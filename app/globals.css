@@ -1,26 +1,46 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-dark-900: #FFFFFF;
+  --color-dark-800: #F5F5F5;
+  --color-dark-700: #FFFFFF;
+  --color-dark-600: #EEEEEE;
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-accent: #0ABAB5;
+  --color-accent-light: #6BBFBA;
+  --color-accent-dark: #088F8C;
+  --color-gold: #C9A96E;
+  --color-premium: #C9A96E;
+  --color-up: #FF4D4D;
+  --color-down: #2196F3;
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+  --color-border: #E5E7EB;
+  --color-surface-dark: #0D1117;
+  --color-surface-dark-card: #161B22;
+  --color-surface-dark-border: #2D3748;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FFFFFF;
+  color: #000000;
+  font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  min-width: 1280px;
 }
+
+.font-display {
+  font-family: var(--font-playfair), 'Georgia', 'Times New Roman', serif;
+}
+
+.font-mono-price {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #FFFFFF; }
+::-webkit-scrollbar-thumb { background: #CCCCCC; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #AAAAAA; }
