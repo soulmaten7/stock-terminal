@@ -1,4 +1,4 @@
-<!-- 2026-04-09 -->
+<!-- 2026-04-11 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
@@ -51,6 +51,21 @@
   - 인증 시스템 (로그인/회원가입/AuthGuard)
   - 홈 대시보드 전체 컴포넌트
   - CLAUDE_CODE_INSTRUCTIONS.md 전체 개발 명령서 작성
+
+### 세션 #3 — 2026-04-11
+- **작업 내용**: 한투 API 4종 검증 + lib/kis.ts 버그 수정
+- **검증 결과 (토요일 장외, 4/10 종가 기준)**:
+  - /api/kis/price: 정상 (삼성전자 206,000원)
+  - /api/kis/investor: 정상 (외국인 +465,171주 / 기관 -475,614주) — 수급 +0억 문제 해결
+  - /api/kis/orderbook: 정상 (10호가)
+  - /api/kis/execution: 정상 (체결 내역)
+- **수정한 버그**:
+  - Rate limiter race condition → Promise chain serialize
+  - 토큰 발급 deduplication → pendingTokenPromise 공유
+  - 토큰 디스크 캐시 추가 (/tmp/kis-token-cache.json)
+  - RATE_LIMIT_MS 400ms → 1100ms (첫 3영업일 1건/초 제한 대응)
+  - WatchlistLive 폴링 10초 → 15초
+- **병렬 3개 API 호출 재테스트**: 3.1초 (1.1초 × 3, 직렬화 정상)
 
 ### 세션 #2 — 2026-04-09
 - **작업 내용**: Phase 1~4 전체 구현 (홈 리팩토링 + API + 서브페이지 + 수익화)

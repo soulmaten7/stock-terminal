@@ -1,4 +1,4 @@
-<!-- 2026-04-09 -->
+<!-- 2026-04-11 -->
 # Stock Terminal — Claude Code 지침서
 
 @AGENTS.md

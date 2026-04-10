@@ -1,5 +1,24 @@
-<!-- 2026-04-09 -->
+<!-- 2026-04-11 -->
 # Stock Terminal — 변경 이력
+
+## 세션 #3 — 2026-04-11
+
+### 검증 (토요일 장외, 금요일 4/10 종가 기준)
+- **/api/kis/price**: 정상 ✅ (삼성전자 206,000원, +2000, +0.98%)
+- **/api/kis/investor**: 정상 ✅ (4/10 외국인 +465,171주 / 기관 -475,614주)
+  - 세션 #2의 "수급 +0억 문제" 해결 확인
+- **/api/kis/orderbook**: 정상 ✅ (매도/매수 10호가)
+- **/api/kis/execution**: 정상 ✅ (체결 내역)
+
+### 수정 (lib/kis.ts)
+- **Rate limiter race condition 수정**: 기존 단순 timestamp 방식은 동시 요청이 모두 통과되는 버그 → Promise chain으로 serialize
+- **토큰 deduplication**: HMR 리로드 시 3개 API가 동시에 토큰을 발급받다가 "1분/회" 제한에 걸리는 문제 → pendingTokenPromise로 공유
+- **토큰 디스크 캐시 추가**: /tmp/kis-token-cache.json에 저장 → HMR 리로드에도 토큰 재사용
+- **RATE_LIMIT_MS 기본값 400ms → 1100ms**: 한투 실전계좌 첫 3영업일은 1건/초 제한. 3영업일 경과 후 env로 복구 가능
+
+### 수정 (WatchlistLive)
+- 폴링 주기 10초 → 15초 (첫 3영업일 rate limit 대응)
+- 3영업일 경과 후 (~4/15) 10초로 복구 예정
 
 ## 세션 #2 — 2026-04-09
 

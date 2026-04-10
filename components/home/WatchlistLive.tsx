@@ -72,7 +72,9 @@ export default function WatchlistLive() {
   useEffect(() => {
     setMounted(true);
     fetchPrices();
-    const interval = setInterval(fetchPrices, 10000);
+    // 한투 실전계좌 첫 3영업일: 1건/초 제한 → 10종목 × 1.1초 = 11초
+    // 3영업일 이후 4/15~: 20건/초 → 10초로 복구 가능
+    const interval = setInterval(fetchPrices, 15000);
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -1,4 +1,4 @@
-<!-- 2026-04-09 -->
+<!-- 2026-04-11 -->
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## 현재 상태 요약
@@ -7,23 +7,27 @@
 - **페이지**: 13개
 - **빌드 상태**: 정상 (dev 서버 localhost:3333)
 - **배포 상태**: 미배포
-- **한투 API**: 실전 계좌 연동 완료
+- **한투 API**: 4개 엔드포인트 전부 검증 완료 (4/10 종가 기준)
 - **AI 분석**: GPT-4o-mini 연동 완료
 
-## 가장 최근 세션 — 세션 #2 (2026-04-09)
-- Phase 1~4 전체 구현 완료
-- 홈 3-layer 라이브스코어+채팅 컨셉 완성
-- 한투 OpenAPI 4개 엔드포인트 연동
-- 4개 신규 페이지 (뉴스·공시, 시장분석, 스크리너, 비교분석)
-- AI 분석 GPT-4o-mini 테스트 성공
-- Hydration mismatch 3건 수정
+## 가장 최근 세션 — 세션 #3 (2026-04-11, 토요일)
+- 한투 API 4종 (/price, /investor, /orderbook, /execution) 전부 정상 확인
+- lib/kis.ts rate limiter race condition 수정 (Promise chain serialize)
+- 토큰 deduplication + 디스크 캐시 추가 (HMR 리로드 대응)
+- RATE_LIMIT_MS 400ms → 1100ms (첫 3영업일 1건/초 제한)
+- WatchlistLive 폴링 10초 → 15초
 
 ## 다음 할 일 (우선순위 순)
 
-### 1순위 — 장중 검증 (09:00~)
-1. **관심종목 실시간 변동 확인** — 한투 API /api/kis/price 10초 폴링이 정상 동작하는지
-2. **수급 데이터 +0억 문제** — /api/kis/investor에서 외국인/기관 순매수가 0으로 나오는 문제 확인
-3. **호가창/체결 데이터** — /api/kis/orderbook, /api/kis/execution 정상 응답 확인
+### 1순위 — 월요일 장중 (4/13, 09:00~) 실시간 검증
+1. **관심종목 실시간 변동** — WatchlistLive 15초 폴링, 가격 blink 동작 확인
+2. **수급 실시간 업데이트** — InstitutionalFlow 외국인/기관 TOP10 갱신 확인
+3. **호가창/체결 라이브** — 종목 상세 페이지 실시간 데이터 확인
+4. **동시 사용자 부하** — 여러 브라우저 탭 열어도 rate limit 안 걸리는지
+
+### 2순위 — 4/15 이후 3영업일 제한 해제
+5. RATE_LIMIT_MS를 60ms(20건/초)로 복구 — .env.local에 `KIS_RATE_LIMIT_MS=60` 추가
+6. WatchlistLive 폴링 15초 → 10초 복구
 
 ### 2순위 — UI/기능 점검
 4. TradingView 위젯 정상 동작 확인
