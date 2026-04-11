@@ -52,6 +52,17 @@
   - 홈 대시보드 전체 컴포넌트
   - CLAUDE_CODE_INSTRUCTIONS.md 전체 개발 명령서 작성
 
+### 세션 #4 — 2026-04-11 (13개 페이지 Chrome MCP 테스트 + 홈 수급 최적화)
+- **신규**: `app/api/kis/investor-rank/route.ts` (batch endpoint, TR ID: FHPTJ04400000)
+- **수정**: `components/home/InstitutionalFlow.tsx` — 10건 병렬 개별호출 → 1건 batch 호출 (60초 폴링)
+- **효과**: 홈 페이지에서 WatchlistLive(10건/15초) + InstitutionalFlow(1건/60초) = 한투 rate limit 안정화
+- **테스트**: 13개 페이지 전부 Chrome MCP로 순회, 페이지별 UI/데이터 상태 기록
+- **발견된 이슈**:
+  - DB 시딩 필요 (`stocks`, `link_hub` 비어있음)
+  - 더미 데이터 8개 컴포넌트 제거 필요
+  - `/admin` AuthGuard 누락 (보안)
+  - Turbopack 파일시스템 캐시 오류 (샌드박스 한정)
+
 ### 세션 #3 — 2026-04-11
 - **작업 내용**: 한투 API 4종 검증 + lib/kis.ts 버그 수정
 - **검증 결과 (토요일 장외, 4/10 종가 기준)**:

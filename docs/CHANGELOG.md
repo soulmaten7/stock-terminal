@@ -1,6 +1,39 @@
 <!-- 2026-04-11 -->
 # Stock Terminal — 변경 이력
 
+## 세션 #4 — 2026-04-11 (13개 페이지 Chrome MCP 테스트 + 홈 수급 최적화)
+
+### 추가 (신규)
+- **`app/api/kis/investor-rank/route.ts`** — 한투 외국인/기관 매매종목 가집계 batch endpoint (TR ID: FHPTJ04400000). 한 번의 호출로 외국인 TOP10 + 기관 TOP10 동시 반환.
+
+### 수정 (components/home/InstitutionalFlow.tsx)
+- 기존: 10개 심볼 각각 `/api/kis/investor` 병렬 호출 (10건) + 30초 폴링 → WatchlistLive의 10건과 충돌해 초당 20건 rate limit 초과
+- 수정: 단일 `/api/kis/investor-rank` batch 호출 (1건) + 60초 폴링 + WatchlistLive와 겹치지 않도록 5초 지연 시작
+- 홈 페이지 전체 API 호출 폭주 해결
+
+### 13개 페이지 Chrome MCP 테스트 결과
+| # | 페이지 | 상태 | 메모 |
+|---|---|---|---|
+| 1 | / | ✅ | 홈 대시보드 정상, InstitutionalFlow batch 적용 후 TOP10 실데이터 표시 |
+| 2 | /stocks/005930 | 🔒 | AuthGuard paywall (로그인 필요 — 예상 동작) |
+| 3 | /news | ✅ | RSS 실제 피드 20건, 매체 필터/키워드 검색 정상 |
+| 4 | /analysis | ⚠️ | FRED 미국 경제지표 실데이터 OK / 업종 히트맵·테마·시장수급은 더미 |
+| 5 | /screener | ⚠️ | UI·필터 정상, 12종목 전체 더미 데이터 |
+| 6 | /compare | ⚠️ | UI 정상, 삼성전자·SK하이닉스 비교 데이터 더미 |
+| 7 | /link-hub | ⚠️ | UI 정상, `link_hub` 테이블 시딩 필요 (0건) |
+| 8 | /stocks | ⚠️ | UI·필터·정렬 정상, `stocks` 테이블 비어있음 |
+| 9 | /stocks/005930/analysis | 🔒 | AuthGuard paywall |
+| 10 | /advertiser | ✅ | 랜딩 페이지 + CTA 정상 |
+| 11 | /mypage | ✅ | 미로그인 시 /auth/login 리다이렉트 정상 |
+| 12 | /pricing | ✅ | Premium/Pro 요금제 버튼 정상 |
+| 13 | /admin | ⚠️ | **AuthGuard 누락 — 비로그인도 접근 가능 (보안 이슈)** |
+
+### 확인된 이슈 (후속 작업)
+1. **DB 시딩 필요**: `stocks`, `link_hub` 테이블 비어있음 → 검색·링크허브 실데이터 없음
+2. **더미 데이터 제거 필요**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage, ComparePage
+3. **관리자 페이지 AuthGuard 추가 필요** (role=admin 체크)
+4. **Turbopack 파일시스템 캐시 오류**: 샌드박스 환경에서 "Operation not permitted" / "Another write batch or compaction is already active" → dev 서버 주기적 재시작 필요 (운영엔 영향 없음, 로컬 샌드박스 한정)
+
 ## 세션 #3 — 2026-04-11
 
 ### 검증 (토요일 장외, 금요일 4/10 종가 기준)

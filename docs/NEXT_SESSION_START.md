@@ -10,7 +10,13 @@
 - **한투 API**: 4개 엔드포인트 전부 검증 완료 (4/10 종가 기준)
 - **AI 분석**: GPT-4o-mini 연동 완료
 
-## 가장 최근 세션 — 세션 #3 (2026-04-11, 토요일)
+## 가장 최근 세션 — 세션 #4 (2026-04-11, 토요일)
+- 13개 페이지 Chrome MCP 체크리스트 테스트 완료
+- 신규 `/api/kis/investor-rank` batch endpoint 추가 (TR ID: FHPTJ04400000)
+- InstitutionalFlow: 10건 병렬 → 1건 batch 호출로 rate limit 안정화
+- 발견된 이슈: DB 시딩 필요 + 8개 컴포넌트 더미 데이터 + /admin AuthGuard 누락
+
+## 세션 #3 (2026-04-11, 토요일)
 - 한투 API 4종 (/price, /investor, /orderbook, /execution) 전부 정상 확인
 - lib/kis.ts rate limiter race condition 수정 (Promise chain serialize)
 - 토큰 deduplication + 디스크 캐시 추가 (HMR 리로드 대응)
@@ -18,6 +24,11 @@
 - WatchlistLive 폴링 10초 → 15초
 
 ## 다음 할 일 (우선순위 순)
+
+### 0순위 — 세션 #4에서 발견된 이슈 처리
+1. **DB 시딩**: `stocks` 테이블 (KOSPI/KOSDAQ 상장종목), `link_hub` 테이블 (카테고리별 투자 링크)
+2. **더미 데이터 제거 (8개 컴포넌트)**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage 하드코딩, ComparePage 하드코딩
+3. **/admin AuthGuard 추가**: `role=admin` 체크
 
 ### 1순위 — 월요일 장중 (4/13, 09:00~) 실시간 검증
 1. **관심종목 실시간 변동** — WatchlistLive 15초 폴링, 가격 blink 동작 확인
