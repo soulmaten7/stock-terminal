@@ -101,11 +101,9 @@
 ## 세션 루틴
 
 ### 세션 시작 시 (Cowork이 처리)
-1. CLAUDE.md 읽기 (규칙 확인)
-2. docs/NEXT_SESSION_START.md 읽기 (최신 상태 + 우선순위)
-3. session-context.md 읽기 (맥락 + TODO)
-4. 가비지 컬렉션: TODO에서 완료된 항목 정리
-5. 사용자에게 오늘 할 작업 제안 → 확인 후 명령어 작성
+1. **`docs/SESSION_KICKOFF.md` 읽기** ← 항상 이것부터 (전체 현황 + 우선순위 정리됨)
+2. session-context.md 확인 (TODO 가비지 컬렉션)
+3. 사용자에게 오늘 할 P0 작업 제안 → 확인 후 명령어 작성
 
 ### 작업 중 (역할 분담)
 - **Cowork**: 코드 작성, 명령어 생성, 설계 결정
