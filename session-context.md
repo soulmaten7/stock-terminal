@@ -1,4 +1,4 @@
-<!-- 2026-04-11 -->
+<!-- 2026-04-17 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
@@ -12,14 +12,18 @@
 ## 현재 TODO
 
 ### P0 — 지금 당장 (블로커)
-- [ ] 내일 장중(09:00~) 검증: 관심종목 실시간 변동, 수급 +0억 문제, 호가창/체결 확인
-- [ ] 프로그램 매매 데이터: 한투 API에 없어서 KRX 크롤링 필요
+- [ ] **DB 시딩**: `stocks` 테이블 (KOSPI/KOSDAQ 상장종목 전체)
+- [ ] **DB 시딩**: `link_hub` 테이블 (카테고리별 투자 링크)
+- [ ] **더미 데이터 제거 (8개 컴포넌트)**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage, ComparePage
+- [ ] **/admin AuthGuard 추가**: role=admin 체크 (보안 이슈)
+- [ ] **rate limit 복구**: 3영업일(~4/15) 경과 → `.env.local`에 `KIS_RATE_LIMIT_MS=60` 추가, WatchlistLive 폴링 15초→10초 복구
 
 ### P1 — 이번 주
 - [ ] TradingView 위젯 연동 확인 (차트, 티커바)
 - [ ] 링크 허브 페이지 실제 링크 동작 확인
 - [ ] 로그인/회원가입 Supabase Auth 연동 테스트
 - [ ] 전체 페이지 UI 세부 점검
+- [ ] 장중 실시간 데이터 검증 (관심종목 변동, 수급 갱신, 호가창/체결)
 
 ### P2 — 다음 주
 - [ ] 토스페이먼츠 결제 연동 (라이브 URL 생성 후)
@@ -27,6 +31,7 @@
 - [ ] SEC EDGAR API 연동 (미국 주식)
 - [ ] 광고주 배너 등록 시스템 완성
 - [ ] 관리자 페이지 완성
+- [ ] **DEV_BYPASS = false** 전환 후 프로덕션 배포 준비
 
 ### P3 — 2주 후
 - [ ] Make 자동화 스케줄링 세팅 (5개 시나리오)
@@ -40,6 +45,26 @@
 - [ ] Paddle 결제 연동 (글로벌)
 
 ## 완료된 세션 히스토리
+
+### 세션 #5 — 2026-04-17 (AuthGuard DEV_BYPASS + Turbopack 서버 안정화 + 문서 전체 갱신)
+- **AuthGuard**: `DEV_BYPASS = true` 추가 → 13개 페이지 paywall 전체 해제 (개발 확인용)
+- **Turbopack 크래시 해결**: `.fuse_hidden` 파일 7개 삭제 후 서버 재시작 → `✓ Ready in 1175ms`
+  - 원인: FUSE mount 위에서 Turbopack RocksDB lock 파일 생성 불가 → "Operation not permitted"
+  - 해결: `mcp__cowork__allow_cowork_file_delete`로 `.fuse_hidden*` 삭제 후 `next.config.ts` 원복
+- **next.config.ts**: `distDir` 절대경로 시도 (실패) → 원복 (Next.js path.join 제약으로 절대경로 불가)
+- **git 이슈**: 샌드박스에서 `.git/index.lock` 삭제 불가 → 사용자 Mac 터미널에서 직접 push 완료 (커밋 `49abd20`, `da61662`)
+- **문서 전체 갱신**: 4개 문서 날짜 + 세션 #4~5 로그 기록 완료
+
+### 세션 #4 — 2026-04-11 (13개 페이지 Chrome MCP 테스트 + 홈 수급 최적화)
+- **신규**: `app/api/kis/investor-rank/route.ts` (batch endpoint, TR ID: FHPTJ04400000)
+- **수정**: `components/home/InstitutionalFlow.tsx` — 10건 병렬 개별호출 → 1건 batch 호출 (60초 폴링)
+- **효과**: 홈 페이지에서 WatchlistLive(10건/15초) + InstitutionalFlow(1건/60초) = 한투 rate limit 안정화
+- **테스트**: 13개 페이지 전부 Chrome MCP로 순회, 페이지별 UI/데이터 상태 기록
+- **발견된 이슈**:
+  - DB 시딩 필요 (`stocks`, `link_hub` 비어있음)
+  - 더미 데이터 8개 컴포넌트 제거 필요
+  - `/admin` AuthGuard 누락 (보안)
+  - Turbopack 파일시스템 캐시 오류 (샌드박스 한정)
 
 ### 세션 #1 — 2026-04-08
 - **작업 내용**: 프로젝트 초기 설정 + 전체 파일 구조 생성

@@ -1,5 +1,55 @@
-<!-- 2026-04-11 -->
+<!-- 2026-04-17 -->
 # Stock Terminal — 변경 이력
+
+## 세션 #5 — 2026-04-17 (AuthGuard DEV_BYPASS + Turbopack 서버 안정화 + 문서 전체 업데이트)
+
+### 수정
+
+#### `components/auth/AuthGuard.tsx` — DEV_BYPASS 추가
+- **배경**: 세션 #4에서 13개 페이지 테스트 시 종목상세·분석 페이지가 paywall에 막혀 UI 확인 불가
+- **수정**: `DEV_BYPASS = true` 플래그 추가 → 모든 기능 잠금 해제 (개발 모드 전용)
+- **주의**: 프로덕션 배포 전 반드시 `DEV_BYPASS = false` 또는 해당 줄 삭제 필요
+```typescript
+const DEV_BYPASS = true;  // TODO: 배포 전 삭제
+function canAccess(role, minPlan): boolean {
+  if (DEV_BYPASS) return true;
+  // ... 기존 role 체크 로직
+}
+```
+
+#### `next.config.ts` — distDir 시도 후 원복
+- **배경**: Turbopack이 FUSE mount 위에서 embedded DB(RocksDB) lock 파일 생성 시도 → "Operation not permitted (os error 1)" 크래시
+- **시도**: `distDir: '/tmp/nextjs-dist'` 및 절대 경로로 캐시 디렉토리 이동 시도
+- **결과**: Next.js 내부에서 `path.join(projectRoot, distDir)` 사용 → 절대 경로가 프로젝트 내부 상대 경로로 해석돼 효과 없음
+- **최종**: `next.config.ts` 원복 (distDir 제거), `.fuse_hidden` 파일 삭제로 근본 원인 해결
+
+### 해결된 이슈
+
+#### Turbopack "Failed to open database" 크래시 해결
+- **원인**: FUSE-mounted Mac 폴더에서 Turbopack 증분 캐시 DB(RocksDB) 파일 lock 불가
+- **증상**: `[Error: Failed to open database - Loading persistence directory failed - Operation not permitted (os error 1)]`
+- **해결**: `mcp__cowork__allow_cowork_file_delete`로 `.fuse_hidden*` 파일 7개 삭제 후 서버 재시작 → 정상 동작
+- `.fuse_hidden` 발생 원인: 이전 서버 종료 시 오픈 상태 파일을 FUSE가 임시 파일로 보관, 이후 재시작 시 충돌
+- 서버 상태: PID 22737, 포트 3333, HTTP 200 정상 확인
+
+#### `.git/index.lock` 이슈 (FUSE mount 제약)
+- 샌드박스에서 `.git/index.lock` 삭제 불가 → 샌드박스에서 git 커밋 실패
+- **해결**: 사용자가 Mac 터미널에서 직접 `rm -f .git/index.lock && git add -A && git commit && git push` 실행
+- 커밋 완료: `49abd20` (AuthGuard DEV_BYPASS), `da61662` (next.config.ts 관련)
+
+### 문서 업데이트
+- CLAUDE.md, docs/CHANGELOG.md, session-context.md, docs/NEXT_SESSION_START.md 날짜 2026-04-17로 갱신
+- 세션 #4~5 전체 로그 기록 완료
+
+### 미해결 / 다음 세션 이슈
+1. `stocks` 테이블 DB 시딩 필요 (KOSPI/KOSDAQ 상장종목)
+2. `link_hub` 테이블 DB 시딩 필요 (투자 링크 카테고리)
+3. 더미 데이터 제거 필요: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage (12종목), ComparePage (삼성/SK 하드코딩)
+4. `/admin` 페이지 AuthGuard 누락 (role=admin 체크 없음 — 보안)
+5. 한투 rate limit 3영업일(~4/15) 경과 → `RATE_LIMIT_MS=60ms` + WatchlistLive 폴링 10초로 복구 필요
+6. DEV_BYPASS = false 로 전환 후 프로덕션 배포
+
+---
 
 ## 세션 #4 — 2026-04-11 (13개 페이지 Chrome MCP 테스트 + 홈 수급 최적화)
 

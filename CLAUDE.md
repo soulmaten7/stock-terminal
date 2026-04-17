@@ -1,10 +1,33 @@
-<!-- 2026-04-11 -->
+<!-- 2026-04-17 -->
 # Stock Terminal — Claude Code 지침서
 
 @AGENTS.md
 
 ## 프로젝트 개요
 글로벌 개인투자자용 통합 데이터 터미널 플랫폼 — 전업투자자의 투자 환경을 일반 투자자에게 월 구독료로 제공하는 서비스.
+
+## 역할 분담 — 핵심 워크플로우
+
+### Cowork (Claude AI 어시스턴트)
+- 사용자와 대화하며 **무엇을 만들지** 결정
+- 구체적인 명령어, 코드, 설정을 **직접 작성해서 전달**
+- 문서 업데이트, 로그 기록, 다음 할 일 정리
+- **실행은 하지 않음** — 명령어를 만들어서 Claude Code에게 넘기거나, 사용자에게 붙여넣기 안내
+
+### Claude Code (터미널 CLI 에이전트)
+- Cowork이 만든 명령어/코드를 **실제로 실행**
+- 파일 수정, npm 실행, git commit/push, 서버 재시작
+- 빌드 에러 확인, 테스트 실행
+
+### 작업 방식
+1. 사용자가 Cowork에게 원하는 것 말하기
+2. Cowork이 → 명령어/코드/지시문 작성
+3. 사용자가 → Claude Code 터미널에 붙여넣어 실행
+4. 결과를 Cowork에게 공유 → 다음 단계 안내
+
+> **한 줄 요약**: Cowork = 두뇌(설계·작성), Claude Code = 손(실행·빌드)
+
+---
 
 ## 절대 규칙
 - 빌드 깨진 코드 push 금지
@@ -13,7 +36,7 @@
 - session-context.md에 없는 숫자 만들기 금지
 - 기존 POTAL Supabase 프로젝트 URL/Key 절대 사용 금지 — 반드시 stock-platform 전용 Supabase 프로젝트 사용
 - 코드/기술 용어는 영어, 소통은 한국어
-- 코딩 초보자 대상 — 기술 설명 간결하게, 작업은 직접 해줘야 함
+- 코딩 초보자 대상 — 기술 설명 간결하게, 명령어는 복붙 가능하게 만들어줄 것
 
 ## 폴더 구조
 ```
@@ -77,20 +100,24 @@
 
 ## 세션 루틴
 
-### 세션 시작 시
+### 세션 시작 시 (Cowork이 처리)
 1. CLAUDE.md 읽기 (규칙 확인)
-2. docs/BUSINESS_STRATEGY.md 읽기 (사업 전략 + 핵심 결정)
-3. docs/SYSTEM_DESIGN.md 읽기 (시스템 설계 + 구현 현황)
-4. session-context.md 읽기 (맥락 + TODO)
-5. docs/NEXT_SESSION_START.md 읽기 (최신 상태)
-6. 가비지 컬렉션: TODO에서 완료된 항목 정리
+2. docs/NEXT_SESSION_START.md 읽기 (최신 상태 + 우선순위)
+3. session-context.md 읽기 (맥락 + TODO)
+4. 가비지 컬렉션: TODO에서 완료된 항목 정리
+5. 사용자에게 오늘 할 작업 제안 → 확인 후 명령어 작성
 
-### 세션 종료 시
-1. 코드 변경 있으면 → 4개 문서 헤더 날짜 오늘로 업데이트
+### 작업 중 (역할 분담)
+- **Cowork**: 코드 작성, 명령어 생성, 설계 결정
+- **Claude Code**: Cowork이 만든 명령어 실행, 빌드 확인, git push
+- 사용자는 Claude Code 터미널에 명령어 붙여넣기만 하면 됨
+
+### 세션 종료 시 (Cowork이 처리)
+1. 4개 문서 헤더 날짜 오늘로 업데이트
 2. CHANGELOG.md에 이번 세션 변경사항 추가
 3. session-context.md에 이번 세션 완료 블록 추가
 4. NEXT_SESSION_START.md 최신 상태로 업데이트
-5. git push
+5. Claude Code용 git push 명령어 제공 → 사용자가 실행
 
 ## 핵심 원칙
 - "로그 없으면 미완료" — 빌드 성공해도, 테스트 통과해도, 기록 없으면 미완료
