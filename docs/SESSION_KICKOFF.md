@@ -36,7 +36,7 @@
 | AuthGuard | DEV_BYPASS = true (admin 게이트는 DEV_BYPASS 무시하고 role 검증) |
 | Rate limit | ✅ 복구 완료 (`KIS_RATE_LIMIT_MS=60`, 20건/초) |
 | git repo | https://github.com/soulmaten7/stock-terminal.git |
-| 최신 커밋 | da61662 (세션 #5까지 push, 세션 #6 분은 로컬 대기 중) |
+| 최신 커밋 | 18fcc48 (세션 #6 push 완료, 12개 파일 변경) |
 
 ---
 

@@ -12,8 +12,8 @@
 ## 현재 TODO
 
 ### P0 — 지금 당장 (블로커)
-- [ ] **DB 시딩**: `stocks` 테이블 (KOSPI/KOSDAQ 상장종목 전체)
-- [ ] **DB 시딩**: `link_hub` 테이블 (카테고리별 투자 링크)
+- [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
+- [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
 - [ ] **더미 데이터 제거 (8개 컴포넌트)**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage, ComparePage
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
@@ -46,6 +46,14 @@
 
 ## 완료된 세션 히스토리
 
+### 세션 #7 — 2026-04-17 (stocks + link_hub DB 시딩)
+- **stocks 테이블 시딩**: KOSPI 949건 + KOSDAQ 1,821건 = 총 2,780건 upsert 완료
+- **link_hub 테이블 시딩**: 기존 더미 데이터 삭제 후 KR/US 56건 재삽입 완료
+- **pykrx → FDR 전환**: KRX API 세션 인증 차단(LOGOUT 400) → FinanceDataReader로 교체
+- **신규 파일**: `scripts/seed-stocks.py` (155 lines)
+- **빌드**: `npm run build` 에러 없음 ✅
+- **git**: `21fafe3` 커밋
+
 ### 세션 #6 — 2026-04-17 (Rate limit 복구 + /admin AuthGuard + 모델 선택 규칙)
 - **Rate limit 복구**: `.env.local` `KIS_RATE_LIMIT_MS=400→60`, `WatchlistLive.tsx` 폴링 15초→10초
 - **/admin AuthGuard 추가 (보안)**:
@@ -55,7 +63,7 @@
   - `app/admin/page.tsx` 전체를 `<AuthGuard minPlan="admin">` 로 래핑
 - **모델 선택 규칙 명문화**: `CLAUDE.md`에 Sonnet 기본 / Opus는 🔴 배지 붙은 경우만 실행 규칙 신설
 - **빌드**: `npm run build` 에러 없음 ✅
-- **git**: `49abd20..da61662` push 완료 (세션 #5 분) — 세션 #6 변경분은 이 세션 종료 시 push 예정
+- **git**: `18fcc48` push 완료 (세션 #6 — 12개 파일 변경)
 
 ### 세션 #5 — 2026-04-17 (AuthGuard DEV_BYPASS + Turbopack 서버 안정화 + 문서 전체 갱신)
 - **AuthGuard**: `DEV_BYPASS = true` 추가 → 13개 페이지 paywall 전체 해제 (개발 확인용)
@@ -139,6 +147,8 @@
 - **API 라우트 수**: 12개 이상
 - **지원 시장**: 한국(코스피/코스닥) + 미국(나스닥/NYSE) — 추후 일본, 홍콩 추가
 - **빌드 상태**: 정상 (dev 서버 localhost:3333)
+- **stocks 테이블**: 2,780건 (KOSPI 949 + KOSDAQ 1,821)
+- **link_hub 테이블**: 56건 (KR/US)
 - **배포 상태**: 미배포
 - **한투 API**: 실전 계좌 연동 완료 (첫 3일 3회/초 제한)
 - **AI 분석**: GPT-4o-mini 연동 완료, 7일 캐시

@@ -13,30 +13,23 @@
 - **rate limit**: `KIS_RATE_LIMIT_MS=60` (20건/초로 복구 완료)
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 
-## 가장 최근 세션 — 세션 #6 (2026-04-17)
-- **Rate limit 복구**: `.env.local` 400→60, `WatchlistLive.tsx` 15s→10s 폴링
-- **/admin AuthGuard 추가 (보안 이슈 해소)**:
-  - `AuthGuard.tsx` `'admin'` minPlan 추가, DEV_BYPASS=true 여도 role 반드시 체크
-  - admin 차단 시 PaywallModal 대신 "접근 권한 없음" 전용 화면
-  - `app/admin/page.tsx` 전체를 `<AuthGuard minPlan="admin">` 로 래핑
-- **모델 선택 규칙 명문화**: `CLAUDE.md`에 Sonnet 기본 / 🔴 배지 붙은 경우만 Opus 규칙 추가
+## 가장 최근 세션 — 세션 #7 (2026-04-17)
+- **stocks 테이블 시딩**: KOSPI 949건 + KOSDAQ 1,821건 = 총 **2,780건** upsert 완료
+- **link_hub 테이블 시딩**: KR/US **56건** 삽입 완료
+- **pykrx → FinanceDataReader(FDR) 전환**: KRX API 세션 인증 차단 → FDR로 교체, 앞으로 KRX 데이터 작업은 FDR 기준
+- **신규 파일**: `scripts/seed-stocks.py`
+- **git**: `21fafe3` 커밋
 
-## 세션 #5 (2026-04-17)
-- AuthGuard `DEV_BYPASS = true` 추가 → 13개 페이지 paywall 전체 해제
-- Turbopack "Failed to open database" 크래시 해결 (`.fuse_hidden*` 삭제)
-- git 커밋: 사용자 Mac 터미널에서 직접 push (`49abd20`, `da61662`)
+## 세션 #6 (2026-04-17)
+- Rate limit 복구: `.env.local` 400→60, `WatchlistLive.tsx` 15s→10s 폴링
+- `/admin` AuthGuard 추가: `'admin'` minPlan, DEV_BYPASS 무시하고 role 체크
+- 모델 선택 규칙 명문화: `CLAUDE.md` Sonnet 기본 / 🔴 Opus 배지 규칙
 
 ## 다음 할 일 (우선순위 순)
 
 ### 0순위 — 지금 당장 처리해야 할 항목
 
-1. **DB 시딩**: `stocks` 테이블 (KOSPI/KOSDAQ 상장종목 전체)
-   - KRX 공공데이터 또는 한투 API로 전체 종목 리스트 수집 후 Supabase insert
-
-2. **DB 시딩**: `link_hub` 테이블 (카테고리별 투자 링크)
-   - 기존 `lib/linkHub.ts` 데이터를 DB로 이전
-
-3. **더미 데이터 제거 (8개 컴포넌트)**:
+1. **더미 데이터 제거 (8개 컴포넌트)**:
    - `ProgramTrading` — KRX 크롤링 필요 (한투 API 엔드포인트 없음)
    - `GlobalFutures` — 외부 API 연동 필요
    - `WarningStocks` — KRX 경고종목 API 연동
@@ -114,3 +107,4 @@ cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model opus
 | 환경변수 | `.env.local` |
 | 한투 API 유틸 | `lib/kis.ts` |
 | AuthGuard | `components/auth/AuthGuard.tsx` |
+| 시딩 스크립트 | `scripts/seed-stocks.py` |

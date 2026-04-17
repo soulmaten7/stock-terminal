@@ -1,6 +1,30 @@
 <!-- 2026-04-17 -->
 # Stock Terminal — 변경 이력
 
+## 세션 #7 — 2026-04-17 (stocks + link_hub DB 시딩)
+
+### 신규
+- **`scripts/seed-stocks.py`** (155 lines) — KOSPI+KOSDAQ 종목 + link_hub 링크 시딩 스크립트
+
+### 데이터
+- **stocks 테이블 시딩**: KOSPI 949건 + KOSDAQ 1,821건 = 총 **2,780건** upsert 완료
+- **link_hub 테이블 시딩**: 기존 더미 데이터 삭제 후 KR/US **56건** 재삽입 완료
+
+### 라이브러리 전환
+- **pykrx → FinanceDataReader(FDR)**:
+  - pykrx가 KRX API 세션 인증 요구(`LOGOUT 400`)로 차단됨
+  - FDR로 교체하여 정상 동작 확인
+  - 앞으로 KRX 관련 데이터 작업(공매도, 수급, 프로그램매매 등)은 FDR 기준으로 통일
+- **의존성 추가** (Python 런타임): `FinanceDataReader`, `supabase`, `python-dotenv`
+
+### 검증
+- `npm run build` — 에러 없음 ✅
+
+### git
+- `21fafe3` — `scripts/seed-stocks.py` 커밋
+
+---
+
 ## 세션 #6 — 2026-04-17 (Rate limit 복구 + /admin AuthGuard + Cowork/Claude Code 모델 분리 규칙)
 
 ### 수정
