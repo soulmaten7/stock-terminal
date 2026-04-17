@@ -33,10 +33,10 @@
 | 배포 상태 | 미배포 |
 | 한투 API | 실전계좌 연동 완료 |
 | AI 분석 | GPT-4o-mini 연동 완료 (7일 캐시) |
-| AuthGuard | DEV_BYPASS = true (개발 모드 — 모든 페이지 열림) |
-| Rate limit | 3영업일 제한(~4/15) 종료 → 복구 필요 |
+| AuthGuard | DEV_BYPASS = true (admin 게이트는 DEV_BYPASS 무시하고 role 검증) |
+| Rate limit | ✅ 복구 완료 (`KIS_RATE_LIMIT_MS=60`, 20건/초) |
 | git repo | https://github.com/soulmaten7/stock-terminal.git |
-| 최신 커밋 | 554dbd4 |
+| 최신 커밋 | da61662 (세션 #5까지 push, 세션 #6 분은 로컬 대기 중) |
 
 ---
 
@@ -56,7 +56,7 @@
 | 10 | /advertiser | 광고주 센터 | ✅ 정상 |
 | 11 | /mypage | 마이페이지 | ✅ (미로그인 → /auth/login 리다이렉트) |
 | 12 | /pricing | 구독/결제 | ✅ 요금제 버튼 정상 |
-| 13 | /admin | 관리자 | ⚠️ AuthGuard 누락 (보안 이슈) |
+| 13 | /admin | 관리자 | ✅ AuthGuard `minPlan="admin"` 래핑 완료 (세션 #6) |
 
 ---
 
@@ -64,24 +64,13 @@
 
 ### ★ P0 — 지금 당장 (블로커)
 
-#### 4-1. Rate limit 복구 (5분 작업)
-한투 API 첫 3영업일 제한(1건/초)이 4/15에 종료됨 → 20건/초로 복구해야 함
+#### 4-1. ~~Rate limit 복구~~ ✅ 세션 #6 완료 (2026-04-17)
+- `.env.local`: `KIS_RATE_LIMIT_MS=400 → 60`
+- `WatchlistLive.tsx`: 폴링 15000ms → 10000ms
 
-**Claude Code에게 줄 명령어:**
-```bash
-# .env.local에 아래 줄 추가
-echo "KIS_RATE_LIMIT_MS=60" >> .env.local
-```
-
-**그리고 아래 파일 수정 (Cowork이 코드 줄 것):**
-- `components/home/WatchlistLive.tsx` — 폴링 주기 15000ms → 10000ms
-
-#### 4-2. /admin 페이지 AuthGuard 추가 (10분 작업)
-현재 비로그인 상태에서도 /admin 접근 가능 → 보안 이슈
-
-**수정 대상 파일:** `app/admin/page.tsx`
-
-**Cowork이 수정 코드 작성 후 Claude Code가 파일 수정**
+#### 4-2. ~~/admin 페이지 AuthGuard 추가~~ ✅ 세션 #6 완료 (2026-04-17)
+- `AuthGuard.tsx`: `'admin'` minPlan 추가 (DEV_BYPASS 무시하고 role 검증)
+- `app/admin/page.tsx`: `<AuthGuard minPlan="admin">` 로 전체 래핑
 
 #### 4-3. stocks 테이블 DB 시딩 (30분~1시간)
 현재 stocks 테이블이 비어있어 종목 검색·리스트·스크리너 전부 빈 화면
@@ -189,8 +178,8 @@ echo "KIS_RATE_LIMIT_MS=60" >> .env.local
 
 ### 한투 API Rate Limit
 - 첫 3영업일(~4/15): 1건/초 → `RATE_LIMIT_MS=1100ms`
-- 3영업일 이후: 20건/초 → `RATE_LIMIT_MS=60ms` (현재 복구 필요)
-- WatchlistLive 폴링: 현재 15초 → 10초로 복구 필요
+- 3영업일 이후: 20건/초 → `RATE_LIMIT_MS=60ms` ✅ 세션 #6 복구 완료
+- WatchlistLive 폴링: 10초 ✅ 세션 #6 복구 완료
 
 ---
 

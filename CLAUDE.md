@@ -27,6 +27,32 @@
 
 > **한 줄 요약**: Cowork = 두뇌(설계·작성), Claude Code = 손(실행·빌드)
 
+### Claude Code 모델 선택 규칙
+
+**기본값: Sonnet 사용**
+- 파일 수정, 빌드, git push, npm run 같은 "손" 작업은 Sonnet으로 충분
+- 속도 빠르고 요금 저렴 (Opus의 약 1/5)
+
+**실행 명령어 (기본 — Sonnet):**
+```bash
+cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model sonnet
+```
+
+**Opus가 필요한 경우** — Cowork이 명령어 줄 때 **🔴 Opus 권장** 배지를 명시:
+- 🔴 원인 불명 빌드/런타임 에러 디버깅 (스택 트레이스로도 추적 어려울 때)
+- 🔴 대규모 리팩토링·아키텍처 변경 (여러 파일 간 영향도 판단 필요)
+- 🔴 복잡한 알고리즘 구현 (Cowork이 설계 못 한 부분)
+- 🔴 레거시 코드 해독 후 수정 (의도 파악이 어려울 때)
+
+**Opus 실행 명령어 (Cowork이 🔴 표시한 경우만):**
+```bash
+cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model opus
+```
+
+**표기 규칙:**
+- Cowork이 제공하는 명령어 블록에 별도 표기 없음 → Sonnet 실행
+- 명령어 블록 상단에 🔴 **Opus 권장** 표시가 있을 때만 Opus 실행
+
 ---
 
 ## 절대 규칙

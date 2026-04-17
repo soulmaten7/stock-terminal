@@ -15,8 +15,8 @@
 - [ ] **DB 시딩**: `stocks` 테이블 (KOSPI/KOSDAQ 상장종목 전체)
 - [ ] **DB 시딩**: `link_hub` 테이블 (카테고리별 투자 링크)
 - [ ] **더미 데이터 제거 (8개 컴포넌트)**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage, ComparePage
-- [ ] **/admin AuthGuard 추가**: role=admin 체크 (보안 이슈)
-- [ ] **rate limit 복구**: 3영업일(~4/15) 경과 → `.env.local`에 `KIS_RATE_LIMIT_MS=60` 추가, WatchlistLive 폴링 15초→10초 복구
+- [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
+- [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
 ### P1 — 이번 주
 - [ ] TradingView 위젯 연동 확인 (차트, 티커바)
@@ -45,6 +45,17 @@
 - [ ] Paddle 결제 연동 (글로벌)
 
 ## 완료된 세션 히스토리
+
+### 세션 #6 — 2026-04-17 (Rate limit 복구 + /admin AuthGuard + 모델 선택 규칙)
+- **Rate limit 복구**: `.env.local` `KIS_RATE_LIMIT_MS=400→60`, `WatchlistLive.tsx` 폴링 15초→10초
+- **/admin AuthGuard 추가 (보안)**:
+  - `AuthGuard.tsx`에 `'admin'` minPlan 타입 추가
+  - admin 게이트는 `DEV_BYPASS=true` 여도 반드시 `role==='admin'` 체크 (보안 우선)
+  - admin 차단 시 PaywallModal 대신 "접근 권한 없음" 전용 화면
+  - `app/admin/page.tsx` 전체를 `<AuthGuard minPlan="admin">` 로 래핑
+- **모델 선택 규칙 명문화**: `CLAUDE.md`에 Sonnet 기본 / Opus는 🔴 배지 붙은 경우만 실행 규칙 신설
+- **빌드**: `npm run build` 에러 없음 ✅
+- **git**: `49abd20..da61662` push 완료 (세션 #5 분) — 세션 #6 변경분은 이 세션 종료 시 push 예정
 
 ### 세션 #5 — 2026-04-17 (AuthGuard DEV_BYPASS + Turbopack 서버 안정화 + 문서 전체 갱신)
 - **AuthGuard**: `DEV_BYPASS = true` 추가 → 13개 페이지 paywall 전체 해제 (개발 확인용)

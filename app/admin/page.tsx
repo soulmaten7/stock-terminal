@@ -7,6 +7,7 @@ import {
   Users, CreditCard, BarChart3, Shield, MessageCircle,
   Settings, BadgeCheck, Bell, ChevronRight,
 } from 'lucide-react';
+import AuthGuard from '@/components/auth/AuthGuard';
 
 type Tab = 'dashboard' | 'users' | 'banners' | 'chat' | 'notice' | 'settings';
 
@@ -106,6 +107,7 @@ export default function AdminPage() {
   ];
 
   return (
+    <AuthGuard minPlan="admin">
     <div className="max-w-[1440px] mx-auto px-6 py-8">
       <h1 className="text-2xl font-bold mb-8">관리자 대시보드</h1>
 
@@ -305,5 +307,6 @@ export default function AdminPage() {
         </div>
       </div>
     </div>
+    </AuthGuard>
   );
 }

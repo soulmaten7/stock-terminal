@@ -1,6 +1,44 @@
 <!-- 2026-04-17 -->
 # Stock Terminal — 변경 이력
 
+## 세션 #6 — 2026-04-17 (Rate limit 복구 + /admin AuthGuard + Cowork/Claude Code 모델 분리 규칙)
+
+### 수정
+
+#### `.env.local` — KIS API Rate Limit 복구
+- **배경**: 한투 실전계좌 첫 3영업일 제한(1건/초)이 4/15에 종료됨 → 기존 400ms 유지 중이라 복구 필요
+- **수정**: `KIS_RATE_LIMIT_MS=400` → `KIS_RATE_LIMIT_MS=60` (20건/초)
+
+#### `components/home/WatchlistLive.tsx` — 관심종목 폴링 복구
+- **수정**: `setInterval(fetchPrices, 15000)` → `setInterval(fetchPrices, 10000)` (15초 → 10초)
+- 상단 주석도 3영업일 경과 기준으로 갱신 (10종목 × 60ms = 0.6초 → 10초 폴링)
+
+#### `components/auth/AuthGuard.tsx` — `'admin'` minPlan 지원 추가 (보안 이슈)
+- **배경**: 기존 AuthGuard는 `'free'|'premium'|'pro'`만 지원 → /admin 전용 게이트 불가
+- **수정**:
+  - `type MinPlan = 'free' | 'premium' | 'pro' | 'admin'` 추가
+  - **`admin` 게이트는 DEV_BYPASS=true 여도 반드시 role 체크** (보안 우선)
+  - admin 차단 시 PaywallModal 대신 "접근 권한 없음" 전용 화면 표시
+
+#### `app/admin/page.tsx` — AuthGuard 래핑 (비로그인 접근 차단)
+- **배경**: `/admin` 페이지가 AuthGuard 없이 노출되어 비로그인자도 진입 가능 (보안 이슈)
+- **수정**:
+  - 상단에 `import AuthGuard from '@/components/auth/AuthGuard'` 추가
+  - 반환 JSX 전체를 `<AuthGuard minPlan="admin">...</AuthGuard>`로 감싸기
+
+#### `CLAUDE.md` — Claude Code 모델 선택 규칙 섹션 신설
+- **배경**: Cowork(설계)=Opus, Claude Code(실행)=Sonnet 역할 분담을 명문화할 필요
+- **수정**: "역할 분담" 섹션 아래 "Claude Code 모델 선택 규칙" 신설
+  - 기본값: Sonnet (`claude --dangerously-skip-permissions --model sonnet`)
+  - Opus 필요 조건 4가지 명시 (원인 불명 에러 / 대규모 리팩토링 / 복잡 알고리즘 / 레거시 해독)
+  - 표기 규칙: Cowork이 명령어에 **🔴 Opus 권장** 배지를 붙인 경우만 Opus 실행
+
+### 검증
+- `npm run build` — 에러 없음 ✅
+- 4개 파일 변경 확인 (.env.local, WatchlistLive, AuthGuard, admin page)
+
+---
+
 ## 세션 #5 — 2026-04-17 (AuthGuard DEV_BYPASS + Turbopack 서버 안정화 + 문서 전체 업데이트)
 
 ### 수정
