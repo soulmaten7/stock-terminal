@@ -27,13 +27,37 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #12 (2026-04-18)
-- **W2.3 보강**: DART corp_codes 3,959건 + ROE 10.26% 개요 탭 표시 → KPI 7/7 완성
-- **W2.4 실적 탭**: DART fnlttSinglAcntAll 파싱 → annual 4건(2022~2025) + quarters 12건
-- 차트 3종(연간 bar / 분기 line / 마진 line) + 상세 테이블
-- **scripts/sql-exec.py**: PAT 기반 DDL 자동화 파이프라인 구축 — 이후 Studio 불필요
-- Chrome MCP 검증: KPI 8/8 실데이터 + 실적탭 SVG 14개 + 테이블 정상
-- commits: 5c6434e / d9102da / 88b2add push 완료
+## 가장 최근 세션 — 세션 #13 (2026-04-18, Day 2 종료)
+- **Google OAuth 실동작화** — Google Cloud `Terminal` 프로젝트 + OAuth Client 발급 → Supabase PATCH (`external_google_enabled=true` / client_id / secret / site_url / uri_allow_list)
+- **scripts/auth-config.py 신규** — PAT Management API `/config/auth` 래퍼 (get / get.providers / patch JSON)
+- **🔥 긴급 패치 — public.users RLS INSERT 정책 부재**
+  - `CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT WITH CHECK (auth.uid() = id);`
+  - 유령 auth.users 1건 백필 (`a7db2d46-…`)
+- **/auth/callback 진단 로그 강화** (commit 60fce18) — `hasCode / errParam / errDesc / origin` + 단계별 redirect 분기
+- **Task #26 Chat API 하네스 6/6 통과**:
+  | 테스트 | 기대 | 결과 |
+  |-------|------|------|
+  | 빈 문자열 | 400 "내용 필요" | ✅ |
+  | 공백만 | 400 "내용 필요" | ✅ |
+  | 금지어 "씨발" | 400 "금지어 포함" | ✅ |
+  | 501자 | 400 "500자 초과" | ✅ |
+  | 500자 경계 | 200 inserted | ✅ |
+  | $삼성전자 | 200 [005930] | ✅ |
+  | $005930 | 200 [005930] | ✅ |
+  | $SK하이닉스 | 200 [000660] | ✅ |
+  | $없는회사 | 200 [] | ✅ |
+  | 6회 연속 | 429 "분당 5개 초과" | ✅ |
+  | 쿠키 없음 | 401 "로그인 필요" | ✅ |
+- **하네스 메시지 5건 hidden 처리** (SQL UPDATE)
+- **Next.js 16 Turbopack 캐시 손상 복구 절차 정립** — `rm -rf .next node_modules/.cache && kill -9 포트 && npm run dev`
+- Mac 단축키 규칙 확정 — 이후 ⌥⌘I / ⌘R / ⌘⇧R 기준
+
+## 다음 세션 우선 작업 — 네 가지 중 선택
+
+**(0) Task #27 — Chat 초기 UX · 메시지 렌더링 디테일 점검** (예상 30분~1시간) ← 세션 #13 이어서 가장 자연스러움
+- Persistent Chat 입력 경험: 빈 입력 / 스크롤 / 태그 하이라이트 / 시간 포맷
+- 금지어·길이·rate-limit 사용자에게 UI로 안내 (토스트 또는 인라인 에러)
+- `$종목` 태그 파란 chip 렌더 + 클릭 시 종목 상세 이동
 
 ## 다음 세션 우선 작업 — 세 가지 중 선택
 
@@ -51,6 +75,14 @@
 - 10 카테고리 × 5+ 링크 레이아웃
 - `link_hub` 테이블 56건 이미 시딩됨 → UI 연동만 필요
 - `docs/PRODUCT_SPEC_V3.md` 도구함 스펙 참고
+
+## 세션 #12 (2026-04-18)
+- **W2.3 보강**: DART corp_codes 3,959건 + ROE 10.26% 개요 탭 표시 → KPI 7/7 완성
+- **W2.4 실적 탭**: DART fnlttSinglAcntAll 파싱 → annual 4건(2022~2025) + quarters 12건
+- 차트 3종(연간 bar / 분기 line / 마진 line) + 상세 테이블
+- **scripts/sql-exec.py**: PAT 기반 DDL 자동화 파이프라인 구축 — 이후 Studio 불필요
+- Chrome MCP 검증: KPI 8/8 실데이터 + 실적탭 SVG 14개 + 테이블 정상
+- commits: 5c6434e / d9102da / 88b2add push 완료
 
 ## 세션 #9 (2026-04-18) — 홈 Bento Grid 재구축 + Light Theme 전환
 - **W1.5 홈 재구축** — Header 191px→73px, 네비 6→3개, TickerBar 다크→라이트, HomeClient flex 3단→Bento Grid 초안, `WidgetCard.tsx` 신규

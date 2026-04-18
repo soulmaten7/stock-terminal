@@ -1,6 +1,32 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #13 — Google OAuth 실동작 + Chat API 하네스 6/6 통과
+
+- **Supabase Google OAuth 실제 활성화 (기획 → 완료)**
+  - Google Cloud 신규 프로젝트 `Terminal` + OAuth 2.0 Client ID 발급 (soulmaten7-org)
+  - Redirect URI 등록: `https://qxkmwlkchyxfzxbonhtj.supabase.co/auth/v1/callback` + `http://localhost:3333/auth/callback`
+  - `scripts/auth-config.py` (신규) — PAT Management API `/config/auth` GET/PATCH 래퍼
+  - PATCH 완료: `external_google_enabled=true` / `client_id` / `secret` / `site_url=http://localhost:3333` / `uri_allow_list=http://localhost:3333/**`
+  - Chrome MCP 검증: 로그인 버튼 → accounts.google.com 정상 리다이렉트 (client_id 일치)
+- **public.users RLS INSERT 정책 누락 — 긴급 패치**
+  - 증상: Google 로그인 후 세션은 생성되지만 `/auth/callback` 의 users insert 가 **조용히 차단** → AuthProvider 가 행 조회 실패 (406) → UI 는 로그아웃 상태로 보임
+  - 원인: RLS 정책이 SELECT/UPDATE 만 있고 INSERT 정책 부재 (기본 deny)
+  - 수정: `CREATE POLICY "Users can insert own profile" FOR INSERT WITH CHECK (auth.uid() = id)`
+  - 백필: 유령 auth.users `a7db2d46-…` (soulmaten7@gmail.com) public.users 행 생성 → 기존 세션 즉시 활성화
+- **/auth/callback 진단 로그 강화** (commit 60fce18)
+  - `error/error_description` 파라미터 캡처, `exchangeCodeForSession` 실패 상세 로그, `users insert` 실패 로그 분리
+- **Task #26 Chat API 하네스 점검 6/6 통과** (Chrome MCP E2E)
+  - 401 (로그인 필요) / 400 (빈문자·공백·금지어·500자 초과) / 200 (500자 경계) / 200 (태그 추출: 한글명→symbol / 6자리 직접 / 미매칭 `[]`) / 429 (분당 5개 초과)
+  - `trim()` 방어 로직 현장 검증 (공백만 메시지 차단, commit 6091053 이미 반영)
+  - 하네스 메시지 5건 `hidden=true` 처리하여 채팅창 오염 방지
+- **Next.js 16 Turbopack 캐시 손상 복구 절차 정립**
+  - 증상: dev 서버가 /api/* 전부 pending/500 응답, ChunkLoadError 발생
+  - 처방: `rm -rf .next node_modules/.cache` + `lsof -ti :3333 | xargs kill -9` + `npm run dev` 재시작
+- 쿠키 정리 Mac 가이드: DevTools Application → Cookies → 수동 삭제 (HttpOnly 쿠키는 JS 로 삭제 불가)
+- new files: `scripts/auth-config.py`
+- DB 변경: `CREATE POLICY` 1건 (users INSERT) + public.users 1건 백필 (Management API 로 반영)
+
 ## [2026-04-18] 세션 #12 — W2.3 보강 + W2.4 실적 탭 실데이터
 
 - W2.3 보강: DART corp_codes 3,959건 시딩 + ROE 계산식(EPS/BPS×100) 추가

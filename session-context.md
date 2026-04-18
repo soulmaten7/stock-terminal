@@ -27,7 +27,9 @@
 ### P1 — 이번 주
 - [ ] TradingView 위젯 연동 확인 (차트, 티커바)
 - [ ] 링크 허브 페이지 실제 링크 동작 확인
-- [ ] 로그인/회원가입 Supabase Auth 연동 테스트
+- [x] ~~로그인/회원가입 Supabase Auth 연동 테스트~~ → 세션 #13 완료 (Google OAuth 실동작, RLS INSERT 정책 신설)
+- [x] ~~Chat API 하네스 점검~~ → 세션 #13 완료 (Task #26, 6/6 통과)
+- [ ] Chat 초기 UX·메시지 렌더링 디테일 점검 (Task #27)
 - [ ] 전체 페이지 UI 세부 점검
 - [ ] 장중 실시간 데이터 검증 (관심종목 변동, 수급 갱신, 호가창/체결)
 
@@ -51,6 +53,19 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #13 — 2026-04-18 (Google OAuth 실동작 + Chat API 하네스 6/6)
+- Google Cloud `Terminal` 프로젝트 + OAuth Client 발급 (soulmaten7-org)
+- `scripts/auth-config.py` 신규 (PAT Management API `/config/auth` 래퍼)
+- Supabase PATCH: `external_google_enabled=true` / client_id·secret / `site_url=http://localhost:3333` / `uri_allow_list=http://localhost:3333/**`
+- Chrome MCP 검증: 로그인 버튼 → accounts.google.com 리다이렉트 (client_id 일치)
+- **긴급 패치**: public.users RLS INSERT 정책 부재로 callback 의 users insert 조용히 차단 → 406 → UI 로그아웃 상태 증상 발견
+- 수정: `CREATE POLICY "Users can insert own profile" FOR INSERT WITH CHECK (auth.uid() = id)` + 유령 `a7db2d46-…` soulmaten7@gmail.com 백필
+- /auth/callback 진단 로그 강화 (commit 60fce18) — exchangeCodeForSession / users insert 실패 상세 로깅
+- Task #26 Chat API 하네스 6/6 통과: 401 / 400×4 / 200 / 태그추출 3종 / 429 (Chrome MCP fetch 기반 E2E)
+- 하네스 메시지 5건 hidden 처리
+- Turbopack 캐시 손상 복구 절차 정립: `rm -rf .next node_modules/.cache` + `lsof -ti :3333 | xargs kill -9` + `npm run dev`
+- commits: 60fce18 push 완료, `scripts/auth-config.py` 추가분 이 세션에서 commit 예정
 
 ### 세션 #12 — 2026-04-18 (W2.3 보강 + W2.4 실적 탭 실데이터)
 - W2.3 보강: DART corp_codes 3,959건 시딩 + ROE 계산식(EPS/BPS×100) 추가 → KPI 7/7 완성
