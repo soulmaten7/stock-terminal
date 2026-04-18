@@ -13,13 +13,18 @@
  */
 
 import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { useTagMapStore } from '@/stores/tagMapStore';
 import { createClient } from '@/lib/supabase/client';
 
+// /stocks/[symbol] 에서 심볼 추출. 6자리 숫자(KR) 또는 영문·숫자(US) 허용.
+const STOCK_PATH_REGEX = /^\/stocks\/([A-Za-z0-9]+)(?:\/.*)?$/;
+
 export default function ChatProvider() {
-  const { setMessages, addMessage, setHotStocks, setConnected } = useChatStore();
+  const { setMessages, addMessage, setHotStocks, setConnected, setActiveSymbol } = useChatStore();
   const { loadTagMap } = useTagMapStore();
+  const pathname = usePathname();
   const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null);
 
   if (!supabaseRef.current && typeof window !== 'undefined') {
@@ -85,6 +90,13 @@ export default function ChatProvider() {
   useEffect(() => {
     loadTagMap();
   }, [loadTagMap]);
+
+  // URL /stocks/[symbol] 감지 → activeSymbol 동기화
+  // 페이지 진입 시 filter='symbol' 자동 전환, 이탈 시 lastManualFilter 복원 (store 가 처리)
+  useEffect(() => {
+    const match = pathname?.match(STOCK_PATH_REGEX);
+    setActiveSymbol(match ? match[1].toUpperCase() : null);
+  }, [pathname, setActiveSymbol]);
 
   return null;
 }

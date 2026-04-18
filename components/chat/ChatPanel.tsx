@@ -54,9 +54,15 @@ interface ChatPanelProps {
   onClose?: () => void;
 }
 
+// 탭 버튼 타입 — 정적 3개 + activeSymbol 있을 때 동적 추가되는 1개
+type FilterTab = {
+  key: 'all' | 'watchlist' | 'hot' | 'symbol';
+  label: string;
+};
+
 export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
   const { user } = useAuthStore();
-  const { messages, filter, hotStocks, isConnected, setFilter } = useChatStore();
+  const { messages, filter, hotStocks, isConnected, activeSymbol, setFilter } = useChatStore();
   const { items: watchlist } = useWatchlistStore();
   const { tagMap } = useTagMapStore();
   const [input, setInput] = useState('');
@@ -104,8 +110,25 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
       const wlSet = new Set(watchlist.map((s) => s.symbol));
       return messages.filter((m) => m.stock_tags.some((t) => wlSet.has(t)));
     }
+    if (filter === 'symbol' && activeSymbol) {
+      // 종목 상세 페이지: 해당 심볼 태그된 메시지만
+      return messages.filter((m) => m.stock_tags.includes(activeSymbol));
+    }
     return messages;
-  }, [messages, filter, hotStocks, watchlist]);
+  }, [messages, filter, hotStocks, watchlist, activeSymbol]);
+
+  // 탭 구성: 정적 3개 + activeSymbol 있을 때 $심볼 탭 동적 추가
+  const tabs: FilterTab[] = useMemo(() => {
+    const base: FilterTab[] = [
+      { key: 'all', label: '전체' },
+      { key: 'watchlist', label: '관심' },
+      { key: 'hot', label: '인기' },
+    ];
+    if (activeSymbol) {
+      base.push({ key: 'symbol', label: `$${activeSymbol}` });
+    }
+    return base;
+  }, [activeSymbol]);
 
   return (
     <div className="flex flex-col h-full bg-white">
@@ -138,28 +161,31 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
               <Link
                 key={s.symbol}
                 href={`/stocks/${s.symbol}`}
-                className="shrink-0 px-1.5 py-0.5 bg-[#FF3B30]/10 text-[#FF3B30] text-[10px] font-bold rounded hover:bg-[#FF3B30]/20"
+                title={`최근 10분 ${s.count}건 언급`}
+                className="shrink-0 px-1.5 py-0.5 bg-[#FF3B30]/10 text-[#FF3B30] text-[10px] font-bold rounded hover:bg-[#FF3B30]/20 flex items-center gap-1"
               >
-                🔥 ${s.symbol}
+                <span>🔥 ${s.symbol}</span>
+                <span className="text-[9px] font-normal opacity-80">·{s.count}</span>
               </Link>
             ))}
           </div>
         )}
       </div>
 
-      {/* Filter tabs */}
+      {/* Filter tabs — activeSymbol 있을 때 $심볼 탭 추가됨 */}
       <div className="flex border-b border-[#E5E7EB] shrink-0">
-        {(['all', 'watchlist', 'hot'] as const).map((f) => (
+        {tabs.map((t) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`flex-1 py-1.5 text-xs font-bold transition-colors ${
-              filter === f
+            key={t.key}
+            onClick={() => setFilter(t.key)}
+            className={`flex-1 py-1.5 text-xs font-bold transition-colors truncate ${
+              filter === t.key
                 ? 'text-[#0ABAB5] border-b-2 border-[#0ABAB5] bg-white'
                 : 'text-[#999999] hover:text-black'
             }`}
+            title={t.label}
           >
-            {f === 'all' ? '전체' : f === 'watchlist' ? '관심' : '인기'}
+            {t.label}
           </button>
         ))}
       </div>
@@ -170,6 +196,7 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
           <p className="text-center text-[#999999] text-xs py-8">
             {filter === 'hot' ? '인기 종목 메시지가 없습니다' :
              filter === 'watchlist' ? '관심종목 메시지가 없습니다' :
+             filter === 'symbol' && activeSymbol ? `$${activeSymbol} 관련 메시지가 없습니다` :
              '아직 메시지가 없습니다'}
           </p>
         )}
@@ -201,7 +228,7 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder="$삼성전자 또는 $005930 으로 태그"
+              placeholder={activeSymbol ? `$${activeSymbol} 관련 의견 남기기` : '$삼성전자 또는 $005930 으로 태그'}
               maxLength={500}
               className="flex-1 px-2 py-1.5 bg-[#F5F5F5] border border-[#E5E7EB] text-xs focus:outline-none focus:border-[#0ABAB5]"
             />
