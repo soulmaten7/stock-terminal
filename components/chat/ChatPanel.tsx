@@ -34,7 +34,7 @@ function parseContent(content: string, tagMap: Record<string, string>) {
           <Link
             key={i}
             href={`/stocks/${symbol}`}
-            className="text-[#0ABAB5] hover:underline font-bold"
+            className="text-[#0ABAB5] hover:text-[#099b96] font-bold bg-[#0ABAB5]/10 hover:bg-[#0ABAB5]/20 px-1 py-px rounded transition-colors"
           >
             {part}
           </Link>
@@ -69,6 +69,7 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // 새 메시지 들어오면 맨 아래로 스크롤
   useEffect(() => {
@@ -87,14 +88,21 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
       });
       const d = await r.json();
       if (!r.ok) {
-        setError(d.error ?? '전송 실패');
-        setTimeout(() => setError(''), 3000);
+        // 429 (rate-limit) 전용 UX — 카피 친절하게
+        if (r.status === 429) {
+          setError('분당 메시지 한도를 초과했습니다. 잠시 후 다시 시도하세요.');
+        } else {
+          setError(d.error ?? '전송 실패');
+        }
+        setTimeout(() => setError(''), 5000);
       } else {
         setInput('');
+        // 전송 후 input 포커스 유지 — 연속 메시지 작성 경험 개선
+        inputRef.current?.focus();
       }
     } catch {
-      setError('네트워크 오류');
-      setTimeout(() => setError(''), 3000);
+      setError('네트워크 오류 — 연결 상태를 확인하세요');
+      setTimeout(() => setError(''), 5000);
     } finally {
       setSending(false);
     }
@@ -213,7 +221,12 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
 
       {/* Input */}
       <div className="border-t border-[#E5E7EB] p-2 shrink-0">
-        {error && <p className="text-[#FF3B30] text-[10px] mb-1">{error}</p>}
+        {error && (
+          <div className="flex items-start gap-1 mb-1 px-1.5 py-1 bg-[#FF3B30]/5 border border-[#FF3B30]/30 rounded">
+            <span className="text-[#FF3B30] text-[11px] leading-none mt-0.5 shrink-0">⚠</span>
+            <p className="text-[#FF3B30] text-[11px] leading-tight">{error}</p>
+          </div>
+        )}
         {!user ? (
           <div className="text-center py-2">
             <p className="text-[#999999] text-xs mb-1">로그인하면 채팅 가능</p>
@@ -222,24 +235,41 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
             </Link>
           </div>
         ) : (
-          <div className="flex gap-1">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder={activeSymbol ? `$${activeSymbol} 관련 의견 남기기` : '$삼성전자 또는 $005930 으로 태그'}
-              maxLength={500}
-              className="flex-1 px-2 py-1.5 bg-[#F5F5F5] border border-[#E5E7EB] text-xs focus:outline-none focus:border-[#0ABAB5]"
-            />
-            <button
-              onClick={handleSend}
-              disabled={sending || !input.trim()}
-              className="px-2 py-1.5 bg-[#0ABAB5] text-white disabled:opacity-40 hover:bg-[#099b96]"
-            >
-              <Send className="w-3.5 h-3.5" />
-            </button>
-          </div>
+          <>
+            <div className="flex gap-1">
+              <input
+                ref={inputRef}
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                placeholder={activeSymbol ? `$${activeSymbol} 관련 의견 남기기` : '$삼성전자 또는 $005930 으로 태그'}
+                maxLength={500}
+                className="flex-1 px-2 py-1.5 bg-[#F5F5F5] border border-[#E5E7EB] text-xs focus:outline-none focus:border-[#0ABAB5]"
+              />
+              <button
+                onClick={handleSend}
+                disabled={sending || !input.trim()}
+                className="px-2 py-1.5 bg-[#0ABAB5] text-white disabled:opacity-40 hover:bg-[#099b96]"
+              >
+                <Send className="w-3.5 h-3.5" />
+              </button>
+            </div>
+            {/* 글자수 카운터 — 90%+ 주황, 98%+ 빨강 */}
+            <div className="flex justify-end mt-0.5 pr-8">
+              <span
+                className={`text-[10px] tabular-nums ${
+                  input.length >= 490
+                    ? 'text-[#FF3B30] font-bold'
+                    : input.length >= 450
+                    ? 'text-[#F59E0B]'
+                    : 'text-[#999999]'
+                }`}
+              >
+                {input.length}/500
+              </span>
+            </div>
+          </>
         )}
       </div>
     </div>

@@ -27,8 +27,21 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #13 (2026-04-18, Day 2 종료)
+## 가장 최근 세션 — 세션 #13 (2026-04-18, Day 2 종료 + Day 3 W2.5/W2.6/W3)
 - **Google OAuth 실동작화** — Google Cloud `Terminal` 프로젝트 + OAuth Client 발급 → Supabase PATCH (`external_google_enabled=true` / client_id / secret / site_url / uri_allow_list)
+- **Task #27 Chat UX 디테일 완료** — `components/chat/ChatPanel.tsx`
+  - 글자수 카운터 `{len}/500` (450+ 주황, 490+ 빨강)
+  - 에러 박스 아이콘(⚠) + 빨강 테두리 + 5초 유지
+  - 429 rate-limit 전용 한글 안내
+  - 전송 후 포커스 유지 (inputRef)
+  - $태그 pill 배경 (`bg-teal/10` + hover `/20`)
+- **W2.5 비교 탭 완료** — `/api/stocks/compare` 신규 + `CompareTab` 재작성
+  - 2~5 심볼 비교: 심볼 칩 + 검색 드롭다운 + KPI 테이블 + 정규화 라인차트(시작일=100)
+- **W2.6 뉴스·공시 완료** — DART list.json + Google News RSS 라이브
+  - `/api/stocks/disclosures` + `/api/stocks/news` 신규
+  - DisclosuresTab: 기간 1/3/6/12개월 + 유형 10종 분류
+  - NewsTab: timeAgo + 출처 링크 (DB 시딩 불요)
+- **W3 투자자 도구함 강화** — 국가(KR/US) 필터 + 표시 건수 카운터 추가
 - **scripts/auth-config.py 신규** — PAT Management API `/config/auth` 래퍼 (get / get.providers / patch JSON)
 - **🔥 긴급 패치 — public.users RLS INSERT 정책 부재**
   - `CREATE POLICY "Users can insert own profile" ON public.users FOR INSERT WITH CHECK (auth.uid() = id);`
@@ -52,29 +65,23 @@
 - **Next.js 16 Turbopack 캐시 손상 복구 절차 정립** — `rm -rf .next node_modules/.cache && kill -9 포트 && npm run dev`
 - Mac 단축키 규칙 확정 — 이후 ⌥⌘I / ⌘R / ⌘⇧R 기준
 
-## 다음 세션 우선 작업 — 네 가지 중 선택
-
-**(0) Task #27 — Chat 초기 UX · 메시지 렌더링 디테일 점검** (예상 30분~1시간) ← 세션 #13 이어서 가장 자연스러움
-- Persistent Chat 입력 경험: 빈 입력 / 스크롤 / 태그 하이라이트 / 시간 포맷
-- 금지어·길이·rate-limit 사용자에게 UI로 안내 (토스트 또는 인라인 에러)
-- `$종목` 태그 파란 chip 렌더 + 클릭 시 종목 상세 이동
-
 ## 다음 세션 우선 작업 — 세 가지 중 선택
 
-**(A) W2.5 비교 탭 실데이터** (예상 1~2시간)
-- `CompareTab.tsx` — 종목 여러 개 재무·가격 나란히 비교
-- `/api/stocks/compare?symbols=005930,000660` 엔드포인트 신규
-- 동일 기간 주가 퍼포먼스 + PER/PBR/ROE 나란히 비교 차트
+**(A) 빌드·E2E 검증** (Chrome MCP) — **세션 #13 이어서 가장 중요** (30분~1시간)
+- `npm run build` 에러 없는지 확인
+- `/stocks/005930?tab=compare` — 심볼 2개 추가 후 차트·테이블 렌더 확인
+- `/stocks/005930?tab=news` — DART 공시 + Google News 둘 다 로드
+- `/toolbox` — 국가 필터 KR/US 토글 동작 + 검색 필터링
+- Chat → 글자수 카운터 색상 전환 (450+ 주황, 490+ 빨강), 429 에러 메시지
 
-**(B) W2.6 뉴스·공시 탭 실데이터** (예상 1~2시간)
-- DART `/api/list.json` 공시 목록 연동 (`NewsDisclosureTab.tsx`)
-- 네이버 금융 RSS 또는 ECOS 경제 뉴스 피드 병합
-- 탭 내 뉴스/공시 서브탭 분리
+**(B) W4 Partner-Agnostic Landing** (예상 2~3시간) — 수익화 인프라
+- `app/partner/[slug]/page.tsx` 신규
+- `partners` 테이블 스키마 + `partner_clicks` 이벤트 추적
+- Partner Slot 자리(`data-slot="toolbox-category-*"`) 실제 채우기
 
-**(C) W3 투자자 도구함 (/toolbox)** (예상 1시간)
-- 10 카테고리 × 5+ 링크 레이아웃
-- `link_hub` 테이블 56건 이미 시딩됨 → UI 연동만 필요
-- `docs/PRODUCT_SPEC_V3.md` 도구함 스펙 참고
+**(C) 더미 데이터 제거** (예상 1~2시간)
+- ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage 7종
+- 각 컴포넌트 실 API 연결 또는 "곧 출시" 스켈레톤 UI 교체
 
 ## 세션 #12 (2026-04-18)
 - **W2.3 보강**: DART corp_codes 3,959건 + ROE 10.26% 개요 탭 표시 → KPI 7/7 완성

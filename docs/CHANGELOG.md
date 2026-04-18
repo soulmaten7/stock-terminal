@@ -1,7 +1,7 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
-## [2026-04-18] 세션 #13 — Google OAuth 실동작 + Chat API 하네스 6/6 통과
+## [2026-04-18] 세션 #13 — Google OAuth + Chat API 하네스 + Chat UX + W2.5/W2.6/W3 실데이터
 
 - **Supabase Google OAuth 실제 활성화 (기획 → 완료)**
   - Google Cloud 신규 프로젝트 `Terminal` + OAuth 2.0 Client ID 발급 (soulmaten7-org)
@@ -26,6 +26,29 @@
 - 쿠키 정리 Mac 가이드: DevTools Application → Cookies → 수동 삭제 (HttpOnly 쿠키는 JS 로 삭제 불가)
 - new files: `scripts/auth-config.py`
 - DB 변경: `CREATE POLICY` 1건 (users INSERT) + public.users 1건 백필 (Management API 로 반영)
+- **Task #27 Chat UX/렌더링 디테일 점검 완료** (`components/chat/ChatPanel.tsx`)
+  - 글자수 카운터 추가 — `{input.length}/500` 하단 표시, 450+ 주황, 490+ 빨강 볼드
+  - 에러 UX 강화 — 아이콘(⚠) + 빨강 배경/테두리 박스 + 5초 유지 (기존 3초)
+  - 429 rate-limit 전용 메시지 — "분당 메시지 한도를 초과했습니다. 잠시 후 다시 시도하세요."
+  - 네트워크 오류 카피 개선 — "네트워크 오류 — 연결 상태를 확인하세요"
+  - 전송 후 input 포커스 유지 (inputRef) — 연속 메시지 작성 개선
+  - $태그 렌더링에 pill 배경 추가 (`bg-[#0ABAB5]/10` + hover 효과) — 가독성·클릭 영역 확대
+- **W2.5 비교 탭 실데이터 연동** (`/api/stocks/compare` + `CompareTab.tsx`)
+  - 신규 엔드포인트: 2~5개 symbol → stocks + financials + 최근 6개월 stock_prices 통합 반환
+  - CompareTab 재작성: 심볼 칩 + 검색 드롭다운 (max 5) / KPI 테이블 (현재가·6M수익률·시총·PER·PBR·ROE·EPS·BPS) / 정규화 라인차트 (시작일=100)
+  - 공통 거래일 교집합으로 차트 정렬 (결측일 대응)
+- **W2.6 뉴스·공시 탭 실데이터 연동** (신규 2 엔드포인트 + 2 탭 교체)
+  - `/api/stocks/disclosures` — DART list.json 라이브 조회 (corp_code → `dart_corp_codes` DB lookup)
+  - `/api/stocks/news` — Google News RSS 라이브 조회 (User-Agent 지정, CDATA/HTML 정리)
+  - DisclosuresTab 재작성: 기간 선택 (1/3/6/12개월) + 공시 유형 10종 분류 필터 + 원본 DART 링크
+  - NewsTab 재작성: timeAgo 렌더 + 출처·시간 표시, `stockId` 대신 `symbol` 사용
+  - NewsDisclosureTab: 두 탭에 symbol 프로퍼티 전달로 통합
+- **W3 투자자 도구함 강화** (`/app/toolbox/page.tsx` + `ToolboxClient.tsx`)
+  - 국가(KR/US/…) 필터 추가 — `availableCountries` 동적 구성, 1국가뿐이면 필터 숨김
+  - 표시 건수 카운터 추가 (전체 N개 · 표시 M개)
+  - 기존 기능 유지: 검색 / 카테고리 접기 / 즐겨찾기 / 클릭 추적 / Partner Slot 자리
+- new endpoints: `/api/stocks/compare`, `/api/stocks/disclosures`, `/api/stocks/news`
+- 데이터 흐름 변화: 뉴스·공시는 DB 시딩 없이 라이브 API 의존 → `news` / `disclosures` 테이블은 향후 캐싱 용도로 보류
 
 ## [2026-04-18] 세션 #12 — W2.3 보강 + W2.4 실적 탭 실데이터
 

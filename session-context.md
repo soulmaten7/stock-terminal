@@ -20,7 +20,7 @@
 ### P0 — 지금 당장 (블로커)
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
-- [ ] **더미 데이터 제거 (8개 컴포넌트)**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage, ComparePage
+- [ ] **더미 데이터 제거**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage _(ComparePage 는 세션 #13 W2.5 로 실데이터 완료)_
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -29,7 +29,7 @@
 - [ ] 링크 허브 페이지 실제 링크 동작 확인
 - [x] ~~로그인/회원가입 Supabase Auth 연동 테스트~~ → 세션 #13 완료 (Google OAuth 실동작, RLS INSERT 정책 신설)
 - [x] ~~Chat API 하네스 점검~~ → 세션 #13 완료 (Task #26, 6/6 통과)
-- [ ] Chat 초기 UX·메시지 렌더링 디테일 점검 (Task #27)
+- [x] ~~Chat 초기 UX·메시지 렌더링 디테일 점검~~ → 세션 #13 완료 (Task #27, 글자수 카운터 + 에러 UX + 429 전용 + $태그 pill + 포커스 유지)
 - [ ] 전체 페이지 UI 세부 점검
 - [ ] 장중 실시간 데이터 검증 (관심종목 변동, 수급 갱신, 호가창/체결)
 
@@ -54,7 +54,7 @@
 
 ## 완료된 세션 히스토리
 
-### 세션 #13 — 2026-04-18 (Google OAuth 실동작 + Chat API 하네스 6/6)
+### 세션 #13 — 2026-04-18 (Google OAuth + Chat API/UX + W2.5/W2.6/W3 실데이터)
 - Google Cloud `Terminal` 프로젝트 + OAuth Client 발급 (soulmaten7-org)
 - `scripts/auth-config.py` 신규 (PAT Management API `/config/auth` 래퍼)
 - Supabase PATCH: `external_google_enabled=true` / client_id·secret / `site_url=http://localhost:3333` / `uri_allow_list=http://localhost:3333/**`
@@ -65,7 +65,27 @@
 - Task #26 Chat API 하네스 6/6 통과: 401 / 400×4 / 200 / 태그추출 3종 / 429 (Chrome MCP fetch 기반 E2E)
 - 하네스 메시지 5건 hidden 처리
 - Turbopack 캐시 손상 복구 절차 정립: `rm -rf .next node_modules/.cache` + `lsof -ti :3333 | xargs kill -9` + `npm run dev`
-- commits: 60fce18 push 완료, `scripts/auth-config.py` 추가분 이 세션에서 commit 예정
+- **Task #27 완료** — `components/chat/ChatPanel.tsx` 디테일 보강
+  - 글자수 카운터 `{len}/500` (450+ 주황, 490+ 빨강 볼드)
+  - 에러 박스 아이콘(⚠) + 빨강 테두리 + 5초 유지
+  - 429 rate-limit 전용 한글 안내 + 네트워크 오류 카피 개선
+  - 전송 후 input 포커스 유지 (inputRef)
+  - $태그 렌더 pill 배경 추가 (`bg-teal/10` + hover `/20`)
+- commits: 60fce18 push 완료, `scripts/auth-config.py` + ChatPanel 개선 + 문서 4종 동기화 이 세션 마지막 commit 에서 포함
+- **W2.5 완료** — `/api/stocks/compare` 신규 + `CompareTab` 전면 재작성
+  - 2~5개 symbol 비교: 심볼 칩(추가/제거) + KPI 테이블 (시총·PER·PBR·ROE·EPS·BPS·6M수익률) + 정규화 라인차트 (시작일=100)
+  - 공통 거래일 교집합 정렬, 5가지 고정 색상 (teal/red/blue/amber/violet)
+- **W2.6 완료** — 뉴스·공시 라이브 엔드포인트 2종 + 탭 2종 재작성
+  - `/api/stocks/disclosures`: DART list.json 라이브 (corp_code DB lookup) + 10종 유형 분류
+  - `/api/stocks/news`: Google News RSS 라이브 (국가별 한/영 쿼리 + CDATA/HTML 정리)
+  - DisclosuresTab: 기간 1/3/6/12개월 + 유형 필터 동적 카운트 + DART 원본 링크
+  - NewsTab: 외부 RSS 기반 → `symbol` prop 필요 (NewsDisclosureTab 도 함께 업데이트)
+- **W3 완료** — `/toolbox` 국가 필터 추가 (ToolboxClient + page.tsx)
+  - `availableCountries` 동적 구성 (실제 데이터에 존재하는 국가만)
+  - 1개 국가뿐이면 필터 숨김, 전체/KR/US/… 토글
+  - 표시 건수 카운터 (전체 N · 표시 M)
+- 신규 API: 3개 (`compare`, `disclosures`, `news`)
+- 새 파일 없음 (기존 탭 재작성 + 엔드포인트 디렉토리 생성)
 
 ### 세션 #12 — 2026-04-18 (W2.3 보강 + W2.4 실적 탭 실데이터)
 - W2.3 보강: DART corp_codes 3,959건 시딩 + ROE 계산식(EPS/BPS×100) 추가 → KPI 7/7 완성
