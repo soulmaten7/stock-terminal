@@ -60,9 +60,14 @@ export default function ChatSidebar() {
   }
   const supabase = supabaseRef.current;
 
-  // Initial load + Realtime subscription
+  // Initial load + Realtime subscription (Broadcast-from-DB 패턴)
+  // 2026-03 Supabase Realtime 업데이트 이후 postgres_changes → broadcast 전환.
+  // DB 트리거 on_chat_messages_broadcast 가 realtime.broadcast_changes() 호출 →
+  // 이 채널에서 'broadcast' 이벤트로 수신.
   useEffect(() => {
     if (!supabase) return;
+
+    let active = true;
 
     supabase
       .from('chat_messages')
@@ -71,17 +76,20 @@ export default function ChatSidebar() {
       .order('created_at', { ascending: true })
       .limit(100)
       .then(({ data }: { data: ChatMessage[] | null }) => {
-        if (data) setMessages(data);
+        if (active && data) setMessages(data);
       });
 
+    // private 채널은 realtime.setAuth() 가 선행돼야 함. anon 세션도 정상 동작.
+    supabase.realtime.setAuth();
+
     const channel = supabase
-      .channel('chat-v3-global')
+      .channel('chat-v3-global', { config: { private: true } })
       .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'chat_messages' },
-        (payload: { new: Record<string, unknown> }) => {
-          const msg = payload.new as unknown as ChatMessage;
-          if (!msg.hidden) addMessage(msg);
+        'broadcast',
+        { event: 'INSERT' },
+        (payload: { payload: { record?: ChatMessage } }) => {
+          const msg = payload.payload?.record;
+          if (msg && !msg.hidden) addMessage(msg);
         }
       )
       .subscribe((status: string) => {
@@ -89,6 +97,7 @@ export default function ChatSidebar() {
       });
 
     return () => {
+      active = false;
       supabase.removeChannel(channel);
       setConnected(false);
     };
