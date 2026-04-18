@@ -12,6 +12,7 @@ import WarningStocks from './WarningStocks';
 import EconomicCalendar from './EconomicCalendar';
 import IpoSchedule from './IpoSchedule';
 import EarningsCalendar from './EarningsCalendar';
+import PartnerSlot from '@/components/partners/PartnerSlot';
 
 const CARD = 'bg-white border border-[#E5E7EB] rounded-lg overflow-hidden flex flex-col';
 
@@ -76,12 +77,7 @@ export default function HomeClient() {
         {/* ═══ 우측: Partner Slot 예약 공간 (240px) ═══ */}
         <aside className="hidden min-[1400px]:block">
           <div className="sticky top-[120px] flex flex-col gap-3">
-            <div
-              className="bg-[#F8F9FA] border border-dashed border-[#D1D5DB] rounded-lg flex items-center justify-center text-xs text-[#999999] tracking-widest"
-              style={{ height: 400 }}
-            >
-              PARTNER SLOT<br />(W4)
-            </div>
+            <PartnerSlot slotKey="home-row3-left" variant="card" />
             <div
               className="bg-[#F8F9FA] border border-dashed border-[#D1D5DB] rounded-lg flex items-center justify-center text-xs text-[#999999] tracking-widest"
               style={{ height: 300 }}

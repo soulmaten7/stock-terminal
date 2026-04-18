@@ -2,8 +2,12 @@
 
 import { useState } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
+import PartnerSlot from '@/components/partners/PartnerSlot';
 
-function PartnerSlotPlaceholder({ slotId }: { slotId: string }) {
+function PartnerSlotPlaceholder({ slotId, slug }: { slotId: string; slug: string }) {
+  if (slug === 'exchange') {
+    return <PartnerSlot slotKey={slotId} variant="compact" className="mb-3" />;
+  }
   return (
     <div
       data-slot={slotId}
@@ -52,7 +56,7 @@ export default function CategorySection({
 
       {open && (
         <div className="pt-3 pb-4">
-          <PartnerSlotPlaceholder slotId={`toolbox-category-${slug}`} />
+          <PartnerSlotPlaceholder slotId={`toolbox-category-${slug}`} slug={slug} />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {links.map((link) => (
               <LinkCard
