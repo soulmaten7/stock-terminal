@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { RotateCcw, Search } from 'lucide-react';
 import { formatMarketCap } from '@/lib/utils/format';
+import PartnerSlot from '@/components/partners/PartnerSlot';
 
 interface StockRow {
   symbol: string;
@@ -202,6 +203,11 @@ export default function ScreenerClient() {
           <button disabled={page >= totalPages} onClick={() => setPage(page + 1)}
             className="px-3 py-1 text-xs font-bold border border-[#E5E7EB] disabled:opacity-40 hover:border-[#0ABAB5]">다음</button>
         </div>
+      </div>
+
+      {/* 2026-04-18 세션 #15 (G): 파트너 슬롯 (하단) */}
+      <div className="mt-8">
+        <PartnerSlot slotKey="screener-bottom" variant="card" />
       </div>
     </div>
   );

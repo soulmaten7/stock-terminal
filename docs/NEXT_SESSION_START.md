@@ -43,10 +43,16 @@
   - GET `/api/admin/partners/leads` (partner_slug·from·to·q·format=json|csv)
   - 페이지: 필터 4종 + KPI 4카드 + UTM TOP5 + 리드 테이블 + CSV BOM 다운로드
   - 파트너 관리 헤더에 "리드 대시보드" 링크 추가
+- **(G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom) 완료**
+  - 전략: `/stocks/[symbol]` + `/screener` 모두 사이드바 없음 → **하단 풀폭 슬롯** 패턴 (리팩토링 최소화 + 기존 key 보존)
+  - `app/admin/partners/page.tsx` SLOT_KEYS 확장 (7옵션)
+  - `app/stocks/[symbol]/page.tsx`: StockDetailTabs 아래 `<PartnerSlot slotKey="stock-detail-bottom" />`
+  - `components/screener/ScreenerClient.tsx`: Pagination 아래 `<PartnerSlot slotKey="screener-bottom" />`
+  - 동작: 슬롯 미매핑 시 `null` 리턴 → 그레이스풀 빈 상태
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (G) 슬롯 키 확장 — 종목 상세 탭 사이드바 슬롯 + 채팅 사이드바 슬롯 + 스크리너 사이드바 슬롯
   - (H) UTM/클릭 대시보드 — `partner_clicks` 집계 (슬롯별 CTR, 리드 전환율, 기간별 추이)
   - (I) 파트너 편집/삭제 기능 (Phase 2)
+  - (J) 채팅 사이드바 슬롯 추가 (채팅 페이지 구조 설계 완료 시)
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)

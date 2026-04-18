@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { Stock } from '@/types/stock';
 import StockHeader from '@/components/stocks/StockHeader';
 import StockDetailTabs from '@/components/stocks/StockDetailTabs';
+import PartnerSlot from '@/components/partners/PartnerSlot';
 
 export default function StockDetailPage() {
   const params = useParams();
@@ -81,6 +82,11 @@ export default function StockDetailPage() {
         priceChangePercent={priceChangePercent}
       />
       <StockDetailTabs stock={stock} />
+
+      {/* 2026-04-18 세션 #15 (G): 파트너 슬롯 (하단) */}
+      <div className="max-w-[1400px] mx-auto px-4 pb-10">
+        <PartnerSlot slotKey="stock-detail-bottom" variant="card" />
+      </div>
     </div>
   );
 }

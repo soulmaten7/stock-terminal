@@ -21,10 +21,11 @@
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
 - [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
-- [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ 완료 → 편집·삭제·슬롯 재매핑 · 리드 대시보드 · 슬롯 키 확장 (종목 상세·채팅 사이드바) · UTM 대시보드
+- [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ ~~리드 대시보드~~ ~~슬롯 키 확장 (종목 상세·스크리너 하단)~~ 완료 → 편집·삭제·슬롯 재매핑 · UTM 대시보드 · (추후) 채팅 사이드바 슬롯
 - [x] ~~**(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체**~~ → 세션 #15 완료 (commit becb74c, home-sidebar-bottom 슬롯에 테스트 자산운용 시드 + HomeClient 회색 박스 제거)
 - [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기, Chrome MCP E2E 5/5 PASS + soulmaten7 admin 승격)
 - [x] ~~**(F) /admin/partners/leads 리드 대시보드 + CSV Export**~~ → 세션 #15 완료 (필터 4종 + KPI 4카드 + UTM TOP5 + 리스트 + CSV BOM 다운로드)
+- [x] ~~**(G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom)**~~ → 세션 #15 완료 (SLOT_KEYS 7옵션 + `/stocks/[symbol]` 하단 + `/screener` 하단 PartnerSlot 주입, 빈 상태=null 렌더)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -57,6 +58,13 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((G) 슬롯 키 확장 — stock-detail-bottom / screener-bottom)
+- **전략 결정**: `/stocks/[symbol]` + `/screener` 둘 다 사이드바 없음 → 리팩토링 최소화 위해 **하단 풀폭 슬롯** 패턴 채택 (기존 `stock-detail-sidebar` / `toolbox-sidebar` 키는 보존하여 DB 데이터 호환)
+- **`app/admin/partners/page.tsx` SLOT_KEYS 확장** — `stock-detail-bottom` / `screener-bottom` 2개 신설 → 드롭다운 7 옵션
+- **`app/stocks/[symbol]/page.tsx`** — `<StockDetailTabs/>` 아래 `max-w-[1400px] mx-auto px-4 pb-10` 래퍼로 `<PartnerSlot slotKey="stock-detail-bottom" variant="card" />` 주입
+- **`components/screener/ScreenerClient.tsx`** — Pagination 블록 아래 `mt-8` 여백으로 `<PartnerSlot slotKey="screener-bottom" variant="card" />` 주입
+- 동작: 파트너 미지정(슬롯 매핑 없음)이면 PartnerSlot이 `null` 리턴 → 그레이스풀 빈 상태. 어드민에서 slot_key 추가 즉시 카드 출현.
 
 ### 세션 #15 — 2026-04-18 ((F) /admin/partners/leads 리드 대시보드 + CSV Export)
 - **신규 API `app/api/admin/partners/leads/route.ts`** (admin only)

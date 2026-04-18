@@ -1,6 +1,14 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom)
+
+- **전략 결정**: `/stocks/[symbol]` + `/screener` 모두 사이드바 레이아웃 없음 → 리팩토링 최소화 위해 **하단 풀폭 슬롯** 패턴 채택. 기존 `stock-detail-sidebar` / `toolbox-sidebar` 키는 보존 (DB 데이터 호환).
+- **`app/admin/partners/page.tsx` SLOT_KEYS 확장** — `stock-detail-bottom` / `screener-bottom` 2개 추가 (드롭다운 7 옵션).
+- **`app/stocks/[symbol]/page.tsx`** — `<StockDetailTabs/>` 아래에 `<PartnerSlot slotKey="stock-detail-bottom" variant="card" />` 주입 (max-w-[1400px] 래퍼).
+- **`components/screener/ScreenerClient.tsx`** — 페이지네이션 아래에 `<PartnerSlot slotKey="screener-bottom" variant="card" />` 주입 (mt-8).
+- 슬롯 미활성(파트너 미지정) 시 `PartnerSlot` 가 null 리턴 → 그레이스풀 빈 상태. 어드민에서 slot_key 매핑 추가 즉시 해당 위치에 카드 렌더.
+
 ## [2026-04-18] 세션 #15 — (F) /admin/partners/leads 리드 대시보드 + CSV Export
 
 - **신규 API `app/api/admin/partners/leads/route.ts`** (admin only, service_role)
