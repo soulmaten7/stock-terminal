@@ -21,8 +21,9 @@
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
 - [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
-- [ ] **W4 Phase 2**: `/admin/partners` CRUD · 리드 대시보드 · 슬롯 키 확장 (종목 상세·채팅 사이드바) · UTM 대시보드
-- [ ] **(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체** — 현재 홈에 회색 박스 1개 남아있음 (세션 #15 다음 작업)
+- [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ 완료 → 편집·삭제·슬롯 재매핑 · 리드 대시보드 · 슬롯 키 확장 (종목 상세·채팅 사이드바) · UTM 대시보드
+- [x] ~~**(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체**~~ → 세션 #15 완료 (commit becb74c, home-sidebar-bottom 슬롯에 테스트 자산운용 시드 + HomeClient 회색 박스 제거)
+- [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -55,6 +56,23 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((E) /admin/partners 최소 CRUD — Phase 1 = 추가)
+- **신규 API `app/api/admin/partners/route.ts`** (service_role, `requireAdmin` 헬퍼로 admin 검증 후 create)
+  - GET: partners 전체 + partner_slots 조인 (priority desc, created_at desc) — 슬롯 매핑 병합
+  - POST: slug 정규식(`^[a-z0-9-]+$`) 검증 / features JSON 파싱·배열 검증 / country 기본 'KR' / 중복 slug `23505` 사용자 친화 메시지 / 선택적 `slot_key` + `slot_position` 주입 (매핑 실패 시 `slot_warning` 으로 경고만)
+- **신규 페이지 `app/admin/partners/page.tsx`** (`AuthGuard minPlan='admin'`)
+  - 헤더 (← 대시보드 링크 + 새로고침 + 파트너 추가 버튼) + 성공/에러 배너
+  - 접힘/펼침 폼: 11 필드 + features JSON 텍스트영역 + 슬롯 드롭다운(`home-row3-left` / `home-sidebar-bottom` / `toolbox-sidebar` / `stock-detail-sidebar`) + position
+  - 리스트 테이블: slug · 이름 · 카테고리 · 국가 · priority · 활성 뱃지 · 슬롯 칩 · `/partner/[slug]` 외부 링크
+- **`app/admin/page.tsx` 대시보드** — "바로가기" 카드 섹션 추가 (Handshake 아이콘 + `/admin/partners` 딥링크)
+- **Phase 2 남은 것**: 편집·삭제·슬롯 재매핑 UI, 리드 대시보드, 슬롯 키 확장, UTM 대시보드
+
+### 세션 #15 — 2026-04-18 ((D) 홈 Row3 우측 하단 PartnerSlot placeholder 교체)
+- `supabase/migrations/011_partner_seed_2.sql` — 두 번째 테스트 파트너 `test-asset` (테스트 자산운용) + `home-sidebar-bottom` 슬롯 매핑 (position 1)
+  - DB 컬럼 픽스: `partner_slots.priority` → 실제 컬럼명 `position` 으로 자동 수정 후 재적용
+- `components/home/HomeClient.tsx` — 회색 "PARTNER SLOT (W4)" placeholder div 제거 → `<PartnerSlot slotKey="home-sidebar-bottom" variant="card" />` 교체
+- Chrome MCP 검증 PASS (commit becb74c) — 사이드바에 두 카드 세로 스택 (상: 테스트 증권 민트 / 하: 테스트 자산운용 주황), 회색 박스 완전 사라짐, 콘솔 Fast Refresh [LOG] 13건·에러 0건
 
 ### 세션 #15 — 2026-04-18 (W5 더미 데이터 제거 1차 — ComingSoonCard + 4개 위젯)
 - `components/common/ComingSoonCard.tsx` 공통 스켈레톤 신설 (제목·아이콘·설명·eta 뱃지)

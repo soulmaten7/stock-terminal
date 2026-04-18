@@ -1,6 +1,32 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (E) /admin/partners 최소 CRUD (Phase 1)
+
+- **신규 관리자 페이지 `app/admin/partners/page.tsx`** — AuthGuard `minPlan='admin'` 로 게이트
+  - 상단: "파트너 관리" 헤더 + 새로고침 / 파트너 추가 버튼
+  - 폼 접힘/펼침 — 폼 필드 11종 (slug·name·category·country·description·logo_url·cta_text·cta_url·priority·is_active·features JSON) + 선택적 슬롯 매핑 2필드 (slot_key 드롭다운 · slot_position)
+  - 슬롯 드롭다운 옵션: `home-row3-left` / `home-sidebar-bottom` / `toolbox-sidebar` / `stock-detail-sidebar` / — 선택 안 함 —
+  - 리스트 테이블 — slug · 이름 · 카테고리 · 국가 · priority · 활성 뱃지 · 연결 슬롯 칩(들) · `/partner/[slug]` 바로가기
+  - 성공/에러 피드백 박스 (CheckCircle2 / AlertCircle)
+- **신규 API `app/api/admin/partners/route.ts`** (service_role)
+  - `requireAdmin()` 헬퍼 — 서버 세션 사용자 조회 → `users.role === 'admin'` 확인 → 401/403 반환
+  - GET: `partners` 전체 + `partner_slots` 조인해 슬롯 매핑 병합 (priority desc, created_at desc)
+  - POST: slug 정규식 검증 (`^[a-z0-9-]+$`), features JSON 파싱·배열 검증, country 기본 'KR', cta_text 기본 '자세히 보기', 중복 slug `23505` 에러 사용자 친화 메시지, 선택적 슬롯 매핑 실패 시 `slot_warning` 으로 경고만 (파트너는 유지)
+- **`app/admin/page.tsx` 대시보드** — "바로가기" 카드 섹션 추가 → `/admin/partners` 딥링크 (Handshake 아이콘)
+- **Phase 1 scope**: 추가(Create)만. 편집·삭제·슬롯 재매핑은 Phase 2 (급한 경우 Supabase SQL Editor 로 처리)
+- new files: `app/api/admin/partners/route.ts`, `app/admin/partners/page.tsx`
+
+## [2026-04-18] 세션 #15 — (D) 홈 Row3 우측 하단 PartnerSlot placeholder 교체 (commit becb74c)
+
+- **`supabase/migrations/011_partner_seed_2.sql`** — 두 번째 테스트 파트너 시드
+  - `test-asset` = 테스트 자산운용, 자산운용 카테고리, features 3종 (연 보수 0.2% / AI 리밸런싱 / 최소 10만원)
+  - 주황 로고 (`FF9500`) "TEST+Asset", CTA "포트폴리오 상담 신청", priority 90
+  - `partner_slots` 매핑: `home-sidebar-bottom` → `test-asset` (position 1)
+- **`components/home/HomeClient.tsx`** — 회색 "PARTNER SLOT (W4)" placeholder div 제거 → `<PartnerSlot slotKey="home-sidebar-bottom" variant="card" />` 렌더링
+- **Chrome MCP 검증 PASS** — 우측 사이드바에 두 카드 세로 스택 (test 증권 민트 / test-asset 주황), 회색 박스 완전 사라짐, 콘솔 Fast Refresh [LOG] 13건·에러 0건
+- **DB 컬럼 이름 픽스** — `partner_slots.priority` 는 존재하지 않음 → 실제 컬럼명 `position` 으로 자동 수정
+
 ## [2026-04-18] 세션 #15 — W5 더미 데이터 제거 1차 (ComingSoonCard + 4개 위젯)
 
 - **공통 스켈레톤 `components/common/ComingSoonCard.tsx` 신설** — 제목·아이콘·설명·eta 뱃지 props, `bg-[#F5F7FA]` + 점선 border + 민트 eta 뱃지

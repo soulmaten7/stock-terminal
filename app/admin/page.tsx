@@ -3,9 +3,10 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { formatNumber, formatDate } from '@/lib/utils/format';
+import Link from 'next/link';
 import {
   Users, CreditCard, BarChart3, Shield, MessageCircle,
-  Settings, BadgeCheck, Bell, ChevronRight,
+  Settings, BadgeCheck, Bell, ChevronRight, Handshake,
 } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
@@ -189,6 +190,23 @@ export default function AdminPage() {
                     <BadgeCheck className="w-8 h-8 text-text-secondary/30 mb-2" />
                     <p className="text-text-secondary text-sm">승인 대기 중인 배너가 없습니다</p>
                   </div>
+                </div>
+              </div>
+
+              {/* Quick links */}
+              <div className="bg-dark-700 rounded-xl border border-border p-5">
+                <h3 className="font-semibold text-sm mb-4">바로가기</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <Link
+                    href="/admin/partners"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-accent/60 hover:bg-dark-600/30 transition-colors"
+                  >
+                    <Handshake className="w-5 h-5 text-accent" />
+                    <div>
+                      <p className="text-sm font-medium">파트너 관리</p>
+                      <p className="text-xs text-text-secondary">Partner-Agnostic 슬롯 + 리드젠</p>
+                    </div>
+                  </Link>
                 </div>
               </div>
 

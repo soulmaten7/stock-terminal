@@ -27,13 +27,21 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #15 (2026-04-18, W5 더미 데이터 제거 1차 + 진행중)
-- `components/common/ComingSoonCard.tsx` 공통 스켈레톤 신설 — 제목·아이콘·설명·eta 뱃지
-- 4개 홈 위젯 ComingSoonCard 교체 (commit b8f007d, 6 files / +287 -97)
-  - ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule
-- Chrome MCP 검증 PASS — 더미 잔존물 0건, "데이터 준비 중" 4개, 300px 유지
+## 가장 최근 세션 — 세션 #15 (2026-04-18, W5 더미 제거 + (D) sidebar-bottom + (E) /admin/partners Phase 1)
+- **W5 더미 제거 1차** — `components/common/ComingSoonCard.tsx` 공통 스켈레톤 + 4개 홈 위젯 교체 (ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule) — commit b8f007d
+- **(D) 홈 Row3 우측 하단 PartnerSlot 교체** (commit becb74c)
+  - `supabase/migrations/011_partner_seed_2.sql` — 테스트 자산운용 `test-asset` + `home-sidebar-bottom` 슬롯 (position 1)
+  - `HomeClient.tsx` 회색 PARTNER SLOT (W4) placeholder div 제거 → `<PartnerSlot slotKey="home-sidebar-bottom" variant="card" />`
+  - Chrome MCP: 사이드바 두 카드 세로 스택 (테스트 증권 민트 / 테스트 자산운용 주황), 콘솔 에러 0
+- **(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**
+  - `app/api/admin/partners/route.ts` — `requireAdmin()` 헬퍼(서버 세션 + role 검증) + GET(파트너+슬롯 조인) + POST(slug 정규식·features JSON·slot 매핑 옵션)
+  - `app/admin/partners/page.tsx` — AuthGuard admin + 접힘/펼침 폼(11 필드 + 슬롯 드롭다운) + 리스트 테이블 + /partner/[slug] 바로가기
+  - `app/admin/page.tsx` 대시보드에 "바로가기" 카드 추가 (Handshake → /admin/partners)
 - **결정**: EarningsCalendar(#38) / EconomicCalendar(#39) → Phase 2 이관 (API 미제공, 리드 유입 검증 우선)
-- **진행중**: (D) 홈 Row3 잔여 PARTNER SLOT (W4) 회색 placeholder 교체 → (E) /admin/partners 최소 CRUD → …
+- **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
+  - (F) 리드 대시보드 최소 (`/admin/partners/leads`) — 리드 목록 + 기간/파트너 필터 + CSV Export
+  - (G) 슬롯 키 확장 — 종목 상세 탭 사이드바 슬롯 + 채팅 사이드바 슬롯
+  - (H) UTM 대시보드 — `partner_clicks` 집계 (슬롯별 CTR, 리드 전환율)
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)
