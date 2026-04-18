@@ -23,7 +23,8 @@
 - [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
 - [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ 완료 → 편집·삭제·슬롯 재매핑 · 리드 대시보드 · 슬롯 키 확장 (종목 상세·채팅 사이드바) · UTM 대시보드
 - [x] ~~**(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체**~~ → 세션 #15 완료 (commit becb74c, home-sidebar-bottom 슬롯에 테스트 자산운용 시드 + HomeClient 회색 박스 제거)
-- [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기)
+- [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기, Chrome MCP E2E 5/5 PASS + soulmaten7 admin 승격)
+- [x] ~~**(F) /admin/partners/leads 리드 대시보드 + CSV Export**~~ → 세션 #15 완료 (필터 4종 + KPI 4카드 + UTM TOP5 + 리스트 + CSV BOM 다운로드)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -56,6 +57,27 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((F) /admin/partners/leads 리드 대시보드 + CSV Export)
+- **신규 API `app/api/admin/partners/leads/route.ts`** (admin only)
+  - GET 필터: partner_slug · from · to (YYYY-MM-DD) · q (이름/이메일/전화/문의 OR ilike) · limit · offset · format(json|csv)
+  - CSV 모드: UTF-8 BOM 프리픽스 + 12열 헤더 + `attachment; filename="partner_leads_YYYY-MM-DD.csv"` 내려보냄 (엑셀 한글 깨짐 방지)
+  - 파트너 이름/slug 병합은 FK select 대신 in-clause 별도 조회 후 메모리 병합 (RLS 우회 안전)
+- **신규 페이지 `app/admin/partners/leads/page.tsx`** (AuthGuard admin)
+  - 필터 4종 + 검색 + 조회/CSV 다운로드 버튼 · KPI 4카드 (총/이메일/전화/동의) · UTM TOP 5 badge · 리드 테이블 8컬럼
+  - 기본 기간: 오늘 ~ 30일 전 (`todayIso(-30)` ~ `todayIso(0)`)
+  - CSV 다운로드는 anchor href 로 직접 트리거 → 브라우저 "다운로드 허용 필요" 팝업 유발 가능 (보안 정책 준수)
+- `app/admin/partners/page.tsx` 헤더에 "리드 대시보드" 링크 버튼 추가 (ListOrdered 아이콘)
+
+### 세션 #15 — 2026-04-18 ((E) /admin/partners Chrome MCP E2E 검증)
+- **Task #42 — 2단계 검증 후 5/5 PASS**
+  1. 비-admin 1차 — UI `AuthGuard` 차단 + API `GET /api/admin/partners` → 403
+  2. `scripts/sql-exec.py` 로 soulmaten7@gmail.com → `role='admin'` 승격 (`UPDATE public.users ... RETURNING`)
+  3. 재로드 후 UI 렌더 — 헤더/새로고침/파트너 추가 버튼 표출
+  4. 리스트 2건 표출 — `test` + slot 칩 2종 (home-row3-left#1, toolbox-category-exchange#1), `test-asset` + home-sidebar-bottom#1
+  5. 폼 POST — `qa-test-bank` / "QA 테스트 은행" 최소 필드로 생성 → 성공 배너 + 리스트 3번째 row 즉시 반영
+- 검증용 QA 데이터 유지 (Phase 1 = DELETE 없음, 추후 SQL로 제거 가능)
+- 스크린샷 저장 · Task #42 완료
 
 ### 세션 #15 — 2026-04-18 ((E) /admin/partners 최소 CRUD — Phase 1 = 추가)
 - **신규 API `app/api/admin/partners/route.ts`** (service_role, `requireAdmin` 헬퍼로 admin 검증 후 create)

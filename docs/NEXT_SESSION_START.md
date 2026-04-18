@@ -38,10 +38,15 @@
   - `app/admin/partners/page.tsx` — AuthGuard admin + 접힘/펼침 폼(11 필드 + 슬롯 드롭다운) + 리스트 테이블 + /partner/[slug] 바로가기
   - `app/admin/page.tsx` 대시보드에 "바로가기" 카드 추가 (Handshake → /admin/partners)
 - **결정**: EarningsCalendar(#38) / EconomicCalendar(#39) → Phase 2 이관 (API 미제공, 리드 유입 검증 우선)
+- **(E) Chrome MCP E2E 5/5 PASS** — 비-admin AuthGuard/API 403 차단 확인 → soulmaten7 admin 승격 → UI/리스트/폼 POST 전부 동작
+- **(F) /admin/partners/leads 리드 대시보드 + CSV Export 완료**
+  - GET `/api/admin/partners/leads` (partner_slug·from·to·q·format=json|csv)
+  - 페이지: 필터 4종 + KPI 4카드 + UTM TOP5 + 리드 테이블 + CSV BOM 다운로드
+  - 파트너 관리 헤더에 "리드 대시보드" 링크 추가
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (F) 리드 대시보드 최소 (`/admin/partners/leads`) — 리드 목록 + 기간/파트너 필터 + CSV Export
-  - (G) 슬롯 키 확장 — 종목 상세 탭 사이드바 슬롯 + 채팅 사이드바 슬롯
-  - (H) UTM 대시보드 — `partner_clicks` 집계 (슬롯별 CTR, 리드 전환율)
+  - (G) 슬롯 키 확장 — 종목 상세 탭 사이드바 슬롯 + 채팅 사이드바 슬롯 + 스크리너 사이드바 슬롯
+  - (H) UTM/클릭 대시보드 — `partner_clicks` 집계 (슬롯별 CTR, 리드 전환율, 기간별 추이)
+  - (I) 파트너 편집/삭제 기능 (Phase 2)
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)

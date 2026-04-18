@@ -4,7 +4,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { Plus, RefreshCw, ExternalLink, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Plus, RefreshCw, ExternalLink, AlertCircle, CheckCircle2, ListOrdered } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
 type Slot = { slot_key: string; partner_id: string; position: number | null; is_active: boolean | null };
@@ -144,6 +144,12 @@ function PartnersAdminInner() {
           <p className="text-xs text-[#999999] mt-1">Partner-Agnostic 리드젠 슬롯 운영. 신규 파트너 등록 시 SQL 없이 폼으로 추가.</p>
         </div>
         <div className="flex gap-2">
+          <Link
+            href="/admin/partners/leads"
+            className="px-3 py-2 text-xs border border-[#E5E7EB] rounded flex items-center gap-1.5 hover:bg-[#F5F7FA]"
+          >
+            <ListOrdered className="w-3.5 h-3.5" /> 리드 대시보드
+          </Link>
           <button
             onClick={load}
             className="px-3 py-2 text-xs border border-[#E5E7EB] rounded flex items-center gap-1.5 hover:bg-[#F5F7FA]"

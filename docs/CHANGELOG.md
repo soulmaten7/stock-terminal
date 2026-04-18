@@ -1,6 +1,34 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (F) /admin/partners/leads 리드 대시보드 + CSV Export
+
+- **신규 API `app/api/admin/partners/leads/route.ts`** (admin only, service_role)
+  - GET 필터: `partner_slug`, `from`, `to` (YYYY-MM-DD), `q` (이름·이메일·전화·문의 본문 ilike OR 검색), `limit`/`offset`, `format` (json|csv)
+  - CSV 모드: UTF-8 BOM(`\ufeff`) 프리픽스 + 헤더 12열 (created_at·partner_slug·partner_name·name·email·phone·message·source_slug·utm_source·utm_medium·utm_campaign·consent_marketing), Content-Disposition: attachment
+  - 파트너 조인: FK select 대신 `partner_id` in-clause 로 별도 조회 후 메모리에서 병합 (RLS 우회)
+- **신규 페이지 `app/admin/partners/leads/page.tsx`** (`AuthGuard minPlan='admin'`)
+  - 헤더: ← 파트너 관리 링크 + "리드 대시보드" + CSV 다운로드 버튼 (anchor href 로 직접 다운로드 트리거)
+  - 필터 4종: 파트너 드롭다운(기본 전체) · 시작일(기본 -30일) · 종료일(오늘) · 검색박스(Enter 즉시 조회)
+  - KPI 카드 4개: 총 리드 / 이메일 보유 / 전화 보유 / 마케팅 동의 — 분자/분모 포맷
+  - UTM TOP 5 바(badge): utm_medium 별 유입 랭킹 (슬롯별 CTR 기반 평가에 직결)
+  - 리스트 테이블: created_at (KST) · 파트너(이름+slug 2줄) · 이름 · 이메일 · 전화 · 문의(truncate+title) · UTM pill · 동의 ✓/-
+- **`app/admin/partners/page.tsx` 헤더에 "리드 대시보드" 링크 추가** (ListOrdered 아이콘)
+- new files: `app/api/admin/partners/leads/route.ts`, `app/admin/partners/leads/page.tsx`
+
+## [2026-04-18] 세션 #15 — (E) /admin/partners Chrome MCP E2E 5/5 PASS
+
+- **Task #42**: 비-admin 계정으로 1차 검증 → 2중 차단 정상 확인
+  - UI: "접근 권한 없음 · 이 페이지는 관리자만 접근할 수 있습니다" AuthGuard 차단
+  - API: `GET /api/admin/partners` → `403 {"error":"관리자 권한 필요"}`
+- `scripts/sql-exec.py` 로 soulmaten7@gmail.com → `role='admin'` 승격 (users.id `a7db2d46-bcfb-4a1a-8ff4-14eb3c59fc87`)
+- 재검증 5/5 PASS:
+  1. 페이지 렌더 — 헤더 "파트너 관리" + 부제 + 새로고침/파트너 추가 버튼
+  2. 리스트 2건 표출 — `test` (증권사 / 100 / home-row3-left#1 + toolbox-category-exchange#1) · `test-asset` (자산운용 / 90 / home-sidebar-bottom#1)
+  3. 폼 접힘/펼침 동작
+  4. POST 성공 — slug=`qa-test-bank`, name="QA 테스트 은행", 카테고리/슬롯 없이 최소 필드로 추가 → 성공 배너 "파트너 'QA 테스트 은행' 생성 완료" + 리스트에 3번째 row 즉시 반영 (priority 기본 50, 활성 ✓)
+  5. 슬롯 칩 렌더링 — `home-row3-left#1` / `toolbox-category-exchange#1` / `home-sidebar-bottom#1` 3종 정상 표시
+
 ## [2026-04-18] 세션 #15 — (E) /admin/partners 최소 CRUD (Phase 1)
 
 - **신규 관리자 페이지 `app/admin/partners/page.tsx`** — AuthGuard `minPlan='admin'` 로 게이트
