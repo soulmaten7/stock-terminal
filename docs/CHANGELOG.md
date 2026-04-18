@@ -1,6 +1,27 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #14 — W4 Partner-Agnostic Landing + E2E 검증
+
+- **W4 Partner-Agnostic Lead Gen 인프라 1차 출시** (Claude Code 실행, commit 91eea5a — 11 files / +1322 insertions)
+  - DB: `supabase/migrations/010_partners.sql` — 4 테이블 (`partners`, `partner_slots`, `partner_leads`, `partner_clicks`) + RLS (SELECT 공개 / INSERT leads·clicks 익명 허용 / 쓰기 service_role 만)
+  - 테스트 시드 1건 (`slug='test'`, `테스트 증권`, features 3종 JSONB) + 슬롯 2개 바인딩 (`home-row3-left`, `toolbox-category-exchange`)
+  - API 4종: `/api/partners/[slug]` (GET 단건) · `/api/partners/slots?key=…` (GET 슬롯+파트너 조인) · `/api/partners/leads` (POST 이름·연락처·동의 검증, IP SHA256 해시) · `/api/partners/clicks` (POST fire-and-forget 추적)
+  - 페이지: `app/partner/[slug]/page.tsx` (Server) → `components/partners/PartnerLandingClient.tsx` (Client) — Hero + Features 3카드 + 리드 폼 (이름 필수 ≤80 / 이메일·전화 중 1 필수 / 문의 ≤1000 / consent) + 성공 박스 전환
+  - 슬롯 컴포넌트: `components/partners/PartnerSlot.tsx` — card/compact 두 가지 variant, `/partner/${slug}?utm_source=slot&utm_medium=${slotKey}` 링크 생성 (부모 'use client' 때문에 Server → Client 전환)
+  - 기존 placeholder 일부 교체: `components/home/HomeClient.tsx` (Row3 좌측) + `components/toolbox/CategorySection.tsx` (`slug==='exchange'` 섹션 헤더 하단)
+- **W4 Chrome MCP E2E 검증 8/8 PASS** (Task #36)
+  - `/partner/test` Hero + Features + 폼 렌더링 / 폼 제출 → "신청 완료" 박스 전환 / 리드 1건 삽입
+  - 홈 Row3 좌측 card variant 렌더링 + 클릭 → `utm_medium=home-row3-left`
+  - `/toolbox` 거래소·증권사 섹션 compact variant 렌더링 + 클릭 → `utm_medium=toolbox-category-exchange`
+  - `/api/partners/slots?key=toolbox-category-exchange` JSON 실시간 응답 (partner 1건)
+  - Console errors: Supabase auth-js `AbortError: Lock broken` 1건 — SDK 내부 탭 간 lock 경합 (무해, W4 무관)
+- **W4 MVP 범위 밖 (Phase 2 보류)**
+  - `/admin/partners` CRUD UI (현재는 SQL 시드로 추가, 추후 관리자 패널 필요)
+  - 리드 대시보드 (열람/상태관리/Export)
+  - 슬롯 키 추가 확장 (종목 상세 탭 내 슬롯, 채팅 사이드바 슬롯 등)
+  - Utm 상세 로그·대시보드 (현재는 `partner_clicks` 테이블에 row 적재만 됨)
+
 ## [2026-04-18] 세션 #13 — Google OAuth + Chat API 하네스 + Chat UX + W2.5/W2.6/W3 실데이터
 
 - **Supabase Google OAuth 실제 활성화 (기획 → 완료)**

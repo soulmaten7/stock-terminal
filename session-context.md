@@ -21,6 +21,7 @@
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
 - [ ] **더미 데이터 제거**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage _(ComparePage 는 세션 #13 W2.5 로 실데이터 완료)_
+- [ ] **W4 Phase 2**: `/admin/partners` CRUD · 리드 대시보드 · 슬롯 키 확장 (종목 상세·채팅 사이드바) · UTM 대시보드
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -53,6 +54,19 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #14 — 2026-04-18 (W4 Partner-Agnostic Landing + E2E 검증)
+- **W4 Partner-Agnostic Lead Gen 인프라 1차 완료** (commit 91eea5a, 11 files / +1322 insertions)
+  - `supabase/migrations/010_partners.sql` — 4 테이블 + RLS (SELECT 공개 / leads·clicks INSERT 익명 허용 / 쓰기 service_role)
+  - 테스트 시드: `slug='test' 테스트 증권`, features 3종 (수수료 0.015% / AI 리서치 무료 / 24시간 상담), 슬롯 2개 (`home-row3-left`, `toolbox-category-exchange`)
+  - API 4종 (`/api/partners/[slug]`, `/slots`, `/leads`, `/clicks`) — curl 4/4 PASS, leads POST 시 IP SHA256 해시화
+  - 페이지: `/partner/[slug]` Server + `PartnerLandingClient` Client (Hero + Features + 리드 폼 + 성공 박스 전환)
+  - 컴포넌트: `PartnerSlot` (card/compact variant, UTM 쿼리 자동 주입) — 부모 'use client' 때문에 Client 컴포넌트로 전환
+  - 교체: `HomeClient` Row3 좌측 + `CategorySection` `slug==='exchange'` 헤더 하단
+- **Chrome MCP E2E 8/8 PASS** (Task #36)
+  - `/partner/test` 풀 렌더링 + 폼 제출 → "신청 완료" 전환 / 홈 card 클릭 UTM `home-row3-left` 전달 / toolbox compact 클릭 UTM `toolbox-category-exchange` 전달 / slots API 실시간 응답
+  - Console errors: Supabase auth-js `AbortError: Lock broken` 1건 (SDK 내부 탭 lock 경합, 기능 무관)
+- **MVP 범위 밖 (Phase 2)**: `/admin/partners` CRUD · 리드 대시보드 · 슬롯 키 확장 · UTM 대시보드
 
 ### 세션 #13 — 2026-04-18 (Google OAuth + Chat API/UX + W2.5/W2.6/W3 실데이터)
 - Google Cloud `Terminal` 프로젝트 + OAuth Client 발급 (soulmaten7-org)

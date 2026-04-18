@@ -27,7 +27,19 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #13 (2026-04-18, Day 2 종료 + Day 3 W2.5/W2.6/W3)
+## 가장 최근 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
+- **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)
+  - `supabase/migrations/010_partners.sql` — `partners`·`partner_slots`·`partner_leads`·`partner_clicks` 4 테이블 + RLS
+  - 테스트 시드: `slug='test' 테스트 증권` + 슬롯 2개 (`home-row3-left`, `toolbox-category-exchange`)
+  - API 4종: `/api/partners/[slug]` · `/slots` · `/leads` (이름/연락처/동의 검증 + IP SHA256 해시) · `/clicks` (fire-and-forget)
+  - 페이지: `app/partner/[slug]/page.tsx` Server + `PartnerLandingClient` — Hero / Features 3카드 / 리드 폼 / "신청 완료" 전환
+  - 컴포넌트: `PartnerSlot` (card/compact) — UTM 자동 주입 링크 `/partner/${slug}?utm_source=slot&utm_medium=${slotKey}`
+  - `HomeClient` Row3 좌측 + `CategorySection` `slug==='exchange'` 헤더 하단 교체
+- **Chrome MCP E2E 8/8 PASS** — `/partner/test` 렌더 + 폼 제출 → 성공 박스 / 홈 UTM=home-row3-left / toolbox UTM=toolbox-category-exchange / slots API 실시간 응답
+- Console errors: Supabase auth-js `AbortError: Lock broken` (SDK lock 경합, W4 무관)
+- **W4 Phase 2 (미구현)**: `/admin/partners` CRUD · 리드 대시보드 · 슬롯 키 확장 · UTM 대시보드
+
+## 이전 세션 — 세션 #13 (2026-04-18, Day 2 종료 + Day 3 W2.5/W2.6/W3)
 - **Google OAuth 실동작화** — Google Cloud `Terminal` 프로젝트 + OAuth Client 발급 → Supabase PATCH (`external_google_enabled=true` / client_id / secret / site_url / uri_allow_list)
 - **Task #27 Chat UX 디테일 완료** — `components/chat/ChatPanel.tsx`
   - 글자수 카운터 `{len}/500` (450+ 주황, 490+ 빨강)
@@ -67,21 +79,20 @@
 
 ## 다음 세션 우선 작업 — 세 가지 중 선택
 
-**(A) 빌드·E2E 검증** (Chrome MCP) — **세션 #13 이어서 가장 중요** (30분~1시간)
-- `npm run build` 에러 없는지 확인
-- `/stocks/005930?tab=compare` — 심볼 2개 추가 후 차트·테이블 렌더 확인
-- `/stocks/005930?tab=news` — DART 공시 + Google News 둘 다 로드
-- `/toolbox` — 국가 필터 KR/US 토글 동작 + 검색 필터링
-- Chat → 글자수 카운터 색상 전환 (450+ 주황, 490+ 빨강), 429 에러 메시지
-
-**(B) W4 Partner-Agnostic Landing** (예상 2~3시간) — 수익화 인프라
-- `app/partner/[slug]/page.tsx` 신규
-- `partners` 테이블 스키마 + `partner_clicks` 이벤트 추적
-- Partner Slot 자리(`data-slot="toolbox-category-*"`) 실제 채우기
-
-**(C) 더미 데이터 제거** (예상 1~2시간)
+**(A) 더미 데이터 제거** (예상 1~2시간) — **W4 인프라 완료 상태, 이제 제품 투명성 확보 차례**
 - ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage 7종
-- 각 컴포넌트 실 API 연결 또는 "곧 출시" 스켈레톤 UI 교체
+- 각 컴포넌트 실 API 연결 또는 "곧 출시" 스켈레톤 UI 교체 (숫자 만들기 절대 금지)
+
+**(B) W4 Phase 2 — Admin/리드 대시보드** (예상 2~3시간) — 수익화 운영화
+- `/admin/partners` CRUD UI (테이블 시드만 되어있는 상태)
+- 리드 열람·상태관리·CSV Export 대시보드
+- UTM 원본별 클릭→리드 전환율 대시보드 (`partner_clicks` + `partner_leads` 조인)
+- Make 자동화: 리드 생성 → Slack/이메일 알림 시나리오
+
+**(C) 슬롯 키 확장** (예상 1~2시간) — 수익 노출면 확대
+- 종목 상세 8탭 내 슬롯 자리 지정 (개요 KPI 하단, 비교 탭 상단 등)
+- 채팅 사이드바 AD 영역에 PartnerSlot 치환
+- 홈에 남은 "PARTNER SLOT (W4)" placeholder 교체 (현재 Row3 좌측만 실슬롯)
 
 ## 세션 #12 (2026-04-18)
 - **W2.3 보강**: DART corp_codes 3,959건 + ROE 10.26% 개요 탭 표시 → KPI 7/7 완성
