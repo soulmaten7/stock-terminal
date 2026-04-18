@@ -1,26 +1,23 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
+import ChatSidebar from '@/components/chat/ChatSidebar';
 
 interface LayoutShellProps {
   children: ReactNode;
   footer: ReactNode;
-  floatingChat: ReactNode;
 }
 
-export default function LayoutShell({ children, footer, floatingChat }: LayoutShellProps) {
-  const pathname = usePathname();
-  const isHome = pathname === '/';
-
+export default function LayoutShell({ children, footer }: LayoutShellProps) {
   return (
     <>
-      <main className={isHome ? '' : 'flex-1'}>
-        {children}
-      </main>
+      <div className="flex flex-1">
+        <ChatSidebar />
+        <main className="flex-1 min-w-0">
+          {children}
+        </main>
+      </div>
       {footer}
-      {/* Floating chat only on non-home pages (home has embedded sidebar chat) */}
-      {!isHome && floatingChat}
     </>
   );
 }

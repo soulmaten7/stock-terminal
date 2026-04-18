@@ -4,7 +4,6 @@ import './globals.css';
 import Header from '@/components/layout/Header';
 import TickerBar from '@/components/layout/TickerBar';
 import Footer from '@/components/layout/Footer';
-import FloatingChat from '@/components/layout/FloatingChat';
 import AuthProvider from '@/components/auth/AuthProvider';
 import LayoutShell from '@/components/layout/LayoutShell';
 
@@ -36,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Header />
           <TickerBar />
-          <LayoutShell footer={<Footer />} floatingChat={<FloatingChat />}>
+          <LayoutShell footer={<Footer />}>
             {children}
           </LayoutShell>
         </AuthProvider>

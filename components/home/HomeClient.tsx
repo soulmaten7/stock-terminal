@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect } from 'react';
-import SidebarChat from './SidebarChat';
 import WatchlistLive from './WatchlistLive';
 import InstitutionalFlow from './InstitutionalFlow';
 import BreakingFeed from './BreakingFeed';
@@ -36,9 +35,6 @@ export default function HomeClient() {
       {/* ═══ Side Panel (280px) ═══ */}
       <div className="hidden min-[1400px]:flex w-[320px] shrink-0 flex-col gap-3 self-start">
         <WatchlistLive />
-        <div className="sticky bottom-4" style={{ height: 500 }}>
-          <SidebarChat />
-        </div>
       </div>
 
       {/* ═══ Main Content (flex-1) ═══ */}

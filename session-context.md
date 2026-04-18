@@ -1,10 +1,16 @@
-<!-- 2026-04-17 -->
+<!-- 2026-04-18 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
 - **서비스 정의**: 글로벌 개인투자자용 통합 데이터 터미널 플랫폼
+- **포지셔닝 (V3 확정)**: "전업투자자 = 일반인 (일반투자자가 되고싶은 상위 1%)" — Aspirational Design
 - **핵심 전략**: 전업투자자가 수년 걸려 세팅한 투자 정보 환경을 일반 투자자에게 월 구독료(2~3만원)로 제공
-- **수익 모델**: 구독료 + 인증업체 배너(20일 5만원) + 일반 배너(20일 3만원) + 추후 거래소 제휴 링크
+- **UI 철학**: Bloomberg/Koyfin 표준 Bento Grid + 단일 지속 채팅 + 투자자 도구함(Link Hub)
+- **수익 모델 (V3 3-Layer)**:
+  - Phase 1 (즉시): 광고주 독립적(Partner-Agnostic) 랜딩페이지 인프라 + Lead Gen (DB 장사, 한국 5~10만원/리드)
+  - Phase 2 (3~6개월): Freemium Pro 구독 (알림/AI 리포트/CSV)
+  - Phase 3 (12개월+): 광고주 확장 + À la carte 프리미엄
+- **데이터 소스**: 100% 무료 (DART/KRX/KIS/FDR/Naver/ECOS) — KIS 서버사이드 연동 완료로 비로그인 이용자도 실시간
 - **기술 스택**: Next.js 16 + TypeScript + Tailwind CSS + Supabase + Zustand + Recharts + TradingView 위젯
 - **배포**: Vercel + Supabase Cloud
 - **결제**: 토스페이먼츠 (한국), 추후 Paddle (글로벌)
@@ -45,6 +51,18 @@
 - [ ] Paddle 결제 연동 (글로벌)
 
 ## 완료된 세션 히스토리
+
+### 세션 #8 — 2026-04-18 (V3 제품 스펙 전면 개정)
+- **전략 방향 확정 (대화):**
+  - "전업투자자 = 일반인 (상위 1%)" Aspirational Design 포지셔닝
+  - Bloomberg/Koyfin Bento Grid + 단일 지속 채팅 + 투자자 도구함
+  - PC-First → 이후 태블릿/모바일 반응형 (모듈식 설계)
+  - 채팅은 전체 1개, 종목 분산 X (Density Over Distribution)
+  - 데이터 100% 무료 소스로 95% 커버 — KIS 서버사이드로 비로그인 이용자도 실시간
+  - 수익화 3-Layer: Phase 1 Partner-Agnostic Lead Gen → Phase 2 Pro 구독 → Phase 3 광고 확장
+- **신규 문서:** `docs/PRODUCT_SPEC_V3.md` (11섹션), `docs/COMMANDS_V3_PHASE1.md`
+- **V2 Spec 아카이브:** `docs/HOME_REDESIGN_V2_SPEC.md` 는 참고용으로만 유지
+- **코드 변경:** 없음 (문서 세션)
 
 ### 세션 #7 — 2026-04-17 (stocks + link_hub DB 시딩)
 - **stocks 테이블 시딩**: KOSPI 949건 + KOSDAQ 1,821건 = 총 2,780건 upsert 완료
