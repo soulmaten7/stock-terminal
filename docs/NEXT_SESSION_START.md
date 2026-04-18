@@ -27,7 +27,15 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
+## 가장 최근 세션 — 세션 #15 (2026-04-18, W5 더미 데이터 제거 1차 + 진행중)
+- `components/common/ComingSoonCard.tsx` 공통 스켈레톤 신설 — 제목·아이콘·설명·eta 뱃지
+- 4개 홈 위젯 ComingSoonCard 교체 (commit b8f007d, 6 files / +287 -97)
+  - ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule
+- Chrome MCP 검증 PASS — 더미 잔존물 0건, "데이터 준비 중" 4개, 300px 유지
+- **결정**: EarningsCalendar(#38) / EconomicCalendar(#39) → Phase 2 이관 (API 미제공, 리드 유입 검증 우선)
+- **진행중**: (D) 홈 Row3 잔여 PARTNER SLOT (W4) 회색 placeholder 교체 → (E) /admin/partners 최소 CRUD → …
+
+## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)
   - `supabase/migrations/010_partners.sql` — `partners`·`partner_slots`·`partner_leads`·`partner_clicks` 4 테이블 + RLS
   - 테스트 시드: `slug='test' 테스트 증권` + 슬롯 2개 (`home-row3-left`, `toolbox-category-exchange`)

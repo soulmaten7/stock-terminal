@@ -1,6 +1,25 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — W5 더미 데이터 제거 1차 (ComingSoonCard + 4개 위젯)
+
+- **공통 스켈레톤 `components/common/ComingSoonCard.tsx` 신설** — 제목·아이콘·설명·eta 뱃지 props, `bg-[#F5F7FA]` + 점선 border + 민트 eta 뱃지
+- **4개 홈 위젯 더미 제거 → ComingSoonCard 교체** (commit b8f007d / 6 files / +287 -97)
+  - `ProgramTrading.tsx` — arb 215 / nonArb -108 하드코딩 제거 → "KRX 크롤링 연동 후 공개"
+  - `GlobalFutures.tsx` — S&P/NASDAQ/WTI/금 4건 하드코딩 제거 → "외부 선물 API 연결 후"
+  - `WarningStocks.tsx` — 테스트A/B/C 3건 하드코딩 제거 → "KRX 데이터 연결 후"
+  - `IpoSchedule.tsx` — 테크바이오/그린에너지/AI로보틱스 3건 하드코딩 제거 → "공시 파이프라인 연결 후"
+- **Chrome MCP 검증 5/5 PASS**
+  - 더미 잔존물 0건 (`(주)테스트`·`테크바이오`·`차익거래`·`비차익거래` 등 모두 사라짐)
+  - "데이터 준비 중" 박스 정확히 4개
+  - 300px 그리드 높이 유지
+  - Console: Supabase auth-js `AbortError: Lock broken` 1건 (SDK 경합, W5 무관)
+- **ScreenerClient 는 손대지 않음** — 이미 `/api/stocks/screener` 연결 (W2~)
+- **Task #38 EarningsCalendar / #39 EconomicCalendar → Phase 2 이관 결정**
+  - DART는 "발표 예정" API 미제공, ECOS는 "과거 지표" API — 둘 다 실데이터 연결이 간단하지 않음
+  - W4 파트너 리드 유입 검증이 우선 — 방문자 1,000명 or 리드 10건 이상 확보 시 재검토
+- new files: `components/common/ComingSoonCard.tsx`, `docs/COMMANDS_V3_W5_DUMMY_REMOVAL.md`
+
 ## [2026-04-18] 세션 #14 — W4 Partner-Agnostic Landing + E2E 검증
 
 - **W4 Partner-Agnostic Lead Gen 인프라 1차 출시** (Claude Code 실행, commit 91eea5a — 11 files / +1322 insertions)

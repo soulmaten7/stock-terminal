@@ -20,8 +20,9 @@
 ### P0 — 지금 당장 (블로커)
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
-- [ ] **더미 데이터 제거**: ProgramTrading, GlobalFutures, WarningStocks, EconomicCalendar, IpoSchedule, EarningsCalendar, ScreenerPage _(ComparePage 는 세션 #13 W2.5 로 실데이터 완료)_
+- [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
 - [ ] **W4 Phase 2**: `/admin/partners` CRUD · 리드 대시보드 · 슬롯 키 확장 (종목 상세·채팅 사이드바) · UTM 대시보드
+- [ ] **(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체** — 현재 홈에 회색 박스 1개 남아있음 (세션 #15 다음 작업)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -54,6 +55,18 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 (W5 더미 데이터 제거 1차 — ComingSoonCard + 4개 위젯)
+- `components/common/ComingSoonCard.tsx` 공통 스켈레톤 신설 (제목·아이콘·설명·eta 뱃지)
+- 4개 홈 위젯 하드코딩 더미 제거 → ComingSoonCard 교체 (commit b8f007d, 6 files / +287 -97)
+  - ProgramTrading (arb 215 / nonArb -108) → "KRX 데이터 연결 후"
+  - GlobalFutures (S&P/NASDAQ/WTI/금 4건) → "외부 선물 API 연결 후"
+  - WarningStocks (테스트A/B/C 3건) → "KRX 데이터 연결 후"
+  - IpoSchedule (테크바이오 등 3건) → "공시 파이프라인 연결 후"
+- Chrome MCP 검증 5/5 PASS — 더미 잔존물 0건, "데이터 준비 중" 4개, 300px 유지, console error W5 무관 1건
+- ScreenerClient는 이미 실연결 상태라 손대지 않음
+- **결정**: Task #38 EarningsCalendar / #39 EconomicCalendar → Phase 2 이관 (DART·ECOS 모두 '발표 예정' API 미제공, W4 리드 유입 검증 우선)
+- 다음 순서 (D) 홈 잔여 PARTNER SLOT (W4) 회색 placeholder 교체 → (E) /admin/partners 최소 CRUD
 
 ### 세션 #14 — 2026-04-18 (W4 Partner-Agnostic Landing + E2E 검증)
 - **W4 Partner-Agnostic Lead Gen 인프라 1차 완료** (commit 91eea5a, 11 files / +1322 insertions)
