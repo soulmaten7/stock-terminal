@@ -27,7 +27,7 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #15 (2026-04-18, W5 더미 제거 + (D) sidebar-bottom + (E) /admin/partners Phase 1)
+## 가장 최근 세션 — 세션 #15 (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I))
 - **W5 더미 제거 1차** — `components/common/ComingSoonCard.tsx` 공통 스켈레톤 + 4개 홈 위젯 교체 (ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule) — commit b8f007d
 - **(D) 홈 Row3 우측 하단 PartnerSlot 교체** (commit becb74c)
   - `supabase/migrations/011_partner_seed_2.sql` — 테스트 자산운용 `test-asset` + `home-sidebar-bottom` 슬롯 (position 1)
@@ -61,10 +61,14 @@
   - /screener 하단 PartnerSlot null 렌더 ✅
   - /stocks/005930 하단 PartnerSlot null 렌더 ✅
   - Console 에러 0 (Supabase auth lock AbortError 기존 known)
+- **(I) 파트너 편집·삭제 + 슬롯 재매핑 완료 (Phase 2 CRUD)**
+  - PATCH/DELETE `/api/admin/partners/[id]` — 부분 필드 업데이트 + 하드 삭제 (CASCADE slots/clicks, SET NULL leads)
+  - POST/DELETE `/api/admin/partners/[id]/slots` — 슬롯 매핑 추가/제거 (slot_key 또는 slot_id 스코프)
+  - 어드민 UI: 편집 버튼(✏️) · 삭제 버튼(🗑️) + confirm · 슬롯 칩 ✕ · "+ 슬롯" 인라인 액션 · "액션" 컬럼 신설
+  - Partner.id `string → number` 타입 정정 (BIGSERIAL 실제 타입과 일치)
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (I) 파트너 편집/삭제 기능 (Phase 2) — PATCH/DELETE API + 어드민 UI 편집 모달 + 슬롯 재매핑
+  - (K-2) Chrome MCP E2E — (I) 편집·삭제·슬롯 재매핑 검증 + `/e2e-chrome-mcp-test` QA 클릭 로그 정리
   - (J) 채팅 사이드바 슬롯 추가 (채팅 페이지 구조 설계 완료 시)
-  - 테스트 클릭 QA 데이터(`/e2e-chrome-mcp-test` 1건) 정리 — 편집/삭제 API 완료 후
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)

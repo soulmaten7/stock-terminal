@@ -21,13 +21,14 @@
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
 - [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
-- [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ ~~리드 대시보드~~ ~~슬롯 키 확장 (종목 상세·스크리너 하단)~~ ~~UTM/클릭 대시보드~~ 완료 → 편집·삭제·슬롯 재매핑 · (추후) 채팅 사이드바 슬롯
+- [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ ~~리드 대시보드~~ ~~슬롯 키 확장 (종목 상세·스크리너 하단)~~ ~~UTM/클릭 대시보드~~ ~~(I) 편집·삭제·슬롯 재매핑~~ 완료 → (추후) 채팅 사이드바 슬롯 · (K-2) 편집·삭제 E2E 검증
 - [x] ~~**(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체**~~ → 세션 #15 완료 (commit becb74c, home-sidebar-bottom 슬롯에 테스트 자산운용 시드 + HomeClient 회색 박스 제거)
 - [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기, Chrome MCP E2E 5/5 PASS + soulmaten7 admin 승격)
 - [x] ~~**(F) /admin/partners/leads 리드 대시보드 + CSV Export**~~ → 세션 #15 완료 (필터 4종 + KPI 4카드 + UTM TOP5 + 리스트 + CSV BOM 다운로드)
 - [x] ~~**(G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom)**~~ → 세션 #15 완료 (SLOT_KEYS 7옵션 + `/stocks/[symbol]` 하단 + `/screener` 하단 PartnerSlot 주입, 빈 상태=null 렌더)
 - [x] ~~**(H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹**~~ → 세션 #15 완료 (H1: sendBeacon + fetch keepalive 폴백 / H2: `/admin/partners/clicks` 슬롯별·파트너별·일자별 집계 + 전환율 + 최근 100건)
 - [x] ~~**(K) Chrome MCP E2E 검증 — (G)(H)**~~ → 세션 #15 완료 5/5 PASS (대시보드 렌더 + POST 트래킹 200 OK + 실데이터 반영 + screener/stocks-detail 슬롯 null 렌더)
+- [x] ~~**(I) 파트너 편집·삭제 + 슬롯 재매핑**~~ → 세션 #15 완료 (PATCH/DELETE `/api/admin/partners/[id]` + POST/DELETE `/[id]/slots` + 어드민 UI 편집 버튼·삭제 confirm·슬롯 칩 ✕·인라인 슬롯 추가)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -60,6 +61,19 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((I) 파트너 편집·삭제 + 슬롯 재매핑 — Phase 2 CRUD)
+- **신규 API `app/api/admin/partners/[id]/route.ts`** — PATCH (부분 필드, slug 재검증, features JSON 파싱, 23505→409) + DELETE (CASCADE slots/clicks, SET NULL leads). Next 16 `params: Promise<...>` + `await params` 규약 준수.
+- **신규 API `app/api/admin/partners/[id]/slots/route.ts`** — POST `{slot_key, position, is_active}` (UNIQUE 충돌 23505→409) + DELETE `?slot_key=` or `?slot_id=` (partner_id 스코프).
+- **어드민 UI 확장 `app/admin/partners/page.tsx`**:
+  - `editingId` 상태 분기: 편집 버튼(✏️) 클릭 → 폼 채움 + 스크롤 업 → PATCH 제출
+  - 삭제 버튼(🗑️) + window.confirm → DELETE 파트너
+  - 슬롯 칩에 ✕ 버튼 → confirm 후 슬롯 매핑 제거
+  - 슬롯 라인에 "+ 슬롯" 인라인 액션 → 드롭다운 + position 입력 → POST slot 매핑
+  - 테이블 "액션" 컬럼 추가 (9컬럼) + align-top 적용 + rowActionError 별도 배너
+  - 편집 모드: 하단 슬롯 폼 영역 숨김 (칩 레벨에서 관리) + "편집 취소" 링크
+- Partner.id `string → number` 타입 정정 (BIGSERIAL 실제 타입과 일치)
+- 다음: (K-2) 편집·삭제 + 슬롯 재매핑 Chrome MCP E2E 검증, 그리고 `/e2e-chrome-mcp-test` QA 클릭 로그 정리
 
 ### 세션 #15 — 2026-04-18 ((K) Chrome MCP E2E 검증 — (G)(H) 5/5 PASS)
 - Task #46 — 라이브 검증 통과

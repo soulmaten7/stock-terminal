@@ -1,15 +1,27 @@
-// 2026-04-18 세션 #15 (E) — /admin/partners 최소 CRUD 페이지
-// 리스트 + 파트너 추가 폼 (Phase 1 scope: 추가만, 편집/삭제는 Phase 2)
+// 2026-04-18 세션 #15 (I) — /admin/partners CRUD 페이지 (편집·삭제·슬롯 재매핑 포함)
+// Phase 1: 추가
+// Phase 2: 편집 (PATCH) + 삭제 (DELETE) + 슬롯 추가/제거 (POST/DELETE /[id]/slots)
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { Plus, RefreshCw, ExternalLink, AlertCircle, CheckCircle2, ListOrdered, MousePointerClick } from 'lucide-react';
+import {
+  Plus,
+  RefreshCw,
+  ExternalLink,
+  AlertCircle,
+  CheckCircle2,
+  ListOrdered,
+  MousePointerClick,
+  Pencil,
+  Trash2,
+  X,
+} from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
-type Slot = { slot_key: string; partner_id: string; position: number | null; is_active: boolean | null };
+type Slot = { slot_key: string; partner_id: number; position: number | null; is_active: boolean | null };
 type Partner = {
-  id: string;
+  id: number;
   slug: string;
   name: string;
   category: string | null;
@@ -44,6 +56,7 @@ function PartnersAdminInner() {
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null); // null=신규, number=편집
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
@@ -61,6 +74,12 @@ function PartnersAdminInner() {
   const [features, setFeatures] = useState(DEFAULT_FEATURES);
   const [slotKey, setSlotKey] = useState('');
   const [slotPosition, setSlotPosition] = useState(1);
+
+  // 행별 인라인 슬롯 추가 UI 상태
+  const [addingSlotForPartner, setAddingSlotForPartner] = useState<number | null>(null);
+  const [newSlotKey, setNewSlotKey] = useState('');
+  const [newSlotPosition, setNewSlotPosition] = useState(1);
+  const [rowActionError, setRowActionError] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -81,6 +100,7 @@ function PartnersAdminInner() {
   }, []);
 
   const resetForm = () => {
+    setEditingId(null);
     setSlug('');
     setName('');
     setCategory('');
@@ -96,40 +116,96 @@ function PartnersAdminInner() {
     setSlotPosition(1);
   };
 
+  const startEdit = (p: Partner) => {
+    setEditingId(p.id);
+    setSlug(p.slug);
+    setName(p.name);
+    setCategory(p.category ?? '');
+    setCountry(p.country ?? 'KR');
+    setDescription(p.description ?? '');
+    setLogoUrl(p.logo_url ?? '');
+    setCtaText(p.cta_text ?? '자세히 보기');
+    setCtaUrl(p.cta_url ?? '');
+    setPriority(p.priority ?? 50);
+    setIsActive(p.is_active !== false);
+    setFeatures(
+      p.features == null
+        ? '[]'
+        : typeof p.features === 'string'
+          ? p.features
+          : JSON.stringify(p.features, null, 2),
+    );
+    setSlotKey('');
+    setSlotPosition(1);
+    setShowForm(true);
+    setFormError(null);
+    setFormSuccess(null);
+    // 스크롤 이동
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFormError(null);
     setFormSuccess(null);
     setSubmitting(true);
     try {
-      const body = {
-        slug,
-        name,
-        category: category || null,
-        country,
-        description: description || null,
-        logo_url: logoUrl || null,
-        cta_text: ctaText,
-        cta_url: ctaUrl || null,
-        priority,
-        is_active: isActive,
-        features, // 서버에서 JSON 파싱
-        slot_key: slotKey || null,
-        slot_position: slotPosition,
-      };
-      const res = await fetch('/api/admin/partners', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || 'create failed');
-
-      const warn = json?.slot_warning ? ` (${json.slot_warning})` : '';
-      setFormSuccess(`파트너 '${name}' 생성 완료${warn}`);
-      resetForm();
-      setShowForm(false);
-      await load();
+      if (editingId != null) {
+        // PATCH
+        const body = {
+          slug,
+          name,
+          category: category || null,
+          country,
+          description: description || null,
+          logo_url: logoUrl || null,
+          cta_text: ctaText,
+          cta_url: ctaUrl || null,
+          priority,
+          is_active: isActive,
+          features, // 서버에서 JSON 파싱
+        };
+        const res = await fetch(`/api/admin/partners/${editingId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || 'update failed');
+        setFormSuccess(`파트너 '${name}' 수정 완료`);
+        resetForm();
+        setShowForm(false);
+        await load();
+      } else {
+        // POST
+        const body = {
+          slug,
+          name,
+          category: category || null,
+          country,
+          description: description || null,
+          logo_url: logoUrl || null,
+          cta_text: ctaText,
+          cta_url: ctaUrl || null,
+          priority,
+          is_active: isActive,
+          features,
+          slot_key: slotKey || null,
+          slot_position: slotPosition,
+        };
+        const res = await fetch('/api/admin/partners', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json?.error || 'create failed');
+        const warn = json?.slot_warning ? ` (${json.slot_warning})` : '';
+        setFormSuccess(`파트너 '${name}' 생성 완료${warn}`);
+        resetForm();
+        setShowForm(false);
+        await load();
+      }
     } catch (e) {
       setFormError(String(e instanceof Error ? e.message : e));
     } finally {
@@ -137,13 +213,76 @@ function PartnersAdminInner() {
     }
   };
 
+  const onDelete = async (p: Partner) => {
+    setRowActionError(null);
+    const ok = typeof window !== 'undefined'
+      ? window.confirm(`파트너 '${p.name}' (${p.slug}) 를 삭제합니다.\n연결된 슬롯/클릭 로그도 함께 제거됩니다. (리드는 partner_id=null로 보존)\n계속할까요?`)
+      : false;
+    if (!ok) return;
+    try {
+      const res = await fetch(`/api/admin/partners/${p.id}`, { method: 'DELETE' });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((json as { error?: string })?.error || 'delete failed');
+      setFormSuccess(`파트너 '${p.name}' 삭제 완료`);
+      await load();
+    } catch (e) {
+      setRowActionError(String(e instanceof Error ? e.message : e));
+    }
+  };
+
+  const onRemoveSlot = async (p: Partner, sKey: string) => {
+    setRowActionError(null);
+    const ok = typeof window !== 'undefined'
+      ? window.confirm(`'${p.slug}' 에서 슬롯 '${sKey}' 를 제거합니다. 계속할까요?`)
+      : false;
+    if (!ok) return;
+    try {
+      const res = await fetch(`/api/admin/partners/${p.id}/slots?slot_key=${encodeURIComponent(sKey)}`, {
+        method: 'DELETE',
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((json as { error?: string })?.error || 'slot remove failed');
+      await load();
+    } catch (e) {
+      setRowActionError(String(e instanceof Error ? e.message : e));
+    }
+  };
+
+  const onAddSlot = async (p: Partner) => {
+    setRowActionError(null);
+    if (!newSlotKey) {
+      setRowActionError('슬롯 선택 필요');
+      return;
+    }
+    try {
+      const res = await fetch(`/api/admin/partners/${p.id}/slots`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slot_key: newSlotKey, position: newSlotPosition, is_active: true }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((json as { error?: string })?.error || 'slot add failed');
+      setAddingSlotForPartner(null);
+      setNewSlotKey('');
+      setNewSlotPosition(1);
+      await load();
+    } catch (e) {
+      setRowActionError(String(e instanceof Error ? e.message : e));
+    }
+  };
+
+  const formTitle = editingId != null ? '파트너 편집' : '신규 파트너 등록';
+  const submitLabel = editingId != null
+    ? (submitting ? '수정 중…' : '수정 저장')
+    : (submitting ? '저장 중…' : '저장');
+
   return (
     <div className="max-w-[1440px] mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <Link href="/admin" className="text-xs text-[#0ABAB5] hover:underline">← 관리자 대시보드</Link>
           <h1 className="text-2xl font-bold mt-1">파트너 관리</h1>
-          <p className="text-xs text-[#999999] mt-1">Partner-Agnostic 리드젠 슬롯 운영. 신규 파트너 등록 시 SQL 없이 폼으로 추가.</p>
+          <p className="text-xs text-[#999999] mt-1">Partner-Agnostic 리드젠 슬롯 운영. SQL 없이 폼으로 추가·편집·삭제·슬롯 재매핑.</p>
         </div>
         <div className="flex gap-2">
           <Link
@@ -166,6 +305,7 @@ function PartnersAdminInner() {
           </button>
           <button
             onClick={() => {
+              if (showForm && editingId != null) resetForm();
               setShowForm((v) => !v);
               setFormError(null);
               setFormSuccess(null);
@@ -189,13 +329,35 @@ function PartnersAdminInner() {
           <span className="text-red-700">{formError}</span>
         </div>
       )}
+      {rowActionError && (
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded flex items-start gap-2 text-sm">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+          <span className="text-red-700">{rowActionError}</span>
+        </div>
+      )}
 
       {showForm && (
         <form
           onSubmit={onSubmit}
           className="mb-8 p-5 bg-white border border-[#E5E7EB] rounded-lg space-y-4"
         >
-          <h2 className="font-bold text-sm mb-1">신규 파트너 등록</h2>
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="font-bold text-sm">
+              {formTitle}
+              {editingId != null && (
+                <span className="ml-2 text-xs text-[#999999] font-normal">(id: {editingId})</span>
+              )}
+            </h2>
+            {editingId != null && (
+              <button
+                type="button"
+                onClick={() => { resetForm(); setShowForm(false); }}
+                className="text-xs text-[#666666] hover:underline"
+              >
+                편집 취소
+              </button>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <Field label="slug (URL id, 영소문자/숫자/하이픈)" required>
               <input
@@ -252,35 +414,48 @@ function PartnersAdminInner() {
             />
           </Field>
 
-          <div className="grid grid-cols-3 gap-4 pt-2 border-t border-[#F0F0F0]">
-            <Field label="슬롯 (선택)">
-              <select value={slotKey} onChange={(e) => setSlotKey(e.target.value)} className="input">
-                {SLOT_KEYS.map((k) => (
-                  <option key={k || 'none'} value={k}>
-                    {k || '— 선택 안 함 —'}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            <Field label="슬롯 position">
-              <input
-                type="number"
-                value={slotPosition}
-                onChange={(e) => setSlotPosition(Number(e.target.value) || 1)}
-                className="input"
-                disabled={!slotKey}
-              />
-            </Field>
-            <div className="flex items-end">
+          {editingId == null && (
+            <div className="grid grid-cols-3 gap-4 pt-2 border-t border-[#F0F0F0]">
+              <Field label="슬롯 (선택, 생성 시만)">
+                <select value={slotKey} onChange={(e) => setSlotKey(e.target.value)} className="input">
+                  {SLOT_KEYS.map((k) => (
+                    <option key={k || 'none'} value={k}>
+                      {k || '— 선택 안 함 —'}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+              <Field label="슬롯 position">
+                <input
+                  type="number"
+                  value={slotPosition}
+                  onChange={(e) => setSlotPosition(Number(e.target.value) || 1)}
+                  className="input"
+                  disabled={!slotKey}
+                />
+              </Field>
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full px-4 py-2 bg-[#0ABAB5] text-white text-sm rounded disabled:opacity-50"
+                >
+                  {submitLabel}
+                </button>
+              </div>
+            </div>
+          )}
+          {editingId != null && (
+            <div className="flex justify-end pt-2 border-t border-[#F0F0F0]">
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full px-4 py-2 bg-[#0ABAB5] text-white text-sm rounded disabled:opacity-50"
+                className="px-6 py-2 bg-[#0ABAB5] text-white text-sm rounded disabled:opacity-50"
               >
-                {submitting ? '저장 중…' : '저장'}
+                {submitLabel}
               </button>
             </div>
-          </div>
+          )}
         </form>
       )}
 
@@ -296,20 +471,21 @@ function PartnersAdminInner() {
               <th className="text-left px-4 py-3">상태</th>
               <th className="text-left px-4 py-3">슬롯</th>
               <th className="text-left px-4 py-3">바로가기</th>
+              <th className="text-center px-4 py-3">액션</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={8} className="text-center py-12 text-[#999999]">로딩 중…</td>
+                <td colSpan={9} className="text-center py-12 text-[#999999]">로딩 중…</td>
               </tr>
             ) : partners.length === 0 ? (
               <tr>
-                <td colSpan={8} className="text-center py-12 text-[#999999]">등록된 파트너가 없습니다</td>
+                <td colSpan={9} className="text-center py-12 text-[#999999]">등록된 파트너가 없습니다</td>
               </tr>
             ) : (
               partners.map((p) => (
-                <tr key={p.id} className="border-t border-[#F0F0F0] hover:bg-[#FAFBFC]">
+                <tr key={p.id} className="border-t border-[#F0F0F0] hover:bg-[#FAFBFC] align-top">
                   <td className="px-4 py-2.5 font-mono text-xs">{p.slug}</td>
                   <td className="px-4 py-2.5 font-medium">{p.name}</td>
                   <td className="px-4 py-2.5 text-[#666666]">{p.category || '-'}</td>
@@ -325,11 +501,67 @@ function PartnersAdminInner() {
                       <span className="text-[#999999]">—</span>
                     ) : (
                       p.slots.map((s) => (
-                        <span key={s.slot_key} className="inline-block mr-1 mb-1 px-1.5 py-0.5 bg-[#F5F7FA] border border-[#E5E7EB] rounded">
-                          {s.slot_key}
-                          {s.position != null ? `#${s.position}` : ''}
+                        <span key={s.slot_key} className="inline-flex items-center mr-1 mb-1 px-1.5 py-0.5 bg-[#F5F7FA] border border-[#E5E7EB] rounded">
+                          <span className="font-mono">{s.slot_key}</span>
+                          {s.position != null ? <span className="text-[#999999] ml-1">#{s.position}</span> : null}
+                          <button
+                            type="button"
+                            onClick={() => onRemoveSlot(p, s.slot_key)}
+                            className="ml-1.5 text-[#999999] hover:text-red-600"
+                            aria-label={`${s.slot_key} 슬롯 제거`}
+                            title="슬롯 제거"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
                         </span>
                       ))
+                    )}
+                    {addingSlotForPartner === p.id ? (
+                      <div className="mt-1 flex items-center gap-1">
+                        <select
+                          value={newSlotKey}
+                          onChange={(e) => setNewSlotKey(e.target.value)}
+                          className="text-xs border border-[#E5E7EB] rounded px-1 py-0.5"
+                        >
+                          <option value="">— 슬롯 선택 —</option>
+                          {SLOT_KEYS.filter(Boolean).map((k) => (
+                            <option key={k} value={k}>{k}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          value={newSlotPosition}
+                          onChange={(e) => setNewSlotPosition(Number(e.target.value) || 1)}
+                          className="text-xs border border-[#E5E7EB] rounded px-1 py-0.5 w-12"
+                          title="position"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => onAddSlot(p)}
+                          className="text-xs px-2 py-0.5 bg-[#0ABAB5] text-white rounded"
+                        >
+                          추가
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setAddingSlotForPartner(null); setNewSlotKey(''); }}
+                          className="text-xs px-1.5 py-0.5 text-[#666666] hover:underline"
+                        >
+                          취소
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAddingSlotForPartner(p.id);
+                          setNewSlotKey('');
+                          setNewSlotPosition(1);
+                        }}
+                        className="inline-flex items-center gap-0.5 text-[11px] text-[#0ABAB5] hover:underline ml-1"
+                      >
+                        <Plus className="w-3 h-3" /> 슬롯
+                      </button>
                     )}
                   </td>
                   <td className="px-4 py-2.5">
@@ -341,6 +573,26 @@ function PartnersAdminInner() {
                       열기 <ExternalLink className="w-3 h-3" />
                     </Link>
                   </td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(p)}
+                        className="p-1.5 text-[#666666] hover:text-[#0ABAB5] hover:bg-[#F5F7FA] rounded"
+                        title="편집"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDelete(p)}
+                        className="p-1.5 text-[#666666] hover:text-red-600 hover:bg-red-50 rounded"
+                        title="삭제"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
@@ -349,7 +601,7 @@ function PartnersAdminInner() {
       </div>
 
       <p className="mt-4 text-xs text-[#999999]">
-        Phase 1 scope: 추가만. 편집·삭제·슬롯 재매핑은 Phase 2에서 추가 예정. 급한 경우 Supabase SQL Editor로 처리.
+        Phase 2: 편집·삭제·슬롯 재매핑 지원. 슬롯 삭제 시 즉시 반영. 파트너 삭제 시 slots/clicks 는 CASCADE 로 제거, leads 는 partner_id=null 로 보존.
       </p>
 
       <style jsx>{`

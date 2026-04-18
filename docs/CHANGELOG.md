@@ -1,6 +1,25 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (I) 파트너 편집·삭제 + 슬롯 재매핑 (Phase 2 CRUD 완성)
+
+- **신규 API `app/api/admin/partners/[id]/route.ts`** (admin only, service_role)
+  - PATCH: 부분 필드 업데이트 (slug/name/category/country/description/logo_url/cta_text/cta_url/priority/is_active/features). slug 정규식 재검증, features 는 문자열/객체 모두 허용 (파싱 실패 시 400), `updated_at` 자동 갱신. 중복 slug 충돌은 23505 → 409 메시지로 변환.
+  - DELETE: 파트너 하드 삭제. `partner_slots`/`partner_clicks` 는 ON DELETE CASCADE 로 자동 정리, `partner_leads` 는 ON DELETE SET NULL 로 리드 로그 보존.
+  - Next 16 dynamic route 규약 준수: `{ params }: { params: Promise<{ id: string }> }` + `const { id: idStr } = await params;`
+- **신규 API `app/api/admin/partners/[id]/slots/route.ts`** (admin only)
+  - POST: body `{ slot_key, position?, is_active? }` — 파트너에 슬롯 매핑 추가. slot_key 정규식(`^[a-z0-9-]+$`) 검증, 파트너 존재 확인 후 insert. UNIQUE(slot_key, partner_id) 충돌(23505) → 409.
+  - DELETE: query `?slot_key=xxx` 또는 `?slot_id=NNN` — 해당 매핑만 제거 (partner_id 스코프 유지).
+- **`app/admin/partners/page.tsx` UI Phase 2 확장**
+  - `editingId` 상태: 신규 등록 vs. 편집 모드 분기. 편집 버튼(✏️) 클릭 시 폼을 해당 파트너 필드로 채우고 스크롤 업 → PATCH 제출.
+  - 삭제 버튼(🗑️) + `window.confirm` 가드 → DELETE `/api/admin/partners/{id}` → 성공 배너 + 리스트 갱신.
+  - 슬롯 칩에 ✕ 버튼 추가 → confirm 후 DELETE `/api/admin/partners/{id}/slots?slot_key=xxx`.
+  - 슬롯 칩 행 끝에 "+ 슬롯" 인라인 액션 → 드롭다운(SLOT_KEYS) + position 입력 → POST `/api/admin/partners/{id}/slots`.
+  - 행 align-top / 신규 "액션" 컬럼(9번째) / rowActionError 별도 배너.
+  - 편집 모드에서는 하단 슬롯 영역 비활성(슬롯은 테이블에서 ✕/+ 로 관리) + "편집 취소" 링크 노출.
+- Partner.id 타입을 `string` → `number` (BIGSERIAL 실제 타입과 일치) 정정. Slot 타입 `partner_id: number`.
+- new files: `app/api/admin/partners/[id]/route.ts`, `app/api/admin/partners/[id]/slots/route.ts`
+
 ## [2026-04-18] 세션 #15 — (K) Chrome MCP E2E 5/5 PASS — (G)(H) 검증
 
 - **Task #46** — (G) 슬롯 확장 + (H) 트래킹·대시보드 라이브 검증 전부 통과
