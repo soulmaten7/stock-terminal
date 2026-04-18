@@ -4,7 +4,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { Plus, RefreshCw, ExternalLink, AlertCircle, CheckCircle2, ListOrdered } from 'lucide-react';
+import { Plus, RefreshCw, ExternalLink, AlertCircle, CheckCircle2, ListOrdered, MousePointerClick } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
 type Slot = { slot_key: string; partner_id: string; position: number | null; is_active: boolean | null };
@@ -151,6 +151,12 @@ function PartnersAdminInner() {
             className="px-3 py-2 text-xs border border-[#E5E7EB] rounded flex items-center gap-1.5 hover:bg-[#F5F7FA]"
           >
             <ListOrdered className="w-3.5 h-3.5" /> 리드 대시보드
+          </Link>
+          <Link
+            href="/admin/partners/clicks"
+            className="px-3 py-2 text-xs border border-[#E5E7EB] rounded flex items-center gap-1.5 hover:bg-[#F5F7FA]"
+          >
+            <MousePointerClick className="w-3.5 h-3.5" /> 클릭 대시보드
           </Link>
           <button
             onClick={load}

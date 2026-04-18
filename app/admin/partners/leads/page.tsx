@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Download, RefreshCw, Search } from 'lucide-react';
+import { Download, RefreshCw, Search, MousePointerClick } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
 type Lead = {
@@ -125,6 +125,12 @@ function LeadsAdminInner() {
           <p className="text-xs text-[#999999] mt-1">파트너별·기간별 리드 수집 현황. CSV Export 지원 (UTF-8 BOM 포함).</p>
         </div>
         <div className="flex gap-2">
+          <Link
+            href="/admin/partners/clicks"
+            className="px-3 py-2 text-xs border border-[#E5E7EB] rounded flex items-center gap-1.5 hover:bg-[#F5F7FA]"
+          >
+            <MousePointerClick className="w-3.5 h-3.5" /> 클릭 대시보드
+          </Link>
           <button
             onClick={load}
             className="px-3 py-2 text-xs border border-[#E5E7EB] rounded flex items-center gap-1.5 hover:bg-[#F5F7FA]"

@@ -49,10 +49,15 @@
   - `app/stocks/[symbol]/page.tsx`: StockDetailTabs 아래 `<PartnerSlot slotKey="stock-detail-bottom" />`
   - `components/screener/ScreenerClient.tsx`: Pagination 아래 `<PartnerSlot slotKey="screener-bottom" />`
   - 동작: 슬롯 미매핑 시 `null` 리턴 → 그레이스풀 빈 상태
+- **(H) UTM/클릭 대시보드 + PartnerSlot 트래킹 완료**
+  - (H1) `PartnerSlot.tsx`: `sendBeacon` + `fetch({keepalive:true})` 폴백으로 `/api/partners/clicks` POST
+  - (H2) `/api/admin/partners/clicks`: 4종 집계 (bySlot / byPartner / byDay / recent) + 리드 전환율 (click→lead)
+  - (H2) `/admin/partners/clicks` 페이지: KPI 4카드 + 슬롯별·파트너별 2-col 테이블 + 일자별 ASCII bar (민트·오렌지) + 최근 100건
+  - 교차 네비: partners ↔ leads ↔ clicks 세 페이지 상호 이동 버튼
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (H) UTM/클릭 대시보드 — `partner_clicks` 집계 (슬롯별 CTR, 리드 전환율, 기간별 추이)
-  - (I) 파트너 편집/삭제 기능 (Phase 2)
+  - (I) 파트너 편집/삭제 기능 (Phase 2) — PATCH/DELETE API + 어드민 UI 편집 모달
   - (J) 채팅 사이드바 슬롯 추가 (채팅 페이지 구조 설계 완료 시)
+  - (K) Chrome MCP E2E 검증 — (G) 슬롯 렌더 + (H) 클릭 대시보드 실데이터 / 트래킹 동작
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)

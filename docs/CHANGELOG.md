@@ -1,6 +1,30 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹
+
+- **(H1) PartnerSlot 클릭 트래킹 주입** — `components/partners/PartnerSlot.tsx`
+  - `trackClick()` 헬퍼: `navigator.sendBeacon` 우선, 실패 시 `fetch({ keepalive: true })` 폴백
+  - payload: `{ slug, slotKey, sourcePage: window.location.pathname }` → `POST /api/partners/clicks`
+  - card / compact 두 variant `<Link onClick={trackClick}>` 로 바인딩
+  - 트래킹 실패는 try/catch 로 완전 흡수 → 네비게이션 중단 없음
+- **(H2) 신규 API `app/api/admin/partners/clicks/route.ts`** (admin only, service_role)
+  - GET 필터: `partner_slug` / `slot_key` / `from` / `to` (YYYY-MM-DD)
+  - 집계 4종: `bySlot` (slot_key별 클릭·리드·전환율) / `byPartner` (파트너별) / `byDay` (KST 일자별) / `recent` (최근 100건 raw)
+  - 리드 연결: 동일 기간 `partner_leads` 조회 → `partner_id` 매칭하여 전환율 계산 (클릭 → 리드)
+  - slot별 전환율은 `utm_medium` 이 `slot_key` 와 일치할 때만 계상 (PartnerSlot 생성 URL 규칙 준수)
+- **(H2) 신규 페이지 `app/admin/partners/clicks/page.tsx`** (`AuthGuard minPlan='admin'`)
+  - KPI 4카드: 총 클릭 / 총 리드 / 전체 전환율 / 활성 슬롯
+  - 테이블 2종 (2-col grid): 슬롯별 / 파트너별 집계 (클릭·리드·전환율)
+  - 일자별 추이 카드: ASCII bar (민트=클릭 / 오렌지=리드, maxDayCount 비례)
+  - 최근 클릭 목록 100건 (clicked_at KST · 파트너 2줄 · 슬롯 · source_page truncate)
+  - 필터 4종: 파트너 드롭다운 · 슬롯 키 직접 입력 · 시작/종료일 (기본 -30일 ~ 오늘)
+- **헤더 네비게이션 교차 링크**:
+  - `/admin/partners` → "클릭 대시보드" 버튼 (MousePointerClick 아이콘)
+  - `/admin/partners/leads` → "클릭 대시보드" 버튼
+  - `/admin/partners/clicks` → "리드 대시보드" 버튼
+- new files: `app/api/admin/partners/clicks/route.ts`, `app/admin/partners/clicks/page.tsx`
+
 ## [2026-04-18] 세션 #15 — (G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom)
 
 - **전략 결정**: `/stocks/[symbol]` + `/screener` 모두 사이드바 레이아웃 없음 → 리팩토링 최소화 위해 **하단 풀폭 슬롯** 패턴 채택. 기존 `stock-detail-sidebar` / `toolbox-sidebar` 키는 보존 (DB 데이터 호환).

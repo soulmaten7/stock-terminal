@@ -35,10 +35,35 @@ export default function PartnerSlot({
 
   const href = `/partner/${partner.slug}?utm_source=slot&utm_medium=${encodeURIComponent(slotKey)}`;
 
+  // 2026-04-18 세션 #15 (H1): 클릭 트래킹 (beacon / fetch keepalive)
+  const trackClick = () => {
+    try {
+      const payload = JSON.stringify({
+        slug: partner.slug,
+        slotKey,
+        sourcePage: typeof window !== 'undefined' ? window.location.pathname : null,
+      });
+      if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+        navigator.sendBeacon('/api/partners/clicks', new Blob([payload], { type: 'application/json' }));
+      } else {
+        // 폴백: keepalive fetch (네비게이션 중단 무관)
+        fetch('/api/partners/clicks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    } catch {
+      // 트래킹 실패가 네비게이션 막지 않도록 완전 흡수
+    }
+  };
+
   if (variant === 'compact') {
     return (
       <Link
         href={href}
+        onClick={trackClick}
         className={`block border border-[#E5E7EB] hover:border-[#0ABAB5] rounded-lg p-3 bg-white transition-colors ${className}`}
       >
         <div className="flex items-center gap-3">
@@ -61,6 +86,7 @@ export default function PartnerSlot({
   return (
     <Link
       href={href}
+      onClick={trackClick}
       className={`block border border-[#E5E7EB] hover:border-[#0ABAB5] rounded-xl p-5 bg-white transition-colors ${className}`}
     >
       <div className="flex items-start justify-between gap-3 mb-3">
