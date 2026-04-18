@@ -52,6 +52,15 @@
 
 ## 완료된 세션 히스토리
 
+### 세션 #11 — 2026-04-18 (W2.3 재무·가격 DB 시딩)
+- financials 191건 upsert (KIS API inquire-price, TOP 200 + 005930)
+- stock_prices 52,969건 upsert (FDR DataReader 1Y OHLCV, 200종목 × ~265일, 실패 0)
+- supabase/migrations/007_stock_prices.sql 신규 (테이블 + 3 인덱스 + RLS + 2 POLICY)
+- Supabase Studio 직접 실행 (direct DB connection IPv4 미지원, pooler region 이슈 우회)
+- Chrome MCP 검증: PER 32.91 / PBR 3.38 / EPS 6,564 / BPS 63,997 / 52주 53,700~223,000 KRW 전부 실데이터
+- 미완: ROE (KIS 미제공, W2.4에서 계산식 추가), 배당수익률 (DART corp_codes 시딩 필요)
+- commit: 31f443f push 완료
+
 ### 세션 #10 — 2026-04-18 (W2.1 종목 상세 8탭 재구축)
 - **페이지 재작성**: `app/stocks/[symbol]/page.tsx` 다크 10탭 + AuthGuard → 라이트 8탭 + 비로그인 접근
 - **8탭 표준**: 개요 / 차트 / 호가 / 재무 / 실적 / 뉴스·공시 / 수급 / 비교 (V3 스펙)

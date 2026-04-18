@@ -27,20 +27,26 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #10 (2026-04-18)
-- **W2.1 종목 상세 8탭 재구축** — 기존 `app/stocks/[symbol]/page.tsx` 다크 10탭 + AuthGuard → 라이트 8탭 + 비로그인 접근
-- **V3 표준 8탭**: 개요 / 차트 / 호가 / 재무 / 실적 / 뉴스·공시 / 수급 / 비교
-- **Server/Client 분리**: StockHeader / StockDetailTabs / WatchlistToggle / OverviewTab / OrderbookTab / EarningsTab / NewsDisclosureTab / CompareTab
-- **URL `?tab=` 기반 탭 상태** (뒤로가기/앞으로가기 지원)
-- **라이트 테마 일괄 치환**: 5개 기존 탭 + OrderBook + ExecutionList
-- **보존 파일**: ShortSelling/Insider/Dividend/Sector/Macro (파일 유지, 라우팅만 제외)
-- **Chrome MCP 검증 통과**: darkResidueCount 0, URL 탭 전환 정상, 비로그인 접근 OK
-- **git**: 21 files changed, 커밋 `267e83b` push 완료
+## 가장 최근 세션 — 세션 #11 (2026-04-18)
+- **W2.3 재무·가격 DB 시딩** — KPI 빈 칸 문제 해결
+- financials 191건 upsert (KIS API, TOP 200 + 005930, PER/PBR/EPS/BPS)
+- stock_prices 52,969건 upsert (FDR DataReader 1Y OHLCV, 200종목, 실패 0)
+- migration 007: stock_prices 테이블 + 3 인덱스 + RLS (Supabase Studio 직접 실행)
+- Chrome MCP 검증 통과: PER 32.91 / PBR 3.38 / EPS 6,564 / BPS 63,997 / 52주 53,700~223,000 KRW
+- 미완: ROE (KIS 미제공), 배당수익률 (DART corp_codes 시딩 필요)
+- commit: 31f443f push 완료
 
-## 다음 세션 우선 작업 — W2.2 (개요 탭 실데이터 + DART 인프라)
-- 명령어 파일: `docs/COMMANDS_V3_W2_2_OVERVIEW_DATA.md`
-- 범위: `/api/stocks/overview` 집계 API + `/api/dart/company` 기업개황 + `lib/dart.ts` + `006_dart_corp_codes.sql` + `seed-dart-corpcodes.py` + OverviewTab 실데이터 연동
-- DART 키 없어도 KPI 7개 (배당 제외) + 기본 정보 fallback 동작 — **키 발급은 선택**
+## 다음 세션 우선 작업 — 두 가지 중 선택
+
+**(A) W2.3 보강 — 개요 탭 KPI 7/7 완성** (예상 30분)
+- `python3 scripts/seed-dart-corpcodes.py` → dart_corp_codes 테이블 시딩 (DART_API_KEY 이미 설정됨)
+- ROE 계산식 추가: `roe = eps / bps * 100` (KIS API 는 ROE 미제공, 자체 계산)
+- 배당수익률: DART `/fnlttSinglAcnt` 로 배당금 조회 가능 (선택)
+
+**(B) W2.4 실적 탭 실데이터** (예상 1~2시간)
+- `/api/stocks/earnings` 신규 엔드포인트 (DART 재무제표 API 활용)
+- `EarningsTab.tsx` 실데이터 연동 — 분기/연간 매출·영업이익·순이익 테이블
+- `docs/PRODUCT_SPEC_V3.md` 실적 탭 스펙 참고
 
 ## 세션 #9 (2026-04-18) — 홈 Bento Grid 재구축 + Light Theme 전환
 - **W1.5 홈 재구축** — Header 191px→73px, 네비 6→3개, TickerBar 다크→라이트, HomeClient flex 3단→Bento Grid 초안, `WidgetCard.tsx` 신규
