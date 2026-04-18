@@ -1,6 +1,17 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (J) 채팅 사이드바 하단 PartnerSlot 추가
+
+- **`components/chat/ChatPanel.tsx`** — 입력 div 아래(최하단)에 `<PartnerSlot slotKey="chat-sidebar-bottom" variant="compact" className="mx-2 mb-2" />` 삽입. `import PartnerSlot from '@/components/partners/PartnerSlot';` 추가.
+- ChatPanel 은 `ChatSidebar`(1400px+ aside) + `FloatingChat`(1400px- 플로팅) 양쪽에서 공유되므로 데스크톱·모바일 모두 동일 위치에서 슬롯 표출. 매핑 없으면 `PartnerSlot` 이 `null` 리턴 → 레이아웃 공간 0.
+- **`app/admin/partners/page.tsx` SLOT_KEYS 확장** — `chat-sidebar-bottom` 옵션 추가 (드롭다운 8 옵션). 편집/매핑 UI 그대로 재사용.
+- **Chrome MCP E2E 검증** (1920px viewport):
+  1. `POST /api/admin/partners/4/slots` body `{slot_key:"chat-sidebar-bottom", position:1, is_active:true}` → 200, slot id=6 insert
+  2. `/` 리로드 → ChatSidebar aside 하단에 test-asset compact 카드 렌더 확인 ("테스트 자산운용 · 글로벌 ETF 포트폴리오 + AI 로보어드바이저 서비스 →"), href 에 `utm_medium=chat-sidebar-bottom` 포함
+  3. Console 에러: Supabase auth-js `AbortError: Lock broken` 3건만 (기존 known, 무관)
+- 잔여 QA 매핑: test-asset(id=4) → chat-sidebar-bottom(slot id=6) 은 다음 세션 cleanup 시 정리 대상.
+
 ## [2026-04-18] 세션 #15 — (K-2) Chrome MCP E2E 5/5 PASS — (I) 편집·삭제·슬롯 재매핑 검증
 
 - **Task #48** — 라이브 검증 전부 통과 (`qa-test-bank` id=5 기준)

@@ -13,6 +13,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
 import { useWatchlistStore } from '@/stores/watchlistStore';
 import { useTagMapStore } from '@/stores/tagMapStore';
+// 2026-04-18 세션 #15 (J): 채팅 하단 파트너 슬롯 (compact variant)
+import PartnerSlot from '@/components/partners/PartnerSlot';
 
 // $토큰 분리용 — 한글·영문·숫자. 예: $삼성전자, $005930, $NAVER
 const CONTENT_SPLIT_REGEX = /(\$[가-힣A-Za-z0-9]+)/g;
@@ -272,6 +274,10 @@ export default function ChatPanel({ onClose }: ChatPanelProps = {}) {
           </>
         )}
       </div>
+
+      {/* 2026-04-18 세션 #15 (J): 파트너 슬롯 (채팅 최하단, compact).
+          매핑 없으면 PartnerSlot 이 null 리턴 → 공간 0. */}
+      <PartnerSlot slotKey="chat-sidebar-bottom" variant="compact" className="mx-2 mb-2" />
     </div>
   );
 }

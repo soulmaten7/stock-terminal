@@ -21,7 +21,7 @@
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
 - [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
 - [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
-- [ ] **W4 Phase 2**: ~~/admin/partners CRUD (Phase 1 = 추가만)~~ ~~리드 대시보드~~ ~~슬롯 키 확장 (종목 상세·스크리너 하단)~~ ~~UTM/클릭 대시보드~~ ~~(I) 편집·삭제·슬롯 재매핑~~ 완료 → (추후) 채팅 사이드바 슬롯 · (K-2) 편집·삭제 E2E 검증
+- [x] ~~**W4 Phase 2**: /admin/partners CRUD + 리드 대시보드 + 슬롯 확장 + UTM 대시보드 + 편집·삭제·슬롯 재매핑 + (K/K-2) E2E + (J) 채팅 사이드바 슬롯~~ → 세션 #15 전부 완료
 - [x] ~~**(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체**~~ → 세션 #15 완료 (commit becb74c, home-sidebar-bottom 슬롯에 테스트 자산운용 시드 + HomeClient 회색 박스 제거)
 - [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기, Chrome MCP E2E 5/5 PASS + soulmaten7 admin 승격)
 - [x] ~~**(F) /admin/partners/leads 리드 대시보드 + CSV Export**~~ → 세션 #15 완료 (필터 4종 + KPI 4카드 + UTM TOP5 + 리스트 + CSV BOM 다운로드)
@@ -30,6 +30,7 @@
 - [x] ~~**(K) Chrome MCP E2E 검증 — (G)(H)**~~ → 세션 #15 완료 5/5 PASS (대시보드 렌더 + POST 트래킹 200 OK + 실데이터 반영 + screener/stocks-detail 슬롯 null 렌더)
 - [x] ~~**(I) 파트너 편집·삭제 + 슬롯 재매핑**~~ → 세션 #15 완료 (PATCH/DELETE `/api/admin/partners/[id]` + POST/DELETE `/[id]/slots` + 어드민 UI 편집 버튼·삭제 confirm·슬롯 칩 ✕·인라인 슬롯 추가)
 - [x] ~~**(K-2) Chrome MCP E2E 검증 — (I)**~~ → 세션 #15 완료 5/5 PASS (PATCH 200 + POST slot 200 + 중복 409 + DELETE slot 200 + DELETE partner 200, UI 반영 확인, 콘솔 에러 0)
+- [x] ~~**(J) 채팅 사이드바 하단 PartnerSlot 추가**~~ → 세션 #15 완료 (ChatPanel 최하단 compact + SLOT_KEYS `chat-sidebar-bottom` 추가, Chrome MCP 렌더 확인 — ChatSidebar/FloatingChat 양쪽 공통 반영, 미매핑 시 null)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -62,6 +63,13 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((J) 채팅 사이드바 하단 PartnerSlot)
+- **`components/chat/ChatPanel.tsx`** — 입력 영역 아래 최하단에 `<PartnerSlot slotKey="chat-sidebar-bottom" variant="compact" className="mx-2 mb-2" />` 삽입 (+ import 추가).
+- ChatPanel 은 ChatSidebar(1400px+ aside) + FloatingChat(<1400px 플로팅 위젯) 둘 다에서 공유되므로 데스크톱·모바일 모두 슬롯 노출. 미매핑 파트너 시 `PartnerSlot` null 반환 → 공간 0.
+- **`app/admin/partners/page.tsx` SLOT_KEYS 확장** — `chat-sidebar-bottom` 추가 (드롭다운 8 옵션).
+- Chrome MCP 렌더 검증 (1920px, `/`): test-asset(id=4) → chat-sidebar-bottom(slot id=6) 매핑 후 ChatSidebar aside 최하단에 compact 카드 표출, href 에 `utm_medium=chat-sidebar-bottom` 포함. Console 에러 0 (auth lock AbortError 3건만, 기존 known).
+- QA 잔여: test-asset → chat-sidebar-bottom 매핑 / `/e2e-chrome-mcp-test` 클릭 1건 / E2E lead 2건 → 다음 세션 cleanup 엔드포인트 or 어드민 수동 정리.
 
 ### 세션 #15 — 2026-04-18 ((K-2) Chrome MCP E2E 검증 — (I) 5/5 PASS)
 - Task #48 — 라이브 검증 전부 통과 (qa-test-bank id=5)

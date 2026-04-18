@@ -45,6 +45,7 @@ const SLOT_KEYS = [
   'stock-detail-sidebar',
   'stock-detail-bottom', // 2026-04-18 세션 #15 (G): 종목 상세 하단
   'screener-bottom', // 2026-04-18 세션 #15 (G): 스크리너 하단
+  'chat-sidebar-bottom', // 2026-04-18 세션 #15 (J): 채팅 패널 최하단 (ChatSidebar + FloatingChat 공용)
 ];
 
 const DEFAULT_FEATURES = `[

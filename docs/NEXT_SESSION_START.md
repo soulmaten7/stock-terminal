@@ -27,7 +27,7 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #15 (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I))
+## 가장 최근 세션 — 세션 #15 (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I)(K-2)(J))
 - **W5 더미 제거 1차** — `components/common/ComingSoonCard.tsx` 공통 스켈레톤 + 4개 홈 위젯 교체 (ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule) — commit b8f007d
 - **(D) 홈 Row3 우측 하단 PartnerSlot 교체** (commit becb74c)
   - `supabase/migrations/011_partner_seed_2.sql` — 테스트 자산운용 `test-asset` + `home-sidebar-bottom` 슬롯 (position 1)
@@ -70,9 +70,16 @@
   - PATCH 200 (name·category·description·priority 반영) · POST slot 200 · 중복 409 · DELETE slot 200 · DELETE partner 200 → 목록 3→2행
   - Console 에러 0 (Supabase auth lock 기존 known)
   - 잔여 QA: `/e2e-chrome-mcp-test` 클릭 1건 + E2E lead 2건 → 다음 세션에서 cleanup 엔드포인트로 정리
+- **(J) 채팅 사이드바 하단 PartnerSlot 추가 완료**
+  - `components/chat/ChatPanel.tsx` — 입력 영역 아래 최하단에 `<PartnerSlot slotKey="chat-sidebar-bottom" variant="compact" />`
+  - ChatPanel 은 ChatSidebar(1400px+) + FloatingChat(<1400px) 양쪽에서 공유 → 데스크톱·모바일 공통 반영
+  - `app/admin/partners/page.tsx` SLOT_KEYS 에 `chat-sidebar-bottom` 옵션 추가 (드롭다운 8 옵션)
+  - Chrome MCP 렌더 확인: test-asset → chat-sidebar-bottom 매핑 후 `/` 사이드바 하단에 compact 카드 표출, `utm_medium=chat-sidebar-bottom` 포함
+  - 잔여 QA 매핑: test-asset → chat-sidebar-bottom 은 다음 세션 cleanup 시 정리
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (J) 채팅 사이드바 슬롯 추가 (채팅 페이지 구조 설계 완료 시)
-  - (선택) partner_clicks/leads QA 정리용 admin cleanup 엔드포인트
+  - (선택) partner_clicks/leads/slots QA 정리용 admin cleanup 엔드포인트 or 어드민 수동 정리 (chat-sidebar-bottom 매핑 + /e2e-chrome-mcp-test 클릭 1건 + E2E lead 2건)
+  - W5 Phase 2: #38 EarningsCalendar (DART) / #39 EconomicCalendar (ECOS) 실데이터 연결
+  - 세션 마무리 (푸시 후 사용자 결정)
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)
