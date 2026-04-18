@@ -53,14 +53,20 @@ export async function POST(req: NextRequest) {
   } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: '로그인 필요' }, { status: 401 });
 
-  const { content } = await req.json();
-  if (!content || typeof content !== 'string') {
+  const raw = await req.json().catch(() => null);
+  const content: unknown = raw?.content;
+  if (typeof content !== 'string') {
     return NextResponse.json({ error: '내용 필요' }, { status: 400 });
   }
-  if (content.length > 500) {
+  // 공백·제로폭 문자 제거 후 빈 문자열 차단 (프론트엔드 trim 보완)
+  const trimmed = content.trim();
+  if (trimmed.length === 0) {
+    return NextResponse.json({ error: '내용 필요' }, { status: 400 });
+  }
+  if (trimmed.length > 500) {
     return NextResponse.json({ error: '500자 초과' }, { status: 400 });
   }
-  if (containsBadWord(content)) {
+  if (containsBadWord(trimmed)) {
     return NextResponse.json({ error: '금지어 포함' }, { status: 400 });
   }
 
@@ -75,11 +81,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '분당 5개 초과' }, { status: 429 });
   }
 
-  const stock_tags = await extractStockTags(content, supabase);
+  const stock_tags = await extractStockTags(trimmed, supabase);
 
   const { data, error } = await supabase
     .from('chat_messages')
-    .insert({ user_id: user.id, content, stock_tags })
+    .insert({ user_id: user.id, content: trimmed, stock_tags })
     .select()
     .single();
 
