@@ -11,15 +11,15 @@ const DUMMY = [
 
 export default function WarningStocks() {
   return (
-    <div className="bg-[#0D1117] p-4 border border-[#2D3748] h-full">
-      <h3 className="text-white font-bold text-sm mb-3 flex items-center gap-2">
+    <div className="p-4 h-full">
+      <h3 className="text-black font-bold text-sm mb-3 flex items-center gap-2">
         <AlertTriangle className="w-4 h-4 text-[#FF9500]" /> 투자주의/경고
       </h3>
       <div className="space-y-2">
         {DUMMY.map((s) => (
           <Link key={s.symbol} href={`/stocks/${s.symbol}`}
-            className="flex items-center justify-between py-1.5 hover:bg-[#161B22] px-2 -mx-2">
-            <span className="text-white font-bold text-sm">{s.name}</span>
+            className="flex items-center justify-between py-1.5 hover:bg-[#F5F7FA] px-2 -mx-2 rounded">
+            <span className="text-black font-bold text-sm">{s.name}</span>
             <span className={`text-xs font-bold ${s.color}`}>{s.type}</span>
           </Link>
         ))}

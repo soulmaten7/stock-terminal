@@ -12,59 +12,85 @@ import WarningStocks from './WarningStocks';
 import EconomicCalendar from './EconomicCalendar';
 import IpoSchedule from './IpoSchedule';
 import EarningsCalendar from './EarningsCalendar';
+
+const CARD = 'bg-white border border-[#E5E7EB] rounded-lg overflow-hidden flex flex-col';
+
 export default function HomeClient() {
   useEffect(() => {
-    // Force scroll to top on mount — repeated to beat async widget loading
     const scrollTop = () => window.scrollTo(0, 0);
     scrollTop();
-    const timers = [50, 150, 300, 600, 1000].map(ms => setTimeout(scrollTop, ms));
-    // Also use requestAnimationFrame for immediate paint
+    const timers = [50, 150, 300, 600, 1000].map((ms) => setTimeout(scrollTop, ms));
     requestAnimationFrame(scrollTop);
     return () => timers.forEach(clearTimeout);
   }, []);
 
   return (
-    <div className="flex gap-3 px-4 py-4 mx-auto" style={{ maxWidth: 1920 }}>
-      {/* ═══ Side Panel (280px) ═══ */}
-      <div className="hidden min-[1400px]:flex w-[320px] shrink-0 flex-col gap-3 self-start">
-        <WatchlistLive />
-      </div>
-
-      {/* ═══ Main Content (flex-1) ═══ */}
-      <div className="flex-1 min-w-0">
-        {/* 1층 */}
-        <section className="flex flex-col gap-3 mb-8">
-          <div style={{ minHeight: 360 }}>
-            <BreakingFeed />
+    <div className="mx-auto px-4 py-4" style={{ maxWidth: 1920 }}>
+      <div className="grid gap-3" style={{ gridTemplateColumns: 'minmax(0,1fr) 240px' }}>
+        {/* ═══ 메인 영역: Bento Grid ═══ */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* ROW 1 — 관심종목 | 수급 TOP10 (400px) */}
+          <div className={CARD} style={{ height: 400 }}>
+            <WatchlistLive />
           </div>
-          <div style={{ minHeight: 320 }}>
+          <div className={CARD} style={{ height: 400 }}>
             <InstitutionalFlow />
           </div>
-        </section>
 
-        {/* 2층 */}
-        <section className="bg-[#F8F9FA] p-6 mb-8 border border-[#E5E7EB]">
-          <h2 className="text-xl font-bold text-black mb-6">오늘의 시장</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* ROW 2 — 거래량 급등 | 코스피/코스닥 (300px) */}
+          <div className={CARD} style={{ height: 300 }}>
             <VolumeSpike />
-            <ProgramTrading />
-            <GlobalFutures />
-            <MarketMiniCharts />
-            <WarningStocks />
           </div>
-        </section>
+          <div className={CARD} style={{ height: 300 }}>
+            <MarketMiniCharts />
+          </div>
 
-        {/* 3층 */}
-        <section className="mb-8">
-          <h2 className="text-xl font-bold text-black mb-6">주요 일정</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* ROW 3~5 — 속보 (tall, row-span-3) | 경제지표·IPO·실적 세로 스택 */}
+          <div className={CARD} style={{ height: 924, gridRow: 'span 3' }}>
+            <BreakingFeed />
+          </div>
+          <div className={CARD} style={{ height: 300 }}>
             <EconomicCalendar />
+          </div>
+          <div className={CARD} style={{ height: 300 }}>
             <IpoSchedule />
+          </div>
+          <div className={CARD} style={{ height: 300 }}>
             <EarningsCalendar />
           </div>
-        </section>
-      </div>
 
+          {/* ROW 6 — 프로그램매매 | 글로벌선물 | 경고종목 (col-span-2, 3등분) */}
+          <div className={`${CARD} col-span-2 grid grid-cols-3 gap-0`} style={{ height: 300 }}>
+            <div className="border-r border-[#F0F0F0] overflow-hidden">
+              <ProgramTrading />
+            </div>
+            <div className="border-r border-[#F0F0F0] overflow-hidden">
+              <GlobalFutures />
+            </div>
+            <div className="overflow-hidden">
+              <WarningStocks />
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ 우측: Partner Slot 예약 공간 (240px) ═══ */}
+        <aside className="hidden min-[1400px]:block">
+          <div className="sticky top-[120px] flex flex-col gap-3">
+            <div
+              className="bg-[#F8F9FA] border border-dashed border-[#D1D5DB] rounded-lg flex items-center justify-center text-xs text-[#999999] tracking-widest"
+              style={{ height: 400 }}
+            >
+              PARTNER SLOT<br />(W4)
+            </div>
+            <div
+              className="bg-[#F8F9FA] border border-dashed border-[#D1D5DB] rounded-lg flex items-center justify-center text-xs text-[#999999] tracking-widest"
+              style={{ height: 300 }}
+            >
+              PARTNER SLOT<br />(W4)
+            </div>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

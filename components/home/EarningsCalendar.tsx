@@ -12,7 +12,7 @@ const DUMMY = [
 
 export default function EarningsCalendar() {
   return (
-    <div className="bg-white p-5 border-[3px] border-[#0ABAB5] h-full">
+    <div className="p-5 h-full">
       <h3 className="text-black font-bold text-base mb-4 flex items-center gap-2">
         <BarChart3 className="w-4 h-4 text-[#0ABAB5]" /> 실적 발표 예정
       </h3>

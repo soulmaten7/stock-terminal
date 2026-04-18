@@ -16,7 +16,7 @@ function TVMini({ symbol, label }: { symbol: string; label: string }) {
     script.type = 'text/javascript';
     script.textContent = JSON.stringify({
       symbol, width: '100%', height: '100%', locale: 'kr',
-      dateRange: '1D', colorTheme: 'dark', isTransparent: true, autosize: true,
+      dateRange: '1D', colorTheme: 'light', isTransparent: true, autosize: true,
     });
     container.appendChild(widgetDiv);
     container.appendChild(script);
@@ -32,8 +32,8 @@ function TVMini({ symbol, label }: { symbol: string; label: string }) {
   useEffect(() => { return init(); }, [init]);
 
   return (
-    <div className="bg-[#161B22] border border-[#2D3748] p-2">
-      <p className="text-[#999999] text-xs font-bold mb-1">{label}</p>
+    <div className="bg-[#F5F7FA] border border-[#E5E7EB] p-2 rounded">
+      <p className="text-[#666666] text-xs font-bold mb-1">{label}</p>
       <div ref={ref} style={{ height: 120 }} />
     </div>
   );
@@ -41,8 +41,8 @@ function TVMini({ symbol, label }: { symbol: string; label: string }) {
 
 export default function MarketMiniCharts() {
   return (
-    <div className="bg-[#0D1117] p-4 border border-[#2D3748] h-full">
-      <h3 className="text-white font-bold text-sm mb-3">코스피 / 코스닥</h3>
+    <div className="p-4 h-full">
+      <h3 className="text-black font-bold text-sm mb-3">코스피 / 코스닥</h3>
       <div className="grid grid-cols-2 gap-3">
         <TVMini key="kospi" symbol="KRX:005930" label="삼성전자 (코스피 대표)" />
         <TVMini key="kosdaq" symbol="KRX:247540" label="에코프로비엠 (코스닥 대표)" />

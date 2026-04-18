@@ -88,7 +88,7 @@ export default function BreakingFeed() {
 
   if (!mounted) {
     return (
-      <div className="bg-white border-[3px] border-[#0ABAB5] flex flex-col h-full">
+      <div className="flex flex-col h-full">
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB]">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 bg-[#FF4D4D]" />
@@ -104,7 +104,7 @@ export default function BreakingFeed() {
   }
 
   return (
-    <div className="bg-white border-[3px] border-[#0ABAB5] flex flex-col h-full">
+    <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 bg-[#FF4D4D] animate-pulse" />

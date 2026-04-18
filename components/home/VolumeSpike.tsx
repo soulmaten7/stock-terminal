@@ -43,24 +43,24 @@ export default function VolumeSpike() {
 
   if (!mounted) {
     return (
-      <div className="bg-[#0D1117] p-4 border border-[#2D3748] h-full">
-        <h3 className="text-white font-bold text-sm mb-3">거래량 급등</h3>
+      <div className="p-4 h-full">
+        <h3 className="text-black font-bold text-sm mb-3">거래량 급등</h3>
         <div className="space-y-2">
-          {Array.from({ length: 5 }).map((_, i) => (<div key={i} className="h-6 bg-[#161B22] animate-pulse" />))}
+          {Array.from({ length: 5 }).map((_, i) => (<div key={i} className="h-6 bg-[#F5F7FA] animate-pulse rounded" />))}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#0D1117] p-4 border border-[#2D3748] h-full">
-      <h3 className="text-white font-bold text-sm mb-3">거래량 급등</h3>
+    <div className="p-4 h-full">
+      <h3 className="text-black font-bold text-sm mb-3">거래량 급등</h3>
       <div className="space-y-2">
         {data.map((s) => (
           <Link key={s.symbol} href={`/stocks/${s.symbol}`}
-            className="flex items-center justify-between py-1.5 hover:bg-[#161B22] px-2 -mx-2">
+            className="flex items-center justify-between py-1.5 hover:bg-[#F5F7FA] px-2 -mx-2 rounded">
             <div>
-              <span className="text-white font-bold text-sm">{s.name}</span>
+              <span className="text-black font-bold text-sm">{s.name}</span>
               <span className={`ml-2 font-mono-price text-xs font-bold ${s.changePercent >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                 {s.changePercent >= 0 ? '+' : ''}{s.changePercent.toFixed(1)}%
               </span>

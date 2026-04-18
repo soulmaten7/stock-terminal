@@ -93,7 +93,7 @@ export default function InstitutionalFlow() {
 
   if (!mounted) {
     return (
-      <div className="bg-white border-[3px] border-[#0ABAB5] h-full">
+      <div className="h-full">
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB]">
           <h3 className="text-base font-bold text-black">실시간 수급</h3>
           <span className="text-xs text-[#999999] font-bold">전체 보기 →</span>
@@ -110,7 +110,7 @@ export default function InstitutionalFlow() {
   const hasData = foreignTop.length > 0 || institutionTop.length > 0;
 
   return (
-    <div className="bg-white border-[3px] border-[#0ABAB5] h-full">
+    <div className="h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#E5E7EB]">
         <h3 className="text-base font-bold text-black">실시간 수급 (TOP 10)</h3>
         <Link

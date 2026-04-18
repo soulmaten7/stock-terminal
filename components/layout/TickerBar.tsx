@@ -45,7 +45,7 @@ function TradingViewTickerTape({ country }: { country: string }) {
       showSymbolLogo: true,
       isTransparent: true,
       displayMode: 'adaptive',
-      colorTheme: 'dark',
+      colorTheme: 'light',
       locale: 'kr',
     });
 
@@ -92,7 +92,7 @@ export default function TickerBar() {
   const { country } = useCountryStore();
 
   return (
-    <div className="bg-[#0D1117] border-b border-[#2D3748] h-12 overflow-hidden">
+    <div className="bg-white border-b border-[#E5E7EB] h-10 overflow-hidden">
       {/* key forces full remount on country change */}
       <TradingViewTickerTape key={country} country={country} />
     </div>

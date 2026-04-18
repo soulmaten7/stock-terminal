@@ -83,7 +83,7 @@ export default function WatchlistLive() {
 
   if (!mounted) {
     return (
-      <div className="bg-white border-[3px] border-[#0ABAB5]">
+      <div className="">
         <div className="px-4 py-3 border-b border-[#E5E7EB]">
           <h3 className="text-base font-bold text-black">관심종목</h3>
         </div>
@@ -95,7 +95,7 @@ export default function WatchlistLive() {
   }
 
   return (
-    <div className="bg-white border-[3px] border-[#0ABAB5]">
+    <div className="">
       <div className="px-4 py-3 border-b border-[#E5E7EB]">
         <h3 className="text-base font-bold text-black">관심종목</h3>
       </div>
