@@ -1,6 +1,48 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## 세션 #10 — 2026-04-18 (W2.1 종목 상세 8탭 재구축 + 라이트 테마 + URL 탭 상태 + AuthGuard 제거)
+
+### 구조 변경
+- **`app/stocks/[symbol]/page.tsx` 전면 재작성**: 다크 테마 10탭 + AuthGuard 래핑 → 라이트 테마 8탭 + 비로그인 접근 허용
+- **Server/Client 역할 분리**: `StockHeader.tsx` / `StockDetailTabs.tsx` / `WatchlistToggle.tsx` 로 컴포넌트 분리
+- **URL `?tab=` 기반 탭 상태**: 기존 `useState` → `useSearchParams`, 뒤로가기/앞으로가기 지원
+
+### V3 표준 8탭 (왼쪽부터)
+- 개요 / 차트 / 호가 / 재무 / 실적 / 뉴스·공시 / 수급 / 비교
+
+### 신규 컴포넌트
+- `lib/constants/stock-tabs.ts` — 탭 키 상수 + 타입
+- `components/stocks/StockHeader.tsx`, `StockDetailTabs.tsx`, `WatchlistToggle.tsx`
+- `components/stocks/tabs/OverviewTab.tsx` (KPI 8개 placeholder + 기업개황 placeholder)
+- `components/stocks/tabs/OrderbookTab.tsx` (OrderBook + ExecutionList 2분할, 미국은 안내문)
+- `components/stocks/tabs/EarningsTab.tsx` (placeholder, W2.3)
+- `components/stocks/tabs/NewsDisclosureTab.tsx` (뉴스/공시 서브탭 통합)
+- `components/stocks/tabs/CompareTab.tsx` (placeholder, W2.3)
+
+### 라이트 테마 일괄 치환 (총 7개 파일)
+- 기존 유지 탭 5개: `ChartTab`, `FinancialsTab`, `NewsTab`, `DisclosuresTab`, `SupplyDemandTab`
+- 공용 컴포넌트 2개: `OrderBook`, `ExecutionList`
+- 매핑: `bg-dark-* → bg-white/F5F7FA`, `border-border → border-[#E5E7EB]`, `text-text-* → text-black/666666`, `text-up → [#FF3B30]`, `text-down → [#007AFF]`, `text-accent → [#0ABAB5]`
+
+### 보존된 파일 (V3 범위 외, 라우팅만 제외)
+- `ShortSellingTab`, `InsiderTab`, `DividendTab`, `SectorTab`, `MacroTab` — 파일 보존 (추후 개요/재무 서브섹션 활용 가능)
+
+### 검증 (Chrome MCP)
+- 8탭 순서 정확 ✅
+- `darkResidueCount: 0` (bg-dark/text-text/border-border 전부 제거) ✅
+- body 배경 `rgb(255, 255, 255)` ✅
+- AuthGuard 차단 없음 (비로그인 접근 가능) ✅
+- URL `?tab=chart/orderbook/financials/earnings/news/flow/compare` 모두 전환 정상 ✅
+- 삼성전자 헤더 / AAPL 헤더 정상 ✅
+- 미국 종목 (AAPL) 호가 탭 안내문 "미국 주식은 호가 데이터를 제공하지 않습니다" ✅
+
+### git
+- 21 files changed, 1,135 insertions(+), 256 deletions(-)
+- 커밋 `267e83b` → push 완료
+
+---
+
 ## 세션 #9 — 2026-04-18 (홈 Bento Grid 재구축 + Light Theme 전환 + 블룸버그 T자형 레이아웃)
 
 ### W1.5 — Header/TickerBar 슬림화 + HomeClient Bento Grid 초안

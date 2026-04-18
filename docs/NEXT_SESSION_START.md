@@ -27,7 +27,22 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #9 (2026-04-18)
+## 가장 최근 세션 — 세션 #10 (2026-04-18)
+- **W2.1 종목 상세 8탭 재구축** — 기존 `app/stocks/[symbol]/page.tsx` 다크 10탭 + AuthGuard → 라이트 8탭 + 비로그인 접근
+- **V3 표준 8탭**: 개요 / 차트 / 호가 / 재무 / 실적 / 뉴스·공시 / 수급 / 비교
+- **Server/Client 분리**: StockHeader / StockDetailTabs / WatchlistToggle / OverviewTab / OrderbookTab / EarningsTab / NewsDisclosureTab / CompareTab
+- **URL `?tab=` 기반 탭 상태** (뒤로가기/앞으로가기 지원)
+- **라이트 테마 일괄 치환**: 5개 기존 탭 + OrderBook + ExecutionList
+- **보존 파일**: ShortSelling/Insider/Dividend/Sector/Macro (파일 유지, 라우팅만 제외)
+- **Chrome MCP 검증 통과**: darkResidueCount 0, URL 탭 전환 정상, 비로그인 접근 OK
+- **git**: 21 files changed, 커밋 `267e83b` push 완료
+
+## 다음 세션 우선 작업 — W2.2 (개요 탭 실데이터 + DART 인프라)
+- 명령어 파일: `docs/COMMANDS_V3_W2_2_OVERVIEW_DATA.md`
+- 범위: `/api/stocks/overview` 집계 API + `/api/dart/company` 기업개황 + `lib/dart.ts` + `006_dart_corp_codes.sql` + `seed-dart-corpcodes.py` + OverviewTab 실데이터 연동
+- DART 키 없어도 KPI 7개 (배당 제외) + 기본 정보 fallback 동작 — **키 발급은 선택**
+
+## 세션 #9 (2026-04-18) — 홈 Bento Grid 재구축 + Light Theme 전환
 - **W1.5 홈 재구축** — Header 191px→73px, 네비 6→3개, TickerBar 다크→라이트, HomeClient flex 3단→Bento Grid 초안, `WidgetCard.tsx` 신규
 - **W1.6 라이트 테마 + C안 레이아웃** — 5개 위젯(VolumeSpike/MarketMiniCharts/ProgramTrading/GlobalFutures/WarningStocks) 다크→라이트 전환, TradingView `colorTheme: 'light'` 적용
 - **블룸버그 T자형 레이아웃 (C안)** — 속보피드 `gridRow: span 3` 924px tall + 경제/IPO/실적 세로 스택(300px×3), Row 6 3등분
