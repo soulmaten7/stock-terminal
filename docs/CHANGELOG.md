@@ -1,6 +1,19 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #12 — W2.3 보강 + W2.4 실적 탭 실데이터
+
+- W2.3 보강: DART corp_codes 3,959건 시딩 + ROE 계산식(EPS/BPS×100) 추가
+- /api/dart/company 삼성전자 기업개황 정상 반환
+- ROE 10.26% 개요 탭 표시 (KPI 7/7 완성, 배당수익률만 추후 DART 배당 API 연동 시 보강)
+- W2.4 실적 탭: lib/dart-financial.ts + /api/stocks/earnings + EarningsTab 차트 교체
+- DART fnlttSinglAcntAll.json 연결재무제표 파싱 (매출/영업이익/순이익/마진)
+- 연간 4건 (2022~2025) + 분기 12건 (8분기 이상 확보)
+- 차트: 연간 grouped bar + 분기 line + 마진 line + 상세 테이블
+- Management API SQL executor 구축 (scripts/sql-exec.py) — 앞으로 모든 DDL 자동화
+- Chrome MCP 검증: 개요 KPI 8/8 실데이터, 실적탭 SVG 14개 + 테이블 정상
+- commits: 5c6434e (W2.3 보강), d9102da (W2.4), 88b2add (sql-exec)
+
 ## [2026-04-18] 세션 #11 — W2.3 재무·가격 DB 시딩
 
 - financials 191건 upsert (KIS API, TOP 200 + 005930)

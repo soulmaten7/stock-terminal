@@ -27,26 +27,30 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #11 (2026-04-18)
-- **W2.3 재무·가격 DB 시딩** — KPI 빈 칸 문제 해결
-- financials 191건 upsert (KIS API, TOP 200 + 005930, PER/PBR/EPS/BPS)
-- stock_prices 52,969건 upsert (FDR DataReader 1Y OHLCV, 200종목, 실패 0)
-- migration 007: stock_prices 테이블 + 3 인덱스 + RLS (Supabase Studio 직접 실행)
-- Chrome MCP 검증 통과: PER 32.91 / PBR 3.38 / EPS 6,564 / BPS 63,997 / 52주 53,700~223,000 KRW
-- 미완: ROE (KIS 미제공), 배당수익률 (DART corp_codes 시딩 필요)
-- commit: 31f443f push 완료
+## 가장 최근 세션 — 세션 #12 (2026-04-18)
+- **W2.3 보강**: DART corp_codes 3,959건 + ROE 10.26% 개요 탭 표시 → KPI 7/7 완성
+- **W2.4 실적 탭**: DART fnlttSinglAcntAll 파싱 → annual 4건(2022~2025) + quarters 12건
+- 차트 3종(연간 bar / 분기 line / 마진 line) + 상세 테이블
+- **scripts/sql-exec.py**: PAT 기반 DDL 자동화 파이프라인 구축 — 이후 Studio 불필요
+- Chrome MCP 검증: KPI 8/8 실데이터 + 실적탭 SVG 14개 + 테이블 정상
+- commits: 5c6434e / d9102da / 88b2add push 완료
 
-## 다음 세션 우선 작업 — 두 가지 중 선택
+## 다음 세션 우선 작업 — 세 가지 중 선택
 
-**(A) W2.3 보강 — 개요 탭 KPI 7/7 완성** (예상 30분)
-- `python3 scripts/seed-dart-corpcodes.py` → dart_corp_codes 테이블 시딩 (DART_API_KEY 이미 설정됨)
-- ROE 계산식 추가: `roe = eps / bps * 100` (KIS API 는 ROE 미제공, 자체 계산)
-- 배당수익률: DART `/fnlttSinglAcnt` 로 배당금 조회 가능 (선택)
+**(A) W2.5 비교 탭 실데이터** (예상 1~2시간)
+- `CompareTab.tsx` — 종목 여러 개 재무·가격 나란히 비교
+- `/api/stocks/compare?symbols=005930,000660` 엔드포인트 신규
+- 동일 기간 주가 퍼포먼스 + PER/PBR/ROE 나란히 비교 차트
 
-**(B) W2.4 실적 탭 실데이터** (예상 1~2시간)
-- `/api/stocks/earnings` 신규 엔드포인트 (DART 재무제표 API 활용)
-- `EarningsTab.tsx` 실데이터 연동 — 분기/연간 매출·영업이익·순이익 테이블
-- `docs/PRODUCT_SPEC_V3.md` 실적 탭 스펙 참고
+**(B) W2.6 뉴스·공시 탭 실데이터** (예상 1~2시간)
+- DART `/api/list.json` 공시 목록 연동 (`NewsDisclosureTab.tsx`)
+- 네이버 금융 RSS 또는 ECOS 경제 뉴스 피드 병합
+- 탭 내 뉴스/공시 서브탭 분리
+
+**(C) W3 투자자 도구함 (/toolbox)** (예상 1시간)
+- 10 카테고리 × 5+ 링크 레이아웃
+- `link_hub` 테이블 56건 이미 시딩됨 → UI 연동만 필요
+- `docs/PRODUCT_SPEC_V3.md` 도구함 스펙 참고
 
 ## 세션 #9 (2026-04-18) — 홈 Bento Grid 재구축 + Light Theme 전환
 - **W1.5 홈 재구축** — Header 191px→73px, 네비 6→3개, TickerBar 다크→라이트, HomeClient flex 3단→Bento Grid 초안, `WidgetCard.tsx` 신규

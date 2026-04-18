@@ -52,6 +52,16 @@
 
 ## 완료된 세션 히스토리
 
+### 세션 #12 — 2026-04-18 (W2.3 보강 + W2.4 실적 탭 실데이터)
+- W2.3 보강: DART corp_codes 3,959건 시딩 + ROE 계산식(EPS/BPS×100) 추가 → KPI 7/7 완성
+- /api/dart/company 기업개황 정상 반환 (삼성전자 대표이사·주소·홈페이지·전화)
+- W2.4 실적 탭: lib/dart-financial.ts + /api/stocks/earnings + EarningsTab 차트 교체
+- DART fnlttSinglAcntAll 연결재무제표 파싱 (annual 4건, quarters 12건)
+- 차트: 연간 grouped bar + 분기 line + 마진 line + 상세 테이블
+- scripts/sql-exec.py: Supabase Management API PAT 래퍼 — 이후 모든 DDL 자동화 가능
+- Chrome MCP 검증: KPI 8/8 실데이터, SVG 14개 + 테이블 정상
+- commits: 5c6434e / d9102da / 88b2add push 완료
+
 ### 세션 #11 — 2026-04-18 (W2.3 재무·가격 DB 시딩)
 - financials 191건 upsert (KIS API inquire-price, TOP 200 + 005930)
 - stock_prices 52,969건 upsert (FDR DataReader 1Y OHLCV, 200종목 × ~265일, 실패 0)
