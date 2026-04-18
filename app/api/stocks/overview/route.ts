@@ -78,7 +78,12 @@ export async function GET(req: NextRequest) {
       pbr: fmtNum(latest?.pbr),
       eps: fmtNum(latest?.eps),
       bps: fmtNum(latest?.bps),
-      roe: latest?.roe != null ? fmtNum(latest.roe, '%') : '—',
+      roe: (() => {
+        if (latest?.roe != null) return fmtNum(latest.roe, '%');
+        if (latest?.eps != null && latest?.bps != null && latest.bps !== 0)
+          return fmtNum((latest.eps / latest.bps) * 100, '%');
+        return '—';
+      })(),
       dividendYield: '—',
       yearRange: yearHigh && yearLow
         ? `${yearLow.toLocaleString()} ~ ${yearHigh.toLocaleString()} ${currency}`
