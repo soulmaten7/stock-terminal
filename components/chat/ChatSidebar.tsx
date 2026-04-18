@@ -6,22 +6,35 @@ import { Send, Wifi, WifiOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore, type ChatMessage } from '@/stores/chatStore';
 import { useWatchlistStore } from '@/stores/watchlistStore';
+import { useTagMapStore } from '@/stores/tagMapStore';
 import { createClient } from '@/lib/supabase/client';
 
-function parseContent(content: string) {
-  const parts = content.split(/(\$\d{6})/g);
+// $토큰 분리용 — 한글·영문·숫자. 예: $삼성전자, $005930, $NAVER
+const CONTENT_SPLIT_REGEX = /(\$[가-힣A-Za-z0-9]+)/g;
+const TOKEN_MATCH_REGEX = /^\$([가-힣A-Za-z0-9]+)$/;
+
+function resolveSymbol(token: string, tagMap: Record<string, string>): string | null {
+  if (/^\d{6}$/.test(token)) return token;
+  return tagMap[token] ?? null;
+}
+
+function parseContent(content: string, tagMap: Record<string, string>) {
+  const parts = content.split(CONTENT_SPLIT_REGEX);
   return parts.map((part, i) => {
-    const match = part.match(/^\$(\d{6})$/);
+    const match = part.match(TOKEN_MATCH_REGEX);
     if (match) {
-      return (
-        <Link
-          key={i}
-          href={`/stocks/${match[1]}`}
-          className="text-[#0ABAB5] hover:underline font-bold"
-        >
-          {part}
-        </Link>
-      );
+      const symbol = resolveSymbol(match[1], tagMap);
+      if (symbol) {
+        return (
+          <Link
+            key={i}
+            href={`/stocks/${symbol}`}
+            className="text-[#0ABAB5] hover:underline font-bold"
+          >
+            {part}
+          </Link>
+        );
+      }
     }
     return <span key={i}>{part}</span>;
   });
@@ -35,6 +48,7 @@ export default function ChatSidebar() {
   const { user } = useAuthStore();
   const { messages, filter, hotStocks, isConnected, setMessages, addMessage, setFilter, setHotStocks, setConnected } = useChatStore();
   const { items: watchlist } = useWatchlistStore();
+  const { tagMap, loadTagMap } = useTagMapStore();
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -92,6 +106,11 @@ export default function ChatSidebar() {
     const t = setInterval(fetchHot, 60_000);
     return () => clearInterval(t);
   }, []);
+
+  // Tag map 로드 — 종목명 → symbol 매핑 (채팅 렌더링에 사용)
+  useEffect(() => {
+    loadTagMap();
+  }, [loadTagMap]);
 
   // Auto scroll to bottom on new message
   useEffect(() => {
@@ -196,7 +215,7 @@ export default function ChatSidebar() {
           <div key={msg.id} className="text-xs border-b border-[#F5F5F5] pb-1.5">
             <span className="text-[#999999] text-[10px]">{formatTime(msg.created_at)}</span>
             <p className="text-black leading-relaxed mt-0.5 break-words">
-              {parseContent(msg.content)}
+              {parseContent(msg.content, tagMap)}
             </p>
           </div>
         ))}
@@ -220,7 +239,7 @@ export default function ChatSidebar() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
-              placeholder="$종목코드로 태그 가능"
+              placeholder="$삼성전자 또는 $005930 으로 태그"
               maxLength={500}
               className="flex-1 px-2 py-1.5 bg-[#F5F5F5] border border-[#E5E7EB] text-xs focus:outline-none focus:border-[#0ABAB5]"
             />
