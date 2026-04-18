@@ -23,7 +23,7 @@ export default function NewsDisclosureTab({ stockId, symbol }: { stockId: number
         ))}
       </div>
       {sub === 'news' ? (
-        <NewsTab stockId={stockId} />
+        <NewsTab stockId={stockId} symbol={symbol} />
       ) : (
         <DisclosuresTab stockId={stockId} symbol={symbol} />
       )}

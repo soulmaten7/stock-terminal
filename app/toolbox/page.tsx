@@ -35,10 +35,15 @@ export default async function ToolboxPage() {
   }
 
   type LinkWithFav = NonNullable<typeof links>[number] & { isFavorite: boolean };
+  const allLinks: LinkWithFav[] = (links ?? []).map((link) => ({
+    ...link,
+    isFavorite: favSet.has(link.id),
+  }));
+
   const grouped: Record<string, LinkWithFav[]> = {};
-  for (const link of links ?? []) {
+  for (const link of allLinks) {
     if (!grouped[link.category]) grouped[link.category] = [];
-    grouped[link.category]!.push({ ...link, isFavorite: favSet.has(link.id) });
+    grouped[link.category]!.push(link);
   }
 
   const categories = Object.entries(grouped).map(([slug, items]) => ({
@@ -47,5 +52,16 @@ export default async function ToolboxPage() {
     links: items ?? [],
   }));
 
-  return <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />;
+  // 국가 필터 선택지 구성 (실제 데이터에 존재하는 나라만)
+  const countrySet = new Set<string>();
+  for (const l of allLinks) if (l.country) countrySet.add(l.country);
+  const availableCountries = [...countrySet].sort();
+
+  return (
+    <ToolboxClient
+      initialCategories={categories}
+      availableCountries={availableCountries}
+      isLoggedIn={!!user}
+    />
+  );
 }
