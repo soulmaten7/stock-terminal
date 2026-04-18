@@ -1,6 +1,17 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (L) 클릭/리드 개별 삭제 API + 어드민 UI
+
+- **신규 API `app/api/admin/partners/clicks/[id]/route.ts`** (admin only)
+  - DELETE: `partner_clicks` 개별 레코드 삭제. `requireAdmin()` 게이트 + `createAdminClient()` 로 service_role 하드 삭제. 200 `{ok:true}` / 400 invalid id / 500 DB error.
+- **신규 API `app/api/admin/partners/leads/[id]/route.ts`** (admin only)
+  - DELETE: `partner_leads` 개별 레코드 삭제. 동일 패턴. 파트너 FK `SET NULL` 영향 없음 (리드 자체 삭제).
+- **`app/admin/partners/clicks/page.tsx`** — 최근 클릭 테이블에 "액션" 컬럼 + 🗑️ 버튼 주입. confirm 가드 + `deletingId` 상태 + rowError 배너 + 성공 시 `load()` 재조회.
+- **`app/admin/partners/leads/page.tsx`** — 동일 패턴 (이름 포함 confirm 메시지) + colSpan 8→9 / rowError 배너.
+- 슬롯 매핑 삭제는 (I) 에서 이미 ✕ chip 지원 → 별도 API 불필요.
+- 용도: QA 데이터 정리 (`/e2e-chrome-mcp-test` 클릭, E2E 테스트 리드 2건, test-asset→chat-sidebar-bottom 매핑) + 앞으로 누적될 테스트·실수 데이터 영구 관리 수단.
+
 ## [2026-04-18] 세션 #15 — (J) 채팅 사이드바 하단 PartnerSlot 추가
 
 - **`components/chat/ChatPanel.tsx`** — 입력 div 아래(최하단)에 `<PartnerSlot slotKey="chat-sidebar-bottom" variant="compact" className="mx-2 mb-2" />` 삽입. `import PartnerSlot from '@/components/partners/PartnerSlot';` 추가.

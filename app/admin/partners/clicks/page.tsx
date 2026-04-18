@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { RefreshCw, MousePointerClick } from 'lucide-react';
+import { RefreshCw, MousePointerClick, Trash2 } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
 type Click = {
@@ -48,6 +48,9 @@ function ClicksAdminInner() {
   const [resp, setResp] = useState<ApiResp | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 2026-04-18 세션 #15 (L): 행별 삭제 상태
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [rowError, setRowError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -90,6 +93,23 @@ function ClicksAdminInner() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 2026-04-18 세션 #15 (L): 클릭 레코드 삭제
+  const onDeleteClick = async (clickId: string | number) => {
+    if (!confirm(`클릭 #${clickId} 을(를) 삭제하시겠습니까? (되돌릴 수 없음)`)) return;
+    setRowError(null);
+    setDeletingId(clickId);
+    try {
+      const res = await fetch(`/api/admin/partners/clicks/${clickId}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || 'delete failed');
+      await load();
+    } catch (e) {
+      setRowError(String(e instanceof Error ? e.message : e));
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const maxDayCount = useMemo(() => {
     if (!resp?.byDay?.length) return 1;
@@ -278,6 +298,9 @@ function ClicksAdminInner() {
 
       {/* 최근 클릭 100건 */}
       <Card title={`최근 클릭 ${resp?.recent?.length ?? 0}건`}>
+        {rowError && (
+          <div className="mx-2 mb-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">{rowError}</div>
+        )}
         {resp?.recent?.length ? (
           <table className="w-full text-sm">
             <thead className="bg-[#F5F7FA] text-xs text-[#666666]">
@@ -286,11 +309,12 @@ function ClicksAdminInner() {
                 <th className="text-left px-3 py-2">파트너</th>
                 <th className="text-left px-3 py-2">슬롯</th>
                 <th className="text-left px-3 py-2">source_page</th>
+                <th className="text-right px-3 py-2 w-16">액션</th>
               </tr>
             </thead>
             <tbody>
               {resp.recent.map((c) => (
-                <tr key={String(c.id)} className="border-t border-[#F0F0F0] hover:bg-[#FAFBFC]">
+                <tr key={String(c.id)} className="border-t border-[#F0F0F0] hover:bg-[#FAFBFC] align-top">
                   <td className="px-3 py-2 text-xs text-[#666666] whitespace-nowrap">
                     {new Date(c.clicked_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })}
                   </td>
@@ -307,6 +331,17 @@ function ClicksAdminInner() {
                   <td className="px-3 py-2 text-xs font-mono">{c.slot_key || '—'}</td>
                   <td className="px-3 py-2 text-xs text-[#666666] max-w-[320px] truncate" title={c.source_page || ''}>
                     {c.source_page || '—'}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    <button
+                      onClick={() => onDeleteClick(c.id)}
+                      disabled={deletingId === c.id}
+                      className="p-1 text-[#999999] hover:text-[#FF3B30] hover:bg-red-50 rounded disabled:opacity-40"
+                      title="이 클릭 레코드 삭제"
+                      aria-label="삭제"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </td>
                 </tr>
               ))}

@@ -27,7 +27,7 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #15 (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I)(K-2)(J))
+## 가장 최근 세션 — 세션 #15 (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I)(K-2)(J)(L))
 - **W5 더미 제거 1차** — `components/common/ComingSoonCard.tsx` 공통 스켈레톤 + 4개 홈 위젯 교체 (ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule) — commit b8f007d
 - **(D) 홈 Row3 우측 하단 PartnerSlot 교체** (commit becb74c)
   - `supabase/migrations/011_partner_seed_2.sql` — 테스트 자산운용 `test-asset` + `home-sidebar-bottom` 슬롯 (position 1)
@@ -75,11 +75,15 @@
   - ChatPanel 은 ChatSidebar(1400px+) + FloatingChat(<1400px) 양쪽에서 공유 → 데스크톱·모바일 공통 반영
   - `app/admin/partners/page.tsx` SLOT_KEYS 에 `chat-sidebar-bottom` 옵션 추가 (드롭다운 8 옵션)
   - Chrome MCP 렌더 확인: test-asset → chat-sidebar-bottom 매핑 후 `/` 사이드바 하단에 compact 카드 표출, `utm_medium=chat-sidebar-bottom` 포함
-  - 잔여 QA 매핑: test-asset → chat-sidebar-bottom 은 다음 세션 cleanup 시 정리
-- **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (선택) partner_clicks/leads/slots QA 정리용 admin cleanup 엔드포인트 or 어드민 수동 정리 (chat-sidebar-bottom 매핑 + /e2e-chrome-mcp-test 클릭 1건 + E2E lead 2건)
-  - W5 Phase 2: #38 EarningsCalendar (DART) / #39 EconomicCalendar (ECOS) 실데이터 연결
-  - 세션 마무리 (푸시 후 사용자 결정)
+- **(L) 클릭/리드 개별 삭제 API + 어드민 UI 완료**
+  - 신규: `DELETE /api/admin/partners/clicks/[id]` + `DELETE /api/admin/partners/leads/[id]` (admin only, service_role)
+  - 대시보드 🗑️ 버튼 주입 — `/admin/partners/clicks` 최근 클릭 테이블 + `/admin/partners/leads` 리스트 테이블 (confirm 가드 + deletingId 상태 + rowError 배너)
+  - 슬롯 매핑 삭제는 (I) ✕ chip 으로 커버 → 별도 작업 없음
+  - 영구 관리 수단: QA 데이터 + 향후 테스트 데이터 어드민이 UI 에서 직접 정리
+- **다음 순서 (사용자 지침 "순서대로 다해")**:
+  - W5 Phase 2: #38 EarningsCalendar (DART) → #39 EconomicCalendar (ECOS) 실데이터 연결
+  - (선택) (L) Chrome MCP E2E 삭제 검증
+  - 세션 마무리
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)

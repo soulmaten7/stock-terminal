@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Download, RefreshCw, Search, MousePointerClick } from 'lucide-react';
+import { Download, RefreshCw, Search, MousePointerClick, Trash2 } from 'lucide-react';
 import AuthGuard from '@/components/auth/AuthGuard';
 
 type Lead = {
@@ -43,6 +43,9 @@ function LeadsAdminInner() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 2026-04-18 세션 #15 (L): 행별 삭제 상태
+  const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [rowError, setRowError] = useState<string | null>(null);
 
   // 파트너 옵션 로드 (리드 필터 드롭다운 용)
   useEffect(() => {
@@ -85,6 +88,23 @@ function LeadsAdminInner() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 2026-04-18 세션 #15 (L): 리드 레코드 삭제
+  const onDeleteLead = async (leadId: string | number, name: string) => {
+    if (!confirm(`리드 "${name}" (#${leadId}) 을(를) 삭제하시겠습니까? (되돌릴 수 없음)`)) return;
+    setRowError(null);
+    setDeletingId(leadId);
+    try {
+      const res = await fetch(`/api/admin/partners/leads/${leadId}`, { method: 'DELETE' });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || 'delete failed');
+      await load();
+    } catch (e) {
+      setRowError(String(e instanceof Error ? e.message : e));
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const csvHref = useMemo(() => {
     const params = new URLSearchParams();
@@ -216,6 +236,10 @@ function LeadsAdminInner() {
         </div>
       )}
 
+      {rowError && (
+        <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">{rowError}</div>
+      )}
+
       {/* 리스트 */}
       <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
         <table className="w-full text-sm">
@@ -229,16 +253,17 @@ function LeadsAdminInner() {
               <th className="text-left px-3 py-2">문의</th>
               <th className="text-left px-3 py-2">UTM</th>
               <th className="text-center px-3 py-2">동의</th>
+              <th className="text-right px-3 py-2 w-16">액션</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} className="text-center py-12 text-[#999999]">로딩 중…</td></tr>
+              <tr><td colSpan={9} className="text-center py-12 text-[#999999]">로딩 중…</td></tr>
             ) : leads.length === 0 ? (
-              <tr><td colSpan={8} className="text-center py-12 text-[#999999]">조회된 리드가 없습니다</td></tr>
+              <tr><td colSpan={9} className="text-center py-12 text-[#999999]">조회된 리드가 없습니다</td></tr>
             ) : (
               leads.map((l) => (
-                <tr key={String(l.id)} className="border-t border-[#F0F0F0] hover:bg-[#FAFBFC]">
+                <tr key={String(l.id)} className="border-t border-[#F0F0F0] hover:bg-[#FAFBFC] align-top">
                   <td className="px-3 py-2 text-xs text-[#666666] whitespace-nowrap">
                     {new Date(l.created_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour12: false })}
                   </td>
@@ -267,6 +292,17 @@ function LeadsAdminInner() {
                     {l.consent_marketing ? (
                       <span className="text-[#0ABAB5] font-bold">✓</span>
                     ) : <span className="text-[#CCCCCC]">−</span>}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    <button
+                      onClick={() => onDeleteLead(l.id, l.name)}
+                      disabled={deletingId === l.id}
+                      className="p-1 text-[#999999] hover:text-[#FF3B30] hover:bg-red-50 rounded disabled:opacity-40"
+                      title="이 리드 삭제"
+                      aria-label="삭제"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </td>
                 </tr>
               ))

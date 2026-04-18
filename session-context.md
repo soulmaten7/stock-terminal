@@ -31,6 +31,7 @@
 - [x] ~~**(I) 파트너 편집·삭제 + 슬롯 재매핑**~~ → 세션 #15 완료 (PATCH/DELETE `/api/admin/partners/[id]` + POST/DELETE `/[id]/slots` + 어드민 UI 편집 버튼·삭제 confirm·슬롯 칩 ✕·인라인 슬롯 추가)
 - [x] ~~**(K-2) Chrome MCP E2E 검증 — (I)**~~ → 세션 #15 완료 5/5 PASS (PATCH 200 + POST slot 200 + 중복 409 + DELETE slot 200 + DELETE partner 200, UI 반영 확인, 콘솔 에러 0)
 - [x] ~~**(J) 채팅 사이드바 하단 PartnerSlot 추가**~~ → 세션 #15 완료 (ChatPanel 최하단 compact + SLOT_KEYS `chat-sidebar-bottom` 추가, Chrome MCP 렌더 확인 — ChatSidebar/FloatingChat 양쪽 공통 반영, 미매핑 시 null)
+- [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -63,6 +64,14 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((L) 클릭/리드 개별 삭제 API + 어드민 UI)
+- **신규 API 2종** — `DELETE /api/admin/partners/clicks/[id]` + `DELETE /api/admin/partners/leads/[id]`. 모두 `requireAdmin()` 게이트 + service_role 하드 삭제. 400/401/403/500 표준 응답.
+- **대시보드 UI 확장**:
+  - `/admin/partners/clicks` 최근 클릭 테이블 → "액션" 컬럼 + 🗑️ 버튼 (confirm 가드, deletingId 비활성 상태, rowError 배너)
+  - `/admin/partners/leads` 리스트 테이블 → 동일 패턴 (이름 포함 confirm 메시지, colSpan 8→9)
+- 슬롯 매핑 삭제는 (I) 의 ✕ chip 버튼으로 이미 지원 → 별도 작업 불필요
+- QA 데이터 + 앞으로 쌓일 테스트·실수 데이터 영구 관리 수단 확보. Chrome MCP E2E 는 블록 4/4 에서 함께 수행 or 별도 세션에 이관
 
 ### 세션 #15 — 2026-04-18 ((J) 채팅 사이드바 하단 PartnerSlot)
 - **`components/chat/ChatPanel.tsx`** — 입력 영역 아래 최하단에 `<PartnerSlot slotKey="chat-sidebar-bottom" variant="compact" className="mx-2 mb-2" />` 삽입 (+ import 추가).
