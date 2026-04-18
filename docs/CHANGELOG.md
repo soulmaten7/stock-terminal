@@ -1,6 +1,17 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (K) Chrome MCP E2E 5/5 PASS — (G)(H) 검증
+
+- **Task #46** — (G) 슬롯 확장 + (H) 트래킹·대시보드 라이브 검증 전부 통과
+  1. `/admin/partners/clicks` 초기 렌더 — 필터 4종·KPI 4카드·3테이블·최근 목록 전부 표출, 데이터 없음 상태 문구 정상
+  2. `POST /api/partners/clicks` — 200 OK / `{ok:true}` / Supabase insert 확인
+  3. 대시보드 실데이터 반영 — 총 클릭 `1` / 총 리드 `2` / 전환율 `200.0%` (리드>클릭 히스토리) / bySlot `home-row3-left:1 click, 0 lead, 0.0%` / byPartner `test · 테스트 증권 · 1/2/200%` / byDay `2026-04-18 click 1 lead 2` / 최근 1건 `21:03:37 · test · home-row3-left · /e2e-chrome-mcp-test`
+  4. `/screener` 하단 PartnerSlot — `screener-bottom` 슬롯 매핑 없음 → API `{partners:[]}` → null 렌더, 에러 0
+  5. `/stocks/005930` 하단 PartnerSlot — `stock-detail-bottom` 슬롯 매핑 없음 → null 렌더, 페이지 "삼성전자" 헤더 정상
+- Console 에러: Supabase auth-js 라이브러리 내부 Navigator Locks `AbortError: Lock broken ... 'steal' option` 2건만 관찰 — 기존 known 경고, 본 작업과 무관
+- 잔여 QA 데이터: `partner_clicks` 1건 (source_page `/e2e-chrome-mcp-test`) 유지 — 편집/삭제 API Phase 2에서 정리 가능
+
 ## [2026-04-18] 세션 #15 — (H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹
 
 - **(H1) PartnerSlot 클릭 트래킹 주입** — `components/partners/PartnerSlot.tsx`

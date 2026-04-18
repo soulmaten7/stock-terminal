@@ -54,10 +54,17 @@
   - (H2) `/api/admin/partners/clicks`: 4종 집계 (bySlot / byPartner / byDay / recent) + 리드 전환율 (click→lead)
   - (H2) `/admin/partners/clicks` 페이지: KPI 4카드 + 슬롯별·파트너별 2-col 테이블 + 일자별 ASCII bar (민트·오렌지) + 최근 100건
   - 교차 네비: partners ↔ leads ↔ clicks 세 페이지 상호 이동 버튼
+- **(K) Chrome MCP E2E (G)(H) 검증 5/5 PASS**
+  - /admin/partners/clicks 대시보드 초기 렌더 ✅
+  - POST /api/partners/clicks 200 OK + DB insert ✅
+  - 대시보드 실데이터: KPI / bySlot / byPartner / byDay ASCII bar / 최근 목록 전부 반영 ✅
+  - /screener 하단 PartnerSlot null 렌더 ✅
+  - /stocks/005930 하단 PartnerSlot null 렌더 ✅
+  - Console 에러 0 (Supabase auth lock AbortError 기존 known)
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (I) 파트너 편집/삭제 기능 (Phase 2) — PATCH/DELETE API + 어드민 UI 편집 모달
+  - (I) 파트너 편집/삭제 기능 (Phase 2) — PATCH/DELETE API + 어드민 UI 편집 모달 + 슬롯 재매핑
   - (J) 채팅 사이드바 슬롯 추가 (채팅 페이지 구조 설계 완료 시)
-  - (K) Chrome MCP E2E 검증 — (G) 슬롯 렌더 + (H) 클릭 대시보드 실데이터 / 트래킹 동작
+  - 테스트 클릭 QA 데이터(`/e2e-chrome-mcp-test` 1건) 정리 — 편집/삭제 API 완료 후
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)

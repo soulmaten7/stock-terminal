@@ -27,6 +27,7 @@
 - [x] ~~**(F) /admin/partners/leads 리드 대시보드 + CSV Export**~~ → 세션 #15 완료 (필터 4종 + KPI 4카드 + UTM TOP5 + 리스트 + CSV BOM 다운로드)
 - [x] ~~**(G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom)**~~ → 세션 #15 완료 (SLOT_KEYS 7옵션 + `/stocks/[symbol]` 하단 + `/screener` 하단 PartnerSlot 주입, 빈 상태=null 렌더)
 - [x] ~~**(H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹**~~ → 세션 #15 완료 (H1: sendBeacon + fetch keepalive 폴백 / H2: `/admin/partners/clicks` 슬롯별·파트너별·일자별 집계 + 전환율 + 최근 100건)
+- [x] ~~**(K) Chrome MCP E2E 검증 — (G)(H)**~~ → 세션 #15 완료 5/5 PASS (대시보드 렌더 + POST 트래킹 200 OK + 실데이터 반영 + screener/stocks-detail 슬롯 null 렌더)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -59,6 +60,15 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((K) Chrome MCP E2E 검증 — (G)(H) 5/5 PASS)
+- Task #46 — 라이브 검증 통과
+  1. /admin/partners/clicks 초기 렌더: 필터·KPI·테이블·최근 목록 전부 표출
+  2. POST /api/partners/clicks: 200 OK + DB insert 확인 (`/e2e-chrome-mcp-test` source_page)
+  3. 대시보드 실데이터: 총 1 클릭 · 슬롯별 · 파트너별 · 일자별 ASCII bar · 최근 1건 KST 모두 정상
+  4. /screener 하단 PartnerSlot: `screener-bottom` 매핑 없음 → null 렌더
+  5. /stocks/005930 하단 PartnerSlot: `stock-detail-bottom` 매핑 없음 → null 렌더
+- Console 에러 0 (Supabase auth lock AbortError 2건은 기존 known)
 
 ### 세션 #15 — 2026-04-18 ((H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹)
 - **(H1) PartnerSlot 트래킹 주입** — `navigator.sendBeacon` 우선, 실패 시 `fetch keepalive` 폴백. payload: `{slug, slotKey, sourcePage}`. 트래킹 실패는 try/catch 완전 흡수 (네비게이션 영향 없음)
