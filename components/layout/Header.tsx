@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/client';
 const NAV_ITEMS = [
   { href: '/', label: '홈' },
   { href: '/screener', label: '스크리너' },
-  { href: '/link-hub', label: '도구함' },
+  { href: '/toolbox', label: '도구함' },
 ];
 
 const COUNTRIES: { code: Country; name: string; flag: string }[] = [
