@@ -32,7 +32,7 @@ function getTypeBadgeColor(type: string | null): string {
     case 'CB발행': return 'bg-yellow-500/20 text-yellow-400';
     case '대주주변동': return 'bg-purple-500/20 text-purple-400';
     case '합병분할': return 'bg-orange-500/20 text-orange-400';
-    default: return 'bg-dark-800 text-text-secondary';
+    default: return 'bg-[#F5F7FA] text-[#666666]';
   }
 }
 
@@ -87,7 +87,7 @@ export default function DisclosuresTab({ stockId, symbol }: DisclosuresTabProps)
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-6 h-6 border-2 border-accent border-t-transparent rounded-full" />
+        <div className="animate-spin w-6 h-6 border-2 border-[#0ABAB5] border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -102,8 +102,8 @@ export default function DisclosuresTab({ stockId, symbol }: DisclosuresTabProps)
             onClick={() => setFilter(ft.key)}
             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
               filter === ft.key
-                ? 'bg-accent text-white'
-                : 'bg-dark-700 text-text-secondary hover:text-text-primary'
+                ? 'bg-[#0ABAB5] text-white'
+                : 'bg-[#F5F7FA] text-[#666666] hover:text-black'
             }`}
           >
             {ft.label}
@@ -112,17 +112,17 @@ export default function DisclosuresTab({ stockId, symbol }: DisclosuresTabProps)
       </div>
 
       {disclosures.length === 0 ? (
-        <div className="text-center text-text-secondary py-20">
+        <div className="text-center text-[#666666] py-20">
           공시 데이터가 없습니다.
         </div>
       ) : (
         <div className="space-y-3">
           {disclosures.map((d) => (
-            <div key={d.id} className="bg-dark-700 rounded-lg border border-border p-4">
+            <div key={d.id} className="bg-white rounded-lg border border-[#E5E7EB] p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-text-secondary text-xs font-mono-price">
+                    <span className="text-[#666666] text-xs font-mono-price">
                       {formatDate(d.published_at)}
                     </span>
                     {d.disclosure_type && (
@@ -131,9 +131,9 @@ export default function DisclosuresTab({ stockId, symbol }: DisclosuresTabProps)
                       </span>
                     )}
                   </div>
-                  <p className="text-text-primary text-sm font-medium">{d.title}</p>
+                  <p className="text-black text-sm font-medium">{d.title}</p>
                   {d.ai_summary && (
-                    <p className="text-text-secondary text-xs mt-2 leading-relaxed">{d.ai_summary}</p>
+                    <p className="text-[#666666] text-xs mt-2 leading-relaxed">{d.ai_summary}</p>
                   )}
                 </div>
                 {d.source_url && (
@@ -141,7 +141,7 @@ export default function DisclosuresTab({ stockId, symbol }: DisclosuresTabProps)
                     href={d.source_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-text-secondary hover:text-accent transition-colors shrink-0"
+                    className="text-[#666666] hover:text-[#0ABAB5] transition-colors shrink-0"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
@@ -157,10 +157,10 @@ export default function DisclosuresTab({ stockId, symbol }: DisclosuresTabProps)
           <button
             onClick={() => loadDisclosures(false)}
             disabled={loadingMore}
-            className="inline-flex items-center gap-2 px-6 py-2 bg-dark-700 text-text-secondary hover:text-text-primary rounded-lg border border-border transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-6 py-2 bg-[#F5F7FA] text-[#666666] hover:text-black rounded-lg border border-border transition-colors disabled:opacity-50"
           >
             {loadingMore ? (
-              <div className="animate-spin w-4 h-4 border-2 border-accent border-t-transparent rounded-full" />
+              <div className="animate-spin w-4 h-4 border-2 border-[#0ABAB5] border-t-transparent rounded-full" />
             ) : (
               <ChevronDown className="w-4 h-4" />
             )}

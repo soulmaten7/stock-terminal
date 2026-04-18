@@ -43,14 +43,14 @@ export default function SupplyDemandTab({ stockId }: SupplyDemandTabProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-6 h-6 border-2 border-accent border-t-transparent rounded-full" />
+        <div className="animate-spin w-6 h-6 border-2 border-[#0ABAB5] border-t-transparent rounded-full" />
       </div>
     );
   }
 
   if (data.length === 0) {
     return (
-      <div className="text-center text-text-secondary py-20">
+      <div className="text-center text-[#666666] py-20">
         수급 데이터가 없습니다.
       </div>
     );
@@ -103,16 +103,16 @@ export default function SupplyDemandTab({ stockId }: SupplyDemandTabProps) {
       )}
 
       {/* Net Trading Chart */}
-      <div className="bg-dark-700 rounded-lg border border-border p-4">
-        <h3 className="text-text-primary font-semibold mb-4">투자자별 순매수 추이</h3>
+      <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+        <h3 className="text-black font-semibold mb-4">투자자별 순매수 추이</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
             <XAxis dataKey="date" tick={{ fill: '#999', fontSize: 12 }} />
             <YAxis tick={{ fill: '#999', fontSize: 12 }} />
             <Tooltip
-              contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '8px' }}
-              labelStyle={{ color: '#fff' }}
+              contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
+              labelStyle={{ color: '#000' }}
             />
             <Legend />
             <Line type="monotone" dataKey="외국인" stroke="#FF3B30" strokeWidth={2} dot={false} />
@@ -123,16 +123,16 @@ export default function SupplyDemandTab({ stockId }: SupplyDemandTabProps) {
       </div>
 
       {/* Cumulative Foreign Chart */}
-      <div className="bg-dark-700 rounded-lg border border-border p-4">
-        <h3 className="text-text-primary font-semibold mb-4">외국인 누적 순매수</h3>
+      <div className="bg-white rounded-lg border border-[#E5E7EB] p-4">
+        <h3 className="text-black font-semibold mb-4">외국인 누적 순매수</h3>
         <ResponsiveContainer width="100%" height={250}>
           <LineChart data={cumulativeChartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
             <XAxis dataKey="date" tick={{ fill: '#999', fontSize: 12 }} />
             <YAxis tick={{ fill: '#999', fontSize: 12 }} />
             <Tooltip
-              contentStyle={{ backgroundColor: '#1a1a24', border: '1px solid #2a2a3a', borderRadius: '8px' }}
-              labelStyle={{ color: '#fff' }}
+              contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #E5E7EB', borderRadius: '8px' }}
+              labelStyle={{ color: '#000' }}
             />
             <Line type="monotone" dataKey="외국인누적" stroke="#FF9500" strokeWidth={2} dot={false} />
           </LineChart>
@@ -140,10 +140,10 @@ export default function SupplyDemandTab({ stockId }: SupplyDemandTabProps) {
       </div>
 
       {/* Detail Table */}
-      <div className="bg-dark-700 rounded-lg border border-border overflow-x-auto">
+      <div className="bg-dark-700 rounded-lg border border-[#E5E7EB] overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border text-text-secondary text-left">
+            <tr className="border-b border-[#E5E7EB] text-[#666666] text-left">
               <th className="p-3">일자</th>
               <th className="p-3 text-right">외국인</th>
               <th className="p-3 text-right">기관</th>
@@ -154,21 +154,21 @@ export default function SupplyDemandTab({ stockId }: SupplyDemandTabProps) {
           </thead>
           <tbody>
             {[...data].reverse().map((d) => (
-              <tr key={d.id} className="border-b border-border/50 hover:bg-dark-800/50">
-                <td className="p-3 text-text-primary">{formatDate(d.trade_date)}</td>
-                <td className={`p-3 text-right font-mono-price ${(d.foreign_net ?? 0) >= 0 ? 'text-up' : 'text-down'}`}>
+              <tr key={d.id} className="border-b border-[#E5E7EB] hover:bg-[#F5F7FA]">
+                <td className="p-3 text-black">{formatDate(d.trade_date)}</td>
+                <td className={`p-3 text-right font-mono-price ${(d.foreign_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {formatNumber(d.foreign_net)}
                 </td>
-                <td className={`p-3 text-right font-mono-price ${(d.institution_net ?? 0) >= 0 ? 'text-up' : 'text-down'}`}>
+                <td className={`p-3 text-right font-mono-price ${(d.institution_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {formatNumber(d.institution_net)}
                 </td>
-                <td className={`p-3 text-right font-mono-price ${(d.individual_net ?? 0) >= 0 ? 'text-up' : 'text-down'}`}>
+                <td className={`p-3 text-right font-mono-price ${(d.individual_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {formatNumber(d.individual_net)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-3 text-right font-mono-price text-black">
                   {formatNumber(d.foreign_cumulative)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-secondary">
+                <td className="p-3 text-right font-mono-price text-[#666666]">
                   {formatNumber(d.program_net)}
                 </td>
               </tr>

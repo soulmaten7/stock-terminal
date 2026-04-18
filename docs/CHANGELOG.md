@@ -1,6 +1,34 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## 세션 #9 — 2026-04-18 (홈 Bento Grid 재구축 + Light Theme 전환 + 블룸버그 T자형 레이아웃)
+
+### W1.5 — Header/TickerBar 슬림화 + HomeClient Bento Grid 초안
+- **`components/layout/Header.tsx`** 전면 교체: 191px 2단 구조 → 단일 73px, 네비 6개 → 3개 (홈/스크리너/도구함), 민트 리본 제거
+- **`components/layout/TickerBar.tsx`**: `colorTheme: 'dark' → 'light'`, `bg-[#0D1117] h-12 → bg-white h-10`
+- **`components/home/HomeClient.tsx`**: flex 3단 구조 → `grid-cols-2` 5행 Bento 초안
+- **`components/home/WidgetCard.tsx`** 신규: 모든 위젯 공통 래퍼 (bg-white + border-[#E5E7EB])
+
+### W1.6 — 5개 위젯 다크→라이트 전환 + C안 T자형 레이아웃 적용
+- **색상 매핑**: `bg-[#0D1117]` 제거, `bg-[#161B22] → bg-[#F5F7FA]`, `border-[#2D3748] → border-[#E5E7EB]`, `text-white → text-black`, 부가 텍스트 `text-[#666666]`
+- **대상 위젯**: VolumeSpike, MarketMiniCharts, ProgramTrading, GlobalFutures, WarningStocks
+- **MarketMiniCharts**: TradingView `colorTheme: 'light'` + `isTransparent: true` 전환
+- **HomeClient.tsx C안 레이아웃** (블룸버그 T자형):
+  - Row 3~5: 속보피드 `gridRow: span 3` (924px tall) | 경제지표/IPO/실적발표 세로 스택 (각 300px)
+  - Row 6: 프로그램매매 / 글로벌선물 / 투자경고 각 `col-span-2` 균등 3등분
+
+### 검증 (Chrome MCP)
+- 다크 잔재 (`bg-[#0D1117]` / `bg-[#161B22]`) 카운트: **0** ✅
+- 속보피드 실측: y=853, **height=924px** (row-span-3 작동)
+- 경제/IPO/실적 x=997 정렬, 각 300px 세로 스택 확인
+- Row 6 3등분 y=1789 정렬 확인
+- 페이지 높이 2,579px, 첫 화면 위젯 8개
+
+### git
+- W1.5 + W1.6 통합 푸시: 17 files changed (main 브랜치)
+
+---
+
 ## 세션 #8 — 2026-04-18 (V3 제품 스펙 전면 개정 + 전략 방향 확정)
 
 ### 전략 결정 (대화를 통한 합의)

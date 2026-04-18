@@ -27,7 +27,14 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #8 (2026-04-18)
+## 가장 최근 세션 — 세션 #9 (2026-04-18)
+- **W1.5 홈 재구축** — Header 191px→73px, 네비 6→3개, TickerBar 다크→라이트, HomeClient flex 3단→Bento Grid 초안, `WidgetCard.tsx` 신규
+- **W1.6 라이트 테마 + C안 레이아웃** — 5개 위젯(VolumeSpike/MarketMiniCharts/ProgramTrading/GlobalFutures/WarningStocks) 다크→라이트 전환, TradingView `colorTheme: 'light'` 적용
+- **블룸버그 T자형 레이아웃 (C안)** — 속보피드 `gridRow: span 3` 924px tall + 경제/IPO/실적 세로 스택(300px×3), Row 6 3등분
+- **Chrome MCP 검증**: darkResidueCount 0, 좌표/높이 전부 C안 일치, 페이지 높이 2,579px, 첫 화면 8개 위젯
+- **git**: W1.5 + W1.6 통합 푸시 (17 files changed, main 브랜치)
+
+## 세션 #8 (2026-04-18)
 - **V3 제품 스펙 확정** — `docs/PRODUCT_SPEC_V3.md` 신규 작성
 - **전략 방향 확정** — Aspirational Design, Bento Grid, 단일 채팅, Partner-Agnostic Lead Gen
 - **Phase 1 실행 명령어** — `docs/COMMANDS_V3_PHASE1.md` 작성

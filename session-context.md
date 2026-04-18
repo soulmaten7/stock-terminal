@@ -52,6 +52,21 @@
 
 ## 완료된 세션 히스토리
 
+### 세션 #9 — 2026-04-18 (홈 Bento Grid 재구축 + Light Theme 전환)
+- **W1.5 — Header/TickerBar 슬림화 + HomeClient Bento 초안:**
+  - `Header.tsx` 191px 2단 → 단일 73px, 네비 6→3개 (홈/스크리너/도구함), 민트 리본 제거
+  - `TickerBar.tsx` 다크 48px → 라이트 40px (`colorTheme: 'light'`, `isTransparent: true`)
+  - `HomeClient.tsx` flex 3단 → `grid-cols-2` 5행 Bento Grid 초안
+  - `WidgetCard.tsx` 신규 공통 래퍼 (bg-white + border-[#E5E7EB])
+- **W1.6 — 5개 위젯 다크→라이트 + C안 T자형 레이아웃:**
+  - 대상 위젯: VolumeSpike, MarketMiniCharts, ProgramTrading, GlobalFutures, WarningStocks
+  - 색상 매핑: `bg-[#0D1117]` 제거, `bg-[#161B22]→bg-[#F5F7FA]`, `border-[#2D3748]→border-[#E5E7EB]`, `text-white→text-black`, 부가 `text-[#666666]`
+  - MarketMiniCharts TradingView `colorTheme: 'light'` 전환
+  - **C안 블룸버그 T자형 레이아웃**: 속보피드 `gridRow: span 3` (924px tall) | 경제/IPO/실적 세로 스택 (각 300px)
+  - Row 6: 프로그램매매 / 글로벌선물 / 투자경고 각 col-span-2 3등분
+- **Chrome MCP 검증:** darkResidueCount 0, 속보 y=853 height=924, 경제/IPO/실적 x=997 세로 스택, 페이지 높이 2,579px, 첫 화면 8개 위젯
+- **git:** W1.5 + W1.6 통합 푸시 17 files changed (main)
+
 ### 세션 #8 — 2026-04-18 (V3 제품 스펙 전면 개정)
 - **전략 방향 확정 (대화):**
   - "전업투자자 = 일반인 (상위 1%)" Aspirational Design 포지셔닝

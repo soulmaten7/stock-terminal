@@ -41,11 +41,11 @@ function TradingViewChart({ symbol, market, country }: ChartTabProps) {
       symbol: tvSymbol,
       interval: 'D',
       timezone: 'Asia/Seoul',
-      theme: 'dark',
+      theme: 'light',
       style: '1',
       locale: 'kr',
-      backgroundColor: 'rgba(17, 17, 23, 1)',
-      gridColor: 'rgba(255, 255, 255, 0.06)',
+      backgroundColor: 'rgba(255, 255, 255, 1)',
+      gridColor: 'rgba(0, 0, 0, 0.06)',
       allow_symbol_change: false,
       calendar: false,
       support_host: 'https://www.tradingview.com',
@@ -95,7 +95,7 @@ function TradingViewChart({ symbol, market, country }: ChartTabProps) {
 
 export default function ChartTab({ symbol, market, country }: ChartTabProps) {
   return (
-    <div className="bg-dark-700 rounded-lg border border-border overflow-hidden">
+    <div className="bg-white rounded-lg border border-[#E5E7EB] overflow-hidden">
       {/* key forces full remount when symbol changes */}
       <TradingViewChart
         key={`${symbol}-${market}-${country}`}

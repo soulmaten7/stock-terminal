@@ -31,11 +31,11 @@ export default function OrderBook({ symbol }: { symbol: string }) {
 
   if (loading) {
     return (
-      <div className="bg-[#0D1117] border border-[#2D3748] p-4 h-full">
-        <h3 className="text-white font-bold text-sm mb-3">호가</h3>
+      <div className="p-4 h-full">
+        <h3 className="text-black font-bold text-sm mb-3">호가</h3>
         <div className="space-y-1">
           {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="h-5 bg-[#161B22] animate-pulse" />
+            <div key={i} className="h-5 bg-[#F5F7FA] animate-pulse rounded" />
           ))}
         </div>
       </div>
@@ -43,8 +43,8 @@ export default function OrderBook({ symbol }: { symbol: string }) {
   }
 
   return (
-    <div className="bg-[#0D1117] border border-[#2D3748] p-3 h-full overflow-y-auto">
-      <h3 className="text-white font-bold text-sm mb-2">호가</h3>
+    <div className="p-3 h-full overflow-y-auto">
+      <h3 className="text-black font-bold text-sm mb-2">호가</h3>
       <div className="space-y-px">
         {/* Asks (매도) — 위에서 아래로 */}
         {asks.map((a, i) => (
