@@ -1,6 +1,17 @@
 <!-- 2026-04-18 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-18] 세션 #15 — (K-2) Chrome MCP E2E 5/5 PASS — (I) 편집·삭제·슬롯 재매핑 검증
+
+- **Task #48** — 라이브 검증 전부 통과 (`qa-test-bank` id=5 기준)
+  1. PATCH `/api/admin/partners/5` (4필드: name·category·description·priority) → 200 OK, 응답에 갱신된 `updated_at` 포함, 리로드 후 UI 3열 (이름·카테고리·priority) 전부 반영
+  2. POST `/api/admin/partners/5/slots` (`stock-detail-bottom`, position 1) → 200, slot id=4 insert 확인
+  3. 동일 slot_key 로 중복 POST → 409 `{"error":"이미 매핑된 슬롯입니다"}` (UNIQUE(slot_key, partner_id) 제약 검증)
+  4. DELETE `/api/admin/partners/5/slots?slot_key=stock-detail-bottom` → 200 `{ok:true}`, 리로드 후 해당 행 슬롯 비어있음 확인
+  5. DELETE `/api/admin/partners/5` → 200 `{ok:true}`, 리로드 후 목록 3행 → 2행 (test, test-asset), qa-test-bank 완전 제거. ON DELETE CASCADE (partner_slots/partner_clicks) / SET NULL (partner_leads) DB 레벨 연동 확인
+- Console 에러: Supabase auth-js Navigator Locks `AbortError: Lock broken` 3건만 관찰 (기존 known, 본 작업 무관)
+- 잔여 QA 데이터: `/e2e-chrome-mcp-test` 클릭 1건 + (H) E2E 테스트 lead 2건은 `test` 파트너에 귀속, 운영 데이터와 혼용되지 않음. 다음 세션에서 필요시 별도 cleanup 엔드포인트로 정리
+
 ## [2026-04-18] 세션 #15 — (I) 파트너 편집·삭제 + 슬롯 재매핑 (Phase 2 CRUD 완성)
 
 - **신규 API `app/api/admin/partners/[id]/route.ts`** (admin only, service_role)

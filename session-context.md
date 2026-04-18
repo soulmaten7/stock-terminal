@@ -29,6 +29,7 @@
 - [x] ~~**(H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹**~~ → 세션 #15 완료 (H1: sendBeacon + fetch keepalive 폴백 / H2: `/admin/partners/clicks` 슬롯별·파트너별·일자별 집계 + 전환율 + 최근 100건)
 - [x] ~~**(K) Chrome MCP E2E 검증 — (G)(H)**~~ → 세션 #15 완료 5/5 PASS (대시보드 렌더 + POST 트래킹 200 OK + 실데이터 반영 + screener/stocks-detail 슬롯 null 렌더)
 - [x] ~~**(I) 파트너 편집·삭제 + 슬롯 재매핑**~~ → 세션 #15 완료 (PATCH/DELETE `/api/admin/partners/[id]` + POST/DELETE `/[id]/slots` + 어드민 UI 편집 버튼·삭제 confirm·슬롯 칩 ✕·인라인 슬롯 추가)
+- [x] ~~**(K-2) Chrome MCP E2E 검증 — (I)**~~ → 세션 #15 완료 5/5 PASS (PATCH 200 + POST slot 200 + 중복 409 + DELETE slot 200 + DELETE partner 200, UI 반영 확인, 콘솔 에러 0)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
@@ -61,6 +62,16 @@
 - ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
+
+### 세션 #15 — 2026-04-18 ((K-2) Chrome MCP E2E 검증 — (I) 5/5 PASS)
+- Task #48 — 라이브 검증 전부 통과 (qa-test-bank id=5)
+  1. PATCH `/api/admin/partners/5` (name·category·description·priority) → 200 OK + UI 3열 반영
+  2. POST `/api/admin/partners/5/slots` (`stock-detail-bottom` pos1) → 200, slot id=4
+  3. 동일 slot_key 재-POST → 409 "이미 매핑된 슬롯입니다" (UNIQUE 제약)
+  4. DELETE `/api/admin/partners/5/slots?slot_key=stock-detail-bottom` → 200 `{ok:true}`
+  5. DELETE `/api/admin/partners/5` → 200, 목록 3행→2행, CASCADE/SET NULL 연동 확인
+- Console 에러 0 (Supabase auth lock AbortError 3건은 기존 known)
+- 잔여 QA 데이터: `/e2e-chrome-mcp-test` 클릭 1건 + E2E lead 2건은 test 파트너에 귀속 → 다음 세션에서 cleanup 엔드포인트 만들면 정리 가능
 
 ### 세션 #15 — 2026-04-18 ((I) 파트너 편집·삭제 + 슬롯 재매핑 — Phase 2 CRUD)
 - **신규 API `app/api/admin/partners/[id]/route.ts`** — PATCH (부분 필드, slug 재검증, features JSON 파싱, 23505→409) + DELETE (CASCADE slots/clicks, SET NULL leads). Next 16 `params: Promise<...>` + `await params` 규약 준수.

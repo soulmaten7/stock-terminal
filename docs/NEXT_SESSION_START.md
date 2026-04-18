@@ -66,9 +66,13 @@
   - POST/DELETE `/api/admin/partners/[id]/slots` — 슬롯 매핑 추가/제거 (slot_key 또는 slot_id 스코프)
   - 어드민 UI: 편집 버튼(✏️) · 삭제 버튼(🗑️) + confirm · 슬롯 칩 ✕ · "+ 슬롯" 인라인 액션 · "액션" 컬럼 신설
   - Partner.id `string → number` 타입 정정 (BIGSERIAL 실제 타입과 일치)
+- **(K-2) Chrome MCP E2E 5/5 PASS** — `qa-test-bank` id=5 대상
+  - PATCH 200 (name·category·description·priority 반영) · POST slot 200 · 중복 409 · DELETE slot 200 · DELETE partner 200 → 목록 3→2행
+  - Console 에러 0 (Supabase auth lock 기존 known)
+  - 잔여 QA: `/e2e-chrome-mcp-test` 클릭 1건 + E2E lead 2건 → 다음 세션에서 cleanup 엔드포인트로 정리
 - **다음 순서 (사용자 지침 "순서대로 쭉 진행")**:
-  - (K-2) Chrome MCP E2E — (I) 편집·삭제·슬롯 재매핑 검증 + `/e2e-chrome-mcp-test` QA 클릭 로그 정리
   - (J) 채팅 사이드바 슬롯 추가 (채팅 페이지 구조 설계 완료 시)
+  - (선택) partner_clicks/leads QA 정리용 admin cleanup 엔드포인트
 
 ## 이전 세션 — 세션 #14 (2026-04-18, W4 Partner-Agnostic Landing + E2E)
 - **W4 Partner-Agnostic Lead Gen 인프라 출시** (commit 91eea5a — 11 files / +1322 insertions)
