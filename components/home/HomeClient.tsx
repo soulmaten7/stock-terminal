@@ -12,8 +12,6 @@ import WarningStocks from './WarningStocks';
 import EconomicCalendar from './EconomicCalendar';
 import IpoSchedule from './IpoSchedule';
 import EarningsCalendar from './EarningsCalendar';
-import AdColumn from './AdColumn';
-
 export default function HomeClient() {
   useEffect(() => {
     // Force scroll to top on mount — repeated to beat async widget loading
@@ -27,11 +25,6 @@ export default function HomeClient() {
 
   return (
     <div className="flex gap-3 px-4 py-4 mx-auto" style={{ maxWidth: 1920 }}>
-      {/* ═══ Left Ad Column ═══ */}
-      <div className="hidden min-[1600px]:block shrink-0">
-        <AdColumn premiumCount={5} generalCount={15} />
-      </div>
-
       {/* ═══ Side Panel (280px) ═══ */}
       <div className="hidden min-[1400px]:flex w-[320px] shrink-0 flex-col gap-3 self-start">
         <WatchlistLive />
@@ -72,10 +65,6 @@ export default function HomeClient() {
         </section>
       </div>
 
-      {/* ═══ Right Ad Column ═══ */}
-      <div className="hidden min-[1600px]:block shrink-0">
-        <AdColumn premiumCount={5} generalCount={15} />
-      </div>
     </div>
   );
 }

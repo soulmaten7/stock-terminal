@@ -4,16 +4,16 @@
 ## 프로젝트 개요
 - **서비스 정의**: 글로벌 개인투자자용 통합 데이터 터미널 플랫폼
 - **포지셔닝 (V3 확정)**: "전업투자자 = 일반인 (일반투자자가 되고싶은 상위 1%)" — Aspirational Design
-- **핵심 전략**: 전업투자자가 수년 걸려 세팅한 투자 정보 환경을 일반 투자자에게 월 구독료(2~3만원)로 제공
+- **핵심 전략**: 전업투자자가 보는 데이터 환경을 일반 투자자에게 **완전 무료**로 제공, 수익은 Partner-Agnostic Lead Gen 으로만 발생 (V3 확정)
 - **UI 철학**: Bloomberg/Koyfin 표준 Bento Grid + 단일 지속 채팅 + 투자자 도구함(Link Hub)
-- **수익 모델 (V3 3-Layer)**:
-  - Phase 1 (즉시): 광고주 독립적(Partner-Agnostic) 랜딩페이지 인프라 + Lead Gen (DB 장사, 한국 5~10만원/리드)
-  - Phase 2 (3~6개월): Freemium Pro 구독 (알림/AI 리포트/CSV)
-  - Phase 3 (12개월+): 광고주 확장 + À la carte 프리미엄
+- **수익 모델 (V3 단일)**: **Partner-Agnostic Lead Gen 만.** 구독/결제/Pro/AI 리포트/CSV/À la carte — **전부 제외**
+  - Phase 1 (즉시): 랜딩페이지 인프라 + Lead Gen (한국 5~10만원/리드)
+  - Phase 2 (5~12주): 트래픽 확보 + 리드 퀄리티 스코어 + 파트너 슬롯 확장
+  - Phase 3 (12개월+): 글로벌 시장 + 광고 인벤토리 세분화 — **여전히 구독 없음**
 - **데이터 소스**: 100% 무료 (DART/KRX/KIS/FDR/Naver/ECOS) — KIS 서버사이드 연동 완료로 비로그인 이용자도 실시간
 - **기술 스택**: Next.js 16 + TypeScript + Tailwind CSS + Supabase + Zustand + Recharts + TradingView 위젯
 - **배포**: Vercel + Supabase Cloud
-- **결제**: 토스페이먼츠 (한국), 추후 Paddle (글로벌)
+- **결제 연동**: **없음** — 토스페이먼츠/Paddle 연동 코드 작성 금지 (별도 의사결정 전까지)
 
 ## 현재 TODO
 
@@ -32,12 +32,12 @@
 - [ ] 장중 실시간 데이터 검증 (관심종목 변동, 수급 갱신, 호가창/체결)
 
 ### P2 — 다음 주
-- [ ] 토스페이먼츠 결제 연동 (라이브 URL 생성 후)
 - [ ] KRX 크롤링 (프로그램매매 + 공매도 데이터)
 - [ ] SEC EDGAR API 연동 (미국 주식)
-- [ ] 광고주 배너 등록 시스템 완성
-- [ ] 관리자 페이지 완성
+- [ ] 관리자 페이지 완성 (파트너 CRUD 중심)
 - [ ] **DEV_BYPASS = false** 전환 후 프로덕션 배포 준비
+- ~~[ ] 토스페이먼츠 결제 연동~~ → **V3 에서 제외 (구독 모델 폐기)**
+- ~~[ ] 광고주 배너 등록 시스템~~ → **V3 에서 제외 (Partner-Agnostic Landing 으로 대체)**
 
 ### P3 — 2주 후
 - [ ] Make 자동화 스케줄링 세팅 (5개 시나리오)
@@ -46,9 +46,9 @@
 
 ### P4 — 1개월 후
 - [ ] 일본(TSE) / 홍콩(HKEX) 시장 추가
-- [ ] 코인 플랫폼 (브랜드명-코인) 런칭
 - [ ] 영어 버전 글로벌 확장
-- [ ] Paddle 결제 연동 (글로벌)
+- ~~[ ] Paddle 결제 연동~~ → **V3 에서 제외 (글로벌 진출 후에도 구독 없음)**
+- ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
 
 ## 완료된 세션 히스토리
 
@@ -59,7 +59,7 @@
   - PC-First → 이후 태블릿/모바일 반응형 (모듈식 설계)
   - 채팅은 전체 1개, 종목 분산 X (Density Over Distribution)
   - 데이터 100% 무료 소스로 95% 커버 — KIS 서버사이드로 비로그인 이용자도 실시간
-  - 수익화 3-Layer: Phase 1 Partner-Agnostic Lead Gen → Phase 2 Pro 구독 → Phase 3 광고 확장
+  - 수익화 단일 모델: **Partner-Agnostic Lead Gen 만.** 구독/결제/Pro/AI 리포트/CSV — **전부 제거**
 - **신규 문서:** `docs/PRODUCT_SPEC_V3.md` (11섹션), `docs/COMMANDS_V3_PHASE1.md`
 - **V2 Spec 아카이브:** `docs/HOME_REDESIGN_V2_SPEC.md` 는 참고용으로만 유지
 - **코드 변경:** 없음 (문서 세션)
