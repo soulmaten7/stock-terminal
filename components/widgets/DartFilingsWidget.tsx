@@ -66,12 +66,12 @@ export default function DartFilingsWidget() {
                   {fmtTime(d.rcept_dt)}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-black truncate">{d.corp_name}</p>
+                  <p className="text-sm font-bold text-black truncate">{d.corp_name}</p>
                   <a
                     href={d.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-[#555] truncate block hover:text-[#0ABAB5] hover:underline"
+                    className="text-sm text-[#555] truncate block hover:text-[#0ABAB5] hover:underline"
                   >
                     {d.report_nm}
                   </a>

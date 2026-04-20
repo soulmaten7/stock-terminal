@@ -1,4 +1,4 @@
-<!-- 2026-04-21 -->
+<!-- 2026-04-20 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
@@ -35,7 +35,16 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
-### 세션 #18 완료 — 2026-04-21 (홈 대시보드 버그픽스 4종)
+### 세션 #18 cont 완료 — 2026-04-20 (홈 대시보드 레이아웃 v2)
+- CommunityChatWidget → RealtimeChatWidget (인라인 WidgetCard, "실시간 채팅")
+- 2페이지 CSS 그리드 (6행 × 3열, minHeight 200vh), 위젯 중요도 순 재배치
+- Sticky Header (top-0 z-40) + TickerBar (top-[72px] z-30)
+- 테이블형 위젯 9종 폰트 스케일업 (text-xs→text-sm, py-1.5→py-2.5)
+- /chat 페이지 제목 "실시간 채팅"으로 업데이트
+- docs/DASHBOARD_SPEC_V1.md 섹션 5 추가 (2페이지 배치도)
+- 빌드: 77/77 통과
+
+### 세션 #18 완료 — 2026-04-20 (홈 대시보드 버그픽스 4종)
 - Bug 1: 레거시 채팅 6개 파일 삭제 (ChatPanel/ChatSidebar/FloatingChat/ChatProvider + 2개 스텁) + LayoutShell 정리
 - Bug 2: CommunityChatWidget fixed floating (left:72px, bottom:12px, 320×360, 더블클릭 최소화, /chat 링크) + 좌측 컬럼 3등분 grid
 - Bug 3: WidgetCard href+ArrowUpRight + 14개 위젯 href 주입 + 13개 라우트 페이지 스텁 + VerticalNav 실라우트 연결

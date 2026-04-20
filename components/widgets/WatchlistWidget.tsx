@@ -25,7 +25,7 @@ export default function WatchlistWidget() {
     >
       <div role="table" aria-label="관심종목 목록" className="w-full">
         <div role="rowgroup">
-          <div role="row" className="grid grid-cols-4 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]">
+          <div role="row" className="grid grid-cols-4 px-3 py-2 text-xs text-[#999] font-bold border-b border-[#F0F0F0]">
             <span role="columnheader">종목</span>
             <span role="columnheader" className="text-right">현재가</span>
             <span role="columnheader" className="text-right">등락률</span>
@@ -34,7 +34,7 @@ export default function WatchlistWidget() {
         </div>
         <div role="rowgroup">
           {DUMMY.map((r) => (
-            <div key={r.name} role="row" className="grid grid-cols-4 px-3 py-1.5 text-xs hover:bg-[#F8F9FA] border-b border-[#F0F0F0]">
+            <div key={r.name} role="row" className="grid grid-cols-4 px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0]">
               <span role="cell" className="font-bold text-black truncate">{r.name}</span>
               <span role="cell" className="text-right text-black">{r.price}</span>
               <span role="cell" className={`text-right font-bold ${r.up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>{r.change}</span>

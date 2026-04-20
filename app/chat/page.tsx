@@ -26,8 +26,8 @@ const ROWS = Array.from({ length: 20 }, (_, i) => ({
 export default function ChatPage() {
   return (
     <WidgetDetailStub
-      title="커뮤니티 채팅"
-      description="실시간 투자자 커뮤니티 채팅입니다. Supabase Realtime 기반 (Phase B에서 실연동 예정)."
+      title="실시간 채팅"
+      description="실시간 투자자 채팅입니다. Supabase Realtime 기반 (Phase B에서 실연동 예정)."
       columns={COLS}
       rows={ROWS}
     />

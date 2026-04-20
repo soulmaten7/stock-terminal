@@ -59,12 +59,12 @@ export default function NewsFeedWidget() {
                   href={n.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-black leading-snug line-clamp-2 hover:text-[#0ABAB5] hover:underline"
+                  className="text-sm text-black leading-snug line-clamp-2 hover:text-[#0ABAB5] hover:underline"
                 >
                   {n.title}
                 </a>
               ) : (
-                <p className="text-xs text-black leading-snug line-clamp-2">{n.title}</p>
+                <p className="text-sm text-black leading-snug line-clamp-2">{n.title}</p>
               )}
             </li>
           ))}

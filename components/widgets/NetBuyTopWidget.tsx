@@ -64,7 +64,7 @@ export default function NetBuyTopWidget() {
       {!loading && (
         <div role="table" aria-label="수급 TOP 목록">
           <div role="rowgroup">
-            <div role="row" className="grid grid-cols-3 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]">
+            <div role="row" className="grid grid-cols-3 px-3 py-1.5 text-xs text-[#999] font-bold border-b border-[#F0F0F0]">
               <span>종목</span>
               <span className="text-right">순매수</span>
               <span className="text-right">등락</span>
@@ -72,7 +72,7 @@ export default function NetBuyTopWidget() {
           </div>
           <div role="rowgroup">
             {items.map((r) => (
-              <div key={r.symbol} role="row" className="grid grid-cols-3 px-3 py-1.5 text-xs border-b border-[#F0F0F0] hover:bg-[#F8F9FA]">
+              <div key={r.symbol} role="row" className="grid grid-cols-3 px-3 py-2.5 text-sm border-b border-[#F0F0F0] hover:bg-[#F8F9FA]">
                 <span className="font-bold text-black truncate">{r.name}</span>
                 <span className={`text-right font-bold ${r[netKey] >= 0 ? 'text-[#0ABAB5]' : 'text-[#FF3B30]'}`}>
                   {fmtBn(r[netKey])}

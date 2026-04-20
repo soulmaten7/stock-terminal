@@ -49,14 +49,14 @@ export default function GlobalIndicesWidget() {
           <div
             key={idx.label}
             role="row"
-            className="flex items-center justify-between px-3 py-1.5 border-b border-[#F0F0F0] hover:bg-[#F8F9FA]"
+            className="flex items-center justify-between px-3 py-2.5 border-b border-[#F0F0F0] hover:bg-[#F8F9FA]"
           >
-            <span role="cell" className="text-xs text-[#555]">{idx.label}</span>
+            <span role="cell" className="text-sm text-[#555]">{idx.label}</span>
             <div className="flex items-center gap-3">
-              <span role="cell" className="text-xs font-bold text-black">{idx.price}</span>
+              <span role="cell" className="text-sm font-bold text-black">{idx.price}</span>
               <span
                 role="cell"
-                className={`text-xs font-bold w-16 text-right ${
+                className={`text-sm font-bold w-20 text-right ${
                   idx.up ? 'text-[#FF3B30]' : 'text-[#0051CC]'
                 }`}
               >

@@ -69,7 +69,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-[#E5E7EB]">
+    <header className="bg-white border-b border-[#E5E7EB] sticky top-0 z-40">
       <div className="max-w-[1920px] mx-auto px-6 h-[72px] flex items-center justify-between gap-8">
         {/* ── Left: Logo ── */}
         <Link

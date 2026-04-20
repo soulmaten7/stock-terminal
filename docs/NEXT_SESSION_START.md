@@ -1,4 +1,4 @@
-<!-- 2026-04-21 -->
+<!-- 2026-04-20 -->
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
@@ -27,7 +27,14 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #15 (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I)(K-2)(J)(L))
+## 가장 최근 세션 — 세션 #18 cont (2026-04-20, 홈 대시보드 레이아웃 v2 완성)
+- CommunityChatWidget → RealtimeChatWidget (인라인 WidgetCard, "실시간 채팅")
+- 2페이지 CSS 그리드 완성 (6행, minHeight 200vh, 위젯 중요도 재배치)
+- Sticky Header z-40 + TickerBar top-[72px] z-30
+- 테이블형 위젯 9종 폰트 스케일업 완료
+- 빌드 77/77 통과
+
+## 세션 #15 이전 — (2026-04-18, W4 Phase 2 Partner CRUD 완성 — (D)(E)(F)(G)(H)(K)(I)(K-2)(J)(L))
 - **W5 더미 제거 1차** — `components/common/ComingSoonCard.tsx` 공통 스켈레톤 + 4개 홈 위젯 교체 (ProgramTrading / GlobalFutures / WarningStocks / IpoSchedule) — commit b8f007d
 - **(D) 홈 Row3 우측 하단 PartnerSlot 교체** (commit becb74c)
   - `supabase/migrations/011_partner_seed_2.sql` — 테스트 자산운용 `test-asset` + `home-sidebar-bottom` 슬롯 (position 1)

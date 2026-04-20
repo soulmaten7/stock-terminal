@@ -41,7 +41,7 @@ export default function VolumeTop10Widget() {
         <div role="rowgroup">
           <div
             role="row"
-            className="grid grid-cols-5 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]"
+            className="grid grid-cols-5 px-3 py-2 text-xs text-[#999] font-bold border-b border-[#F0F0F0]"
           >
             <span role="columnheader">#</span>
             <span role="columnheader">종목</span>
@@ -55,7 +55,7 @@ export default function VolumeTop10Widget() {
             <div
               key={r.symbol}
               role="row"
-              className="grid grid-cols-5 px-3 py-1.5 text-xs hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
+              className="grid grid-cols-5 px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
             >
               <span role="cell" className="text-[#999] font-bold">{i + 1}</span>
               <span role="cell" className="font-bold text-black truncate">{r.name}</span>

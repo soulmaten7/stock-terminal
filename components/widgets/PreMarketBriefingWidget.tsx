@@ -37,11 +37,11 @@ export default function PreMarketBriefingWidget() {
           <p className="text-[10px] font-bold text-[#999] mb-1.5 uppercase tracking-wider">간밤 미증시</p>
           <div className="space-y-1 mb-3">
             {(data?.overnight ?? []).map((o) => (
-              <div key={o.label} className="flex items-center justify-between text-xs">
+              <div key={o.label} className="flex items-center justify-between text-sm">
                 <span className="text-[#555]">{o.label}</span>
                 <div className="flex gap-2">
-                  <span className="font-bold text-black">{o.val}</span>
-                  <span className={`font-bold ${o.up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
+                  <span className="text-sm font-bold text-black">{o.val}</span>
+                  <span className={`text-sm font-bold ${o.up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                     {o.change}
                   </span>
                 </div>

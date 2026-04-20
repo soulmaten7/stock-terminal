@@ -1,7 +1,21 @@
-<!-- 2026-04-21 -->
+<!-- 2026-04-20 -->
 # Stock Terminal — 변경 이력
 
-## [2026-04-21] 세션 #18 — 홈 대시보드 버그픽스 4종
+## [2026-04-20] 세션 #18 cont — 홈 대시보드 레이아웃 v2
+
+### 리팩토링
+- **[레이아웃 v2] 2페이지 CSS 그리드**: `gridTemplateRows: repeat(6, minmax(300px, 1fr))`, `minHeight: 200vh`. 14개 위젯 중요도 순 재배치 (위 섹션 5 배치도 참고).
+- **CommunityChatWidget → RealtimeChatWidget**: 고정 플로팅 → 인라인 WidgetCard 그리드 위젯. 제목 "커뮤니티 채팅" → "실시간 채팅", 고정 포지셔닝 완전 제거.
+- **Sticky Header + TickerBar**: Header `sticky top-0 z-40`, TickerBar `sticky top-[72px] z-30`.
+- **테이블형 위젯 폰트 스케일업**: WatchlistWidget, VolumeTop10Widget, MoversTop10Widget, GlobalIndicesWidget, NetBuyTopWidget, InvestorFlowWidget, DartFilingsWidget, NewsFeedWidget, PreMarketBriefingWidget — 헤더 `text-[10px]`→`text-xs`, 행 `text-xs`→`text-sm`, 행 패딩 `py-1.5`→`py-2.5`.
+- `/chat` 페이지 제목 "커뮤니티 채팅" → "실시간 채팅".
+
+### 문서
+- `docs/DASHBOARD_SPEC_V1.md` 섹션 5 추가 — 2페이지 배치도 + 중요도 근거.
+
+---
+
+## [2026-04-20] 세션 #18 — 홈 대시보드 버그픽스 4종
 
 ### 버그픽스
 - **[Bug 1] 레거시 채팅 중복 제거**: `components/chat/{ChatPanel,ChatSidebar,FloatingChat,ChatProvider}.tsx` + `components/layout/FloatingChat.tsx` + `components/home/SidebarChat.tsx` 파일 삭제. `LayoutShell`에서 ChatSidebar·FloatingChat·ChatProvider 제거.

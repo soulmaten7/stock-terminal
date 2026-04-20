@@ -33,7 +33,7 @@ export default function InvestorFlowWidget() {
       {!loading && (
         <div role="table" aria-label="투자자별 매매동향">
           <div role="rowgroup">
-            <div role="row" className="grid grid-cols-3 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]">
+            <div role="row" className="grid grid-cols-3 px-3 py-1.5 text-xs text-[#999] font-bold border-b border-[#F0F0F0]">
               <span>투자자</span>
               <span className="text-right">코스피</span>
               <span className="text-right">코스닥</span>

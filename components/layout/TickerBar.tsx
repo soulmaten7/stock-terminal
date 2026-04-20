@@ -92,7 +92,7 @@ export default function TickerBar() {
   const { country } = useCountryStore();
 
   return (
-    <div className="bg-white border-b border-[#E5E7EB] h-10 overflow-hidden">
+    <div className="bg-white border-b border-[#E5E7EB] h-10 overflow-hidden sticky top-[72px] z-30">
       {/* key forces full remount on country change */}
       <TradingViewTickerTape key={country} country={country} />
     </div>
