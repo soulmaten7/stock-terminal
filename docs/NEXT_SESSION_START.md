@@ -27,7 +27,12 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #19 (2026-04-20, 그리드 뷰포트 고정 레이아웃 v3)
+## 가장 최근 세션 — 세션 #20 (2026-04-20, KIS 차트 실데이터 + lightweight-charts)
+- /api/kis/chart: FHKST03010100, 150일 일봉, symbol/period/from/to 지원
+- ChartWidget: 한국 종목(6자리) → KIS+Lightweight v4 캔들차트 / 영문 → TradingView
+- HomeClient: NewsFeed R4-5 span, EconCalendar R6 전체폭
+
+## 세션 #19 (2026-04-20, 그리드 뷰포트 고정 레이아웃 v3)
 - `gridTemplateRows: repeat(6, calc((100vh - 136px) / 3))` — 정확히 2페이지
 - 1440×900, 1920×1080 모두 row3 bottom = 1×viewport ✓
 

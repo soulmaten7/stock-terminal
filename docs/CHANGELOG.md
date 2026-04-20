@@ -1,6 +1,29 @@
 <!-- 2026-04-20 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-20] 세션 #20 — KIS 차트 실데이터 연동 (lightweight-charts v4)
+
+### 추가
+- `npm i lightweight-charts@4.2.3` — KRX 종목 캔들차트 렌더링 라이브러리
+- `app/api/kis/chart/route.ts` — KIS `FHKST03010100` (일봉 최대 150일). params: `symbol`, `period(D/W/M)`, `from`, `to`
+
+### 변경
+- **ChartWidget** 완전 재구현:
+  - 6자리 숫자 입력 → KRX 경로: `/api/kis/chart` fetch → lightweight-charts 캔들+거래량 렌더
+  - 그 외(AAPL, NASDAQ:NVDA 등) → TradingView tv.js 렌더 (기존 방식 유지)
+  - 상승=빨강(#FF3B30) / 하락=파랑(#0064FF) KR 색깔 컨벤션
+  - 거래량 서브차트 (scaleMargins top=0.8, 반투명 색상)
+  - placeholder 입력: `005930 · AAPL`
+- **HomeClient**: NewsFeed R4-5 (2행 span), 경제캘린더 R6 전체 폭(1/4 span)
+
+### 빌드
+- 78/78 통과 (신규 라우트 1개 추가)
+
+### API 검증
+- `GET /api/kis/chart?symbol=005930` → 삼성전자 일봉 150일 데이터 ✓
+
+---
+
 ## [2026-04-20] 세션 #19 cont — 그리드 포뮬러 재조정 + ChartWidget 정리
 
 ### 변경

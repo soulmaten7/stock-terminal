@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 세션 #20 완료 — 2026-04-20 (KIS 차트 실데이터 + lightweight-charts)
+- lightweight-charts v4.2.3 설치
+- /api/kis/chart (FHKST03010100, 150일 일봉) 신규
+- ChartWidget: 6자리 → KIS+Lightweight Charts, 영문 → TradingView tv.js
+- HomeClient: NewsFeed R4-5, EconCalendar R6 전체폭
+- 빌드 78/78 통과, API 삼성전자 검증 완료
+
 ### 세션 #19 완료 — 2026-04-20 (그리드 행 높이 뷰포트 고정)
 - gridTemplateRows: minmax(300px,1fr) → calc((100vh - 136px) / 3) 교체
 - 정확히 2페이지 고정: 1440×900, 1920×1080 모두 검증

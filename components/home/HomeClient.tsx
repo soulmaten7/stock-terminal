@@ -23,9 +23,9 @@ import RealtimeChatWidget from '@/components/widgets/RealtimeChatWidget';
 //  Row 2   │  거래량 급등         │  ↑                       │  실시간 수급 TOP
 //  Row 3   │  실시간 채팅         │  호가창 + 체결창           │  DART 공시
 // ─────────┼─────────────────────┼─────────────────────────┼──────────────────
-//  Row 4   │  상승/하락           │  투자자별 (span 2)         │  뉴스 속보 (span 3)
+//  Row 4   │  상승/하락           │  투자자별 (span 2)         │  뉴스 속보 (span 2)
 //  Row 5   │  장전 브리핑         │  ↑                       │  ↑
-//  Row 6   │  경제캘린더 (span 2) │  ↑                       │  ↑
+//  Row 6   │  경제캘린더 (span 3 — 전체 폭)                                     │
 // ──────────────────────────────────────────────────────────────────────────────
 
 export default function HomeClient() {
@@ -110,8 +110,8 @@ export default function HomeClient() {
         <InvestorFlowWidget />
       </div>
 
-      {/* R4-6 C3 — 뉴스 속보 (3행 span) */}
-      <div id="section-news" style={{ gridRow: '4 / 7', gridColumn: 3 }}>
+      {/* R4-5 C3 — 뉴스 속보 (2행 span, Row 6은 경제캘린더 자리) */}
+      <div id="section-news" style={{ gridRow: '4 / 6', gridColumn: 3 }}>
         <NewsFeedWidget />
       </div>
 
@@ -124,8 +124,8 @@ export default function HomeClient() {
 
       {/* ── Page 2 · Row 6 ── */}
 
-      {/* R6 C1-2 — 경제캘린더 (2컬럼 span) */}
-      <div id="section-econ" style={{ gridRow: 6, gridColumn: '1 / 3' }}>
+      {/* R6 C1-3 — 경제캘린더 (전체 폭 span, 내부 스크롤) */}
+      <div id="section-econ" style={{ gridRow: 6, gridColumn: '1 / 4' }}>
         <EconCalendarWidget />
       </div>
     </div>
