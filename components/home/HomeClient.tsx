@@ -28,44 +28,44 @@ export default function HomeClient() {
     <div className="mx-auto px-3 py-3" style={{ maxWidth: 1920 }}>
       <div className="grid grid-cols-2 gap-2">
           {/* ROW 1 — 관심종목 | 수급 TOP10 */}
-          <div className={CARD} style={{ height: 320 }}>
+          <div id="section-watchlist" className={CARD} style={{ height: 320 }}>
             <WatchlistLive />
           </div>
-          <div className={CARD} style={{ height: 320 }}>
+          <div id="section-flow" className={CARD} style={{ height: 320 }}>
             <InstitutionalFlow />
           </div>
 
           {/* ROW 2 — 거래량 급등 | 코스피/코스닥 */}
-          <div className={CARD} style={{ height: 240 }}>
+          <div id="section-volume" className={CARD} style={{ height: 240 }}>
             <VolumeSpike />
           </div>
-          <div className={CARD} style={{ height: 240 }}>
+          <div id="section-market-charts" className={CARD} style={{ height: 240 }}>
             <MarketMiniCharts />
           </div>
 
           {/* ROW 3~5 — 속보 (tall, row-span-3) | 경제지표·IPO·실적 세로 스택 */}
-          <div className={CARD} style={{ height: 736, gridRow: 'span 3' }}>
+          <div id="section-news" className={CARD} style={{ height: 736, gridRow: 'span 3' }}>
             <BreakingFeed />
           </div>
-          <div className={CARD} style={{ height: 240 }}>
+          <div id="section-economic" className={CARD} style={{ height: 240 }}>
             <EconomicCalendar />
           </div>
-          <div className={CARD} style={{ height: 240 }}>
+          <div id="section-ipo" className={CARD} style={{ height: 240 }}>
             <IpoSchedule />
           </div>
-          <div className={CARD} style={{ height: 240 }}>
+          <div id="section-earnings" className={CARD} style={{ height: 240 }}>
             <EarningsCalendar />
           </div>
 
           {/* ROW 6 — 프로그램매매 | 글로벌선물 | 경고종목 (col-span-2, 3등분) */}
           <div className={`${CARD} col-span-2 grid grid-cols-3 gap-0`} style={{ height: 240 }}>
-            <div className="border-r border-[#F0F0F0] overflow-hidden">
+            <div id="section-program" className="border-r border-[#F0F0F0] overflow-hidden">
               <ProgramTrading />
             </div>
-            <div className="border-r border-[#F0F0F0] overflow-hidden">
+            <div id="section-global" className="border-r border-[#F0F0F0] overflow-hidden">
               <GlobalFutures />
             </div>
-            <div className="overflow-hidden">
+            <div id="section-warning" className="overflow-hidden">
               <WarningStocks />
             </div>
           </div>

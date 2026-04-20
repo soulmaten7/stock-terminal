@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import ChatSidebar from '@/components/chat/ChatSidebar';
 import ChatProvider from '@/components/chat/ChatProvider';
 import FloatingChat from '@/components/chat/FloatingChat';
+import VerticalNav from '@/components/layout/VerticalNav';
 
 interface LayoutShellProps {
   children: ReactNode;
@@ -17,6 +18,7 @@ export default function LayoutShell({ children, footer }: LayoutShellProps) {
       <ChatProvider />
 
       <div className="flex flex-1">
+        <VerticalNav />
         {/* 1400px+ : 좌측 고정 사이드바 */}
         <ChatSidebar />
         <main className="flex-1 min-w-0">
