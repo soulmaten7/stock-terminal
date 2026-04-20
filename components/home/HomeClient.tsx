@@ -35,9 +35,9 @@ export default function HomeClient() {
       style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(300px,3fr) minmax(600px,6fr) minmax(300px,3fr)',
-        // 6행 × 3행/페이지 = 2페이지 고정
-        // (100vh - 112px sticky - 8px pad_top - 2×8px row_gaps_per_page) / 3
-        gridTemplateRows: 'repeat(6, calc((100vh - 136px) / 3))',
+        // 6행 × 2페이지 — total 2vh에서 sticky(112) + 5gaps(40) 차감
+        // (200vh - 152px) / 6 per row
+        gridTemplateRows: 'repeat(6, calc((200vh - 152px) / 6))',
         gap: 8,
       }}
     >

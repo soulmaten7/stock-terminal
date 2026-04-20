@@ -14,8 +14,8 @@ export default function ChartWidget({ symbol = '005930' }: { symbol?: string }) 
     '&interval=D' +
     '&theme=light' +
     '&hide_side_toolbar=1' +
-    '&hide_top_toolbar=0' +
-    '&allow_symbol_change=1' +
+    '&hide_top_toolbar=1' +
+    '&allow_symbol_change=0' +
     '&locale=kr' +
     '&timezone=Asia%2FSeoul';
 

@@ -1,6 +1,15 @@
 <!-- 2026-04-20 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-20] 세션 #19 cont — 그리드 포뮬러 재조정 + ChartWidget 정리
+
+### 변경
+- **gridTemplateRows 포뮬러**: `(100vh - 136px) / 3` → `(200vh - 152px) / 6`
+  - 152 = sticky(112) + 5 row gaps(40), 2 뷰포트 기준 균등 분배
+- **ChartWidget**: `hide_top_toolbar=1` + `allow_symbol_change=0` — 팝업 방지 + 외부 심볼 변경 차단
+
+---
+
 ## [2026-04-20] 세션 #19 — 그리드 행 높이 뷰포트 고정 (레이아웃 v3)
 
 ### 버그픽스
