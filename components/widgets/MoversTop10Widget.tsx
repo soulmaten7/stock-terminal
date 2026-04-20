@@ -1,67 +1,106 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
 
-const GAINERS = [
-  { rank: 1, name: 'HLB', change: '+29.9%', price: '54,700' },
-  { rank: 2, name: '에코프로비엠', change: '+8.4%', price: '124,500' },
-  { rank: 3, name: '엔켐', change: '+7.1%', price: '38,450' },
-  { rank: 4, name: '씨에스윈드', change: '+6.8%', price: '52,200' },
-  { rank: 5, name: '한화오션', change: '+5.5%', price: '34,900' },
-];
-
-const LOSERS = [
-  { rank: 1, name: '카카오게임즈', change: '-12.4%', price: '18,200' },
-  { rank: 2, name: 'CJ CGV', change: '-9.1%', price: '4,180' },
-  { rank: 3, name: '두산퓨얼셀', change: '-7.8%', price: '11,350' },
-  { rank: 4, name: '한미반도체', change: '-6.2%', price: '88,400' },
-  { rank: 5, name: '리노공업', change: '-4.9%', price: '158,000' },
-];
+interface MoverItem {
+  rank: number;
+  symbol: string;
+  name: string;
+  price: string;
+  changePercent: number;
+}
 
 export default function MoversTop10Widget() {
   const [tab, setTab] = useState<'up' | 'down'>('up');
-  const data = tab === 'up' ? GAINERS : LOSERS;
+  const [upItems, setUpItems] = useState<MoverItem[]>([]);
+  const [downItems, setDownItems] = useState<MoverItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([
+      fetch('/api/kis/movers?dir=up').then((r) => (r.ok ? r.json() : { items: [] })),
+      fetch('/api/kis/movers?dir=down').then((r) => (r.ok ? r.json() : { items: [] })),
+    ])
+      .then(([up, down]) => {
+        setUpItems(up.items ?? []);
+        setDownItems(down.items ?? []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const data = tab === 'up' ? upItems : downItems;
 
   return (
     <WidgetCard
       title="상승/하락 TOP 10"
-      subtitle="Phase B · KIS API"
+      subtitle="KIS API"
       action={
         <div className="flex gap-1">
           <button
             onClick={() => setTab('up')}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${tab === 'up' ? 'bg-[#FF3B30] text-white' : 'text-[#999] hover:text-black'}`}
+            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
+              tab === 'up' ? 'bg-[#FF3B30] text-white' : 'text-[#999] hover:text-black'
+            }`}
           >
             상승
           </button>
           <button
             onClick={() => setTab('down')}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${tab === 'down' ? 'bg-[#0051CC] text-white' : 'text-[#999] hover:text-black'}`}
+            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
+              tab === 'down' ? 'bg-[#0051CC] text-white' : 'text-[#999] hover:text-black'
+            }`}
           >
             하락
           </button>
         </div>
       }
     >
-      <div role="table" aria-label="상승하락 종목 목록">
-        <div role="rowgroup">
-          <div role="row" className="grid grid-cols-3 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]">
-            <span role="columnheader">#  종목</span>
-            <span role="columnheader" className="text-right">등락률</span>
-            <span role="columnheader" className="text-right">현재가</span>
+      {loading && (
+        <div className="flex items-center justify-center h-20 text-xs text-[#999]">로딩 중…</div>
+      )}
+      {!loading && (
+        <div role="table" aria-label="상승하락 종목 목록">
+          <div role="rowgroup">
+            <div
+              role="row"
+              className="grid grid-cols-3 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]"
+            >
+              <span role="columnheader">#  종목</span>
+              <span role="columnheader" className="text-right">등락률</span>
+              <span role="columnheader" className="text-right">현재가</span>
+            </div>
+          </div>
+          <div role="rowgroup">
+            {data.map((r) => (
+              <div
+                key={r.symbol}
+                role="row"
+                className="grid grid-cols-3 px-3 py-1.5 text-xs hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
+              >
+                <span role="cell" className="font-bold text-black truncate">
+                  <span className="text-[#999] mr-1">{r.rank}</span>
+                  {r.name}
+                </span>
+                <span
+                  role="cell"
+                  className={`text-right font-bold ${
+                    tab === 'up' ? 'text-[#FF3B30]' : 'text-[#0051CC]'
+                  }`}
+                >
+                  {r.changePercent >= 0 ? '+' : ''}{r.changePercent.toFixed(2)}%
+                </span>
+                <span role="cell" className="text-right text-black">{r.price}</span>
+              </div>
+            ))}
+            {data.length === 0 && (
+              <div className="px-3 py-4 text-xs text-[#999] text-center">데이터 없음</div>
+            )}
           </div>
         </div>
-        <div role="rowgroup">
-          {data.map((r) => (
-            <div key={r.rank} role="row" className="grid grid-cols-3 px-3 py-1.5 text-xs hover:bg-[#F8F9FA] border-b border-[#F0F0F0]">
-              <span role="cell" className="font-bold text-black"><span className="text-[#999] mr-1">{r.rank}</span>{r.name}</span>
-              <span role="cell" className={`text-right font-bold ${tab === 'up' ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>{r.change}</span>
-              <span role="cell" className="text-right text-black">{r.price}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </WidgetCard>
   );
 }

@@ -1,5 +1,28 @@
-<!-- 2026-04-20 -->
+<!-- 2026-04-21 -->
 # Stock Terminal — 변경 이력
+
+## [2026-04-21] 세션 #17 — Phase B 데이터 통합 (9개 위젯 실데이터 연동)
+
+### 추가
+- `app/api/home/news/route.ts` — 한국경제·매일경제·이데일리 RSS 3종 병합 (정규식 파싱, 5분 캐시)
+- `app/api/home/global/route.ts` — Yahoo Finance v7: 8개 지수·환율·선물·채권 실데이터
+- `app/api/kis/movers/route.ts` — KIS 등락률 순위 (`FHPST01700000`, ?dir=up|down)
+- `app/api/home/investor-flow/route.ts` — KIS KOSPI(0001)/KOSDAQ(1001) 투자자별 순매수 집계
+- `app/api/home/briefing/route.ts` — Yahoo Finance 미증시 4종 + DART 오늘 주요 공시
+
+### 변경 (위젯 실데이터 교체)
+- `ChartWidget` — TradingView iframe 임베드 (종목 입력·이동 가능, `key` prop으로 리렌더)
+- `EconCalendarWidget` — Investing.com SSLecal2 iframe (주간 캘린더)
+- `NewsFeedWidget` — `/api/home/news` 실데이터, 출처별 컬러, 링크 클릭 → 원문
+- `GlobalIndicesWidget` — `/api/home/global` 실데이터, Placeholder 로딩 상태
+- `VolumeTop10Widget` — `/api/kis/volume-rank` 실데이터 (기존 API 활용)
+- `MoversTop10Widget` — `/api/kis/movers` 실데이터 (신규 API)
+- `NetBuyTopWidget` — `/api/kis/investor-rank` 실데이터 (기존 API 활용)
+- `InvestorFlowWidget` — `/api/home/investor-flow` 실데이터
+- `PreMarketBriefingWidget` — `/api/home/briefing` 실데이터 (미증시 + 오늘 공시)
+- `DartFilingsWidget` — `/api/dart` 실데이터, 공시 유형 자동 분류, DART 원문 링크
+
+---
 
 ## [2026-04-20] 세션 #16 — 3-패널 워크스테이션 홈 + 14개 위젯 스텁 (Phase A)
 

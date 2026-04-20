@@ -1,4 +1,4 @@
-<!-- 2026-04-20 -->
+<!-- 2026-04-21 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
@@ -35,8 +35,22 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 세션 #17 완료 — 2026-04-21 (Phase B 데이터 통합)
+- `ChartWidget`: TradingView iframe 임베드 (종목 입력 가능)
+- `EconCalendarWidget`: Investing.com SSLecal2 iframe
+- `NewsFeedWidget`: 한경·매경·이데일리 RSS 3종 실데이터
+- `GlobalIndicesWidget`: Yahoo Finance 8종 실데이터
+- `VolumeTop10Widget`: KIS volume-rank API 실데이터
+- `MoversTop10Widget`: KIS movers API 신규 (등락률 순위 up/down)
+- `NetBuyTopWidget`: KIS investor-rank API 실데이터
+- `InvestorFlowWidget`: KIS KOSPI/KOSDAQ 투자자별 실데이터
+- `PreMarketBriefingWidget`: Yahoo Finance 미증시 + DART 오늘 공시
+- `DartFilingsWidget`: DART OpenAPI 실데이터, 유형 자동 분류
+- 신규 API 5종: /api/home/{news,global,investor-flow,briefing} + /api/kis/movers
+- 빌드 통과: 64/64 페이지
+
 ### P1 — 이번 주
-- [ ] TradingView 위젯 연동 확인 (차트, 티커바)
+- [x] ~~TradingView 위젯 연동 확인 (차트)~~ → 세션 #17 완료 (iframe 임베드)
 - [ ] 링크 허브 페이지 실제 링크 동작 확인
 - [x] ~~로그인/회원가입 Supabase Auth 연동 테스트~~ → 세션 #13 완료 (Google OAuth 실동작, RLS INSERT 정책 신설)
 - [x] ~~Chat API 하네스 점검~~ → 세션 #13 완료 (Task #26, 6/6 통과)

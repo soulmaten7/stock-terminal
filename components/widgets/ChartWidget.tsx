@@ -1,9 +1,26 @@
 'use client';
 
+import { useState } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
 
 export default function ChartWidget({ symbol = '005930' }: { symbol?: string }) {
-  const krxSymbol = `KRX:${symbol}`;
+  const [ticker, setTicker] = useState(symbol);
+  const [input, setInput] = useState(symbol);
+  const krxSymbol = `KRX:${ticker}`;
+
+  const src =
+    'https://www.tradingview.com/widgetembed/?' +
+    `symbol=${encodeURIComponent(krxSymbol)}` +
+    '&interval=D' +
+    '&hidesidetoolbar=0' +
+    '&hidetoptoolbar=0' +
+    '&symboledit=1' +
+    '&saveimage=0' +
+    '&theme=light' +
+    '&style=1' +
+    '&timezone=Asia%2FSeoul' +
+    '&locale=kr' +
+    '&toolbarbg=f4f4f4';
 
   return (
     <WidgetCard
@@ -11,21 +28,37 @@ export default function ChartWidget({ symbol = '005930' }: { symbol?: string }) 
       subtitle={krxSymbol}
       className="h-full"
       action={
-        <span className="text-[10px] text-[#999]">TradingView · Phase B 심볼 연동</span>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const v = input.trim();
+            if (v) setTicker(v.toUpperCase());
+          }}
+          className="flex items-center gap-1"
+        >
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value.toUpperCase())}
+            className="w-20 text-[10px] bg-[#F0F0F0] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
+            placeholder="005930"
+            maxLength={6}
+          />
+          <button
+            type="submit"
+            className="text-[10px] text-[#0ABAB5] hover:underline"
+          >
+            이동
+          </button>
+        </form>
       }
     >
-      <div className="relative h-full min-h-[300px] bg-[#F8F9FA] flex flex-col items-center justify-center">
-        <div className="text-center px-6">
-          <div className="text-2xl mb-2">📈</div>
-          <p className="text-sm font-bold text-[#333] mb-1">TradingView 차트 위젯</p>
-          <p className="text-xs text-[#999] mb-3">
-            심볼: <span className="font-mono text-[#0ABAB5]">{krxSymbol}</span>
-          </p>
-          <span className="inline-block text-[10px] font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-3 py-1 rounded border border-[#0ABAB5]/20">
-            준비 중 — Phase B에서 TradingView iframe 임베드
-          </span>
-        </div>
-      </div>
+      <iframe
+        key={krxSymbol}
+        src={src}
+        className="w-full h-full border-0"
+        title={`TradingView 차트 — ${krxSymbol}`}
+        allowFullScreen
+      />
     </WidgetCard>
   );
 }
