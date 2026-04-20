@@ -12,7 +12,6 @@ import WarningStocks from './WarningStocks';
 import EconomicCalendar from './EconomicCalendar';
 import IpoSchedule from './IpoSchedule';
 import EarningsCalendar from './EarningsCalendar';
-import PartnerSlot from '@/components/partners/PartnerSlot';
 
 const CARD = 'bg-white border border-[#E5E7EB] rounded-lg overflow-hidden flex flex-col';
 
@@ -27,9 +26,7 @@ export default function HomeClient() {
 
   return (
     <div className="mx-auto px-4 py-4" style={{ maxWidth: 1920 }}>
-      <div className="grid gap-3" style={{ gridTemplateColumns: 'minmax(0,1fr) 240px' }}>
-        {/* ═══ 메인 영역: Bento Grid ═══ */}
-        <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3">
           {/* ROW 1 — 관심종목 | 수급 TOP10 (400px) */}
           <div className={CARD} style={{ height: 400 }}>
             <WatchlistLive />
@@ -73,15 +70,6 @@ export default function HomeClient() {
             </div>
           </div>
         </div>
-
-        {/* ═══ 우측: Partner Slot 예약 공간 (240px) ═══ */}
-        <aside className="hidden min-[1400px]:block">
-          <div className="sticky top-[120px] flex flex-col gap-3">
-            <PartnerSlot slotKey="home-row3-left" variant="card" />
-            <PartnerSlot slotKey="home-sidebar-bottom" variant="card" />
-          </div>
-        </aside>
-      </div>
     </div>
   );
 }
