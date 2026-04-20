@@ -35,9 +35,10 @@ export default function HomeClient() {
       style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(300px,3fr) minmax(600px,6fr) minmax(300px,3fr)',
-        gridTemplateRows: 'repeat(6, minmax(300px, 1fr))',
+        // 6행 × 3행/페이지 = 2페이지 고정
+        // (100vh - 112px sticky - 8px pad_top - 2×8px row_gaps_per_page) / 3
+        gridTemplateRows: 'repeat(6, calc((100vh - 136px) / 3))',
         gap: 8,
-        minHeight: '200vh',
       }}
     >
       {/* ── Page 1 · Row 1 ── */}
@@ -84,6 +85,7 @@ export default function HomeClient() {
           gridColumn: 2,
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
+          gridTemplateRows: '1fr',
           gap: 8,
         }}
       >

@@ -27,7 +27,11 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #18 cont (2026-04-20, 홈 대시보드 레이아웃 v2 완성)
+## 가장 최근 세션 — 세션 #19 (2026-04-20, 그리드 뷰포트 고정 레이아웃 v3)
+- `gridTemplateRows: repeat(6, calc((100vh - 136px) / 3))` — 정확히 2페이지
+- 1440×900, 1920×1080 모두 row3 bottom = 1×viewport ✓
+
+## 세션 #18 cont (2026-04-20, 홈 대시보드 레이아웃 v2 완성)
 - CommunityChatWidget → RealtimeChatWidget (인라인 WidgetCard, "실시간 채팅")
 - 2페이지 CSS 그리드 완성 (6행, minHeight 200vh, 위젯 중요도 재배치)
 - Sticky Header z-40 + TickerBar top-[72px] z-30

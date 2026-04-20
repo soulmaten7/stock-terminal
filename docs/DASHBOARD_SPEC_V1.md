@@ -98,12 +98,23 @@ Stock Terminal 홈 대시보드는 전업투자자가 실제 사용하는 워크
 
 ## 섹션 5: 2페이지 레이아웃 배치도 (레이아웃 v2, 2026-04-20)
 
-### 그리드 정의
+### 그리드 정의 (레이아웃 v3 — 뷰포트 고정)
 ```
 gridTemplateColumns: minmax(300px,3fr) minmax(600px,6fr) minmax(300px,3fr)
-gridTemplateRows: repeat(6, minmax(300px, 1fr))
+gridTemplateRows: repeat(6, calc((100vh - 136px) / 3))
 gap: 8px
-minHeight: 200vh
+
+/* row_h 계산 근거:
+   100vh                  = 뷰포트 전체
+   - 72px  (Header)
+   - 40px  (TickerBar)
+   - 8px   (grid container top padding, py-2)
+   - 2×8px (row 1-2, row 2-3 사이 gap)
+   = 100vh - 136px → 3행이 정확히 1페이지를 채움
+*/
+
+/* 1440×900 기준: row_h = 254.67px */
+/* 1920×1080 기준: row_h = 314.67px */
 ```
 
 ### 위젯 배치표

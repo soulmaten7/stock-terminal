@@ -1,6 +1,23 @@
 <!-- 2026-04-20 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-20] 세션 #19 — 그리드 행 높이 뷰포트 고정 (레이아웃 v3)
+
+### 버그픽스
+- **[레이아웃 v3] gridTemplateRows 뷰포트 기반 고정**: `minmax(300px, 1fr)` → `calc((100vh - 136px) / 3)` 교체.
+  - 136px = Header(72) + TickerBar(40) + grid-pad-top(8) + 2×row-gap(8×2)
+  - 3행 × row_h + 2×gap = 100vh - 112px ← 1페이지 정확히 채움
+  - 1440×900 기준: row_h = 254.67px, 1920×1080 기준: row_h = 314.67px
+- `minHeight: 200vh` 제거 — row 고정으로 불필요
+- sub-grid(R3C2 호가창+체결창)에 `gridTemplateRows: '1fr'` 추가 — 세로 꽉 채움
+
+### 검증
+- 빌드 77/77 통과
+- 1440×900: page1 bottom = 900px (정확), page2 bottom = 1688px (= 2×900 - 112)
+- 1920×1080: page1 bottom = 1080px, page2 bottom = 2048px (= 2×1080 - 112)
+
+---
+
 ## [2026-04-20] 세션 #18 cont — 홈 대시보드 레이아웃 v2
 
 ### 리팩토링

@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 세션 #19 완료 — 2026-04-20 (그리드 행 높이 뷰포트 고정)
+- gridTemplateRows: minmax(300px,1fr) → calc((100vh - 136px) / 3) 교체
+- 정확히 2페이지 고정: 1440×900, 1920×1080 모두 검증
+- minHeight: 200vh 제거
+- sub-grid R3C2 gridTemplateRows: '1fr' 추가
+- 빌드 77/77 통과
+
 ### 세션 #18 cont 완료 — 2026-04-20 (홈 대시보드 레이아웃 v2)
 - CommunityChatWidget → RealtimeChatWidget (인라인 WidgetCard, "실시간 채팅")
 - 2페이지 CSS 그리드 (6행 × 3열, minHeight 200vh), 위젯 중요도 순 재배치
