@@ -13,7 +13,7 @@ import EconomicCalendar from './EconomicCalendar';
 import IpoSchedule from './IpoSchedule';
 import EarningsCalendar from './EarningsCalendar';
 
-const CARD = 'bg-white border border-[#E5E7EB] rounded-lg overflow-hidden flex flex-col';
+const CARD = 'bg-white border border-[#E5E7EB] rounded-md overflow-hidden flex flex-col';
 
 export default function HomeClient() {
   useEffect(() => {
@@ -25,40 +25,40 @@ export default function HomeClient() {
   }, []);
 
   return (
-    <div className="mx-auto px-4 py-4" style={{ maxWidth: 1920 }}>
-      <div className="grid grid-cols-2 gap-3">
-          {/* ROW 1 — 관심종목 | 수급 TOP10 (400px) */}
-          <div className={CARD} style={{ height: 400 }}>
+    <div className="mx-auto px-3 py-3" style={{ maxWidth: 1920 }}>
+      <div className="grid grid-cols-2 gap-2">
+          {/* ROW 1 — 관심종목 | 수급 TOP10 */}
+          <div className={CARD} style={{ height: 320 }}>
             <WatchlistLive />
           </div>
-          <div className={CARD} style={{ height: 400 }}>
+          <div className={CARD} style={{ height: 320 }}>
             <InstitutionalFlow />
           </div>
 
-          {/* ROW 2 — 거래량 급등 | 코스피/코스닥 (300px) */}
-          <div className={CARD} style={{ height: 300 }}>
+          {/* ROW 2 — 거래량 급등 | 코스피/코스닥 */}
+          <div className={CARD} style={{ height: 240 }}>
             <VolumeSpike />
           </div>
-          <div className={CARD} style={{ height: 300 }}>
+          <div className={CARD} style={{ height: 240 }}>
             <MarketMiniCharts />
           </div>
 
           {/* ROW 3~5 — 속보 (tall, row-span-3) | 경제지표·IPO·실적 세로 스택 */}
-          <div className={CARD} style={{ height: 924, gridRow: 'span 3' }}>
+          <div className={CARD} style={{ height: 736, gridRow: 'span 3' }}>
             <BreakingFeed />
           </div>
-          <div className={CARD} style={{ height: 300 }}>
+          <div className={CARD} style={{ height: 240 }}>
             <EconomicCalendar />
           </div>
-          <div className={CARD} style={{ height: 300 }}>
+          <div className={CARD} style={{ height: 240 }}>
             <IpoSchedule />
           </div>
-          <div className={CARD} style={{ height: 300 }}>
+          <div className={CARD} style={{ height: 240 }}>
             <EarningsCalendar />
           </div>
 
           {/* ROW 6 — 프로그램매매 | 글로벌선물 | 경고종목 (col-span-2, 3등분) */}
-          <div className={`${CARD} col-span-2 grid grid-cols-3 gap-0`} style={{ height: 300 }}>
+          <div className={`${CARD} col-span-2 grid grid-cols-3 gap-0`} style={{ height: 240 }}>
             <div className="border-r border-[#F0F0F0] overflow-hidden">
               <ProgramTrading />
             </div>
