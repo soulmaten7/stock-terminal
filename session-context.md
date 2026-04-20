@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 세션 #18 완료 — 2026-04-21 (홈 대시보드 버그픽스 4종)
+- Bug 1: 레거시 채팅 6개 파일 삭제 (ChatPanel/ChatSidebar/FloatingChat/ChatProvider + 2개 스텁) + LayoutShell 정리
+- Bug 2: CommunityChatWidget fixed floating (left:72px, bottom:12px, 320×360, 더블클릭 최소화, /chat 링크) + 좌측 컬럼 3등분 grid
+- Bug 3: WidgetCard href+ArrowUpRight + 14개 위젯 href 주입 + 13개 라우트 페이지 스텁 + VerticalNav 실라우트 연결
+- Bug 4: TradingView iframe URL → s.tradingview.com, hide_side_toolbar=1, allow_symbol_change=1
+- 빌드: 77/77 통과
+
 ### 세션 #17 완료 — 2026-04-21 (Phase B 데이터 통합)
 - `ChartWidget`: TradingView iframe 임베드 (종목 입력 가능)
 - `EconCalendarWidget`: Investing.com SSLecal2 iframe

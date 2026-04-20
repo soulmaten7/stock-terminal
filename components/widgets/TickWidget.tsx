@@ -17,6 +17,7 @@ export default function TickWidget() {
     <WidgetCard
       title="체결창"
       subtitle="체결강도 · Phase B"
+      href="/ticks"
       action={
         <span className="text-[10px] font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-0.5 rounded">
           준비 중

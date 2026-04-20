@@ -9,24 +9,22 @@ export default function ChartWidget({ symbol = '005930' }: { symbol?: string }) 
   const krxSymbol = `KRX:${ticker}`;
 
   const src =
-    'https://www.tradingview.com/widgetembed/?' +
+    'https://s.tradingview.com/widgetembed/?' +
     `symbol=${encodeURIComponent(krxSymbol)}` +
     '&interval=D' +
-    '&hidesidetoolbar=0' +
-    '&hidetoptoolbar=0' +
-    '&symboledit=1' +
-    '&saveimage=0' +
     '&theme=light' +
-    '&style=1' +
-    '&timezone=Asia%2FSeoul' +
+    '&hide_side_toolbar=1' +
+    '&hide_top_toolbar=0' +
+    '&allow_symbol_change=1' +
     '&locale=kr' +
-    '&toolbarbg=f4f4f4';
+    '&timezone=Asia%2FSeoul';
 
   return (
     <WidgetCard
       title="차트"
       subtitle={krxSymbol}
       className="h-full"
+      href="/chart"
       action={
         <form
           onSubmit={(e) => {

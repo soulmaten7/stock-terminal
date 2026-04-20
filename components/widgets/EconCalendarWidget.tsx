@@ -16,7 +16,7 @@ const CALENDAR_SRC =
 
 export default function EconCalendarWidget() {
   return (
-    <WidgetCard title="경제캘린더" subtitle="Investing.com">
+    <WidgetCard title="경제캘린더" subtitle="Investing.com" href="/calendar">
       <iframe
         src={CALENDAR_SRC}
         className="w-full h-full border-0 min-h-[120px]"

@@ -22,6 +22,7 @@ export default function OrderBookWidget() {
     <WidgetCard
       title="호가창"
       subtitle="10단 · Phase B · KIS WebSocket"
+      href="/orderbook"
       action={
         <span className="text-[10px] font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-0.5 rounded">
           준비 중

@@ -1,6 +1,20 @@
 <!-- 2026-04-21 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-21] 세션 #18 — 홈 대시보드 버그픽스 4종
+
+### 버그픽스
+- **[Bug 1] 레거시 채팅 중복 제거**: `components/chat/{ChatPanel,ChatSidebar,FloatingChat,ChatProvider}.tsx` + `components/layout/FloatingChat.tsx` + `components/home/SidebarChat.tsx` 파일 삭제. `LayoutShell`에서 ChatSidebar·FloatingChat·ChatProvider 제거.
+- **[Bug 2] 채팅 fixed 플로팅 전환**: `CommunityChatWidget` — `left: 72px, bottom: 12px, w: 320px, h: 360px, z-index: 40, border-radius: 12px, box-shadow`. 헤더 더블클릭·버튼 클릭 최소화/펼치기 토글. `/chat` 바로가기 ArrowUpRight 버튼. 좌측 컬럼 `grid-rows: repeat(3, minmax(0,1fr))` 균등 3등분 + `padding-bottom: 24px`.
+- **[Bug 3] 위젯 바로가기 + 사이드바 페이지**: `WidgetCard`에 `href` prop + ArrowUpRight 버튼 추가. 14개 위젯 전부 href 주입. 13개 신규 라우트 페이지 생성 (`/watchlist /movers/volume /movers/price /chart /orderbook /ticks /global /filings /calendar /net-buy /investor-flow /briefing /chat`). `VerticalNav` 아이콘 12개 → 실제 라우트 경로로 업데이트.
+- **[Bug 4] TradingView iframe URL 수정**: `s.tradingview.com/widgetembed/` + `hide_side_toolbar=1&allow_symbol_change=1`. 팝업 차단 완성.
+
+### 추가
+- `components/common/WidgetDetailStub.tsx` — 위젯 상세 페이지 공통 스텁 컴포넌트 (테이블 20행)
+- `app/{watchlist,movers/volume,movers/price,chart,orderbook,ticks,global,filings,calendar,net-buy,investor-flow,briefing,chat}/page.tsx` — 13개 상세 페이지 스텁
+
+---
+
 ## [2026-04-21] 세션 #17 — Phase B 데이터 통합 (9개 위젯 실데이터 연동)
 
 ### 추가

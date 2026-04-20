@@ -40,6 +40,7 @@ export default function NetBuyTopWidget() {
     <WidgetCard
       title="실시간 수급 TOP"
       subtitle="KIS API"
+      href="/net-buy"
       action={
         <div className="flex gap-1">
           <button

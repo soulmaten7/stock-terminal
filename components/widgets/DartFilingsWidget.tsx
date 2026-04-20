@@ -47,7 +47,7 @@ export default function DartFilingsWidget() {
   }, []);
 
   return (
-    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI">
+    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/filings">
       {loading && (
         <div className="flex items-center justify-center h-24 text-xs text-[#999]">로딩 중…</div>
       )}

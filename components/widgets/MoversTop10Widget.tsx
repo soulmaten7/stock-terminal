@@ -37,6 +37,7 @@ export default function MoversTop10Widget() {
     <WidgetCard
       title="상승/하락 TOP 10"
       subtitle="KIS API"
+      href="/movers/price"
       action={
         <div className="flex gap-1">
           <button

@@ -37,6 +37,7 @@ export default function GlobalIndicesWidget() {
     <WidgetCard
       title="글로벌 지수·환율·선물·채권"
       subtitle="Yahoo Finance"
+      href="/global"
       action={
         loading ? (
           <span className="text-[10px] text-[#BBB]">로딩 중…</span>

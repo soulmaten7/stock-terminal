@@ -32,6 +32,7 @@ export default function VolumeTop10Widget() {
     <WidgetCard
       title="거래량 급등 TOP 10"
       subtitle="KIS API"
+      href="/movers/volume"
       action={
         loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined
       }

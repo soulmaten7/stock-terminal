@@ -28,7 +28,7 @@ export default function PreMarketBriefingWidget() {
   }, []);
 
   return (
-    <WidgetCard title="장전 브리핑" subtitle="Yahoo Finance · DART">
+    <WidgetCard title="장전 브리핑" subtitle="Yahoo Finance · DART" href="/briefing">
       {loading && (
         <div className="flex items-center justify-center h-24 text-xs text-[#999]">로딩 중…</div>
       )}

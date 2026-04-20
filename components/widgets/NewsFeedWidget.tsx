@@ -31,7 +31,7 @@ export default function NewsFeedWidget() {
   }, []);
 
   return (
-    <WidgetCard title="뉴스 속보" subtitle="한경 · 매경 · 이데일리">
+    <WidgetCard title="뉴스 속보" subtitle="한경 · 매경 · 이데일리" href="/news">
       {loading && (
         <div className="flex items-center justify-center h-24 text-xs text-[#999]">
           로딩 중…

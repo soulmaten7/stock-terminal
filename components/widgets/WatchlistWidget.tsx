@@ -16,6 +16,7 @@ export default function WatchlistWidget() {
       title="관심종목"
       subtitle="Phase B"
       className="h-full"
+      href="/watchlist"
       action={
         <span className="text-[10px] font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-0.5 rounded">
           준비 중

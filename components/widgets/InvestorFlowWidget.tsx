@@ -26,7 +26,7 @@ export default function InvestorFlowWidget() {
   }, []);
 
   return (
-    <WidgetCard title="투자자별 매매동향" subtitle="KIS API · 당일">
+    <WidgetCard title="투자자별 매매동향" subtitle="KIS API · 당일" href="/investor-flow">
       {loading && (
         <div className="flex items-center justify-center h-16 text-xs text-[#999]">로딩 중…</div>
       )}

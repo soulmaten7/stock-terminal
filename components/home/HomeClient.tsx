@@ -27,15 +27,22 @@ export default function HomeClient() {
           alignItems: 'start',
         }}
       >
-        {/* ── 좌측 패널 (3fr): 관심종목 / 거래량급등 / 상승하락 ── */}
-        <div className="flex flex-col gap-2">
-          <div id="section-watchlist" style={{ height: 280 }}>
+        {/* ── 좌측 패널 (3fr): 관심종목 / 거래량급등 / 상승하락 — 3등분 균등 ── */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateRows: 'repeat(3, minmax(0, 1fr))',
+            gap: 8,
+            paddingBottom: 24,
+          }}
+        >
+          <div id="section-watchlist">
             <WatchlistWidget />
           </div>
-          <div id="section-volume" style={{ height: 240 }}>
+          <div id="section-volume">
             <VolumeTop10Widget />
           </div>
-          <div id="section-movers" style={{ height: 240 }}>
+          <div id="section-movers">
             <MoversTop10Widget />
           </div>
         </div>

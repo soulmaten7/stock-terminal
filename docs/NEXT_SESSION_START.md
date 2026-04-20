@@ -135,6 +135,13 @@
 - **Next.js 16 Turbopack 캐시 손상 복구 절차 정립** — `rm -rf .next node_modules/.cache && kill -9 포트 && npm run dev`
 - Mac 단축키 규칙 확정 — 이후 ⌥⌘I / ⌘R / ⌘⇧R 기준
 
+## 세션 #18 완료 (2026-04-21) — 홈 대시보드 버그픽스 4종
+- 레거시 채팅 파일 삭제 + LayoutShell 정리 (Bug 1)
+- CommunityChatWidget fixed floating left:72px + 최소화 토글 (Bug 2)
+- WidgetCard href+↗버튼 + 14위젯 href + 13 라우트 페이지 스텁 + VerticalNav 업데이트 (Bug 3)
+- TradingView s.tradingview.com 도메인 + allow_symbol_change (Bug 4)
+- 빌드: 77/77 OK
+
 ## 다음 세션 우선 작업 — 세 가지 중 선택
 
 **(A) 더미 데이터 제거** (예상 1~2시간) — **W4 인프라 완료 상태, 이제 제품 투명성 확보 차례**
