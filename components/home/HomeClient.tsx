@@ -1,75 +1,91 @@
 'use client';
 
-import { useEffect } from 'react';
-import WatchlistLive from './WatchlistLive';
-import InstitutionalFlow from './InstitutionalFlow';
-import BreakingFeed from './BreakingFeed';
-import VolumeSpike from './VolumeSpike';
-import ProgramTrading from './ProgramTrading';
-import GlobalFutures from './GlobalFutures';
-import MarketMiniCharts from './MarketMiniCharts';
-import WarningStocks from './WarningStocks';
-import EconomicCalendar from './EconomicCalendar';
-import IpoSchedule from './IpoSchedule';
-import EarningsCalendar from './EarningsCalendar';
-
-const CARD = 'bg-white border border-[#E5E7EB] rounded-md overflow-hidden flex flex-col';
+import WatchlistWidget from '@/components/widgets/WatchlistWidget';
+import VolumeTop10Widget from '@/components/widgets/VolumeTop10Widget';
+import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
+import ChartWidget from '@/components/widgets/ChartWidget';
+import OrderBookWidget from '@/components/widgets/OrderBookWidget';
+import TickWidget from '@/components/widgets/TickWidget';
+import GlobalIndicesWidget from '@/components/widgets/GlobalIndicesWidget';
+import DartFilingsWidget from '@/components/widgets/DartFilingsWidget';
+import EconCalendarWidget from '@/components/widgets/EconCalendarWidget';
+import NetBuyTopWidget from '@/components/widgets/NetBuyTopWidget';
+import InvestorFlowWidget from '@/components/widgets/InvestorFlowWidget';
+import NewsFeedWidget from '@/components/widgets/NewsFeedWidget';
+import PreMarketBriefingWidget from '@/components/widgets/PreMarketBriefingWidget';
+import CommunityChatWidget from '@/components/widgets/CommunityChatWidget';
 
 export default function HomeClient() {
-  useEffect(() => {
-    const scrollTop = () => window.scrollTo(0, 0);
-    scrollTop();
-    const timers = [50, 150, 300, 600, 1000].map((ms) => setTimeout(scrollTop, ms));
-    requestAnimationFrame(scrollTop);
-    return () => timers.forEach(clearTimeout);
-  }, []);
-
   return (
-    <div className="mx-auto px-3 py-3" style={{ maxWidth: 1920 }}>
-      <div className="grid grid-cols-2 gap-2">
-          {/* ROW 1 — 관심종목 | 수급 TOP10 */}
-          <div id="section-watchlist" className={CARD} style={{ height: 320 }}>
-            <WatchlistLive />
+    <>
+      <div
+        className="min-h-screen px-2 py-2"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '3fr 6fr 3fr',
+          gap: 8,
+          alignItems: 'start',
+        }}
+      >
+        {/* ── 좌측 패널 (3fr): 관심종목 / 거래량급등 / 상승하락 ── */}
+        <div className="flex flex-col gap-2">
+          <div id="section-watchlist" style={{ height: 280 }}>
+            <WatchlistWidget />
           </div>
-          <div id="section-flow" className={CARD} style={{ height: 320 }}>
-            <InstitutionalFlow />
+          <div id="section-volume" style={{ height: 240 }}>
+            <VolumeTop10Widget />
           </div>
+          <div id="section-movers" style={{ height: 240 }}>
+            <MoversTop10Widget />
+          </div>
+        </div>
 
-          {/* ROW 2 — 거래량 급등 | 코스피/코스닥 */}
-          <div id="section-volume" className={CARD} style={{ height: 240 }}>
-            <VolumeSpike />
+        {/* ── 중앙 패널 (6fr): 차트 70% + 호가/체결 30% ── */}
+        <div className="flex flex-col gap-2">
+          <div id="section-chart" style={{ height: 480 }}>
+            <ChartWidget />
           </div>
-          <div id="section-market-charts" className={CARD} style={{ height: 240 }}>
-            <MarketMiniCharts />
-          </div>
-
-          {/* ROW 3~5 — 속보 (tall, row-span-3) | 경제지표·IPO·실적 세로 스택 */}
-          <div id="section-news" className={CARD} style={{ height: 736, gridRow: 'span 3' }}>
-            <BreakingFeed />
-          </div>
-          <div id="section-economic" className={CARD} style={{ height: 240 }}>
-            <EconomicCalendar />
-          </div>
-          <div id="section-ipo" className={CARD} style={{ height: 240 }}>
-            <IpoSchedule />
-          </div>
-          <div id="section-earnings" className={CARD} style={{ height: 240 }}>
-            <EarningsCalendar />
-          </div>
-
-          {/* ROW 6 — 프로그램매매 | 글로벌선물 | 경고종목 (col-span-2, 3등분) */}
-          <div className={`${CARD} col-span-2 grid grid-cols-3 gap-0`} style={{ height: 240 }}>
-            <div id="section-program" className="border-r border-[#F0F0F0] overflow-hidden">
-              <ProgramTrading />
+          <div className="grid grid-cols-2 gap-2" style={{ height: 240 }}>
+            <div id="section-orderbook">
+              <OrderBookWidget />
             </div>
-            <div id="section-global" className="border-r border-[#F0F0F0] overflow-hidden">
-              <GlobalFutures />
-            </div>
-            <div id="section-warning" className="overflow-hidden">
-              <WarningStocks />
+            <div id="section-tick">
+              <TickWidget />
             </div>
           </div>
         </div>
-    </div>
+
+        {/* ── 우측 패널 (3fr): 수급·뉴스·공시 등 — 세로 스크롤 ── */}
+        <div
+          className="flex flex-col gap-2 overflow-y-auto"
+          style={{ maxHeight: 'calc(100vh - 96px)' }}
+        >
+          <div id="section-briefing" style={{ height: 180 }}>
+            <PreMarketBriefingWidget />
+          </div>
+          <div id="section-global" style={{ height: 200 }}>
+            <GlobalIndicesWidget />
+          </div>
+          <div id="section-net-buy" style={{ height: 200 }}>
+            <NetBuyTopWidget />
+          </div>
+          <div id="section-investor-flow" style={{ height: 160 }}>
+            <InvestorFlowWidget />
+          </div>
+          <div id="section-dart" style={{ height: 200 }}>
+            <DartFilingsWidget />
+          </div>
+          <div id="section-news" style={{ height: 200 }}>
+            <NewsFeedWidget />
+          </div>
+          <div id="section-econ" style={{ height: 160 }}>
+            <EconCalendarWidget />
+          </div>
+        </div>
+      </div>
+
+      {/* ── 좌측 하단 고정: 채팅 위젯 ── */}
+      <CommunityChatWidget />
+    </>
   );
 }

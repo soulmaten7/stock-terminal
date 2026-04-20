@@ -1,5 +1,30 @@
-<!-- 2026-04-18 -->
+<!-- 2026-04-20 -->
 # Stock Terminal — 변경 이력
+
+## [2026-04-20] 세션 #16 — 3-패널 워크스테이션 홈 + 14개 위젯 스텁 (Phase A)
+
+### 추가
+- `components/widgets/` 신규 디렉토리 — 14개 위젯 스텁 생성
+  - WatchlistWidget, VolumeTop10Widget, MoversTop10Widget (좌측)
+  - ChartWidget, OrderBookWidget, TickWidget (중앙)
+  - GlobalIndicesWidget, DartFilingsWidget, EconCalendarWidget (우측)
+  - NetBuyTopWidget, InvestorFlowWidget, NewsFeedWidget, PreMarketBriefingWidget (우측)
+  - CommunityChatWidget (고정 하단)
+- `components/home/HomeClient.tsx` — 3-패널 CSS Grid (3fr 6fr 3fr, gap 8px) 레이아웃으로 전면 재작성
+- `docs/DASHBOARD_SPEC_V1.md` — 설계 원칙·14위젯 상세·데이터소스·Phase 구현 로드맵
+- `docs/DATA_SOURCES_MAPPING.xlsx` 기반 — 엑셀 4개 시트에서 MVP 14위젯 데이터소스 확정
+
+### 변경
+- VerticalNav section id 유지 (section-watchlist, section-volume 등)
+- CommunityChatWidget: fixed bottom-0 left-12 (48px VerticalNav 회피)
+
+### 다음 단계 (Phase B)
+1. TradingView 차트 iframe 임베드 (0.5일)
+2. 경제캘린더 Investing.com iframe (0.5일)
+3. 뉴스 RSS 3종 API 연동 (1.5일)
+4. KIS API 시세·순위 연동 (2~3일)
+
+---
 
 ## [2026-04-18] 세션 #15 — (L) 클릭/리드 개별 삭제 API + 어드민 UI
 
