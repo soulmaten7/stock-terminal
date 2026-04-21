@@ -52,7 +52,7 @@ export default function VerticalNav() {
   };
 
   return (
-    <nav className="hidden md:flex flex-col items-center w-14 bg-white border-r border-[#E5E7EB] py-3 sticky top-0 h-screen shrink-0 z-50 isolate">
+    <nav className="hidden md:flex flex-col items-center w-14 bg-white border-r border-[#E5E7EB] py-3 sticky top-0 h-screen shrink-0 z-50 isolate self-start">
       {ITEMS.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.href);
