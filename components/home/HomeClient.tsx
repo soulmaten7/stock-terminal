@@ -13,7 +13,7 @@ import DartFilingsWidget from '@/components/widgets/DartFilingsWidget';
 import VolumeTop10Widget from '@/components/widgets/VolumeTop10Widget';
 import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
 
-// ── 레이아웃 (Dashboard V1.3) ──────────────────────────────────────────────
+// ── 레이아웃 (Dashboard V1.4) ──────────────────────────────────────────────
 //
 //  Row\Col │    Col 1 (3fr)          │    Col 2 (6fr)                │    Col 3 (3fr)
 // ─────────┼─────────────────────────┼───────────────────────────────┼─────────────────────
@@ -22,11 +22,12 @@ import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
 //          │  관심종목 (bot half)    │                                │  체결창 (bot half)
 //  R3      │                         │  글로벌지수 | 실시간수급      │
 // ─────────┼─────────────────────────┼───────────────────────────────┼─────────────────────
-//  R4      │  상승테마 | DART공시 | 거래량TOP | 상승/하락 | 뉴스속보
-//          │  (500px 고정, 각 위젯 내부 스크롤, 0.75:0.75:0.75:0.75:1)
+//  R4      │  상승/하락 | 거래량TOP | 상승테마 | DART공시 | 뉴스속보
+//          │  (max(500px, 100vh-280px), 내부 스크롤, 0.75:0.75:0.75:0.75:1)
 // ────────────────────────────────────────────────────────────────────────────────────────
 //
-// R4 아래 = 추후 광고 배너 자리 (500px 고정으로 예측 가능한 위치)
+// R4 순서 논리: 가격 움직임(Movers·Volume) → 원인(Themes·DART) → 최신성(News)
+// 페이지 높이 = 200vh 정확히 — R4가 뷰포트-푸터 채움
 
 export default function HomeClient() {
   return (
@@ -35,7 +36,7 @@ export default function HomeClient() {
       style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(300px,3fr) minmax(600px,6fr) minmax(300px,3fr)',
-        gridTemplateRows: 'repeat(3, calc((100vh - 152px) / 3)) 500px',
+        gridTemplateRows: 'repeat(3, calc((100vh - 152px) / 3)) max(500px, calc(100vh - 280px))',
         gap: 8,
       }}
     >
@@ -101,17 +102,17 @@ export default function HomeClient() {
           minHeight: 0,
         }}
       >
+        <div id="section-movers" style={{ minHeight: 0 }}>
+          <MoversTop10Widget size="large" />
+        </div>
+        <div id="section-volume" style={{ minHeight: 0 }}>
+          <VolumeTop10Widget size="large" />
+        </div>
         <div id="section-themes" style={{ minHeight: 0 }}>
           <TrendingThemesWidget size="large" />
         </div>
         <div id="section-dart" style={{ minHeight: 0 }}>
           <DartFilingsWidget size="large" />
-        </div>
-        <div id="section-volume" style={{ minHeight: 0 }}>
-          <VolumeTop10Widget size="large" />
-        </div>
-        <div id="section-movers" style={{ minHeight: 0 }}>
-          <MoversTop10Widget size="large" />
         </div>
         <div id="section-news" style={{ minHeight: 0 }}>
           <NewsFeedWidget size="large" />
