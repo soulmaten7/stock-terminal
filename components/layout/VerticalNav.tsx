@@ -42,7 +42,7 @@ export default function VerticalNav() {
   };
 
   return (
-    <nav className="hidden md:flex flex-col items-center w-14 bg-white border-r border-[#E5E7EB] py-3 sticky top-0 h-screen shrink-0">
+    <nav className="hidden md:flex flex-col items-center w-14 bg-white border-r border-[#E5E7EB] py-3 sticky top-0 h-screen shrink-0 z-40">
       {ITEMS.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.href);
@@ -74,7 +74,7 @@ export default function VerticalNav() {
             />
 
             {/* Hover tooltip */}
-            <span className="absolute left-full ml-2 px-2 py-1 text-xs bg-gray-900 text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-50">
+            <span className="absolute left-full ml-2 px-2 py-1 text-xs bg-gray-900 text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-[100]">
               {item.label}
             </span>
           </Link>

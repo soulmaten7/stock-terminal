@@ -14,7 +14,7 @@ interface WidgetDetailStubProps {
 
 export default function WidgetDetailStub({ title, description, columns, rows }: WidgetDetailStubProps) {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="w-full px-6 py-6">
       <div className="mb-6">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[#999] hover:text-black mb-4">
           <ArrowLeft className="w-4 h-4" />
