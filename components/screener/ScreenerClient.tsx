@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { RotateCcw, Search } from 'lucide-react';
 import { formatMarketCap } from '@/lib/utils/format';
@@ -46,8 +47,28 @@ export default function ScreenerClient() {
   const [page, setPage] = useState(1);
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => { setMounted(true); }, []);
+
+  // URL 파라미터 → 초기 필터 1회 적용 (mount 직후)
+  useEffect(() => {
+    if (!mounted) return;
+    const urlMarket = searchParams.get('market');
+    const urlQ = searchParams.get('q');
+    if (!urlMarket && !urlQ) return;
+
+    setFilters((prev) => {
+      const next = { ...prev };
+      if (urlMarket) {
+        const markets = urlMarket.split(',').filter((m) => ['KOSPI', 'KOSDAQ'].includes(m));
+        if (markets.length > 0) next.market = markets;
+      }
+      if (urlQ) next.keyword = urlQ;
+      return next;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted]);
 
   // 필터 변경 시 page 1로 리셋
   useEffect(() => { setPage(1); }, [filters]);
