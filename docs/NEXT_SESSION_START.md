@@ -1,4 +1,4 @@
-<!-- 2026-04-20 -->
+<!-- 2026-04-21 -->
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
@@ -27,7 +27,15 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #20 (2026-04-20, KIS 차트 실데이터 + lightweight-charts)
+## 가장 최근 세션 — 세션 #21 (2026-04-21, Phase B 위젯 4종 실데이터 실시간 연동)
+- **WatchlistWidget**: /api/kis/price × 5종목, 10초 폴링
+- **OrderBookWidget**: /api/kis/orderbook + price 병렬, 5초 폴링, 5단 호가
+- **TickWidget**: /api/kis/execution, 5초 폴링, 체결강도 실계산
+- **RealtimeChatWidget**: Supabase Realtime INSERT 구독 + /api/chat/send POST, 로그인 토글
+- "준비 중" 배지 전량 제거 · 13개 위젯 모두 실데이터 연동 (EconCalendar iframe 제외)
+- 빌드 78/78 통과, 커밋 `6d3cd13` 푸시
+
+## 세션 #20 (2026-04-20, KIS 차트 실데이터 + lightweight-charts)
 - /api/kis/chart: FHKST03010100, 150일 일봉, symbol/period/from/to 지원
 - ChartWidget: 한국 종목(6자리) → KIS+Lightweight v4 캔들차트 / 영문 → TradingView
 - HomeClient: NewsFeed R4-5 span, EconCalendar R6 전체폭

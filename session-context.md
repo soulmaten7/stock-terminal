@@ -1,4 +1,4 @@
-<!-- 2026-04-20 -->
+<!-- 2026-04-21 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
@@ -34,6 +34,14 @@
 - [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
+
+### 세션 #21 완료 — 2026-04-21 (Phase B 위젯 4종 실데이터 실시간 연동)
+- **WatchlistWidget**: /api/kis/price × 5종목 병렬, 10초 폴링
+- **OrderBookWidget**: /api/kis/orderbook + price 병렬, 5초 폴링, 5단 호가 + 동적 볼륨 바
+- **TickWidget**: /api/kis/execution 최근 10건, 5초 폴링, 체결강도 실계산
+- **RealtimeChatWidget**: Supabase Realtime postgres_changes INSERT 구독 + /api/chat/send POST, 로그인 토글, nickname 해시 매핑
+- "준비 중" 배지 4종 전량 제거, 13개 위젯 모두 실데이터 연동 완료 (EconCalendar iframe 제외)
+- 빌드 78/78 통과, 커밋 `6d3cd13` 푸시 (Claude Code가 타입 린터 fix(types) 포함 amend)
 
 ### 세션 #20 완료 — 2026-04-20 (KIS 차트 실데이터 + lightweight-charts)
 - lightweight-charts v4.2.3 설치

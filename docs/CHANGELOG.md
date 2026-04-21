@@ -1,5 +1,28 @@
-<!-- 2026-04-20 -->
+<!-- 2026-04-21 -->
 # Stock Terminal — 변경 이력
+
+## [2026-04-21] 세션 #21 — Phase B 위젯 4종 실데이터 실시간 연동
+
+### 변경
+- **WatchlistWidget** 재구현: DUMMY 하드코딩 → `/api/kis/price` × 5종목(005930·000660·035420·373220·035720) 병렬 fetch, **10초 폴링**. "준비 중" 배지 제거, subtitle "KIS API · 10초 갱신"으로 교체
+- **OrderBookWidget** 재구현: 하드코딩 ASKS/BIDS → `/api/kis/orderbook` + `/api/kis/price` 병렬 fetch, **5초 폴링**, 5단 호가. maxVol 대비 볼륨 바 동적 렌더. "준비 중" 배지 제거
+- **TickWidget** 재구현: DUMMY 5건 → `/api/kis/execution` (최근 30건 중 10건 표시), **5초 폴링**. 체결강도 실계산 (매수체결 볼륨 / 전체 볼륨 × 100, changeSign 1·2 = 상승). "준비 중" 배지 제거
+- **RealtimeChatWidget** 재구현: DUMMY 6개 + 비활성화 입력 → **Supabase Realtime `postgres_changes` INSERT 구독** + `/api/chat/send` POST. 로그인 상태별 입력창 활성/비활성 토글. nickname = user_id 해시 → NICKS[10] 매핑. 최근 20개 초기 로드 + 실시간 append (max 50). "Phase B" 배지 → "Live"
+
+### 제거
+- "준비 중" 배지 전량 제거 (WatchlistWidget · OrderBookWidget · TickWidget · RealtimeChatWidget)
+- DUMMY 하드코딩 상수 전량 제거
+- `grep "준비 중|Phase B|DUMMY" components/widgets/` → **0건**
+
+### 실데이터 연동 현황
+- 13개 위젯 모두 fetch() 실데이터 연결 (EconCalendar는 iframe)
+- KIS API 경로: price / orderbook / execution / chart / volume-rank / investor-rank / movers / investor (7종)
+- Supabase Realtime: chat_messages INSERT 브로드캐스트
+
+### 빌드
+- 78/78 통과 · 커밋 `6d3cd13` (원커밋 `a764d22` + 메시지 amend) 푸시
+
+---
 
 ## [2026-04-20] 세션 #20 — KIS 차트 실데이터 연동 (lightweight-charts v4)
 
