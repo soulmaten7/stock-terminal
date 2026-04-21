@@ -30,11 +30,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
       <body className="min-h-screen flex flex-col antialiased">
         <AuthProvider>
-          <Header />
-          <TickerBar />
-          <LayoutShell footer={<Footer />}>
-            {children}
-          </LayoutShell>
+          <div className="w-full max-w-screen-2xl mx-auto flex-1 flex flex-col">
+            <Header />
+            <TickerBar />
+            <LayoutShell footer={<Footer />}>
+              {children}
+            </LayoutShell>
+          </div>
         </AuthProvider>
       </body>
     </html>

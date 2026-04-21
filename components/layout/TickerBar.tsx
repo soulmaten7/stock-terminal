@@ -93,10 +93,8 @@ export default function TickerBar() {
 
   return (
     <div className="bg-white border-b border-[#E5E7EB] h-10 overflow-hidden">
-      <div className="max-w-screen-2xl ml-14 h-full">
-        {/* key forces full remount on country change */}
-        <TradingViewTickerTape key={country} country={country} />
-      </div>
+      {/* key forces full remount on country change */}
+      <TradingViewTickerTape key={country} country={country} />
     </div>
   );
 }

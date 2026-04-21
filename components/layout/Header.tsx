@@ -58,7 +58,7 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-[#E5E7EB]">
-      <div className="max-w-screen-2xl ml-14 px-6 h-[72px] flex items-center justify-between gap-8">
+      <div className="px-6 h-[72px] flex items-center justify-between gap-8">
         {/* ── Left: Logo ── */}
         <Link
           href="/"
@@ -177,7 +177,7 @@ export default function Header() {
       {/* ── Search Bar (toggle) ── */}
       {searchOpen && (
         <div className="bg-white border-t border-[#E5E7EB]">
-          <div className="max-w-screen-2xl ml-14 px-6 py-3">
+          <div className="px-6 py-3">
             <form onSubmit={handleSearch}>
               <input
                 ref={searchInputRef}
