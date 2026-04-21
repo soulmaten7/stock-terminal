@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   Home,
   Star,
@@ -34,15 +35,21 @@ const ITEMS = [
 
 export default function VerticalNav() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
-  // 홈은 완전일치, 그 외는 prefix 일치 (상세 페이지 포함 활성화)
+  // 하이드레이션 에러 방지: 클라이언트 mount 후에만 active 상태 적용
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isActive = (href: string) => {
+    if (!mounted) return false;
     if (href === '/') return pathname === '/';
     return pathname === href || pathname.startsWith(href + '/');
   };
 
   return (
-    <nav className="hidden md:flex flex-col items-center w-14 bg-white border-r border-[#E5E7EB] py-3 sticky top-0 h-screen shrink-0 z-40">
+    <nav className="hidden md:flex flex-col items-center w-14 bg-white border-r border-[#E5E7EB] py-3 sticky top-0 h-screen shrink-0 z-50 isolate">
       {ITEMS.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.href);
@@ -73,7 +80,7 @@ export default function VerticalNav() {
               }`}
             />
 
-            {/* Hover tooltip */}
+            {/* Hover tooltip — z-[100] + isolate 조합으로 채팅창 위에 확실히 표시 */}
             <span className="absolute left-full ml-2 px-2 py-1 text-xs bg-gray-900 text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-[100]">
               {item.label}
             </span>
