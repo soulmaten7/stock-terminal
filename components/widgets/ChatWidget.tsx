@@ -163,7 +163,7 @@ export default function ChatWidget() {
   };
 
   return (
-    <>
+    <div className="relative h-full">
       <WidgetCard
         title="마켓 채팅"
         subtitle="Supabase Realtime"
@@ -226,6 +226,6 @@ export default function ChatWidget() {
         onClose={() => setModalOpen(false)}
         participants={participants}
       />
-    </>
+    </div>
   );
 }
