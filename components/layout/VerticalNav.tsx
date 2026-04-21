@@ -37,7 +37,6 @@ export default function VerticalNav() {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
-  // 하이드레이션 에러 방지: 클라이언트 mount 후에만 active 상태 적용
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -63,7 +62,6 @@ export default function VerticalNav() {
               active ? 'bg-[#0ABAB5]/10' : 'hover:bg-gray-100'
             }`}
           >
-            {/* Active state: 왼쪽 컬러 바 */}
             {active && (
               <span
                 aria-hidden="true"
@@ -71,7 +69,6 @@ export default function VerticalNav() {
               />
             )}
 
-            {/* 아이콘: active 시 티파니블루 */}
             <Icon
               className={`w-5 h-5 transition-colors ${
                 active
@@ -80,7 +77,6 @@ export default function VerticalNav() {
               }`}
             />
 
-            {/* Hover tooltip — z-[100] + isolate 조합으로 채팅창 위에 확실히 표시 */}
             <span className="absolute left-full ml-2 px-2 py-1 text-xs bg-gray-900 text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-[100]">
               {item.label}
             </span>

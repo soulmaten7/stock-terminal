@@ -28,9 +28,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: `history.scrollRestoration='manual'` }} />
-      </head>
       <body className="min-h-screen flex flex-col antialiased">
         <AuthProvider>
           <Header />
