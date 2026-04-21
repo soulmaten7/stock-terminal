@@ -40,7 +40,7 @@ export default function HomeClient() {
       className="px-2 py-2"
       style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(280px,2.5fr) minmax(640px,6.5fr) minmax(300px,3fr)',
+        gridTemplateColumns: 'minmax(240px,2.5fr) minmax(560px,6.5fr) minmax(280px,3fr)',
         gridTemplateRows: 'calc(100vh - 152px) max(500px, calc(100vh - 280px))',
         gap: 8,
       }}
