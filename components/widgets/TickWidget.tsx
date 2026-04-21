@@ -1,38 +1,98 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
 
-const DUMMY = [
-  { time: '15:29:58', price: '78,400', qty: 823, side: 'buy' },
-  { time: '15:29:55', price: '78,350', qty: 1204, side: 'sell' },
-  { time: '15:29:52', price: '78,400', qty: 542, side: 'buy' },
-  { time: '15:29:49', price: '78,400', qty: 2100, side: 'buy' },
-  { time: '15:29:46', price: '78,300', qty: 731, side: 'sell' },
-];
+interface Execution {
+  time: string; // HHMMSS
+  price: number;
+  change: number;
+  changeSign: string; // 1=상승 2=하락 3=보합 4=상한 5=하한
+  volume: number;
+}
+
+interface ApiResponse {
+  symbol: string;
+  executions: Execution[];
+}
+
+const DEFAULT_SYMBOL = '005930';
+
+function fmtPrice(n: number): string {
+  return n.toLocaleString('ko-KR');
+}
+
+function fmtTime(t: string): string {
+  if (!t || t.length < 6) return t || '—';
+  return `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`;
+}
+
+// 체결강도 = (매수체결 volume / 전체 volume) × 100
+// KIS changeSign: 1=상한, 2=상승, 3=보합, 4=하한, 5=하락
+function calcStrength(executions: Execution[]): number {
+  if (executions.length === 0) return 0;
+  const recent = executions.slice(0, 10);
+  const upVol = recent
+    .filter((e) => e.changeSign === '1' || e.changeSign === '2')
+    .reduce((s, e) => s + e.volume, 0);
+  const totalVol = recent.reduce((s, e) => s + e.volume, 0);
+  if (totalVol === 0) return 50;
+  return Math.round((upVol / totalVol) * 100);
+}
 
 export default function TickWidget() {
-  const strength = 64.2;
+  const [executions, setExecutions] = useState<Execution[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const res = await fetch(`/api/kis/execution?symbol=${DEFAULT_SYMBOL}`);
+        if (!res.ok) return;
+        const data: ApiResponse = await res.json();
+        if (cancelled) return;
+        setExecutions(data.executions || []);
+      } catch {
+        // noop
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    load();
+    const timer = setInterval(load, 5_000); // 5초마다 갱신
+
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, []);
+
+  const strength = calcStrength(executions);
+  const strengthUp = strength >= 50;
 
   return (
     <WidgetCard
       title="체결창"
-      subtitle="체결강도 · Phase B"
+      subtitle={`${DEFAULT_SYMBOL} · 5초 갱신`}
       href="/ticks"
       action={
-        <span className="text-[10px] font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-0.5 rounded">
-          준비 중
-        </span>
+        loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined
       }
     >
       {/* 체결강도 바 */}
       <div className="px-3 py-2 border-b border-[#F0F0F0]">
         <div className="flex items-center justify-between text-[10px] mb-1">
           <span className="text-[#999]">체결강도</span>
-          <span className="font-bold text-[#FF3B30]">{strength}%</span>
+          <span className={`font-bold ${strengthUp ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
+            {strength}%
+          </span>
         </div>
         <div className="h-1.5 bg-[#E5E7EB] rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#FF3B30] rounded-full"
+            className={`h-full rounded-full ${strengthUp ? 'bg-[#FF3B30]' : 'bg-[#0051CC]'}`}
             style={{ width: `${Math.min(strength, 100)}%` }}
           />
         </div>
@@ -47,13 +107,30 @@ export default function TickWidget() {
           </div>
         </div>
         <div role="rowgroup">
-          {DUMMY.map((t, i) => (
-            <div key={i} role="row" className="grid grid-cols-3 px-3 py-1 text-xs border-b border-[#F0F0F0]">
-              <span role="cell" className="text-[#999]">{t.time}</span>
-              <span role="cell" className={`text-right font-bold ${t.side === 'buy' ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>{t.price}</span>
-              <span role="cell" className="text-right text-[#555]">{t.qty.toLocaleString()}</span>
-            </div>
-          ))}
+          {executions.slice(0, 10).map((t, i) => {
+            const up = t.changeSign === '1' || t.changeSign === '2';
+            return (
+              <div
+                key={i}
+                role="row"
+                className="grid grid-cols-3 px-3 py-1 text-xs border-b border-[#F0F0F0]"
+              >
+                <span role="cell" className="text-[#999]">{fmtTime(t.time)}</span>
+                <span
+                  role="cell"
+                  className={`text-right font-bold ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}
+                >
+                  {fmtPrice(t.price)}
+                </span>
+                <span role="cell" className="text-right text-[#555]">
+                  {t.volume.toLocaleString()}
+                </span>
+              </div>
+            );
+          })}
+          {!loading && executions.length === 0 && (
+            <div className="px-3 py-4 text-xs text-[#999] text-center">데이터 없음</div>
+          )}
         </div>
       </div>
     </WidgetCard>
