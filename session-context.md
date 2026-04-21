@@ -35,6 +35,27 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 세션 #22 완료 — 2026-04-21 (홈 대시보드 V1 → V1.5 재구성)
+- **신규 위젯**: TrendingThemesWidget (KRX 섹터 TOP 5)
+- **제거**: 레거시 RealtimeChatWidget (grid cell로 흡수), 발견피드/시장활성도 탭
+- **홈 레이아웃 V1.5 확정**:
+  - 3-column: `minmax(280px,2.5fr) minmax(640px,6.5fr) minmax(300px,3fr)`
+  - Col 1: 마켓채팅 + 글로벌 지수 (하단 스왑 — 관심종목 → 글로벌 지수)
+  - Col 2: 차트 + (관심종목 | 상승테마 1:1)
+  - Col 3: 호가창 + 체결창
+  - R4 discovery: 상승/하락 | 거래량 | 실시간수급 | DART | 뉴스
+  - R4 높이: `max(500px, calc(100vh - 280px))` 뷰포트 채움
+  - 단일 스크롤 레이어 (`min-h-0` + `flex-1 overflow-y-auto`)
+- **Yahoo Finance 401 복구**: `yahoo-finance2` v3 npm 설치, `new YahooFinance()` 인스턴스화
+- **KOSPI 200 추가** (`^KS200`) → 9개 지수, 30초 폴링
+- **NetBuyTopWidget**: size/inline props 추가 (R4용)
+- **Col 1 폭 축소**: 3fr → 2.5fr
+- 8개 커밋: c42ccb9 → b928742 → 56b8114 → f6c4606 → 624d204 → d4ab8ae → 86685b6 → 49d449f
+- STEP_4~8_COMMAND.md 5개 파일 생성 (Cowork → Claude Code 핸드오프 아카이브)
+
+### P1 (다음 세션 우선)
+- **KIS API 빈 배열 이슈**: 상승/하락 TOP 10, 거래량 급등 TOP 10 "데이터 없음" — 엔드포인트 조사 필요
+
 ### 세션 #21 완료 — 2026-04-21 (Phase B 위젯 4종 실데이터 실시간 연동)
 - **WatchlistWidget**: /api/kis/price × 5종목 병렬, 10초 폴링
 - **OrderBookWidget**: /api/kis/orderbook + price 병렬, 5초 폴링, 5단 호가 + 동적 볼륨 바

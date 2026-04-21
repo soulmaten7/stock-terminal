@@ -27,7 +27,42 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 가장 최근 세션 — 세션 #21 (2026-04-21, Phase B 위젯 4종 실데이터 실시간 연동)
+## 다음 세션 P1 (가장 우선) — KIS API 빈 배열 이슈
+
+### 증상
+- 홈 R4 영역의 **상승/하락 TOP 10** 위젯 "데이터 없음"
+- 홈 R4 영역의 **거래량 급등 TOP 10** 위젯 "데이터 없음"
+- 다른 KIS 위젯들(관심종목, 호가, 체결, 실시간수급)은 정상 → 엔드포인트별 문제
+
+### 조사 시작점
+- `/api/kis/movers?dir=up` / `/api/kis/movers?dir=down` 엔드포인트 — 응답 확인 (`curl http://localhost:3333/api/kis/movers?dir=up`)
+- `/api/kis/volume-rank` 엔드포인트 — 응답 확인
+- KIS API 문서의 TR ID 및 파라미터 확인, 장중/장외 시간 영향 여부
+- `app/api/kis/movers/route.ts`, `app/api/kis/volume-rank/route.ts` 소스 점검
+
+### 검증 방법
+- 서버 로그에서 KIS 원본 응답 확인
+- Postman/curl로 KIS API 직접 호출
+- 혹시 장마감 후 데이터 공백 가능성 (장중 16:00 이전 재확인)
+
+---
+
+## 가장 최근 세션 — 세션 #22 (2026-04-21, 홈 대시보드 V1 → V1.5 재구성)
+- **신규**: TrendingThemesWidget (KRX 섹터 TOP 5)
+- **V1.5 홈 레이아웃 확정**:
+  - Col 1: 마켓채팅 + 글로벌 지수 (폭 3fr → 2.5fr)
+  - Col 2: 차트 + (관심종목 | 상승테마 1:1)
+  - Col 3: 호가창 + 체결창
+  - R4 discovery (5위젯 순서): 상승/하락 | 거래량 | 실시간수급 | DART | 뉴스
+  - R4 높이 뷰포트 채움 `max(500px, calc(100vh - 280px))`
+  - 단일 스크롤 레이어 아키텍처
+- **Yahoo Finance 401 복구**: yahoo-finance2 v3 설치 + KOSPI 200(`^KS200`) 추가 + 30초 폴링 + 서버 캐시 30초
+- **NetBuyTopWidget**: size/inline props 확장 (R4 대형 배치)
+- **제거**: 레거시 RealtimeChatWidget, 발견피드/시장활성도 탭
+- 8개 커밋 (c42ccb9 → 49d449f), STEP_4~8_COMMAND.md 5개 아카이브
+- 데이터 검증: `/api/home/global` 9개 지수 전부 실데이터 (KOSPI 6,388.47 +2.72%, KOSPI 200 962.26 +2.83% 등)
+
+## 세션 #21 (2026-04-21, Phase B 위젯 4종 실데이터 실시간 연동)
 - **WatchlistWidget**: /api/kis/price × 5종목, 10초 폴링
 - **OrderBookWidget**: /api/kis/orderbook + price 병렬, 5초 폴링, 5단 호가
 - **TickWidget**: /api/kis/execution, 5초 폴링, 체결강도 실계산

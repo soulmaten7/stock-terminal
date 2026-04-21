@@ -1,6 +1,51 @@
 <!-- 2026-04-21 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-21] 세션 #22 — 홈 대시보드 V1 → V1.5 재구성 (zone 철학 + Yahoo 복구 + KOSPI 200)
+
+### 커밋 8개 (시간순)
+1. `c42ccb9` Step 1/3: `TrendingThemesWidget` 신규 + `ChatSidebar` 신설
+2. `b928742` Step 2/3: 4-row 대시보드 + 우측 고정 ChatSidebar 레이아웃
+3. `56b8114` Step 3/3: 레거시 `RealtimeChatWidget` 제거 + nav 아이콘 + detail 페이지 스텁
+4. `f6c4606` Step 4: 3-row grid + 마켓채팅을 grid cell로 편입 + 탭 통합 (발견피드/시장활성도)
+5. `624d204` V1.2: 2-zone 대시보드 (R1-R3 viewport 고정 + R4 discovery 스크롤)
+6. `d4ab8ae` V1.3: R4 플랫 레이아웃 (5개 단일 위젯) + 500px 고정 + 단일 스크롤 레이어
+7. `86685b6` V1.4: R4 뷰포트 채움 `max(500px, calc(100vh - 280px))` + F-pattern 재배치
+8. `49d449f` V1.5: zone 재구성 + KOSPI 200 추가 + 30초 폴링 + Yahoo 401 해결
+
+### 주요 변경
+- **홈 레이아웃 V1.5 확정**: 3-column grid `minmax(280px,2.5fr) minmax(640px,6.5fr) minmax(300px,3fr)` × 4-row (R1 차트/R2 위젯/R3 discovery 헤더 + 서브그리드/R4 flat 5위젯)
+- **신규 위젯**: `TrendingThemesWidget` (KRX 섹터 TOP 5)
+- **제거**: 레거시 `RealtimeChatWidget` (grid cell로 통합되면서 중복 제거), "발견피드"/"시장활성도" 탭 구조
+- **R4 discovery 영역 확정 순서 (좌→우)**: 상승/하락 TOP 10 | 거래량 급등 TOP 10 | 실시간 수급 TOP | DART 공시 피드 | 뉴스속보
+  - 내러티브 흐름: "가격 이동 → 원인 → 뉴스 컨텍스트"
+  - 단일 스크롤 레이어 아키텍처 (`min-h-0` + `flex-1 overflow-y-auto`)
+- **글로벌 지수 위젯 (Yahoo Finance)**:
+  - `yahoo-finance2` v3 npm 설치 → Yahoo 401 crumb 인증 이슈 해결
+  - **KOSPI 200 (`^KS200`) 추가** → 한국 투자자용 선물 기준 지수 (9개로 확장)
+  - 30초 자동 폴링 (`setInterval` + cleanup)
+  - 서버 캐시 5분 → 30초
+  - breaking change: v3는 `new YahooFinance()` 인스턴스화 필요
+- **NetBuyTopWidget 확장**: `size?: 'default' | 'large'` + `inline?` props 추가 (R4용)
+- **Col 1 폭 축소**: 3fr → 2.5fr (마켓채팅 + 글로벌 지수 컬럼)
+- **위젯 위치 스왑**:
+  - Col 1 하단: 관심종목 → 글로벌 지수
+  - R3 중앙: 글로벌지수|실시간수급 → 관심종목|상승테마
+
+### 파일 변경
+- 신규: `app/api/home/global/route.ts` (yahoo-finance2 기반 재작성), `components/widgets/TrendingThemesWidget.tsx`, `components/layout/ChatSidebar.tsx` (→ 나중에 grid cell로 흡수)
+- 수정: `components/home/HomeClient.tsx` (여러 차례 grid 포뮬러 재조정), `components/widgets/GlobalIndicesWidget.tsx` (KOSPI 200 + 폴링), `components/widgets/NetBuyTopWidget.tsx` (size/inline props), `components/widgets/MoversTop10Widget.tsx` (size/inline props), `components/widgets/VolumeTop10Widget.tsx`, `components/widgets/DartFeedWidget.tsx`, `components/widgets/NewsFeedWidget.tsx`
+- 문서: `docs/STEP_4~8_COMMAND.md` 5개 생성 (Cowork → Claude Code 핸드오프 아카이브)
+
+### 데이터 검증
+- `/api/home/global` 9개 지수 전부 실데이터 (KOSPI 6,388.47 +2.72%, KOSPI 200 962.26 +2.83%, KOSDAQ 1,179.03 +0.36%, ...)
+- 홈 시각 검증: Col 1 글로벌지수 정상, R3 관심종목+상승테마 1:1, R4 5위젯 순서 일치
+
+### 알려진 이슈 (P1 다음 세션)
+- **상승/하락 TOP 10, 거래량 급등 TOP 10 "데이터 없음"** — KIS API 응답 빈 배열. 엔드포인트 조사 필요
+
+---
+
 ## [2026-04-21] 세션 #21 — Phase B 위젯 4종 실데이터 실시간 연동
 
 ### 변경
