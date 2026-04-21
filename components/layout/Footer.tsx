@@ -43,7 +43,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#0ABAB5] border-t border-[#088F8C] mt-auto">
       {/* Main Footer */}
-      <div className="max-w-[1600px] mx-auto px-4 py-12">
+      <div className="max-w-[1600px] mx-auto pl-16 pr-4 py-12">
         <div className="grid grid-cols-4 gap-8">
           {FOOTER_SECTIONS.map((section) => (
             <div key={section.title}>
@@ -70,7 +70,7 @@ export default function Footer() {
 
       {/* Disclaimer */}
       <div className="border-t border-[#088F8C] bg-[#088F8C]">
-        <div className="max-w-[1600px] mx-auto px-4 py-6">
+        <div className="max-w-[1600px] mx-auto pl-16 pr-4 py-6">
           <p className="text-xs text-white leading-relaxed mb-3">
             본 사이트는 공개된 금융 데이터를 정리하여 제공하며, 투자 권유 또는 투자 자문이 아닙니다.
             모든 투자 판단과 그에 따른 결과의 책임은 투자자 본인에게 있습니다.
