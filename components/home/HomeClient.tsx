@@ -55,6 +55,7 @@ export default function HomeClient() {
           gridTemplateRows: '45fr 10fr 45fr',
           gap: 8,
           minHeight: 0,
+          minWidth: 0,
         }}
       >
         <div id="section-chat" style={{ minHeight: 0 }}><ChatWidget /></div>
@@ -72,6 +73,7 @@ export default function HomeClient() {
           gridTemplateRows: '1fr 1fr',
           gap: 8,
           minHeight: 0,
+          minWidth: 0,
         }}
       >
         <div id="section-chart" style={{ minHeight: 0 }}><ChartWidget /></div>
@@ -99,6 +101,7 @@ export default function HomeClient() {
           gridTemplateRows: '1fr 1fr',
           gap: 8,
           minHeight: 0,
+          minWidth: 0,
         }}
       >
         <div id="section-news" style={{ minHeight: 0 }}><NewsFeedWidget /></div>
@@ -115,6 +118,7 @@ export default function HomeClient() {
           gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
           gap: 8,
           minHeight: 0,
+          minWidth: 0,
         }}
       >
         <div id="section-movers" style={{ minHeight: 0 }}>
