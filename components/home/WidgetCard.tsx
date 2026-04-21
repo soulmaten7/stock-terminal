@@ -13,6 +13,8 @@ interface WidgetCardProps {
   bodyClassName?: string;
   /** 상세 페이지 경로 — 설정 시 우상단 ↗ 버튼 표시 */
   href?: string;
+  /** 제목 텍스트 크기 variant — R4 발견 존에서 large 사용 */
+  size?: 'default' | 'large';
 }
 
 export default function WidgetCard({
@@ -23,18 +25,22 @@ export default function WidgetCard({
   className = '',
   bodyClassName = '',
   href,
+  size = 'default',
 }: WidgetCardProps) {
   const router = useRouter();
+  const titleCls = size === 'large' ? 'text-lg font-bold text-black' : 'text-sm font-bold text-black';
+  const subtitleCls = size === 'large' ? 'text-xs text-[#999999]' : 'text-xs text-[#999999]';
+  const headerPadCls = size === 'large' ? 'px-4 py-4' : 'px-4 py-3';
 
   return (
     <div
       className={`bg-white border border-[#E5E7EB] rounded-lg overflow-hidden flex flex-col h-full ${className}`}
     >
       {(title || action || href) && (
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#F0F0F0] shrink-0">
+        <div className={`flex items-center justify-between ${headerPadCls} border-b border-[#F0F0F0] shrink-0`}>
           <div className="flex items-baseline gap-2">
-            {title && <h3 className="text-sm font-bold text-black">{title}</h3>}
-            {subtitle && <span className="text-xs text-[#999999]">{subtitle}</span>}
+            {title && <h3 className={titleCls}>{title}</h3>}
+            {subtitle && <span className={subtitleCls}>{subtitle}</span>}
           </div>
           <div className="flex items-center gap-1">
             {action && <div>{action}</div>}

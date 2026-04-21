@@ -17,7 +17,9 @@ const SOURCE_COLOR: Record<string, string> = {
   '이데일리': 'text-[#009900]',
 };
 
-export default function NewsFeedWidget() {
+interface Props { size?: 'default' | 'large' }
+
+export default function NewsFeedWidget({ size = 'default' }: Props = {}) {
   const [items, setItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -31,7 +33,7 @@ export default function NewsFeedWidget() {
   }, []);
 
   return (
-    <WidgetCard title="뉴스 속보" subtitle="한경 · 매경 · 이데일리" href="/news">
+    <WidgetCard title="뉴스 속보" subtitle="한경 · 매경 · 이데일리" href="/news" size={size}>
       {loading && (
         <div className="flex items-center justify-center h-24 text-xs text-[#999]">
           로딩 중…

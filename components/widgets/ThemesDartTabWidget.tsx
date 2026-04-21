@@ -5,7 +5,9 @@ import WidgetCard from '@/components/home/WidgetCard';
 import TrendingThemesWidget from './TrendingThemesWidget';
 import DartFilingsWidget from './DartFilingsWidget';
 
-export default function ThemesDartTabWidget() {
+interface Props { size?: 'default' | 'large' }
+
+export default function ThemesDartTabWidget({ size = 'default' }: Props = {}) {
   const [tab, setTab] = useState<'themes' | 'dart'>('themes');
 
   const tabs = [
@@ -14,7 +16,7 @@ export default function ThemesDartTabWidget() {
   ];
 
   return (
-    <WidgetCard title="발견 피드" subtitle="테마 · 공시">
+    <WidgetCard title="발견 피드" subtitle="테마 · 공시" size={size}>
       <div className="h-full flex flex-col">
         <div className="flex border-b border-[#E5E7EB] shrink-0">
           {tabs.map((t) => (

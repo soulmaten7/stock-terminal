@@ -5,7 +5,9 @@ import WidgetCard from '@/components/home/WidgetCard';
 import VolumeTop10Widget from './VolumeTop10Widget';
 import MoversTop10Widget from './MoversTop10Widget';
 
-export default function VolumeMoversTabWidget() {
+interface Props { size?: 'default' | 'large' }
+
+export default function VolumeMoversTabWidget({ size = 'default' }: Props = {}) {
   const [tab, setTab] = useState<'volume' | 'movers'>('volume');
 
   const tabs = [
@@ -14,7 +16,7 @@ export default function VolumeMoversTabWidget() {
   ];
 
   return (
-    <WidgetCard title="시장 활성도" subtitle="KIS API · 분 단위">
+    <WidgetCard title="시장 활성도" subtitle="KIS API · 분 단위" size={size}>
       <div className="h-full flex flex-col">
         <div className="flex border-b border-[#E5E7EB] shrink-0">
           {tabs.map((t) => (
