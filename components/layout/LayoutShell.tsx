@@ -10,14 +10,14 @@ interface LayoutShellProps {
 
 export default function LayoutShell({ children, footer }: LayoutShellProps) {
   return (
-    <div className="flex flex-1">
-      <VerticalNav />
-      <div className="flex-1 min-w-0 flex flex-col">
-        <main className="flex-1">
+    <>
+      <div className="flex flex-1">
+        <VerticalNav />
+        <main className="flex-1 min-w-0">
           {children}
         </main>
-        {footer}
       </div>
-    </div>
+      {footer}
+    </>
   );
 }
