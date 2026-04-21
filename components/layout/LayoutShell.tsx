@@ -14,7 +14,9 @@ export default function LayoutShell({ children, footer }: LayoutShellProps) {
       <div className="flex flex-1">
         <VerticalNav />
         <main className="flex-1 min-w-0">
-          {children}
+          <div className="max-w-screen-2xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
       {footer}
