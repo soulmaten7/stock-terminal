@@ -27,23 +27,18 @@
 - **관심종목 폴링**: 10초 (3영업일 경과 후 복구 완료)
 - **DB 시딩**: stocks 2,780건 + link_hub 56건 완료
 
-## 다음 세션 P1 (가장 우선) — KIS API 빈 배열 이슈
+## 다음 세션 P1 — 장중 재검증 (09:00-15:30 KST)
 
-### 증상
-- 홈 R4 영역의 **상승/하락 TOP 10** 위젯 "데이터 없음"
-- 홈 R4 영역의 **거래량 급등 TOP 10** 위젯 "데이터 없음"
-- 다른 KIS 위젯들(관심종목, 호가, 체결, 실시간수급)은 정상 → 엔드포인트별 문제
+세션 #22에서 KIS API 빈 응답은 해결됐지만, 장마감 상태로 검증해서 일부 거동 재확인 필요:
 
-### 조사 시작점
-- `/api/kis/movers?dir=up` / `/api/kis/movers?dir=down` 엔드포인트 — 응답 확인 (`curl http://localhost:3333/api/kis/movers?dir=up`)
-- `/api/kis/volume-rank` 엔드포인트 — 응답 확인
-- KIS API 문서의 TR ID 및 파라미터 확인, 장중/장외 시간 영향 여부
-- `app/api/kis/movers/route.ts`, `app/api/kis/volume-rank/route.ts` 소스 점검
+### 재검증 항목
+1. **volume-rank `spike` 값**: 장마감 후 `avgVolume == volume`이라 1.0x로만 표시됨. 장중에 실제 "거래량 급등" 배수(예: 3.5x) 제대로 계산되는지 확인
+2. **movers `dir=down` 정렬**: 장마감 상태에서 일부 양수값 혼재 관찰됨. 장중 재호출 시 하락률 순으로 정상 정렬되는지 확인
+3. **장중 vol_inrt 단위 실측**: 만약 KIS `vol_inrt`가 실제로는 % 단위였다면 Step 10 보수적 패치를 철회하고 `vol_inrt` 재활용 검토 (장중 실측 후 판단)
 
-### 검증 방법
-- 서버 로그에서 KIS 원본 응답 확인
-- Postman/curl로 KIS API 직접 호출
-- 혹시 장마감 후 데이터 공백 가능성 (장중 16:00 이전 재확인)
+### 확인 방법
+- `curl http://localhost:3333/api/kis/volume-rank | head -c 500` 로 장중 응답 확인
+- Chrome MCP로 홈 R4 스크린샷 — spike 값이 1.0x 이상 다양하게 표시되는지
 
 ---
 

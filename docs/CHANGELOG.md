@@ -1,9 +1,32 @@
 <!-- 2026-04-21 -->
 # Stock Terminal — 변경 이력
 
-## [2026-04-21] 세션 #22 — 홈 대시보드 V1 → V1.5 재구성 (zone 철학 + Yahoo 복구 + KOSPI 200)
+## [2026-04-21] 세션 #22 — 홈 대시보드 V1 → V1.5 재구성 + KIS P1 복구 (Step 9-10)
 
-### 커밋 8개 (시간순)
+### Step 9 — KIS 상승/하락/거래량 API 빈 응답 해결 (커밋 `f198862`)
+- **근본 원인**: `movers` 엔드포인트 경로가 TR ID와 완전 불일치 — `FHPST01700000`(등락률 순위)이 `/quotations/volume-rank`(거래량 순위) 경로로 호출되어 KIS가 조용히 빈 `output` 반환
+- **movers 라우트 완전 재작성**:
+  - 경로: `/uapi/domestic-stock/v1/quotations/volume-rank` → `/uapi/domestic-stock/v1/ranking/fluctuation`
+  - 파라미터 14개 재구성 (KIS 공식 GitHub 샘플 verbatim): `fid_rsfl_rate1/2`, `fid_input_cnt_1`, `fid_prc_cls_code` 신규 추가
+  - symbol 필드: `stck_shrn_iscd` 우선 + `mksc_shrn_iscd` fallback
+- **volume-rank 라우트 파라미터 교정**:
+  - `FID_COND_SCR_DIV_CODE`: `20101` → `20171`
+  - `FID_INPUT_DATE_1`: `''` → `'0'` (빈 문자열 거부)
+  - `FID_BLNG_CLS_CODE`: `'0'`(평균거래량) → `'1'`(거래증가율 = "급등")
+- **실측 검증 (Chrome MCP localhost:3333 라이브)**:
+  - `/api/kis/movers?dir=up` 10건 반환 — 국일제지 +29.83%, 에이에프더블류 +29.93% 등 상한가 근처
+  - `/api/kis/movers?dir=down` 10건 반환
+  - `/api/kis/volume-rank` 10건 반환 — 화인써키트, 현대리바트 등
+- 근거: https://github.com/koreainvestment/open-trading-api (examples_llm/domestic_stock/fluctuation + volume_rank)
+
+### Step 10 — volume-rank spike 단위 버그 수정 (보수적 패치)
+- **발견된 이슈**: 모든 종목의 `spike` 값이 `101x`로 동일 표시
+- **원인**: KIS `vol_inrt` 필드가 %가 아닌 basis points(‱) 단위로 추정 — `/100 + 1` 공식이 10000이란 값을 만나면 101 산출
+- **수정**: `vol_inrt` 의존 제거, 수동 계산(`volume / avgVolume`)만 사용
+  - 장마감 후에는 `avgVolume == volume`이라 일시적으로 1.0x 표시 (허위값 대신 투명한 0~1 표현)
+  - 장중(09:00-15:30 KST)에는 실제 거래량 배수로 정확히 작동
+
+### 커밋 9개 (시간순)
 1. `c42ccb9` Step 1/3: `TrendingThemesWidget` 신규 + `ChatSidebar` 신설
 2. `b928742` Step 2/3: 4-row 대시보드 + 우측 고정 ChatSidebar 레이아웃
 3. `56b8114` Step 3/3: 레거시 `RealtimeChatWidget` 제거 + nav 아이콘 + detail 페이지 스텁
@@ -12,6 +35,8 @@
 6. `d4ab8ae` V1.3: R4 플랫 레이아웃 (5개 단일 위젯) + 500px 고정 + 단일 스크롤 레이어
 7. `86685b6` V1.4: R4 뷰포트 채움 `max(500px, calc(100vh - 280px))` + F-pattern 재배치
 8. `49d449f` V1.5: zone 재구성 + KOSPI 200 추가 + 30초 폴링 + Yahoo 401 해결
+9. `f198862` fix(kis): 등락률/거래량 순위 API 빈 응답 해결 (P1) — Step 9
+10. (pending) fix(kis): volume-rank spike 단위 버그 수정 — Step 10
 
 ### 주요 변경
 - **홈 레이아웃 V1.5 확정**: 3-column grid `minmax(280px,2.5fr) minmax(640px,6.5fr) minmax(300px,3fr)` × 4-row (R1 차트/R2 위젯/R3 discovery 헤더 + 서브그리드/R4 flat 5위젯)

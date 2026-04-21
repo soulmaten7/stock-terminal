@@ -53,8 +53,16 @@
 - 8개 커밋: c42ccb9 → b928742 → 56b8114 → f6c4606 → 624d204 → d4ab8ae → 86685b6 → 49d449f
 - STEP_4~8_COMMAND.md 5개 파일 생성 (Cowork → Claude Code 핸드오프 아카이브)
 
-### P1 (다음 세션 우선)
-- **KIS API 빈 배열 이슈**: 상승/하락 TOP 10, 거래량 급등 TOP 10 "데이터 없음" — 엔드포인트 조사 필요
+### P1 — 세션 #22 내 해결 ✅
+- ~~KIS API 빈 배열 이슈: 상승/하락 TOP 10, 거래량 급등 TOP 10 "데이터 없음"~~ → Step 9 (커밋 `f198862`) 해결
+  - movers: 경로 `/quotations/volume-rank` → `/ranking/fluctuation` + 파라미터 14개 재구성
+  - volume-rank: SCR_DIV `20101→20171`, INPUT_DATE `'' → '0'`, BLNG_CLS `0→1`
+  - Chrome MCP 실측: 국일제지 +29.83%, 화인써키트 +29.85% 등 3개 엔드포인트 모두 실데이터
+- ~~volume-rank spike 값 전부 `101x` 표시 버그~~ → Step 10 (보수적 패치: `vol_inrt` 제거, 수동 계산만)
+
+### P1 (다음 세션 우선) — 장중 재검증
+- **spike 값 장중 거동 확인**: 장마감 상태에선 `avgVolume == volume`이라 1.0x 표시. 장중(09:00-15:30 KST)에 실제 배수 값 확인 + 2배 이상 급등 종목 실측
+- **movers dir=down 정렬 재검증**: 장마감 후 양수값 혼재 관찰됨 — 장중 재확인 시 올바른 하락 순 정렬 나오는지
 
 ### 세션 #21 완료 — 2026-04-21 (Phase B 위젯 4종 실데이터 실시간 연동)
 - **WatchlistWidget**: /api/kis/price × 5종목 병렬, 10초 폴링

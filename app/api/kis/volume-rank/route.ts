@@ -27,11 +27,10 @@ export async function GET() {
     const items = (data.output || []).slice(0, 10).map((item: Record<string, string>) => {
       const volume = parseInt(item.acml_vol || '0', 10);
       const avgVolume = parseInt(item.avrg_vol || '1', 10);
-      // KIS가 직접 주는 vol_inrt (거래량증가율 %) 우선 사용, 없으면 수동 계산
-      const volIncreaseRate = parseFloat(item.vol_inrt || '0');
-      const spike = volIncreaseRate > 0
-        ? parseFloat((volIncreaseRate / 100 + 1).toFixed(1))  // +250% → 3.5x
-        : (avgVolume > 0 ? parseFloat((volume / avgVolume).toFixed(1)) : 0);
+      // 장중: volume/avgVolume = 실제 거래량 배수
+      // 장마감: avgVolume == volume 이라 1.0x 표시 (허위값 대신 투명하게)
+      // vol_inrt (KIS 거래량증가율) 는 basis points 단위 추정되어 사용 보류
+      const spike = avgVolume > 0 ? parseFloat((volume / avgVolume).toFixed(1)) : 0;
 
       return {
         symbol: item.mksc_shrn_iscd || '',
