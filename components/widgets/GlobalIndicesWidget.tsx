@@ -12,6 +12,7 @@ interface QuoteItem {
 
 const PLACEHOLDER: QuoteItem[] = [
   { label: 'KOSPI',      price: '—',    change: '—',      up: true },
+  { label: 'KOSPI 200',  price: '—',    change: '—',      up: true },
   { label: 'KOSDAQ',     price: '—',    change: '—',      up: true },
   { label: 'S&P 500 선물', price: '—', change: '—',      up: false },
   { label: 'NASDAQ 선물', price: '—',  change: '—',      up: false },
@@ -26,11 +27,17 @@ export default function GlobalIndicesWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/home/global')
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d) => { if (d.items?.length) setItems(d.items); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    const fetchData = () => {
+      fetch('/api/home/global')
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
+        .then((d) => { if (d.items?.length) setItems(d.items); })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    };
+
+    fetchData();
+    const interval = setInterval(fetchData, 30_000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

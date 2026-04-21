@@ -17,7 +17,12 @@ function fmtBn(val: number): string {
   return `${sign}${val.toLocaleString('ko-KR')}억`;
 }
 
-export default function NetBuyTopWidget() {
+interface Props {
+  inline?: boolean;
+  size?: 'default' | 'large';
+}
+
+export default function NetBuyTopWidget({ inline = false, size = 'default' }: Props = {}) {
   const [tab, setTab] = useState<'foreign' | 'inst'>('foreign');
   const [data, setData] = useState<{ foreignTop: NetItem[]; institutionTop: NetItem[] }>({
     foreignTop: [],
@@ -36,28 +41,25 @@ export default function NetBuyTopWidget() {
   const items = tab === 'foreign' ? data.foreignTop : data.institutionTop;
   const netKey = tab === 'foreign' ? 'foreignBuy' : 'institutionBuy';
 
-  return (
-    <WidgetCard
-      title="실시간 수급 TOP"
-      subtitle="KIS API"
-      href="/net-buy"
-      action={
-        <div className="flex gap-1">
-          <button
-            onClick={() => setTab('foreign')}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded ${tab === 'foreign' ? 'bg-[#0ABAB5] text-white' : 'text-[#999]'}`}
-          >
-            외국인
-          </button>
-          <button
-            onClick={() => setTab('inst')}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded ${tab === 'inst' ? 'bg-[#0ABAB5] text-white' : 'text-[#999]'}`}
-          >
-            기관
-          </button>
-        </div>
-      }
-    >
+  const tabButtons = (
+    <div className="flex gap-1">
+      <button
+        onClick={() => setTab('foreign')}
+        className={`text-[10px] font-bold px-2 py-0.5 rounded ${tab === 'foreign' ? 'bg-[#0ABAB5] text-white' : 'text-[#999]'}`}
+      >
+        외국인
+      </button>
+      <button
+        onClick={() => setTab('inst')}
+        className={`text-[10px] font-bold px-2 py-0.5 rounded ${tab === 'inst' ? 'bg-[#0ABAB5] text-white' : 'text-[#999]'}`}
+      >
+        기관
+      </button>
+    </div>
+  );
+
+  const body = (
+    <>
       {loading && (
         <div className="flex items-center justify-center h-20 text-xs text-[#999]">로딩 중…</div>
       )}
@@ -88,6 +90,29 @@ export default function NetBuyTopWidget() {
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (inline) {
+    return (
+      <div className="h-full flex flex-col overflow-hidden">
+        <div className="flex justify-end px-3 py-2 border-b border-[#F0F0F0] shrink-0">
+          {tabButtons}
+        </div>
+        <div className="flex-1 overflow-auto">{body}</div>
+      </div>
+    );
+  }
+
+  return (
+    <WidgetCard
+      title="실시간 수급 TOP"
+      subtitle="KIS API"
+      href="/net-buy"
+      size={size}
+      action={tabButtons}
+    >
+      {body}
     </WidgetCard>
   );
 }

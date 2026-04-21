@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
+import YahooFinance from 'yahoo-finance2';
+
+const yahooFinance = new YahooFinance();
 
 const SYMBOLS = [
   { symbol: '^KS11',    label: 'KOSPI' },
+  { symbol: '^KS200',   label: 'KOSPI 200' },
   { symbol: '^KQ11',    label: 'KOSDAQ' },
   { symbol: 'ES=F',     label: 'S&P 500 선물' },
   { symbol: 'NQ=F',     label: 'NASDAQ 선물' },
@@ -10,10 +14,6 @@ const SYMBOLS = [
   { symbol: 'CL=F',     label: 'WTI 원유' },
   { symbol: '^TNX',     label: '미국채 10Y' },
 ];
-
-const YF_URL =
-  'https://query1.finance.yahoo.com/v7/finance/quote?symbols=' +
-  SYMBOLS.map((s) => encodeURIComponent(s.symbol)).join(',');
 
 interface QuoteItem {
   label: string;
@@ -30,23 +30,13 @@ function fmt(n: number, digits = 2): string {
 
 export async function GET() {
   try {
-    const res = await fetch(YF_URL, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; StockTerminal/1.0)',
-        Accept: 'application/json',
-      },
-      signal: AbortSignal.timeout(5000),
-      next: { revalidate: 300 },
-    });
-
-    if (!res.ok) throw new Error(`Yahoo Finance ${res.status}`);
-
-    const json = await res.json();
-    const results: Record<string, unknown>[] = json?.quoteResponse?.result ?? [];
+    const symbols = SYMBOLS.map((s) => s.symbol);
+    const quotes = await yahooFinance.quote(symbols);
+    const resultsArr = (Array.isArray(quotes) ? quotes : [quotes]) as Array<Record<string, unknown>>;
 
     const labelMap = Object.fromEntries(SYMBOLS.map((s) => [s.symbol, s.label]));
 
-    const items: QuoteItem[] = results.map((q) => {
+    const items: QuoteItem[] = resultsArr.map((q) => {
       const price = (q.regularMarketPrice as number) ?? 0;
       const changePct = (q.regularMarketChangePercent as number) ?? 0;
       const sym = q.symbol as string;
@@ -62,15 +52,16 @@ export async function GET() {
       };
     });
 
-    // preserve original order
     const ordered = SYMBOLS.map((s) => items.find((i) => i.symbol === s.symbol)).filter(Boolean) as QuoteItem[];
 
     return NextResponse.json(
       { items: ordered },
-      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=60' } },
+      { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=10' } },
     );
   } catch (e) {
     console.error('[api/home/global]', e);
     return NextResponse.json({ items: [] }, { status: 502 });
   }
 }
+
+export const revalidate = 30;
