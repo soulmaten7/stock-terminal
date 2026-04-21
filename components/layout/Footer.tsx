@@ -42,50 +42,56 @@ const FOOTER_SECTIONS = [
 export default function Footer() {
   return (
     <footer className="bg-[#0ABAB5] border-t border-[#088F8C] mt-auto">
-      {/* Main Footer */}
-      <div className="max-w-[1600px] mx-auto pl-16 pr-4 py-12">
-        <div className="grid grid-cols-4 gap-8">
-          {FOOTER_SECTIONS.map((section) => (
-            <div key={section.title}>
-              <h4 className="font-bold text-white mb-4">{section.title}</h4>
-              <ul className="space-y-2">
-                {'links' in section && section.links
-                  ? section.links.map((link) => (
-                      <li key={link.label}>
-                        <Link href={link.href} className="text-sm text-white hover:text-[#C9A96E] transition-colors">
-                          {link.label}
-                        </Link>
-                      </li>
-                    ))
-                  : section.items?.map((item) => (
-                      <li key={item} className="text-sm text-white">
-                        {item}
-                      </li>
-                    ))}
-              </ul>
-            </div>
-          ))}
+      {/* Main Footer — sidebar+main 구조 미러링 */}
+      <div className="flex">
+        <div className="w-14 shrink-0" aria-hidden />
+        <div className="flex-1 min-w-0 px-2 py-12">
+          <div className="grid grid-cols-4 gap-8">
+            {FOOTER_SECTIONS.map((section) => (
+              <div key={section.title}>
+                <h4 className="font-bold text-white mb-4">{section.title}</h4>
+                <ul className="space-y-2">
+                  {'links' in section && section.links
+                    ? section.links.map((link) => (
+                        <li key={link.label}>
+                          <Link href={link.href} className="text-sm text-white hover:text-[#C9A96E] transition-colors">
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))
+                    : section.items?.map((item) => (
+                        <li key={item} className="text-sm text-white">
+                          {item}
+                        </li>
+                      ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Disclaimer */}
+      {/* Disclaimer — sidebar+main 구조 미러링 */}
       <div className="border-t border-[#088F8C] bg-[#088F8C]">
-        <div className="max-w-[1600px] mx-auto pl-16 pr-4 py-6">
-          <p className="text-xs text-white leading-relaxed mb-3">
-            본 사이트는 공개된 금융 데이터를 정리하여 제공하며, 투자 권유 또는 투자 자문이 아닙니다.
-            모든 투자 판단과 그에 따른 결과의 책임은 투자자 본인에게 있습니다.
-            본 사이트에서 제공하는 정보의 정확성, 완전성을 보장하지 않으며, 이를 기반으로 한 투자 손실에 대해 어떠한 책임도 지지 않습니다.
-          </p>
-          <p className="text-xs text-white leading-relaxed mb-6">
-            광고 배너는 광고주가 직접 등록한 것이며, 본 사이트는 광고 내용에 대한 책임을 지지 않습니다.
-            인증업체 마크는 사업자등록 확인을 의미하며, 상품의 품질이나 수익을 보증하지 않습니다.
-          </p>
-          <div className="text-xs text-white space-y-1">
-            <p>상호명: [추후 입력] | 대표자: [추후 입력] | 사업자등록번호: [추후 입력]</p>
-            <p>통신판매업 신고번호: [추후 입력] | 주소: [추후 입력]</p>
-          </div>
-          <div className="mt-6 pt-4 border-t border-[#077D7A] text-xs text-white text-center">
-            &copy; 2026 StockTerminal. All rights reserved.
+        <div className="flex">
+          <div className="w-14 shrink-0" aria-hidden />
+          <div className="flex-1 min-w-0 px-2 py-6">
+            <p className="text-xs text-white leading-relaxed mb-3">
+              본 사이트는 공개된 금융 데이터를 정리하여 제공하며, 투자 권유 또는 투자 자문이 아닙니다.
+              모든 투자 판단과 그에 따른 결과의 책임은 투자자 본인에게 있습니다.
+              본 사이트에서 제공하는 정보의 정확성, 완전성을 보장하지 않으며, 이를 기반으로 한 투자 손실에 대해 어떠한 책임도 지지 않습니다.
+            </p>
+            <p className="text-xs text-white leading-relaxed mb-6">
+              광고 배너는 광고주가 직접 등록한 것이며, 본 사이트는 광고 내용에 대한 책임을 지지 않습니다.
+              인증업체 마크는 사업자등록 확인을 의미하며, 상품의 품질이나 수익을 보증하지 않습니다.
+            </p>
+            <div className="text-xs text-white space-y-1">
+              <p>상호명: [추후 입력] | 대표자: [추후 입력] | 사업자등록번호: [추후 입력]</p>
+              <p>통신판매업 신고번호: [추후 입력] | 주소: [추후 입력]</p>
+            </div>
+            <div className="mt-6 pt-4 border-t border-[#077D7A] text-xs text-white text-center">
+              &copy; 2026 StockTerminal. All rights reserved.
+            </div>
           </div>
         </div>
       </div>
