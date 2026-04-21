@@ -18,7 +18,32 @@ const THEMES: Theme[] = [
   { name: '방산', change: 1.6, count: 15 },
 ];
 
-export default function TrendingThemesWidget() {
+interface Props { inline?: boolean }
+
+export default function TrendingThemesWidget({ inline = false }: Props = {}) {
+  const content = (
+    <div className="flex flex-col h-full divide-y divide-[#F5F5F5]">
+      {THEMES.map((theme) => (
+        <div
+          key={theme.name}
+          className="flex items-center justify-between py-2 px-3"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-sm font-medium text-[#1A1A2E] truncate">{theme.name}</span>
+            <span className="text-[10px] text-[#999] shrink-0">{theme.count}종목</span>
+          </div>
+          <span className="text-sm font-bold text-[#FF3B30] shrink-0">
+            +{theme.change.toFixed(1)}%
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+
+  if (inline) {
+    return <div className="h-full overflow-auto">{content}</div>;
+  }
+
   return (
     <WidgetCard
       title="상승 테마"
@@ -32,22 +57,7 @@ export default function TrendingThemesWidget() {
         </div>
       }
     >
-      <div className="flex flex-col h-full divide-y divide-[#F5F5F5]">
-        {THEMES.map((theme) => (
-          <div
-            key={theme.name}
-            className="flex items-center justify-between py-2 px-3"
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-sm font-medium text-[#1A1A2E] truncate">{theme.name}</span>
-              <span className="text-[10px] text-[#999] shrink-0">{theme.count}종목</span>
-            </div>
-            <span className="text-sm font-bold text-[#FF3B30] shrink-0">
-              +{theme.change.toFixed(1)}%
-            </span>
-          </div>
-        ))}
-      </div>
+      {content}
     </WidgetCard>
   );
 }

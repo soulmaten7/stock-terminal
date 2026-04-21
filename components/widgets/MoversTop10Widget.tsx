@@ -11,7 +11,9 @@ interface MoverItem {
   changePercent: number;
 }
 
-export default function MoversTop10Widget() {
+interface Props { inline?: boolean }
+
+export default function MoversTop10Widget({ inline = false }: Props = {}) {
   const [tab, setTab] = useState<'up' | 'down'>('up');
   const [upItems, setUpItems] = useState<MoverItem[]>([]);
   const [downItems, setDownItems] = useState<MoverItem[]>([]);
@@ -33,32 +35,29 @@ export default function MoversTop10Widget() {
 
   const data = tab === 'up' ? upItems : downItems;
 
-  return (
-    <WidgetCard
-      title="상승/하락 TOP 10"
-      subtitle="KIS API"
-      href="/movers/price"
-      action={
-        <div className="flex gap-1">
-          <button
-            onClick={() => setTab('up')}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
-              tab === 'up' ? 'bg-[#FF3B30] text-white' : 'text-[#999] hover:text-black'
-            }`}
-          >
-            상승
-          </button>
-          <button
-            onClick={() => setTab('down')}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
-              tab === 'down' ? 'bg-[#0051CC] text-white' : 'text-[#999] hover:text-black'
-            }`}
-          >
-            하락
-          </button>
-        </div>
-      }
-    >
+  const tabButtons = (
+    <div className="flex gap-1">
+      <button
+        onClick={() => setTab('up')}
+        className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
+          tab === 'up' ? 'bg-[#FF3B30] text-white' : 'text-[#999] hover:text-black'
+        }`}
+      >
+        상승
+      </button>
+      <button
+        onClick={() => setTab('down')}
+        className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${
+          tab === 'down' ? 'bg-[#0051CC] text-white' : 'text-[#999] hover:text-black'
+        }`}
+      >
+        하락
+      </button>
+    </div>
+  );
+
+  const body = (
+    <>
       {loading && (
         <div className="flex items-center justify-center h-20 text-xs text-[#999]">로딩 중…</div>
       )}
@@ -102,6 +101,28 @@ export default function MoversTop10Widget() {
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (inline) {
+    return (
+      <div className="h-full flex flex-col overflow-hidden">
+        <div className="flex justify-end px-3 py-2 border-b border-[#F0F0F0] shrink-0">
+          {tabButtons}
+        </div>
+        <div className="flex-1 overflow-auto">{body}</div>
+      </div>
+    );
+  }
+
+  return (
+    <WidgetCard
+      title="상승/하락 TOP 10"
+      subtitle="KIS API"
+      href="/movers/price"
+      action={tabButtons}
+    >
+      {body}
     </WidgetCard>
   );
 }

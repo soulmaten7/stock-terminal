@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
-import { MessageCircle, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import WidgetCard from '@/components/home/WidgetCard';
 
 interface ChatMsg {
   id: string;
@@ -31,11 +31,7 @@ function nickFrom(uid: string | null): string {
   return NICKS[hash % NICKS.length];
 }
 
-interface ChatSidebarProps {
-  onClose?: () => void;
-}
-
-export default function ChatSidebar({ onClose }: ChatSidebarProps) {
+export default function ChatWidget() {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [input, setInput] = useState('');
@@ -117,55 +113,53 @@ export default function ChatSidebar({ onClose }: ChatSidebarProps) {
   };
 
   return (
-    <aside className="fixed right-0 top-[112px] bottom-0 w-[280px] z-40 bg-white border-l border-[#E5E7EB] flex flex-col shadow-lg">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-[#F0F0F0] shrink-0">
-        <div className="flex items-center gap-1.5">
-          <MessageCircle className="w-4 h-4 text-[#0ABAB5]" />
-          <span className="text-sm font-bold text-[#1A1A2E]">마켓 채팅</span>
-          <span className="text-[10px] text-[#0ABAB5] font-bold">Live</span>
+    <WidgetCard
+      title="마켓 채팅"
+      subtitle="Supabase Realtime"
+      action={
+        <div className="flex items-center gap-1">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF3B30] animate-pulse" />
+          <span className="text-[10px] text-[#FF3B30] font-bold">Live</span>
         </div>
-        {onClose && (
-          <button onClick={onClose} className="text-[#999] hover:text-[#333] transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-
-      <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3 min-h-0">
-        {messages.length === 0 && (
-          <div className="text-[11px] text-[#999] text-center py-4">
-            아직 메시지가 없습니다. 첫 메시지를 남겨보세요.
-          </div>
-        )}
-        {messages.map((m) => (
-          <div key={m.id}>
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <span className="text-sm font-bold text-[#0ABAB5]">
-                {m.nickname || nickFrom(m.user_id)}
-              </span>
-              <span className="text-xs text-[#BBBBBB]">{fmtTime(m.created_at)}</span>
+      }
+    >
+      <div className="h-full flex flex-col">
+        <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3 min-h-0">
+          {messages.length === 0 && (
+            <div className="text-[11px] text-[#999] text-center py-4">
+              아직 메시지가 없습니다. 첫 메시지를 남겨보세요.
             </div>
-            <p className="text-sm text-[#333] leading-snug break-all">{m.content}</p>
-          </div>
-        ))}
-      </div>
+          )}
+          {messages.map((m) => (
+            <div key={m.id}>
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <span className="text-sm font-bold text-[#0ABAB5]">
+                  {m.nickname || nickFrom(m.user_id)}
+                </span>
+                <span className="text-xs text-[#BBBBBB]">{fmtTime(m.created_at)}</span>
+              </div>
+              <p className="text-sm text-[#333] leading-snug break-all">{m.content}</p>
+            </div>
+          ))}
+        </div>
 
-      <form onSubmit={handleSend} className="border-t border-[#F0F0F0] px-3 py-2 shrink-0">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={loggedIn ? '메시지 입력… ($종목명 태그 지원)' : '로그인 후 채팅 참여'}
-          disabled={!loggedIn || sending}
-          maxLength={500}
-          className={`w-full text-sm border border-[#E5E7EB] rounded px-2.5 py-2 ${
-            loggedIn
-              ? 'bg-white text-black focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]'
-              : 'bg-[#F8F9FA] text-[#999] cursor-not-allowed'
-          }`}
-        />
-        {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
-      </form>
-    </aside>
+        <form onSubmit={handleSend} className="sticky bottom-0 border-t border-[#F0F0F0] bg-white px-3 py-2 shrink-0">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={loggedIn ? '메시지 입력… ($종목명 태그 지원)' : '로그인 후 채팅 참여'}
+            disabled={!loggedIn || sending}
+            maxLength={500}
+            className={`w-full text-sm border border-[#E5E7EB] rounded px-2.5 py-2 ${
+              loggedIn
+                ? 'bg-white text-black focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]'
+                : 'bg-[#F8F9FA] text-[#999] cursor-not-allowed'
+            }`}
+          />
+          {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
+        </form>
+      </div>
+    </WidgetCard>
   );
 }

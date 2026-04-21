@@ -15,6 +15,7 @@ import {
   Globe,
   MessageCircle,
   Sun,
+  PieChart,
 } from 'lucide-react';
 
 const ITEMS = [
@@ -30,6 +31,7 @@ const ITEMS = [
   { icon: Calendar,      label: '경제캘린더',        href: '/calendar' },
   { icon: Sun,           label: '장전 브리핑',       href: '/briefing' },
   { icon: Globe,         label: '글로벌 지수',       href: '/global' },
+  { icon: PieChart,      label: '분석',              href: '/analytics' },
   { icon: MessageCircle, label: '커뮤니티 채팅',     href: '/chat' },
 ];
 

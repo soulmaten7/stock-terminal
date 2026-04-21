@@ -33,7 +33,9 @@ function fmtTime(rcept_dt: string): string {
   return `${rcept_dt.slice(4, 6)}/${rcept_dt.slice(6, 8)}`;
 }
 
-export default function DartFilingsWidget() {
+interface Props { inline?: boolean }
+
+export default function DartFilingsWidget({ inline = false }: Props = {}) {
   const [items, setItems] = useState<Filing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -46,8 +48,8 @@ export default function DartFilingsWidget() {
       .finally(() => setLoading(false));
   }, []);
 
-  return (
-    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/filings">
+  const content = (
+    <>
       {loading && (
         <div className="flex items-center justify-center h-24 text-xs text-[#999]">로딩 중…</div>
       )}
@@ -87,6 +89,16 @@ export default function DartFilingsWidget() {
           )}
         </ul>
       )}
+    </>
+  );
+
+  if (inline) {
+    return <div className="h-full overflow-auto">{content}</div>;
+  }
+
+  return (
+    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/filings">
+      {content}
     </WidgetCard>
   );
 }

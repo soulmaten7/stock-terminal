@@ -6,7 +6,6 @@ import TickerBar from '@/components/layout/TickerBar';
 import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
 import LayoutShell from '@/components/layout/LayoutShell';
-import ChatSidebar from '@/components/layout/ChatSidebar';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -36,12 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Header />
           <TickerBar />
-          <div className="md:pr-[280px]">
-            <LayoutShell footer={<Footer />}>
-              {children}
-            </LayoutShell>
-          </div>
-          <ChatSidebar />
+          <LayoutShell footer={<Footer />}>
+            {children}
+          </LayoutShell>
         </AuthProvider>
       </body>
     </html>

@@ -1,28 +1,23 @@
 'use client';
 
 import WatchlistWidget from '@/components/widgets/WatchlistWidget';
-import VolumeTop10Widget from '@/components/widgets/VolumeTop10Widget';
-import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
 import ChartWidget from '@/components/widgets/ChartWidget';
 import OrderBookWidget from '@/components/widgets/OrderBookWidget';
 import TickWidget from '@/components/widgets/TickWidget';
 import GlobalIndicesWidget from '@/components/widgets/GlobalIndicesWidget';
-import DartFilingsWidget from '@/components/widgets/DartFilingsWidget';
 import NetBuyTopWidget from '@/components/widgets/NetBuyTopWidget';
-import InvestorFlowWidget from '@/components/widgets/InvestorFlowWidget';
-import NewsFeedWidget from '@/components/widgets/NewsFeedWidget';
-import TrendingThemesWidget from '@/components/widgets/TrendingThemesWidget';
+import VolumeMoversTabWidget from '@/components/widgets/VolumeMoversTabWidget';
+import ThemesDartTabWidget from '@/components/widgets/ThemesDartTabWidget';
+import ChatWidget from '@/components/widgets/ChatWidget';
 
-// ── 1페이지 그리드 배치 (4행 × 1뷰포트) ──────────────────────────────────────
+// ── 1페이지 그리드 배치 (3행 × 1뷰포트) ──────────────────────────────────────
 //
-//  Row\Col │    Col 1 (3fr)       │    Col 2 (6fr)           │    Col 3 (3fr)
-// ─────────┼─────────────────────┼─────────────────────────┼──────────────────
-//  Row 1   │  관심종목            │  차트 (span 2)            │  글로벌 지수
-//  Row 2   │  거래량 급등         │  ↑                       │  실시간 수급 TOP
-//  Row 3   │  상승 테마           │  호가창 + 체결창           │  DART 공시
-//  Row 4   │  상승/하락           │  투자자별                 │  뉴스 속보
+//  Row\Col │    Col 1 (3fr)              │    Col 2 (6fr)           │    Col 3 (3fr)
+// ─────────┼──────────────────────────────┼─────────────────────────┼──────────────────────
+//  Row 1   │  관심종목                    │  차트 (span 2)            │  글로벌 지수
+//  Row 2   │  거래량+상승하락 탭          │  ↑                       │  실시간 수급 TOP
+//  Row 3   │  상승테마+DART공시 탭        │  호가창 + 체결창          │  마켓 채팅
 // ──────────────────────────────────────────────────────────────────────────────
-// 우측 ChatSidebar (fixed right-0 w-[280px]) — layout.tsx에서 전역 마운트
 
 export default function HomeClient() {
   return (
@@ -31,8 +26,7 @@ export default function HomeClient() {
       style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(300px,3fr) minmax(600px,6fr) minmax(300px,3fr)',
-        // 4행 × 1페이지 — sticky(112) + 3gaps(24) = 136 → 152 (여유 포함)
-        gridTemplateRows: 'repeat(4, calc((100vh - 152px) / 4))',
+        gridTemplateRows: 'repeat(3, calc((100vh - 152px) / 3))',
         gap: 8,
       }}
     >
@@ -55,9 +49,9 @@ export default function HomeClient() {
 
       {/* ── Row 2 ── */}
 
-      {/* R2 C1 — 거래량 급등 */}
-      <div id="section-volume" style={{ gridRow: 2, gridColumn: 1 }}>
-        <VolumeTop10Widget />
+      {/* R2 C1 — 거래량+상승하락 탭 */}
+      <div id="section-volume-movers" style={{ gridRow: 2, gridColumn: 1 }}>
+        <VolumeMoversTabWidget />
       </div>
 
       {/* R2 C3 — 실시간 수급 TOP */}
@@ -67,9 +61,9 @@ export default function HomeClient() {
 
       {/* ── Row 3 ── */}
 
-      {/* R3 C1 — 상승 테마 */}
-      <div id="section-themes" style={{ gridRow: 3, gridColumn: 1 }}>
-        <TrendingThemesWidget />
+      {/* R3 C1 — 상승테마+DART공시 탭 */}
+      <div id="section-themes-dart" style={{ gridRow: 3, gridColumn: 1 }}>
+        <ThemesDartTabWidget />
       </div>
 
       {/* R3 C2 — 호가창 + 체결창 sub-grid */}
@@ -88,26 +82,9 @@ export default function HomeClient() {
         <div id="section-tick"><TickWidget /></div>
       </div>
 
-      {/* R3 C3 — DART 공시 */}
-      <div id="section-dart" style={{ gridRow: 3, gridColumn: 3 }}>
-        <DartFilingsWidget />
-      </div>
-
-      {/* ── Row 4 ── */}
-
-      {/* R4 C1 — 상승/하락 TOP */}
-      <div id="section-movers" style={{ gridRow: 4, gridColumn: 1 }}>
-        <MoversTop10Widget />
-      </div>
-
-      {/* R4 C2 — 투자자별 매매동향 */}
-      <div id="section-investor-flow" style={{ gridRow: 4, gridColumn: 2 }}>
-        <InvestorFlowWidget />
-      </div>
-
-      {/* R4 C3 — 뉴스 속보 */}
-      <div id="section-news" style={{ gridRow: 4, gridColumn: 3 }}>
-        <NewsFeedWidget />
+      {/* R3 C3 — 마켓 채팅 */}
+      <div id="section-chat" style={{ gridRow: 3, gridColumn: 3 }}>
+        <ChatWidget />
       </div>
     </div>
   );
