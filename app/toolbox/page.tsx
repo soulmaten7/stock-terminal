@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import ToolboxClient from '@/components/toolbox/ToolboxClient';
 
-export const metadata = { title: '투자자 도구함 — Stock Terminal' };
+export const metadata = { title: '참고 사이트 — Stock Terminal' };
 
 const CATEGORY_LABELS: Record<string, string> = {
   news:       '뉴스',

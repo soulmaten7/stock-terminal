@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   Home,
+  Filter,
   Star,
   LineChart,
   TrendingUp,
@@ -16,10 +17,12 @@ import {
   Sun,
   Globe,
   PieChart,
+  BookMarked,
 } from 'lucide-react';
 
 const ITEMS = [
   { icon: Home,       label: '홈',           href: '/' },
+  { icon: Filter,     label: '종목 발굴',     href: '/screener' },
   { icon: Star,       label: '관심종목',      href: '/watchlist' },
   { icon: LineChart,  label: '차트',          href: '/chart' },
   { icon: TrendingUp, label: '상승/하락',     href: '/movers/price' },
@@ -31,6 +34,7 @@ const ITEMS = [
   { icon: Sun,        label: '장전 브리핑',   href: '/briefing' },
   { icon: Globe,      label: '글로벌 지수',   href: '/global' },
   { icon: PieChart,   label: '시장 지도',     href: '/analytics' },
+  { icon: BookMarked, label: '참고 사이트',   href: '/toolbox' },
 ];
 
 export default function VerticalNav() {

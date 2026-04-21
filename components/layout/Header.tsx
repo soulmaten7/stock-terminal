@@ -2,17 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Search, X, User, Star, Bell, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
-
-const NAV_ITEMS = [
-  { href: '/', label: '홈' },
-  { href: '/screener', label: '스크리너' },
-  { href: '/toolbox', label: '도구함' },
-];
 
 const COUNTRIES: { code: Country; name: string; flag: string }[] = [
   { code: 'KR', name: '한국', flag: '🇰🇷' },
@@ -20,7 +14,6 @@ const COUNTRIES: { code: Country; name: string; flag: string }[] = [
 ];
 
 export default function Header() {
-  const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuthStore();
   const { country, setCountry } = useCountryStore();
@@ -63,11 +56,6 @@ export default function Header() {
     router.push('/');
   };
 
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname.startsWith(href);
-  };
-
   return (
     <header className="bg-white border-b border-[#E5E7EB]">
       <div className="max-w-[1920px] mx-auto px-6 h-[72px] flex items-center justify-between gap-8">
@@ -82,23 +70,6 @@ export default function Header() {
             STOCK TERMINAL
           </span>
         </Link>
-
-        {/* ── Center: Nav ── */}
-        <nav className="flex items-center gap-10">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm tracking-wide transition-colors ${
-                isActive(item.href)
-                  ? 'text-[#0ABAB5] font-bold'
-                  : 'text-black hover:text-[#0ABAB5]'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
 
         {/* ── Right: Search | Country | Bell | Watchlist | Profile ── */}
         <div className="flex items-center gap-4 shrink-0">

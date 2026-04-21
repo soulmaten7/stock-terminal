@@ -91,7 +91,7 @@ export default function ScreenerClient() {
   if (!mounted) {
     return (
       <div className="max-w-[1400px] mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-black mb-8">종목 스크리너</h1>
+        <h1 className="text-3xl font-bold text-black mb-8">종목 발굴</h1>
         <div className="space-y-4">{Array.from({ length: 8 }).map((_, i) => (<div key={i} className="h-12 bg-[#F0F0F0] animate-pulse" />))}</div>
       </div>
     );
@@ -103,7 +103,7 @@ export default function ScreenerClient() {
 
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-black mb-2">종목 스크리너</h1>
+      <h1 className="text-3xl font-bold text-black mb-2">종목 발굴</h1>
       <p className="text-[#999999] text-xs mb-6">
         KOSPI + KOSDAQ 전체 상장종목 · 시가총액순 · 재무/가격 필터는 다음 업데이트에서 추가
       </p>
