@@ -16,9 +16,12 @@ function fmt(n: number) {
   return n.toLocaleString('ko-KR');
 }
 
-interface Props { inline?: boolean }
+interface Props {
+  inline?: boolean;
+  size?: 'default' | 'large';
+}
 
-export default function VolumeTop10Widget({ inline = false }: Props = {}) {
+export default function VolumeTop10Widget({ inline = false, size = 'default' }: Props = {}) {
   const [items, setItems] = useState<VolumeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -81,6 +84,7 @@ export default function VolumeTop10Widget({ inline = false }: Props = {}) {
       title="거래량 급등 TOP 10"
       subtitle="KIS API"
       href="/movers/volume"
+      size={size}
       action={
         loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined
       }

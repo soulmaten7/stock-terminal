@@ -33,9 +33,12 @@ function fmtTime(rcept_dt: string): string {
   return `${rcept_dt.slice(4, 6)}/${rcept_dt.slice(6, 8)}`;
 }
 
-interface Props { inline?: boolean }
+interface Props {
+  inline?: boolean;
+  size?: 'default' | 'large';
+}
 
-export default function DartFilingsWidget({ inline = false }: Props = {}) {
+export default function DartFilingsWidget({ inline = false, size = 'default' }: Props = {}) {
   const [items, setItems] = useState<Filing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -97,7 +100,7 @@ export default function DartFilingsWidget({ inline = false }: Props = {}) {
   }
 
   return (
-    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/filings">
+    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/filings" size={size}>
       {content}
     </WidgetCard>
   );

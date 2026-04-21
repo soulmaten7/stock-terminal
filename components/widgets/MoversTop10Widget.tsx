@@ -11,9 +11,12 @@ interface MoverItem {
   changePercent: number;
 }
 
-interface Props { inline?: boolean }
+interface Props {
+  inline?: boolean;
+  size?: 'default' | 'large';
+}
 
-export default function MoversTop10Widget({ inline = false }: Props = {}) {
+export default function MoversTop10Widget({ inline = false, size = 'default' }: Props = {}) {
   const [tab, setTab] = useState<'up' | 'down'>('up');
   const [upItems, setUpItems] = useState<MoverItem[]>([]);
   const [downItems, setDownItems] = useState<MoverItem[]>([]);
@@ -120,6 +123,7 @@ export default function MoversTop10Widget({ inline = false }: Props = {}) {
       title="상승/하락 TOP 10"
       subtitle="KIS API"
       href="/movers/price"
+      size={size}
       action={tabButtons}
     >
       {body}

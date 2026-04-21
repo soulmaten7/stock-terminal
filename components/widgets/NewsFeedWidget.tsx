@@ -45,7 +45,7 @@ export default function NewsFeedWidget({ size = 'default' }: Props = {}) {
         </div>
       )}
       {!loading && !error && (
-        <ul aria-label="뉴스 목록" className="divide-y divide-[#F0F0F0] overflow-y-auto max-h-full">
+        <ul aria-label="뉴스 목록" className="divide-y divide-[#F0F0F0]">
           {items.map((n, i) => (
             <li key={i} className="px-3 py-2 hover:bg-[#F8F9FA]">
               <div className="flex items-center gap-1.5 mb-0.5">

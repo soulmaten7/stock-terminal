@@ -18,9 +18,12 @@ const THEMES: Theme[] = [
   { name: '방산', change: 1.6, count: 15 },
 ];
 
-interface Props { inline?: boolean }
+interface Props {
+  inline?: boolean;
+  size?: 'default' | 'large';
+}
 
-export default function TrendingThemesWidget({ inline = false }: Props = {}) {
+export default function TrendingThemesWidget({ inline = false, size = 'default' }: Props = {}) {
   const content = (
     <div className="flex flex-col h-full divide-y divide-[#F5F5F5]">
       {THEMES.map((theme) => (
@@ -49,6 +52,7 @@ export default function TrendingThemesWidget({ inline = false }: Props = {}) {
       title="상승 테마"
       subtitle="KRX 섹터"
       href="/themes"
+      size={size}
       className="h-full"
       action={
         <div className="flex items-center gap-1">
