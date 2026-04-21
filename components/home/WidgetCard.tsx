@@ -28,9 +28,9 @@ export default function WidgetCard({
   size = 'default',
 }: WidgetCardProps) {
   const router = useRouter();
-  const titleCls = size === 'large' ? 'text-lg font-bold text-black' : 'text-sm font-bold text-black';
-  const subtitleCls = size === 'large' ? 'text-xs text-[#999999]' : 'text-xs text-[#999999]';
-  const headerPadCls = size === 'large' ? 'px-4 py-4' : 'px-4 py-3';
+  const titleCls = 'text-lg font-bold text-black';
+  const subtitleCls = 'text-xs text-[#999999]';
+  const headerPadCls = 'px-4 py-4';
 
   return (
     <div
