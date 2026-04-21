@@ -1,6 +1,26 @@
 <!-- 2026-04-21 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-21] 세션 #22 (계속) — Step 12: 마켓채팅 참여자 팝업 (Phase 2-A)
+
+### Step 12 — 마켓채팅 참여자 팝업 (Phase 2-A)
+
+**변경 사항**:
+- 마켓채팅 헤더에 실시간 참여자 수 표시 ("Live · N명")
+- 참여자 수 클릭 → 참여자 목록 모달 오픈
+- 모달 크기: 320px × 600px (마켓채팅 위젯과 유사)
+- 참여자 추적: Supabase Presence API (로그인 사용자만)
+- 모달 UX: 배경 클릭/ESC/X 버튼으로 닫힘, 배경 블러, 스크롤 가능
+
+**신규 파일**: `components/widgets/ChatParticipantsModal.tsx`
+**수정 파일**: `components/widgets/ChatWidget.tsx`
+
+**Phase 2-A 완료. Phase 2-B, 2-C 대기**:
+- Phase 2-B: `/investor-flow` 페이지 내용을 `/net-buy` 내 탭으로 흡수
+- Phase 2-C: 경제캘린더 홈 미니 위젯 (오늘+내일 주요 이벤트)
+
+---
+
 ## [2026-04-21] 세션 #22 (계속) — Step 11: 사이드바 IA 개편 Phase 1
 
 ### Step 11 — 사이드바 IA 개편 Phase 1

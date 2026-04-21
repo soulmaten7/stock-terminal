@@ -35,6 +35,20 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### Session #22 Step 12 완료 (2026-04-21)
+- Phase 2-A: 마켓채팅 참여자 팝업 완료
+- Supabase Presence API 통합 — 로그인 사용자의 실시간 접속 추적
+- 새 컴포넌트: ChatParticipantsModal (320×600, ESC/배경 클릭 닫기)
+- ChatWidget 재구조 — action slot을 버튼으로 변경, 2번째 useEffect 추가 (Presence)
+
+### TODO (Phase 2-B)
+- [ ] /investor-flow 페이지 내용을 /net-buy 내 탭으로 흡수
+- [ ] 수급 페이지 탭 구조: [종목별 TOP] [시장 동향]
+
+### TODO (Phase 2-C)
+- [ ] 경제캘린더 API 소스 결정 (네이버증권 vs Investing.com vs 한경컨센서스)
+- [ ] 홈 미니 위젯 (오늘+내일 주요 이벤트 3~5건)
+
 ### Session #22 Step 11 완료 (2026-04-21)
 - 사이드바 IA 개편 Phase 1 완료
 - 14개 → 12개로 정리 (커뮤니티 채팅 제거, 수급 통합, 시장 지도 리네임)

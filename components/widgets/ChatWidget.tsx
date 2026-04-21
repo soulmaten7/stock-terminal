@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import WidgetCard from '@/components/home/WidgetCard';
+import ChatParticipantsModal, { type Participant } from './ChatParticipantsModal';
 
 interface ChatMsg {
   id: string;
@@ -34,20 +35,29 @@ function nickFrom(uid: string | null): string {
 export default function ChatWidget() {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [modalOpen, setModalOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
+  // 메시지 로딩 + 인증 상태 + 메시지 realtime 구독
   useEffect(() => {
     const supabase = createClient();
     let cancelled = false;
 
-    supabase.auth.getUser().then(({ data }: { data: { user: unknown } }) => {
-      if (!cancelled) setLoggedIn(!!data.user);
+    supabase.auth.getUser().then(({ data }: { data: { user: { id: string } | null } }) => {
+      if (cancelled) return;
+      setLoggedIn(!!data.user);
+      setUserId(data.user?.id ?? null);
     });
+
     const { data: authSub } = supabase.auth.onAuthStateChange((_evt: AuthChangeEvent, session: Session | null) => {
-      if (!cancelled) setLoggedIn(!!session?.user);
+      if (cancelled) return;
+      setLoggedIn(!!session?.user);
+      setUserId(session?.user?.id ?? null);
     });
 
     supabase
@@ -82,6 +92,46 @@ export default function ChatWidget() {
     };
   }, []);
 
+  // Presence 구독 — 로그인 상태가 바뀔 때마다 재구독
+  useEffect(() => {
+    if (!userId) {
+      setParticipants([]);
+      return;
+    }
+
+    const supabase = createClient();
+    const nickname = nickFrom(userId);
+
+    const presenceChannel = supabase.channel('chat-presence', {
+      config: { presence: { key: userId } },
+    });
+
+    presenceChannel
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel.presenceState();
+        const list: Participant[] = [];
+        Object.values(state).forEach((metas: unknown) => {
+          (metas as Participant[]).forEach((meta) => {
+            list.push(meta);
+          });
+        });
+        setParticipants(list);
+      })
+      .subscribe(async (status: string) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel.track({
+            user_id: userId,
+            nickname,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(presenceChannel);
+    };
+  }, [userId]);
+
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
@@ -113,53 +163,69 @@ export default function ChatWidget() {
   };
 
   return (
-    <WidgetCard
-      title="마켓 채팅"
-      subtitle="Supabase Realtime"
-      action={
-        <div className="flex items-center gap-1">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF3B30] animate-pulse" />
-          <span className="text-[10px] text-[#FF3B30] font-bold">Live</span>
-        </div>
-      }
-    >
-      <div className="h-full flex flex-col">
-        <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3 min-h-0">
-          {messages.length === 0 && (
-            <div className="text-[11px] text-[#999] text-center py-4">
-              아직 메시지가 없습니다. 첫 메시지를 남겨보세요.
-            </div>
-          )}
-          {messages.map((m) => (
-            <div key={m.id}>
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-sm font-bold text-[#0ABAB5]">
-                  {m.nickname || nickFrom(m.user_id)}
-                </span>
-                <span className="text-xs text-[#BBBBBB]">{fmtTime(m.created_at)}</span>
+    <>
+      <WidgetCard
+        title="마켓 채팅"
+        subtitle="Supabase Realtime"
+        action={
+          <button
+            onClick={() => setModalOpen(true)}
+            className="flex items-center gap-1 hover:bg-gray-50 px-1.5 py-0.5 rounded transition-colors"
+            title="참여자 목록 보기"
+            aria-label={`참여자 목록 보기 (${participants.length}명)`}
+          >
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF3B30] animate-pulse" />
+            <span className="text-[10px] text-[#FF3B30] font-bold">Live</span>
+            <span className="text-[10px] text-[#999999] font-medium">
+              · {participants.length}명
+            </span>
+          </button>
+        }
+      >
+        <div className="h-full flex flex-col">
+          <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3 min-h-0">
+            {messages.length === 0 && (
+              <div className="text-[11px] text-[#999] text-center py-4">
+                아직 메시지가 없습니다. 첫 메시지를 남겨보세요.
               </div>
-              <p className="text-sm text-[#333] leading-snug break-all">{m.content}</p>
-            </div>
-          ))}
-        </div>
+            )}
+            {messages.map((m) => (
+              <div key={m.id}>
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-sm font-bold text-[#0ABAB5]">
+                    {m.nickname || nickFrom(m.user_id)}
+                  </span>
+                  <span className="text-xs text-[#BBBBBB]">{fmtTime(m.created_at)}</span>
+                </div>
+                <p className="text-sm text-[#333] leading-snug break-all">{m.content}</p>
+              </div>
+            ))}
+          </div>
 
-        <form onSubmit={handleSend} className="sticky bottom-0 border-t border-[#F0F0F0] bg-white px-3 py-2 shrink-0">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={loggedIn ? '메시지 입력… ($종목명 태그 지원)' : '로그인 후 채팅 참여'}
-            disabled={!loggedIn || sending}
-            maxLength={500}
-            className={`w-full text-sm border border-[#E5E7EB] rounded px-2.5 py-2 ${
-              loggedIn
-                ? 'bg-white text-black focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]'
-                : 'bg-[#F8F9FA] text-[#999] cursor-not-allowed'
-            }`}
-          />
-          {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
-        </form>
-      </div>
-    </WidgetCard>
+          <form onSubmit={handleSend} className="sticky bottom-0 border-t border-[#F0F0F0] bg-white px-3 py-2 shrink-0">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={loggedIn ? '메시지 입력… ($종목명 태그 지원)' : '로그인 후 채팅 참여'}
+              disabled={!loggedIn || sending}
+              maxLength={500}
+              className={`w-full text-sm border border-[#E5E7EB] rounded px-2.5 py-2 ${
+                loggedIn
+                  ? 'bg-white text-black focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]'
+                  : 'bg-[#F8F9FA] text-[#999] cursor-not-allowed'
+              }`}
+            />
+            {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
+          </form>
+        </div>
+      </WidgetCard>
+
+      <ChatParticipantsModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        participants={participants}
+      />
+    </>
   );
 }
