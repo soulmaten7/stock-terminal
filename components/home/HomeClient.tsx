@@ -12,6 +12,8 @@ import StockDetailToggle from '@/components/dashboard/StockDetailToggle';
 import BriefingWidget from '@/components/widgets/BriefingWidget';
 import ScreenerExpandedWidget from '@/components/widgets/ScreenerExpandedWidget';
 import MoversPairWidget from '@/components/widgets/MoversPairWidget';
+import SectorHeatmapWidget from '@/components/widgets/SectorHeatmapWidget';
+import ThemeTop10Widget from '@/components/widgets/ThemeTop10Widget';
 
 export default function HomeClient() {
   return (
@@ -70,6 +72,16 @@ export default function HomeClient() {
           <div className="col-span-6 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
             <NetBuyTopWidget inline />
           </div>
+        </div>
+      </section>
+
+      {/* Section 4 — Market Structure */}
+      <section className="grid grid-cols-12 gap-2">
+        <div className="col-span-12 lg:col-span-9 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 280 }}>
+          <SectorHeatmapWidget />
+        </div>
+        <div className="col-span-12 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 280 }}>
+          <ThemeTop10Widget />
         </div>
       </section>
     </div>
