@@ -16,21 +16,16 @@
 
 ## 현재 상태 (2026-04-22 기준)
 
-Phase 2-A 완료 + 세션 #23 레이아웃 정렬 대수술 완료 (Step 20~27, 9개 커밋).
-**대시보드 오버플로우 완전 해결** — 3단 방어선(track `minmax(0,Nfr)` + item `minWidth: 0` + `overflow: hidden`).
-Phase 2-B 작업 대기.
+Phase 2-A + 2-B + 2-D 완료. Step 20~30 총 12개 커밋.
+- 대시보드 오버플로우 완전 해결 (3단 방어선)
+- 수급 페이지 탭 통합 완료 (`/net-buy` TOP + 시장동향)
+- 관심종목 생태계 완성: 스크리너 ⭐ → watchlists DB → `/watchlist` 페이지 → 홈 WatchlistWidget
 
 ## 다음 세션 P0
 
-- **Phase 2-B**: `/investor-flow` 페이지 내용을 `/net-buy` 내 탭으로 통합
-  - 탭 구조: [종목별 TOP] [시장 동향 시계열]
-  - URL은 `/net-buy`로 단일화, `/investor-flow`는 301 리다이렉트
-
-## 다음 세션 P1
-
 - **Phase 2-C**: 경제캘린더 홈 미니 위젯
-  - API 소스 리서치 필요
-  - 크기/배치 결정 필요 (현재 어느 위젯 옆?)
+  - API 소스 리서치 필요 (한국 ECOS / 국내 경제 이벤트)
+  - 위치: Col 1 or Col 3 배치 결정 필요
 
 ---
 

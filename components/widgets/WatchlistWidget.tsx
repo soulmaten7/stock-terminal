@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
+import { useAuthStore } from '@/stores/authStore';
+import { getWatchlistSymbols } from '@/lib/watchlist';
 
-// 기본 관심종목 — 추후 로그인 사용자별로 교체 가능
 const DEFAULT_SYMBOLS = [
   { symbol: '005930', name: '삼성전자' },
   { symbol: '000660', name: 'SK하이닉스' },
@@ -33,7 +34,7 @@ function fmtVol(n: number): string {
 async function fetchPrice(symbol: string, fallbackName: string): Promise<Row> {
   try {
     const res = await fetch(`/api/kis/price?symbol=${symbol}`);
-    if (!res.ok) throw new Error('fetch failed');
+    if (!res.ok) throw new Error();
     const d = await res.json();
     return {
       symbol,
@@ -48,31 +49,37 @@ async function fetchPrice(symbol: string, fallbackName: string): Promise<Row> {
 }
 
 export default function WatchlistWidget() {
+  const { user, isLoading: authLoading } = useAuthStore();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
+  const load = useCallback(async () => {
+    let symbols: { symbol: string; name: string }[];
+    if (user) {
+      const syms = await getWatchlistSymbols(user.id);
+      if (syms.length > 0) {
+        symbols = syms.map((s) => ({ symbol: s, name: s }));
+      } else {
+        symbols = DEFAULT_SYMBOLS;
+      }
+    } else {
+      symbols = DEFAULT_SYMBOLS;
+    }
+    const results = await Promise.all(
+      symbols.map((s) => fetchPrice(s.symbol, s.name))
+    );
+    setRows(results);
+    setLoading(false);
+    setLastUpdate(new Date());
+  }, [user]);
+
   useEffect(() => {
-    let cancelled = false;
-
-    const load = async () => {
-      const results = await Promise.all(
-        DEFAULT_SYMBOLS.map((s) => fetchPrice(s.symbol, s.name))
-      );
-      if (cancelled) return;
-      setRows(results);
-      setLoading(false);
-      setLastUpdate(new Date());
-    };
-
+    if (authLoading) return;
     load();
-    const timer = setInterval(load, 10_000); // 10초마다 갱신
-
-    return () => {
-      cancelled = true;
-      clearInterval(timer);
-    };
-  }, []);
+    const timer = setInterval(load, 10_000);
+    return () => clearInterval(timer);
+  }, [authLoading, load]);
 
   return (
     <WidgetCard

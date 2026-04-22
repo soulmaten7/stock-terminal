@@ -38,3 +38,8 @@ export async function isInWatchlist(userId: string, symbol: string) {
     .limit(1);
   return (data?.length || 0) > 0;
 }
+
+export async function getWatchlistSymbols(userId: string): Promise<string[]> {
+  const items = await getWatchlist(userId);
+  return items.map((i: { symbol: string }) => i.symbol);
+}

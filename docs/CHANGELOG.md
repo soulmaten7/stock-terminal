@@ -1,6 +1,26 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## [2026-04-22] 세션 #24 — 관심종목 생태계 완성 + 수급 탭 통합 (Step 28~30)
+
+### Step 28 — /net-buy 탭 구조 통합
+- `/investor-flow` → `/net-buy?tab=flow` 301 리다이렉트
+- `/net-buy` 2탭 구조: [종목별 TOP] [시장 동향]
+- `async searchParams` (Next.js 16 Promise 타입) 패턴 적용
+
+### Step 29 — 수급 탭 KIS API 실데이터 연동
+- `TopTab`: `/api/kis/investor-rank` 외국인+기관 합산 TOP 20
+- `FlowTab`: `/api/home/investor-flow` 투자자별 매매동향 (KOSPI/KOSDAQ)
+
+### Step 30 — 관심종목 생태계 완성 (Phase 2-D)
+- `lib/watchlist.ts` — `getWatchlistSymbols` 헬퍼 추가
+- `ScreenerClient` — ⭐ 버튼 + 낙관적 UI (로그인 필요 시 alert)
+- `WatchlistPageClient` (신규) — 실데이터 풀 페이지 (auth gate + 8컬럼 + 10초 폴링 + 삭제)
+- `app/watchlist/page.tsx` — Math.random() 스텁 → WatchlistPageClient 대체
+- `WatchlistWidget` — 로그인 사용자: Supabase watchlist, 비로그인: DEFAULT_SYMBOLS fallback
+
+---
+
 ## [2026-04-22] 세션 #23 — 사이드바 통합 후 레이아웃 정렬 대수술 (Step 20~27)
 
 **배경**: 세션 #22 이후 사이드바(w-14)가 레이아웃 안으로 들어왔는데, 기존 대시보드 그리드는 사이드바 없던 시절의 폭 가정(minmax 280/640/300)을 그대로 썼음. 결과적으로 R4 + Col 3 (뉴스/DART) 가 박스 밖으로 사이드바 크기만큼 튀어나옴.

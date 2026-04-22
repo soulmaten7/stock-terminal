@@ -3,9 +3,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { RotateCcw, Search } from 'lucide-react';
+import { RotateCcw, Search, Star } from 'lucide-react';
 import { formatMarketCap } from '@/lib/utils/format';
 import PartnerSlot from '@/components/partners/PartnerSlot';
+import { useAuthStore } from '@/stores/authStore';
+import { addToWatchlist, removeFromWatchlist, getWatchlistSymbols } from '@/lib/watchlist';
 
 interface StockRow {
   symbol: string;
@@ -48,8 +50,15 @@ export default function ScreenerClient() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const searchParams = useSearchParams();
+  const { user } = useAuthStore();
+  const [watched, setWatched] = useState<Set<string>>(new Set());
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    if (!user) { setWatched(new Set()); return; }
+    getWatchlistSymbols(user.id).then((syms) => setWatched(new Set(syms)));
+  }, [user]);
 
   // URL 파라미터 → 초기 필터 1회 적용 (mount 직후)
   useEffect(() => {
@@ -99,6 +108,29 @@ export default function ScreenerClient() {
   const applyPreset = (preset: typeof PRESETS[0]) => {
     const p = preset.filter as Partial<FilterState>;
     setFilters({ ...DEFAULT_FILTER, minCap: p.minCap ?? 0, maxCap: p.maxCap ?? 0 });
+  };
+
+  const toggleWatch = async (symbol: string) => {
+    if (!user) {
+      alert('관심종목은 로그인 후 이용 가능합니다.');
+      return;
+    }
+    const wasWatched = watched.has(symbol);
+    setWatched((prev) => {
+      const next = new Set(prev);
+      if (wasWatched) next.delete(symbol); else next.add(symbol);
+      return next;
+    });
+    const ok = wasWatched
+      ? await removeFromWatchlist(user.id, symbol)
+      : await addToWatchlist(user.id, symbol);
+    if (!ok) {
+      setWatched((prev) => {
+        const next = new Set(prev);
+        if (wasWatched) next.add(symbol); else next.delete(symbol);
+        return next;
+      });
+    }
   };
 
   const toggleMarket = (m: string) => {
@@ -188,14 +220,15 @@ export default function ScreenerClient() {
               <th className="text-left px-3 py-2">시장</th>
               <th className="text-left px-3 py-2">섹터</th>
               <th className="text-right px-3 py-2">시가총액</th>
+              <th className="text-center px-3 py-2 w-10">⭐</th>
             </tr>
           </thead>
           <tbody>
             {loading && stocks.length === 0 && (
-              <tr><td colSpan={4} className="text-center py-8 text-[#999999]">불러오는 중...</td></tr>
+              <tr><td colSpan={5} className="text-center py-8 text-[#999999]">불러오는 중...</td></tr>
             )}
             {!loading && stocks.length === 0 && (
-              <tr><td colSpan={4} className="text-center py-8 text-[#999999] font-bold">조건에 맞는 종목이 없습니다</td></tr>
+              <tr><td colSpan={5} className="text-center py-8 text-[#999999] font-bold">조건에 맞는 종목이 없습니다</td></tr>
             )}
             {stocks.map((s, i) => (
               <tr key={`${s.symbol}-${s.market}`} className={`border-b border-[#F0F0F0] hover:bg-[#F5F5F5] ${i % 2 === 1 ? 'bg-[#FAFAFA]' : ''}`}>
@@ -206,6 +239,15 @@ export default function ScreenerClient() {
                 <td className="px-3 py-2 text-xs text-[#999999] font-bold">{s.market}</td>
                 <td className="px-3 py-2 text-xs text-[#666666]">{s.sector ?? '-'}</td>
                 <td className="text-right px-3 py-2 font-mono-price font-bold">{formatMarketCap(s.market_cap)}</td>
+                <td className="text-center px-3 py-2">
+                  <button
+                    onClick={() => toggleWatch(s.symbol)}
+                    className={`p-1 transition-colors ${watched.has(s.symbol) ? 'text-[#0ABAB5]' : 'text-[#CCC] hover:text-[#0ABAB5]'}`}
+                    aria-label={watched.has(s.symbol) ? '관심종목 제거' : '관심종목 추가'}
+                  >
+                    <Star className="w-4 h-4" fill={watched.has(s.symbol) ? 'currentColor' : 'none'} />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
