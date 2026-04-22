@@ -1,5 +1,75 @@
-<!-- 2026-04-21 -->
+<!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
+
+## [2026-04-22] 세션 #23 — 사이드바 통합 후 레이아웃 정렬 대수술 (Step 20~27)
+
+**배경**: 세션 #22 이후 사이드바(w-14)가 레이아웃 안으로 들어왔는데, 기존 대시보드 그리드는 사이드바 없던 시절의 폭 가정(minmax 280/640/300)을 그대로 썼음. 결과적으로 R4 + Col 3 (뉴스/DART) 가 박스 밖으로 사이드바 크기만큼 튀어나옴.
+
+### Step 20 (`53271dd`) — User Flow 아키텍처 재구성
+- 기존 Zone 기반 분류에서 User Flow 기반으로 전환
+- Col 1: 마켓채팅 (45%) + 종목발굴 (10%) + 관심종목 (45%) — "정보 → 탐색 → 결정"
+- Col 2: 차트 (50%) + (호가창 | 체결창 1:1) (50%) — "분석 → 주문"
+- Col 3: 뉴스속보 (50%) + DART공시 (50%) — "실시간 이벤트 스트림"
+- R4: 상승/하락 | 거래량 | 실시간수급 | 상승테마 | 글로벌지수 (1:1:1:1:1)
+
+### Step 20a~21 (`64fe8fa`) — VerticalNav sticky 안정화
+- `components/layout/VerticalNav.tsx`에 `self-start` 추가 — sticky top-0 스크롤 추적 정상화
+- `components/layout/LayoutShell.tsx` Footer 정렬 시도
+
+### Step 22 (`907f525`) — Footer 풀폭 복원
+- LayoutShell 구조 Step 19 복원 — Header / TickerBar / Footer 모두 max-w-screen-2xl (1536) 풀폭
+- 롤백 이유: Step 21의 Footer pl-14 접근이 다른 부분을 망가뜨림
+
+### Step 23 (`e16ca3a`) — Footer 수동 정렬 시도
+- Footer에 `pl-16 pr-4` 적용 — `html { font-size: 13px }` 컨텍스트 고려한 수동 픽셀 계산
+- 결과: 시각적으로 여전히 미스매치 (서브픽셀 오차 추정)
+
+### Step 24 (`7ed8fe2`) — Footer 구조 미러링 (Footer 정렬 최종 해결)
+- 픽셀 계산 대신 **LayoutShell 구조 미러링** 접근
+- Footer 내부를 `<div w-14 shrink-0 /> + <div flex-1 min-w-0 px-2>` 구조로 재작성
+- 사이드바+Main과 **동일 Tailwind 클래스**를 쓰므로 rem base·서브픽셀·줌 무관하게 정렬 보장
+- Footer turquoise / disclaimer 배경은 1536 풀폭 유지
+
+### Step 25 (`6749cee`) — Outer grid minmax floor 축소
+- `minmax(280px,2.5fr) minmax(640px,6.5fr) minmax(300px,3fr)` → `minmax(240px,2.5fr) minmax(560px,6.5fr) minmax(280px,3fr)`
+- Grid 최소 합 1236 → 1080 (+gap 16 = 1096) — Main 가용 ~1190px 안에 fit
+- 결과: **R4 오버플로우 해결**. 하지만 R1-R3 Col 3 (뉴스/DART)는 여전히 튀어나옴
+
+### Step 26 (`c00d199` + `b3281e5`) — minmax track min을 0으로
+- 1차 시도 (c00d199): section div에 `minWidth: 0`만 추가 → 효과 있으나 불완전
+- 2차 수정 (b3281e5): outer grid를 `minmax(0,2.5fr) minmax(0,6.5fr) minmax(0,3fr)`로 변경
+- Track은 부모 밖으로 못 나가지만, 새로고침 시 **잠시 fit 됐다가 다시 밀려나는** 증상 발견 — 데이터 post-hydration 시점에 grid item이 min-content로 track을 안에서 밀어냄
+
+### Step 27 (`290ec82`) — Grid item 자체의 min-width + overflow 차단 (최종 완성)
+- CSS Grid Level 1 스펙의 "Automatic Minimum Size of Grid Items" 문제 해결
+- `section-col1 / col2 / col3 / r4 / orderbook-tick` 5개 grid item에 `minWidth: 0 + overflow: hidden` 추가
+- **3단계 방어선 구축**:
+  1. Track level: `minmax(0, Nfr)` — track이 부모 밖으로 못 나감
+  2. Item level: `minWidth: 0` — item이 자식 min-content로 track을 못 밀어냄
+  3. Visual level: `overflow: hidden` — 최종 clip 안전망
+- 결과: 새로고침 / post-hydration / 데이터 변경 모든 시점에서 오버플로우 완전 차단
+
+### 교훈
+- **픽셀 계산보다 구조 미러링** — Step 23 실패 후 Step 24 성공. Tailwind 클래스가 같으면 rem base 무관.
+- **CSS Grid는 track + item 양쪽 min-width를 모두 막아야 확실하게 오버플로우 방지** — Step 25~26의 단편적 접근으론 불충분.
+- **"새로고침 시 잠시 fit → 다시 밀림"은 항상 post-hydration content growth** — 자식 min-content 팽창이 원인.
+- **복붙 가능한 명령서 패턴** (`docs/STEP_N_COMMAND.md`) — Cowork 설계 + Claude Code 실행 워크플로우 검증됨.
+
+### 커밋 9개 (시간순)
+1. `53271dd` refactor: restructure home dashboard to User Flow architecture
+2. `64fe8fa` fix: align footer with main + stabilize sidebar sticky
+3. `907f525` revert: restore footer to full box width (header = footer = 1536)
+4. `e16ca3a` fix: align footer inner content with dashboard R1/R4 left edge
+5. `7ed8fe2` refactor: mirror sidebar+main structure in footer for exact alignment
+6. `6749cee` fix: shrink dashboard grid mins to fit post-sidebar main width
+7. `c00d199` fix: add minWidth: 0 to dashboard section divs to prevent col overflow
+8. `b3281e5` fix: set grid track min to 0 so dashboard never overflows main width
+9. `290ec82` fix: block grid items from expanding their tracks post-hydration
+
+### 아카이브된 명령서 (참고용)
+`docs/STEP_20_COMMAND.md` ~ `docs/STEP_27_COMMAND.md` (8개) — 이번 세션의 Cowork 설계 기록
+
+---
 
 ## [2026-04-21] 세션 #22 (계속) — Step 12: 마켓채팅 참여자 팝업 (Phase 2-A)
 

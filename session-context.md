@@ -1,4 +1,4 @@
-<!-- 2026-04-21 -->
+<!-- 2026-04-22 -->
 # Stock Terminal — 프로젝트 맥락
 
 ## 프로젝트 개요
@@ -34,6 +34,19 @@
 - [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
+
+### Session #23 완료 (2026-04-22) — 사이드바 통합 후 레이아웃 정렬 대수술 (Step 20~27)
+- **배경**: 세션 #22 사이드바 통합 후 대시보드가 사이드바 크기(w-14 ≈ 45px)만큼 박스 밖으로 오버플로우. 기존 grid가 1536 기준이고 Main은 1490 가용이라 불일치.
+- **Step 20**: User Flow 아키텍처 재구성 (Col 1 정보→탐색→결정 / Col 2 분석→주문 / Col 3 이벤트 스트림 / R4 랭킹)
+- **Step 20a~21**: VerticalNav `self-start`로 sticky 안정화
+- **Step 22**: LayoutShell Step 19 복원 — Header/Ticker/Footer 모두 1536 풀폭
+- **Step 23**: Footer `pl-16 pr-4` 픽셀 수동 맞춤 시도 (실패)
+- **Step 24**: Footer 내부를 sidebar+main 구조 미러링 — Tailwind 클래스 동일화로 서브픽셀 오차 무시하고 정렬 성공
+- **Step 25**: outer grid mins 280/640/300 → 240/560/280 축소 (R4 오버플로우 해결)
+- **Step 26**: outer grid `minmax(0, Nfr)` 변경 (track level 차단)
+- **Step 27 (최종)**: section div에 `minWidth: 0 + overflow: hidden` 추가 (item level 차단) — 3단 방어선으로 완전 해결
+- **9개 커밋 (53271dd → 290ec82)**, STEP_20~27_COMMAND.md 8개 아카이브
+- **교훈**: CSS Grid 오버플로우는 track + item 양쪽 min-width를 모두 막아야 완전 차단. 픽셀 계산보다 구조 미러링이 안정적.
 
 ### Session #22 Step 12 완료 (2026-04-21)
 - Phase 2-A: 마켓채팅 참여자 팝업 완료

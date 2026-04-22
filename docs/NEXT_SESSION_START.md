@@ -1,4 +1,4 @@
-<!-- 2026-04-21 -->
+<!-- 2026-04-22 -->
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
@@ -14,9 +14,11 @@
 - **데이터**: 100% 무료 소스 (DART/KRX/KIS/FDR/Naver/ECOS) — KIS 이미 서버사이드 실시간 연동
 - **수익화**: **Partner-Agnostic Lead Gen 단일 모델.** 구독/결제/Pro/AI 리포트/CSV 일절 없음. Phase 1~3 모두 무료 놀이터 + 리드 수익
 
-## 현재 상태 (2026-04-21 기준)
+## 현재 상태 (2026-04-22 기준)
 
-Phase 2-A 완료. Phase 2-B 작업 대기.
+Phase 2-A 완료 + 세션 #23 레이아웃 정렬 대수술 완료 (Step 20~27, 9개 커밋).
+**대시보드 오버플로우 완전 해결** — 3단 방어선(track `minmax(0,Nfr)` + item `minWidth: 0` + `overflow: hidden`).
+Phase 2-B 작업 대기.
 
 ## 다음 세션 P0
 
