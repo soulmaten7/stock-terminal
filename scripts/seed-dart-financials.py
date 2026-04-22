@@ -64,12 +64,30 @@ def parse_amount(raw):
 
 
 def find_amount(items, sj_div, *keywords):
-    """sj_div (IS/BS) 카테고리 안에서 account_nm 또는 account_id 매칭."""
+    """sj_div 카테고리 내에서 account_nm/account_id 매칭.
+    1차: 완전 일치 (account_nm == kw 또는 account_id == kw)
+    2차: account_id 부분 매칭 (IFRS/DART 태그 prefix 만 허용 — 일반 한글 키워드 부분매칭은 차단)
+    """
+    # 1차: 완전 일치
     for kw in keywords:
         for x in items:
             if x.get('sj_div') != sj_div:
                 continue
-            if x.get('account_nm') == kw or (kw in (x.get('account_id') or '')):
+            if x.get('account_nm') == kw or x.get('account_id') == kw:
+                v = parse_amount(x.get('thstrm_amount'))
+                if v is None:
+                    v = parse_amount(x.get('frmtrm_amount'))
+                if v is not None:
+                    return v
+    # 2차: account_id 부분 매칭 (IFRS/DART 태그만)
+    for kw in keywords:
+        if not (kw.startswith('ifrs-full_') or kw.startswith('dart_')):
+            continue
+        for x in items:
+            if x.get('sj_div') != sj_div:
+                continue
+            aid = x.get('account_id') or ''
+            if kw in aid:
                 v = parse_amount(x.get('thstrm_amount'))
                 if v is None:
                     v = parse_amount(x.get('frmtrm_amount'))
@@ -78,32 +96,66 @@ def find_amount(items, sj_div, *keywords):
     return None
 
 
+def find_is_or_cis(items, *keywords):
+    """손익계산서 — IS 먼저, 없으면 CIS (단일 포괄손익계산서) 탐색."""
+    v = find_amount(items, 'IS', *keywords)
+    if v is not None:
+        return v
+    return find_amount(items, 'CIS', *keywords)
+
+
+def _request_acnt(corp_code, year, fs_div):
+    r = requests.get(
+        f'{DART_BASE}/fnlttSinglAcntAll.json',
+        params={
+            'crtfc_key': DART_KEY,
+            'corp_code': corp_code,
+            'bsns_year': str(year),
+            'reprt_code': REPRT_CODE,
+            'fs_div': fs_div,
+        },
+        timeout=15,
+    )
+    if r.status_code != 200:
+        return None
+    data = r.json()
+    if data.get('status') != '000':
+        return None
+    items = data.get('list') or []
+    return items or None
+
+
 def fetch_dart_financial(corp_code, year):
     try:
-        r = requests.get(
-            f'{DART_BASE}/fnlttSinglAcntAll.json',
-            params={
-                'crtfc_key': DART_KEY,
-                'corp_code': corp_code,
-                'bsns_year': str(year),
-                'reprt_code': REPRT_CODE,
-                'fs_div': 'CFS',
-            },
-            timeout=15,
-        )
-        if r.status_code != 200:
-            return None
-        data = r.json()
-        if data.get('status') != '000':
-            return None
-        items = data.get('list', [])
+        items = _request_acnt(corp_code, year, 'CFS')
+        if not items:
+            time.sleep(RATE_LIMIT_SEC)
+            items = _request_acnt(corp_code, year, 'OFS')
         if not items:
             return None
 
+        revenue = find_is_or_cis(
+            items,
+            '매출액', '매출', '수익(매출액)', '영업수익', '수익',
+            'ifrs-full_Revenue',
+            'ifrs-full_RevenueFromContractsWithCustomers',
+        )
+        operating_income = find_is_or_cis(
+            items,
+            '영업이익', '영업이익(손실)', '영업손익',
+            'dart_OperatingIncomeLoss',
+            'ifrs-full_ProfitLossFromOperatingActivities',
+        )
+        net_income = find_is_or_cis(
+            items,
+            '당기순이익', '당기순이익(손실)', '당기순손익', '반기순이익', '분기순이익',
+            'ifrs-full_ProfitLoss',
+        )
+
         return {
-            'revenue': find_amount(items, 'IS', '매출액', 'ifrs-full_Revenue', '수익(매출액)'),
-            'operating_income': find_amount(items, 'IS', '영업이익', 'dart_OperatingIncomeLoss', '영업이익(손실)'),
-            'net_income': find_amount(items, 'IS', '당기순이익', 'ifrs-full_ProfitLoss', '당기순이익(손실)'),
+            'revenue': revenue,
+            'operating_income': operating_income,
+            'net_income': net_income,
             'total_assets': find_amount(items, 'BS', '자산총계', 'ifrs-full_Assets'),
             'total_liabilities': find_amount(items, 'BS', '부채총계', 'ifrs-full_Liabilities'),
             'total_equity': find_amount(items, 'BS', '자본총계', 'ifrs-full_Equity'),

@@ -41,10 +41,26 @@ function parseAmount(raw?: string): number | null {
   return isNaN(n) ? null : n;
 }
 
-function findAmount(items: DartAcntItem[], ...keywords: string[]): number | null {
+function findBySjDiv(
+  items: DartAcntItem[],
+  sjDiv: string,
+  keywords: string[]
+): number | null {
+  // 1차: 완전 일치 (account_nm == kw 또는 account_id == kw)
   for (const kw of keywords) {
     const hit = items.find(
-      (x) => x.sj_div === 'IS' && (x.account_nm === kw || x.account_id?.includes(kw))
+      (x) => x.sj_div === sjDiv && (x.account_nm === kw || x.account_id === kw)
+    );
+    if (hit) {
+      const v = parseAmount(hit.thstrm_amount) ?? parseAmount(hit.frmtrm_amount);
+      if (v !== null) return v;
+    }
+  }
+  // 2차: account_id 부분 매칭 (IFRS/DART 태그 prefix 만)
+  for (const kw of keywords) {
+    if (!(kw.startsWith('ifrs-full_') || kw.startsWith('dart_'))) continue;
+    const hit = items.find(
+      (x) => x.sj_div === sjDiv && (x.account_id ?? '').includes(kw)
     );
     if (hit) {
       const v = parseAmount(hit.thstrm_amount) ?? parseAmount(hit.frmtrm_amount);
@@ -52,6 +68,13 @@ function findAmount(items: DartAcntItem[], ...keywords: string[]): number | null
     }
   }
   return null;
+}
+
+function findAmount(items: DartAcntItem[], ...keywords: string[]): number | null {
+  // 손익계산서 — IS 먼저, 없으면 CIS (단일 포괄손익계산서) 탐색
+  const is = findBySjDiv(items, 'IS', keywords);
+  if (is !== null) return is;
+  return findBySjDiv(items, 'CIS', keywords);
 }
 
 export async function fetchDartFinancial(
@@ -62,27 +85,41 @@ export async function fetchDartFinancial(
   const meta = REPRT_MAP[reprtCode];
   if (!meta) return null;
 
-  let data: DartAcntAllResponse;
-  try {
-    data = await fetchDart<DartAcntAllResponse>('/fnlttSinglAcntAll.json', {
-      corp_code: corpCode,
-      bsns_year: String(year),
-      reprt_code: reprtCode,
-      fs_div: 'CFS',
-    });
-  } catch {
-    return null;
+  async function request(fsDiv: 'CFS' | 'OFS'): Promise<DartAcntItem[] | null> {
+    try {
+      const d = await fetchDart<DartAcntAllResponse>('/fnlttSinglAcntAll.json', {
+        corp_code: corpCode,
+        bsns_year: String(year),
+        reprt_code: reprtCode,
+        fs_div: fsDiv,
+      });
+      const list = d.list ?? [];
+      return list.length > 0 ? list : null;
+    } catch {
+      return null;
+    }
   }
 
-  const items = data.list ?? [];
-  if (items.length === 0) return null;
+  let items = await request('CFS');
+  if (!items) items = await request('OFS');
+  if (!items) return null;
 
-  const revenue = findAmount(items, '매출액', 'ifrs-full_Revenue', '수익(매출액)');
+  const revenue = findAmount(
+    items,
+    '매출액', '매출', '수익(매출액)', '영업수익', '수익',
+    'ifrs-full_Revenue',
+    'ifrs-full_RevenueFromContractsWithCustomers'
+  );
   const operatingIncome = findAmount(
-    items, '영업이익', 'dart_OperatingIncomeLoss', '영업이익(손실)'
+    items,
+    '영업이익', '영업이익(손실)', '영업손익',
+    'dart_OperatingIncomeLoss',
+    'ifrs-full_ProfitLossFromOperatingActivities'
   );
   const netIncome = findAmount(
-    items, '당기순이익', 'ifrs-full_ProfitLoss', '당기순이익(손실)'
+    items,
+    '당기순이익', '당기순이익(손실)', '당기순손익', '반기순이익', '분기순이익',
+    'ifrs-full_ProfitLoss'
   );
 
   const opMargin =

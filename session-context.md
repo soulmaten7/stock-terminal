@@ -35,6 +35,16 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 39 완료
+- [x] `scripts/debug-dart-sample.py` 신규 (DART raw 응답 덤프 도구)
+- [x] 4종목 null 근본 원인 진단 — IS 섹션 없이 CIS 단일 포괄손익계산서만 제출
+- [x] `seed-dart-financials.py` 파서 전면 개선 (1·2차 매칭 분리, IS→CIS fallback, CFS→OFS fallback, keyword 확장)
+- [x] `lib/dart-financial.ts` 동일 방향 동기화 (런타임 API 정확도 확보)
+- [x] STEP 38 누락 4종목 (SK하이닉스·한화에어로·삼성바이오·HD현대중공업) 전원 복구
+- [x] `TOP_N=100 YEARS='2023,2024'` 배치 → financials 193건 upsert (누계 576건)
+- [x] 테마 50종 중 37종 DART 커버 확인
+- [ ] STEP 40 후보: ValueAnalysis.tsx UI 연결 / 분기 보고서 수집 / 테마 50 풀커버
+
 ### 2026-04-22 세션 — STEP 38 완료
 - [x] `scripts/seed-dart-financials.py` 신규 작성 (DART IS+BS 수집 파이프라인)
 - [x] `dart_corp_codes` 3,959건 매핑 완료

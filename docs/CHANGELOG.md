@@ -1,6 +1,35 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 39: DART 파서 보완 + TOP 100 확장
+
+**코드 변경**
+- `scripts/seed-dart-financials.py` `find_amount` 전면 개선
+  - account_id/account_nm 완전 일치 우선 → IFRS/DART 태그 prefix 부분 매칭 2차 fallback
+  - 일반 한글 키워드 부분매칭 차단 (엉뚱한 항목 매칭 방지)
+  - `find_is_or_cis` 신설 — 손익계산서는 IS 먼저, 없으면 CIS (단일 포괄손익계산서) 탐색
+  - keyword 확장: 매출/영업수익/수익, 영업이익/영업이익(손실)/영업손익, 당기순이익/당기순이익(손실)/당기순손익/반기·분기순이익 + `ifrs-full_RevenueFromContractsWithCustomers`·`ifrs-full_ProfitLossFromOperatingActivities`
+  - CFS → OFS fallback 추가 (연결재무제표 미제출 종목 대응)
+- `lib/dart-financial.ts` 동일 방향 동기화 (`findBySjDiv` 1/2차 로직 + IS→CIS fallback + CFS→OFS fallback + keyword 확장)
+- `scripts/debug-dart-sample.py` 신규 — DART `fnlttSinglAcntAll` raw 응답 덤프 (sj_div 별 그룹화, 상위 40건 + OFS 재시도)
+
+**근본 원인 진단 (Part A)**
+- SK하이닉스·한화에어로·삼성바이오·HD현대중공업 4종목 모두 **IS 섹션 없음, CIS 단일 손익계산서만 제출**
+- 파서가 `sj_div='IS'` 만 탐색 → 전 필드 null
+- 한화에어로 매출 = `매출` (account_nm), 삼성바이오 영업이익 = `영업이익` (괄호 없음) — keyword 확장 동시 필요
+
+**데이터 작업**
+- STEP 38 누락 4종목 전원 복구 성공 (rev/op/ni 모두 적재)
+- `TOP_N=100 YEARS='2023,2024'` 배치 → `financials` 193건 upsert (누계 576건)
+- SKIP 5건: 005935/005387 (우선주 corp_code 없음), HD현대마린솔루션 2023 (신규상장), 기타 2건
+
+**효과**
+- 테마 50종목 중 **37종** DART 실재무 커버 (STEP 38 의 0종 → 37종)
+- 시총 TOP 100 종목의 `/stocks/[symbol]` 에 2023/2024 연간 매출·영업이익·순이익·자산·부채·자본 시계열 DB 적재 완료
+- `lib/dart-financial.ts` 도 동기화되어 런타임 API 도 동일 정확도 확보
+
+---
+
 ## 2026-04-22 — STEP 38: DART 재무제표 파이프라인
 
 **신규 파일**
