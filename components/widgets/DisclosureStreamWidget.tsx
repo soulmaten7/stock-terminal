@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 interface DisclosureItem {
   corp_name: string;
@@ -44,26 +45,27 @@ export default function DisclosureStreamWidget() {
     }
   }, [market]);
 
-  return (
-    <div className="p-3 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-3 shrink-0">
-        <h3 className="text-sm font-bold text-[#222]">공시 스트림</h3>
-        <div className="inline-flex rounded overflow-hidden border border-[#E5E7EB]">
-          {(['KR', 'US'] as Market[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMarket(m)}
-              className={`px-3 h-6 text-xs font-bold ${
-                market === m ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666] hover:bg-[#F3F4F6]'
-              }`}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-      </div>
+  const marketToggle = (
+    <div className="inline-flex rounded overflow-hidden border border-[#E5E7EB]">
+      {(['KR', 'US'] as Market[]).map((m) => (
+        <button
+          key={m}
+          onClick={() => setMarket(m)}
+          className={`px-3 h-6 text-xs font-bold ${
+            market === m ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666] hover:bg-[#F3F4F6]'
+          }`}
+        >
+          {m}
+        </button>
+      ))}
+    </div>
+  );
 
-      <div className="flex-1 overflow-auto space-y-0">
+  return (
+    <div className="flex flex-col h-full">
+      <WidgetHeader title="공시 스트림" href="/disclosures" actions={marketToggle} />
+
+      <div className="flex-1 overflow-auto space-y-0 px-3">
         {loading && Array.from({ length: 8 }).map((_, i) => (
           <div key={i} className="py-2 border-b border-[#F3F4F6]">
             <div className="h-3 w-2/3 bg-[#F0F0F0] animate-pulse rounded mb-1.5" />

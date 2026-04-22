@@ -1,6 +1,8 @@
 <!-- 2026-04-23 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-23 — fix(dashboard): 긴급 패치 6건 통합 (STEP 83) — 섹션 고정높이, 위젯 전체보기 링크, FloatingChat 재설계, 중복key 수정
+
 ## 2026-04-23 — chore(qa): STEP 82 통합 QA — 빌드 검증, console 정리, V3_RELEASE_NOTES.md 생성, 세션 문서 업데이트
 
 ## 2026-04-23 — feat(widgets): 체결창/호가창 폴리싱 — fadeIn 애니, 대량체결 배지, depth bar, 총잔량, selectedSymbol 동기화 (STEP 81)

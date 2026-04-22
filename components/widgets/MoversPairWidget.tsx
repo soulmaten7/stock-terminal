@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 interface MoverItem {
   rank: number;
@@ -61,9 +62,9 @@ export default function MoversPairWidget() {
   );
 
   return (
-    <div className="p-3 h-full flex flex-col">
-      <h3 className="text-sm font-bold text-[#222] mb-3">급등락 Top 10</h3>
-      <div className="grid grid-cols-2 gap-3 flex-1 min-h-0">
+    <div className="flex flex-col h-full">
+      <WidgetHeader title="급등락 Top 10" href="/movers/price" />
+      <div className="grid grid-cols-2 gap-3 flex-1 min-h-0 p-3">
         <div className="min-w-0">
           <div className="text-xs font-bold text-[#FF3B30] mb-2">🔺 상승</div>
           {renderList(gainers, true)}

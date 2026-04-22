@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ExternalLink, RefreshCw } from 'lucide-react';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 interface NewsItem {
   source: string;
@@ -37,20 +38,17 @@ export default function NewsStreamWidget() {
     return () => clearInterval(iv);
   }, []);
 
-  return (
-    <div className="p-3 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-3 shrink-0">
-        <h3 className="text-sm font-bold text-[#222]">뉴스 스트림</h3>
-        <button
-          onClick={load}
-          className="text-[#999] hover:text-[#222] transition-colors"
-          title="새로고침"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-        </button>
-      </div>
+  const refreshBtn = (
+    <button onClick={load} className="text-[#999] hover:text-[#222] transition-colors" title="새로고침">
+      <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+    </button>
+  );
 
-      <div className="flex-1 overflow-auto space-y-0">
+  return (
+    <div className="flex flex-col h-full">
+      <WidgetHeader title="뉴스 스트림" href="/news" actions={refreshBtn} />
+
+      <div className="flex-1 overflow-auto space-y-0 px-3">
         {loading && items.length === 0 && Array.from({ length: 10 }).map((_, i) => (
           <div key={i} className="py-2 border-b border-[#F3F4F6]">
             <div className="h-3 w-3/4 bg-[#F0F0F0] animate-pulse rounded mb-1.5" />

@@ -28,6 +28,8 @@ export default function ChatParticipantsModal({ open, onClose, participants }: P
 
   if (!open) return null;
 
+  const uniqueParticipants = Array.from(new Map(participants.map((p) => [p.user_id, p])).values());
+
   return (
     <div
       className="absolute inset-0 z-20 bg-white flex flex-col overflow-hidden rounded-lg"
@@ -42,7 +44,7 @@ export default function ChatParticipantsModal({ open, onClose, participants }: P
             채팅 참여자
           </h3>
           <p className="text-xs text-[#999999]">
-            총 {participants.length}명 접속 중
+            총 {uniqueParticipants.length}명 접속 중
           </p>
         </div>
         <button
@@ -56,7 +58,7 @@ export default function ChatParticipantsModal({ open, onClose, participants }: P
 
       {/* 참여자 목록 */}
       <div className="flex-1 overflow-y-auto">
-        {participants.length === 0 ? (
+        {uniqueParticipants.length === 0 ? (
           <div className="text-center text-sm text-[#999] py-8 px-4">
             현재 접속 중인 참여자가 없습니다.
             <br />
@@ -66,7 +68,7 @@ export default function ChatParticipantsModal({ open, onClose, participants }: P
           </div>
         ) : (
           <ul className="divide-y divide-[#F0F0F0]">
-            {participants.map((p) => {
+            {uniqueParticipants.map((p) => {
               const time = (() => {
                 try {
                   const d = new Date(p.online_at);

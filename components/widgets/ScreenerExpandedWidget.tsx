@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 const PRESETS = [
   { key: 'low-per',   label: '저PER',  url: '/api/stocks/screener?maxPER=15&limit=10&orderBy=per&order=asc' },
@@ -72,22 +73,23 @@ export default function ScreenerExpandedWidget() {
     ? rows.filter((r) => r.name.includes(search) || r.code.includes(search))
     : rows;
 
-  return (
-    <div className="p-3">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-[#222]">종목 발굴</h3>
-        <div className="flex items-center gap-1 border border-[#E5E7EB] rounded px-2">
-          <Search className="w-3.5 h-3.5 text-[#999]" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="종목 검색"
-            className="w-32 h-7 text-xs outline-none"
-          />
-        </div>
-      </div>
+  const searchInput = (
+    <div className="flex items-center gap-1 border border-[#E5E7EB] rounded px-2">
+      <Search className="w-3.5 h-3.5 text-[#999]" />
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="종목 검색"
+        className="w-28 h-6 text-xs outline-none"
+      />
+    </div>
+  );
 
+  return (
+    <div className="flex flex-col h-full">
+      <WidgetHeader title="종목 발굴" href="/screener" actions={searchInput} />
+      <div className="px-3 py-2">
       <div className="flex gap-1 mb-3 flex-wrap">
         {PRESETS.map((p) => (
           <button
@@ -145,6 +147,7 @@ export default function ScreenerExpandedWidget() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

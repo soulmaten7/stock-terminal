@@ -44,8 +44,8 @@ export default function RootLayout({
               {children}
             </LayoutShell>
           </div>
-        <FloatingChat />
         </AuthProvider>
+        <FloatingChat />
       </body>
     </html>
   );

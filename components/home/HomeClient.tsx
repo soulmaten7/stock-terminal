@@ -21,82 +21,79 @@ import EconomicCalendarWidget from '@/components/widgets/EconomicCalendarWidget'
 export default function HomeClient() {
   return (
     <div className="px-2 py-2 flex flex-col gap-2">
-      {/* Section 1 — 3컬럼 반응형 */}
-      <section className="grid gap-0 h-[680px] border border-[#E5E7EB] bg-white
+      {/* Section 1 — 680px 고정 */}
+      <section className="grid gap-0 h-[680px] border border-[#E5E7EB] bg-white overflow-hidden
         grid-cols-[240px_1fr]
         lg:grid-cols-[240px_1fr_320px]
         xl:grid-cols-[280px_1fr_360px]">
-        <div className="border-r border-[#E5E7EB] min-w-0 overflow-hidden">
+        <div className="border-r border-[#E5E7EB] min-w-0 min-h-0 overflow-y-auto">
           <WatchlistWidget />
         </div>
-        <div className="flex flex-col min-w-[480px] overflow-hidden">
+        <div className="flex flex-col min-w-0 overflow-hidden">
           <div className="basis-[60%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-hidden">
             <ChartWidget />
           </div>
-          <div className="basis-[25%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-hidden">
+          <div className="basis-[25%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-y-auto">
             <OrderBookWidget />
           </div>
-          <div className="basis-[15%] shrink-0 min-h-0 overflow-hidden">
+          <div className="basis-[15%] shrink-0 min-h-0 overflow-y-auto">
             <TickWidget />
           </div>
         </div>
-        <div className="hidden lg:block min-w-0 overflow-hidden">
+        <div className="hidden lg:block min-w-0 min-h-0 overflow-hidden">
           <StockDetailPanel />
         </div>
       </section>
 
       <StockDetailToggle />
 
-      {/* Section 2 — Pre-Market & Global (4:8) */}
-      <section className="grid grid-cols-12 gap-2 border border-[#E5E7EB]" style={{ minHeight: 400 }}>
-        <div className="col-span-12 lg:col-span-4 min-w-0 border-b lg:border-b-0 lg:border-r border-[#E5E7EB] overflow-hidden" style={{ minHeight: 200 }}>
+      {/* Section 2 — 400px 고정 */}
+      <section className="grid grid-cols-12 gap-2 h-[400px]">
+        <div className="col-span-12 lg:col-span-4 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <BriefingWidget compact />
         </div>
-        <div className="col-span-12 lg:col-span-8 min-w-0 overflow-hidden">
+        <div className="col-span-12 lg:col-span-8 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <GlobalIndicesWidget expanded />
         </div>
       </section>
 
-      {/* Section 3 — Discovery */}
+      {/* Section 3 — 260 + 340 */}
       <section className="space-y-2">
-        {/* 상단: 종목 발굴 확장 (풀폭) */}
-        <div className="border border-[#E5E7EB] bg-white overflow-hidden">
+        <div className="h-[260px] border border-[#E5E7EB] bg-white overflow-y-auto">
           <ScreenerExpandedWidget />
         </div>
-
-        {/* 하단: 6:3:3 */}
-        <div className="grid grid-cols-12 gap-2">
-          <div className="col-span-12 lg:col-span-6 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
+        <div className="grid grid-cols-12 gap-2 h-[340px]">
+          <div className="col-span-12 lg:col-span-6 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
             <MoversPairWidget />
           </div>
-          <div className="col-span-6 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
+          <div className="col-span-6 lg:col-span-3 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
             <VolumeTop10Widget inline />
           </div>
-          <div className="col-span-6 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
+          <div className="col-span-6 lg:col-span-3 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
             <NetBuyTopWidget inline />
           </div>
         </div>
       </section>
 
-      {/* Section 4 — Market Structure */}
-      <section className="grid grid-cols-12 gap-2">
-        <div className="col-span-12 lg:col-span-9 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 280 }}>
+      {/* Section 4 — 440px 고정 */}
+      <section className="grid grid-cols-12 gap-2 h-[440px]">
+        <div className="col-span-12 lg:col-span-9 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <SectorHeatmapWidget />
         </div>
-        <div className="col-span-12 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 280 }}>
+        <div className="col-span-12 lg:col-span-3 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <ThemeTop10Widget />
         </div>
       </section>
 
-      {/* Section 5 — Information Streams */}
-      <section className="grid grid-cols-12 gap-2">
-        <div className="col-span-12 lg:col-span-5 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 400 }}>
+      {/* Section 5 — 440px 고정 */}
+      <section className="grid grid-cols-12 gap-2 h-[440px] mb-6">
+        <div className="col-span-12 lg:col-span-5 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <NewsStreamWidget />
         </div>
-        <div className="col-span-12 lg:col-span-4 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 400 }}>
+        <div className="col-span-12 lg:col-span-4 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <DisclosureStreamWidget />
         </div>
-        <div className="col-span-12 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 400 }}>
+        <div className="col-span-12 lg:col-span-3 min-w-0 min-h-0 border border-[#E5E7EB] bg-white overflow-y-auto">
           <EconomicCalendarWidget />
         </div>
       </section>

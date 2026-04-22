@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 interface Sector { sector: string; change: number; count: number; }
 
@@ -37,27 +38,29 @@ export default function SectorHeatmapWidget() {
       .finally(() => setLoading(false));
   }, [market]);
 
+  const marketToggle = (
+    <div className="inline-flex rounded overflow-hidden border border-[#E5E7EB]">
+      {(['KR', 'US'] as Market[]).map((m) => (
+        <button
+          key={m}
+          onClick={() => setMarket(m)}
+          className={`px-3 h-6 text-xs font-bold ${
+            market === m ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666] hover:bg-[#F3F4F6]'
+          }`}
+        >
+          {m}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
-    <div className="p-3 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-[#222]">섹터 히트맵</h3>
-        <div className="inline-flex rounded overflow-hidden border border-[#E5E7EB]">
-          {(['KR', 'US'] as Market[]).map((m) => (
-            <button
-              key={m}
-              onClick={() => setMarket(m)}
-              className={`px-3 h-6 text-xs font-bold ${
-                market === m ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666] hover:bg-[#F3F4F6]'
-              }`}
-            >
-              {m}
-            </button>
-          ))}
-        </div>
-      </div>
+    <div className="flex flex-col h-full">
+      {/* TODO: /market-map 페이지 미구현 — STEP 84+ */}
+      <WidgetHeader title="섹터 히트맵" actions={marketToggle} />
 
       {loading ? (
-        <div className="flex-1 grid grid-cols-4 gap-1.5">
+        <div className="flex-1 grid grid-cols-4 gap-1.5 p-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-14 bg-[#F0F0F0] animate-pulse rounded" />
           ))}
@@ -65,7 +68,7 @@ export default function SectorHeatmapWidget() {
       ) : sectors.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-xs text-[#999]">데이터 없음</div>
       ) : (
-        <div className="flex-1 grid grid-cols-4 gap-1.5 content-start">
+        <div className="flex-1 grid grid-cols-4 gap-1.5 p-3 content-start">
           {sectors.map((s) => (
             <div
               key={s.sector}
@@ -83,7 +86,7 @@ export default function SectorHeatmapWidget() {
         </div>
       )}
 
-      <p className="mt-2 text-[10px] text-[#AAA]">
+      <p className="mt-2 px-3 text-[10px] text-[#AAA]">
         {market === 'KR' ? '3개월 수익률 기준 섹터 평균' : 'SPDR 섹터 ETF 당일 등락'}
       </p>
     </div>
