@@ -1,6 +1,8 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — feat(dashboard): 뉴스·공시·재무 탭 상세 콘텐츠 (STEP 73)
+
 ## 2026-04-22 — feat(dashboard): 종합 탭 5블록 실데이터 연결 (STEP 72)
 
 ## 2026-04-22 — feat(dashboard): selectedSymbolStore + 종합 탭 5블록 구조 골격 (STEP 71)

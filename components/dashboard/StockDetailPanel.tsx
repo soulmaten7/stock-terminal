@@ -5,6 +5,9 @@ import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 import SnapshotHeader from './SnapshotHeader';
 import DetailTabs, { type DetailTab } from './DetailTabs';
 import OverviewTab from './tabs/OverviewTab';
+import NewsTab from './tabs/NewsTab';
+import DisclosuresTab from './tabs/DisclosuresTab';
+import FinancialsTab from './tabs/FinancialsTab';
 
 export interface PriceData {
   price: number;
@@ -21,12 +24,6 @@ export interface PriceData {
   low52w: number;
 }
 
-const TAB_LABEL: Record<DetailTab, string> = {
-  overview:    '종합',
-  news:        '뉴스',
-  disclosures: '공시',
-  financials:  '재무',
-};
 
 export default function StockDetailPanel() {
   const [activeTab, setActiveTab] = useState<DetailTab>('overview');
@@ -52,13 +49,10 @@ export default function StockDetailPanel() {
       <SnapshotHeader priceData={priceData} loading={priceLoading} />
       <DetailTabs activeTab={activeTab} onChange={setActiveTab} />
       <div className="flex-1 overflow-y-auto px-4">
-        {activeTab === 'overview' ? (
-          <OverviewTab priceData={priceData} onNavigateTab={setActiveTab} />
-        ) : (
-          <div className="text-center py-8 text-xs text-[#999]">
-            Coming soon — {TAB_LABEL[activeTab]}
-          </div>
-        )}
+        {activeTab === 'overview'    && <OverviewTab priceData={priceData} onNavigateTab={setActiveTab} />}
+        {activeTab === 'news'        && <NewsTab />}
+        {activeTab === 'disclosures' && <DisclosuresTab />}
+        {activeTab === 'financials'  && <FinancialsTab />}
       </div>
     </aside>
   );
