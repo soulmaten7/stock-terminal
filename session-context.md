@@ -18,9 +18,11 @@
 ## 현재 TODO
 
 ### P0 — 다음 작업 (차기)
-- [ ] **STEP 72 — 종합 탭 5블록 실데이터 연결 (투자지표·수급·뉴스·공시·재무 순차)**
-  - 기존 API 라우트 재활용, 소스 없는 블록은 placeholder 유지
-  - 참고: `docs/STEP_72_COMMAND.md`
+- [ ] **STEP 73 — 뉴스/공시/재무 탭 상세 구현 + 빠진 API 보강**
+  - 뉴스 탭: 선택 종목 전체 뉴스 리스트 (무한 스크롤 or 페이지네이션)
+  - 공시 탭: DART 전체 리스트 + US SEC TODO
+  - 재무 탭: 손익/재무상태/현금흐름 상세 테이블
+  - 배당수익률·US 재무 API 보강
 
 ### P0 — 지금 당장 (블로커)
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
@@ -39,6 +41,15 @@
 - [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
+
+### 2026-04-22 세션 — STEP 72 완료
+- [x] STEP 72: 종합 탭 5블록 실데이터 연결
+  - 블록1(핵심투자지표): KIS price API — per/pbr/marketCap/high52w/low52w, dividendYield=—
+  - 블록2(수급미니): KIS investor API — 당일·5일 외인/기관/개인, KR전용
+  - 블록3(뉴스): Google News RSS `/api/stocks/news?limit=3`
+  - 블록4(공시): DART `/api/stocks/disclosures?limit=3` — US=SEC TODO
+  - 블록5(재무미니): DART earnings `/api/stocks/earnings` — quarters[-4:] CSS 막대
+  - StockDetailPanel: 가격 1회 페치 후 Header·OverviewTab 공유, 종목 변경 시 탭 overview로 초기화
 
 ### 2026-04-22 세션 — STEP 71 완료
 - [x] STEP 71: selectedSymbolStore 신설 + WatchlistWidget 클릭 핸들러 연결 (Case A)
