@@ -1,6 +1,8 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — feat(dashboard): Section 1 3컬럼 레이아웃 + 우측 종목상세 패널 스켈레톤 (STEP 70)
+
 ## 2026-04-22 — docs: Dashboard Spec V3.2 — Section 1 우측 컬럼 확정 (스냅샷 헤더 + 탭 4개, 종합 블록 5개)
 
 ## 2026-04-22 — Dashboard Spec V3.1 — Section 1 레이아웃 확정 (🅐 3컬럼 + 60/25/15)

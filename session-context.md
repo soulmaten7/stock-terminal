@@ -18,10 +18,10 @@
 ## 현재 TODO
 
 ### P0 — 다음 작업 (차기)
-- [ ] **STEP 70 — Section 1 3컬럼 레이아웃 + 우측 컬럼 스켈레톤 구현**
-  - 좌: 관심종목 / 중: 차트(60%)·호가창(25%)·체결창(15%) 세로 스택 / 우: 종목 상세 (신규)
-  - 우측 = 스냅샷 헤더(~100px) + 탭 4개(종합/뉴스/공시/재무) + 탭 콘텐츠 스켈레톤
-  - 참고: `docs/DASHBOARD_SPEC_V3.md` Section 1 블록 (V3.2)
+- [ ] **STEP 71 — 우측 컬럼 탭별 실제 콘텐츠 (종합 탭 먼저)**
+  - 종합 탭: 핵심투자지표 → 수급미니(KR) → 뉴스3건 → 공시3건 → 재무미니
+  - Zustand 스토어 연결 (선택 종목 → StockDetailPanel 데이터 바인딩)
+  - 참고: `docs/DASHBOARD_SPEC_V3.md` Section 1 우측 컬럼 상세
 
 ### P0 — 지금 당장 (블로커)
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
@@ -40,6 +40,14 @@
 - [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
+
+### 2026-04-22 세션 — STEP 70 완료
+- [x] STEP 70: Section 1 3컬럼 레이아웃 + 우측 종목상세 패널 스켈레톤
+  - components/dashboard/ 폴더 신설
+  - DetailTabs.tsx / SnapshotHeader.tsx / StockDetailPanel.tsx 신규
+  - HomeClient Section 1 = 3컬럼 grid (280px / 1fr / 360px, h-680px)
+  - 중앙 컬럼: ChartWidget(60%) / OrderBookWidget(25%) / TickWidget(15%)
+  - 좌측: WatchlistWidget / 우측: StockDetailPanel (스켈레톤)
 
 ### 2026-04-22 세션 — STEP 69 완료 (docs only)
 - [x] STEP 69: Dashboard Spec V3.2 — Section 1 우측 컬럼 확정 (스냅샷 헤더 + 탭 4개, 종합 블록 5개)

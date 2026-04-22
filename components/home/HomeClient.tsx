@@ -14,116 +14,52 @@ import VolumeTop10Widget from '@/components/widgets/VolumeTop10Widget';
 import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
 import ScreenerMiniWidget from '@/components/widgets/ScreenerMiniWidget';
 import EconCalendarMiniWidget from '@/components/widgets/EconCalendarMiniWidget';
+import StockDetailPanel from '@/components/dashboard/StockDetailPanel';
 
-// ── 레이아웃 (Dashboard V2 — User Flow Architecture) ────────────────────────
+// ── 레이아웃 (Dashboard V3 — STEP 70) ─────────────────────────────────────
 //
-//  Row\Col │  Col 1 (2.5fr)       │  Col 2 (6.5fr)              │  Col 3 (3fr)
-// ─────────┼──────────────────────┼──────────────────────────────┼──────────────────
-//  R1-R3   │  마켓채팅 (45%)       │  차트 (50%)                  │  뉴스속보 (50%)
-//          │  ──────               │  ──────                      │  ──────
-//          │  종목발굴 (10%)       │  호가창 | 체결창 (50%, 1:1)  │  DART공시 (50%)
-//          │  ──────               │                              │
-//          │  관심종목 (45%)       │                              │
-// ─────────┼──────────────────────┼──────────────────────────────┼──────────────────
-//  R4      │  상승/하락 | 거래량 | 실시간수급 | 상승테마 | 글로벌지수 (1:1:1:1:1)
-//          │  (max(500px, 100vh-280px), 내부 스크롤)
-// ────────────────────────────────────────────────────────────────────────────────
+//  Section 1 (3컬럼, h-680px):
+//    좌(280px): 관심종목
+//    중(1fr):   차트(60%) / 호가창(25%) / 체결창(15%) 세로 스택
+//    우(360px): 종목 상세 (스냅샷 헤더 + 탭 4개)
 //
-// User Flow 철학 (Zone 철학에서 전환):
-//  Col 1 = 정보→탐색→결정 (채팅 → 발굴 → 관심종목)
-//  Col 2 = 분석→주문 (차트 → 호가/체결)
-//  Col 3 = 실시간 이벤트 스트림 (뉴스 + DART)
-//  R4    = 순수 랭킹/훑어보기
+//  R4 (Discovery Row): 5등분 — 기존 유지
 
 export default function HomeClient() {
   return (
-    <div
-      className="px-2 py-2"
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0,2.5fr) minmax(0,6.5fr) minmax(0,3fr)',
-        gridTemplateRows: 'calc(100vh - 152px) max(500px, calc(100vh - 280px))',
-        gap: 8,
-      }}
-    >
-      {/* ── Col 1: Chat (45) + ScreenerMini (10) + Watchlist (45) ── */}
-      <div
-        id="section-col1"
-        style={{
-          gridRow: 1,
-          gridColumn: 1,
-          display: 'grid',
-          gridTemplateRows: '45fr 10fr 45fr',
-          gap: 8,
-          minHeight: 0,
-          minWidth: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <div id="section-chat" style={{ minHeight: 0 }}><ChatWidget /></div>
-        <div id="section-screener-mini" style={{ minHeight: 0 }}><ScreenerMiniWidget /></div>
-        <div id="section-watchlist" style={{ minHeight: 0 }}><WatchlistWidget /></div>
-      </div>
-
-      {/* ── Col 2: Chart (50) + (OrderBook | Tick 1:1) (50) ── */}
-      <div
-        id="section-col2"
-        style={{
-          gridRow: 1,
-          gridColumn: 2,
-          display: 'grid',
-          gridTemplateRows: '1fr 1fr',
-          gap: 8,
-          minHeight: 0,
-          minWidth: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <div id="section-chart" style={{ minHeight: 0 }}><ChartWidget /></div>
-        <div
-          id="section-orderbook-tick"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 8,
-            minHeight: 0,
-            minWidth: 0,
-            overflow: 'hidden',
-          }}
-        >
-          <div id="section-orderbook" style={{ minHeight: 0 }}><OrderBookWidget /></div>
-          <div id="section-tick" style={{ minHeight: 0 }}><TickWidget /></div>
+    <div className="px-2 py-2 flex flex-col gap-2">
+      {/* Section 1 — 3컬럼 (관심종목 / 차트·호가·체결 / 종목 상세) */}
+      <section className="grid grid-cols-[280px_1fr_360px] gap-0 h-[680px] border border-[#E5E7EB] bg-white">
+        {/* 좌 — 관심종목 */}
+        <div className="border-r border-[#E5E7EB] min-w-0 overflow-hidden">
+          <WatchlistWidget />
         </div>
-      </div>
 
-      {/* ── Col 3: News (35) + DART (35) + EconCalendar (30) vertical ── */}
-      <div
-        id="section-col3"
-        style={{
-          gridRow: 1,
-          gridColumn: 3,
-          display: 'grid',
-          gridTemplateRows: '35fr 35fr 30fr',
-          gap: 8,
-          minHeight: 0,
-          minWidth: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <div id="section-news" style={{ minHeight: 0 }}><NewsFeedWidget /></div>
-        <div id="section-dart" style={{ minHeight: 0 }}><DartFilingsWidget /></div>
-        <div id="section-econcal" style={{ minHeight: 0 }}><EconCalendarMiniWidget /></div>
-      </div>
+        {/* 중 — 차트 60% / 호가 25% / 체결 15% */}
+        <div className="flex flex-col min-w-0 overflow-hidden">
+          <div className="basis-[60%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-hidden">
+            <ChartWidget />
+          </div>
+          <div className="basis-[25%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-hidden">
+            <OrderBookWidget />
+          </div>
+          <div className="basis-[15%] shrink-0 min-h-0 overflow-hidden">
+            <TickWidget />
+          </div>
+        </div>
 
-      {/* ── R4: Discovery Row (1:1:1:1:1) ── */}
+        {/* 우 — 종목 상세 (신규) */}
+        <StockDetailPanel />
+      </section>
+
+      {/* R4: Discovery Row (1:1:1:1:1) — 기존 유지 */}
       <div
         id="section-r4"
         style={{
-          gridRow: 2,
-          gridColumn: '1 / 4',
           display: 'grid',
           gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
           gap: 8,
+          height: 'max(500px, calc(100vh - 280px))',
           minHeight: 0,
           minWidth: 0,
           overflow: 'hidden',
