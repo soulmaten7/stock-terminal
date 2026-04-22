@@ -2,6 +2,7 @@
 
 import { useEffect, useState, FormEvent } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
+import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 
 interface Level {
   price: number;
@@ -27,13 +28,24 @@ function fmtPrice(n: number): string {
 }
 
 const DEFAULT_SYMBOL = '005930';
+const LEVELS = 5;
 
 export default function OrderBookWidget() {
+  const selectedCode = useSelectedSymbolStore((s) => s.selected?.code);
   const [symbol, setSymbol] = useState(DEFAULT_SYMBOL);
   const [input, setInput] = useState(DEFAULT_SYMBOL);
   const [book, setBook] = useState<BookData | null>(null);
   const [info, setInfo] = useState<PriceData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // sync with global selected symbol
+  useEffect(() => {
+    if (selectedCode && /^\d{6}$/.test(selectedCode)) {
+      setSymbol(selectedCode);
+      setInput(selectedCode);
+      setBook(null);
+    }
+  }, [selectedCode]);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,7 +70,6 @@ export default function OrderBookWidget() {
 
     load();
     const timer = setInterval(load, 5_000);
-
     return () => {
       cancelled = true;
       clearInterval(timer);
@@ -75,14 +86,11 @@ export default function OrderBookWidget() {
     }
   };
 
-  const allVolumes = [
-    ...(book?.asks || []).map((a) => a.volume),
-    ...(book?.bids || []).map((b) => b.volume),
-  ];
-  const maxVol = Math.max(1, ...allVolumes);
+  const asks = book?.asks?.slice(-LEVELS) || [];
+  const bids = book?.bids?.slice(0, LEVELS) || [];
 
-  const asks = book?.asks?.slice(-5) || [];
-  const bids = book?.bids?.slice(0, 5) || [];
+  const allVolumes = [...asks, ...bids].map((l) => l.volume);
+  const maxVol = Math.max(1, ...allVolumes);
 
   const totalAsk = book?.totalAskVolume ?? 0;
   const totalBid = book?.totalBidVolume ?? 0;
@@ -105,9 +113,7 @@ export default function OrderBookWidget() {
             maxLength={6}
             inputMode="numeric"
           />
-          <button type="submit" className="text-[10px] text-[#0ABAB5] hover:underline">
-            이동
-          </button>
+          <button type="submit" className="text-[10px] text-[#0ABAB5] hover:underline">이동</button>
         </form>
       }
     >
@@ -116,21 +122,18 @@ export default function OrderBookWidget() {
       ) : (
         <div className="flex flex-col h-full">
           <div aria-label="호가창" className="px-2 py-1 text-xs flex-1">
-            {/* 매도 호가 (위) — 3-col 그리드 */}
+            {/* 매도 호가 */}
             <div className="mb-0.5">
               {asks.map((a, i) => {
-                const bar = Math.round((a.volume / maxVol) * 100);
+                const barPct = Math.round((a.volume / maxVol) * 100);
                 return (
-                  <div
-                    key={`ask-${i}`}
-                    className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-1 py-0.5 px-1"
-                  >
-                    <div className="relative h-full flex items-center justify-end">
+                  <div key={`ask-${i}`} className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-1 py-[3px] px-1">
+                    <div className="relative flex items-center justify-end">
                       <div
-                        className="absolute right-0 top-0 bottom-0 bg-[#0051CC]/15"
-                        style={{ width: `${bar}%` }}
+                        className="absolute right-0 top-0 bottom-0 bg-[#0051CC]/15 transition-all duration-300"
+                        style={{ width: `${barPct}%` }}
                       />
-                      <span className="relative text-[#555] tabular-nums">
+                      <span className="relative text-[#555] tabular-nums text-[11px]">
                         {a.volume.toLocaleString()}
                       </span>
                     </div>
@@ -146,33 +149,28 @@ export default function OrderBookWidget() {
             {/* 현재가 */}
             <div className="bg-[#0ABAB5]/10 text-center py-1 font-bold text-[#0ABAB5] text-sm border-y border-[#0ABAB5]/20 mb-0.5 tabular-nums">
               {info?.price ? fmtPrice(info.price) : '—'}{' '}
-              <span
-                className={`text-xs ${(info?.changePercent ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}
-              >
+              <span className={`text-xs ${(info?.changePercent ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                 {(info?.changePercent ?? 0) >= 0 ? '+' : ''}
                 {(info?.changePercent ?? 0).toFixed(2)}%
               </span>
             </div>
 
-            {/* 매수 호가 (아래) — 3-col 그리드 */}
+            {/* 매수 호가 */}
             <div>
               {bids.map((b, i) => {
-                const bar = Math.round((b.volume / maxVol) * 100);
+                const barPct = Math.round((b.volume / maxVol) * 100);
                 return (
-                  <div
-                    key={`bid-${i}`}
-                    className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-1 py-0.5 px-1"
-                  >
+                  <div key={`bid-${i}`} className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-1 py-[3px] px-1">
                     <span />
                     <span className="relative text-[#FF3B30] font-bold text-center min-w-[60px] tabular-nums">
                       {fmtPrice(b.price)}
                     </span>
-                    <div className="relative h-full flex items-center justify-start">
+                    <div className="relative flex items-center justify-start">
                       <div
-                        className="absolute left-0 top-0 bottom-0 bg-[#FF3B30]/15"
-                        style={{ width: `${bar}%` }}
+                        className="absolute left-0 top-0 bottom-0 bg-[#FF3B30]/15 transition-all duration-300"
+                        style={{ width: `${barPct}%` }}
                       />
-                      <span className="relative text-[#555] tabular-nums">
+                      <span className="relative text-[#555] tabular-nums text-[11px]">
                         {b.volume.toLocaleString()}
                       </span>
                     </div>
@@ -186,20 +184,24 @@ export default function OrderBookWidget() {
           {sumTotal > 0 && (
             <div className="border-t border-[#F0F0F0] px-2 py-1.5 bg-[#FAFAFA]">
               <div className="flex items-center justify-between text-[10px] text-[#666] tabular-nums mb-1">
-                <span>
-                  매도 <span className="text-[#0051CC] font-bold">{totalAsk.toLocaleString()}</span>
-                </span>
-                <span>
-                  매수 <span className="text-[#FF3B30] font-bold">{totalBid.toLocaleString()}</span>
-                </span>
+                <span>매도 <span className="text-[#0051CC] font-bold">{totalAsk.toLocaleString()}</span></span>
+                <span>매수 <span className="text-[#FF3B30] font-bold">{totalBid.toLocaleString()}</span></span>
               </div>
-              <div className="flex h-1.5 rounded overflow-hidden">
-                <div className="bg-[#FF3B30]" style={{ width: `${bidPct}%` }} title={`매수 ${bidPct.toFixed(1)}%`} />
-                <div className="bg-[#0051CC]" style={{ width: `${askPct}%` }} title={`매도 ${askPct.toFixed(1)}%`} />
+              <div className="flex h-2 rounded overflow-hidden">
+                <div
+                  className="bg-[#FF3B30] transition-all duration-500"
+                  style={{ width: `${bidPct}%` }}
+                  title={`매수 ${bidPct.toFixed(1)}%`}
+                />
+                <div
+                  className="bg-[#0051CC] transition-all duration-500"
+                  style={{ width: `${askPct}%` }}
+                  title={`매도 ${askPct.toFixed(1)}%`}
+                />
               </div>
               <div className="flex items-center justify-between text-[9px] text-[#888] tabular-nums mt-0.5">
-                <span>매수 {bidPct.toFixed(1)}%</span>
-                <span>{askPct.toFixed(1)}% 매도</span>
+                <span className="text-[#FF3B30] font-bold">매수 {bidPct.toFixed(1)}%</span>
+                <span className="text-[#0051CC] font-bold">{askPct.toFixed(1)}% 매도</span>
               </div>
             </div>
           )}
