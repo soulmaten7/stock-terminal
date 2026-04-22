@@ -1,0 +1,27 @@
+{
+  "updatedAt": "2026-04-22",
+  "source": "수동 큐레이션 — Investing.com / FOMC 공식 일정 / 통계청 발표 일정 교차 검증",
+  "events": [
+    { "date": "2026-04-22", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "CPI 월간", "importance": 3, "forecast": "0.2%", "previous": "0.3%" },
+    { "date": "2026-04-22", "time": "23:00", "country": "US", "flag": "🇺🇸", "title": "소매판매 월간", "importance": 2, "forecast": "0.4%", "previous": "0.6%" },
+    { "date": "2026-04-23", "time": "03:00", "country": "US", "flag": "🇺🇸", "title": "FOMC 회의록", "importance": 3, "forecast": "-", "previous": "-" },
+    { "date": "2026-04-24", "time": "08:00", "country": "KR", "flag": "🇰🇷", "title": "한국 수출입 지표", "importance": 2, "forecast": "-", "previous": "-" },
+    { "date": "2026-04-24", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "내구재 주문 월간", "importance": 2, "forecast": "-0.5%", "previous": "+0.7%" },
+    { "date": "2026-04-25", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "1분기 GDP 성장률", "importance": 3, "forecast": "2.4%", "previous": "3.1%" },
+    { "date": "2026-04-25", "time": "23:00", "country": "US", "flag": "🇺🇸", "title": "미시건 소비자심리", "importance": 2, "forecast": "76.5", "previous": "77.9" },
+    { "date": "2026-04-28", "time": "09:00", "country": "JP", "flag": "🇯🇵", "title": "일본 BOJ 금리 결정", "importance": 3, "forecast": "0.50%", "previous": "0.50%" },
+    { "date": "2026-04-28", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "PCE 물가지수", "importance": 3, "forecast": "2.5%", "previous": "2.5%" },
+    { "date": "2026-04-29", "time": "03:00", "country": "US", "flag": "🇺🇸", "title": "FOMC 금리 결정", "importance": 3, "forecast": "5.50%", "previous": "5.50%" },
+    { "date": "2026-04-29", "time": "03:30", "country": "US", "flag": "🇺🇸", "title": "FOMC 기자회견", "importance": 3, "forecast": "-", "previous": "-" },
+    { "date": "2026-04-29", "time": "21:15", "country": "US", "flag": "🇺🇸", "title": "ADP 고용 변화", "importance": 2, "forecast": "150K", "previous": "155K" },
+    { "date": "2026-04-30", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "비농업 고용자 수", "importance": 3, "forecast": "175K", "previous": "188K" },
+    { "date": "2026-04-30", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "실업률", "importance": 3, "forecast": "3.8%", "previous": "3.7%" },
+    { "date": "2026-05-01", "time": "09:00", "country": "KR", "flag": "🇰🇷", "title": "한국 소비자물가", "importance": 2, "forecast": "2.1%", "previous": "2.3%" },
+    { "date": "2026-05-02", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "신규 실업수당 청구", "importance": 2, "forecast": "220K", "previous": "218K" },
+    { "date": "2026-05-05", "time": "22:00", "country": "EU", "flag": "🇪🇺", "title": "유로존 소매판매", "importance": 2, "forecast": "0.3%", "previous": "0.1%" },
+    { "date": "2026-05-06", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "무역수지", "importance": 2, "forecast": "-68.0B", "previous": "-67.4B" },
+    { "date": "2026-05-07", "time": "21:00", "country": "GB", "flag": "🇬🇧", "title": "영국 BOE 금리 결정", "importance": 3, "forecast": "5.25%", "previous": "5.25%" },
+    { "date": "2026-05-08", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "신규 실업수당 청구", "importance": 2, "forecast": "-", "previous": "-" },
+    { "date": "2026-05-13", "time": "21:30", "country": "US", "flag": "🇺🇸", "title": "CPI 월간", "importance": 3, "forecast": "-", "previous": "-" }
+  ]
+}

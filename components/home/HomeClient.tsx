@@ -13,6 +13,7 @@ import DartFilingsWidget from '@/components/widgets/DartFilingsWidget';
 import VolumeTop10Widget from '@/components/widgets/VolumeTop10Widget';
 import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
 import ScreenerMiniWidget from '@/components/widgets/ScreenerMiniWidget';
+import EconCalendarMiniWidget from '@/components/widgets/EconCalendarMiniWidget';
 
 // ── 레이아웃 (Dashboard V2 — User Flow Architecture) ────────────────────────
 //
@@ -95,14 +96,14 @@ export default function HomeClient() {
         </div>
       </div>
 
-      {/* ── Col 3: News (50) + DART (50) vertical ── */}
+      {/* ── Col 3: News (35) + DART (35) + EconCalendar (30) vertical ── */}
       <div
         id="section-col3"
         style={{
           gridRow: 1,
           gridColumn: 3,
           display: 'grid',
-          gridTemplateRows: '1fr 1fr',
+          gridTemplateRows: '35fr 35fr 30fr',
           gap: 8,
           minHeight: 0,
           minWidth: 0,
@@ -111,6 +112,7 @@ export default function HomeClient() {
       >
         <div id="section-news" style={{ minHeight: 0 }}><NewsFeedWidget /></div>
         <div id="section-dart" style={{ minHeight: 0 }}><DartFilingsWidget /></div>
+        <div id="section-econcal" style={{ minHeight: 0 }}><EconCalendarMiniWidget /></div>
       </div>
 
       {/* ── R4: Discovery Row (1:1:1:1:1) ── */}
