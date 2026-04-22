@@ -35,6 +35,23 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 59~66 완료 (commit 6cbf55a, 8 STEP 일괄)
+- [x] STEP 59: /global — Yahoo Finance 35개 심볼 실데이터 (8섹션 필터)
+- [x] STEP 60: /briefing — 3-컬럼 (미증시/공시/경제지표) 실데이터
+- [x] STEP 61: VerticalNav 14 flat → 5그룹 (시세/정보/일정/글로벌/도구), hover 54↔220px (Task #25 해결)
+- [x] STEP 62: News — 소스 배지 URL 프리셋, 기간/중요 필터
+- [x] STEP 63: Calendar — 기간·국가·중요도 3-세그먼트, importance= 프리셋
+- [x] STEP 64: Analysis — 테마 상승/하락 토글, 전체 테마 4-컬럼 그리드, theme= 하이라이트
+- [x] STEP 65: Chat — $종목코드 자동 링크, /chat 풀페이지화
+- [x] STEP 66: Ticks — 심볼 인풋, 통계 패널+50건 테이블, /ticks 풀페이지화
+- [x] 누계: 28 files changed, +3482 / -290
+- [x] **P0/P1 위젯·페이지 전량 실데이터 전환 완료** — 런칭 가능 수준 UI 달성
+
+### 2026-04-22 세션 — STEP 58 완료
+- [x] NetBuyTopWidget 외국인/기관·매수/매도 이중 토글 + 막대 시각화
+- [x] /api/kis/investor-rank sort+market 파라미터
+- [x] net-buy TopTab 3-세그먼트 (Who/Mode/Market) + URL 프리셋
+
 ### 2026-04-22 세션 — STEP 57 완료
 - [x] VolumeTop10Widget 배수 막대 시각화 + 급등 뱃지
 - [x] MoversVolumePageClient 신설 (시장구분·정렬 필터, 30종목)

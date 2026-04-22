@@ -2,28 +2,43 @@
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
-1. `docs/REFERENCE_PLATFORM_MAPPING.md` 읽기 — 어느 플랫폼을 벤치마킹할지 합의된 매핑
-2. **STEP 51 후보 (P0 위젯부터 리팩토링 시작)**:
-   - P0 위젯: Watchlist, Chart, OrderBook, DART, Movers, Volume, NetBuy
-   - P0 페이지: 홈, Screener, Watchlist, Chart
-3. 진행 방식:
-   - (a) 해당 레퍼런스 플랫폼 실제 UI 스크린샷 수집 (Chrome MCP)
-   - (b) 위젯/페이지별 디테일 스펙 문서 작성 (`docs/WIDGET_SPEC_{name}.md`)
-   - (c) 스펙 기반 UI 리팩토링 실행
+1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 + 우선순위
+2. **P0/P1 위젯·페이지 100% 실데이터 전환 완료** 상태 → **배포 단계** 진입
+3. 다음 우선순위 후보:
+   - (A) Vercel 배포 검증 + Supabase 환경변수 점검 + RLS 검증
+   - (B) P2 작업: OverviewTab 확장, AI 분석 (Perplexity/GPT) 통합, 종목 비교 기능
+   - (C) 수익화 활성화: Partner-Agnostic Lead Gen 슬롯 실트래픽 연동, UTM 대시보드 가동
+   - (D) 스크리너 파워업: 저장된 스크린 + 백테스팅 미니
 4. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
-## 현재 상태 (2026-04-22 STEP 52 완료 시점)
-- STEP 51: Watchlist — 전일비 컬럼 + 인라인 추가 폼 + 컬럼 정렬 완료
-- STEP 52: /chart 풀스크린 페이지 완료 (lightweight-charts + TradingView 임베드, 기간 토글 D/W/M, OHLCV 30행 테이블, ChartWidget href 동적화)
-- P0 진행 현황: Watchlist ✅, Chart ✅ → OrderBook, DART, Movers, Volume, NetBuy 대기
+## 현재 상태 (2026-04-22 STEP 66 완료 시점)
 
-## 다음 할 일 P0
-- [x] STEP 53: OrderBookWidget 리팩토링 ✅
-- [x] STEP 54: /orderbook 풀스크린 10단 페이지 ✅
-- [x] STEP 55: DartFilings 위젯 + /disclosures 페이지 리팩토링 ✅
-- [x] STEP 56: MoversTop10Widget 상한가 강조 + /movers/price 풀 리팩토링 ✅
-- [x] STEP 57: VolumeTop10Widget 배수 막대 + /movers/volume 풀 리팩토링 ✅
-- [ ] STEP 58: NetBuyWidget 리팩토링 (P0) — 기관/외국인 순매수 구분
+### P0 (필수 기능) — 100% 완료
+- 위젯: Watchlist ✅ / Chart ✅ / OrderBook ✅ / DART ✅ / Movers ✅ / Volume ✅ / NetBuy ✅
+- 페이지: /watchlist ✅ / /chart ✅ / /orderbook ✅ / /disclosures ✅ / /movers/price ✅ / /movers/volume ✅ / /net-buy ✅
+
+### P1 (2차 기능) — 100% 완료
+- 위젯: News ✅ / EconCal ✅ / Themes ✅ / Chat ✅ / Tick ✅ / GlobalIndices ✅ / PreMarketBriefing ✅
+- 페이지: /news ✅ / /calendar ✅ / /analysis ✅ / /chat ✅ / /ticks ✅ / /global ✅ / /briefing ✅
+
+### UI 인프라 — 완료
+- VerticalNav 5그룹 재구성 완료 (시세/정보/일정/글로벌/도구)
+- 화이트/tiffany 테마 전역 적용
+- Suspense 래핑 규칙 정착 (useSearchParams 쓰는 모든 페이지)
+
+## 다음 할 일 — P2 / 배포 단계
+
+### 배포 (우선)
+- [ ] Vercel 배포 환경변수 점검 — KIS_APP_KEY, KIS_APP_SECRET, DART_API_KEY, NEXT_PUBLIC_SUPABASE_URL/ANON_KEY
+- [ ] Supabase RLS 정책 재검증 (watchlists, chat_messages, partners, leads, clicks)
+- [ ] 첫 배포 + 실도메인 연결 (도메인 미정)
+- [ ] Chrome MCP로 배포본 E2E 검증
+
+### P2 기능
+- [ ] OverviewTab KPI 확장 (현재 시총 TOP 200 → 2,780 전종목)
+- [ ] AI 분석 연동 (Perplexity API 또는 GPT-4o)
+- [ ] 종목 비교 페이지 (/compare)
+- [ ] 스크리너 저장된 스크린 기능
 
 ## 이전 상태 (2026-04-22 STEP 50 완료 시점)
 - 레퍼런스 플랫폼 매핑 테이블 작성 완료 — Markdown + Excel 2개 포맷

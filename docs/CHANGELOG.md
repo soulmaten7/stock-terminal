@@ -1,6 +1,66 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 59~66: P0/P1 위젯·페이지 전량 실데이터 전환 (commit 6cbf55a)
+
+한 세션에 8개 STEP 일괄 실행 — 28 files, +3482 / -290.
+
+### STEP 59: /global — Yahoo Finance 35개 심볼 실데이터
+- `app/api/global/route.ts` 신설 — 35개 심볼을 8개 섹션(국내/미국/선물/환율/채권/원자재/아시아/유럽)으로 반환
+- `components/global/GlobalPageClient.tsx` 신설 — 섹션 필터 세그먼트, 52주 고가/저가, 60초 자동갱신, 채권 yield 포맷 구분
+- `app/global/page.tsx` — WidgetDetailStub 제거, Client 호출만 남김
+
+### STEP 60: /briefing — 3-컬럼 실데이터
+- `components/briefing/BriefingPageClient.tsx` 신설 — /api/home/briefing + /api/calendar/upcoming 조합
+- 3-컬럼 그리드: 간밤 미증시 / 오늘 주요 공시 / 이번주 경제지표
+- `app/briefing/page.tsx` 스텁 제거
+
+### STEP 61: VerticalNav 5그룹 재구성
+- 14개 flat 아이콘 → 5그룹 (시세 / 정보 / 일정 / 글로벌 / 도구)
+- hover 시 54px → 220px 확장 애니메이션, 그룹 헤더 uppercase 라벨
+- 호가창·체결창·채팅 메뉴 신규 노출 (기존 drawer/inline 전용이던 항목들)
+- Task #25 해결
+
+### STEP 62: News 폴리싱
+- `NewsFeedWidget` — 소스 배지(6개 색상 맵) 클릭 시 `/news?source=` 프리셋, 종목 태그 `#` 표시
+- `NewsClient` — 1h/24h/7d/전체 기간 세그먼트, 중요 공시만 토글, URL 파라미터 초기화 (`useSearchParams`)
+- `app/news/page.tsx` — Suspense 래핑
+
+### STEP 63: Calendar 폴리싱
+- `EconCalendarMiniWidget` — 3단계 중요도 dot(회색/주황/빨강), 오늘/내일 라벨 + 당일 로우 하이라이트
+- `CalendarPageClient` — 기간(7/30/60일) + 국가(6개: 전체/미국/한국/유럽/일본/중국) + 중요도 3-세그먼트
+- URL `?importance=` 프리셋 이동 지원
+
+### STEP 64: TrendingThemes + /analysis 폴리싱
+- `TrendingThemesWidget` — 상승/하락 토글, 상대 등락률 바 시각화, 테마 클릭 시 `/analysis?theme=` 프리셋
+- `AnalysisClient` — 전체 테마 4-컬럼 그리드 섹션 (상승/하락/종목수 정렬) + `?theme=` 파라미터 하이라이트
+- `app/analysis/page.tsx` Suspense 래핑
+
+### STEP 65: Chat 폴리싱
+- `ChatWidget` — `$005930` `$삼성전자` 패턴 자동 감지 → `/chart?symbol=` 링크 (renderWithTags 파서)
+- `app/chat/page.tsx` — WidgetDetailStub 제거, ChatWidget 풀페이지 전환
+
+### STEP 66: Ticks 폴리싱
+- `TickWidget` — 6자리 숫자 심볼 인풋, 심볼 변경 시 5초 폴링 재시작
+- `components/ticks/TicksPageClient.tsx` 신설 — 통계 패널(체결강도·매수/매도·가중평균가) + 50건 로그 테이블 + 매수/매도 뱃지
+- `app/ticks/page.tsx` 스텁 제거, Suspense 래핑
+
+### 결과
+- P0/P1 위젯 + 대응 풀페이지 **전량 실데이터** 전환 완료
+- 홈 대시보드의 모든 위젯이 기능하는 상태 = 런칭 가능 수준 UI
+- 다음 우선순위: 배포(Vercel) 검증 + P2 (Chart 확장, AI 분석 추가) / Supabase 스키마 배포
+
+---
+
+## 2026-04-22 — STEP 58: NetBuy 위젯 + /net-buy TopTab 개선 (P0)
+
+### 변경
+- `app/api/kis/investor-rank/route.ts` — sort(buy/sell) + market 파라미터, foreignTop/institutionTop/combined 3종 반환
+- `NetBuyTopWidget` — 외국인/기관 + 매수/매도 이중 토글, 막대 시각화, href 동적화
+- `components/net-buy/TopTab.tsx` — 3-세그먼트 컨트롤 (Who/Mode/Market) + URL 파라미터 초기화, 종목명 `/chart?symbol=` 링크
+
+---
+
 ## 2026-04-22 — STEP 57: Volume 위젯 + /movers/volume 페이지 리팩토링 (P0)
 
 ### 변경
