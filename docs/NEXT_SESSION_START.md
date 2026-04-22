@@ -18,8 +18,9 @@
 - P0 진행 현황: Watchlist ✅, Chart ✅ → OrderBook, DART, Movers, Volume, NetBuy 대기
 
 ## 다음 할 일 P0
-- [ ] STEP 53: OrderBookWidget 리팩토링 (P0) — 키움 영웅문 호가창 스타일
-- [ ] STEP 54: DartFilingsWidget 리팩토링 (P0) — DART 공시유형 뱃지
+- [x] STEP 53: OrderBookWidget 리팩토링 ✅
+- [ ] STEP 54: /orderbook 페이지 풀스크린 10단 (Chart 페이지 패턴 재사용)
+- [ ] STEP 55: DartFilingsWidget 리팩토링 (P0) — 공시유형 뱃지
 
 ## 이전 상태 (2026-04-22 STEP 50 완료 시점)
 - 레퍼런스 플랫폼 매핑 테이블 작성 완료 — Markdown + Excel 2개 포맷

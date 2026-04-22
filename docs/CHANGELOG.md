@@ -1,6 +1,13 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 53: OrderBookWidget 리팩토링 (P0 Phase A)
+
+### 변경
+- `components/widgets/OrderBookWidget.tsx` — 3-col 그리드 (매도잔량·호가·매수잔량), 총잔량 푸터 + 비율 게이지, 6자리 심볼 입력 폼, href 동적화
+
+---
+
 ## 2026-04-22 — STEP 52B: 중복·미사용 파일 정리
 
 ### 변경
