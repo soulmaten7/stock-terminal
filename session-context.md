@@ -35,6 +35,12 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 40 완료
+- [x] ValueAnalysis.tsx 전면 재작성 (315줄 → ~150줄, 가짜값 제거 + DART 실재무 연결)
+- [x] 빌드 성공 (타입 에러 0건)
+- [x] 삼성전자·SK하이닉스·현대모비스 페이지 200 OK 확인
+- [ ] STEP 41 후보: QuantAnalysis / DividendAnalysis 동일 방향 정리 / 분기 재무 수집
+
 ### 2026-04-22 세션 — STEP 39 완료
 - [x] `scripts/debug-dart-sample.py` 신규 (DART raw 응답 덤프 도구)
 - [x] 4종목 null 근본 원인 진단 — IS 섹션 없이 CIS 단일 포괄손익계산서만 제출

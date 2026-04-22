@@ -27,13 +27,13 @@ Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 - OverviewTab KPI 그리드 활성 (시총 TOP 200 종목 PER/PBR/EPS/BPS)
 - **DART 재무제표 TOP 100 × 2023,2024 연간 적재 완료** — 테마 50 중 37종 커버
 - **DART 파서 IS→CIS fallback + account_id 정확도 상향** (`lib/dart-financial.ts` 동기화)
+- **ValueAnalysis.tsx 실데이터 전환 완료** — 가짜값 전면 제거 + DART 시계열 차트 신규
 
 ## 다음 세션 P0
 
-- **STEP 40 후보 (택1)**
-  1. **UI 연결 — ValueAnalysis.tsx 실데이터 모드** (권장): `financials` 테이블 매출·영업이익·순이익 시계열 + KPI 카드 바인딩. 데이터가 쌓였으니 사용자 체감 화면부터 개방.
-  2. **분기 보고서 수집**: `REPRT_CODE=11013/11012/11014` 3회 실행 → TOP 100 × 각 분기 = ~300건 추가.
-  3. **테마 50 풀커버**: `TOP_N=500` 으로 극단적 확장 or 테마 명시 리스트 타겟 시딩.
+- **STEP 41 후보 (택1)**
+  1. **다른 분석 탭 동일 정리** (권장): `QuantAnalysis.tsx`, `DividendAnalysis.tsx`, `TechnicalAnalysis.tsx`, `SupplyAnalysis.tsx` — placeholder/AI 섹션/가짜 계산값 위생 작업
+  2. **분기 보고서 수집**: `REPRT_CODE=11013/11012/11014` 3회 실행 → TOP 100 × 각 분기 = ~300건 추가
 
 ---
 

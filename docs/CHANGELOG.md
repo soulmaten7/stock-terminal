@@ -1,6 +1,21 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 40: ValueAnalysis 정직한 재작성
+
+**코드 변경**
+- `components/analysis/ValueAnalysis.tsx` 전면 재작성 (315줄 → 약 150줄)
+  - 제거: AI Summary 섹션, ai_analyses 테이블 쿼리, DCF 모델, 그레이엄 안전마진, SECTOR_AVERAGES 하드코딩, placeholder fallback 숫자 (`per ?? 12.5`, `currentPrice = 52000`, `sharesOutstanding = 100_000_000`)
+  - 추가: DART 실재무 시계열 차트 (매출·영업이익·순이익 최근 5년), 수익성·안정성 지표 추이 (영업이익률·순이익률·부채비율)
+  - 유지: 상단 KPI 카드 5개 (PER/PBR/ROE/EPS/BPS), null 일 때 `—` 표시
+
+**방향성**
+- CLAUDE.md 절대규칙 준수: "session-context.md 에 없는 숫자 만들기 금지"
+- V3 방향성 준수: AI 리포트 전면 제거
+- DART 미커버 종목은 ComingSoonCard 로 정직 표시
+
+---
+
 ## 2026-04-22 — STEP 39: DART 파서 보완 + TOP 100 확장
 
 **코드 변경**
