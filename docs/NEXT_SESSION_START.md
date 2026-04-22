@@ -12,7 +12,16 @@
    - (c) 스펙 기반 UI 리팩토링 실행
 4. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
-## 현재 상태 (2026-04-22 STEP 50 완료 시점)
+## 현재 상태 (2026-04-22 STEP 52 완료 시점)
+- STEP 51: Watchlist — 전일비 컬럼 + 인라인 추가 폼 + 컬럼 정렬 완료
+- STEP 52: /chart 풀스크린 페이지 완료 (lightweight-charts + TradingView 임베드, 기간 토글 D/W/M, OHLCV 30행 테이블, ChartWidget href 동적화)
+- P0 진행 현황: Watchlist ✅, Chart ✅ → OrderBook, DART, Movers, Volume, NetBuy 대기
+
+## 다음 할 일 P0
+- [ ] STEP 53: OrderBookWidget 리팩토링 (P0) — 키움 영웅문 호가창 스타일
+- [ ] STEP 54: DartFilingsWidget 리팩토링 (P0) — DART 공시유형 뱃지
+
+## 이전 상태 (2026-04-22 STEP 50 완료 시점)
 - 레퍼런스 플랫폼 매핑 테이블 작성 완료 — Markdown + Excel 2개 포맷
 - 홈 위젯 14개 + 상세 페이지 14개, 총 28개 매핑 확정
 - 우선순위: P0 11개 / P1 13개 / P2 5개

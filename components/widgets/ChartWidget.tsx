@@ -183,7 +183,7 @@ export default function ChartWidget({ symbol = '005930' }: { symbol?: string }) 
       title="차트"
       subtitle={displayTitle}
       className="h-full"
-      href="/chart"
+      href={`/chart?symbol=${encodeURIComponent(raw)}`}
       action={
         <form
           onSubmit={(e) => {

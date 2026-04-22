@@ -35,6 +35,11 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 52 완료
+- [x] /chart 풀스크린 차트 페이지 (lightweight-charts + TradingView)
+- [x] 기간 토글 D/W/M + OHLCV 30행 테이블 (KRX)
+- [x] ChartWidget href 동적화 (?symbol=)
+
 ### 2026-04-22 세션 — STEP 51 완료
 - [x] WatchlistWidget: 전일비 컬럼 추가 (grid-cols-5, change 필드, 종목명 Link)
 - [x] WatchlistPageClient: 인라인 추가 폼 (6자리 검증), 8-컬럼 토글 정렬, 전일비 컬럼

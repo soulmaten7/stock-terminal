@@ -1,6 +1,15 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 52: Chart 페이지 리팩토링 (P0 Phase A)
+
+### 변경
+- `app/chart/page.tsx` — WidgetDetailStub 스텁 제거, Suspense 래퍼로 교체
+- `components/chart/ChartPageClient.tsx` — 신설 (URL 파라미터 ?symbol=, 기간 토글 D/W/M, lightweight-charts 캔들+거래량, TradingView 임베드, OHLCV 30행 테이블)
+- `components/widgets/ChartWidget.tsx` — href `/chart` → `/chart?symbol={encodeURIComponent(raw)}` 동적화
+
+---
+
 ## 2026-04-22 — STEP 51: Watchlist Phase A — 전일비 컬럼 + 인라인 추가 폼 + 정렬
 
 ### 변경
