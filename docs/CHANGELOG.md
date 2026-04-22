@@ -1,6 +1,14 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 54: /orderbook 풀스크린 10단 페이지 (P0 Phase B)
+
+### 변경
+- `app/orderbook/page.tsx` — WidgetDetailStub 스텁 제거, Suspense 래퍼로 교체
+- `components/orderbook/OrderBookPageClient.tsx` — 신설 (URL ?symbol=, 종목 요약 헤더 8개 지표, 10단 호가창 3-col, 총잔량 게이지 바, 5초 갱신)
+
+---
+
 ## 2026-04-22 — STEP 53: OrderBookWidget 리팩토링 (P0 Phase A)
 
 ### 변경
