@@ -2,9 +2,12 @@
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
-1. `docs/PRODUCT_SPEC_V3.md` **반드시 읽기** — 이 문서가 V2 Home Redesign Spec을 대체함
-2. `docs/COMMANDS_V3_PHASE1.md` 읽고 Phase 1 실행 순서 숙지
-3. 기존 `docs/HOME_REDESIGN_V2_SPEC.md` 는 **참고용 아카이브** — V3이 우선순위
+1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 요약
+2. **STEP 46 후속 작업 후보**:
+   - 홈 대시보드에 "퀀트 종합 TOP 10" 위젯 추가
+   - 스크리너 URL 공유 기능 (현재 필터 → URL 직렬화)
+   - 데이터 fresh-cycle 스케줄 (일일 재시딩 자동화)
+3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
 ## V3 전략 요약 (세션 #8에서 확정)
 - **포지셔닝**: "전업투자자 = 일반인 (상위 1% 지향)" — Aspirational Design
@@ -14,7 +17,12 @@
 - **데이터**: 100% 무료 소스 (DART/KRX/KIS/FDR/Naver/ECOS) — KIS 이미 서버사이드 실시간 연동
 - **수익화**: **Partner-Agnostic Lead Gen 단일 모델.** 구독/결제/Pro/AI 리포트/CSV 일절 없음. Phase 1~3 모두 무료 놀이터 + 리드 수익
 
-## 현재 상태 (2026-04-22 기준)
+## 현재 상태 (2026-04-22 STEP 46 완료 시점)
+- 5개 분석 탭 전원 live (가치/기술/수급/배당/퀀트)
+- 스크리너 팩터 업그레이드 완료 — /screener 전업용 수준 (프리셋 8종 + 팩터 필터 + 정렬)
+- DB: stocks 2,780 / financials 576 / stock_prices 54,899 / supply_demand 3,000 / dividends 790 / quant_factors 200
+
+## 이전 상태 (참고)
 
 Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 - 대시보드 오버플로우 완전 해결 (3단 방어선)

@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 46: 스크리너 팩터 업그레이드 ✅
+- Migration 013 stock_snapshot_v view — stocks/quant_factors/dividends LEFT JOIN LATERAL 집계
+- API route 팩터 필터 + 화이트리스트 기반 정렬 지원
+- ScreenerClient 프리셋 3→8종, 필터 5종 추가, 컬럼 3종 추가, 정렬 UI
+- 누계 DB 변화 없음 (view 신설만)
+- 5개 분석 탭 완성 이후 첫 유저 노출 단계 — 스크리너가 팩터 자산 활용 UX 1순위 진입점
+
 ### 2026-04-22 세션 — STEP 45 완료 ✅ 5개 분석 탭 전원 live
 - [x] `supabase/migrations/012_quant_factors.sql` 신규 (Management API로 적용)
 - [x] `scripts/seed-quant-factors.py` 신규 작성 (TOP 200 Value/Momentum/Quality 퍼센타일)
