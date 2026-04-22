@@ -1,6 +1,16 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 57: Volume 위젯 + /movers/volume 페이지 리팩토링 (P0)
+
+### 변경
+- `app/api/kis/volume-rank/route.ts` — market + sort(spike/volume/amount) + limit 파라미터 추가, tradeAmount 필드 포함
+- `VolumeTop10Widget` — 배수 막대 시각화 (급등=빨강, 고배수=주황, 기본=티얼), 10x 이상 "급등" 뱃지
+- `components/movers/MoversVolumePageClient.tsx` 신규 — 시장구분 + 정렬(거래증가율/거래량/거래대금), 배수 막대, 종목명 → /chart 링크
+- `app/movers/volume/page.tsx` — WidgetDetailStub 스텁 제거, Suspense 래퍼로 교체
+
+---
+
 ## 2026-04-22 — STEP 56: Movers 위젯 + /movers/price 페이지 리팩토링 (P0)
 
 ### 변경

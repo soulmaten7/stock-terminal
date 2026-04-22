@@ -35,6 +35,11 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 57 완료
+- [x] VolumeTop10Widget 배수 막대 시각화 + 급등 뱃지
+- [x] MoversVolumePageClient 신설 (시장구분·정렬 필터, 30종목)
+- [x] /movers/volume 스텁 → Suspense 래퍼로 교체
+
 ### 2026-04-22 세션 — STEP 56 완료
 - [x] MoversTop10Widget 상한가/하한가 강조 + 뱃지 + href 동적화
 - [x] MoversPricePageClient 신설 (상승/하락·시장구분·상한가만 필터, 30종목)

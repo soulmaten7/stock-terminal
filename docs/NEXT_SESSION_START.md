@@ -22,7 +22,7 @@
 - [x] STEP 54: /orderbook 풀스크린 10단 페이지 ✅
 - [x] STEP 55: DartFilings 위젯 + /disclosures 페이지 리팩토링 ✅
 - [x] STEP 56: MoversTop10Widget 상한가 강조 + /movers/price 풀 리팩토링 ✅
-- [ ] STEP 57: VolumeTop10Widget 리팩토링 (P0) — 전일비 거래량 증가율 막대
+- [x] STEP 57: VolumeTop10Widget 배수 막대 + /movers/volume 풀 리팩토링 ✅
 - [ ] STEP 58: NetBuyWidget 리팩토링 (P0) — 기관/외국인 순매수 구분
 
 ## 이전 상태 (2026-04-22 STEP 50 완료 시점)
