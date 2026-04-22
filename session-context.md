@@ -35,6 +35,11 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 56 완료
+- [x] MoversTop10Widget 상한가/하한가 강조 + 뱃지 + href 동적화
+- [x] MoversPricePageClient 신설 (상승/하락·시장구분·상한가만 필터, 30종목)
+- [x] /movers/price 스텁 → Suspense 래퍼로 교체
+
 ### 2026-04-22 세션 — STEP 55 완료
 - [x] dart-classify.ts 공용 유틸 신설
 - [x] DartFilingsWidget 중요 토글 + 뱃지 + href 동적화

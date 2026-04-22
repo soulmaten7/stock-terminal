@@ -1,6 +1,16 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 56: Movers 위젯 + /movers/price 페이지 리팩토링 (P0)
+
+### 변경
+- `app/api/kis/movers/route.ts` — market(kospi/kosdaq/all) + limit(30) 파라미터 추가, prdyVrss·volume 필드 추가
+- `MoversTop10Widget` — 상한가/하한가 배경 강조 + 뱃지, 탭 라벨에 상한가 개수, href 동적화 (?tab=)
+- `components/movers/MoversPricePageClient.tsx` 신규 — 상승/하락 + 시장구분 + 상한가만 토글, 전일대비·거래량 컬럼, 종목명 → /chart 링크
+- `app/movers/price/page.tsx` — WidgetDetailStub 스텁 제거, Suspense 래퍼로 교체
+
+---
+
 ## 2026-04-22 — STEP 55: DartFilings 위젯 + /disclosures 페이지 리팩토링 (P0)
 
 ### 변경
