@@ -1,6 +1,23 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 41: 나머지 4개 분석 탭 정직 스텁 교체
+
+**코드 변경**
+- `components/analysis/QuantAnalysis.tsx`: 282줄 → 35줄 (스텁, 예정 STEP 45+)
+- `components/analysis/DividendAnalysis.tsx`: 320줄 → 35줄 (스텁, 예정 STEP 44)
+- `components/analysis/TechnicalAnalysis.tsx`: 394줄 → 35줄 (스텁, 예정 STEP 42)
+- `components/analysis/SupplyAnalysis.tsx`: 335줄 → 35줄 (스텁, 예정 STEP 43)
+- **총 1,331줄 → 약 140줄** (1,191줄 감소)
+
+**제거된 기술 부채**
+- AI Summary 섹션 4개 (V3 방향성 위반)
+- 하드코딩된 수익률/퍼센타일/팩터 스코어
+- `ai_analyses` 테이블 쿼리 4개
+- placeholder fallback 숫자
+
+---
+
 ## 2026-04-22 — STEP 40: ValueAnalysis 정직한 재작성
 
 **코드 변경**

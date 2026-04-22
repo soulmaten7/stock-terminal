@@ -35,6 +35,14 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 41 완료
+- [x] Quant/Dividend/Technical/Supply 4개 탭 정직 스텁 교체 (1,331→140줄)
+- [x] 빌드 성공 (타입 에러 0건)
+- [ ] STEP 42: stock_prices 시딩 → TechnicalAnalysis 재활성화
+- [ ] STEP 43: KIS per-stock investor-flow 수집 → SupplyAnalysis 재활성화
+- [ ] STEP 44: DART 배당 공시 수집 → DividendAnalysis 재활성화
+- [ ] STEP 45+: 시장 전체 팩터 집계 → QuantAnalysis 재활성화
+
 ### 2026-04-22 세션 — STEP 40 완료
 - [x] ValueAnalysis.tsx 전면 재작성 (315줄 → ~150줄, 가짜값 제거 + DART 실재무 연결)
 - [x] 빌드 성공 (타입 에러 0건)
