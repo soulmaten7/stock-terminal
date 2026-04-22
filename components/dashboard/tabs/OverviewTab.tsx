@@ -53,7 +53,7 @@ function Block1Metrics({ priceData }: { priceData: PriceData | null }) {
       <Metric label="PER" value={fmtNum(priceData.per, '배')} />
       <Metric label="PBR" value={fmtNum(priceData.pbr, '배')} />
       <Metric label="시총" value={fmtMarketCap(priceData.marketCap)} />
-      <Metric label="배당수익률" value="—" />
+      <Metric label="배당수익률" value={priceData.dividendYield ? `${priceData.dividendYield.toFixed(2)}%` : '—'} />
       <Metric label="52주 신고" value={fmtPrice(priceData.high52w)} />
       <Metric label="52주 신저" value={fmtPrice(priceData.low52w)} />
     </dl>

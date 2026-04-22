@@ -10,6 +10,12 @@ interface Quarter {
   netIncome: number | null;
   opMargin: number | null;
   netMargin: number | null;
+  totalAssets: number | null;
+  totalLiabilities: number | null;
+  totalEquity: number | null;
+  operatingCF: number | null;
+  investingCF: number | null;
+  financingCF: number | null;
 }
 
 function fmtAmt(n: number | null | undefined): string {
@@ -87,27 +93,33 @@ export default function FinancialsTab() {
       </Section>
 
       <Section title="재무상태표">
-        <p className="text-[11px] text-[#BBB]">연결 예정 (STEP 75)</p>
-        <FinancialTable
-          periods={periods.length ? periods : ['--', '--', '--', '--']}
-          rows={[
-            { label: '자산총계', values: periods.length ? periods.map(() => '—') : ['--', '--', '--', '--'] },
-            { label: '부채총계', values: periods.length ? periods.map(() => '—') : ['--', '--', '--', '--'] },
-            { label: '자본총계', values: periods.length ? periods.map(() => '—') : ['--', '--', '--', '--'] },
-          ]}
-        />
+        {quarters.length ? (
+          <FinancialTable
+            periods={periods}
+            rows={[
+              { label: '자산총계', values: quarters.map((q) => fmtAmt(q.totalAssets)) },
+              { label: '부채총계', values: quarters.map((q) => fmtAmt(q.totalLiabilities)) },
+              { label: '자본총계', values: quarters.map((q) => fmtAmt(q.totalEquity)) },
+            ]}
+          />
+        ) : (
+          <p className="text-[11px] text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
+        )}
       </Section>
 
       <Section title="현금흐름표">
-        <p className="text-[11px] text-[#BBB]">연결 예정 (STEP 75)</p>
-        <FinancialTable
-          periods={periods.length ? periods : ['--', '--', '--', '--']}
-          rows={[
-            { label: '영업활동', values: periods.length ? periods.map(() => '—') : ['--', '--', '--', '--'] },
-            { label: '투자활동', values: periods.length ? periods.map(() => '—') : ['--', '--', '--', '--'] },
-            { label: '재무활동', values: periods.length ? periods.map(() => '—') : ['--', '--', '--', '--'] },
-          ]}
-        />
+        {quarters.length ? (
+          <FinancialTable
+            periods={periods}
+            rows={[
+              { label: '영업활동', values: quarters.map((q) => fmtAmt(q.operatingCF)) },
+              { label: '투자활동', values: quarters.map((q) => fmtAmt(q.investingCF)) },
+              { label: '재무활동', values: quarters.map((q) => fmtAmt(q.financingCF)) },
+            ]}
+          />
+        ) : (
+          <p className="text-[11px] text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
+        )}
       </Section>
     </div>
   );

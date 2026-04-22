@@ -1,5 +1,7 @@
-<!-- 2026-04-22 -->
+<!-- 2026-04-23 -->
 # Stock Terminal — 변경 이력
+
+## 2026-04-23 — feat(dashboard): Section 1 TODO 보강 — 배당/DART재무상태·현금흐름/SEC공시 (STEP 75)
 
 ## 2026-04-22 — feat(dashboard): Section 1 반응형 + 선택 종목 persist + 모바일 토글 (STEP 74)
 

@@ -22,6 +22,7 @@ export interface PriceData {
   pbr: number;
   high52w: number;
   low52w: number;
+  dividendYield: number | null;
 }
 
 

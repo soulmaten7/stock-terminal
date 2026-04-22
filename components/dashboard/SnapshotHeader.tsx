@@ -71,6 +71,8 @@ export default function SnapshotHeader({ priceData, loading }: Props) {
         <div><dt className="inline text-[#999]">거래량 </dt><dd className="inline">{priceData ? fmtVol(priceData.volume) : '--'}</dd></div>
         <div><dt className="inline text-[#999]">시총 </dt><dd className="inline">{priceData ? fmtMarketCap(priceData.marketCap) : '--'}</dd></div>
         <div><dt className="inline text-[#999]">PER </dt><dd className="inline">{priceData?.per ? `${priceData.per.toFixed(1)}배` : '—'}</dd></div>
+        <div><dt className="inline text-[#999]">PBR </dt><dd className="inline">{priceData?.pbr ? `${priceData.pbr.toFixed(2)}배` : '—'}</dd></div>
+        <div><dt className="inline text-[#999]">배당 </dt><dd className="inline">{priceData?.dividendYield ? `${priceData.dividendYield.toFixed(2)}%` : '—'}</dd></div>
       </dl>
     </header>
   );

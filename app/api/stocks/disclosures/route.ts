@@ -3,6 +3,76 @@ import { fetchDart, getDartCorpCode, DartKeyMissingError } from '@/lib/dart';
 
 export const runtime = 'nodejs';
 
+// ── SEC EDGAR helpers ──────────────────────────────────────────────────────
+
+const SEC_UA = process.env.SEC_USER_AGENT ?? 'StockTerminal research@stockterminal.local';
+
+let _cikMap: Record<string, number> | null = null;
+let _cikMapTime = 0;
+
+async function getCikForTicker(ticker: string): Promise<number | null> {
+  const now = Date.now();
+  if (!_cikMap || now - _cikMapTime > 86_400_000) {
+    try {
+      const res = await fetch('https://data.sec.gov/submissions/company_tickers.json', {
+        headers: { 'User-Agent': SEC_UA },
+        next: { revalidate: 86400 },
+      });
+      if (!res.ok) return null;
+      const raw = await res.json() as Record<string, { cik_str: number; ticker: string }>;
+      _cikMap = {};
+      for (const entry of Object.values(raw)) {
+        _cikMap[entry.ticker.toUpperCase()] = entry.cik_str;
+      }
+      _cikMapTime = now;
+    } catch {
+      return null;
+    }
+  }
+  return _cikMap?.[ticker.toUpperCase()] ?? null;
+}
+
+interface SecSubmissions {
+  cik: string;
+  name: string;
+  filings: {
+    recent: {
+      accessionNumber: string[];
+      filingDate: string[];
+      form: string[];
+      primaryDocument: string[];
+    };
+  };
+}
+
+async function fetchSecFilings(ticker: string, limit: number) {
+  const cik = await getCikForTicker(ticker);
+  if (!cik) return { items: [], error: `CIK not found for ${ticker}` };
+
+  const cikPadded = String(cik).padStart(10, '0');
+  const url = `https://data.sec.gov/submissions/CIK${cikPadded}.json`;
+  const res = await fetch(url, { headers: { 'User-Agent': SEC_UA } });
+  if (!res.ok) return { items: [], error: `SEC EDGAR returned ${res.status}` };
+
+  const data = await res.json() as SecSubmissions;
+  const recent = data.filings?.recent;
+  if (!recent) return { items: [], corp_name: data.name };
+
+  const n = Math.min(limit, recent.accessionNumber.length);
+  const items = [];
+  for (let i = 0; i < n; i++) {
+    const acc = recent.accessionNumber[i];
+    const accNoDash = acc.replace(/-/g, '');
+    items.push({
+      report_name: recent.form[i],
+      published_at: recent.filingDate[i] ? `${recent.filingDate[i]}T00:00:00Z` : null,
+      disclosure_type: recent.form[i],
+      source_url: `https://www.sec.gov/Archives/edgar/data/${cik}/${accNoDash}/${recent.primaryDocument[i]}`,
+    });
+  }
+  return { items, corp_name: data.name, cik };
+}
+
 /**
  * GET /api/stocks/disclosures?symbol=005930&months=3&limit=50
  *
@@ -56,11 +126,30 @@ function parseKrDate(yyyymmdd: string): string | null {
 
 export async function GET(req: NextRequest) {
   const symbol = req.nextUrl.searchParams.get('symbol');
+  const market = req.nextUrl.searchParams.get('market');
   const months = Math.min(12, Math.max(1, Number(req.nextUrl.searchParams.get('months') ?? 3)));
   const limit = Math.min(100, Math.max(1, Number(req.nextUrl.searchParams.get('limit') ?? 50)));
 
   if (!symbol) {
     return NextResponse.json({ error: 'symbol 파라미터 필요' }, { status: 400 });
+  }
+
+  const isUS = market === 'US' || (market !== 'KR' && !/^\d{6}$/.test(symbol));
+
+  if (isUS) {
+    try {
+      const result = await fetchSecFilings(symbol.toUpperCase(), limit);
+      return NextResponse.json({
+        corp_name: result.corp_name ?? null,
+        total_count: result.items.length,
+        items: result.items,
+        source: 'SEC EDGAR',
+        ...(result.error ? { error: result.error } : {}),
+      });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '알 수 없는 오류';
+      return NextResponse.json({ error: `SEC 조회 실패: ${msg}`, items: [] }, { status: 502 });
+    }
   }
 
   try {

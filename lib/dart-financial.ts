@@ -11,6 +11,12 @@ export interface FinancialStatement {
   netIncome: number | null;
   opMargin: number | null;   // %
   netMargin: number | null;  // %
+  totalAssets: number | null;
+  totalLiabilities: number | null;
+  totalEquity: number | null;
+  operatingCF: number | null;
+  investingCF: number | null;
+  financingCF: number | null;
 }
 
 interface DartAcntItem {
@@ -127,6 +133,29 @@ export async function fetchDartFinancial(
   const netMargin =
     revenue && netIncome !== null ? (netIncome / revenue) * 100 : null;
 
+  const totalAssets = findBySjDiv(items, 'BS', [
+    '자산총계', 'ifrs-full_Assets', 'dart_Assets',
+  ]);
+  const totalLiabilities = findBySjDiv(items, 'BS', [
+    '부채총계', 'ifrs-full_Liabilities', 'dart_Liabilities',
+  ]);
+  const totalEquity = findBySjDiv(items, 'BS', [
+    '자본총계', 'ifrs-full_Equity', 'dart_Equity',
+  ]);
+
+  const operatingCF = findBySjDiv(items, 'CF', [
+    '영업활동으로 인한 현금흐름', '영업활동현금흐름', '영업활동으로인한현금흐름',
+    'ifrs-full_CashFlowsFromUsedInOperatingActivities',
+  ]);
+  const investingCF = findBySjDiv(items, 'CF', [
+    '투자활동으로 인한 현금흐름', '투자활동현금흐름', '투자활동으로인한현금흐름',
+    'ifrs-full_CashFlowsFromUsedInInvestingActivities',
+  ]);
+  const financingCF = findBySjDiv(items, 'CF', [
+    '재무활동으로 인한 현금흐름', '재무활동현금흐름', '재무활동으로인한현금흐름',
+    'ifrs-full_CashFlowsFromUsedInFinancingActivities',
+  ]);
+
   return {
     period: `${year}${meta.suffix}`,
     periodType: meta.type,
@@ -136,5 +165,11 @@ export async function fetchDartFinancial(
     netIncome,
     opMargin: opMargin !== null ? Math.round(opMargin * 100) / 100 : null,
     netMargin: netMargin !== null ? Math.round(netMargin * 100) / 100 : null,
+    totalAssets,
+    totalLiabilities,
+    totalEquity,
+    operatingCF,
+    investingCF,
+    financingCF,
   };
 }
