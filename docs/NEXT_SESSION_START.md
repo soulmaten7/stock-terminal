@@ -3,13 +3,10 @@
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
 1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 + 우선순위
-2. **P0/P1 위젯·페이지 100% 실데이터 전환 완료** 상태 → **배포 단계** 진입
-3. 다음 우선순위 후보:
-   - (A) Vercel 배포 검증 + Supabase 환경변수 점검 + RLS 검증
-   - (B) P2 작업: OverviewTab 확장, AI 분석 (Perplexity/GPT) 통합, 종목 비교 기능
-   - (C) 수익화 활성화: Partner-Agnostic Lead Gen 슬롯 실트래픽 연동, UTM 대시보드 가동
-   - (D) 스크리너 파워업: 저장된 스크린 + 백테스팅 미니
-4. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
+2. **STEP 70** 실행: Section 1 3컬럼 레이아웃 + 중앙 60/25/15 + 우측 컬럼 스켈레톤 구현
+   - 참고 스펙: `docs/DASHBOARD_SPEC_V3.md` Section 1 블록 (V3.2 확정)
+   - 우측 컬럼 구조: 스냅샷 헤더(~100px) + 탭 4개(종합/뉴스/공시/재무) + 탭 콘텐츠 스켈레톤
+3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
 ## 현재 상태 (2026-04-22 STEP 66 완료 시점)
 
