@@ -1,32 +1,8 @@
-import WidgetDetailStub from '@/components/common/WidgetDetailStub';
+import type { Metadata } from 'next';
+import BriefingPageClient from '@/components/briefing/BriefingPageClient';
 
-const COLS = ['날짜', '구분', '항목', '내용', '중요도'];
-const ROWS = [
-  { 날짜:'2026-04-21', 구분:'미증시', 항목:'S&P 500', 내용:'5,308.13 (-0.34%)', 중요도:'상' },
-  { 날짜:'2026-04-21', 구분:'미증시', 항목:'NASDAQ', 내용:'18,399.47 (-0.52%)', 중요도:'상' },
-  { 날짜:'2026-04-21', 구분:'미증시', 항목:'DOW', 내용:'39,142.23 (-0.22%)', 중요도:'중' },
-  { 날짜:'2026-04-21', 구분:'미증시', 항목:'VIX', 내용:'17.42 (+1.2%)', 중요도:'중' },
-  { 날짜:'2026-04-21', 구분:'공시', 항목:'삼성전자', 내용:'1분기 영업이익 6.6조원 확정', 중요도:'상' },
-  { 날짜:'2026-04-21', 구분:'공시', 항목:'SK하이닉스', 내용:'HBM3E 출하량 전분기 대비 40% 증가', 중요도:'상' },
-  { 날짜:'2026-04-21', 구분:'공시', 항목:'셀트리온', 내용:'짐펜트라 FDA 허가 취득', 중요도:'상' },
-  { 날짜:'2026-04-21', 구분:'일정', 항목:'실적 발표', 내용:'현대차 1분기 실적 10:00', 중요도:'중' },
-  { 날짜:'2026-04-21', 구분:'일정', 항목:'경제지표', 내용:'미국 CPI 21:30 (예상 0.2%)', 중요도:'상' },
-  ...Array.from({ length: 11 }, (_, i) => ({
-    날짜: `2026-04-${String(20 - i).padStart(2, '0')}`,
-    구분: ['미증시','공시','일정','환율','채권'][i % 5],
-    항목: ['S&P 500','삼성전자','FOMC','USD/KRW','미국채10Y'][i % 5],
-    내용: '샘플 브리핑 데이터',
-    중요도: ['상','중','하'][i % 3],
-  })),
-];
+export const metadata: Metadata = { title: '장전 브리핑 — StockTerminal' };
 
 export default function BriefingPage() {
-  return (
-    <WidgetDetailStub
-      title="장전 브리핑"
-      description="매일 장 시작 전 주요 지수, 공시, 일정을 정리합니다. Yahoo Finance + DART API 기반."
-      columns={COLS}
-      rows={ROWS}
-    />
-  );
+  return <BriefingPageClient />;
 }

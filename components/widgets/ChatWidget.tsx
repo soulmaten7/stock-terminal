@@ -5,6 +5,7 @@ import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import WidgetCard from '@/components/home/WidgetCard';
 import ChatParticipantsModal, { type Participant } from './ChatParticipantsModal';
+import Link from 'next/link';
 
 interface ChatMsg {
   id: string;
@@ -22,6 +23,33 @@ function fmtTime(iso: string): string {
   } catch {
     return '';
   }
+}
+
+// $005930, $삼성전자 형태 감지 → Link 렌더
+function renderWithTags(content: string) {
+  const regex = /\$([A-Za-z0-9가-힣]+)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  while ((match = regex.exec(content)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(content.slice(lastIndex, match.index));
+    }
+    const symbol = match[1];
+    parts.push(
+      <Link
+        key={`tag-${key++}`}
+        href={`/chart?symbol=${encodeURIComponent(symbol)}`}
+        className="text-[#0ABAB5] font-bold hover:underline"
+      >
+        ${symbol}
+      </Link>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < content.length) parts.push(content.slice(lastIndex));
+  return parts;
 }
 
 function nickFrom(uid: string | null): string {
@@ -197,7 +225,7 @@ export default function ChatWidget() {
                   </span>
                   <span className="text-xs text-[#BBBBBB]">{fmtTime(m.created_at)}</span>
                 </div>
-                <p className="text-sm text-[#333] leading-snug break-all">{m.content}</p>
+                <p className="text-sm text-[#333] leading-snug break-all">{renderWithTags(m.content)}</p>
               </div>
             ))}
           </div>

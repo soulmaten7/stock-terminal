@@ -14,7 +14,17 @@ interface EconEvent {
   previous: string;
 }
 
-function mmdd(dateStr: string): string {
+const IMPORTANCE_COLOR: Record<number, string> = {
+  1: '#999',
+  2: '#FFA500',
+  3: '#FF3B30',
+};
+
+function dayLabel(dateStr: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+  if (dateStr === today) return '오늘';
+  if (dateStr === tomorrow) return '내일';
   const [, m, d] = dateStr.split('-');
   return `${m}/${d}`;
 }
@@ -24,7 +34,7 @@ export default function EconCalendarMiniWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/calendar/upcoming?days=7&minImportance=3&limit=5')
+    fetch('/api/calendar/upcoming?days=7&minImportance=2&limit=5')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => setEvents(d.events ?? []))
       .catch(() => {})
@@ -32,7 +42,7 @@ export default function EconCalendarMiniWidget() {
   }, []);
 
   return (
-    <WidgetCard title="경제 캘린더" subtitle="이번주 주요 지표" href="/calendar">
+    <WidgetCard title="경제 캘린더" subtitle="이번주 주요 지표" href="/calendar?importance=2">
       {loading ? (
         <div className="flex items-center justify-center h-16 text-xs text-[#999]">로딩 중…</div>
       ) : events.length === 0 ? (
@@ -42,23 +52,30 @@ export default function EconCalendarMiniWidget() {
       ) : (
         <div role="table" aria-label="주요 경제 지표 목록">
           <div role="rowgroup">
-            {events.map((e, i) => (
-              <div
-                key={`${e.date}-${e.time}-${i}`}
-                role="row"
-                className="flex items-center gap-2 px-3 py-2 text-xs border-b border-[#F0F0F0] hover:bg-[#F8F9FA] last:border-0"
-              >
-                <span className="text-[#999] font-bold w-10 shrink-0">{mmdd(e.date)}</span>
-                <span className="text-[#666] w-10 shrink-0">{e.time}</span>
-                <span className="shrink-0 text-base">{e.flag}</span>
-                <span className="text-black font-bold truncate flex-1">{e.title}</span>
-                <span
-                  className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ backgroundColor: '#FF3B30' }}
-                  aria-label="중요도 상"
-                />
-              </div>
-            ))}
+            {events.map((e, i) => {
+              const isToday = e.date === new Date().toISOString().slice(0, 10);
+              return (
+                <div
+                  key={`${e.date}-${e.time}-${i}`}
+                  role="row"
+                  className={`flex items-center gap-2 px-3 py-2 text-xs border-b border-[#F0F0F0] hover:bg-[#F8F9FA] last:border-0 ${
+                    isToday ? 'bg-[#FFF5F5]' : ''
+                  }`}
+                >
+                  <span className={`font-bold w-10 shrink-0 ${isToday ? 'text-[#FF3B30]' : 'text-[#999]'}`}>
+                    {dayLabel(e.date)}
+                  </span>
+                  <span className="text-[#666] w-10 shrink-0 font-mono">{e.time}</span>
+                  <span className="shrink-0 text-base">{e.flag}</span>
+                  <span className="text-black font-bold truncate flex-1">{e.title}</span>
+                  <span
+                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                    style={{ backgroundColor: IMPORTANCE_COLOR[e.importance] }}
+                    aria-label={`중요도 ${e.importance}`}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

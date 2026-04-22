@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ChangeEvent } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
 
 interface Execution {
-  time: string; // HHMMSS
+  time: string;
   price: number;
   change: number;
-  changeSign: string; // 1=상승 2=하락 3=보합 4=상한 5=하한
+  changeSign: string;
   volume: number;
 }
 
@@ -27,8 +27,6 @@ function fmtTime(t: string): string {
   return `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}`;
 }
 
-// 체결강도 = (매수체결 volume / 전체 volume) × 100
-// KIS changeSign: 1=상한, 2=상승, 3=보합, 4=하한, 5=하락
 function calcStrength(executions: Execution[]): number {
   if (executions.length === 0) return 0;
   const recent = executions.slice(0, 10);
@@ -41,6 +39,8 @@ function calcStrength(executions: Execution[]): number {
 }
 
 export default function TickWidget() {
+  const [symbol, setSymbol] = useState(DEFAULT_SYMBOL);
+  const [symbolInput, setSymbolInput] = useState(DEFAULT_SYMBOL);
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +49,7 @@ export default function TickWidget() {
 
     const load = async () => {
       try {
-        const res = await fetch(`/api/kis/execution?symbol=${DEFAULT_SYMBOL}`);
+        const res = await fetch(`/api/kis/execution?symbol=${symbol}`);
         if (!res.ok) return;
         const data: ApiResponse = await res.json();
         if (cancelled) return;
@@ -61,14 +61,20 @@ export default function TickWidget() {
       }
     };
 
+    setLoading(true);
     load();
-    const timer = setInterval(load, 5_000); // 5초마다 갱신
-
+    const timer = setInterval(load, 5_000);
     return () => {
       cancelled = true;
       clearInterval(timer);
     };
-  }, []);
+  }, [symbol]);
+
+  const handleSymbolChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const v = e.target.value.replace(/\D/g, '').slice(0, 6);
+    setSymbolInput(v);
+    if (v.length === 6) setSymbol(v);
+  };
 
   const strength = calcStrength(executions);
   const strengthUp = strength >= 50;
@@ -76,13 +82,23 @@ export default function TickWidget() {
   return (
     <WidgetCard
       title="체결창"
-      subtitle={`${DEFAULT_SYMBOL} · 5초 갱신`}
-      href="/ticks"
+      subtitle={`${symbol} · 5초 갱신`}
+      href={`/ticks?symbol=${symbol}`}
       action={
-        loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined
+        <div className="flex items-center gap-1.5">
+          <input
+            type="text"
+            inputMode="numeric"
+            value={symbolInput}
+            onChange={handleSymbolChange}
+            className="w-16 text-[10px] font-mono border border-[#E5E7EB] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
+            placeholder="005930"
+            aria-label="종목 코드"
+          />
+          {loading && <span className="text-[10px] text-[#BBB]">로딩…</span>}
+        </div>
       }
     >
-      {/* 체결강도 바 */}
       <div className="px-3 py-2 border-b border-[#F0F0F0]">
         <div className="flex items-center justify-between text-[10px] mb-1">
           <span className="text-[#999]">체결강도</span>
@@ -97,7 +113,7 @@ export default function TickWidget() {
           />
         </div>
       </div>
-      {/* 체결 로그 */}
+
       <div role="table" aria-label="체결 내역">
         <div role="rowgroup">
           <div role="row" className="grid grid-cols-3 px-3 py-1 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]">
@@ -116,15 +132,10 @@ export default function TickWidget() {
                 className="grid grid-cols-3 px-3 py-1 text-xs border-b border-[#F0F0F0]"
               >
                 <span role="cell" className="text-[#999]">{fmtTime(t.time)}</span>
-                <span
-                  role="cell"
-                  className={`text-right font-bold ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}
-                >
+                <span role="cell" className={`text-right font-bold ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                   {fmtPrice(t.price)}
                 </span>
-                <span role="cell" className="text-right text-[#555]">
-                  {t.volume.toLocaleString()}
-                </span>
+                <span role="cell" className="text-right text-[#555]">{t.volume.toLocaleString()}</span>
               </div>
             );
           })}

@@ -1,3 +1,31 @@
+# STEP 61 — 사이드바 5그룹 재구성 (VerticalNav)
+
+**실행 명령어 (Sonnet):**
+```bash
+cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model sonnet
+```
+
+**목표:** `components/layout/VerticalNav.tsx` 의 14개 flat 아이콘 메뉴를 5개 논리 그룹(**시세 / 정보 / 일정 / 글로벌 / 도구**)으로 재구성. 사이드바 폭은 기본 54px(collapsed, 아이콘만) → hover/expanded 시 220px로 확장되며 그룹 헤더 + children label이 표시된다. 5그룹 재구성은 #25 task에 계류 중이던 항목.
+
+**전제 상태 (직전 커밋):** STEP 60 완료 (/briefing 실데이터 전환)
+
+---
+
+## 1. 그룹 구조 정의
+
+| 그룹 | 아이콘(헤더) | 항목 |
+|------|-----------|------|
+| **시세** | TrendingUp | 홈, 관심종목, 차트, 호가창, 체결창 |
+| **정보** | Newspaper | 상승/하락, 거래량, 수급, 뉴스속보, DART 공시 |
+| **일정** | Calendar | 경제캘린더, 장전 브리핑 |
+| **글로벌** | Globe | 글로벌 지수, 시장 지도 |
+| **도구** | Wrench | 종목 발굴, 참고 사이트, 채팅 |
+
+---
+
+## 2. VerticalNav 전면 재작성 — `components/layout/VerticalNav.tsx`
+
+```typescript
 'use client';
 
 import Link from 'next/link';
@@ -153,3 +181,36 @@ export default function VerticalNav() {
     </nav>
   );
 }
+```
+
+---
+
+## 3. 검증
+
+```bash
+cd ~/Desktop/OTMarketing
+npm run build
+```
+
+hover 시 220px 확장 / 떠나면 54px 축소. 모든 경로(홈, /watchlist, /chart, /orderbook, /ticks, /movers/price, /movers/volume, /net-buy, /news, /disclosures, /calendar, /briefing, /global, /analysis, /screener, /toolbox, /chat) 클릭 테스트.
+
+에러 없으면 커밋 + push:
+
+```bash
+git add -A
+git commit -m "feat(nav): VerticalNav 14 flat → 5 그룹 (시세/정보/일정/글로벌/도구)
+
+- 기본 54px collapsed (아이콘만), hover 시 220px expanded
+- 그룹 헤더 아이콘 + uppercase tracking 라벨
+- 호가창·체결창·채팅 메뉴 신규 노출
+- Task #25 해결
+
+STEP 61 / NAV refactor"
+git push
+```
+
+---
+
+## 4. 다음 STEP
+
+완료 후 `@docs/STEP_62_COMMAND.md 파일 내용대로 실행해줘` 로 NewsFeed 폴리싱 진행.

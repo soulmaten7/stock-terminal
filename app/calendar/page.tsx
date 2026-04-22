@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CalendarPageClient from '@/components/calendar/CalendarPageClient';
 
@@ -21,7 +22,9 @@ export default function CalendarPage() {
         </p>
       </div>
 
-      <CalendarPageClient />
+      <Suspense fallback={<div className="h-48 bg-[#F0F0F0] animate-pulse rounded-lg" />}>
+        <CalendarPageClient />
+      </Suspense>
     </div>
   );
 }

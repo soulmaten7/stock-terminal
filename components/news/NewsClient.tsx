@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import NewsFeed from './NewsFeed';
 import NewsFilter from './NewsFilter';
 
@@ -27,9 +28,22 @@ export interface Filters {
 const ALL_SOURCES = ['한국경제', '매일경제', '서울경제', '연합뉴스', '조선비즈'];
 
 export default function NewsClient() {
+  const sp = useSearchParams();
+  const initSource = sp.get('source');
+  const initTab = (['all', 'news', 'disclosure'].includes(sp.get('tab') || '')
+    ? sp.get('tab')
+    : 'all') as 'all' | 'news' | 'disclosure';
+
   const [mounted, setMounted] = useState(false);
   const [allItems, setAllItems] = useState<FeedItem[]>([]);
-  const [filters, setFilters] = useState<Filters>({ tab: 'all', sources: ALL_SOURCES, disclosureTypes: [], keyword: '' });
+  const [filters, setFilters] = useState<Filters>({
+    tab: initTab,
+    sources: initSource ? [initSource] : ALL_SOURCES,
+    disclosureTypes: [],
+    keyword: '',
+  });
+  const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | 'all'>('all');
+  const [onlyImportant, setOnlyImportant] = useState(false);
 
   const load = useCallback(async () => {
     const merged: FeedItem[] = [];
@@ -68,11 +82,24 @@ export default function NewsClient() {
 
   useEffect(() => { setMounted(true); load(); const iv = setInterval(load, 5 * 60 * 1000); return () => clearInterval(iv); }, [load]);
 
+  const now = Date.now();
+  const rangeMs: Record<string, number> = {
+    '1h': 60 * 60 * 1000,
+    '24h': 24 * 60 * 60 * 1000,
+    '7d': 7 * 24 * 60 * 60 * 1000,
+    all: Infinity,
+  };
+
   const filtered = allItems.filter((item) => {
     if (filters.tab === 'news' && item.type !== 'news') return false;
     if (filters.tab === 'disclosure' && item.type !== 'disclosure') return false;
     if (item.type === 'news' && filters.sources.length > 0 && !filters.sources.includes(item.source)) return false;
     if (filters.keyword && !item.title.includes(filters.keyword) && !(item.corpName || '').includes(filters.keyword)) return false;
+    if (onlyImportant && !item.isImportant) return false;
+    if (timeRange !== 'all' && item.sortKey) {
+      const ts = new Date(item.sortKey).getTime();
+      if (!isNaN(ts) && now - ts > rangeMs[timeRange]) return false;
+    }
     return true;
   });
 
@@ -88,6 +115,36 @@ export default function NewsClient() {
   return (
     <div className="max-w-[1400px] mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-black mb-8">뉴스·공시</h1>
+
+      <div className="mb-4 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg px-4 py-3 flex flex-wrap items-center gap-3">
+        <div className="inline-flex rounded overflow-hidden border border-[#E5E7EB] bg-white">
+          {(['1h', '24h', '7d', 'all'] as const).map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setTimeRange(r)}
+              className={`text-xs font-bold px-3 py-2 transition-colors ${
+                timeRange === r
+                  ? 'bg-[#0ABAB5] text-white'
+                  : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
+              }`}
+            >
+              {r === 'all' ? '전체' : r}
+            </button>
+          ))}
+        </div>
+        <label className="inline-flex items-center gap-2 text-xs text-[#333] cursor-pointer">
+          <input
+            type="checkbox"
+            checked={onlyImportant}
+            onChange={(e) => setOnlyImportant(e.target.checked)}
+            className="accent-[#FF3B30]"
+          />
+          중요 공시만
+        </label>
+        <span className="text-xs text-[#888] ml-auto">{filtered.length}건</span>
+      </div>
+
       <div className="flex gap-6">
         <div className="flex-1 min-w-0">
           <NewsFeed items={filtered} />
