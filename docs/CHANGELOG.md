@@ -1,6 +1,8 @@
 <!-- 2026-04-23 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-23 — feat(home): Section 5 Information Streams — NewsStream + DisclosureStream(KR/US) + EconomicCalendar (STEP 80)
+
 ## 2026-04-23 — feat(home): Section 4 Market Structure — SectorHeatmapWidget (KR/US 토글) + ThemeTop10Widget (STEP 79)
 
 ## 2026-04-23 — feat(home): Section 3 Discovery — ScreenerExpandedWidget + MoversPairWidget + Volume/NetBuy inline (STEP 78)
