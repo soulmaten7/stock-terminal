@@ -16,6 +16,7 @@ import ScreenerMiniWidget from '@/components/widgets/ScreenerMiniWidget';
 import EconCalendarMiniWidget from '@/components/widgets/EconCalendarMiniWidget';
 import StockDetailPanel from '@/components/dashboard/StockDetailPanel';
 import StockDetailToggle from '@/components/dashboard/StockDetailToggle';
+import BriefingWidget from '@/components/widgets/BriefingWidget';
 
 // ── 레이아웃 (Dashboard V3 — STEP 70) ─────────────────────────────────────
 //
@@ -60,6 +61,16 @@ export default function HomeClient() {
 
       {/* lg 미만에서만 표시되는 FAB 토글 */}
       <StockDetailToggle />
+
+      {/* Section 2 — Pre-Market & Global (4:8) */}
+      <section className="grid grid-cols-12 gap-2 border border-[#E5E7EB]" style={{ minHeight: 400 }}>
+        <div className="col-span-12 lg:col-span-4 min-w-0 border-b lg:border-b-0 lg:border-r border-[#E5E7EB] overflow-hidden" style={{ minHeight: 200 }}>
+          <BriefingWidget compact />
+        </div>
+        <div className="col-span-12 lg:col-span-8 min-w-0 overflow-hidden">
+          <GlobalIndicesWidget expanded />
+        </div>
+      </section>
 
       {/* R4: Discovery Row (1:1:1:1:1) — 기존 유지 */}
       <div

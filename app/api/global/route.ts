@@ -6,7 +6,7 @@ const yahooFinance = new YahooFinance();
 interface SymbolDef {
   symbol: string;
   label: string;
-  section: '국내' | '미국' | '선물' | '환율' | '채권' | '원자재' | '아시아' | '유럽';
+  section: '국내' | '미국' | '선물' | '환율' | '채권' | '원자재' | '아시아' | '유럽' | '암호화폐';
 }
 
 const SYMBOLS: SymbolDef[] = [
@@ -53,6 +53,11 @@ const SYMBOLS: SymbolDef[] = [
   { symbol: '^FTSE',    label: 'FTSE 100',     section: '유럽' },
   { symbol: '^FCHI',    label: 'CAC 40',       section: '유럽' },
   { symbol: '^STOXX50E',label: 'Euro Stoxx 50',section: '유럽' },
+  // 암호화폐
+  { symbol: 'BTC-USD',  label: 'Bitcoin',      section: '암호화폐' },
+  { symbol: 'ETH-USD',  label: 'Ethereum',     section: '암호화폐' },
+  // 추가 환율
+  { symbol: 'JPYKRW=X', label: 'JPY/KRW',      section: '환율' },
 ];
 
 interface QuoteItem {
