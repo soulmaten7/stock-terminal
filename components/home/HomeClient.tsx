@@ -15,6 +15,7 @@ import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
 import ScreenerMiniWidget from '@/components/widgets/ScreenerMiniWidget';
 import EconCalendarMiniWidget from '@/components/widgets/EconCalendarMiniWidget';
 import StockDetailPanel from '@/components/dashboard/StockDetailPanel';
+import StockDetailToggle from '@/components/dashboard/StockDetailToggle';
 
 // ── 레이아웃 (Dashboard V3 — STEP 70) ─────────────────────────────────────
 //
@@ -28,15 +29,18 @@ import StockDetailPanel from '@/components/dashboard/StockDetailPanel';
 export default function HomeClient() {
   return (
     <div className="px-2 py-2 flex flex-col gap-2">
-      {/* Section 1 — 3컬럼 (관심종목 / 차트·호가·체결 / 종목 상세) */}
-      <section className="grid grid-cols-[280px_1fr_360px] gap-0 h-[680px] border border-[#E5E7EB] bg-white">
+      {/* Section 1 — 3컬럼 반응형 (xl: 280/1fr/360, lg: 240/1fr/320, <lg: 240/1fr) */}
+      <section className="grid gap-0 h-[680px] border border-[#E5E7EB] bg-white
+        grid-cols-[240px_1fr]
+        lg:grid-cols-[240px_1fr_320px]
+        xl:grid-cols-[280px_1fr_360px]">
         {/* 좌 — 관심종목 */}
         <div className="border-r border-[#E5E7EB] min-w-0 overflow-hidden">
           <WatchlistWidget />
         </div>
 
         {/* 중 — 차트 60% / 호가 25% / 체결 15% */}
-        <div className="flex flex-col min-w-0 overflow-hidden">
+        <div className="flex flex-col min-w-[480px] overflow-hidden">
           <div className="basis-[60%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-hidden">
             <ChartWidget />
           </div>
@@ -48,9 +52,14 @@ export default function HomeClient() {
           </div>
         </div>
 
-        {/* 우 — 종목 상세 (신규) */}
-        <StockDetailPanel />
+        {/* 우 — 종목 상세 (lg 이상만 grid cell 노출) */}
+        <div className="hidden lg:block min-w-0 overflow-hidden">
+          <StockDetailPanel />
+        </div>
       </section>
+
+      {/* lg 미만에서만 표시되는 FAB 토글 */}
+      <StockDetailToggle />
 
       {/* R4: Discovery Row (1:1:1:1:1) — 기존 유지 */}
       <div

@@ -281,7 +281,10 @@ function BlockSection({ title, children }: { title: string; children: React.Reac
 
 // ── 메인 컴포넌트 ─────────────────────────────────────────────────────────────
 export default function OverviewTab({ priceData, onNavigateTab }: Props) {
-  const selected = useSelectedSymbolStore((s) => s.selected);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const _selected = useSelectedSymbolStore((s) => s.selected);
+  const selected = mounted ? _selected : null;
 
   if (!selected) {
     return (

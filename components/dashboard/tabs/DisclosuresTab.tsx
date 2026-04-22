@@ -17,7 +17,10 @@ function fmtDate(yyyymmdd: string): string {
 }
 
 export default function DisclosuresTab() {
-  const selected = useSelectedSymbolStore((s) => s.selected);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const _selected = useSelectedSymbolStore((s) => s.selected);
+  const selected = mounted ? _selected : null;
   const [items, setItems] = useState<DisclosureItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);

@@ -3,11 +3,10 @@
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
 1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 + 우선순위
-2. **STEP 73** 실행: 뉴스/공시/재무 탭 상세 구현
-   - 뉴스 탭: 선택 종목 전체 뉴스 리스트
-   - 공시 탭: DART 전체 리스트 (US SEC 보강)
-   - 재무 탭: 손익/재무상태/현금흐름 상세 테이블
-   - 참고: `docs/STEP_73_COMMAND.md`
+2. **STEP 75** 실행: US SEC 공시 + 재무상태·현금흐름 연결 + 배당수익률 보강
+   - FinancialsTab 재무상태표·현금흐름표 DART 실데이터 연결
+   - DisclosuresTab US 종목 SEC 공시 연결
+   - SnapshotHeader/OverviewTab 배당수익률 필드 추가
 3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
 ## 현재 상태 (2026-04-22 STEP 66 완료 시점)

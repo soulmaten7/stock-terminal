@@ -21,7 +21,10 @@ function formatRelativeTime(iso: string | null): string {
 }
 
 export default function NewsTab() {
-  const selected = useSelectedSymbolStore((s) => s.selected);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const _selected = useSelectedSymbolStore((s) => s.selected);
+  const selected = mounted ? _selected : null;
   const [items, setItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);

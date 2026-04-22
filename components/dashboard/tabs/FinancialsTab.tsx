@@ -27,7 +27,10 @@ function fmtPct(n: number | null | undefined): string {
 }
 
 export default function FinancialsTab() {
-  const selected = useSelectedSymbolStore((s) => s.selected);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const _selected = useSelectedSymbolStore((s) => s.selected);
+  const selected = mounted ? _selected : null;
   const [quarters, setQuarters] = useState<Quarter[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);

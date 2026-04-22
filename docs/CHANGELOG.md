@@ -1,6 +1,8 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — feat(dashboard): Section 1 반응형 + 선택 종목 persist + 모바일 토글 (STEP 74)
+
 ## 2026-04-22 — feat(dashboard): 뉴스·공시·재무 탭 상세 콘텐츠 (STEP 73)
 
 ## 2026-04-22 — feat(dashboard): 종합 탭 5블록 실데이터 연결 (STEP 72)

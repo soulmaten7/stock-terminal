@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 import type { PriceData } from './StockDetailPanel';
 
@@ -32,7 +33,10 @@ function changeCls(n: number): string {
 }
 
 export default function SnapshotHeader({ priceData, loading }: Props) {
-  const selected = useSelectedSymbolStore((s) => s.selected);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const _selected = useSelectedSymbolStore((s) => s.selected);
+  const selected = mounted ? _selected : null;
 
   const priceCls = changeCls(priceData?.changePercent ?? 0);
   const pctStr = priceData

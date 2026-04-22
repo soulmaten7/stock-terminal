@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export type Market = 'KR' | 'US';
 
@@ -15,7 +16,16 @@ interface SelectedSymbolState {
   setSelected: (symbol: SelectedSymbol | null) => void;
 }
 
-export const useSelectedSymbolStore = create<SelectedSymbolState>((set) => ({
-  selected: null,
-  setSelected: (symbol) => set({ selected: symbol }),
-}));
+export const useSelectedSymbolStore = create<SelectedSymbolState>()(
+  persist(
+    (set) => ({
+      selected: null,
+      setSelected: (symbol) => set({ selected: symbol }),
+    }),
+    {
+      name: 'selected-symbol',
+      storage: createJSONStorage(() => localStorage),
+      version: 1,
+    }
+  )
+);

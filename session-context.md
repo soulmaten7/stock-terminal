@@ -18,7 +18,10 @@
 ## 현재 TODO
 
 ### P0 — 다음 작업 (차기)
-- [ ] **STEP 74 — Section 1 반응형 + 선택 종목 persist + 우측 FAB 토글**
+- [ ] **STEP 75 — US 재무/공시 API 보강 + 재무상태·현금흐름 연결**
+  - 재무상태표/현금흐름표 DART 데이터 연결 (FinancialsTab)
+  - US 종목 SEC 공시 연결 (DisclosuresTab)
+  - 배당수익률 API 보강 (현재 `—`)
   - 뉴스 탭: 선택 종목 전체 뉴스 리스트 (무한 스크롤 or 페이지네이션)
   - 공시 탭: DART 전체 리스트 + US SEC TODO
   - 재무 탭: 손익/재무상태/현금흐름 상세 테이블
@@ -41,6 +44,14 @@
 - [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
+
+### 2026-04-22 세션 — STEP 74 완료
+- [x] STEP 74: Section 1 반응형 + persist + FAB 토글
+  - selectedSymbolStore: zustand persist 미들웨어, key=selected-symbol
+  - mounted 플래그: SnapshotHeader / OverviewTab / NewsTab / DisclosuresTab / FinancialsTab 5곳
+  - Section 1 grid 3단계 반응형: xl(≥1440)=280/1fr/360 / lg(≥1280)=240/1fr/320 / <lg=240/1fr
+  - StockDetailToggle.tsx: lg 미만 FAB + 슬라이드 오버레이
+  - 중앙 컬럼 min-w-[480px] 보장
 
 ### 2026-04-22 세션 — STEP 73 완료
 - [x] STEP 73: 뉴스·공시·재무 탭 상세 콘텐츠 + StockDetailPanel 탭 라우팅 확장
