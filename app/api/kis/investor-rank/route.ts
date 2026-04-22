@@ -46,7 +46,17 @@ export async function GET(request: NextRequest) {
       .sort((a, b) => b.institutionBuy - a.institutionBuy)
       .slice(0, 10);
 
-    return NextResponse.json({ foreignTop, institutionTop });
+    const totals = {
+      foreignBuyTotal: mapped.reduce((acc, x) => acc + x.foreignBuy, 0),
+      institutionBuyTotal: mapped.reduce((acc, x) => acc + x.institutionBuy, 0),
+      individualBuyApprox: -1 * (
+        mapped.reduce((acc, x) => acc + x.foreignBuy, 0) +
+        mapped.reduce((acc, x) => acc + x.institutionBuy, 0)
+      ),
+      count: mapped.length,
+    };
+
+    return NextResponse.json({ foreignTop, institutionTop, totals });
   } catch (err) {
     return NextResponse.json(
       { error: String(err), foreignTop: [], institutionTop: [] },
