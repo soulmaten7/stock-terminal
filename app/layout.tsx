@@ -25,7 +25,13 @@ export const metadata: Metadata = {
   description: '전업투자자의 투자 환경을 일반 투자자에게. 한국/미국 주식 데이터를 한곳에서.',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+  panel,
+}: {
+  children: React.ReactNode;
+  panel: React.ReactNode;
+}) {
   return (
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
       <body className="min-h-screen flex flex-col antialiased">
@@ -37,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {children}
             </LayoutShell>
           </div>
+          {panel}
         </AuthProvider>
       </body>
     </html>

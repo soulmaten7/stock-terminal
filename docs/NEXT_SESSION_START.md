@@ -3,11 +3,17 @@
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
 1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 요약
-2. **STEP 46 후속 작업 후보**:
-   - 홈 대시보드에 "퀀트 종합 TOP 10" 위젯 추가
-   - 스크리너 URL 공유 기능 (현재 필터 → URL 직렬화)
-   - 데이터 fresh-cycle 스케줄 (일일 재시딩 자동화)
+2. **STEP 47 후속 작업 후보 (P0)**:
+   - STEP 48-A: 위젯·페이지 레퍼런스 플랫폼 매핑 테이블 작성
+   - STEP 48-B: 사이드바 5그룹 재구성 (VerticalNav 아이콘→카테고리)
+   - STEP 48-C: 나머지 위젯 WidgetShell 적용 + Intercepting Routes 일괄 생성
 3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
+
+## 현재 상태 (2026-04-22 STEP 47 완료 시점)
+- URL-routed drawer 인프라 가동 — `@panel` Parallel Route + `(.)screener` Intercepting Route
+- DetailDrawer, WidgetShell 공통 컴포넌트 생성 완료
+- `/screener` 직접 URL = 풀페이지, 내부 네비 = 드로워 (시범 이관 1개)
+- 나머지 13개 위젯은 아직 WidgetShell 미적용 → STEP 48~
 
 ## V3 전략 요약 (세션 #8에서 확정)
 - **포지셔닝**: "전업투자자 = 일반인 (상위 1% 지향)" — Aspirational Design

@@ -1,6 +1,27 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 47: URL 라우팅 인프라 + 드로워 패턴 도입
+
+### Added
+- **Parallel Routes 인프라**: `app/@panel/` 슬롯 + `app/layout.tsx`에 `panel` 파라미터 추가
+- **Intercepting Route**: `app/@panel/(.)screener/page.tsx` — 대시보드에서 `/screener` 네비 시 드로워로 인터셉트
+- **공통 컴포넌트 `DetailDrawer`** (`components/common/DetailDrawer.tsx`): 우측 슬라이드 드로워, ESC/백드롭 닫기, body 스크롤 잠금
+- **공통 컴포넌트 `WidgetShell`** (`components/common/WidgetShell.tsx`): 위젯 외곽 + `[더보기 →]` 버튼 통합 (STEP 48부터 위젯 전체에 적용 예정)
+
+### Changed
+- `/screener` 직접 URL 접속은 풀페이지 유지 (공유·SEO·북마크 대응)
+- `VerticalNav` 의 DART 공시 링크 `/filings` → `/disclosures` 교체
+- `DartFilingsWidget` 의 `href` `/filings` → `/disclosures` 교체
+
+### Removed
+- `app/link-hub/` — `toolbox/` 가 완전 대체
+- `app/filings/` — 스텁 페이지. `disclosures/` 가 실제 DART API 연동 구현체
+
+### 아키텍처 결정
+- **URL-routed drawer 패턴 채택**: `/screener` URL이 네비게이션 컨텍스트에 따라 드로워 또는 풀페이지로 렌더됨
+- **인터셉팅 마커 수정**: `(..)` → `(.)` (루트 레벨에선 동일 세그먼트 마커 사용)
+
 ## 2026-04-22 — STEP 46: 스크리너 팩터 업그레이드 (API JOIN + 프리셋 8종 + 정렬 컬럼)
 
 - **Migration**: `supabase/migrations/013_stock_snapshot_view.sql` 신규 — stocks + 최신 quant_factors + 최신 dividends LEFT JOIN LATERAL view

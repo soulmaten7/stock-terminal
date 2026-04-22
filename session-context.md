@@ -35,6 +35,14 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 47: URL 라우팅 인프라 + 드로워 패턴 ✅
+- Parallel Routes `app/@panel/` + `app/layout.tsx` panel 슬롯 추가
+- Intercepting Route `app/@panel/(.)screener/` — 내부 네비 시 드로워, 직접 URL 시 풀페이지
+- DetailDrawer, WidgetShell 공통 컴포넌트 신규
+- `app/link-hub/`, `app/filings/` 구버전 제거
+- VerticalNav + DartFilingsWidget `/filings` → `/disclosures` 교체
+- 인터셉팅 마커 수정 사항: `(..)` → `(.)` (루트에선 동일 세그먼트 마커)
+
 ### 2026-04-22 세션 — STEP 46: 스크리너 팩터 업그레이드 ✅
 - Migration 013 stock_snapshot_v view — stocks/quant_factors/dividends LEFT JOIN LATERAL 집계
 - API route 팩터 필터 + 화이트리스트 기반 정렬 지원

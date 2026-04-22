@@ -100,7 +100,7 @@ export default function DartFilingsWidget({ inline = false, size = 'default' }: 
   }
 
   return (
-    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/filings" size={size}>
+    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/disclosures" size={size}>
       {content}
     </WidgetCard>
   );

@@ -29,7 +29,7 @@ const ITEMS = [
   { icon: Flame,      label: '거래량 급등',   href: '/movers/volume' },
   { icon: BarChart3,  label: '수급',          href: '/net-buy' },
   { icon: Newspaper,  label: '뉴스 속보',     href: '/news' },
-  { icon: FileText,   label: 'DART 공시',     href: '/filings' },
+  { icon: FileText,   label: 'DART 공시',     href: '/disclosures' },
   { icon: Calendar,   label: '경제캘린더',    href: '/calendar' },
   { icon: Sun,        label: '장전 브리핑',   href: '/briefing' },
   { icon: Globe,      label: '글로벌 지수',   href: '/global' },
