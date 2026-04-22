@@ -27,10 +27,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  panel,
 }: {
   children: React.ReactNode;
-  panel: React.ReactNode;
 }) {
   return (
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
@@ -43,7 +41,6 @@ export default function RootLayout({
               {children}
             </LayoutShell>
           </div>
-          {panel}
         </AuthProvider>
       </body>
     </html>

@@ -35,6 +35,14 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 48 완료
+- [x] STEP 47 드로워 오버레이 인프라 제거
+- [x] `app/@panel/` 삭제
+- [x] `DetailDrawer.tsx` 삭제
+- [x] `app/layout.tsx` panel slot 제거
+- [x] 빌드 검증 통과
+- [x] 평범한 페이지 라우팅으로 회귀 — `/net-buy` 패턴과 동일하게 동작
+
 ### 2026-04-22 세션 — STEP 47: URL 라우팅 인프라 + 드로워 패턴 ✅
 - Parallel Routes `app/@panel/` + `app/layout.tsx` panel 슬롯 추가
 - Intercepting Route `app/@panel/(.)screener/` — 내부 네비 시 드로워, 직접 URL 시 풀페이지

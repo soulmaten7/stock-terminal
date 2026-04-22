@@ -1,6 +1,23 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 48: 드로워 오버레이 제거, 평범한 페이지 라우팅으로 회귀
+
+### 배경
+STEP 47에서 Parallel Route `@panel` + Intercepting Route `(.)screener` + 우측 오버레이 `DetailDrawer` 조합을 구축했으나, 사용자 의도와 불일치. 사용자는 "URL만 바뀌고 레이아웃(사이드바+티커바+푸터)은 유지되는 평범한 페이지 이동"을 원했음. `/net-buy` 가 이미 그 패턴이었고, 그게 정답.
+
+### 제거
+- `app/@panel/` 디렉토리 전체 (`default.tsx`, `(.)screener/page.tsx`)
+- `components/common/DetailDrawer.tsx`
+- `app/layout.tsx` 의 `panel` parallel slot 파라미터
+
+### 유지
+- `components/common/WidgetShell.tsx` — [더보기 →] `<Link href>` 기반 평범 네비게이션
+- STEP 47의 `link-hub` 삭제, `/filings` → `/disclosures` 정리는 그대로 유효
+
+### 교훈
+Next.js Parallel/Intercepting Routes는 진짜 모달 오버레이 UX가 필요할 때만 쓴다. "URL은 바뀌지만 레이아웃은 유지"는 App Router의 기본 동작이므로 별도 인프라 불필요.
+
 ## 2026-04-22 — STEP 47: URL 라우팅 인프라 + 드로워 패턴 도입
 
 ### Added

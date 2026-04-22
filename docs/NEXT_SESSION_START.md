@@ -9,11 +9,14 @@
    - STEP 48-C: 나머지 위젯 WidgetShell 적용 + Intercepting Routes 일괄 생성
 3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
-## 현재 상태 (2026-04-22 STEP 47 완료 시점)
-- URL-routed drawer 인프라 가동 — `@panel` Parallel Route + `(.)screener` Intercepting Route
-- DetailDrawer, WidgetShell 공통 컴포넌트 생성 완료
-- `/screener` 직접 URL = 풀페이지, 내부 네비 = 드로워 (시범 이관 1개)
-- 나머지 13개 위젯은 아직 WidgetShell 미적용 → STEP 48~
+## 현재 상태 (2026-04-22 STEP 48 완료 시점)
+- 드로워 오버레이 제거 완료 — 평범한 페이지 라우팅으로 회귀
+- 위젯 [더보기 →] 클릭 시 사이드바+티커바+푸터 유지된 채 컨텐츠 영역만 전환 (App Router 기본 동작)
+- `WidgetShell.tsx` 유지 — 향후 위젯 13개에 적용 예정
+- 다음 할 일 후보 (STEP 49):
+  - (A) 레퍼런스 플랫폼 매핑 테이블 작성 — 20+ 위젯/페이지 각각이 어느 플랫폼 UI를 벤치마킹하는지 정리
+  - (B) 사이드바 14항목 5그룹 재구성 — 카테고리 라벨 추가
+  - (C) 나머지 위젯 13개에 WidgetShell 적용 + 페이지 네비게이션 연결
 
 ## V3 전략 요약 (세션 #8에서 확정)
 - **포지셔닝**: "전업투자자 = 일반인 (상위 1% 지향)" — Aspirational Design
