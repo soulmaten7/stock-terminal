@@ -18,14 +18,20 @@
 ## 현재 TODO
 
 ### P0 — 다음 작업 (차기)
-- [ ] **STEP 75 — US 재무/공시 API 보강 + 재무상태·현금흐름 연결**
-  - 재무상태표/현금흐름표 DART 데이터 연결 (FinancialsTab)
-  - US 종목 SEC 공시 연결 (DisclosuresTab)
-  - 배당수익률 API 보강 (현재 `—`)
-  - 뉴스 탭: 선택 종목 전체 뉴스 리스트 (무한 스크롤 or 페이지네이션)
-  - 공시 탭: DART 전체 리스트 + US SEC TODO
-  - 재무 탭: 손익/재무상태/현금흐름 상세 테이블
-  - 배당수익률·US 재무 API 보강
+- [ ] **DisclosureStreamWidget US** — SEC EDGAR 최근 8-K 스트림 API 신설
+- [ ] **GlobalIndicesWidget Sparkline** — Yahoo Finance 7일 히스토리 연결
+- [ ] **ESLint cleanup** — `set-state-in-effect` 63건 일괄 정리 (별도 STEP)
+- [ ] **Vercel 배포 검증** — 빌드 OK + 환경변수 확인
+
+### 2026-04-23 세션 — STEP 75~82 완료 (V3 대시보드 풀 구현)
+- [x] STEP 75: Section 1 보강 — 배당수익률, DART BS/CF, SEC EDGAR 공시
+- [x] STEP 76: Section 2 Pre-Market & Global — BriefingWidget + GlobalIndicesWidget 5그룹
+- [x] STEP 77: FloatingChat 전역화 (3상태), layout.tsx 주입
+- [x] STEP 78: Section 3 Discovery — ScreenerExpandedWidget + MoversPairWidget
+- [x] STEP 79: Section 4 Market Structure — SectorHeatmapWidget + ThemeTop10Widget
+- [x] STEP 80: Section 5 Information Streams — NewsStream + DisclosureStream + EconCalendar
+- [x] STEP 81: 체결창/호가창 폴리싱 — fadeIn, 대량체결배지, depth bar, selectedSymbol 동기화
+- [x] STEP 82: QA — 빌드 OK, console.log 없음, V3_RELEASE_NOTES.md 생성
 
 ### P0 — 지금 당장 (블로커)
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)

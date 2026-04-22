@@ -3,13 +3,33 @@
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
 1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 + 우선순위
-2. **STEP 75** 실행: US SEC 공시 + 재무상태·현금흐름 연결 + 배당수익률 보강
-   - FinancialsTab 재무상태표·현금흐름표 DART 실데이터 연결
-   - DisclosuresTab US 종목 SEC 공시 연결
-   - SnapshotHeader/OverviewTab 배당수익률 필드 추가
-3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
+2. **Vercel 배포** — 환경변수 점검 + 배포 + E2E 검증
+3. **DisclosureStreamWidget US** — SEC EDGAR 최근 8-K 스트림 API
+4. 4개 문서 날짜 확인 (CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START)
 
-## 현재 상태 (2026-04-22 STEP 66 완료 시점)
+## 현재 상태 (2026-04-23 STEP 82 완료 시점) — V3 대시보드 5섹션 풀 완성
+
+### 홈 대시보드 5섹션 구성
+- **Section 1**: 트레이딩 터미널 (Watchlist + Chart + OrderBook + Tick + StockDetailPanel)
+- **Section 2**: Pre-Market & Global (BriefingWidget + GlobalIndicesWidget 17지표)
+- **Section 3**: Discovery (ScreenerExpandedWidget 6프리셋 + MoversPairWidget + Volume/NetBuy)
+- **Section 4**: Market Structure (SectorHeatmapWidget KR/US + ThemeTop10Widget)
+- **Section 5**: Information Streams (NewsStream + DisclosureStream KR/US + EconCalendar)
+
+### 전역 기능
+- FloatingChat: 3상태 (닫힘/최소화/열림), Supabase Realtime
+- selectedSymbolStore: Zustand persist, OrderBook/Tick/전체 위젯 연동
+- StockDetailPanel: 4탭 (종합/재무/공시/뉴스) 실데이터 완전 연결
+
+### 빌드 상태
+- TypeScript: ✅ 오류 없음 | 빌드: ✅ 81페이지 | console.log: ✅ 없음
+- ESLint: ⚠️ 63건 비차단 경고 (기존 패턴, 별도 Cleanup STEP 필요)
+
+### 미완성 항목
+- DisclosureStreamWidget US (SEC EDGAR 스트림 미연결)
+- GlobalIndicesWidget Sparkline (7일 히스토리 미연결)
+
+## 이전 상태 (2026-04-22 STEP 66 완료 시점)
 
 ### P0 (필수 기능) — 100% 완료
 - 위젯: Watchlist ✅ / Chart ✅ / OrderBook ✅ / DART ✅ / Movers ✅ / Volume ✅ / NetBuy ✅
