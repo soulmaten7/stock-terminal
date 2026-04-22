@@ -2,7 +2,8 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search } from 'lucide-react';
+import Link from 'next/link';
+import { Search, ArrowUpRight } from 'lucide-react';
 
 type Market = 'KOSPI' | 'KOSDAQ';
 
@@ -19,7 +20,15 @@ export default function ScreenerMiniWidget() {
   };
 
   return (
-    <div className="h-full bg-white border border-[#E5E7EB] p-3 flex flex-col justify-center">
+    <div className="h-full bg-white border border-[#E5E7EB] p-3 flex flex-col justify-center relative">
+      <Link
+        href="/screener"
+        className="absolute top-1 right-1 text-[#BBBBBB] hover:text-[#0ABAB5] transition-colors"
+        title="종목 발굴 상세 페이지"
+        aria-label="종목 발굴 상세 페이지로 이동"
+      >
+        <ArrowUpRight className="w-3.5 h-3.5" />
+      </Link>
       <form onSubmit={handleSubmit} className="flex items-center gap-2">
         {/* 시장 토글 */}
         <div className="flex gap-1 shrink-0">

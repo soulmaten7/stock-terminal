@@ -33,7 +33,7 @@ const ITEMS = [
   { icon: Calendar,   label: '경제캘린더',    href: '/calendar' },
   { icon: Sun,        label: '장전 브리핑',   href: '/briefing' },
   { icon: Globe,      label: '글로벌 지수',   href: '/global' },
-  { icon: PieChart,   label: '시장 지도',     href: '/analytics' },
+  { icon: PieChart,   label: '시장 지도',     href: '/analysis' },
   { icon: BookMarked, label: '참고 사이트',   href: '/toolbox' },
 ];
 

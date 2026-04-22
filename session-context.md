@@ -35,6 +35,14 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 49 완료
+- [x] 홈 위젯 13개 href 감사 — 11개 이미 정확
+- [x] VerticalNav '시장 지도' `/analytics` → `/analysis` 수정
+- [x] `app/analytics/` 디렉토리 삭제 (중복)
+- [x] `WidgetShell.tsx` 삭제 (미사용)
+- [x] ScreenerMini 우상단 ↗ 아이콘 추가
+- [x] 빌드 검증 통과
+
 ### 2026-04-22 세션 — STEP 48 완료
 - [x] STEP 47 드로워 오버레이 인프라 제거
 - [x] `app/@panel/` 삭제

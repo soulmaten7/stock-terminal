@@ -1,6 +1,21 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 49: 위젯 네비게이션 정합성 정리
+
+### 배경
+홈 위젯 13개의 `href` 연결 감사 결과, 11개 이미 정확. 사이드바 '시장 지도' 항목이 중복 페이지 `/analytics` (InvestorFlowWidget 하나만 렌더)를 가리키는 매핑 오류 발견.
+
+### 수정
+- `VerticalNav.tsx`: '시장 지도' href `/analytics` → `/analysis` (SectorHeatmap + ThemeGroups + MarketFlow + EconomicDashboard 실제 시장 지도 페이지)
+- `app/analytics/` 삭제 (`/investor-flow` 와 중복 기능)
+- `components/common/WidgetShell.tsx` 삭제 (미사용, `WidgetCard` 와 중복)
+- `ScreenerMiniWidget.tsx`: 우상단 `ArrowUpRight` 아이콘 링크 추가 (다른 위젯과 일관된 UX)
+
+### 유지 (이미 올바른 매핑)
+- 11개 위젯 href 정확 — Watchlist, Chart, OrderBook, Tick, News, DART, EconCal, Movers, Volume, NetBuy, Global
+- TrendingThemesWidget.`href="/analysis"` 는 정답이었음
+
 ## 2026-04-22 — STEP 48: 드로워 오버레이 제거, 평범한 페이지 라우팅으로 회귀
 
 ### 배경
