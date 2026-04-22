@@ -13,6 +13,20 @@ export interface Stock {
   updated_at: string;
 }
 
+export interface StockPrice {
+  id: number;
+  stock_id: number;
+  trade_date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number;
+  volume: number | null;
+  change: number | null;
+  change_percent: number | null;
+  created_at: string;
+}
+
 export interface Financial {
   id: number;
   stock_id: number;

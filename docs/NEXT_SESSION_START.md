@@ -28,14 +28,16 @@ Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 - **DART 재무제표 TOP 100 × 2023,2024 연간 적재 완료** — 테마 50 중 37종 커버
 - **DART 파서 IS→CIS fallback + account_id 정확도 상향** (`lib/dart-financial.ts` 동기화)
 - **ValueAnalysis.tsx 실데이터 전환 완료** — 가짜값 전면 제거 + DART 시계열 차트 신규
-- **나머지 4개 분석 탭 정직 스텁화 완료** — 1,331줄 dead code 제거, 각 탭에 활성화 예정 STEP 번호 명시
+- **나머지 4개 분석 탭 정직 스텁화 완료** — 1,331줄 dead code 제거
+- **TechnicalAnalysis 재활성화 완료** — stock_prices 54,899건 + MA·볼린저·RSI·거래량 차트
+
+**누계 DB**: stocks 2,780 / financials 576 / stock_prices 54,899 / dart_corp_codes 3,959
 
 ## 다음 세션 P0
 
-- **STEP 42**: `stock_prices` 시딩 → TechnicalAnalysis 재활성화 (이동평균·RSI·볼린저밴드)
 - **STEP 43**: KIS per-stock investor-flow (FHKST01010900) 수집 → SupplyAnalysis 재활성화
 - **STEP 44**: DART 배당 공시 수집 → DividendAnalysis 재활성화
-- 분기 보고서 수집 대안: `REPRT_CODE=11013/11012/11014` 3회 실행 → ~300건 추가
+- **분기 보고서 수집 대안**: `REPRT_CODE=11013/11012/11014` 3회 실행 → ~300건 추가
 
 ---
 

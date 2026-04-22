@@ -1,6 +1,19 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 42: TechnicalAnalysis 재활성화 (stock_prices 시딩 + MA·볼린저·RSI)
+
+**데이터 작업**
+- `scripts/seed-stock-prices.py` 실행 → `stock_prices` 테이블 시총 TOP 200 1년 일봉 53,363건 upsert (실패 0건, 누계 54,899건)
+
+**코드 변경**
+- `types/stock.ts` — `StockPrice` 인터페이스 추가
+- `components/analysis/TechnicalAnalysis.tsx` — 32줄 스텁 → 실제 기술 지표 컴포넌트 재작성
+  - SMA (5·20·60·120일), 볼린저밴드 (20일 ±2σ), RSI (Wilder's 14일), 거래량 바차트
+  - 일봉 20개 미만 종목은 "데이터 부족" 카드 표시
+
+---
+
 ## 2026-04-22 — STEP 41: 나머지 4개 분석 탭 정직 스텁 교체
 
 **코드 변경**

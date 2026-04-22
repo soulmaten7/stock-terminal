@@ -35,6 +35,14 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 42 완료
+- [x] `stock_prices` 시딩 완료: 200종목 × 1년 일봉, 54,899건 (실패 0건)
+- [x] `StockPrice` 타입 추가 (`types/stock.ts`)
+- [x] TechnicalAnalysis.tsx 재작성 (스텁 → MA·볼린저·RSI·거래량 실차트)
+- [x] 빌드 성공 (타입 에러 0건)
+- [ ] STEP 43: KIS per-stock investor-flow 수집 → SupplyAnalysis 재활성화
+- [ ] STEP 44: DART 배당 공시 수집 → DividendAnalysis 재활성화
+
 ### 2026-04-22 세션 — STEP 41 완료
 - [x] Quant/Dividend/Technical/Supply 4개 탭 정직 스텁 교체 (1,331→140줄)
 - [x] 빌드 성공 (타입 에러 0건)
