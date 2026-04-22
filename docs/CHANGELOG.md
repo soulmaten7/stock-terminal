@@ -1,6 +1,16 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 52B: 중복·미사용 파일 정리
+
+### 변경
+- 죽은 코드 제거: `components/common/LoadingSkeleton.tsx`, `app/compare/`, `components/compare/`
+- 구 Phase 명령서 15개 삭제 (PHASE1~4 + V3_W1~W5, 5,702 lines)
+- 중복 `docs/DATA_SOURCES_MAPPING.xlsx` 제거 (`REFERENCE_PLATFORM_MAPPING.xlsx`로 대체됨)
+- `PRODUCT_SPEC_V3.md` · `NEXT_SESSION_START.md` 구 명령서 참조 정리
+
+---
+
 ## 2026-04-22 — STEP 52: Chart 페이지 리팩토링 (P0 Phase A)
 
 ### 변경

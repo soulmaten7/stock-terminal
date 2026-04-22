@@ -35,6 +35,9 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 52B
+- [x] 중복·미사용 파일 정리 (17개 파일 삭제)
+
 ### 2026-04-22 세션 — STEP 52 완료
 - [x] /chart 풀스크린 차트 페이지 (lightweight-charts + TradingView)
 - [x] 기간 토글 D/W/M + OHLCV 30행 테이블 (KRX)

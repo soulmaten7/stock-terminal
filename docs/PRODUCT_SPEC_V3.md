@@ -566,7 +566,7 @@ Claude Code 실행 후 **매번** 다음 항목 체크:
 | `docs/HOME_REDESIGN_V2_SPEC.md` | **아카이브** — 홈 단건 스펙. V3에서 홈은 4페이지 중 1개로 축소 |
 | `docs/BUSINESS_STRATEGY.md` | 유지 — 비즈니스 전략 상세는 여기 참조 |
 | `docs/SYSTEM_DESIGN.md` | 유지 — 기술 아키텍처 상세는 여기 참조 |
-| `docs/COMMANDS_PHASE1_HOME.md` ~ `PHASE4_MONETIZE.md` | 참고 — V3 에서는 `COMMANDS_V3_PHASE1.md` 가 신규 기준 |
+| `docs/STEP_{N}_COMMAND.md` | 실행 명령서 — STEP 번호순으로 아카이브됨 |
 | `docs/PAGE_FRAME_SPEC.md` | 참고 — 페이지별 프레임 일부 재사용 |
 
 ---
@@ -586,4 +586,4 @@ Claude Code 실행 후 **매번** 다음 항목 체크:
 
 ---
 
-**문서 종료.** Phase 1 실행 명령어는 `docs/COMMANDS_V3_PHASE1.md` 참고.
+**문서 종료.** 이후 모든 실행은 `docs/STEP_{N}_COMMAND.md` 파일로 전달됨.

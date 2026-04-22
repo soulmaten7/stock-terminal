@@ -294,7 +294,7 @@ Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 ## 세션 #8 (2026-04-18)
 - **V3 제품 스펙 확정** — `docs/PRODUCT_SPEC_V3.md` 신규 작성
 - **전략 방향 확정** — Aspirational Design, Bento Grid, 단일 채팅, Partner-Agnostic Lead Gen
-- **Phase 1 실행 명령어** — `docs/COMMANDS_V3_PHASE1.md` 작성
+- **Phase 1 실행 명령어** — STEP 워크플로우로 전환 (COMMANDS_V3_PHASE1.md 삭제됨)
 - **코드 변경 없음** (문서 세션)
 
 ## 세션 #7 (2026-04-17)
@@ -312,7 +312,7 @@ Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 ## 다음 할 일 (우선순위 순)
 
 ### 0순위 (V3) — 4-페이지 심장부 구현
-**`docs/COMMANDS_V3_PHASE1.md` 참고하여 Claude Code에 순서대로 전달**
+**`docs/STEP_{N}_COMMAND.md` 파일로 순서대로 전달됨**
 
 1. **Persistent Chat** (`app/layout.tsx` 에 배치 — 페이지 이동해도 채팅 유지)
 2. **종목 상세 8탭** (`app/stocks/[symbol]/page.tsx` — 개요/차트/호가/재무/실적/뉴스공시/수급/비교)
@@ -390,7 +390,7 @@ cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model opus
 | 비즈니스 전략 | `docs/BUSINESS_STRATEGY.md` |
 | 시스템 설계 | `docs/SYSTEM_DESIGN.md` |
 | 페이지 프레임 스펙 | `docs/PAGE_FRAME_SPEC.md` |
-| Phase 1~4 명령서 | `docs/COMMANDS_PHASE1~4_*.md` |
+| 실행 명령서 | `docs/STEP_{N}_COMMAND.md` |
 | Make 자동화 | `docs/MAKE_AUTOMATION.md` |
 | Claude Code 지침 | `CLAUDE.md` |
 | 프로젝트 맥락 | `session-context.md` |
