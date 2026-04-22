@@ -35,6 +35,10 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 51 완료
+- [x] WatchlistWidget: 전일비 컬럼 추가 (grid-cols-5, change 필드, 종목명 Link)
+- [x] WatchlistPageClient: 인라인 추가 폼 (6자리 검증), 8-컬럼 토글 정렬, 전일비 컬럼
+
 ### 2026-04-22 세션 — STEP 50 완료
 - [x] 홈 위젯 14개 + 상세 페이지 14개 레퍼런스 플랫폼 매핑
 - [x] `docs/REFERENCE_PLATFORM_MAPPING.md` 생성

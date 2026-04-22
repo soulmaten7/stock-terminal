@@ -1,6 +1,14 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 51: Watchlist Phase A — 전일비 컬럼 + 인라인 추가 폼 + 정렬
+
+### 변경
+- `components/widgets/WatchlistWidget.tsx` — `change` 필드 추가, grid-cols-5, 전일비 컬럼, 종목명 → Link
+- `components/watchlist/WatchlistPageClient.tsx` — `change` 필드, 인라인 추가 폼(6자리 검증), 컬럼별 토글 정렬(SortKey 8종), 전일비 컬럼 추가
+
+---
+
 ## 2026-04-22 — STEP 50: 레퍼런스 플랫폼 매핑 테이블 작성
 
 ### 배경

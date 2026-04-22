@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import WidgetCard from '@/components/home/WidgetCard';
 import { useAuthStore } from '@/stores/authStore';
 import { getWatchlistSymbols } from '@/lib/watchlist';
@@ -17,6 +18,7 @@ interface Row {
   symbol: string;
   name: string;
   price: number;
+  change: number;
   changePercent: number;
   volume: number;
 }
@@ -40,11 +42,12 @@ async function fetchPrice(symbol: string, fallbackName: string): Promise<Row> {
       symbol,
       name: d.name || fallbackName,
       price: d.price ?? 0,
+      change: d.change ?? 0,
       changePercent: d.changePercent ?? 0,
       volume: d.volume ?? 0,
     };
   } catch {
-    return { symbol, name: fallbackName, price: 0, changePercent: 0, volume: 0 };
+    return { symbol, name: fallbackName, price: 0, change: 0, changePercent: 0, volume: 0 };
   }
 }
 
@@ -99,9 +102,10 @@ export default function WatchlistWidget() {
     >
       <div role="table" aria-label="관심종목 목록" className="w-full">
         <div role="rowgroup">
-          <div role="row" className="grid grid-cols-4 px-3 py-2 text-xs text-[#999] font-bold border-b border-[#F0F0F0]">
+          <div role="row" className="grid grid-cols-5 px-3 py-2 text-xs text-[#999] font-bold border-b border-[#F0F0F0]">
             <span role="columnheader">종목</span>
             <span role="columnheader" className="text-right">현재가</span>
+            <span role="columnheader" className="text-right">전일비</span>
             <span role="columnheader" className="text-right">등락률</span>
             <span role="columnheader" className="text-right">거래량</span>
           </div>
@@ -111,11 +115,23 @@ export default function WatchlistWidget() {
             <div
               key={r.symbol}
               role="row"
-              className="grid grid-cols-4 px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
+              className="grid grid-cols-5 px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
             >
-              <span role="cell" className="font-bold text-black truncate">{r.name}</span>
+              <Link
+                href={`/stocks/${r.symbol}`}
+                role="cell"
+                className="font-bold text-black truncate hover:text-[#0ABAB5]"
+              >
+                {r.name}
+              </Link>
               <span role="cell" className="text-right text-black">
                 {r.price > 0 ? fmtPrice(r.price) : '—'}
+              </span>
+              <span
+                role="cell"
+                className={`text-right ${r.change >= 0 ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}
+              >
+                {r.price > 0 ? `${r.change >= 0 ? '+' : ''}${fmtPrice(r.change)}` : '—'}
               </span>
               <span
                 role="cell"
