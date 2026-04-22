@@ -2,20 +2,26 @@
 # Stock Terminal — 다음 세션 시작 가이드
 
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
-1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 요약
-2. **STEP 47 후속 작업 후보 (P0)**:
-   - STEP 48-A: 위젯·페이지 레퍼런스 플랫폼 매핑 테이블 작성
-   - STEP 48-B: 사이드바 5그룹 재구성 (VerticalNav 아이콘→카테고리)
-   - STEP 48-C: 나머지 위젯 WidgetShell 적용 + Intercepting Routes 일괄 생성
-3. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
+1. `docs/REFERENCE_PLATFORM_MAPPING.md` 읽기 — 어느 플랫폼을 벤치마킹할지 합의된 매핑
+2. **STEP 51 후보 (P0 위젯부터 리팩토링 시작)**:
+   - P0 위젯: Watchlist, Chart, OrderBook, DART, Movers, Volume, NetBuy
+   - P0 페이지: 홈, Screener, Watchlist, Chart
+3. 진행 방식:
+   - (a) 해당 레퍼런스 플랫폼 실제 UI 스크린샷 수집 (Chrome MCP)
+   - (b) 위젯/페이지별 디테일 스펙 문서 작성 (`docs/WIDGET_SPEC_{name}.md`)
+   - (c) 스펙 기반 UI 리팩토링 실행
+4. 기존 4개 문서(CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START) 오늘 날짜 확인
 
-## 현재 상태 (2026-04-22 STEP 49 완료 시점)
+## 현재 상태 (2026-04-22 STEP 50 완료 시점)
+- 레퍼런스 플랫폼 매핑 테이블 작성 완료 — Markdown + Excel 2개 포맷
+- 홈 위젯 14개 + 상세 페이지 14개, 총 28개 매핑 확정
+- 우선순위: P0 11개 / P1 13개 / P2 5개
+- 주 벤치마크 6개 플랫폼: 네이버증권, TradingView, Koyfin, Finviz, Investing.com, 키움 영웅문
+
+## 이전 상태 (2026-04-22 STEP 49 완료 시점)
 - 모든 홈 위젯이 `WidgetCard href` prop으로 평범한 페이지 이동 연결됨
 - 사이드바 14항목과 페이지 매핑 정합성 확보 (시장 지도 → `/analysis` 수정)
 - 중복 페이지/컴포넌트 정리 완료 (`analytics/`, `WidgetShell.tsx`)
-- 다음 할 일 후보 (STEP 50):
-  - (A) **[P0] 레퍼런스 플랫폼 매핑 테이블 작성** — 위젯 13개 + 페이지 14개가 각각 어느 플랫폼(토스증권/키움/네이버증권/Koyfin 등) UI를 벤치마킹하는지 정리
-  - (B) 사이드바 14항목 5그룹 카테고리 재구성 (아이콘 바 → 라벨 그룹)
 
 ## V3 전략 요약 (세션 #8에서 확정)
 - **포지셔닝**: "전업투자자 = 일반인 (상위 1% 지향)" — Aspirational Design

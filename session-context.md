@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 50 완료
+- [x] 홈 위젯 14개 + 상세 페이지 14개 레퍼런스 플랫폼 매핑
+- [x] `docs/REFERENCE_PLATFORM_MAPPING.md` 생성
+- [x] `docs/REFERENCE_PLATFORM_MAPPING.xlsx` 생성 (우선순위 색상 코딩, 3탭)
+- [x] P0 = 11개 / P1 = 13개 / P2 = 5개 분포 확정
+- [x] 주 벤치마크 플랫폼 6개 확정 (네이버증권, TradingView, Koyfin, Finviz, Investing.com, 키움 영웅문)
+
 ### 2026-04-22 세션 — STEP 49 완료
 - [x] 홈 위젯 13개 href 감사 — 11개 이미 정확
 - [x] VerticalNav '시장 지도' `/analytics` → `/analysis` 수정
