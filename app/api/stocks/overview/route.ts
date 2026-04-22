@@ -28,7 +28,50 @@ export async function GET(req: NextRequest) {
     .eq('symbol', symbol.toUpperCase())
     .maybeSingle();
 
-  if (!stock) return NextResponse.json({ error: 'stock not found' }, { status: 404 });
+  if (!stock) {
+    // KIS fallback — 6자리 한국 종목만
+    if (!/^[0-9]{6}$/.test(symbol.toUpperCase())) {
+      return NextResponse.json({ error: 'stock not found' }, { status: 404 });
+    }
+    try {
+      const { fetchKisApi } = await import('@/lib/kis');
+      const data = await fetchKisApi({
+        endpoint: '/uapi/domestic-stock/v1/quotations/inquire-price',
+        trId: 'FHKST01010100',
+        params: { FID_COND_MRKT_DIV_CODE: 'J', FID_INPUT_ISCD: symbol.toUpperCase() },
+      });
+      const o = data.output;
+      if (!o) return NextResponse.json({ error: 'not found' }, { status: 404 });
+
+      return NextResponse.json({
+        symbol: symbol.toUpperCase(),
+        name: o.hts_kor_isnm,
+        market: 'KOSPI',
+        country: 'KR',
+        sector: null,
+        industry: null,
+        kpis: {
+          marketCap: o.hts_avls ? formatKRW(parseInt(o.hts_avls, 10) * 100_000_000) : '—',
+          per: fmtNum(parseFloat(o.per || '0') || null),
+          pbr: fmtNum(parseFloat(o.pbr || '0') || null),
+          eps: '—',
+          bps: '—',
+          roe: '—',
+          dividendYield: '—',
+          yearRange: o.stck_dryc_hgpr && o.stck_dryc_lwpr
+            ? `${parseInt(o.stck_dryc_lwpr, 10).toLocaleString()} ~ ${parseInt(o.stck_dryc_hgpr, 10).toLocaleString()} KRW`
+            : '—',
+        },
+        meta: {
+          latestFinancialPeriod: null,
+          latestFinancialType: 'KIS-live',
+          priceDataPoints: 0,
+        },
+      });
+    } catch (err) {
+      return NextResponse.json({ error: String(err) }, { status: 500 });
+    }
+  }
 
   // 2. 최신 재무 지표 (annual 우선, 없으면 quarterly)
   const { data: fin } = await supabase

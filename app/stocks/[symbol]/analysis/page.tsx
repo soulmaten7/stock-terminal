@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import type { Stock } from '@/types/stock';
 import AuthGuard from '@/components/auth/AuthGuard';
 import ValueAnalysis from '@/components/analysis/ValueAnalysis';
@@ -32,16 +31,11 @@ export default function AnalysisPage() {
 
   useEffect(() => {
     async function loadStock() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('stocks')
-        .select('*')
-        .eq('symbol', symbol.toUpperCase())
-        .single();
-
-      if (data) {
-        setStock(data as Stock);
-      }
+      try {
+        const res = await fetch(`/api/stocks/resolve?symbol=${symbol.toUpperCase()}`);
+        const json = await res.json();
+        if (json.stock) setStock(json.stock as Stock);
+      } catch {}
       setLoading(false);
     }
     loadStock();
@@ -67,17 +61,29 @@ export default function AnalysisPage() {
   }
 
   function renderTab() {
+    // KIS fallback 종목 — AI 분석 탭 모두 비활성
+    if (stock && stock.id === null) {
+      return (
+        <div className="flex flex-col items-center justify-center py-16 text-center bg-dark-800 rounded-lg">
+          <p className="text-text-primary font-bold mb-2">AI 분석은 확장 데이터 연결 후 이용 가능합니다</p>
+          <Link href={`/stocks/${symbol}`} className="text-accent hover:underline text-sm mt-2">
+            종목 대시보드로 돌아가기
+          </Link>
+        </div>
+      );
+    }
+
     switch (activeTab) {
       case 'value':
-        return <ValueAnalysis stockId={stock!.id} />;
+        return <ValueAnalysis stockId={stock!.id!} />;
       case 'technical':
-        return <TechnicalAnalysis stockId={stock!.id} />;
+        return <TechnicalAnalysis stockId={stock!.id!} />;
       case 'quant':
-        return <QuantAnalysis stockId={stock!.id} />;
+        return <QuantAnalysis stockId={stock!.id!} />;
       case 'dividend':
-        return <DividendAnalysis stockId={stock!.id} />;
+        return <DividendAnalysis stockId={stock!.id!} />;
       case 'supply':
-        return <SupplyAnalysis stockId={stock!.id} />;
+        return <SupplyAnalysis stockId={stock!.id!} />;
       default:
         return null;
     }

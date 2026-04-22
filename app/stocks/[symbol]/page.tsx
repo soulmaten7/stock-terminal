@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import type { Stock } from '@/types/stock';
 import StockHeader from '@/components/stocks/StockHeader';
 import StockDetailTabs from '@/components/stocks/StockDetailTabs';
 import PartnerSlot from '@/components/partners/PartnerSlot';
+import { createClient } from '@/lib/supabase/client';
 
 export default function StockDetailPage() {
   const params = useParams();
@@ -18,24 +18,24 @@ export default function StockDetailPage() {
   const [priceChange, setPriceChange] = useState<number | null>(null);
   const [priceChangePercent, setPriceChangePercent] = useState<number | null>(null);
 
-  // 종목 기본 정보
+  // 종목 기본 정보 — Supabase 우선, 미수록 시 KIS fallback
   useEffect(() => {
     async function loadStock() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('stocks')
-        .select('*')
-        .eq('symbol', symbol.toUpperCase())
-        .single();
-      if (data) setStock(data as Stock);
+      try {
+        const res = await fetch(`/api/stocks/resolve?symbol=${symbol.toUpperCase()}`);
+        const json = await res.json();
+        if (json.stock) setStock(json.stock as Stock);
+      } catch {
+        // stock remains null → 404 UI
+      }
       setLoading(false);
     }
     loadStock();
   }, [symbol]);
 
-  // 최신 가격
+  // 최신 가격 — Supabase stock_prices (DB 수록 종목만)
   useEffect(() => {
-    if (!stock) return;
+    if (!stock || stock.id === null) return;
     async function loadPrice() {
       const supabase = createClient();
       const { data } = await supabase

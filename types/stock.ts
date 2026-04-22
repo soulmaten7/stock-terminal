@@ -1,5 +1,5 @@
 export interface Stock {
-  id: number;
+  id: number | null;  // null = Supabase 미수록, KIS fallback 전용
   symbol: string;
   name_ko: string | null;
   name_en: string | null;

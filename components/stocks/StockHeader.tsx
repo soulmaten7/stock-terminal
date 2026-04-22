@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ExternalLink, TrendingUp } from 'lucide-react';
 import { formatCurrency, formatPercent } from '@/lib/utils/format';
@@ -11,7 +14,24 @@ interface Props {
   priceChangePercent: number | null;
 }
 
-export default function StockHeader({ stock, currentPrice, priceChange, priceChangePercent }: Props) {
+export default function StockHeader({ stock, currentPrice: propPrice, priceChange: propChange, priceChangePercent: propPct }: Props) {
+  const [kisPrice, setKisPrice] = useState<{ price: number; change: number; changePercent: number } | null>(null);
+
+  useEffect(() => {
+    // Supabase id 없을 때만 KIS 직접 조회
+    if (stock.id !== null || stock.country !== 'KR') return;
+    fetch(`/api/kis/price?symbol=${stock.symbol}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.price) setKisPrice({ price: d.price, change: d.change, changePercent: d.changePercent });
+      })
+      .catch(() => {});
+  }, [stock.id, stock.symbol, stock.country]);
+
+  const currentPrice = propPrice ?? kisPrice?.price ?? null;
+  const priceChange = propChange ?? kisPrice?.change ?? null;
+  const priceChangePercent = propPct ?? kisPrice?.changePercent ?? null;
+
   const isUp = (priceChange ?? 0) >= 0;
   const currency = stock.country === 'KR' ? 'KRW' : 'USD';
 
@@ -28,6 +48,9 @@ export default function StockHeader({ stock, currentPrice, priceChange, priceCha
               </span>
             </div>
             {stock.sector && <p className="text-[#666666] text-sm mt-1">{stock.sector}</p>}
+            {stock.id === null && (
+              <p className="text-[10px] text-[#999] mt-1">※ 기본 정보만 표시 (확장 데이터 준비 중)</p>
+            )}
           </div>
         </div>
 
