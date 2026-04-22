@@ -6,40 +6,24 @@ import OrderBookWidget from '@/components/widgets/OrderBookWidget';
 import TickWidget from '@/components/widgets/TickWidget';
 import GlobalIndicesWidget from '@/components/widgets/GlobalIndicesWidget';
 import NetBuyTopWidget from '@/components/widgets/NetBuyTopWidget';
-import NewsFeedWidget from '@/components/widgets/NewsFeedWidget';
-import TrendingThemesWidget from '@/components/widgets/TrendingThemesWidget';
-import DartFilingsWidget from '@/components/widgets/DartFilingsWidget';
 import VolumeTop10Widget from '@/components/widgets/VolumeTop10Widget';
-import MoversTop10Widget from '@/components/widgets/MoversTop10Widget';
-import ScreenerMiniWidget from '@/components/widgets/ScreenerMiniWidget';
-import EconCalendarMiniWidget from '@/components/widgets/EconCalendarMiniWidget';
 import StockDetailPanel from '@/components/dashboard/StockDetailPanel';
 import StockDetailToggle from '@/components/dashboard/StockDetailToggle';
 import BriefingWidget from '@/components/widgets/BriefingWidget';
-
-// ── 레이아웃 (Dashboard V3 — STEP 70) ─────────────────────────────────────
-//
-//  Section 1 (3컬럼, h-680px):
-//    좌(280px): 관심종목
-//    중(1fr):   차트(60%) / 호가창(25%) / 체결창(15%) 세로 스택
-//    우(360px): 종목 상세 (스냅샷 헤더 + 탭 4개)
-//
-//  R4 (Discovery Row): 5등분 — 기존 유지
+import ScreenerExpandedWidget from '@/components/widgets/ScreenerExpandedWidget';
+import MoversPairWidget from '@/components/widgets/MoversPairWidget';
 
 export default function HomeClient() {
   return (
     <div className="px-2 py-2 flex flex-col gap-2">
-      {/* Section 1 — 3컬럼 반응형 (xl: 280/1fr/360, lg: 240/1fr/320, <lg: 240/1fr) */}
+      {/* Section 1 — 3컬럼 반응형 */}
       <section className="grid gap-0 h-[680px] border border-[#E5E7EB] bg-white
         grid-cols-[240px_1fr]
         lg:grid-cols-[240px_1fr_320px]
         xl:grid-cols-[280px_1fr_360px]">
-        {/* 좌 — 관심종목 */}
         <div className="border-r border-[#E5E7EB] min-w-0 overflow-hidden">
           <WatchlistWidget />
         </div>
-
-        {/* 중 — 차트 60% / 호가 25% / 체결 15% */}
         <div className="flex flex-col min-w-[480px] overflow-hidden">
           <div className="basis-[60%] shrink-0 border-b border-[#E5E7EB] min-h-0 overflow-hidden">
             <ChartWidget />
@@ -51,14 +35,11 @@ export default function HomeClient() {
             <TickWidget />
           </div>
         </div>
-
-        {/* 우 — 종목 상세 (lg 이상만 grid cell 노출) */}
         <div className="hidden lg:block min-w-0 overflow-hidden">
           <StockDetailPanel />
         </div>
       </section>
 
-      {/* lg 미만에서만 표시되는 FAB 토글 */}
       <StockDetailToggle />
 
       {/* Section 2 — Pre-Market & Global (4:8) */}
@@ -71,35 +52,26 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* R4: Discovery Row (1:1:1:1:1) — 기존 유지 */}
-      <div
-        id="section-r4"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr',
-          gap: 8,
-          height: 'max(500px, calc(100vh - 280px))',
-          minHeight: 0,
-          minWidth: 0,
-          overflow: 'hidden',
-        }}
-      >
-        <div id="section-movers" style={{ minHeight: 0 }}>
-          <MoversTop10Widget size="large" />
+      {/* Section 3 — Discovery */}
+      <section className="space-y-2">
+        {/* 상단: 종목 발굴 확장 (풀폭) */}
+        <div className="border border-[#E5E7EB] bg-white overflow-hidden">
+          <ScreenerExpandedWidget />
         </div>
-        <div id="section-volume" style={{ minHeight: 0 }}>
-          <VolumeTop10Widget size="large" />
+
+        {/* 하단: 6:3:3 */}
+        <div className="grid grid-cols-12 gap-2">
+          <div className="col-span-12 lg:col-span-6 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
+            <MoversPairWidget />
+          </div>
+          <div className="col-span-6 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
+            <VolumeTop10Widget inline />
+          </div>
+          <div className="col-span-6 lg:col-span-3 min-w-0 border border-[#E5E7EB] bg-white overflow-hidden" style={{ minHeight: 320 }}>
+            <NetBuyTopWidget inline />
+          </div>
         </div>
-        <div id="section-net-buy" style={{ minHeight: 0 }}>
-          <NetBuyTopWidget size="large" />
-        </div>
-        <div id="section-themes" style={{ minHeight: 0 }}>
-          <TrendingThemesWidget />
-        </div>
-        <div id="section-global" style={{ minHeight: 0 }}>
-          <GlobalIndicesWidget />
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
