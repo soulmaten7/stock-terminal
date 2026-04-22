@@ -35,6 +35,21 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 38 완료
+- [x] `scripts/seed-dart-financials.py` 신규 작성 (DART IS+BS 수집 파이프라인)
+- [x] `dart_corp_codes` 3,959건 매핑 완료
+- [x] `financials` 테이블 18건 upsert (시총 TOP 10 × 2023,2024 연간, 총 누계 401건)
+- [x] 삼성전자 2023/2024 연간 매출·영업이익 검증 완료
+
+### 2026-04-22 세션 — STEP 37 완료
+- [x] KIS 재무 스냅샷 시딩 (`financials` 192건 → 누계 383건)
+- [x] OverviewTab KPI 그리드 PER/PBR/EPS/BPS 활성화 확인 (삼성전자 PER 33.14)
+
+### 2026-04-22 세션 — STEP 36 완료
+- [x] Supabase stocks 테이블 시딩 (KOSPI 949 + KOSDAQ 1820 = 2,780건)
+- [x] link_hub 56건 재시딩
+- [x] 테마 37개 종목 🔒 해제 확인 (source: supabase로 전환)
+
 ### Session #23 완료 (2026-04-22) — 사이드바 통합 후 레이아웃 정렬 대수술 (Step 20~27)
 - **배경**: 세션 #22 사이드바 통합 후 대시보드가 사이드바 크기(w-14 ≈ 45px)만큼 박스 밖으로 오버플로우. 기존 grid가 1536 기준이고 Main은 1490 가용이라 불일치.
 - **Step 20**: User Flow 아키텍처 재구성 (Col 1 정보→탐색→결정 / Col 2 분석→주문 / Col 3 이벤트 스트림 / R4 랭킹)

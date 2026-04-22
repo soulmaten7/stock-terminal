@@ -16,16 +16,24 @@
 
 ## 현재 상태 (2026-04-22 기준)
 
-Phase 2-A + 2-B + 2-D 완료. Step 20~30 총 12개 커밋.
+Phase 2-A ~ 2-D 완료 + STEP 31~38 완료. Step 20~38 총 22개 커밋.
 - 대시보드 오버플로우 완전 해결 (3단 방어선)
-- 수급 페이지 탭 통합 완료 (`/net-buy` TOP + 시장동향)
-- 관심종목 생태계 완성: 스크리너 ⭐ → watchlists DB → `/watchlist` 페이지 → 홈 WatchlistWidget
+- 수급/관심종목/경제캘린더/테마 생태계 완성
+- 레거시 17개 파일 삭제 (components/home/ 정리)
+- /analysis 더미 제거 (MarketFlow 실데이터, SectorHeatmap/ThemeGroups 각각 복원/정직화)
+- **Supabase stocks 2,780건 + financials 401건 + link_hub 56건 + dart_corp_codes 3,959건 시딩 완료**
+- /stocks/[symbol] KIS fallback — 미수록 종목도 페이지 렌더
+- 테마 50종목 드릴스루 전원 🔒 해제 (source: supabase)
+- OverviewTab KPI 그리드 활성 (시총 TOP 200 종목 PER/PBR/EPS/BPS)
+- **DART 재무제표 시범 수집 완료** (시총 TOP 10 × 2023,2024 연간 18건, 삼성전자 검증 완료)
 
 ## 다음 세션 P0
 
-- **Phase 2-C**: 경제캘린더 홈 미니 위젯
-  - API 소스 리서치 필요 (한국 ECOS / 국내 경제 이벤트)
-  - 위치: Col 1 or Col 3 배치 결정 필요
+- **STEP 39**: DART 파이프라인 확장
+  - `TOP_N=100 python3 scripts/seed-dart-financials.py` (TOP 100 연간)
+  - SK하이닉스 등 4종목 null 이슈 — account_id fallback 보완 (`ifrs-full_Revenue` 단독 시도)
+  - 분기 보고서: `REPRT_CODE=11014 YEARS=2024 python3 scripts/seed-dart-financials.py`
+- **STEP 40**: ValueAnalysis.tsx UI 연결 — `financials` 테이블 매출·영업이익·순이익 시계열 차트
 
 ---
 

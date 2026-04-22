@@ -1,6 +1,51 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 38: DART 재무제표 파이프라인
+
+**신규 파일**
+- `scripts/seed-dart-financials.py` — DART `fnlttSinglAcntAll` API → `financials` 테이블 upsert
+  - IS: 매출·영업이익·순이익 / BS: 자산·부채·자본
+  - `operating_margin`, `net_margin`, `debt_ratio` 자동 계산
+  - `on_conflict='stock_id,period_type,period_date'` 멱등 upsert
+  - 환경변수 `TOP_N` / `YEARS` / `REPRT_CODE` 로 확장 가능
+
+**데이터 작업**
+- `dart_corp_codes` 테이블 3,959건 (DART 전체 코드 매핑, Step 38A 선행 완료)
+- `financials` 테이블 18건 upsert (시총 TOP 10 × 2023,2024 연간 — 총 누계 401건)
+- 삼성전자 2023 rev=258.9조 op=6.6조 / 2024 rev=300.9조 op=32.7조 검증 완료
+
+**비고**: SK하이닉스·한화에어로스페이스·삼성바이오로직스·HD현대중공업 4종목 IS 항목명 불일치로 null → STEP 39에서 account_id fallback 보완 예정
+
+---
+
+## 2026-04-22 — STEP 37: KIS 재무 스냅샷 시딩
+
+**데이터 작업 (코드 변경 없음)**
+- `scripts/seed-financials-snapshot.py` 실행
+- `financials` 테이블에 KIS inquire-price 기반 PER/PBR/EPS/BPS 192건 upsert (실패 0건)
+- 대상: 시총 TOP 200 종목 (`financials` 누계 383건)
+
+**효과**
+- `/stocks/[symbol]` OverviewTab KPI 그리드 활성화 (PER/PBR/EPS/BPS `—` → 숫자)
+- 삼성전자 예시: PER 33.14 / PBR 3.4 / EPS 6,564 / BPS 63,997
+- ROE는 `eps / bps * 100` 자동 계산 (OverviewTab API 기존 fallback 로직)
+- `data/themes.json` 테마 50종목 중 시총 TOP 200 안의 종목들 즉시 혜택
+
+---
+
+## 2026-04-22 — STEP 36: Supabase stocks/link_hub 전체 시딩
+
+**데이터 작업 (코드 변경 없음)**
+- `scripts/seed-stocks.py` 실행 → `stocks` 테이블 KOSPI(949)+KOSDAQ(1820) 전체 2,780건 upsert
+- `link_hub` 테이블 56건 재시딩
+
+**효과**
+- STEP 35에서 🔒 잠겼던 4개 탭(재무·어닝·뉴스·수급)이 `data/themes.json` 37개 테마 종목에서 해제됨
+- `/api/stocks/resolve?symbol=xxx` 응답 `source` 필드가 `kis` → `supabase`로 전환
+
+---
+
 ## [2026-04-22] 세션 #24 — 관심종목 생태계 완성 + 수급 탭 통합 (Step 28~30)
 
 ### Step 28 — /net-buy 탭 구조 통합
