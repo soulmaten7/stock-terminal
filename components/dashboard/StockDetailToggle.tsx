@@ -12,7 +12,7 @@ export default function StockDetailToggle() {
       <button
         onClick={() => setOpen(true)}
         aria-label="종목 상세 열기"
-        className="lg:hidden fixed bottom-6 right-6 z-30 w-12 h-12 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693]"
+        className="lg:hidden fixed bottom-24 right-6 z-30 w-12 h-12 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693]"
       >
         <Info className="w-5 h-5" />
       </button>

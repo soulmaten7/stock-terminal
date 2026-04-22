@@ -1,6 +1,8 @@
 <!-- 2026-04-23 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-23 — feat(chat): 인라인 ChatWidget → 전역 FloatingChat 전환 (3상태: 닫힘/최소화/열림) (STEP 77)
+
 ## 2026-04-23 — feat(dashboard): Section 2 Pre-Market & Global 추가 — 장전 브리핑 + 글로벌 지수 확장 17지표 (STEP 76)
 
 ## 2026-04-23 — feat(dashboard): Section 1 TODO 보강 — 배당/DART재무상태·현금흐름/SEC공시 (STEP 75)

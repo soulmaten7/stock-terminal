@@ -6,7 +6,6 @@ import OrderBookWidget from '@/components/widgets/OrderBookWidget';
 import TickWidget from '@/components/widgets/TickWidget';
 import GlobalIndicesWidget from '@/components/widgets/GlobalIndicesWidget';
 import NetBuyTopWidget from '@/components/widgets/NetBuyTopWidget';
-import ChatWidget from '@/components/widgets/ChatWidget';
 import NewsFeedWidget from '@/components/widgets/NewsFeedWidget';
 import TrendingThemesWidget from '@/components/widgets/TrendingThemesWidget';
 import DartFilingsWidget from '@/components/widgets/DartFilingsWidget';
