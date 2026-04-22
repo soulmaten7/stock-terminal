@@ -1,3 +1,25 @@
+# STEP 67 — 사이드바 UX 재설계 + MarketFlow 버그 수정
+
+**실행 명령어 (Sonnet):**
+```bash
+cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model sonnet
+```
+
+**전제 상태:** 직전 커밋 `b199716` (docs only). 코드 최종은 `6cbf55a` (STEP 59~66).
+
+**목표 (4개를 한 커밋으로 묶음):**
+1. VerticalNav 호버 확장(54px↔220px) 롤백 → 항상 54px, 호버 시 툴팁만 표시
+2. 사이드바에서 `채팅` 메뉴 항목 제거 (`/chat` 페이지 자체는 유지)
+3. 그룹 구조를 🅑 안으로 재설계: **핵심 / 분석 / 시장흐름 / 정보 / 도구**
+4. `components/analysis-page/MarketFlow.tsx` 런타임 TypeError 수정 (`f.value` undefined 시 `.toLocaleString()` 호출 실패)
+
+---
+
+## 작업 1 — `components/layout/VerticalNav.tsx` 전체 교체
+
+아래 내용으로 **파일 전체를 덮어쓰기**:
+
+```tsx
 'use client';
 
 import Link from 'next/link';
@@ -82,7 +104,7 @@ export default function VerticalNav() {
         const groupActive = group.items.some((it) => isActive(it.href));
         return (
           <div key={group.groupLabel} className="mb-2">
-            {/* 그룹 헤더 — 아이콘만, 라벨 없음 */}
+            {/* 그룹 헤더 — 아이콘만, 라벨 없음 (호버 확장 제거) */}
             <div className="flex items-center justify-center px-3 py-1.5">
               <GroupIcon
                 className={`w-4 h-4 shrink-0 ${groupActive ? 'text-[#0ABAB5]' : 'text-[#999]'}`}
@@ -129,3 +151,105 @@ export default function VerticalNav() {
     </nav>
   );
 }
+```
+
+**변경 요약:**
+- `expanded` state, `onMouseEnter/Leave`, `w-[220px]`, `transition-[width]` 전부 제거
+- `w-14` 고정
+- 그룹 헤더 라벨 텍스트(`groupLabel`) 표시 로직 제거 — 아이콘만 남김
+- 아이템 라벨도 제거, 툴팁(`group-hover:opacity-100`)만 남김
+- `MessageSquare` import 제거, `/chat` 항목 삭제
+- 그룹을 🅑 안으로 재편: **핵심(홈·관심종목·종목발굴) / 분석(차트·호가·체결) / 시장흐름(급등락·거래량·수급·글로벌·지도) / 정보(뉴스·공시·캘린더·브리핑) / 도구(참고사이트)**
+
+---
+
+## 작업 2 — `components/analysis-page/MarketFlow.tsx` 버그 수정
+
+**기존 62번 라인:**
+```tsx
+<span className={`text-sm font-mono-price font-bold w-20 text-right ${f.value >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+  {f.value >= 0 ? '+' : ''}{f.value.toLocaleString()}억
+</span>
+```
+
+**수정 후 (null-safe):**
+```tsx
+<span className={`text-sm font-mono-price font-bold w-20 text-right ${(f.value ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+  {(f.value ?? 0) >= 0 ? '+' : ''}{(f.value ?? 0).toLocaleString()}억
+</span>
+```
+
+추가로 `maxAbs` 계산도 null-safe로 보강 (32번 라인):
+
+**기존:**
+```tsx
+const maxAbs = flow.length > 0 ? Math.max(...flow.map((f) => Math.abs(f.value))) : 1;
+```
+
+**수정 후:**
+```tsx
+const maxAbs = flow.length > 0 ? Math.max(...flow.map((f) => Math.abs(f.value ?? 0))) : 1;
+```
+
+그리고 55번 라인 `width` 계산부도 동일하게 보강:
+
+**기존:**
+```tsx
+width: `${(Math.abs(f.value) / maxAbs) * 100}%`,
+...
+left: f.value >= 0 ? '50%' : undefined,
+right: f.value < 0 ? '50%' : undefined,
+```
+
+**수정 후:**
+```tsx
+width: `${(Math.abs(f.value ?? 0) / maxAbs) * 100}%`,
+...
+left: (f.value ?? 0) >= 0 ? '50%' : undefined,
+right: (f.value ?? 0) < 0 ? '50%' : undefined,
+```
+
+---
+
+## 작업 3 — 빌드 검증
+
+```bash
+npm run build
+```
+
+에러 없으면 다음 단계. 에러 나면 보고 후 중단.
+
+---
+
+## 작업 4 — Git commit & push
+
+```bash
+git add -A && git commit -m "$(cat <<'EOF'
+feat(nav): 사이드바 그룹 🅑 안 재설계 + 호버 확장 롤백 + 채팅 메뉴 제거 + MarketFlow null-safe 수정 (STEP 67)
+
+- VerticalNav: 54px 고정, 호버 확장(220px) 롤백, 호버 시 툴팁만 표시
+- 그룹 재편: 핵심(홈/관심/발굴) / 분석(차트/호가/체결) / 시장흐름(급등락/거래량/수급/글로벌/지도) / 정보(뉴스/공시/캘린더/브리핑) / 도구(참고사이트)
+- 사이드바에서 /chat 항목 제거 (페이지 자체는 유지)
+- MarketFlow.tsx: f.value가 undefined일 때 toLocaleString() 터지는 런타임 TypeError 수정 — (f.value ?? 0) 패턴으로 전환
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>
+EOF
+)" && git push
+```
+
+---
+
+## 완료 보고 양식
+
+Claude Code 실행 끝나면 아래 형태로 요약 보고:
+
+```
+✅ STEP 67 완료
+- VerticalNav.tsx: 호버 확장 롤백 + 채팅 제거 + 🅑 안 그룹 적용
+- MarketFlow.tsx: null-safe (f.value ?? 0) 패턴 4곳 적용
+- npm run build: 성공
+- git commit: <hash>
+- git push: success
+```
+
+빌드 실패하거나 중간에 막히면 즉시 중단 후 로그 전달.

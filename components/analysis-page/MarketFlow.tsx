@@ -29,7 +29,7 @@ export default function MarketFlow() {
     return () => clearInterval(iv);
   }, []);
 
-  const maxAbs = flow.length > 0 ? Math.max(...flow.map((f) => Math.abs(f.value))) : 1;
+  const maxAbs = flow.length > 0 ? Math.max(...flow.map((f) => Math.abs(f.value ?? 0))) : 1;
 
   return (
     <div className="bg-white border-[3px] border-[#0ABAB5] p-6">
@@ -52,14 +52,14 @@ export default function MarketFlow() {
               <span className="text-sm font-bold text-black w-28 shrink-0">{f.label}</span>
               <div className="flex-1 h-6 bg-[#F5F5F5] relative">
                 <div className="absolute top-0 h-full" style={{
-                  width: `${(Math.abs(f.value) / maxAbs) * 100}%`,
+                  width: `${(Math.abs(f.value ?? 0) / maxAbs) * 100}%`,
                   backgroundColor: f.color,
-                  left: f.value >= 0 ? '50%' : undefined,
-                  right: f.value < 0 ? '50%' : undefined,
+                  left: (f.value ?? 0) >= 0 ? '50%' : undefined,
+                  right: (f.value ?? 0) < 0 ? '50%' : undefined,
                 }} />
               </div>
-              <span className={`text-sm font-mono-price font-bold w-20 text-right ${f.value >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
-                {f.value >= 0 ? '+' : ''}{f.value.toLocaleString()}억
+              <span className={`text-sm font-mono-price font-bold w-20 text-right ${(f.value ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                {(f.value ?? 0) >= 0 ? '+' : ''}{(f.value ?? 0).toLocaleString()}억
               </span>
             </div>
           ))}
