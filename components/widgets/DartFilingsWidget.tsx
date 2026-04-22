@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import WidgetCard from '@/components/home/WidgetCard';
+import { classifyDartType, TYPE_COLOR, fmtDartDate } from '@/lib/dart-classify';
 
 interface Filing {
   corp_name: string;
@@ -9,28 +10,6 @@ interface Filing {
   rcept_dt: string;
   url: string;
   is_important: boolean;
-}
-
-const TYPE_COLOR: Record<string, string> = {
-  '주요사항': 'text-[#FF9500] bg-[#FF9500]/10',
-  '정기공시': 'text-[#0ABAB5] bg-[#0ABAB5]/10',
-  '지분공시': 'text-[#9B59B6] bg-[#9B59B6]/10',
-  '감사보고': 'text-[#0066CC] bg-[#0066CC]/10',
-  '공시':     'text-[#999] bg-[#F0F0F0]',
-};
-
-function classifyType(reportNm: string): string {
-  if (/주요사항|유상증자|무상증자|합병|분할|자사주|해산/.test(reportNm)) return '주요사항';
-  if (/사업보고서|분기보고서|반기보고서|연결/.test(reportNm)) return '정기공시';
-  if (/주요주주|대량보유|주식등/.test(reportNm)) return '지분공시';
-  if (/감사보고/.test(reportNm)) return '감사보고';
-  return '공시';
-}
-
-function fmtTime(rcept_dt: string): string {
-  // rcept_dt: "20260420" → "04/20"
-  if (rcept_dt.length !== 8) return '';
-  return `${rcept_dt.slice(4, 6)}/${rcept_dt.slice(6, 8)}`;
 }
 
 interface Props {
@@ -42,14 +21,49 @@ export default function DartFilingsWidget({ inline = false, size = 'default' }: 
   const [items, setItems] = useState<Filing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [onlyImportant, setOnlyImportant] = useState(false);
 
   useEffect(() => {
-    fetch('/api/dart?endpoint=list&page_count=20')
+    fetch('/api/dart?endpoint=list&page_count=30')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => setItems(d.disclosures ?? []))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
+
+  const filtered = useMemo(
+    () => (onlyImportant ? items.filter((d) => d.is_important) : items).slice(0, 15),
+    [items, onlyImportant]
+  );
+
+  const href = onlyImportant ? '/disclosures?important=1' : '/disclosures';
+
+  const action = (
+    <div className="flex items-center gap-1">
+      <button
+        type="button"
+        onClick={() => setOnlyImportant(false)}
+        className={`text-[10px] font-medium px-2 py-0.5 rounded transition-colors ${
+          !onlyImportant
+            ? 'bg-[#0ABAB5] text-white'
+            : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E5E7EB]'
+        }`}
+      >
+        전체
+      </button>
+      <button
+        type="button"
+        onClick={() => setOnlyImportant(true)}
+        className={`text-[10px] font-medium px-2 py-0.5 rounded transition-colors ${
+          onlyImportant
+            ? 'bg-[#FF3B30] text-white'
+            : 'bg-[#F0F0F0] text-[#666] hover:bg-[#E5E7EB]'
+        }`}
+      >
+        중요
+      </button>
+    </div>
+  );
 
   const content = (
     <>
@@ -63,15 +77,27 @@ export default function DartFilingsWidget({ inline = false, size = 'default' }: 
       )}
       {!loading && !error && (
         <ul aria-label="DART 공시 목록" className="divide-y divide-[#F0F0F0]">
-          {items.slice(0, 15).map((d, i) => {
-            const type = classifyType(d.report_nm);
+          {filtered.map((d, i) => {
+            const type = classifyDartType(d.report_nm);
             return (
-              <li key={i} className="flex items-start gap-2 px-3 py-2 hover:bg-[#F8F9FA]">
+              <li
+                key={i}
+                className={`flex items-start gap-2 px-3 py-2 hover:bg-[#F8F9FA] ${
+                  d.is_important ? 'border-l-2 border-[#FF3B30]' : 'border-l-2 border-transparent'
+                }`}
+              >
                 <span className="text-[10px] text-[#999] mt-0.5 shrink-0 w-9">
-                  {fmtTime(d.rcept_dt)}
+                  {fmtDartDate(d.rcept_dt)}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-black truncate">{d.corp_name}</p>
+                  <div className="flex items-center gap-1">
+                    <p className="text-sm font-bold text-black truncate">{d.corp_name}</p>
+                    {d.is_important && (
+                      <span className="text-[9px] font-bold px-1 py-0.5 rounded bg-[#FF3B30] text-white shrink-0">
+                        중요
+                      </span>
+                    )}
+                  </div>
                   <a
                     href={d.url}
                     target="_blank"
@@ -87,8 +113,10 @@ export default function DartFilingsWidget({ inline = false, size = 'default' }: 
               </li>
             );
           })}
-          {items.length === 0 && (
-            <li className="px-3 py-4 text-xs text-[#999] text-center">공시 없음</li>
+          {filtered.length === 0 && (
+            <li className="px-3 py-4 text-xs text-[#999] text-center">
+              {onlyImportant ? '중요 공시 없음' : '공시 없음'}
+            </li>
           )}
         </ul>
       )}
@@ -100,7 +128,7 @@ export default function DartFilingsWidget({ inline = false, size = 'default' }: 
   }
 
   return (
-    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href="/disclosures" size={size}>
+    <WidgetCard title="DART 공시 피드" subtitle="DART OpenAPI" href={href} size={size} action={action}>
       {content}
     </WidgetCard>
   );

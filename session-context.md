@@ -35,6 +35,11 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 55 완료
+- [x] dart-classify.ts 공용 유틸 신설
+- [x] DartFilingsWidget 중요 토글 + 뱃지 + href 동적화
+- [x] DisclosuresPageClient 화이트 테마 + 시장구분·중요 필터 + 유형 뱃지 컬럼
+
 ### 2026-04-22 세션 — STEP 54 완료
 - [x] /orderbook 풀스크린 10단 (종목 요약 + 호가 + 총잔량 게이지)
 

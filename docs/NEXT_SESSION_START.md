@@ -20,7 +20,7 @@
 ## 다음 할 일 P0
 - [x] STEP 53: OrderBookWidget 리팩토링 ✅
 - [x] STEP 54: /orderbook 풀스크린 10단 페이지 ✅
-- [ ] STEP 55: DartFilingsWidget 리팩토링 (P0) — 공시유형 뱃지 (중요/일반)
+- [x] STEP 55: DartFilings 위젯 + /disclosures 페이지 리팩토링 ✅
 - [ ] STEP 56: MoversTop10Widget 리팩토링 (P0) — 기간 필터 + 상한가 강조
 - [ ] STEP 57: VolumeTop10Widget 리팩토링 (P0) — 전일비 거래량 증가율 막대
 

@@ -1,6 +1,16 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 55: DartFilings 위젯 + /disclosures 페이지 리팩토링 (P0)
+
+### 변경
+- `lib/dart-classify.ts` 신규 — classifyDartType / TYPE_COLOR / fmtDartDate / fmtDartDateFull 공용 모듈
+- `DartFilingsWidget` — 전체/중요 토글 action 슬롯, 붉은 보더, 중요 뱃지, href 동적화
+- `components/disclosures/DisclosuresPageClient.tsx` 신규 — 화이트/티얼 테마, 시장구분·중요 필터, 유형 뱃지 컬럼, URL 파라미터 지원
+- `app/disclosures/page.tsx` — Suspense 래퍼 + 다크 테마 잔재 제거
+
+---
+
 ## 2026-04-22 — STEP 54: /orderbook 풀스크린 10단 페이지 (P0 Phase B)
 
 ### 변경
