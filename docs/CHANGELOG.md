@@ -1,6 +1,18 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 45: QuantAnalysis 재활성화 (전종목 팩터 집계 완료, 5개 분석 탭 전원 live)
+
+- **Migration**: `supabase/migrations/012_quant_factors.sql` 신규 — quant_factors 테이블
+- **Script**: `scripts/seed-quant-factors.py` 신규 — TOP 200 대상 Value/Momentum/Quality 퍼센타일 집계
+- **Data**: quant_factors 200행 시딩 (schema cache 문제 → Management API로 테이블 직접 생성)
+- **Component**: `components/analysis/QuantAnalysis.tsx` 스텁(32줄) → 실제 퀀트 컴포넌트(~200줄)
+  - 종합 퀀트 스코어 그라디언트 헤더 (0~100, 섹터 내 순위 포함)
+  - Value · Momentum · Quality 3개 점수 카드
+  - 레이더 차트 (RadarChart)
+  - 원시 지표 테이블 (PER/PBR/ROE/영업이익률/3M·6M·12M 수익률)
+- **5개 분석 탭 모두 실데이터 연결 완료** — 가치투자 · 기술적 분석 · 수급 분석 · 배당 분석 · 퀀트 분석
+
 ## 2026-04-22 — STEP 44: DividendAnalysis 재활성화 (DART alotMatter 배당 수집)
 
 **신규 파일**

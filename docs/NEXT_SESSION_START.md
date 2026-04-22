@@ -32,14 +32,17 @@ Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 - **TechnicalAnalysis 재활성화 완료** — stock_prices 54,899건 + MA·볼린저·RSI·거래량 차트
 - **SupplyAnalysis 재활성화 완료** — supply_demand 3,000건 + 스택 바/누적 라인/5일 테이블
 - **DividendAnalysis 재활성화 완료** — dividends 790건 (TOP 200 × 최대 6년) + 4지표 카드·차트
+- **QuantAnalysis 재활성화 완료** ✅ — quant_factors 200건 (TOP 200 Value/Momentum/Quality 퍼센타일) + 종합 스코어 헤더·RadarChart·원시 지표 테이블
+- **🎉 5개 분석 탭 전원 실데이터 연결 완료** (가치투자·기술적·수급·배당·퀀트)
 
-**누계 DB**: stocks 2,780 / financials 576 / stock_prices 54,899 / supply_demand 3,000 / dividends 790 / dart_corp_codes 3,959
+**누계 DB**: stocks 2,780 / financials 576 / stock_prices 54,899 / supply_demand 3,000 / dividends 790 / quant_factors 200 / dart_corp_codes 3,959
 
 ## 다음 세션 P0
 
-- **STEP 45+**: 전종목 팩터 집계 → QuantAnalysis 재활성화 (PER/PBR 퍼센타일, 모멘텀, ROE 퀄리티)
-- **분기 보고서 수집**: `REPRT_CODE=11013/11012/11014` 3회 실행 → ~300건 추가
+- **분기 보고서 수집**: `REPRT_CODE=11013/11012/11014` 3회 실행 → financials ~300건 추가
+- **데이터 fresh-cycle**: 일일 재시딩 스케줄 설계 (cron 또는 Make.com)
 - **배포**: Vercel + Supabase RLS 점검 후 첫 배포 검토
+- **커버리지 확대**: US/JP 종목 지원 검토
 
 ---
 

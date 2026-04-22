@@ -35,12 +35,20 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 45 완료 ✅ 5개 분석 탭 전원 live
+- [x] `supabase/migrations/012_quant_factors.sql` 신규 (Management API로 적용)
+- [x] `scripts/seed-quant-factors.py` 신규 작성 (TOP 200 Value/Momentum/Quality 퍼센타일)
+- [x] quant_factors 테이블 200행 시딩
+- [x] QuantAnalysis.tsx 재작성 (종합 스코어 + 3팩터 카드 + RadarChart + 원시 지표 테이블)
+- [x] 빌드 성공 (타입 에러 0건)
+- **누계 DB**: stocks 2,780 / financials 576 / stock_prices 54,899 / supply_demand 3,000 / dividends 790 / quant_factors 200
+- **마일스톤**: 종목 상세 /analysis 5개 탭 전원 실데이터 연결 완료
+
 ### 2026-04-22 세션 — STEP 44 완료
 - [x] `scripts/seed-dividends.py` 신규 작성 (DART alotMatter.json)
 - [x] dividends 테이블 790행 시딩 (TOP 200 × 최대 6년, 삼성전자 6년 검증 완료)
 - [x] DividendAnalysis.tsx 재작성 (4지표 카드 + DPS 바차트 + yield·payout 라인)
 - [x] 빌드 성공 (타입 에러 0건)
-- [ ] STEP 45+: 전종목 팩터 집계 → QuantAnalysis 재활성화
 
 ### 2026-04-22 세션 — STEP 43 완료
 - [x] `scripts/seed-supply-demand.py` 신규 작성 (KIS FHKST01010900)
