@@ -30,14 +30,15 @@ Phase 2-A ~ 2-D 완료 + STEP 31~39 완료. Step 20~39 총 23개 커밋.
 - **ValueAnalysis.tsx 실데이터 전환 완료** — 가짜값 전면 제거 + DART 시계열 차트 신규
 - **나머지 4개 분석 탭 정직 스텁화 완료** — 1,331줄 dead code 제거
 - **TechnicalAnalysis 재활성화 완료** — stock_prices 54,899건 + MA·볼린저·RSI·거래량 차트
+- **SupplyAnalysis 재활성화 완료** — supply_demand 3,000건 + 스택 바/누적 라인/5일 테이블
 
-**누계 DB**: stocks 2,780 / financials 576 / stock_prices 54,899 / dart_corp_codes 3,959
+**누계 DB**: stocks 2,780 / financials 576 / stock_prices 54,899 / supply_demand 3,000 / dart_corp_codes 3,959
 
 ## 다음 세션 P0
 
-- **STEP 43**: KIS per-stock investor-flow (FHKST01010900) 수집 → SupplyAnalysis 재활성화
 - **STEP 44**: DART 배당 공시 수집 → DividendAnalysis 재활성화
 - **분기 보고서 수집 대안**: `REPRT_CODE=11013/11012/11014` 3회 실행 → ~300건 추가
+- **STEP 45+**: 전종목 팩터 집계 → QuantAnalysis 재활성화
 
 ---
 

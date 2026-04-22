@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 43 완료
+- [x] `scripts/seed-supply-demand.py` 신규 작성 (KIS FHKST01010900)
+- [x] supply_demand 테이블 3,000행 시딩 (100종목 × ~30영업일, 실패 0건)
+- [x] SupplyAnalysis.tsx 재작성 (합계 카드 + 스택 바 + 누적 라인 + 5일 테이블)
+- [x] 빌드 성공 (타입 에러 0건)
+- [ ] STEP 44: DART 배당 공시 수집 → DividendAnalysis 재활성화
+
 ### 2026-04-22 세션 — STEP 42 완료
 - [x] `stock_prices` 시딩 완료: 200종목 × 1년 일봉, 54,899건 (실패 0건)
 - [x] `StockPrice` 타입 추가 (`types/stock.ts`)

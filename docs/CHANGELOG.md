@@ -1,6 +1,21 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 43: SupplyAnalysis 재활성화 (KIS FHKST01010900 수급 시딩)
+
+**신규 파일**
+- `scripts/seed-supply-demand.py` — KIS 종목별 투자자별 매매동향 API → supply_demand 테이블 upsert
+
+**데이터 작업**
+- supply_demand 테이블 3,000행 시딩 (100종목 × ~30영업일, 실패 0건)
+
+**코드 변경**
+- `components/analysis/SupplyAnalysis.tsx` — 32줄 스텁 → 실제 수급 분석 컴포넌트
+  - 60일 합계 카드 (외국인·기관·개인), 양수=빨강/음수=파랑
+  - 일별 순매수 스택 바차트, 누적 순매수 라인차트, 최근 5일 요약 테이블
+
+---
+
 ## 2026-04-22 — STEP 42: TechnicalAnalysis 재활성화 (stock_prices 시딩 + MA·볼린저·RSI)
 
 **데이터 작업**
