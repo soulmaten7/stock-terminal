@@ -1,13 +1,22 @@
 'use client';
 
-// TODO(STEP 71+): 선택된 종목 Zustand 스토어 연결, 실제 데이터 바인딩
+import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
+
+// TODO(STEP 72+): 시세·지표 데이터 페치 훅 연결
 export default function SnapshotHeader() {
+  const selected = useSelectedSymbolStore((s) => s.selected);
+
   return (
     <header className="px-4 py-3 border-b border-[#E5E7EB] shrink-0 bg-white">
       <div className="flex items-baseline justify-between mb-2">
         <div className="min-w-0">
-          <div className="text-sm font-bold text-black truncate">종목명</div>
-          <div className="text-[11px] text-[#999]">000000</div>
+          <div className="text-sm font-bold text-black truncate">
+            {selected?.name ?? '종목을 선택하세요'}
+          </div>
+          <div className="text-[11px] text-[#999]">
+            {selected?.code ?? '—'}
+            {selected?.market && <span className="ml-1 text-[#BBB]">· {selected.market}</span>}
+          </div>
         </div>
         <div className="text-right shrink-0 ml-3">
           <div className="text-lg font-bold text-black">--</div>

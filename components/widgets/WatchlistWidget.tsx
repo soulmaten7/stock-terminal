@@ -5,6 +5,11 @@ import Link from 'next/link';
 import WidgetCard from '@/components/home/WidgetCard';
 import { useAuthStore } from '@/stores/authStore';
 import { getWatchlistSymbols } from '@/lib/watchlist';
+import { useSelectedSymbolStore, type Market } from '@/stores/selectedSymbolStore';
+
+function inferMarket(code: string): Market {
+  return /^\d{6}$/.test(code) ? 'KR' : 'US';
+}
 
 const DEFAULT_SYMBOLS = [
   { symbol: '005930', name: '삼성전자' },
@@ -53,6 +58,7 @@ async function fetchPrice(symbol: string, fallbackName: string): Promise<Row> {
 
 export default function WatchlistWidget() {
   const { user, isLoading: authLoading } = useAuthStore();
+  const setSelected = useSelectedSymbolStore((s) => s.setSelected);
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
@@ -121,6 +127,7 @@ export default function WatchlistWidget() {
                 href={`/stocks/${r.symbol}`}
                 role="cell"
                 className="font-bold text-black truncate hover:text-[#0ABAB5]"
+                onClick={() => setSelected({ code: r.symbol, name: r.name, market: inferMarket(r.symbol) })}
               >
                 {r.name}
               </Link>

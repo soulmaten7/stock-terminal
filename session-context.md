@@ -18,10 +18,9 @@
 ## 현재 TODO
 
 ### P0 — 다음 작업 (차기)
-- [ ] **STEP 71 — 우측 컬럼 탭별 실제 콘텐츠 (종합 탭 먼저)**
-  - 종합 탭: 핵심투자지표 → 수급미니(KR) → 뉴스3건 → 공시3건 → 재무미니
-  - Zustand 스토어 연결 (선택 종목 → StockDetailPanel 데이터 바인딩)
-  - 참고: `docs/DASHBOARD_SPEC_V3.md` Section 1 우측 컬럼 상세
+- [ ] **STEP 72 — 종합 탭 5블록 실데이터 연결 (투자지표·수급·뉴스·공시·재무 순차)**
+  - 기존 API 라우트 재활용, 소스 없는 블록은 placeholder 유지
+  - 참고: `docs/STEP_72_COMMAND.md`
 
 ### P0 — 지금 당장 (블로커)
 - [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
@@ -40,6 +39,14 @@
 - [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
+
+### 2026-04-22 세션 — STEP 71 완료
+- [x] STEP 71: selectedSymbolStore 신설 + WatchlistWidget 클릭 핸들러 연결 (Case A)
+  - stores/selectedSymbolStore.ts: code/name/market Zustand 스토어
+  - WatchlistWidget: 종목명 Link에 onClick → setSelected (inferMarket 헬퍼 포함)
+  - SnapshotHeader: 스토어 구독 (종목명·코드·시장 표시)
+  - components/dashboard/tabs/OverviewTab.tsx: 5블록 구조 골격 (Coming soon)
+  - StockDetailPanel: overview 탭에 OverviewTab 연결, 탭 전환 prop 전달
 
 ### 2026-04-22 세션 — STEP 70 완료
 - [x] STEP 70: Section 1 3컬럼 레이아웃 + 우측 종목상세 패널 스켈레톤
