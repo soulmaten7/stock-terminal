@@ -1,6 +1,21 @@
 <!-- 2026-04-22 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-22 — STEP 44: DividendAnalysis 재활성화 (DART alotMatter 배당 수집)
+
+**신규 파일**
+- `scripts/seed-dividends.py` — DART `alotMatter.json` 으로 TOP 200 대상 2019~2024 (6년) 배당 이력 수집
+
+**데이터 작업**
+- dividends 테이블 790행 시딩 (200종목 × 최대 6년, 무배당주 제외)
+- 삼성전자 검증: 2024 DPS=1,446원 yield=2.7% payout=29.2% ✓
+
+**코드 변경**
+- `components/analysis/DividendAnalysis.tsx` — 32줄 스텁 → 실제 배당 컴포넌트
+  - 4지표 카드 (DPS·yield·payout·YoY growth), DPS 바차트, yield/payout 라인차트
+
+---
+
 ## 2026-04-22 — STEP 43: SupplyAnalysis 재활성화 (KIS FHKST01010900 수급 시딩)
 
 **신규 파일**

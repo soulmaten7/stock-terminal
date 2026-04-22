@@ -35,6 +35,13 @@
 - [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
 - [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
+### 2026-04-22 세션 — STEP 44 완료
+- [x] `scripts/seed-dividends.py` 신규 작성 (DART alotMatter.json)
+- [x] dividends 테이블 790행 시딩 (TOP 200 × 최대 6년, 삼성전자 6년 검증 완료)
+- [x] DividendAnalysis.tsx 재작성 (4지표 카드 + DPS 바차트 + yield·payout 라인)
+- [x] 빌드 성공 (타입 에러 0건)
+- [ ] STEP 45+: 전종목 팩터 집계 → QuantAnalysis 재활성화
+
 ### 2026-04-22 세션 — STEP 43 완료
 - [x] `scripts/seed-supply-demand.py` 신규 작성 (KIS FHKST01010900)
 - [x] supply_demand 테이블 3,000행 시딩 (100종목 × ~30영업일, 실패 0건)
