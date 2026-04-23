@@ -37,6 +37,10 @@ function timeAgo(iso: string | null): string {
   if (diff < 86400) return `${Math.floor(diff / 3600)}시간 전`;
   return `${Math.floor(diff / 86400)}일 전`;
 }
+function isStale(iso: string | null): boolean {
+  if (!iso) return false;
+  return Date.now() - new Date(iso).getTime() > 14 * 86_400_000;
+}
 function fmtFinancial(n: number | null): string {
   if (n == null) return '—';
   const abs = Math.abs(n);
@@ -123,18 +127,29 @@ function Block3News({ symbol, onMore }: { symbol: string; onMore: () => void }) 
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/stocks/news?symbol=${symbol}&limit=3`)
+    fetch(`/api/stocks/news?symbol=${symbol}&limit=10`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { setItems(d?.items ?? []); setLoading(false); })
       .catch(() => { setItems([]); setLoading(false); });
   }, [symbol]);
 
   if (loading) return <p className="text-[11px] text-[#BBB] py-1">로딩 중…</p>;
-  if (!items.length) return <p className="text-[11px] text-[#BBB] py-1">뉴스 없음</p>;
+
+  const recent = items
+    .filter((item) => !isStale(item.publishedAt))
+    .sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''))
+    .slice(0, 3);
+
+  if (!recent.length) return (
+    <div className="py-3 text-center">
+      <p className="text-[11px] text-[#BBB]">최근 14일 내 뉴스 없음</p>
+      <button onClick={onMore} className="text-[11px] text-[#0ABAB5] hover:underline mt-1">전체 뉴스 보기 →</button>
+    </div>
+  );
 
   return (
     <div className="space-y-2">
-      {items.map((item, i) => (
+      {recent.map((item, i) => (
         <a
           key={i}
           href={item.link}
@@ -142,8 +157,11 @@ function Block3News({ symbol, onMore }: { symbol: string; onMore: () => void }) 
           rel="noopener noreferrer"
           className="block hover:bg-[#F8F9FA] -mx-1 px-1 py-0.5 rounded"
         >
-          <p className="text-xs font-medium text-black leading-tight line-clamp-2">{item.title}</p>
-          <p className="text-[10px] text-[#999] mt-0.5">
+          <div className="flex items-start gap-1.5">
+            <span className="shrink-0 mt-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-[#0ABAB5]/10 text-[#0ABAB5]">{symbol}</span>
+            <p className="text-xs font-medium text-black leading-tight line-clamp-2">{item.title}</p>
+          </div>
+          <p className="text-[10px] text-[#999] mt-0.5 pl-[calc(1ch+10px+6px)]">
             {item.source}{item.publishedAt ? ` · ${timeAgo(item.publishedAt)}` : ''}
           </p>
         </a>
@@ -165,7 +183,7 @@ function Block4Disclosures({ symbol, market, onMore }: { symbol: string; market:
   useEffect(() => {
     if (market !== 'KR') { setLoading(false); return; }
     setLoading(true);
-    fetch(`/api/stocks/disclosures?symbol=${symbol}&months=3&limit=3`)
+    fetch(`/api/stocks/disclosures?symbol=${symbol}&months=3&limit=20`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => { setItems(d?.items ?? []); setLoading(false); })
       .catch(() => { setItems([]); setLoading(false); });
@@ -173,11 +191,25 @@ function Block4Disclosures({ symbol, market, onMore }: { symbol: string; market:
 
   if (market !== 'KR') return <p className="text-[11px] text-[#BBB] py-1">SEC 공시 연결 예정 (STEP 73)</p>;
   if (loading) return <p className="text-[11px] text-[#BBB] py-1">로딩 중…</p>;
-  if (!items.length) return <p className="text-[11px] text-[#BBB] py-1">공시 없음</p>;
+
+  const recent = items
+    .filter((item) => {
+      if (!item.rcept_dt || item.rcept_dt.length < 8) return true;
+      const d = new Date(`${item.rcept_dt.slice(0,4)}-${item.rcept_dt.slice(4,6)}-${item.rcept_dt.slice(6)}`);
+      return Date.now() - d.getTime() <= 14 * 86_400_000;
+    })
+    .slice(0, 3);
+
+  if (!recent.length) return (
+    <div className="py-3 text-center">
+      <p className="text-[11px] text-[#BBB]">최근 14일 내 공시 없음</p>
+      <button onClick={onMore} className="text-[11px] text-[#0ABAB5] hover:underline mt-1">전체 공시 보기 →</button>
+    </div>
+  );
 
   return (
     <div className="space-y-2">
-      {items.map((item, i) => {
+      {recent.map((item, i) => {
         const dt = item.rcept_dt ? `${item.rcept_dt.slice(0,4)}.${item.rcept_dt.slice(4,6)}.${item.rcept_dt.slice(6)}` : '';
         return (
           <a
@@ -187,8 +219,11 @@ function Block4Disclosures({ symbol, market, onMore }: { symbol: string; market:
             rel="noopener noreferrer"
             className="block hover:bg-[#F8F9FA] -mx-1 px-1 py-0.5 rounded"
           >
-            <p className="text-xs font-medium text-black leading-tight line-clamp-2">{item.report_nm}</p>
-            {dt && <p className="text-[10px] text-[#999] mt-0.5">{dt}</p>}
+            <div className="flex items-start gap-1.5">
+              <span className="shrink-0 mt-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-[#FF3B30]/10 text-[#FF3B30]">{symbol}</span>
+              <p className="text-xs font-medium text-black leading-tight line-clamp-2">{item.report_nm}</p>
+            </div>
+            {dt && <p className="text-[10px] text-[#999] mt-0.5 pl-[calc(1ch+10px+6px)]">{dt}</p>}
           </a>
         );
       })}

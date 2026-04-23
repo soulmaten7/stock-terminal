@@ -1,9 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
-import WidgetCard from '@/components/home/WidgetCard';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 // ── compact 모드 (기존 R4 위젯) ──────────────────────────────────────────────
 
@@ -44,13 +42,14 @@ function CompactWidget() {
   }, []);
 
   return (
-    <WidgetCard
-      title="글로벌 지수·환율·선물·채권"
-      subtitle="Yahoo Finance"
-      href="/global"
-      action={loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined}
-    >
-      <div role="table" aria-label="글로벌 지수 목록">
+    <div className="flex flex-col h-full">
+      <WidgetHeader
+        title="글로벌 지수·환율·선물·채권"
+        subtitle="Yahoo Finance"
+        href="/global"
+        actions={loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined}
+      />
+      <div role="table" aria-label="글로벌 지수 목록" className="flex-1 overflow-auto">
         {items.map((idx) => (
           <div
             key={idx.label}
@@ -67,7 +66,7 @@ function CompactWidget() {
           </div>
         ))}
       </div>
-    </WidgetCard>
+    </div>
   );
 }
 
@@ -201,15 +200,11 @@ function ExpandedWidget() {
 
   return (
     <div className="flex flex-col h-full bg-white min-w-0">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#F0F0F0] shrink-0">
-        <div>
-          <h3 className="text-sm font-bold text-black">글로벌 지수 · 환율 · 원자재 · 채권 · 암호화폐</h3>
-          <p className="text-[10px] text-[#999]">Yahoo Finance{updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 기준` : ''}</p>
-        </div>
-        <Link href="/global" className="text-[#BBB] hover:text-[#0ABAB5] transition-colors" title="상세 페이지">
-          <ArrowUpRight className="w-3.5 h-3.5" />
-        </Link>
-      </div>
+      <WidgetHeader
+        title="글로벌 지수 · 환율 · 원자재 · 채권 · 암호화폐"
+        subtitle={`Yahoo Finance${updatedAt ? ` · ${new Date(updatedAt).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })} 기준` : ''}`}
+        href="/global"
+      />
 
       {loading ? (
         <div className="flex-1 p-3 grid grid-cols-6 gap-1.5 content-start animate-pulse">

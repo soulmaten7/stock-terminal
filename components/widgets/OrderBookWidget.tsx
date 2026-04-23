@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, FormEvent } from 'react';
-import WidgetCard from '@/components/home/WidgetCard';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 
 interface Level {
@@ -98,25 +98,23 @@ export default function OrderBookWidget() {
   const bidPct = sumTotal > 0 ? (totalBid / sumTotal) * 100 : 50;
   const askPct = 100 - bidPct;
 
+  const symbolForm = (
+    <form onSubmit={handleSubmit} className="flex items-center gap-1">
+      <input
+        value={input}
+        onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+        className="w-16 text-[10px] bg-[#F0F0F0] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
+        placeholder="005930"
+        maxLength={6}
+        inputMode="numeric"
+      />
+      <button type="submit" className="text-[10px] text-[#0ABAB5] hover:underline">이동</button>
+    </form>
+  );
+
   return (
-    <WidgetCard
-      title="호가창"
-      subtitle={`${info?.name || symbol} · 5초 갱신`}
-      href={`/orderbook?symbol=${symbol}`}
-      action={
-        <form onSubmit={handleSubmit} className="flex items-center gap-1">
-          <input
-            value={input}
-            onChange={(e) => setInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
-            className="w-16 text-[10px] bg-[#F0F0F0] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
-            placeholder="005930"
-            maxLength={6}
-            inputMode="numeric"
-          />
-          <button type="submit" className="text-[10px] text-[#0ABAB5] hover:underline">이동</button>
-        </form>
-      }
-    >
+    <div className="flex flex-col h-full">
+      <WidgetHeader title="호가" subtitle={`${info?.name || symbol} · 10단계`} actions={symbolForm} />
       {asks.length === 0 && bids.length === 0 && !loading ? (
         <div className="px-3 py-4 text-xs text-[#999] text-center">데이터 없음</div>
       ) : (
@@ -207,6 +205,6 @@ export default function OrderBookWidget() {
           )}
         </div>
       )}
-    </WidgetCard>
+    </div>
   );
 }

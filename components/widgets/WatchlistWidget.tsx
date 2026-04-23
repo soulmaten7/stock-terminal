@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import WidgetCard from '@/components/home/WidgetCard';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 import { useAuthStore } from '@/stores/authStore';
 import { getWatchlistSymbols } from '@/lib/watchlist';
 import { useSelectedSymbolStore, type Market } from '@/stores/selectedSymbolStore';
@@ -56,7 +56,7 @@ async function fetchPrice(symbol: string, fallbackName: string): Promise<Row> {
   }
 }
 
-export default function WatchlistWidget() {
+export default function WatchlistWidget({ compact = false }: { compact?: boolean } = {}) {
   const { user, isLoading: authLoading } = useAuthStore();
   const setSelected = useSelectedSymbolStore((s) => s.setSelected);
   const [rows, setRows] = useState<Row[]>([]);
@@ -90,25 +90,25 @@ export default function WatchlistWidget() {
     return () => clearInterval(timer);
   }, [authLoading, load]);
 
+  const rowPy = compact ? 'py-1.5' : 'py-2.5';
+  const textSz = compact ? 'text-xs' : 'text-sm';
+
   return (
-    <WidgetCard
-      title="관심종목"
-      subtitle="KIS API · 10초 갱신"
-      className="h-full"
-      href="/watchlist"
-      action={
-        loading ? (
-          <span className="text-[10px] text-[#BBB]">로딩 중…</span>
-        ) : lastUpdate ? (
-          <span className="text-[10px] text-[#999]">
-            {lastUpdate.toTimeString().slice(0, 5)}
-          </span>
-        ) : undefined
-      }
-    >
-      <div role="table" aria-label="관심종목 목록" className="w-full">
+    <div className="flex flex-col h-full">
+      <WidgetHeader
+        title="관심종목"
+        subtitle="10초 갱신"
+        href="/watchlist"
+        linkLabel="관심종목 전체"
+        actions={
+          loading ? <span className="text-[10px] text-[#BBB]">로딩…</span>
+          : lastUpdate ? <span className="text-[10px] text-[#999]">{lastUpdate.toTimeString().slice(0, 5)}</span>
+          : undefined
+        }
+      />
+      <div role="table" aria-label="관심종목 목록" className="w-full flex-1 overflow-y-auto">
         <div role="rowgroup">
-          <div role="row" className="grid grid-cols-5 px-3 py-2 text-xs text-[#999] font-bold border-b border-[#F0F0F0]">
+          <div role="row" className="grid grid-cols-5 px-3 py-1.5 text-[10px] text-[#999] font-bold border-b border-[#F0F0F0]">
             <span role="columnheader">종목</span>
             <span role="columnheader" className="text-right">현재가</span>
             <span role="columnheader" className="text-right">전일비</span>
@@ -121,7 +121,7 @@ export default function WatchlistWidget() {
             <div
               key={r.symbol}
               role="row"
-              className="grid grid-cols-5 px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
+              className={`grid grid-cols-5 px-3 ${rowPy} ${textSz} hover:bg-[#F8F9FA] border-b border-[#F0F0F0]`}
             >
               <Link
                 href={`/stocks/${r.symbol}`}
@@ -156,6 +156,6 @@ export default function WatchlistWidget() {
           )}
         </div>
       </div>
-    </WidgetCard>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef, type ChangeEvent } from 'react';
-import WidgetCard from '@/components/home/WidgetCard';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 
 interface Execution {
@@ -104,25 +104,26 @@ export default function TickWidget() {
   const displayed = executions.slice(0, 10);
 
   return (
-    <WidgetCard
-      title="체결창"
-      subtitle={`${symbol} · 5초 갱신`}
-      href={`/ticks?symbol=${symbol}`}
-      action={
-        <div className="flex items-center gap-1.5">
-          <input
-            type="text"
-            inputMode="numeric"
-            value={symbolInput}
-            onChange={handleSymbolChange}
-            className="w-16 text-[10px] font-mono border border-[#E5E7EB] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
-            placeholder="005930"
-            aria-label="종목 코드"
-          />
-          {loading && <span className="text-[10px] text-[#BBB]">로딩…</span>}
-        </div>
-      }
-    >
+    <div className="flex flex-col h-full">
+      <WidgetHeader
+        title="체결창"
+        subtitle={`${symbol} · 5초 갱신`}
+        href={`/ticks?symbol=${symbol}`}
+        actions={
+          <div className="flex items-center gap-1.5">
+            <input
+              type="text"
+              inputMode="numeric"
+              value={symbolInput}
+              onChange={handleSymbolChange}
+              className="w-16 text-[10px] font-mono border border-[#E5E7EB] rounded px-1.5 py-0.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
+              placeholder="005930"
+              aria-label="종목 코드"
+            />
+            {loading && <span className="text-[10px] text-[#BBB]">로딩…</span>}
+          </div>
+        }
+      />
       {/* 체결강도 */}
       <div className="px-3 py-1.5 border-b border-[#F0F0F0]">
         <div className="flex items-center justify-between text-[10px] mb-1">
@@ -192,6 +193,6 @@ export default function TickWidget() {
           <span className="text-[10px] font-bold text-[#333] tabular-nums">{totalVolume.toLocaleString()} 주</span>
         </div>
       )}
-    </WidgetCard>
+    </div>
   );
 }

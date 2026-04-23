@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import WidgetCard from '@/components/home/WidgetCard';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 interface VolumeItem {
   rank: number;
@@ -109,19 +109,28 @@ export default function VolumeTop10Widget({ inline = false, size = 'default' }: 
     </div>
   );
 
-  if (inline) {
-    return <div className="h-full overflow-auto">{content}</div>;
-  }
-
-  return (
-    <WidgetCard
+  const widgetHeader = (
+    <WidgetHeader
       title="거래량 급등 TOP 10"
       subtitle="KIS API · 배수 = 거래량 / 평균거래량"
       href="/movers/volume"
-      size={size}
-      action={loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined}
-    >
-      {content}
-    </WidgetCard>
+      actions={loading ? <span className="text-[10px] text-[#BBB]">로딩 중…</span> : undefined}
+    />
+  );
+
+  if (inline) {
+    return (
+      <div className="flex flex-col h-full">
+        {widgetHeader}
+        <div className="flex-1 overflow-auto">{content}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      {widgetHeader}
+      <div className="flex-1 overflow-auto">{content}</div>
+    </div>
   );
 }

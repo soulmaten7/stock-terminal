@@ -7,7 +7,6 @@ import TopNav from '@/components/layout/TopNav';
 import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
 import LayoutShell from '@/components/layout/LayoutShell';
-import FloatingChat from '@/components/chat/FloatingChat';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -45,7 +44,6 @@ export default function RootLayout({
             </LayoutShell>
           </div>
         </AuthProvider>
-        <FloatingChat />
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import WidgetCard from '@/components/home/WidgetCard';
+import WidgetHeader from '@/components/dashboard/WidgetHeader';
 
 interface NetItem {
   symbol: string;
@@ -157,26 +157,28 @@ export default function NetBuyTopWidget({ inline = false, size = 'default' }: Pr
     </>
   );
 
+  const widgetHeader = (
+    <WidgetHeader
+      title="실시간 수급 TOP"
+      subtitle="KIS API · 외국인·기관 순매수/매도"
+      href={`/net-buy?tab=top&who=${tab}&mode=${mode}`}
+      actions={header}
+    />
+  );
+
   if (inline) {
     return (
       <div className="h-full flex flex-col overflow-hidden">
-        <div className="flex justify-end px-3 py-2 border-b border-[#F0F0F0] shrink-0">
-          {header}
-        </div>
+        {widgetHeader}
         <div className="flex-1 overflow-auto">{body}</div>
       </div>
     );
   }
 
   return (
-    <WidgetCard
-      title="실시간 수급 TOP"
-      subtitle="KIS API · 외국인·기관 순매수/매도"
-      href={`/net-buy?tab=top&who=${tab}&mode=${mode}`}
-      size={size}
-      action={header}
-    >
-      {body}
-    </WidgetCard>
+    <div className="flex flex-col h-full">
+      {widgetHeader}
+      <div className="flex-1 overflow-auto">{body}</div>
+    </div>
   );
 }
