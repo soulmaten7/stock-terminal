@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { createPortal } from 'react-dom';
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/client';
 import { MessageCircle, X } from 'lucide-react';
@@ -210,120 +211,119 @@ export default function FloatingChat() {
 
   if (!mounted) return null;
 
-  // 대시보드(max-w-1600 px-2)와 동일한 경계: viewport가 1600px 이상이면 여백을 계산해 안쪽으로 붙임
   const edgeOffset = 'calc(max(8px, (100vw - 1600px) / 2 + 8px))';
-  const fixedStyle: React.CSSProperties =
-    position === 'left'
-      ? { bottom: 8, left: edgeOffset, zIndex: 40 }
-      : { bottom: 8, right: edgeOffset, zIndex: 40 };
+  const fixedStyle: React.CSSProperties = {
+    position: 'fixed',
+    bottom: 8,
+    [position === 'left' ? 'left' : 'right']: edgeOffset,
+    zIndex: 9999,
+  };
 
-  // ── 닫힘 — 원형 아이콘 ─────────────────────────────────────────────────────
-  if (chatState === 'closed') {
-    return (
-      <button
-        onClick={() => setChatState('open')}
-        aria-label="채팅 열기"
-        style={fixedStyle}
-        className="fixed w-14 h-14 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693] transition-colors"
-      >
-        <MessageCircle className="w-6 h-6" />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-[#FF4D4D] text-white text-xs flex items-center justify-center">
-            {unreadCount > 99 ? '99+' : unreadCount}
-          </span>
-        )}
-      </button>
-    );
-  }
-
-  // ── 열림 — 패널 (좌/우 토글) ───────────────────────────────────────────────
-  return (
+  const chatContent = (
     <>
-      <div
-        style={fixedStyle}
-        className="fixed w-80 h-[440px] rounded-lg bg-white border border-[#E5E7EB] shadow-xl flex flex-col"
-      >
-        {/* 헤더 */}
-        <div className="h-10 border-b border-[#E5E7EB] flex items-center justify-between px-3 shrink-0 bg-[#FAFAFA] rounded-t-lg">
-          <div className="flex items-center gap-1">
-            {/* 위치 토글 */}
+      {chatState === 'closed' ? (
+        <button
+          onClick={() => setChatState('open')}
+          aria-label="채팅 열기"
+          style={fixedStyle}
+          className="w-14 h-14 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693] transition-colors"
+        >
+          <MessageCircle className="w-6 h-6" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-[#FF4D4D] text-white text-xs flex items-center justify-center">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </span>
+          )}
+        </button>
+      ) : (
+        <div
+          style={fixedStyle}
+          className="w-80 h-[440px] rounded-lg bg-white border border-[#E5E7EB] shadow-xl flex flex-col"
+        >
+          {/* 헤더 */}
+          <div className="h-10 border-b border-[#E5E7EB] flex items-center justify-between px-3 shrink-0 bg-[#FAFAFA] rounded-t-lg">
+            <div className="flex items-center gap-1">
+              {/* 위치 토글 */}
+              <button
+                onClick={() => setPosition('left')}
+                disabled={position === 'left'}
+                className={`text-[11px] px-2 py-0.5 rounded transition-colors ${
+                  position === 'left'
+                    ? 'bg-[#F3F4F6] text-[#999] cursor-default'
+                    : 'text-[#0ABAB5] hover:bg-[#F0FDFC]'
+                }`}
+              >
+                ◀ 좌측
+              </button>
+              <button
+                onClick={() => setPosition('right')}
+                disabled={position === 'right'}
+                className={`text-[11px] px-2 py-0.5 rounded transition-colors ${
+                  position === 'right'
+                    ? 'bg-[#F3F4F6] text-[#999] cursor-default'
+                    : 'text-[#0ABAB5] hover:bg-[#F0FDFC]'
+                }`}
+              >
+                우측 ▶
+              </button>
+              <button
+                onClick={() => setModalOpen(true)}
+                className="flex items-center gap-1 ml-1"
+                title="참여자 목록"
+              >
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF3B30] animate-pulse" />
+                <span className="text-[10px] text-[#999]">{participants.length}명</span>
+              </button>
+            </div>
             <button
-              onClick={() => setPosition('left')}
-              disabled={position === 'left'}
-              className={`text-[11px] px-2 py-0.5 rounded transition-colors ${
-                position === 'left'
-                  ? 'bg-[#F3F4F6] text-[#999] cursor-default'
-                  : 'text-[#0ABAB5] hover:bg-[#F0FDFC]'
-              }`}
+              onClick={() => setChatState('closed')}
+              aria-label="닫기"
+              className="w-7 h-7 flex items-center justify-center text-[#666] hover:text-black hover:bg-[#F3F4F6] rounded"
             >
-              ◀ 좌측
-            </button>
-            <button
-              onClick={() => setPosition('right')}
-              disabled={position === 'right'}
-              className={`text-[11px] px-2 py-0.5 rounded transition-colors ${
-                position === 'right'
-                  ? 'bg-[#F3F4F6] text-[#999] cursor-default'
-                  : 'text-[#0ABAB5] hover:bg-[#F0FDFC]'
-              }`}
-            >
-              우측 ▶
-            </button>
-            <button
-              onClick={() => setModalOpen(true)}
-              className="flex items-center gap-1 ml-1"
-              title="참여자 목록"
-            >
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[#FF3B30] animate-pulse" />
-              <span className="text-[10px] text-[#999]">{participants.length}명</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
-          <button
-            onClick={() => setChatState('closed')}
-            aria-label="닫기"
-            className="w-7 h-7 flex items-center justify-center text-[#666] hover:text-black hover:bg-[#F3F4F6] rounded"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
 
-        {/* 메시지 목록 */}
-        <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3 min-h-0">
-          {messages.length === 0 && (
-            <div className="text-[11px] text-[#999] text-center py-4">
-              아직 메시지가 없습니다. 첫 메시지를 남겨보세요.
-            </div>
-          )}
-          {messages.map((m) => (
-            <div key={m.id}>
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-xs font-bold text-[#0ABAB5]">{m.nickname || nickFrom(m.user_id)}</span>
-                <span className="text-[10px] text-[#BBB]">{fmtTime(m.created_at)}</span>
+          {/* 메시지 목록 */}
+          <div ref={listRef} className="flex-1 overflow-y-auto px-3 py-2 space-y-3 min-h-0">
+            {messages.length === 0 && (
+              <div className="text-[11px] text-[#999] text-center py-4">
+                아직 메시지가 없습니다. 첫 메시지를 남겨보세요.
               </div>
-              <p className="text-xs text-[#333] leading-snug break-all">{renderWithTags(m.content)}</p>
-            </div>
-          ))}
-        </div>
+            )}
+            {messages.map((m) => (
+              <div key={m.id}>
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <span className="text-xs font-bold text-[#0ABAB5]">{m.nickname || nickFrom(m.user_id)}</span>
+                  <span className="text-[10px] text-[#BBB]">{fmtTime(m.created_at)}</span>
+                </div>
+                <p className="text-xs text-[#333] leading-snug break-all">{renderWithTags(m.content)}</p>
+              </div>
+            ))}
+          </div>
 
-        {/* 입력창 */}
-        <form onSubmit={handleSend} className="border-t border-[#F0F0F0] bg-white px-3 py-2 shrink-0">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={loggedIn ? '메시지 입력… ($종목명 태그 지원)' : '로그인 후 채팅 참여'}
-            disabled={!loggedIn || sending}
-            maxLength={500}
-            className={`w-full text-sm border border-[#E5E7EB] rounded px-2.5 py-1.5 ${
-              loggedIn
-                ? 'bg-white text-black focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]'
-                : 'bg-[#F8F9FA] text-[#999] cursor-not-allowed'
-            }`}
-          />
-          {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
-        </form>
-      </div>
+          {/* 입력창 */}
+          <form onSubmit={handleSend} className="border-t border-[#F0F0F0] bg-white px-3 py-2 shrink-0">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={loggedIn ? '메시지 입력… ($종목명 태그 지원)' : '로그인 후 채팅 참여'}
+              disabled={!loggedIn || sending}
+              maxLength={500}
+              className={`w-full text-sm border border-[#E5E7EB] rounded px-2.5 py-1.5 ${
+                loggedIn
+                  ? 'bg-white text-black focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]'
+                  : 'bg-[#F8F9FA] text-[#999] cursor-not-allowed'
+              }`}
+            />
+            {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
+          </form>
+        </div>
+      )}
       <ChatParticipantsModal open={modalOpen} onClose={() => setModalOpen(false)} participants={participants} />
     </>
   );
+
+  return createPortal(chatContent, document.body);
 }
