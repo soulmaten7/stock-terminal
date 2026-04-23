@@ -64,7 +64,7 @@ function nickFrom(uid: string | null): string {
 export default function FloatingChat() {
   const [mounted, setMounted] = useState(false);
   const [chatState, setChatState] = useState<ChatState>('open');
-  const [position, setPosition] = useState<Position>('right');
+  const [position, setPosition] = useState<Position>('left');
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
