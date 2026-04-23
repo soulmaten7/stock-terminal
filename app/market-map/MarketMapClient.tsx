@@ -99,7 +99,7 @@ export default function MarketMapClient() {
           {/* 좌측: 히트맵 그리드 */}
           <div className="col-span-8 border-r border-[#E5E7EB] p-4">
             {loading ? (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
                 {Array.from({ length: 10 }).map((_, i) => (
                   <div key={i} className="h-28 bg-[#F0F0F0] animate-pulse rounded" />
                 ))}
@@ -107,11 +107,12 @@ export default function MarketMapClient() {
             ) : sectors.length === 0 ? (
               <div className="flex items-center justify-center h-64 text-sm text-[#999]">데이터 없음</div>
             ) : (
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
                 {sectors.map((s) => (
                   <button
                     key={s.sector}
                     onClick={() => openSector(s.sector)}
+                    title={`${s.sector} · ${s.change >= 0 ? '+' : ''}${s.change.toFixed(2)}% · ${s.count}개 종목`}
                     className={`h-28 rounded p-3 flex flex-col justify-between text-left transition-all hover:scale-[1.02] ${
                       selectedSector === s.sector ? 'ring-2 ring-[#0ABAB5]' : ''
                     }`}

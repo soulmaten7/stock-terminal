@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import WidgetHeader from '@/components/dashboard/WidgetHeader';
+import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 
 interface VolumeItem {
   rank: number;
@@ -24,6 +25,7 @@ interface Props {
 export default function VolumeTop10Widget({ inline = false, size = 'default' }: Props = {}) {
   const [items, setItems] = useState<VolumeItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const setSelected = useSelectedSymbolStore((s) => s.setSelected);
 
   useEffect(() => {
     fetch('/api/kis/volume-rank?sort=spike&limit=10')
@@ -63,7 +65,8 @@ export default function VolumeTop10Widget({ inline = false, size = 'default' }: 
             <div
               key={r.symbol}
               role="row"
-              className="grid grid-cols-[32px_1fr_80px_90px_70px] px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0]"
+              onClick={() => setSelected({ code: r.symbol, name: r.name, market: 'KR' })}
+              className="grid grid-cols-[32px_1fr_80px_90px_70px] px-3 py-2.5 text-sm hover:bg-[#F8F9FA] border-b border-[#F0F0F0] cursor-pointer"
             >
               <span role="cell" className="text-[#999] font-bold">
                 {i + 1}

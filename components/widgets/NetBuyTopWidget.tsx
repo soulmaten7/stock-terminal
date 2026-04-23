@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import WidgetHeader from '@/components/dashboard/WidgetHeader';
+import { useSelectedSymbolStore } from '@/stores/selectedSymbolStore';
 
 interface NetItem {
   symbol: string;
@@ -33,6 +34,7 @@ export default function NetBuyTopWidget({ inline = false, size = 'default' }: Pr
     institutionTop: [],
   });
   const [loading, setLoading] = useState(true);
+  const setSelected = useSelectedSymbolStore((s) => s.setSelected);
 
   useEffect(() => {
     setLoading(true);
@@ -118,7 +120,8 @@ export default function NetBuyTopWidget({ inline = false, size = 'default' }: Pr
                 <div
                   key={r.symbol}
                   role="row"
-                  className="grid grid-cols-[1fr_110px_70px] px-3 py-2.5 text-sm border-b border-[#F0F0F0] hover:bg-[#F8F9FA]"
+                  onClick={() => setSelected({ code: r.symbol, name: r.name, market: 'KR' })}
+                  className="grid grid-cols-[1fr_110px_70px] px-3 py-2.5 text-sm border-b border-[#F0F0F0] hover:bg-[#F8F9FA] cursor-pointer"
                 >
                   <span className="font-bold text-black truncate">{r.name}</span>
                   <span className="relative pr-1">

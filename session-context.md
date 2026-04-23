@@ -23,6 +23,12 @@
 - [ ] **ESLint cleanup** — `set-state-in-effect` 63건 일괄 정리 (별도 STEP)
 - [ ] **Vercel 배포 검증** — 빌드 OK + 환경변수 확인
 
+### 2026-04-23 — STEP 87 완료
+- yahoo-finance2 v3 인스턴스화 핫픽스 (섹터 API KR·US 복구)
+- 섹터 히트맵 모바일 반응형 (grid-cols-2 → md:3 → lg/xl:4)
+- 섹터 타일 title 툴팁 + cursor-help
+- 종목 클릭 → 호가창 동기화 (VolumeTop10 + NetBuyTop 2개 위젯)
+
 ### 2026-04-23 — STEP 86 완료
 - 신규 화면 3개: /market-map (섹터 히트맵 드릴다운), /themes (테마주 Top10), /disclosures (2컬럼 리팩토링)
 - TopNav: '섹터 지도' /market-map + '테마주' /themes 링크 추가

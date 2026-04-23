@@ -60,7 +60,7 @@ export default function SectorHeatmapWidget() {
       <WidgetHeader title="섹터 히트맵" href="/market-map" actions={marketToggle} />
 
       {loading ? (
-        <div className="flex-1 grid grid-cols-4 gap-1.5 p-3">
+        <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 p-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-14 bg-[#F0F0F0] animate-pulse rounded" />
           ))}
@@ -68,11 +68,12 @@ export default function SectorHeatmapWidget() {
       ) : sectors.length === 0 ? (
         <div className="flex-1 flex items-center justify-center text-xs text-[#999]">데이터 없음</div>
       ) : (
-        <div className="flex-1 grid grid-cols-4 gap-1.5 p-3 content-start">
+        <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 p-3 content-start">
           {sectors.map((s) => (
             <div
               key={s.sector}
-              className="rounded p-1.5 flex flex-col justify-between min-h-[52px]"
+              title={`${s.sector} · ${s.change >= 0 ? '+' : ''}${s.change.toFixed(2)}%${s.count > 1 ? ` · ${s.count}개 종목` : ''}`}
+              className="rounded p-1.5 flex flex-col justify-between min-h-[52px] cursor-help"
               style={{ background: heatColor(s.change) }}
             >
               <span className="text-[10px] font-medium leading-tight" style={{ color: textColor(s.change) }}>
