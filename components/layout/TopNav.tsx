@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import {
   Filter, Star, LineChart, TrendingUp, Flame, BarChart3, Newspaper,
   FileText, Calendar, Sun, Globe, PieChart, BookMarked,
-  ListOrdered, Activity,
+  ListOrdered, Activity, Layers,
 } from 'lucide-react';
 
 type LucideIcon = typeof Star;
@@ -31,7 +31,8 @@ const GROUPS: NavItem[][] = [
     { icon: Flame,      label: '거래량',      href: '/movers/volume' },
     { icon: BarChart3,  label: '수급',        href: '/net-buy' },
     { icon: Globe,      label: '글로벌 지수', href: '/global' },
-    { icon: PieChart,   label: '시장 지도',   href: '/analysis' },
+    { icon: PieChart,   label: '섹터 지도',   href: '/market-map' },
+    { icon: Layers,     label: '테마주',      href: '/themes' },
   ],
   // 정보
   [

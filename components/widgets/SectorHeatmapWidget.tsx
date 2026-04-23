@@ -57,7 +57,7 @@ export default function SectorHeatmapWidget() {
   return (
     <div className="flex flex-col h-full">
       {/* TODO: /market-map 페이지 미구현 — STEP 84+ */}
-      <WidgetHeader title="섹터 히트맵" actions={marketToggle} />
+      <WidgetHeader title="섹터 히트맵" href="/market-map" actions={marketToggle} />
 
       {loading ? (
         <div className="flex-1 grid grid-cols-4 gap-1.5 p-3">

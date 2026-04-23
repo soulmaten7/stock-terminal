@@ -23,6 +23,10 @@
 - [ ] **ESLint cleanup** — `set-state-in-effect` 63건 일괄 정리 (별도 STEP)
 - [ ] **Vercel 배포 검증** — 빌드 OK + 환경변수 확인
 
+### 2026-04-23 — STEP 86 완료
+- 신규 화면 3개: /market-map (섹터 히트맵 드릴다운), /themes (테마주 Top10), /disclosures (2컬럼 리팩토링)
+- TopNav: '섹터 지도' /market-map + '테마주' /themes 링크 추가
+
 ### 2026-04-23 — STEP 85 완료
 - 데이터 품질 4개 버그 수정 (sectors KR 폴백 / movers 로그 / screener ETF 필터 / news 키워드 필터)
 

@@ -7,7 +7,7 @@
 3. **DisclosureStreamWidget US** — SEC EDGAR 최근 8-K 스트림 API
 4. 4개 문서 날짜 확인 (CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START)
 
-## 현재 상태 (2026-04-23 STEP 84 완료 시점) — V3 대시보드 폴리싱 완료
+## 현재 상태 (2026-04-23 STEP 86 완료 시점) — 신규 풀스크린 페이지 3개 추가
 
 ### 홈 대시보드 5섹션 구성
 - **Section 1**: 트레이딩 터미널 (Watchlist + Chart + OrderBook + Tick + StockDetailPanel)
@@ -20,6 +20,11 @@
 - FloatingChat v3: 2상태 (닫힘/열림), 좌/우 위치 토글, localStorage persist, 홈 전용 absolute 포지션
 - selectedSymbolStore: Zustand persist, OrderBook/Tick/전체 위젯 연동
 - StockDetailPanel: 4탭 (종합/재무/공시/뉴스) 실데이터 완전 연결
+
+### 신규 페이지 (STEP 86)
+- /market-map: 섹터 히트맵 + 드릴다운 종목 Top10
+- /themes: ThemeTop10Widget 풀스크린
+- /disclosures: DisclosureStreamWidget(좌) + DisclosuresPageClient(우) 2컬럼
 
 ### 빌드 상태
 - TypeScript: ✅ 오류 없음 | 빌드: ✅ 클린 | console.log: ✅ 없음

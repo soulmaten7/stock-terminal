@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
-import DisclosuresPageClient from '@/components/disclosures/DisclosuresPageClient';
+import DisclosuresClient from './DisclosuresClient';
+
+export const metadata = { title: '공시 스트림 · Stock Terminal' };
 
 export default function DisclosuresPage() {
   return (
@@ -10,7 +12,7 @@ export default function DisclosuresPage() {
         </div>
       }
     >
-      <DisclosuresPageClient />
+      <DisclosuresClient />
     </Suspense>
   );
 }

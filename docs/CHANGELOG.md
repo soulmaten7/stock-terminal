@@ -1,6 +1,8 @@
 <!-- 2026-04-23 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-23 — STEP 86: 신규 화면 3개 (/market-map 섹터 히트맵 + /themes 테마주 + /disclosures 2컬럼) + TopNav 링크 정비
+
 ## 2026-04-23 — STEP 85: 데이터 품질 수정 (sectors KR 폴백 + movers 로그 + screener ETF 필터 + news 키워드 필터)
 
 ## 2026-04-23 — feat(dashboard): Section 1 L-shape 레이아웃 + FloatingChat v3 + WidgetHeader 통일 (STEP 84) — TickWidget/BriefingWidget/GlobalIndicesWidget/VolumeTop10/NetBuyTop 변환, OverviewTab 14일 필터+종목배지+빈상태 UI

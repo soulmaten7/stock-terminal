@@ -46,8 +46,7 @@ export default function ThemeTop10Widget() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* TODO: /themes 페이지 미구현 — STEP 84+ */}
-      <WidgetHeader title="테마 Top 10" actions={modeToggle} />
+      <WidgetHeader title="테마 Top 10" href="/themes" actions={modeToggle} />
 
       <ol className="flex-1 space-y-0.5 overflow-auto px-2 py-2">
         {loading && Array.from({ length: 10 }).map((_, i) => (
