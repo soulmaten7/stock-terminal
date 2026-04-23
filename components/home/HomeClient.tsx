@@ -21,7 +21,7 @@ import FloatingChat from '@/components/chat/FloatingChat';
 
 export default function HomeClient() {
   return (
-    <div className="relative max-w-[1600px] min-w-[1280px] mx-auto px-2 py-2 flex flex-col gap-2">
+    <div className="max-w-[1600px] min-w-[1280px] mx-auto px-2 py-2 flex flex-col gap-2">
 
       {/* Section 1 — L자 레이아웃, 820px */}
       <section

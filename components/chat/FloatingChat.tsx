@@ -210,15 +210,23 @@ export default function FloatingChat() {
 
   if (!mounted) return null;
 
-  const posClass = position === 'left' ? 'left-4' : 'right-4';
+  const posInner = position === 'left' ? 'left-0' : 'right-0';
+
+  const chatWrapper = (content: React.ReactNode) => (
+    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1600px] min-w-[1280px] pointer-events-none z-40 px-4 pb-4">
+      <div className="relative h-0">
+        {content}
+      </div>
+    </div>
+  );
 
   // ── 닫힘 — 원형 아이콘 ─────────────────────────────────────────────────────
   if (chatState === 'closed') {
-    return (
+    return chatWrapper(
       <button
         onClick={() => setChatState('open')}
         aria-label="채팅 열기"
-        className={`absolute bottom-4 ${posClass} z-40 w-14 h-14 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693] transition-colors`}
+        className={`absolute bottom-0 ${posInner} pointer-events-auto w-14 h-14 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693] transition-colors`}
       >
         <MessageCircle className="w-6 h-6" />
         {unreadCount > 0 && (
@@ -233,8 +241,9 @@ export default function FloatingChat() {
   // ── 열림 — 패널 (좌/우 토글) ───────────────────────────────────────────────
   return (
     <>
+      {chatWrapper(
       <div
-        className={`absolute bottom-4 ${posClass} z-40 w-80 h-[440px] rounded-lg bg-white border border-[#E5E7EB] shadow-xl flex flex-col`}
+        className={`absolute bottom-0 ${posInner} pointer-events-auto w-80 h-[440px] rounded-lg bg-white border border-[#E5E7EB] shadow-xl flex flex-col`}
       >
         {/* 헤더 */}
         <div className="h-10 border-b border-[#E5E7EB] flex items-center justify-between px-3 shrink-0 bg-[#FAFAFA] rounded-t-lg">
@@ -316,7 +325,7 @@ export default function FloatingChat() {
           {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
         </form>
       </div>
-
+      )}
       <ChatParticipantsModal open={modalOpen} onClose={() => setModalOpen(false)} participants={participants} />
     </>
   );
