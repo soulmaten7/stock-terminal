@@ -210,23 +210,21 @@ export default function FloatingChat() {
 
   if (!mounted) return null;
 
-  const posInner = position === 'left' ? 'left-0' : 'right-0';
-
-  const chatWrapper = (content: React.ReactNode) => (
-    <div className="fixed bottom-0 left-0 right-0 mx-auto max-w-[1600px] min-w-[1280px] px-2 pb-2 pointer-events-none z-40">
-      <div className="relative h-0">
-        {content}
-      </div>
-    </div>
-  );
+  // 대시보드(max-w-1600 px-2)와 동일한 경계: viewport가 1600px 이상이면 여백을 계산해 안쪽으로 붙임
+  const edgeOffset = 'calc(max(8px, (100vw - 1600px) / 2 + 8px))';
+  const fixedStyle: React.CSSProperties =
+    position === 'left'
+      ? { bottom: 8, left: edgeOffset, zIndex: 40 }
+      : { bottom: 8, right: edgeOffset, zIndex: 40 };
 
   // ── 닫힘 — 원형 아이콘 ─────────────────────────────────────────────────────
   if (chatState === 'closed') {
-    return chatWrapper(
+    return (
       <button
         onClick={() => setChatState('open')}
         aria-label="채팅 열기"
-        className={`absolute bottom-0 ${posInner} pointer-events-auto w-14 h-14 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693] transition-colors`}
+        style={fixedStyle}
+        className="fixed w-14 h-14 rounded-full bg-[#0ABAB5] text-white shadow-lg flex items-center justify-center hover:bg-[#089693] transition-colors"
       >
         <MessageCircle className="w-6 h-6" />
         {unreadCount > 0 && (
@@ -241,9 +239,9 @@ export default function FloatingChat() {
   // ── 열림 — 패널 (좌/우 토글) ───────────────────────────────────────────────
   return (
     <>
-      {chatWrapper(
       <div
-        className={`absolute bottom-0 ${posInner} pointer-events-auto w-80 h-[440px] rounded-lg bg-white border border-[#E5E7EB] shadow-xl flex flex-col`}
+        style={fixedStyle}
+        className="fixed w-80 h-[440px] rounded-lg bg-white border border-[#E5E7EB] shadow-xl flex flex-col"
       >
         {/* 헤더 */}
         <div className="h-10 border-b border-[#E5E7EB] flex items-center justify-between px-3 shrink-0 bg-[#FAFAFA] rounded-t-lg">
@@ -325,7 +323,6 @@ export default function FloatingChat() {
           {err && <p className="text-[10px] text-[#C33] mt-1">⚠ {err}</p>}
         </form>
       </div>
-      )}
       <ChatParticipantsModal open={modalOpen} onClose={() => setModalOpen(false)} participants={participants} />
     </>
   );
