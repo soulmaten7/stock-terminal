@@ -213,7 +213,7 @@ export default function FloatingChat() {
   const posInner = position === 'left' ? 'left-0' : 'right-0';
 
   const chatWrapper = (content: React.ReactNode) => (
-    <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[1600px] min-w-[1280px] pointer-events-none z-40 px-4 pb-4">
+    <div className="fixed bottom-0 left-0 right-0 mx-auto max-w-[1600px] min-w-[1280px] px-2 pb-2 pointer-events-none z-40">
       <div className="relative h-0">
         {content}
       </div>
