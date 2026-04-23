@@ -23,6 +23,9 @@
 - [ ] **ESLint cleanup** — `set-state-in-effect` 63건 일괄 정리 (별도 STEP)
 - [ ] **Vercel 배포 검증** — 빌드 OK + 환경변수 확인
 
+### 2026-04-23 — STEP 85 완료
+- 데이터 품질 4개 버그 수정 (sectors KR 폴백 / movers 로그 / screener ETF 필터 / news 키워드 필터)
+
 ### 2026-04-23 세션 — STEP 75~82 완료 (V3 대시보드 풀 구현)
 - [x] STEP 75: Section 1 보강 — 배당수익률, DART BS/CF, SEC EDGAR 공시
 - [x] STEP 76: Section 2 Pre-Market & Global — BriefingWidget + GlobalIndicesWidget 5그룹

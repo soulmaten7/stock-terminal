@@ -87,7 +87,7 @@ export default function SectorHeatmapWidget() {
       )}
 
       <p className="mt-2 px-3 text-[10px] text-[#AAA]">
-        {market === 'KR' ? '3개월 수익률 기준 섹터 평균' : 'SPDR 섹터 ETF 당일 등락'}
+        {market === 'KR' ? 'KRX 섹터 ETF 당일 등락' : 'SPDR 섹터 ETF 당일 등락'}
       </p>
     </div>
   );

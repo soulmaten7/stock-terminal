@@ -64,6 +64,17 @@ export async function GET(request: NextRequest) {
     .eq('country', 'KR')
     .in('market', markets);
 
+  // 레버리지/인버스/ETF/ETN 제외 (이름 기반)
+  const EXCLUDE_PATTERNS = [
+    '레버리지', '인버스', '곱버스',
+    'KODEX', 'TIGER', 'HANARO', 'ARIRANG',
+    'ETN', 'ETF',
+    'KBSTAR', 'KINDEX', 'KOSEF',
+  ];
+  for (const p of EXCLUDE_PATTERNS) {
+    query = query.not('name_ko', 'ilike', `%${p}%`);
+  }
+
   if (q) query = query.or(`name_ko.ilike.%${q}%,symbol.ilike.${q}%`);
   if (minCap != null && minCap > 0) query = query.gte('market_cap', minCap);
   if (maxCap != null && maxCap > 0) query = query.lte('market_cap', maxCap);

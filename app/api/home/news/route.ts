@@ -6,6 +6,32 @@ const FEEDS = [
   { source: '이데일리', url: 'https://www.edaily.co.kr/rss/rss-newsflash.asp' },
 ];
 
+// 주식/기업 관련 키워드 포함된 기사만 통과
+const ALLOW_KEYWORDS = [
+  '종목', '주가', '주식', '코스피', '코스닥', 'KOSPI', 'KOSDAQ',
+  '상장', '공시', '실적', '영업이익', '매출',
+  '증권', '투자', '펀드', 'ETF',
+  '반도체', '2차전지', '바이오', '자동차', '조선',
+  '삼성', 'SK', 'LG', '현대', '네이버', '카카오', '셀트리온',
+  'AI', '인공지능', '반등', '급등', '급락', '상한가', '하한가',
+  '배당', '자사주', '분할', '합병', '인수',
+  '외국인', '기관', '순매수', '순매도',
+];
+
+// 제외 키워드 (주식과 무관한 분야)
+const DENY_KEYWORDS = [
+  '부동산', '아파트', '분양', '집값',
+  '결혼', '이혼', '사망', '연예',
+  '스포츠', '야구', '축구', '농구',
+  '맛집', '여행', '레시피',
+];
+
+function isRelevant(title: string): boolean {
+  if (DENY_KEYWORDS.some((k) => title.includes(k))) return false;
+  const t = title.toLowerCase();
+  return ALLOW_KEYWORDS.some((k) => title.includes(k) || t.includes(k.toLowerCase()));
+}
+
 interface NewsItem {
   source: string;
   title: string;
@@ -15,12 +41,10 @@ interface NewsItem {
 }
 
 function extractTag(xml: string, tag: string): string {
-  // handles <tag>text</tag> and <tag><![CDATA[text]]></tag>
   const m = xml.match(new RegExp(`<${tag}[^>]*>(?:<!\\[CDATA\\[)?([\\s\\S]*?)(?:\\]\\]>)?<\\/${tag}>`, 'i'));
   return m ? m[1].trim() : '';
 }
 
-// <link> in RSS often has no closing tag — fall back to text after <link>
 function extractLink(xml: string): string {
   const withClose = extractTag(xml, 'link');
   if (withClose) return withClose;
@@ -49,10 +73,11 @@ async function fetchFeed(source: string, url: string): Promise<NewsItem[]> {
     const xml = await res.text();
     const items: NewsItem[] = [];
     const blocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)];
-    for (const block of blocks.slice(0, 12)) {
+    for (const block of blocks.slice(0, 30)) {
       const raw = block[1];
       const title = extractTag(raw, 'title');
       if (!title) continue;
+      if (!isRelevant(title)) continue;
       const link = extractLink(raw);
       const pubDate = extractTag(raw, 'pubDate');
       items.push({ source, title, link, pubDate, timeAgo: timeAgo(pubDate) });
