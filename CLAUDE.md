@@ -35,7 +35,7 @@
 
 **실행 명령어 (기본 — Sonnet):**
 ```bash
-cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model sonnet
+cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
 ```
 
 **Opus가 필요한 경우** — Cowork이 명령어 줄 때 **🔴 Opus 권장** 배지를 명시:
@@ -46,7 +46,7 @@ cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model sonnet
 
 **Opus 실행 명령어 (Cowork이 🔴 표시한 경우만):**
 ```bash
-cd ~/Desktop/OTMarketing && claude --dangerously-skip-permissions --model opus
+cd ~/stock-terminal && claude --dangerously-skip-permissions --model opus
 ```
 
 **표기 규칙:**
@@ -92,6 +92,8 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 - 기존 POTAL Supabase 프로젝트 URL/Key 절대 사용 금지 — 반드시 stock-platform 전용 Supabase 프로젝트 사용
 - 코드/기술 용어는 영어, 소통은 한국어
 - 코딩 초보자 대상 — 기술 설명 간결하게, 명령어는 복붙 가능하게 만들어줄 것
+- **OTMarketing CPA 작업은 여기서 하지 않는다** → `~/OTMarketing/` 별도 저장소 (2026-04-23 분리 완료, 상세: `docs/CROSS_REFERENCE.md`)
+- 광고주 DB 수집·정산 로직은 본 프로젝트 영역 아님 — 투자 정보·차트·시그널·트레이딩 도구만 다룸
 
 ## 폴더 구조
 ```

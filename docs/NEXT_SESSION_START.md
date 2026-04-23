@@ -1,11 +1,35 @@
 <!-- 2026-04-23 -->
 # Stock Terminal — 다음 세션 시작 가이드
 
+## 📦 2026-04-23 OTMarketing 분리 직후 — 반드시 먼저 읽을 것
+
+이 프로젝트는 오늘(2026-04-23) OTMarketing CPA 사업 폴더와 **완전 분리**되었음.
+
+| 항목 | 값 |
+|------|-----|
+| 현재 위치 | `~/stock-terminal/` (홈 디렉토리 직하) |
+| git 원격 | `https://github.com/soulmaten7/stock-terminal.git` |
+| 현재 브랜치 | `main` (origin/main과 동기화) |
+| 분리 직전 커밋 | `adcd609 feat: add proposal template system with 6 industry defaults` |
+| 백업 위치 | `~/_BACKUP_20260423_191738/` (2026-04-30 이후 수동 삭제) |
+| OTMarketing 위치 | `~/OTMarketing/` (독립 저장소 `soulmaten7/otmarketing-cpa`) |
+
+**분리 직후 working tree 상태 (커밋 안 된 변경)**
+- `M components/widgets/SectorHeatmapWidget.tsx` (STEP 87 작업 잔여물)
+- `D templates/proposals/*.pdf`, `_generator.py`, `README.md` (OTMarketing으로 이관된 파일들의 local 삭제 — OTMarketing 폴더에 원본 보존)
+- `?? docs/STEP_01_PROJECT_SEPARATION.md` (분리 작업 로그)
+- `?? docs/STEP_87_COMMAND.md` (직전 STEP 명령서)
+
+**공유 자원**: Vercel 계정·GitHub 계정(soulmaten7)은 OTMarketing과 공용, 저장소·DB·도메인은 분리됨. 자세한 관계는 `docs/CROSS_REFERENCE.md` 참조.
+
+---
+
 ## ⚠️ 다음 세션에서 가장 먼저 할 일
 1. `docs/SESSION_KICKOFF.md` 읽기 — 전체 현황 + 우선순위
 2. **Vercel 배포** — 환경변수 점검 + 배포 + E2E 검증
 3. **DisclosureStreamWidget US** — SEC EDGAR 최근 8-K 스트림 API
 4. 4개 문서 날짜 확인 (CLAUDE/CHANGELOG/session-context/NEXT_SESSION_START)
+5. (분리 직후) working tree 미커밋 변경 처리 방향 결정 — templates/proposals deletion 을 별도 커밋으로 정리할지 사용자 확인
 
 ## 현재 상태 (2026-04-23 STEP 86 완료 시점) — 신규 풀스크린 페이지 3개 추가
 

@@ -1,6 +1,27 @@
 <!-- 2026-04-23 -->
 # Stock Terminal — 변경 이력
 
+## 2026-04-23 — STEP 02: OTMarketing 분리 후 handoff 문서 셋업
+
+### 주요 변경
+- OTMarketing CPA 사업 폴더(`~/OTMarketing/`)가 별도 저장소 `soulmaten7/otmarketing-cpa`로 분리됨 — 본 프로젝트는 `~/stock-terminal/`에서 독립 git 저장소로 운영 (`soulmaten7/stock-terminal`)
+- 외장하드 Antigravity 사본은 `_archived_Antigravity_20260423/` 로 명명, 1주일 후 삭제 예정
+- 백업 위치: `~/_BACKUP_20260423_191738/` (2026-04-30 이후 수동 삭제)
+- 본 세션 산출물:
+  - `CLAUDE.md` 갱신 — 절대 규칙에 "OTMarketing 분리" 항목 추가, 실행 명령어 경로를 `~/Desktop/OTMarketing` → `~/stock-terminal` 으로 교체
+  - `docs/NEXT_SESSION_START.md` 상단에 "2026-04-23 OTMarketing 분리 직후" 박스 추가 (기존 내용 보존)
+  - `docs/CROSS_REFERENCE.md` 신규 생성 — OTMarketing과의 공유 인프라·분리 경계 명시
+
+### 분리 이전과의 차이
+- (분리 이전) `~/OTMarketing/` 한 폴더에 Stock Terminal Next.js 앱 + CPA 템플릿 혼재
+- (분리 이후) Stock Terminal 코드만 독립 폴더 + 독립 git + 독립 Vercel 프로젝트
+- (영향) Vercel·GitHub 계정은 공용, 저장소·도메인·DB는 분리
+
+### 미커밋 변경 (working tree 보존, 다음 세션에서 별도 처리)
+- `M components/widgets/SectorHeatmapWidget.tsx` (STEP 87 잔여)
+- `D templates/proposals/*` (OTMarketing으로 이관 — local 삭제만 반영, 원본은 `~/OTMarketing/templates/proposals/`에 보존)
+- `?? docs/STEP_01_PROJECT_SEPARATION.md`, `?? docs/STEP_87_COMMAND.md`
+
 ## 2026-04-23 — STEP 87: 회귀 핫픽스 + UI 디테일 (yahoo-finance2 v3 인스턴스화 / 반응형 / 툴팁 / 호가창 동기화)
 
 ## 2026-04-23 — STEP 86: 신규 화면 3개 (/market-map 섹터 히트맵 + /themes 테마주 + /disclosures 2컬럼) + TopNav 링크 정비
