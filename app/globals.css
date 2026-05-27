@@ -20,6 +20,19 @@
   --color-surface-dark: #0D1117;
   --color-surface-dark-card: #161B22;
   --color-surface-dark-border: #2D3748;
+  /* 운종(雲從) 브랜드 팔레트 */
+  --color-unjong-primary: #0F1E3D;
+  --color-unjong-accent: #D4AF37;
+  --color-unjong-success: #0E7C7B;
+  --color-unjong-danger: #C73E3A;
+  --color-unjong-muted: #6B7280;
+  --color-unjong-surface: #FFFFFF;
+  --color-unjong-background: #F5F5F7;
+  --color-unjong-border: #E5E7EB;
+  --color-unjong-dark-primary: #E5E7EB;
+  --color-unjong-dark-bg: #0A0A0A;
+  --color-unjong-dark-surface: #1C1C1E;
+  --color-unjong-dark-border: #2C2C2E;
 }
 
 * { box-sizing: border-box; }

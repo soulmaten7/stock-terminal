@@ -1,5 +1,36 @@
-<!-- 2026-04-23 -->
-# Stock Terminal — 프로젝트 맥락
+<!-- 2026-05-27 -->
+<!-- Last GC: 2026-04-23 (STEP 87 시점) -->
+# 운종(雲從) — 프로젝트 맥락
+
+## 세션 #25 (2026-05-27) — 운종(雲從) 브랜드 전환 + V4 비전 확정
+
+### 핵심 결정 사항
+- **브랜드**: Stock Terminal → **운종(雲從)** 확정
+- **도메인**: onetrillion.app (보유) 메인 + unjong.com 보호 (Layer 6)
+- **글로벌**: 영어판 X, 국가별 별도 페이지
+- **포지셔닝**: 한국 주식 동선의 출발점 (정보·대화·허브·신뢰)
+
+### 화면 구조 (V4)
+- 라이브스코어 톤: 메인 카드 65~70% + 좌측 채팅 25% + 헤더 5%
+- 3창 분리: 단타창 / 장타창 / 미국주식창 (헤더 고정 + 페이지 라우트)
+- 좌측 사이드 (폭 300px): 채팅 위 60% + 입력 10% + 관심종목 아래 30%
+- 채팅창 크기 고정, 스크롤로 보기 (확장 X)
+- 우측 사이드패널: 종목 클릭 시 차트/호가/체결 (기존 V3 재활용)
+
+### 카드 큐레이션 (창별 7개)
+- 단타창: Movers, Volume, VI 발동, NetBuy+거래원, 공시, 테마, 공매도
+- 장타창: 공시, 분기실적, 저평가, 배당 TOP, 신저가, 섹터, 관리종목
+- 미국주식창: 지수+VIX, Pre/After, M7, Movers, 환율+시계, 뉴스+8-K, FOMC
+
+### 광고 모델 (Layer 2~3)
+- Tier 1: 금융위 인증 (증권사)
+- Tier 2: 운종 검증 (유튜브·텔레그램·전문가·강의)
+- Tier 3: 일반 (회색·AD 라벨)
+
+### 진행 중
+- ✅ STEP 88 (운종 브랜드 적용) — 본 세션
+- ✅ STEP 95 (PRODUCT_SPEC_V4) — 본 세션
+- 다음: STEP 89~94 (라우트·헤더·사이드·카드·V3 강등)
 
 ## 프로젝트 개요
 - **서비스 정의**: 글로벌 개인투자자용 통합 데이터 터미널 플랫폼
@@ -17,11 +48,42 @@
 
 ## 현재 TODO
 
-### P0 — 다음 작업 (차기)
+### P0 — 다음 작업 (진짜 블로커)
+- [ ] **Vercel 첫 배포** — 환경변수 점검 (KIS/DART/Supabase/OpenAI) + Supabase RLS 재검증 + Chrome MCP 배포본 E2E
 - [ ] **DisclosureStreamWidget US** — SEC EDGAR 최근 8-K 스트림 API 신설
 - [ ] **GlobalIndicesWidget Sparkline** — Yahoo Finance 7일 히스토리 연결
+- [ ] **SESSION_KICKOFF self-update 루틴 정착** — 세션 종료 시 반드시 섹션 2~5 갱신 (과거 20+ 세션 누락 해소)
 - [ ] **ESLint cleanup** — `set-state-in-effect` 63건 일괄 정리 (별도 STEP)
-- [ ] **Vercel 배포 검증** — 빌드 OK + 환경변수 확인
+
+### P1 — 이번 주
+- [ ] 장중 실시간 검증 (평일 09:00~15:30 KST): 관심종목/수급/호가창/체결
+- [ ] 링크 허브 실제 링크 클릭 동작 확인
+- [ ] 전체 페이지 UI 세부 점검
+
+### P2 — 다음 주+
+- [ ] KRX 크롤링 (프로그램매매 + 공매도)
+- [ ] SEC EDGAR 확장 (미국 상세 공시 8-K/10-Q/10-K 구조화)
+- [ ] `/investor-flow` → `/net-buy` 탭 흡수
+- [ ] 경제캘린더 API 소스 결정 (네이버증권/Investing.com/한경컨센서스)
+- [ ] **DEV_BYPASS = false** 전환 후 프로덕션 모드
+
+### P3 — 2주+
+- [ ] Make 자동화 5개 시나리오 (리드 → Slack/이메일)
+- [ ] 모바일/태블릿 반응형
+- [ ] 시장 지도 Finviz 스타일 Treemap 재구현
+- [ ] 글로벌 지수 V2 (스파크라인 · 상관계수 · VKOSPI)
+
+### P4 — 1개월+
+- [ ] 일본(TSE) / 홍콩(HKEX) 시장
+- [ ] 영어 버전 글로벌 확장
+- ~~[ ] 토스페이먼츠/Paddle 결제~~ → V3 에서 영구 폐기
+- ~~[ ] 광고주 배너 등록 시스템~~ → Partner-Agnostic Landing 으로 대체
+
+---
+
+## 완료 아카이브
+
+> 완료된 세션·STEP 로그. 가장 최근이 위에, 과거가 아래로.
 
 ### 2026-04-23 — STEP 87 완료
 - yahoo-finance2 v3 인스턴스화 핫픽스 (섹터 API KR·US 복구)
@@ -45,24 +107,6 @@
 - [x] STEP 80: Section 5 Information Streams — NewsStream + DisclosureStream + EconCalendar
 - [x] STEP 81: 체결창/호가창 폴리싱 — fadeIn, 대량체결배지, depth bar, selectedSymbol 동기화
 - [x] STEP 82: QA — 빌드 OK, console.log 없음, V3_RELEASE_NOTES.md 생성
-
-### P0 — 지금 당장 (블로커)
-- [x] ~~**DB 시딩**: `stocks` 테이블~~ → 세션 #7 완료 (KOSPI 949 + KOSDAQ 1,821 = 2,780건)
-- [x] ~~**DB 시딩**: `link_hub` 테이블~~ → 세션 #7 완료 (KR/US 56건)
-- [x] ~~**더미 데이터 제거**: ~~ProgramTrading~~, ~~GlobalFutures~~, ~~WarningStocks~~, EconomicCalendar(#39→Phase2), ~~IpoSchedule~~, EarningsCalendar(#38→Phase2), ~~ScreenerPage~~, ~~ComparePage(W2.5)~~~~ → 세션 #15 ComingSoon 4개 완료, 나머지 결정됨
-- [x] ~~**W4 Phase 2**: /admin/partners CRUD + 리드 대시보드 + 슬롯 확장 + UTM 대시보드 + 편집·삭제·슬롯 재매핑 + (K/K-2) E2E + (J) 채팅 사이드바 슬롯~~ → 세션 #15 전부 완료
-- [x] ~~**(D) 홈 Row3 잔여 PARTNER SLOT (W4) placeholder 교체**~~ → 세션 #15 완료 (commit becb74c, home-sidebar-bottom 슬롯에 테스트 자산운용 시드 + HomeClient 회색 박스 제거)
-- [x] ~~**(E) /admin/partners 최소 CRUD (Phase 1 = 추가)**~~ → 세션 #15 완료 (GET/POST API + AuthGuard admin 페이지 + /admin 대시보드 바로가기, Chrome MCP E2E 5/5 PASS + soulmaten7 admin 승격)
-- [x] ~~**(F) /admin/partners/leads 리드 대시보드 + CSV Export**~~ → 세션 #15 완료 (필터 4종 + KPI 4카드 + UTM TOP5 + 리스트 + CSV BOM 다운로드)
-- [x] ~~**(G) 슬롯 키 확장 (stock-detail-bottom / screener-bottom)**~~ → 세션 #15 완료 (SLOT_KEYS 7옵션 + `/stocks/[symbol]` 하단 + `/screener` 하단 PartnerSlot 주입, 빈 상태=null 렌더)
-- [x] ~~**(H) UTM/클릭 대시보드 + PartnerSlot 클릭 트래킹**~~ → 세션 #15 완료 (H1: sendBeacon + fetch keepalive 폴백 / H2: `/admin/partners/clicks` 슬롯별·파트너별·일자별 집계 + 전환율 + 최근 100건)
-- [x] ~~**(K) Chrome MCP E2E 검증 — (G)(H)**~~ → 세션 #15 완료 5/5 PASS (대시보드 렌더 + POST 트래킹 200 OK + 실데이터 반영 + screener/stocks-detail 슬롯 null 렌더)
-- [x] ~~**(I) 파트너 편집·삭제 + 슬롯 재매핑**~~ → 세션 #15 완료 (PATCH/DELETE `/api/admin/partners/[id]` + POST/DELETE `/[id]/slots` + 어드민 UI 편집 버튼·삭제 confirm·슬롯 칩 ✕·인라인 슬롯 추가)
-- [x] ~~**(K-2) Chrome MCP E2E 검증 — (I)**~~ → 세션 #15 완료 5/5 PASS (PATCH 200 + POST slot 200 + 중복 409 + DELETE slot 200 + DELETE partner 200, UI 반영 확인, 콘솔 에러 0)
-- [x] ~~**(J) 채팅 사이드바 하단 PartnerSlot 추가**~~ → 세션 #15 완료 (ChatPanel 최하단 compact + SLOT_KEYS `chat-sidebar-bottom` 추가, Chrome MCP 렌더 확인 — ChatSidebar/FloatingChat 양쪽 공통 반영, 미매핑 시 null)
-- [x] ~~**(L) 클릭/리드 개별 삭제 API + 어드민 UI**~~ → 세션 #15 완료 (DELETE `/api/admin/partners/clicks/[id]` + `leads/[id]` + 대시보드 🗑️ 버튼. QA 데이터 + 앞으로 쌓일 테스트 데이터 영구 정리 수단)
-- [x] ~~**/admin AuthGuard 추가**~~ → 세션 #6 완료 (2026-04-17)
-- [x] ~~**rate limit 복구**~~ → 세션 #6 완료 (2026-04-17)
 
 ### 2026-04-22 세션 — STEP 74 완료
 - [x] STEP 74: Section 1 반응형 + persist + FAB 토글
@@ -283,28 +327,13 @@
 - 새 컴포넌트: ChatParticipantsModal (320×600, ESC/배경 클릭 닫기)
 - ChatWidget 재구조 — action slot을 버튼으로 변경, 2번째 useEffect 추가 (Presence)
 
-### TODO (Phase 2-B)
-- [ ] /investor-flow 페이지 내용을 /net-buy 내 탭으로 흡수
-- [ ] 수급 페이지 탭 구조: [종목별 TOP] [시장 동향]
-
-### TODO (Phase 2-C)
-- [ ] 경제캘린더 API 소스 결정 (네이버증권 vs Investing.com vs 한경컨센서스)
-- [ ] 홈 미니 위젯 (오늘+내일 주요 이벤트 3~5건)
-
 ### Session #22 Step 11 완료 (2026-04-21)
 - 사이드바 IA 개편 Phase 1 완료
 - 14개 → 12개로 정리 (커뮤니티 채팅 제거, 수급 통합, 시장 지도 리네임)
 - Active State 3중 표시 (왼쪽 바 + 배경 틴트 + 아이콘 색상)
 - Phase 2, 3 로드맵 결정됨 (아래 TODO 참조)
 
-### TODO (Phase 2 - 다음 세션)
-- [ ] 마켓채팅 참여자 팝업 구현 (참여자 수 클릭 → 모달)
-- [ ] `/investor-flow` 페이지 내용을 `/net-buy` 내 탭으로 흡수
-- [ ] 경제캘린더 홈 미니 위젯 (오늘+내일 주요 이벤트)
-
-### TODO (Phase 3 - 주요 작업)
-- [ ] 시장 지도 전면 재구현 (Finviz 스타일 섹터 Treemap)
-- [ ] 글로벌 지수 V2 확장 (스파크라인, 상관계수, VKOSPI, 위험자산/안전자산 그룹)
+> ※ Session #22 당시 Phase 2/3 TODO 는 상단 P2/P3 로드맵에 흡수 (2026-04-23 GC).
 
 ### 세션 #22 완료 — 2026-04-21 (홈 대시보드 V1 → V1.5 재구성)
 - **신규 위젯**: TrendingThemesWidget (KRX 섹터 TOP 5)
@@ -387,35 +416,9 @@
 - 신규 API 5종: /api/home/{news,global,investor-flow,briefing} + /api/kis/movers
 - 빌드 통과: 64/64 페이지
 
-### P1 — 이번 주
-- [x] ~~TradingView 위젯 연동 확인 (차트)~~ → 세션 #17 완료 (iframe 임베드)
-- [ ] 링크 허브 페이지 실제 링크 동작 확인
-- [x] ~~로그인/회원가입 Supabase Auth 연동 테스트~~ → 세션 #13 완료 (Google OAuth 실동작, RLS INSERT 정책 신설)
-- [x] ~~Chat API 하네스 점검~~ → 세션 #13 완료 (Task #26, 6/6 통과)
-- [x] ~~Chat 초기 UX·메시지 렌더링 디테일 점검~~ → 세션 #13 완료 (Task #27, 글자수 카운터 + 에러 UX + 429 전용 + $태그 pill + 포커스 유지)
-- [ ] 전체 페이지 UI 세부 점검
-- [ ] 장중 실시간 데이터 검증 (관심종목 변동, 수급 갱신, 호가창/체결)
+> ※ P1~P4 로드맵은 상단 "현재 TODO" 로 통합 (2026-04-23 GC).
 
-### P2 — 다음 주
-- [ ] KRX 크롤링 (프로그램매매 + 공매도 데이터)
-- [ ] SEC EDGAR API 연동 (미국 주식)
-- [ ] 관리자 페이지 완성 (파트너 CRUD 중심)
-- [ ] **DEV_BYPASS = false** 전환 후 프로덕션 배포 준비
-- ~~[ ] 토스페이먼츠 결제 연동~~ → **V3 에서 제외 (구독 모델 폐기)**
-- ~~[ ] 광고주 배너 등록 시스템~~ → **V3 에서 제외 (Partner-Agnostic Landing 으로 대체)**
-
-### P3 — 2주 후
-- [ ] Make 자동화 스케줄링 세팅 (5개 시나리오)
-- [ ] 모바일/태블릿 반응형 대응
-- [ ] 성능 최적화
-
-### P4 — 1개월 후
-- [ ] 일본(TSE) / 홍콩(HKEX) 시장 추가
-- [ ] 영어 버전 글로벌 확장
-- ~~[ ] Paddle 결제 연동~~ → **V3 에서 제외 (글로벌 진출 후에도 구독 없음)**
-- ~~[ ] 코인 플랫폼~~ → 별건 프로젝트로 분리 (V3 범위 아님)
-
-## 완료된 세션 히스토리
+## 완료된 세션 히스토리 (상세 로그)
 
 ### 세션 #15 — 2026-04-18 ((L) 클릭/리드 개별 삭제 API + 어드민 UI)
 - **신규 API 2종** — `DELETE /api/admin/partners/clicks/[id]` + `DELETE /api/admin/partners/leads/[id]`. 모두 `requireAdmin()` 게이트 + service_role 하드 삭제. 400/401/403/500 표준 응답.
@@ -680,17 +683,6 @@
   - 홈 대시보드 전체 컴포넌트
   - CLAUDE_CODE_INSTRUCTIONS.md 전체 개발 명령서 작성
 
-### 세션 #4 — 2026-04-11 (13개 페이지 Chrome MCP 테스트 + 홈 수급 최적화)
-- **신규**: `app/api/kis/investor-rank/route.ts` (batch endpoint, TR ID: FHPTJ04400000)
-- **수정**: `components/home/InstitutionalFlow.tsx` — 10건 병렬 개별호출 → 1건 batch 호출 (60초 폴링)
-- **효과**: 홈 페이지에서 WatchlistLive(10건/15초) + InstitutionalFlow(1건/60초) = 한투 rate limit 안정화
-- **테스트**: 13개 페이지 전부 Chrome MCP로 순회, 페이지별 UI/데이터 상태 기록
-- **발견된 이슈**:
-  - DB 시딩 필요 (`stocks`, `link_hub` 비어있음)
-  - 더미 데이터 8개 컴포넌트 제거 필요
-  - `/admin` AuthGuard 누락 (보안)
-  - Turbopack 파일시스템 캐시 오류 (샌드박스 한정)
-
 ### 세션 #3 — 2026-04-11
 - **작업 내용**: 한투 API 4종 검증 + lib/kis.ts 버그 수정
 - **검증 결과 (토요일 장외, 4/10 종가 기준)**:
@@ -723,21 +715,35 @@
   - SidebarChat 탭 제거, sticky bottom
 - **미완료**: 토스페이먼츠 (라이브 URL 필요), 프로그램매매 데이터 (KRX 크롤링 필요)
 
-## 핵심 수치
-- **총 파일 수**: 120개 이상
-- **페이지 수**: 13개 (홈, 링크허브, 종목검색, 종목상세, 기법분석, 광고주센터, 마이페이지, 구독결제, 관리자, 뉴스·공시, 시장분석, 스크리너, 비교분석)
-- **컴포넌트 수**: 70개 이상
-- **DB 테이블 수**: 20개
-- **API 라우트 수**: 12개 이상
-- **지원 시장**: 한국(코스피/코스닥) + 미국(나스닥/NYSE) — 추후 일본, 홍콩 추가
-- **빌드 상태**: 정상 (dev 서버 localhost:3333)
-- **stocks 테이블**: 2,780건 (KOSPI 949 + KOSDAQ 1,821)
-- **link_hub 테이블**: 56건 (KR/US)
-- **배포 상태**: 미배포
-- **한투 API**: 실전 계좌 연동 완료 (첫 3일 3회/초 제한)
-- **AI 분석**: GPT-4o-mini 연동 완료, 7일 캐시
+## 핵심 수치 (2026-04-23 STEP 87 기준)
+- **최신 STEP**: 87 (섹터 API v3 핫픽스 + 반응형 + 호가창 동기화)
+- **최신 커밋**: `1f46fa3` (docs: session-handoff bootstrap)
+- **홈 대시보드**: V3 5섹션 구조 (STEP 82 확정)
+- **신규 풀스크린 페이지**: `/market-map` · `/themes` · `/disclosures` (STEP 86)
+- **빌드 상태**: ✅ 클린 · TypeScript 0 오류 · console.log 0 · ESLint 63건 비차단 경고
+- **배포 상태**: ❌ 미배포 (P0)
+- **지원 시장**: 한국(KOSPI/KOSDAQ) + 미국(NASDAQ/NYSE) — 일본/홍콩 P4
+- **한투 API**: 7개 엔드포인트 전부 검증 완료
+- **AuthGuard**: `DEV_BYPASS = true` (admin 게이트는 DEV_BYPASS 무시)
+- **Rate limit**: `KIS_RATE_LIMIT_MS=60` (20건/초)
+
+### DB 시딩 누계
+| 테이블 | 건수 | 비고 |
+|--------|------|------|
+| stocks | 2,780 | KOSPI 949 + KOSDAQ 1,821 |
+| link_hub | 56 | KR/US |
+| financials | 576 | DART 연간 (TOP 100 × 2023/2024) |
+| stock_prices | 54,899 | 200종목 × 1년 일봉 |
+| supply_demand | 3,000 | 100종목 × 30영업일 |
+| dividends | 790 | TOP 200 × 최대 6년 |
+| quant_factors | 200 | TOP 200 Value/Momentum/Quality |
+| dart_corp_codes | 3,959 | DART 매핑 |
+
+### AI 분석
+- **모델**: GPT-4o-mini, 7일 캐시 (종목 AI 분석 전용)
 
 ## 세션 업데이트 지침
 - 이 파일에 없는 숫자를 임의로 만들지 말 것
 - 핵심 수치는 실제 확인된 수치만 기록
-- 세션 히스토리는 가장 최근이 아래에 추가
+- 세션 히스토리는 가장 최근이 위로 추가 (완료 아카이브 섹션)
+- **GC 루틴**: 2주+ 방치 TODO 는 ROADMAP 강등 또는 제거, Last GC 날짜 헤더 갱신

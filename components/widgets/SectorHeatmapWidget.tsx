@@ -60,7 +60,7 @@ export default function SectorHeatmapWidget() {
       <WidgetHeader title="섹터 히트맵" href="/market-map" actions={marketToggle} />
 
       {loading ? (
-        <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1.5 p-3">
+        <div className="flex-1 grid grid-cols-4 gap-1.5 p-3">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="h-14 bg-[#F0F0F0] animate-pulse rounded" />
           ))}

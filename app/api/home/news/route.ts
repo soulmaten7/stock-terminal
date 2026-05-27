@@ -65,7 +65,7 @@ function timeAgo(dateStr: string): string {
 async function fetchFeed(source: string, url: string): Promise<NewsItem[]> {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; StockTerminal/1.0; +https://stock-terminal.io)' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Unjong/1.0; +https://onetrillion.app)' },
       signal: AbortSignal.timeout(5000),
       next: { revalidate: 300 },
     });

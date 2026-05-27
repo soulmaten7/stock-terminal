@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import ChatWidget from '@/components/widgets/ChatWidget';
 
-export const metadata: Metadata = { title: '실시간 채팅 — StockTerminal' };
+export const metadata: Metadata = { title: '실시간 채팅 — 운종(雲從)' };
 
 export default function ChatPage() {
   return (

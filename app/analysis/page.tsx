@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import AnalysisClient from '@/components/analysis-page/AnalysisClient';
 
-export const metadata: Metadata = { title: '시장 분석 — StockTerminal' };
+export const metadata: Metadata = { title: '시장 분석 — 운종(雲從)' };
 
 export default function AnalysisPage() {
   return (

@@ -1,5 +1,26 @@
-<!-- 2026-04-23 -->
-# Stock Terminal — 변경 이력
+<!-- 2026-05-27 -->
+# 운종(雲從) — 변경 이력
+
+## 2026-05-27 — STEP 88 (세션 #25)
+
+### Stock Terminal → 운종(雲從) 브랜드 전환
+- `package.json` name: `stock-platform` → `unjong`
+- `app/layout.tsx` 메타데이터: 운종 브랜드로 통일 (title, description, OpenGraph)
+- `app/globals.css` 색상 팔레트 추가 (`--color-unjong-*` CSS 변수, Tailwind v4)
+- 모든 "Stock Terminal" / "StockTerminal" 문자열 → "운종(雲從)" 으로 일괄 변경
+- `docs/BRAND_IDENTITY.md` 신설 — 이름·의미·태그라인·색상·도메인 전략
+
+### V4 비전 문서화
+- `docs/PRODUCT_SPEC_V4.md` 신설 — 운종 비전·구조·레이어 로드맵
+- `docs/PRODUCT_SPEC_V3.md` 는 히스토리 보존 (덮어쓰지 않음)
+
+### Layer 0 (틀) 시작점
+- STEP 88~95 의 8단계 작업 정의 (1~1.5주)
+- STEP 89~94: 라우트·헤더·사이드·카드·V3 강등
+- STEP 95: PRODUCT_SPEC_V4 (이미 완료)
+
+### 다음 STEP
+- STEP 89: 3창 라우트 구조 (`/scalper` `/longterm` `/us`)
 
 ## 2026-04-23 — STEP 02: OTMarketing 분리 후 handoff 문서 셋업
 

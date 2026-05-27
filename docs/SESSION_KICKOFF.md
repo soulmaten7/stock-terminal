@@ -1,8 +1,10 @@
-<!-- 2026-04-17 -->
+<!-- 2026-04-23 -->
 # Stock Terminal — 새 세션 즉시 시작 파일
 
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> 세션이 끝날 때마다 이 파일도 업데이트할 것.
+> **Last refreshed**: 2026-04-23 (STEP 87 완료 · 세션 #24 · OTMarketing 분리 직후)
+> **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (샌드박스/외장하드 환경 종료)
+> 세션이 끝날 때마다 이 파일 섹션 2~5 반드시 업데이트할 것.
 
 ---
 
@@ -12,155 +14,151 @@
 - **Claude Code**: 사용자가 터미널에서 실행하는 CLI. 실제 파일 수정·빌드·git push 담당.
 - **사용자**: 코딩 초보. Claude Code 터미널에 명령어 붙여넣기만 하면 됨.
 
-**프로젝트**: 글로벌 개인투자자용 통합 주식 데이터 터미널  
-**목표**: 전업투자자 수준의 투자 환경을 월 2~3만원 구독료로 일반 투자자에게 제공  
-**기술 스택**: Next.js 16 + TypeScript + Tailwind CSS + Supabase + Zustand + Recharts + TradingView  
-**결제**: 토스페이먼츠 (한국) → 추후 Paddle (글로벌)  
-**배포**: Vercel + Supabase Cloud (현재 미배포, dev 서버 localhost:3333)
+**프로젝트**: 글로벌 개인투자자용 통합 주식 데이터 터미널
+**포지셔닝 (V3)**: "전업투자자 = 일반인 (상위 1% 지향)" — Aspirational Design
+**수익 모델 (V3 단일)**: **Partner-Agnostic Lead Gen 만.** 구독/결제/Pro/AI 리포트/CSV 일절 없음.
+**기술 스택**: Next.js 16 + TypeScript + Tailwind CSS + Supabase + Zustand + Recharts + TradingView + lightweight-charts
+**데이터 소스**: 100% 무료 (DART/KRX/KIS/FDR/Naver/ECOS/Yahoo Finance/SEC EDGAR) — KIS 서버사이드 실시간 연동 완료
+**배포**: Vercel + Supabase Cloud (**현재 미배포** — 이번 세션 P0)
+**저장소**: https://github.com/soulmaten7/stock-terminal.git
 
 ---
 
-## 2. 현재 프로젝트 상태 (2026-04-17 기준)
+## 2. 현재 프로젝트 상태 (2026-04-23 STEP 87 완료 기준)
 
 | 항목 | 상태 |
 |------|------|
-| 총 파일 수 | 120개 이상 |
-| 페이지 수 | 13개 |
-| 컴포넌트 수 | 70개 이상 |
-| DB 테이블 수 | 20개 |
-| API 라우트 수 | 12개 이상 |
-| 빌드 상태 | 정상 (dev 서버 localhost:3333) |
-| 배포 상태 | 미배포 |
-| 한투 API | 실전계좌 연동 완료 |
-| AI 분석 | GPT-4o-mini 연동 완료 (7일 캐시) |
-| AuthGuard | DEV_BYPASS = true (admin 게이트는 DEV_BYPASS 무시하고 role 검증) |
-| Rate limit | ✅ 복구 완료 (`KIS_RATE_LIMIT_MS=60`, 20건/초) |
-| git repo | https://github.com/soulmaten7/stock-terminal.git |
-| 최신 커밋 | 18fcc48 (세션 #6 push 완료, 12개 파일 변경) |
+| 최신 STEP | 87 (섹터 API 핫픽스 + 반응형 + 호가창 동기화) |
+| 최신 커밋 | `1f46fa3` (docs: session-handoff bootstrap) |
+| 빌드 | ✅ 클린 · TypeScript 0 오류 · console.log 0 |
+| ESLint | ⚠️ `set-state-in-effect` 63건 비차단 경고 (별도 STEP 예정) |
+| 배포 | ❌ 미배포 (P0) |
+| AuthGuard | `DEV_BYPASS = true` (admin 게이트는 DEV_BYPASS 무시하고 role 검증) |
+| Rate limit | ✅ `KIS_RATE_LIMIT_MS=60` (20건/초) |
+| 한투 API | 7개 엔드포인트 전부 검증 완료 |
+| DART | corp_codes 3,959건 · financials 576건 |
+| AI 분석 | GPT-4o-mini 7일 캐시 (종목 AI 분석 전용) |
+
+**DB 시딩 누계 (이미 완료, 반복 금지)**:
+- `stocks` 2,780건 (KOSPI 949 + KOSDAQ 1,821)
+- `link_hub` 56건 (KR/US)
+- `financials` 576건 / `stock_prices` 54,899건
+- `supply_demand` 3,000건 / `dividends` 790건 / `quant_factors` 200건
+- `dart_corp_codes` 3,959건
 
 ---
 
-## 3. 13개 페이지 목록 및 현재 상태
+## 3. 홈 대시보드 5섹션 구조 (V3 기준, STEP 82 확정)
 
-| # | URL | 페이지명 | 상태 |
-|---|-----|---------|------|
-| 1 | / | 홈 대시보드 | ✅ 실데이터 |
-| 2 | /stocks | 종목 검색/리스트 | ⚠️ stocks 테이블 비어있음 |
-| 3 | /stocks/[code] | 종목 상세 | ✅ (DEV_BYPASS로 열림) |
-| 4 | /stocks/[code]/analysis | 종목 AI 분석 | ✅ (DEV_BYPASS로 열림) |
-| 5 | /news | 뉴스·공시 | ✅ RSS 실데이터 20건 |
-| 6 | /analysis | 시장분석 | ⚠️ FRED OK, 나머지 더미 |
-| 7 | /screener | 스크리너 | ⚠️ 12종목 전체 더미 |
-| 8 | /compare | 비교분석 | ⚠️ 삼성/SK 하드코딩 더미 |
-| 9 | /link-hub | 링크 허브 | ⚠️ link_hub 테이블 비어있음 |
-| 10 | /advertiser | 광고주 센터 | ✅ 정상 |
-| 11 | /mypage | 마이페이지 | ✅ (미로그인 → /auth/login 리다이렉트) |
-| 12 | /pricing | 구독/결제 | ✅ 요금제 버튼 정상 |
-| 13 | /admin | 관리자 | ✅ AuthGuard `minPlan="admin"` 래핑 완료 (세션 #6) |
+| # | 섹션 | 구성 위젯 |
+|---|------|----------|
+| 1 | 트레이딩 터미널 | Watchlist · Chart · OrderBook · Tick · StockDetailPanel |
+| 2 | Pre-Market & Global | BriefingWidget · GlobalIndicesWidget(17지표) |
+| 3 | Discovery | ScreenerExpandedWidget(6프리셋) · MoversPairWidget · Volume · NetBuy |
+| 4 | Market Structure | SectorHeatmapWidget(KR/US) · ThemeTop10Widget |
+| 5 | Information Streams | NewsStream · DisclosureStream(KR/US) · EconCalendar |
 
----
+**전역 기능**: FloatingChat v3 (2상태 · 좌/우 토글 · persist) · selectedSymbolStore (Zustand persist) · StockDetailPanel 4탭 (종합/재무/공시/뉴스)
 
-## 4. 다음 세션 작업 목록 (우선순위 순)
+**신규 풀스크린 페이지 (STEP 86)**: `/market-map` · `/themes` · `/disclosures`
 
-### ★ P0 — 지금 당장 (블로커)
+### 풀스크린 페이지 전체 목록 (10종 + Admin/Partner)
 
-#### 4-1. ~~Rate limit 복구~~ ✅ 세션 #6 완료 (2026-04-17)
-- `.env.local`: `KIS_RATE_LIMIT_MS=400 → 60`
-- `WatchlistLive.tsx`: 폴링 15000ms → 10000ms
-
-#### 4-2. ~~/admin 페이지 AuthGuard 추가~~ ✅ 세션 #6 완료 (2026-04-17)
-- `AuthGuard.tsx`: `'admin'` minPlan 추가 (DEV_BYPASS 무시하고 role 검증)
-- `app/admin/page.tsx`: `<AuthGuard minPlan="admin">` 로 전체 래핑
-
-#### 4-3. stocks 테이블 DB 시딩 (30분~1시간)
-현재 stocks 테이블이 비어있어 종목 검색·리스트·스크리너 전부 빈 화면
-
-**방법 옵션:**
-- A) 한투 API로 전체 종목 리스트 가져오기 (추천)
-- B) KRX 공공데이터 CSV 다운로드 후 Supabase에 insert
-- C) 샘플 데이터 100개만 먼저 넣어서 UI 확인
-
-#### 4-4. link_hub 테이블 DB 시딩 (20분)
-현재 link_hub 테이블이 비어있어 링크 허브 페이지 빈 화면
-
-**방법:** 기존 `lib/linkHub.ts`에 하드코딩된 데이터를 Supabase insert SQL로 변환
-
-#### 4-5. 더미 데이터 제거 (8개 컴포넌트, 1~2시간)
-아래 컴포넌트들이 하드코딩된 가짜 데이터를 보여주고 있음:
-
-| 컴포넌트 | 위치 | 필요한 것 |
-|---------|------|---------|
-| ProgramTrading | components/home/ | KRX 크롤링 (한투 API 없음) |
-| GlobalFutures | components/home/ | 외부 API (Yahoo Finance 등) |
-| WarningStocks | components/home/ | KRX 경고종목 API |
-| EconomicCalendar | components/home/ | 경제지표 일정 API |
-| IpoSchedule | components/home/ | IPO 일정 API |
-| EarningsCalendar | components/home/ | 실적발표 일정 API |
-| ScreenerPage | app/screener/ | stocks 테이블 시딩 후 DB 쿼리 |
-| ComparePage | app/compare/ | stocks 테이블 시딩 후 실데이터 |
+| 경로 | 역할 | 비고 |
+|------|------|------|
+| `/chart` | TradingView 풀차트 | 종목 선택 시 selectedSymbolStore 공유 |
+| `/orderbook` | 호가창 + 체결 전용 뷰 | KIS 실시간 |
+| `/screener` | 스크리너 풀뷰 | 6프리셋 · 커스텀 필터 |
+| `/movers/price` · `/movers/volume` | 등락률 / 거래량 TOP | KIS ranking API |
+| `/net-buy` | 외국인·기관 수급 | 추후 `/investor-flow` 흡수 예정 |
+| `/market-map` ⭐ | 시장 지도 (신규 STEP 86) | 섹터 히트맵 확장 |
+| `/themes` ⭐ | 테마 TOP10 (신규 STEP 86) | 상승 테마 랭킹 |
+| `/disclosures` ⭐ | 공시 스트림 (신규 STEP 86) | KR live · US TODO |
+| `/news` · `/calendar` · `/briefing` | 뉴스 / 경제캘린더 / 프리마켓 브리핑 | Information Streams 확장 |
+| `/global` · `/ticks` | 글로벌 지수 · 체결 틱 | Pre-Market & Global 확장 |
+| `/chat` · `/analysis` | FloatingChat 풀뷰 · AI 분석 | GPT-4o-mini 7일 캐시 |
+| `/admin/partners` · `/partner/[slug]` | 파트너 관리 / 파트너 랜딩 | 수익 모델 인프라 |
 
 ---
 
-### ★ P1 — 이번 주
+## 4. 다음 세션 P0 (진짜 블로커만)
 
-- [ ] 장중 실시간 검증 (평일 09:00~15:30): 관심종목 변동, 수급 갱신, 호가창/체결
-- [ ] TradingView 위젯 동작 확인 (차트, 티커바)
-- [ ] 링크 허브 실제 링크 클릭 동작 확인
-- [ ] 로그인/회원가입 Supabase Auth 연동 테스트
-- [ ] 전체 페이지 UI 세부 점검
+### 4-1. Vercel 첫 배포
+- 환경변수 점검: `KIS_APP_KEY` / `KIS_APP_SECRET` / `DART_API_KEY` / `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` / `OPENAI_API_KEY`
+- Supabase RLS 재검증: `watchlists` · `chat_messages` · `partners` · `partner_leads` · `partner_clicks`
+- Vercel 배포 → 실도메인 연결 (도메인 미정)
+- Chrome MCP 로 배포본 E2E 검증 (홈 5섹션 렌더 + 실데이터 도달)
 
----
+### 4-2. DisclosureStreamWidget US 실데이터 연결
+- SEC EDGAR 최근 8-K 스트림 API 신설 (`/api/stocks/disclosures` US 분기)
+- 현재 KR(DART)은 live, US는 TODO 상태
 
-### ★ P2 — 다음 주
+### 4-3. GlobalIndicesWidget Sparkline
+- Yahoo Finance 7일 히스토리 연결 (현재 실시간 값만 있고 trend mini-chart 없음)
 
-- [ ] 토스페이먼츠 결제 연동 (라이브 URL 생성 후 실제 API 키 발급)
-- [ ] KRX 크롤링 (프로그램매매 + 공매도 데이터)
-- [ ] SEC EDGAR API 연동 (미국 주식)
-- [ ] 광고주 배너 등록 시스템 완성
-- [ ] 관리자 페이지 기능 완성
+### 4-4. 문서 self-update 루틴 정착
+- **세션 종료 시 이 파일(SESSION_KICKOFF.md) 섹션 2~4 반드시 갱신**
+- 과거 20+ 세션 동안 누락돼 2026-04-17 기준으로 고착돼 있었음 (2026-04-23 본 리프레시로 해소)
+- 종료 루틴 체크리스트는 섹션 11 참조
 
----
-
-### ★ P3 — 2주 후
-
-- [ ] Make 자동화 스케줄링 세팅 (5개 시나리오)
-- [ ] 모바일/태블릿 반응형 대응
-- [ ] 성능 최적화 (번들 사이즈, 이미지, lazy loading)
+### 4-5. ESLint cleanup (별도 STEP)
+- `react-hooks/set-state-in-effect` 63건 일괄 정리
+- 비차단이지만 코드 품질 부채로 누적 중
 
 ---
 
-### ★ P4 — 프로덕션 배포 전 필수 체크
+## 5. P1/P2/P3 로드맵 (참고용, 우선순위 낮음)
 
-- [ ] `AuthGuard.tsx`: `DEV_BYPASS = true` → `false` (또는 줄 삭제)
-- [ ] `.env.local` → Vercel 환경변수로 이관
-- [ ] `console.log` 전체 제거
-- [ ] Vercel 배포 + Supabase Cloud 연결
+### P1 — 배포 후
+- 장중 실시간 검증 (평일 09:00~15:30): 관심종목 변동 · 수급 갱신 · 호가창/체결
+- 링크 허브 실제 링크 클릭 동작 확인
+- 전체 페이지 UI 세부 점검
+
+### P2 — 다음 주+
+- KRX 크롤링 (프로그램매매 + 공매도 데이터)
+- SEC EDGAR 확장 (미국 종목 상세 공시 8-K/10-Q/10-K 구조화)
+- `/investor-flow` → `/net-buy` 탭 흡수
+- 경제캘린더 API 소스 결정 (네이버증권 vs Investing.com vs 한경컨센서스)
+- **DEV_BYPASS = false** 전환 후 프로덕션 모드
+
+### P3 — 2주+
+- Make 자동화 5개 시나리오 (리드 전송/정산)
+- 모바일/태블릿 반응형
+- 시장 지도 Finviz Treemap 재구현
+- 글로벌 지수 V2 (스파크라인 · 상관계수 · VKOSPI)
+
+### P4 — 1개월+
+- 일본(TSE) / 홍콩(HKEX) 시장
+- 영어 버전 글로벌 확장
 
 ---
 
-## 5. 핵심 파일 위치
+## 6. 핵심 파일 위치
 
 | 파일 | 경로 | 용도 |
 |------|------|------|
 | 이 파일 | `docs/SESSION_KICKOFF.md` | 새 세션 즉시 시작용 |
+| 다음 세션 가이드 | `docs/NEXT_SESSION_START.md` | 최신 상태 요약 + 다음 할 일 |
 | Claude 지침 | `CLAUDE.md` | 역할 분담 + 절대 규칙 |
 | 개발 명령서 | `CLAUDE_CODE_INSTRUCTIONS.md` | 전체 기능 명세, DB 스키마 |
-| 비즈니스 전략 | `docs/BUSINESS_STRATEGY.md` | 사업 전략, 수익모델 |
+| 제품 스펙 V3 | `docs/PRODUCT_SPEC_V3.md` | V3 확정 스펙 |
+| 비즈니스 전략 | `docs/BUSINESS_STRATEGY.md` | Partner-Agnostic Lead Gen 수익 모델 |
 | 시스템 설계 | `docs/SYSTEM_DESIGN.md` | 아키텍처, API 현황 |
 | 프로젝트 맥락 | `session-context.md` | TODO, 히스토리, 핵심 수치 |
 | 변경 이력 | `docs/CHANGELOG.md` | 세션별 변경사항 |
+| V3 릴리스 노트 | `docs/V3_RELEASE_NOTES.md` | STEP 82 대시보드 V3 완성 |
+| 대시보드 스펙 | `docs/DASHBOARD_SPEC_V3.md` | 5섹션 레이아웃 |
 | DB 스키마 | `supabase/migrations/001_initial_schema.sql` | Supabase 테이블 정의 |
-| 환경변수 | `.env.local` | API 키 (절대 git push 금지) |
+| 환경변수 | `.env.local` | API 키 (반드시 stock-platform 전용 Supabase, git push 금지) |
 | 한투 API 유틸 | `lib/kis.ts` | rate limiter, 토큰 캐싱 |
 | AuthGuard | `components/auth/AuthGuard.tsx` | DEV_BYPASS 위치 |
 
 ---
 
-## 6. 알아야 할 기술 이슈
+## 7. 알아야 할 기술 이슈
 
 ### FUSE mount + Turbopack 충돌 (샌드박스 전용)
 - **증상**: `Failed to open database - Operation not permitted`
-- **원인**: 샌드박스 워크스페이스가 FUSE mount라 Turbopack DB lock 파일 생성 불가
 - **해결**: `.fuse_hidden*` 파일 삭제 후 서버 재시작
   ```bash
   find . -name ".fuse_hidden*" -delete 2>/dev/null; npm run dev
@@ -168,7 +166,7 @@
 - **운영 환경엔 영향 없음** (Vercel 배포 후 사라지는 문제)
 
 ### git 커밋 (샌드박스 전용)
-- 샌드박스에서 `.git/index.lock` 삭제 불가 → Mac 터미널에서 직접 실행 필요
+- 샌드박스에서 `.git/index.lock` 삭제 불가 → Mac 터미널에서 직접 실행
   ```bash
   rm -f .git/index.lock
   git add -A
@@ -176,48 +174,42 @@
   git push
   ```
 
-### 한투 API Rate Limit
-- 첫 3영업일(~4/15): 1건/초 → `RATE_LIMIT_MS=1100ms`
-- 3영업일 이후: 20건/초 → `RATE_LIMIT_MS=60ms` ✅ 세션 #6 복구 완료
-- WatchlistLive 폴링: 10초 ✅ 세션 #6 복구 완료
+### Next.js 16 Turbopack 캐시 손상 복구
+- `rm -rf .next node_modules/.cache && lsof -ti :3333 | xargs kill -9 && npm run dev`
+
+### yahoo-finance2 v3 인스턴스화 (STEP 87 핫픽스)
+- v3부터 `new YahooFinance()` 인스턴스화 필수 (default export 직접 호출 금지)
 
 ---
 
-## 7. 한투 API 엔드포인트 현황
+## 8. 한투 API 엔드포인트 현황 (7개 전부 검증)
 
-| 엔드포인트 | TR ID | 상태 | 용도 |
-|-----------|-------|------|------|
-| /api/kis/price | FHKST01010100 | ✅ 검증완료 | 종목 현재가 |
-| /api/kis/investor | FHKST01010900 | ✅ 검증완료 | 외국인/기관 수급 |
-| /api/kis/orderbook | FHKST01010200 | ✅ 검증완료 | 10호가 |
-| /api/kis/execution | FHKST01010300 | ✅ 검증완료 | 체결 내역 |
-| /api/kis/investor-rank | FHPTJ04400000 | ✅ 검증완료 | 외국인/기관 TOP10 batch |
-
----
-
-## 8. Supabase DB 테이블 현황
-
-| 테이블 | 상태 | 비고 |
-|--------|------|------|
-| users | ✅ 스키마 있음 | Auth 연동 필요 |
-| stocks | ⚠️ 비어있음 | **시딩 필요 (P0)** |
-| link_hub | ⚠️ 비어있음 | **시딩 필요 (P0)** |
-| watchlist | ✅ 스키마 있음 | |
-| chat_messages | ✅ 스키마 있음 | Realtime 연동 |
-| ads | ✅ 스키마 있음 | 광고주 배너 |
-| subscriptions | ✅ 스키마 있음 | 토스페이먼츠 연동 예정 |
-| ai_analysis_cache | ✅ 스키마 있음 | GPT-4o-mini 7일 캐시 |
+| 엔드포인트 | TR ID | 용도 |
+|-----------|-------|------|
+| /api/kis/price | FHKST01010100 | 종목 현재가 |
+| /api/kis/investor | FHKST01010900 | 외국인/기관 수급 |
+| /api/kis/orderbook | FHKST01010200 | 10호가 |
+| /api/kis/execution | FHKST01010300 | 체결 내역 |
+| /api/kis/investor-rank | FHPTJ04400000 | 외국인/기관 TOP10 batch |
+| /api/kis/volume-rank | FHPST01710000 | 거래량 급등 TOP |
+| /api/kis/chart | FHKST03010100 | 150일 일봉 |
+| /api/kis/movers | /ranking/fluctuation | 등락률 TOP (up/down) |
 
 ---
 
-## 9. 수익 모델 (개발 우선순위 참고용)
+## 9. 수익 모델 (V3 단일 — Partner-Agnostic Lead Gen)
 
-| 항목 | 금액 | 상태 |
-|------|------|------|
-| 구독 (Premium) | 월 2만원 | 페이지 있음, 결제 미연동 |
-| 구독 (Pro) | 월 3만원 | 페이지 있음, 결제 미연동 |
-| 인증업체 배너 | 20일 5만원 | 컴포넌트 있음, 관리자 미완성 |
-| 일반 배너 | 20일 3만원 | 컴포넌트 있음, 관리자 미완성 |
+| 요소 | 상태 |
+|------|------|
+| Partner Landing (`/partner/[slug]`) | ✅ 인프라 완료 (세션 #14) |
+| PartnerSlot 8슬롯 | ✅ 홈·종목상세·스크리너·채팅·툴박스 |
+| Admin 파트너 CRUD | ✅ 완료 (세션 #15) |
+| 리드 대시보드 + CSV Export | ✅ 완료 (세션 #15) |
+| 클릭/리드 집계 대시보드 | ✅ 완료 (세션 #15) |
+| 파트너 편집·삭제·슬롯 재매핑 | ✅ 완료 (세션 #15) |
+| Make 자동화 (리드 → Slack/이메일) | ⚠️ P3 |
+
+**제외된 것 (V3 에서 영구 폐기)**: 구독(Premium/Pro) · 결제(토스페이먼츠/Paddle) · AI 리포트 판매 · CSV 판매 · À la carte
 
 ---
 
@@ -226,6 +218,7 @@
 새 세션 시작 시 반드시 이 순서로:
 
 - [ ] 이 파일(`docs/SESSION_KICKOFF.md`) 읽기
+- [ ] `docs/NEXT_SESSION_START.md` 확인 (최신 상태)
 - [ ] `session-context.md` 확인 (TODO 가비지 컬렉션)
 - [ ] 사용자에게 오늘 작업할 P0 항목 제안
 - [ ] 확인 받으면 → 코드/명령어 작성 → Claude Code용 복붙 명령어 제공
@@ -240,11 +233,11 @@
 - [ ] `docs/CHANGELOG.md` 헤더 날짜 + 이번 세션 항목 추가
 - [ ] `session-context.md` 헤더 날짜 + 세션 히스토리 블록 추가 + TODO 갱신
 - [ ] `docs/NEXT_SESSION_START.md` 최신 상태로 전면 갱신
-- [ ] `docs/SESSION_KICKOFF.md` (이 파일) 섹션 2~4 업데이트
+- [ ] **`docs/SESSION_KICKOFF.md` (이 파일) 섹션 2~5 업데이트** ← 과거 누락 반복 주의
 - [ ] Claude Code용 git push 명령어 제공:
   ```bash
   rm -f .git/index.lock
   git add -A
-  git commit -m "docs: session #N 완료 + 문서 갱신"
+  git commit -m "docs: STEP N 완료 + 문서 4종 갱신"
   git push
   ```

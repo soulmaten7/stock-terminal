@@ -28,7 +28,7 @@ function formatKSTDate(d: Date) {
 async function fetchUsIndices() {
   try {
     const res = await fetch(YF_URL, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; StockTerminal/1.0)', Accept: 'application/json' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Unjong/1.0)', Accept: 'application/json' },
       signal: AbortSignal.timeout(5000),
       next: { revalidate: 900 },
     });

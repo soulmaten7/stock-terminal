@@ -32,7 +32,7 @@ const FOOTER_SECTIONS = [
     title: '고객지원',
     items: [
       '이메일: support@stockterminal.com',
-      '카카오톡: @StockTerminal',
+      '카카오톡: @운종',
       '운영시간: 평일 09:00 ~ 18:00',
       '문의 응답: 영업일 기준 1~2일 이내',
     ],
@@ -90,7 +90,7 @@ export default function Footer() {
               <p>통신판매업 신고번호: [추후 입력] | 주소: [추후 입력]</p>
             </div>
             <div className="mt-6 pt-4 border-t border-[#077D7A] text-xs text-white text-center">
-              &copy; 2026 StockTerminal. All rights reserved.
+              &copy; 2026 운종(雲從). All rights reserved.
             </div>
           </div>
         </div>

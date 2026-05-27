@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
         try {
           const res = await fetch(feed.url, {
             next: { revalidate: 600 },
-            headers: { 'User-Agent': 'StockTerminal/1.0' },
+            headers: { 'User-Agent': 'Unjong/1.0' },
           });
 
           if (!res.ok) return;

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import CalendarPageClient from '@/components/calendar/CalendarPageClient';
 
-export const metadata = { title: '경제 캘린더 — StockTerminal' };
+export const metadata = { title: '경제 캘린더 — 운종(雲從)' };
 
 export default function CalendarPage() {
   return (

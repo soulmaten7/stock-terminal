@@ -22,8 +22,31 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'StockTerminal - 글로벌 투자 데이터 터미널',
-  description: '전업투자자의 투자 환경을 일반 투자자에게. 한국/미국 주식 데이터를 한곳에서.',
+  title: {
+    default: "운종(雲從) — 한국 주식 동선의 출발점",
+    template: "%s | 운종",
+  },
+  description:
+    "운종(雲從) — 정보·대화·허브·신뢰 4박자 플랫폼. 단타·장타·미국주식 3창 분리. " +
+    "모든 자산이 운집(雲集)하는 곳.",
+  keywords: [
+    "운종",
+    "雲從",
+    "한국 주식",
+    "주식 채팅",
+    "단타",
+    "장기투자",
+    "미국주식",
+    "주식 커뮤니티",
+    "운종가",
+  ],
+  authors: [{ name: "운종" }],
+  openGraph: {
+    title: "운종(雲從)",
+    description: "한국 주식 동선의 출발점 — 정보·대화·허브·신뢰",
+    type: "website",
+    locale: "ko_KR",
+  },
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import OrderBookPageClient from '@/components/orderbook/OrderBookPageClient';
 
-export const metadata: Metadata = { title: '호가창 — StockTerminal' };
+export const metadata: Metadata = { title: '호가창 — 운종(雲從)' };
 
 export default function OrderBookPage() {
   return (

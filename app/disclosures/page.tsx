@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import DisclosuresClient from './DisclosuresClient';
 
-export const metadata = { title: '공시 스트림 · Stock Terminal' };
+export const metadata = { title: '공시 스트림 · 운종(雲從)' };
 
 export default function DisclosuresPage() {
   return (

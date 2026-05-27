@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const billingKey = billingResult.billingKey;
     const orderId = `SUB-${customerKey}-${Date.now()}`;
 
-    const chargeResult = await chargeBilling(billingKey, customerKey, planInfo.price, orderId, `StockTerminal ${planInfo.name}`);
+    const chargeResult = await chargeBilling(billingKey, customerKey, planInfo.price, orderId, `Unjong ${planInfo.name}`);
     if (chargeResult.code) {
       return NextResponse.json({ error: chargeResult.message }, { status: 400 });
     }

@@ -47,7 +47,7 @@ function SuccessContent() {
             <Check className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-black mb-2">구독 완료!</h1>
-          <p className="text-[#999999] text-sm mb-6">StockTerminal의 모든 기능을 이용할 수 있습니다.</p>
+          <p className="text-[#999999] text-sm mb-6">운종(雲從)의 모든 기능을 이용할 수 있습니다.</p>
           <Link href="/" className="px-6 py-3 bg-[#0ABAB5] text-white font-bold hover:bg-[#088F8C]">홈으로</Link>
         </>
       )}

@@ -139,7 +139,7 @@ export default function AdPage() {
 
       {/* Disclaimer */}
       <p className="text-[#999999] text-xs text-center mt-8">
-        본 페이지는 광고주가 직접 작성한 내용이며, StockTerminal은 이에 대한 책임을 지지 않습니다.
+        본 페이지는 광고주가 직접 작성한 내용이며, 운종(雲從)은 이에 대한 책임을 지지 않습니다.
       </p>
 
       <div className="text-center mt-4">

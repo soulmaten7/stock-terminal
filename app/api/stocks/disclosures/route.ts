@@ -5,7 +5,7 @@ export const runtime = 'nodejs';
 
 // ── SEC EDGAR helpers ──────────────────────────────────────────────────────
 
-const SEC_UA = process.env.SEC_USER_AGENT ?? 'StockTerminal research@stockterminal.local';
+const SEC_UA = process.env.SEC_USER_AGENT ?? 'Unjong research@onetrillion.app';
 
 let _cikMap: Record<string, number> | null = null;
 let _cikMapTime = 0;
