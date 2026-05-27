@@ -1,42 +1,10 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { UnjongHeader } from "@/components/header/UnjongHeader";
 
 export default function WindowsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen flex-col bg-unjong-background">
-      {/* 상단 헤더 (STEP 90 에서 채움) */}
-      <header className="border-b border-unjong-border bg-unjong-surface">
-        <div className="flex h-14 items-center px-4 gap-4">
-          <div className="text-xl font-bold text-unjong-primary">雲從</div>
-          <div className="text-xs text-unjong-muted">UNJONG</div>
-          <div className="flex-1 text-center text-xs text-unjong-muted">
-            (검색창 자리 · STEP 90)
-          </div>
-          <div className="text-xs text-unjong-muted">
-            (글로벌 티커 · STEP 90)
-          </div>
-        </div>
-        <nav className="flex h-12 items-center gap-2 px-4 border-t border-unjong-border">
-          <Link
-            href="/scalper"
-            className="rounded-md px-4 py-1.5 text-sm font-medium hover:bg-unjong-background"
-          >
-            단타창
-          </Link>
-          <Link
-            href="/longterm"
-            className="rounded-md px-4 py-1.5 text-sm font-medium hover:bg-unjong-background"
-          >
-            장타창
-          </Link>
-          <Link
-            href="/us"
-            className="rounded-md px-4 py-1.5 text-sm font-medium hover:bg-unjong-background"
-          >
-            미국주식창
-          </Link>
-        </nav>
-      </header>
+      <UnjongHeader />
 
       {/* 본문 (좌측 + 메인 + 우측) */}
       <div className="flex flex-1 overflow-hidden">
