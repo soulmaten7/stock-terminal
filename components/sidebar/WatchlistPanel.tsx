@@ -1,6 +1,7 @@
 "use client";
 
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 
 type WatchItem = {
   code: string;
@@ -20,7 +21,15 @@ const DUMMY_WATCHLIST: WatchItem[] = [
   { code: "NVDA", name: "NVIDIA", price: "$880.50", changePct: 1.54 },
 ];
 
+function inferMarket(code: string): "KOSPI" | "KOSDAQ" | "US" {
+  if (/^[A-Z]+$/.test(code)) return "US";
+  if (code.startsWith("0")) return "KOSPI";
+  return "KOSDAQ";
+}
+
 export function WatchlistPanel() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <div className="flex flex-col max-h-[35%] border-t border-unjong-border bg-unjong-surface flex-shrink-0">
       {/* 헤더 */}
@@ -38,6 +47,15 @@ export function WatchlistPanel() {
           return (
             <li
               key={item.code}
+              onClick={() =>
+                setSelectedSymbol({
+                  code: item.code,
+                  name: item.name,
+                  price: item.price,
+                  changePct: item.changePct,
+                  market: inferMarket(item.code),
+                })
+              }
               className="flex items-center justify-between gap-2 px-3 py-1.5 text-xs hover:bg-unjong-background cursor-pointer transition-colors"
             >
               <div className="flex flex-col min-w-0">
