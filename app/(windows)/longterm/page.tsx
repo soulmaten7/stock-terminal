@@ -1,4 +1,9 @@
 import type { Metadata } from "next";
+import {
+  LongtermDisclosureCard,
+  EarningsCalendarCard,
+  SectorCard,
+} from "@/components/cards/LongtermCards";
 
 export const metadata: Metadata = {
   title: "장타창",
@@ -10,26 +15,23 @@ export const metadata: Metadata = {
 export default function LongtermPage() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-lg border border-unjong-border bg-unjong-surface p-6">
-        <h1 className="text-2xl font-bold text-unjong-primary">🌳 장타창</h1>
-        <p className="mt-2 text-sm text-unjong-muted">
+      <div className="rounded-lg border border-unjong-border bg-unjong-surface p-4">
+        <h1 className="text-xl font-bold text-unjong-primary">🌳 장타창</h1>
+        <p className="mt-1 text-xs text-unjong-muted">
           저녁·주말 — 가치투자자·장기보유자의 데스크
         </p>
       </div>
 
-      <div className="rounded-lg border border-unjong-border bg-unjong-surface p-6">
-        <h2 className="text-sm font-medium text-unjong-muted">
-          메인 카드 7개 자리 (STEP 92 + Layer 1)
-        </h2>
-        <ul className="mt-3 grid grid-cols-2 gap-2 text-xs text-unjong-muted">
-          <li>1. 공시 (실적·배당·증자·자사주)</li>
-          <li>2. 분기 실적 캘린더</li>
-          <li>3. 저평가 종목 랭킹 ⭐신규</li>
-          <li>4. 배당 캘린더 + 수익률 TOP</li>
-          <li>5. 52주 신저가 우량주 ⭐신규</li>
-          <li>6. 섹터 히트맵</li>
-          <li>7. 관리종목·투자유의 ⭐신규</li>
-        </ul>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <LongtermDisclosureCard />
+        <EarningsCalendarCard />
+        <SectorCard />
+      </div>
+
+      <div className="rounded-lg border border-dashed border-unjong-border bg-unjong-surface p-4 text-center">
+        <p className="text-xs text-unjong-muted">
+          Layer 1 예정 카드: 저평가 종목 랭킹 · 배당 캘린더 + 수익률 TOP · 52주 신저가 우량주 · 관리종목·투자유의
+        </p>
       </div>
     </div>
   );
