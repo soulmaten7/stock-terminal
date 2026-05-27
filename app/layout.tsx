@@ -1,7 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
+import Header from '@/components/layout/Header';
+import TickerBar from '@/components/layout/TickerBar';
+import TopNav from '@/components/layout/TopNav';
+import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
+import LayoutShell from '@/components/layout/LayoutShell';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -53,7 +58,14 @@ export default function RootLayout({
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
       <body className="min-h-screen flex flex-col antialiased">
         <AuthProvider>
-          {children}
+          <div className="w-full max-w-screen-2xl mx-auto flex-1 flex flex-col">
+            <Header />
+            <TickerBar />
+            <TopNav />
+            <LayoutShell footer={<Footer />}>
+              {children}
+            </LayoutShell>
+          </div>
         </AuthProvider>
       </body>
     </html>
