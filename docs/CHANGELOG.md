@@ -1,6 +1,34 @@
 <!-- 2026-05-27 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-27 — STEP 94 + Layer 0 완료 (세션 #25)
+
+### V3 → 운종 메인 전환
+- `app/page.tsx` 루트를 `/scalper` 자동 리다이렉트로 교체
+- 기존 V3 5섹션 홈을 `app/dashboard/page.tsx` 로 이동 (보존)
+- 루트 진입 시 단타창이 첫 화면 (Layer 1 에서 성향 선택 추가 예정)
+- FloatingChat v3 — root layout에 원래 없었음, HomeClient 내부에서만 작동 (/dashboard 정상)
+- `/dashboard` 상단에 "V3 보존 페이지" 안내 배너 추가
+
+### Layer 0 (틀) 완료 — 8개 STEP 모두 ✅
+- STEP 88: 운종 브랜드 정체성
+- STEP 89: 3창 라우트 (/scalper /longterm /us)
+- STEP 90: 헤더 (로고 · 검색 · 글로벌 티커 · 3창 카드 박스)
+- STEP 91: 좌측 사이드 (채팅 + 관심종목)
+- STEP 92: 메인 카드 그리드 (창별 3개 더미)
+- STEP 93: 우측 사이드패널 (4탭 · 종목 클릭 연결)
+- STEP 94: V3 5섹션 → /dashboard 강등 (본 STEP)
+- STEP 95: PRODUCT_SPEC_V4 문서
+
+### Layer 1 진입 (다음 세션)
+- 카드 7개씩 완성 (단타·장타·미장 각 4개 신규 카드 추가)
+- 신규 데이터 연결: VI · 거래원 · 공매도 · 저평가 · 신저가 · M7 · Pre/After · 환율
+- Supabase Realtime 채팅 실작동
+- 카드 종목 클릭 → 우측 패널 연결 확장
+- 글로벌 티커 실시간 (Yahoo + KIS)
+
+---
+
 ## 2026-05-27 — STEP 88 (세션 #25)
 
 ### Stock Terminal → 운종(雲從) 브랜드 전환
