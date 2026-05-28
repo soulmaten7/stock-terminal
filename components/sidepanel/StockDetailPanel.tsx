@@ -264,22 +264,25 @@ function ChartTab() {
         ))}
       </div>
 
-      <div className="aspect-[4/3] rounded border border-unjong-border bg-unjong-background flex items-center justify-center relative overflow-hidden">
+      <div className="w-full h-[300px] rounded border border-unjong-border bg-unjong-background flex items-center justify-center relative overflow-hidden">
         <svg
-          viewBox="0 0 400 300"
+          viewBox="0 0 1600 400"
+          preserveAspectRatio="none"
           className="absolute inset-0 w-full h-full opacity-30"
           aria-hidden
         >
           <polyline
-            points="20,200 60,180 100,210 140,150 180,160 220,120 260,140 300,90 340,110 380,70"
+            points="50,300 150,260 280,290 400,210 530,230 660,180 800,200 930,150 1050,180 1180,140 1320,170 1450,110 1550,130"
             fill="none"
-            stroke="#0E7C7B"
-            strokeWidth="2"
+            stroke="currentColor"
+            strokeWidth="3"
+            className="text-unjong-success"
           />
-          <line x1="0" y1="100" x2="400" y2="100" stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray="4 4" />
-          <line x1="0" y1="200" x2="400" y2="200" stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray="4 4" />
+          <line x1="0" y1="100" x2="1600" y2="100" stroke="currentColor" strokeWidth="1" strokeDasharray="8 8" className="text-unjong-border" />
+          <line x1="0" y1="200" x2="1600" y2="200" stroke="currentColor" strokeWidth="1" strokeDasharray="8 8" className="text-unjong-border" />
+          <line x1="0" y1="300" x2="1600" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="8 8" className="text-unjong-border" />
         </svg>
-        <div className="relative text-center px-4">
+        <div className="relative text-center px-4 z-10">
           <p className="text-sm font-medium text-unjong-primary">📈 차트</p>
           <p className="text-[10px] text-unjong-muted mt-1">
             Layer 1 — TradingView · lightweight-charts 연결
