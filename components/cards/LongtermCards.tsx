@@ -1,5 +1,12 @@
+"use client";
+
 import { Calendar, FileText, Gem, Coins, TrendingDown, AlertTriangle, Star } from "lucide-react";
 import { CardContainer } from "./CardContainer";
+import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
+
+function inferKrMarket(code: string): "KOSPI" | "KOSDAQ" {
+  return code.startsWith("0") ? "KOSPI" : "KOSDAQ";
+}
 
 const LONGTERM_DISCLOSURES = [
   { code: "005930", name: "삼성전자", type: "현금배당 결정 (배당금 ₩1,361)", time: "어제" },
@@ -28,6 +35,8 @@ const SECTORS = [
 ];
 
 export function LongtermDisclosureCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-disclosure"
@@ -41,6 +50,13 @@ export function LongtermDisclosureCard() {
         {LONGTERM_DISCLOSURES.map((d, i) => (
           <li
             key={`${d.code}-${i}`}
+            onClick={() =>
+                setSelectedSymbol({
+                  code: d.code,
+                  name: d.name,
+                  market: inferKrMarket(d.code),
+                })
+              }
             className="flex items-start justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
           >
             <div className="flex items-start gap-2 min-w-0">
@@ -65,6 +81,8 @@ export function LongtermDisclosureCard() {
 }
 
 export function EarningsCalendarCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-earnings"
@@ -78,6 +96,13 @@ export function EarningsCalendarCard() {
         {EARNINGS_CALENDAR.map((e) => (
           <li
             key={e.code}
+            onClick={() =>
+                setSelectedSymbol({
+                  code: e.code,
+                  name: e.name,
+                  market: inferKrMarket(e.code),
+                })
+              }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -180,6 +205,8 @@ const WARNING_TYPE_STYLE: Record<"관리종목" | "투자유의" | "단기과열
 };
 
 export function ValueScreenCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-value"
@@ -193,6 +220,13 @@ export function ValueScreenCard() {
         {VALUE_STOCKS.map((v) => (
           <li
             key={v.code}
+            onClick={() =>
+                setSelectedSymbol({
+                  code: v.code,
+                  name: v.name,
+                  market: inferKrMarket(v.code),
+                })
+              }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -215,6 +249,8 @@ export function ValueScreenCard() {
 }
 
 export function DividendTopCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-dividend"
@@ -228,6 +264,13 @@ export function DividendTopCard() {
         {DIVIDEND_TOP.map((d) => (
           <li
             key={d.code}
+            onClick={() =>
+                setSelectedSymbol({
+                  code: d.code,
+                  name: d.name,
+                  market: inferKrMarket(d.code),
+                })
+              }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -248,6 +291,8 @@ export function DividendTopCard() {
 }
 
 export function Lows52WCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-lows"
@@ -261,6 +306,14 @@ export function Lows52WCard() {
         {LOWS_52W.map((s) => (
           <li
             key={s.code}
+            onClick={() =>
+                setSelectedSymbol({
+                  code: s.code,
+                  name: s.name,
+                  price: s.price,
+                  market: inferKrMarket(s.code),
+                })
+              }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -286,6 +339,8 @@ export function Lows52WCard() {
 }
 
 export function WarningStockCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-warning"
@@ -299,6 +354,13 @@ export function WarningStockCard() {
         {WARNING_STOCKS.map((w) => (
           <li
             key={w.code}
+            onClick={() =>
+                setSelectedSymbol({
+                  code: w.code,
+                  name: w.name,
+                  market: inferKrMarket(w.code),
+                })
+              }
             className="flex items-start justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
           >
             <div className="flex items-start gap-2 min-w-0">

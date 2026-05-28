@@ -1,5 +1,8 @@
+"use client";
+
 import { TrendingUp, FileText } from "lucide-react";
 import { CardContainer } from "./CardContainer";
+import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 
 const VI_EVENTS = [
   { code: "247540", name: "에코프로비엠", state: "발동" as const, type: "정적", time: "14:32", changePct: 12.5, price: "412,000" },
@@ -61,7 +64,13 @@ const DISCLOSURES = [
   { code: "035420", name: "NAVER", type: "유상증자 결정", time: "10:05" },
 ];
 
+function inferKrMarket(code: string): "KOSPI" | "KOSDAQ" {
+  return code.startsWith("0") ? "KOSPI" : "KOSDAQ";
+}
+
 export function MoversCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-movers"
@@ -75,6 +84,15 @@ export function MoversCard() {
         {MOVERS.map((m, i) => (
           <li
             key={m.code}
+            onClick={() =>
+              setSelectedSymbol({
+                code: m.code,
+                name: m.name,
+                price: m.price,
+                changePct: m.changePct,
+                market: inferKrMarket(m.code),
+              })
+            }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
@@ -102,6 +120,8 @@ export function MoversCard() {
 }
 
 export function VolumeCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-volume"
@@ -115,6 +135,13 @@ export function VolumeCard() {
         {VOLUME_SURGE.map((v) => (
           <li
             key={v.code}
+            onClick={() =>
+              setSelectedSymbol({
+                code: v.code,
+                name: v.name,
+                market: inferKrMarket(v.code),
+              })
+            }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
           >
             <div className="flex flex-col min-w-0">
@@ -136,6 +163,8 @@ export function VolumeCard() {
 }
 
 export function ViCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-vi"
@@ -152,6 +181,15 @@ export function ViCard() {
           return (
             <li
               key={`${v.code}-${i}`}
+              onClick={() =>
+                setSelectedSymbol({
+                  code: v.code,
+                  name: v.name,
+                  price: v.price,
+                  changePct: v.changePct,
+                  market: inferKrMarket(v.code),
+                })
+              }
               className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
             >
               <div className="flex items-center gap-2 min-w-0">
@@ -183,6 +221,8 @@ export function ViCard() {
 }
 
 export function NetBuyBrokerCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-netbuy"
@@ -199,6 +239,13 @@ export function NetBuyBrokerCard() {
           return (
             <li
               key={n.code}
+              onClick={() =>
+                setSelectedSymbol({
+                  code: n.code,
+                  name: n.name,
+                  market: inferKrMarket(n.code),
+                })
+              }
               className="flex flex-col gap-1 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
             >
               <div className="flex items-center justify-between">
@@ -246,7 +293,7 @@ export function ThemeTop10Card() {
           return (
             <li
               key={t.rank}
-              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-default"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span className="font-mono text-unjong-muted w-4 text-right text-[10px]">{t.rank}</span>
@@ -267,6 +314,8 @@ export function ThemeTop10Card() {
 }
 
 export function ShortInterestCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-short"
@@ -288,6 +337,13 @@ export function ShortInterestCard() {
           return (
             <li
               key={s.code}
+              onClick={() =>
+                setSelectedSymbol({
+                  code: s.code,
+                  name: s.name,
+                  market: inferKrMarket(s.code),
+                })
+              }
               className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
             >
               <div className="flex items-center gap-2 min-w-0">
@@ -314,6 +370,8 @@ export function ShortInterestCard() {
 }
 
 export function ScalperDisclosureCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-disclosure"
@@ -327,6 +385,13 @@ export function ScalperDisclosureCard() {
         {DISCLOSURES.map((d, i) => (
           <li
             key={`${d.code}-${i}`}
+            onClick={() =>
+              setSelectedSymbol({
+                code: d.code,
+                name: d.name,
+                market: inferKrMarket(d.code),
+              })
+            }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">

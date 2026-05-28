@@ -1,5 +1,8 @@
+"use client";
+
 import { TrendingUp, TrendingDown, Newspaper, Clock } from "lucide-react";
 import { CardContainer } from "./CardContainer";
+import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 
 const GLOBAL_INDICES = [
   { name: "S&P 500",      value: "5,234.12",  changePct:  0.87, isUp: true  },
@@ -95,6 +98,8 @@ export function GlobalIndicesCard() {
 }
 
 export function PreAfterMarketCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-prepost"
@@ -110,7 +115,16 @@ export function PreAfterMarketCard() {
           return (
             <li
               key={m.code}
-              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
+              onClick={() =>
+                setSelectedSymbol({
+                  code: m.code,
+                  name: m.name,
+                  price: m.price,
+                  changePct: m.changePct,
+                  market: "US",
+                })
+              }
+            className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${
@@ -138,6 +152,8 @@ export function PreAfterMarketCard() {
 }
 
 export function Magnificent7Card() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-m7"
@@ -153,7 +169,16 @@ export function Magnificent7Card() {
           return (
             <li
               key={m.code}
-              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              onClick={() =>
+                setSelectedSymbol({
+                  code: m.code,
+                  name: m.name,
+                  price: m.price,
+                  changePct: m.changePct,
+                  market: "US",
+                })
+              }
+            className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <div className="flex flex-col min-w-0">
@@ -176,6 +201,8 @@ export function Magnificent7Card() {
 }
 
 export function UsMoversCard() {
+  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+
   return (
     <CardContainer
       id="card-movers"
@@ -189,6 +216,15 @@ export function UsMoversCard() {
         {US_MOVERS.map((m, i) => (
           <li
             key={m.code}
+            onClick={() =>
+              setSelectedSymbol({
+                code: m.code,
+                name: m.name,
+                price: m.price,
+                changePct: m.changePct,
+                market: "US",
+              })
+            }
             className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
           >
             <div className="flex items-center gap-2 min-w-0">
