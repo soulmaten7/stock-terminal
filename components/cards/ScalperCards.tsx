@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { TrendingUp, FileText } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
@@ -41,13 +42,20 @@ const SHORT_INTEREST = [
   { code: "035420", name: "NAVER", ratio: 1.8, delta: -0.2, signal: "안정" as const },
 ];
 
-const MOVERS = [
+const MOVERS_FALLBACK = [
   { code: "247540", name: "에코프로비엠", price: "412,000", changePct: 12.5 },
   { code: "035720", name: "카카오", price: "53,400", changePct: 10.2 },
   { code: "086520", name: "에코프로", price: "892,000", changePct: 8.7 },
   { code: "005930", name: "삼성전자", price: "82,100", changePct: 7.4 },
   { code: "000660", name: "SK하이닉스", price: "248,500", changePct: 6.1 },
 ];
+
+type Mover = {
+  code: string;
+  name: string;
+  price: string;
+  changePct: number;
+};
 
 const VOLUME_SURGE = [
   { code: "005930", name: "삼성전자", volume: "12,847,234", ratio: "5.2x" },
@@ -70,6 +78,54 @@ function inferKrMarket(code: string): "KOSPI" | "KOSDAQ" {
 
 export function MoversCard() {
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+  const [data, setData] = useState<Mover[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      try {
+        const res = await fetch("/api/kis/movers", { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+
+        const rawList: Array<{ symbol: string; name: string; priceText: string; changePercent: number }> =
+          Array.isArray(json.items) ? json.items : [];
+
+        const mapped: Mover[] = rawList.slice(0, 5).map((item) => ({
+          code: item.symbol,
+          name: item.name,
+          price: item.priceText,
+          changePct: item.changePercent,
+        }));
+
+        if (mounted) {
+          setData(mapped.length > 0 ? mapped : null);
+          setError(null);
+          setLastUpdate(new Date());
+        }
+      } catch (e) {
+        if (mounted) {
+          setError(e instanceof Error ? e.message : String(e));
+        }
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+    const interval = setInterval(load, 10_000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, []);
+
+  const displayData = data ?? (error !== null ? MOVERS_FALLBACK : []);
+  const isUsingFallback = data === null && error !== null;
 
   return (
     <CardContainer
@@ -77,44 +133,60 @@ export function MoversCard() {
       detailHref="/scalper/movers"
       title="Movers · 등락률 TOP"
       emoji="🚀"
-      subtitle="실시간 KOSPI/KOSDAQ"
-      hint="Layer 1 — KIS ranking API 연결 예정"
+      subtitle={
+        lastUpdate
+          ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}`
+          : "실시간 KOSPI/KOSDAQ"
+      }
+      hint={
+        isUsingFallback
+          ? `⚠️ API 에러 (${error}) · fallback 표시`
+          : data
+          ? "Layer 1 — KIS ranking API 연결됨 ✅"
+          : "Layer 1 — KIS ranking API 로딩 중..."
+      }
     >
-      <ul className="space-y-2">
-        {MOVERS.map((m, i) => (
-          <li
-            key={m.code}
-            onClick={() =>
-              setSelectedSymbol({
-                code: m.code,
-                name: m.name,
-                price: m.price,
-                changePct: m.changePct,
-                market: inferKrMarket(m.code),
-              })
-            }
-            className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-unjong-muted font-mono w-4 text-right">
-                {i + 1}
-              </span>
-              <div className="flex flex-col min-w-0">
-                <span className="font-medium text-unjong-primary truncate">
-                  {m.name}
-                </span>
-                <span className="text-[10px] text-unjong-muted">{m.code}</span>
-              </div>
-            </div>
-            <div className="flex flex-col items-end flex-shrink-0">
-              <span className="font-semibold text-unjong-primary">{m.price}</span>
-              <span className="flex items-center gap-0.5 text-[10px] text-unjong-success font-semibold">
-                <TrendingUp size={10} />+{m.changePct.toFixed(1)}%
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {loading && data === null && error === null ? (
+        <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
+      ) : displayData.length === 0 ? (
+        <div className="text-xs text-unjong-muted text-center py-4">데이터 없음</div>
+      ) : (
+        <ul className="space-y-2">
+          {displayData.map((m, i) => {
+            const isUp = m.changePct >= 0;
+            return (
+              <li
+                key={m.code}
+                onClick={() =>
+                  setSelectedSymbol({
+                    code: m.code,
+                    name: m.name,
+                    price: m.price,
+                    changePct: m.changePct,
+                    market: inferKrMarket(m.code),
+                  })
+                }
+                className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-unjong-muted font-mono w-4 text-right">{i + 1}</span>
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-medium text-unjong-primary truncate">{m.name}</span>
+                    <span className="text-[10px] text-unjong-muted">{m.code}</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-end flex-shrink-0">
+                  <span className="font-semibold text-unjong-primary">{m.price}</span>
+                  <span className={`flex items-center gap-0.5 text-[10px] font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                    <TrendingUp size={10} />
+                    {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
+                  </span>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </CardContainer>
   );
 }
