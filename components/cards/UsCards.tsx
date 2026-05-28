@@ -28,6 +28,7 @@ const US_NEWS = [
 export function GlobalIndicesCard() {
   return (
     <CardContainer
+      id="card-indices"
       title="글로벌 지수"
       emoji="🌐"
       subtitle="S&P/Nasdaq/Dow/VIX"
@@ -64,6 +65,7 @@ export function GlobalIndicesCard() {
 export function UsMoversCard() {
   return (
     <CardContainer
+      id="card-movers"
       title="미국 Movers"
       emoji="🇺🇸"
       subtitle="정규장 TOP"
@@ -104,6 +106,7 @@ export function UsMoversCard() {
 export function UsNewsCard() {
   return (
     <CardContainer
+      id="card-news"
       title="미국 뉴스"
       emoji="📰"
       subtitle="Bloomberg/CNBC/WSJ"

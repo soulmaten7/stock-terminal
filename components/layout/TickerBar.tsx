@@ -13,14 +13,14 @@ function TradingViewTickerTape({ country }: { country: string }) {
     const symbols =
       country === 'KR'
         ? [
+            { proName: 'KRX:KOSPI', title: 'KOSPI' },
+            { proName: 'KRX:KOSDAQ', title: 'KOSDAQ' },
             { proName: 'FOREXCOM:SPXUSD', title: 'S&P 500' },
-            { proName: 'FOREXCOM:NSXUSD', title: 'US 100' },
-            { proName: 'INDEX:DJI', title: 'DOW' },
+            { proName: 'FOREXCOM:NSXUSD', title: 'NASDAQ' },
             { proName: 'FX_IDC:USDKRW', title: 'USD/KRW' },
             { proName: 'TVC:USOIL', title: 'WTI' },
             { proName: 'TVC:GOLD', title: 'GOLD' },
             { proName: 'BITSTAMP:BTCUSD', title: 'BTC' },
-            { proName: 'FX:EURUSD', title: 'EUR/USD' },
           ]
         : [
             { proName: 'FOREXCOM:SPXUSD', title: 'S&P 500' },

@@ -30,6 +30,7 @@ const SECTORS = [
 export function LongtermDisclosureCard() {
   return (
     <CardContainer
+      id="card-disclosure"
       title="공시 · 실적·배당·증자"
       emoji="📊"
       subtitle="DART"
@@ -65,6 +66,7 @@ export function LongtermDisclosureCard() {
 export function EarningsCalendarCard() {
   return (
     <CardContainer
+      id="card-earnings"
       title="분기 실적 캘린더"
       emoji="📅"
       subtitle="발표 예정"
@@ -98,6 +100,7 @@ export function EarningsCalendarCard() {
 export function SectorCard() {
   return (
     <CardContainer
+      id="card-sector"
       title="섹터 히트맵"
       emoji="🗺️"
       subtitle="업종별 등락"

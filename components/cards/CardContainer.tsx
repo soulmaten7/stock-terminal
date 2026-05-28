@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 type CardContainerProps = {
+  id?: string;
   title: string;
   emoji?: string;
   subtitle?: string;
@@ -9,6 +10,7 @@ type CardContainerProps = {
 };
 
 export function CardContainer({
+  id,
   title,
   emoji,
   subtitle,
@@ -16,7 +18,10 @@ export function CardContainer({
   children,
 }: CardContainerProps) {
   return (
-    <section className="flex flex-col rounded-lg border border-unjong-border bg-unjong-surface overflow-hidden">
+    <section
+      id={id}
+      className="flex flex-col rounded-lg border border-unjong-border bg-unjong-surface overflow-hidden scroll-mt-32"
+    >
       {/* 헤더 */}
       <header className="flex items-center justify-between gap-2 border-b border-unjong-border px-4 py-3 bg-unjong-background">
         <div className="flex items-center gap-1.5 min-w-0">

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, X, User, Star, Bell, LogOut } from 'lucide-react';
+import { Search, User, Star, Bell, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
@@ -19,11 +19,9 @@ export default function Header() {
   const { country, setCountry } = useCountryStore();
   const [countryOpen, setCountryOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const countryRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const currentCountry = COUNTRIES.find((c) => c.code === country)!;
 
   useEffect(() => {
@@ -35,16 +33,11 @@ export default function Header() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  useEffect(() => {
-    if (searchOpen && searchInputRef.current) searchInputRef.current.focus();
-  }, [searchOpen]);
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/stocks?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
-      setSearchOpen(false);
     }
   };
 
@@ -57,30 +50,30 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-[#E5E7EB]">
-      <div className="px-6 h-[72px] flex items-center justify-between gap-8">
-        {/* ── Left: Logo ── */}
-        <Link
-          href="/"
-          scroll={true}
-          onClick={() => window.scrollTo(0, 0)}
-          className="shrink-0 hover:opacity-80"
-        >
-          <span className="font-display text-xl font-black text-black tracking-[0.15em] uppercase leading-none">
-            STOCK TERMINAL
+    <header className="bg-unjong-surface border-b border-unjong-border">
+      <div className="px-6 h-[60px] flex items-center gap-4">
+        {/* ── 로고 ── */}
+        <Link href="/" className="shrink-0 hover:opacity-80 flex items-center gap-1.5">
+          <span className="text-lg font-bold tracking-wider text-unjong-primary">
+            UNJONG
           </span>
+          <span className="text-sm text-unjong-muted">운종</span>
         </Link>
 
-        {/* ── Right: Search | Country | Bell | Watchlist | Profile ── */}
-        <div className="flex items-center gap-4 shrink-0">
-          <button
-            onClick={() => setSearchOpen(!searchOpen)}
-            className="text-black hover:opacity-60"
-            title="검색"
-          >
-            {searchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-          </button>
+        {/* ── 통합 검색박스 ── */}
+        <form onSubmit={handleSearch} className="relative flex-1 max-w-2xl mx-2">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="종목·뉴스·공시 통합 검색  ·  Layer 5 에서 활성화"
+            className="w-full rounded-md border border-unjong-border bg-unjong-background py-1.5 pl-9 pr-3 text-sm placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent"
+          />
+        </form>
 
+        {/* ── 우측 아이콘 ── */}
+        <div className="flex items-center gap-3 ml-auto shrink-0">
           <div ref={countryRef} className="relative">
             <button
               onClick={() => setCountryOpen(!countryOpen)}
@@ -90,16 +83,13 @@ export default function Header() {
               {currentCountry.flag}
             </button>
             {countryOpen && (
-              <div className="absolute top-full mt-2 right-0 bg-white border border-[#E5E7EB] shadow-lg overflow-hidden z-50 min-w-[140px]">
+              <div className="absolute top-full mt-2 right-0 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50 min-w-[140px]">
                 {COUNTRIES.map((c) => (
                   <button
                     key={c.code}
-                    onClick={() => {
-                      setCountry(c.code);
-                      setCountryOpen(false);
-                    }}
-                    className={`flex items-center gap-3 w-full px-4 py-3 text-sm hover:bg-[#F5F5F5] ${
-                      country === c.code ? 'text-[#0ABAB5] font-bold' : 'text-black'
+                    onClick={() => { setCountry(c.code); setCountryOpen(false); }}
+                    className={`flex items-center gap-3 w-full px-4 py-3 text-sm hover:bg-unjong-background ${
+                      country === c.code ? 'text-unjong-accent font-bold' : 'text-unjong-primary'
                     }`}
                   >
                     <span className="text-lg">{c.flag}</span>
@@ -110,59 +100,47 @@ export default function Header() {
             )}
           </div>
 
-          <button className="text-black hover:opacity-60" title="알림">
+          <button className="text-unjong-muted hover:text-unjong-primary" title="알림">
             <Bell className="w-5 h-5" />
           </button>
 
           {!user ? (
             <>
-              <Link href="/stocks" className="text-black hover:opacity-60" title="관심종목">
+              <Link href="/stocks" className="text-unjong-muted hover:text-unjong-primary" title="관심종목">
                 <Star className="w-5 h-5" />
               </Link>
-              <Link href="/auth/login" className="text-black hover:opacity-60" title="로그인">
+              <Link href="/auth/login" className="text-unjong-muted hover:text-unjong-primary" title="로그인">
                 <User className="w-5 h-5" />
               </Link>
             </>
           ) : (
             <>
-              <Link
-                href="/stocks?tab=watchlist"
-                className="text-black hover:opacity-60"
-                title="관심종목"
-              >
+              <Link href="/stocks?tab=watchlist" className="text-unjong-muted hover:text-unjong-primary" title="관심종목">
                 <Star className="w-5 h-5" />
               </Link>
               <div ref={profileRef} className="relative">
                 <button
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="text-black hover:opacity-60"
+                  className="text-unjong-muted hover:text-unjong-primary"
                 >
                   <User className="w-5 h-5" />
                 </button>
                 {profileOpen && (
-                  <div className="absolute top-full mt-2 right-0 w-48 bg-white border border-[#E5E7EB] shadow-lg overflow-hidden z-50">
-                    <div className="px-4 py-3 border-b border-[#F0F0F0]">
-                      <p className="text-sm font-bold text-black">{user.nickname}</p>
-                      <p className="text-xs text-[#999999]">{user.email}</p>
+                  <div className="absolute top-full mt-2 right-0 w-48 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50">
+                    <div className="px-4 py-3 border-b border-unjong-border">
+                      <p className="text-sm font-bold text-unjong-primary">{user.nickname}</p>
+                      <p className="text-xs text-unjong-muted">{user.email}</p>
                     </div>
-                    <Link
-                      href="/mypage"
-                      className="block px-4 py-2.5 text-sm text-black hover:bg-[#F5F5F5]"
-                      onClick={() => setProfileOpen(false)}
-                    >
+                    <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>
                       마이페이지
                     </Link>
-                    <Link
-                      href="/stocks?tab=watchlist"
-                      className="block px-4 py-2.5 text-sm text-black hover:bg-[#F5F5F5]"
-                      onClick={() => setProfileOpen(false)}
-                    >
+                    <Link href="/stocks?tab=watchlist" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>
                       관심종목
                     </Link>
-                    <div className="border-t border-[#E5E7EB]" />
+                    <div className="border-t border-unjong-border" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-[#FF4D4D] font-bold hover:bg-[#FFF5F5]"
+                      className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-unjong-danger font-bold hover:bg-unjong-background"
                     >
                       <LogOut className="w-4 h-4" /> 로그아웃
                     </button>
@@ -173,24 +151,6 @@ export default function Header() {
           )}
         </div>
       </div>
-
-      {/* ── Search Bar (toggle) ── */}
-      {searchOpen && (
-        <div className="bg-white border-t border-[#E5E7EB]">
-          <div className="px-6 py-3">
-            <form onSubmit={handleSearch}>
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="종목명 또는 코드를 검색하세요"
-                className="w-full bg-transparent border-none text-black text-sm placeholder:text-[#999999] focus:outline-none"
-              />
-            </form>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

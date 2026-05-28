@@ -67,3 +67,10 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 .animate-fadeIn { animation: fadeIn 0.25s ease-out both; }
+
+.unjong-card-highlight {
+  outline: 3px solid var(--color-unjong-accent, #D4AF37);
+  outline-offset: 4px;
+  border-radius: 0.5rem;
+  transition: outline-color 0.3s;
+}
