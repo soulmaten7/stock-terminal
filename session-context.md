@@ -1,42 +1,80 @@
-<!-- 2026-05-27 -->
-<!-- Last GC: 2026-04-23 (STEP 87 시점) -->
+<!-- 2026-05-28 -->
+<!-- Last GC: 2026-05-27 (세션 #25 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
 
-## 세션 #25 (2026-05-27) — 운종(雲從) 브랜드 전환 + V4 비전 확정
+## 세션 #25 (2026-05-27) — 운종(雲從) 브랜드 + Layer 0 + 21개 카드 디테일 완성
 
 ### 핵심 결정 사항
-- **브랜드**: Stock Terminal → **운종(雲從)** 확정
-- **도메인**: onetrillion.app (보유) 메인 + unjong.com 보호 (Layer 6)
-- **글로벌**: 영어판 X, 국가별 별도 페이지
-- **포지셔닝**: 한국 주식 동선의 출발점 (정보·대화·허브·신뢰)
+- **브랜드**: Stock Terminal → **운종(雲從) · UNJONG** 확정 (한자는 표기 X, 영문+한글만)
+- **도메인**: onetrillion.app (보유) 메인 + unjong.com 보호 (Layer 6 구매 예정)
+- **글로벌**: 영어판 X, 국가별 별도 페이지 (Layer 7+)
+- **포지셔닝**: 한국 주식 동선의 출발점 (정보·대화·허브·신뢰 4박자)
+- **거래 X**: 증권사 라이선스 X, 정보+대화+허브만
 
-### 화면 구조 (V4)
-- 라이브스코어 톤: 메인 카드 65~70% + 좌측 채팅 25% + 헤더 5%
-- 3창 분리: 단타창 / 장타창 / 미국주식창 (헤더 고정 + 페이지 라우트)
-- 좌측 사이드 (폭 300px): 채팅 위 60% + 입력 10% + 관심종목 아래 30%
-- 채팅창 크기 고정, 스크롤로 보기 (확장 X)
-- 우측 사이드패널: 종목 클릭 시 차트/호가/체결 (기존 V3 재활용)
+### 화면 구조 (Layer 0 확정)
+- **헤더 4단 (sticky)**:
+  - 1단: UNJONG 운종 + 통합 검색박스 + 한국기·알림·즐겨찾기·프로필
+  - 2단: 글로벌 티커 (TradingView 실시간 위젯 — 이미 실데이터)
+  - 3단: [⚡단타창][🌳장타창][🌙미국주식창] + 🔍 종목발굴(Screener) · 📅 경제캘린더(Calendar)
+  - 4단: ContextNav — 창별 카드 7개 메뉴 자동 변경 (앵커 점프 + 금색 깜박임)
+- **3컬럼 본문**:
+  - 좌측 (300px, sticky): 채팅 500px 고정 + Layer 2 광고 placeholder
+  - 우측 영역: 1행 (종목상세 flex-1 + 관심종목 300px) + 2행~ 카드 풀폭 (관심종목 영역 침범)
 
-### 카드 큐레이션 (창별 7개)
-- 단타창: Movers, Volume, VI 발동, NetBuy+거래원, 공시, 테마, 공매도
-- 장타창: 공시, 분기실적, 저평가, 배당 TOP, 신저가, 섹터, 관리종목
-- 미국주식창: 지수+VIX, Pre/After, M7, Movers, 환율+시계, 뉴스+8-K, FOMC
+### 21개 카드 (3창 × 7) — 100% 시각화 완성
+- **단타창**: 🚀 Movers · 🔥 Volume · 🚨 VI · 💰 NetBuy+거래원 · 📄 공시 · 🎯 테마 · ⚠️ 공매도
+- **장타창**: 📊 공시 · 📅 분기실적 · 💎 저평가 · 💰 배당TOP · 📉 52주신저가 · 🗺️ 섹터 · ⚠️ 관리종목
+- **미국주식창**: 🌐 지수+VIX · 🌅 Pre/After · ⭐ M7 · 🇺🇸 Movers · 💱 환율+시계 · 📰 뉴스+8K · 📅 FOMC
 
-### 광고 모델 (Layer 2~3)
-- Tier 1: 금융위 인증 (증권사)
-- Tier 2: 운종 검증 (유튜브·텔레그램·전문가·강의)
-- Tier 3: 일반 (회색·AD 라벨)
+### 21개 디테일 페이지 (동적 라우트)
+- `app/(windows)/{scalper,longterm,us}/[card]/page.tsx` 3개 동적 라우트
+- 21개 URL 자동: `/scalper/movers`, `/longterm/value`, `/us/m7` 등
+- 카드 헤더의 "더보기 →" 클릭 시 진입
+- 디테일 페이지: ← 뒤로가기 + 카드 타이틀 + 필터/정렬 placeholder + Layer 1 안내
+- 디테일 페이지에서도 좌측 채팅 + 1행 유지 (운종 정체성)
 
-### Layer 0 완료 (세션 #25)
-- ✅ STEP 88 — 운종 브랜드 적용
-- ✅ STEP 89 — 3창 라우트 (/scalper /longterm /us) · 커밋 e8bc870
-- ✅ STEP 90 — 헤더 (로고·검색·티커·창 전환) · 커밋 052c439
-- ✅ STEP 91 — 좌측 사이드 (채팅+관심종목) · 커밋 13ae6c4
-- ✅ STEP 92 — 메인 카드 그리드 (창별 3개) · 커밋 ef1bf4d
-- ✅ STEP 93 — 우측 사이드패널 (4탭) · 커밋 7026306
-- ✅ STEP 94 — V3 5섹션 → /dashboard 강등 (본 STEP)
-- ✅ STEP 95 — PRODUCT_SPEC_V4 문서
-- **다음: Layer 1 — 카드 12개 신규 + 실데이터 + 채팅 실시간**
+### 광고 모델 (Layer 2~3 예정)
+- Tier 1: 🏛️ 금융위 인증 (증권사·은행·자산운용사)
+- Tier 2: ▶️ 운종 검증 (유튜브·텔레그램·전문가·강의)
+- Tier 3: 일반 AD 라벨 (회색 톤)
+- 광고 위치: 좌측 채팅 아래 Layer 2 placeholder + 메인 카드 하단
+
+### Layer 0 완료 — 세션 #25 전체 커밋 히스토리
+- ✅ STEP 88 (`892c662`) — 운종 브랜드 적용
+- ✅ STEP 89 (`e8bc870`) — 3창 라우트
+- ✅ STEP 90 (`052c439`) — 헤더 고정
+- ✅ STEP 91 (`13ae6c4`) — 좌측 사이드
+- ✅ STEP 92 (`ef1bf4d`) — 메인 카드 3개씩
+- ✅ STEP 93 (`7026306`) — 우측 사이드패널
+- ✅ STEP 94 (`954e59f`) — V3 → /dashboard 강등
+- ✅ STEP 96 (`c0bbff0`) — 단타창 카드 4개 추가
+- ✅ STEP 97 (`c08696d`) — 장타창 카드 4개 추가
+- ✅ STEP 95-A revert (`9b1676f`) — 잘못된 V3 헤더 제거 롤백
+- ✅ STEP 95-C (`8441316`) — 헤더 4단 통합 + ContextNav
+- ✅ STEP 95-D (`03fd1ed`) — 미세조정 7개
+- ✅ STEP 95-E (`ea52558`) — 3컬럼 구조
+- ✅ STEP 95-E1 (`8c7dc6a`) — 차트 풀폭 핫픽스
+- ✅ STEP 95-F (`cf5835e`) — 카드 풀폭 (관심종목 침범)
+- ✅ STEP 98+99 (`8890620`) — 미국주식창 4개 + 카드 디테일 21개
+
+### 신설 문서
+- `docs/PRODUCT_SPEC_V4.md` — 운종 V4 비전·구조·레이어
+- `docs/BRAND_IDENTITY.md` — 브랜드 이름·색·도메인·태그라인
+- `docs/STEP_88~99_COMMAND.md` — 각 STEP 명령서 (총 16개)
+
+### 신설 컴포넌트
+- `components/header/`: Header (V3 골격, UNJONG 운종) · TickerBar (TradingView) · MainNav · ContextNav
+- `components/sidebar/`: ChatPanel · WatchlistPanel · UnjongSidebar (deprecated)
+- `components/sidepanel/`: StockDetailPanel (inline 모드)
+- `components/cards/`: CardContainer · CardDetail · ScalperCards · LongtermCards · UsCards
+- `stores/unjongSelectedSymbolStore.ts`
+
+### 다음 (Layer 1) — 3가지 후보
+1. **Layer 1-A**: 21개 카드 더미 → 실 API (KIS · DART · Yahoo · KRX) — 5~7일
+2. **Layer 1-B**: Supabase Realtime 채팅 실시간 — 3~4일
+3. **Layer 1-C**: 글로벌 티커 강화 + 카드 → 우측 패널 연결 — 1~2일
+
+추천 순서: 1-C → 1-A → 1-B
 
 ## 프로젝트 개요
 - **서비스 정의**: 글로벌 개인투자자용 통합 데이터 터미널 플랫폼
@@ -52,32 +90,81 @@
 - **배포**: Vercel + Supabase Cloud
 - **결제 연동**: **없음** — 토스페이먼츠/Paddle 연동 코드 작성 금지 (별도 의사결정 전까지)
 
-## 현재 TODO
+## 현재 TODO (Layer 별 — 2026-05-27 GC 완료)
 
-### P0 — 다음 작업 (진짜 블로커)
-- [ ] **Vercel 첫 배포** — 환경변수 점검 (KIS/DART/Supabase/OpenAI) + Supabase RLS 재검증 + Chrome MCP 배포본 E2E
-- [ ] **DisclosureStreamWidget US** — SEC EDGAR 최근 8-K 스트림 API 신설
-- [ ] **GlobalIndicesWidget Sparkline** — Yahoo Finance 7일 히스토리 연결
-- [ ] **SESSION_KICKOFF self-update 루틴 정착** — 세션 종료 시 반드시 섹션 2~5 갱신 (과거 20+ 세션 누락 해소)
-- [ ] **ESLint cleanup** — `set-state-in-effect` 63건 일괄 정리 (별도 STEP)
+### ✅ Layer 0 — 완성 (세션 #25)
+- [x] 운종(雲從) 브랜드 적용
+- [x] 3창 라우트 (`/scalper` `/longterm` `/us`)
+- [x] 헤더 4단 통합 (V3 + 운종)
+- [x] 3컬럼 레이아웃 (채팅·메인·관심종목)
+- [x] 21개 카드 시각화 (3창 × 7)
+- [x] 21개 디테일 페이지 (동적 라우트 3개)
+- [x] V3 5섹션 → `/dashboard` 강등 (보존)
+- [x] 카드 더보기 + 뒤로가기
 
-### P1 — 이번 주
-- [ ] 장중 실시간 검증 (평일 09:00~15:30 KST): 관심종목/수급/호가창/체결
-- [ ] 링크 허브 실제 링크 클릭 동작 확인
-- [ ] 전체 페이지 UI 세부 점검
+### 🚧 Layer 1 — 다음 세션 (실데이터 + 채팅 실시간)
 
-### P2 — 다음 주+
-- [ ] KRX 크롤링 (프로그램매매 + 공매도)
-- [ ] SEC EDGAR 확장 (미국 상세 공시 8-K/10-Q/10-K 구조화)
-- [ ] `/investor-flow` → `/net-buy` 탭 흡수
-- [ ] 경제캘린더 API 소스 결정 (네이버증권/Investing.com/한경컨센서스)
-- [ ] **DEV_BYPASS = false** 전환 후 프로덕션 모드
+#### Layer 1-A: 카드 실데이터 연결 (5~7일)
+- [ ] 단타창 7개 카드 → KIS API (Movers·Volume·VI·NetBuy·거래원·테마·공매도)
+- [ ] 단타창 공시 카드 → DART API (이미 KR 인프라 있음)
+- [ ] 장타창 7개 카드 → DART + quant_factors DB + KRX 공식
+- [ ] 미국주식창 7개 카드 → Yahoo Finance + SEC EDGAR + Investing.com
+- [ ] 21개 디테일 페이지 풀 리스트 (각 30~100건+)
 
-### P3 — 2주+
-- [ ] Make 자동화 5개 시나리오 (리드 → Slack/이메일)
-- [ ] 모바일/태블릿 반응형
-- [ ] 시장 지도 Finviz 스타일 Treemap 재구현
-- [ ] 글로벌 지수 V2 (스파크라인 · 상관계수 · VKOSPI)
+#### Layer 1-B: Supabase Realtime 채팅 (3~4일)
+- [ ] 좌측 채팅창 더미 → 실시간 송수신
+- [ ] 닉네임 시스템 (Layer 4 점수제 별도)
+- [ ] 채팅 메시지 영구 저장 (Supabase)
+- [ ] 단타·장타·미장 채팅방 분리
+
+#### Layer 1-C: 카드 → 우측 패널 연결 + 글로벌 티커 강화 (1~2일)
+- [ ] 21개 카드 모두 종목 클릭 시 `setSelectedSymbol` 호출
+- [ ] 우측 종목 상세 자동 업데이트 (현재 WatchlistPanel만 연결)
+- [ ] 글로벌 티커 추가 종목 큐레이션 (TradingView 위젯 옵션)
+
+### 📦 Layer 2 — 광고 허브 (Layer 1 후)
+- [ ] 좌측 채팅 아래 Layer 2 placeholder → 실 광고 카드
+- [ ] 메인 카드 하단 광고 영역 신설 (증권사·전문가)
+- [ ] 광고 카드 디자인 (Tier 3단계)
+- [ ] 참고 사이트 모아보기 (헤더 메뉴)
+- [ ] V3 의 link_hub 56건 데이터 재활용
+
+### 🏛️ Layer 3 — 인증 시스템 (Layer 2 후)
+- [ ] DB 스키마 확장 (`partners.verification_tier`, `verification_badge` 등)
+- [ ] 인증 마크 디자인 (Tier 1·2·3)
+- [ ] 운영자 어드민 (검증 워크플로우)
+- [ ] 광고주 신청 페이지 (`/partner/apply`)
+- [ ] 24~48시간 검증 응답 시스템
+
+### 🛡️ Layer 4 — 모더레이션 (베타 직전)
+- [ ] 채팅 리딩방 광고 자동 필터링
+- [ ] "매수/매도 추천" 발언 자동 모더레이션
+- [ ] 사용자 신고 + 누적 점수
+- [ ] 닉네임 정확도 점수제
+
+### 🔍 Layer 5 — 통합 검색 + AI 봇 (차별화)
+- [ ] 통합 종목 검색 — 한 종목 → 모든 출처 결과
+- [ ] @운종AI 채팅 봇 (GPT-4o-mini)
+- [ ] AI 분석 자동 종목 추천
+
+### 🚀 Layer 6 — 배포·도메인·영업
+- [ ] unjong.com + unjong.app 도메인 구매 ($21)
+- [ ] Vercel 배포 + onetrillion.app 연결
+- [ ] 환경변수 점검 (KIS/DART/Supabase/OpenAI)
+- [ ] Supabase RLS 재검증
+- [ ] 광고주 영업 시작 (증권사 7곳 + 유튜버 5~10곳)
+
+### 별도 작업 (Layer 무관)
+- [ ] ESLint cleanup — `set-state-in-effect` 63건 일괄 정리 (비차단 경고)
+- [ ] 모바일/태블릿 반응형 (3컬럼 → 1컬럼)
+- [ ] `/screener`, `/calendar` 보조 페이지 실제 작동 (현재 placeholder)
+
+### 완료 아카이브 (참고)
+- ~~Vercel 첫 배포~~ → Layer 6 으로 이전
+- ~~DisclosureStreamWidget US~~ → 미국주식창 News+8K 카드로 통합
+- ~~GlobalIndicesWidget Sparkline~~ → TradingView 실시간 위젯으로 대체
+- ~~SESSION_KICKOFF self-update 루틴~~ → 세션 #25 종료 시 정착 완료
+- ~~5섹션 대시보드 V3~~ → `/dashboard` 로 보존
 
 ### P4 — 1개월+
 - [ ] 일본(TSE) / 홍콩(HKEX) 시장

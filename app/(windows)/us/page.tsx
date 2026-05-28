@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "미국주식창",
   description:
-    "운종(雲從) 미국주식창 — 미장 투자자의 새벽 데스크. " +
+    "운종 미국주식창 — 미장 투자자의 새벽 데스크. " +
     "S&P/Nasdaq/VIX · Pre/After · M7 · Movers · 환율 · 뉴스+8K · FOMC.",
 };
 

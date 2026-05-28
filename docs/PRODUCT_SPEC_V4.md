@@ -1,9 +1,9 @@
-<!-- 2026-05-27 -->
+<!-- 2026-05-28 -->
 # 운종(雲從) — PRODUCT_SPEC_V4
 
-> **Last updated**: 2026-05-27 (세션 #25 · 운종 비전 확정)
+> **Last updated**: 2026-05-27 (세션 #25 종료 · Layer 0 100% 완성)
 > **이전 스펙**: `docs/PRODUCT_SPEC_V3.md` (히스토리 보존)
-> **상태**: V4 비전 확정, Layer 0 (틀) 진행 시작
+> **상태**: ✅ Layer 0 + 21개 카드 디테일 완성 · ⏸️ Layer 1 시작 예정
 
 ---
 
@@ -240,15 +240,22 @@ app/
 
 ## 9. 레이어 로드맵 — 0~6
 
-| Layer | 내용 | 시점 |
+| Layer | 내용 | 상태 |
 |-------|------|------|
-| **Layer 0** | 🏗️ 틀 (운종 브랜드 + 3창 구조 + 빈 카드 + 채팅 자리) | **이번 STEP 88~95** |
-| Layer 1 | 카드 7개씩 완성 + 신규 데이터 + 채팅 실시간 작동 | 다음 |
-| Layer 2 | 광고 허브 + 참고 사이트 + 헤더 사이트 모아보기 | 그 다음 |
+| **Layer 0** | 🏗️ 시각 골격 (운종 브랜드 + 3창 + 21개 카드 + 디테일) | ✅ **완성 (세션 #25)** |
+| **Layer 1** | 카드 21개 실데이터 + Supabase Realtime 채팅 + 카드→패널 연결 | ⏸️ 시작 예정 |
+| Layer 2 | 광고 허브 + 참고 사이트 + 좌측 빈공간 채우기 | Layer 1 후 |
 | Layer 3 | 인증 시스템 (Tier 1·2·3) + 운영자 어드민 + 광고주 신청 | 그 다음 |
 | Layer 4 | 모더레이션 + 신고 + 닉네임 점수 | 베타 직전 |
 | Layer 5 | 통합 종목 검색 + AI 봇 (@운종AI) | 차별화 강화 |
 | Layer 6 | unjong.com 도메인 + Vercel 배포 + 광고주 영업 | 출시 직전 |
+
+### Layer 0 완성 내역 (세션 #25, 16개 STEP)
+- ✅ STEP 88~95 (Layer 0 정의 8개)
+- ✅ STEP 96, 97, 98 (단타·장타·미장 카드 4개씩 추가)
+- ✅ STEP 95-A revert, 95-C, 95-D, 95-E, 95-E1, 95-F (구조 통합·재설계)
+- ✅ STEP 99 (카드 더보기 + 디테일 페이지 21개 동적 라우트)
+- 신설: 헤더 4단 통합 · 3컬럼 본문 · ContextNav · 21개 카드 · 21개 디테일 · TradingView 실시간 티커
 
 ---
 
@@ -279,10 +286,11 @@ app/
 - ScreenerExpanded → `/screener`
 
 ### ⏸️ 미루기 (Layer 1+)
-- 카드 7개 완성 (Layer 0 은 3개씩만)
-- 신규 데이터 (VI·거래원·공매도·저평가·신저가·M7·Pre/After·환율)
-- 채팅 실시간 작동
-- 광고 허브 / 인증 시스템
+- ~~카드 7개 완성~~ → ✅ 세션 #25 완성 (STEP 96·97·98)
+- 카드 실 데이터 (VI·거래원·공매도·저평가·신저가·M7·Pre/After·환율 등 21개 모두)
+- 채팅 실시간 작동 (Supabase Realtime)
+- 카드 → 우측 패널 연결 (현재 WatchlistPanel 만)
+- 광고 허브 / 인증 시스템 (Layer 2~3)
 
 ---
 
@@ -313,20 +321,27 @@ app/
 
 ---
 
-## 14. 다음 작업 — Layer 0 (STEP 88~95)
+## 14. 다음 작업 — Layer 1 (실데이터 + 채팅 실시간)
 
-8개 STEP. 작업 순서:
+Layer 0 ✅ 완성. 다음 Layer 1 의 3가지 후보:
 
-1. **STEP 88** — 운종 브랜드 적용 (이름·로고·색)
-2. **STEP 89** — 3창 라우트 구조 (`/scalper` `/longterm` `/us`)
-3. **STEP 90** — 헤더 고정 영역
-4. **STEP 91** — 좌측 사이드 (채팅+관심종목)
-5. **STEP 92** — 메인 카드 그리드 (창별 3개)
-6. **STEP 93** — 우측 사이드패널
-7. **STEP 94** — V3 5섹션 → `/dashboard` 강등
-8. **STEP 95** — 본 문서 (PRODUCT_SPEC_V4)
+### Layer 1-A — 카드 21개 실데이터 (5~7일)
+- 단타창 7개 → KIS API
+- 장타창 7개 → DART + quant_factors DB
+- 미국주식창 7개 → Yahoo + SEC EDGAR
+- 디테일 페이지 풀 리스트 30~100건+
 
-총 약 11.5일, 병렬 진행 시 1~1.5주.
+### Layer 1-B — Supabase Realtime 채팅 (3~4일)
+- 좌측 채팅창 더미 → 실시간 메시지
+- 닉네임 시스템 + 영구 저장
+- 단타·장타·미장 채팅방 분리
+
+### Layer 1-C — 카드 → 패널 연결 + 글로벌 티커 강화 (1~2일)
+- 21개 카드 모두 종목 클릭 시 `setSelectedSymbol` 호출
+- 우측 종목 상세 자동 변경
+- 글로벌 티커 종목 큐레이션
+
+**추천 순서**: C → A → B (가벼운 것부터)
 
 ---
 
@@ -336,11 +351,16 @@ app/
 |------|------|
 | 본 문서 `docs/PRODUCT_SPEC_V4.md` | V4 비전·구조 (이 문서) |
 | `docs/PRODUCT_SPEC_V3.md` | V3 스펙 (히스토리 보존) |
-| `docs/SESSION_KICKOFF.md` | 세션 시작용 |
-| `docs/NEXT_SESSION_START.md` | 다음 세션 가이드 |
+| `docs/SESSION_KICKOFF.md` | 세션 시작용 (가장 최신) |
+| `docs/NEXT_SESSION_START.md` | 다음 세션 Layer 1 가이드 |
+| `docs/BRAND_IDENTITY.md` | 운종 브랜드 정체성 |
 | `CLAUDE.md` | Cowork ↔ Claude Code 역할 분담 |
-| `docs/STEP_88_COMMAND.md` ~ `STEP_95_COMMAND.md` | 각 STEP 명령서 |
+| `docs/CHANGELOG.md` | 세션별 변경 누적 |
+| `session-context.md` | TODO + 결정사항 누적 |
+| `docs/STEP_88~99_COMMAND.md` | 각 STEP 명령서 (총 16개) |
 
 ---
 
-> **요약**: 운종(雲從) = 한국 주식 동선의 출발점. 정보 + 대화 + 허브 + 신뢰. Layer 0 부터 시작.
+> **요약**: 운종(雲從) = 한국 주식 동선의 출발점. 정보 + 대화 + 허브 + 신뢰.
+> ✅ Layer 0 + 21개 카드 + 21개 디테일 페이지 완성 (세션 #25).
+> 다음: Layer 1 (실데이터 + 채팅 실시간).

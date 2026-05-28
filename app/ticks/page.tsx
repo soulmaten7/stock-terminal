@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import TicksPageClient from '@/components/ticks/TicksPageClient';
 
-export const metadata: Metadata = { title: '체결창 — 운종(雲從)' };
+export const metadata: Metadata = { title: '체결창 — 운종' };
 
 export default function TicksPage() {
   return (

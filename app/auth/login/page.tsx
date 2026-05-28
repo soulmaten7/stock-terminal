@@ -44,7 +44,7 @@ export default function LoginPage() {
     <div className="min-h-[calc(100vh-7rem)] flex items-center justify-center">
       <div className="w-full max-w-md mx-auto p-8 bg-white rounded-2xl shadow-lg border border-border">
         <h1 className="text-2xl font-bold text-center mb-2">로그인</h1>
-        <p className="text-text-secondary text-center text-sm mb-8">운종(雲從)에 오신 것을 환영합니다</p>
+        <p className="text-text-secondary text-center text-sm mb-8">운종에 오신 것을 환영합니다</p>
 
         <form onSubmit={handleLogin} className="space-y-4">
           {error && (

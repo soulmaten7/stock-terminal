@@ -7,7 +7,7 @@ export function UnjongLogo() {
       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
     >
       <span className="text-2xl font-bold text-unjong-primary leading-none">
-        雲從
+        UNJONG
       </span>
       <div className="flex flex-col leading-none">
         <span className="text-[10px] tracking-widest text-unjong-muted font-medium">

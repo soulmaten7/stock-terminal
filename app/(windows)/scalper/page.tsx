@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "단타창",
   description:
-    "운종(雲從) 단타창 — 장중 09:00~15:30 액티브 트레이더의 데스크. " +
+    "운종 단타창 — 장중 09:00~15:30 액티브 트레이더의 데스크. " +
     "Movers · Volume · VI · NetBuy · 공시 · 테마 · 공매도.",
 };
 

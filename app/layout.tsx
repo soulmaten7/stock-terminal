@@ -23,15 +23,15 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "운종(雲從) — 한국 주식 동선의 출발점",
+    default: "운종 — 한국 주식 동선의 출발점",
     template: "%s | 운종",
   },
   description:
-    "운종(雲從) — 정보·대화·허브·신뢰 4박자 플랫폼. 단타·장타·미국주식 3창 분리. " +
-    "모든 자산이 운집(雲集)하는 곳.",
+    "운종 — 정보·대화·허브·신뢰 4박자 플랫폼. 단타·장타·미국주식 3창 분리. " +
+    "모든 자산이 운집하는 곳.",
   keywords: [
     "운종",
-    "雲從",
+
     "한국 주식",
     "주식 채팅",
     "단타",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "운종" }],
   openGraph: {
-    title: "운종(雲從)",
+    title: "운종",
     description: "한국 주식 동선의 출발점 — 정보·대화·허브·신뢰",
     type: "website",
     locale: "ko_KR",

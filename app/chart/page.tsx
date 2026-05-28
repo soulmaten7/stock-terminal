@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import ChartPageClient from '@/components/chart/ChartPageClient';
 
-export const metadata: Metadata = { title: '차트 — 운종(雲從)' };
+export const metadata: Metadata = { title: '차트 — 운종' };
 
 export default function ChartPage() {
   return (

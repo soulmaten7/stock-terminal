@@ -1,6 +1,11 @@
-# Reference Platform Mapping — StockTerminal V3
+<!-- 2026-04-22 (V3) -->
+# Reference Platform Mapping — 운종(雲從) · UNJONG (V3 매핑, 보존 문서)
 
-> **최종 업데이트**: 2026-04-22
+> **⚠️ 보존 알림** (2026-05-27 세션 #25): 이 문서는 V3 (StockTerminal) 시절 작성된 레퍼런스 플랫폼 매핑입니다.
+> 운종(雲從) V4 의 카드 큐레이션은 매매 스타일별로 재구성됨 (단타·장타·미장 × 7카드).
+> V4 카드 구성은 `docs/PRODUCT_SPEC_V4.md` 섹션 5-3 + `docs/SESSION_KICKOFF.md` 섹션 3 참조.
+
+> **최종 업데이트**: 2026-04-22 (V3)
 > **원칙**: "다른 플랫폼에 있는 UI와 기능을 그대로 가져온다. 매수매도만 제외." (사용자 지시, STEP 47 리뷰)
 > **레퍼런스 후보군 (4 카테고리)**:
 > - **MTS**: 키움 영웅문, 한투 eFriend, 미래에셋 M-Stock, NH나무, 삼성증권

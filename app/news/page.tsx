@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import NewsClient from '@/components/news/NewsClient';
 
-export const metadata: Metadata = { title: '뉴스·공시 — 운종(雲從)' };
+export const metadata: Metadata = { title: '뉴스·공시 — 운종' };
 
 export default function NewsPage() {
   return (

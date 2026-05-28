@@ -90,7 +90,7 @@ export default function Footer() {
               <p>통신판매업 신고번호: [추후 입력] | 주소: [추후 입력]</p>
             </div>
             <div className="mt-6 pt-4 border-t border-[#077D7A] text-xs text-white text-center">
-              &copy; 2026 운종(雲從). All rights reserved.
+              &copy; 2026 운종. All rights reserved.
             </div>
           </div>
         </div>

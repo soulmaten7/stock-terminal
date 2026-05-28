@@ -1,10 +1,13 @@
-<!-- 2026-05-27 -->
-# Stock Terminal — Claude Code 지침서
+<!-- 2026-05-28 -->
+# 운종(雲從) · UNJONG — Claude Code 지침서
 
 @AGENTS.md
 
 ## 프로젝트 개요
-글로벌 개인투자자용 통합 데이터 터미널 플랫폼 — 전업투자자의 투자 환경을 일반 투자자에게 **완전 무료**로 제공, 수익은 **Partner-Agnostic Lead Gen** 만으로 발생. 구독/결제/Pro/AI 리포트/CSV — V3 에서 **전면 제외** (상세: `docs/PRODUCT_SPEC_V3.md`).
+**운종(雲從) · UNJONG** — 한국 주식 동선의 출발점 · 정보 + 대화 + 허브 + 신뢰 4박자 플랫폼.
+브랜드명: 운종 (UNJONG, 한자 雲從 코드 표기 X — 영문+한글만). 거래 X — 정보·대화·허브 역할만.
+수익 모델: Partner-Agnostic Lead Gen (Tier 1·2·3 인증 광고 시스템).
+V4 비전 (현재 확정): `docs/PRODUCT_SPEC_V4.md` · V3 보존 (히스토리): `docs/PRODUCT_SPEC_V3.md`.
 
 ## 역할 분담 — 핵심 워크플로우
 
@@ -89,7 +92,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 - console.log 남긴 채 커밋 금지
 - 한 번에 하나의 작업만 — 멀티태스킹 금지
 - session-context.md에 없는 숫자 만들기 금지
-- 기존 POTAL Supabase 프로젝트 URL/Key 절대 사용 금지 — 반드시 stock-platform 전용 Supabase 프로젝트 사용
+- 기존 POTAL Supabase 프로젝트 URL/Key 절대 사용 금지 — 반드시 운종 전용 Supabase 프로젝트 (구 stock-platform 명) 사용
 - 코드/기술 용어는 영어, 소통은 한국어
 - 코딩 초보자 대상 — 기술 설명 간결하게, 명령어는 복붙 가능하게 만들어줄 것
 - **OTMarketing CPA 작업은 여기서 하지 않는다** → `~/OTMarketing/` 별도 저장소 (2026-04-23 분리 완료, 상세: `docs/CROSS_REFERENCE.md`)
@@ -138,7 +141,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 | 변경 이력 | `docs/CHANGELOG.md` | 세션별 변경사항 |
 | 다음 세션 가이드 | `docs/NEXT_SESSION_START.md` | 최신 상태 요약 + 다음 할 일 |
 | DB 스키마 | `supabase/migrations/001_initial_schema.sql` | Supabase 테이블 정의 |
-| 환경변수 | `.env.local` | API 키 (반드시 stock-platform 전용 Supabase) |
+| 환경변수 | `.env.local` | API 키 (반드시 운종 전용 Supabase, 구 stock-platform 명) |
 
 ## 🔒 하네스 규칙 (자동 강제 — 부탁이 아닌 시스템)
 

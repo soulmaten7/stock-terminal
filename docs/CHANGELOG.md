@@ -1,5 +1,108 @@
-<!-- 2026-05-27 -->
+<!-- 2026-05-28 -->
 # 운종(雲從) — 변경 이력
+
+## 2026-05-27 — 세션 #25 종료 (Layer 0 + 21개 카드 디테일 완성)
+
+### 세션 전체 요약
+운종(雲從) 브랜드 확정 + V4 비전 + Layer 0 시각 골격 + 21개 카드 (3창 × 7) + 21개 디테일 페이지 + 3컬럼 레이아웃 + ContextNav 자동 변경까지 한 세션에 완성. **운종 시각 정체성 100% 구현.**
+
+### 추가 STEP (STEP 94 이후)
+
+#### STEP 95-A (revert) — V3 헤더 잔재 제거 (잘못된 제거 → 롤백)
+- 처음 Header + TickerBar + TopNav + LayoutShell + Footer 5개 모두 제거 → 과도한 제거
+- LayoutShell·Footer 까지 빠져서 페이지 골격 깨짐
+- `git revert d6227a8` 으로 STEP 95-A 롤백 (`9b1676f`)
+
+#### STEP 96 (`c0bbff0`) — 단타창 카드 4개 추가
+- VI 발동/해제 (한국 시장 특유)
+- NetBuy + 거래원 매수상위 (통합)
+- 테마 TOP10
+- 공매도 잔고 변화 (숏커버/위험 시그널)
+- 단타창 채팅 메시지 100% 화면 동기화
+
+#### STEP 97 (`c08696d`) — 장타창 카드 4개 추가
+- 저평가 종목 (PER/PBR/ROE 조합)
+- 배당 캘린더 + 수익률 TOP
+- 52주 신저가 우량주
+- 관리종목·투자유의 (위험 회피)
+- 가치투자자 채팅 메시지 100% 동기화
+
+#### STEP 95-C (`8441316`) — 헤더 4단 통합 + ContextNav
+- V3 헤더 골격 유지 + 운종 브랜드로 통일
+- STOCK TERMINAL → UNJONG 운종 (영문 + 한글, 한자 X)
+- V3 검색 아이콘 → 큰 통합 검색박스
+- V3 + 운종 글로벌 티커 통합 (TradingView 실시간 위젯 유지)
+- V3 옛 네비 16개 → 3창 + 종목발굴 + 경제캘린더
+- 4단 ContextNav 신설 — 창별 카드 7개 메뉴 자동 변경 (앵커 점프 + 금색 깜박임)
+- 두 번째 운종 헤더 (UnjongHeader) import 제거
+- 카드 21개에 id 추가 (앵커 점프 연결)
+
+#### STEP 95-D (`03fd1ed`) — 헤더·페이지·사이드 미세조정 7개
+- 1단 우측 아이콘 정렬·크기 통일 (size 18 + p-1)
+- 3단 메뉴 영문+한글 병기 (종목발굴 (Screener) · 경제캘린더 (Calendar))
+- 4단 ContextNav 위치 변경 (좌측 채팅창 침범 X, 메인+우측 wrapper 안)
+- 페이지 헤더 박스 제거 (⚡단타창 박스 등 3창 모두)
+- Layer 1 안내 박스 제거 (3창 모두)
+- 카드 그리드 3열 → 2열 (md:grid-cols-2)
+- 좌측 사이드 비율 고정 (채팅 65% + 관심종목 35%)
+
+#### STEP 95-E (`ea52558`) — 3컬럼 구조 재설계
+- 우측 사이드패널 (StockDetailPanel 별도 컬럼) 폐기 → 메인 영역 1행으로 이동
+- 관심종목을 좌측에서 우측 컬럼으로 이동 (폭 300px)
+- 채팅 좌측 sticky top + 고정 500px
+- 좌측 채팅 아래 빈 공간 = Layer 2 광고·텔레그램 placeholder
+- StockDetailPanel `inline` prop 추가 (풀폭 가로 헤더 디자인)
+- overflow-hidden 제거 → 페이지 자연 스크롤
+
+#### STEP 95-E1 (`8c7dc6a`) — 차트 풀폭 사이즈 핫픽스
+- ChartTab 의 차트 placeholder `aspect-[4/3]` → `w-full h-[300px]`
+- SVG viewBox 400×300 → 1600×400 (4:1 가로)
+- preserveAspectRatio="none" + polyline 13 포인트 재배치
+- 차트가 풀폭으로 펼쳐짐
+
+#### STEP 95-F (`cf5835e`) — 카드 풀폭 (관심종목 영역 침범)
+- 우측 별도 컬럼 (WatchlistPanel aside) 제거
+- 우측 영역 안에 1행 wrapper 추가 — 종목상세 (flex-1) + 관심종목 (300px) 가로 배치
+- 2행~ children = 우측 영역 풀폭 (카드가 관심종목 위까지 침범)
+- WatchlistPanel: h-full + rounded-lg + overflow-y-auto (자체 영역 스크롤)
+
+#### STEP 98+99 (`8890620`) — 미국주식창 카드 4개 + 카드 디테일 페이지 21개
+
+**STEP 98 — 미국주식창 카드 4개 추가**:
+- Pre-market / After-hours 변동 TOP (NVDA Pre +2.4% · TSLA AH -1.8% 등)
+- Magnificent 7 (NVDA·AAPL·MSFT·GOOG·AMZN·META·TSLA)
+- USD/KRW 환율 + 미국 시계 (REGULAR/PRE/AH 상태)
+- FOMC·CPI·NFP·GDP·PMI 캘린더
+- **미국주식창 7개 카드 완성** → 21개 카드 (3창 × 7) 총합 완성
+- 미장 투자자 채팅 메시지 100% 동기화
+
+**STEP 99 — 카드 더보기 + 디테일 페이지 (동적 라우트 21개)**:
+- CardContainer.detailHref prop 추가 — 헤더에 "더보기 →" 링크
+- 21개 카드 (3창 × 7) 모두 detailHref 전달
+- CardDetail.tsx 공통 컴포넌트 (21개 메타 + 뒤로가기 + 필터/정렬 placeholder)
+- 동적 라우트 3개:
+  - `app/(windows)/scalper/[card]/page.tsx`
+  - `app/(windows)/longterm/[card]/page.tsx`
+  - `app/(windows)/us/[card]/page.tsx`
+- 21개 디테일 URL 자동 처리:
+  - `/scalper/{movers,volume,vi,netbuy,disclosure,theme,short}`
+  - `/longterm/{disclosure,earnings,value,dividend,lows,sector,warning}`
+  - `/us/{indices,prepost,m7,movers,forex,news,fomc}`
+- 디테일 페이지에서도 좌측 채팅 + 1행 (종목상세+관심종목) 유지 (운종 정체성)
+- 뒤로가기 = 명시적 Link (`← 단타창으로` 등, router.back() 의존 X)
+
+### 세션 #25 누적 성과
+- **운종 시각 골격 100% 완성** — 3컬럼 + 21개 카드 + 21개 디테일 + 헤더 4단 + ContextNav
+- 모든 더미 데이터는 Layer 1 에서 실 API 연결 예정
+- 글로벌 티커는 TradingView 실시간 위젯 (이미 실데이터)
+
+### 다음 (Layer 1)
+- 21개 카드 더미 → 실데이터 (KIS · DART · Yahoo · KRX)
+- Supabase Realtime 채팅 실시간
+- 카드 → 종목 클릭 → 우측 패널 연결 확장
+- 디테일 페이지 풀 리스트 (30~100건+)
+
+---
 
 ## 2026-05-27 — STEP 94 + Layer 0 완료 (세션 #25)
 

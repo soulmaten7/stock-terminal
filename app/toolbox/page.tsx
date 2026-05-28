@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import ToolboxClient from '@/components/toolbox/ToolboxClient';
 
-export const metadata = { title: '참고 사이트 — 운종(雲從)' };
+export const metadata = { title: '참고 사이트 — 운종' };
 
 const CATEGORY_LABELS: Record<string, string> = {
   news:       '뉴스',
