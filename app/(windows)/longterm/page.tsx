@@ -3,6 +3,10 @@ import {
   LongtermDisclosureCard,
   EarningsCalendarCard,
   SectorCard,
+  ValueScreenCard,
+  DividendTopCard,
+  Lows52WCard,
+  WarningStockCard,
 } from "@/components/cards/LongtermCards";
 
 export const metadata: Metadata = {
@@ -17,7 +21,11 @@ export default function LongtermPage() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <LongtermDisclosureCard />
       <EarningsCalendarCard />
+      <ValueScreenCard />
+      <DividendTopCard />
+      <Lows52WCard />
       <SectorCard />
+      <WarningStockCard />
     </div>
   );
 }
