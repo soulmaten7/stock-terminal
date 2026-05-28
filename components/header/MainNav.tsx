@@ -11,8 +11,8 @@ const PRIMARY_WINDOWS = [
 ] as const;
 
 const SECONDARY_LINKS = [
-  { href: "/screener", label: "스크리너", icon: Search },
-  { href: "/calendar", label: "캘린더", icon: Calendar },
+  { href: "/screener", label: "종목발굴", englishLabel: "Screener", icon: Search },
+  { href: "/calendar", label: "경제캘린더", englishLabel: "Calendar", icon: Calendar },
 ] as const;
 
 export function MainNav() {
@@ -47,14 +47,15 @@ export function MainNav() {
 
       {/* 우측: 보조 링크 */}
       <div className="flex items-center gap-3">
-        {SECONDARY_LINKS.map(({ href, label, icon: Icon }) => (
+        {SECONDARY_LINKS.map(({ href, label, englishLabel, icon: Icon }) => (
           <Link
             key={href}
             href={href}
-            className="flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary"
+            className="flex items-center gap-1.5 text-xs text-unjong-muted hover:text-unjong-primary transition-colors"
           >
             <Icon size={14} />
-            <span>{label}</span>
+            <span className="font-medium">{label}</span>
+            <span className="text-[10px] text-unjong-muted">({englishLabel})</span>
           </Link>
         ))}
       </div>

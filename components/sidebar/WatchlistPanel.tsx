@@ -31,7 +31,7 @@ export function WatchlistPanel() {
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
 
   return (
-    <div className="flex flex-col max-h-[35%] border-t border-unjong-border bg-unjong-surface flex-shrink-0">
+    <div className="flex h-full flex-col border-t border-unjong-border bg-unjong-surface">
       {/* 헤더 */}
       <div className="flex items-center justify-between border-b border-unjong-border px-3 py-2 flex-shrink-0">
         <span className="text-xs font-semibold text-unjong-primary">

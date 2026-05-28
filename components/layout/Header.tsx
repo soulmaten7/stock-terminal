@@ -76,9 +76,11 @@ export default function Header() {
         <div className="flex items-center gap-3 ml-auto shrink-0">
           <div ref={countryRef} className="relative">
             <button
+              type="button"
               onClick={() => setCountryOpen(!countryOpen)}
-              className="text-xl hover:opacity-60"
-              title="국가 선택"
+              className="text-base p-1 hover:opacity-70 transition-opacity"
+              aria-label="국가 선택"
+              title={currentCountry.name}
             >
               {currentCountry.flag}
             </button>
@@ -100,30 +102,31 @@ export default function Header() {
             )}
           </div>
 
-          <button className="text-unjong-muted hover:text-unjong-primary" title="알림">
-            <Bell className="w-5 h-5" />
+          <button type="button" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" aria-label="알림">
+            <Bell size={18} />
           </button>
 
           {!user ? (
             <>
-              <Link href="/stocks" className="text-unjong-muted hover:text-unjong-primary" title="관심종목">
-                <Star className="w-5 h-5" />
+              <Link href="/stocks" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="관심종목">
+                <Star size={18} />
               </Link>
-              <Link href="/auth/login" className="text-unjong-muted hover:text-unjong-primary" title="로그인">
-                <User className="w-5 h-5" />
+              <Link href="/auth/login" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="로그인">
+                <User size={18} />
               </Link>
             </>
           ) : (
             <>
-              <Link href="/stocks?tab=watchlist" className="text-unjong-muted hover:text-unjong-primary" title="관심종목">
-                <Star className="w-5 h-5" />
+              <Link href="/stocks?tab=watchlist" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="관심종목">
+                <Star size={18} />
               </Link>
               <div ref={profileRef} className="relative">
                 <button
+                  type="button"
                   onClick={() => setProfileOpen(!profileOpen)}
-                  className="text-unjong-muted hover:text-unjong-primary"
+                  className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors"
                 >
-                  <User className="w-5 h-5" />
+                  <User size={18} />
                 </button>
                 {profileOpen && (
                   <div className="absolute top-full mt-2 right-0 w-48 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50">

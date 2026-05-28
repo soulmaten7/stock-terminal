@@ -60,7 +60,7 @@ export function ChatPanel() {
     (pathname && DUMMY_MESSAGES[pathname]) || DUMMY_MESSAGES["/scalper"];
 
   return (
-    <div className="flex flex-1 flex-col min-h-0 bg-unjong-surface">
+    <div className="flex h-full flex-col min-h-0 bg-unjong-surface">
       {/* 헤더 */}
       <div className="flex items-center justify-between border-b border-unjong-border px-3 py-2.5 flex-shrink-0">
         <div className="flex items-center gap-1.5">
