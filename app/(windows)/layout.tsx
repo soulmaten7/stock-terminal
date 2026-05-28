@@ -7,7 +7,7 @@ import { ContextNav } from "@/components/header/ContextNav";
 export default function WindowsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex bg-unjong-background min-h-screen">
-      {/* ─── 좌측 컬럼: 채팅 (sticky top 500px) + Layer 2 placeholder ─── */}
+      {/* ─── 좌측 컬럼: 채팅 (sticky top) + Layer 2 placeholder ─── */}
       <aside className="w-[300px] flex-shrink-0 border-r border-unjong-border bg-unjong-surface">
         <div className="sticky top-0 h-[500px] flex flex-col">
           <ChatPanel />
@@ -17,19 +17,25 @@ export default function WindowsLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* ─── 가운데 컬럼: ContextNav + 종목상세 + 카드 ─── */}
+      {/* ─── 우측 영역: ContextNav + 1행(종목상세+관심종목) + 2행(카드 풀폭) ─── */}
       <div className="flex-1 flex flex-col min-w-0">
         <ContextNav />
-        <main className="flex-1 p-4 space-y-4">
-          <StockDetailPanel inline />
+
+        {/* 1행: 종목상세 (flex-1) + 관심종목 (300px) 가로 배치 */}
+        <div className="flex gap-4 px-4 pt-4 items-stretch">
+          <div className="flex-1 min-w-0">
+            <StockDetailPanel inline />
+          </div>
+          <aside className="w-[300px] flex-shrink-0 flex flex-col">
+            <WatchlistPanel />
+          </aside>
+        </div>
+
+        {/* 2행~: 카드 그리드 우측 영역 풀폭 */}
+        <main className="px-4 py-4">
           {children}
         </main>
       </div>
-
-      {/* ─── 우측 컬럼: 관심종목 (자연 길이) ─── */}
-      <aside className="w-[300px] flex-shrink-0 border-l border-unjong-border bg-unjong-surface">
-        <WatchlistPanel />
-      </aside>
     </div>
   );
 }
