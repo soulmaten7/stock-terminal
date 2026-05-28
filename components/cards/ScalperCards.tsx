@@ -65,6 +65,7 @@ export function MoversCard() {
   return (
     <CardContainer
       id="card-movers"
+      detailHref="/scalper/movers"
       title="Movers · 등락률 TOP"
       emoji="🚀"
       subtitle="실시간 KOSPI/KOSDAQ"
@@ -104,6 +105,7 @@ export function VolumeCard() {
   return (
     <CardContainer
       id="card-volume"
+      detailHref="/scalper/volume"
       title="Volume · 거래량 폭증"
       emoji="🔥"
       subtitle="전일 대비 3배+"
@@ -137,6 +139,7 @@ export function ViCard() {
   return (
     <CardContainer
       id="card-vi"
+      detailHref="/scalper/vi"
       title="VI · 변동성 완화장치"
       emoji="🚨"
       subtitle="실시간 발동/해제"
@@ -183,6 +186,7 @@ export function NetBuyBrokerCard() {
   return (
     <CardContainer
       id="card-netbuy"
+      detailHref="/scalper/netbuy"
       title="NetBuy + 거래원"
       emoji="💰"
       subtitle="외인·기관 + 매수 1위"
@@ -230,6 +234,7 @@ export function ThemeTop10Card() {
   return (
     <CardContainer
       id="card-theme"
+      detailHref="/scalper/theme"
       title="테마 TOP10"
       emoji="🎯"
       subtitle="실시간 등락률 순"
@@ -265,6 +270,7 @@ export function ShortInterestCard() {
   return (
     <CardContainer
       id="card-short"
+      detailHref="/scalper/short"
       title="공매도 잔고 변화"
       emoji="⚠️"
       subtitle="숏커버·위험 시그널"
@@ -311,6 +317,7 @@ export function ScalperDisclosureCard() {
   return (
     <CardContainer
       id="card-disclosure"
+      detailHref="/scalper/disclosure"
       title="공시 · 실시간"
       emoji="📄"
       subtitle="DART"

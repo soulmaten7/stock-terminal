@@ -31,6 +31,7 @@ export function LongtermDisclosureCard() {
   return (
     <CardContainer
       id="card-disclosure"
+      detailHref="/longterm/disclosure"
       title="공시 · 실적·배당·증자"
       emoji="📊"
       subtitle="DART"
@@ -67,6 +68,7 @@ export function EarningsCalendarCard() {
   return (
     <CardContainer
       id="card-earnings"
+      detailHref="/longterm/earnings"
       title="분기 실적 캘린더"
       emoji="📅"
       subtitle="발표 예정"
@@ -101,6 +103,7 @@ export function SectorCard() {
   return (
     <CardContainer
       id="card-sector"
+      detailHref="/longterm/sector"
       title="섹터 히트맵"
       emoji="🗺️"
       subtitle="업종별 등락"
@@ -180,6 +183,7 @@ export function ValueScreenCard() {
   return (
     <CardContainer
       id="card-value"
+      detailHref="/longterm/value"
       title="저평가 스크리너"
       emoji="💎"
       subtitle="PER·PBR·ROE"
@@ -214,6 +218,7 @@ export function DividendTopCard() {
   return (
     <CardContainer
       id="card-dividend"
+      detailHref="/longterm/dividend"
       title="배당 TOP 5"
       emoji="💰"
       subtitle="배당수익률 순위"
@@ -246,6 +251,7 @@ export function Lows52WCard() {
   return (
     <CardContainer
       id="card-lows"
+      detailHref="/longterm/lows"
       title="52주 신저가"
       emoji="📉"
       subtitle="우량주 신저가"
@@ -283,6 +289,7 @@ export function WarningStockCard() {
   return (
     <CardContainer
       id="card-warning"
+      detailHref="/longterm/warning"
       title="관리·주의 종목"
       emoji="⚠️"
       subtitle="관리종목·투자유의·단기과열"

@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import {
   GlobalIndicesCard,
+  PreAfterMarketCard,
+  Magnificent7Card,
   UsMoversCard,
+  ForexClockCard,
   UsNewsCard,
+  FOMCCalendarCard,
 } from "@/components/cards/UsCards";
 
 export const metadata: Metadata = {
@@ -16,8 +20,12 @@ export default function UsPage() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <GlobalIndicesCard />
+      <PreAfterMarketCard />
+      <Magnificent7Card />
       <UsMoversCard />
+      <ForexClockCard />
       <UsNewsCard />
+      <FOMCCalendarCard />
     </div>
   );
 }

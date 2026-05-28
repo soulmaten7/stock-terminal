@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 
 type CardContainerProps = {
   id?: string;
@@ -6,6 +8,7 @@ type CardContainerProps = {
   emoji?: string;
   subtitle?: string;
   hint?: string;
+  detailHref?: string;
   children: ReactNode;
 };
 
@@ -15,6 +18,7 @@ export function CardContainer({
   emoji,
   subtitle,
   hint,
+  detailHref,
   children,
 }: CardContainerProps) {
   return (
@@ -33,6 +37,17 @@ export function CardContainer({
             <span className="text-[10px] text-unjong-muted">· {subtitle}</span>
           )}
         </div>
+
+        {detailHref && (
+          <Link
+            href={detailHref}
+            className="flex items-center gap-0.5 text-[11px] text-unjong-muted hover:text-unjong-accent transition-colors flex-shrink-0"
+            aria-label={`${title} 상세 페이지`}
+          >
+            <span>더보기</span>
+            <ArrowUpRight size={11} />
+          </Link>
+        )}
       </header>
 
       {/* 바디 */}
