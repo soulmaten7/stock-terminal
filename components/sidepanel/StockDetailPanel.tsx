@@ -55,11 +55,22 @@ const TABS: Array<{ id: Tab; label: string; emoji: string }> = [
   { id: "overview", label: "종합", emoji: "📋" },
 ];
 
-export function StockDetailPanel() {
+type StockDetailPanelProps = {
+  inline?: boolean;
+};
+
+export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
   const { selectedSymbol, setSelectedSymbol } = useUnjongSelectedSymbol();
   const [activeTab, setActiveTab] = useState<Tab>("chart");
 
   if (!selectedSymbol) {
+    if (inline) {
+      return (
+        <div className="rounded-lg border border-dashed border-unjong-border bg-unjong-surface p-6 text-center text-xs text-unjong-muted">
+          관심종목 또는 카드에서 종목을 클릭하면 차트·호가·체결·종합이 표시됩니다.
+        </div>
+      );
+    }
     return (
       <aside className="hidden xl:flex w-[360px] flex-shrink-0 flex-col border-l border-unjong-border bg-unjong-surface">
         <div className="flex flex-1 items-center justify-center p-6 text-center">
@@ -83,6 +94,83 @@ export function StockDetailPanel() {
 
   const isUp = (selectedSymbol.changePct ?? 0) >= 0;
 
+  if (inline) {
+    return (
+      <section className="rounded-lg border border-unjong-border bg-unjong-surface overflow-hidden">
+        {/* 헤더 — 가로 배치 */}
+        <header className="flex items-center justify-between gap-4 border-b border-unjong-border px-4 py-3 bg-unjong-background">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <h3 className="text-lg font-bold text-unjong-primary truncate">
+                {selectedSymbol.name}
+              </h3>
+              {selectedSymbol.market && (
+                <span className="text-[10px] font-semibold text-unjong-muted bg-unjong-surface px-1.5 py-0.5 rounded flex-shrink-0">
+                  {selectedSymbol.market}
+                </span>
+              )}
+              <span className="text-[11px] text-unjong-muted font-mono flex-shrink-0">
+                {selectedSymbol.code}
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2 border-l border-unjong-border pl-4 flex-shrink-0">
+              <span className="text-xl font-bold text-unjong-primary tabular-nums">
+                {selectedSymbol.price ?? "—"}
+              </span>
+              {selectedSymbol.changePct !== undefined && (
+                <span
+                  className={`flex items-center gap-0.5 text-sm font-semibold ${
+                    isUp ? "text-unjong-success" : "text-unjong-danger"
+                  }`}
+                >
+                  {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+                  {isUp ? "+" : ""}
+                  {selectedSymbol.changePct.toFixed(2)}%
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSelectedSymbol(null)}
+            className="text-unjong-muted hover:text-unjong-primary p-1 flex-shrink-0"
+            aria-label="종목 선택 해제"
+          >
+            <X size={16} />
+          </button>
+        </header>
+
+        {/* 탭 네비게이션 */}
+        <nav className="flex border-b border-unjong-border" aria-label="종목 상세 탭">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setActiveTab(t.id)}
+              className={`flex-1 px-3 py-2.5 text-xs font-medium transition-colors border-b-2 ${
+                activeTab === t.id
+                  ? "border-unjong-accent text-unjong-primary"
+                  : "border-transparent text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background"
+              }`}
+            >
+              <span className="mr-1" aria-hidden>{t.emoji}</span>
+              {t.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* 탭 컨텐츠 */}
+        <div className="p-4 min-h-[300px]">
+          {activeTab === "chart" && <ChartTab />}
+          {activeTab === "orderbook" && <OrderBookTab />}
+          {activeTab === "tick" && <TickTab />}
+          {activeTab === "overview" && <OverviewTab />}
+        </div>
+      </section>
+    );
+  }
+
+  // 기존 세로 사이드패널 모드 (재활용 가능)
   return (
     <aside className="hidden xl:flex w-[360px] flex-shrink-0 flex-col border-l border-unjong-border bg-unjong-surface">
       {/* 종목 헤더 */}
@@ -113,7 +201,6 @@ export function StockDetailPanel() {
           </button>
         </div>
 
-        {/* 가격 + 등락 */}
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-2xl font-bold text-unjong-primary tabular-nums">
             {selectedSymbol.price ?? "—"}

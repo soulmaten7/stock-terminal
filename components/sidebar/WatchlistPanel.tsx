@@ -31,17 +31,17 @@ export function WatchlistPanel() {
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
 
   return (
-    <div className="flex h-full flex-col border-t border-unjong-border bg-unjong-surface">
-      {/* 헤더 */}
-      <div className="flex items-center justify-between border-b border-unjong-border px-3 py-2 flex-shrink-0">
+    <div className="flex flex-col bg-unjong-surface">
+      {/* 헤더 (sticky) */}
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-unjong-border px-3 py-2 bg-unjong-surface">
         <span className="text-xs font-semibold text-unjong-primary">
           👀 관심종목 {DUMMY_WATCHLIST.length}개
         </span>
-        <span className="text-[10px] text-unjong-muted">(더미 · Layer 1 연결)</span>
+        <span className="text-[10px] text-unjong-muted">(더미)</span>
       </div>
 
-      {/* 리스트 (스크롤) */}
-      <ul className="flex-1 overflow-y-auto min-h-0 divide-y divide-unjong-border">
+      {/* 리스트 (자연 길이) */}
+      <ul className="divide-y divide-unjong-border">
         {DUMMY_WATCHLIST.map((item) => {
           const isUp = item.changePct >= 0;
           return (
