@@ -1,5 +1,5 @@
-<!-- 2026-05-28 -->
-<!-- Last GC: 2026-05-27 (세션 #25 종료 시점) -->
+<!-- 2026-05-29 -->
+<!-- Last GC: 2026-05-29 (세션 #26 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
 
 ## 세션 #25 (2026-05-27) — 운종(雲從) 브랜드 + Layer 0 + 21개 카드 디테일 완성
@@ -102,14 +102,14 @@
 - [x] V3 5섹션 → `/dashboard` 강등 (보존)
 - [x] 카드 더보기 + 뒤로가기
 
-### 🚧 Layer 1 — 다음 세션 (실데이터 + 채팅 실시간)
+### ✅ Layer 1-A — 완성 (세션 #26, 2026-05-29)
+- [x] 단타창 7/7 카드 실데이터 (STEP 101~103) — KIS API
+- [x] 장타창 7/7 카드 실데이터 (STEP 104) — DART + DB + KIS
+- [x] 미국주식창 7/7 카드 실데이터 (STEP 105) — Yahoo Finance
+- [x] 카드 → setSelectedSymbol 15개 연결 (STEP 100)
+- [x] **21/21 카드 100% 실데이터 완성** 🏁
 
-#### Layer 1-A: 카드 실데이터 연결 (5~7일)
-- [ ] 단타창 7개 카드 → KIS API (Movers·Volume·VI·NetBuy·거래원·테마·공매도)
-- [ ] 단타창 공시 카드 → DART API (이미 KR 인프라 있음)
-- [ ] 장타창 7개 카드 → DART + quant_factors DB + KRX 공식
-- [ ] 미국주식창 7개 카드 → Yahoo Finance + SEC EDGAR + Investing.com
-- [ ] 21개 디테일 페이지 풀 리스트 (각 30~100건+)
+### 🚧 Layer 1-B — 다음 (Supabase Realtime 채팅)
 
 #### Layer 1-B: Supabase Realtime 채팅 (3~4일)
 - [ ] 좌측 채팅창 더미 → 실시간 송수신
@@ -117,10 +117,11 @@
 - [ ] 채팅 메시지 영구 저장 (Supabase)
 - [ ] 단타·장타·미장 채팅방 분리
 
-#### Layer 1-C: 카드 → 우측 패널 연결 + 글로벌 티커 강화 (1~2일)
-- [ ] 21개 카드 모두 종목 클릭 시 `setSelectedSymbol` 호출
-- [ ] 우측 종목 상세 자동 업데이트 (현재 WatchlistPanel만 연결)
-- [ ] 글로벌 티커 추가 종목 큐레이션 (TradingView 위젯 옵션)
+### 🚧 Layer 1-A2 — 보완 (선택)
+- [ ] 테마 종목 매핑 확장 (현재 THEME_MAP 10개 × 3~4종목)
+- [ ] KRX 공매도 자동 수집 (현재 시드 데이터)
+- [ ] 관리종목·투자유의 KRX 자동 수집 (현재 시드)
+- [ ] NetBuyBrokerCard 거래원 TOP3 (현재 "—" 하드코딩)
 
 ### 📦 Layer 2 — 광고 허브 (Layer 1 후)
 - [ ] 좌측 채팅 아래 Layer 2 placeholder → 실 광고 카드

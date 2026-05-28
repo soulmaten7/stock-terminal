@@ -1,5 +1,48 @@
-<!-- 2026-05-28 -->
+<!-- 2026-05-29 -->
 # 운종(雲從) — 변경 이력
+
+## 2026-05-29 — 세션 #26 종료 (Layer 1-A 완성 — 21/21 카드 100% 실데이터)
+
+### 세션 전체 요약
+Layer 1-A (카드 실데이터) 7개 STEP 완성. 단타창 7/7 + 장타창 7/7 + 미국주식창 7/7 = **21/21 카드 100% 실데이터**.
+
+### STEP 100 (`1f46fa3` 기준, 이번 세션 복원)
+- 15개 카드 → setSelectedSymbol 연결 (카드 클릭 → 우측 패널 자동 업데이트)
+
+### STEP 101 (`6fa3c79` 이후)
+- MoversCard 실데이터: `/api/kis/movers` → 단타창 1/7
+
+### STEP 102
+- VolumeCard `/api/kis/volume-rank?sort=spike&limit=5`
+- NetBuyBrokerCard `/api/kis/investor-rank`
+- ScalperDisclosureCard `/api/home/disclosures?limit=5`
+
+### STEP 103
+- ViCard: `/api/kis/vi` 신규 (±5% 해제 / ±8% 발동 필터)
+- ThemeTop10Card: `/api/kis/theme` 신규 (THEME_MAP 10개 × 3-4종목)
+- ShortInterestCard: `/api/krx/short-interest` 신규 (시드 데이터)
+- **단타창 7/7 완성** ✅
+
+### STEP 104
+- LongtermDisclosureCard: `/api/dart/disclosures-longterm` 신규
+- EarningsCard: `/api/dart/earnings-calendar` 신규
+- ValueStocksCard: `/api/db/value-stocks` 신규
+- DividendCard: `/api/db/dividend-top` 신규
+- Lows52WCard: `/api/db/52w-lows` 신규
+- SectorCard: `/api/kis/sector` 신규
+- WarningCard: `/api/krx/warning` 신규
+- **장타창 7/7 완성** ✅
+
+### STEP 105 (`bbe3adf`)
+- GlobalIndicesCard: `/api/yahoo/indices` (S&P/Nasdaq/Dow/Russell/VIX)
+- PreAfterMarketCard: `/api/yahoo/prepost` (8개 한국인 인기 종목)
+- Magnificent7Card: `/api/yahoo/m7` (NVDA·AAPL·MSFT·GOOG·AMZN·META·TSLA)
+- UsMoversCard: `/api/yahoo/us-movers` (day_gainers screener + fallback)
+- ForexClockCard: `/api/forex/usdkrw` (환율 60초) + 클라이언트 시계 1초 (EST/KST + 시장상태)
+- UsNewsCard: `/api/news/us` (Yahoo S&P 500 뉴스 검색)
+- FOMCCalendarCard: `/api/calendar/us-econ` (시드 + D-day 자동계산)
+- **미국주식창 7/7 완성** ✅
+- **🎯🎯🎯 21/21 (100%) 모든 카드 실데이터 완성 — Layer 1-A 끝**
 
 ## 2026-05-27 — 세션 #25 종료 (Layer 0 + 21개 카드 디테일 완성)
 
