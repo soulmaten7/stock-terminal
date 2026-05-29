@@ -65,27 +65,44 @@ export function ChatPanel() {
     setMessages([]);
 
     const load = async () => {
-      let supabase;
-      try { supabase = createClient(); } catch { if (mounted) setLoading(false); return; }
+      try {
+        let supabase;
+        try {
+          supabase = createClient();
+        } catch (err) {
+          console.error("[chat] createClient failed", err);
+          if (mounted) setLoading(false);
+          return;
+        }
 
-      const { data, error } = await supabase
-        .from("chat_messages")
-        .select("id, room, nickname, content, created_at")
-        .eq("room", room)
-        .eq("hidden", false)
-        .order("created_at", { ascending: false })
-        .limit(100);
+        console.log("[chat] loading messages for room:", room);
+        const { data, error } = await supabase
+          .from("chat_messages")
+          .select("id, room, nickname, content, created_at")
+          .eq("room", room)
+          .eq("hidden", false)
+          .order("created_at", { ascending: false })
+          .limit(100);
 
-      if (mounted) {
-        if (!error && data) {
+        if (!mounted) return;
+
+        if (error) {
+          console.error("[chat] supabase select error", error);
+        } else if (data) {
+          console.log("[chat] loaded", data.length, "messages");
           setMessages([...data].reverse() as ChatMessage[]);
         }
         setLoading(false);
+      } catch (err) {
+        console.error("[chat] unexpected error during load", err);
+        if (mounted) setLoading(false);
       }
     };
 
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [room]);
 
   // 2. Realtime subscribe — postgres_changes (supabase_realtime publication)
