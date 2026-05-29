@@ -44,11 +44,19 @@ export function ChatPanel() {
   const ctx = ROOM_META[room];
 
   const nickname = useNickname((s) => s.nickname);
+  const ensureNickname = useNickname((s) => s.ensureNickname);
+  const [mounted, setMounted] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // 0. Hydration 안전 — 클라이언트 마운트 후 닉네임 보장 (SSR 시 nickname="" 유지)
+  useEffect(() => {
+    setMounted(true);
+    ensureNickname();
+  }, [ensureNickname]);
 
   // 1. 과거 메시지 로드 (room 변경 시 재실행)
   useEffect(() => {
@@ -127,9 +135,10 @@ export function ChatPanel() {
     try { supabase = createClient(); } catch { return; }
 
     setSending(true);
+    const safeNickname = nickname || "익명";
     const { error } = await supabase.from("chat_messages").insert({
       room,
-      nickname,
+      nickname: safeNickname,
       content: trimmed,
     });
 
@@ -158,8 +167,12 @@ export function ChatPanel() {
             {ctx.window} 채팅
           </span>
         </div>
-        <span className="text-[10px] text-unjong-muted truncate ml-2" title={nickname}>
-          {nickname}
+        <span
+          className="text-[10px] text-unjong-muted truncate ml-2"
+          title={mounted ? nickname : ""}
+          suppressHydrationWarning
+        >
+          {mounted ? nickname : ""}
         </span>
       </div>
 
