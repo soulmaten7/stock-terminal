@@ -13,7 +13,6 @@ type M7Item = { code: string; name: string; price: string; changePct: number; ma
 type MoverItem = { code: string; name: string; price: string; changePct: number };
 type NewsItem = { title: string; source: string; time: string; url?: string };
 type EconItem = { date: string; event: string; importance: "high" | "medium" | "low"; daysLeft: number };
-type ForexData = { pair: string; price: string; change: string; changePct: number; isUp: boolean };
 
 // ─── Fallbacks ────────────────────────────────────────────────────────────────
 
@@ -348,21 +347,7 @@ export function UsMoversCard() {
 // ─── ForexClockCard ───────────────────────────────────────────────────────────
 
 export function ForexClockCard() {
-  const [forex, setForex] = useState<ForexData | null>(null);
   const [currentTime, setCurrentTime] = useState({ est: "00:00", kst: "00:00" });
-
-  // 환율 fetch (60초 갱신)
-  useEffect(() => {
-    const load = () =>
-      fetch("/api/forex/usdkrw")
-        .then((r) => r.json())
-        .then((j) => { if (j.price) setForex(j); })
-        .catch(() => {});
-
-    load();
-    const id = setInterval(load, 60_000);
-    return () => clearInterval(id);
-  }, []);
 
   // 시계 (1초 갱신)
   useEffect(() => {
@@ -401,31 +386,15 @@ export function ForexClockCard() {
     CLOSED: "text-slate-400",
   };
 
-  const price = forex?.price ?? "1,387.50";
-  const change = forex?.change ?? "+0.00";
-  const changePct = forex?.changePct ?? 0;
-  const isUp = forex?.isUp ?? true;
-
   return (
     <CardContainer
-      id="card-forex"
-      detailHref="/us/forex"
-      title="USD/KRW + 미국 시계"
-      emoji="💱"
-      subtitle="환율 · 시장 상태"
+      id="card-clock"
+      detailHref="/us/clock"
+      title="미국 시계 · 시장 상태"
+      emoji="🕐"
+      subtitle="NYSE/NASDAQ 영업 시간"
     >
       <div className="space-y-3">
-        {/* 환율 */}
-        <div className="flex items-center justify-between rounded bg-unjong-background px-3 py-2.5">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-unjong-muted">USD/KRW</span>
-            <span className="text-lg font-bold text-unjong-primary tabular-nums">{price}</span>
-          </div>
-          <span className={`text-xs font-semibold ${isUp ? "text-unjong-danger" : "text-unjong-success"}`}>
-            {change} ({isUp ? "+" : ""}{changePct.toFixed(2)}%)
-          </span>
-        </div>
-
         {/* 시간 + 시장 상태 */}
         <div className="grid grid-cols-2 gap-1.5">
           <div className="rounded bg-unjong-background px-2 py-2 text-center">

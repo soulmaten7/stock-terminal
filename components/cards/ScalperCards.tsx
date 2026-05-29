@@ -457,9 +457,9 @@ export function NetBuyBrokerCard() {
     <CardContainer
       id="card-netbuy"
       detailHref="/scalper/netbuy"
-      title="NetBuy + 거래원"
+      title="NetBuy · 외인/기관"
       emoji="💰"
-      subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "외인·기관 + 매수 1위"}
+      subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "외국인·기관 순매수 TOP"}
       hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
@@ -481,9 +481,7 @@ export function NetBuyBrokerCard() {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-unjong-primary">{n.name}</span>
-                  <span className="text-[10px] text-unjong-muted">
-                    거래원 1위 <span className="font-semibold text-unjong-accent">{n.topBroker}</span>
-                  </span>
+                  <span className="text-[10px] text-unjong-muted font-mono">{n.code}</span>
                 </div>
                 <div className="flex items-center gap-3 text-[11px]">
                   <span className="flex items-center gap-1">
