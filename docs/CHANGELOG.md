@@ -1,6 +1,27 @@
 <!-- 2026-05-29 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-29 — 세션 #28 종료 (STEP 107~109 완성)
+
+### 세션 전체 요약
+채팅 무한로딩 픽스 + 종목 상세 패널 4탭 실데이터 + 관심종목 실데이터화. Layer 1 전면 실데이터 완성.
+
+### STEP 107 (`lib/supabase/anon-client.ts` 신규)
+- `@supabase/ssr` createBrowserClient 세션 락 버그 → 순수 `@supabase/supabase-js` 익명 클라이언트로 교체
+- `ChatPanel.tsx` — createAnonClient 사용, 10s Promise.race 타임아웃, try/catch 완비
+
+### STEP 108 (`components/sidepanel/StockDetailPanel.tsx` 전면 교체)
+- ChartTab: dynamic import lightweight-charts, KIS 봉차트 실데이터
+- OrderBookTab: `/api/kis/orderbook` + `/api/kis/price` 10초 폴링
+- TickTab: `/api/kis/execution` 5초 폴링
+- OverviewTab: `/api/kis/price` 30초 폴링 + 시가총액·PER·PBR 표시
+
+### STEP 109 (`ebbd416`)
+- `app/api/yahoo/quote/route.ts` — 미국주식 batch quote API 신규
+- `stores/watchlistStore.ts` — Zustand persist (localStorage), KR 5 + US 3 seed
+- `components/sidebar/WatchlistPanel.tsx` — KIS(KR) + Yahoo(US) 30초 폴링 실데이터
+- `app/mypage/page.tsx` — useWatchlistStore 제거 → local state (DB-backed)
+
 ## 2026-05-29 — 세션 #27 종료 (Layer 1-B 완성 — Supabase Realtime 채팅)
 
 ### 세션 전체 요약

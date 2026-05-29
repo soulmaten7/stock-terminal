@@ -1,8 +1,8 @@
 <!-- 2026-05-29 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-29 (세션 #27 종료 · Layer 1-B 완성 — Supabase Realtime 채팅)
-> **현재 상태**: Layer 1-A + 1-B 완성. 다음은 Layer 2 (광고 허브) 또는 Layer 1-A2 (카드 보완).
+> **Last updated**: 2026-05-29 (세션 #28 종료 · STEP 107~109 완성 — 채팅 픽스 + 종목 상세 4탭 + 관심종목 실데이터)
+> **현재 상태**: Layer 1 전면 실데이터 완성. 다음은 Layer 2 (광고 허브) 또는 Layer 1-A2 (카드 보완).
 
 ⚠️ **채팅 DB 활성화 미완료**: Supabase Dashboard SQL Editor 에서 `supabase/migrations/014_chat_rooms.sql` 실행 필요
 
