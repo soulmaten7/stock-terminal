@@ -79,7 +79,7 @@ export function CardDetail({ window, card }: CardDetailProps) {
           <span>{meta.windowLabel}으로</span>
         </Link>
         <span className="text-[10px] text-unjong-muted italic">
-          Layer 1 — 실데이터 + 풀 리스트 연결 예정
+          준비 중
         </span>
       </div>
 
@@ -115,7 +115,7 @@ export function CardDetail({ window, card }: CardDetailProps) {
           </div>
         </div>
         <p className="text-[10px] text-unjong-muted italic mt-2 pl-4">
-          Layer 1 — 실제 필터/정렬 동작 연결 예정
+          준비 중
         </p>
       </div>
 

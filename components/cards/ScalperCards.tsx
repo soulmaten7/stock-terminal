@@ -186,13 +186,7 @@ export function MoversCard() {
           ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}`
           : "실시간 KOSPI/KOSDAQ"
       }
-      hint={
-        isUsingFallback
-          ? `⚠️ API 에러 (${error}) · fallback 표시`
-          : data
-          ? "Layer 1 — KIS ranking API 연결됨 ✅"
-          : "Layer 1 — KIS ranking API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -291,13 +285,7 @@ export function VolumeCard() {
       title="Volume · 거래량 폭증"
       emoji="🔥"
       subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "전일 대비 3배+"}
-      hint={
-        isUsingFallback
-          ? `⚠️ API 에러 (${error}) · fallback 표시`
-          : data
-          ? "Layer 1 — KIS volume-rank API 연결됨 ✅"
-          : "Layer 1 — KIS volume-rank API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -369,13 +357,7 @@ export function ViCard() {
       title="VI · 변동성 완화장치"
       emoji="🚨"
       subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "실시간 발동/해제"}
-      hint={
-        isUsingFallback
-          ? `⚠️ VI API 에러 · fallback`
-          : data
-          ? "Layer 1 — Movers 기반 자체 분류 (8%+ 발동, 5%+ 해제) ✅"
-          : "Layer 1 — VI API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -478,13 +460,7 @@ export function NetBuyBrokerCard() {
       title="NetBuy + 거래원"
       emoji="💰"
       subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "외인·기관 + 매수 1위"}
-      hint={
-        isUsingFallback
-          ? `⚠️ API 에러 (${error}) · fallback 표시`
-          : data
-          ? "Layer 1 — KIS investor-rank API 연결됨 ✅"
-          : "Layer 1 — KIS investor-rank API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -575,13 +551,7 @@ export function ThemeTop10Card() {
       title="테마 TOP10"
       emoji="🎯"
       subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "실시간 등락률 순"}
-      hint={
-        isUsingFallback
-          ? `⚠️ 테마 API 에러 · fallback`
-          : data
-          ? "Layer 1 — 자체 테마 매핑 10개 + KIS price 평균 ✅"
-          : "Layer 1 — 테마 API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -667,13 +637,7 @@ export function ShortInterestCard() {
       title="공매도 잔고 변화"
       emoji="⚠️"
       subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "숏커버·위험 시그널"}
-      hint={
-        isUsingFallback
-          ? `⚠️ KRX 공매도 API 에러 · fallback`
-          : data
-          ? "Layer 1 — KRX 공매도 시드 (Layer 1-A2 에서 KRX CSV 교체) ✅"
-          : "Layer 1 — 공매도 API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -768,13 +732,7 @@ export function ScalperDisclosureCard() {
       title="공시 · 실시간"
       emoji="📄"
       subtitle={lastUpdate ? `DART · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "DART"}
-      hint={
-        isUsingFallback
-          ? `⚠️ DART API 에러 · fallback 표시`
-          : data
-          ? "Layer 1 — DART Open API 연결됨 ✅"
-          : "Layer 1 — DART API 로딩 중..."
-      }
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>

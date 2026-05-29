@@ -132,7 +132,7 @@ export function LongtermDisclosureCard() {
       title="공시 · 실적·배당·증자"
       emoji="📊"
       subtitle={lastUpdate ? `DART · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "DART"}
-      hint={isUsingFallback ? "⚠️ DART API 에러 · fallback" : data ? "Layer 1 — DART 필터링 연결됨 ✅" : "Layer 1 — DART 로딩 중..."}
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -198,7 +198,7 @@ export function EarningsCalendarCard() {
       title="분기 실적 캘린더"
       emoji="📅"
       subtitle={lastUpdate ? `발표 예정 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "발표 예정"}
-      hint={data ? "Layer 1 — 자체 캘린더 + 컨센서스 ✅" : "Layer 1 — 캘린더 로딩 중..."}
+      hint={undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -263,7 +263,7 @@ export function SectorCard() {
       title="섹터 히트맵"
       emoji="🗺️"
       subtitle={lastUpdate ? `실시간 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "업종별 등락"}
-      hint={error ? "⚠️ 섹터 API 에러 · fallback" : data ? "Layer 1 — KIS sector 자체 매핑 ✅" : "Layer 1 — 섹터 로딩 중..."}
+      hint={error ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -323,7 +323,7 @@ export function ValueScreenCard() {
       title="저평가 스크리너"
       emoji="💎"
       subtitle={lastUpdate ? `PER·PBR·ROE · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "PER·PBR·ROE"}
-      hint={isUsingFallback ? "⚠️ DB 에러 · fallback" : data ? "Layer 1 — quant_factors DB 연결됨 ✅" : "Layer 1 — DB 로딩 중..."}
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -390,7 +390,7 @@ export function DividendTopCard() {
       title="배당 TOP 5"
       emoji="💰"
       subtitle={lastUpdate ? `배당수익률 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "배당수익률 순위"}
-      hint={isUsingFallback ? "⚠️ DB 에러 · fallback" : data ? "Layer 1 — dividends DB 연결됨 ✅" : "Layer 1 — DB 로딩 중..."}
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -457,7 +457,7 @@ export function Lows52WCard() {
       title="52주 신저가"
       emoji="📉"
       subtitle={lastUpdate ? `우량주 신저가 · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "우량주 신저가"}
-      hint={isUsingFallback ? "⚠️ DB 에러 · fallback" : data ? "Layer 1 — stock_prices DB 연결됨 ✅" : "Layer 1 — DB 로딩 중..."}
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
@@ -527,7 +527,7 @@ export function WarningStockCard() {
       title="관리·주의 종목"
       emoji="⚠️"
       subtitle={lastUpdate ? `KRX · ${lastUpdate.toLocaleTimeString("ko-KR")}` : "관리종목·투자유의·단기과열"}
-      hint={isUsingFallback ? "⚠️ KRX API 에러 · fallback" : data ? "Layer 1 — KRX 관리종목 시드 ✅" : "Layer 1 — 로딩 중..."}
+      hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
         <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>

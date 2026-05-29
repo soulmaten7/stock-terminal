@@ -218,9 +218,6 @@ export function WatchlistPanel() {
         )}
       </ul>
 
-      <div className="border-t border-unjong-border bg-unjong-background px-2 py-1 flex-shrink-0">
-        <p className="text-[10px] text-unjong-muted italic text-center">Layer 1 — KIS·Yahoo · 30초 폴링 ✅</p>
-      </div>
     </div>
   );
 }
