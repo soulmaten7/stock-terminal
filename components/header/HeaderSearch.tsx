@@ -94,9 +94,9 @@ export function HeaderSearch() {
   };
 
   return (
-    <div ref={containerRef} className="relative flex-1 max-w-2xl mx-4">
+    <div ref={containerRef} className="relative w-full max-w-3xl mx-auto">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted z-10">
-        <Search size={14} />
+        <Search size={16} />
       </div>
       <input
         type="text"
@@ -107,8 +107,8 @@ export function HeaderSearch() {
         }}
         onFocus={() => setShowDropdown(true)}
         onKeyDown={handleKeyDown}
-        placeholder="종목명·코드 검색 (예: 삼성전자, 005930, AAPL)"
-        className="w-full rounded-md border border-unjong-border bg-unjong-surface py-1 pl-8 pr-8 text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent transition-colors"
+        placeholder="🔍 종목 검색 (예: 삼성전자, 005930, AAPL)"
+        className="w-full rounded-md border border-unjong-border bg-unjong-surface py-2 pl-10 pr-9 text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent transition-colors"
         aria-label="운종 종목 검색"
         autoComplete="off"
       />
@@ -119,7 +119,7 @@ export function HeaderSearch() {
           className="absolute right-2 top-1/2 -translate-y-1/2 text-unjong-muted hover:text-unjong-primary"
           aria-label="검색어 지우기"
         >
-          <X size={12} />
+          <X size={14} />
         </button>
       )}
 

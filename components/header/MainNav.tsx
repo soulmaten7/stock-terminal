@@ -21,11 +21,11 @@ export function MainNav() {
 
   return (
     <nav
-      className="flex items-center gap-4 border-b border-unjong-border bg-unjong-background px-4 py-2"
+      className="grid grid-cols-[auto_1fr_auto] items-center gap-6 border-b border-unjong-border bg-unjong-background px-4 py-2"
       aria-label="메인 네비"
     >
       {/* 좌측: 운종 3창 */}
-      <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="flex items-center gap-2">
         {PRIMARY_WINDOWS.map((w) => {
           const isActive = pathname?.startsWith(w.href);
           return (
@@ -50,7 +50,7 @@ export function MainNav() {
       <HeaderSearch />
 
       {/* 우측: 보조 링크 */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex items-center gap-3 justify-self-end">
         {SECONDARY_LINKS.map(({ href, label, englishLabel, icon: Icon }) => (
           <Link
             key={href}
