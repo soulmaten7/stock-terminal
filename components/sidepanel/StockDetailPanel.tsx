@@ -191,6 +191,7 @@ function ChartTab({ symbol }: { symbol: string }) {
             background: { type: ColorType.Solid, color: "transparent" },
             textColor: "#475569",
             fontFamily: "inherit",
+            attributionLogo: false,
           },
           grid: {
             vertLines: { color: "#e2e8f0", style: LineStyle.Dotted },
