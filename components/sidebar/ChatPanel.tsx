@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Send } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useNickname } from "@/stores/nicknameStore";
 
 type ChatMessage = {
@@ -52,15 +52,15 @@ export function ChatPanel() {
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 0. Hydration 안전 — 클라이언트 마운트 후 닉네임 보장 (SSR 시 nickname="" 유지)
+  // 0. Hydration 안전
   useEffect(() => {
     setMounted(true);
     ensureNickname();
   }, [ensureNickname]);
 
-  // 1. 과거 메시지 로드 (room 변경 시 재실행)
+  // 1. 과거 메시지 로드
   useEffect(() => {
-    let mounted = true;
+    let isMounted = true;
     setLoading(true);
     setMessages([]);
 
@@ -68,15 +68,16 @@ export function ChatPanel() {
       try {
         let supabase;
         try {
-          supabase = createClient();
+          supabase = createAnonClient();
         } catch (err) {
-          console.error("[chat] createClient failed", err);
-          if (mounted) setLoading(false);
+          console.error("[chat] createAnonClient failed", err);
+          if (isMounted) setLoading(false);
           return;
         }
 
         console.log("[chat] loading messages for room:", room);
-        const { data, error } = await supabase
+
+        const queryPromise = supabase
           .from("chat_messages")
           .select("id, room, nickname, content, created_at")
           .eq("room", room)
@@ -84,7 +85,13 @@ export function ChatPanel() {
           .order("created_at", { ascending: false })
           .limit(100);
 
-        if (!mounted) return;
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Supabase select timeout (10s)")), 10000)
+        );
+
+        const { data, error } = await Promise.race([queryPromise, timeoutPromise]) as Awaited<typeof queryPromise>;
+
+        if (!isMounted) return;
 
         if (error) {
           console.error("[chat] supabase select error", error);
@@ -95,20 +102,18 @@ export function ChatPanel() {
         setLoading(false);
       } catch (err) {
         console.error("[chat] unexpected error during load", err);
-        if (mounted) setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     load();
-    return () => {
-      mounted = false;
-    };
+    return () => { isMounted = false; };
   }, [room]);
 
-  // 2. Realtime subscribe — postgres_changes (supabase_realtime publication)
+  // 2. Realtime subscribe
   useEffect(() => {
     let supabase;
-    try { supabase = createClient(); } catch { return; }
+    try { supabase = createAnonClient(); } catch { return; }
 
     const channel = supabase
       .channel(`chat-room-${room}`)
@@ -149,7 +154,7 @@ export function ChatPanel() {
     if (!trimmed || sending) return;
 
     let supabase;
-    try { supabase = createClient(); } catch { return; }
+    try { supabase = createAnonClient(); } catch { return; }
 
     setSending(true);
     const safeNickname = nickname || "익명";
