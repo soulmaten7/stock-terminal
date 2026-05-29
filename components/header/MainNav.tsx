@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, CalendarDays } from "lucide-react";
+import { HeaderSearch } from "./HeaderSearch";
 
 const PRIMARY_WINDOWS = [
   { href: "/scalper", label: "단타창", emoji: "⚡" },
@@ -11,8 +12,8 @@ const PRIMARY_WINDOWS = [
 ] as const;
 
 const SECONDARY_LINKS = [
-  { href: "/screener", label: "스크리너", icon: BarChart3 },
-  { href: "/calendar", label: "캘린더", icon: CalendarDays },
+  { href: "/screener", label: "종목발굴", englishLabel: "Screener", icon: BarChart3 },
+  { href: "/calendar", label: "경제 캘린더", englishLabel: "Calendar", icon: CalendarDays },
 ] as const;
 
 export function MainNav() {
@@ -20,11 +21,11 @@ export function MainNav() {
 
   return (
     <nav
-      className="flex items-center justify-between border-b border-unjong-border bg-unjong-background px-4 py-2"
+      className="flex items-center gap-4 border-b border-unjong-border bg-unjong-background px-4 py-2"
       aria-label="메인 네비"
     >
       {/* 좌측: 운종 3창 */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-shrink-0">
         {PRIMARY_WINDOWS.map((w) => {
           const isActive = pathname?.startsWith(w.href);
           return (
@@ -45,9 +46,12 @@ export function MainNav() {
         })}
       </div>
 
+      {/* 가운데: 검색 (flex-1) */}
+      <HeaderSearch />
+
       {/* 우측: 보조 링크 */}
-      <div className="flex items-center gap-3">
-        {SECONDARY_LINKS.map(({ href, label, icon: Icon }) => (
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {SECONDARY_LINKS.map(({ href, label, englishLabel, icon: Icon }) => (
           <Link
             key={href}
             href={href}
@@ -55,6 +59,7 @@ export function MainNav() {
           >
             <Icon size={14} />
             <span className="font-medium">{label}</span>
+            <span className="text-[10px] text-unjong-muted">({englishLabel})</span>
           </Link>
         ))}
       </div>

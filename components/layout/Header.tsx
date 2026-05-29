@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, User, Star, Bell, LogOut } from 'lucide-react';
+import { User, Bell, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
@@ -19,7 +19,6 @@ export default function Header() {
   const { country, setCountry } = useCountryStore();
   const [countryOpen, setCountryOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const countryRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const currentCountry = COUNTRIES.find((c) => c.code === country)!;
@@ -32,14 +31,6 @@ export default function Header() {
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/stocks?q=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery('');
-    }
-  };
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -59,18 +50,6 @@ export default function Header() {
           </span>
           <span className="text-sm text-unjong-muted">운종</span>
         </Link>
-
-        {/* ── 통합 검색박스 ── */}
-        <form onSubmit={handleSearch} className="relative flex-1 max-w-2xl mx-2">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="종목·뉴스·공시 통합 검색  ·  Layer 5 에서 활성화"
-            className="w-full rounded-md border border-unjong-border bg-unjong-background py-1.5 pl-9 pr-3 text-sm placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent"
-          />
-        </form>
 
         {/* ── 우측 아이콘 ── */}
         <div className="flex items-center gap-3 ml-auto shrink-0">
@@ -108,18 +87,12 @@ export default function Header() {
 
           {!user ? (
             <>
-              <Link href="/stocks" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="관심종목">
-                <Star size={18} />
-              </Link>
               <Link href="/auth/login" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="로그인">
                 <User size={18} />
               </Link>
             </>
           ) : (
             <>
-              <Link href="/stocks?tab=watchlist" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="관심종목">
-                <Star size={18} />
-              </Link>
               <div ref={profileRef} className="relative">
                 <button
                   type="button"

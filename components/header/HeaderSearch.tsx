@@ -17,7 +17,7 @@ function inferMarket(country: string, market: string): "KOSPI" | "KOSDAQ" | "US"
   return "KOSDAQ";
 }
 
-export function UnjongSearch() {
+export function HeaderSearch() {
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -34,7 +34,6 @@ export function UnjongSearch() {
       setLoading(false);
       return;
     }
-
     setLoading(true);
     const timeoutId = setTimeout(async () => {
       try {
@@ -48,11 +47,10 @@ export function UnjongSearch() {
         setLoading(false);
       }
     }, 200);
-
     return () => clearTimeout(timeoutId);
   }, [query]);
 
-  // Click outside → close dropdown
+  // Click outside → close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -82,7 +80,6 @@ export function UnjongSearch() {
       return;
     }
     if (!showDropdown || results.length === 0) return;
-
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveIndex((i) => Math.min(i + 1, results.length - 1));
@@ -97,9 +94,9 @@ export function UnjongSearch() {
   };
 
   return (
-    <div ref={containerRef} className="relative flex-1 max-w-xl">
+    <div ref={containerRef} className="relative flex-1 max-w-2xl mx-4">
       <div className="absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted z-10">
-        <Search size={16} />
+        <Search size={14} />
       </div>
       <input
         type="text"
@@ -111,22 +108,18 @@ export function UnjongSearch() {
         onFocus={() => setShowDropdown(true)}
         onKeyDown={handleKeyDown}
         placeholder="종목명·코드 검색 (예: 삼성전자, 005930, AAPL)"
-        className="w-full rounded-md border border-unjong-border bg-unjong-background py-1.5 pl-9 pr-9 text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent transition-colors"
+        className="w-full rounded-md border border-unjong-border bg-unjong-surface py-1 pl-8 pr-8 text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent transition-colors"
         aria-label="운종 종목 검색"
         autoComplete="off"
       />
       {query && (
         <button
           type="button"
-          onClick={() => {
-            setQuery("");
-            setResults([]);
-            setShowDropdown(false);
-          }}
+          onClick={() => { setQuery(""); setResults([]); setShowDropdown(false); }}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-unjong-muted hover:text-unjong-primary"
           aria-label="검색어 지우기"
         >
-          <X size={14} />
+          <X size={12} />
         </button>
       )}
 
@@ -156,9 +149,7 @@ export function UnjongSearch() {
                       onClick={() => handleSelect(item)}
                       onMouseEnter={() => setActiveIndex(i)}
                       className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${
-                        i === activeIndex
-                          ? "bg-unjong-background"
-                          : "hover:bg-unjong-background"
+                        i === activeIndex ? "bg-unjong-background" : "hover:bg-unjong-background"
                       }`}
                     >
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold flex-shrink-0 ${marketColor}`}>
