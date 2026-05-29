@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, Calendar } from "lucide-react";
+import { BarChart3, CalendarDays } from "lucide-react";
 
 const PRIMARY_WINDOWS = [
   { href: "/scalper", label: "단타창", emoji: "⚡" },
@@ -11,8 +11,8 @@ const PRIMARY_WINDOWS = [
 ] as const;
 
 const SECONDARY_LINKS = [
-  { href: "/screener", label: "종목발굴", englishLabel: "Screener", icon: Search },
-  { href: "/calendar", label: "경제캘린더", englishLabel: "Calendar", icon: Calendar },
+  { href: "/screener", label: "스크리너", icon: BarChart3 },
+  { href: "/calendar", label: "캘린더", icon: CalendarDays },
 ] as const;
 
 export function MainNav() {
@@ -47,7 +47,7 @@ export function MainNav() {
 
       {/* 우측: 보조 링크 */}
       <div className="flex items-center gap-3">
-        {SECONDARY_LINKS.map(({ href, label, englishLabel, icon: Icon }) => (
+        {SECONDARY_LINKS.map(({ href, label, icon: Icon }) => (
           <Link
             key={href}
             href={href}
@@ -55,7 +55,6 @@ export function MainNav() {
           >
             <Icon size={14} />
             <span className="font-medium">{label}</span>
-            <span className="text-[10px] text-unjong-muted">({englishLabel})</span>
           </Link>
         ))}
       </div>

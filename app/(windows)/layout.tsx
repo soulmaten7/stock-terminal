@@ -2,8 +2,6 @@ import type { ReactNode } from "react";
 import { ChatPanel } from "@/components/sidebar/ChatPanel";
 import { WatchlistPanel } from "@/components/sidebar/WatchlistPanel";
 import { StockDetailPanel } from "@/components/sidepanel/StockDetailPanel";
-import { ContextNav } from "@/components/header/ContextNav";
-
 export default function WindowsLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex bg-unjong-background min-h-screen">
@@ -17,10 +15,8 @@ export default function WindowsLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* ─── 우측 영역: ContextNav + 1행(종목상세+관심종목) + 2행(카드 풀폭) ─── */}
+      {/* ─── 우측 영역: 1행(종목상세+관심종목) + 2행(카드 풀폭) ─── */}
       <div className="flex-1 flex flex-col min-w-0">
-        <ContextNav />
-
         {/* 1행: 종목상세 (flex-1) + 관심종목 (300px) 가로 배치 */}
         <div className="flex gap-4 px-4 pt-4 items-stretch">
           <div className="flex-1 min-w-0">
