@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
-import { useWatchlistStore } from '@/stores/watchlistStore';
 import { formatDate, formatNumber } from '@/lib/utils/format';
 import { User, CreditCard, Star, Bell, MessageCircle, Trash2, Crown } from 'lucide-react';
 import type { Payment } from '@/types/api';
@@ -16,7 +15,7 @@ type Tab = 'profile' | 'subscription' | 'watchlist' | 'notifications' | 'chat';
 export default function MyPage() {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
-  const { items: watchlistItems, setItems, removeItem } = useWatchlistStore();
+  const [watchlistItems, setWatchlistItems] = useState<Watchlist[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('profile');
   const [payments, setPayments] = useState<Payment[]>([]);
   const [nickname, setNickname] = useState('');
@@ -39,7 +38,7 @@ export default function MyPage() {
       supabase.from('payments').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
     ]);
 
-    if (watchlistRes.data) setItems(watchlistRes.data);
+    if (watchlistRes.data) setWatchlistItems(watchlistRes.data);
     if (paymentsRes.data) setPayments(paymentsRes.data);
   };
 
@@ -55,7 +54,7 @@ export default function MyPage() {
   const removeFromWatchlist = async (item: Watchlist) => {
     const supabase = createClient();
     await supabase.from('watchlist').delete().eq('id', item.id);
-    removeItem(item.id);
+    setWatchlistItems((prev) => prev.filter((i) => i.id !== item.id));
   };
 
   if (isLoading || !user) {
