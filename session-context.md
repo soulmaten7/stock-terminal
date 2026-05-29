@@ -102,6 +102,14 @@
 - [x] V3 5섹션 → `/dashboard` 강등 (보존)
 - [x] 카드 더보기 + 뒤로가기
 
+### ✅ Layer 1-B — 완성 (세션 #27, 2026-05-29)
+- [x] ChatPanel 더미 제거 → Supabase Realtime 실시간 (STEP 106)
+- [x] 닉네임 store (Zustand persist, 트레이더-XXXX)
+- [x] 3창 채팅방 분리 (scalper/longterm/us)
+- [x] postgres_changes subscribe + 자동스크롤 + Enter 전송
+- [x] 마이그레이션 014_chat_rooms.sql (room+nickname 컬럼, RLS 익명)
+- ⚠️ **Supabase Dashboard 에서 014 SQL 실행 필수** (사용자 직접)
+
 ### ✅ Layer 1-A — 완성 (세션 #26, 2026-05-29)
 - [x] 단타창 7/7 카드 실데이터 (STEP 101~103) — KIS API
 - [x] 장타창 7/7 카드 실데이터 (STEP 104) — DART + DB + KIS

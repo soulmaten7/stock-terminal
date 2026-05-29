@@ -1,8 +1,10 @@
 <!-- 2026-05-29 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-29 (세션 #26 종료 · Layer 1-A 완성 — 21/21 카드 100% 실데이터)
-> **현재 상태**: Layer 1-A 완성. 다음은 Layer 1-B (Supabase Realtime 채팅) 또는 Layer 2 (광고 허브).
+> **Last updated**: 2026-05-29 (세션 #27 종료 · Layer 1-B 완성 — Supabase Realtime 채팅)
+> **현재 상태**: Layer 1-A + 1-B 완성. 다음은 Layer 2 (광고 허브) 또는 Layer 1-A2 (카드 보완).
+
+⚠️ **채팅 DB 활성화 미완료**: Supabase Dashboard SQL Editor 에서 `supabase/migrations/014_chat_rooms.sql` 실행 필요
 
 ---
 
@@ -51,12 +53,11 @@
 
 ---
 
-## 4. 다음 — Layer 1-B 또는 Layer 2
+## 4. 다음 — Layer 2 또는 Layer 1-A2
 
-### Layer 1-B — Supabase Realtime 채팅 ★ 추천 (3~4일)
-- 좌측 채팅창 더미 → 실시간 송수신
-- 닉네임 시스템 + 채팅 메시지 영구 저장 (Supabase)
-- 단타·장타·미장 채팅방 분리
+### ✅ Layer 1-B 완성 (세션 #27)
+- ChatPanel 실시간 채팅 완성 (STEP 106, 커밋 `6b350d8`)
+- ⚠️ **채팅 DB 활성화**: Supabase Dashboard → SQL Editor → `014_chat_rooms.sql` 실행 필수
 
 ### Layer 1-A2 — 카드 보완 (1~2일)
 - 테마 종목 매핑 확장 (현재 THEME_MAP 10개 × 3~4종목)

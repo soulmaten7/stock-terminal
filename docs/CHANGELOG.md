@@ -1,6 +1,18 @@
 <!-- 2026-05-29 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-29 — 세션 #27 종료 (Layer 1-B 완성 — Supabase Realtime 채팅)
+
+### 세션 전체 요약
+Layer 1-B (Supabase Realtime 채팅) 완성. ChatPanel 더미 제거 → 실시간 송수신. 3창 채팅방 분리.
+
+### STEP 106 (`6b350d8`)
+- `supabase/migrations/014_chat_rooms.sql` — chat_messages 에 room + nickname 추가, INSERT RLS 익명 허용, 방별 Broadcast 트리거
+- `stores/nicknameStore.ts` — Zustand persist, 트레이더-XXXX 자동생성
+- `components/sidebar/ChatPanel.tsx` — 더미 제거, postgres_changes Realtime, 과거 100건 로드, Enter 전송, 자동스크롤
+
+⚠️ 채팅 활성화: Supabase Dashboard SQL Editor 에서 `014_chat_rooms.sql` 실행 필수
+
 ## 2026-05-29 — 세션 #26 종료 (Layer 1-A 완성 — 21/21 카드 100% 실데이터)
 
 ### 세션 전체 요약
