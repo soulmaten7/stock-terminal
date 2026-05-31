@@ -14,9 +14,9 @@ type ChatMessage = {
   created_at: string;
 };
 
-type Props = { symbol: string };
+type Props = { symbol: string; stockName?: string };
 
-export default function StockChatPanel({ symbol }: Props) {
+export default function StockChatPanel({ symbol, stockName }: Props) {
   const nickname = useNickname((s) => s.nickname);
   const ensureNickname = useNickname((s) => s.ensureNickname);
   const [mounted, setMounted] = useState(false);
@@ -111,7 +111,7 @@ export default function StockChatPanel({ symbol }: Props) {
   return (
     <div className="flex flex-col bg-unjong-surface rounded-lg border border-unjong-border h-[calc(100vh-2rem)] overflow-hidden">
       <header className="flex items-center justify-between border-b border-unjong-border px-3 py-2 bg-unjong-background flex-shrink-0">
-        <span className="text-xs font-semibold text-unjong-primary">⚡ {symbol} 실시간 채팅</span>
+        <span className="text-xs font-semibold text-unjong-primary">⚡ {stockName || symbol} 실시간 채팅</span>
         <span className="text-[10px] text-unjong-muted truncate ml-2" suppressHydrationWarning>
           {mounted ? nickname : ""}
         </span>
@@ -120,7 +120,7 @@ export default function StockChatPanel({ symbol }: Props) {
         {loading ? (
           <LoadingState />
         ) : messages.length === 0 ? (
-          <EmptyState icon="💬" title="첫 메시지를 남겨보세요" description={`${symbol} 트레이더와 실시간 대화.`} />
+          <EmptyState icon="💬" title="첫 메시지를 남겨보세요" description={`${stockName || symbol} 트레이더와 실시간 대화.`} />
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className="flex flex-col gap-0.5">
@@ -142,7 +142,7 @@ export default function StockChatPanel({ symbol }: Props) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={`${symbol} 채팅...`}
+            placeholder={`${stockName || symbol} 채팅...`}
             maxLength={500}
             className="flex-1 bg-transparent text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
             disabled={sending}

@@ -96,10 +96,15 @@ export default function StockInfoPanel({ symbol }: Props) {
           fetch(`/api/kis/chart?symbol=${symbol}&period=D`).then((r) => r.json()),
         ]);
         if (cancelled || !chartRef.current) return;
+        if (!res.candles || res.candles.length === 0) {
+          console.warn("[chart] no candles for", symbol);
+          return;
+        }
 
         chartRef.current.innerHTML = "";
+        const width = chartRef.current.clientWidth || 280;
         chart = createChart(chartRef.current, {
-          width: chartRef.current.clientWidth,
+          width,
           height: 200,
           layout: {
             background: { type: ColorType.Solid, color: "transparent" },
@@ -142,8 +147,8 @@ export default function StockInfoPanel({ symbol }: Props) {
           }
         });
         ro.observe(chartRef.current);
-      } catch {
-        // 차트 로딩 실패 무시
+      } catch (err) {
+        console.error("[chart] failed to load", err);
       }
     };
     load();
@@ -189,7 +194,7 @@ export default function StockInfoPanel({ symbol }: Props) {
       {isKr && (
         <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3">
           <h3 className="text-[10px] font-semibold text-unjong-muted uppercase mb-2">일봉 (60일)</h3>
-          <div ref={chartRef} className="w-full h-[200px]" />
+          <div ref={chartRef} className="relative w-full h-[200px] min-w-[260px]" />
         </section>
       )}
 
@@ -224,14 +229,15 @@ function formatPrice(price: number, isUS = false): string {
 }
 
 function formatMarketCap(cap: number, isUS = false): string {
-  if (!cap) return "—";
+  if (!cap || cap <= 0) return "—";
   if (isUS) {
     if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
     if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
     return `$${cap.toLocaleString()}`;
   }
-  // 한국 (원 단위)
-  return `${(cap / 100000000).toFixed(1)}조`;
+  // 한국 — KIS hts_avls 단위 = 억원 (1조 = 10,000억)
+  if (cap >= 10000) return `${(cap / 10000).toFixed(1)}조`;
+  return `${cap.toLocaleString()}억`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {

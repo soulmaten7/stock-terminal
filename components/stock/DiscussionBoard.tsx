@@ -21,9 +21,9 @@ type Discussion = {
 
 type SortMode = "hot" | "recent";
 
-type Props = { symbol: string };
+type Props = { symbol: string; stockName?: string };
 
-export default function DiscussionBoard({ symbol }: Props) {
+export default function DiscussionBoard({ symbol, stockName }: Props) {
   const user = useAuthStore((s) => s.user);
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -103,7 +103,7 @@ export default function DiscussionBoard({ symbol }: Props) {
       {/* 헤더 */}
       <header className="flex items-center justify-between bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3">
         <div>
-          <h1 className="text-base font-semibold text-unjong-primary">💬 {symbol} 토론</h1>
+          <h1 className="text-base font-semibold text-unjong-primary">💬 {stockName || symbol} 토론</h1>
           <p className="text-[10px] text-unjong-muted">실시간 토론 · 좋아요 정렬 / 최신순</p>
         </div>
         <div className="flex items-center gap-1">
@@ -139,7 +139,7 @@ export default function DiscussionBoard({ symbol }: Props) {
           onClick={() => setShowWrite(true)}
           className="w-full text-left bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3 text-xs text-unjong-muted hover:text-unjong-primary"
         >
-          ✏️ {symbol} 에 대해 어떻게 생각하세요?
+          ✏️ {stockName || symbol} 에 대해 어떻게 생각하세요?
         </button>
       ) : (
         <div className="bg-unjong-surface rounded-lg border border-unjong-accent p-3 space-y-2">

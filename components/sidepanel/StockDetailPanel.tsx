@@ -321,7 +321,13 @@ function OverviewTab({ symbol }: { symbol: string }) {
   if (loading && !data) return <div className="p-4 text-center text-xs text-unjong-muted italic">⏳ 정보 로딩 중...</div>;
   if (error || !data) return <div className="p-4 text-center text-xs text-unjong-danger">❌ {error || "데이터 없음"}</div>;
 
-  const marketCapStr = data.marketCap > 0 ? `${(data.marketCap / 100_000_000).toFixed(1)}조` : "—";
+  // KIS hts_avls 단위 = 억원 (1조 = 10,000억)
+  const marketCapStr =
+    data.marketCap > 0
+      ? data.marketCap >= 10_000
+        ? `${(data.marketCap / 10_000).toFixed(1)}조`
+        : `${data.marketCap.toLocaleString()}억`
+      : "—";
 
   return (
     <div className="p-3 space-y-3">

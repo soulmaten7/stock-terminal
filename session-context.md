@@ -1,6 +1,16 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 125 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 126 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 126 (2026-05-31) — 종목 페이지 핫픽스 (4개 버그) ✅
+
+### 수정
+- 버그1 종목명: StockPageClient 가 stocks DB name_ko 조회 → DiscussionBoard·StockChatPanel `stockName` prop
+- 버그2 시총(결정적): KIS hts_avls=억원 → `/10000`+조/억 (StockInfoPanel·StockDetailPanel 둘 다)
+- 버그3 52주: KIS price API `w52_hgpr/w52_lwpr` 우선 + 기존 필드 폴백
+- 버그4 차트: 컨테이너 min-w-[260px], createChart width=clientWidth||280, 빈 candles 가드 + console 진단
+
+### 검증: KIS 실데이터는 사용자 실행 환경 확인 (차트 안 뜨면 콘솔 [chart] 로그)
 
 ## STEP 125 (2026-05-31) — 미국 주식 상세 + 검색 ⭐ Watchlist ✅
 

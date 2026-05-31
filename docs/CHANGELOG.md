@@ -1,6 +1,31 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 126 (종목 페이지 핫픽스 — 종목명·시총·52주·차트)
+
+### 세션 전체 요약
+`/stock/000660`(SK하이닉스) 스크린샷에서 발견된 4개 버그 핫픽스.
+
+### 버그 1 — 종목명 미표시 (토론·채팅 헤더가 코드만 표시)
+- `StockPageClient`: stocks DB `name_ko` 조회(한국)/ticker(미국) → `stockName` state
+- `DiscussionBoard`·`StockChatPanel` 에 `stockName` prop 전달 → 헤더·placeholder `{stockName || symbol}`
+- StockInfoPanel 좌측 헤더는 KIS `hts_kor_isnm` 그대로 사용(정상)
+
+### 버그 2 — 시가총액 1억배 오류 (200조 → 0.2조 표시) **결정적**
+- KIS `hts_avls` 단위 = 억원. 잘못된 변환 `/100000000` → 올바른 `/10000` (1조=10,000억), 1만 미만 `X억`
+- `StockInfoPanel.formatMarketCap`(한국 분기) + `StockDetailPanel` OverviewTab 둘 다 수정
+
+### 버그 3 — 52주 최고/최저 "—" 표시
+- `app/api/kis/price/route.ts`: `stck_dryc_*`(당해년도) → `w52_hgpr || w52_lwpr` (52주) 우선, 기존 필드 폴백
+
+### 버그 4 — 차트 빈 박스
+- `StockInfoPanel` 차트 effect: 컨테이너 `min-w-[260px] relative`, `createChart width = clientWidth || 280` 폴백
+- 빈 candles 가드(`console.warn`) + catch `console.error` 진단 로그
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0.
+- 차트/시총/52주 실데이터는 KIS 인증·네트워크 필요 → 사용자 실행 환경에서 최종 확인.
+
 ## 2026-05-31 — STEP 125 (미국 주식 상세 정보 + 검색 ⭐ Watchlist 통합)
 
 ### 세션 전체 요약
