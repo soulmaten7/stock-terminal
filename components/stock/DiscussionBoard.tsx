@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useAuthStore } from "@/stores/authStore";
-import { Heart, MessageCircle, Flag, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import Link from "next/link";
+import DiscussionItem from "./DiscussionItem";
 
 type Discussion = {
   id: string;
@@ -29,6 +30,27 @@ export default function DiscussionBoard({ symbol }: Props) {
   const [showWrite, setShowWrite] = useState(false);
   const [writeContent, setWriteContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+
+  // 본인이 좋아요한 글 ID 미리 로드 → 초기 liked 상태 표시
+  useEffect(() => {
+    if (!user) {
+      setLikedIds(new Set());
+      return;
+    }
+    let cancelled = false;
+    const loadLikes = async () => {
+      const supabase = createAnonClient();
+      const { data } = await supabase
+        .from("discussion_likes")
+        .select("discussion_id")
+        .eq("user_id", user.id);
+      if (cancelled) return;
+      setLikedIds(new Set((data || []).map((r: { discussion_id: string }) => r.discussion_id)));
+    };
+    loadLikes();
+    return () => { cancelled = true; };
+  }, [user, discussions.length]);
 
   useEffect(() => {
     let cancelled = false;
@@ -164,41 +186,14 @@ export default function DiscussionBoard({ symbol }: Props) {
       ) : (
         <ul className="space-y-2">
           {discussions.map((d) => (
-            <DiscussionItem key={d.id} discussion={d} />
+            <DiscussionItem
+              key={d.id}
+              discussion={d}
+              initiallyLiked={likedIds.has(d.id)}
+            />
           ))}
         </ul>
       )}
     </div>
-  );
-}
-
-function DiscussionItem({ discussion: d }: { discussion: Discussion }) {
-  const tierEmoji = d.tier === 3 ? "🏆" : d.tier === 2 ? "✓" : "";
-
-  return (
-    <li className="bg-unjong-surface rounded-lg border border-unjong-border p-3 hover:border-unjong-accent transition-colors">
-      <div className="flex items-baseline justify-between mb-2">
-        <span className="text-xs font-semibold text-unjong-primary">
-          {tierEmoji} {d.nickname}
-        </span>
-        <span className="text-[10px] text-unjong-muted">
-          {new Date(d.created_at).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
-        </span>
-      </div>
-      <p className="text-xs text-unjong-primary whitespace-pre-wrap leading-relaxed mb-2">{d.content}</p>
-      <div className="flex items-center gap-4">
-        <button className="flex items-center gap-1 text-[10px] text-unjong-muted hover:text-unjong-danger">
-          <Heart size={12} />
-          <span>{d.like_count}</span>
-        </button>
-        <button className="flex items-center gap-1 text-[10px] text-unjong-muted hover:text-unjong-primary">
-          <MessageCircle size={12} />
-          <span>{d.comment_count}</span>
-        </button>
-        <button className="ml-auto text-[10px] text-unjong-muted hover:text-unjong-danger">
-          <Flag size={11} />
-        </button>
-      </div>
-    </li>
   );
 }

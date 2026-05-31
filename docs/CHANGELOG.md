@@ -1,6 +1,35 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 120 (종목 페이지 마무리 — 좋아요·신고 + 차트 inline + 미장 Yahoo)
+
+### 세션 전체 요약
+종목 페이지 `/stock/[code]` 의 3가지 미완성 마무리: 토론 좋아요·신고 인터랙션, 좌측 일봉 차트 inline, 미국주식 Yahoo 가격 통합.
+
+### [1] 토론 좋아요·신고 (`components/stock/DiscussionItem.tsx` 신규 분리)
+- `DiscussionBoard` 인라인 DiscussionItem → 별도 파일 분리 (상태 관리)
+- 좋아요: onClick → `discussion_likes` insert/delete 토글 + 낙관적 카운트 + 채워진 하트
+- 신고: onClick → `confirm` 다이얼로그 → `discussion_reports` insert (5건↑ 자동 hidden)
+- 비로그인 클릭 → amber 배너 "로그인 후 이용 가능합니다" + /auth/login (3초 자동 숨김)
+- `DiscussionBoard`: 본인 좋아요한 글 ID(`likedIds`) 미리 로드 → 초기 liked 상태 표시
+- 댓글 버튼: disabled (count 만, 댓글 기능 추후)
+
+### [2] StockInfoPanel 차트 inline
+- 종목 헤더 박스 아래 60일 일봉 캔들 차트 (높이 200px)
+- lightweight-charts dynamic import (STEP 108 ChartTab 재활용), attributionLogo: false
+- 한국 주식만 표시 · ResizeObserver 너비 자동 조절 (effect cleanup 으로 안전 해제)
+
+### [3] 미국 주식 StockInfoPanel — Yahoo 통합
+- 미국 분기: `/api/yahoo/quote?symbols=` 호출 (가격·등락률) — "통합 추후" 메시지 제거
+- 시세·재무 박스는 한국 주식만 풍부 / 미국은 "Yahoo Finance 통합 작업 중" 안내
+- 종목명은 ticker 표시 (Yahoo quote 가 종목명 미반환 — quoteSummary 통합 추후)
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0. `/stock/[code]` 정상.
+
+### 참고 (인증 미활성화)
+- 좋아요·신고 실제 DB insert 는 RLS 상 로그인 필요 → 카카오 OAuth 활성화(STEP 118 사용자 작업) 후 동작. 비로그인은 안내 배너로 흐름 차단.
+
 ## 2026-05-31 — STEP 117 (새 홈 페이지 + dashboard 처분 + V3 2차 청소)
 
 ### 세션 전체 요약

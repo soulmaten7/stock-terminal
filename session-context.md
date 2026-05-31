@@ -1,6 +1,18 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 117 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 120 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 120 (2026-05-31) — 종목 페이지 마무리 (좋아요·신고 + 차트 + 미장 Yahoo) ✅
+
+### 변경
+- `DiscussionItem.tsx` 분리: 좋아요(discussion_likes 토글) + 신고(discussion_reports confirm) + 비로그인 amber 안내(3초)
+- `DiscussionBoard`: likedIds 미리 로드해 초기 liked 표시, 댓글 버튼 disabled
+- `StockInfoPanel`: 60일 일봉 차트 inline(lightweight-charts dynamic, 한국만) + 미국주식 Yahoo quote 가격·등락률 통합
+
+### 동작 전제
+- 좋아요·신고 DB insert = 카카오 OAuth 활성화 + 017 적용 후. 비로그인은 안내 차단
+### 잔여
+- 토론 댓글, 미국주식 시고저·52주·PER(quoteSummary)·종목명 → 추후
 
 ## STEP 117 (2026-05-31) — 새 홈 + dashboard 처분 + V3 2차 청소 ✅
 

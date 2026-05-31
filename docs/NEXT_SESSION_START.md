@@ -1,8 +1,8 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-31 (STEP 117 — 새 홈 / + dashboard·V3 12페이지·widgets 청소)
-> **현재 상태**: V5 구조(114)+V3 청소(116)+인증(118)+종목페이지(115)+새 홈(117) 완료. 빌드 ✓. 다음은 STEP 119 (Vercel 배포).
+> **Last updated**: 2026-05-31 (STEP 120 — 종목 페이지 마무리: 좋아요·신고 + 차트 inline + 미장 Yahoo)
+> **현재 상태**: V5 구조(114)+청소(116)+인증(118)+종목페이지(115)+새 홈(117)+종목마무리(120) 완료. 빌드 ✓. 다음은 STEP 119 (Vercel 배포).
 
 ⚠️ **미적용 DB 마이그레이션** (Cowork 가 Supabase MCP 로 순서대로 적용):
 - `015_chat_unify.sql` — 채팅 room → general 통합
@@ -20,12 +20,16 @@
 ### 이연 사항 (다음 STEP)
 - 고아 컴포넌트 dirs (analysis/briefing/stocks/news/dashboard/movers/net-buy/orderbook/ticks/toolbox/watchlist/partners/payment/advertiser 등) — V3 페이지 삭제로 미사용. 빌드 영향 없어 추후 일괄 청소
 - 고아 `stores/chatStore.ts`, `components/layout/TopNav.tsx`, `app/global` 검토
-- 종목 페이지: 좋아요·신고·댓글 onClick 동작, 미국주식 종목 정보(Yahoo) 통합, 차트 영역 → 추후
+- 종목 페이지 잔여: 토론 **댓글**(현재 count만, disabled), 미국주식 시고저·52주·PER(quoteSummary 별도 API), 미국주식 종목명(현재 ticker) → 추후
 - mypage 구독/결제 탭 V3 잔재 → 카카오 OAuth 활성화 시 정리
 
 ### 다음 STEP
 - **STEP 119** — Vercel 배포 + 환경변수 + unjong.com 도메인
-- 추후 — 카카오 OAuth 활성화 (사용자 작업) · 토론 좋아요·신고·댓글 · 미국 주식 종목 정보 통합 · 고아 컴포넌트 일괄 청소
+- **STEP 121** — 모바일 반응형 (<1024px 단일 컬럼) · **STEP 122** — 종목별 뉴스 · **STEP 123** — UI 다듬기
+- 추후 — 카카오 OAuth 활성화 (사용자 작업) · 토론 댓글 · 미국주식 상세(quoteSummary) · 고아 컴포넌트 일괄 청소
+
+### STEP 120 동작 전제
+- 토론 좋아요·신고 실제 DB insert 는 **카카오 OAuth 활성화 + 마이그레이션 017 적용** 후 동작. 비로그인은 amber 안내 배너로 차단.
 
 ### 운종 V5 페이지 구조 (최종)
 - `/` 새 홈 · `/kr` 한국 5카드 · `/us` 미국 4카드 · `/stock/[code]` 종목 · `/screener` · `/calendar` · `/auth/login`·`/auth/callback` · `/mypage`
