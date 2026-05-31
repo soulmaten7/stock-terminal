@@ -6,9 +6,8 @@ import { BarChart3, CalendarDays } from "lucide-react";
 import { HeaderSearch } from "./HeaderSearch";
 
 const PRIMARY_WINDOWS = [
-  { href: "/scalper", label: "단타창", emoji: "⚡" },
-  { href: "/longterm", label: "장타창", emoji: "🌳" },
-  { href: "/us", label: "미국주식창", emoji: "🌙" },
+  { href: "/kr", label: "한국주식", emoji: "🇰🇷" },
+  { href: "/us", label: "미국주식", emoji: "🇺🇸" },
 ] as const;
 
 const SECONDARY_LINKS = [
@@ -24,7 +23,7 @@ export function MainNav() {
       className="grid grid-cols-[auto_1fr_auto] items-center gap-6 border-b border-unjong-border bg-unjong-background px-4 py-2"
       aria-label="메인 네비"
     >
-      {/* 좌측: 운종 3창 */}
+      {/* 좌측: 운종 2창 (한국/미국) */}
       <div className="flex items-center gap-2">
         {PRIMARY_WINDOWS.map((w) => {
           const isActive = pathname?.startsWith(w.href);

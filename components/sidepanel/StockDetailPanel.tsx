@@ -5,13 +5,11 @@ import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { TrendingUp, TrendingDown, X } from "lucide-react";
 import type { IChartApi } from "lightweight-charts";
 
-type Tab = "chart" | "orderbook" | "tick" | "overview";
+type Tab = "chart" | "overview";
 
 const TABS: Array<{ id: Tab; label: string; emoji: string }> = [
-  { id: "chart",     label: "차트",   emoji: "📈" },
-  { id: "orderbook", label: "호가창", emoji: "📊" },
-  { id: "tick",      label: "체결",   emoji: "⚡" },
-  { id: "overview",  label: "종합",   emoji: "📋" },
+  { id: "chart",    label: "차트", emoji: "📈" },
+  { id: "overview", label: "종합", emoji: "📋" },
 ];
 
 type StockDetailPanelProps = { inline?: boolean };
@@ -24,7 +22,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
     if (inline) {
       return (
         <div className="rounded-lg border border-dashed border-unjong-border bg-unjong-surface p-6 text-center text-xs text-unjong-muted">
-          관심종목 또는 카드에서 종목을 클릭하면 차트·호가·체결·종합이 표시됩니다.
+          관심종목 또는 카드에서 종목을 클릭하면 차트·종합이 표시됩니다.
         </div>
       );
     }
@@ -38,7 +36,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
               <br />
               종목을 클릭하면
               <br />
-              여기 차트·호가·체결이 표시됩니다.
+              여기 차트·종합이 표시됩니다.
             </p>
           </div>
         </div>
@@ -50,10 +48,8 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
 
   const tabContent = (
     <>
-      {activeTab === "chart"     && <ChartTab symbol={selectedSymbol.code} />}
-      {activeTab === "orderbook" && <OrderBookTab symbol={selectedSymbol.code} />}
-      {activeTab === "tick"      && <TickTab symbol={selectedSymbol.code} />}
-      {activeTab === "overview"  && <OverviewTab symbol={selectedSymbol.code} />}
+      {activeTab === "chart"    && <ChartTab symbol={selectedSymbol.code} />}
+      {activeTab === "overview" && <OverviewTab symbol={selectedSymbol.code} />}
     </>
   );
 
@@ -280,135 +276,6 @@ function ChartTab({ symbol }: { symbol: string }) {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// ─── OrderBookTab ─────────────────────────────────────────────────────────────
-
-type OrderBookEntry = { price: number; volume: number };
-type OrderBookData = {
-  symbol: string;
-  asks: OrderBookEntry[];
-  bids: OrderBookEntry[];
-  totalAskVolume: number;
-  totalBidVolume: number;
-};
-
-function OrderBookTab({ symbol }: { symbol: string }) {
-  const [data, setData] = useState<OrderBookData | null>(null);
-  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isKrCode(symbol)) { setLoading(false); return; }
-
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const [obRes, pRes] = await Promise.all([
-          fetch(`/api/kis/orderbook?symbol=${symbol}`).then((r) => r.json()),
-          fetch(`/api/kis/price?symbol=${symbol}`).then((r) => r.json()),
-        ]);
-        if (cancelled) return;
-        if (obRes.error) setError(obRes.error);
-        else { setData(obRes); if (pRes.price) setCurrentPrice(pRes.price); }
-      } catch (err) {
-        if (!cancelled) setError(String(err));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    load();
-    const interval = setInterval(load, 10_000);
-    return () => { cancelled = true; clearInterval(interval); };
-  }, [symbol]);
-
-  if (!isKrCode(symbol)) return <div className="p-4 text-center text-xs text-unjong-muted italic">미국 주식 호가창은 별도 데이터 소스 필요</div>;
-  if (loading && !data) return <div className="p-4 text-center text-xs text-unjong-muted italic">⏳ 호가 로딩 중...</div>;
-  if (error || !data) return <div className="p-4 text-center text-xs text-unjong-danger">❌ {error || "데이터 없음"}</div>;
-
-  return (
-    <div className="p-3 space-y-0.5">
-      {data.asks.filter((a) => a.price > 0).map((ask, i) => (
-        <div key={i} className="flex items-center justify-between bg-emerald-50 rounded px-2 py-1 text-xs">
-          <span className="text-unjong-muted tabular-nums">{ask.volume.toLocaleString()}</span>
-          <span className="font-semibold text-unjong-success tabular-nums">{ask.price.toLocaleString()}</span>
-        </div>
-      ))}
-
-      <div className="border-y border-unjong-border my-1 py-1.5 text-center bg-unjong-background">
-        <span className="text-sm font-bold text-unjong-accent">{currentPrice ? currentPrice.toLocaleString() : "—"}</span>
-        <span className="text-[10px] text-unjong-muted ml-2">현재가</span>
-      </div>
-
-      {data.bids.filter((b) => b.price > 0).map((bid, i) => (
-        <div key={i} className="flex items-center justify-between bg-red-50 rounded px-2 py-1 text-xs">
-          <span className="font-semibold text-unjong-danger tabular-nums">{bid.price.toLocaleString()}</span>
-          <span className="text-unjong-muted tabular-nums">{bid.volume.toLocaleString()}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─── TickTab ──────────────────────────────────────────────────────────────────
-
-type Execution = { time: string; price: number; change: number; changeSign: string; volume: number; totalVolume: number };
-type TickData = { symbol: string; executions: Execution[] };
-
-function TickTab({ symbol }: { symbol: string }) {
-  const [data, setData] = useState<TickData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isKrCode(symbol)) { setLoading(false); return; }
-
-    let cancelled = false;
-    const load = async () => {
-      try {
-        const r = await fetch(`/api/kis/execution?symbol=${symbol}`);
-        const json = await r.json();
-        if (cancelled) return;
-        if (json.error) setError(json.error);
-        else setData(json);
-      } catch (err) {
-        if (!cancelled) setError(String(err));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    load();
-    const interval = setInterval(load, 5_000);
-    return () => { cancelled = true; clearInterval(interval); };
-  }, [symbol]);
-
-  if (!isKrCode(symbol)) return <div className="p-4 text-center text-xs text-unjong-muted italic">미국 주식 체결은 별도 데이터 소스 필요</div>;
-  if (loading && !data) return <div className="p-4 text-center text-xs text-unjong-muted italic">⏳ 체결 로딩 중...</div>;
-  if (error || !data) return <div className="p-4 text-center text-xs text-unjong-danger">❌ {error || "데이터 없음"}</div>;
-
-  const fmt = (t: string) => t.length >= 6 ? `${t.slice(0, 2)}:${t.slice(2, 4)}:${t.slice(4, 6)}` : t;
-
-  return (
-    <div className="p-3">
-      <ul className="space-y-1 max-h-[400px] overflow-y-auto">
-        {data.executions.slice(0, 30).map((tick, i) => {
-          const isUp = tick.changeSign === "1" || tick.changeSign === "2";
-          return (
-            <li key={i} className="flex items-center justify-between text-xs px-2 py-1 hover:bg-unjong-background rounded">
-              <span className="text-[10px] text-unjong-muted font-mono">{fmt(tick.time)}</span>
-              <span className={`font-semibold tabular-nums ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
-                {tick.price.toLocaleString()}
-              </span>
-              <span className="text-unjong-muted tabular-nums">{tick.volume.toLocaleString()}</span>
-            </li>
-          );
-        })}
-      </ul>
     </div>
   );
 }

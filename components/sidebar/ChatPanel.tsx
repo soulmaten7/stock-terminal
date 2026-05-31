@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Send } from "lucide-react";
 import { createAnonClient } from "@/lib/supabase/anon-client";
@@ -14,17 +13,11 @@ type ChatMessage = {
   created_at: string;
 };
 
+// STEP 114: 단타/장타/미장 3채널 → 운종 전체 채팅 1채널 (general) 통합.
+// 종목별 채팅은 STEP 115 에서 별도 구현.
 const ROOM_META: Record<string, { window: string; emoji: string }> = {
-  scalper:  { window: "단타창",      emoji: "⚡" },
-  longterm: { window: "장타창",      emoji: "🌳" },
-  us:       { window: "미국주식창",  emoji: "🌙" },
+  general: { window: "운종 전체 채팅", emoji: "💬" },
 };
-
-function getRoomKey(pathname: string | null): "scalper" | "longterm" | "us" {
-  if (pathname?.startsWith("/longterm")) return "longterm";
-  if (pathname?.startsWith("/us")) return "us";
-  return "scalper";
-}
 
 function formatTime(iso: string): string {
   try {
@@ -39,8 +32,7 @@ function formatTime(iso: string): string {
 }
 
 export function ChatPanel() {
-  const pathname = usePathname();
-  const room = getRoomKey(pathname);
+  const room: "general" = "general";
   const ctx = ROOM_META[room];
 
   const nickname = useNickname((s) => s.nickname);
@@ -75,8 +67,6 @@ export function ChatPanel() {
           return;
         }
 
-        console.log("[chat] loading messages for room:", room);
-
         const queryPromise = supabase
           .from("chat_messages")
           .select("id, room, nickname, content, created_at")
@@ -96,7 +86,6 @@ export function ChatPanel() {
         if (error) {
           console.error("[chat] supabase select error", error);
         } else if (data) {
-          console.log("[chat] loaded", data.length, "messages");
           setMessages([...data].reverse() as ChatMessage[]);
         }
         setLoading(false);

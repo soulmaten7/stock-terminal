@@ -6,12 +6,12 @@ type Params = Promise<{ card: string }>;
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { card } = await params;
   return {
-    title: `장타창 / ${card}`,
-    description: `운종 장타창 ${card} 디테일 페이지.`,
+    title: `한국주식 / ${card}`,
+    description: `운종 한국주식 ${card} 디테일 페이지.`,
   };
 }
 
-export default async function LongtermCardDetailPage({ params }: { params: Params }) {
+export default async function KrCardDetailPage({ params }: { params: Params }) {
   const { card } = await params;
-  return <CardDetail window="longterm" card={card} />;
+  return <CardDetail window="kr" card={card} />;
 }

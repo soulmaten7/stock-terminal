@@ -11,39 +11,27 @@ type CardMeta = {
 };
 
 const CARD_META: Record<string, CardMeta> = {
-  "scalper-movers":      { title: "Movers · 등락률 TOP",         emoji: "🚀", subtitle: "실시간 KOSPI/KOSDAQ",      windowLabel: "단타창" },
-  "scalper-volume":      { title: "Volume · 거래량 폭증",          emoji: "🔥", subtitle: "전일 대비 3배+",           windowLabel: "단타창" },
-  "scalper-vi":          { title: "VI · 변동성 완화장치",           emoji: "🚨", subtitle: "실시간 발동/해제",          windowLabel: "단타창" },
-  "scalper-netbuy":      { title: "NetBuy + 거래원",               emoji: "💰", subtitle: "외인·기관 + 매수 1위",      windowLabel: "단타창" },
-  "scalper-disclosure":  { title: "공시 · 실시간",                  emoji: "📄", subtitle: "DART",                   windowLabel: "단타창" },
-  "scalper-theme":       { title: "테마 TOP10",                    emoji: "🎯", subtitle: "실시간 등락률 순",          windowLabel: "단타창" },
-  "scalper-short":       { title: "공매도 잔고 변화",               emoji: "⚠️", subtitle: "숏커버·위험 시그널",        windowLabel: "단타창" },
+  // 한국주식 (/kr) — 5개
+  "kr-movers":             { title: "Movers · 등락률 TOP",         emoji: "🚀", subtitle: "실시간 KOSPI/KOSDAQ",      windowLabel: "한국주식" },
+  "kr-volume":             { title: "Volume · 거래량 폭증",          emoji: "🔥", subtitle: "전일 대비 3배+",           windowLabel: "한국주식" },
+  "kr-netbuy":             { title: "NetBuy · 외인/기관",            emoji: "💰", subtitle: "외인·기관 순매수 TOP",     windowLabel: "한국주식" },
+  "kr-disclosure":         { title: "공시 · 실시간",                  emoji: "📄", subtitle: "DART",                   windowLabel: "한국주식" },
+  "kr-longterm-disclosure":{ title: "공시 · 실적·배당·증자",          emoji: "📊", subtitle: "DART",                   windowLabel: "한국주식" },
 
-  "longterm-disclosure": { title: "공시 · 실적·배당·증자",          emoji: "📊", subtitle: "DART",                   windowLabel: "장타창" },
-  "longterm-earnings":   { title: "분기 실적 캘린더",               emoji: "📅", subtitle: "발표 예정",               windowLabel: "장타창" },
-  "longterm-value":      { title: "저평가 스크리너",                emoji: "💎", subtitle: "PER · PBR · ROE",        windowLabel: "장타창" },
-  "longterm-dividend":   { title: "배당 TOP 5",                    emoji: "💰", subtitle: "배당수익률 순위",           windowLabel: "장타창" },
-  "longterm-lows":       { title: "52주 신저가",                   emoji: "📉", subtitle: "우량주 신저가",             windowLabel: "장타창" },
-  "longterm-sector":     { title: "섹터 히트맵",                   emoji: "🗺️", subtitle: "업종별 등락",             windowLabel: "장타창" },
-  "longterm-warning":    { title: "관리·주의 종목",                 emoji: "⚠️", subtitle: "관리종목·투자유의·단기과열", windowLabel: "장타창" },
-
-  "us-indices":          { title: "글로벌 지수",                   emoji: "🌐", subtitle: "S&P/Nasdaq/Dow/VIX",     windowLabel: "미국주식창" },
-  "us-prepost":          { title: "Pre-market / After-hours",     emoji: "🌅", subtitle: "시간외 변동 TOP",           windowLabel: "미국주식창" },
-  "us-m7":               { title: "Magnificent 7",                emoji: "⭐", subtitle: "미국 7대 대장주",           windowLabel: "미국주식창" },
-  "us-movers":           { title: "미국 Movers",                  emoji: "🇺🇸", subtitle: "정규장 TOP",              windowLabel: "미국주식창" },
-  "us-forex":            { title: "USD/KRW + 미국 시계",           emoji: "💱", subtitle: "환율 · 시장 상태",          windowLabel: "미국주식창" },
-  "us-news":             { title: "미국 뉴스",                     emoji: "📰", subtitle: "Bloomberg/CNBC/WSJ",      windowLabel: "미국주식창" },
-  "us-fomc":             { title: "FOMC·CPI·NFP 캘린더",          emoji: "📅", subtitle: "미국 거시 이벤트",           windowLabel: "미국주식창" },
+  // 미국주식 (/us) — 4개
+  "us-indices":            { title: "글로벌 지수",                   emoji: "🌐", subtitle: "S&P/Nasdaq/Dow/VIX",     windowLabel: "미국주식" },
+  "us-m7":                 { title: "Magnificent 7",                emoji: "⭐", subtitle: "미국 7대 대장주",           windowLabel: "미국주식" },
+  "us-movers":             { title: "미국 Movers",                  emoji: "🇺🇸", subtitle: "정규장 TOP",              windowLabel: "미국주식" },
+  "us-clock":              { title: "미국 시계 · 시장 상태",          emoji: "🕐", subtitle: "NYSE/NASDAQ 영업 시간",    windowLabel: "미국주식" },
 };
 
 const WINDOW_HREF: Record<string, string> = {
-  scalper: "/scalper",
-  longterm: "/longterm",
+  kr: "/kr",
   us: "/us",
 };
 
 type CardDetailProps = {
-  window: "scalper" | "longterm" | "us";
+  window: "kr" | "us";
   card: string;
 };
 
@@ -58,7 +46,7 @@ export function CardDetail({ window, card }: CardDetailProps) {
           <code className="text-unjong-primary">{window}/{card}</code>
         </p>
         <Link
-          href={WINDOW_HREF[window] ?? "/scalper"}
+          href={WINDOW_HREF[window] ?? "/kr"}
           className="mt-2 inline-block text-xs text-unjong-accent hover:underline"
         >
           ← 돌아가기

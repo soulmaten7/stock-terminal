@@ -58,7 +58,7 @@ export default function RootLayout({
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
       <body className="min-h-screen flex flex-col antialiased">
         <AuthProvider>
-          <div className="w-full max-w-screen-2xl mx-auto flex-1 flex flex-col">
+          <div className="w-full max-w-[1984px] mx-auto flex-1 flex flex-col">
             <Header />
             <TickerBar />
             <MainNav />

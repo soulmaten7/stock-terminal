@@ -1,5 +1,36 @@
-<!-- 2026-05-29 -->
+<!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
+
+## 2026-05-31 — STEP 114 (운종 V5 1차 리뉴얼 — 구조 통합)
+
+### 세션 전체 요약
+3창(단타/장타/미장) → 2창(한국/미국) 통합, 카드 21개 → 정확 9개, 종목 상세 4탭 → 2탭, 채팅 3채널 → 1채널, 컨테이너 1984px. "정확도 보장되는 본질만" 방향으로 대규모 정리.
+
+### [1] 컨테이너 너비 (`app/layout.tsx`)
+- `max-w-screen-2xl`(1536px) → `max-w-[1984px]` (토스 수준 화면 사용)
+
+### [2] 3창 → 2창 통합
+- `app/(windows)/scalper`, `longterm` 폴더 삭제 → `app/(windows)/kr` 신규 (page + [card])
+- `app/(windows)/us` 유지 (메타 "미국주식 — 운종")
+- `next.config.ts` redirect: `/scalper`, `/longterm`(+ :path*) → `/kr` 영구 이동
+- 홈 `app/page.tsx` redirect `/scalper` → `/kr`
+- 메뉴 `MainNav.tsx`: ⚡단타창/🌳장타창/🌙미국주식창 → 🇰🇷한국주식/🇺🇸미국주식
+
+### [3] 카드 21개 → 정확 9개
+- 한국 5개 (`components/cards/KrCards.tsx` 신규): Movers·Volume·NetBuy·단타공시·장타공시
+- 미국 4개: 글로벌 지수·M7·미국 Movers·미국 시계+시장상태
+- 삭제 12개: ViCard·ThemeTop10Card·ShortInterestCard (ScalperCards), EarningsCalendarCard·ValueScreenCard·DividendTopCard·Lows52WCard·SectorCard·WarningStockCard (LongtermCards), PreAfterMarketCard·UsNewsCard·FOMCCalendarCard (UsCards)
+- `CardDetail.tsx` CARD_META 9개 + window 타입 `kr | us` 로 정리, 카드 detailHref `/kr/*`·`/us/*` 통일
+
+### [4] 종목 상세 4탭 → 2탭 (`StockDetailPanel.tsx`)
+- 유지: 차트, 종합 / 삭제: 호가창(OrderBookTab)·체결(TickTab) — 전문가용, 운종 페르소나 X
+
+### [5] 채팅 3채널 → 1채널 (`ChatPanel.tsx`)
+- ROOM_META `general` 단일 ("💬 운종 전체 채팅"), room 상태 const 고정, 디버그 console.log 제거
+- DB 마이그레이션 `supabase/migrations/015_chat_unify.sql` 동봉 (⚠️ Cowork 가 Supabase MCP 로 별도 적용)
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TypeScript/ESLint 에러 0
 
 ## 2026-05-29 — 세션 #28 종료 (STEP 107~109 완성)
 

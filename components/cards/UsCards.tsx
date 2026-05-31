@@ -1,18 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp, TrendingDown, Newspaper, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type IndexItem = { name: string; value: string; changePct: number; isUp: boolean };
-type PrePostItem = { code: string; name: string; session: "Pre" | "AH"; price: string; changePct: number; volume: string };
 type M7Item = { code: string; name: string; price: string; changePct: number; marketCap: string };
 type MoverItem = { code: string; name: string; price: string; changePct: number };
-type NewsItem = { title: string; source: string; time: string; url?: string };
-type EconItem = { date: string; event: string; importance: "high" | "medium" | "low"; daysLeft: number };
 
 // ─── Fallbacks ────────────────────────────────────────────────────────────────
 
@@ -22,14 +19,6 @@ const INDICES_FALLBACK: IndexItem[] = [
   { name: "Dow",          value: "39,127.14", changePct:  0.45, isUp: true  },
   { name: "Russell 2000", value: "2,108.55",  changePct: -0.23, isUp: false },
   { name: "VIX",          value: "18.42",     changePct: -2.14, isUp: false },
-];
-
-const PREPOST_FALLBACK: PrePostItem[] = [
-  { code: "NVDA", name: "NVIDIA",   price: "$892.40", changePct:  1.35, session: "Pre", volume: "2.1M" },
-  { code: "TSLA", name: "Tesla",    price: "$241.80", changePct: -2.17, session: "Pre", volume: "1.8M" },
-  { code: "AAPL", name: "Apple",    price: "$197.10", changePct:  0.90, session: "AH",  volume: "980K" },
-  { code: "AMZN", name: "Amazon",   price: "$182.50", changePct:  1.62, session: "AH",  volume: "750K" },
-  { code: "GOOG", name: "Alphabet", price: "$175.80", changePct: -0.45, session: "Pre", volume: "620K" },
 ];
 
 const M7_FALLBACK: M7Item[] = [
@@ -49,27 +38,6 @@ const US_MOVERS_FALLBACK: MoverItem[] = [
   { code: "META", name: "Meta",      price: "$528.40", changePct: 1.8 },
   { code: "MSFT", name: "Microsoft", price: "$432.10", changePct: 1.5 },
 ];
-
-const US_NEWS_FALLBACK: NewsItem[] = [
-  { title: "Fed signals dovish pivot — rate cut probability rises",   source: "Bloomberg", time: "1h ago"  },
-  { title: "NVIDIA beats Q2 earnings, raises full-year guidance",      source: "CNBC",      time: "3h ago"  },
-  { title: "Tesla announces new Gigafactory in India",                 source: "Reuters",   time: "5h ago"  },
-  { title: "Apple Vision Pro 2 launch confirmed for Q4 2026",          source: "WSJ",       time: "8h ago"  },
-  { title: "Inflation data comes in below expectations",               source: "Bloomberg", time: "12h ago" },
-];
-
-const FOMC_FALLBACK: EconItem[] = [
-  { date: "06/11", event: "FOMC 회의",          importance: "high",   daysLeft: 13 },
-  { date: "07/03", event: "NFP (비농업 고용)",   importance: "high",   daysLeft: 35 },
-  { date: "07/11", event: "CPI 발표",            importance: "high",   daysLeft: 43 },
-  { date: "07/30", event: "FOMC 회의",           importance: "high",   daysLeft: 62 },
-];
-
-const IMPORTANCE_STYLE: Record<"high" | "medium" | "low", string> = {
-  high:   "bg-red-100 text-red-700",
-  medium: "bg-amber-100 text-amber-700",
-  low:    "bg-slate-100 text-slate-600",
-};
 
 // ─── Market state helper ──────────────────────────────────────────────────────
 
@@ -101,7 +69,7 @@ export function GlobalIndicesCard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const displayData = data ?? (error !== null ? INDICES_FALLBACK : INDICES_FALLBACK);
+  const displayData = data ?? INDICES_FALLBACK;
 
   return (
     <CardContainer
@@ -110,6 +78,7 @@ export function GlobalIndicesCard() {
       title="글로벌 지수"
       emoji="🌐"
       subtitle="S&P/Nasdaq/Dow/VIX"
+      hint={error ? "⚠️ 데이터 일시 불가" : undefined}
     >
       <ul className="space-y-2">
         {displayData.map((idx) => (
@@ -139,78 +108,6 @@ export function GlobalIndicesCard() {
   );
 }
 
-// ─── PreAfterMarketCard ───────────────────────────────────────────────────────
-
-export function PreAfterMarketCard() {
-  const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
-  const [data, setData] = useState<PrePostItem[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = () =>
-      fetch("/api/yahoo/prepost")
-        .then((r) => r.json())
-        .then((j) => { if (j.items?.length) setData(j.items); else if (!data) setError("no data"); })
-        .catch(() => setError("fetch error"));
-
-    load();
-    const id = setInterval(load, 30_000);
-    return () => clearInterval(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const displayData = data ?? (error !== null ? PREPOST_FALLBACK : PREPOST_FALLBACK);
-
-  return (
-    <CardContainer
-      id="card-prepost"
-      detailHref="/us/prepost"
-      title="Pre / After-hours"
-      emoji="🌅"
-      subtitle="시간외 변동 TOP"
-    >
-      <ul className="space-y-2">
-        {displayData.map((m) => {
-          const isUp = m.changePct >= 0;
-          return (
-            <li
-              key={`${m.code}-${m.session}`}
-              onClick={() =>
-                setSelectedSymbol({
-                  code: m.code,
-                  name: m.name,
-                  price: m.price,
-                  changePct: m.changePct,
-                  market: "US",
-                })
-              }
-              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
-            >
-              <div className="flex items-center gap-2 min-w-0">
-                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${
-                  m.session === "Pre" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
-                }`}>
-                  {m.session}
-                </span>
-                <div className="flex flex-col min-w-0">
-                  <span className="font-medium text-unjong-primary">{m.code}</span>
-                  <span className="text-[10px] text-unjong-muted truncate">{m.name}</span>
-                </div>
-              </div>
-              <div className="flex flex-col items-end flex-shrink-0">
-                <span className="font-semibold text-unjong-primary tabular-nums">{m.price}</span>
-                <span className={`text-[10px] font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
-                  {isUp ? "+" : ""}{m.changePct.toFixed(2)}%
-                </span>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </CardContainer>
-  );
-}
-
 // ─── Magnificent7Card ─────────────────────────────────────────────────────────
 
 export function Magnificent7Card() {
@@ -231,7 +128,7 @@ export function Magnificent7Card() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const displayData = data ?? (error !== null ? M7_FALLBACK : M7_FALLBACK);
+  const displayData = data ?? M7_FALLBACK;
 
   return (
     <CardContainer
@@ -240,6 +137,7 @@ export function Magnificent7Card() {
       title="Magnificent 7"
       emoji="⭐"
       subtitle="미국 7대 대장주"
+      hint={error ? "⚠️ 데이터 일시 불가" : undefined}
     >
       <ul className="space-y-1.5">
         {displayData.map((m) => {
@@ -296,15 +194,16 @@ export function UsMoversCard() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const displayData = data ?? (error !== null ? US_MOVERS_FALLBACK : US_MOVERS_FALLBACK);
+  const displayData = data ?? US_MOVERS_FALLBACK;
 
   return (
     <CardContainer
-      id="card-movers"
+      id="card-us-movers"
       detailHref="/us/movers"
       title="미국 Movers"
       emoji="🇺🇸"
       subtitle="정규장 TOP"
+      hint={error ? "⚠️ 데이터 일시 불가" : undefined}
     >
       <ul className="space-y-2">
         {displayData.map((m, i) => {
@@ -416,114 +315,6 @@ export function ForexClockCard() {
           <span>ET 기준 · Pre 04:00 / 정규 09:30 / AH 16:00</span>
         </div>
       </div>
-    </CardContainer>
-  );
-}
-
-// ─── UsNewsCard ───────────────────────────────────────────────────────────────
-
-export function UsNewsCard() {
-  const [data, setData] = useState<NewsItem[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = () =>
-      fetch("/api/news/us")
-        .then((r) => r.json())
-        .then((j) => { if (j.items?.length) setData(j.items); else if (!data) setError("no data"); })
-        .catch(() => setError("fetch error"));
-
-    load();
-    const id = setInterval(load, 300_000);
-    return () => clearInterval(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const displayData = data ?? (error !== null ? US_NEWS_FALLBACK : US_NEWS_FALLBACK);
-
-  return (
-    <CardContainer
-      id="card-news"
-      detailHref="/us/news"
-      title="미국 뉴스"
-      emoji="📰"
-      subtitle="Bloomberg/CNBC/WSJ"
-    >
-      <ul className="space-y-3">
-        {displayData.map((n, i) => (
-          <li
-            key={i}
-            onClick={() => n.url && window.open(n.url, "_blank", "noopener")}
-            className={`flex items-start gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 ${
-              n.url ? "cursor-pointer" : "cursor-default"
-            }`}
-          >
-            <Newspaper size={12} className="text-unjong-muted flex-shrink-0 mt-0.5" />
-            <div className="flex flex-col min-w-0 gap-0.5">
-              <span className="font-medium text-unjong-primary leading-snug">{n.title}</span>
-              <div className="flex items-center gap-2 text-[10px] text-unjong-muted">
-                <span className="font-semibold">{n.source}</span>
-                <span>·</span>
-                <span>{n.time}</span>
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </CardContainer>
-  );
-}
-
-// ─── FOMCCalendarCard ─────────────────────────────────────────────────────────
-
-export function FOMCCalendarCard() {
-  const [data, setData] = useState<EconItem[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = () =>
-      fetch("/api/calendar/us-econ")
-        .then((r) => r.json())
-        .then((j) => { if (j.items?.length) setData(j.items); else if (!data) setError("no data"); })
-        .catch(() => setError("fetch error"));
-
-    load();
-    const id = setInterval(load, 3_600_000);
-    return () => clearInterval(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const displayData = data ?? (error !== null ? FOMC_FALLBACK : FOMC_FALLBACK);
-
-  return (
-    <CardContainer
-      id="card-fomc"
-      detailHref="/us/fomc"
-      title="FOMC·CPI·NFP 캘린더"
-      emoji="📅"
-      subtitle="미국 거시 이벤트"
-    >
-      <ul className="space-y-2">
-        {displayData.map((e, i) => (
-          <li
-            key={i}
-            className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-default"
-          >
-            <div className="flex items-center gap-2 min-w-0">
-              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${IMPORTANCE_STYLE[e.importance]}`}>
-                {e.importance === "high" ? "HIGH" : e.importance === "medium" ? "MED" : "LOW"}
-              </span>
-              <div className="flex flex-col min-w-0">
-                <span className="font-medium text-unjong-primary truncate">{e.event}</span>
-                <span className="text-[10px] text-unjong-muted">{e.date}</span>
-              </div>
-            </div>
-            <span className="text-[10px] text-unjong-muted flex-shrink-0 tabular-nums">
-              D-{e.daysLeft}
-            </span>
-          </li>
-        ))}
-      </ul>
     </CardContainer>
   );
 }

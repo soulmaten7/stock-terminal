@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '*.supabase.in' },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/scalper", destination: "/kr", permanent: true },
+      { source: "/scalper/:path*", destination: "/kr/:path*", permanent: true },
+      { source: "/longterm", destination: "/kr", permanent: true },
+      { source: "/longterm/:path*", destination: "/kr/:path*", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
