@@ -1,18 +1,22 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-31 (STEP 114 — 운종 V5 1차 리뉴얼: 3창→2창, 카드 9개, 종목 2탭, 채팅 1채널, 1984px)
-> **현재 상태**: V5 구조 통합 완료. 빌드 ✓. 다음은 STEP 115 (종목 페이지 + 토론 게시판 + 종목별 채팅 + 인증).
+> **Last updated**: 2026-05-31 (STEP 116 — V3 잔재 1차 청소: 페이지 9개 + API 3개 + PaywallModal·AuthGuard 삭제)
+> **현재 상태**: V5 구조 통합(STEP 114) + V3 1차 청소(STEP 116) 완료. 빌드 ✓. 다음은 STEP 118 (Layer 3 인증).
 
 ⚠️ **미적용 DB 마이그레이션**: `supabase/migrations/015_chat_unify.sql` — Cowork 가 Supabase MCP 로 별도 적용 필요 (채팅 room: scalper/longterm/us → general 통합). 적용 전까지 기존 3채널 메시지는 general 로 보이지 않음.
 
 ✅ **채팅 DB 활성화 완료**: Cowork 가 Supabase MCP 로 직접 마이그레이션 005 + 014 적용 (`qxkmwlkchyxfzxbonhtj` 프로젝트). 실시간 채팅 정상 작동.
 
-### STEP 114 후속 (다음 STEP)
-- **STEP 115** — 종목 페이지(/stock/[code]) + 토론 게시판 + 종목별 채팅 + 인증 (Layer 3)
-- **STEP 116** — V3 잔재 페이지 정리
-- **STEP 117** — 새 홈 페이지 (/ = 시장 지표 + 관심 + 핫 이슈 + HOT 토론·채팅)
-- **STEP 118** — Vercel 배포
+### STEP 116 잔여/이연 사항
+- 보존 V3 페이지(analysis/news/chat/dashboard 등) 내부 컴포넌트의 `/stocks/*` 링크 → **STEP 117** 에서 dashboard 재결정 시 함께 정리
+- 고아 컴포넌트 `components/layout/TopNav.tsx` (미사용) → 추후 청소 후보
+
+### 다음 STEP
+- **STEP 118** — Layer 3 인증 (카카오 OAuth + Supabase Auth + 닉네임 영구화)
+- **STEP 115** — 종목 페이지(/stock/[code]) + 토론 게시판 + 종목별 채팅
+- **STEP 117** — 새 홈 페이지 (/ = 시장 지표 + 관심 + 핫 이슈 + HOT 토론·채팅) + V3 잔재 2차 청소
+- **STEP 119** — Vercel 배포
 
 ---
 

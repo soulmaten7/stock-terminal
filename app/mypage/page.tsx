@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate, formatNumber } from '@/lib/utils/format';
-import { User, CreditCard, Star, Bell, MessageCircle, Trash2, Crown } from 'lucide-react';
+import { User, CreditCard, Star, Bell, MessageCircle, Trash2 } from 'lucide-react';
 import type { Payment } from '@/types/api';
 import type { Watchlist } from '@/types/user';
 
@@ -125,11 +125,6 @@ export default function MyPage() {
                     <span className="text-sm text-text-secondary">다음 결제일: {formatDate(user.subscription_end_date)}</span>
                   )}
                 </div>
-                {user.role === 'free' && (
-                  <Link href="/pricing" className="inline-flex items-center gap-2 px-4 py-2 bg-premium text-dark-900 rounded-lg text-sm font-medium">
-                    <Crown className="w-4 h-4" /> 프리미엄 시작하기
-                  </Link>
-                )}
               </div>
 
               <div className="bg-dark-700 rounded-xl border border-border p-6">
@@ -166,7 +161,7 @@ export default function MyPage() {
                   <tbody>
                     {watchlistItems.map((item) => (
                       <tr key={item.id} className="border-t border-border/50">
-                        <td className="py-2"><Link href={`/stocks/${item.symbol}`} className="text-accent hover:underline">{item.symbol}</Link></td>
+                        <td className="py-2"><Link href="/kr" className="text-accent hover:underline">{item.symbol}</Link></td>
                         <td className="py-2">{item.market}</td>
                         <td className="py-2 text-text-secondary">{formatDate(item.created_at)}</td>
                         <td className="py-2 text-right">

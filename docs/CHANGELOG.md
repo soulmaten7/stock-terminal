@@ -1,6 +1,39 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 116 (V3 잔재 1차 청소 — 9개 페이지 + 의존 컴포넌트·API)
+
+### 세션 전체 요약
+V3/OTMarketing 잔재 페이지 9개 + V3 결제·광고 API 3개 + 전용 컴포넌트 2개 삭제. dashboard·widgets·V3 13개 페이지·auth·mypage 는 보존 (STEP 117 에서 재결정).
+
+### [1] 페이지 폴더 9개 삭제
+- `app/ad`, `app/advertiser`, `app/admin`, `app/partner` (OTMarketing 잔재 — 2026-04-23 별도 저장소 분리)
+- `app/payment`, `app/pricing` (V3 결제 — 운종은 거래 X)
+- `app/toolbox` (V3 도구 — V4 대체)
+- `app/stocks`, `app/watchlist` (V3 종목/관심종목 — V4 검색·Screener·WatchlistPanel 대체)
+
+### [2] V3 결제·광고 API endpoints 삭제
+- `app/api/payment`, `app/api/advertiser`, `app/api/admin`
+
+### [3] 의존 컴포넌트
+- 삭제: `components/common/PaywallModal.tsx` (app/stocks·AuthGuard 전용 → 0 사용)
+- 삭제: `components/auth/AuthGuard.tsx` (사용처가 전부 삭제된 admin·stocks 뿐 → 0 사용)
+- 보존: `components/chat/FloatingChat.tsx` (HomeClient/dashboard 가 사용 중)
+
+### [4] 잔여 링크 정리 (삭제 라우트 404 방지)
+- `components/layout/Header.tsx` — 프로필 드롭다운 `/stocks?tab=watchlist` 링크 제거
+- `components/widgets/WatchlistWidget.tsx` — `href '/watchlist'` → `/kr`, 종목 링크 `/stocks/${symbol}` → `/kr`
+- `app/mypage/page.tsx` — `/pricing` 프리미엄 CTA 제거(미사용 Crown import 정리), 관심종목 `/stocks/${symbol}` 링크 → `/kr`
+- `components/layout/Footer.tsx` — 광고 문의 `/advertiser` → `mailto:ad@stockterminal.com`
+
+### 범위 메모
+- 보존된 V3 페이지(analysis/news/chat 등) 내부 컴포넌트의 `/stocks/*` 링크는 호스트 페이지가 보존 대상이라 STEP 117 로 이연. 문자열 링크라 빌드 영향 없음.
+- `components/layout/TopNav.tsx` 는 어디에서도 import 안 되는 고아 컴포넌트(렌더 X) — 이번엔 미정리.
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TypeScript/ESLint 에러 0. 라우트 맵에서 9개 페이지 제거 확인.
+- 검증 grep 3종(삭제 import / PaywallModal / 정적 href) 모두 0건.
+
 ## 2026-05-31 — STEP 114 (운종 V5 1차 리뉴얼 — 구조 통합)
 
 ### 세션 전체 요약

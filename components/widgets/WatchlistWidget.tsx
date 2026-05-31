@@ -98,7 +98,7 @@ export default function WatchlistWidget({ compact = false }: { compact?: boolean
       <WidgetHeader
         title="관심종목"
         subtitle="10초 갱신"
-        href="/watchlist"
+        href="/kr"
         linkLabel="관심종목 전체"
         actions={
           loading ? <span className="text-[10px] text-[#BBB]">로딩…</span>
@@ -124,7 +124,7 @@ export default function WatchlistWidget({ compact = false }: { compact?: boolean
               className={`grid grid-cols-5 px-3 ${rowPy} ${textSz} hover:bg-[#F8F9FA] border-b border-[#F0F0F0]`}
             >
               <Link
-                href={`/stocks/${r.symbol}`}
+                href="/kr"
                 role="cell"
                 className="font-bold text-black truncate hover:text-[#0ABAB5]"
                 onClick={() => setSelected({ code: r.symbol, name: r.name, market: inferMarket(r.symbol) })}

@@ -1,6 +1,25 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-29 (세션 #26 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 116 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 116 (2026-05-31) — V3 잔재 1차 청소 ✅
+
+### 삭제
+- 페이지 9개: `ad`·`advertiser`·`admin`·`partner` (OTMarketing 잔재), `payment`·`pricing` (결제 X), `toolbox`, `stocks`·`watchlist` (V4 대체)
+- API 3개: `api/payment`·`api/advertiser`·`api/admin`
+- 컴포넌트 2개: `PaywallModal` + `AuthGuard` (사용처가 전부 삭제 폴더 → 0 사용)
+
+### 보존 (STEP 117 에서 재결정)
+- `dashboard` + `HomeClient` + `widgets/*` + `FloatingChat`
+- V3 13개 페이지: briefing/analysis/chat/chart/orderbook/ticks/disclosures/investor-flow/movers/net-buy/news/themes/market-map
+- `auth`·`mypage` (Layer 3 활용)
+
+### 링크 정리 (404 방지)
+- Header `/stocks` 제거, WatchlistWidget·mypage 의 `/stocks`·`/watchlist`·`/pricing` → `/kr` 또는 제거, Footer `/advertiser` → mailto
+
+### 이연
+- 보존 V3 페이지 내부 컴포넌트의 `/stocks/*` 링크 다수 → STEP 117
+- 고아 `components/layout/TopNav.tsx` → 추후
 
 ## STEP 114 (2026-05-31) — 운종 V5 1차 리뉴얼 (구조 통합) ✅
 

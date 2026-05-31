@@ -110,9 +110,6 @@ export default function Header() {
                     <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>
                       마이페이지
                     </Link>
-                    <Link href="/stocks?tab=watchlist" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>
-                      관심종목
-                    </Link>
                     <div className="border-t border-unjong-border" />
                     <button
                       onClick={handleLogout}

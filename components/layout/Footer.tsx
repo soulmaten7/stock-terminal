@@ -22,7 +22,7 @@ const FOOTER_SECTIONS = [
   {
     title: '광고/제휴',
     links: [
-      { label: '광고 문의', href: '/advertiser' },
+      { label: '광고 문의', href: 'mailto:ad@stockterminal.com' },
       { label: '제휴 문의', href: 'mailto:partner@stockterminal.com' },
       { label: '데이터 제공 문의', href: 'mailto:data@stockterminal.com' },
       { label: '미디어/언론 문의', href: 'mailto:press@stockterminal.com' },
