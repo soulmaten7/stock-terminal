@@ -1,6 +1,33 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 124 (토론 댓글 기능 — 운종 V5 대화 본질 완성)
+
+### 세션 전체 요약
+댓글 없는 토론(게시판) → 댓글 있는 토론(대화)로. "운종 = 정보 + 대화" 본질 완성.
+
+### DB 마이그레이션 018 (`supabase/migrations/018_discussion_comments.sql` 신규 · Cowork 가 MCP 로 별도 적용)
+- `discussion_comments` 테이블 (discussion_id·user_id·nickname·tier·content(1~2000)·like/report_count·hidden·created_at)
+- `comment_count` 자동 갱신 트리거 (INSERT +1 / DELETE -1)
+- RLS: 모두 read(hidden=false), 인증만 insert, 본인만 delete + Realtime publication
+
+### 신규 컴포넌트 — `components/stock/DiscussionComments.tsx`
+- 댓글 목록(시간 오름차순) + Realtime 구독(postgres_changes INSERT)
+- 작성: 인증 필요 + 닉네임·Tier 자동, Enter 전송, 비로그인 amber 안내 + /auth/login
+- 본인 댓글 hover 시 삭제(Trash2) → confirm → delete
+
+### DiscussionItem 수정
+- 댓글 버튼 onClick → 펼치기/접기 토글 (채워진 MessageCircle = 열림)
+- showComments 시 DiscussionComments 자식 렌더
+- localCommentCount: 영역 열려있을 때만 댓글 INSERT Realtime 구독해 +1
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0.
+
+### 동작 전제 / 잔여
+- 실제 댓글 insert 는 마이그레이션 018 적용 + 카카오 OAuth 활성화 후. 비로그인은 읽기만 + 안내.
+- 댓글 좋아요·신고, 대댓글(parent_comment_id), 댓글 길이 카운터 UI → 추후
+
 ## 2026-05-31 — STEP 123 (UI 일관성 — 공통 상태 컴포넌트 추출)
 
 ### 세션 전체 요약

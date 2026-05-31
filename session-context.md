@@ -1,6 +1,18 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 123 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 124 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 124 (2026-05-31) — 토론 댓글 기능 ✅
+
+### 신규
+- 마이그레이션 018: discussion_comments 테이블 + comment_count 트리거 + RLS + Realtime
+- `DiscussionComments.tsx`: 목록(Realtime) + 작성(인증) + 본인 삭제 + 비로그인 안내
+- `DiscussionItem`: 댓글 버튼 토글 + localCommentCount Realtime(+1)
+
+### 의미: 토론 = 메인 글 + 댓글 = 진짜 "대화"
+### 동작 전제 / 잔여
+- 댓글 insert = 마이그레이션 018 적용 + 카카오 OAuth 활성화 후
+- 댓글 좋아요·신고, 대댓글(parent_comment_id) → 추후
 
 ## STEP 123 (2026-05-31) — UI 일관성 — 공통 상태 컴포넌트 추출 ✅
 

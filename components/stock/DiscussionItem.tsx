@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Heart, Flag, MessageCircle } from "lucide-react";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useAuthStore } from "@/stores/authStore";
+import DiscussionComments from "./DiscussionComments";
 
 type Discussion = {
   id: string;
@@ -29,8 +30,31 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
   const [reporting, setReporting] = useState(false);
   const [reported, setReported] = useState(false);
   const [showLoginNotice, setShowLoginNotice] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [localCommentCount, setLocalCommentCount] = useState(d.comment_count);
 
   const tierEmoji = d.tier === 3 ? "🏆" : d.tier === 2 ? "✓" : "";
+
+  // 댓글 영역이 열려 있을 때만 댓글 수 Realtime 동기화
+  useEffect(() => {
+    if (!showComments) return;
+    const supabase = createAnonClient();
+    const channel = supabase
+      .channel(`comment-count-${d.id}`)
+      .on(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        "postgres_changes" as any,
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "discussion_comments",
+          filter: `discussion_id=eq.${d.id}`,
+        },
+        () => setLocalCommentCount((c) => c + 1)
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [d.id, showComments]);
 
   const handleLike = async () => {
     if (!user) {
@@ -100,12 +124,11 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
         </button>
         <button
           type="button"
-          className="flex items-center gap-1 text-[10px] text-unjong-muted"
-          disabled
-          title="댓글 기능은 추후 구현"
+          onClick={() => setShowComments((v) => !v)}
+          className={`flex items-center gap-1 text-[10px] transition-colors ${showComments ? "text-unjong-accent" : "text-unjong-muted hover:text-unjong-primary"}`}
         >
-          <MessageCircle size={12} />
-          <span>{d.comment_count}</span>
+          <MessageCircle size={12} fill={showComments ? "currentColor" : "none"} />
+          <span>{localCommentCount}</span>
         </button>
         <button
           type="button"
@@ -127,6 +150,9 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
           </Link>
         </div>
       )}
+
+      {/* 댓글 영역 */}
+      {showComments && <DiscussionComments discussionId={d.id} />}
     </li>
   );
 }

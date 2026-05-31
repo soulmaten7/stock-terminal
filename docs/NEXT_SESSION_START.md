@@ -1,14 +1,15 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-31 (STEP 123 — UI 일관성 공통 상태 컴포넌트)
-> **현재 상태**: V5 구조(114)+청소(116)+인증(118)+종목페이지(115)+새 홈(117)+종목마무리(120)+뉴스(122)+UI다듬기(123) 완료. 빌드 ✓. 다음은 STEP 119 (Vercel 배포) 또는 댓글 기능.
+> **Last updated**: 2026-05-31 (STEP 124 — 토론 댓글 기능)
+> **현재 상태**: V5 구조(114)+청소(116)+인증(118)+종목페이지(115)+새 홈(117)+종목마무리(120)+뉴스(122)+UI(123)+댓글(124) 완료. 빌드 ✓. 다음은 STEP 119 (Vercel 배포).
 
 ⚠️ **미적용 DB 마이그레이션** (Cowork 가 Supabase MCP 로 순서대로 적용):
 - `015_chat_unify.sql` — 채팅 room → general 통합
 - `016_users_v5.sql` — users 결제 컬럼 제거 + tier/bio/oauth_provider + handle_new_user 트리거 + RLS
 - `017_discussions.sql` — discussions/likes/reports 테이블 + chat_messages.symbol + 트리거 + RLS + Realtime
-  → **017 적용 전까지 /stock/[code] 의 토론·종목채팅은 빈 화면/에러** (테이블 없음). 페이지/빌드는 정상.
+- `018_discussion_comments.sql` — discussion_comments 테이블 + comment_count 트리거 + RLS + Realtime
+  → **017·018 적용 전까지 /stock/[code] 의 토론·댓글·종목채팅은 빈 화면/에러** (테이블 없음). 페이지/빌드는 정상.
 
 🔴 **사용자(Jang Eun) 직접 작업 — 카카오 로그인 활성화 (STEP 118 잔여)**:
 1. 카카오 Developers 콘솔: 앱 등록 + Redirect URI `https://qxkmwlkchyxfzxbonhtj.supabase.co/auth/v1/callback` + REST API 키
