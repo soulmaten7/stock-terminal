@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { AlertCircle } from "lucide-react";
 import Link from "next/link";
 import DiscussionItem from "./DiscussionItem";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type Discussion = {
   id: string;
@@ -178,10 +179,12 @@ export default function DiscussionBoard({ symbol }: Props) {
 
       {/* 목록 */}
       {loading ? (
-        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-8 text-center text-xs text-unjong-muted">⏳ 로딩 중...</div>
+        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
+          <LoadingState />
+        </div>
       ) : discussions.length === 0 ? (
-        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-8 text-center text-xs text-unjong-muted">
-          첫 토론을 남겨보세요.
+        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
+          <EmptyState icon="💬" title="첫 토론을 남겨보세요" description="이 종목에 대한 의견·분석·질문을 자유롭게." />
         </div>
       ) : (
         <ul className="space-y-2">

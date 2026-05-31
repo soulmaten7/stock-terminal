@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Send } from "lucide-react";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useNickname } from "@/stores/nicknameStore";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type ChatMessage = {
   id: string;
@@ -117,11 +118,9 @@ export default function StockChatPanel({ symbol }: Props) {
       </header>
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-2 min-h-0">
         {loading ? (
-          <div className="text-center text-[10px] text-unjong-muted italic py-4">⏳ 로딩 중...</div>
+          <LoadingState />
         ) : messages.length === 0 ? (
-          <div className="text-center text-[10px] text-unjong-muted italic py-4">
-            첫 메시지를 남겨보세요. {symbol} 트레이더와 실시간 대화.
-          </div>
+          <EmptyState icon="💬" title="첫 메시지를 남겨보세요" description={`${symbol} 트레이더와 실시간 대화.`} />
         ) : (
           messages.map((msg) => (
             <div key={msg.id} className="flex flex-col gap-0.5">

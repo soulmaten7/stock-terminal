@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 function inferKrMarket(code: string): "KOSPI" | "KOSDAQ" {
   return code.startsWith("0") ? "KOSPI" : "KOSDAQ";
@@ -67,9 +68,9 @@ export function LongtermDisclosureCard() {
       hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
-        <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : displayData.length === 0 ? (
-        <div className="text-xs text-unjong-muted text-center py-4">데이터 없음</div>
+        <EmptyState title="데이터 없음" />
       ) : (
         <ul className="space-y-2">
           {displayData.map((d, i) => (

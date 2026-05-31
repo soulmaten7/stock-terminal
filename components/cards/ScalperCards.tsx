@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { TrendingUp, FileText } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 const NETBUY_WITH_BROKERS_FALLBACK = [
   { code: "005930", name: "삼성전자", foreign: 124, institution: -85, topBroker: "키움증권" },
@@ -136,9 +137,9 @@ export function MoversCard() {
       hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
-        <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : displayData.length === 0 ? (
-        <div className="text-xs text-unjong-muted text-center py-4">데이터 없음</div>
+        <EmptyState title="데이터 없음" />
       ) : (
         <ul className="space-y-2">
           {displayData.map((m, i) => {
@@ -237,9 +238,9 @@ export function VolumeCard() {
       hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
-        <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : displayData.length === 0 ? (
-        <div className="text-xs text-unjong-muted text-center py-4">데이터 없음</div>
+        <EmptyState title="데이터 없음" />
       ) : (
         <ul className="space-y-2">
           {displayData.map((v) => (
@@ -321,9 +322,9 @@ export function NetBuyBrokerCard() {
       hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
-        <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : displayData.length === 0 ? (
-        <div className="text-xs text-unjong-muted text-center py-4">데이터 없음</div>
+        <EmptyState title="데이터 없음" />
       ) : (
         <ul className="space-y-2">
           {displayData.map((n) => {
@@ -419,9 +420,9 @@ export function ScalperDisclosureCard() {
       hint={isUsingFallback ? "⚠️ 데이터 일시 불가" : undefined}
     >
       {loading && data === null && error === null ? (
-        <div className="text-xs text-unjong-muted text-center py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : displayData.length === 0 ? (
-        <div className="text-xs text-unjong-muted text-center py-4">데이터 없음</div>
+        <EmptyState title="데이터 없음" />
       ) : (
         <ul className="space-y-2">
           {displayData.map((d, i) => (

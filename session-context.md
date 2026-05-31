@@ -1,6 +1,16 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 122 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 123 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 123 (2026-05-31) — UI 일관성 — 공통 상태 컴포넌트 추출 ✅
+
+### 신규
+- `components/ui/State.tsx`: `LoadingState` / `EmptyState` / `ErrorState` 공통 컴포넌트
+- 적용: DiscussionBoard · StockChatPanel · StockNewsModule · StockInfoPanel · HotDiscussionsModule · HotChatRoomsModule · MarketNewsModule · ChatPanel · WatchlistPanel · ScalperCards(4개) · LongtermCards
+
+### 검증
+- 색상: 의미 있는 inline 색상(배지·차트·카카오) 모두 의도된 사용 — 변경 X
+- 빌드: ✓
 
 ## STEP 122 (2026-05-31) — 종목별 뉴스 + 시장 헤드라인 (RSS + Yahoo) ✅
 

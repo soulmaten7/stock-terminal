@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { TrendingUp, TrendingDown, X, Plus } from "lucide-react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { useWatchlist, type WatchlistItem } from "@/stores/watchlistStore";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type PriceInfo = { price: string; changePct: number };
 type PriceMap = Record<string, PriceInfo | null>;
@@ -169,13 +170,17 @@ export function WatchlistPanel() {
       {/* 리스트 */}
       <ul className="flex-1 overflow-y-auto min-h-0 divide-y divide-unjong-border">
         {!mounted ? (
-          <li className="p-4 text-center text-[10px] text-unjong-muted italic">⏳ 로딩 중...</li>
+          <li><LoadingState /></li>
         ) : items.length === 0 ? (
-          <li className="p-4 text-center text-xs text-unjong-muted">
-            <p className="mb-2">관심종목이 없습니다.</p>
-            <button type="button" onClick={resetItems} className="text-[10px] text-unjong-accent hover:underline">
-              기본 종목 8개 복원
-            </button>
+          <li>
+            <EmptyState
+              title="관심종목이 없습니다"
+              action={
+                <button type="button" onClick={resetItems} className="text-[10px] text-unjong-accent hover:underline">
+                  기본 종목 8개 복원
+                </button>
+              }
+            />
           </li>
         ) : (
           items.map((item) => {

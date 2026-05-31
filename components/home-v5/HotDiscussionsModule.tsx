@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { Heart, MessageCircle } from "lucide-react";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type Discussion = {
   id: string;
@@ -53,11 +54,9 @@ export default function HotDiscussionsModule() {
       </header>
 
       {loading ? (
-        <div className="text-center text-xs text-unjong-muted py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : items.length === 0 ? (
-        <div className="text-center text-xs text-unjong-muted py-4">
-          첫 토론을 남겨보세요. 종목 페이지에서 작성 가능.
-        </div>
+        <EmptyState icon="💬" title="첫 토론을 남겨보세요" description="종목 페이지에서 작성 가능." />
       ) : (
         <ul className="space-y-2">
           {items.map((d) => {

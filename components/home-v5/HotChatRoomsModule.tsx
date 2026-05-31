@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { MessageCircle } from "lucide-react";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type ChatRoom = {
   symbol: string;
@@ -49,9 +50,9 @@ export default function HotChatRoomsModule() {
     <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3">
       <h3 className="text-xs font-semibold text-unjong-primary mb-2">💬 활발한 채팅방</h3>
       {loading ? (
-        <div className="text-center text-[10px] text-unjong-muted py-2">⏳</div>
+        <LoadingState />
       ) : items.length === 0 ? (
-        <div className="text-center text-[10px] text-unjong-muted py-2">아직 종목별 채팅이 없습니다</div>
+        <EmptyState title="아직 종목별 채팅이 없습니다" />
       ) : (
         <ul className="space-y-1">
           {items.map((room) => (

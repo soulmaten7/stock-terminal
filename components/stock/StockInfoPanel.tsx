@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
+import { LoadingState } from "@/components/ui/State";
 
 type Props = { symbol: string };
 
@@ -148,7 +149,7 @@ export default function StockInfoPanel({ symbol }: Props) {
     };
   }, [symbol]);
 
-  if (loading) return <div className="p-4 text-center text-xs text-unjong-muted">⏳ 로딩...</div>;
+  if (loading) return <LoadingState className="p-4" />;
   if (!data) return (
     <div className="p-4 text-center text-xs text-unjong-muted">
       {isKr ? "데이터 없음" : "미국 주식 — Yahoo Finance 통합 추후"}

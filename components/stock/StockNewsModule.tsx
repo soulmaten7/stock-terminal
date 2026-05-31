@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
+import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type NewsItem = {
   title: string;
@@ -50,11 +51,9 @@ export default function StockNewsModule({ symbol }: Props) {
       </header>
 
       {loading ? (
-        <div className="text-center text-xs text-unjong-muted py-3">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : items.length === 0 ? (
-        <div className="text-center text-xs text-unjong-muted py-3">
-          {stockName} 관련 최근 뉴스가 없습니다.
-        </div>
+        <EmptyState icon="📰" title="관련 최근 뉴스가 없습니다" description={`${stockName} 관련 최근 뉴스가 없습니다.`} />
       ) : (
         <ul className="space-y-2">
           {items.slice(0, 5).map((item, i) => (

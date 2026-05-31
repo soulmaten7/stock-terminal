@@ -1,6 +1,38 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 123 (UI 일관성 — 공통 상태 컴포넌트 추출)
+
+### 세션 전체 요약
+로딩·빈상태·에러 메시지가 컴포넌트마다 달랐던 것을 공통 컴포넌트로 통일. 신규 `components/ui/State.tsx` 생성 후 11개 컴포넌트에 적용.
+
+### 신규 컴포넌트
+- `components/ui/State.tsx` — `LoadingState` / `EmptyState` / `ErrorState`
+  - `LoadingState`: "⏳ {title}" 중앙 이탤릭, className override 가능
+  - `EmptyState`: 이모지 아이콘 + title + description + 선택 action 버튼
+  - `ErrorState`: "❌ {title}" 빨간 텍스트
+
+### 적용 파일 (11개)
+- `components/stock/DiscussionBoard.tsx` — 로딩/첫 토론 빈상태
+- `components/stock/StockChatPanel.tsx` — 로딩/첫 메시지 빈상태
+- `components/stock/StockNewsModule.tsx` — 로딩/뉴스 없음 빈상태
+- `components/stock/StockInfoPanel.tsx` — 로딩 상태
+- `components/home-v5/HotDiscussionsModule.tsx` — 로딩/첫 토론 빈상태
+- `components/home-v5/HotChatRoomsModule.tsx` — 로딩/채팅방 없음 빈상태
+- `components/home-v5/MarketNewsModule.tsx` — 로딩/에러 상태
+- `components/sidebar/ChatPanel.tsx` — 로딩/첫 메시지 빈상태
+- `components/sidebar/WatchlistPanel.tsx` — 로딩/관심종목 없음 빈상태 (복원 버튼 포함)
+- `components/cards/ScalperCards.tsx` — 4개 카드 (Movers/Volume/NetBuy/Disclosure) 로딩·빈상태
+- `components/cards/LongtermCards.tsx` — 로딩·빈상태
+
+### 색상 점검
+- 의미 있는 inline 색상 (`emerald/red/amber/blue/purple`) 모두 의도된 사용 (배지·차트) — 변경 X
+- `#FEE500` 카카오 브랜드 — 유지
+- 차트 라이브러리 hex (`#0ABAB5`, `#C73E3A` 등) — 차트 색계열, 변경 X
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0
+
 ## 2026-05-31 — STEP 122 (종목별 뉴스 + 시장 헤드라인 — RSS + Yahoo)
 
 ### 세션 전체 요약

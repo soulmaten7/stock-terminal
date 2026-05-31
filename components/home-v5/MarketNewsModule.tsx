@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
+import { LoadingState, ErrorState } from "@/components/ui/State";
 
 type NewsItem = {
   title: string;
@@ -40,9 +41,9 @@ export default function MarketNewsModule() {
       </header>
 
       {loading ? (
-        <div className="text-center text-xs text-unjong-muted py-4">⏳ 로딩 중...</div>
+        <LoadingState />
       ) : items.length === 0 ? (
-        <div className="text-center text-xs text-unjong-muted py-4">뉴스 로딩 실패</div>
+        <ErrorState title="뉴스 로딩 실패" />
       ) : (
         <ul className="space-y-2">
           {items.map((item, i) => (
