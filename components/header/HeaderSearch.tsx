@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { Search, X, Star } from "lucide-react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
+import { useWatchlist } from "@/stores/watchlistStore";
 
 type SearchResult = {
   symbol: string;
@@ -21,6 +22,9 @@ function inferMarket(country: string, market: string): "KOSPI" | "KOSDAQ" | "US"
 export function HeaderSearch() {
   const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
+  const watchlistItems = useWatchlist((s) => s.items);
+  const addToWatchlist = useWatchlist((s) => s.add);
+  const removeFromWatchlist = useWatchlist((s) => s.remove);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -74,6 +78,21 @@ export function HeaderSearch() {
     setResults([]);
     setShowDropdown(false);
     setActiveIndex(-1);
+  };
+
+  const isInWatchlist = (code: string) => watchlistItems.some((i) => i.code === code);
+
+  const handleStar = (e: React.MouseEvent, item: SearchResult) => {
+    e.stopPropagation();
+    if (isInWatchlist(item.symbol)) {
+      removeFromWatchlist(item.symbol);
+    } else {
+      addToWatchlist({
+        code: item.symbol,
+        name: item.name,
+        market: inferMarket(item.country, item.market),
+      });
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -145,26 +164,42 @@ export function HeaderSearch() {
                     : market === "KOSDAQ"
                     ? "bg-emerald-50 text-emerald-700"
                     : "bg-purple-50 text-purple-700";
+                const starred = isInWatchlist(item.symbol);
                 return (
                   <li key={item.symbol}>
-                    <button
-                      type="button"
-                      onClick={() => handleSelect(item)}
+                    <div
                       onMouseEnter={() => setActiveIndex(i)}
-                      className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${
+                      className={`w-full px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${
                         i === activeIndex ? "bg-unjong-background" : "hover:bg-unjong-background"
                       }`}
                     >
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold flex-shrink-0 ${marketColor}`}>
-                        {market}
-                      </span>
-                      <span className="font-medium text-unjong-primary truncate flex-1">
-                        {item.name}
-                      </span>
-                      <span className="text-[10px] text-unjong-muted font-mono flex-shrink-0">
-                        {item.symbol}
-                      </span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSelect(item)}
+                        className="flex items-center gap-2 flex-1 text-left min-w-0"
+                      >
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold flex-shrink-0 ${marketColor}`}>
+                          {market}
+                        </span>
+                        <span className="font-medium text-unjong-primary truncate flex-1">
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] text-unjong-muted font-mono flex-shrink-0">
+                          {item.symbol}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => handleStar(e, item)}
+                        className={`p-1 flex-shrink-0 transition-colors ${
+                          starred ? "text-amber-500" : "text-unjong-muted hover:text-amber-500"
+                        }`}
+                        aria-label={starred ? "관심종목 제거" : "관심종목 추가"}
+                        title={starred ? "관심종목에서 제거" : "관심종목에 추가"}
+                      >
+                        <Star size={12} fill={starred ? "currentColor" : "none"} />
+                      </button>
+                    </div>
                   </li>
                 );
               })}

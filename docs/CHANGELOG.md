@@ -1,6 +1,33 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 125 (미국 주식 상세 정보 + 검색 ⭐ Watchlist 통합)
+
+### 세션 전체 요약
+미국 주식 종목 페이지를 한국과 동일 수준(시고저·52주·PER·시총)으로 풍부화 + 검색 드롭다운에서 ⭐ 관심종목 추가/제거. 운종 V5 PC 핵심 기능 완성.
+
+### [1] 신규 API — `/api/yahoo/quote-detail?symbol=`
+- yahoo-finance2 `quoteSummary` (price·summaryDetail·defaultKeyStatistics·financialData)
+- 시고저·거래량·52주·PER·PBR·시총·배당수익률 통합, `.raw ?? value` 양쪽 처리
+
+### [2] StockInfoPanel 미국 분기 풍부화
+- 미국 로딩 `/api/yahoo/quote` → `/api/yahoo/quote-detail`
+- 시세·재무 박스를 한국·미국 공통 구조로 (조건 `data.open > 0`)
+- `formatPrice`/`formatMarketCap` 헬퍼 (미국 $/T·B, 한국 원/조), 가격 헤더 미국 `$` prefix
+- isUS = !isKr (별도 state 없이 symbol 기반), "통합 추후" 메시지 제거
+
+### [3] HeaderSearch ⭐ Watchlist 통합 (STEP 113 완료)
+- 드롭다운 항목 우측 Star 버튼 → watchlistStore add/remove 토글 (e.stopPropagation)
+- 이미 관심종목이면 amber 채워진 별, 비로그인도 동작(localStorage)
+- 항목 구조: `<button>`(선택) + `<button>`(⭐)를 `<div>` 안에 분리 (버튼 중첩 회피)
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0. `/api/yahoo/quote-detail` 생성 확인.
+- Yahoo quoteSummary 라이브 응답은 배포 환경에서 확인 권장 (실패 시 graceful — 시세 박스 미표시).
+
+### 운종 V5 PC 핵심 기능 완성 ✅
+구조·카드·청소·인증코드·종목페이지·토론·댓글·채팅·새 홈·차트·뉴스·UI일관성·미국 상세·검색⭐
+
 ## 2026-05-31 — STEP 124 (토론 댓글 기능 — 운종 V5 대화 본질 완성)
 
 ### 세션 전체 요약

@@ -1,6 +1,17 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 124 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 125 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 125 (2026-05-31) — 미국 주식 상세 + 검색 ⭐ Watchlist ✅
+
+### 신규
+- API `/api/yahoo/quote-detail` — quoteSummary 로 미국 시고저·52주·PER·PBR·시총·배당
+- `StockInfoPanel`: 미국 분기 풍부화 (시세·재무 박스 한국·미국 공통, formatPrice/formatMarketCap, isUS=!isKr)
+- `HeaderSearch`: 드롭다운 ⭐ 버튼 → watchlistStore add/remove 토글 (비로그인 localStorage)
+
+### 의미: 운종 V5 PC 핵심 기능 완성 (114~125)
+### 잔여 (사용자 결정)
+- 댓글 좋아요·신고 / 대댓글 / 큰 시각 변경 / 모바일 반응형 / Vercel 배포 + unjong.com / 카카오 OAuth 활성화 / 네이버 검색 API
 
 ## STEP 124 (2026-05-31) — 토론 댓글 기능 ✅
 

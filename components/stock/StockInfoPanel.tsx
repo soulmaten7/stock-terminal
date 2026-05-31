@@ -53,17 +53,23 @@ export default function StockInfoPanel({ symbol }: Props) {
             marketCap: json.marketCap,
           });
         } else if (/^[A-Z.\-]+$/.test(symbol)) {
-          // 미국 주식 — Yahoo quote (가격·등락률만)
-          const r = await fetch(`/api/yahoo/quote?symbols=${symbol}`);
+          // 미국 주식 — Yahoo quoteSummary (시고저·52주·PER·시총)
+          const r = await fetch(`/api/yahoo/quote-detail?symbol=${symbol}`);
           const json = await r.json();
-          if (cancelled || !json.items?.[0]) return;
-          const it = json.items[0];
+          if (cancelled || json.error) return;
           setData({
-            name: it.code,
-            price: it.price,
-            changePct: it.changePct,
-            open: 0, high: 0, low: 0, volume: 0,
-            high52w: 0, low52w: 0, per: 0, pbr: 0, marketCap: 0,
+            name: json.name || symbol,
+            price: json.price,
+            changePct: json.changePct,
+            open: json.open || 0,
+            high: json.high || 0,
+            low: json.low || 0,
+            volume: json.volume || 0,
+            high52w: json.high52w || 0,
+            low52w: json.low52w || 0,
+            per: json.per || 0,
+            pbr: json.pbr || 0,
+            marketCap: json.marketCap || 0,
           });
         }
       } finally {
@@ -151,12 +157,11 @@ export default function StockInfoPanel({ symbol }: Props) {
 
   if (loading) return <LoadingState className="p-4" />;
   if (!data) return (
-    <div className="p-4 text-center text-xs text-unjong-muted">
-      {isKr ? "데이터 없음" : "미국 주식 — Yahoo Finance 통합 추후"}
-    </div>
+    <div className="p-4 text-center text-xs text-unjong-muted">데이터 없음</div>
   );
 
   const isUp = data.changePct >= 0;
+  const isUS = !isKr;
 
   return (
     <div className="space-y-3">
@@ -171,7 +176,7 @@ export default function StockInfoPanel({ symbol }: Props) {
         <p className="text-[10px] text-unjong-muted font-mono">{symbol}</p>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-xl font-bold text-unjong-primary tabular-nums">
-            {data.price.toLocaleString()}
+            {isUS ? `$${data.price.toFixed(2)}` : data.price.toLocaleString()}
           </span>
           <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
             {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -188,37 +193,45 @@ export default function StockInfoPanel({ symbol }: Props) {
         </section>
       )}
 
-      {/* 시세·재무 (한국 주식만 풍부) */}
-      {isKr && data.open > 0 && (
+      {/* 시세·재무 (한국·미국 동일 구조, 통화·단위만 다름) */}
+      {data.open > 0 && (
         <>
           <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3 space-y-1.5">
             <h3 className="text-[10px] font-semibold text-unjong-muted uppercase mb-1">시세</h3>
-            <Row label="시가" value={data.open ? data.open.toLocaleString() : "—"} />
-            <Row label="고가" value={data.high ? data.high.toLocaleString() : "—"} />
-            <Row label="저가" value={data.low ? data.low.toLocaleString() : "—"} />
+            <Row label="시가" value={formatPrice(data.open, isUS)} />
+            <Row label="고가" value={formatPrice(data.high, isUS)} />
+            <Row label="저가" value={formatPrice(data.low, isUS)} />
             <Row label="거래량" value={data.volume ? data.volume.toLocaleString() : "—"} />
-            <Row label="52주 최고" value={data.high52w ? data.high52w.toLocaleString() : "—"} />
-            <Row label="52주 최저" value={data.low52w ? data.low52w.toLocaleString() : "—"} />
+            <Row label="52주 최고" value={formatPrice(data.high52w, isUS)} />
+            <Row label="52주 최저" value={formatPrice(data.low52w, isUS)} />
           </section>
 
           <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3 space-y-1.5">
             <h3 className="text-[10px] font-semibold text-unjong-muted uppercase mb-1">재무</h3>
-            <Row label="시가총액" value={data.marketCap > 0 ? `${(data.marketCap / 100000000).toFixed(1)}조` : "—"} />
+            <Row label="시가총액" value={formatMarketCap(data.marketCap, isUS)} />
             <Row label="PER" value={data.per > 0 ? data.per.toFixed(1) : "—"} />
             <Row label="PBR" value={data.pbr > 0 ? data.pbr.toFixed(1) : "—"} />
           </section>
         </>
       )}
-
-      {/* 미국 주식 — 상세 정보 추후 */}
-      {!isKr && (
-        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-3 text-center text-[10px] text-unjong-muted space-y-0.5">
-          <p>미국 주식 상세 정보 (시고저·52주·PER 등)</p>
-          <p>Yahoo Finance 통합 작업 중</p>
-        </div>
-      )}
     </div>
   );
+}
+
+function formatPrice(price: number, isUS = false): string {
+  if (!price) return "—";
+  return isUS ? `$${price.toFixed(2)}` : price.toLocaleString();
+}
+
+function formatMarketCap(cap: number, isUS = false): string {
+  if (!cap) return "—";
+  if (isUS) {
+    if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
+    if (cap >= 1e9) return `$${(cap / 1e9).toFixed(1)}B`;
+    return `$${cap.toLocaleString()}`;
+  }
+  // 한국 (원 단위)
+  return `${(cap / 100000000).toFixed(1)}조`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {
