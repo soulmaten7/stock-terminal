@@ -1,6 +1,18 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 120 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 122 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 122 (2026-05-31) — 종목별 뉴스 + 시장 헤드라인 (RSS + Yahoo) ✅
+
+### 신규
+- API `/api/news/market`(한국 RSS 5개 통합, 정규식 파싱, 10분 캐싱, TOP30) · `/api/news/stock`(한국 RSS 종목명 매칭 / 미국 Yahoo search)
+- 컴포넌트 `MarketNewsModule`(새 홈) · `StockNewsModule`(종목 페이지)
+- 통합: HomeClientV5(카드→뉴스→HOT토론), StockPageClient(뉴스→토론)
+
+### 의미: "운종 = 오르내림 + 대화 + 정보(뉴스)" 4박자 완성
+### 동작 전제 / 잔여
+- RSS·Yahoo 라이브 fetch → Vercel 배포 환경 실데이터 검증 권장 (로컬 차단 시 graceful 안내)
+- 종목 한국뉴스: name_ko 부분일치 → 네이버 검색 API(키) 통합 시 정확도↑
 
 ## STEP 120 (2026-05-31) — 종목 페이지 마무리 (좋아요·신고 + 차트 + 미장 Yahoo) ✅
 

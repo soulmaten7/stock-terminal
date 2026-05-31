@@ -1,6 +1,30 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 122 (종목별 뉴스 + 시장 헤드라인 — RSS + Yahoo)
+
+### 세션 전체 요약
+"운종 = 오르내림 + 대화 + 정보(뉴스)" 4박자 완성. 한국 경제 RSS 5개 통합 시장 헤드라인 + 종목별 뉴스(한국 RSS 종목명 매칭 / 미국 Yahoo).
+
+### 신규 API
+- `/api/news/market` — 한경·매경·머니투데이·이데일리·연합 RSS 5개 통합. 정규식 RSS 2.0 파싱(xml2js 무의존), 최신순+제목 중복 제거 TOP 30, revalidate 600(10분 캐싱), Promise.allSettled 로 일부 실패 무시
+- `/api/news/stock?symbol=` — 한국(6자리): stocks DB `name_ko` 조회 → KR RSS 3개 제목 종목명 포함 필터 / 미국(티커): Yahoo Finance `yf.search(symbol, {newsCount:10})`
+
+### 신규 컴포넌트
+- `components/home-v5/MarketNewsModule.tsx` — 새 홈 시장 헤드라인 (10건, 5분 갱신, 외부 새 탭)
+- `components/stock/StockNewsModule.tsx` — 종목 페이지 종목별 뉴스 (5건, 10분 갱신)
+
+### 통합
+- `HomeClientV5` 가운데: 시장 핫 이슈 카드 → **MarketNewsModule** → HotDiscussionsModule
+- `StockPageClient` 가운데: **StockNewsModule** → DiscussionBoard
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0. `/api/news/market`(static 10m revalidate)·`/api/news/stock`(dynamic) 생성 확인.
+- RSS 라이브 fetch 검증은 배포 환경 네트워크 의존 → 코드에 graceful 에러 처리(빈 결과 반환). curl 검증은 배포 후.
+
+### 추후 (네이버 검색 API — 사용자 키 발급)
+- 종목별 매핑 정확도 ↑ (현재 RSS 종목명 부분일치), 동의어 처리('삼전' 등)
+
 ## 2026-05-31 — STEP 120 (종목 페이지 마무리 — 좋아요·신고 + 차트 inline + 미장 Yahoo)
 
 ### 세션 전체 요약

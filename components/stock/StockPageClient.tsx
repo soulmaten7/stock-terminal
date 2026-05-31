@@ -5,6 +5,7 @@ import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import StockInfoPanel from "./StockInfoPanel";
 import DiscussionBoard from "./DiscussionBoard";
 import StockChatPanel from "./StockChatPanel";
+import StockNewsModule from "./StockNewsModule";
 
 type Props = { code: string };
 
@@ -23,8 +24,9 @@ export default function StockPageClient({ code }: Props) {
         <StockInfoPanel symbol={code} />
       </aside>
 
-      {/* 가운데: 토론 게시판 */}
+      {/* 가운데: 종목 뉴스 + 토론 게시판 */}
       <main>
+        <StockNewsModule symbol={code} />
         <DiscussionBoard symbol={code} />
       </main>
 

@@ -10,6 +10,7 @@ import {
 } from "@/components/cards/ScalperCards";
 import HotDiscussionsModule from "./HotDiscussionsModule";
 import HotChatRoomsModule from "./HotChatRoomsModule";
+import MarketNewsModule from "./MarketNewsModule";
 
 export default function HomeClientV5() {
   return (
@@ -33,6 +34,8 @@ export default function HomeClientV5() {
             <ScalperDisclosureCard />
           </div>
         </section>
+
+        <MarketNewsModule />
 
         <HotDiscussionsModule />
       </main>
