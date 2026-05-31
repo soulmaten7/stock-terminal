@@ -1,29 +1,30 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-31 (STEP 118 — Layer 3 인증: 카카오 OAuth + users V5 마이그레이션 + 로그인 UI)
-> **현재 상태**: V5 구조 통합(114) + V3 1차 청소(116) + Layer 3 인증 코드(118) 완료. 빌드 ✓. 다음은 STEP 115 (종목 페이지 + 토론).
+> **Last updated**: 2026-05-31 (STEP 115 — 종목 페이지 /stock/[code] + 토론 게시판 + 종목별 채팅)
+> **현재 상태**: V5 구조(114) + V3 청소(116) + 인증 코드(118) + 종목 페이지(115) 완료. 빌드 ✓. 다음은 STEP 117 (새 홈 + dashboard 처분).
 
-🔴 **사용자(Jang Eun) 직접 작업 — STEP 118 활성화 필수**:
-1. 카카오 Developers 콘솔 (https://developers.kakao.com): 앱 `운종` 등록 → Web 플랫폼(`http://localhost:3333`) + 카카오 로그인 ON + Redirect URI `https://qxkmwlkchyxfzxbonhtj.supabase.co/auth/v1/callback` + 동의항목(닉네임·이메일·프로필) + **REST API 키 복사**
-2. Supabase Dashboard → Auth → Providers → **Kakao ON** + REST API 키 입력 → Save
-→ 이 2개 전까지는 빌드/페이지는 정상이나 실제 카카오 로그인 시 OAuth 실패.
+⚠️ **미적용 DB 마이그레이션** (Cowork 가 Supabase MCP 로 순서대로 적용):
+- `015_chat_unify.sql` — 채팅 room → general 통합
+- `016_users_v5.sql` — users 결제 컬럼 제거 + tier/bio/oauth_provider + handle_new_user 트리거 + RLS
+- `017_discussions.sql` — discussions/likes/reports 테이블 + chat_messages.symbol + 트리거 + RLS + Realtime
+  → **017 적용 전까지 /stock/[code] 의 토론·종목채팅은 빈 화면/에러** (테이블 없음). 페이지/빌드는 정상.
 
-⚠️ **미적용 DB 마이그레이션** (Cowork 가 Supabase MCP 로 별도 적용):
-- `015_chat_unify.sql` — 채팅 room scalper/longterm/us → general 통합
-- `016_users_v5.sql` — users 결제 컬럼 제거 + tier/bio/oauth_provider 추가 + handle_new_user 트리거 + RLS
+🔴 **사용자(Jang Eun) 직접 작업 — 카카오 로그인 활성화 (STEP 118 잔여)**:
+1. 카카오 Developers 콘솔: 앱 등록 + Redirect URI `https://qxkmwlkchyxfzxbonhtj.supabase.co/auth/v1/callback` + REST API 키
+2. Supabase Dashboard → Auth → Providers → Kakao ON + 키 입력
+→ 전까지 카카오 로그인 시 OAuth 실패. (토론 글쓰기는 로그인 필요, 채팅·읽기는 비로그인 가능)
 
-✅ **채팅 DB 활성화 완료**: 마이그레이션 005 + 014 적용 (`qxkmwlkchyxfzxbonhtj` 프로젝트). 실시간 채팅 정상.
+✅ **채팅 DB 활성화 완료**: 마이그레이션 005 + 014 적용. 실시간 채팅 정상.
 
-### 이연 사항
-- 보존 V3 페이지(analysis/news/chat/dashboard 등) 내부 `/stocks/*` 링크 → **STEP 117**
-- 고아 `components/layout/TopNav.tsx` (미사용) → 추후
-- mypage 구독/결제 내역 탭 (V3 잔재, payments 테이블 직접 조회) → 추후 mypage 전용 정리
+### 이연 사항 (다음 STEP)
+- 종목 페이지: 좋아요·신고·댓글 onClick 동작, 미국주식 종목 정보(Yahoo) 통합, 차트 영역 → 추후
+- 보존 V3 페이지 내부 `/stocks/*` 링크, 고아 TopNav.tsx, mypage 구독/결제 탭 → STEP 117
 
 ### 다음 STEP
-- **STEP 115** — 종목 페이지(/stock/[code]) + 토론 게시판 + 종목별 채팅 (인증 위에 구축)
-- **STEP 117** — 새 홈 페이지 + dashboard 처분 + V3 잔재 2차 청소
+- **STEP 117** — 새 홈 페이지(/ = 시장 지표 + 관심 + 핫 이슈 + HOT 토론·채팅) + dashboard 처분 + V3 2차 청소
 - **STEP 119** — Vercel 배포 + unjong.com 도메인
+- 추후 — 토론 좋아요·신고·댓글 동작, 미국 주식 종목 정보 통합
 
 ---
 

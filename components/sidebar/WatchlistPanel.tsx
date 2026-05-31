@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import { TrendingUp, TrendingDown, X, Plus } from "lucide-react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { useWatchlist, type WatchlistItem } from "@/stores/watchlistStore";
@@ -9,6 +10,7 @@ type PriceInfo = { price: string; changePct: number };
 type PriceMap = Record<string, PriceInfo | null>;
 
 export function WatchlistPanel() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [mounted, setMounted] = useState(false);
   const items = useWatchlist((s) => s.items);
@@ -116,6 +118,7 @@ export function WatchlistPanel() {
       changePct: p?.changePct,
       market: item.market,
     });
+    router.push(`/stock/${item.code}`);
   };
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TrendingUp, FileText } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
@@ -70,6 +71,7 @@ function inferKrMarket(code: string): "KOSPI" | "KOSDAQ" {
 }
 
 export function MoversCard() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [data, setData] = useState<Mover[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -144,15 +146,16 @@ export function MoversCard() {
             return (
               <li
                 key={m.code}
-                onClick={() =>
+                onClick={() => {
                   setSelectedSymbol({
                     code: m.code,
                     name: m.name,
                     price: m.price,
                     changePct: m.changePct,
                     market: inferKrMarket(m.code),
-                  })
-                }
+                  });
+                  router.push(`/stock/${m.code}`);
+                }}
                 className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
               >
                 <div className="flex items-center gap-2 min-w-0">
@@ -179,6 +182,7 @@ export function MoversCard() {
 }
 
 export function VolumeCard() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [data, setData] = useState<VolumeItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -241,9 +245,10 @@ export function VolumeCard() {
           {displayData.map((v) => (
             <li
               key={v.code}
-              onClick={() =>
-                setSelectedSymbol({ code: v.code, name: v.name, market: inferKrMarket(v.code) })
-              }
+              onClick={() => {
+                setSelectedSymbol({ code: v.code, name: v.name, market: inferKrMarket(v.code) });
+                router.push(`/stock/${v.code}`);
+              }}
               className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
             >
               <div className="flex flex-col min-w-0">
@@ -260,6 +265,7 @@ export function VolumeCard() {
 }
 
 export function NetBuyBrokerCard() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [data, setData] = useState<NetBuyItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -326,9 +332,10 @@ export function NetBuyBrokerCard() {
             return (
               <li
                 key={n.code}
-                onClick={() =>
-                  setSelectedSymbol({ code: n.code, name: n.name, market: inferKrMarket(n.code) })
-                }
+                onClick={() => {
+                  setSelectedSymbol({ code: n.code, name: n.name, market: inferKrMarket(n.code) });
+                  router.push(`/stock/${n.code}`);
+                }}
                 className="flex flex-col gap-1 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
               >
                 <div className="flex items-center justify-between">

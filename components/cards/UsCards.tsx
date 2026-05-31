@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
@@ -111,6 +112,7 @@ export function GlobalIndicesCard() {
 // ─── Magnificent7Card ─────────────────────────────────────────────────────────
 
 export function Magnificent7Card() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [data, setData] = useState<M7Item[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -145,15 +147,16 @@ export function Magnificent7Card() {
           return (
             <li
               key={m.code}
-              onClick={() =>
+              onClick={() => {
                 setSelectedSymbol({
                   code: m.code,
                   name: m.name,
                   price: m.price,
                   changePct: m.changePct,
                   market: "US",
-                })
-              }
+                });
+                router.push(`/stock/${m.code}`);
+              }}
               className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
             >
               <div className="flex flex-col min-w-0">
@@ -177,6 +180,7 @@ export function Magnificent7Card() {
 // ─── UsMoversCard ─────────────────────────────────────────────────────────────
 
 export function UsMoversCard() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [data, setData] = useState<MoverItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -211,15 +215,16 @@ export function UsMoversCard() {
           return (
             <li
               key={m.code}
-              onClick={() =>
+              onClick={() => {
                 setSelectedSymbol({
                   code: m.code,
                   name: m.name,
                   price: m.price,
                   changePct: m.changePct,
                   market: "US",
-                })
-              }
+                });
+                router.push(`/stock/${m.code}`);
+              }}
               className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
             >
               <div className="flex items-center gap-2 min-w-0">

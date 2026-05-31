@@ -1,6 +1,23 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 118 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 115 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 115 (2026-05-31) — 종목 페이지 + 토론 + 종목별 채팅 (V5 핵심) ✅
+
+### 신규
+- `/stock/[code]` — 운종 본질 페이지. 좌(StockInfoPanel 320) · 중(DiscussionBoard) · 우(StockChatPanel 380) 3컬럼 sticky
+- DB 마이그레이션 017: discussions / discussion_likes / discussion_reports + chat_messages.symbol + 트리거/RLS/Realtime
+- 컴포넌트 4종: StockPageClient, StockInfoPanel(KIS 30초 폴링), DiscussionBoard(HOT/최신·글쓰기·좋아요/신고 UI), StockChatPanel(symbol 필터 실시간)
+
+### 동선
+- 검색(HeaderSearch)·관심종목(WatchlistPanel)·카드(Movers/Volume/NetBuy/장타공시/M7/UsMovers) 클릭 → /stock/[code] (setSelectedSymbol 유지 + router.push)
+
+### 정책
+- 토론 읽기 비로그인 OK / 글쓰기 로그인 필요 · 채팅 비로그인 OK · 신고 5건↑ 자동 hidden
+
+### ⚠️ 후속
+- Cowork: 마이그레이션 015·016·017 순서 적용 (017 전엔 토론·종목채팅 빈 화면)
+- 다음 STEP: 좋아요/신고/댓글 동작, 미국주식 Yahoo 통합, 차트 → 추후 / STEP 117 새 홈
 
 ## STEP 118 (2026-05-31) — Layer 3 인증 (카카오 OAuth) ✅
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 
@@ -18,6 +19,7 @@ function inferMarket(country: string, market: string): "KOSPI" | "KOSDAQ" | "US"
 }
 
 export function HeaderSearch() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -67,6 +69,7 @@ export function HeaderSearch() {
       name: item.name,
       market: inferMarket(item.country, item.market),
     });
+    router.push(`/stock/${item.symbol}`);
     setQuery("");
     setResults([]);
     setShowDropdown(false);

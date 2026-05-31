@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FileText } from "lucide-react";
 import { CardContainer } from "./CardContainer";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
@@ -26,6 +27,7 @@ const LONGTERM_DISCLOSURES_FALLBACK: DisclosureItem[] = [
 // ── Cards ────────────────────────────────────────────────────────────────────
 
 export function LongtermDisclosureCard() {
+  const router = useRouter();
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
   const [data, setData] = useState<DisclosureItem[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,7 +75,11 @@ export function LongtermDisclosureCard() {
           {displayData.map((d, i) => (
             <li
               key={`${d.code}-${i}`}
-              onClick={() => d.code ? setSelectedSymbol({ code: d.code, name: d.name, market: inferKrMarket(d.code) }) : undefined}
+              onClick={() => {
+                if (!d.code) return;
+                setSelectedSymbol({ code: d.code, name: d.name, market: inferKrMarket(d.code) });
+                router.push(`/stock/${d.code}`);
+              }}
               className={`flex items-start justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1.5 ${d.code ? "cursor-pointer" : "cursor-default"}`}
             >
               <div className="flex items-start gap-2 min-w-0">

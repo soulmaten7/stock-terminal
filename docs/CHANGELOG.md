@@ -1,6 +1,36 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 115 (종목 페이지 + 토론 게시판 + 종목별 채팅 — V5 핵심)
+
+### 세션 전체 요약
+운종 본질 페이지 `/stock/[code]` 신규 — 좌(종목정보)·중(토론)·우(실시간 채팅) 3컬럼. 토스/네이버 페이 증권 패턴. 검색·관심종목·카드 클릭 동선을 종목 페이지로 통합.
+
+### DB 마이그레이션 017 (`supabase/migrations/017_discussions.sql` 신규 · Cowork 가 MCP 로 별도 적용)
+- `discussions` (토론 게시글: symbol·nickname·tier·content·like/comment/report_count·hidden)
+- `discussion_likes` (좋아요, PK 복합) · `discussion_reports` (신고, 5건↑ 자동 hidden)
+- `chat_messages.symbol` 컬럼 추가 (NULL=전체, 값=종목별 채팅)
+- like_count·report_count 자동 갱신 트리거 + RLS (모두 read, 인증만 insert) + Realtime publication
+
+### 신규 페이지/컴포넌트
+- `app/stock/[code]/page.tsx` + `app/stock/layout.tsx` (메인 헤더 유지 passthrough)
+- `StockPageClient` — 3컬럼 grid (320 / 1fr / 380), 진입 시 selectedSymbol 동기화
+- `StockInfoPanel` — 좌측 sticky 종목 정보 (가격·시세·재무, KIS 30초 폴링, 미국주식 추후 표시)
+- `DiscussionBoard` — 가운데 토론 (HOT/최신 정렬, 비로그인 글쓰기 차단+로그인 안내, 좋아요/신고 UI)
+- `StockChatPanel` — 우측 종목별 실시간 채팅 (symbol 필터 + postgres_changes, 비로그인 가능)
+
+### 동선 변경 (→ /stock/[code])
+- `HeaderSearch` 선택, `WatchlistPanel` 클릭, 카드 클릭(Movers·Volume·NetBuy·장타공시·M7·UsMovers) — setSelectedSymbol 유지 + router.push 추가
+
+### 운종 정책
+- 토론 읽기 = 비로그인 OK / 글쓰기 = 로그인 후 (카카오 안내) · 채팅 = 비로그인 OK (트레이더-XXXX) · 신고 5건↑ 자동 숨김
+
+### 미구현(다음 STEP) — 명령서 명시
+- 좋아요·신고·댓글 onClick 동작, 미국주식 종목 정보(Yahoo) 통합, 종목 페이지 차트 — 모두 추후
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0. `/stock/[code]` 동적 라우트 생성 확인.
+
 ## 2026-05-31 — STEP 118 (Layer 3 인증 — 카카오 OAuth + DB 통합 + 로그인 UI)
 
 ### 세션 전체 요약
