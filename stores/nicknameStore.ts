@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { useAuthStore } from "./authStore";
 
 type Store = {
   nickname: string;
@@ -22,6 +23,13 @@ export const useNickname = create<Store>()(
       nickname: "",
       setNickname: (n) => set({ nickname: n }),
       ensureNickname: () => {
+        // 1. 로그인한 사용자면 DB 닉네임 우선
+        const authUser = useAuthStore.getState().user;
+        if (authUser?.nickname) {
+          set({ nickname: authUser.nickname });
+          return;
+        }
+        // 2. 로그인 X 면 localStorage 생성
         if (!get().nickname) {
           set({ nickname: generateNickname() });
         }

@@ -1,6 +1,39 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 118 (Layer 3 인증 — 카카오 OAuth + DB 통합 + 로그인 UI)
+
+### 세션 전체 요약
+V3 이메일/비밀번호 인증 → 카카오 OAuth 단일로 전환. users 테이블 V5 정리(결제 컬럼 제거 + tier 추가) 마이그레이션 016 동봉. 인증 선택사항 정책(비로그인도 채팅·관심종목 가능).
+
+### [1] DB 마이그레이션 016 (`supabase/migrations/016_users_v5.sql` 신규)
+- V3 결제 컬럼 제거: subscription_status / subscription_start_date / subscription_end_date / billing_key
+- `tier SMALLINT (1·2·3)` 추가 — 운종 Tier 시스템, `bio TEXT` / `oauth_provider TEXT` 추가
+- `handle_new_user()` 트리거: auth.users INSERT 시 public.users 자동 생성 (카카오 raw_user_meta_data 닉네임/아바타 추출, ON CONFLICT DO NOTHING)
+- RLS: 전체 SELECT 허용, 본인만 UPDATE
+- ⚠️ **Cowork 가 Supabase MCP 로 별도 적용** (Claude Code 적용 X)
+
+### [2] 페이지
+- `app/auth/signup` 삭제 (카카오 OAuth 가 자동 가입 처리)
+- `app/auth/login/page.tsx` V5 운종 디자인 새로 작성 (카카오 버튼 1개 · FEE500)
+- `app/auth/callback/route.ts` 정리 (exchangeCodeForSession + 트리거 미적용 대비 폴백 insert, 디버그 console.log 제거, next ?? /kr)
+
+### [3] 코드
+- `types/user.ts` — V3 결제 필드·UserRole·SubscriptionStatus 제거, `role: free|premium|pro` + tier·bio·oauth_provider 추가
+- `stores/authStore.ts` — tier state 추가 (setUser 시 user.tier 반영)
+- `stores/nicknameStore.ts` — ensureNickname 로그인 시 DB 닉네임 우선 + 비로그인 localStorage 폴백
+- `components/auth/AuthProvider.tsx` — 변경 없음 (`.select('*')` 가 tier 포함)
+- `lib/utils/permissions.ts` 삭제 (V3 admin/advertiser 권한 헬퍼 — 미사용 고아, UserRole 의존)
+- `app/mypage/page.tsx` — 삭제된 subscription 필드 참조 제거 (구독 배지만 유지)
+
+### ⚠️ 사용자(Jang Eun) 직접 작업 필요 (별도)
+1. 카카오 Developers 콘솔: 앱 등록 + Web 플랫폼/Redirect URI + 동의항목 + REST API 키 발급
+2. Supabase Dashboard: Kakao Provider ON + REST API 키 입력
+   - Redirect: `https://qxkmwlkchyxfzxbonhtj.supabase.co/auth/v1/callback`
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0. `/auth/signup` 라우트 제거, `/auth/login`·`/auth/callback` 정상.
+
 ## 2026-05-31 — STEP 116 (V3 잔재 1차 청소 — 9개 페이지 + 의존 컴포넌트·API)
 
 ### 세션 전체 요약

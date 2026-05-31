@@ -5,39 +5,25 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
   const errParam = searchParams.get('error');
-  const errDesc = searchParams.get('error_description');
-
-  console.log('[auth/callback] hit', { hasCode: !!code, errParam, errDesc, origin });
+  const next = searchParams.get('next') ?? '/kr';
 
   if (errParam) {
-    console.error('[auth/callback] OAuth provider 에러:', errParam, errDesc);
     return NextResponse.redirect(`${origin}/auth/login?error=provider_${errParam}`);
   }
 
   if (!code) {
-    console.error('[auth/callback] code 파라미터 없음');
     return NextResponse.redirect(`${origin}/auth/login?error=no_code`);
   }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
-  if (error) {
-    console.error('[auth/callback] exchangeCodeForSession 실패:', {
-      name: error.name,
-      message: error.message,
-      status: error.status,
-    });
-    return NextResponse.redirect(`${origin}/auth/login?error=exchange_failed&msg=${encodeURIComponent(error.message)}`);
+  if (error || !data.user) {
+    return NextResponse.redirect(`${origin}/auth/login?error=exchange_failed`);
   }
 
-  if (!data.user) {
-    console.error('[auth/callback] exchange 성공이지만 user 없음');
-    return NextResponse.redirect(`${origin}/auth/login?error=no_user`);
-  }
-
-  console.log('[auth/callback] 로그인 성공:', { userId: data.user.id, email: data.user.email });
-
+  // DB 트리거(handle_new_user, 마이그레이션 016)가 users 행을 자동 생성하지만,
+  // 트리거 미적용 환경 대비 폴백 insert (ON CONFLICT 격 — 존재 시 skip).
   const { data: existingUser } = await supabase
     .from('users')
     .select('id')
@@ -45,23 +31,21 @@ export async function GET(request: Request) {
     .single();
 
   if (!existingUser) {
-    const nickname = data.user.user_metadata?.nickname ||
-      data.user.user_metadata?.full_name ||
+    const meta = data.user.user_metadata ?? {};
+    const nickname =
+      meta.name ||
+      meta.nickname ||
+      meta.full_name ||
       data.user.email?.split('@')[0] ||
-      `user_${Date.now()}`;
+      `트레이더-${data.user.id.slice(0, 4)}`;
 
-    const { error: insertErr } = await supabase.from('users').insert({
+    await supabase.from('users').insert({
       id: data.user.id,
-      email: data.user.email!,
+      email: data.user.email ?? `${data.user.id}@unjong.local`,
       nickname,
       role: 'free',
     });
-    if (insertErr) {
-      console.error('[auth/callback] users insert 실패:', insertErr);
-    } else {
-      console.log('[auth/callback] users row 생성 완료');
-    }
   }
 
-  return NextResponse.redirect(origin);
+  return NextResponse.redirect(`${origin}${next}`);
 }

@@ -1,6 +1,22 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 116 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 118 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 118 (2026-05-31) — Layer 3 인증 (카카오 OAuth) ✅
+
+### 변경
+- 인증: 이메일/비밀번호 → **카카오 OAuth 단일**. `app/auth/signup` 삭제, `login` V5 재작성, `callback` 정리
+- DB 마이그레이션 016 동봉: users 결제 컬럼 제거 + tier(1·2·3)·bio·oauth_provider 추가 + handle_new_user 트리거 + RLS
+- 코드: types/user.ts(결제 필드 제거+tier), authStore(tier), nicknameStore(로그인 우선), permissions.ts 삭제(미사용 고아), mypage subscription 필드 정리
+- 정책: 인증 선택사항 (비로그인도 채팅·관심종목 가능, 로그인 시 영구화)
+
+### 🔴 사용자 직접 작업 (인증 활성화 전제)
+1. 카카오 Developers 콘솔: 앱 등록 + Redirect URI + REST API 키
+2. Supabase Dashboard: Kakao Provider ON + 키 입력
+→ Cowork: 마이그레이션 015 + 016 Supabase MCP 적용
+
+### 이연
+- mypage 구독/결제 탭 V3 잔재, dashboard/V3 `/stocks` 링크 → STEP 117
 
 ## STEP 116 (2026-05-31) — V3 잔재 1차 청소 ✅
 

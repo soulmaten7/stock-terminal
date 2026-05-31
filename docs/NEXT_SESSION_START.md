@@ -1,22 +1,29 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-05-31 (STEP 116 — V3 잔재 1차 청소: 페이지 9개 + API 3개 + PaywallModal·AuthGuard 삭제)
-> **현재 상태**: V5 구조 통합(STEP 114) + V3 1차 청소(STEP 116) 완료. 빌드 ✓. 다음은 STEP 118 (Layer 3 인증).
+> **Last updated**: 2026-05-31 (STEP 118 — Layer 3 인증: 카카오 OAuth + users V5 마이그레이션 + 로그인 UI)
+> **현재 상태**: V5 구조 통합(114) + V3 1차 청소(116) + Layer 3 인증 코드(118) 완료. 빌드 ✓. 다음은 STEP 115 (종목 페이지 + 토론).
 
-⚠️ **미적용 DB 마이그레이션**: `supabase/migrations/015_chat_unify.sql` — Cowork 가 Supabase MCP 로 별도 적용 필요 (채팅 room: scalper/longterm/us → general 통합). 적용 전까지 기존 3채널 메시지는 general 로 보이지 않음.
+🔴 **사용자(Jang Eun) 직접 작업 — STEP 118 활성화 필수**:
+1. 카카오 Developers 콘솔 (https://developers.kakao.com): 앱 `운종` 등록 → Web 플랫폼(`http://localhost:3333`) + 카카오 로그인 ON + Redirect URI `https://qxkmwlkchyxfzxbonhtj.supabase.co/auth/v1/callback` + 동의항목(닉네임·이메일·프로필) + **REST API 키 복사**
+2. Supabase Dashboard → Auth → Providers → **Kakao ON** + REST API 키 입력 → Save
+→ 이 2개 전까지는 빌드/페이지는 정상이나 실제 카카오 로그인 시 OAuth 실패.
 
-✅ **채팅 DB 활성화 완료**: Cowork 가 Supabase MCP 로 직접 마이그레이션 005 + 014 적용 (`qxkmwlkchyxfzxbonhtj` 프로젝트). 실시간 채팅 정상 작동.
+⚠️ **미적용 DB 마이그레이션** (Cowork 가 Supabase MCP 로 별도 적용):
+- `015_chat_unify.sql` — 채팅 room scalper/longterm/us → general 통합
+- `016_users_v5.sql` — users 결제 컬럼 제거 + tier/bio/oauth_provider 추가 + handle_new_user 트리거 + RLS
 
-### STEP 116 잔여/이연 사항
-- 보존 V3 페이지(analysis/news/chat/dashboard 등) 내부 컴포넌트의 `/stocks/*` 링크 → **STEP 117** 에서 dashboard 재결정 시 함께 정리
-- 고아 컴포넌트 `components/layout/TopNav.tsx` (미사용) → 추후 청소 후보
+✅ **채팅 DB 활성화 완료**: 마이그레이션 005 + 014 적용 (`qxkmwlkchyxfzxbonhtj` 프로젝트). 실시간 채팅 정상.
+
+### 이연 사항
+- 보존 V3 페이지(analysis/news/chat/dashboard 등) 내부 `/stocks/*` 링크 → **STEP 117**
+- 고아 `components/layout/TopNav.tsx` (미사용) → 추후
+- mypage 구독/결제 내역 탭 (V3 잔재, payments 테이블 직접 조회) → 추후 mypage 전용 정리
 
 ### 다음 STEP
-- **STEP 118** — Layer 3 인증 (카카오 OAuth + Supabase Auth + 닉네임 영구화)
-- **STEP 115** — 종목 페이지(/stock/[code]) + 토론 게시판 + 종목별 채팅
-- **STEP 117** — 새 홈 페이지 (/ = 시장 지표 + 관심 + 핫 이슈 + HOT 토론·채팅) + V3 잔재 2차 청소
-- **STEP 119** — Vercel 배포
+- **STEP 115** — 종목 페이지(/stock/[code]) + 토론 게시판 + 종목별 채팅 (인증 위에 구축)
+- **STEP 117** — 새 홈 페이지 + dashboard 처분 + V3 잔재 2차 청소
+- **STEP 119** — Vercel 배포 + unjong.com 도메인
 
 ---
 

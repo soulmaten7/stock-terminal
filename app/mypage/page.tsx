@@ -121,9 +121,6 @@ export default function MyPage() {
                   <span className={`px-3 py-1 rounded-full text-sm font-medium ${user.role === 'premium' ? 'bg-premium/20 text-premium' : 'bg-dark-600 text-text-secondary'}`}>
                     {user.role === 'premium' ? '프리미엄' : '무료'}
                   </span>
-                  {user.subscription_status === 'active' && user.subscription_end_date && (
-                    <span className="text-sm text-text-secondary">다음 결제일: {formatDate(user.subscription_end_date)}</span>
-                  )}
                 </div>
               </div>
 
