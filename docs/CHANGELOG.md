@@ -1,6 +1,38 @@
 <!-- 2026-05-31 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-05-31 — STEP 117 (새 홈 페이지 + dashboard 처분 + V3 2차 청소)
+
+### 세션 전체 요약
+`/` 가 V3 redirect → V5 새 홈으로 전환. dashboard + V3 12개 페이지 + V3 컴포넌트(home/widgets/chat) 통째 삭제. "한국 주식 동선의 출발점" 정체성 (네이버 페이 증권 홈 리뉴얼 인사이트 적용).
+
+### 신규
+- `app/page.tsx` — `/` 가 새 홈 (이전: `/kr` redirect)
+- `components/home-v5/HomeClientV5.tsx` — 3컬럼 (좌 채팅+활발한 채팅방 · 중 시장 핫 이슈 카드 4종+HOT 토론 · 우 관심종목 sticky)
+- `components/home-v5/HotDiscussionsModule.tsx` — 24시간 좋아요 순 토론 TOP 10
+- `components/home-v5/HotChatRoomsModule.tsx` — 24시간 메시지 많은 종목 TOP 5 (클라 집계)
+
+### 삭제 (운종 V5 가 100% 대체)
+- `app/dashboard` (V3 5섹션 통합 홈)
+- V3 12개 페이지: briefing/analysis/chat/chart/orderbook/ticks/disclosures/investor-flow/movers/net-buy/news/themes/market-map
+- `components/home/*` (HomeClient·WidgetCard), `components/widgets/*` (위젯 28개), `components/chat/*` (FloatingChat)
+
+### 보존 판단 (명령서 [5] 검증 결과)
+- **`app/api/home/*` 보존** — `/api/home/disclosures` 가 살아있는 V5 카드(ScalperDisclosureCard)에서 사용 중. (`briefing`·`investor-flow` 도 일부 V3 컴포넌트가 참조)
+- Footer: 삭제 페이지로의 링크 없음 → 변경 없음
+- 명령서 예시의 `DisclosureCard` → 실제 export 명 `ScalperDisclosureCard` 로 수정 적용
+
+### 이연 사항
+- 고아 컴포넌트 dirs(analysis/briefing/stocks/news/dashboard/movers/net-buy/orderbook/ticks/toolbox/watchlist/partners/payment/advertiser 등) — 호스트 페이지 삭제로 미사용. 빌드 영향 없어 추후 일괄 정리
+- 고아 `stores/chatStore.ts` (FloatingChat 전용이었음), `components/layout/TopNav.tsx` — 추후
+- `app/global` — 명령서 12개 목록에 없어 보존
+
+### 빌드
+- `npm run build` ✓ Compiled successfully — TS/ESLint 0. 라우트 맵: `/` 새 홈 생성, dashboard+V3 12개 제거 확인.
+
+### 운종 V5 페이지 구조 (최종)
+- `/` 새 홈 · `/kr` 한국 5카드 · `/us` 미국 4카드 · `/stock/[code]` 종목(정보·토론·채팅) · `/screener` · `/calendar` · `/auth/login`·`/auth/callback` · `/mypage`
+
 ## 2026-05-31 — STEP 115 (종목 페이지 + 토론 게시판 + 종목별 채팅 — V5 핵심)
 
 ### 세션 전체 요약

@@ -1,6 +1,27 @@
 <!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 115 종료 시점) -->
+<!-- Last GC: 2026-05-31 (STEP 117 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 117 (2026-05-31) — 새 홈 + dashboard 처분 + V3 2차 청소 ✅
+
+### 신규
+- `/` 새 홈 (`HomeClientV5`): 3컬럼 — 좌 채팅+활발한 채팅방 / 중 시장 핫 이슈 카드 4종+HOT 토론 / 우 관심종목
+- `home-v5` 모듈: HotDiscussionsModule(24h 좋아요 TOP10), HotChatRoomsModule(24h 메시지 TOP5)
+
+### 삭제
+- `app/dashboard` + V3 12개 페이지(briefing/analysis/chat/chart/orderbook/ticks/disclosures/investor-flow/movers/net-buy/news/themes/market-map)
+- `components/home`·`widgets`(28개)·`chat`(FloatingChat)
+
+### 보존 판단
+- `app/api/home/*` 보존 — disclosures 가 V5 ScalperDisclosureCard 에서 사용 중
+- `app/global` 보존(목록 외)
+
+### 이연
+- 고아 컴포넌트 dirs 다수(analysis/briefing/stocks/news/dashboard 등), chatStore, TopNav → 추후 일괄 청소
+- 다음: STEP 119 Vercel 배포
+
+### 운종 V5 최종 구조
+- / · /kr · /us · /stock/[code] · /screener · /calendar · /auth/* · /mypage
 
 ## STEP 115 (2026-05-31) — 종목 페이지 + 토론 + 종목별 채팅 (V5 핵심) ✅
 
