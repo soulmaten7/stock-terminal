@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import StockInfoPanel from "./StockInfoPanel";
-import DiscussionBoard from "./DiscussionBoard";
 import StockChatPanel from "./StockChatPanel";
-import StockNewsModule from "./StockNewsModule";
+import StockTabs from "./StockTabs";
 
 type Props = { code: string };
 
@@ -46,10 +45,9 @@ export default function StockPageClient({ code }: Props) {
         <StockInfoPanel symbol={code} />
       </aside>
 
-      {/* 가운데: 종목 뉴스 + 토론 게시판 */}
+      {/* 가운데: 탭 시스템 (차트·시세 / 토론 / 뉴스 / 인사이트) */}
       <main>
-        <StockNewsModule symbol={code} />
-        <DiscussionBoard symbol={code} stockName={stockName} />
+        <StockTabs symbol={code} stockName={stockName} />
       </main>
 
       {/* 우측: 실시간 채팅 (sticky) */}

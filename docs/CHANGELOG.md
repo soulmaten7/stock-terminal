@@ -1,6 +1,15 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-01 — STEP 131 (종목 페이지 네이버 탭 시스템 + 우측 fixed nav, 리뉴얼 3/5)
+
+- `StockTabs` 신규: 차트·시세 / 토론 / 뉴스 / 인사이트 4탭 (활성 border-b-2)
+- `StockChartSection` 신규: 큰 일봉 차트(400px) + 일/주/월 토글 + 토스 그린·레드
+- `StockInsightsTab` 신규: placeholder (재무·동종업종 추후)
+- `StockPageClient`: 가운데 StockNewsModule+DiscussionBoard 직접 렌더 → StockTabs 통합
+- `RightFixedNav` 신규(우측 48px, app/stock/layout.tsx 종목 페이지 한정). ⚠️ 미존재 라우트(/notifications·/watchlist·/recent) 대신 기존 라우트(/mypage·/)로 연결 — 페이지 신설 시 교체
+- 빌드 ✓ (exit 0)
+
 ## 2026-06-01 — STEP 130 (카드 9개 콘텐츠 토스 스타일, 리뉴얼 2/5)
 
 - 종목 행: `rounded px-2 py-1(.5)` → `rounded-lg px-3 py-3 transition-colors` (여유 + 호버 전환)
