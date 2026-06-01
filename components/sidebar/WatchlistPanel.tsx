@@ -123,7 +123,7 @@ export function WatchlistPanel() {
   };
 
   return (
-    <div className="flex h-full flex-col rounded-lg border border-unjong-border bg-unjong-surface overflow-hidden">
+    <div className="flex h-full flex-col rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft overflow-hidden">
       {/* 헤더 */}
       <div className="flex items-center justify-between border-b border-unjong-border px-4 py-3 bg-unjong-background flex-shrink-0">
         <span className="text-sm font-semibold text-unjong-primary" suppressHydrationWarning>

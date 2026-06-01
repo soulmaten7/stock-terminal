@@ -1,6 +1,14 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-01 — STEP 132 (새 홈 손성기 모듈 순서 + MVP 2.0 진입, 리뉴얼 4/5)
+
+- `HotProductReviewsModule`·`HotRoomReviewsModule` 신규 — HOT 상품/리딩방 평가 TOP 5 (인증 마크)
+- `HomeClientV5` 재배치(손성기 순서): 시장 핫이슈 → HOT 토론 → **HOT 평가 2모듈(MVP 2.0)** → 시장 헤드라인
+- 컨테이너 gap-5·py-5, 핫이슈 헤더 text-lg, 관심종목 우측 sticky 유지
+- `WatchlistPanel` 외곽 rounded-2xl + shadow-soft (토스 카드 톤)
+- 빌드 ✓ (exit 0)
+
 ## 2026-06-01 — STEP 131 (종목 페이지 네이버 탭 시스템 + 우측 fixed nav, 리뉴얼 3/5)
 
 - `StockTabs` 신규: 차트·시세 / 토론 / 뉴스 / 인사이트 4탭 (활성 border-b-2)
