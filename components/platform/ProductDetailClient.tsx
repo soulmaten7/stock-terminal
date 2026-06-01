@@ -48,7 +48,7 @@ export default function ProductDetailClient({ id }: { id: string }) {
         <Link href="/products" className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
           <ArrowLeft size={12} /> 상품 디렉토리
         </Link>
-        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
+        <div className="bg-unjong-surface rounded-2xl border border-unjong-border p-4 shadow-soft">
           <div className="flex items-baseline justify-between mb-2">
             <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">
               {product.category.toUpperCase()}

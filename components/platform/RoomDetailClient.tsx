@@ -54,7 +54,7 @@ export default function RoomDetailClient({ id }: { id: string }) {
         <Link href="/rooms" className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
           <ArrowLeft size={12} /> 리딩방 디렉토리
         </Link>
-        <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
+        <div className="bg-unjong-surface rounded-2xl border border-unjong-border p-4 shadow-soft">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
               {PLATFORM_LABEL[room.platform] ?? "기타"}

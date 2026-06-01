@@ -1,8 +1,14 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-06-01 (STEP 128 — MVP 2.0 1차: 상품·리딩방 디렉토리 + 평가)
-> **현재 상태**: V5 PC 핵심(114~127) + MVP 2.0 진입(128). 빌드 ✓. 다음은 광고 분리 UI / Tier 인증 / 카카오 OAuth 활성화.
+> **Last updated**: 2026-06-01 (STEP 129~133 — 전면 디자인 리뉴얼: 토스 카드 + 종목 탭 + 새 홈 + MVP2 디자인)
+> **현재 상태**: V5 PC 핵심(114~128) + 전면 디자인 리뉴얼(129~133) 완료. 빌드 ✓. 다음은 광고 분리 UI / Tier 인증 / 카카오 OAuth 활성화.
+
+### STEP 129~133 요약 (전면 디자인 리뉴얼)
+- 129 디자인 시스템(토스 토큰·CardContainer rounded-2xl·shadow-soft) · 130 카드 9개 콘텐츠(토스 등락색·여유 행)
+- 131 종목 페이지 탭(차트·토론·뉴스·인사이트) + 우측 fixed nav · 132 새 홈 손성기 순서 + HOT 평가 모듈
+- 133 /screener 제거 · /calendar 외부 링크(Investing.com) · MVP2 4페이지 토스 통일
+- ⚠️ RightFixedNav 의 미존재 라우트는 기존 라우트로 임시 연결(페이지 신설 시 교체). 고아 컴포넌트(calendar/screener 잔재·watchlist 등) 잔존 — 추후 청소
 
 ### STEP 128 검증 (Cowork 마이그레이션 019 적용 후)
 - 헤더 "상품·리딩방(Reviews)" → `/products` ETF 10개, `/rooms` 리딩방 5개(placeholder)

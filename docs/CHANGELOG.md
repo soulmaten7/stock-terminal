@@ -1,6 +1,18 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-01 — STEP 133 (/screener 제거 + /calendar 외부 링크 + MVP 2.0 디자인 통일, 리뉴얼 5/5)
+
+- `/screener` + `components/screener` 삭제 (정체성 충돌 — 네이버·키움 영역). `lib/watchlist.ts`는 고아 컴포넌트가 아직 사용 중이라 보존
+- `/calendar` → Investing.com 외부 링크 안내 페이지(허브 정체성). 기존 CalendarPageClient는 고아로 보존
+- `MainNav`: 종목발굴(Screener) 제거 → 상품·리딩방 + 경제 캘린더만 (미사용 BarChart3 import 정리)
+- MVP 2.0 4페이지 토스 통일: 디렉토리 카드 `rounded-2xl + shadow-soft + p-5`, 상세 정보 카드 `rounded-2xl + shadow-soft`
+- 빌드 ✓ (exit 0). `/screener` 라우트 제거 확인
+
+### 🎉 전면 디자인 리뉴얼 완료 (STEP 129~133)
+디자인 시스템(토스 토큰·CardContainer) → 9개 카드 콘텐츠 → 종목 페이지 탭 + 우측 nav → 새 홈 손성기 순서 + MVP 2.0 진입 → 페이지 정리·디자인 통일.
+운종 V5 = 네이버 레이아웃 + 토스 카드 + Trustpilot 평가.
+
 ## 2026-06-01 — STEP 132 (새 홈 손성기 모듈 순서 + MVP 2.0 진입, 리뉴얼 4/5)
 
 - `HotProductReviewsModule`·`HotRoomReviewsModule` 신규 — HOT 상품/리딩방 평가 TOP 5 (인증 마크)

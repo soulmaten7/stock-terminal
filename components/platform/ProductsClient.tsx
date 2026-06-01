@@ -88,7 +88,7 @@ export default function ProductsClient() {
             <li key={p.id}>
               <Link
                 href={`/product/${p.id}`}
-                className="block bg-unjong-surface rounded-lg border border-unjong-border p-4 hover:border-unjong-accent transition-colors"
+                className="block bg-unjong-surface rounded-2xl border border-unjong-border p-5 shadow-soft hover:shadow-soft-hover transition-shadow"
               >
                 <div className="flex items-baseline justify-between mb-2">
                   <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700">

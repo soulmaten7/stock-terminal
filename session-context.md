@@ -1,6 +1,18 @@
 <!-- 2026-06-01 -->
-<!-- Last GC: 2026-06-01 (STEP 128 종료 시점) -->
+<!-- Last GC: 2026-06-01 (STEP 133 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 129~133 (2026-06-01) — 전면 디자인 리뉴얼 ✅ (운종 V5 = 네이버 레이아웃 + 토스 카드 + Trustpilot 평가)
+
+- **129** 디자인 시스템: globals.css 토스 색상 토큰 + `.shadow-soft(/-hover)`, CardContainer 재설계(rounded-2xl·shadow·p-5), 카드 그리드 gap-5
+- **130** 카드 9개 콘텐츠: 행 padding↑·rounded-lg·transition, 등락색 토스(#1AC267/#F04452), 순위 강조
+- **131** 종목 페이지 탭: StockTabs(차트·토론·뉴스·인사이트) + StockChartSection(400px) + RightFixedNav(app/stock/layout)
+- **132** 새 홈 손성기 순서: HotProductReviewsModule·HotRoomReviewsModule + HomeClientV5 재배치(핫이슈→HOT토론→HOT평가→헤드라인) + WatchlistPanel 토스화
+- **133** /screener 삭제, /calendar→Investing.com 외부 링크, MainNav 정리(BarChart3 제거), MVP2 4페이지 토스 통일
+
+### 잔여
+- RightFixedNav 미존재 라우트 임시 연결, 고아 컴포넌트(calendar/screener 잔재·components/watchlist·stocks 등)·lib/watchlist 정리 추후
+- 마이그레이션 015~019 Cowork 적용 + 카카오 OAuth 활성화(사용자) 후 실데이터 동작
 
 ## STEP 128 (2026-06-01) — MVP 2.0 1차: 상품·리딩방 디렉토리 + 평가 ✅
 
