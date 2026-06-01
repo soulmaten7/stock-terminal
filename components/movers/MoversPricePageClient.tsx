@@ -91,7 +91,7 @@ export default function MoversPricePageClient() {
           <button
             type="button"
             onClick={() => setDir('up')}
-            className={`text-xs font-bold px-3 py-2 transition-colors ${
+            className={`text-sm font-bold px-4 py-3 transition-colors ${
               dir === 'up' ? 'bg-[#FF3B30] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
             }`}
           >
@@ -100,7 +100,7 @@ export default function MoversPricePageClient() {
           <button
             type="button"
             onClick={() => setDir('down')}
-            className={`text-xs font-bold px-3 py-2 transition-colors ${
+            className={`text-sm font-bold px-4 py-3 transition-colors ${
               dir === 'down' ? 'bg-[#0051CC] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
             }`}
           >
@@ -115,7 +115,7 @@ export default function MoversPricePageClient() {
               key={m}
               type="button"
               onClick={() => setMarket(m)}
-              className={`text-xs font-medium px-3 py-2 transition-colors ${
+              className={`text-sm font-medium px-4 py-3 transition-colors ${
                 market === m
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
@@ -130,7 +130,7 @@ export default function MoversPricePageClient() {
         <button
           type="button"
           onClick={() => setOnlyLimit((v) => !v)}
-          className={`text-xs font-medium px-3 py-2 rounded border transition-colors ${
+          className={`text-sm font-medium px-4 py-3 rounded border transition-colors ${
             onlyLimit
               ? dir === 'up'
                 ? 'bg-[#FF3B30] text-white border-[#FF3B30]'
@@ -141,7 +141,7 @@ export default function MoversPricePageClient() {
           {dir === 'up' ? '상한가만' : '하한가만'}
         </button>
 
-        {loading && <span className="text-xs text-[#888]">로딩 중…</span>}
+        {loading && <span className="text-sm text-[#888]">로딩 중…</span>}
       </div>
 
       {/* 테이블 */}
@@ -149,7 +149,7 @@ export default function MoversPricePageClient() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FAFAFA] text-[#666] text-xs">
+              <tr className="bg-[#FAFAFA] text-[#666] text-sm">
                 <th className="text-right px-4 py-2.5 w-14">순위</th>
                 <th className="text-left px-4 py-2.5 w-28">종목코드</th>
                 <th className="text-left px-4 py-2.5">종목명</th>
@@ -180,7 +180,7 @@ export default function MoversPricePageClient() {
                     }`}
                   >
                     <td className="px-4 py-2.5 text-right text-[#888] tabular-nums">{r.rank}</td>
-                    <td className="px-4 py-2.5 text-[#333] tabular-nums text-xs">{r.symbol}</td>
+                    <td className="px-4 py-2.5 text-[#333] tabular-nums text-sm">{r.symbol}</td>
                     <td className="px-4 py-2.5">
                       <div className="flex items-center gap-1.5">
                         <Link
@@ -227,7 +227,7 @@ export default function MoversPricePageClient() {
         </div>
       </div>
 
-      <p className="text-xs text-[#999] mt-4 text-center">
+      <p className="text-sm text-[#999] mt-4 text-center">
         데이터 출처: 한국투자증권 KIS OpenAPI · 장중 5분 캐시
       </p>
     </div>

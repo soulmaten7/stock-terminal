@@ -71,7 +71,7 @@ export default function TopNav() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative flex items-center gap-1.5 px-3 h-11 text-xs whitespace-nowrap transition-colors shrink-0 ${
+                  className={`relative flex items-center gap-1.5 px-3 h-11 text-sm whitespace-nowrap transition-colors shrink-0 ${
                     active ? 'text-[#0ABAB5] font-bold' : 'text-[#444] hover:text-black'
                   }`}
                 >

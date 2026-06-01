@@ -80,7 +80,7 @@ export default function CalendarPageClient() {
           <div>
             <h2 className="text-lg font-bold text-black">큐레이션 주요 지표</h2>
             {updatedAt && (
-              <p className="text-xs text-[#999]">최종 업데이트: {updatedAt} (월 1회 수동 갱신)</p>
+              <p className="text-sm text-[#999]">최종 업데이트: {updatedAt} (월 1회 수동 갱신)</p>
             )}
           </div>
 
@@ -92,7 +92,7 @@ export default function CalendarPageClient() {
                   key={d}
                   type="button"
                   onClick={() => setDays(d as 7 | 30 | 60)}
-                  className={`text-xs font-bold px-3 py-1.5 ${
+                  className={`text-sm font-bold px-3 py-1.5 ${
                     days === d ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
                   }`}
                 >
@@ -107,7 +107,7 @@ export default function CalendarPageClient() {
                   key={c.value}
                   type="button"
                   onClick={() => setCountry(c.value)}
-                  className={`text-xs font-bold px-3 py-1.5 ${
+                  className={`text-sm font-bold px-3 py-1.5 ${
                     country === c.value ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
                   }`}
                 >
@@ -125,7 +125,7 @@ export default function CalendarPageClient() {
                 <button
                   key={opt.v}
                   onClick={() => setMinImportance(opt.v)}
-                  className={`text-xs font-bold px-3 py-1.5 ${
+                  className={`text-sm font-bold px-3 py-1.5 ${
                     minImportance === opt.v ? 'bg-[#FF3B30] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
                   }`}
                 >
@@ -141,21 +141,21 @@ export default function CalendarPageClient() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#F0F0F0] bg-[#F8F9FA]">
-                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-xs">날짜</th>
-                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-xs">시각(KST)</th>
-                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-xs">국가</th>
-                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-xs">이벤트</th>
-                  <th className="px-4 py-2.5 text-right font-bold text-[#666] text-xs">예상</th>
-                  <th className="px-4 py-2.5 text-right font-bold text-[#666] text-xs">이전</th>
-                  <th className="px-4 py-2.5 text-center font-bold text-[#666] text-xs">중요도</th>
+                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-sm">날짜</th>
+                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-sm">시각(KST)</th>
+                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-sm">국가</th>
+                  <th className="px-4 py-2.5 text-left font-bold text-[#666] text-sm">이벤트</th>
+                  <th className="px-4 py-2.5 text-right font-bold text-[#666] text-sm">예상</th>
+                  <th className="px-4 py-2.5 text-right font-bold text-[#666] text-sm">이전</th>
+                  <th className="px-4 py-2.5 text-center font-bold text-[#666] text-sm">중요도</th>
                 </tr>
               </thead>
               <tbody>
                 {loading && (
-                  <tr><td colSpan={7} className="px-4 py-8 text-center text-xs text-[#999]">로딩 중…</td></tr>
+                  <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-[#999]">로딩 중…</td></tr>
                 )}
                 {!loading && filteredEvents.length === 0 && (
-                  <tr><td colSpan={7} className="px-4 py-8 text-center text-xs text-[#999]">조건에 맞는 이벤트 없음</td></tr>
+                  <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-[#999]">조건에 맞는 이벤트 없음</td></tr>
                 )}
                 {!loading &&
                   filteredEvents.map((e, i) => (
@@ -164,12 +164,12 @@ export default function CalendarPageClient() {
                       className="border-b border-[#F0F0F0] hover:bg-[#F8F9FA]"
                     >
                       <td className="px-4 py-2.5 text-[#333]">{e.date}</td>
-                      <td className="px-4 py-2.5 text-[#333] font-mono text-xs">{e.time}</td>
+                      <td className="px-4 py-2.5 text-[#333] font-mono text-sm">{e.time}</td>
                       <td className="px-4 py-2.5 text-base">{e.flag}</td>
                       <td className="px-4 py-2.5 text-[#333] font-bold">{e.title}</td>
                       <td className="px-4 py-2.5 text-right text-[#333]">{e.forecast}</td>
                       <td className="px-4 py-2.5 text-right text-[#666]">{e.previous}</td>
-                      <td className={`px-4 py-2.5 text-center font-bold text-xs ${IMPORTANCE_COLOR[e.importance]}`}>
+                      <td className={`px-4 py-2.5 text-center font-bold text-sm ${IMPORTANCE_COLOR[e.importance]}`}>
                         {IMPORTANCE_LABEL[e.importance]}
                       </td>
                     </tr>
@@ -182,7 +182,7 @@ export default function CalendarPageClient() {
 
       <div>
         <h2 className="text-lg font-bold text-black mb-1">실시간 경제 캘린더</h2>
-        <p className="text-xs text-[#999] mb-3">
+        <p className="text-sm text-[#999] mb-3">
           Investing.com 공식 위젯 — 미국·한국·일본·영국·유럽 주요 지표 실시간, 한국어·KST 표시
         </p>
         <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">

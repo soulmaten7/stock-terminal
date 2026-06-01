@@ -54,11 +54,11 @@ export function MainNav() {
           <Link
             key={href}
             href={href}
-            className="flex items-center gap-1.5 text-xs text-unjong-muted hover:text-unjong-primary transition-colors"
+            className="flex items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-primary transition-colors"
           >
             <Icon size={14} />
             <span className="font-medium">{label}</span>
-            <span className="text-[10px] text-unjong-muted">({englishLabel})</span>
+            <span className="text-xs text-unjong-muted">({englishLabel})</span>
           </Link>
         ))}
       </div>

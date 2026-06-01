@@ -33,7 +33,7 @@ export default function LoginPage() {
         {/* 뒤로가기 */}
         <Link
           href="/kr"
-          className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary mb-6"
+          className="inline-flex items-center gap-1 text-sm text-unjong-muted hover:text-unjong-primary mb-6"
         >
           <ArrowLeft size={14} />
           돌아가기
@@ -44,14 +44,14 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
             UNJONG <span className="text-base text-unjong-muted font-medium">운종</span>
           </h1>
-          <p className="text-xs text-unjong-muted">한국 주식 동선의 출발점</p>
+          <p className="text-sm text-unjong-muted">한국 주식 동선의 출발점</p>
         </div>
 
         {/* 로그인 카드 */}
         <div className="bg-unjong-surface rounded-lg border border-unjong-border p-8 space-y-6">
           <div className="text-center">
             <h2 className="text-lg font-semibold text-unjong-primary mb-1">로그인</h2>
-            <p className="text-xs text-unjong-muted">
+            <p className="text-sm text-unjong-muted">
               로그인하면 닉네임과 관심종목이 모든 기기에서 동기화됩니다
             </p>
           </div>
@@ -67,23 +67,23 @@ export default function LoginPage() {
           </button>
 
           {error && (
-            <p className="text-xs text-unjong-danger text-center">
+            <p className="text-sm text-unjong-danger text-center">
               ❌ {error}
             </p>
           )}
 
           <div className="border-t border-unjong-border pt-4 text-center space-y-1">
-            <p className="text-[10px] text-unjong-muted">
+            <p className="text-xs text-unjong-muted">
               로그인 없이도 채팅·관심종목 사용 가능합니다
             </p>
-            <p className="text-[10px] text-unjong-muted">
+            <p className="text-xs text-unjong-muted">
               단 닉네임·관심종목이 이 브라우저에만 저장됩니다
             </p>
           </div>
         </div>
 
         {/* 약관 */}
-        <p className="text-[10px] text-unjong-muted text-center mt-6 leading-relaxed">
+        <p className="text-xs text-unjong-muted text-center mt-6 leading-relaxed">
           로그인 시 운종의 <Link href="/terms" className="underline">이용약관</Link> 및{" "}
           <Link href="/privacy" className="underline">개인정보처리방침</Link> 에 동의한 것으로 간주됩니다
         </p>

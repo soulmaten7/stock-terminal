@@ -45,7 +45,7 @@ export default function StockNewsModule({ symbol }: Props) {
         <h2 className="text-sm font-semibold text-unjong-primary">
           📰 {stockName} 뉴스
         </h2>
-        <span className="text-[10px] text-unjong-muted italic">
+        <span className="text-xs text-unjong-muted italic">
           {source === "yahoo" ? "Yahoo Finance" : source === "rss" ? "RSS 매칭" : ""}
         </span>
       </header>
@@ -65,14 +65,14 @@ export default function StockNewsModule({ symbol }: Props) {
                 className="block hover:bg-unjong-background rounded p-2 transition-colors"
               >
                 <div className="flex items-baseline justify-between gap-2 mb-1">
-                  <span className="text-[10px] font-semibold text-unjong-muted">
+                  <span className="text-xs font-semibold text-unjong-muted">
                     {item.publisher}
                   </span>
-                  <span className="text-[10px] text-unjong-muted">
+                  <span className="text-xs text-unjong-muted">
                     {new Date(item.publishedAt).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
-                <p className="text-xs text-unjong-primary leading-snug flex items-start gap-1">
+                <p className="text-sm text-unjong-primary leading-normal flex items-start gap-1">
                   <span className="flex-1">{item.title}</span>
                   <ExternalLink size={10} className="flex-shrink-0 mt-0.5 text-unjong-muted" />
                 </p>

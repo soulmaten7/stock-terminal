@@ -103,21 +103,21 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
   };
 
   return (
-    <li className="bg-unjong-surface rounded-lg border border-unjong-border p-3 hover:border-unjong-accent transition-colors">
+    <li className="bg-unjong-surface rounded-lg border border-unjong-border p-4 hover:border-unjong-accent transition-colors">
       <div className="flex items-baseline justify-between mb-2">
-        <span className="text-xs font-semibold text-unjong-primary">
+        <span className="text-sm font-semibold text-unjong-primary">
           {tierEmoji} {d.nickname}
         </span>
-        <span className="text-[10px] text-unjong-muted">
+        <span className="text-xs text-unjong-muted">
           {new Date(d.created_at).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
         </span>
       </div>
-      <p className="text-xs text-unjong-primary whitespace-pre-wrap leading-relaxed mb-2">{d.content}</p>
+      <p className="text-sm text-unjong-primary whitespace-pre-wrap leading-relaxed mb-2">{d.content}</p>
       <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={handleLike}
-          className={`flex items-center gap-1 text-[10px] transition-colors ${liked ? "text-unjong-danger" : "text-unjong-muted hover:text-unjong-danger"}`}
+          className={`flex items-center gap-1 text-xs transition-colors ${liked ? "text-unjong-danger" : "text-unjong-muted hover:text-unjong-danger"}`}
         >
           <Heart size={12} fill={liked ? "currentColor" : "none"} />
           <span>{likeCount}</span>
@@ -125,7 +125,7 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
         <button
           type="button"
           onClick={() => setShowComments((v) => !v)}
-          className={`flex items-center gap-1 text-[10px] transition-colors ${showComments ? "text-unjong-accent" : "text-unjong-muted hover:text-unjong-primary"}`}
+          className={`flex items-center gap-1 text-xs transition-colors ${showComments ? "text-unjong-accent" : "text-unjong-muted hover:text-unjong-primary"}`}
         >
           <MessageCircle size={12} fill={showComments ? "currentColor" : "none"} />
           <span>{localCommentCount}</span>
@@ -134,7 +134,7 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
           type="button"
           onClick={handleReport}
           disabled={reported || reporting}
-          className={`ml-auto text-[10px] transition-colors ${reported ? "text-unjong-danger" : "text-unjong-muted hover:text-unjong-danger"}`}
+          className={`ml-auto text-xs transition-colors ${reported ? "text-unjong-danger" : "text-unjong-muted hover:text-unjong-danger"}`}
           title={reported ? "신고 완료" : "신고"}
         >
           <Flag size={11} fill={reported ? "currentColor" : "none"} />
@@ -143,7 +143,7 @@ export default function DiscussionItem({ discussion: d, initiallyLiked = false }
 
       {/* 비로그인 안내 */}
       {showLoginNotice && (
-        <div className="mt-2 px-2 py-1.5 bg-amber-50 border border-amber-200 rounded text-[10px] text-amber-800 flex items-center justify-between">
+        <div className="mt-2 px-2 py-1.5 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800 flex items-center justify-between">
           <span>로그인 후 이용 가능합니다</span>
           <Link href="/auth/login" className="text-unjong-accent font-semibold hover:underline">
             로그인 →

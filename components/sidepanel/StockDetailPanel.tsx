@@ -21,7 +21,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
   if (!selectedSymbol) {
     if (inline) {
       return (
-        <div className="rounded-lg border border-dashed border-unjong-border bg-unjong-surface p-6 text-center text-xs text-unjong-muted">
+        <div className="rounded-lg border border-dashed border-unjong-border bg-unjong-surface p-6 text-center text-sm text-unjong-muted">
           관심종목 또는 카드에서 종목을 클릭하면 차트·종합이 표시됩니다.
         </div>
       );
@@ -60,7 +60,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
           key={t.id}
           type="button"
           onClick={() => setActiveTab(t.id)}
-          className={`flex-1 ${compact ? "px-2" : "px-3"} py-2.5 text-xs font-medium transition-colors border-b-2 ${
+          className={`flex-1 ${compact ? "px-2" : "px-3"} py-2.5 text-sm font-medium transition-colors border-b-2 ${
             activeTab === t.id
               ? "border-unjong-accent text-unjong-primary"
               : "border-transparent text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background"
@@ -81,11 +81,11 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
             <div className="flex items-center gap-2 min-w-0">
               <h3 className="text-lg font-bold text-unjong-primary truncate">{selectedSymbol.name}</h3>
               {selectedSymbol.market && (
-                <span className="text-[10px] font-semibold text-unjong-muted bg-unjong-surface px-1.5 py-0.5 rounded flex-shrink-0">
+                <span className="text-xs font-semibold text-unjong-muted bg-unjong-surface px-1.5 py-0.5 rounded flex-shrink-0">
                   {selectedSymbol.market}
                 </span>
               )}
-              <span className="text-[11px] text-unjong-muted font-mono flex-shrink-0">{selectedSymbol.code}</span>
+              <span className="text-xs text-unjong-muted font-mono flex-shrink-0">{selectedSymbol.code}</span>
             </div>
             <div className="flex items-baseline gap-2 border-l border-unjong-border pl-4 flex-shrink-0">
               <span className="text-xl font-bold text-unjong-primary tabular-nums">{selectedSymbol.price ?? "—"}</span>
@@ -109,18 +109,18 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
 
   return (
     <aside className="hidden xl:flex w-[360px] flex-shrink-0 flex-col border-l border-unjong-border bg-unjong-surface">
-      <header className="border-b border-unjong-border p-3 bg-unjong-background">
+      <header className="border-b border-unjong-border p-4 bg-unjong-background">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-unjong-primary truncate">{selectedSymbol.name}</h3>
               {selectedSymbol.market && (
-                <span className="text-[10px] font-semibold text-unjong-muted bg-unjong-surface px-1.5 py-0.5 rounded">
+                <span className="text-xs font-semibold text-unjong-muted bg-unjong-surface px-1.5 py-0.5 rounded">
                   {selectedSymbol.market}
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-unjong-muted font-mono">{selectedSymbol.code}</p>
+            <p className="text-xs text-unjong-muted font-mono">{selectedSymbol.code}</p>
           </div>
           <button type="button" onClick={() => setSelectedSymbol(null)} className="text-unjong-muted hover:text-unjong-primary p-1" aria-label="종목 선택 해제">
             <X size={14} />
@@ -238,21 +238,21 @@ function ChartTab({ symbol }: { symbol: string }) {
 
   if (!isKrCode(symbol)) {
     return (
-      <div className="p-4 text-center text-xs text-unjong-muted italic">
+      <div className="p-4 text-center text-sm text-unjong-muted italic">
         미국 주식 차트는 추후 Yahoo Finance / TradingView 위젯으로 추가 예정
       </div>
     );
   }
 
   return (
-    <div className="p-3 space-y-3">
+    <div className="p-4 space-y-3">
       <div className="flex items-center gap-1">
         {(["D", "W", "M"] as const).map((p) => (
           <button
             key={p}
             type="button"
             onClick={() => setPeriod(p)}
-            className={`text-[10px] px-2 py-1 rounded ${
+            className={`text-xs px-2 py-1 rounded ${
               period === p
                 ? "bg-unjong-accent text-white font-semibold"
                 : "text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background"
@@ -266,12 +266,12 @@ function ChartTab({ symbol }: { symbol: string }) {
       <div className="w-full h-[300px] rounded border border-unjong-border bg-unjong-background relative">
         <div ref={containerRef} className="absolute inset-0" />
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center text-xs text-unjong-muted bg-unjong-background/80">
+          <div className="absolute inset-0 flex items-center justify-center text-sm text-unjong-muted bg-unjong-background/80">
             ⏳ 차트 로딩 중...
           </div>
         )}
         {error && !loading && (
-          <div className="absolute inset-0 flex items-center justify-center text-xs text-unjong-danger px-4 text-center">
+          <div className="absolute inset-0 flex items-center justify-center text-sm text-unjong-danger px-4 text-center">
             ❌ 차트 로딩 실패: {error}
           </div>
         )}
@@ -317,9 +317,9 @@ function OverviewTab({ symbol }: { symbol: string }) {
     return () => { cancelled = true; clearInterval(interval); };
   }, [symbol]);
 
-  if (!isKrCode(symbol)) return <div className="p-4 text-center text-xs text-unjong-muted italic">미국 주식 종합 정보는 Yahoo Finance 모듈로 추후 추가</div>;
-  if (loading && !data) return <div className="p-4 text-center text-xs text-unjong-muted italic">⏳ 정보 로딩 중...</div>;
-  if (error || !data) return <div className="p-4 text-center text-xs text-unjong-danger">❌ {error || "데이터 없음"}</div>;
+  if (!isKrCode(symbol)) return <div className="p-4 text-center text-sm text-unjong-muted italic">미국 주식 종합 정보는 Yahoo Finance 모듈로 추후 추가</div>;
+  if (loading && !data) return <div className="p-4 text-center text-sm text-unjong-muted italic">⏳ 정보 로딩 중...</div>;
+  if (error || !data) return <div className="p-4 text-center text-sm text-unjong-danger">❌ {error || "데이터 없음"}</div>;
 
   // KIS hts_avls 단위 = 억원 (1조 = 10,000억)
   const marketCapStr =
@@ -330,10 +330,10 @@ function OverviewTab({ symbol }: { symbol: string }) {
       : "—";
 
   return (
-    <div className="p-3 space-y-3">
+    <div className="p-4 space-y-3">
       <section>
-        <h4 className="text-[10px] font-semibold text-unjong-muted uppercase mb-1.5">가격</h4>
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+        <h4 className="text-xs font-semibold text-unjong-muted uppercase mb-1.5">가격</h4>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
           <Row label="시가"     value={data.open    ? data.open.toLocaleString()    : "—"} />
           <Row label="고가"     value={data.high    ? data.high.toLocaleString()    : "—"} />
           <Row label="저가"     value={data.low     ? data.low.toLocaleString()     : "—"} />
@@ -344,8 +344,8 @@ function OverviewTab({ symbol }: { symbol: string }) {
       </section>
 
       <section className="border-t border-unjong-border pt-3">
-        <h4 className="text-[10px] font-semibold text-unjong-muted uppercase mb-1.5">재무</h4>
-        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+        <h4 className="text-xs font-semibold text-unjong-muted uppercase mb-1.5">재무</h4>
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1 text-sm">
           <Row label="시가총액"   value={marketCapStr} />
           <Row label="PER"        value={data.per > 0 ? data.per.toFixed(1) : "—"} />
           <Row label="PBR"        value={data.pbr > 0 ? data.pbr.toFixed(1) : "—"} />

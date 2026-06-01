@@ -37,7 +37,7 @@ export default function MarketNewsModule() {
         <h2 className="text-base font-semibold text-unjong-primary">
           📰 시장 헤드라인
         </h2>
-        <span className="text-[10px] text-unjong-muted italic">한경·매경·머니투데이·이데일리·연합</span>
+        <span className="text-xs text-unjong-muted italic">한경·매경·머니투데이·이데일리·연합</span>
       </header>
 
       {loading ? (
@@ -55,14 +55,14 @@ export default function MarketNewsModule() {
                 className="block bg-unjong-background rounded p-2 hover:border-unjong-accent border border-transparent transition-colors"
               >
                 <div className="flex items-baseline justify-between gap-2 mb-1">
-                  <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 flex-shrink-0">
+                  <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 flex-shrink-0">
                     {item.publisher}
                   </span>
-                  <span className="text-[10px] text-unjong-muted">
+                  <span className="text-xs text-unjong-muted">
                     {new Date(item.publishedAt).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
-                <p className="text-xs text-unjong-primary leading-snug flex items-start gap-1">
+                <p className="text-sm text-unjong-primary leading-normal flex items-start gap-1">
                   <span className="flex-1">{item.title}</span>
                   <ExternalLink size={10} className="flex-shrink-0 mt-0.5 text-unjong-muted" />
                 </p>

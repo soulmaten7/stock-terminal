@@ -157,18 +157,18 @@ export function MoversCard() {
                   });
                   router.push(`/stock/${m.code}`);
                 }}
-                className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+                className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-unjong-muted font-mono w-4 text-right">{i + 1}</span>
                   <div className="flex flex-col min-w-0">
                     <span className="font-medium text-unjong-primary truncate">{m.name}</span>
-                    <span className="text-[10px] text-unjong-muted">{m.code}</span>
+                    <span className="text-xs text-unjong-muted">{m.code}</span>
                   </div>
                 </div>
                 <div className="flex flex-col items-end flex-shrink-0">
                   <span className="font-semibold text-unjong-primary">{m.price}</span>
-                  <span className={`flex items-center gap-0.5 text-[10px] font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                  <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
                     <TrendingUp size={10} />
                     {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                   </span>
@@ -250,13 +250,13 @@ export function VolumeCard() {
                 setSelectedSymbol({ code: v.code, name: v.name, market: inferKrMarket(v.code) });
                 router.push(`/stock/${v.code}`);
               }}
-              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
             >
               <div className="flex flex-col min-w-0">
                 <span className="font-medium text-unjong-primary truncate">{v.name}</span>
-                <span className="text-[10px] text-unjong-muted font-mono">{v.volume} 주</span>
+                <span className="text-xs text-unjong-muted font-mono">{v.volume} 주</span>
               </div>
-              <span className="text-[11px] font-bold text-unjong-accent flex-shrink-0">{v.ratio}</span>
+              <span className="text-xs font-bold text-unjong-accent flex-shrink-0">{v.ratio}</span>
             </li>
           ))}
         </ul>
@@ -337,13 +337,13 @@ export function NetBuyBrokerCard() {
                   setSelectedSymbol({ code: n.code, name: n.name, market: inferKrMarket(n.code) });
                   router.push(`/stock/${n.code}`);
                 }}
-                className="flex flex-col gap-1 text-xs hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
+                className="flex flex-col gap-1 text-sm hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-unjong-primary">{n.name}</span>
-                  <span className="text-[10px] text-unjong-muted font-mono">{n.code}</span>
+                  <span className="text-xs text-unjong-muted font-mono">{n.code}</span>
                 </div>
-                <div className="flex items-center gap-3 text-[11px]">
+                <div className="flex items-center gap-3 text-xs">
                   <span className="flex items-center gap-1">
                     <span className="text-unjong-muted">외인</span>
                     <span className={foreignUp ? "text-unjong-success font-semibold" : "text-unjong-danger font-semibold"}>
@@ -428,16 +428,16 @@ export function ScalperDisclosureCard() {
           {displayData.map((d, i) => (
             <li
               key={`${d.code}-${i}`}
-              className="flex items-center justify-between gap-2 text-xs hover:bg-unjong-background rounded px-2 py-1 cursor-default"
+              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-default"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <FileText size={12} className="text-unjong-muted flex-shrink-0" />
                 <div className="flex flex-col min-w-0">
                   <span className="font-medium text-unjong-primary truncate">{d.name}</span>
-                  <span className="text-[10px] text-unjong-muted truncate">{d.type}</span>
+                  <span className="text-xs text-unjong-muted truncate">{d.type}</span>
                 </div>
               </div>
-              <span className="text-[10px] text-unjong-muted flex-shrink-0">{d.time}</span>
+              <span className="text-xs text-unjong-muted flex-shrink-0">{d.time}</span>
             </li>
           ))}
         </ul>

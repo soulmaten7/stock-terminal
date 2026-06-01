@@ -92,7 +92,7 @@ export default function TopTab() {
               key={w}
               type="button"
               onClick={() => setWho(w)}
-              className={`text-xs font-bold px-3 py-2 transition-colors ${
+              className={`text-sm font-bold px-4 py-3 transition-colors ${
                 who === w
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
@@ -108,7 +108,7 @@ export default function TopTab() {
           <button
             type="button"
             onClick={() => setMode('buy')}
-            className={`text-xs font-bold px-3 py-2 transition-colors ${
+            className={`text-sm font-bold px-4 py-3 transition-colors ${
               mode === 'buy' ? 'bg-[#FF3B30] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
             }`}
           >
@@ -117,7 +117,7 @@ export default function TopTab() {
           <button
             type="button"
             onClick={() => setMode('sell')}
-            className={`text-xs font-bold px-3 py-2 transition-colors ${
+            className={`text-sm font-bold px-4 py-3 transition-colors ${
               mode === 'sell' ? 'bg-[#0051CC] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
             }`}
           >
@@ -132,7 +132,7 @@ export default function TopTab() {
               key={m}
               type="button"
               onClick={() => setMarket(m)}
-              className={`text-xs font-medium px-3 py-2 transition-colors ${
+              className={`text-sm font-medium px-4 py-3 transition-colors ${
                 market === m
                   ? 'bg-[#FF9500] text-white'
                   : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
@@ -143,7 +143,7 @@ export default function TopTab() {
           ))}
         </div>
 
-        {loading && <span className="text-xs text-[#888]">로딩 중…</span>}
+        {loading && <span className="text-sm text-[#888]">로딩 중…</span>}
       </div>
 
       <p className="text-sm text-[#666] mb-3">
@@ -155,7 +155,7 @@ export default function TopTab() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FAFAFA] text-[#666] text-xs">
+              <tr className="bg-[#FAFAFA] text-[#666] text-sm">
                 <th className="px-4 py-2.5 text-right w-14">순위</th>
                 <th className="px-4 py-2.5 text-left w-24">종목코드</th>
                 <th className="px-4 py-2.5 text-left">종목명</th>
@@ -168,21 +168,21 @@ export default function TopTab() {
             <tbody>
               {loading && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-xs text-[#999]">
+                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-[#999]">
                     로딩 중…
                   </td>
                 </tr>
               )}
               {!loading && error && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-xs text-[#FF3B30]">
+                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-[#FF3B30]">
                     데이터를 불러오지 못했습니다
                   </td>
                 </tr>
               )}
               {!loading && !error && rows.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-xs text-[#999]">
+                  <td colSpan={7} className="px-4 py-8 text-center text-sm text-[#999]">
                     데이터 없음
                   </td>
                 </tr>
@@ -198,7 +198,7 @@ export default function TopTab() {
                       }`}
                     >
                       <td className="px-4 py-2.5 text-right text-[#888] tabular-nums">{i + 1}</td>
-                      <td className="px-4 py-2.5 text-[#333] tabular-nums text-xs">{r.symbol}</td>
+                      <td className="px-4 py-2.5 text-[#333] tabular-nums text-sm">{r.symbol}</td>
                       <td className="px-4 py-2.5">
                         <Link
                           href={`/chart?symbol=${r.symbol}`}

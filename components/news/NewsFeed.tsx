@@ -40,13 +40,13 @@ export default function NewsFeed({ items }: { items: FeedItem[] }) {
             <div key={item.id} className={`border-b border-[#F0F0F0] ${item.isImportant ? 'bg-[#FFF5F5]' : ''}`}>
               <div className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-[#FAFAFA]"
                 onClick={() => item.type === 'disclosure' ? setExpanded(isExpanded ? null : item.id) : window.open(item.url, '_blank')}>
-                {item.isImportant && <span className="text-[#FF4D4D] text-xs mt-1 shrink-0">●</span>}
-                <span className="text-[#999999] text-xs font-mono-price font-bold shrink-0 mt-0.5 w-12">{item.time}</span>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 shrink-0 mt-0.5 ${SOURCE_COLORS[item.source] || 'bg-[#E5E7EB] text-black'}`}>{item.source}</span>
+                {item.isImportant && <span className="text-[#FF4D4D] text-sm mt-1 shrink-0">●</span>}
+                <span className="text-[#999999] text-sm font-mono-price font-bold shrink-0 mt-0.5 w-12">{item.time}</span>
+                <span className={`text-xs font-bold px-1.5 py-0.5 shrink-0 mt-0.5 ${SOURCE_COLORS[item.source] || 'bg-[#E5E7EB] text-black'}`}>{item.source}</span>
                 <div className="flex-1 min-w-0">
                   {item.corpName && (
                     <Link href={`/stocks/${item.stockCode}`} onClick={(e) => e.stopPropagation()}
-                      className="text-[#0ABAB5] font-bold text-xs mr-2 hover:underline">{item.corpName}</Link>
+                      className="text-[#0ABAB5] font-bold text-sm mr-2 hover:underline">{item.corpName}</Link>
                   )}
                   <span className="text-black text-sm font-medium" dangerouslySetInnerHTML={{ __html: highlightKeywords(item.title) }} />
                 </div>
@@ -59,12 +59,12 @@ export default function NewsFeed({ items }: { items: FeedItem[] }) {
                 <div className="px-4 pb-4 pl-24 bg-[#FAFAFA] border-t border-[#F0F0F0]">
                   <div className="flex gap-3 mt-3">
                     <a href={item.url} target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#0ABAB5] text-white text-xs font-bold hover:bg-[#088F8C]">
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-[#0ABAB5] text-white text-sm font-bold hover:bg-[#088F8C]">
                       <ExternalLink className="w-3 h-3" /> DART 원문 보기
                     </a>
                   </div>
                   {item.corpName && (
-                    <p className="text-[#999999] text-xs mt-2">기업: <span className="text-black font-bold">{item.corpName}</span> ({item.stockCode})</p>
+                    <p className="text-[#999999] text-sm mt-2">기업: <span className="text-black font-bold">{item.corpName}</span> ({item.stockCode})</p>
                   )}
                 </div>
               )}

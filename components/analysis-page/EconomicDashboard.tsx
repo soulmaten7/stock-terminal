@@ -27,16 +27,16 @@ export default function EconomicDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {data.map((ind) => (
             <div key={ind.series_id} className="bg-[#F5F5F5] p-4">
-              <p className="text-xs text-[#999999] font-bold">{ind.label}</p>
+              <p className="text-sm text-[#999999] font-bold">{ind.label}</p>
               <p className="text-xl font-mono-price font-bold text-black mt-1">
-                {ind.value != null ? ind.value.toLocaleString() : '-'} <span className="text-xs text-[#999999]">{ind.unit}</span>
+                {ind.value != null ? ind.value.toLocaleString() : '-'} <span className="text-sm text-[#999999]">{ind.unit}</span>
               </p>
               {ind.change != null && (
-                <p className={`text-xs font-mono-price font-bold mt-1 ${ind.change >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                <p className={`text-sm font-mono-price font-bold mt-1 ${ind.change >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {ind.change >= 0 ? '+' : ''}{ind.change.toFixed(2)}
                 </p>
               )}
-              {ind.date && <p className="text-[10px] text-[#999999] mt-1">{ind.date}</p>}
+              {ind.date && <p className="text-xs text-[#999999] mt-1">{ind.date}</p>}
             </div>
           ))}
         </div>

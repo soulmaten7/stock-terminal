@@ -27,12 +27,12 @@ export default function WidgetDetailStub({ title, description, columns, rows }: 
       <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
         <div className="px-4 py-3 border-b border-[#F0F0F0] flex items-center justify-between">
           <span className="text-sm font-bold text-black">{title}</span>
-          <span className="text-[10px] font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-0.5 rounded">
+          <span className="text-xs font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-0.5 rounded">
             실데이터 연결 예정
           </span>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#F0F0F0] bg-[#F8F9FA]">
                 {columns.map((col) => (

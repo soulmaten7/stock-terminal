@@ -29,7 +29,7 @@ export default function ThemeGroups() {
     <div className="bg-white border-[3px] border-[#0ABAB5] p-6">
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="text-lg font-bold text-black">테마별 종목</h2>
-        <span className="text-[10px] text-[#999]">큐레이션 · 평균 등락률 기준</span>
+        <span className="text-xs text-[#999]">큐레이션 · 평균 등락률 기준</span>
       </div>
       {loading ? (
         <div className="space-y-4">
@@ -46,7 +46,7 @@ export default function ThemeGroups() {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className="font-bold text-sm text-black">{t.name}</span>
-                  <span className="text-[10px] text-[#999] ml-2">{t.count}종목</span>
+                  <span className="text-xs text-[#999] ml-2">{t.count}종목</span>
                 </div>
                 <span className={`font-mono-price font-bold text-sm ${t.change >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {t.change >= 0 ? '▲' : '▼'}{Math.abs(t.change).toFixed(2)}%
@@ -60,7 +60,7 @@ export default function ThemeGroups() {
                     className="flex items-center justify-between py-1 px-2 hover:bg-[#F5F5F5]"
                   >
                     <span className="text-black text-sm truncate">{s.name}</span>
-                    <span className={`font-mono-price text-xs font-bold shrink-0 ${s.change >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                    <span className={`font-mono-price text-sm font-bold shrink-0 ${s.change >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                       {s.change >= 0 ? '+' : ''}{s.change.toFixed(2)}%
                     </span>
                   </Link>

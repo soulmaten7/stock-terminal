@@ -128,9 +128,9 @@ export default function FinancialsTab({ stockId }: FinancialsTabProps) {
       <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
         {summaryCards.map((card) => (
           <div key={card.label} className="bg-white rounded-lg border border-[#E5E7EB] p-4">
-            <p className="text-[#666666] text-xs mb-1">{card.label}</p>
+            <p className="text-[#666666] text-sm mb-1">{card.label}</p>
             <p className="text-black font-bold font-mono-price text-sm">{card.value}</p>
-            {card.sub && <p className="text-[#666666] text-xs mt-1">{card.sub}</p>}
+            {card.sub && <p className="text-[#666666] text-sm mt-1">{card.sub}</p>}
           </div>
         ))}
       </div>
@@ -160,29 +160,29 @@ export default function FinancialsTab({ stockId }: FinancialsTabProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#E5E7EB] text-[#666666] text-left">
-              <th className="p-3">기간</th>
-              <th className="p-3 text-right">매출액</th>
-              <th className="p-3 text-right">영업이익</th>
-              <th className="p-3 text-right">순이익</th>
-              <th className="p-3 text-right">EPS</th>
-              <th className="p-3 text-right">ROE</th>
-              <th className="p-3 text-right">PER</th>
-              <th className="p-3 text-right">PBR</th>
-              <th className="p-3 text-right">부채비율</th>
+              <th className="p-4">기간</th>
+              <th className="p-4 text-right">매출액</th>
+              <th className="p-4 text-right">영업이익</th>
+              <th className="p-4 text-right">순이익</th>
+              <th className="p-4 text-right">EPS</th>
+              <th className="p-4 text-right">ROE</th>
+              <th className="p-4 text-right">PER</th>
+              <th className="p-4 text-right">PBR</th>
+              <th className="p-4 text-right">부채비율</th>
             </tr>
           </thead>
           <tbody>
             {financials.map((f) => (
               <tr key={f.id} className="border-b border-[#E5E7EB] hover:bg-[#F5F7FA]">
-                <td className="p-3 text-black">{formatDate(f.period_date)}</td>
-                <td className="p-3 text-right font-mono-price">{formatNumber(f.revenue)}</td>
-                <td className="p-3 text-right font-mono-price">{formatNumber(f.operating_income)}</td>
-                <td className="p-3 text-right font-mono-price">{formatNumber(f.net_income)}</td>
-                <td className="p-3 text-right font-mono-price">{formatNumber(f.eps)}</td>
-                <td className="p-3 text-right font-mono-price">{f.roe != null ? `${f.roe.toFixed(2)}%` : '-'}</td>
-                <td className="p-3 text-right font-mono-price">{f.per != null ? f.per.toFixed(2) : '-'}</td>
-                <td className="p-3 text-right font-mono-price">{f.pbr != null ? f.pbr.toFixed(2) : '-'}</td>
-                <td className="p-3 text-right font-mono-price">{f.debt_ratio != null ? `${f.debt_ratio.toFixed(1)}%` : '-'}</td>
+                <td className="p-4 text-black">{formatDate(f.period_date)}</td>
+                <td className="p-4 text-right font-mono-price">{formatNumber(f.revenue)}</td>
+                <td className="p-4 text-right font-mono-price">{formatNumber(f.operating_income)}</td>
+                <td className="p-4 text-right font-mono-price">{formatNumber(f.net_income)}</td>
+                <td className="p-4 text-right font-mono-price">{formatNumber(f.eps)}</td>
+                <td className="p-4 text-right font-mono-price">{f.roe != null ? `${f.roe.toFixed(2)}%` : '-'}</td>
+                <td className="p-4 text-right font-mono-price">{f.per != null ? f.per.toFixed(2) : '-'}</td>
+                <td className="p-4 text-right font-mono-price">{f.pbr != null ? f.pbr.toFixed(2) : '-'}</td>
+                <td className="p-4 text-right font-mono-price">{f.debt_ratio != null ? `${f.debt_ratio.toFixed(1)}%` : '-'}</td>
               </tr>
             ))}
           </tbody>

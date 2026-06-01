@@ -50,9 +50,9 @@ export default function ExecutionList({ symbol }: { symbol: string }) {
   }
 
   return (
-    <div className="p-3 h-full overflow-y-auto">
+    <div className="p-4 h-full overflow-y-auto">
       <h3 className="text-black font-bold text-sm mb-2">체결</h3>
-      <table className="w-full text-xs">
+      <table className="w-full text-sm">
         <thead>
           <tr className="text-[#666666] font-bold">
             <th className="text-left py-1">시간</th>

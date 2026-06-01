@@ -130,7 +130,7 @@ export default function WatchlistPageClient() {
 
   const SortTh = ({ col, label, align = 'right' }: { col: SortKey; label: string; align?: string }) => (
     <th
-      className={`px-4 py-2.5 text-${align} font-bold text-[#666] text-xs cursor-pointer hover:text-black select-none`}
+      className={`px-4 py-2.5 text-${align} font-bold text-[#666] text-sm cursor-pointer hover:text-black select-none`}
       onClick={() => toggleSort(col)}
     >
       <span className="inline-flex items-center gap-1 justify-end">
@@ -170,7 +170,7 @@ export default function WatchlistPageClient() {
         <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
           <div className="px-4 py-3 border-b border-[#F0F0F0] flex items-center justify-between">
             <span className="text-sm font-bold text-black">내 관심종목 ({rows.length})</span>
-            <span className="text-[10px] text-[#999]">KIS API · 10초 갱신</span>
+            <span className="text-xs text-[#999]">KIS API · 10초 갱신</span>
           </div>
 
           {/* 인라인 추가 폼 */}
@@ -191,7 +191,7 @@ export default function WatchlistPageClient() {
               <Plus className="w-3.5 h-3.5" />
               추가
             </button>
-            {addError && <span className="text-xs text-[#FF3B30]">{addError}</span>}
+            {addError && <span className="text-sm text-[#FF3B30]">{addError}</span>}
           </form>
 
           {rows.length === 0 ? (
@@ -206,14 +206,14 @@ export default function WatchlistPageClient() {
                 <thead>
                   <tr className="border-b border-[#F0F0F0] bg-[#F8F9FA]">
                     <SortTh col="name" label="종목명" align="left" />
-                    <th className="px-4 py-2.5 text-left font-bold text-[#666] text-xs">종목코드</th>
+                    <th className="px-4 py-2.5 text-left font-bold text-[#666] text-sm">종목코드</th>
                     <SortTh col="price" label="현재가" />
                     <SortTh col="change" label="전일비" />
                     <SortTh col="changePercent" label="등락률" />
                     <SortTh col="volume" label="거래량" />
                     <SortTh col="marketCap" label="시가총액" />
                     <SortTh col="createdAt" label="추가일" />
-                    <th className="px-4 py-2.5 text-center font-bold text-[#666] text-xs w-12">삭제</th>
+                    <th className="px-4 py-2.5 text-center font-bold text-[#666] text-sm w-12">삭제</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -224,7 +224,7 @@ export default function WatchlistPageClient() {
                           {r.name}
                         </Link>
                       </td>
-                      <td className="px-4 py-2.5 text-[#999] text-xs font-mono">{r.symbol}</td>
+                      <td className="px-4 py-2.5 text-[#999] text-sm font-mono">{r.symbol}</td>
                       <td className="px-4 py-2.5 text-right text-[#333]">
                         {r.price > 0 ? fmtNum(r.price) : '—'}
                       </td>
@@ -234,13 +234,13 @@ export default function WatchlistPageClient() {
                       <td className={`px-4 py-2.5 text-right font-bold ${r.changePercent >= 0 ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                         {r.changePercent >= 0 ? '+' : ''}{r.changePercent.toFixed(2)}%
                       </td>
-                      <td className="px-4 py-2.5 text-right text-[#666] text-xs">
+                      <td className="px-4 py-2.5 text-right text-[#666] text-sm">
                         {r.volume > 0 ? fmtNum(r.volume) : '—'}
                       </td>
                       <td className="px-4 py-2.5 text-right text-[#333]">
                         {fmtMarketCap(r.marketCap)}
                       </td>
-                      <td className="px-4 py-2.5 text-[#999] text-xs">{fmtDate(r.createdAt)}</td>
+                      <td className="px-4 py-2.5 text-[#999] text-sm">{fmtDate(r.createdAt)}</td>
                       <td className="px-4 py-2.5 text-center">
                         <button
                           onClick={() => handleRemove(r.symbol)}

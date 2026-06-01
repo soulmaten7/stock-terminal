@@ -76,7 +76,7 @@ export default function EarningsTab({ stockId, symbol }: { stockId: number; symb
       <div className="bg-[#F5F7FA] border border-[#E5E7EB] rounded p-6 text-center text-[#666666] text-sm">
         DART 재무제표 조회 불가 — corp_code 또는 조회년도 확인 필요
         {data?.fallbackReason && (
-          <p className="text-[10px] mt-1 text-[#999999]">{data.fallbackReason}</p>
+          <p className="text-xs mt-1 text-[#999999]">{data.fallbackReason}</p>
         )}
       </div>
     );
@@ -108,7 +108,7 @@ export default function EarningsTab({ stockId, symbol }: { stockId: number; symb
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-3 py-1 text-xs font-bold rounded border transition-colors ${
+            className={`px-3 py-1 text-sm font-bold rounded border transition-colors ${
               tab === t
                 ? 'bg-black text-white border-black'
                 : 'bg-white text-[#666666] border-[#E5E7EB] hover:border-black'
@@ -179,11 +179,11 @@ export default function EarningsTab({ stockId, symbol }: { stockId: number; symb
           {tab === 'annual' ? '연간' : '분기'} 상세
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-xs border-collapse">
+          <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="bg-[#F5F7FA] border-b border-[#E5E7EB]">
                 {['기간', '매출액', '영업이익', '순이익', 'OP마진', '순이익률'].map((h) => (
-                  <th key={h} className="text-left px-3 py-2 font-bold text-[#666666]">
+                  <th key={h} className="text-left px-4 py-3 font-bold text-[#666666]">
                     {h}
                   </th>
                 ))}
@@ -192,16 +192,16 @@ export default function EarningsTab({ stockId, symbol }: { stockId: number; symb
             <tbody>
               {tableData.map((r) => (
                 <tr key={r.period} className="border-b border-[#F5F7FA] hover:bg-[#F5F7FA]">
-                  <td className="px-3 py-2 font-mono-price font-bold text-black">{r.period}</td>
-                  <td className="px-3 py-2 text-black">{fmt조억(r.revenue)}</td>
-                  <td className={`px-3 py-2 font-bold ${(r.operatingIncome ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                  <td className="px-4 py-3 font-mono-price font-bold text-black">{r.period}</td>
+                  <td className="px-4 py-3 text-black">{fmt조억(r.revenue)}</td>
+                  <td className={`px-4 py-3 font-bold ${(r.operatingIncome ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                     {fmt조억(r.operatingIncome)}
                   </td>
-                  <td className={`px-3 py-2 font-bold ${(r.netIncome ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                  <td className={`px-4 py-3 font-bold ${(r.netIncome ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                     {fmt조억(r.netIncome)}
                   </td>
-                  <td className="px-3 py-2 text-[#666666]">{fmtPct(r.opMargin)}</td>
-                  <td className="px-3 py-2 text-[#666666]">{fmtPct(r.netMargin)}</td>
+                  <td className="px-4 py-3 text-[#666666]">{fmtPct(r.opMargin)}</td>
+                  <td className="px-4 py-3 text-[#666666]">{fmtPct(r.netMargin)}</td>
                 </tr>
               ))}
             </tbody>
@@ -209,7 +209,7 @@ export default function EarningsTab({ stockId, symbol }: { stockId: number; symb
         </div>
       </div>
 
-      <p className="text-[10px] text-[#999999]">
+      <p className="text-xs text-[#999999]">
         출처: DART 재무제표 (연결재무제표 기준) · stockId {stockId}
       </p>
     </div>

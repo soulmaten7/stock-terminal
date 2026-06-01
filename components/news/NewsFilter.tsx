@@ -20,7 +20,7 @@ export default function NewsFilter({ filters, onFilterChange }: { filters: Filte
       <div className="flex border-b border-[#E5E7EB]">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => onFilterChange({ ...filters, tab: t.key })}
-            className={`flex-1 py-2 text-xs font-bold ${filters.tab === t.key ? 'text-[#0ABAB5] border-b-2 border-[#0ABAB5]' : 'text-black'}`}>
+            className={`flex-1 py-2 text-sm font-bold ${filters.tab === t.key ? 'text-[#0ABAB5] border-b-2 border-[#0ABAB5]' : 'text-black'}`}>
             {t.label}
           </button>
         ))}
@@ -28,7 +28,7 @@ export default function NewsFilter({ filters, onFilterChange }: { filters: Filte
 
       {/* Keyword */}
       <div>
-        <label className="text-xs font-bold text-black mb-2 block">키워드 검색</label>
+        <label className="text-sm font-bold text-black mb-2 block">키워드 검색</label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999999]" />
           <input type="text" value={filters.keyword} onChange={(e) => onFilterChange({ ...filters, keyword: e.target.value })}
@@ -39,7 +39,7 @@ export default function NewsFilter({ filters, onFilterChange }: { filters: Filte
       {/* Sources */}
       {filters.tab !== 'disclosure' && (
         <div>
-          <label className="text-xs font-bold text-black mb-2 block">매체 필터</label>
+          <label className="text-sm font-bold text-black mb-2 block">매체 필터</label>
           <div className="space-y-2">
             {SOURCES.map((s) => (
               <label key={s} className="flex items-center gap-2 cursor-pointer">

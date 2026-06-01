@@ -114,7 +114,7 @@ export default function DisclosuresTab({ symbol }: DisclosuresTabProps) {
                 setMonths(m);
                 setDisplayCount(PAGE_SIZE);
               }}
-              className={`px-2 py-1 text-xs font-bold rounded ${
+              className={`px-2 py-1 text-sm font-bold rounded ${
                 months === m
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-[#F5F7FA] text-[#666666] hover:text-black'
@@ -124,13 +124,13 @@ export default function DisclosuresTab({ symbol }: DisclosuresTabProps) {
             </button>
           ))}
         </div>
-        <span className="text-[11px] text-[#666666]">
+        <span className="text-xs text-[#666666]">
           전체 {totalCount}건 · 필터 후 {filtered.length}건
         </span>
       </div>
 
       {err && (
-        <div className="px-3 py-2 bg-[#FF3B30]/5 border border-[#FF3B30]/30 rounded text-xs text-[#FF3B30]">
+        <div className="px-4 py-3 bg-[#FF3B30]/5 border border-[#FF3B30]/30 rounded text-sm text-[#FF3B30]">
           ⚠ {err}
         </div>
       )}
@@ -147,7 +147,7 @@ export default function DisclosuresTab({ symbol }: DisclosuresTabProps) {
                 setFilter(ft.key);
                 setDisplayCount(PAGE_SIZE);
               }}
-              className={`px-2.5 py-1 text-xs rounded transition-colors ${
+              className={`px-2.5 py-1 text-sm rounded transition-colors ${
                 filter === ft.key
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-[#F5F7FA] text-[#666666] hover:text-black'
@@ -166,22 +166,22 @@ export default function DisclosuresTab({ symbol }: DisclosuresTabProps) {
       ) : (
         <div className="space-y-2">
           {displayed.map((d) => (
-            <div key={d.rcept_no} className="bg-white rounded border border-[#E5E7EB] p-3 hover:border-[#0ABAB5]/50 transition-colors">
+            <div key={d.rcept_no} className="bg-white rounded border border-[#E5E7EB] p-4 hover:border-[#0ABAB5]/50 transition-colors">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <span className="text-[#666666] text-xs tabular-nums">
+                    <span className="text-[#666666] text-sm tabular-nums">
                       {d.published_at ? formatDate(d.published_at) : '—'}
                     </span>
-                    <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded ${getTypeBadgeColor(d.disclosure_type)}`}>
+                    <span className={`px-1.5 py-0.5 text-xs font-bold rounded ${getTypeBadgeColor(d.disclosure_type)}`}>
                       {d.disclosure_type}
                     </span>
                     {d.remark && (
-                      <span className="text-[10px] text-[#F59E0B] font-bold">[{d.remark}]</span>
+                      <span className="text-xs text-[#F59E0B] font-bold">[{d.remark}]</span>
                     )}
                   </div>
                   <p className="text-black text-sm font-medium truncate">{d.report_name}</p>
-                  <p className="text-[#999999] text-[11px] mt-0.5">{d.filer_name}</p>
+                  <p className="text-[#999999] text-xs mt-0.5">{d.filer_name}</p>
                 </div>
                 <a
                   href={d.source_url}
@@ -202,7 +202,7 @@ export default function DisclosuresTab({ symbol }: DisclosuresTabProps) {
         <div className="text-center">
           <button
             onClick={() => setDisplayCount((c) => c + PAGE_SIZE)}
-            className="inline-flex items-center gap-1 px-5 py-1.5 bg-[#F5F7FA] text-[#666666] hover:text-black rounded text-xs border border-[#E5E7EB] transition-colors"
+            className="inline-flex items-center gap-1 px-5 py-1.5 bg-[#F5F7FA] text-[#666666] hover:text-black rounded text-sm border border-[#E5E7EB] transition-colors"
           >
             <ChevronDown className="w-3 h-3" />
             더 불러오기 ({displayed.length} / {filtered.length})
@@ -210,7 +210,7 @@ export default function DisclosuresTab({ symbol }: DisclosuresTabProps) {
         </div>
       )}
 
-      <p className="text-[10px] text-[#999999] text-center">데이터: DART OpenAPI (금융감독원 전자공시시스템)</p>
+      <p className="text-xs text-[#999999] text-center">데이터: DART OpenAPI (금융감독원 전자공시시스템)</p>
     </div>
   );
 }

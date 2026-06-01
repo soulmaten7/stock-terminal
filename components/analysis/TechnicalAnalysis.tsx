@@ -164,14 +164,14 @@ export default function TechnicalAnalysis({ stockId }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {metrics.map(m => (
             <div key={m.label} className="bg-dark-700 rounded-lg p-4 border border-border">
-              <p className="text-xs text-text-secondary mb-1">{m.label}</p>
+              <p className="text-sm text-text-secondary mb-1">{m.label}</p>
               <p className="text-2xl font-bold font-mono-price mt-1 text-text-primary">
                 {formatNum(m.value, m.digits, m.suffix)}
               </p>
             </div>
           ))}
         </div>
-        <p className="text-xs text-text-secondary/70 mt-2">
+        <p className="text-sm text-text-secondary/70 mt-2">
           기준일: {latest.date} · 일봉 {chartData.length}개
         </p>
       </div>
@@ -227,7 +227,7 @@ export default function TechnicalAnalysis({ stockId }: Props) {
             </LineChart>
           </ResponsiveContainer>
         </div>
-        <p className="text-xs text-text-secondary mt-2">
+        <p className="text-sm text-text-secondary mt-2">
           70 이상 = 과매수(매도 압력), 30 이하 = 과매도(매수 압력). 참고 지표이며 매매 조언 아님.
         </p>
       </div>

@@ -1,5 +1,34 @@
-<!-- 2026-05-31 -->
+<!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
+
+## 2026-06-01 — STEP 127 (가독성 리뉴얼 — Pretendard + 크기·spacing 상향)
+
+### 세션 전체 요약
+"네이버 페이 증권 수준 가독성"(사용자 의도) — Pretendard 폰트 + 텍스트 한 단계 상향 + 카드 spacing. 옵션 B(한 번에).
+
+### [1] Pretendard 폰트 (`app/globals.css`)
+- jsDelivr CDN `@import` 추가 (pretendardvariable-dynamic-subset) — 기존엔 font-family 에 'Pretendard' 참조만 있고 로드 X 였음
+- body font-family → `"Pretendard Variable"` 우선 (CDN 등록 패밀리명과 일치) + Apple SD Gothic Neo / Noto Sans KR 폴백
+
+### [2] 루트 폰트 크기 (핵심 — 명령서 px 목표의 전제) ⚠️ 추가 조치
+- `html { font-size: 13px → 16px }`. 기존 13px 루트 때문에 rem 기반 Tailwind 텍스트가 전부 축소돼 있었음(text-xs=9.75px). 명령서가 주석으로 단언한 "text-xs=12px / text-sm=14px" 및 네이버 수준 목표는 16px 루트에서만 성립 → 명령서 자체 일관성을 위해 함께 변경.
+
+### [3] 텍스트 크기 일괄 상향 (perl, 전 .tsx)
+- **순서 교정**: 명령서 sed 는 체이닝 버그로 `text-[10px]`이 `text-xs`→`text-sm`까지 가버림. 교정 순서 = `text-xs→text-sm` 먼저, 그 다음 `text-[10px]/[11px]→text-xs` → 표 의도대로 (10/11px → 12px, 12px → 14px)
+- `text-[10px]`·`text-[11px]` → `text-xs` (잔여 0), `text-xs` → `text-sm`
+- `text-sm`→`text-base` 는 이번 STEP 제외(명령서 지침)
+
+### [4] 카드 padding / 줄간격
+- `p-3`→`p-4` (단어경계 perl — gap-3/px-3 미영향), `px-3 py-2`→`px-4 py-3` (py-2.5 제외)
+- `leading-snug`→`leading-normal` (1.5)
+
+### 빌드
+- `npm run build` ✓ Compiled successfully (exit 0) — TS/ESLint 0.
+
+### 참고 / 검증
+- ⚠️ 이 세션은 일부 셸/Read 출력 렌더가 손상됐으나 명령 실행·exit code·Edit·빌드는 정상. globals.css/layout.tsx 에 이전 자동편집 잔재(중복 font-family 블록)는 무해하게 보존.
+- `app/layout.tsx` 의 Inter import 는 미사용(무해)이나 파일 렌더 손상으로 안전상 미제거 → 추후 정리
+- 루트 16px + 클래스/패딩 상향 = "한 번에" 의도. 과하면 사용자 시각 확인 후 미세 조정(다음 STEP)
 
 ## 2026-05-31 — STEP 126 (종목 페이지 핫픽스 — 종목명·시총·52주·차트)
 

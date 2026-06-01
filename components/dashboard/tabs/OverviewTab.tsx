@@ -51,9 +51,9 @@ function fmtFinancial(n: number | null): string {
 
 // ── 블록 1: 핵심 투자지표 ───────────────────────────────────────────────────
 function Block1Metrics({ priceData }: { priceData: PriceData | null }) {
-  if (!priceData) return <p className="text-[11px] text-[#BBB] py-2">로딩 중…</p>;
+  if (!priceData) return <p className="text-xs text-[#BBB] py-2">로딩 중…</p>;
   return (
-    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+    <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
       <Metric label="PER" value={fmtNum(priceData.per, '배')} />
       <Metric label="PBR" value={fmtNum(priceData.pbr, '배')} />
       <Metric label="시총" value={fmtMarketCap(priceData.marketCap)} />
@@ -84,8 +84,8 @@ function Block2Supply({ symbol }: { symbol: string }) {
       .catch(() => { setRows([]); setLoading(false); });
   }, [symbol]);
 
-  if (loading) return <p className="text-[11px] text-[#BBB] py-1">로딩 중…</p>;
-  if (!rows.length) return <p className="text-[11px] text-[#BBB] py-1">데이터 없음</p>;
+  if (loading) return <p className="text-xs text-[#BBB] py-1">로딩 중…</p>;
+  if (!rows.length) return <p className="text-xs text-[#BBB] py-1">데이터 없음</p>;
 
   const today = rows[0];
   const five = rows.slice(0, 5);
@@ -94,7 +94,7 @@ function Block2Supply({ symbol }: { symbol: string }) {
   const sumPrs = five.reduce((a, r) => a + r.individualBuy, 0);
 
   return (
-    <div className="text-[11px]">
+    <div className="text-xs">
       <div className="grid grid-cols-4 gap-0 mb-1 text-[#999]">
         <span />
         <span className="text-center">외인</span>
@@ -133,7 +133,7 @@ function Block3News({ symbol, onMore }: { symbol: string; onMore: () => void }) 
       .catch(() => { setItems([]); setLoading(false); });
   }, [symbol]);
 
-  if (loading) return <p className="text-[11px] text-[#BBB] py-1">로딩 중…</p>;
+  if (loading) return <p className="text-xs text-[#BBB] py-1">로딩 중…</p>;
 
   const recent = items
     .filter((item) => !isStale(item.publishedAt))
@@ -142,8 +142,8 @@ function Block3News({ symbol, onMore }: { symbol: string; onMore: () => void }) 
 
   if (!recent.length) return (
     <div className="py-3 text-center">
-      <p className="text-[11px] text-[#BBB]">최근 14일 내 뉴스 없음</p>
-      <button onClick={onMore} className="text-[11px] text-[#0ABAB5] hover:underline mt-1">전체 뉴스 보기 →</button>
+      <p className="text-xs text-[#BBB]">최근 14일 내 뉴스 없음</p>
+      <button onClick={onMore} className="text-xs text-[#0ABAB5] hover:underline mt-1">전체 뉴스 보기 →</button>
     </div>
   );
 
@@ -159,14 +159,14 @@ function Block3News({ symbol, onMore }: { symbol: string; onMore: () => void }) 
         >
           <div className="flex items-start gap-1.5">
             <span className="shrink-0 mt-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-[#0ABAB5]/10 text-[#0ABAB5]">{symbol}</span>
-            <p className="text-xs font-medium text-black leading-tight line-clamp-2">{item.title}</p>
+            <p className="text-sm font-medium text-black leading-tight line-clamp-2">{item.title}</p>
           </div>
-          <p className="text-[10px] text-[#999] mt-0.5 pl-[calc(1ch+10px+6px)]">
+          <p className="text-xs text-[#999] mt-0.5 pl-[calc(1ch+10px+6px)]">
             {item.source}{item.publishedAt ? ` · ${timeAgo(item.publishedAt)}` : ''}
           </p>
         </a>
       ))}
-      <button onClick={onMore} className="text-[11px] text-[#0ABAB5] hover:underline">
+      <button onClick={onMore} className="text-xs text-[#0ABAB5] hover:underline">
         뉴스 전체 보기 →
       </button>
     </div>
@@ -189,8 +189,8 @@ function Block4Disclosures({ symbol, market, onMore }: { symbol: string; market:
       .catch(() => { setItems([]); setLoading(false); });
   }, [symbol, market]);
 
-  if (market !== 'KR') return <p className="text-[11px] text-[#BBB] py-1">SEC 공시 연결 예정 (STEP 73)</p>;
-  if (loading) return <p className="text-[11px] text-[#BBB] py-1">로딩 중…</p>;
+  if (market !== 'KR') return <p className="text-xs text-[#BBB] py-1">SEC 공시 연결 예정 (STEP 73)</p>;
+  if (loading) return <p className="text-xs text-[#BBB] py-1">로딩 중…</p>;
 
   const recent = items
     .filter((item) => {
@@ -202,8 +202,8 @@ function Block4Disclosures({ symbol, market, onMore }: { symbol: string; market:
 
   if (!recent.length) return (
     <div className="py-3 text-center">
-      <p className="text-[11px] text-[#BBB]">최근 14일 내 공시 없음</p>
-      <button onClick={onMore} className="text-[11px] text-[#0ABAB5] hover:underline mt-1">전체 공시 보기 →</button>
+      <p className="text-xs text-[#BBB]">최근 14일 내 공시 없음</p>
+      <button onClick={onMore} className="text-xs text-[#0ABAB5] hover:underline mt-1">전체 공시 보기 →</button>
     </div>
   );
 
@@ -221,13 +221,13 @@ function Block4Disclosures({ symbol, market, onMore }: { symbol: string; market:
           >
             <div className="flex items-start gap-1.5">
               <span className="shrink-0 mt-0.5 text-[9px] font-bold px-1 py-0.5 rounded bg-[#FF3B30]/10 text-[#FF3B30]">{symbol}</span>
-              <p className="text-xs font-medium text-black leading-tight line-clamp-2">{item.report_nm}</p>
+              <p className="text-sm font-medium text-black leading-tight line-clamp-2">{item.report_nm}</p>
             </div>
-            {dt && <p className="text-[10px] text-[#999] mt-0.5 pl-[calc(1ch+10px+6px)]">{dt}</p>}
+            {dt && <p className="text-xs text-[#999] mt-0.5 pl-[calc(1ch+10px+6px)]">{dt}</p>}
           </a>
         );
       })}
-      <button onClick={onMore} className="text-[11px] text-[#0ABAB5] hover:underline">
+      <button onClick={onMore} className="text-xs text-[#0ABAB5] hover:underline">
         공시 전체 보기 →
       </button>
     </div>
@@ -250,9 +250,9 @@ function Block5Financial({ symbol, market, onMore }: { symbol: string; market: s
       .catch(() => { setQuarters([]); setLoading(false); });
   }, [symbol, market]);
 
-  if (market !== 'KR') return <p className="text-[11px] text-[#BBB] py-1">US 재무 연결 예정 (STEP 73)</p>;
-  if (loading) return <p className="text-[11px] text-[#BBB] py-1">로딩 중…</p>;
-  if (!quarters.length) return <p className="text-[11px] text-[#BBB] py-1">재무 데이터 없음</p>;
+  if (market !== 'KR') return <p className="text-xs text-[#BBB] py-1">US 재무 연결 예정 (STEP 73)</p>;
+  if (loading) return <p className="text-xs text-[#BBB] py-1">로딩 중…</p>;
+  if (!quarters.length) return <p className="text-xs text-[#BBB] py-1">재무 데이터 없음</p>;
 
   const maxRev = Math.max(...quarters.map((q) => q.revenue ?? 0));
   const maxOp = Math.max(...quarters.map((q) => Math.abs(q.operatingIncome ?? 0)));
@@ -264,7 +264,7 @@ function Block5Financial({ symbol, market, onMore }: { symbol: string; market: s
           const revPct = maxRev > 0 ? ((q.revenue ?? 0) / maxRev) * 100 : 0;
           const opPct = maxOp > 0 ? (Math.abs(q.operatingIncome ?? 0) / maxOp) * 100 : 0;
           return (
-            <div key={q.period} className="text-[10px]">
+            <div key={q.period} className="text-xs">
               <div className="text-[#999] mb-0.5">{q.period}</div>
               <div className="flex items-center gap-1 mb-0.5">
                 <span className="w-8 text-right text-[#999] shrink-0">매출</span>
@@ -288,7 +288,7 @@ function Block5Financial({ symbol, market, onMore }: { symbol: string; market: s
           );
         })}
       </div>
-      <button onClick={onMore} className="mt-2 text-[11px] text-[#0ABAB5] hover:underline">
+      <button onClick={onMore} className="mt-2 text-xs text-[#0ABAB5] hover:underline">
         재무 전체 보기 →
       </button>
     </div>
@@ -308,7 +308,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 function BlockSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="py-3">
-      <h4 className="text-[11px] font-bold text-[#444] mb-2 tracking-wide">{title}</h4>
+      <h4 className="text-xs font-bold text-[#444] mb-2 tracking-wide">{title}</h4>
       {children}
     </section>
   );
@@ -323,7 +323,7 @@ export default function OverviewTab({ priceData, onNavigateTab }: Props) {
 
   if (!selected) {
     return (
-      <div className="py-8 text-center text-xs text-[#999]">
+      <div className="py-8 text-center text-sm text-[#999]">
         좌측에서 종목을 선택하세요
       </div>
     );

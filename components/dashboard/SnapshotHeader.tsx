@@ -50,7 +50,7 @@ export default function SnapshotHeader({ priceData, loading }: Props) {
           <div className="text-sm font-bold text-black truncate">
             {selected?.name ?? '종목을 선택하세요'}
           </div>
-          <div className="text-[11px] text-[#999]">
+          <div className="text-xs text-[#999]">
             {selected?.code ?? '—'}
             {selected?.market && <span className="ml-1 text-[#BBB]">· {selected.market}</span>}
           </div>
@@ -59,12 +59,12 @@ export default function SnapshotHeader({ priceData, loading }: Props) {
           <div className={`text-lg font-bold ${loading ? 'text-[#BBB]' : 'text-black'}`}>
             {priceData ? fmtPrice(priceData.price) : '--'}
           </div>
-          <div className={`text-[11px] font-bold ${loading ? 'text-[#BBB]' : priceCls}`}>
+          <div className={`text-xs font-bold ${loading ? 'text-[#BBB]' : priceCls}`}>
             {pctStr}
           </div>
         </div>
       </div>
-      <dl className="grid grid-cols-3 gap-x-3 gap-y-1 text-[11px] text-[#666]">
+      <dl className="grid grid-cols-3 gap-x-3 gap-y-1 text-xs text-[#666]">
         <div><dt className="inline text-[#999]">시 </dt><dd className="inline">{priceData ? fmtPrice(priceData.open) : '--'}</dd></div>
         <div><dt className="inline text-[#999]">고 </dt><dd className="inline">{priceData ? fmtPrice(priceData.high) : '--'}</dd></div>
         <div><dt className="inline text-[#999]">저 </dt><dd className="inline">{priceData ? fmtPrice(priceData.low) : '--'}</dd></div>

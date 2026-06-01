@@ -144,31 +144,31 @@ export default function SupplyDemandTab({ stockId }: SupplyDemandTabProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-[#E5E7EB] text-[#666666] text-left">
-              <th className="p-3">일자</th>
-              <th className="p-3 text-right">외국인</th>
-              <th className="p-3 text-right">기관</th>
-              <th className="p-3 text-right">개인</th>
-              <th className="p-3 text-right">외국인 누적</th>
-              <th className="p-3 text-right">프로그램</th>
+              <th className="p-4">일자</th>
+              <th className="p-4 text-right">외국인</th>
+              <th className="p-4 text-right">기관</th>
+              <th className="p-4 text-right">개인</th>
+              <th className="p-4 text-right">외국인 누적</th>
+              <th className="p-4 text-right">프로그램</th>
             </tr>
           </thead>
           <tbody>
             {[...data].reverse().map((d) => (
               <tr key={d.id} className="border-b border-[#E5E7EB] hover:bg-[#F5F7FA]">
-                <td className="p-3 text-black">{formatDate(d.trade_date)}</td>
-                <td className={`p-3 text-right font-mono-price ${(d.foreign_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                <td className="p-4 text-black">{formatDate(d.trade_date)}</td>
+                <td className={`p-4 text-right font-mono-price ${(d.foreign_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {formatNumber(d.foreign_net)}
                 </td>
-                <td className={`p-3 text-right font-mono-price ${(d.institution_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                <td className={`p-4 text-right font-mono-price ${(d.institution_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {formatNumber(d.institution_net)}
                 </td>
-                <td className={`p-3 text-right font-mono-price ${(d.individual_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
+                <td className={`p-4 text-right font-mono-price ${(d.individual_net ?? 0) >= 0 ? 'text-[#FF3B30]' : 'text-[#007AFF]'}`}>
                   {formatNumber(d.individual_net)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-black">
+                <td className="p-4 text-right font-mono-price text-black">
                   {formatNumber(d.foreign_cumulative)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-[#666666]">
+                <td className="p-4 text-right font-mono-price text-[#666666]">
                   {formatNumber(d.program_net)}
                 </td>
               </tr>

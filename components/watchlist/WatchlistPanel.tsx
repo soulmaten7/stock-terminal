@@ -80,7 +80,7 @@ export default function WatchlistPanel() {
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Star className="w-8 h-8 text-[#999999] mb-3" />
           <p className="text-[#999999] text-sm font-bold">관심종목이 없습니다</p>
-          <p className="text-[#999999] text-xs mt-1">위에서 종목코드를 입력해 추가하세요</p>
+          <p className="text-[#999999] text-sm mt-1">위에서 종목코드를 입력해 추가하세요</p>
         </div>
       ) : (
         <ul className="space-y-1">

@@ -97,21 +97,21 @@ export default function ShortSellingTab({ stockId }: ShortSellingTabProps) {
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-dark-700 rounded-lg border border-border p-4">
-          <p className="text-text-secondary text-xs mb-1">공매도 잔고</p>
+          <p className="text-text-secondary text-sm mb-1">공매도 잔고</p>
           <p className="text-text-primary font-bold font-mono-price">{formatNumber(latest.short_balance)}</p>
         </div>
         <div className="bg-dark-700 rounded-lg border border-border p-4">
-          <p className="text-text-secondary text-xs mb-1">공매도 비중</p>
+          <p className="text-text-secondary text-sm mb-1">공매도 비중</p>
           <p className="text-text-primary font-bold font-mono-price">
             {latest.short_ratio != null ? `${latest.short_ratio.toFixed(2)}%` : '-'}
           </p>
         </div>
         <div className="bg-dark-700 rounded-lg border border-border p-4">
-          <p className="text-text-secondary text-xs mb-1">신용 잔고</p>
+          <p className="text-text-secondary text-sm mb-1">신용 잔고</p>
           <p className="text-text-primary font-bold font-mono-price">{formatNumber(latest.credit_balance)}</p>
         </div>
         <div className="bg-dark-700 rounded-lg border border-border p-4">
-          <p className="text-text-secondary text-xs mb-1">대차 잔고</p>
+          <p className="text-text-secondary text-sm mb-1">대차 잔고</p>
           <p className="text-text-primary font-bold font-mono-price">{formatNumber(latest.loan_balance)}</p>
         </div>
       </div>

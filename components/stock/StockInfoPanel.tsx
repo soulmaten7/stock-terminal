@@ -162,7 +162,7 @@ export default function StockInfoPanel({ symbol }: Props) {
 
   if (loading) return <LoadingState className="p-4" />;
   if (!data) return (
-    <div className="p-4 text-center text-xs text-unjong-muted">데이터 없음</div>
+    <div className="p-4 text-center text-sm text-unjong-muted">데이터 없음</div>
   );
 
   const isUp = data.changePct >= 0;
@@ -171,19 +171,19 @@ export default function StockInfoPanel({ symbol }: Props) {
   return (
     <div className="space-y-3">
       {/* 뒤로 */}
-      <Link href="/kr" className="inline-flex items-center gap-1 text-[10px] text-unjong-muted hover:text-unjong-primary">
+      <Link href="/kr" className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
         <ArrowLeft size={12} /> 한국주식
       </Link>
 
       {/* 종목 헤더 */}
-      <div className="bg-unjong-surface rounded-lg border border-unjong-border p-3">
+      <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
         <h2 className="text-base font-bold text-unjong-primary">{data.name}</h2>
-        <p className="text-[10px] text-unjong-muted font-mono">{symbol}</p>
+        <p className="text-xs text-unjong-muted font-mono">{symbol}</p>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-xl font-bold text-unjong-primary tabular-nums">
             {isUS ? `$${data.price.toFixed(2)}` : data.price.toLocaleString()}
           </span>
-          <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+          <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
             {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
             {isUp ? "+" : ""}{data.changePct.toFixed(2)}%
           </span>
@@ -192,8 +192,8 @@ export default function StockInfoPanel({ symbol }: Props) {
 
       {/* 차트 (한국 주식만) */}
       {isKr && (
-        <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3">
-          <h3 className="text-[10px] font-semibold text-unjong-muted uppercase mb-2">일봉 (60일)</h3>
+        <section className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
+          <h3 className="text-xs font-semibold text-unjong-muted uppercase mb-2">일봉 (60일)</h3>
           <div ref={chartRef} className="relative w-full h-[200px] min-w-[260px]" />
         </section>
       )}
@@ -201,8 +201,8 @@ export default function StockInfoPanel({ symbol }: Props) {
       {/* 시세·재무 (한국·미국 동일 구조, 통화·단위만 다름) */}
       {data.open > 0 && (
         <>
-          <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3 space-y-1.5">
-            <h3 className="text-[10px] font-semibold text-unjong-muted uppercase mb-1">시세</h3>
+          <section className="bg-unjong-surface rounded-lg border border-unjong-border p-4 space-y-1.5">
+            <h3 className="text-xs font-semibold text-unjong-muted uppercase mb-1">시세</h3>
             <Row label="시가" value={formatPrice(data.open, isUS)} />
             <Row label="고가" value={formatPrice(data.high, isUS)} />
             <Row label="저가" value={formatPrice(data.low, isUS)} />
@@ -211,8 +211,8 @@ export default function StockInfoPanel({ symbol }: Props) {
             <Row label="52주 최저" value={formatPrice(data.low52w, isUS)} />
           </section>
 
-          <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3 space-y-1.5">
-            <h3 className="text-[10px] font-semibold text-unjong-muted uppercase mb-1">재무</h3>
+          <section className="bg-unjong-surface rounded-lg border border-unjong-border p-4 space-y-1.5">
+            <h3 className="text-xs font-semibold text-unjong-muted uppercase mb-1">재무</h3>
             <Row label="시가총액" value={formatMarketCap(data.marketCap, isUS)} />
             <Row label="PER" value={data.per > 0 ? data.per.toFixed(1) : "—"} />
             <Row label="PBR" value={data.pbr > 0 ? data.pbr.toFixed(1) : "—"} />
@@ -242,7 +242,7 @@ function formatMarketCap(cap: number, isUS = false): string {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between text-xs">
+    <div className="flex justify-between text-sm">
       <span className="text-unjong-muted">{label}</span>
       <span className="font-semibold text-unjong-primary tabular-nums">{value}</span>
     </div>

@@ -110,9 +110,9 @@ export default function StockChatPanel({ symbol, stockName }: Props) {
 
   return (
     <div className="flex flex-col bg-unjong-surface rounded-lg border border-unjong-border h-[calc(100vh-2rem)] overflow-hidden">
-      <header className="flex items-center justify-between border-b border-unjong-border px-3 py-2 bg-unjong-background flex-shrink-0">
-        <span className="text-xs font-semibold text-unjong-primary">⚡ {stockName || symbol} 실시간 채팅</span>
-        <span className="text-[10px] text-unjong-muted truncate ml-2" suppressHydrationWarning>
+      <header className="flex items-center justify-between border-b border-unjong-border px-4 py-3 bg-unjong-background flex-shrink-0">
+        <span className="text-sm font-semibold text-unjong-primary">⚡ {stockName || symbol} 실시간 채팅</span>
+        <span className="text-xs text-unjong-muted truncate ml-2" suppressHydrationWarning>
           {mounted ? nickname : ""}
         </span>
       </header>
@@ -125,12 +125,12 @@ export default function StockChatPanel({ symbol, stockName }: Props) {
           messages.map((msg) => (
             <div key={msg.id} className="flex flex-col gap-0.5">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xs font-semibold text-unjong-primary">{msg.nickname}</span>
-                <span className="text-[10px] text-unjong-muted">
+                <span className="text-sm font-semibold text-unjong-primary">{msg.nickname}</span>
+                <span className="text-xs text-unjong-muted">
                   {new Date(msg.created_at).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false })}
                 </span>
               </div>
-              <p className="text-xs text-unjong-primary pl-1">{msg.content}</p>
+              <p className="text-sm text-unjong-primary pl-1">{msg.content}</p>
             </div>
           ))
         )}
@@ -144,7 +144,7 @@ export default function StockChatPanel({ symbol, stockName }: Props) {
             onKeyDown={handleKeyDown}
             placeholder={`${stockName || symbol} 채팅...`}
             maxLength={500}
-            className="flex-1 bg-transparent text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
             disabled={sending}
           />
           <button

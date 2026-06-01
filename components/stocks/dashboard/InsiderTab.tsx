@@ -50,13 +50,13 @@ export default function InsiderTab({ stockId }: InsiderTabProps) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-border text-text-secondary text-left">
-            <th className="p-3">일자</th>
-            <th className="p-3">성명</th>
-            <th className="p-3">직위</th>
-            <th className="p-3">구분</th>
-            <th className="p-3 text-right">수량</th>
-            <th className="p-3 text-right">단가</th>
-            <th className="p-3 text-right">거래금액</th>
+            <th className="p-4">일자</th>
+            <th className="p-4">성명</th>
+            <th className="p-4">직위</th>
+            <th className="p-4">구분</th>
+            <th className="p-4 text-right">수량</th>
+            <th className="p-4 text-right">단가</th>
+            <th className="p-4 text-right">거래금액</th>
           </tr>
         </thead>
         <tbody>
@@ -64,12 +64,12 @@ export default function InsiderTab({ stockId }: InsiderTabProps) {
             const isBuy = t.trade_type === 'buy';
             return (
               <tr key={t.id} className="border-b border-border/50 hover:bg-dark-800/50">
-                <td className="p-3 text-text-primary font-mono-price">{formatDate(t.trade_date)}</td>
-                <td className="p-3 text-text-primary">{t.insider_name}</td>
-                <td className="p-3 text-text-secondary">{t.position ?? '-'}</td>
-                <td className="p-3">
+                <td className="p-4 text-text-primary font-mono-price">{formatDate(t.trade_date)}</td>
+                <td className="p-4 text-text-primary">{t.insider_name}</td>
+                <td className="p-4 text-text-secondary">{t.position ?? '-'}</td>
+                <td className="p-4">
                   <span
-                    className={`px-2 py-0.5 text-xs rounded font-medium ${
+                    className={`px-2 py-0.5 text-sm rounded font-medium ${
                       isBuy
                         ? 'bg-green-500/20 text-green-400'
                         : 'bg-red-500/20 text-red-400'
@@ -78,13 +78,13 @@ export default function InsiderTab({ stockId }: InsiderTabProps) {
                     {isBuy ? '매수' : '매도'}
                   </span>
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-4 text-right font-mono-price text-text-primary">
                   {formatNumber(t.shares)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-4 text-right font-mono-price text-text-primary">
                   {formatCurrency(t.price)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-4 text-right font-mono-price text-text-primary">
                   {formatCurrency(t.total_amount)}
                 </td>
               </tr>

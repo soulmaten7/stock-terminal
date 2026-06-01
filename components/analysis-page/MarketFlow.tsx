@@ -35,7 +35,7 @@ export default function MarketFlow() {
     <div className="bg-white border-[3px] border-[#0ABAB5] p-6">
       <div className="flex items-baseline justify-between mb-4">
         <h2 className="text-lg font-bold text-black">상위 종목 순매수 집계</h2>
-        <span className="text-[10px] text-[#999]">KIS · 외국인·기관 매매 상위 30종목 합산 (억원)</span>
+        <span className="text-xs text-[#999]">KIS · 외국인·기관 매매 상위 30종목 합산 (억원)</span>
       </div>
       {loading ? (
         <div className="space-y-3">

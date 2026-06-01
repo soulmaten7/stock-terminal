@@ -54,24 +54,24 @@ export default function AnalysisClient() {
         <header className="px-4 py-3 border-b border-[#F0F0F0] bg-[#FAFAFA] flex items-center justify-between flex-wrap gap-2">
           <div>
             <h2 className="text-lg font-bold text-black">전체 테마</h2>
-            <p className="text-xs text-[#999]">큐레이션 · {themes.length}개 테마 · 평균 등락률</p>
+            <p className="text-sm text-[#999]">큐레이션 · {themes.length}개 테마 · 평균 등락률</p>
           </div>
           <div className="inline-flex rounded overflow-hidden border border-[#E5E7EB] bg-white">
             <button
               onClick={() => setSort('up')}
-              className={`text-xs font-bold px-3 py-1.5 ${sort === 'up' ? 'bg-[#FF3B30] text-white' : 'bg-white text-[#666]'}`}
+              className={`text-sm font-bold px-3 py-1.5 ${sort === 'up' ? 'bg-[#FF3B30] text-white' : 'bg-white text-[#666]'}`}
             >
               상승순
             </button>
             <button
               onClick={() => setSort('down')}
-              className={`text-xs font-bold px-3 py-1.5 ${sort === 'down' ? 'bg-[#0051CC] text-white' : 'bg-white text-[#666]'}`}
+              className={`text-sm font-bold px-3 py-1.5 ${sort === 'down' ? 'bg-[#0051CC] text-white' : 'bg-white text-[#666]'}`}
             >
               하락순
             </button>
             <button
               onClick={() => setSort('count')}
-              className={`text-xs font-bold px-3 py-1.5 ${sort === 'count' ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666]'}`}
+              className={`text-sm font-bold px-3 py-1.5 ${sort === 'count' ? 'bg-[#0ABAB5] text-white' : 'bg-white text-[#666]'}`}
             >
               종목수
             </button>
@@ -91,7 +91,7 @@ export default function AnalysisClient() {
               >
                 <div className="min-w-0">
                   <div className="text-sm font-bold text-black truncate">{t.name}</div>
-                  <div className="text-[10px] text-[#999]">{t.count}종목</div>
+                  <div className="text-xs text-[#999]">{t.count}종목</div>
                 </div>
                 <span className={`text-sm font-bold shrink-0 ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                   {up ? '+' : ''}{t.change.toFixed(1)}%

@@ -47,8 +47,8 @@ export default function HotChatRoomsModule() {
   }, []);
 
   return (
-    <section className="bg-unjong-surface rounded-lg border border-unjong-border p-3">
-      <h3 className="text-xs font-semibold text-unjong-primary mb-2">💬 활발한 채팅방</h3>
+    <section className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
+      <h3 className="text-sm font-semibold text-unjong-primary mb-2">💬 활발한 채팅방</h3>
       {loading ? (
         <LoadingState />
       ) : items.length === 0 ? (
@@ -59,10 +59,10 @@ export default function HotChatRoomsModule() {
             <li key={room.symbol}>
               <Link
                 href={`/stock/${room.symbol}`}
-                className="flex items-center justify-between text-xs py-1 px-2 hover:bg-unjong-background rounded"
+                className="flex items-center justify-between text-sm py-1 px-2 hover:bg-unjong-background rounded"
               >
                 <span className="font-mono text-unjong-primary">{room.symbol}</span>
-                <span className="flex items-center gap-1 text-[10px] text-unjong-muted">
+                <span className="flex items-center gap-1 text-xs text-unjong-muted">
                   <MessageCircle size={10} /> {room.message_count}
                 </span>
               </Link>

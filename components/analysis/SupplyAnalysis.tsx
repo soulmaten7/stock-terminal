@@ -128,7 +128,7 @@ export default function SupplyAnalysis({ stockId }: Props) {
             <div key={m.label} className="bg-dark-700 rounded-lg p-4 border border-border">
               <div className="flex items-center gap-2 mb-2">
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: m.color }} />
-                <p className="text-xs text-text-secondary">{m.label} 순매수 합계</p>
+                <p className="text-sm text-text-secondary">{m.label} 순매수 합계</p>
               </div>
               <p className={`text-2xl font-bold font-mono-price ${netColor(m.value)}`}>
                 {formatSignedShares(m.value)}
@@ -223,7 +223,7 @@ export default function SupplyAnalysis({ stockId }: Props) {
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-text-secondary/70 mt-3">
+        <p className="text-sm text-text-secondary/70 mt-3">
           양수(빨강) = 순매수, 음수(파랑) = 순매도. 출처: KIS 투자자별 매매동향
         </p>
       </div>

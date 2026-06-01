@@ -84,7 +84,7 @@ export default function ToolboxClient({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="사이트 검색 (이름, 설명, URL)"
-          className="flex-1 min-w-[200px] border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-black placeholder-[#999999] focus:outline-none focus:border-[#0ABAB5]"
+          className="flex-1 min-w-[200px] border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm text-black placeholder-[#999999] focus:outline-none focus:border-[#0ABAB5]"
         />
 
         {/* 국가 필터 — 1개 국가뿐이면 숨김 */}
@@ -92,7 +92,7 @@ export default function ToolboxClient({
           <div className="flex items-center gap-1 border border-[#E5E7EB] rounded-lg p-0.5">
             <button
               onClick={() => setCountry('all')}
-              className={`px-2.5 py-1.5 text-xs font-bold rounded ${
+              className={`px-2.5 py-1.5 text-sm font-bold rounded ${
                 country === 'all'
                   ? 'bg-[#0ABAB5] text-white'
                   : 'text-[#666666] hover:text-black'
@@ -104,7 +104,7 @@ export default function ToolboxClient({
               <button
                 key={c}
                 onClick={() => setCountry(c)}
-                className={`px-2.5 py-1.5 text-xs font-bold rounded ${
+                className={`px-2.5 py-1.5 text-sm font-bold rounded ${
                   country === c
                     ? 'bg-[#0ABAB5] text-white'
                     : 'text-[#666666] hover:text-black'
@@ -118,7 +118,7 @@ export default function ToolboxClient({
 
         <button
           onClick={toggleAll}
-          className="flex-shrink-0 border border-[#E5E7EB] rounded-lg px-3 py-2 text-xs text-[#666666] hover:border-[#0ABAB5] hover:text-[#0ABAB5] transition-colors"
+          className="flex-shrink-0 border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm text-[#666666] hover:border-[#0ABAB5] hover:text-[#0ABAB5] transition-colors"
         >
           {allOpen ? '전체 접기' : '전체 펼치기'}
         </button>

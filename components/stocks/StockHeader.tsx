@@ -43,13 +43,13 @@ export default function StockHeader({ stock, currentPrice: propPrice, priceChang
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold text-black">{stock.name_ko || stock.name_en}</h1>
               <span className="text-[#666666] text-sm font-mono-price">{stock.symbol}</span>
-              <span className="px-2 py-0.5 text-xs rounded bg-[#F5F7FA] border border-[#E5E7EB] text-[#666666] font-bold">
+              <span className="px-2 py-0.5 text-sm rounded bg-[#F5F7FA] border border-[#E5E7EB] text-[#666666] font-bold">
                 {stock.market}
               </span>
             </div>
             {stock.sector && <p className="text-[#666666] text-sm mt-1">{stock.sector}</p>}
             {stock.id === null && (
-              <p className="text-[10px] text-[#999] mt-1">※ 기본 정보만 표시 (확장 데이터 준비 중)</p>
+              <p className="text-xs text-[#999] mt-1">※ 기본 정보만 표시 (확장 데이터 준비 중)</p>
             )}
           </div>
         </div>

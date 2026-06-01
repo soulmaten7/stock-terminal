@@ -56,12 +56,12 @@ export default function FinancialsTab() {
   }, [selected?.code, selected?.market]);
 
   if (!selected) {
-    return <div className="py-8 text-center text-xs text-[#999]">좌측에서 종목을 선택하세요</div>;
+    return <div className="py-8 text-center text-sm text-[#999]">좌측에서 종목을 선택하세요</div>;
   }
 
   if (selected.market !== 'KR') {
     return (
-      <div className="py-8 text-center text-xs text-[#999]">
+      <div className="py-8 text-center text-sm text-[#999]">
         <p>US 종목 재무 연결 예정</p>
         <p className="text-[#BBB] mt-1">STEP 75+ 보강 예정</p>
       </div>
@@ -69,7 +69,7 @@ export default function FinancialsTab() {
   }
 
   if (loading) return <TableSkeleton />;
-  if (error) return <div className="py-8 text-center text-xs text-[#999]">재무 데이터를 불러오지 못했습니다</div>;
+  if (error) return <div className="py-8 text-center text-sm text-[#999]">재무 데이터를 불러오지 못했습니다</div>;
 
   const periods = quarters.map((q) => q.period);
 
@@ -88,7 +88,7 @@ export default function FinancialsTab() {
             ]}
           />
         ) : (
-          <p className="text-[11px] text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
+          <p className="text-xs text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
         )}
       </Section>
 
@@ -103,7 +103,7 @@ export default function FinancialsTab() {
             ]}
           />
         ) : (
-          <p className="text-[11px] text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
+          <p className="text-xs text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
         )}
       </Section>
 
@@ -118,7 +118,7 @@ export default function FinancialsTab() {
             ]}
           />
         ) : (
-          <p className="text-[11px] text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
+          <p className="text-xs text-[#BBB]">데이터 없음 — DART 미등록 종목</p>
         )}
       </Section>
     </div>
@@ -128,7 +128,7 @@ export default function FinancialsTab() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h4 className="text-[11px] font-bold text-[#444] mb-2 tracking-wide">{title}</h4>
+      <h4 className="text-xs font-bold text-[#444] mb-2 tracking-wide">{title}</h4>
       {children}
     </section>
   );
@@ -136,7 +136,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function FinancialTable({ rows, periods }: { rows: { label: string; values: string[] }[]; periods: string[] }) {
   return (
-    <table className="w-full text-[11px] tabular-nums">
+    <table className="w-full text-xs tabular-nums">
       <thead>
         <tr className="text-[#999]">
           <th className="text-left font-normal py-1 w-16" />

@@ -104,20 +104,20 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
       <header className="flex items-center justify-between bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3">
         <div>
           <h1 className="text-base font-semibold text-unjong-primary">💬 {stockName || symbol} 토론</h1>
-          <p className="text-[10px] text-unjong-muted">실시간 토론 · 좋아요 정렬 / 최신순</p>
+          <p className="text-xs text-unjong-muted">실시간 토론 · 좋아요 정렬 / 최신순</p>
         </div>
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => setSortMode("hot")}
-            className={`text-[10px] px-2 py-1 rounded ${sortMode === "hot" ? "bg-unjong-accent text-white font-semibold" : "text-unjong-muted hover:text-unjong-primary"}`}
+            className={`text-xs px-2 py-1 rounded ${sortMode === "hot" ? "bg-unjong-accent text-white font-semibold" : "text-unjong-muted hover:text-unjong-primary"}`}
           >
             🔥 HOT
           </button>
           <button
             type="button"
             onClick={() => setSortMode("recent")}
-            className={`text-[10px] px-2 py-1 rounded ${sortMode === "recent" ? "bg-unjong-accent text-white font-semibold" : "text-unjong-muted hover:text-unjong-primary"}`}
+            className={`text-xs px-2 py-1 rounded ${sortMode === "recent" ? "bg-unjong-accent text-white font-semibold" : "text-unjong-muted hover:text-unjong-primary"}`}
           >
             🕐 최신
           </button>
@@ -128,8 +128,8 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
       {!user ? (
         <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4 text-center space-y-2">
           <AlertCircle size={20} className="mx-auto text-unjong-muted" />
-          <p className="text-xs text-unjong-primary">토론 글쓰기는 로그인 후 가능합니다</p>
-          <Link href="/auth/login" className="inline-block text-[10px] text-unjong-accent hover:underline">
+          <p className="text-sm text-unjong-primary">토론 글쓰기는 로그인 후 가능합니다</p>
+          <Link href="/auth/login" className="inline-block text-xs text-unjong-accent hover:underline">
             카카오로 로그인 →
           </Link>
         </div>
@@ -137,12 +137,12 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
         <button
           type="button"
           onClick={() => setShowWrite(true)}
-          className="w-full text-left bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3 text-xs text-unjong-muted hover:text-unjong-primary"
+          className="w-full text-left bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3 text-sm text-unjong-muted hover:text-unjong-primary"
         >
           ✏️ {stockName || symbol} 에 대해 어떻게 생각하세요?
         </button>
       ) : (
-        <div className="bg-unjong-surface rounded-lg border border-unjong-accent p-3 space-y-2">
+        <div className="bg-unjong-surface rounded-lg border border-unjong-accent p-4 space-y-2">
           <textarea
             value={writeContent}
             onChange={(e) => setWriteContent(e.target.value)}
@@ -150,17 +150,17 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
             maxLength={5000}
             rows={4}
             autoFocus
-            className="w-full text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none resize-none"
+            className="w-full text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none resize-none"
           />
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-unjong-muted">
+            <span className="text-xs text-unjong-muted">
               {writeContent.length} / 5000자 · {user.nickname} (Tier {user.tier ?? 1})
             </span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => { setShowWrite(false); setWriteContent(""); }}
-                className="text-xs text-unjong-muted px-2 py-1"
+                className="text-sm text-unjong-muted px-2 py-1"
               >
                 취소
               </button>
@@ -168,7 +168,7 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
                 type="button"
                 onClick={handleSubmit}
                 disabled={submitting || !writeContent.trim()}
-                className="text-xs bg-unjong-accent text-white font-semibold px-3 py-1 rounded disabled:opacity-50"
+                className="text-sm bg-unjong-accent text-white font-semibold px-3 py-1 rounded disabled:opacity-50"
               >
                 {submitting ? "..." : "등록"}
               </button>

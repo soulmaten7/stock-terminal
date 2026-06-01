@@ -47,7 +47,7 @@ export function CardDetail({ window, card }: CardDetailProps) {
         </p>
         <Link
           href={WINDOW_HREF[window] ?? "/kr"}
-          className="mt-2 inline-block text-xs text-unjong-accent hover:underline"
+          className="mt-2 inline-block text-sm text-unjong-accent hover:underline"
         >
           ← 돌아가기
         </Link>
@@ -66,7 +66,7 @@ export function CardDetail({ window, card }: CardDetailProps) {
           <ArrowLeft size={16} />
           <span>{meta.windowLabel}으로</span>
         </Link>
-        <span className="text-[10px] text-unjong-muted italic">
+        <span className="text-xs text-unjong-muted italic">
           준비 중
         </span>
       </div>
@@ -77,32 +77,32 @@ export function CardDetail({ window, card }: CardDetailProps) {
           <span aria-hidden className="text-2xl">{meta.emoji}</span>
           <div>
             <h1 className="text-lg font-bold text-unjong-primary">{meta.title}</h1>
-            <p className="text-xs text-unjong-muted mt-0.5">{meta.subtitle}</p>
+            <p className="text-sm text-unjong-muted mt-0.5">{meta.subtitle}</p>
           </div>
         </div>
       </div>
 
       {/* 필터/정렬 UI placeholder */}
-      <div className="rounded-lg border border-unjong-border bg-unjong-surface p-3">
+      <div className="rounded-lg border border-unjong-border bg-unjong-surface p-4">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-unjong-muted">
+          <div className="flex items-center gap-1.5 text-sm text-unjong-muted">
             <Filter size={12} />
             <span>필터</span>
             <span className="text-unjong-primary font-medium">전체</span>
-            <span className="text-[10px]">·</span>
+            <span className="text-xs">·</span>
             <span className="hover:text-unjong-primary cursor-pointer">KOSPI</span>
-            <span className="text-[10px]">·</span>
+            <span className="text-xs">·</span>
             <span className="hover:text-unjong-primary cursor-pointer">KOSDAQ</span>
-            <span className="text-[10px]">·</span>
+            <span className="text-xs">·</span>
             <span className="hover:text-unjong-primary cursor-pointer">시총 1조+</span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-unjong-muted ml-auto">
+          <div className="flex items-center gap-1.5 text-sm text-unjong-muted ml-auto">
             <ArrowUpDown size={12} />
             <span>정렬</span>
             <span className="text-unjong-primary font-medium">등락률 ↓</span>
           </div>
         </div>
-        <p className="text-[10px] text-unjong-muted italic mt-2 pl-4">
+        <p className="text-xs text-unjong-muted italic mt-2 pl-4">
           준비 중
         </p>
       </div>
@@ -113,7 +113,7 @@ export function CardDetail({ window, card }: CardDetailProps) {
         <p className="text-sm font-medium text-unjong-primary mb-1">
           {meta.title} 풀 리스트
         </p>
-        <p className="text-xs text-unjong-muted leading-relaxed max-w-md mx-auto">
+        <p className="text-sm text-unjong-muted leading-relaxed max-w-md mx-auto">
           Layer 1 에서 30~100건+ 풀 데이터 + 필터/정렬 + 검색 + 시간별 추이 연결.
           <br />
           현재 메인 카드 (요약 5건) 는{" "}

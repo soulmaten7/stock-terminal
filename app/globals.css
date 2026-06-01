@@ -1,3 +1,4 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/[email protected]/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 @import "tailwindcss";
 
 @theme inline {
@@ -38,13 +39,15 @@
 * { box-sizing: border-box; }
 
 html {
-  font-size: 13px;
+  /* STEP 127: 13px → 16px (브라우저 기본). rem 기반 Tailwind 텍스트·spacing 이
+     네이버 페이 증권 수준 크기(text-xs=12px / text-sm=14px / text-base=16px)로 정렬됨. */
+  font-size: 16px;
 }
 
 body {
   background-color: #FFFFFF;
   color: #000000;
-  font-family: 'Pretendard', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   min-width: 1280px;
 }
 

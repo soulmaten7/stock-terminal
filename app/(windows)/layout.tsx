@@ -10,7 +10,7 @@ export default function WindowsLayout({ children }: { children: ReactNode }) {
         <div className="sticky top-0 h-[500px] flex flex-col">
           <ChatPanel />
         </div>
-        <div className="border-t border-unjong-border bg-unjong-background p-3 text-[10px] text-unjong-muted text-center italic">
+        <div className="border-t border-unjong-border bg-unjong-background p-4 text-xs text-unjong-muted text-center italic">
           Layer 2 — 광고·텔레그램 링크 영역
         </div>
       </aside>

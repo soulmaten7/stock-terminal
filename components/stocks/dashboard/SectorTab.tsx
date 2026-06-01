@@ -90,12 +90,12 @@ export default function SectorTab({ stockId, sector }: SectorTabProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-text-secondary text-left">
-              <th className="p-3 w-8">#</th>
-              <th className="p-3">종목명</th>
-              <th className="p-3">코드</th>
-              <th className="p-3 text-right">시가총액</th>
-              <th className="p-3 text-right">PER</th>
-              <th className="p-3 text-right">등락률</th>
+              <th className="p-4 w-8">#</th>
+              <th className="p-4">종목명</th>
+              <th className="p-4">코드</th>
+              <th className="p-4 text-right">시가총액</th>
+              <th className="p-4 text-right">PER</th>
+              <th className="p-4 text-right">등락률</th>
             </tr>
           </thead>
           <tbody>
@@ -110,8 +110,8 @@ export default function SectorTab({ stockId, sector }: SectorTabProps) {
                       : 'hover:bg-dark-800/50'
                   }`}
                 >
-                  <td className="p-3 text-text-secondary font-mono-price">{i + 1}</td>
-                  <td className="p-3">
+                  <td className="p-4 text-text-secondary font-mono-price">{i + 1}</td>
+                  <td className="p-4">
                     <Link
                       href={`/stocks/${s.symbol}`}
                       className={`hover:text-accent transition-colors ${
@@ -121,14 +121,14 @@ export default function SectorTab({ stockId, sector }: SectorTabProps) {
                       {s.name_ko || s.name_en}
                     </Link>
                   </td>
-                  <td className="p-3 text-text-secondary font-mono-price">{s.symbol}</td>
-                  <td className="p-3 text-right font-mono-price text-text-primary">
+                  <td className="p-4 text-text-secondary font-mono-price">{s.symbol}</td>
+                  <td className="p-4 text-right font-mono-price text-text-primary">
                     {formatMarketCap(s.market_cap)}
                   </td>
-                  <td className="p-3 text-right font-mono-price text-text-primary">
+                  <td className="p-4 text-right font-mono-price text-text-primary">
                     {s.per != null ? s.per.toFixed(2) : '-'}
                   </td>
-                  <td className={`p-3 text-right font-mono-price ${
+                  <td className={`p-4 text-right font-mono-price ${
                     (s.change_percent ?? 0) >= 0 ? 'text-up' : 'text-down'
                   }`}>
                     {s.change_percent != null ? formatPercent(s.change_percent) : '-'}

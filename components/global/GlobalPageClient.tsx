@@ -81,7 +81,7 @@ export default function GlobalPageClient() {
               key={s}
               type="button"
               onClick={() => setSection(s)}
-              className={`text-xs font-bold px-3 py-2 transition-colors ${
+              className={`text-sm font-bold px-4 py-3 transition-colors ${
                 section === s
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
@@ -91,14 +91,14 @@ export default function GlobalPageClient() {
             </button>
           ))}
         </div>
-        {loading && <span className="text-xs text-[#888]">로딩 중…</span>}
+        {loading && <span className="text-sm text-[#888]">로딩 중…</span>}
       </div>
 
       <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FAFAFA] text-[#666] text-xs">
+              <tr className="bg-[#FAFAFA] text-[#666] text-sm">
                 <th className="px-4 py-2.5 text-left w-20">구분</th>
                 <th className="px-4 py-2.5 text-left">지수/종목</th>
                 <th className="px-4 py-2.5 text-right w-28">현재가</th>
@@ -110,20 +110,20 @@ export default function GlobalPageClient() {
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-xs text-[#999]">로딩 중…</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-[#999]">로딩 중…</td></tr>
               )}
               {!loading && error && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-xs text-[#FF3B30]">데이터를 불러오지 못했습니다</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-[#FF3B30]">데이터를 불러오지 못했습니다</td></tr>
               )}
               {!loading && !error && filtered.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-xs text-[#999]">데이터 없음</td></tr>
+                <tr><td colSpan={7} className="px-4 py-8 text-center text-sm text-[#999]">데이터 없음</td></tr>
               )}
               {!loading && !error && filtered.map((r) => {
                 const up = r.changePercent >= 0;
                 const yieldSym = isYield(r.symbol);
                 return (
                   <tr key={r.symbol} className="border-t border-[#F0F0F0] hover:bg-[#FAFAFA]">
-                    <td className="px-4 py-2.5 text-[#888] text-xs">{r.section}</td>
+                    <td className="px-4 py-2.5 text-[#888] text-sm">{r.section}</td>
                     <td className="px-4 py-2.5 text-black font-bold">{r.label}</td>
                     <td className="px-4 py-2.5 text-right text-[#333] tabular-nums">
                       {yieldSym ? `${fmt(r.price, 3)}%` : fmt(r.price)}

@@ -66,7 +66,7 @@ export default function PartnerLandingClient({
             <img src={partner.logo_url} alt={partner.name} className="h-14 w-auto object-contain" />
           )}
           {partner.category && (
-            <span className="text-xs font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-1 rounded">
+            <span className="text-sm font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-2 py-1 rounded">
               {partner.category}
             </span>
           )}
@@ -112,7 +112,7 @@ export default function PartnerLandingClient({
                 type="text" required maxLength={80}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:border-[#0ABAB5]"
+                className="w-full border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm text-black focus:outline-none focus:border-[#0ABAB5]"
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -122,7 +122,7 @@ export default function PartnerLandingClient({
                   type="email" maxLength={120}
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:border-[#0ABAB5]"
+                  className="w-full border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm text-black focus:outline-none focus:border-[#0ABAB5]"
                 />
               </div>
               <div>
@@ -132,21 +132,21 @@ export default function PartnerLandingClient({
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
                   placeholder="010-1234-5678"
-                  className="w-full border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:border-[#0ABAB5]"
+                  className="w-full border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm text-black focus:outline-none focus:border-[#0ABAB5]"
                 />
               </div>
             </div>
-            <p className="text-xs text-[#999999]">이메일 또는 전화 중 하나 이상 입력</p>
+            <p className="text-sm text-[#999999]">이메일 또는 전화 중 하나 이상 입력</p>
             <div>
               <label className="block text-sm font-bold text-black mb-1">문의 내용</label>
               <textarea
                 maxLength={1000} rows={4}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
-                className="w-full border border-[#E5E7EB] rounded-lg px-3 py-2 text-sm text-black focus:outline-none focus:border-[#0ABAB5] resize-none"
+                className="w-full border border-[#E5E7EB] rounded-lg px-4 py-3 text-sm text-black focus:outline-none focus:border-[#0ABAB5] resize-none"
               />
             </div>
-            <label className="flex items-start gap-2 text-xs text-[#666666]">
+            <label className="flex items-start gap-2 text-sm text-[#666666]">
               <input
                 type="checkbox"
                 checked={form.consent}

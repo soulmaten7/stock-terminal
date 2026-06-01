@@ -98,7 +98,7 @@ export default function MacroTab() {
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <TrendingUp className="w-10 h-10 text-text-secondary/30 mb-3" />
         <p className="text-text-secondary text-sm">거시경제 데이터를 불러올 수 없습니다</p>
-        <p className="text-text-secondary/60 text-xs mt-1">FRED API 키를 확인해주세요</p>
+        <p className="text-text-secondary/60 text-sm mt-1">FRED API 키를 확인해주세요</p>
       </div>
     );
   }
@@ -121,7 +121,7 @@ export default function MacroTab() {
                 <div className="text-left">
                   <p className="text-text-primary font-medium text-sm">{ind.label}</p>
                   {ind.date && (
-                    <p className="text-text-secondary text-xs mt-0.5">
+                    <p className="text-text-secondary text-sm mt-0.5">
                       {formatDate(ind.date)} 기준
                     </p>
                   )}
@@ -141,7 +141,7 @@ export default function MacroTab() {
                         ) : (
                           <TrendingDown className="w-3 h-3 text-down" />
                         )}
-                        <p className={`text-xs font-mono-price ${ind.change >= 0 ? 'text-up' : 'text-down'}`}>
+                        <p className={`text-sm font-mono-price ${ind.change >= 0 ? 'text-up' : 'text-down'}`}>
                           {ind.change >= 0 ? '+' : ''}{ind.change.toFixed(2)}
                         </p>
                       </div>

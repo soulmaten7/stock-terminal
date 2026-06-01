@@ -151,7 +151,7 @@ export default function OrderBookPageClient() {
             이동
           </button>
         </form>
-        {loading && <span className="text-xs text-[#888]">로딩 중…</span>}
+        {loading && <span className="text-sm text-[#888]">로딩 중…</span>}
       </div>
 
       {/* 종목 요약 */}
@@ -167,7 +167,7 @@ export default function OrderBookPageClient() {
               {(info.changePercent ?? 0).toFixed(2)}%)
             </span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-[#888]">시가</span>
               <span className="tabular-nums text-[#333]">{fmtN(info.open)}</span>
@@ -212,7 +212,7 @@ export default function OrderBookPageClient() {
       <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
         <div className="px-4 py-2.5 border-b border-[#F0F0F0] flex items-center justify-between">
           <span className="text-sm font-bold text-black">10단 호가</span>
-          <span className="text-xs text-[#999]">KIS OpenAPI · FHKST01010200</span>
+          <span className="text-sm text-[#999]">KIS OpenAPI · FHKST01010200</span>
         </div>
 
         {asks.length === 0 && bids.length === 0 ? (
@@ -220,7 +220,7 @@ export default function OrderBookPageClient() {
         ) : (
           <div className="px-4 py-3">
             {/* 컬럼 헤더 */}
-            <div className="grid grid-cols-[1fr_auto_1fr] gap-2 py-2 border-b border-[#F0F0F0] text-[11px] font-bold text-[#888]">
+            <div className="grid grid-cols-[1fr_auto_1fr] gap-2 py-2 border-b border-[#F0F0F0] text-xs font-bold text-[#888]">
               <div className="text-right pr-2">매도 잔량</div>
               <div className="text-center min-w-[100px]">호가</div>
               <div className="text-left pl-2">매수 잔량</div>
@@ -295,7 +295,7 @@ export default function OrderBookPageClient() {
         {/* 총잔량 푸터 */}
         {sumTotal > 0 && (
           <div className="border-t border-[#F0F0F0] px-4 py-3 bg-[#FAFAFA]">
-            <div className="flex items-center justify-between text-xs mb-2 tabular-nums">
+            <div className="flex items-center justify-between text-sm mb-2 tabular-nums">
               <span className="text-[#666]">
                 총 매도{' '}
                 <span className="text-[#0051CC] font-bold">{totalAsk.toLocaleString()}</span>
@@ -307,19 +307,19 @@ export default function OrderBookPageClient() {
             </div>
             <div className="flex h-3 rounded overflow-hidden">
               <div
-                className="bg-[#FF3B30] flex items-center justify-center text-[10px] font-bold text-white"
+                className="bg-[#FF3B30] flex items-center justify-center text-xs font-bold text-white"
                 style={{ width: `${bidPct}%` }}
               >
                 {bidPct >= 15 ? `${bidPct.toFixed(1)}%` : ''}
               </div>
               <div
-                className="bg-[#0051CC] flex items-center justify-center text-[10px] font-bold text-white"
+                className="bg-[#0051CC] flex items-center justify-center text-xs font-bold text-white"
                 style={{ width: `${askPct}%` }}
               >
                 {askPct >= 15 ? `${askPct.toFixed(1)}%` : ''}
               </div>
             </div>
-            <div className="flex items-center justify-between text-[10px] text-[#888] mt-1">
+            <div className="flex items-center justify-between text-xs text-[#888] mt-1">
               <span>매수 우세 ←</span>
               <span>→ 매도 우세</span>
             </div>

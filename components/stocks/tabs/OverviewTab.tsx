@@ -82,9 +82,9 @@ export default function OverviewTab({ stock }: { stock: Stock }) {
           {KPI_ORDER.map(({ key, label }) => (
             <div
               key={key}
-              className="bg-[#F5F7FA] border border-[#E5E7EB] rounded p-3"
+              className="bg-[#F5F7FA] border border-[#E5E7EB] rounded p-4"
             >
-              <p className="text-[#666666] text-xs font-bold mb-1">{label}</p>
+              <p className="text-[#666666] text-sm font-bold mb-1">{label}</p>
               <p className="text-black font-mono-price font-bold text-base">
                 {loading ? '...' : overview?.kpis[key] ?? '—'}
               </p>
@@ -92,7 +92,7 @@ export default function OverviewTab({ stock }: { stock: Stock }) {
           ))}
         </div>
         {overview?.meta.latestFinancialPeriod && (
-          <p className="text-[10px] text-[#999999] mt-2">
+          <p className="text-xs text-[#999999] mt-2">
             재무 지표 기준: {overview.meta.latestFinancialPeriod} ({overview.meta.latestFinancialType}) /
             가격 데이터 포인트: {overview.meta.priceDataPoints}
           </p>
@@ -107,12 +107,12 @@ export default function OverviewTab({ stock }: { stock: Stock }) {
             <p className="text-[#999999]">불러오는 중…</p>
           ) : company?.error ? (
             <div>
-              <p className="text-[#666666] text-xs mb-2">
+              <p className="text-[#666666] text-sm mb-2">
                 {company.fallback
                   ? 'DART 연동 미설정 — 기본 정보만 표시'
                   : `기업개황을 불러올 수 없습니다: ${company.error}`}
               </p>
-              <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="grid grid-cols-2 gap-2 text-sm">
                 <div><span className="font-bold text-black">종목코드: </span>{stock.symbol}</div>
                 <div><span className="font-bold text-black">시장: </span>{stock.market}</div>
                 <div><span className="font-bold text-black">섹터: </span>{stock.sector ?? '—'}</div>
@@ -120,7 +120,7 @@ export default function OverviewTab({ stock }: { stock: Stock }) {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
               <Info label="기업명" value={company?.name} />
               <Info label="대표이사" value={company?.ceo} />
               <Info label="본사 주소" value={company?.address} />

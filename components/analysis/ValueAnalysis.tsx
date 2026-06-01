@@ -94,7 +94,7 @@ export default function ValueAnalysis({ stockId }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {metrics.map(m => (
             <div key={m.label} className="bg-dark-700 rounded-lg p-4 border border-border">
-              <p className="text-xs text-text-secondary mb-1">{m.desc}</p>
+              <p className="text-sm text-text-secondary mb-1">{m.desc}</p>
               <p className="text-base font-bold font-mono-price">{m.label}</p>
               <p className="text-2xl font-bold font-mono-price mt-1 text-text-primary">
                 {formatNum(m.value, 2, m.suffix)}
@@ -103,7 +103,7 @@ export default function ValueAnalysis({ stockId }: Props) {
           ))}
         </div>
         {latest?.period_date && (
-          <p className="text-xs text-text-secondary/70 mt-2">
+          <p className="text-sm text-text-secondary/70 mt-2">
             기준: {latest.period_date} ({latest.period_type}){latest.source ? ` · 출처 ${latest.source}` : ''}
           </p>
         )}

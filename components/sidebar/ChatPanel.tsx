@@ -180,7 +180,7 @@ export function ChatPanel() {
           </span>
         </div>
         <span
-          className="text-[10px] text-unjong-muted truncate ml-2"
+          className="text-xs text-unjong-muted truncate ml-2"
           title={mounted ? nickname : ""}
           suppressHydrationWarning
         >
@@ -198,14 +198,14 @@ export function ChatPanel() {
           messages.map((msg) => (
             <div key={msg.id} className="flex flex-col gap-0.5">
               <div className="flex items-baseline gap-1.5">
-                <span className="text-xs font-semibold text-unjong-primary">
+                <span className="text-sm font-semibold text-unjong-primary">
                   {msg.nickname ?? "익명"}
                 </span>
-                <span className="text-[10px] text-unjong-muted">
+                <span className="text-xs text-unjong-muted">
                   {formatTime(msg.created_at)}
                 </span>
               </div>
-              <p className="text-xs text-unjong-primary leading-snug pl-1">
+              <p className="text-sm text-unjong-primary leading-normal pl-1">
                 {msg.content}
               </p>
             </div>
@@ -223,7 +223,7 @@ export function ChatPanel() {
             onKeyDown={handleKeyDown}
             placeholder={`${ctx.window}에 메시지...`}
             maxLength={500}
-            className="flex-1 bg-transparent text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
             aria-label="채팅 입력"
             disabled={sending}
           />

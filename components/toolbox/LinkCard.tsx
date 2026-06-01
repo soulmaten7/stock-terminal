@@ -77,7 +77,7 @@ export default function LinkCard({
             <p className="font-bold text-black text-sm truncate group-hover:text-[#0ABAB5] transition-colors">
               {link.site_name}
             </p>
-            <p className="text-[10px] text-[#999999] truncate">{domain}</p>
+            <p className="text-xs text-[#999999] truncate">{domain}</p>
           </div>
         </div>
         {isLoggedIn && (
@@ -91,7 +91,7 @@ export default function LinkCard({
         )}
       </div>
       {link.description && (
-        <p className="text-[11px] text-[#666666] line-clamp-2 leading-relaxed">
+        <p className="text-xs text-[#666666] line-clamp-2 leading-relaxed">
           {link.description}
         </p>
       )}

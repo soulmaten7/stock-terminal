@@ -85,7 +85,7 @@ export default function StockDetailTabs({ stock }: Props) {
                 title={isDisabled ? '확장 데이터 연결 후 사용 가능' : undefined}
               >
                 {tab.label}
-                {isDisabled && <span className="ml-1 text-[10px]">🔒</span>}
+                {isDisabled && <span className="ml-1 text-xs">🔒</span>}
               </Link>
             );
           })}

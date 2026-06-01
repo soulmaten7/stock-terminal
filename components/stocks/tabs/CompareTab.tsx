@@ -197,7 +197,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
   return (
     <div className="space-y-4">
       {/* 심볼 칩 + 검색 */}
-      <div className="bg-white border border-[#E5E7EB] rounded p-3">
+      <div className="bg-white border border-[#E5E7EB] rounded p-4">
         <div className="flex flex-wrap items-center gap-1.5">
           {symbols.map((sym) => {
             const isCurrent = sym === stock.symbol;
@@ -205,7 +205,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
             return (
               <div
                 key={sym}
-                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-bold ${
+                className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-sm font-bold ${
                   isCurrent
                     ? 'bg-[#0ABAB5] text-white'
                     : 'bg-[#F5F7FA] text-black border border-[#E5E7EB]'
@@ -213,7 +213,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
               >
                 <span>${sym}</span>
                 {metadata && (
-                  <span className={`font-normal text-[10px] ${isCurrent ? 'opacity-80' : 'text-[#999999]'}`}>
+                  <span className={`font-normal text-xs ${isCurrent ? 'opacity-80' : 'text-[#999999]'}`}>
                     {metadata.name}
                   </span>
                 )}
@@ -236,7 +236,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
               {!searchOpen ? (
                 <button
                   onClick={() => setSearchOpen(true)}
-                  className="px-2 py-1 text-xs font-bold text-[#0ABAB5] border border-dashed border-[#0ABAB5] rounded hover:bg-[#0ABAB5]/10"
+                  className="px-2 py-1 text-sm font-bold text-[#0ABAB5] border border-dashed border-[#0ABAB5] rounded hover:bg-[#0ABAB5]/10"
                 >
                   + 종목 추가
                 </button>
@@ -249,7 +249,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
                     onBlur={() => setTimeout(() => setSearchOpen(false), 200)}
                     autoFocus
                     placeholder="종목명 또는 6자리 코드"
-                    className="px-2 py-1 text-xs border border-[#E5E7EB] rounded focus:outline-none focus:border-[#0ABAB5] w-48"
+                    className="px-2 py-1 text-sm border border-[#E5E7EB] rounded focus:outline-none focus:border-[#0ABAB5] w-48"
                   />
                   {searchResults.length > 0 && (
                     <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-[#E5E7EB] rounded shadow-lg z-10 max-h-60 overflow-y-auto">
@@ -260,7 +260,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
                             e.preventDefault();
                             addSymbol(r.symbol);
                           }}
-                          className="w-full px-2 py-1.5 text-xs text-left hover:bg-[#F5F7FA] flex justify-between items-center border-b border-[#F5F7FA] last:border-b-0"
+                          className="w-full px-2 py-1.5 text-sm text-left hover:bg-[#F5F7FA] flex justify-between items-center border-b border-[#F5F7FA] last:border-b-0"
                           disabled={symbols.includes(r.symbol)}
                         >
                           <span>
@@ -268,7 +268,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
                             <span className="text-[#666666] ml-1">{r.name_ko}</span>
                           </span>
                           {symbols.includes(r.symbol) && (
-                            <span className="text-[10px] text-[#999999]">추가됨</span>
+                            <span className="text-xs text-[#999999]">추가됨</span>
                           )}
                         </button>
                       ))}
@@ -280,10 +280,10 @@ export default function CompareTab({ stock }: { stock: Stock }) {
           )}
         </div>
 
-        <p className="text-[10px] text-[#999999] mt-2">
+        <p className="text-xs text-[#999999] mt-2">
           현재 종목 포함 2~5개 비교. 현재 종목은 제거할 수 없습니다.
         </p>
-        {err && <p className="text-[11px] text-[#FF3B30] mt-1">⚠ {err}</p>}
+        {err && <p className="text-xs text-[#FF3B30] mt-1">⚠ {err}</p>}
       </div>
 
       {/* 대기 / 에러 / 빈 상태 */}
@@ -301,20 +301,20 @@ export default function CompareTab({ stock }: { stock: Stock }) {
       {/* KPI 비교 테이블 */}
       {data && data.stocks.length >= 2 && !loading && (
         <div className="bg-white border border-[#E5E7EB] rounded overflow-hidden">
-          <div className="px-3 py-2 bg-[#F5F7FA] border-b border-[#E5E7EB]">
-            <p className="font-bold text-xs text-black">핵심 지표 비교</p>
+          <div className="px-4 py-3 bg-[#F5F7FA] border-b border-[#E5E7EB]">
+            <p className="font-bold text-sm text-black">핵심 지표 비교</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="bg-[#FAFBFC] border-b border-[#E5E7EB]">
-                  <th className="px-3 py-2 text-left font-bold text-[#666666]">지표</th>
+                  <th className="px-4 py-3 text-left font-bold text-[#666666]">지표</th>
                   {data.stocks.map((s, i) => (
-                    <th key={s.symbol} className="px-3 py-2 text-right font-bold">
+                    <th key={s.symbol} className="px-4 py-3 text-right font-bold">
                       <Link href={`/stocks/${s.symbol}`} className="hover:underline">
                         <span style={{ color: CHART_COLORS[i] }}>${s.symbol}</span>
                         <br />
-                        <span className="font-normal text-[10px] text-[#666666]">{s.name}</span>
+                        <span className="font-normal text-xs text-[#666666]">{s.name}</span>
                       </Link>
                     </th>
                   ))}
@@ -393,10 +393,10 @@ export default function CompareTab({ stock }: { stock: Stock }) {
 
       {/* 퍼포먼스 라인차트 */}
       {data && data.stocks.length >= 2 && chartData.length > 0 && !loading && (
-        <div className="bg-white border border-[#E5E7EB] rounded p-3">
+        <div className="bg-white border border-[#E5E7EB] rounded p-4">
           <div className="flex justify-between items-center mb-2">
-            <p className="font-bold text-xs text-black">6개월 정규화 퍼포먼스 (시작일 = 100)</p>
-            <p className="text-[10px] text-[#999999]">{chartData.length} 거래일</p>
+            <p className="font-bold text-sm text-black">6개월 정규화 퍼포먼스 (시작일 = 100)</p>
+            <p className="text-xs text-[#999999]">{chartData.length} 거래일</p>
           </div>
           <div style={{ width: '100%', height: 280 }}>
             <ResponsiveContainer>
@@ -437,7 +437,7 @@ export default function CompareTab({ stock }: { stock: Stock }) {
 
       {/* notFound 경고 */}
       {data && data.notFound.length > 0 && (
-        <div className="text-[11px] text-[#F59E0B]">
+        <div className="text-xs text-[#F59E0B]">
           ⓘ 데이터 부재: {data.notFound.map((s) => `$${s}`).join(', ')}
         </div>
       )}

@@ -48,9 +48,9 @@ export default function HotDiscussionsModule() {
     <section className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
       <header className="flex items-center justify-between mb-3">
         <h2 className="text-base font-semibold text-unjong-primary flex items-center gap-1.5">
-          🔥 HOT 토론 <span className="text-[10px] text-unjong-muted font-normal">24시간 좋아요 순</span>
+          🔥 HOT 토론 <span className="text-xs text-unjong-muted font-normal">24시간 좋아요 순</span>
         </h2>
-        <span className="text-[10px] text-unjong-muted italic">실시간</span>
+        <span className="text-xs text-unjong-muted italic">실시간</span>
       </header>
 
       {loading ? (
@@ -65,27 +65,27 @@ export default function HotDiscussionsModule() {
               <li key={d.id}>
                 <Link
                   href={`/stock/${d.symbol}`}
-                  className="block bg-unjong-background rounded p-3 hover:border-unjong-accent border border-transparent transition-colors"
+                  className="block bg-unjong-background rounded p-4 hover:border-unjong-accent border border-transparent transition-colors"
                 >
                   <div className="flex items-baseline justify-between mb-1">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
+                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-50 text-blue-700">
                         {d.symbol}
                       </span>
-                      <span className="text-xs font-medium text-unjong-primary">
+                      <span className="text-sm font-medium text-unjong-primary">
                         {tierEmoji} {d.nickname}
                       </span>
                     </div>
-                    <span className="text-[10px] text-unjong-muted">
+                    <span className="text-xs text-unjong-muted">
                       {new Date(d.created_at).toLocaleString("ko-KR", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
-                  <p className="text-xs text-unjong-primary truncate">{d.content}</p>
+                  <p className="text-sm text-unjong-primary truncate">{d.content}</p>
                   <div className="flex items-center gap-3 mt-1.5">
-                    <span className="flex items-center gap-1 text-[10px] text-unjong-muted">
+                    <span className="flex items-center gap-1 text-xs text-unjong-muted">
                       <Heart size={10} /> {d.like_count}
                     </span>
-                    <span className="flex items-center gap-1 text-[10px] text-unjong-muted">
+                    <span className="flex items-center gap-1 text-xs text-unjong-muted">
                       <MessageCircle size={10} /> {d.comment_count}
                     </span>
                   </div>

@@ -48,16 +48,16 @@ export default function DisclosuresTab() {
   }, [selected?.code, selected?.market]);
 
   if (!selected) {
-    return <div className="py-8 text-center text-xs text-[#999]">좌측에서 종목을 선택하세요</div>;
+    return <div className="py-8 text-center text-sm text-[#999]">좌측에서 종목을 선택하세요</div>;
   }
 
   if (loading) return <ListSkeleton count={5} />;
-  if (error) return <div className="py-8 text-center text-xs text-[#999]">공시를 불러오지 못했습니다</div>;
-  if (!items.length) return <div className="py-8 text-center text-xs text-[#999]">최근 공시가 없습니다</div>;
+  if (error) return <div className="py-8 text-center text-sm text-[#999]">공시를 불러오지 못했습니다</div>;
+  if (!items.length) return <div className="py-8 text-center text-sm text-[#999]">최근 공시가 없습니다</div>;
 
   return (
     <div className="py-2">
-      <div className="text-[10px] text-[#999] mb-2">
+      <div className="text-xs text-[#999] mb-2">
         출처: {source === 'SEC' ? 'SEC EDGAR' : 'DART'}{source === 'DART' ? ' (최근 6개월)' : ''}
       </div>
       <ul className="divide-y divide-[#F0F0F0]">
@@ -69,10 +69,10 @@ export default function DisclosuresTab() {
               rel="noopener noreferrer"
               className="block hover:bg-[#F9F9F9] -mx-2 px-2 py-1 rounded"
             >
-              <div className="text-xs text-black font-medium leading-snug mb-0.5 line-clamp-2">
+              <div className="text-sm text-black font-medium leading-normal mb-0.5 line-clamp-2">
                 {item.report_name}
               </div>
-              <div className="text-[10px] text-[#999] flex gap-1.5">
+              <div className="text-xs text-[#999] flex gap-1.5">
                 {item.published_at && <span>{fmtDate(item.published_at)}</span>}
                 {item.disclosure_type && item.disclosure_type !== item.report_name && (
                   <><span>·</span><span>{item.disclosure_type}</span></>

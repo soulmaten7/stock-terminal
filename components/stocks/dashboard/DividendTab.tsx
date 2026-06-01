@@ -73,7 +73,7 @@ export default function DividendTab({ stockId }: DividendTabProps) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {summaryCards.map((card) => (
           <div key={card.label} className="bg-dark-700 rounded-lg border border-border p-4">
-            <p className="text-text-secondary text-xs mb-1">{card.label}</p>
+            <p className="text-text-secondary text-sm mb-1">{card.label}</p>
             <p className="text-text-primary font-bold font-mono-price">{card.value}</p>
           </div>
         ))}
@@ -101,31 +101,31 @@ export default function DividendTab({ stockId }: DividendTabProps) {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border text-text-secondary text-left">
-              <th className="p-3">연도</th>
-              <th className="p-3 text-right">주당 배당금</th>
-              <th className="p-3 text-right">배당 수익률</th>
-              <th className="p-3 text-right">배당 성향</th>
-              <th className="p-3">배당락일</th>
-              <th className="p-3">지급일</th>
+              <th className="p-4">연도</th>
+              <th className="p-4 text-right">주당 배당금</th>
+              <th className="p-4 text-right">배당 수익률</th>
+              <th className="p-4 text-right">배당 성향</th>
+              <th className="p-4">배당락일</th>
+              <th className="p-4">지급일</th>
             </tr>
           </thead>
           <tbody>
             {[...dividends].reverse().map((d) => (
               <tr key={d.id} className="border-b border-border/50 hover:bg-dark-800/50">
-                <td className="p-3 text-text-primary font-mono-price">{d.fiscal_year}</td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-4 text-text-primary font-mono-price">{d.fiscal_year}</td>
+                <td className="p-4 text-right font-mono-price text-text-primary">
                   {formatCurrency(d.dividend_per_share)}
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-4 text-right font-mono-price text-text-primary">
                   {d.dividend_yield != null ? `${d.dividend_yield.toFixed(2)}%` : '-'}
                 </td>
-                <td className="p-3 text-right font-mono-price text-text-primary">
+                <td className="p-4 text-right font-mono-price text-text-primary">
                   {d.payout_ratio != null ? `${d.payout_ratio.toFixed(1)}%` : '-'}
                 </td>
-                <td className="p-3 text-text-secondary">
+                <td className="p-4 text-text-secondary">
                   {d.ex_dividend_date ? formatDate(d.ex_dividend_date) : '-'}
                 </td>
-                <td className="p-3 text-text-secondary">
+                <td className="p-4 text-text-secondary">
                   {d.payment_date ? formatDate(d.payment_date) : '-'}
                 </td>
               </tr>

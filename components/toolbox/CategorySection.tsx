@@ -11,7 +11,7 @@ function PartnerSlotPlaceholder({ slotId, slug }: { slotId: string; slug: string
   return (
     <div
       data-slot={slotId}
-      className="border border-dashed border-[#E5E7EB] rounded-xl px-4 py-3 text-[11px] text-[#BBBBBB] text-center mb-3"
+      className="border border-dashed border-[#E5E7EB] rounded-xl px-4 py-3 text-xs text-[#BBBBBB] text-center mb-3"
     >
       Partner Slot — W4 구현 예정
     </div>
@@ -45,11 +45,11 @@ export default function CategorySection({
           <span className="font-bold text-black text-sm group-hover:text-[#0ABAB5] transition-colors">
             {label}
           </span>
-          <span className="bg-[#F5F7FA] text-[#666666] text-[10px] font-bold px-2 py-0.5 rounded-full">
+          <span className="bg-[#F5F7FA] text-[#666666] text-xs font-bold px-2 py-0.5 rounded-full">
             {links.length}
           </span>
         </div>
-        <span className={`text-[#999999] text-xs transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
+        <span className={`text-[#999999] text-sm transition-transform duration-200 ${open ? 'rotate-180' : ''}`}>
           ▼
         </span>
       </button>

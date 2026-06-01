@@ -237,12 +237,12 @@ export default function ChartPageClient() {
 
         {isKrx && (
           <div className="flex items-center gap-1 ml-auto">
-            <span className="text-xs text-[#666] mr-1">기간</span>
+            <span className="text-sm text-[#666] mr-1">기간</span>
             {(['D', 'W', 'M'] as Period[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setPeriod(p)}
-                className={`text-xs font-medium px-2.5 py-1 rounded ${
+                className={`text-sm font-medium px-2.5 py-1 rounded ${
                   period === p
                     ? 'bg-[#0ABAB5] text-white'
                     : 'bg-white border border-[#E5E7EB] text-[#666] hover:text-black'
@@ -285,10 +285,10 @@ export default function ChartPageClient() {
             <span className="text-sm font-bold text-black">
               최근 {tableRows.length}개 {period === 'D' ? '일봉' : period === 'W' ? '주봉' : '월봉'}
             </span>
-            <span className="text-xs text-[#999]">KIS OpenAPI</span>
+            <span className="text-sm text-[#999]">KIS OpenAPI</span>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[#F0F0F0] bg-[#F8F9FA]">
                   <th className="px-4 py-2 text-left font-bold text-[#666]">날짜</th>

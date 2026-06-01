@@ -25,7 +25,7 @@ export default function DetailTabs({ activeTab, onChange }: Props) {
             role="tab"
             aria-selected={active}
             onClick={() => onChange(tab.id)}
-            className={`relative flex-1 h-10 text-xs transition-colors ${
+            className={`relative flex-1 h-10 text-sm transition-colors ${
               active ? 'text-[#0ABAB5] font-bold' : 'text-[#444] hover:text-black'
             }`}
           >

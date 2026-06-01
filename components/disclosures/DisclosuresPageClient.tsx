@@ -116,7 +116,7 @@ export default function DisclosuresPageClient() {
             </p>
           </div>
           {total > 0 && (
-            <span className="text-xs text-[#888]">
+            <span className="text-sm text-[#888]">
               총 <span className="text-black font-bold tabular-nums">{total.toLocaleString()}</span>건
             </span>
           )}
@@ -155,7 +155,7 @@ export default function DisclosuresPageClient() {
               key={key || 'all'}
               type="button"
               onClick={() => setCorpCls(key)}
-              className={`text-xs font-medium px-3 py-2 transition-colors ${
+              className={`text-sm font-medium px-4 py-3 transition-colors ${
                 corpCls === key
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
@@ -171,7 +171,7 @@ export default function DisclosuresPageClient() {
           <button
             type="button"
             onClick={() => setOnlyImportant(false)}
-            className={`text-xs font-medium px-3 py-2 transition-colors ${
+            className={`text-sm font-medium px-4 py-3 transition-colors ${
               !onlyImportant ? 'bg-[#666] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
             }`}
           >
@@ -180,7 +180,7 @@ export default function DisclosuresPageClient() {
           <button
             type="button"
             onClick={() => setOnlyImportant(true)}
-            className={`text-xs font-medium px-3 py-2 transition-colors ${
+            className={`text-sm font-medium px-4 py-3 transition-colors ${
               onlyImportant ? 'bg-[#FF3B30] text-white' : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
             }`}
           >
@@ -194,7 +194,7 @@ export default function DisclosuresPageClient() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FAFAFA] text-[#666] text-xs">
+              <tr className="bg-[#FAFAFA] text-[#666] text-sm">
                 <th className="text-left px-4 py-3 w-28">접수일</th>
                 <th className="text-left px-4 py-3 w-24">종목코드</th>
                 <th className="text-left px-4 py-3 w-40">기업명</th>
@@ -224,7 +224,7 @@ export default function DisclosuresPageClient() {
                         ? '중요 공시가 없습니다'
                         : '해당 날짜의 공시가 없습니다'}
                     </p>
-                    <p className="text-xs text-[#999] mt-1">
+                    <p className="text-sm text-[#999] mt-1">
                       날짜·시장구분·필터를 조정해 보세요
                     </p>
                   </td>
@@ -239,10 +239,10 @@ export default function DisclosuresPageClient() {
                         d.is_important ? 'bg-[#FF3B30]/[0.03]' : ''
                       }`}
                     >
-                      <td className="px-4 py-2.5 text-[#888] tabular-nums text-xs">
+                      <td className="px-4 py-2.5 text-[#888] tabular-nums text-sm">
                         {fmtDartDateFull(d.rcept_dt)}
                       </td>
-                      <td className="px-4 py-2.5 tabular-nums text-xs text-[#333]">
+                      <td className="px-4 py-2.5 tabular-nums text-sm text-[#333]">
                         {d.stock_code || '-'}
                       </td>
                       <td className="px-4 py-2.5">
@@ -257,7 +257,7 @@ export default function DisclosuresPageClient() {
                       </td>
                       <td className="px-4 py-2.5">
                         <span
-                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${TYPE_COLOR[type]}`}
+                          className={`text-xs font-bold px-1.5 py-0.5 rounded ${TYPE_COLOR[type]}`}
                         >
                           {type}
                         </span>
@@ -272,7 +272,7 @@ export default function DisclosuresPageClient() {
                           {d.report_nm.trim()}
                         </a>
                       </td>
-                      <td className="px-4 py-2.5 text-[#888] text-xs">{d.flr_nm}</td>
+                      <td className="px-4 py-2.5 text-[#888] text-sm">{d.flr_nm}</td>
                       <td className="px-4 py-2.5 text-center">
                         <a
                           href={d.url}
@@ -293,7 +293,7 @@ export default function DisclosuresPageClient() {
         </div>
       </div>
 
-      <p className="text-xs text-[#999] mt-4 text-center">
+      <p className="text-sm text-[#999] mt-4 text-center">
         데이터 출처: 금융감독원 DART 전자공시시스템 (opendart.fss.or.kr)
       </p>
     </div>

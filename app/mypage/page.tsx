@@ -96,18 +96,18 @@ export default function MyPage() {
             <div className="bg-dark-700 rounded-xl border border-border p-6 space-y-4">
               <h2 className="font-bold">프로필 관리</h2>
               <div>
-                <label className="text-xs text-text-secondary block mb-1">닉네임</label>
+                <label className="text-sm text-text-secondary block mb-1">닉네임</label>
                 <div className="flex gap-2">
                   <input value={nickname} onChange={(e) => setNickname(e.target.value)} className="flex-1 px-4 py-2.5 bg-dark-800 border border-border rounded-lg text-sm" />
                   <button onClick={updateNickname} disabled={saving} className="px-4 py-2.5 bg-accent text-white rounded-lg text-sm">{saving ? '저장중...' : '변경'}</button>
                 </div>
               </div>
               <div>
-                <label className="text-xs text-text-secondary block mb-1">이메일</label>
+                <label className="text-sm text-text-secondary block mb-1">이메일</label>
                 <input value={user.email} disabled className="w-full px-4 py-2.5 bg-dark-800 border border-border rounded-lg text-sm text-text-secondary" />
               </div>
               <div>
-                <label className="text-xs text-text-secondary block mb-1">가입일</label>
+                <label className="text-sm text-text-secondary block mb-1">가입일</label>
                 <p className="text-sm">{formatDate(user.created_at)}</p>
               </div>
             </div>
@@ -130,14 +130,14 @@ export default function MyPage() {
                   <p className="text-text-secondary text-sm">결제 내역이 없습니다</p>
                 ) : (
                   <table className="w-full text-sm">
-                    <thead><tr className="text-text-secondary text-xs"><th className="text-left pb-2">날짜</th><th className="text-right pb-2">금액</th><th className="text-left pb-2">유형</th><th className="text-left pb-2">상태</th></tr></thead>
+                    <thead><tr className="text-text-secondary text-sm"><th className="text-left pb-2">날짜</th><th className="text-right pb-2">금액</th><th className="text-left pb-2">유형</th><th className="text-left pb-2">상태</th></tr></thead>
                     <tbody>
                       {payments.map((p) => (
                         <tr key={p.id} className="border-t border-border/50">
                           <td className="py-2">{formatDate(p.created_at)}</td>
                           <td className="py-2 text-right font-mono-price">{formatNumber(p.amount)}원</td>
                           <td className="py-2">{p.payment_type === 'subscription' ? '구독' : '배너'}</td>
-                          <td className="py-2"><span className={`px-2 py-0.5 rounded text-xs ${p.status === 'completed' ? 'bg-success/20 text-success' : 'bg-dark-600 text-text-secondary'}`}>{p.status === 'completed' ? '완료' : p.status}</span></td>
+                          <td className="py-2"><span className={`px-2 py-0.5 rounded text-sm ${p.status === 'completed' ? 'bg-success/20 text-success' : 'bg-dark-600 text-text-secondary'}`}>{p.status === 'completed' ? '완료' : p.status}</span></td>
                         </tr>
                       ))}
                     </tbody>
@@ -154,7 +154,7 @@ export default function MyPage() {
                 <p className="text-text-secondary text-sm">등록된 관심 종목이 없습니다</p>
               ) : (
                 <table className="w-full text-sm">
-                  <thead><tr className="text-text-secondary text-xs"><th className="text-left pb-2">종목코드</th><th className="text-left pb-2">시장</th><th className="text-left pb-2">등록일</th><th className="text-right pb-2">삭제</th></tr></thead>
+                  <thead><tr className="text-text-secondary text-sm"><th className="text-left pb-2">종목코드</th><th className="text-left pb-2">시장</th><th className="text-left pb-2">등록일</th><th className="text-right pb-2">삭제</th></tr></thead>
                   <tbody>
                     {watchlistItems.map((item) => (
                       <tr key={item.id} className="border-t border-border/50">

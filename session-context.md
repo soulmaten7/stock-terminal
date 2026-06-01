@@ -1,6 +1,17 @@
-<!-- 2026-05-31 -->
-<!-- Last GC: 2026-05-31 (STEP 126 종료 시점) -->
+<!-- 2026-06-01 -->
+<!-- Last GC: 2026-06-01 (STEP 127 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 127 (2026-06-01) — 가독성 리뉴얼 (Pretendard + 크기·spacing 상향) ✅
+
+### 변경
+- globals.css: Pretendard CDN @import 로드 + body "Pretendard Variable" + **html font-size 13px→16px**(핵심 — rem 텍스트 축소 원인 제거)
+- 전 .tsx: text-[10px]/[11px]→text-xs, text-xs→text-sm (perl, 명령서 sed 순서 버그 교정), leading-snug→leading-normal, p-3→p-4, px-3 py-2→px-4 py-3
+- 빌드 ✓ (exit 0)
+
+### 주의
+- 이 세션 셸/Read 출력 렌더 간헐 손상 (실행·빌드·Edit 은 정상). globals.css/layout.tsx 의 중복 font-family 잔재는 무해 보존, layout.tsx Inter 미사용 추후 정리
+- 루트 16px + 상향 = "한 번에". 과하면 사용자 피드백 후 미세 조정
 
 ## STEP 126 (2026-05-31) — 종목 페이지 핫픽스 (4개 버그) ✅
 

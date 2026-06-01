@@ -94,14 +94,14 @@ export default function DividendAnalysis({ stockId }: Props) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {metrics.map(m => (
             <div key={m.label} className="bg-dark-700 rounded-lg p-4 border border-border">
-              <p className="text-xs text-text-secondary mb-1">{m.label}</p>
+              <p className="text-sm text-text-secondary mb-1">{m.label}</p>
               <p className="text-2xl font-bold font-mono-price mt-1 text-text-primary">
                 {formatNum(m.value, m.digits, m.suffix)}
               </p>
             </div>
           ))}
         </div>
-        <p className="text-xs text-text-secondary/70 mt-2">
+        <p className="text-sm text-text-secondary/70 mt-2">
           출처: DART 정기공시 배당에 관한 사항 (alotMatter)
         </p>
       </div>
@@ -178,7 +178,7 @@ export default function DividendAnalysis({ stockId }: Props) {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-xs text-text-secondary mt-2">
+          <p className="text-sm text-text-secondary mt-2">
             배당 성향 = 배당 총액 ÷ 당기순이익. 높을수록 순이익 중 주주환원 비중 큼.
           </p>
         </div>

@@ -278,7 +278,7 @@ export default function ScreenerClient() {
     return (
       <button
         onClick={() => toggleSort(col)}
-        className={`flex items-center gap-1 text-xs font-bold ${active ? 'text-[#0ABAB5]' : 'text-[#999]'} hover:text-[#0ABAB5] ${align === 'right' ? 'justify-end ml-auto' : align === 'center' ? 'justify-center mx-auto' : ''}`}
+        className={`flex items-center gap-1 text-sm font-bold ${active ? 'text-[#0ABAB5]' : 'text-[#999]'} hover:text-[#0ABAB5] ${align === 'right' ? 'justify-end ml-auto' : align === 'center' ? 'justify-center mx-auto' : ''}`}
       >
         {SORTABLE_COLUMNS[col]}
         {active && (order === 'desc' ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />)}
@@ -289,7 +289,7 @@ export default function ScreenerClient() {
   return (
     <div className="px-4 py-8">
       <h1 className="text-3xl font-bold text-black mb-2">종목 발굴</h1>
-      <p className="text-[#999999] text-xs mb-6">
+      <p className="text-[#999999] text-sm mb-6">
         KOSPI + KOSDAQ 전체 · 퀀트/재무 팩터 기반 필터 · 컬럼 클릭 정렬
       </p>
 
@@ -310,13 +310,13 @@ export default function ScreenerClient() {
       <div className="bg-white border-[3px] border-[#0ABAB5] p-5 mb-6">
         <div className="flex flex-wrap gap-4 items-end">
           <div>
-            <label className="text-xs font-bold text-black block mb-1">시장</label>
+            <label className="text-sm font-bold text-black block mb-1">시장</label>
             <div className="flex gap-2">
               {['KOSPI', 'KOSDAQ'].map((m) => (
                 <button
                   key={m}
                   onClick={() => toggleMarket(m)}
-                  className={`px-3 py-1.5 text-xs font-bold border ${filters.market.includes(m) ? 'bg-[#0ABAB5] text-white border-[#0ABAB5]' : 'bg-white text-[#999999] border-[#E5E7EB]'}`}
+                  className={`px-3 py-1.5 text-sm font-bold border ${filters.market.includes(m) ? 'bg-[#0ABAB5] text-white border-[#0ABAB5]' : 'bg-white text-[#999999] border-[#E5E7EB]'}`}
                 >
                   {m}
                 </button>
@@ -324,7 +324,7 @@ export default function ScreenerClient() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">키워드</label>
+            <label className="text-sm font-bold text-black block mb-1">키워드</label>
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-[#999999]" />
               <input
@@ -337,7 +337,7 @@ export default function ScreenerClient() {
             </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">시총 최소(조)</label>
+            <label className="text-sm font-bold text-black block mb-1">시총 최소(조)</label>
             <input
               type="number"
               value={filters.minCap > 0 ? filters.minCap / 조 : ''}
@@ -347,7 +347,7 @@ export default function ScreenerClient() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">시총 최대(조)</label>
+            <label className="text-sm font-bold text-black block mb-1">시총 최대(조)</label>
             <input
               type="number"
               value={filters.maxCap > 0 ? filters.maxCap / 조 : ''}
@@ -357,7 +357,7 @@ export default function ScreenerClient() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">PER ≤</label>
+            <label className="text-sm font-bold text-black block mb-1">PER ≤</label>
             <input
               type="number"
               value={filters.maxPER > 0 ? filters.maxPER : ''}
@@ -367,7 +367,7 @@ export default function ScreenerClient() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">ROE ≥ (%)</label>
+            <label className="text-sm font-bold text-black block mb-1">ROE ≥ (%)</label>
             <input
               type="number"
               value={filters.minROE > 0 ? filters.minROE : ''}
@@ -377,7 +377,7 @@ export default function ScreenerClient() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">퀀트 종합 ≥</label>
+            <label className="text-sm font-bold text-black block mb-1">퀀트 종합 ≥</label>
             <input
               type="number"
               value={filters.minComposite > 0 ? filters.minComposite : ''}
@@ -387,7 +387,7 @@ export default function ScreenerClient() {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-black block mb-1">배당수익률 ≥ (%)</label>
+            <label className="text-sm font-bold text-black block mb-1">배당수익률 ≥ (%)</label>
             <input
               type="number"
               step="0.1"
@@ -399,7 +399,7 @@ export default function ScreenerClient() {
           </div>
           <button
             onClick={() => { setFilters(DEFAULT_FILTER); setOrderBy('market_cap'); setOrder('desc'); }}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-[#999999] hover:text-black"
+            className="flex items-center gap-1 px-3 py-1.5 text-sm font-bold text-[#999999] hover:text-black"
           >
             <RotateCcw className="w-3 h-3" /> 초기화
           </button>
@@ -409,17 +409,17 @@ export default function ScreenerClient() {
       {/* Results */}
       <div className="bg-white border border-[#E5E7EB] overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-[#F5F5F5] text-xs text-[#999999] font-bold">
+          <thead className="bg-[#F5F5F5] text-sm text-[#999999] font-bold">
             <tr>
-              <th className="text-left px-3 py-2">종목</th>
-              <th className="text-left px-3 py-2">시장</th>
-              <th className="text-left px-3 py-2">섹터</th>
-              <th className="text-right px-3 py-2"><SortHeader col="market_cap" /></th>
-              <th className="text-right px-3 py-2"><SortHeader col="per" /></th>
-              <th className="text-right px-3 py-2"><SortHeader col="roe" /></th>
-              <th className="text-right px-3 py-2"><SortHeader col="dividend_yield" /></th>
-              <th className="text-center px-3 py-2"><SortHeader col="composite_pct" align="center" /></th>
-              <th className="text-center px-3 py-2 w-10">⭐</th>
+              <th className="text-left px-4 py-3">종목</th>
+              <th className="text-left px-4 py-3">시장</th>
+              <th className="text-left px-4 py-3">섹터</th>
+              <th className="text-right px-4 py-3"><SortHeader col="market_cap" /></th>
+              <th className="text-right px-4 py-3"><SortHeader col="per" /></th>
+              <th className="text-right px-4 py-3"><SortHeader col="roe" /></th>
+              <th className="text-right px-4 py-3"><SortHeader col="dividend_yield" /></th>
+              <th className="text-center px-4 py-3"><SortHeader col="composite_pct" align="center" /></th>
+              <th className="text-center px-4 py-3 w-10">⭐</th>
             </tr>
           </thead>
           <tbody>
@@ -433,24 +433,24 @@ export default function ScreenerClient() {
               const badge = scoreBadge(s.composite_pct);
               return (
                 <tr key={`${s.symbol}-${s.market}`} className={`border-b border-[#F0F0F0] hover:bg-[#F5F5F5] ${i % 2 === 1 ? 'bg-[#FAFAFA]' : ''}`}>
-                  <td className="px-3 py-2">
+                  <td className="px-4 py-3">
                     <Link href={`/stocks/${s.symbol}`} className="text-black font-bold hover:text-[#0ABAB5]">{s.name_ko}</Link>
-                    <span className="text-[#999999] text-xs ml-1">{s.symbol}</span>
+                    <span className="text-[#999999] text-sm ml-1">{s.symbol}</span>
                   </td>
-                  <td className="px-3 py-2 text-xs text-[#999999] font-bold">{s.market}</td>
-                  <td className="px-3 py-2 text-xs text-[#666666]">{s.sector ?? '-'}</td>
-                  <td className="text-right px-3 py-2 font-mono-price font-bold">{formatMarketCap(s.market_cap)}</td>
-                  <td className="text-right px-3 py-2 font-mono-price">{fmtNum(s.per, 1)}</td>
-                  <td className="text-right px-3 py-2 font-mono-price">{fmtNum(s.roe, 1, '%')}</td>
-                  <td className="text-right px-3 py-2 font-mono-price">{fmtNum(s.dividend_yield, 2, '%')}</td>
-                  <td className="text-center px-3 py-2">
+                  <td className="px-4 py-3 text-sm text-[#999999] font-bold">{s.market}</td>
+                  <td className="px-4 py-3 text-sm text-[#666666]">{s.sector ?? '-'}</td>
+                  <td className="text-right px-4 py-3 font-mono-price font-bold">{formatMarketCap(s.market_cap)}</td>
+                  <td className="text-right px-4 py-3 font-mono-price">{fmtNum(s.per, 1)}</td>
+                  <td className="text-right px-4 py-3 font-mono-price">{fmtNum(s.roe, 1, '%')}</td>
+                  <td className="text-right px-4 py-3 font-mono-price">{fmtNum(s.dividend_yield, 2, '%')}</td>
+                  <td className="text-center px-4 py-3">
                     {s.composite_pct != null ? (
-                      <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold ${badge.bg} ${badge.text}`}>
+                      <span className={`inline-block px-2 py-0.5 rounded text-sm font-bold ${badge.bg} ${badge.text}`}>
                         {Math.round(s.composite_pct)}
                       </span>
-                    ) : <span className="text-[#CCC] text-xs">—</span>}
+                    ) : <span className="text-[#CCC] text-sm">—</span>}
                   </td>
-                  <td className="text-center px-3 py-2">
+                  <td className="text-center px-4 py-3">
                     <button
                       onClick={() => toggleWatch(s.symbol)}
                       className={`p-1 transition-colors ${watched.has(s.symbol) ? 'text-[#0ABAB5]' : 'text-[#CCC] hover:text-[#0ABAB5]'}`}
@@ -468,15 +468,15 @@ export default function ScreenerClient() {
 
       {/* Pagination */}
       <div className="flex items-center justify-between mt-4">
-        <p className="text-[#999999] text-xs">
+        <p className="text-[#999999] text-sm">
           {total.toLocaleString()}종목 중 {((page - 1) * LIMIT + 1).toLocaleString()}~{Math.min(page * LIMIT, total).toLocaleString()}
         </p>
         <div className="flex gap-2">
           <button disabled={page <= 1} onClick={() => setPage(page - 1)}
-            className="px-3 py-1 text-xs font-bold border border-[#E5E7EB] disabled:opacity-40 hover:border-[#0ABAB5]">이전</button>
-          <span className="px-3 py-1 text-xs font-bold text-black">{page} / {totalPages || 1}</span>
+            className="px-3 py-1 text-sm font-bold border border-[#E5E7EB] disabled:opacity-40 hover:border-[#0ABAB5]">이전</button>
+          <span className="px-3 py-1 text-sm font-bold text-black">{page} / {totalPages || 1}</span>
           <button disabled={page >= totalPages} onClick={() => setPage(page + 1)}
-            className="px-3 py-1 text-xs font-bold border border-[#E5E7EB] disabled:opacity-40 hover:border-[#0ABAB5]">다음</button>
+            className="px-3 py-1 text-sm font-bold border border-[#E5E7EB] disabled:opacity-40 hover:border-[#0ABAB5]">다음</button>
         </div>
       </div>
 

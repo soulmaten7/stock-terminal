@@ -123,7 +123,7 @@ export default function NewsClient() {
               key={r}
               type="button"
               onClick={() => setTimeRange(r)}
-              className={`text-xs font-bold px-3 py-2 transition-colors ${
+              className={`text-sm font-bold px-4 py-3 transition-colors ${
                 timeRange === r
                   ? 'bg-[#0ABAB5] text-white'
                   : 'bg-white text-[#666] hover:bg-[#F0F0F0]'
@@ -133,7 +133,7 @@ export default function NewsClient() {
             </button>
           ))}
         </div>
-        <label className="inline-flex items-center gap-2 text-xs text-[#333] cursor-pointer">
+        <label className="inline-flex items-center gap-2 text-sm text-[#333] cursor-pointer">
           <input
             type="checkbox"
             checked={onlyImportant}
@@ -142,7 +142,7 @@ export default function NewsClient() {
           />
           중요 공시만
         </label>
-        <span className="text-xs text-[#888] ml-auto">{filtered.length}건</span>
+        <span className="text-sm text-[#888] ml-auto">{filtered.length}건</span>
       </div>
 
       <div className="flex gap-6">

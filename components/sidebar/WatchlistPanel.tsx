@@ -125,8 +125,8 @@ export function WatchlistPanel() {
   return (
     <div className="flex h-full flex-col rounded-lg border border-unjong-border bg-unjong-surface overflow-hidden">
       {/* 헤더 */}
-      <div className="flex items-center justify-between border-b border-unjong-border px-3 py-2 bg-unjong-background flex-shrink-0">
-        <span className="text-xs font-semibold text-unjong-primary" suppressHydrationWarning>
+      <div className="flex items-center justify-between border-b border-unjong-border px-4 py-3 bg-unjong-background flex-shrink-0">
+        <span className="text-sm font-semibold text-unjong-primary" suppressHydrationWarning>
           👀 관심종목 {mounted ? `${items.length}개` : ""}
         </span>
         <button
@@ -151,17 +151,17 @@ export function WatchlistPanel() {
               onKeyDown={handleKeyDown}
               placeholder="005930 또는 AAPL"
               autoFocus
-              className="flex-1 px-2 py-1 text-xs rounded border border-unjong-border bg-unjong-surface text-unjong-primary focus:outline-none focus:border-unjong-accent"
+              className="flex-1 px-2 py-1 text-sm rounded border border-unjong-border bg-unjong-surface text-unjong-primary focus:outline-none focus:border-unjong-accent"
             />
             <button
               type="button"
               onClick={handleAdd}
-              className="px-2 py-1 text-xs rounded bg-unjong-accent text-white font-semibold hover:opacity-90"
+              className="px-2 py-1 text-sm rounded bg-unjong-accent text-white font-semibold hover:opacity-90"
             >
               추가
             </button>
           </div>
-          <p className="text-[10px] text-unjong-muted mt-1">
+          <p className="text-xs text-unjong-muted mt-1">
             한국: 6자리 종목코드 · 미국: 티커 (예: TSLA)
           </p>
         </div>
@@ -176,7 +176,7 @@ export function WatchlistPanel() {
             <EmptyState
               title="관심종목이 없습니다"
               action={
-                <button type="button" onClick={resetItems} className="text-[10px] text-unjong-accent hover:underline">
+                <button type="button" onClick={resetItems} className="text-xs text-unjong-accent hover:underline">
                   기본 종목 8개 복원
                 </button>
               }
@@ -189,7 +189,7 @@ export function WatchlistPanel() {
             return (
               <li
                 key={item.code}
-                className="group flex items-center justify-between gap-2 px-3 py-1.5 text-xs hover:bg-unjong-background cursor-pointer transition-colors"
+                className="group flex items-center justify-between gap-2 px-3 py-1.5 text-sm hover:bg-unjong-background cursor-pointer transition-colors"
               >
                 <button
                   type="button"
@@ -198,14 +198,14 @@ export function WatchlistPanel() {
                 >
                   <div className="flex flex-col min-w-0">
                     <span className="font-medium text-unjong-primary truncate">{item.name}</span>
-                    <span className="text-[10px] text-unjong-muted">{item.code}</span>
+                    <span className="text-xs text-unjong-muted">{item.code}</span>
                   </div>
                   <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
                     <span className="font-semibold text-unjong-primary tabular-nums">
                       {pricesLoading && !p ? "..." : (p?.price ?? "—")}
                     </span>
                     {p && (
-                      <span className={`flex items-center gap-0.5 text-[10px] font-medium tabular-nums ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                      <span className={`flex items-center gap-0.5 text-xs font-medium tabular-nums ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
                         {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
                         {isUp ? "+" : ""}{p.changePct.toFixed(2)}%
                       </span>

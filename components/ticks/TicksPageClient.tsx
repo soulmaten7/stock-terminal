@@ -84,7 +84,7 @@ export default function TicksPageClient() {
 
       {/* 컨트롤 */}
       <div className="mb-4 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg px-4 py-3 flex items-center gap-3">
-        <label className="text-xs text-[#666]">종목 코드</label>
+        <label className="text-sm text-[#666]">종목 코드</label>
         <input
           type="text"
           inputMode="numeric"
@@ -93,7 +93,7 @@ export default function TicksPageClient() {
           className="w-24 text-sm font-mono border border-[#E5E7EB] rounded px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#0ABAB5]"
           placeholder="005930"
         />
-        {loading && <span className="text-xs text-[#888]">로딩 중…</span>}
+        {loading && <span className="text-sm text-[#888]">로딩 중…</span>}
       </div>
 
       {/* 통계 + 테이블 2컬럼 */}
@@ -101,7 +101,7 @@ export default function TicksPageClient() {
         {/* 통계 패널 */}
         <aside className="space-y-3">
           <div className="bg-white border border-[#E5E7EB] rounded-lg p-4">
-            <div className="text-xs text-[#999] mb-2">체결강도</div>
+            <div className="text-sm text-[#999] mb-2">체결강도</div>
             <div className={`text-3xl font-bold ${strengthUp ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
               {strength}%
             </div>
@@ -111,10 +111,10 @@ export default function TicksPageClient() {
                 style={{ width: `${Math.min(strength, 100)}%` }}
               />
             </div>
-            <p className="text-[10px] text-[#888] mt-2">최근 50건 기준</p>
+            <p className="text-xs text-[#888] mt-2">최근 50건 기준</p>
           </div>
 
-          <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 space-y-2 text-xs">
+          <div className="bg-white border border-[#E5E7EB] rounded-lg p-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-[#666]">매수 체결량</span>
               <span className="text-[#FF3B30] font-bold tabular-nums">{buyVol.toLocaleString()}</span>
@@ -138,7 +138,7 @@ export default function TicksPageClient() {
         <div className="bg-white border border-[#E5E7EB] rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FAFAFA] text-[#666] text-xs">
+              <tr className="bg-[#FAFAFA] text-[#666] text-sm">
                 <th className="px-4 py-2.5 text-left w-24">시각</th>
                 <th className="px-4 py-2.5 text-right w-28">체결가</th>
                 <th className="px-4 py-2.5 text-right w-20">변동</th>
@@ -148,25 +148,25 @@ export default function TicksPageClient() {
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-xs text-[#999]">로딩 중…</td></tr>
+                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-[#999]">로딩 중…</td></tr>
               )}
               {!loading && executions.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-xs text-[#999]">데이터 없음</td></tr>
+                <tr><td colSpan={5} className="px-4 py-8 text-center text-sm text-[#999]">데이터 없음</td></tr>
               )}
               {executions.slice(0, 50).map((t, i) => {
                 const up = t.changeSign === '1' || t.changeSign === '2';
                 return (
                   <tr key={i} className="border-t border-[#F0F0F0] hover:bg-[#FAFAFA]">
-                    <td className="px-4 py-2 text-[#888] font-mono text-xs">{fmtTime(t.time)}</td>
+                    <td className="px-4 py-2 text-[#888] font-mono text-sm">{fmtTime(t.time)}</td>
                     <td className={`px-4 py-2 text-right font-bold tabular-nums ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                       {fmtPrice(t.price)}
                     </td>
-                    <td className={`px-4 py-2 text-right tabular-nums text-xs ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
+                    <td className={`px-4 py-2 text-right tabular-nums text-sm ${up ? 'text-[#FF3B30]' : 'text-[#0051CC]'}`}>
                       {t.change > 0 ? '+' : ''}{t.change}
                     </td>
                     <td className="px-4 py-2 text-right text-[#555] tabular-nums">{t.volume.toLocaleString()}</td>
                     <td className="px-4 py-2 text-center">
-                      <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded ${up ? 'bg-[#FF3B30]/10 text-[#FF3B30]' : 'bg-[#0051CC]/10 text-[#0051CC]'}`}>
+                      <span className={`inline-block text-xs font-bold px-1.5 py-0.5 rounded ${up ? 'bg-[#FF3B30]/10 text-[#FF3B30]' : 'bg-[#0051CC]/10 text-[#0051CC]'}`}>
                         {up ? '매수' : '매도'}
                       </span>
                     </td>

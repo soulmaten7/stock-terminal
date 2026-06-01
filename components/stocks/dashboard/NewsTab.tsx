@@ -78,13 +78,13 @@ export default function NewsTab({ symbol }: NewsTabProps) {
   return (
     <div className="space-y-3">
       {query && (
-        <p className="text-[11px] text-[#999999]">
+        <p className="text-xs text-[#999999]">
           검색어: <span className="font-bold text-[#666666]">{query}</span>
         </p>
       )}
 
       {err && (
-        <div className="px-3 py-2 bg-[#FF3B30]/5 border border-[#FF3B30]/30 rounded text-xs text-[#FF3B30]">
+        <div className="px-4 py-3 bg-[#FF3B30]/5 border border-[#FF3B30]/30 rounded text-sm text-[#FF3B30]">
           ⚠ {err}
         </div>
       )}
@@ -99,14 +99,14 @@ export default function NewsTab({ symbol }: NewsTabProps) {
               href={n.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-white rounded border border-[#E5E7EB] p-3 hover:border-[#0ABAB5]/50 transition-colors group"
+              className="block bg-white rounded border border-[#E5E7EB] p-4 hover:border-[#0ABAB5]/50 transition-colors group"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-black text-sm font-medium group-hover:text-[#0ABAB5] transition-colors line-clamp-2">
                     {n.title}
                   </p>
-                  <div className="flex items-center gap-3 mt-1.5 text-[11px] text-[#666666]">
+                  <div className="flex items-center gap-3 mt-1.5 text-xs text-[#666666]">
                     {n.source && <span className="font-bold">{n.source}</span>}
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -121,7 +121,7 @@ export default function NewsTab({ symbol }: NewsTabProps) {
         </div>
       )}
 
-      <p className="text-[10px] text-[#999999] text-center">데이터: Google News RSS</p>
+      <p className="text-xs text-[#999999] text-center">데이터: Google News RSS</p>
     </div>
   );
 }

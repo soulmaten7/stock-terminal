@@ -105,7 +105,7 @@ export default function Header() {
                   <div className="absolute top-full mt-2 right-0 w-48 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50">
                     <div className="px-4 py-3 border-b border-unjong-border">
                       <p className="text-sm font-bold text-unjong-primary">{user.nickname}</p>
-                      <p className="text-xs text-unjong-muted">{user.email}</p>
+                      <p className="text-sm text-unjong-muted">{user.email}</p>
                     </div>
                     <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>
                       마이페이지

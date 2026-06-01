@@ -64,7 +64,7 @@ export default function PartnerSlot({
       <Link
         href={href}
         onClick={trackClick}
-        className={`block border border-[#E5E7EB] hover:border-[#0ABAB5] rounded-lg p-3 bg-white transition-colors ${className}`}
+        className={`block border border-[#E5E7EB] hover:border-[#0ABAB5] rounded-lg p-4 bg-white transition-colors ${className}`}
       >
         <div className="flex items-center gap-3">
           {partner.logo_url && (
@@ -74,10 +74,10 @@ export default function PartnerSlot({
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold text-black truncate">{partner.name}</p>
             {partner.description && (
-              <p className="text-xs text-[#666666] truncate">{partner.description}</p>
+              <p className="text-sm text-[#666666] truncate">{partner.description}</p>
             )}
           </div>
-          <span className="text-xs text-[#0ABAB5] font-bold flex-shrink-0">→</span>
+          <span className="text-sm text-[#0ABAB5] font-bold flex-shrink-0">→</span>
         </div>
       </Link>
     );
@@ -94,13 +94,13 @@ export default function PartnerSlot({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={partner.logo_url} alt={partner.name} className="h-10 w-auto object-contain" />
         )}
-        <span className="text-[10px] text-[#999999] font-bold flex-shrink-0">AD</span>
+        <span className="text-xs text-[#999999] font-bold flex-shrink-0">AD</span>
       </div>
       <h3 className="text-base font-bold text-black mb-1">{partner.name}</h3>
       {partner.description && (
         <p className="text-sm text-[#555555] leading-relaxed mb-3 line-clamp-3">{partner.description}</p>
       )}
-      <span className="inline-block text-xs font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-3 py-1 rounded">
+      <span className="inline-block text-sm font-bold text-[#0ABAB5] bg-[#0ABAB5]/10 px-3 py-1 rounded">
         {partner.cta_text || '자세히 보기'} →
       </span>
     </Link>

@@ -58,7 +58,7 @@ export function ContextNav() {
           key={m.id}
           type="button"
           onClick={() => handleClick(m.id)}
-          className="flex items-center gap-1 rounded px-2.5 py-1 text-xs text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background whitespace-nowrap"
+          className="flex items-center gap-1 rounded px-2.5 py-1 text-sm text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background whitespace-nowrap"
         >
           <span aria-hidden>{m.emoji}</span>
           <span>{m.label}</span>

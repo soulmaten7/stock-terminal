@@ -149,9 +149,9 @@ export function HeaderSearch() {
       {showDropdown && query.trim() && (
         <div className="absolute left-0 right-0 top-full mt-1 max-h-80 overflow-y-auto rounded-md border border-unjong-border bg-unjong-surface shadow-lg z-50">
           {loading && results.length === 0 ? (
-            <div className="px-3 py-2 text-xs text-unjong-muted italic">검색 중...</div>
+            <div className="px-4 py-3 text-sm text-unjong-muted italic">검색 중...</div>
           ) : results.length === 0 ? (
-            <div className="px-3 py-2 text-xs text-unjong-muted italic">
+            <div className="px-4 py-3 text-sm text-unjong-muted italic">
               일치하는 종목이 없습니다.
             </div>
           ) : (
@@ -169,7 +169,7 @@ export function HeaderSearch() {
                   <li key={item.symbol}>
                     <div
                       onMouseEnter={() => setActiveIndex(i)}
-                      className={`w-full px-3 py-1.5 text-xs flex items-center gap-2 transition-colors ${
+                      className={`w-full px-3 py-1.5 text-sm flex items-center gap-2 transition-colors ${
                         i === activeIndex ? "bg-unjong-background" : "hover:bg-unjong-background"
                       }`}
                     >
@@ -178,13 +178,13 @@ export function HeaderSearch() {
                         onClick={() => handleSelect(item)}
                         className="flex items-center gap-2 flex-1 text-left min-w-0"
                       >
-                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold flex-shrink-0 ${marketColor}`}>
+                        <span className={`px-1.5 py-0.5 rounded text-xs font-semibold flex-shrink-0 ${marketColor}`}>
                           {market}
                         </span>
                         <span className="font-medium text-unjong-primary truncate flex-1">
                           {item.name}
                         </span>
-                        <span className="text-[10px] text-unjong-muted font-mono flex-shrink-0">
+                        <span className="text-xs text-unjong-muted font-mono flex-shrink-0">
                           {item.symbol}
                         </span>
                       </button>

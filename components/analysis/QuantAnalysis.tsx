@@ -109,7 +109,7 @@ export default function QuantAnalysis({ stockId }: Props) {
       <div className="bg-gradient-to-r from-dark-700 to-dark-800 rounded-lg p-6 border border-border">
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <p className="text-xs text-text-secondary mb-1 flex items-center gap-2">
+            <p className="text-sm text-text-secondary mb-1 flex items-center gap-2">
               <Award className="w-4 h-4" />
               종합 퀀트 스코어 (TOP {factor.universe_size} 대비)
             </p>
@@ -121,7 +121,7 @@ export default function QuantAnalysis({ stockId }: Props) {
               {scoreLabel(factor.composite_pct)} · 섹터 내 {formatNum(factor.sector_rank_pct, 1)}점
             </p>
           </div>
-          <div className="text-xs text-text-secondary/70 text-right">
+          <div className="text-sm text-text-secondary/70 text-right">
             <p>집계일 {factor.snapshot_date}</p>
             <p>가중: Value 35% · Momentum 30% · Quality 35%</p>
           </div>
@@ -144,8 +144,8 @@ export default function QuantAnalysis({ stockId }: Props) {
               {formatNum(m.pct, 1)}
               <span className="text-sm text-text-secondary ml-1">/ 100</span>
             </p>
-            <p className="text-xs text-text-secondary mt-1">{m.desc}</p>
-            <p className={`text-xs font-bold mt-2 ${scoreColor(m.pct)}`}>
+            <p className="text-sm text-text-secondary mt-1">{m.desc}</p>
+            <p className={`text-sm font-bold mt-2 ${scoreColor(m.pct)}`}>
               {scoreLabel(m.pct)}
             </p>
           </div>
@@ -187,17 +187,17 @@ export default function QuantAnalysis({ stockId }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
-              <tr><td className="py-2 px-3 text-text-primary">PER</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.per, 2, '배')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">낮을수록 저평가</td></tr>
-              <tr><td className="py-2 px-3 text-text-primary">PBR</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.pbr, 2, '배')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">낮을수록 저평가</td></tr>
-              <tr><td className="py-2 px-3 text-text-primary">ROE</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.roe, 2, '%')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">높을수록 수익성</td></tr>
-              <tr><td className="py-2 px-3 text-text-primary">영업이익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.operating_margin, 2, '%')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">높을수록 효율성</td></tr>
-              <tr><td className="py-2 px-3 text-text-primary">3개월 수익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.return_3m, 2, '%')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">—</td></tr>
-              <tr><td className="py-2 px-3 text-text-primary">6개월 수익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.return_6m, 2, '%')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">—</td></tr>
-              <tr><td className="py-2 px-3 text-text-primary">12개월 수익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.return_12m, 2, '%')}</td><td className="py-2 px-3 text-right text-xs text-text-secondary">—</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">PER</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.per, 2, '배')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">낮을수록 저평가</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">PBR</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.pbr, 2, '배')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">낮을수록 저평가</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">ROE</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.roe, 2, '%')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">높을수록 수익성</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">영업이익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.operating_margin, 2, '%')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">높을수록 효율성</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">3개월 수익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.return_3m, 2, '%')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">—</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">6개월 수익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.return_6m, 2, '%')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">—</td></tr>
+              <tr><td className="py-2 px-3 text-text-primary">12개월 수익률</td><td className="py-2 px-3 text-right font-mono-price">{formatNum(factor.return_12m, 2, '%')}</td><td className="py-2 px-3 text-right text-sm text-text-secondary">—</td></tr>
             </tbody>
           </table>
         </div>
-        <p className="text-xs text-text-secondary/70 mt-3">
+        <p className="text-sm text-text-secondary/70 mt-3">
           퍼센타일은 시총 TOP {factor.universe_size} 종목 간 상대 순위. 절대 평가 아님.
         </p>
       </div>
