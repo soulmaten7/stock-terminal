@@ -157,10 +157,10 @@ export function MoversCard() {
                   });
                   router.push(`/stock/${m.code}`);
                 }}
-                className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+                className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-unjong-muted font-mono w-4 text-right">{i + 1}</span>
+                  <span className="text-base font-bold text-unjong-muted font-mono w-5 text-center tabular-nums">{i + 1}</span>
                   <div className="flex flex-col min-w-0">
                     <span className="font-medium text-unjong-primary truncate">{m.name}</span>
                     <span className="text-xs text-unjong-muted">{m.code}</span>
@@ -168,7 +168,7 @@ export function MoversCard() {
                 </div>
                 <div className="flex flex-col items-end flex-shrink-0">
                   <span className="font-semibold text-unjong-primary">{m.price}</span>
-                  <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                  <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                     <TrendingUp size={10} />
                     {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                   </span>
@@ -250,7 +250,7 @@ export function VolumeCard() {
                 setSelectedSymbol({ code: v.code, name: v.name, market: inferKrMarket(v.code) });
                 router.push(`/stock/${v.code}`);
               }}
-              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-pointer"
             >
               <div className="flex flex-col min-w-0">
                 <span className="font-medium text-unjong-primary truncate">{v.name}</span>
@@ -337,7 +337,7 @@ export function NetBuyBrokerCard() {
                   setSelectedSymbol({ code: n.code, name: n.name, market: inferKrMarket(n.code) });
                   router.push(`/stock/${n.code}`);
                 }}
-                className="flex flex-col gap-1 text-sm hover:bg-unjong-background rounded px-2 py-1.5 cursor-pointer"
+                className="flex flex-col gap-1 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-pointer"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium text-unjong-primary">{n.name}</span>
@@ -346,13 +346,13 @@ export function NetBuyBrokerCard() {
                 <div className="flex items-center gap-3 text-xs">
                   <span className="flex items-center gap-1">
                     <span className="text-unjong-muted">외인</span>
-                    <span className={foreignUp ? "text-unjong-success font-semibold" : "text-unjong-danger font-semibold"}>
+                    <span className={foreignUp ? "text-[#1AC267] font-semibold" : "text-[#F04452] font-semibold"}>
                       {foreignUp ? "+" : ""}{n.foreign}억
                     </span>
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="text-unjong-muted">기관</span>
-                    <span className={instUp ? "text-unjong-success font-semibold" : "text-unjong-danger font-semibold"}>
+                    <span className={instUp ? "text-[#1AC267] font-semibold" : "text-[#F04452] font-semibold"}>
                       {instUp ? "+" : ""}{n.institution}억
                     </span>
                   </span>
@@ -428,7 +428,7 @@ export function ScalperDisclosureCard() {
           {displayData.map((d, i) => (
             <li
               key={`${d.code}-${i}`}
-              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-default"
+              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-default"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <FileText size={12} className="text-unjong-muted flex-shrink-0" />

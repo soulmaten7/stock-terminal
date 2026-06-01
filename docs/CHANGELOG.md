@@ -1,6 +1,14 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-01 — STEP 130 (카드 9개 콘텐츠 토스 스타일, 리뉴얼 2/5)
+
+- 종목 행: `rounded px-2 py-1(.5)` → `rounded-lg px-3 py-3 transition-colors` (여유 + 호버 전환)
+- 등락 색: `text-unjong-success/danger` → 토스 `text-[#1AC267]`/`text-[#F04452]` (카드 한정, 선명)
+- 순위 숫자: `text-base font-bold ... w-5 text-center tabular-nums` (1·2·3 강조)
+- 대상: ScalperCards(Movers·Volume·NetBuy·공시)·UsCards(지수·M7·UsMovers·시계)·LongtermCards(공시)
+- 빌드 ✓ (exit 0)
+
 ## 2026-06-01 — STEP 129 (디자인 시스템 + CardContainer 토스 스타일, 리뉴얼 1/5)
 
 - `globals.css`: 토스 색상 토큰(toss-blue/red/green/gray-*) + `.shadow-soft`·`.shadow-soft-hover` 유틸

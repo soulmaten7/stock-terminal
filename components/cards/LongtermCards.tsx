@@ -81,7 +81,7 @@ export function LongtermDisclosureCard() {
                 setSelectedSymbol({ code: d.code, name: d.name, market: inferKrMarket(d.code) });
                 router.push(`/stock/${d.code}`);
               }}
-              className={`flex items-start justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1.5 ${d.code ? "cursor-pointer" : "cursor-default"}`}
+              className={`flex items-start justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors ${d.code ? "cursor-pointer" : "cursor-default"}`}
             >
               <div className="flex items-start gap-2 min-w-0">
                 <FileText size={12} className="text-unjong-muted flex-shrink-0 mt-0.5" />

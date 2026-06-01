@@ -85,7 +85,7 @@ export function GlobalIndicesCard() {
         {displayData.map((idx) => (
           <li
             key={idx.name}
-            className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1.5 cursor-default"
+            className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-default"
           >
             <span className="font-medium text-unjong-primary">{idx.name}</span>
             <div className="flex items-center gap-2">
@@ -94,7 +94,7 @@ export function GlobalIndicesCard() {
               </span>
               <span
                 className={`flex items-center gap-0.5 text-xs font-semibold ${
-                  idx.isUp ? "text-unjong-success" : "text-unjong-danger"
+                  idx.isUp ? "text-[#1AC267]" : "text-[#F04452]"
                 }`}
               >
                 {idx.isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
@@ -157,7 +157,7 @@ export function Magnificent7Card() {
                 });
                 router.push(`/stock/${m.code}`);
               }}
-              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-pointer"
             >
               <div className="flex flex-col min-w-0">
                 <span className="font-medium text-unjong-primary">{m.code}</span>
@@ -165,7 +165,7 @@ export function Magnificent7Card() {
               </div>
               <div className="flex flex-col items-end flex-shrink-0">
                 <span className="font-semibold text-unjong-primary tabular-nums">{m.price}</span>
-                <span className={`text-xs font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                <span className={`text-xs font-semibold ${isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                   {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                 </span>
               </div>
@@ -225,10 +225,10 @@ export function UsMoversCard() {
                 });
                 router.push(`/stock/${m.code}`);
               }}
-              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded px-2 py-1 cursor-pointer"
+              className="flex items-center justify-between gap-2 text-sm hover:bg-unjong-background rounded-lg px-3 py-3 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-2 min-w-0">
-                <span className="text-unjong-muted font-mono w-4 text-right">{i + 1}</span>
+                <span className="text-base font-bold text-unjong-muted font-mono w-5 text-center tabular-nums">{i + 1}</span>
                 <div className="flex flex-col min-w-0">
                   <span className="font-medium text-unjong-primary">{m.code}</span>
                   <span className="text-xs text-unjong-muted truncate">{m.name}</span>
@@ -236,7 +236,7 @@ export function UsMoversCard() {
               </div>
               <div className="flex flex-col items-end flex-shrink-0">
                 <span className="font-semibold text-unjong-primary tabular-nums">{m.price}</span>
-                <span className={`text-xs font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                <span className={`text-xs font-semibold ${isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                   {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                 </span>
               </div>
