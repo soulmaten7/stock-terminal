@@ -27,7 +27,7 @@ export default function HomeClientV5() {
       <main className="space-y-4">
         <section>
           <h2 className="text-base font-semibold text-unjong-primary mb-3">🔥 시장 핫 이슈</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <MoversCard />
             <VolumeCard />
             <NetBuyBrokerCard />

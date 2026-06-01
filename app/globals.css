@@ -34,6 +34,22 @@
   --color-unjong-dark-bg: #0A0A0A;
   --color-unjong-dark-surface: #1C1C1E;
   --color-unjong-dark-border: #2C2C2E;
+  /* STEP 129: 토스 스타일 보조 톤 */
+  --color-toss-blue: #3182F6;
+  --color-toss-red: #F04452;
+  --color-toss-green: #1AC267;
+  --color-toss-gray-50: #F9FAFB;
+  --color-toss-gray-100: #F2F4F6;
+  --color-toss-gray-700: #4E5968;
+  --color-toss-gray-900: #191F28;
+}
+
+/* STEP 129: 토스 부드러운 그림자 유틸 */
+.shadow-soft {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+.shadow-soft-hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
 }
 
 * { box-sizing: border-box; }

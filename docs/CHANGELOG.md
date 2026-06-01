@@ -1,6 +1,14 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-01 — STEP 129 (디자인 시스템 + CardContainer 토스 스타일, 리뉴얼 1/5)
+
+- `globals.css`: 토스 색상 토큰(toss-blue/red/green/gray-*) + `.shadow-soft`·`.shadow-soft-hover` 유틸
+- `CardContainer` 재설계: `rounded-2xl` + shadow-soft + hover 전환 + 헤더 emoji 18px·title text-base bold·subtitle xs + 바디 p-5
+- 카드 그리드 gap-4 → gap-5 (KrCards · /us 페이지 · HomeClientV5 핫이슈)
+- CardContainer 사용처(Scalper·Longterm·Us 카드) 전부 자동 새 디자인 적용
+- 빌드 ✓ (exit 0)
+
 ## 2026-06-01 — STEP 128 (MVP 2.0 1차 — 상품·리딩방 디렉토리 + 평가 시스템)
 
 ### 세션 전체 요약
