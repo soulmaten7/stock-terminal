@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CalendarDays } from "lucide-react";
+import { BarChart3, CalendarDays, Award } from "lucide-react";
 import { HeaderSearch } from "./HeaderSearch";
 
 const PRIMARY_WINDOWS = [
@@ -11,6 +11,7 @@ const PRIMARY_WINDOWS = [
 ] as const;
 
 const SECONDARY_LINKS = [
+  { href: "/products", label: "상품·리딩방", englishLabel: "Reviews", icon: Award },
   { href: "/screener", label: "종목발굴", englishLabel: "Screener", icon: BarChart3 },
   { href: "/calendar", label: "경제 캘린더", englishLabel: "Calendar", icon: CalendarDays },
 ] as const;

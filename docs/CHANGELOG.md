@@ -1,6 +1,36 @@
 <!-- 2026-06-01 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-01 — STEP 128 (MVP 2.0 1차 — 상품·리딩방 디렉토리 + 평가 시스템)
+
+### 세션 전체 요약
+운종 진짜 차별화 = "Trustpilot 한국 금융 버전" 진입. 금융 상품·리딩방 평가 디렉토리 기반 구축 (MVP 2.0 1차 — 기반만).
+
+### DB 마이그레이션 019 (`supabase/migrations/019_platform_directory.sql` · Cowork 가 MCP 로 별도 적용)
+- `products` (etf/fund/wrap/els/bond/reits) · `leading_rooms` (telegram/kakao/discord/… + is_certified)
+- `platform_discussions` (다형 — target_type 'product'|'room' + target_id, outcome·duration 평가 메타)
+- `platform_discussion_likes` / `platform_discussion_reports`
+- 트리거: like_count·discussion_count 자동 갱신 + report 5건 자동 hidden / RLS: 모두 read·인증만 insert
+- 시드: ETF 10개(KODEX 200·TIGER 미국나스닥100 등) + 리딩방 placeholder 5개 + Realtime publication
+
+### 신규 페이지
+- `/products` 상품 디렉토리(카테고리 필터) · `/product/[id]` 상품 평가(좌 정보 + 우 평가 토론)
+- `/rooms` 리딩방 디렉토리(플랫폼 배지·인증 마크·⚠️ "운종 평가 X" 경고문) · `/room/[id]` 리딩방 평가
+
+### 신규 컴포넌트 (`components/platform/`)
+- ProductsClient · RoomsClient (디렉토리) · ProductDetailClient · RoomDetailClient (평가)
+- `PlatformDiscussionBoard` — DiscussionBoard 패턴 재활용 + target_type 다형 + 좋아요/신고 + outcome(👍/😐/👎)·duration 평가 메타
+
+### 헤더
+- `MainNav` SECONDARY_LINKS 에 "상품·리딩방 (Reviews, Award 아이콘)" 추가 (종목발굴 앞)
+
+### 빌드
+- `npm run build` ✓ Compiled successfully (exit 0) — TS/ESLint 0. `/products`·`/product/[id]`·`/rooms`·`/room/[id]` 생성 확인.
+
+### 동작 전제 / 정체성
+- 실데이터·평가 insert 는 마이그레이션 019 적용 + 카카오 OAuth 활성화 후. 비로그인은 읽기 + 안내.
+- 운종 = 평가 X(사용자 토론만), 광고(Sponsored)↔토론 분리·Tier 인증·KOFIA/KRX API 는 추후 STEP.
+
 ## 2026-06-01 — STEP 127 (가독성 리뉴얼 — Pretendard + 크기·spacing 상향)
 
 ### 세션 전체 요약

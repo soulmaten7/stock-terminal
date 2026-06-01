@@ -1,6 +1,19 @@
 <!-- 2026-06-01 -->
-<!-- Last GC: 2026-06-01 (STEP 127 종료 시점) -->
+<!-- Last GC: 2026-06-01 (STEP 128 종료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 128 (2026-06-01) — MVP 2.0 1차: 상품·리딩방 디렉토리 + 평가 ✅
+
+### 신규 (운종 = Trustpilot 한국 금융 버전 진입)
+- 마이그레이션 019: products / leading_rooms / platform_discussions(다형 target_type) / likes / reports + 트리거 + RLS + 시드(ETF 10·리딩방 5)
+- 페이지: /products · /product/[id] · /rooms · /room/[id]
+- 컴포넌트(components/platform): ProductsClient·RoomsClient·ProductDetailClient·RoomDetailClient·PlatformDiscussionBoard(좋아요·신고·outcome·duration)
+- 헤더 MainNav: "상품·리딩방(Reviews)" 메뉴 추가
+
+### 정체성: 운종 = 평가 X(토론만), 리딩방 경고문 노출
+### 동작 전제 / 잔여
+- 마이그레이션 019 적용(Cowork) + 카카오 OAuth 활성화 후 실데이터·평가 insert
+- 추후: 광고(Sponsored)↔토론 분리 UI, Tier 1·2·3 인증, KOFIA/KRX API
 
 ## STEP 127 (2026-06-01) — 가독성 리뉴얼 (Pretendard + 크기·spacing 상향) ✅
 
