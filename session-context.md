@@ -1,6 +1,19 @@
 <!-- 2026-06-03 -->
-<!-- Last GC: 2026-06-03 (STEP 135 종료 시점 — 잔여 문서 V5 정렬 패치) -->
+<!-- Last GC: 2026-06-03 (V6 Phase 1 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## V6 Phase 1 (2026-06-03) — 틀 완성 + 신뢰 축 정렬 ✅ (PRODUCT_SPEC_V6 로드맵)
+
+PRODUCT SPEC V6 확정 — 중심축 "동선의 출발점(편의)" → **"투자상품에 속지 않게 돕는 곳(신뢰)"**. Phase 1 3개 항목 완료.
+- **1-1 정체성 카피 전환** (`3a645eb`): layout/page/login 메타·문구 + HomeClientV5 태그라인 배너
+- **1-2 추천/비추천** (`e717be0`): 마이그레이션 020(vote SMALLINT + dislike_count + 트리거) + PlatformDiscussionBoard ThumbsUp/Down UI. 별점 ❌
+- **1-3 KIS 캐시 안정화** (`e37bf9d`): lib/kis.ts 응답 TTL 캐시(기본 15s) + 동시요청 coalescing
+
+### 후속 (Phase 2 — 신뢰 강화, 미착수)
+- ② 리딩방 **금융위 신고번호 검증 뱃지** (마이그레이션 021) — ⚠️ 검증 데이터 소스(금융위/FSS API or 목록) 필요 → 사용자/Cowork 결정 대기
+- ④ 2단계 재무지표 파이프라인 (마이그레이션 022) — DART 계정과목 매핑·TTM 정제 필요(비용)
+- 증권사별 상품 링크 다중화
+- ⚠️ 마이그레이션 020 Cowork(Supabase MCP) 적용 + 카카오 OAuth 활성화 후 추천/비추천 실동작
 
 ## STEP 135 (2026-06-03) — 잔여 문서 V5 정렬 패치 ✅
 
