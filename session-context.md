@@ -1,6 +1,16 @@
 <!-- 2026-06-03 -->
-<!-- Last GC: 2026-06-03 (STEP 141 — 종목 공시 탭 완료 시점) -->
+<!-- Last GC: 2026-06-03 (STEP 142 — 포털형 홈 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 142 (2026-06-03) — 포털형 홈 전면 재구성 ✅
+
+홈을 한국 증권 정보 포털 레이아웃으로. 마이그레이션·DB 변경 0, home-v5 재사용.
+- components/home-v6/HomeClientV6 → app/page.tsx 교체. max-w-1480 + 메인/우측레일(320)
+- 데이터 모듈: HomeIndexBar·HomeBriefing·HomeGlobalRanking·HomeSectorTheme·HomeEtfPicks·HomeRightRail
+- placeholder shell: HomeBannerSlot(fss)·HomeCryptoSlot(코인 보류)·HomePopularStocks·검색상위·숏컷
+- 재사용: 뉴스·HOT토론·검증평가 모듈. 운종 카피·디자인만(타사 복제 X)
+- 푸터 중복 제거(전역 LayoutShell 사용). 빌드 ✓
+- 다음: 사용자 섹션별 운종 방향 수정 반복
 
 ## STEP 141 (2026-06-03) — 종목 공시(DART·SEC) 탭 추가 ✅
 

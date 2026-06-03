@@ -1,6 +1,17 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-03 — STEP 142 (포털형 홈 전면 재구성)
+
+홈을 한국 증권 정보 포털 레이아웃으로 재구성. 마이그레이션·DB 변경 0. `home-v5` 모듈 재사용.
+- `components/home-v6/HomeClientV6` 신규 → `app/page.tsx` 교체 (HomeClientV5 → V6). max-w-1480, 메인(1fr)+우측레일(320)
+- 신규 데이터 모듈: `HomeIndexBar`(yahoo/indices, 미국/국내 탭)·`HomeBriefing`(home/briefing 간밤지수+일정+운종 면책)·`HomeGlobalRanking`(거래량 volume-rank/등락 movers/검색 placeholder, 종목클릭→/stock)·`HomeSectorTheme`(국내 kis/theme·미국 home/sectors)·`HomeEtfPicks`(products etf, 필터 인기순만 실데이터)·`HomeRightRail`(아이콘 nav+WatchlistPanel+숏컷 placeholder)
+- placeholder shell(빈 자리 유지): `HomeBannerSlot`(fss 신뢰지표)·`HomeCryptoSlot`(코인 보류 결정③)·`HomePopularStocks`(계좌 연동 후)·검색상위·숏컷·ETF 미구현 필터
+- 재사용: MarketNewsModule·HotDiscussionsModule·HotRoom/ProductReviewsModule. 🛡️ 검증·평가 섹션 유지(운종 차별점)
+- 운종 카피·디자인 시스템만 사용(타사 로고·고유 문구·광고 복제 X). 등락색 토스식(상승#1AC267/하락#F04452)
+- **푸터 중복 제거**: 명령서는 HomeClientV6에 Footer 추가였으나 전역 LayoutShell 이 이미 Footer 렌더 → 홈 자체 Footer 생략
+- 빌드 ✓ (exit 0). 빈 데이터에도 EmptyState/placeholder 로 렌더
+
 ## 2026-06-03 — STEP 141 (종목 공시(DART·SEC) 탭 추가)
 
 네이버 "전자공시" 대응. 신규 데이터·마이그레이션 0 — 기존 `/api/stocks/disclosures` 연결.
