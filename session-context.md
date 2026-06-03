@@ -1,6 +1,16 @@
 <!-- 2026-06-03 -->
-<!-- Last GC: 2026-06-03 (STEP 139 — 종목 페이지 네이버급 디테일 완료 시점) -->
+<!-- Last GC: 2026-06-03 (STEP 140 — 종목 토론 추천/비추천 통일 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 140 (2026-06-03) — 종목 토론 추천/비추천 통일 ✅
+
+상품·리딩방 평가(020)와 종목 토론의 신뢰 신호 통일.
+- 마이그레이션 022(⚠️ Cowork 적용 대기): discussion_likes.vote + discussions.dislike_count + 동시갱신 트리거
+- DiscussionItem: Heart → ThumbsUp/ThumbsDown vote 토글·전환 (댓글·신고·실시간 유지)
+- DiscussionBoard: voteMap 로드 + select dislike_count + '추천 정렬'
+- HotDiscussionsModule: 추천👍/비추천👎 표시
+- 추천 #1AC267 / 비추천 #F04452 (전 토론·평가 통일). 빌드 ✓
+- 다음 후보: 공시(DART) 탭 / 외국인보유율·상장주식수 메타
 
 ## STEP 139 (2026-06-03) — 종목 페이지 네이버급 디테일 (기존 API 연결) ✅
 

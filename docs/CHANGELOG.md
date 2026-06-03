@@ -1,6 +1,15 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-03 — STEP 140 (종목 토론 추천/비추천 통일 — 신뢰 신호 일관화)
+
+상품·리딩방 평가(STEP 020)엔 추천/비추천이 있었으나 종목 토론은 좋아요만 → 통일.
+- 마이그레이션 `022_discussion_dislike.sql` 신규 (Cowork 적용 대기): `discussion_likes.vote SMALLINT(-1/1)` + `discussions.dislike_count` + like/dislike 동시 갱신 트리거(INSERT/DELETE/UPDATE 전환). 기존 좋아요는 vote=1 승계
+- `DiscussionItem`: Heart 좋아요 → **ThumbsUp(추천)/ThumbsDown(비추천)**, 사용자당 1표 토글·전환 (PlatformDiscussionBoard 패턴 이식). 댓글·신고·Realtime 유지
+- `DiscussionBoard`: `likedIds`(Set) → `voteMap`(Map<id,1|-1>), select +dislike_count, 헤더 "추천 정렬"
+- `HotDiscussionsModule`(홈): 좋아요 표시 → 추천 👍 + 비추천 👎 수
+- 추천=#1AC267 / 비추천=#F04452 (평가·홈 토스식과 통일). 빌드 ✓ (exit 0). 실제 투표는 022 적용 후
+
 ## 2026-06-03 — STEP 139 (종목 페이지 네이버급 디테일 — 기존 API 연결)
 
 신규 데이터 소스·마이그레이션 0 — 이미 있으나 미연결이던 백엔드 API를 화면에 연결.
