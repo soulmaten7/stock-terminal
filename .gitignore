@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code 로컬 설정 (사용자별 허용 명령어 — push 불필요)
+.claude/settings.local.json
