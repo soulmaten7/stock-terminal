@@ -135,8 +135,10 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 - [ ] CHANGELOG.md에 이번 세션 변경사항 추가
 - [ ] session-context.md에 이번 세션 완료 블록 추가
 - [ ] NEXT_SESSION_START.md 최신 상태로 업데이트
+- [ ] **`docs/NEXT_SESSION_PLAYBOOK.md` 갱신** (다음 세션 마스터 인수인계 — HEAD 해시·STEP 번호·다음 STEP 후보·디자인 변경 등 반영)
+- [ ] SESSION_KICKOFF.md `현재 커밋` 표기 갱신
 - [ ] git push
-- [ ] 빌드 에러 없는지 확인
+- [ ] 빌드 에러 없는지 확인 (`npm run build`)
 
 ## 참조 파일 경로 테이블
 
@@ -169,9 +171,10 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 ## 세션 루틴
 
 ### 세션 시작 시 (Cowork이 처리)
-1. **`docs/SESSION_KICKOFF.md` 읽기** ← 항상 이것부터 (전체 현황 + 우선순위 정리됨)
-2. session-context.md 확인 (TODO 가비지 컬렉션)
-3. 사용자에게 오늘 할 P0 작업 제안 → 확인 후 명령어 작성
+1. **`docs/NEXT_SESSION_PLAYBOOK.md` 읽기** ← **항상 이것부터** (디테일 마스터 인수인계 — 정체성·페이지 13개·디자인 시스템·STEP 88~135 이력·다음 STEP 후보·환경변수·자주 쓰는 명령어 전부 한 파일)
+2. `docs/SESSION_KICKOFF.md` 보조 확인 (간략 요약 — PLAYBOOK 의 단축본)
+3. `session-context.md` 확인 (TODO 가비지 컬렉션)
+4. 사용자에게 오늘 할 P0 작업 제안 → 확인 후 명령어 작성
 
 ### 작업 중 (역할 분담)
 - **Cowork**: 코드 작성, 명령어 생성, 설계 결정
