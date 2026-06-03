@@ -44,7 +44,7 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
             UNJONG <span className="text-base text-unjong-muted font-medium">운종</span>
           </h1>
-          <p className="text-sm text-unjong-muted">한국 주식 동선의 출발점</p>
+          <p className="text-sm text-unjong-muted">투자상품에 속지 않게 돕는 곳</p>
         </div>
 
         {/* 로그인 카드 */}
