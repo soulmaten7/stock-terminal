@@ -1,11 +1,13 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-06-03 (STEP 134 — 모든 문서·로그 3차 교차검수 갱신)
-> ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (정체성·페이지 13개·디자인 시스템·STEP 88~135 이력·환경변수·자주 쓰는 명령어 전부 한 파일).
+> **Last updated**: 2026-06-03 (STEP 137 — FSS 인증 시스템 / V6 Phase 2-①)
+> ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md`. **마스터 비전**: `docs/PRODUCT_SPEC_V6.md` (정체성 축 = "안 속는 곳").
 >
-> **현재 상태**: 운종 V5 PC 핵심 + 전면 디자인 리뉴얼 + MVP 2.0 1차 디렉토리·평가 시스템 완료 + 모든 문서 V5 정렬 + PLAYBOOK 생성. 빌드 ✓ (HEAD `3ba3773` — STEP 135 docs).
-> **운종 정체성**: 네이버 레이아웃 + 토스 카드 디자인 + Trustpilot 평가 = 운종 고유 (한국 금융 동선의 출발점 + 정제된 대화 + 신뢰 평가 허브)
+> **현재 상태**: 운종 V5 + V6 Phase 1(정체성 카피·추천/비추천·KIS 캐시) + V6 Phase 2-①(FSS 인증) 완료. 빌드 ✓ (HEAD `0e0995c` — STEP 137).
+> **운종 정체성 (V6)**: "투자상품에 속지 않게 돕는 곳" — 정확한 정보 + 솔직한 토론 + 검증된 신뢰 (중심축 = 신뢰).
+>
+> ⚠️ **미적용 마이그레이션 (Cowork Supabase MCP 적용 대기)**: `020_dislike_votes.sql`(추천/비추천), `021_fss_advisors.sql`(FSS 인증). 적용 후 `npx tsx scripts/import-fss-advisors.ts` 1회 실행해 fss_advisors ~1,700건 적재.
 
 ---
 
