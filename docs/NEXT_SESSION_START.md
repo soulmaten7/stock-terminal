@@ -1,10 +1,10 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 다음 세션 시작 가이드
 
-> **Last updated**: 2026-06-03 (STEP 138 — 홈 신뢰 축 재배치 / V6 정체성 정렬)
+> **Last updated**: 2026-06-03 (STEP 139 — 종목 페이지 네이버급 디테일)
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md`. **마스터 비전**: `docs/PRODUCT_SPEC_V6.md` (정체성 축 = "안 속는 곳").
 >
-> **현재 상태**: V5 + V6 Phase 1 + Phase 2-①(FSS 인증, fss_advisors 1,738건 적재) + 홈 신뢰 축 재배치(STEP 138) 완료. 빌드 ✓ (HEAD `7e4e341` — STEP 138). 홈 위계 = 검증·평가→평가글→토론→시장정보→뉴스.
+> **현재 상태**: V5 + V6 Phase 1 + Phase 2-①(FSS 인증 1,738건) + 홈 신뢰 축(138) + 종목 페이지 네이버급 디테일(139) 완료. 빌드 ✓ (HEAD `d4c8088` — STEP 139). 종목 탭: 차트·시세(차트+호가+체결) / 토론 / 뉴스 / 인사이트(기업실적+수급+업종).
 > **운종 정체성 (V6)**: "투자상품에 속지 않게 돕는 곳" — 정확한 정보 + 솔직한 토론 + 검증된 신뢰 (중심축 = 신뢰).
 >
 > ⚠️ **미적용 마이그레이션 (Cowork Supabase MCP 적용 대기)**: `020_dislike_votes.sql`(추천/비추천), `021_fss_advisors.sql`(FSS 인증). 적용 후 `npx tsx scripts/import-fss-advisors.ts` 1회 실행해 fss_advisors ~1,700건 적재.
