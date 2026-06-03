@@ -15,6 +15,7 @@ type Discussion = {
   tier: number;
   content: string;
   like_count: number;
+  dislike_count: number;
   comment_count: number;
   created_at: string;
 };
@@ -31,25 +32,25 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
   const [showWrite, setShowWrite] = useState(false);
   const [writeContent, setWriteContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [voteMap, setVoteMap] = useState<Map<string, 1 | -1>>(new Map());
 
-  // 본인이 좋아요한 글 ID 미리 로드 → 초기 liked 상태 표시
+  // 본인 투표 방향(추천/비추천) 미리 로드
   useEffect(() => {
     if (!user) {
-      setLikedIds(new Set());
+      setVoteMap(new Map());
       return;
     }
     let cancelled = false;
-    const loadLikes = async () => {
+    const loadVotes = async () => {
       const supabase = createAnonClient();
       const { data } = await supabase
         .from("discussion_likes")
-        .select("discussion_id")
+        .select("discussion_id, vote")
         .eq("user_id", user.id);
       if (cancelled) return;
-      setLikedIds(new Set((data || []).map((r: { discussion_id: string }) => r.discussion_id)));
+      setVoteMap(new Map((data || []).map((r: { discussion_id: string; vote: number }) => [r.discussion_id, r.vote as 1 | -1])));
     };
-    loadLikes();
+    loadVotes();
     return () => { cancelled = true; };
   }, [user, discussions.length]);
 
@@ -60,7 +61,7 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
       const supabase = createAnonClient();
       let query = supabase
         .from("discussions")
-        .select("id, symbol, nickname, tier, content, like_count, comment_count, created_at")
+        .select("id, symbol, nickname, tier, content, like_count, dislike_count, comment_count, created_at")
         .eq("symbol", symbol)
         .eq("hidden", false)
         .limit(50);
@@ -104,7 +105,7 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
       <header className="flex items-center justify-between bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3">
         <div>
           <h1 className="text-base font-semibold text-unjong-primary">💬 {stockName || symbol} 토론</h1>
-          <p className="text-xs text-unjong-muted">실시간 토론 · 좋아요 정렬 / 최신순</p>
+          <p className="text-xs text-unjong-muted">실시간 토론 · 추천 정렬 / 최신순</p>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -192,7 +193,7 @@ export default function DiscussionBoard({ symbol, stockName }: Props) {
             <DiscussionItem
               key={d.id}
               discussion={d}
-              initiallyLiked={likedIds.has(d.id)}
+              initialVote={voteMap.get(d.id) ?? 0}
             />
           ))}
         </ul>

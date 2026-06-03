@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createAnonClient } from "@/lib/supabase/anon-client";
-import { Heart, MessageCircle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type Discussion = {
@@ -13,6 +13,7 @@ type Discussion = {
   tier: number;
   content: string;
   like_count: number;
+  dislike_count: number;
   comment_count: number;
   created_at: string;
 };
@@ -28,7 +29,7 @@ export default function HotDiscussionsModule() {
         const supabase = createAnonClient();
         const { data } = await supabase
           .from("discussions")
-          .select("id, symbol, nickname, tier, content, like_count, comment_count, created_at")
+          .select("id, symbol, nickname, tier, content, like_count, dislike_count, comment_count, created_at")
           .eq("hidden", false)
           .gte("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
           .order("like_count", { ascending: false })
@@ -83,7 +84,10 @@ export default function HotDiscussionsModule() {
                   <p className="text-sm text-unjong-primary truncate">{d.content}</p>
                   <div className="flex items-center gap-3 mt-1.5">
                     <span className="flex items-center gap-1 text-xs text-unjong-muted">
-                      <Heart size={10} /> {d.like_count}
+                      <ThumbsUp size={10} /> {d.like_count}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-unjong-muted">
+                      <ThumbsDown size={10} /> {d.dislike_count}
                     </span>
                     <span className="flex items-center gap-1 text-xs text-unjong-muted">
                       <MessageCircle size={10} /> {d.comment_count}
