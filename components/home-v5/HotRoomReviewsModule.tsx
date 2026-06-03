@@ -69,11 +69,19 @@ export default function HotRoomReviewsModule() {
                   {PLATFORM_LABEL[r.platform] ?? "기타"}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-unjong-primary truncate flex items-center gap-1">
-                    {r.name}
-                    {r.is_certified && <ShieldCheck size={12} className="text-unjong-accent flex-shrink-0" />}
-                  </p>
-                  <p className="text-xs text-unjong-muted truncate">{r.operator || "운영자 미상"}</p>
+                  <p className="text-sm font-semibold text-unjong-primary truncate">{r.name}</p>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    {r.is_certified ? (
+                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-[#1AC267]/10 text-[#1AC267]">
+                        <ShieldCheck size={11} /> 금감원 신고 ✓
+                      </span>
+                    ) : (
+                      <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-unjong-muted">
+                        신고 미확인
+                      </span>
+                    )}
+                    <span className="text-xs text-unjong-muted truncate">{r.operator || "운영자 미상"}</span>
+                  </div>
                 </div>
                 <span className="flex items-center gap-1 text-xs text-unjong-muted flex-shrink-0">
                   <MessageCircle size={12} /> {r.discussion_count}
