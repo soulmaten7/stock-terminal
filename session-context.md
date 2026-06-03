@@ -1,6 +1,15 @@
-<!-- 2026-06-01 -->
-<!-- Last GC: 2026-06-01 (STEP 133 종료 시점) -->
+<!-- 2026-06-03 -->
+<!-- Last GC: 2026-06-03 (STEP 134 종료 시점 — 모든 문서 갱신) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 134 (2026-06-03) — 모든 문서·로그 3차 교차검수 갱신 ✅
+
+- 4개 필수 문서 헤더 일관 (2026-06-03): CLAUDE.md · CHANGELOG.md · session-context.md · NEXT_SESSION_START.md
+- 보강 문서 갱신: SESSION_KICKOFF.md · BRAND_IDENTITY.md · README.md
+- 마이그레이션 015~019 **모두 적용 완료** 명시 (이전엔 "미적용" 잘못 표기)
+- 운종 V5 페이지 구조 최종 (13개 라우트) 정리
+- MVP 1.0 → MVP 2.0 진입 (상품·리딩방 평가) 반영
+- 운종 정체성 V5 = 네이버 레이아웃 + 토스 카드 + Trustpilot 평가 = 한국 금융 동선의 출발점
 
 ## STEP 129~133 (2026-06-01) — 전면 디자인 리뉴얼 ✅ (운종 V5 = 네이버 레이아웃 + 토스 카드 + Trustpilot 평가)
 
@@ -10,9 +19,12 @@
 - **132** 새 홈 손성기 순서: HotProductReviewsModule·HotRoomReviewsModule + HomeClientV5 재배치(핫이슈→HOT토론→HOT평가→헤드라인) + WatchlistPanel 토스화
 - **133** /screener 삭제, /calendar→Investing.com 외부 링크, MainNav 정리(BarChart3 제거), MVP2 4페이지 토스 통일
 
-### 잔여
-- RightFixedNav 미존재 라우트 임시 연결, 고아 컴포넌트(calendar/screener 잔재·components/watchlist·stocks 등)·lib/watchlist 정리 추후
-- 마이그레이션 015~019 Cowork 적용 + 카카오 OAuth 활성화(사용자) 후 실데이터 동작
+### 잔여 (다음 STEP)
+- RightFixedNav 미존재 라우트 (`/notifications`·`/recent`) 임시 연결 — 페이지 신설 시 교체
+- 고아 컴포넌트 (`components/calendar` 잔재 · `components/screener` 잔재 · `components/watchlist` · `components/stocks` · `lib/watchlist.ts`) 일괄 청소
+- **DB 마이그레이션 015~019 = ✅ 모두 적용 완료** (이전 표기 오류)
+- 카카오 OAuth 활성화 = 🔴 사용자 직접 작업 (도메인 결정 후 권장)
+- STEP_119_COMMAND.md 의 Supabase PAT 폐기 = 🔴 사용자 직접 (계속 권장)
 
 ## STEP 128 (2026-06-01) — MVP 2.0 1차: 상품·리딩방 디렉토리 + 평가 ✅
 
