@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/cron/fss-advisors", "schedule": "0 19 * * *" }
+  ]
+}

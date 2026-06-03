@@ -1,6 +1,15 @@
 <!-- 2026-06-03 -->
-<!-- Last GC: 2026-06-03 (V6 Phase 1 완료 시점) -->
+<!-- Last GC: 2026-06-03 (STEP 137 — FSS 인증 시스템 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## STEP 137 (2026-06-03) — FSS 유사투자자문업자 인증 시스템 (V6 Phase 2-①) ✅
+
+리딩방이 금감원 실제 신고업체인지 공적 데이터 자동 검증.
+- STEP 0 확정(라이브): 파인 GET `pageIndex`, 174p(10행/p), 봇 UA 차단→브라우저 UA. 파싱 검증 통과
+- 마이그레이션 `021_fss_advisors.sql`(⚠️ Cowork 적용 대기): fss_advisors 원장 + leading_rooms 인증 컬럼
+- lib/fss.ts(cheerio), scripts/import-fss-advisors.ts(tsx 수동), cron 라우트+vercel.json(KST 04:00), 검증 API, 뱃지 UI("금감원 신고업체 ✓") + 검증 폼 + 면책 고지
+- 빌드 ✓. 실데이터 적재/검증 동작은 021 적용(Cowork) 후
+- 후속: 운영자/admin 권한 게이팅(TODO), 상호·홈페이지 자동 매칭, Vercel 배포 후 cron 활성
 
 ## V6 Phase 1 (2026-06-03) — 틀 완성 + 신뢰 축 정렬 ✅ (PRODUCT_SPEC_V6 로드맵)
 

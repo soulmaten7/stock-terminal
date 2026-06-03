@@ -1,6 +1,19 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-03 — STEP 137 (FSS 유사투자자문업자 인증 시스템 — V6 Phase 2-①)
+
+운종 신뢰 축 핵심: 리딩방이 금융위(금감원) 실제 신고 업체인지 **공적 데이터 자동 검증**.
+- **STEP 0 조사 확정**(라이브): 금감원 파인 목록 = GET `pageIndex` 파라미터, 174페이지(10행/페이지), 봇 UA 차단 → 표준 브라우저 UA 필수. 헤더 동적 매핑으로 컬럼 순서/추가(신고일자) 안전. 라이브 파싱 검증 통과(사업자번호·상호·유효기간 추출 정상)
+- **마이그레이션 `021_fss_advisors.sql` 신규** (Cowork 가 Supabase MCP 로 적용 대기): `fss_advisors` 원장 캐시 + `leading_rooms` 인증 컬럼(biz_no·cert_type·cert_verified_at·fss_biz_no) + RLS 공개읽기
+- **`lib/fss.ts`**: cheerio 파싱 + 174페이지 순회(페이지당 딜레이) + 사업자번호 dedup upsert(500배치) + 미수집 active 행 revoked 처리
+- **`scripts/import-fss-advisors.ts`** (수동 1회 실행, tsx) — admin import는 상대경로로 별칭 미해석 회피
+- **`app/api/cron/fss-advisors/route.ts`** + `vercel.json` cron (UTC 19:00 = KST 04:00, CRON_SECRET 인증). 배포 후 활성
+- **검증 API `app/api/rooms/[id]/verify/route.ts`**: 사업자번호 → fss_advisors active+유효기간 대조 → leading_rooms is_certified 토글 (TODO: 운영자/admin 게이팅)
+- **뱃지 UI**: RoomsClient·RoomDetailClient → "금감원 신고업체 ✓"(green pill) / "신고 미확인"(gray). 상세에 운영자 사업자번호 검증 폼 + 출처/확인일 + **면책 고지**(투자권유 X·신고=수익보장 아님)
+- cheerio·tsx 설치. 빌드 ✓ (exit 0)
+- ⚠️ 실데이터 적재(`npx tsx scripts/import-fss-advisors.ts` ~1,700건)·검증 동작은 **Cowork 가 021 적용 후**
+
 ## 2026-06-03 — V6 Phase 1-3 (KIS 캐시 안정화 — 결정 ④ 1단계)
 
 KIS rate limit 대응: "밀리초 실시간"이 아니라 "캐시 갱신" 모델.

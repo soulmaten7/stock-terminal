@@ -115,10 +115,12 @@ export default function RoomsClient() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className={`text-xs font-semibold px-1.5 py-0.5 rounded ${pm.cls}`}>{pm.label}</span>
-                    {r.is_certified && (
-                      <span className="flex items-center gap-1 text-xs font-semibold text-unjong-accent">
-                        <ShieldCheck size={12} /> 인증
+                    {r.is_certified ? (
+                      <span className="flex items-center gap-1 rounded-full bg-emerald-50 text-[#1AC267] text-xs font-semibold px-2 py-0.5">
+                        <ShieldCheck size={12} /> 금감원 신고업체 ✓
                       </span>
+                    ) : (
+                      <span className="rounded-full bg-unjong-background text-unjong-muted text-xs px-2 py-0.5">신고 미확인</span>
                     )}
                   </div>
                   <h3 className="text-base font-semibold text-unjong-primary mb-1">{r.name}</h3>
