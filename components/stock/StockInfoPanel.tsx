@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { LoadingState } from "@/components/ui/State";
+import { formatKRW, formatPct } from "@/lib/format";
 
 type Props = { symbol: string };
 
@@ -20,6 +21,8 @@ type StockData = {
   per: number;
   pbr: number;
   marketCap: number;
+  tradeAmount: number;
+  dividendYield: number;
 };
 
 export default function StockInfoPanel({ symbol }: Props) {
@@ -51,6 +54,8 @@ export default function StockInfoPanel({ symbol }: Props) {
             per: json.per,
             pbr: json.pbr,
             marketCap: json.marketCap,
+            tradeAmount: json.tradeAmount ?? 0,
+            dividendYield: json.dividendYield ?? 0,
           });
         } else if (/^[A-Z.\-]+$/.test(symbol)) {
           // 미국 주식 — Yahoo quoteSummary (시고저·52주·PER·시총)
@@ -70,6 +75,8 @@ export default function StockInfoPanel({ symbol }: Props) {
             per: json.per || 0,
             pbr: json.pbr || 0,
             marketCap: json.marketCap || 0,
+            tradeAmount: 0,
+            dividendYield: json.dividendYield ?? 0,
           });
         }
       } finally {
@@ -207,6 +214,7 @@ export default function StockInfoPanel({ symbol }: Props) {
             <Row label="고가" value={formatPrice(data.high, isUS)} />
             <Row label="저가" value={formatPrice(data.low, isUS)} />
             <Row label="거래량" value={data.volume ? data.volume.toLocaleString() : "—"} />
+            {data.tradeAmount > 0 && <Row label="거래대금" value={formatKRW(data.tradeAmount)} />}
             <Row label="52주 최고" value={formatPrice(data.high52w, isUS)} />
             <Row label="52주 최저" value={formatPrice(data.low52w, isUS)} />
           </section>
@@ -216,6 +224,7 @@ export default function StockInfoPanel({ symbol }: Props) {
             <Row label="시가총액" value={formatMarketCap(data.marketCap, isUS)} />
             <Row label="PER" value={data.per > 0 ? data.per.toFixed(1) : "—"} />
             <Row label="PBR" value={data.pbr > 0 ? data.pbr.toFixed(1) : "—"} />
+            {data.dividendYield > 0 && <Row label="배당수익률" value={formatPct(data.dividendYield, 2)} />}
           </section>
         </>
       )}

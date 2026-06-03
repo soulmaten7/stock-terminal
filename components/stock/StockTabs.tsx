@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { LineChart, MessageSquare, Newspaper, BarChart3 } from "lucide-react";
 import StockChartSection from "./StockChartSection";
+import StockOrderbookCard from "./StockOrderbookCard";
+import StockExecutionCard from "./StockExecutionCard";
 import DiscussionBoard from "./DiscussionBoard";
 import StockNewsModule from "./StockNewsModule";
 import StockInsightsTab from "./StockInsightsTab";
@@ -47,7 +49,15 @@ export default function StockTabs({ symbol, stockName }: Props) {
 
       {/* 탭 콘텐츠 */}
       <div className="bg-unjong-surface rounded-b-2xl shadow-soft p-5 min-h-[400px]">
-        {active === "chart" && <StockChartSection symbol={symbol} />}
+        {active === "chart" && (
+          <div className="space-y-5">
+            <StockChartSection symbol={symbol} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <StockOrderbookCard symbol={symbol} />
+              <StockExecutionCard symbol={symbol} />
+            </div>
+          </div>
+        )}
         {active === "discussion" && <DiscussionBoard symbol={symbol} stockName={stockName} />}
         {active === "news" && <StockNewsModule symbol={symbol} />}
         {active === "insights" && <StockInsightsTab symbol={symbol} />}
