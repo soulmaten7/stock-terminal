@@ -1,6 +1,17 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-03 — STEP 135 (잔여 문서 V5 정렬 패치)
+
+STEP 134 commit 후 정밀 재검수에서 발견된 4건 처리 — 헤더만 오늘 날짜이고 본문은 V4 그대로였던 문서 정렬.
+
+- **README.md 전면 재작성**: 핵심 정체성 표 (정보/대화/허브/신뢰) V5 정렬, 운종 V5 페이지 13개 표 추가, "단타·장타·미국주식 × 7개" → "한국 5개·미국 4개 정확 카드", "3창 분리 실시간 채팅" → "종목별 채팅 + 토론·댓글", "21개 카드 + 21개 디테일" → V4 이력으로 강등, 진행 상태 표 STEP 88~135 명시, `cp .env.example .env.local` 실행 가이드 추가
+- **docs/BRAND_IDENTITY.md**: 태그라인 "한국 주식 동선" → "한국 금융 동선" (MVP 2.0 포함), 정체성 5가지(V4) → 4박자(V5) — V4 5가지는 보존 명시, 색상 팔레트 V4 → V4·V5 비교 표 (`#0E7C7B`→`#1AC267`, `#C73E3A`→`#F04452`), 중복 "## 이름" 헤더 정리, 참조 섹션 V5 (NEXT_SESSION_START·SESSION_KICKOFF) 추가
+- **docs/PRODUCT_SPEC_V4.md**: 상단에 ⚠️ "V4 명세 이력 보존" 안내문 추가 — V4→V5 주요 변경 (3창→2창, 21개→9개, 종목별 채팅, MVP 2.0 평가 디렉토리) 요약 + V5 비전 위치 (NEXT_SESSION_START·SESSION_KICKOFF) 명시
+- **.env.example 신규 생성** (STEP 119 결정 후 미생성 상태였음): 21개 키 (Supabase 5 · KIS 6 · DART/ECOS/SEC/FRED 4 · 카카오 OAuth 2 · 토스페이먼츠 2 · OpenAI 1 · SUPABASE_ACCESS_TOKEN rotate 권장) 그룹화
+- **.gitignore 패턴 보정**: `.env*` 규칙에 `!.env.example` 예외 추가 — 템플릿 파일이 git 에 포함되도록
+- 빌드 영향 X (문서·gitignore만)
+
 ## 2026-06-03 — STEP 134 (모든 문서·로그 3차 교차검수 갱신)
 
 - **4개 필수 문서 헤더 일관 (2026-06-03)**: CLAUDE.md · CHANGELOG.md · session-context.md · NEXT_SESSION_START.md

@@ -2,9 +2,9 @@
 # 운종(雲從) — 새 세션 즉시 시작 파일
 
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-03 (STEP 134 — 모든 문서 3차 교차검수 갱신)
+> **Last refreshed**: 2026-06-03 (STEP 135 — 잔여 문서 V5 정렬 패치 + .env.example 생성)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행
-> **현재 커밋**: HEAD `0f63ac5` (STEP 133) — 빌드 ✓
+> **현재 커밋**: HEAD `0f63ac5` (STEP 133) — 빌드 ✓ (STEP 134·135 는 문서만, 다음 push 로 갱신 예정)
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 
 ---
