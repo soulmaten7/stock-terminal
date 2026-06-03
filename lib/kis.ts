@@ -119,15 +119,28 @@ async function rateLimitWait(): Promise<void> {
   }
 }
 
+// ── Response cache (TTL) + in-flight coalescing ──────────────────────────────
+// PRODUCT SPEC V6 ④: KIS rate limit 대응. "밀리초 실시간"이 아니라 "캐시 갱신" 모델.
+// 동일 (trId+endpoint+params) 요청은 TTL 동안 메모리 캐시에서 제공하고,
+// 동시 요청은 하나로 합쳐(coalesce) KIS 호출·rate-limit 큐 부담을 줄인다.
+const DEFAULT_CACHE_TTL_MS = parseInt(process.env.KIS_CACHE_TTL_MS || '15000', 10);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const respCache = new Map<string, { data: any; expiresAt: number }>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const respPending = new Map<string, Promise<any>>();
+
 // ── Common API caller ───────────────────────────────────────────────────────
 
 interface KisApiOptions {
   endpoint: string;
   trId: string;
   params?: Record<string, string>;
+  /** 응답 캐시 TTL(ms). 0 이면 캐시 우회. 기본 15s (env KIS_CACHE_TTL_MS). */
+  cacheTtlMs?: number;
 }
 
-export async function fetchKisApi({ endpoint, trId, params }: KisApiOptions) {
+async function callKisApi(endpoint: string, trId: string, params?: Record<string, string>) {
   await rateLimitWait();
 
   const token = await getKisToken();
@@ -154,4 +167,35 @@ export async function fetchKisApi({ endpoint, trId, params }: KisApiOptions) {
   }
 
   return res.json();
+}
+
+export async function fetchKisApi({ endpoint, trId, params, cacheTtlMs = DEFAULT_CACHE_TTL_MS }: KisApiOptions) {
+  if (cacheTtlMs <= 0) {
+    return callKisApi(endpoint, trId, params);
+  }
+
+  const key = `${trId}|${endpoint}|${JSON.stringify(params ?? {})}`;
+
+  const hit = respCache.get(key);
+  if (hit && Date.now() < hit.expiresAt) {
+    return hit.data;
+  }
+
+  const pending = respPending.get(key);
+  if (pending) {
+    return pending;
+  }
+
+  const exec = (async () => {
+    const data = await callKisApi(endpoint, trId, params);
+    respCache.set(key, { data, expiresAt: Date.now() + cacheTtlMs });
+    return data;
+  })();
+
+  respPending.set(key, exec);
+  try {
+    return await exec;
+  } finally {
+    respPending.delete(key);
+  }
 }

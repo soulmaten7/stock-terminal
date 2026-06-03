@@ -1,6 +1,14 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-03 — V6 Phase 1-3 (KIS 캐시 안정화 — 결정 ④ 1단계)
+
+KIS rate limit 대응: "밀리초 실시간"이 아니라 "캐시 갱신" 모델.
+- `lib/kis.ts` `fetchKisApi`에 **응답 TTL 캐시 + 동시요청 coalescing** 추가. 동일 (trId+endpoint+params) 요청은 TTL(기본 15s, `KIS_CACHE_TTL_MS`) 동안 메모리 캐시에서 제공, 동시 요청은 1회 호출로 합침
+- 효과: 여러 카드/사용자가 같은 라우트(movers·volume·investor-rank·price·chart 등)를 10초마다 폴링해도 KIS 실호출·rate-limit 큐 부담 대폭 감소. 오류는 캐시 안 함(다음 호출 재시도)
+- `cacheTtlMs:0` 으로 호출별 캐시 우회 가능. `.env.example`에 `KIS_CACHE_TTL_MS` 문서화
+- 빌드 ✓ (exit 0). (공시 DART 는 30초 폴링·뉴스 RSS 는 revalidate 600 으로 이미 완화 — 추가 캐시는 후속)
+
 ## 2026-06-03 — V6 Phase 1-2 (플랫폼 평가 토론 추천/비추천 도입 — 결정 ①)
 
 별점 ❌ → 추천(+1)/비추천(-1) + 사기의심 신고. 조작·명예훼손 리스크 회피.
