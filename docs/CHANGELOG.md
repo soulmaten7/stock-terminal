@@ -1,6 +1,13 @@
 <!-- 2026-06-03 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-03 — V6 Phase 1-2 (플랫폼 평가 토론 추천/비추천 도입 — 결정 ①)
+
+별점 ❌ → 추천(+1)/비추천(-1) + 사기의심 신고. 조작·명예훼손 리스크 회피.
+- 마이그레이션 `020_dislike_votes.sql` 신규 (Cowork 가 Supabase MCP 로 적용): `platform_discussion_likes.vote SMALLINT(-1/1)` + `platform_discussions.dislike_count` + like/dislike 동시 갱신 트리거(INSERT/DELETE/UPDATE 전환)
+- `PlatformDiscussionBoard`: ThumbsUp/ThumbsDown 투표 UI(토스 그린/레드), 사용자당 1표 토글·전환, 본인 투표 선로드(myVotes), 신고 라벨 "사기의심 신고"
+- 빌드 ✓ (exit 0). 실제 투표는 020 적용 + 카카오 OAuth 활성화 후 동작
+
 ## 2026-06-03 — V6 Phase 1-1 (정체성 카피 전환: "동선의 출발점" → "안 속는 곳")
 
 PRODUCT SPEC V6 확정 — 중심축을 편의(동선의 출발점) → 신뢰(투자상품에 속지 않게 돕는 곳)로 전환. 코드 카피 정렬 1차.

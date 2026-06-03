@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useAuthStore } from "@/stores/authStore";
-import { Heart, Flag, AlertCircle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Flag, AlertCircle } from "lucide-react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type PlatformDiscussion = {
@@ -15,6 +15,7 @@ type PlatformDiscussion = {
   duration: string | null;
   outcome: "positive" | "neutral" | "negative" | null;
   like_count: number;
+  dislike_count: number;
   created_at: string;
 };
 
@@ -42,7 +43,7 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
   const [duration, setDuration] = useState("");
   const [outcome, setOutcome] = useState<Outcome | "">("");
   const [submitting, setSubmitting] = useState(false);
-  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [myVotes, setMyVotes] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -51,7 +52,7 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
       const supabase = createAnonClient();
       let query = supabase
         .from("platform_discussions")
-        .select("id, nickname, tier, content, duration, outcome, like_count, created_at")
+        .select("id, nickname, tier, content, duration, outcome, like_count, dislike_count, created_at")
         .eq("target_type", targetType)
         .eq("target_id", targetId)
         .eq("hidden", false)
@@ -69,17 +70,19 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
     return () => { cancelled = true; clearInterval(interval); };
   }, [targetType, targetId, sortMode]);
 
-  // 본인 좋아요 ID 선로드
+  // 본인 투표(추천/비추천) 선로드
   useEffect(() => {
-    if (!user) { setLikedIds(new Set()); return; }
+    if (!user) { setMyVotes(new Map()); return; }
     let cancelled = false;
     const load = async () => {
       const supabase = createAnonClient();
       const { data } = await supabase
         .from("platform_discussion_likes")
-        .select("discussion_id")
+        .select("discussion_id, vote")
         .eq("user_id", user.id);
-      if (!cancelled) setLikedIds(new Set((data || []).map((r: { discussion_id: string }) => r.discussion_id)));
+      if (!cancelled) {
+        setMyVotes(new Map((data || []).map((r: { discussion_id: string; vote: number }) => [r.discussion_id, r.vote])));
+      }
     };
     load();
     return () => { cancelled = true; };
@@ -115,7 +118,7 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
       <header className="flex items-center justify-between bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3">
         <div>
           <h2 className="text-base font-semibold text-unjong-primary">💬 사용자 평가</h2>
-          <p className="text-xs text-unjong-muted">운종은 평가 X · 사용자 토론만 제공</p>
+          <p className="text-xs text-unjong-muted">운종은 평가 X · 사용자 토론·추천/비추천만 제공</p>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -218,7 +221,7 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
       ) : (
         <ul className="space-y-2">
           {items.map((d) => (
-            <PlatformDiscussionItem key={d.id} discussion={d} initiallyLiked={likedIds.has(d.id)} />
+            <PlatformDiscussionItem key={d.id} discussion={d} initialVote={myVotes.get(d.id) ?? 0} />
           ))}
         </ul>
       )}
@@ -226,10 +229,11 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
   );
 }
 
-function PlatformDiscussionItem({ discussion: d, initiallyLiked }: { discussion: PlatformDiscussion; initiallyLiked: boolean }) {
+function PlatformDiscussionItem({ discussion: d, initialVote }: { discussion: PlatformDiscussion; initialVote: number }) {
   const user = useAuthStore((s) => s.user);
-  const [liked, setLiked] = useState(initiallyLiked);
+  const [vote, setVote] = useState(initialVote); // 1 추천 · -1 비추천 · 0 없음
   const [likeCount, setLikeCount] = useState(d.like_count);
+  const [dislikeCount, setDislikeCount] = useState(d.dislike_count);
   const [reported, setReported] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [showLoginNotice, setShowLoginNotice] = useState(false);
@@ -241,21 +245,37 @@ function PlatformDiscussionItem({ discussion: d, initiallyLiked }: { discussion:
     setTimeout(() => setShowLoginNotice(false), 3000);
   };
 
-  const handleLike = async () => {
+  const handleVote = async (dir: 1 | -1) => {
     if (!user) return notifyLogin();
     const supabase = createAnonClient();
-    if (liked) {
+    if (vote === dir) {
+      // 같은 방향 재클릭 → 투표 취소
       const { error } = await supabase
         .from("platform_discussion_likes")
         .delete()
         .eq("discussion_id", d.id)
         .eq("user_id", user.id);
-      if (!error) { setLiked(false); setLikeCount((c) => c - 1); }
+      if (!error) {
+        setVote(0);
+        if (dir === 1) setLikeCount((c) => c - 1);
+        else setDislikeCount((c) => c - 1);
+      }
     } else {
+      // 신규 또는 전환 → upsert
       const { error } = await supabase
         .from("platform_discussion_likes")
-        .insert({ discussion_id: d.id, user_id: user.id });
-      if (!error) { setLiked(true); setLikeCount((c) => c + 1); }
+        .upsert({ discussion_id: d.id, user_id: user.id, vote: dir }, { onConflict: "discussion_id,user_id" });
+      if (!error) {
+        const prev = vote;
+        setVote(dir);
+        if (dir === 1) {
+          setLikeCount((c) => c + 1);
+          if (prev === -1) setDislikeCount((c) => c - 1);
+        } else {
+          setDislikeCount((c) => c + 1);
+          if (prev === 1) setLikeCount((c) => c - 1);
+        }
+      }
     }
   };
 
@@ -292,18 +312,28 @@ function PlatformDiscussionItem({ discussion: d, initiallyLiked }: { discussion:
       <div className="flex items-center gap-4">
         <button
           type="button"
-          onClick={handleLike}
-          className={`flex items-center gap-1 text-xs transition-colors ${liked ? "text-unjong-danger" : "text-unjong-muted hover:text-unjong-danger"}`}
+          onClick={() => handleVote(1)}
+          className={`flex items-center gap-1 text-xs transition-colors ${vote === 1 ? "text-[#1AC267]" : "text-unjong-muted hover:text-[#1AC267]"}`}
+          title="추천"
         >
-          <Heart size={12} fill={liked ? "currentColor" : "none"} />
+          <ThumbsUp size={12} fill={vote === 1 ? "currentColor" : "none"} />
           <span>{likeCount}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => handleVote(-1)}
+          className={`flex items-center gap-1 text-xs transition-colors ${vote === -1 ? "text-[#F04452]" : "text-unjong-muted hover:text-[#F04452]"}`}
+          title="비추천"
+        >
+          <ThumbsDown size={12} fill={vote === -1 ? "currentColor" : "none"} />
+          <span>{dislikeCount}</span>
         </button>
         <button
           type="button"
           onClick={handleReport}
           disabled={reported || reporting}
           className={`ml-auto text-xs transition-colors ${reported ? "text-unjong-danger" : "text-unjong-muted hover:text-unjong-danger"}`}
-          title={reported ? "신고 완료" : "신고"}
+          title={reported ? "신고 완료" : "사기의심 신고"}
         >
           <Flag size={11} fill={reported ? "currentColor" : "none"} />
         </button>
