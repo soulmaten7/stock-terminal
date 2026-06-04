@@ -2,6 +2,14 @@
 <!-- Last GC: 2026-06-04 (마이그레이션 020·021·022 적용 + FSS 1,738건 적재 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
 
+## STEP 147 (2026-06-04) — 종목 메타 보강 (외국인 소진율 + 상장주식수) ✅
+
+종목 `StockInfoPanel` 재무 섹션 한국 전용 메타 2행. 마이그레이션·DB·새 의존성 0. 전제 `98b68e2`.
+- `/api/kis/price`: `listedShares`(lstn_stcn) · `foreignRatio`(hts_frgn_ehrt) 2필드 매핑 추가(기존 inquire-price 응답의 표준 필드)
+- `StockInfoPanel` (`99864a3`): 타입 2필드 + 한/미 매핑 + 재무 행 2개(isKr && 값>0 가드) + formatShares 헬퍼
+- 명칭: hts_frgn_ehrt = "외국인 소진율"(보유÷한도) 정확 표기. 미국 미표시(isKr). 빌드 ✓
+- 다음 후보: 홈 레이아웃 미세조정 · 빈 섹션 CTA 문구 · Sponsored 분리 UI / 사용자: 카카오 OAuth·Vercel
+
 ## STEP 144·145 (2026-06-04) — 홈 데이터 품질 P0 (스파크라인 + 브리핑 안정화) ✅
 
 홈 상단 신뢰·품질 P0 두 건. 마이그레이션·DB·새 의존성 0. 전제 `fac9e71`.
