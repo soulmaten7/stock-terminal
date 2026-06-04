@@ -7,7 +7,7 @@ import { HeaderSearch } from "./HeaderSearch";
 // 네이버 증권식 상단 6메뉴 (운종). 코인·거래 제외, 평가·검증 = 운종 차별점.
 const MENU = [
   { href: "/", label: "홈", match: (p: string) => p === "/" },
-  { href: "/kr", label: "마켓", match: (p: string) => /^\/(kr|us|market|stock)/.test(p) },
+  { href: "/market", label: "마켓", match: (p: string) => /^\/(market|kr|us|stock)/.test(p) },
   { href: "/discussion", label: "토론", match: (p: string) => p.startsWith("/discussion") },
   { href: "/news", label: "뉴스", match: (p: string) => p.startsWith("/news") },
   { href: "/products", label: "평가·검증", match: (p: string) => /^\/(product|room|reviews)/.test(p) },
