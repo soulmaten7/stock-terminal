@@ -1,5 +1,14 @@
-<!-- 2026-06-03 -->
+<!-- 2026-06-04 -->
 # 운종(雲從) — 변경 이력
+
+## 2026-06-04 — STEP 143 (홈 빈 섹션·버그 수정 + 시각 밀도)
+
+STEP 142 포털 홈의 비어 보이는/깨진 데이터 섹션 3곳 복구. 마이그레이션 없음.
+- **브리핑**: `/api/home/briefing` overnight 가 raw `quoteResponse` fetch(빈값) → `yahoo-finance2` `quote()` 교체(`/api/home/sectors` 와 동일 방식). 미사용 US_SYMBOLS/YF_URL/fmt 제거. DART 일정 범위 당일→최근 3일
+- **거래량 랭킹**: `HomeGlobalRanking` 가짜 "spike x·0%" → 실제 `price`·`changePercent` 매핑
+- **업종·테마**: `HomeSectorTheme` 두 탭 모두 `/api/home/sectors?market=KR|US` + 올바른 키(`sector`/`change`). 불안정 `kis/theme` 제거
+- **랭킹 레터 아바타**: 종목명 첫 글자 컬러 원형(해시 색상) — 거래량·등락 두 열 (타사 로고 X, 운종 자체 UI)
+- 빌드 ✓ (exit 0). 인기 토론글 0건은 버그 아님(EmptyState 정상)
 
 ## 2026-06-03 — STEP 142 (포털형 홈 전면 재구성)
 
