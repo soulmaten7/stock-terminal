@@ -42,7 +42,7 @@ function fmtAmount(won?: number): string {
   return won.toLocaleString();
 }
 
-export default function MarketClient() {
+export default function MarketClient({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
   const [country, setCountry] = useState<CountryKey>("kr");
   const [filter, setFilter] = useState<FilterKey>("amount");
@@ -97,11 +97,15 @@ export default function MarketClient() {
   const filters = country === "us" ? US_FILTERS : KR_FILTERS;
 
   return (
-    <div className="max-w-[1480px] mx-auto px-4 py-6">
-      <header className="mb-4">
-        <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
-        <p className="mt-1 text-sm text-unjong-muted">실시간 랭킹 — 종목 클릭 시 상세로. (시총·52주 필터·히트맵은 순차 확장)</p>
-      </header>
+    <div className={embedded ? "" : "max-w-[1480px] mx-auto px-4 py-6"}>
+      {embedded ? (
+        <h2 className="text-lg font-bold text-unjong-primary mb-3">📈 실시간 차트</h2>
+      ) : (
+        <header className="mb-4">
+          <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
+          <p className="mt-1 text-sm text-unjong-muted">실시간 랭킹 — 종목 클릭 시 상세로. (시총·52주 필터·히트맵은 순차 확장)</p>
+        </header>
+      )}
 
       {/* 국가 탭 */}
       <div className="flex items-center gap-2 border-b border-unjong-border mb-4">
