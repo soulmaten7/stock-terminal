@@ -1,55 +1,66 @@
-<!-- 2026-06-03 -->
+<!-- 2026-06-04 -->
 # 운종(雲從) · UNJONG — 다음 세션 PLAYBOOK
 
 > **이 파일은 무엇인가**: 다음 세션을 처음부터 끝까지 이해하고 진행하기 위한 마스터 인수인계 파일. 다른 어떤 문서를 안 봐도 이 파일만으로 작업 시작 가능.
 >
-> **시점 스냅샷**: 2026-06-03 STEP 135 종료
-> **HEAD 커밋**: `3ba3773` (STEP 135 docs · 잔여 문서 V5 정렬 패치 + .env.example)
-> **마지막 코드 변경**: `0f63ac5` (STEP 133 · /screener 제거 + /calendar 외부 링크 + MVP 2.0 디자인 통일)
+> **시점 스냅샷**: 2026-06-04 STEP 143 종료 + 마이그레이션 020·021·022 적용 완료
+> **HEAD 커밋**: `0d7c23b` (STEP 143 docs · 홈 빈 섹션 복구)
+> **마지막 코드 변경**: `fbb25d7` (STEP 143 · 브리핑 야후 라이브러리·거래량 실값·업종테마 market 키·레터 아바타)
 > **빌드 상태**: ✓ exit 0
 > **다음 세션 시작 시 첫 번째로 읽는 파일**: 이 파일 + `session-context.md` (TODO GC)
+>
+> 🔑 **DB 함정 메모**: 운종 전용 Supabase = 표시명 "OT-Marketing", ref **`qxkmwlkchyxfzxbonhtj`**. 절대 쓰면 안 되는 POTAL = ref **`zyurflkhiregundhisky`**. 마이그레이션·쿼리는 반드시 운종 ref 로.
 
 ---
 
-## 1. 운종 한 줄 정체성
+## 1. 운종 한 줄 정체성 (V6 — 2026-06-03 확정)
 
-> **운종 = 한국 금융 동선의 출발점**
-> = 네이버 페이 증권 레이아웃 + 토스 증권 카드 디자인 + Trustpilot 평가 모델
+> **운종 = "투자상품에 속지 않게 돕는 곳"** — 정확한 정보 + 솔직한 토론 + 검증된 신뢰
+> 구조 = 네이버 페이 증권 레이아웃 + 토스 증권 카드 디자인 + Trustpilot 평가 모델 (V5 계승, 중심축만 편의 → **신뢰**). 마스터 비전 `docs/PRODUCT_SPEC_V6.md`.
 
 조선 한양 종로의 옛 이름 **운종가(雲從街)** — "구름처럼 사람이 모이는 거리" — 에서 가져온 이름.
 
-## 2. 4박자 핵심 정체성
+### V6 확정 결정 5개 (LOCK — 2026-06-03)
+- **0 정체성 축**: "동선의 출발점(편의)" → "안 속는 곳(신뢰)"
+- **① 평가 방식**: 토론 + 추천/비추천 + 사기의심 신고. 별점(star) ❌ — 조작·명예훼손 소송 리스크 회피
+- **② 인증 뱃지**: 금융위(금감원) 신고번호 입력 → 자동 검증 → 뱃지. 운영자 임의 부여 ❌ (법적 방패)
+- **③ 코인**: 제외 — 한국 주식으로 먼저 완성·증명 후 재논의
+- **④ 정보 깊이 단계화**: 시세·차트·공시·뉴스 먼저(캐시) → 재무지표(ROE·부채비율 등 계산) 2단계 → 정밀 스크리너·비교 필터는 외부 링크
+
+## 2. 4박자 핵심 정체성 (신뢰가 중심축)
 
 | 영역 | 내용 |
 |------|------|
-| **정보** | 한국 5개·미국 4개 정확 카드 + 종목별 가격·차트·뉴스·공시·시고저·52주·PER |
-| **대화** | 종목별 채팅 + 토론·댓글 (Realtime + Tier 표시 + 신고 5건 자동 hidden) |
-| **허브** | 모든 한국 금융 사이트 출발점 (네이버·키움·FnGuide·Investing.com 외부 동선) |
-| **신뢰** | 상품·리딩방 평가 디렉토리 (Trustpilot 금융 한국판 — MVP 2.0) + Tier 1·2·3 인증 |
+| **정보** | 한국 5개·미국 4개 정확 카드 + 종목 5탭(차트·시세/토론/뉴스/공시/인사이트) 디테일 |
+| **대화** | 종목별 채팅 + 토론·댓글 (Realtime + 추천/비추천 + 신고 5건 자동 hidden) |
+| **허브** | 한국 금융 사이트 외부 동선 (네이버·키움·FnGuide·Investing.com) |
+| **신뢰 (중심축)** | 상품·리딩방 평가 디렉토리 + **금감원 신고 자동 검증 뱃지** + Tier 1·2·3 인증 |
 
 ## 3. 안 하는 것 (정체성 경계)
 
 - **거래 X** — 증권사 라이선스 X (네이버·키움·삼성증권 영역)
 - **영어판 X** — 국가별 별도 페이지 (일본·미국 진출은 Layer 7+)
+- **코인 X** — V6 결정 ③: 한국 주식으로 먼저 완성·증명 후 재논의
+- **별점(star rating) X** — V6 결정 ①: 추천/비추천 + 사기의심 신고로 대체
 - **정밀 스크리너 X** — FnGuide·키움 영역. 운종은 외부 동선 안내만
-- **깊은 분석 X** — 토스·미래에셋 영역
+- **깊은 분석 X** — 정밀 분석 도구는 외부 링크 (V6 결정 ④)
 - **한자 雲從 코드 표기 X** — UNJONG + 운종 한글만
 - **OTMarketing CPA 작업 X** — 별도 저장소 `~/OTMarketing/` (상세: `docs/CROSS_REFERENCE.md`)
 
 ## 4. 수익 모델
 
 - **MVP 1.0 (완료)** — 기본 정보 + 정제된 채팅·토론 (트래픽 확보)
-- **MVP 2.0 (1차 진입)** — 상품·리딩방 평가 디렉토리 (Trustpilot 금융 버전) — 운종 진짜 차별화
+- **MVP 2.0 (진행)** — 상품·리딩방 평가 디렉토리 + 금감원 인증 뱃지 (Trustpilot 금융 버전) — 운종 진짜 차별화
 - **광고 (예정)** — Tier 1·2·3 인증 광고 시스템 (Sponsored ↔ 평가 명확 분리)
 
-## 5. V5 페이지 13개 라우트 + 핵심 컴포넌트 매핑
+## 5. 페이지 13개 라우트 + 핵심 컴포넌트 매핑
 
 | 라우트 | 역할 | 핵심 컴포넌트 |
 |--------|------|---------------|
-| `/` | 새 홈 (시장 핫이슈 + HOT 토론·평가·헤드라인 + 관심종목) | `HomeClientV5` · `HotProductReviewsModule` · `HotRoomReviewsModule` · `WatchlistPanel` |
+| `/` | **포털형 홈** (STEP 142~143) = 지수바·브리핑·랭킹·업종테마·ETF·우측레일 + 검증·평가·HOT토론·뉴스 + placeholder shell | `components/home-v6/HomeClientV6` · `HomeIndexBar`·`HomeBriefing`·`HomeGlobalRanking`·`HomeSectorTheme`·`HomeEtfPicks`·`HomeRightRail` (home-v5 모듈 재사용) |
 | `/kr` | 한국주식 카드 5개 | `MoversCard`·`VolumeCard`·`NetBuyCard`·`DisclosureCard`·`SectorCard` |
 | `/us` | 미국주식 카드 4개 | `GlobalIndicesCard`·`M7Card`·`USPreAfterCard`·`USNewsCard` |
-| `/stock/[code]` | 종목 페이지 (좌 정보·차트 / 중 탭 + 댓글 / 우 채팅) | `StockTabs`·`StockChartSection`·`StockSidePanel`·`RightFixedNav` |
+| `/stock/[code]` | 종목 페이지 (좌 정보·차트 / 중 **탭 5종: 차트·시세 / 토론 / 뉴스 / 공시 / 인사이트** + 댓글 / 우 채팅) | `StockTabs`·`StockChartSection`·`StockOrderbookCard`·`StockExecutionCard`·`StockDisclosuresTab`·`StockInsightsTab`·`StockInfoPanel`·`RightFixedNav` |
 | `/products` | 상품 디렉토리 (ETF·펀드·랩·리츠·채권) | `ProductDirectoryClient` |
 | `/product/[id]` | 상품 평가 | `ProductDetailClient`·`PlatformReviewSection` |
 | `/rooms` | 리딩방 디렉토리 (텔레그램·카카오·디스코드·유튜브) | `RoomDirectoryClient` |
@@ -153,10 +164,14 @@
 | 017 | `017_discussions.sql` | discussions + chat_messages.symbol |
 | 018 | `018_discussion_comments.sql` | 토론 댓글 |
 | 019 | `019_platform_directory.sql` | products + leading_rooms + platform_discussions + 시드 |
+| **020** | `020_dislike_votes.sql` | 상품·리딩방 평가 추천/비추천 (vote SMALLINT + dislike_count + 트리거) — ✅ 06-04 |
+| **021** | `021_fss_advisors.sql` | 금감원 유사투자자문업자 원장 + leading_rooms 인증 컬럼. **FSS 1,738건 적재 완료** — ✅ 06-04 |
+| **022** | `022_discussion_dislike.sql` | 종목 토론 추천/비추천 (vote + dislike_count + 트리거) — ✅ 06-04 |
 
-**적용 방법**: Supabase MCP (Cowork) — 다음 세션에서 새 마이그레이션 시 동일 방식.
+**적용 방법**: Supabase MCP (Cowork) — 운종 DB ref `qxkmwlkchyxfzxbonhtj` (표시명 "OT-Marketing"). 다음 세션에서 새 마이그레이션 시 동일 방식. ⚠️ POTAL ref `zyurflkhiregundhisky` 절대 사용 금지.
+**FSS 데이터 적재**: `npx tsx scripts/import-fss-advisors.ts` (수동 1회) 또는 `/api/cron/fss-advisors` (Vercel Cron — 배포 후 활성, KST 04:00).
 
-## 10. STEP 88~135 진행 이력 (구간별 요약)
+## 10. STEP 88~143 진행 이력 (구간별 요약)
 
 | 구간 | 영역 | 상태 |
 |------|------|------|
@@ -181,53 +196,30 @@
 | 129~133 | 전면 디자인 리뉴얼 (디자인 시스템 + 토스 카드 + 종목 페이지 탭 + 새 홈 손성기 + MVP2 통일) | ✅ V5 완성 |
 | 134 | 모든 문서·로그 3차 교차검수 갱신 | ✅ |
 | 135 | 잔여 문서 V5 정렬 패치 (README·BRAND·SPEC_V4 + .env.example) | ✅ |
+| — | **정체성 V6 전환** + PRODUCT_SPEC_V6 생성 + Phase 1 (카피 전환·추천/비추천 020·KIS 캐시) | ✅ "안 속는 곳"으로 |
+| 137 | FSS 유사투자자문업자 인증 (lib/fss.ts·cron·검증 API·뱃지, 마이그레이션 021) | ✅ 1,738건 적재 |
+| 138 | 홈 신뢰 축 재배치 (검증·평가 최상단 + 금감원 1,738개 히어로 + 뉴스 탭) | ✅ |
+| 139 | 종목 페이지 네이버급 디테일 (InsightsTab·Orderbook·Execution·InfoPanel·lib/format) | ✅ 정보깊이 ④ |
+| 140 | 종목 토론 추천/비추천 통일 (ThumbsUp/Down + voteMap, 마이그레이션 022) | ✅ |
+| 141 | 종목 공시 탭 (StockDisclosuresTab DART/SEC, 주의공시 레드) → 종목 5탭 완성 | ✅ |
+| 142 | 포털형 홈 전면 재구성 (components/home-v6/HomeClientV6 + 섹션 모듈) | ✅ 홈=HomeClientV6 |
+| 143 | 홈 빈 섹션·버그 수정 (브리핑 야후 라이브러리·거래량 실값·업종테마 market 키·레터 아바타) | ✅ |
 
-## 11. 다음 STEP 후보 (우선순위)
+## 11. 다음 STEP 후보 (우선순위 — STEP 144 부터)
 
-### 🥇 P0 — 운종 차별화 강화 (추천)
-**STEP 136 — 광고 분리 UI**
-Sponsored ↔ 평가 영역 시각 분리. 운종 신뢰의 기반.
-- 디렉토리 카드에 "Sponsored" 배지 (위치·색)
-- 평가 점수 카드와 광고 카드 시각 분리
-- 정렬 옵션 "평가 순 / Sponsored 우선 / 최신순"
-- 광고주에게 노출 위치·기간 옵션 (DB schema)
+### 🥇 P0 — 홈 데이터 품질 (빠른 반복)
+- **브리핑 overnight 값 안정화** — 간밤 지수 표기 신뢰화 (`/api/home/briefing`)
+- **지수 카드 스파크라인** — `HomeIndexBar` 미니 차트
+- **홈 레이아웃 비율 미세조정** — 메인(1fr)/우측레일(320) 균형
+- **인기글 시드** — `HotDiscussions`·평가글 0건 → 초기 콘텐츠 (현재 EmptyState 정상)
 
-### 🥈 P1 — Tier 인증 시스템
-**STEP 137 — Tier 1·2·3 운영자 신청·검토 시스템**
-- `/admin` Tier 신청 검토 페이지
-- Tier 1 (기본) · Tier 2 (인증) · Tier 3 (프리미엄) 권한 매트릭스
-- users 테이블 tier 컬럼 활용
+### 🥈 P1 — 정보 깊이·신뢰 강화
+- **외국인보유율·상장주식수 메타** — 종목 `StockInfoPanel` 보강
+- **Sponsored 분리 UI** — 광고 ↔ 평가 시각 분리 (운종 신뢰 기반, V6 결정 ②와 일관)
 
-### 🥉 P2 — 청소 (저비용·고가치)
-**STEP 138 — 고아 컴포넌트 일괄 청소**
-이미 알려진 고아: `components/calendar/*`, `components/screener/*`, `components/watchlist/*`, `components/stocks/*`, `lib/watchlist.ts`
-- 의존성 검증 후 일괄 삭제
-- 빌드 ✓ 확인
-
-### 📱 P3 — 모바일 반응형
-**STEP 139 — < 1024px 단일 컬럼 + 햄버거 메뉴**
-- 종목 페이지 3컬럼 → 단일 컬럼 (탭 system 유지)
-- 새 홈 단일 컬럼
-- MainNav → 햄버거
-
-### 🔐 P4 — 사용자 직접 작업
-**STEP 140 — 카카오 OAuth 활성화 (사용자)**
-- 카카오 디벨로퍼스 → REST API 키·Client Secret 발급
-- Supabase Dashboard → Auth → Providers → Kakao 활성화
-- `.env.local` `KAKAO_CLIENT_ID`·`KAKAO_CLIENT_SECRET` 채우기
-- `/auth/login` 실측 테스트
-
-### 🚀 P5 — 배포
-**STEP 119 (보류 중) — Vercel 배포 + unjong.com 도메인**
-- `unjong.com` 도메인 결정 (Layer 6 — $21)
-- Vercel 환경변수 (Supabase·KIS·DART·SEC·카카오·토스) 전체 등록
-- DNS 설정 + SSL
-- ⚠️ STEP 119 명령서에 시크릿 노출 이력 → SUPABASE_ACCESS_TOKEN rotate 권장
-
-### 🔍 P6 — 검색 인덱싱·SEO
-**STEP 141 — 검색 인덱싱 (Algolia·Typesense or Postgres FTS)**
-- 종목·상품·리딩방·토론 통합 검색
-- 운종 검색 → unjong.com → onetrillion.app
+### 🔐 P2 — 사용자 직접 작업
+- **카카오 OAuth 활성화 (사용자)** — 카카오 디벨로퍼스 REST API 키·Secret → Supabase Auth Providers → `/auth/login` 테스트. **추천/비추천 투표 실동작 전제** (마이그레이션은 적용 완료)
+- **Vercel 배포 + unjong.com 도메인 (사용자)** — Vercel 환경변수 전체 등록(+`CRON_SECRET`). **FSS cron 활성 전제**. ⚠️ STEP 119 시크릿 노출 이력 → `SUPABASE_ACCESS_TOKEN` rotate 권장
 
 ## 12. 사용자 직접 작업 (미완)
 
@@ -338,7 +330,9 @@ cd ~/stock-terminal && claude --dangerously-skip-permissions --model opus
 | `docs/CHANGELOG.md` | 세션별 변경 이력 | 매 세션 종료 |
 | `session-context.md` | TODO + 누적 결정사항 + GC 시점 | 매 세션 종료 |
 | `CLAUDE.md` | Cowork ↔ Claude Code 역할 분담 (지침서) | 변경 시 |
-| `docs/BRAND_IDENTITY.md` | 운종 브랜드 + V5 디자인 시스템 | 디자인 변경 시 |
+| `docs/PRODUCT_SPEC_V6.md` | **마스터 비전 (V6 — 정체성 축 "안 속는 곳" + 확정 결정 5개)** | 비전 변경 시 |
+| `docs/NAVER_STOCK_PAGE_ANALYSIS.md` | 네이버 종목 페이지 분석 (정보 깊이 ④ 근거) | 참조 |
+| `docs/BRAND_IDENTITY.md` | 운종 브랜드 + V5 디자인 시스템 (V6 계승) | 디자인 변경 시 |
 | `docs/PRODUCT_SPEC_V4.md` | V4 비전 (이력 보존) | 보존 — 갱신 X |
 | `docs/PRODUCT_SPEC_V3.md` | V3 히스토리 (보존) | 보존 — 갱신 X |
 | `docs/SYSTEM_DESIGN.md` | V3 시스템 설계 (이력 보존) | 보존 — 갱신 X |
@@ -369,8 +363,9 @@ cd ~/stock-terminal && claude --dangerously-skip-permissions --model opus
 │   ├── mypage/             # 마이페이지
 │   └── api/                # API routes (KIS·DART·Yahoo·RSS)
 ├── components/             # React 컴포넌트
-│   ├── home/               # 새 홈 모듈
-│   ├── stock/              # 종목 페이지 탭 시스템
+│   ├── home-v6/            # 포털형 홈 (HomeClientV6 + 섹션 모듈, STEP 142~143)
+│   ├── home-v5/            # 홈 모듈 (검증·평가·뉴스·HOT토론 — home-v6 가 재사용)
+│   ├── stock/              # 종목 페이지 탭 5종 시스템
 │   ├── chat/               # Realtime 채팅
 │   ├── discussion/         # 토론 + 댓글
 │   ├── platform/           # MVP 2.0 평가 시스템
@@ -379,7 +374,7 @@ cd ~/stock-terminal && claude --dangerously-skip-permissions --model opus
 ├── lib/                    # 유틸리티 (yahoo·dart·kis·rss·supabase)
 ├── stores/                 # Zustand (watchlist·chat)
 ├── types/                  # TypeScript 정의
-├── supabase/migrations/    # 005·014·015·016·017·018·019
+├── supabase/migrations/    # 005·014·015·016·017·018·019·020·021·022 (전부 적용)
 ├── public/                 # 정적 파일
 ├── docs/                   # 모든 문서 + STEP 명령서 아카이브
 ├── .claude/hooks/          # 세션 종료 검증 hook
@@ -449,6 +444,7 @@ cd ~/stock-terminal && rm -f .git/index.lock
 | 미국 데이터 | `SEC_USER_AGENT`·`FRED_API_KEY` |
 | 카카오 OAuth | `KAKAO_CLIENT_ID`·`KAKAO_CLIENT_SECRET` |
 | 토스페이먼츠 | `TOSS_CLIENT_KEY`·`TOSS_SECRET_KEY` |
+| Cron (FSS) | `CRON_SECRET` — `/api/cron/fss-advisors` Vercel Cron 인증용 (STEP 137 추가) |
 | AI 보조 (선택) | `OPENAI_API_KEY` |
 
 ## 24. 도메인 전략
@@ -475,4 +471,4 @@ cd ~/stock-terminal && rm -f .git/index.lock
 
 > **PLAYBOOK 사용법**: 매 세션 종료 시 이 파일을 갱신하라. 다음 세션 Cowork 이 이 파일만 읽어도 100% 동기화 가능하도록.
 >
-> **이 PLAYBOOK 마지막 갱신**: 2026-06-03 STEP 135 종료 시점 · HEAD `3ba3773`
+> **이 PLAYBOOK 마지막 갱신**: 2026-06-04 STEP 143 종료 + 마이그레이션 020·021·022 적용 완료 시점 · HEAD `0d7c23b`

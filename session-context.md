@@ -1,6 +1,15 @@
 <!-- 2026-06-04 -->
-<!-- Last GC: 2026-06-04 (STEP 143 — 홈 빈 섹션 복구 완료 시점) -->
+<!-- Last GC: 2026-06-04 (마이그레이션 020·021·022 적용 + FSS 1,738건 적재 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
+
+## 마이그레이션 020·021·022 적용 완료 + FSS 적재 (2026-06-04) ✅
+
+STEP 137~140 에서 작성만 해둔 마이그레이션 3종을 운종 전용 Supabase(표시명 "OT-Marketing", ref `qxkmwlkchyxfzxbonhtj`)에 모두 적용. (POTAL `zyurflkhiregundhisky` 절대 사용 금지)
+- 020_dislike_votes ✅ — 상품·리딩방 평가 추천/비추천
+- 021_fss_advisors ✅ — 금감원 유사투자자문업자 원장 + leading_rooms 인증 컬럼. **FSS 실데이터 1,738건 적재 완료**
+- 022_discussion_dislike ✅ — 종목 토론 추천/비추천
+- 결과: STEP 137(금감원 신고 검증 뱃지)·138/140(추천/비추천 투표) 실동작. 코드 변경 없음
+- HEAD 변동 없음(`0d7c23b` STEP 143). 남은 사용자 작업: 카카오 OAuth 활성화(로그인 후 투표 동작) · Vercel 배포(cron 활성)
 
 ## STEP 143 (2026-06-04) — 홈 빈 섹션·버그 수정 + 시각 밀도 ✅
 
@@ -32,7 +41,7 @@ STEP 142 포털 홈의 깨진 데이터 섹션 3곳 복구. 마이그레이션 �
 ## STEP 140 (2026-06-03) — 종목 토론 추천/비추천 통일 ✅
 
 상품·리딩방 평가(020)와 종목 토론의 신뢰 신호 통일.
-- 마이그레이션 022(⚠️ Cowork 적용 대기): discussion_likes.vote + discussions.dislike_count + 동시갱신 트리거
+- 마이그레이션 022(✅ 2026-06-04 적용 완료): discussion_likes.vote + discussions.dislike_count + 동시갱신 트리거
 - DiscussionItem: Heart → ThumbsUp/ThumbsDown vote 토글·전환 (댓글·신고·실시간 유지)
 - DiscussionBoard: voteMap 로드 + select dislike_count + '추천 정렬'
 - HotDiscussionsModule: 추천👍/비추천👎 표시
@@ -61,9 +70,9 @@ STEP 142 포털 홈의 깨진 데이터 섹션 3곳 복구. 마이그레이션 �
 
 리딩방이 금감원 실제 신고업체인지 공적 데이터 자동 검증.
 - STEP 0 확정(라이브): 파인 GET `pageIndex`, 174p(10행/p), 봇 UA 차단→브라우저 UA. 파싱 검증 통과
-- 마이그레이션 `021_fss_advisors.sql`(⚠️ Cowork 적용 대기): fss_advisors 원장 + leading_rooms 인증 컬럼
+- 마이그레이션 `021_fss_advisors.sql`(✅ 2026-06-04 적용 완료): fss_advisors 원장 + leading_rooms 인증 컬럼
 - lib/fss.ts(cheerio), scripts/import-fss-advisors.ts(tsx 수동), cron 라우트+vercel.json(KST 04:00), 검증 API, 뱃지 UI("금감원 신고업체 ✓") + 검증 폼 + 면책 고지
-- 빌드 ✓. 실데이터 적재/검증 동작은 021 적용(Cowork) 후
+- 빌드 ✓. ✅ 2026-06-04: 021 적용 + 실데이터 1,738건 적재 완료 → 검증·뱃지 실동작. cron 은 Vercel 배포 후 활성
 - 후속: 운영자/admin 권한 게이팅(TODO), 상호·홈페이지 자동 매칭, Vercel 배포 후 cron 활성
 
 ## V6 Phase 1 (2026-06-03) — 틀 완성 + 신뢰 축 정렬 ✅ (PRODUCT_SPEC_V6 로드맵)
@@ -73,11 +82,11 @@ PRODUCT SPEC V6 확정 — 중심축 "동선의 출발점(편의)" → **"투자
 - **1-2 추천/비추천** (`e717be0`): 마이그레이션 020(vote SMALLINT + dislike_count + 트리거) + PlatformDiscussionBoard ThumbsUp/Down UI. 별점 ❌
 - **1-3 KIS 캐시 안정화** (`e37bf9d`): lib/kis.ts 응답 TTL 캐시(기본 15s) + 동시요청 coalescing
 
-### 후속 (Phase 2 — 신뢰 강화, 미착수)
-- ② 리딩방 **금융위 신고번호 검증 뱃지** (마이그레이션 021) — ⚠️ 검증 데이터 소스(금융위/FSS API or 목록) 필요 → 사용자/Cowork 결정 대기
-- ④ 2단계 재무지표 파이프라인 (마이그레이션 022) — DART 계정과목 매핑·TTM 정제 필요(비용)
-- 증권사별 상품 링크 다중화
-- ⚠️ 마이그레이션 020 Cowork(Supabase MCP) 적용 + 카카오 OAuth 활성화 후 추천/비추천 실동작
+### 후속 (Phase 2 — 신뢰 강화) — 대부분 STEP 137~143 에서 완료
+- ② 리딩방 **금융위(금감원) 신고번호 검증 뱃지** → ✅ STEP 137 완료 (021 적용 + FSS 1,738건 적재). 데이터 소스 = 금감원 파인 유사투자자문업자 목록
+- ④ 정보 깊이 단계화 → ✅ STEP 139 완료 (시세·차트·공시·뉴스 + 재무 2단계 ROE/부채비율 파생, 정밀 분석은 FnGuide 외부 링크)
+- 증권사별 상품 링크 다중화 — 미착수
+- ✅ 마이그레이션 020·021·022 = 2026-06-04 전부 적용 완료. 추천/비추천 투표는 카카오 OAuth 활성화(사용자) 후 로그인 사용자에게 동작
 
 ## STEP 135 (2026-06-03) — 잔여 문서 V5 정렬 패치 ✅
 

@@ -1,6 +1,14 @@
 <!-- 2026-06-04 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-04 — 마이그레이션 020·021·022 적용 완료 + FSS 실데이터 적재 ✅
+
+STEP 137~140 에서 작성만 해두고 "적용 대기" 상태였던 마이그레이션 3종을 운종 전용 Supabase(표시명 "OT-Marketing", ref `qxkmwlkchyxfzxbonhtj`)에 **모두 적용 완료**. (POTAL ref `zyurflkhiregundhisky` 사용 금지 — 혼동 주의)
+- **020_dislike_votes** ✅ — 상품·리딩방 평가(`platform_discussions`) 추천/비추천: `platform_discussion_likes.vote SMALLINT(-1/1)` + `dislike_count` + 동시갱신 트리거
+- **021_fss_advisors** ✅ — 금감원 파인 유사투자자문업자 원장 테이블 + `leading_rooms` 인증 컬럼(`biz_no`·`cert_type`·`cert_verified_at`·`fss_biz_no`). **FSS 실데이터 1,738건 적재 완료** (`scripts/import-fss-advisors.ts`)
+- **022_discussion_dislike** ✅ — 종목 토론(`discussions`) 추천/비추천: `discussion_likes.vote` + `discussions.dislike_count` + 동시갱신 트리거
+- 효과: STEP 137(리딩방 금감원 신고 검증 뱃지)·STEP 138/140(추천·비추천 투표)이 이제 **실동작**. 코드 변경 없음(마이그레이션·데이터 적재만)
+
 ## 2026-06-04 — STEP 143 (홈 빈 섹션·버그 수정 + 시각 밀도)
 
 STEP 142 포털 홈의 비어 보이는/깨진 데이터 섹션 3곳 복구. 마이그레이션 없음.
@@ -32,11 +40,11 @@ STEP 142 포털 홈의 비어 보이는/깨진 데이터 섹션 3곳 복구. 마
 ## 2026-06-03 — STEP 140 (종목 토론 추천/비추천 통일 — 신뢰 신호 일관화)
 
 상품·리딩방 평가(STEP 020)엔 추천/비추천이 있었으나 종목 토론은 좋아요만 → 통일.
-- 마이그레이션 `022_discussion_dislike.sql` 신규 (Cowork 적용 대기): `discussion_likes.vote SMALLINT(-1/1)` + `discussions.dislike_count` + like/dislike 동시 갱신 트리거(INSERT/DELETE/UPDATE 전환). 기존 좋아요는 vote=1 승계
+- 마이그레이션 `022_discussion_dislike.sql` 신규 (**2026-06-04 적용 완료**): `discussion_likes.vote SMALLINT(-1/1)` + `discussions.dislike_count` + like/dislike 동시 갱신 트리거(INSERT/DELETE/UPDATE 전환). 기존 좋아요는 vote=1 승계
 - `DiscussionItem`: Heart 좋아요 → **ThumbsUp(추천)/ThumbsDown(비추천)**, 사용자당 1표 토글·전환 (PlatformDiscussionBoard 패턴 이식). 댓글·신고·Realtime 유지
 - `DiscussionBoard`: `likedIds`(Set) → `voteMap`(Map<id,1|-1>), select +dislike_count, 헤더 "추천 정렬"
 - `HotDiscussionsModule`(홈): 좋아요 표시 → 추천 👍 + 비추천 👎 수
-- 추천=#1AC267 / 비추천=#F04452 (평가·홈 토스식과 통일). 빌드 ✓ (exit 0). 실제 투표는 022 적용 후
+- 추천=#1AC267 / 비추천=#F04452 (평가·홈 토스식과 통일). 빌드 ✓ (exit 0). 실제 투표는 022 적용 후 → **2026-06-04 적용 완료, 실동작**
 
 ## 2026-06-03 — STEP 139 (종목 페이지 네이버급 디테일 — 기존 API 연결)
 
@@ -61,14 +69,14 @@ STEP 142 포털 홈의 비어 보이는/깨진 데이터 섹션 3곳 복구. 마
 
 운종 신뢰 축 핵심: 리딩방이 금융위(금감원) 실제 신고 업체인지 **공적 데이터 자동 검증**.
 - **STEP 0 조사 확정**(라이브): 금감원 파인 목록 = GET `pageIndex` 파라미터, 174페이지(10행/페이지), 봇 UA 차단 → 표준 브라우저 UA 필수. 헤더 동적 매핑으로 컬럼 순서/추가(신고일자) 안전. 라이브 파싱 검증 통과(사업자번호·상호·유효기간 추출 정상)
-- **마이그레이션 `021_fss_advisors.sql` 신규** (Cowork 가 Supabase MCP 로 적용 대기): `fss_advisors` 원장 캐시 + `leading_rooms` 인증 컬럼(biz_no·cert_type·cert_verified_at·fss_biz_no) + RLS 공개읽기
+- **마이그레이션 `021_fss_advisors.sql` 신규** (**2026-06-04 적용 완료**): `fss_advisors` 원장 캐시 + `leading_rooms` 인증 컬럼(biz_no·cert_type·cert_verified_at·fss_biz_no) + RLS 공개읽기
 - **`lib/fss.ts`**: cheerio 파싱 + 174페이지 순회(페이지당 딜레이) + 사업자번호 dedup upsert(500배치) + 미수집 active 행 revoked 처리
 - **`scripts/import-fss-advisors.ts`** (수동 1회 실행, tsx) — admin import는 상대경로로 별칭 미해석 회피
 - **`app/api/cron/fss-advisors/route.ts`** + `vercel.json` cron (UTC 19:00 = KST 04:00, CRON_SECRET 인증). 배포 후 활성
 - **검증 API `app/api/rooms/[id]/verify/route.ts`**: 사업자번호 → fss_advisors active+유효기간 대조 → leading_rooms is_certified 토글 (TODO: 운영자/admin 게이팅)
 - **뱃지 UI**: RoomsClient·RoomDetailClient → "금감원 신고업체 ✓"(green pill) / "신고 미확인"(gray). 상세에 운영자 사업자번호 검증 폼 + 출처/확인일 + **면책 고지**(투자권유 X·신고=수익보장 아님)
 - cheerio·tsx 설치. 빌드 ✓ (exit 0)
-- ⚠️ 실데이터 적재(`npx tsx scripts/import-fss-advisors.ts` ~1,700건)·검증 동작은 **Cowork 가 021 적용 후**
+- ✅ **2026-06-04**: 021 적용 + 실데이터 **1,738건 적재 완료** → 리딩방 금감원 신고 검증·뱃지 실동작
 
 ## 2026-06-03 — V6 Phase 1-3 (KIS 캐시 안정화 — 결정 ④ 1단계)
 
@@ -81,9 +89,9 @@ KIS rate limit 대응: "밀리초 실시간"이 아니라 "캐시 갱신" 모델
 ## 2026-06-03 — V6 Phase 1-2 (플랫폼 평가 토론 추천/비추천 도입 — 결정 ①)
 
 별점 ❌ → 추천(+1)/비추천(-1) + 사기의심 신고. 조작·명예훼손 리스크 회피.
-- 마이그레이션 `020_dislike_votes.sql` 신규 (Cowork 가 Supabase MCP 로 적용): `platform_discussion_likes.vote SMALLINT(-1/1)` + `platform_discussions.dislike_count` + like/dislike 동시 갱신 트리거(INSERT/DELETE/UPDATE 전환)
+- 마이그레이션 `020_dislike_votes.sql` 신규 (**2026-06-04 적용 완료**): `platform_discussion_likes.vote SMALLINT(-1/1)` + `platform_discussions.dislike_count` + like/dislike 동시 갱신 트리거(INSERT/DELETE/UPDATE 전환)
 - `PlatformDiscussionBoard`: ThumbsUp/ThumbsDown 투표 UI(토스 그린/레드), 사용자당 1표 토글·전환, 본인 투표 선로드(myVotes), 신고 라벨 "사기의심 신고"
-- 빌드 ✓ (exit 0). 실제 투표는 020 적용 + 카카오 OAuth 활성화 후 동작
+- 빌드 ✓ (exit 0). 020 적용 완료 — 실제 투표는 카카오 OAuth 활성화(사용자 작업) 후 로그인 사용자에게 동작
 
 ## 2026-06-03 — V6 Phase 1-1 (정체성 카피 전환: "동선의 출발점" → "안 속는 곳")
 

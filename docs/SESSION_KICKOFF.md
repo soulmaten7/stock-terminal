@@ -1,32 +1,32 @@
-<!-- 2026-06-03 -->
+<!-- 2026-06-04 -->
 # 운종(雲從) — 새 세션 즉시 시작 파일
 
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-03 (STEP 135 — 잔여 문서 V5 정렬 패치 + PLAYBOOK 생성)
+> **Last refreshed**: 2026-06-04 (STEP 143 + 마이그레이션 020·021·022 적용 완료)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행
-> **현재 커밋**: HEAD `3ba3773` (STEP 135 docs) — 빌드 ✓ (마지막 코드 변경은 `0f63ac5` STEP 133)
+> **현재 커밋**: HEAD `0d7c23b` (STEP 143 docs) — 빌드 ✓ (마지막 코드 변경은 `fbb25d7` STEP 143)
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 
 ---
 
-## 1. 운종 한 줄 정체성
+## 1. 운종 한 줄 정체성 (V6 — 2026-06-03 확정)
 
-> **운종 = 한국 금융 동선의 출발점 + 정제된 대화 + 신뢰 평가 허브**
+> **운종 = "투자상품에 속지 않게 돕는 곳"** — 정확한 정보 + 솔직한 토론 + 검증된 신뢰
 >
-> = 네이버 페이 증권 레이아웃 + 토스 증권 카드 디자인 + Trustpilot 평가 모델
+> 구조 = 네이버 페이 증권 레이아웃 + 토스 증권 카드 디자인 + Trustpilot 평가 모델 (V5 계승, 중심축만 편의 → **신뢰**). 마스터 비전 `docs/PRODUCT_SPEC_V6.md`.
 
-거래 X · 영어판 X · 깊은 분석 X (외부 정확한 곳으로 동선 안내 = 허브)
+거래 X · 영어판 X · 깊은 분석 X (외부 정확한 곳으로 동선 안내 = 허브) · 코인 제외(한국 주식 먼저)
 
 ## 2. 운종 V5 페이지 13개
 
 | 라우트 | 역할 |
 |--------|------|
-| `/` | 새 홈 (시장 핫이슈 + HOT 토론·평가·헤드라인 + 관심종목) |
+| `/` | 포털형 홈 = `components/home-v6/HomeClientV6` (지수바·브리핑·랭킹·업종테마·ETF·우측레일 + 검증·평가·HOT토론·뉴스) |
 | `/kr` | 한국주식 카드 5개 |
 | `/us` | 미국주식 카드 4개 |
-| `/stock/[code]` | 종목 페이지 (좌 정보·차트 / 중 탭(차트·토론·뉴스·인사이트) + 댓글 / 우 채팅) |
+| `/stock/[code]` | 종목 페이지 (좌 정보·차트 / 중 탭 5종: 차트·시세 / 토론 / 뉴스 / 공시 / 인사이트 + 댓글 / 우 채팅) |
 | `/products` | 상품 디렉토리 (ETF·펀드·랩·리츠·채권) |
 | `/product/[id]` | 상품 평가 |
 | `/rooms` | 리딩방 디렉토리 (텔레그램·카카오·디스코드·유튜브) |
@@ -35,51 +35,45 @@
 | `/auth/login`·`/auth/callback` | 카카오 OAuth (활성화 미완) |
 | `/mypage` | 마이페이지 |
 
-## 3. 현재 진행 상태 (STEP 88~134)
+## 3. 현재 진행 상태 (STEP 88~143)
 
-### ✅ MVP 1.0 (운종 V5 PC 기능 완성)
-- 정보: 가격·차트·뉴스·공시·시고저·52주·PER (9개 정확 카드 + 종목별)
-- 대화: 종목별 토론·댓글·채팅 (Realtime + Tier 표시 + 신고 5건 자동 hidden)
-- 검색: stocks DB 자동완성 + ⭐ Watchlist 토글
-- 관심종목: localStorage (멀티 기기는 인증 후 영구화)
+### ✅ V6 STEP 137~143 (정체성 V6 전환 후)
+- **137** FSS 유사투자자문업자 인증 (lib/fss.ts·cron·검증 API·뱃지) — 금감원 신고 자동 검증, **1,738건 적재 완료**
+- **138** 홈 신뢰 축 재배치 — 검증·평가 최상단 + 금감원 1,738개 히어로 + 뉴스 카테고리 탭
+- **139** 종목 페이지 네이버급 디테일 — StockInsightsTab·Orderbook·Execution·InfoPanel·lib/format
+- **140** 종목 토론 추천/비추천 통일 (ThumbsUp/Down + voteMap)
+- **141** 종목 공시 탭 (StockDisclosuresTab DART/SEC, 주의공시 레드) → 종목 5탭 완성
+- **142** 포털형 홈 전면 재구성 → 홈 = `components/home-v6/HomeClientV6`
+- **143** 홈 빈 섹션·버그 수정 (브리핑 야후 라이브러리·거래량 실값·업종테마 market 키·레터 아바타)
 
-### ✅ MVP 2.0 1차 (운종 진짜 차별화 진입)
-- 상품 디렉토리 (ETF 10개 시드)
-- 리딩방 디렉토리 (5개 placeholder)
-- platform_discussions 다형 평가 토론
-
-### ✅ 전면 디자인 리뉴얼 (STEP 129~133)
+### ✅ MVP 1.0 + 2.0 (이전 누적)
+- 정보: 9개 정확 카드 + 종목 5탭 디테일 / 대화: 토론·댓글·채팅(Realtime) / 검색 + Watchlist
+- 상품·리딩방 평가 디렉토리 (platform_discussions 추천/비추천 + 금감원 인증 뱃지)
 - 디자인 시스템 (Pretendard + 토스 색상 + rounded-2xl + shadow-soft)
-- 9개 카드 토스 콘텐츠 스타일
-- 종목 페이지 네이버 탭 시스템 (차트·토론·뉴스·인사이트) + 우측 fixed nav
-- 새 홈 손성기 모듈 순서 + HOT 평가 진입 모듈
-- /screener 제거 + /calendar 외부 링크
 
 ### 🔴 사용자 직접 작업 (미완)
-- **카카오 OAuth 활성화** (카카오 콘솔 + Supabase Dashboard)
-- **Vercel 배포 + unjong.com 도메인** (도메인 결정 후)
+- **카카오 OAuth 활성화** (카카오 콘솔 + Supabase Dashboard) — 추천/비추천 투표 실동작 전제
+- **Vercel 배포 + unjong.com 도메인** (도메인 결정 후) — FSS cron 활성 전제
 - **SUPABASE_ACCESS_TOKEN 폐기** (보안 권장)
 
 ## 4. 다음 STEP 후보 (우선순위)
 
-1. **STEP 134** ✅ 완료 (모든 문서 갱신)
-2. **STEP 135 — 광고 분리 UI** (Sponsored ↔ 평가 영역 시각 분리)
-3. **Tier 인증 시스템** (운영자 신청·검토·Tier 1·2·3 부여) — 운종 신뢰 핵심
-4. **고아 컴포넌트 일괄 청소** (calendar/screener 잔재·watchlist·stocks)
-5. **모바일 반응형** (< 1024px 단일 컬럼)
-6. **카카오 OAuth 활성화** (사용자)
-7. **Vercel 배포 + unjong.com** (사용자)
+1. **브리핑 overnight 값 안정화** (간밤 지수 표기)
+2. **지수 카드 스파크라인** (HomeIndexBar 미니 차트)
+3. **홈 레이아웃 비율 미세조정** (메인/우측레일 균형)
+4. **인기글 시드** (HotDiscussions·평가글 초기 콘텐츠)
+5. **외국인보유율·상장주식수 메타** (종목 InfoPanel)
+6. **Sponsored 분리 UI** (광고 ↔ 평가 시각 분리)
+7. **카카오 OAuth 활성화** (사용자) / **Vercel 배포 + unjong.com** (사용자)
 
-## 5. DB 마이그레이션 — 모두 적용 완료
+## 5. DB 마이그레이션 — 020·021·022 까지 모두 적용 완료
 
-005 → 014 → 015 → 016 → 017 → 018 → 019 (Cowork Supabase MCP)
-- 005 채팅 기본
-- 014 room/nickname
-- 015 채팅 통합
-- 016 users V5 (tier·bio·oauth + handle_new_user)
-- 017 discussions + chat_messages.symbol
-- 018 discussion_comments
-- 019 products + leading_rooms + platform_discussions + 시드
+005 → 014 → 015 → 016 → 017 → 018 → 019 → **020 → 021 → 022** (Cowork Supabase MCP, 운종 DB ref `qxkmwlkchyxfzxbonhtj` = 표시명 "OT-Marketing")
+- 005 채팅 기본 / 014 room·nickname / 015 채팅 통합 / 016 users V5 / 017 discussions / 018 댓글 / 019 platform 디렉토리 + 시드
+- **020 dislike_votes** — 상품·리딩방 평가 추천/비추천 ✅ (06-04)
+- **021 fss_advisors** — 금감원 원장 + 인증 컬럼, **FSS 1,738건 적재** ✅ (06-04)
+- **022 discussion_dislike** — 종목 토론 추천/비추천 ✅ (06-04)
+- ⚠️ POTAL ref `zyurflkhiregundhisky` 절대 사용 금지 (혼동 주의)
 
 ## 6. 핵심 참조 파일
 
