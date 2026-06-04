@@ -57,7 +57,19 @@ export default function HotDiscussionsModule() {
       {loading ? (
         <LoadingState />
       ) : items.length === 0 ? (
-        <EmptyState icon="💬" title="첫 토론을 남겨보세요" description="종목 페이지에서 작성 가능." />
+        <EmptyState
+          icon="💬"
+          title="첫 토론을 남겨보세요"
+          description="종목 페이지에서 솔직한 의견을 나눌 수 있어요."
+          action={
+            <Link
+              href="/kr"
+              className="inline-block text-xs font-semibold text-white bg-unjong-primary rounded-full px-3 py-1.5 hover:opacity-90 transition-opacity"
+            >
+              종목 보러 가기 →
+            </Link>
+          }
+        />
       ) : (
         <ul className="space-y-2">
           {items.map((d) => {

@@ -62,7 +62,19 @@ export default function HotReviewPostsModule() {
       {loading ? (
         <LoadingState />
       ) : items.length === 0 ? (
-        <EmptyState icon="⭐" title="첫 평가를 남겨보세요" description="상품·리딩방 페이지에서 작성 가능." />
+        <EmptyState
+          icon="⭐"
+          title="첫 평가를 남겨보세요"
+          description="상품·리딩방을 솔직하게 평가해 보세요."
+          action={
+            <Link
+              href="/products"
+              className="inline-block text-xs font-semibold text-white bg-unjong-primary rounded-full px-3 py-1.5 hover:opacity-90 transition-opacity"
+            >
+              평가하러 가기 →
+            </Link>
+          }
+        />
       ) : (
         <ul className="space-y-2">
           {items.map((p) => {
