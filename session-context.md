@@ -2,6 +2,13 @@
 <!-- Last GC: 2026-06-04 (마이그레이션 020·021·022 적용 + FSS 1,738건 적재 완료 시점) -->
 # 운종(雲從) — 프로젝트 맥락
 
+## STEP 144·145 (2026-06-04) — 홈 데이터 품질 P0 (스파크라인 + 브리핑 안정화) ✅
+
+홈 상단 신뢰·품질 P0 두 건. 마이그레이션·DB·새 의존성 0. 전제 `fac9e71`.
+- **144 지수 스파크라인** (`a0cc3bf`): HomeIndexBar 미국 5지수 카드에 최근 30일 일봉 추세선(inline SVG, 외부 차트 라이브러리 X). indices API 에 yf.chart() 30일 시계열 `spark[]` 추가(실패=빈배열 graceful). 헤드라인 quote() 유지 = 숫자 회귀 0. 심볼별 호출로 순서 매칭 잠재버그 해소
+- **145 브리핑 overnight 안정화** (`90cb8a3`): briefing fetchUsIndices 누락·0·NaN → 가짜 초록 "+0.00%" 대신 `hasData:false` → HomeBriefing "—"(중립 회색). "데이터 없음" vs "0% 보합" 구분 = 신뢰 정렬
+- 빌드 ✓ (exit 0). 다음 후보: 홈 레이아웃 비율 미세조정 · 인기글 예시 시드 · 종목 메타(외국인보유율·상장주식수)
+
 ## 마이그레이션 020·021·022 적용 완료 + FSS 적재 (2026-06-04) ✅
 
 STEP 137~140 에서 작성만 해둔 마이그레이션 3종을 운종 전용 Supabase(표시명 "OT-Marketing", ref `qxkmwlkchyxfzxbonhtj`)에 모두 적용. (POTAL `zyurflkhiregundhisky` 절대 사용 금지)

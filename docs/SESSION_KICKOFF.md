@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-04 (STEP 143 + 마이그레이션 020·021·022 적용 완료)
+> **Last refreshed**: 2026-06-04 (STEP 145 + 마이그레이션 020·021·022 적용 완료)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행
-> **현재 커밋**: HEAD `0d7c23b` (STEP 143 docs) — 빌드 ✓ (마지막 코드 변경은 `fbb25d7` STEP 143)
+> **현재 커밋**: HEAD `90cb8a3` (STEP 145 · 브리핑 overnight 안정화) — 빌드 ✓
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 
 ---
@@ -35,9 +35,9 @@
 | `/auth/login`·`/auth/callback` | 카카오 OAuth (활성화 미완) |
 | `/mypage` | 마이페이지 |
 
-## 3. 현재 진행 상태 (STEP 88~143)
+## 3. 현재 진행 상태 (STEP 88~145)
 
-### ✅ V6 STEP 137~143 (정체성 V6 전환 후)
+### ✅ V6 STEP 137~145 (정체성 V6 전환 후)
 - **137** FSS 유사투자자문업자 인증 (lib/fss.ts·cron·검증 API·뱃지) — 금감원 신고 자동 검증, **1,738건 적재 완료**
 - **138** 홈 신뢰 축 재배치 — 검증·평가 최상단 + 금감원 1,738개 히어로 + 뉴스 카테고리 탭
 - **139** 종목 페이지 네이버급 디테일 — StockInsightsTab·Orderbook·Execution·InfoPanel·lib/format
@@ -45,6 +45,8 @@
 - **141** 종목 공시 탭 (StockDisclosuresTab DART/SEC, 주의공시 레드) → 종목 5탭 완성
 - **142** 포털형 홈 전면 재구성 → 홈 = `components/home-v6/HomeClientV6`
 - **143** 홈 빈 섹션·버그 수정 (브리핑 야후 라이브러리·거래량 실값·업종테마 market 키·레터 아바타)
+- **144** 홈 지수 카드 스파크라인 — HomeIndexBar inline SVG 30일 추세선 + indices API yf.chart()
+- **145** 브리핑 overnight 안정화 — 누락·0·NaN → "—"(중립), 가짜 초록 "+0.00%" 제거 (신뢰 정렬)
 
 ### ✅ MVP 1.0 + 2.0 (이전 누적)
 - 정보: 9개 정확 카드 + 종목 5탭 디테일 / 대화: 토론·댓글·채팅(Realtime) / 검색 + Watchlist
@@ -58,13 +60,12 @@
 
 ## 4. 다음 STEP 후보 (우선순위)
 
-1. **브리핑 overnight 값 안정화** (간밤 지수 표기)
-2. **지수 카드 스파크라인** (HomeIndexBar 미니 차트)
-3. **홈 레이아웃 비율 미세조정** (메인/우측레일 균형)
-4. **인기글 시드** (HotDiscussions·평가글 초기 콘텐츠)
-5. **외국인보유율·상장주식수 메타** (종목 InfoPanel)
-6. **Sponsored 분리 UI** (광고 ↔ 평가 시각 분리)
-7. **카카오 OAuth 활성화** (사용자) / **Vercel 배포 + unjong.com** (사용자)
+1. ~~브리핑 overnight 안정화~~ ✅ STEP 145 · ~~지수 카드 스파크라인~~ ✅ STEP 144
+2. **홈 레이아웃 비율 미세조정** (메인/우측레일 균형)
+3. **인기글 예시 시드** (HotDiscussions·평가글 초기 콘텐츠 — '예시' 명확 표기)
+4. **외국인보유율·상장주식수 메타** (종목 InfoPanel)
+5. **Sponsored 분리 UI** (광고 ↔ 평가 시각 분리)
+6. **카카오 OAuth 활성화** (사용자) / **Vercel 배포 + unjong.com** (사용자)
 
 ## 5. DB 마이그레이션 — 020·021·022 까지 모두 적용 완료
 

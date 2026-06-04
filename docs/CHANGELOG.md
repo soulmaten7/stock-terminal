@@ -1,6 +1,13 @@
 <!-- 2026-06-04 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-04 — STEP 144·145 (홈 지수 스파크라인 + 브리핑 overnight 안정화)
+
+홈 상단 데이터 품질 P0 두 건. 마이그레이션·DB 변경 0. 새 의존성 0.
+- **STEP 144 지수 스파크라인** (`a0cc3bf`): `HomeIndexBar` 미국 5개 지수 카드에 최근 30일 일봉 추세선(외부 라이브러리 없이 inline SVG `<path>`). `/api/yahoo/indices` 에 `yf.chart()` 30일 시계열 → `spark: number[]` 추가(실패 시 빈 배열 graceful). 헤드라인 숫자는 기존 `quote()` 유지(회귀 0). 심볼별 호출로 전환하며 잠재 순서 매칭 버그도 해소
+- **STEP 145 브리핑 overnight 안정화** (`90cb8a3`): `/api/home/briefing` `fetchUsIndices` 가 누락·0·NaN 값을 가짜 "+0.00%"(초록) 대신 `hasData:false` 로 표시 → `HomeBriefing` 이 "—"(중립 회색)으로 렌더. "데이터 없음"과 "0% 보합"을 구분 → 운종 신뢰 정체성 정렬
+- 빌드 ✓ (exit 0). 야후 정상 시 기존과 동일, 달라지는 건 데이터 없을 때뿐
+
 ## 2026-06-04 — 마이그레이션 020·021·022 적용 완료 + FSS 실데이터 적재 ✅
 
 STEP 137~140 에서 작성만 해두고 "적용 대기" 상태였던 마이그레이션 3종을 운종 전용 Supabase(표시명 "OT-Marketing", ref `qxkmwlkchyxfzxbonhtj`)에 **모두 적용 완료**. (POTAL ref `zyurflkhiregundhisky` 사용 금지 — 혼동 주의)
