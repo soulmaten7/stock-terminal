@@ -97,7 +97,7 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
   const filters = country === "us" ? US_FILTERS : KR_FILTERS;
 
   return (
-    <div className={embedded ? "" : "max-w-[1480px] mx-auto px-4 py-6"}>
+    <div className={embedded ? "" : "px-4 py-6"}>
       {embedded ? (
         <h2 className="text-lg font-bold text-unjong-primary mb-3">📈 실시간 차트</h2>
       ) : (

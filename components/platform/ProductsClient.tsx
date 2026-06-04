@@ -53,7 +53,7 @@ export default function ProductsClient() {
   }, [category]);
 
   return (
-    <div className="max-w-screen-xl mx-auto px-6 py-6">
+    <div className="px-6 py-6">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-unjong-primary mb-2">💼 금융 상품 디렉토리</h1>
         <p className="text-sm text-unjong-muted">

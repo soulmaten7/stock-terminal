@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "뉴스" };
 
 export default function NewsPage() {
   return (
-    <div className="max-w-[1480px] mx-auto px-4 py-6">
+    <div className="px-4 py-6">
       <header className="mb-5">
         <h1 className="text-xl font-bold text-unjong-primary">뉴스</h1>
         <p className="mt-1 text-sm text-unjong-muted">

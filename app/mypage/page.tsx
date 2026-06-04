@@ -70,7 +70,7 @@ export default function MyPage() {
   ];
 
   return (
-    <div className="max-w-[1440px] mx-auto px-6 py-8">
+    <div className="px-6 py-8">
       <h1 className="text-2xl font-bold mb-8">마이페이지</h1>
 
       <div className="flex gap-8">

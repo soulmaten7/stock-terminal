@@ -65,7 +65,7 @@ export default function RoomsClient() {
   }, [platform]);
 
   return (
-    <div className="max-w-screen-xl mx-auto px-6 py-6">
+    <div className="px-6 py-6">
       <header className="mb-4">
         <h1 className="text-2xl font-bold text-unjong-primary mb-2">📡 리딩방 디렉토리</h1>
         <p className="text-sm text-unjong-muted">
