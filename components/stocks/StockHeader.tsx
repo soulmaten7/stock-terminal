@@ -37,7 +37,7 @@ export default function StockHeader({ stock, currentPrice: propPrice, priceChang
 
   return (
     <div className="border-b border-[#E5E7EB] bg-white px-6 py-4">
-      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-3">
           <div>
             <div className="flex items-center gap-2">

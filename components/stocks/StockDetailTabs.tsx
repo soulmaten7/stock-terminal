@@ -65,7 +65,7 @@ export default function StockDetailTabs({ stock }: Props) {
   return (
     <>
       <div className="border-b border-[#E5E7EB] bg-white px-6 overflow-x-auto sticky top-0 z-[5]">
-        <div className="max-w-7xl mx-auto flex gap-1">
+        <div className="flex gap-1">
           {STOCK_TABS.map((tab) => {
             const href = `?tab=${tab.key}`;
             const isActive = active === tab.key;
@@ -92,7 +92,7 @@ export default function StockDetailTabs({ stock }: Props) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-6 bg-white min-h-[60vh]">
+      <div className="px-6 py-6 bg-white min-h-[60vh]">
         {renderTab()}
       </div>
     </>

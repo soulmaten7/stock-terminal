@@ -66,7 +66,7 @@ export default function MoversPricePageClient() {
     : items;
 
   return (
-    <div className="w-full px-6 py-6 max-w-screen-2xl mx-auto">
+    <div className="w-full px-6 py-6">
       <div className="mb-4">
         <Link
           href="/"

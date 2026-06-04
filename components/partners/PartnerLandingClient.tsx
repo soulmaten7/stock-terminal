@@ -59,7 +59,7 @@ export default function PartnerLandingClient({
   return (
     <div className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="max-w-5xl mx-auto px-4 py-12">
+      <section className="px-4 py-12">
         <div className="flex items-center gap-4 mb-4">
           {partner.logo_url && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -79,7 +79,7 @@ export default function PartnerLandingClient({
 
       {/* Features */}
       {features.length > 0 && (
-        <section className="max-w-5xl mx-auto px-4 py-8 border-t border-[#E5E7EB]">
+        <section className="px-4 py-8 border-t border-[#E5E7EB]">
           <h2 className="text-lg font-bold text-black mb-6">핵심 혜택</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {features.map((f, i) => (
@@ -93,7 +93,7 @@ export default function PartnerLandingClient({
       )}
 
       {/* Lead Form */}
-      <section className="max-w-2xl mx-auto px-4 py-12 border-t border-[#E5E7EB]">
+      <section className="px-4 py-12 border-t border-[#E5E7EB]">
         <h2 className="text-xl font-bold text-black mb-2">{partner.cta_text || '상담 신청'}</h2>
         <p className="text-sm text-[#666666] mb-6">
           아래 정보를 남겨주시면 {partner.name} 담당자가 영업일 기준 1~2일 이내 연락드립니다.

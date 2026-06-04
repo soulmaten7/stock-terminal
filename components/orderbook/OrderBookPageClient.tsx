@@ -114,7 +114,7 @@ export default function OrderBookPageClient() {
   const colorCls = up ? 'text-[#FF3B30]' : 'text-[#0051CC]';
 
   return (
-    <div className="w-full px-6 py-6 max-w-screen-2xl mx-auto">
+    <div className="w-full px-6 py-6">
       {/* 상단 헤더 */}
       <div className="mb-4">
         <Link

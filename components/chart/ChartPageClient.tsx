@@ -198,7 +198,7 @@ export default function ChartPageClient() {
   const tableRows = [...candles].reverse().slice(0, 30);
 
   return (
-    <div className="w-full px-6 py-6 max-w-screen-2xl mx-auto">
+    <div className="w-full px-6 py-6">
       {/* 상단 헤더 */}
       <div className="mb-4">
         <Link

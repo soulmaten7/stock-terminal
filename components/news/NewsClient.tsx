@@ -105,7 +105,7 @@ export default function NewsClient() {
 
   if (!mounted) {
     return (
-      <div className="max-w-[1400px] mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         <h1 className="text-3xl font-bold text-black mb-8">뉴스·공시</h1>
         <div className="space-y-3">{Array.from({ length: 10 }).map((_, i) => (<div key={i} className="h-12 bg-[#F0F0F0] animate-pulse" />))}</div>
       </div>
@@ -113,7 +113,7 @@ export default function NewsClient() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <h1 className="text-3xl font-bold text-black mb-8">뉴스·공시</h1>
 
       <div className="mb-4 bg-[#FAFAFA] border border-[#E5E7EB] rounded-lg px-4 py-3 flex flex-wrap items-center gap-3">

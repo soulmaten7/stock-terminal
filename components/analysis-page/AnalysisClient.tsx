@@ -32,7 +32,7 @@ export default function AnalysisClient() {
 
   if (!mounted) {
     return (
-      <div className="max-w-[1400px] mx-auto px-4 py-8">
+      <div className="px-4 py-8">
         <h1 className="text-3xl font-bold text-black mb-8">시장 분석</h1>
         <div className="space-y-4">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -44,7 +44,7 @@ export default function AnalysisClient() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-4 py-8">
+    <div className="px-4 py-8">
       <h1 className="text-3xl font-bold text-black mb-8">시장 분석</h1>
 
       <SectorHeatmap />
