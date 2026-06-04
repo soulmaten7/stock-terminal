@@ -2,65 +2,50 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, Award } from "lucide-react";
 import { HeaderSearch } from "./HeaderSearch";
 
-const PRIMARY_WINDOWS = [
-  { href: "/kr", label: "한국주식", emoji: "🇰🇷" },
-  { href: "/us", label: "미국주식", emoji: "🇺🇸" },
-] as const;
-
-const SECONDARY_LINKS = [
-  { href: "/products", label: "상품·리딩방", englishLabel: "Reviews", icon: Award },
-  { href: "/calendar", label: "경제 캘린더", englishLabel: "Calendar", icon: CalendarDays },
+// 네이버 증권식 상단 6메뉴 (운종). 코인·거래 제외, 평가·검증 = 운종 차별점.
+const MENU = [
+  { href: "/", label: "홈", match: (p: string) => p === "/" },
+  { href: "/kr", label: "마켓", match: (p: string) => /^\/(kr|us|market|stock)/.test(p) },
+  { href: "/discussion", label: "토론", match: (p: string) => p.startsWith("/discussion") },
+  { href: "/news", label: "뉴스", match: (p: string) => p.startsWith("/news") },
+  { href: "/products", label: "평가·검증", match: (p: string) => /^\/(product|room|reviews)/.test(p) },
+  { href: "/mypage", label: "MY", match: (p: string) => p.startsWith("/mypage") },
 ] as const;
 
 export function MainNav() {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
 
   return (
     <nav
-      className="grid grid-cols-[auto_1fr_auto] items-center gap-6 border-b border-unjong-border bg-unjong-background px-4 py-2"
+      className="flex items-center gap-4 border-b border-unjong-border bg-unjong-background px-4"
       aria-label="메인 네비"
     >
-      {/* 좌측: 운종 2창 (한국/미국) */}
-      <div className="flex items-center gap-2">
-        {PRIMARY_WINDOWS.map((w) => {
-          const isActive = pathname?.startsWith(w.href);
+      {/* 좌측: 네이버식 6메뉴 (active = 하단 굵은 밑줄) */}
+      <div className="flex items-center shrink-0">
+        {MENU.map((m) => {
+          const isActive = m.match(pathname);
           return (
             <Link
-              key={w.href}
-              href={w.href}
+              key={m.label}
+              href={m.href}
               aria-current={isActive ? "page" : undefined}
               className={
                 isActive
-                  ? "flex items-center gap-1 rounded-md border-2 border-unjong-accent bg-unjong-surface px-3 py-1 text-sm font-semibold text-unjong-primary shadow-sm"
-                  : "flex items-center gap-1 rounded-md border-2 border-transparent px-3 py-1 text-sm font-medium text-unjong-muted hover:bg-unjong-surface hover:text-unjong-primary"
+                  ? "px-3 py-3 text-sm font-bold text-unjong-primary border-b-2 border-unjong-primary -mb-px transition-colors"
+                  : "px-3 py-3 text-sm font-medium text-unjong-muted hover:text-unjong-primary border-b-2 border-transparent -mb-px transition-colors"
               }
             >
-              <span aria-hidden>{w.emoji}</span>
-              <span>{w.label}</span>
+              {m.label}
             </Link>
           );
         })}
       </div>
 
-      {/* 가운데: 검색 (flex-1) */}
-      <HeaderSearch />
-
-      {/* 우측: 보조 링크 */}
-      <div className="flex items-center gap-3 justify-self-end">
-        {SECONDARY_LINKS.map(({ href, label, englishLabel, icon: Icon }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-primary transition-colors"
-          >
-            <Icon size={14} />
-            <span className="font-medium">{label}</span>
-            <span className="text-xs text-unjong-muted">({englishLabel})</span>
-          </Link>
-        ))}
+      {/* 우측: 검색 (남은 폭 채움) */}
+      <div className="flex-1 min-w-0 py-1.5">
+        <HeaderSearch />
       </div>
     </nav>
   );
