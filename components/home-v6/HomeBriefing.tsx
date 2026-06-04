@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 
-type Overnight = { label: string; val: string; change: string; up: boolean };
+type Overnight = { label: string; val: string; change: string; up: boolean; hasData?: boolean };
 
 export default function HomeBriefing() {
   const [overnight, setOvernight] = useState<Overnight[]>([]);
@@ -49,7 +49,11 @@ export default function HomeBriefing() {
                   <div key={o.label} className="rounded-lg bg-unjong-background px-3 py-2">
                     <p className="text-xs text-unjong-muted">{o.label}</p>
                     <p className="text-sm font-bold text-unjong-primary tabular-nums">{o.val}</p>
-                    <p className={`text-xs font-semibold ${o.up ? "text-[#1AC267]" : "text-[#F04452]"}`}>{o.change}</p>
+                    <p className={`text-xs font-semibold ${
+                      o.hasData === false
+                        ? "text-unjong-muted"
+                        : o.up ? "text-[#1AC267]" : "text-[#F04452]"
+                    }`}>{o.change}</p>
                   </div>
                 ))}
               </div>

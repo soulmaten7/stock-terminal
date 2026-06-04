@@ -15,22 +15,30 @@ async function fetchUsIndices() {
     { symbol: '^DJI',  label: 'DOW' },
     { symbol: '^VIX',  label: 'VIX' },
   ];
+  // 데이터 없을 때 안전 기본행 (가짜 0.00 대신 '—')
+  const blank = SYMS.map((s) => ({ label: s.label, val: '—', change: '—', up: true, hasData: false }));
   try {
     const q = await yahooFinance.quote(SYMS.map((s) => s.symbol));
     const arr = (Array.isArray(q) ? q : [q]) as Array<Record<string, unknown>>;
     return SYMS.map((s) => {
       const hit = arr.find((x) => x.symbol === s.symbol);
-      const price = Number(hit?.regularMarketPrice ?? 0);
-      const pct = Number(hit?.regularMarketChangePercent ?? 0);
+      const price = Number(hit?.regularMarketPrice);
+      const pct = Number(hit?.regularMarketChangePercent);
+      // 가격이 양수 유한값 + 등락률이 유한값일 때만 실데이터로 인정
+      const hasData = Number.isFinite(price) && price > 0 && Number.isFinite(pct);
+      if (!hasData) {
+        return { label: s.label, val: '—', change: '—', up: true, hasData: false };
+      }
       return {
         label: s.label,
         val: price >= 1000 ? price.toLocaleString('en-US', { maximumFractionDigits: 2 }) : price.toFixed(2),
         change: `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`,
         up: pct >= 0,
+        hasData: true,
       };
     });
   } catch {
-    return SYMS.map((s) => ({ label: s.label, val: '—', change: '—', up: true }));
+    return blank;
   }
 }
 
