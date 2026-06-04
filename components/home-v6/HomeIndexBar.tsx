@@ -3,8 +3,43 @@
 import { useEffect, useState } from "react";
 import { LoadingState } from "@/components/ui/State";
 
-type IndexItem = { name: string; value: string; changePct: number; isUp: boolean };
+type IndexItem = { name: string; value: string; changePct: number; isUp: boolean; spark?: number[] };
 type Tab = "미국" | "국내";
+
+// 작은 추세선(스파크라인) — 외부 라이브러리 없이 inline SVG 로 그린다
+function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
+  if (!points || points.length < 2) return null;
+  const w = 100;
+  const h = 26;
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+  const d = points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * w;
+      const y = h - ((p - min) / range) * h;
+      return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(" ");
+  return (
+    <svg
+      viewBox={`0 0 ${w} ${h}`}
+      preserveAspectRatio="none"
+      className="w-full h-6 mt-1.5"
+      aria-hidden="true"
+    >
+      <path
+        d={d}
+        fill="none"
+        stroke={up ? "#1AC267" : "#F04452"}
+        strokeWidth={1.5}
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        vectorEffect="non-scaling-stroke"
+      />
+    </svg>
+  );
+}
 
 export default function HomeIndexBar() {
   const [tab, setTab] = useState<Tab>("미국");
@@ -62,6 +97,7 @@ export default function HomeIndexBar() {
               <p className={`text-xs font-semibold ${idx.isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                 {idx.isUp ? "+" : ""}{idx.changePct.toFixed(2)}%
               </p>
+              <Sparkline points={idx.spark} up={idx.isUp} />
             </div>
           ))}
         </div>
