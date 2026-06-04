@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import YahooFinance from 'yahoo-finance2';
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 // 장전 브리핑 — 간밤 미증시(야후 라이브러리, 심볼별 quote) + 최근 DART 주요 일정
 
 const yf = new YahooFinance();
