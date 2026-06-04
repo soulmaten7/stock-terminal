@@ -23,6 +23,8 @@ type StockData = {
   marketCap: number;
   tradeAmount: number;
   dividendYield: number;
+  listedShares: number;
+  foreignRatio: number;
 };
 
 export default function StockInfoPanel({ symbol }: Props) {
@@ -56,6 +58,8 @@ export default function StockInfoPanel({ symbol }: Props) {
             marketCap: json.marketCap,
             tradeAmount: json.tradeAmount ?? 0,
             dividendYield: json.dividendYield ?? 0,
+            listedShares: json.listedShares ?? 0,
+            foreignRatio: json.foreignRatio ?? 0,
           });
         } else if (/^[A-Z.\-]+$/.test(symbol)) {
           // 미국 주식 — Yahoo quoteSummary (시고저·52주·PER·시총)
@@ -77,6 +81,8 @@ export default function StockInfoPanel({ symbol }: Props) {
             marketCap: json.marketCap || 0,
             tradeAmount: 0,
             dividendYield: json.dividendYield ?? 0,
+            listedShares: 0,
+            foreignRatio: 0,
           });
         }
       } finally {
@@ -225,6 +231,8 @@ export default function StockInfoPanel({ symbol }: Props) {
             <Row label="PER" value={data.per > 0 ? data.per.toFixed(1) : "—"} />
             <Row label="PBR" value={data.pbr > 0 ? data.pbr.toFixed(1) : "—"} />
             {data.dividendYield > 0 && <Row label="배당수익률" value={formatPct(data.dividendYield, 2)} />}
+            {isKr && data.foreignRatio > 0 && <Row label="외국인 소진율" value={formatPct(data.foreignRatio, 2)} />}
+            {isKr && data.listedShares > 0 && <Row label="상장주식수" value={formatShares(data.listedShares)} />}
           </section>
         </>
       )}
@@ -247,6 +255,13 @@ function formatMarketCap(cap: number, isUS = false): string {
   // 한국 — KIS hts_avls 단위 = 억원 (1조 = 10,000억)
   if (cap >= 10000) return `${(cap / 10000).toFixed(1)}조`;
   return `${cap.toLocaleString()}억`;
+}
+
+function formatShares(n: number): string {
+  if (!n || n <= 0) return "—";
+  if (n >= 1e8) return `${(n / 1e8).toFixed(1)}억주`;
+  if (n >= 1e4) return `${(n / 1e4).toFixed(0)}만주`;
+  return `${n.toLocaleString()}주`;
 }
 
 function Row({ label, value }: { label: string; value: string }) {

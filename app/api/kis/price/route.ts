@@ -40,6 +40,8 @@ export async function GET(request: NextRequest) {
       pbr: parseFloat(o.pbr || '0'),
       marketCap: parseInt(o.hts_avls || '0', 10),
       dividendYield: parseFloat(o.divi_yield_ratio || o.stck_dryy_divi_rate || '0') || null,
+      listedShares: parseInt(o.lstn_stcn || '0', 10),
+      foreignRatio: parseFloat(o.hts_frgn_ehrt || '0') || 0,
     });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
