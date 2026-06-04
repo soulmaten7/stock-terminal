@@ -6,8 +6,8 @@ import { fetchKisApi } from '@/lib/kis';
 export async function GET(request: NextRequest) {
   const market = request.nextUrl.searchParams.get('market') || 'all';
   const limit = Math.min(
-    parseInt(request.nextUrl.searchParams.get('limit') || '30', 10) || 30,
-    30
+    parseInt(request.nextUrl.searchParams.get('limit') || '100', 10) || 100,
+    100
   );
   const iscd = market === 'kospi' ? '0001' : market === 'kosdaq' ? '1001' : '0000';
 

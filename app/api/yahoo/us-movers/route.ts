@@ -11,7 +11,7 @@ const POPULAR_US = ["NVDA", "TSLA", "AAPL", "META", "MSFT", "AMD", "AMZN", "GOOG
 
 export async function GET(request: NextRequest) {
   const dir = request.nextUrl.searchParams.get("dir") === "down" ? "down" : "up";
-  const count = Math.min(parseInt(request.nextUrl.searchParams.get("count") || "5", 10) || 5, 30);
+  const count = Math.min(parseInt(request.nextUrl.searchParams.get("count") || "100", 10) || 100, 100);
   const scrId = dir === "down" ? "day_losers" : "day_gainers";
 
   try {

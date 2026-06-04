@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
   const isDown = dirParam === 'down';
   const market = request.nextUrl.searchParams.get('market') || 'all';
   const limit = Math.min(
-    parseInt(request.nextUrl.searchParams.get('limit') || '10', 10) || 10,
-    30
+    parseInt(request.nextUrl.searchParams.get('limit') || '100', 10) || 100,
+    100
   );
 
   // 0000=전체, 0001=코스피, 1001=코스닥

@@ -7,13 +7,13 @@ import { fetchKisApi } from '@/lib/kis';
 //   - spike: 거래증가율(FID_BLNG_CLS_CODE=1)
 //   - volume: 평균거래량(0)
 //   - amount: 거래금액순(3)
-// ?limit (default: 30, max: 30)
+// ?limit (default: 100, max: 100)
 export async function GET(request: NextRequest) {
   const market = request.nextUrl.searchParams.get('market') || 'all';
   const sort = request.nextUrl.searchParams.get('sort') || 'spike';
   const limit = Math.min(
-    parseInt(request.nextUrl.searchParams.get('limit') || '30', 10) || 30,
-    30
+    parseInt(request.nextUrl.searchParams.get('limit') || '100', 10) || 100,
+    100
   );
 
   const iscd =

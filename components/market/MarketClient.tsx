@@ -60,10 +60,10 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
         if (country === "kr") {
           const url =
             filter === "amount" || filter === "volume"
-              ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=30`
+              ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=100`
               : filter === "cap"
-              ? `/api/kis/market-cap?market=${market}&limit=30`
-              : `/api/kis/movers?dir=${filter}&market=${market}&limit=30`;
+              ? `/api/kis/market-cap?market=${market}&limit=100`
+              : `/api/kis/movers?dir=${filter}&market=${market}&limit=100`;
           const j = await (await fetch(url)).json();
           list = (j.stocks ?? j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
             rank: typeof s.rank === "number" ? s.rank : i + 1,
@@ -76,7 +76,7 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
           }));
         } else {
           const dir = filter === "down" ? "down" : "up";
-          const j = await (await fetch(`/api/yahoo/us-movers?dir=${dir}&count=30`)).json();
+          const j = await (await fetch(`/api/yahoo/us-movers?dir=${dir}&count=100`)).json();
           list = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
             rank: i + 1,
             symbol: String(s.code ?? ""),
