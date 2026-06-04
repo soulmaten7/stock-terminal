@@ -13,12 +13,13 @@ const COUNTRIES = [
 ] as const;
 type CountryKey = (typeof COUNTRIES)[number]["key"];
 
-type FilterKey = "amount" | "volume" | "up" | "down";
+type FilterKey = "amount" | "volume" | "cap" | "up" | "down";
 type FilterDef = { key: FilterKey; label: string };
 
 const KR_FILTERS: FilterDef[] = [
   { key: "amount", label: "거래대금" },
   { key: "volume", label: "거래량" },
+  { key: "cap", label: "시가총액" },
   { key: "up", label: "상승" },
   { key: "down", label: "하락" },
 ];
@@ -60,6 +61,8 @@ export default function MarketClient() {
           const url =
             filter === "amount" || filter === "volume"
               ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=30`
+              : filter === "cap"
+              ? `/api/kis/market-cap?market=${market}&limit=30`
               : `/api/kis/movers?dir=${filter}&market=${market}&limit=30`;
           const j = await (await fetch(url)).json();
           list = (j.stocks ?? j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
