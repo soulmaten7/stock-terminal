@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 
-type Row = { rank: number; symbol: string; name: string; price: number; changePercent: number; volume: number; tradeAmount?: number };
+type Row = { rank: number; symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
 
 const COUNTRIES = [
   { key: "kr", label: "국내" },
@@ -13,13 +13,19 @@ const COUNTRIES = [
 ] as const;
 type CountryKey = (typeof COUNTRIES)[number]["key"];
 
-const FILTERS = [
+type FilterKey = "amount" | "volume" | "up" | "down";
+type FilterDef = { key: FilterKey; label: string };
+
+const KR_FILTERS: FilterDef[] = [
   { key: "amount", label: "거래대금" },
   { key: "volume", label: "거래량" },
   { key: "up", label: "상승" },
   { key: "down", label: "하락" },
-] as const;
-type FilterKey = (typeof FILTERS)[number]["key"];
+];
+const US_FILTERS: FilterDef[] = [
+  { key: "up", label: "상승" },
+  { key: "down", label: "하락" },
+];
 
 const MARKETS = [
   { key: "all", label: "전체" },
@@ -44,27 +50,40 @@ export default function MarketClient() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (country !== "kr") return;
+    if (country === "global") return;
     let cancelled = false;
     setLoading(true);
     (async () => {
       try {
-        const url =
-          filter === "amount" || filter === "volume"
-            ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=30`
-            : `/api/kis/movers?dir=${filter}&market=${market}&limit=30`;
-        const j = await (await fetch(url)).json();
-        if (cancelled) return;
-        const list: Row[] = (j.stocks ?? j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
-          rank: typeof s.rank === "number" ? s.rank : i + 1,
-          symbol: String(s.symbol ?? ""),
-          name: String(s.name ?? ""),
-          price: Number(s.price ?? 0),
-          changePercent: Number(s.changePercent ?? 0),
-          volume: Number(s.volume ?? 0),
-          tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
-        }));
-        setRows(list);
+        let list: Row[] = [];
+        if (country === "kr") {
+          const url =
+            filter === "amount" || filter === "volume"
+              ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=30`
+              : `/api/kis/movers?dir=${filter}&market=${market}&limit=30`;
+          const j = await (await fetch(url)).json();
+          list = (j.stocks ?? j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
+            rank: typeof s.rank === "number" ? s.rank : i + 1,
+            symbol: String(s.symbol ?? ""),
+            name: String(s.name ?? ""),
+            priceText: Number(s.price ?? 0).toLocaleString(),
+            changePercent: Number(s.changePercent ?? 0),
+            volume: Number(s.volume ?? 0),
+            tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
+          }));
+        } else {
+          const dir = filter === "down" ? "down" : "up";
+          const j = await (await fetch(`/api/yahoo/us-movers?dir=${dir}&count=30`)).json();
+          list = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
+            rank: i + 1,
+            symbol: String(s.code ?? ""),
+            name: String(s.name ?? ""),
+            priceText: String(s.price ?? "—"),
+            changePercent: Number(s.changePct ?? 0),
+            volume: Number(s.volume ?? 0),
+          }));
+        }
+        if (!cancelled) setRows(list);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -72,11 +91,13 @@ export default function MarketClient() {
     return () => { cancelled = true; };
   }, [country, filter, market]);
 
+  const filters = country === "us" ? US_FILTERS : KR_FILTERS;
+
   return (
     <div className="max-w-[1480px] mx-auto px-4 py-6">
       <header className="mb-4">
         <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
-        <p className="mt-1 text-sm text-unjong-muted">실시간 랭킹 — 종목 클릭 시 상세로. (시장지표·히트맵은 순차 확장)</p>
+        <p className="mt-1 text-sm text-unjong-muted">실시간 랭킹 — 종목 클릭 시 상세로. (시총·52주 필터·히트맵은 순차 확장)</p>
       </header>
 
       {/* 국가 탭 */}
@@ -85,7 +106,11 @@ export default function MarketClient() {
           <button
             key={c.key}
             type="button"
-            onClick={() => setCountry(c.key)}
+            onClick={() => {
+              setCountry(c.key);
+              setFilter(c.key === "us" ? "up" : "amount");
+              setMarket("all");
+            }}
             className={
               country === c.key
                 ? "px-3 py-2 text-sm font-bold text-unjong-primary border-b-2 border-unjong-primary -mb-px"
@@ -97,34 +122,31 @@ export default function MarketClient() {
         ))}
       </div>
 
-      {country !== "kr" ? (
-        <EmptyState
-          icon="🛠️"
-          title={`${COUNTRIES.find((c) => c.key === country)?.label} 마켓 준비 중`}
-          description="순차 확장 예정 (STEP 153~)."
-          className="py-12"
-        />
+      {country === "global" ? (
+        <EmptyState icon="🛠️" title="글로벌 마켓 준비 중" description="순차 확장 예정 (STEP 154~)." className="py-12" />
       ) : (
         <>
-          {/* 시장 필터 */}
-          <div className="flex items-center gap-1.5 mb-3">
-            {MARKETS.map((m) => (
-              <button
-                key={m.key}
-                type="button"
-                onClick={() => setMarket(m.key)}
-                className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${
-                  market === m.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-                }`}
-              >
-                {m.label}
-              </button>
-            ))}
-          </div>
+          {/* 시장 필터 (국내만) */}
+          {country === "kr" && (
+            <div className="flex items-center gap-1.5 mb-3">
+              {MARKETS.map((m) => (
+                <button
+                  key={m.key}
+                  type="button"
+                  onClick={() => setMarket(m.key)}
+                  className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${
+                    market === m.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
+                  }`}
+                >
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* 랭킹 필터 */}
+          {/* 랭킹 필터 (국가별) */}
           <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-            {FILTERS.map((f) => (
+            {filters.map((f) => (
               <button
                 key={f.key}
                 type="button"
@@ -153,7 +175,7 @@ export default function MarketClient() {
                     <th className="text-right font-medium px-4 py-2.5">현재가</th>
                     <th className="text-right font-medium px-4 py-2.5">전일대비</th>
                     <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래량</th>
-                    <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래대금</th>
+                    {country === "kr" && <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래대금</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -167,16 +189,18 @@ export default function MarketClient() {
                       >
                         <td className="px-4 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
                         <td className="px-4 py-3 font-medium text-unjong-primary">{r.name}</td>
-                        <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.price.toLocaleString()}</td>
+                        <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.priceText}</td>
                         <td className={`px-4 py-3 text-right tabular-nums font-semibold ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                           {up ? "+" : ""}{r.changePercent.toFixed(2)}%
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums text-unjong-muted hidden md:table-cell">
                           {r.volume ? r.volume.toLocaleString() : "—"}
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-unjong-muted hidden md:table-cell">
-                          {fmtAmount(r.tradeAmount)}
-                        </td>
+                        {country === "kr" && (
+                          <td className="px-4 py-3 text-right tabular-nums text-unjong-muted hidden md:table-cell">
+                            {fmtAmount(r.tradeAmount)}
+                          </td>
+                        )}
                       </tr>
                     );
                   })}
