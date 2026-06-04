@@ -16,16 +16,13 @@ export default function HomeSectorTheme() {
     setLoading(true);
     (async () => {
       try {
-        if (tab === "국내") {
-          const j = await (await fetch("/api/kis/theme")).json();
-          const rows = (j.items || []).map((t: { name: string; changePct: number }) => ({ name: t.name, changePct: Number(t.changePct ?? 0) }));
-          if (!cancelled) setItems(rows);
-        } else {
-          const j = await (await fetch("/api/home/sectors")).json();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const rows = (j.sectors || []).map((s: any) => ({ name: s.name, changePct: Number(s.changePct ?? s.change ?? 0) }));
-          if (!cancelled) setItems(rows);
-        }
+        const market = tab === "미국" ? "US" : "KR";
+        const j = await (await fetch(`/api/home/sectors?market=${market}`)).json();
+        const rows = (j.sectors || []).map((s: { sector: string; change: number }) => ({
+          name: s.sector,
+          changePct: Number(s.change ?? 0),
+        }));
+        if (!cancelled) setItems(rows);
       } catch {
         if (!cancelled) setItems([]);
       } finally {

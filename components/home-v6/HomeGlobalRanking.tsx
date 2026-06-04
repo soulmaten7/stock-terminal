@@ -6,6 +6,13 @@ import { LoadingState, EmptyState } from "@/components/ui/State";
 
 type Row = { code: string; name: string; price: string; changePct: number };
 
+function avatarColor(name: string): string {
+  const colors = ["bg-blue-100 text-blue-700", "bg-emerald-100 text-emerald-700", "bg-amber-100 text-amber-700", "bg-violet-100 text-violet-700", "bg-rose-100 text-rose-700", "bg-slate-100 text-slate-700"];
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % colors.length;
+  return colors[h];
+}
+
 function RankList({ title, rows, loading, router }: { title: string; rows: Row[]; loading: boolean; router: ReturnType<typeof useRouter> }) {
   return (
     <div className="bg-unjong-background rounded-xl p-4">
@@ -22,6 +29,9 @@ function RankList({ title, rows, loading, router }: { title: string; rows: Row[]
                   className="w-full flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-unjong-surface transition-colors text-left"
                 >
                   <span className="w-4 text-center text-sm font-bold text-unjong-muted tabular-nums flex-shrink-0">{i + 1}</span>
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${avatarColor(r.name)}`}>
+                    {r.name.charAt(0)}
+                  </span>
                   <span className="flex-1 text-sm font-medium text-unjong-primary truncate">{r.name}</span>
                   <span className="text-sm text-unjong-primary tabular-nums flex-shrink-0">{r.price}</span>
                   <span className={`w-14 text-right text-xs font-semibold tabular-nums flex-shrink-0 ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
@@ -53,8 +63,8 @@ export default function HomeGlobalRanking() {
         ]);
         if (cancelled) return;
         if (vr?.stocks) {
-          setVolume(vr.stocks.map((s: { symbol: string; name: string; volume: number; spike: number }) => ({
-            code: s.symbol, name: s.name, price: `${s.spike?.toFixed?.(1) ?? "—"}x`, changePct: 0,
+          setVolume(vr.stocks.map((s: { symbol: string; name: string; price: number; changePercent: number }) => ({
+            code: s.symbol, name: s.name, price: (s.price ?? 0).toLocaleString("ko-KR"), changePct: s.changePercent ?? 0,
           })));
         }
         if (mv?.items) {
