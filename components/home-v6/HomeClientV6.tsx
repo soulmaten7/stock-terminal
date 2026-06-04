@@ -6,7 +6,7 @@ import MarketClient from "@/components/market/MarketClient";
 
 export default function HomeClientV6() {
   return (
-    <div className="max-w-[1480px] mx-auto px-6 py-5">
+    <div className="px-6 py-5">
       {/* 시장 상태바 (토스식) */}
       <div className="flex flex-wrap items-center gap-4 mb-4 text-xs text-unjong-muted">
         <span className="flex items-center gap-1.5">
