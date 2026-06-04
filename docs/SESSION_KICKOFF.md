@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-04 (STEP 147 + 마이그레이션 020·021·022 적용 완료)
+> **Last refreshed**: 2026-06-04 (STEP 151 + 마이그레이션 020·021·022 적용 완료)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행
-> **현재 커밋**: HEAD `99864a3` (STEP 147 · 종목 메타 보강) — 빌드 ✓
+> **현재 커밋**: HEAD `140b929` (STEP 151 · 네이버식 6메뉴 + 토론·뉴스 shell, V7 진입) — 빌드 ✓
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 
 ---
@@ -35,9 +35,9 @@
 | `/auth/login`·`/auth/callback` | 카카오 OAuth (활성화 미완) |
 | `/mypage` | 마이페이지 |
 
-## 3. 현재 진행 상태 (STEP 88~147)
+## 3. 현재 진행 상태 (STEP 88~151 · V7 진입)
 
-### ✅ V6 STEP 137~147 (정체성 V6 전환 후)
+### ✅ STEP 137~151 (V6 정체성 → V7 네이버 복제 진입)
 - **137** FSS 유사투자자문업자 인증 (lib/fss.ts·cron·검증 API·뱃지) — 금감원 신고 자동 검증, **1,738건 적재 완료**
 - **138** 홈 신뢰 축 재배치 — 검증·평가 최상단 + 금감원 1,738개 히어로 + 뉴스 카테고리 탭
 - **139** 종목 페이지 네이버급 디테일 — StockInsightsTab·Orderbook·Execution·InfoPanel·lib/format
@@ -48,6 +48,9 @@
 - **144** 홈 지수 카드 스파크라인 — HomeIndexBar inline SVG 30일 추세선 + indices API yf.chart()
 - **145** 브리핑 overnight 안정화 — 누락·0·NaN → "—"(중립), 가짜 초록 "+0.00%" 제거 (신뢰 정렬)
 - **147** 종목 메타 보강 — StockInfoPanel 외국인 소진율·상장주식수 (KIS 한국 전용)
+- **149** 홈 빈 섹션 CTA 버튼 — HOT토론·평가 참여 유도 링크
+- **150** 브리핑 간밤 지수 실데이터 복구 — 라우트 runtime/dynamic 누락 수정
+- **151** 네이버식 상단 6메뉴 + /discussion·/news shell — **V7 진입** (네이버 복제, 마스터 `docs/SITE_MAP_V7.md`)
 
 ### ✅ MVP 1.0 + 2.0 (이전 누적)
 - 정보: 9개 정확 카드 + 종목 5탭 디테일 / 대화: 토론·댓글·채팅(Realtime) / 검색 + Watchlist
