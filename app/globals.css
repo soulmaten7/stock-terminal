@@ -100,6 +100,7 @@ body {
   to { transform: translateX(-50%); }
 }
 .ticker-track {
+  width: max-content;
   animation: ticker 40s linear infinite;
   will-change: transform;
 }

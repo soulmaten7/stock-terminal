@@ -5,6 +5,7 @@ import { useEffect, useState, type RefObject } from "react";
 type Item = {
   name: string;
   value: string;
+  changeText?: string;
   changePct: number;
   isUp: boolean;
 };
@@ -45,21 +46,29 @@ export default function HomeStickyTicker({ observeRef }: { observeRef: RefObject
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-40 h-9 overflow-hidden border-t border-unjong-border bg-unjong-surface/95 backdrop-blur transition-transform duration-300 ${
+      className={`fixed bottom-0 left-0 right-0 z-40 flex h-9 border-t border-unjong-border bg-unjong-surface/95 backdrop-blur transition-transform duration-300 ${
         show ? "translate-y-0" : "translate-y-full"
       }`}
       aria-hidden={!show}
     >
-      <div className="ticker-track flex h-full items-center whitespace-nowrap">
-        {loop.map((it, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5 px-4 text-xs">
-            <span className="text-unjong-muted">{it.name}</span>
-            <span className="font-semibold text-unjong-primary tabular-nums">{it.value}</span>
-            <span className={`tabular-nums ${it.isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
-              {it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%
+      {/* 왼쪽 고정 라벨 (스크롤 안 함) */}
+      <div className="flex shrink-0 items-center gap-1 border-r border-unjong-border bg-unjong-background px-3 text-[11px] font-semibold text-unjong-muted">
+        ⚠ 투자유의사항
+      </div>
+
+      {/* 스크롤 트랙 */}
+      <div className="relative flex-1 overflow-hidden">
+        <div className="ticker-track flex h-full items-center whitespace-nowrap">
+          {loop.map((it, i) => (
+            <span key={i} className="inline-flex items-center gap-1.5 px-4 text-xs">
+              <span className="text-unjong-muted">{it.name}</span>
+              <span className="font-semibold text-unjong-primary tabular-nums">{it.value}</span>
+              <span className={`tabular-nums ${it.isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                {it.changeText ? `${it.changeText} ` : ""}({it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%)
+              </span>
             </span>
-          </span>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
