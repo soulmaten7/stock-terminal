@@ -6,7 +6,7 @@ import { TrendingUp, TrendingDown, Heart, Plus } from "lucide-react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { useWatchlist, type WatchlistItem } from "@/stores/watchlistStore";
 import { LoadingState, EmptyState } from "@/components/ui/State";
-import { avatarBg, avatarChar } from "@/lib/avatar";
+import { StockLogo } from "@/components/ui/StockLogo";
 
 type PriceInfo = { price: string; changePct: number };
 type PriceMap = Record<string, PriceInfo | null>;
@@ -132,9 +132,7 @@ export function WatchlistPanel() {
             return (
               <li key={item.code} className="group flex items-center gap-2 px-3 py-2 text-sm hover:bg-unjong-background cursor-pointer transition-colors">
                 <button type="button" onClick={() => handleItemClick(item)} className="flex flex-1 items-center gap-2.5 min-w-0 text-left">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-unjong-primary" style={{ background: avatarBg(item.name) }}>
-                    {avatarChar(item.name)}
-                  </span>
+                  <StockLogo code={item.code} name={item.name} size={28} />
                   <div className="flex flex-col min-w-0">
                     <span className="font-medium text-unjong-primary truncate">{item.name}</span>
                     <span className="text-xs text-unjong-muted">{item.code}</span>

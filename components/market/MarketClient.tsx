@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
-import { avatarBg, avatarChar } from "@/lib/avatar";
+import { StockLogo } from "@/components/ui/StockLogo";
 
 type Row = { rank: number; symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
 
@@ -213,12 +213,7 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
                         <td className="px-4 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
-                            <span
-                              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-unjong-primary"
-                              style={{ background: avatarBg(r.name) }}
-                            >
-                              {avatarChar(r.name)}
-                            </span>
+                            <StockLogo code={r.symbol} name={r.name} size={28} />
                             <span className="font-medium text-unjong-primary">{r.name}</span>
                           </div>
                         </td>
