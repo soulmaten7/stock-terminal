@@ -11,7 +11,7 @@ export default function HomeClientV6() {
 
   return (
     <div className="px-6 py-5">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         {/* 왼쪽: 상태바 + 지수 그리드 + 실시간 랭킹 */}
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-4 mb-4 text-xs text-unjong-muted">
