@@ -6,6 +6,10 @@ export const dynamic = "force-dynamic";
 
 const yf = new YahooFinance();
 
+// 30초 서버 캐시 — 그리드 + 하단 티커가 같은 데이터 공유, Yahoo 호출 절감
+let _cache: { data: unknown; at: number } | null = null;
+const _TTL = 30_000;
+
 const INDEX_SYMBOLS = [
   { symbol: "^KS11", name: "코스피" },
   { symbol: "^KQ11", name: "코스닥" },
@@ -20,6 +24,9 @@ const INDEX_SYMBOLS = [
 ];
 
 export async function GET() {
+  if (_cache && Date.now() - _cache.at < _TTL) {
+    return NextResponse.json(_cache.data);
+  }
   try {
     // 심볼별로 현재값(quote) + 스파크라인용 최근 30일 일봉(chart)을 병렬로 가져온다
     const items = await Promise.all(
@@ -54,7 +61,9 @@ export async function GET() {
       })
     );
 
-    return NextResponse.json({ items: items.filter((x) => x.value !== "0") });
+    const payload = { items: items.filter((x) => x.value !== "0") };
+    _cache = { data: payload, at: Date.now() };
+    return NextResponse.json(payload);
   } catch (e) {
     return NextResponse.json(
       { items: [], error: e instanceof Error ? e.message : String(e) },

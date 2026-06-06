@@ -93,3 +93,16 @@ body {
   border-radius: 0.5rem;
   transition: outline-color 0.3s;
 }
+
+/* 하단 마퀴 티커 — 항목 2배 복제 + -50% 이동으로 끊김 없는 루프 */
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-track {
+  animation: ticker 40s linear infinite;
+  will-change: transform;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
