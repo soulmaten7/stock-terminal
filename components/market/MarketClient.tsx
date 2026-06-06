@@ -113,9 +113,7 @@ export default function MarketClient({ embedded = false, onHover }: { embedded?:
 
   return (
     <div className={embedded ? "" : "px-4 py-6"}>
-      {embedded ? (
-        <h2 className="text-lg font-bold text-unjong-primary mb-3">📈 실시간 차트</h2>
-      ) : (
+      {!embedded && (
         <header className="mb-4">
           <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
           <p className="mt-1 text-sm text-unjong-muted">실시간 랭킹 — 종목 클릭 시 상세로. (시총·52주 필터·히트맵은 순차 확장)</p>

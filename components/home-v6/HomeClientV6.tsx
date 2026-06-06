@@ -5,7 +5,8 @@ import HomeIndexBar from "./HomeIndexBar";
 import HomeRightRail from "./HomeRightRail";
 import HomeStickyTicker from "./HomeStickyTicker";
 import HomeStockDetail from "./HomeStockDetail";
-import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
+import { type HoverStock } from "@/components/market/MarketClient";
+import HomeRankingTabs from "./HomeRankingTabs";
 
 export default function HomeClientV6() {
   const gridRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ export default function HomeClientV6() {
           {/* 랭킹 + (xl) 종목 상세 패널 */}
           <div className="mt-5 flex gap-4">
             <div className="flex-1 min-w-0">
-              <MarketClient embedded onHover={setHovered} />
+              <HomeRankingTabs onHover={setHovered} />
             </div>
             <HomeStockDetail stock={hovered} />
           </div>
