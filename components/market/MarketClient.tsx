@@ -58,14 +58,26 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
       try {
         let list: Row[] = [];
         if (country === "kr") {
-          const url =
+          // 1순위: KRX 100개(약 20분 지연). 비거나 실패하면 2순위: KIS 30개 fallback.
+          const krxUrl = `/api/krx/ranking?market=${market}&sort=${filter}&limit=100`;
+          const kisUrl =
             filter === "amount" || filter === "volume"
               ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=100`
               : filter === "cap"
               ? `/api/kis/market-cap?market=${market}&limit=100`
               : `/api/kis/movers?dir=${filter}&market=${market}&limit=100`;
-          const j = await (await fetch(url)).json();
-          list = (j.stocks ?? j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
+          let raw: Record<string, unknown>[] = [];
+          try {
+            const j = await (await fetch(krxUrl)).json();
+            raw = (j.stocks ?? []) as Record<string, unknown>[];
+          } catch {
+            raw = [];
+          }
+          if (raw.length === 0) {
+            const j = await (await fetch(kisUrl)).json();
+            raw = (j.stocks ?? j.items ?? []) as Record<string, unknown>[];
+          }
+          list = raw.map((s, i: number) => ({
             rank: typeof s.rank === "number" ? s.rank : i + 1,
             symbol: String(s.symbol ?? ""),
             name: String(s.name ?? ""),
@@ -167,6 +179,9 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
             ))}
           </div>
 
+          {country === "kr" && (
+            <p className="text-xs text-unjong-muted mb-2">국내 시세 KRX 기준 · 최대 약 20분 지연 (실시간 아님)</p>
+          )}
           {/* 랭킹 테이블 */}
           <section className="bg-unjong-surface rounded-2xl border border-unjong-border shadow-soft overflow-hidden">
             {loading ? (
