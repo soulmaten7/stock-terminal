@@ -3,15 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { StockLogo } from "@/components/ui/StockLogo";
+import { createAnonClient } from "@/lib/supabase/anon-client";
 import type { HoverStock } from "@/components/market/MarketClient";
 
 type Candle = { open: number; high: number; low: number; close: number };
+type Post = { id: string; nickname: string; tier: string | null; content: string; created_at: string };
 
-function fmtAmount(won?: number): string {
-  if (!won || won <= 0) return "—";
-  if (won >= 1e12) return `${(won / 1e12).toFixed(1)}조`;
-  if (won >= 1e8) return `${Math.round(won / 1e8).toLocaleString()}억`;
-  return won.toLocaleString();
+function timeAgo(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "방금";
+  if (m < 60) return `${m}분 전`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}시간 전`;
+  return `${Math.floor(h / 24)}일 전`;
 }
 
 function CandleChart({ candles }: { candles: Candle[] }) {
@@ -49,7 +54,9 @@ function CandleChart({ candles }: { candles: Candle[] }) {
 
 export default function HomeStockDetail({ stock }: { stock: HoverStock | null }) {
   const [candles, setCandles] = useState<Candle[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
+  // 차트 (국내 6자리, debounce)
   useEffect(() => {
     if (!stock || !/^\d{6}$/.test(stock.symbol)) {
       setCandles([]);
@@ -66,10 +73,30 @@ export default function HomeStockDetail({ stock }: { stock: HoverStock | null })
         if (!cancelled) setCandles([]);
       }
     }, 350);
-    return () => {
-      cancelled = true;
-      clearTimeout(t);
-    };
+    return () => { cancelled = true; clearTimeout(t); };
+  }, [stock?.symbol]);
+
+  // 커뮤니티 (종목 토론, debounce)
+  useEffect(() => {
+    if (!stock) { setPosts([]); return; }
+    const code = stock.symbol;
+    let cancelled = false;
+    const t = setTimeout(async () => {
+      try {
+        const supabase = createAnonClient();
+        const { data } = await supabase
+          .from("discussions")
+          .select("id, nickname, tier, content, created_at")
+          .eq("symbol", code)
+          .eq("hidden", false)
+          .order("created_at", { ascending: false })
+          .limit(3);
+        if (!cancelled) setPosts((data as Post[]) ?? []);
+      } catch {
+        if (!cancelled) setPosts([]);
+      }
+    }, 350);
+    return () => { cancelled = true; clearTimeout(t); };
   }, [stock?.symbol]);
 
   return (
@@ -79,6 +106,7 @@ export default function HomeStockDetail({ stock }: { stock: HoverStock | null })
           <div className="p-5 text-sm text-unjong-muted">종목에 마우스를 올리면 상세가 표시됩니다.</div>
         ) : (
           <>
+            {/* 헤더 */}
             <div className="flex items-center gap-2.5 border-b border-unjong-border p-4">
               <StockLogo code={stock.symbol} name={stock.name} size={36} />
               <div className="min-w-0">
@@ -90,22 +118,34 @@ export default function HomeStockDetail({ stock }: { stock: HoverStock | null })
               </div>
             </div>
 
+            {/* 캔들차트 */}
             <div className="border-b border-unjong-border px-2 py-3">
               <p className="px-2 pb-1 text-xs text-unjong-muted">일봉</p>
               <CandleChart candles={candles} />
             </div>
 
-            <div className="grid grid-cols-2 gap-px bg-unjong-border text-xs">
-              <div className="bg-unjong-surface p-3">
-                <p className="mb-0.5 text-unjong-muted">거래량</p>
-                <p className="font-semibold text-unjong-primary tabular-nums">{stock.volume ? stock.volume.toLocaleString() : "—"}</p>
-              </div>
-              <div className="bg-unjong-surface p-3">
-                <p className="mb-0.5 text-unjong-muted">거래대금</p>
-                <p className="font-semibold text-unjong-primary tabular-nums">{fmtAmount(stock.tradeAmount)}</p>
-              </div>
+            {/* 커뮤니티 */}
+            <div className="border-b border-unjong-border p-4">
+              <p className="mb-2 text-xs font-semibold text-unjong-muted">커뮤니티</p>
+              {posts.length === 0 ? (
+                <p className="text-xs text-unjong-muted">아직 토론이 없어요. 첫 의견을 남겨보세요.</p>
+              ) : (
+                <ul className="space-y-2.5">
+                  {posts.map((p) => (
+                    <li key={p.id} className="text-xs">
+                      <p className="mb-0.5 text-unjong-muted">
+                        {p.nickname}
+                        {p.tier ? <span className="ml-1 rounded bg-unjong-background px-1 py-0.5 text-[10px]">{p.tier}</span> : null}
+                        <span className="ml-1">· {timeAgo(p.created_at)}</span>
+                      </p>
+                      <p className="line-clamp-2 text-unjong-primary">{p.content}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
+            {/* CTA */}
             <div className="p-4">
               <Link href={`/stock/${stock.symbol}`} className="block w-full rounded-lg bg-unjong-primary py-2 text-center text-sm font-semibold text-white hover:opacity-90">
                 종목 상세 · 토론 보기 →
