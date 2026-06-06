@@ -27,6 +27,7 @@ export async function GET() {
         const q = await yf.quote(meta.symbol);
         const price = Number(q.regularMarketPrice ?? 0);
         const changePct = Number(q.regularMarketChangePercent ?? 0);
+        const change = Number(q.regularMarketChange ?? 0);
 
         // 스파크라인: 최근 약 30일 일봉 종가 배열 (실패해도 카드는 그대로 표시)
         let spark: number[] = [];
@@ -45,6 +46,7 @@ export async function GET() {
         return {
           name: meta.name,
           value: price.toLocaleString("en-US", { maximumFractionDigits: 2 }),
+          changeText: change.toLocaleString("en-US", { maximumFractionDigits: 2, signDisplay: "always" }),
           changePct,
           isUp: changePct >= 0,
           spark,
