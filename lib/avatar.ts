@@ -58,3 +58,16 @@ export function logoUrl(code: string): string | null {
   if (!domain) return null;
   return `https://www.google.com/s2/favicons?sz=128&domain=${domain}`;
 }
+
+/** 레버리지/인버스 ETF면 배지 정보(이름 파싱), 아니면 null */
+export function leverageInfo(name: string): { label: string; inverse: boolean } | null {
+  const n = (name || "").toUpperCase();
+  const inverse = /인버스|INVERSE|BEAR/.test(n);
+  let mult: string | null = null;
+  if (/3\s*X|3배/.test(n)) mult = "3x";
+  else if (/2\s*X|2배/.test(n)) mult = "2x";
+  else if (/레버리지|LEVERAGE|BULL/.test(n)) mult = "2x";
+  if (mult) return { label: mult, inverse };
+  if (inverse) return { label: "인", inverse: true };
+  return null;
+}

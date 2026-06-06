@@ -1,13 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import { avatarBg, avatarChar, logoUrl } from "@/lib/avatar";
+import { avatarBg, avatarChar, logoUrl, leverageInfo } from "@/lib/avatar";
 
-// 종목 로고: 주요 종목은 실로고, 없거나 로딩 실패 시 레터 아바타.
 export function StockLogo({ code, name, size = 28 }: { code: string; name: string; size?: number }) {
-  const url = logoUrl(code);
   const [err, setErr] = useState(false);
 
+  // 1) 레버리지/인버스 ETF → 배수 배지 (토스식)
+  const lev = leverageInfo(name);
+  if (lev) {
+    return (
+      <span
+        className="flex shrink-0 items-center justify-center rounded-full font-bold text-white"
+        style={{
+          width: size,
+          height: size,
+          background: lev.inverse ? "#F04452" : "#2563EB",
+          fontSize: Math.round(size * 0.36),
+        }}
+      >
+        {lev.label}
+      </span>
+    );
+  }
+
+  // 2) 주요 종목 실로고
+  const url = logoUrl(code);
   if (url && !err) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -15,12 +33,13 @@ export function StockLogo({ code, name, size = 28 }: { code: string; name: strin
         src={url}
         alt=""
         onError={() => setErr(true)}
-        className="shrink-0 rounded-full object-contain bg-white border border-unjong-border"
+        className="shrink-0 rounded-full border border-unjong-border bg-white object-contain"
         style={{ width: size, height: size }}
       />
     );
   }
 
+  // 3) 레터 아바타 폴백
   return (
     <span
       className="flex shrink-0 items-center justify-center rounded-full font-bold text-unjong-primary"
