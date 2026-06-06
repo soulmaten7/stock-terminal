@@ -4,13 +4,12 @@ import { useEffect, useState } from "react";
 import { LoadingState } from "@/components/ui/State";
 
 type IndexItem = { name: string; value: string; changePct: number; isUp: boolean; spark?: number[] };
-type Tab = "미국" | "국내";
 
 // 작은 추세선(스파크라인) — 외부 라이브러리 없이 inline SVG 로 그린다
 function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
   if (!points || points.length < 2) return null;
   const w = 100;
-  const h = 26;
+  const h = 24;
   const min = Math.min(...points);
   const max = Math.max(...points);
   const range = max - min || 1;
@@ -22,12 +21,7 @@ function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
     })
     .join(" ");
   return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      preserveAspectRatio="none"
-      className="w-full h-6 mt-1.5"
-      aria-hidden="true"
-    >
+    <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-5 mt-1.5" aria-hidden="true">
       <path
         d={d}
         fill="none"
@@ -42,7 +36,6 @@ function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
 }
 
 export default function HomeIndexBar() {
-  const [tab, setTab] = useState<Tab>("미국");
   const [items, setItems] = useState<IndexItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -68,32 +61,22 @@ export default function HomeIndexBar() {
 
   return (
     <section className="mt-5 bg-unjong-surface rounded-2xl border border-unjong-border shadow-soft p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <h2 className="text-base font-bold text-unjong-primary mr-2">주요 지수</h2>
-        {(["미국", "국내"] as Tab[]).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setTab(t)}
-            className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${
-              tab === t ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-            }`}
-          >
-            {t}
-          </button>
-        ))}
+      <div className="flex items-baseline gap-2 mb-3">
+        <h2 className="text-base font-bold text-unjong-primary">주요 지수</h2>
+        <span className="text-xs text-unjong-muted">국내·해외·환율·원자재·코인</span>
       </div>
 
-      {tab === "국내" ? (
-        <p className="text-sm text-unjong-muted py-2">국내 지수(코스피·코스닥) — 준비 중</p>
-      ) : loading ? (
+      {loading ? (
         <LoadingState />
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
           {items.map((idx) => (
-            <div key={idx.name} className="rounded-xl bg-unjong-background px-3 py-2.5">
+            <div
+              key={idx.name}
+              className="rounded-xl bg-unjong-background px-3 py-2.5 hover:bg-slate-100 transition-colors"
+            >
               <p className="text-xs text-unjong-muted truncate">{idx.name}</p>
-              <p className="text-base font-bold text-unjong-primary tabular-nums mt-0.5">{idx.value}</p>
+              <p className="text-[15px] font-bold text-unjong-primary tabular-nums mt-0.5">{idx.value}</p>
               <p className={`text-xs font-semibold ${idx.isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                 {idx.isUp ? "+" : ""}{idx.changePct.toFixed(2)}%
               </p>

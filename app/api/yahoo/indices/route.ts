@@ -7,11 +7,16 @@ export const dynamic = "force-dynamic";
 const yf = new YahooFinance();
 
 const INDEX_SYMBOLS = [
+  { symbol: "^KS11", name: "코스피" },
+  { symbol: "^KQ11", name: "코스닥" },
+  { symbol: "USDKRW=X", name: "원/달러" },
   { symbol: "^GSPC", name: "S&P 500" },
-  { symbol: "^IXIC", name: "Nasdaq" },
-  { symbol: "^DJI", name: "Dow" },
-  { symbol: "^RUT", name: "Russell 2000" },
+  { symbol: "^IXIC", name: "나스닥" },
+  { symbol: "^DJI", name: "다우" },
+  { symbol: "^SOX", name: "필라델피아 반도체" },
   { symbol: "^VIX", name: "VIX" },
+  { symbol: "GC=F", name: "금" },
+  { symbol: "BTC-USD", name: "비트코인" },
 ];
 
 export async function GET() {
