@@ -12,13 +12,21 @@ type IndexItem = {
   spark?: number[];
 };
 
-// 느낌 태그 — 변동률 기준(토스식 급상승/조정/급락). 맥락 태그(금리·뉴스)는 추후 별도.
+type Flow = { date?: string; indiv: number; foreign: number; inst: number };
+
 function moodTag(pct: number): string | null {
   if (pct >= 5) return "급등";
   if (pct >= 2) return "급상승";
   if (pct <= -5) return "급락";
   if (pct <= -2) return "조정";
   return null;
+}
+
+function flowColor(v: number): string {
+  return v > 0 ? "text-[#1AC267]" : v < 0 ? "text-[#F04452]" : "text-unjong-muted";
+}
+function flowText(v: number): string {
+  return `${v > 0 ? "+" : ""}${v.toLocaleString()}`;
 }
 
 // 작은 추세선(스파크라인) — 외부 라이브러리 없이 inline SVG
@@ -53,24 +61,31 @@ function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
 
 export default function HomeIndexBar() {
   const [items, setItems] = useState<IndexItem[]>([]);
+  const [flows, setFlows] = useState<Record<string, Flow | null>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    const loadIndices = async () => {
+      const j = await (await fetch("/api/yahoo/indices")).json();
+      if (!cancelled) setItems(j.items || []);
+    };
+    const loadFlows = async () => {
+      try {
+        const j = await (await fetch("/api/kis/market-investor")).json();
+        if (!cancelled) setFlows({ 코스피: j["코스피"] ?? null, 코스닥: j["코스닥"] ?? null });
+      } catch { /* 무시 */ }
+    };
     (async () => {
       try {
-        const r = await fetch("/api/yahoo/indices");
-        const j = await r.json();
-        if (!cancelled) setItems(j.items || []);
+        await Promise.all([loadIndices(), loadFlows()]);
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
-    const t = setInterval(async () => {
-      try {
-        const j = await (await fetch("/api/yahoo/indices")).json();
-        setItems(j.items || []);
-      } catch { /* 무시 */ }
+    const t = setInterval(() => {
+      loadIndices();
+      loadFlows();
     }, 60000);
     return () => { cancelled = true; clearInterval(t); };
   }, []);
@@ -88,6 +103,7 @@ export default function HomeIndexBar() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5">
           {items.map((idx) => {
             const tag = moodTag(idx.changePct);
+            const flow = flows[idx.name];
             return (
               <div
                 key={idx.name}
@@ -114,6 +130,18 @@ export default function HomeIndexBar() {
                   {idx.changeText ? `${idx.changeText} ` : ""}({idx.isUp ? "+" : ""}{idx.changePct.toFixed(2)}%)
                 </p>
                 <Sparkline points={idx.spark} up={idx.isUp} />
+                {flow && (
+                  <div className="mt-1.5 pt-1.5 border-t border-unjong-border/60">
+                    <p className="text-[10px] text-unjong-muted mb-0.5">
+                      순매수(억){flow.date ? ` · ${flow.date.slice(4, 6)}/${flow.date.slice(6, 8)}` : ""}
+                    </p>
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] tabular-nums">
+                      <span className="text-unjong-muted">개인 <b className={flowColor(flow.indiv)}>{flowText(flow.indiv)}</b></span>
+                      <span className="text-unjong-muted">외인 <b className={flowColor(flow.foreign)}>{flowText(flow.foreign)}</b></span>
+                      <span className="text-unjong-muted">기관 <b className={flowColor(flow.inst)}>{flowText(flow.inst)}</b></span>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
