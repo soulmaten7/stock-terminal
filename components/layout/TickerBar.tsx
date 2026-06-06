@@ -13,8 +13,6 @@ function TradingViewTickerTape({ country }: { country: string }) {
     const symbols =
       country === 'KR'
         ? [
-            { proName: 'KRX:KOSPI', title: 'KOSPI' },
-            { proName: 'KRX:KOSDAQ', title: 'KOSDAQ' },
             { proName: 'FOREXCOM:SPXUSD', title: 'S&P 500' },
             { proName: 'FOREXCOM:NSXUSD', title: 'NASDAQ' },
             { proName: 'FX_IDC:USDKRW', title: 'USD/KRW' },
