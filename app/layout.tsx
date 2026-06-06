@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
-import { MainNav } from '@/components/header/MainNav';
 import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
 import LayoutShell from '@/components/layout/LayoutShell';
@@ -58,7 +57,6 @@ export default function RootLayout({
         <AuthProvider>
           <div className="w-full max-w-[1984px] mx-auto flex-1 flex flex-col">
             <Header />
-            <MainNav />
             <LayoutShell footer={<Footer />}>
               {children}
             </LayoutShell>
