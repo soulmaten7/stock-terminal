@@ -21,8 +21,6 @@ function eok(v: unknown): number {
 
 async function marketFlow(iscd: string, iscd1: string) {
   const today = new Date();
-  const from = new Date(today);
-  from.setDate(today.getDate() - 10);
   const data = await fetchKisApi({
     endpoint: "/uapi/domestic-stock/v1/quotations/inquire-investor-daily-by-market",
     trId: "FHPTJ04040000",
@@ -31,7 +29,7 @@ async function marketFlow(iscd: string, iscd1: string) {
       FID_INPUT_ISCD: iscd,
       FID_INPUT_ISCD_1: iscd1,
       FID_INPUT_ISCD_2: iscd,
-      FID_INPUT_DATE_1: ymd(from),
+      FID_INPUT_DATE_1: ymd(today),
       FID_INPUT_DATE_2: ymd(today),
     },
     cacheTtlMs: 300_000, // 일별 데이터 → 5분 캐시
