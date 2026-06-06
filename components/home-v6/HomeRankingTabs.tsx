@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
 import SectorRanking from "./SectorRanking";
 import InvestorTrend from "./InvestorTrend";
@@ -12,7 +12,7 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
-export default function HomeRankingTabs({ onHover }: { onHover?: (s: HoverStock) => void }) {
+export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
   const [tab, setTab] = useState<TabKey>("chart");
 
   return (
@@ -34,7 +34,7 @@ export default function HomeRankingTabs({ onHover }: { onHover?: (s: HoverStock)
         ))}
       </div>
 
-      {tab === "chart" && <MarketClient embedded onHover={onHover} />}
+      {tab === "chart" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "category" && <SectorRanking />}
       {tab === "investor" && <InvestorTrend />}
     </div>

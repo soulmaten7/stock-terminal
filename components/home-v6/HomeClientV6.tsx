@@ -35,11 +35,8 @@ export default function HomeClientV6() {
           </div>
 
           {/* 랭킹 + (xl) 종목 상세 패널 */}
-          <div className="mt-5 flex gap-4">
-            <div className="flex-1 min-w-0">
-              <HomeRankingTabs onHover={setHovered} />
-            </div>
-            <HomeStockDetail stock={hovered} />
+          <div className="mt-5">
+            <HomeRankingTabs onHover={setHovered} detailSlot={<HomeStockDetail stock={hovered} />} />
           </div>
         </div>
 

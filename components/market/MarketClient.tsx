@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
@@ -47,7 +47,7 @@ function fmtAmount(won?: number): string {
 
 export type HoverStock = { symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
 
-export default function MarketClient({ embedded = false, onHover }: { embedded?: boolean; onHover?: (s: HoverStock) => void }) {
+export default function MarketClient({ embedded = false, onHover, detailSlot }: { embedded?: boolean; onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
   const router = useRouter();
   const watchItems = useWatchlist((s) => s.items);
   const addWatch = useWatchlist((s) => s.add);
@@ -182,8 +182,9 @@ export default function MarketClient({ embedded = false, onHover }: { embedded?:
           {country === "kr" && (
             <p className="text-xs text-unjong-muted mb-2">국내 시세 KRX 기준 · 최대 약 20분 지연 (실시간 아님)</p>
           )}
-          {/* 랭킹 테이블 */}
-          <section className="bg-unjong-surface rounded-2xl border border-unjong-border shadow-soft overflow-hidden">
+          {/* 랭킹 테이블 (embedded: 우측 미리보기 — 필터 밑, 테이블과 같은 높이) */}
+          <div className={embedded ? "flex items-start gap-4" : ""}>
+          <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "flex-1 min-w-0" : ""}`}>
             {loading ? (
               <LoadingState className="py-10" />
             ) : rows.length === 0 ? (
@@ -255,6 +256,8 @@ export default function MarketClient({ embedded = false, onHover }: { embedded?:
               </table>
             )}
           </section>
+          {embedded && detailSlot}
+          </div>
         </>
       )}
     </div>
