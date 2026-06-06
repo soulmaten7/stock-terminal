@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
+import { Heart } from "lucide-react";
+import { useWatchlist } from "@/stores/watchlistStore";
 
 type Row = { rank: number; symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
 
@@ -47,6 +49,12 @@ export type HoverStock = { symbol: string; name: string; priceText: string; chan
 
 export default function MarketClient({ embedded = false, onHover }: { embedded?: boolean; onHover?: (s: HoverStock) => void }) {
   const router = useRouter();
+  const watchItems = useWatchlist((s) => s.items);
+  const addWatch = useWatchlist((s) => s.add);
+  const removeWatch = useWatchlist((s) => s.remove);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isWatched = (code: string) => watchItems.some((i) => i.code === code);
   const [country, setCountry] = useState<CountryKey>("kr");
   const [filter, setFilter] = useState<FilterKey>("amount");
   const [market, setMarket] = useState<MarketKey>("all");
@@ -193,10 +201,11 @@ export default function MarketClient({ embedded = false, onHover }: { embedded?:
               <table className="w-full text-sm">
                 <thead>
                   <tr className="text-xs text-unjong-muted border-b border-unjong-border">
+                    <th className="w-8 px-2 py-2.5"></th>
                     <th className="text-left font-medium px-4 py-2.5 w-12">순위</th>
                     <th className="text-left font-medium px-4 py-2.5">종목명</th>
                     <th className="text-right font-medium px-4 py-2.5">현재가</th>
-                    <th className="text-right font-medium px-4 py-2.5">전일대비</th>
+                    <th className="text-right font-medium px-4 py-2.5">등락률</th>
                     <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래량</th>
                     {country === "kr" && <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래대금</th>}
                   </tr>
@@ -211,6 +220,24 @@ export default function MarketClient({ embedded = false, onHover }: { embedded?:
                         onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
                         className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
                       >
+                        <td className="px-2 py-3">
+                          <button
+                            type="button"
+                            aria-label="관심 토글"
+                            className="p-0.5"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (isWatched(r.symbol)) removeWatch(r.symbol);
+                              else addWatch({ code: r.symbol, name: r.name, market: country === "us" ? "US" : "KOSPI" });
+                            }}
+                          >
+                            <Heart
+                              size={15}
+                              fill={mounted && isWatched(r.symbol) ? "currentColor" : "none"}
+                              className={mounted && isWatched(r.symbol) ? "text-[#F04452]" : "text-unjong-muted hover:text-[#F04452]"}
+                            />
+                          </button>
+                        </td>
                         <td className="px-4 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2.5">
