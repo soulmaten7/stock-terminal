@@ -128,65 +128,56 @@ export default function MarketClient({ embedded = false, onHover }: { embedded?:
         </header>
       )}
 
-      {/* 국가 탭 */}
-      <div className="flex items-center gap-2 border-b border-unjong-border mb-4">
+      {/* 필터 (토스식 한 줄: 국가 · 시장 · 정렬, 구분선) */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-2">
         {COUNTRIES.map((c) => (
           <button
             key={c.key}
             type="button"
-            onClick={() => {
-              setCountry(c.key);
-              setFilter(c.key === "us" ? "up" : "amount");
-              setMarket("all");
-            }}
-            className={
-              country === c.key
-                ? "px-3 py-2 text-sm font-bold text-unjong-primary border-b-2 border-unjong-primary -mb-px"
-                : "px-3 py-2 text-sm font-medium text-unjong-muted hover:text-unjong-primary border-b-2 border-transparent -mb-px"
-            }
+            onClick={() => { setCountry(c.key); setFilter(c.key === "us" ? "up" : "amount"); setMarket("all"); }}
+            className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+              country === c.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
+            }`}
           >
             {c.label}
           </button>
         ))}
+
+        {country === "kr" && <span className="mx-1 h-4 w-px bg-unjong-border" />}
+        {country === "kr" &&
+          MARKETS.map((m) => (
+            <button
+              key={m.key}
+              type="button"
+              onClick={() => setMarket(m.key)}
+              className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                market === m.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+
+        {country !== "global" && <span className="mx-1 h-4 w-px bg-unjong-border" />}
+        {country !== "global" &&
+          filters.map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setFilter(f.key)}
+              className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
+                filter === f.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
       </div>
 
       {country === "global" ? (
         <EmptyState icon="🛠️" title="글로벌 마켓 준비 중" description="순차 확장 예정 (STEP 154~)." className="py-12" />
       ) : (
         <>
-          {/* 시장 필터 (국내만) */}
-          {country === "kr" && (
-            <div className="flex items-center gap-1.5 mb-3">
-              {MARKETS.map((m) => (
-                <button
-                  key={m.key}
-                  type="button"
-                  onClick={() => setMarket(m.key)}
-                  className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${
-                    market === m.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-                  }`}
-                >
-                  {m.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* 랭킹 필터 (국가별) */}
-          <div className="flex items-center gap-1.5 mb-3 flex-wrap">
-            {filters.map((f) => (
-              <button
-                key={f.key}
-                type="button"
-                onClick={() => setFilter(f.key)}
-                className={`text-sm font-medium px-3 py-1.5 rounded-lg transition-colors ${
-                  filter === f.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
 
           {country === "kr" && (
             <p className="text-xs text-unjong-muted mb-2">국내 시세 KRX 기준 · 최대 약 20분 지연 (실시간 아님)</p>
