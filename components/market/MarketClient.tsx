@@ -43,7 +43,9 @@ function fmtAmount(won?: number): string {
   return won.toLocaleString();
 }
 
-export default function MarketClient({ embedded = false }: { embedded?: boolean }) {
+export type HoverStock = { symbol: string; name: string; priceText: string; changePercent: number };
+
+export default function MarketClient({ embedded = false, onHover }: { embedded?: boolean; onHover?: (s: HoverStock) => void }) {
   const router = useRouter();
   const [country, setCountry] = useState<CountryKey>("kr");
   const [filter, setFilter] = useState<FilterKey>("amount");
@@ -208,6 +210,7 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
                       <tr
                         key={r.symbol}
                         onClick={() => router.push(`/stock/${r.symbol}`)}
+                        onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent })}
                         className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
                       >
                         <td className="px-4 py-3 text-unjong-muted tabular-nums">{r.rank}</td>

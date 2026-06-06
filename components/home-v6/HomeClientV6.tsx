@@ -1,19 +1,22 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import HomeIndexBar from "./HomeIndexBar";
 import HomeRightRail from "./HomeRightRail";
 import HomeStickyTicker from "./HomeStickyTicker";
-import MarketClient from "@/components/market/MarketClient";
+import HomeStockDetail from "./HomeStockDetail";
+import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
 
 export default function HomeClientV6() {
   const gridRef = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState<HoverStock | null>(null);
 
   return (
     <div className="px-6 py-5">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
-        {/* 왼쪽: 상태바 + 지수 그리드 + 실시간 랭킹 */}
+        {/* 왼쪽: 상태바 + 지수 그리드 + (랭킹 | 상세) */}
         <div className="min-w-0">
+          {/* 시장 상태바 */}
           <div className="flex flex-wrap items-center gap-4 mb-4 text-xs text-unjong-muted">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-[#1AC267]" />
@@ -25,20 +28,25 @@ export default function HomeClientV6() {
             </span>
           </div>
 
+          {/* 지수 그리드 */}
           <div ref={gridRef}>
             <HomeIndexBar />
           </div>
 
-          <div className="mt-5">
-            <MarketClient embedded />
+          {/* 랭킹 + (xl) 종목 상세 패널 */}
+          <div className="mt-5 flex gap-4">
+            <div className="flex-1 min-w-0">
+              <MarketClient embedded onHover={setHovered} />
+            </div>
+            <HomeStockDetail stock={hovered} />
           </div>
         </div>
 
-        {/* 오른쪽: 관심 레일 (헤더까지 풀하이트) */}
+        {/* 오른쪽: 관심 레일 */}
         <HomeRightRail />
       </div>
 
-      {/* 하단 고정 마퀴 티커 */}
+      {/* 하단 마퀴 티커 */}
       <HomeStickyTicker observeRef={gridRef} />
     </div>
   );
