@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import { avatarBg, avatarChar } from "@/lib/avatar";
 
 type Row = { rank: number; symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
 
@@ -210,7 +211,17 @@ export default function MarketClient({ embedded = false }: { embedded?: boolean 
                         className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
                       >
                         <td className="px-4 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
-                        <td className="px-4 py-3 font-medium text-unjong-primary">{r.name}</td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2.5">
+                            <span
+                              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-unjong-primary"
+                              style={{ background: avatarBg(r.name) }}
+                            >
+                              {avatarChar(r.name)}
+                            </span>
+                            <span className="font-medium text-unjong-primary">{r.name}</span>
+                          </div>
+                        </td>
                         <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.priceText}</td>
                         <td className={`px-4 py-3 text-right tabular-nums font-semibold ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
                           {up ? "+" : ""}{r.changePercent.toFixed(2)}%
