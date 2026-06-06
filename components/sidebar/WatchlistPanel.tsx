@@ -2,10 +2,11 @@
 
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
-import { TrendingUp, TrendingDown, X, Plus } from "lucide-react";
+import { TrendingUp, TrendingDown, Heart, Plus } from "lucide-react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { useWatchlist, type WatchlistItem } from "@/stores/watchlistStore";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import { avatarBg, avatarChar } from "@/lib/avatar";
 
 type PriceInfo = { price: string; changePct: number };
 type PriceMap = Record<string, PriceInfo | null>;
@@ -33,15 +34,11 @@ export function WatchlistPanel() {
       setPricesLoading(false);
       return;
     }
-
     let cancelled = false;
-
     const load = async () => {
       const krCodes = items.filter((i) => i.market !== "US").map((i) => i.code);
       const usCodes = items.filter((i) => i.market === "US").map((i) => i.code);
       const next: PriceMap = {};
-
-      // KR — 개별 호출 (KIS batch API 없음)
       await Promise.all(
         krCodes.map(async (code) => {
           try {
@@ -49,38 +46,23 @@ export function WatchlistPanel() {
             if (!r.ok) return;
             const json = await r.json();
             if (json.error) return;
-            next[code] = {
-              price: Number(json.price).toLocaleString(),
-              changePct: Number(json.changePercent) || 0,
-            };
-          } catch {
-            next[code] = null;
-          }
+            next[code] = { price: Number(json.price).toLocaleString(), changePct: Number(json.changePercent) || 0 };
+          } catch { next[code] = null; }
         })
       );
-
-      // US — batch 호출
       if (usCodes.length > 0) {
         try {
           const r = await fetch(`/api/yahoo/quote?symbols=${usCodes.join(",")}`);
           if (r.ok) {
             const json = await r.json();
             (json.items as Array<{ code: string; price: number; changePct: number }>).forEach((it) => {
-              next[it.code] = {
-                price: `$${it.price.toFixed(2)}`,
-                changePct: it.changePct,
-              };
+              next[it.code] = { price: `$${it.price.toFixed(2)}`, changePct: it.changePct };
             });
           }
         } catch { /* 무시 */ }
       }
-
-      if (!cancelled) {
-        setPrices(next);
-        setPricesLoading(false);
-      }
+      if (!cancelled) { setPrices(next); setPricesLoading(false); }
     };
-
     setPricesLoading(true);
     load();
     const interval = setInterval(load, 30_000);
@@ -90,16 +72,10 @@ export function WatchlistPanel() {
   const handleAdd = () => {
     const raw = addInput.trim().toUpperCase();
     if (!raw) return;
-
     let item: WatchlistItem;
-    if (/^\d{6}$/.test(raw)) {
-      item = { code: raw, name: raw, market: "KOSPI" };
-    } else if (/^[A-Z.\-]+$/.test(raw)) {
-      item = { code: raw, name: raw, market: "US" };
-    } else {
-      return;
-    }
-
+    if (/^\d{6}$/.test(raw)) item = { code: raw, name: raw, market: "KOSPI" };
+    else if (/^[A-Z.\-]+$/.test(raw)) item = { code: raw, name: raw, market: "US" };
+    else return;
     addItem(item);
     setAddInput("");
     setShowAdd(false);
@@ -112,13 +88,7 @@ export function WatchlistPanel() {
 
   const handleItemClick = (item: WatchlistItem) => {
     const p = prices[item.code];
-    setSelectedSymbol({
-      code: item.code,
-      name: item.name,
-      price: p?.price,
-      changePct: p?.changePct,
-      market: item.market,
-    });
+    setSelectedSymbol({ code: item.code, name: item.name, price: p?.price, changePct: p?.changePct, market: item.market });
     router.push(`/stock/${item.code}`);
   };
 
@@ -126,17 +96,11 @@ export function WatchlistPanel() {
     <div className="flex h-full flex-col rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft overflow-hidden">
       {/* 헤더 */}
       <div className="flex items-center justify-between border-b border-unjong-border px-4 py-3 bg-unjong-background flex-shrink-0">
-        <span className="text-sm font-semibold text-unjong-primary" suppressHydrationWarning>
-          👀 관심종목 {mounted ? `${items.length}개` : ""}
+        <span className="text-sm font-bold text-unjong-primary" suppressHydrationWarning>
+          관심 종목 {mounted ? `${items.length}` : ""}
         </span>
-        <button
-          type="button"
-          onClick={() => setShowAdd((v) => !v)}
-          className="text-unjong-muted hover:text-unjong-accent p-0.5"
-          aria-label="관심종목 추가"
-          title="추가"
-        >
-          <Plus size={14} />
+        <button type="button" onClick={() => setShowAdd((v) => !v)} className="text-unjong-muted hover:text-unjong-accent p-0.5" aria-label="관심종목 추가" title="추가">
+          <Plus size={15} />
         </button>
       </div>
 
@@ -144,26 +108,10 @@ export function WatchlistPanel() {
       {showAdd && (
         <div className="border-b border-unjong-border bg-unjong-background p-2 flex-shrink-0">
           <div className="flex items-center gap-1">
-            <input
-              type="text"
-              value={addInput}
-              onChange={(e) => setAddInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="005930 또는 AAPL"
-              autoFocus
-              className="flex-1 px-2 py-1 text-sm rounded border border-unjong-border bg-unjong-surface text-unjong-primary focus:outline-none focus:border-unjong-accent"
-            />
-            <button
-              type="button"
-              onClick={handleAdd}
-              className="px-2 py-1 text-sm rounded bg-unjong-accent text-white font-semibold hover:opacity-90"
-            >
-              추가
-            </button>
+            <input type="text" value={addInput} onChange={(e) => setAddInput(e.target.value)} onKeyDown={handleKeyDown} placeholder="005930 또는 AAPL" autoFocus className="flex-1 px-2 py-1 text-sm rounded border border-unjong-border bg-unjong-surface text-unjong-primary focus:outline-none focus:border-unjong-accent" />
+            <button type="button" onClick={handleAdd} className="px-2 py-1 text-sm rounded bg-unjong-accent text-white font-semibold hover:opacity-90">추가</button>
           </div>
-          <p className="text-xs text-unjong-muted mt-1">
-            한국: 6자리 종목코드 · 미국: 티커 (예: TSLA)
-          </p>
+          <p className="text-xs text-unjong-muted mt-1">한국: 6자리 종목코드 · 미국: 티커 (예: TSLA)</p>
         </div>
       )}
 
@@ -173,59 +121,41 @@ export function WatchlistPanel() {
           <li><LoadingState /></li>
         ) : items.length === 0 ? (
           <li>
-            <EmptyState
-              title="관심종목이 없습니다"
-              action={
-                <button type="button" onClick={resetItems} className="text-xs text-unjong-accent hover:underline">
-                  기본 종목 8개 복원
-                </button>
-              }
-            />
+            <EmptyState title="관심종목이 없습니다" action={
+              <button type="button" onClick={resetItems} className="text-xs text-unjong-accent hover:underline">기본 종목 8개 복원</button>
+            } />
           </li>
         ) : (
           items.map((item) => {
             const p = prices[item.code];
             const isUp = (p?.changePct ?? 0) >= 0;
             return (
-              <li
-                key={item.code}
-                className="group flex items-center justify-between gap-2 px-3 py-1.5 text-sm hover:bg-unjong-background cursor-pointer transition-colors"
-              >
-                <button
-                  type="button"
-                  onClick={() => handleItemClick(item)}
-                  className="flex flex-1 items-center justify-between gap-2 min-w-0 text-left"
-                >
+              <li key={item.code} className="group flex items-center gap-2 px-3 py-2 text-sm hover:bg-unjong-background cursor-pointer transition-colors">
+                <button type="button" onClick={() => handleItemClick(item)} className="flex flex-1 items-center gap-2.5 min-w-0 text-left">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-unjong-primary" style={{ background: avatarBg(item.name) }}>
+                    {avatarChar(item.name)}
+                  </span>
                   <div className="flex flex-col min-w-0">
                     <span className="font-medium text-unjong-primary truncate">{item.name}</span>
                     <span className="text-xs text-unjong-muted">{item.code}</span>
                   </div>
-                  <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
-                    <span className="font-semibold text-unjong-primary tabular-nums">
-                      {pricesLoading && !p ? "..." : (p?.price ?? "—")}
-                    </span>
+                  <div className="ml-auto flex flex-col items-end gap-0.5 shrink-0">
+                    <span className="font-semibold text-unjong-primary tabular-nums">{pricesLoading && !p ? "..." : (p?.price ?? "—")}</span>
                     {p && (
                       <span className={`flex items-center gap-0.5 text-xs font-medium tabular-nums ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
-                        {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                        {isUp ? "+" : ""}{p.changePct.toFixed(2)}%
+                        {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}{isUp ? "+" : ""}{p.changePct.toFixed(2)}%
                       </span>
                     )}
                   </div>
                 </button>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); removeItem(item.code); }}
-                  className="opacity-0 group-hover:opacity-100 text-unjong-muted hover:text-unjong-danger p-0.5 flex-shrink-0 transition-opacity"
-                  aria-label={`${item.name} 관심종목 제거`}
-                >
-                  <X size={12} />
+                <button type="button" onClick={(e) => { e.stopPropagation(); removeItem(item.code); }} className="shrink-0 text-[#F04452] hover:opacity-70 p-0.5" aria-label={`${item.name} 관심 해제`} title="관심 해제">
+                  <Heart size={14} fill="currentColor" />
                 </button>
               </li>
             );
           })
         )}
       </ul>
-
     </div>
   );
 }

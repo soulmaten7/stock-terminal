@@ -12,9 +12,9 @@ export default function HomeRightRail() {
     { icon: Clock, label: "최근 본", href: "/" },
   ];
   return (
-    <aside className="hidden lg:block space-y-5 sticky top-5 self-start max-h-[calc(100vh-2rem)] overflow-y-auto">
+    <aside className="hidden lg:flex flex-col gap-4 sticky top-5 self-start h-[calc(100vh-6rem)]">
       {/* 아이콘 nav */}
-      <div className="flex items-center justify-around bg-unjong-surface rounded-2xl border border-unjong-border shadow-soft py-3">
+      <div className="flex items-center justify-around bg-unjong-surface rounded-2xl border border-unjong-border shadow-soft py-3 flex-shrink-0">
         {nav.map((n) => {
           const Icon = n.icon;
           return (
@@ -26,16 +26,9 @@ export default function HomeRightRail() {
         })}
       </div>
 
-      {/* 관심 종목 */}
-      <div className="h-[420px]">
+      {/* 관심 종목 (남은 높이 가득) — 추후 이 컬럼에 채팅 탭 추가 예정 */}
+      <div className="flex-1 min-h-0">
         <WatchlistPanel />
-      </div>
-
-      {/* 숏컷/머니스토리 placeholder */}
-      <div className="bg-unjong-surface rounded-2xl border border-dashed border-unjong-border p-5">
-        <h3 className="text-sm font-bold text-unjong-primary mb-1">숏컷 · 머니스토리</h3>
-        <p className="text-xs text-unjong-muted">콘텐츠 영역 — 운종 방향으로 추후 채움</p>
-        <div className="mt-3 h-20 rounded-xl bg-unjong-background flex items-center justify-center text-xs text-unjong-muted">placeholder</div>
       </div>
     </aside>
   );
