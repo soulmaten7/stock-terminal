@@ -4,11 +4,13 @@ import { useState, type ReactNode } from "react";
 import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
 import SectorRanking from "./SectorRanking";
 import InvestorTrend from "./InvestorTrend";
+import HomeEtfRanking from "./HomeEtfRanking";
 
 const TABS = [
   { key: "chart", label: "실시간 차트" },
   { key: "category", label: "지금 뜨는 카테고리" },
   { key: "investor", label: "국내 투자자 동향" },
+  { key: "etf", label: "투자상품" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
@@ -37,6 +39,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
       {tab === "chart" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "category" && <SectorRanking />}
       {tab === "investor" && <InvestorTrend />}
+      {tab === "etf" && <HomeEtfRanking />}
     </div>
   );
 }
