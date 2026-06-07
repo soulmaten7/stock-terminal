@@ -12,23 +12,38 @@ type Kind = "room" | "channel";
 
 const COPY: Record<Kind, { warn: string; empty: string }> = {
   room: {
-    warn: "운종은 리딩방을 평가하지 않아요. 금감원 신고 여부(사실)와 사용자 평가만 보여줘요. 허위·작전·과장이 많으니 가입·결제 전 충분히 확인하세요.",
+    warn: "금감원 신고 여부(사실)와 사용자 평가 순으로 랭킹을 보여줄 뿐, 운종이 추천·보증하지 않아요. 허위·작전·과장이 많으니 가입·결제 전 충분히 확인하세요.",
     empty: "아직 등록된 리딩방이 없어요",
   },
   channel: {
-    warn: "주식 관련 유튜브·SNS·디스코드 채널이에요. 운종은 채널을 평가하지 않고 사용자 평가만 보여줘요. 투자 판단·결과는 본인 책임이에요.",
+    warn: "주식 관련 유튜브·SNS·디스코드 채널이에요. 운종은 사용자 평가 랭킹을 보여줄 뿐 추천·보증하지 않아요. 투자 판단·결과는 본인 책임이에요.",
     empty: "아직 등록된 채널이 없어요",
   },
 };
+
+type RoomSort = "like" | "dislike" | "view";
+const ROOM_SORTS: { key: RoomSort; label: string; col: string }[] = [
+  { key: "like", label: "좋아요순", col: "like_count" },
+  { key: "dislike", label: "싫어요순", col: "dislike_count" },
+  { key: "view", label: "조회순", col: "view_count" },
+];
+
+function chip(active: boolean) {
+  return `rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+    active ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
+  }`;
+}
 
 export default function HomeRoomRanking({ platforms, kind }: { platforms: string[]; kind: Kind }) {
   const [items, setItems] = useState<RoomItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<RoomItem | null>(null);
+  const [sort, setSort] = useState<RoomSort>("like");
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    const sortCol = ROOM_SORTS.find((s) => s.key === sort)!.col;
     (async () => {
       try {
         const supabase = createAnonClient();
@@ -37,8 +52,7 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
           .select("id, platform, name, operator, pricing, external_url, is_certified, like_count, dislike_count, view_count")
           .eq("hidden", false)
           .in("platform", platforms)
-          .order("is_certified", { ascending: false })
-          .order("like_count", { ascending: false })
+          .order(sortCol, { ascending: false })
           .order("view_count", { ascending: false })
           .limit(10);
         if (!cancelled) {
@@ -51,7 +65,7 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
       }
     })();
     return () => { cancelled = true; };
-  }, [platforms, kind]);
+  }, [platforms, kind, sort]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
@@ -59,6 +73,15 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
       <div className="flex items-start gap-2 border-b border-unjong-border bg-amber-50 px-4 py-2.5">
         <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber-600" />
         <p className="text-[11px] leading-relaxed text-amber-800">{COPY[kind].warn}</p>
+      </div>
+
+      {/* 정렬 칩 */}
+      <div className="flex items-center gap-1 border-b border-unjong-border px-3 py-2">
+        {ROOM_SORTS.map((s) => (
+          <button key={s.key} type="button" onClick={() => setSort(s.key)} className={chip(sort === s.key)}>
+            {s.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
@@ -94,9 +117,9 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
                     ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-3 text-[11px] tabular-nums text-unjong-muted">
-                    <span className="flex items-center gap-0.5"><ThumbsUp size={11} /> {r.like_count}</span>
-                    <span className="flex items-center gap-0.5"><ThumbsDown size={11} /> {r.dislike_count}</span>
-                    <span className="flex items-center gap-0.5"><Eye size={11} /> {r.view_count}</span>
+                    <span className={`flex items-center gap-0.5 ${sort === "like" ? "font-bold text-unjong-primary" : ""}`}><ThumbsUp size={11} /> {r.like_count}</span>
+                    <span className={`flex items-center gap-0.5 ${sort === "dislike" ? "font-bold text-unjong-primary" : ""}`}><ThumbsDown size={11} /> {r.dislike_count}</span>
+                    <span className={`flex items-center gap-0.5 ${sort === "view" ? "font-bold text-unjong-primary" : ""}`}><Eye size={11} /> {r.view_count}</span>
                   </div>
                 </Link>
               </li>
