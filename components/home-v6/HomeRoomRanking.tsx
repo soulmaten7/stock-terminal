@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createAnonClient } from "@/lib/supabase/anon-client";
-import { ThumbsUp, ThumbsDown, Eye, ShieldCheck, AlertTriangle } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Eye, Users, ShieldCheck, AlertTriangle } from "lucide-react";
 import { LoadingState } from "@/components/ui/State";
 import { PlatformLogo } from "./platformLogo";
 import HomeRoomPreview, { type RoomItem } from "./HomeRoomPreview";
@@ -21,12 +21,13 @@ const COPY: Record<Kind, { warn: string; empty: string }> = {
   },
 };
 
-type RoomSort = "like" | "dislike" | "view";
-const ROOM_SORTS: { key: RoomSort; label: string; col: string }[] = [
-  { key: "like", label: "좋아요순", col: "like_count" },
-  { key: "dislike", label: "싫어요순", col: "dislike_count" },
-  { key: "view", label: "조회순", col: "view_count" },
-];
+type RoomSort = "follower" | "like" | "dislike" | "view";
+const SORT_COL: Record<RoomSort, string> = {
+  follower: "follower_count",
+  like: "like_count",
+  dislike: "dislike_count",
+  view: "view_count",
+};
 
 function chip(active: boolean) {
   return `rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
@@ -35,6 +36,11 @@ function chip(active: boolean) {
 }
 
 export default function HomeRoomRanking({ platforms, kind }: { platforms: string[]; kind: Kind }) {
+  const sorts: { key: RoomSort; label: string }[] =
+    kind === "channel"
+      ? [{ key: "follower", label: "팔로워순" }, { key: "like", label: "좋아요순" }, { key: "dislike", label: "싫어요순" }, { key: "view", label: "조회순" }]
+      : [{ key: "like", label: "좋아요순" }, { key: "dislike", label: "싫어요순" }, { key: "view", label: "조회순" }];
+
   const [items, setItems] = useState<RoomItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<RoomItem | null>(null);
@@ -43,16 +49,15 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    const sortCol = ROOM_SORTS.find((s) => s.key === sort)!.col;
     (async () => {
       try {
         const supabase = createAnonClient();
         const { data } = await supabase
           .from("leading_rooms")
-          .select("id, platform, name, operator, pricing, external_url, is_certified, like_count, dislike_count, view_count")
+          .select("id, platform, name, operator, pricing, external_url, is_certified, like_count, dislike_count, view_count, follower_count")
           .eq("hidden", false)
           .in("platform", platforms)
-          .order(sortCol, { ascending: false })
+          .order(SORT_COL[sort], { ascending: false })
           .order("view_count", { ascending: false })
           .limit(10);
         if (!cancelled) {
@@ -76,8 +81,8 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
       </div>
 
       {/* 정렬 칩 */}
-      <div className="flex items-center gap-1 border-b border-unjong-border px-3 py-2">
-        {ROOM_SORTS.map((s) => (
+      <div className="flex flex-wrap items-center gap-1 border-b border-unjong-border px-3 py-2">
+        {sorts.map((s) => (
           <button key={s.key} type="button" onClick={() => setSort(s.key)} className={chip(sort === s.key)}>
             {s.label}
           </button>
@@ -99,11 +104,7 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
           <ul className="min-w-0 flex-1 divide-y divide-unjong-border">
             {items.map((r, i) => (
               <li key={r.id}>
-                <Link
-                  href={`/room/${r.id}`}
-                  onMouseEnter={() => setHovered(r)}
-                  className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-unjong-background"
-                >
+                <Link href={`/room/${r.id}`} onMouseEnter={() => setHovered(r)} className="flex items-center gap-3 rounded-lg px-2 py-3 hover:bg-unjong-background">
                   <span className="w-4 shrink-0 text-center text-sm font-bold tabular-nums text-unjong-muted">{i + 1}</span>
                   <PlatformLogo platform={r.platform} size={28} />
                   <div className="flex min-w-0 flex-1 items-center gap-1.5">
@@ -117,6 +118,9 @@ export default function HomeRoomRanking({ platforms, kind }: { platforms: string
                     ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-3 text-[11px] tabular-nums text-unjong-muted">
+                    {kind === "channel" && (
+                      <span className={`flex items-center gap-0.5 ${sort === "follower" ? "font-bold text-unjong-primary" : ""}`}><Users size={11} /> {r.follower_count.toLocaleString()}</span>
+                    )}
                     <span className={`flex items-center gap-0.5 ${sort === "like" ? "font-bold text-unjong-primary" : ""}`}><ThumbsUp size={11} /> {r.like_count}</span>
                     <span className={`flex items-center gap-0.5 ${sort === "dislike" ? "font-bold text-unjong-primary" : ""}`}><ThumbsDown size={11} /> {r.dislike_count}</span>
                     <span className={`flex items-center gap-0.5 ${sort === "view" ? "font-bold text-unjong-primary" : ""}`}><Eye size={11} /> {r.view_count}</span>

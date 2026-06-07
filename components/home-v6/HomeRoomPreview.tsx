@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useAuthStore } from "@/stores/authStore";
-import { ThumbsUp, ThumbsDown, Eye, ShieldCheck, ExternalLink } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Eye, Users, ShieldCheck, ExternalLink } from "lucide-react";
 import { PlatformLogo, PLATFORM_LABEL } from "./platformLogo";
 
 export type RoomItem = {
@@ -18,6 +18,7 @@ export type RoomItem = {
   like_count: number;
   dislike_count: number;
   view_count: number;
+  follower_count: number;
 };
 
 type Comment = { id: string; nickname: string; content: string };
@@ -155,6 +156,9 @@ export default function HomeRoomPreview({ room }: { room: RoomItem | null }) {
             <ThumbsDown size={14} fill={vote === "dislike" ? "currentColor" : "none"} /> {dislikes}
           </button>
           <span className="flex items-center gap-1 px-1 text-xs text-unjong-muted"><Eye size={13} /> {room.view_count}</span>
+          {room.follower_count > 0 && (
+            <span className="flex items-center gap-1 px-1 text-xs text-unjong-muted"><Users size={13} /> {room.follower_count.toLocaleString()}</span>
+          )}
         </div>
         {loginNotice && <p className="px-4 pt-2 text-[11px] text-amber-700">로그인 후 평가할 수 있어요.</p>}
 
