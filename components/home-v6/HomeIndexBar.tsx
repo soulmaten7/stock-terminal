@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { LoadingState } from "@/components/ui/State";
 
 type IndexItem = {
@@ -29,27 +29,38 @@ function flowText(v: number): string {
   return `${v > 0 ? "+" : ""}${v.toLocaleString()}`;
 }
 
-// 작은 추세선(스파크라인) — 외부 라이브러리 없이 inline SVG
+// 작은 추세선(스파크라인) — inline SVG (선 + 밑면 그라데이션으로 등락 체감)
 function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
+  const rawId = useId();
   if (!points || points.length < 2) return null;
+  const gid = `sg${rawId.replace(/:/g, "")}`;
   const w = 100;
   const h = 24;
   const min = Math.min(...points);
   const max = Math.max(...points);
   const range = max - min || 1;
-  const d = points
+  const color = up ? "#1AC267" : "#F04452";
+  const line = points
     .map((p, i) => {
       const x = (i / (points.length - 1)) * w;
       const y = h - ((p - min) / range) * h;
       return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
     })
     .join(" ");
+  const area = `${line} L${w} ${h} L0 ${h} Z`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} preserveAspectRatio="none" className="w-full h-5 mt-1.5" aria-hidden="true">
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity={0.26} />
+          <stop offset="100%" stopColor={color} stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#${gid})`} stroke="none" />
       <path
-        d={d}
+        d={line}
         fill="none"
-        stroke={up ? "#1AC267" : "#F04452"}
+        stroke={color}
         strokeWidth={1.5}
         strokeLinejoin="round"
         strokeLinecap="round"
