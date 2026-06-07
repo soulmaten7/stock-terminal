@@ -15,7 +15,7 @@ export default function HomeClientV6() {
     <div className="px-6 py-5">
       {/* 얇은 지수 티커 (헤더 밑 고정 — 지수 앵커) */}
       <HomeIndexStrip />
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
         {/* 왼쪽: 상태바 + 인기토론 + (랭킹 | 상세) */}
         <div className="min-w-0">
           {/* 시장 상태바 */}
