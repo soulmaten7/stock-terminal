@@ -14,10 +14,13 @@ type Item = {
   institutionBuy: number;
 };
 
-function Col({ title, items, valueKey }: { title: string; items: Item[]; valueKey: "foreignBuy" | "institutionBuy" }) {
+function Col({ title, sub, items, valueKey }: { title: string; sub: string; items: Item[]; valueKey: "foreignBuy" | "institutionBuy" }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
-      <div className="border-b border-unjong-border bg-unjong-background px-4 py-3 text-sm font-bold text-unjong-primary">{title}</div>
+      <div className="flex items-baseline gap-2 border-b border-unjong-border bg-unjong-background px-4 py-3">
+        <span className="text-sm font-bold text-unjong-primary">{title}</span>
+        <span className="text-xs text-unjong-muted">{sub}</span>
+      </div>
       <ul className="divide-y divide-unjong-border">
         {items.slice(0, 10).map((it, i) => {
           const v = it[valueKey];
@@ -46,6 +49,22 @@ function Col({ title, items, valueKey }: { title: string; items: Item[]; valueKe
   );
 }
 
+function PlaceholderCol({ title, sub }: { title: string; sub: string }) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
+      <div className="flex items-baseline gap-2 border-b border-unjong-border bg-unjong-background px-4 py-3">
+        <span className="text-sm font-bold text-unjong-primary">{title}</span>
+        <span className="text-xs text-unjong-muted">{sub}</span>
+      </div>
+      <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
+        <span className="mb-2 text-2xl">🧑‍💻</span>
+        <p className="text-sm text-unjong-muted">개인 종목별 순매수는 준비 중이에요</p>
+        <p className="mt-1 text-xs leading-relaxed text-unjong-muted">KIS가 개인 종목별 데이터를 제공하지 않아<br />외국인·기관만 우선 지원해요</p>
+      </div>
+    </div>
+  );
+}
+
 export default function InvestorTrend() {
   const [sort, setSort] = useState<"buy" | "sell">("buy");
   const [data, setData] = useState<{ foreignTop: Item[]; institutionTop: Item[] }>({ foreignTop: [], institutionTop: [] });
@@ -69,15 +88,15 @@ export default function InvestorTrend() {
 
   return (
     <div>
-      {/* 순매수/순매도 토글 */}
-      <div className="mb-3 flex items-center gap-1.5">
+      {/* 순매수/순매도 토글 (토스식 라운드스퀘어) */}
+      <div className="mb-3 flex items-center gap-1">
         {(["buy", "sell"] as const).map((s) => (
           <button
             key={s}
             type="button"
             onClick={() => setSort(s)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              sort === s ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
+            className={`rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+              sort === s ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
             }`}
           >
             {s === "buy" ? "순매수" : "순매도"}
@@ -88,9 +107,10 @@ export default function InvestorTrend() {
       {loading ? (
         <LoadingState className="py-10" />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Col title={`외국인 ${label} 상위`} items={data.foreignTop} valueKey="foreignBuy" />
-          <Col title={`기관 ${label} 상위`} items={data.institutionTop} valueKey="institutionBuy" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Col title="외국인" sub={`${label} 상위`} items={data.foreignTop} valueKey="foreignBuy" />
+          <Col title="기관" sub={`${label} 상위`} items={data.institutionTop} valueKey="institutionBuy" />
+          <PlaceholderCol title="개인" sub={`${label} 상위`} />
         </div>
       )}
     </div>
