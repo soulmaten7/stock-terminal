@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import HomeIndexBar from "./HomeIndexBar";
+import HomeIndexStrip from "./HomeIndexStrip";
 import HomeRightRail from "./HomeRightRail";
 import HomeStickyTicker from "./HomeStickyTicker";
 import HomeStockDetail from "./HomeStockDetail";
@@ -14,6 +15,8 @@ export default function HomeClientV6() {
 
   return (
     <div className="px-6 py-5">
+      {/* 얇은 지수 티커 (헤더 밑 고정 — 지수 앵커) */}
+      <HomeIndexStrip />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
         {/* 왼쪽: 상태바 + 지수 그리드 + (랭킹 | 상세) */}
         <div className="min-w-0">
