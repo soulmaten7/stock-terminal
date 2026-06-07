@@ -23,7 +23,7 @@ const TABS: Array<{ id: Tab; label: string; icon: typeof LineChart }> = [
 type Props = { symbol: string; stockName: string };
 
 export default function StockTabs({ symbol, stockName }: Props) {
-  const [active, setActive] = useState<Tab>("discussion");
+  const [active, setActive] = useState<Tab>("chart");
 
   return (
     <div>

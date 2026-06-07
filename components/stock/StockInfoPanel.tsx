@@ -134,12 +134,12 @@ export default function StockInfoPanel({ symbol }: Props) {
         });
 
         const series = chart.addCandlestickSeries({
-          upColor: "#0E7C7B",
-          downColor: "#C73E3A",
-          borderUpColor: "#0E7C7B",
-          borderDownColor: "#C73E3A",
-          wickUpColor: "#0E7C7B",
-          wickDownColor: "#C73E3A",
+          upColor: "#F04452",
+          downColor: "#3182F6",
+          borderUpColor: "#F04452",
+          borderDownColor: "#3182F6",
+          wickUpColor: "#F04452",
+          wickDownColor: "#3182F6",
         });
         series.setData(
           (res.candles ?? [])
@@ -180,6 +180,9 @@ export default function StockInfoPanel({ symbol }: Props) {
 
   const isUp = data.changePct >= 0;
   const isUS = !isKr;
+  const denom = 1 + data.changePct / 100;
+  const changeAbs = Math.abs(denom !== 0 ? data.price - data.price / denom : 0);
+  const changeAbsText = isUS ? `$${changeAbs.toFixed(2)}` : Math.round(changeAbs).toLocaleString();
 
   return (
     <div className="space-y-3">
@@ -192,13 +195,13 @@ export default function StockInfoPanel({ symbol }: Props) {
       <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
         <h2 className="text-base font-bold text-unjong-primary">{data.name}</h2>
         <p className="text-xs text-unjong-muted font-mono">{symbol}</p>
-        <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-xl font-bold text-unjong-primary tabular-nums">
+        <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+          <span className="text-2xl font-bold tabular-nums text-unjong-primary">
             {isUS ? `$${data.price.toFixed(2)}` : data.price.toLocaleString()}
           </span>
-          <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-[#3182F6]" : "text-[#3182F6]"}`}>
-            {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-            {isUp ? "+" : ""}{data.changePct.toFixed(2)}%
+          <span className={`flex items-center gap-1 text-sm font-semibold tabular-nums ${isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
+            {isUp ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+            {changeAbsText} ({isUp ? "+" : ""}{data.changePct.toFixed(2)}%)
           </span>
         </div>
       </div>
