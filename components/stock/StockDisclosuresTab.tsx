@@ -17,9 +17,9 @@ type Disclosure = {
 const CAUTION = new Set(["유상증자", "CB발행", "대주주변동", "합병분할"]);
 
 function badgeClass(type: string): string {
-  if (CAUTION.has(type)) return "bg-[#F04452]/10 text-[#F04452]";       // 주의 = 레드
+  if (CAUTION.has(type)) return "bg-[#3182F6]/10 text-[#3182F6]";       // 주의 = 레드
   if (type === "정기보고" || type === "감사·재무") return "bg-blue-50 text-blue-700";
-  if (type === "IR" || type === "자사주" || type === "무상증자") return "bg-[#1AC267]/10 text-[#1AC267]";
+  if (type === "IR" || type === "자사주" || type === "무상증자") return "bg-[#F04452]/10 text-[#F04452]";
   return "bg-slate-100 text-unjong-muted";
 }
 

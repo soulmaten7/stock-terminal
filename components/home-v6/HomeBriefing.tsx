@@ -52,7 +52,7 @@ export default function HomeBriefing() {
                     <p className={`text-xs font-semibold ${
                       o.hasData === false
                         ? "text-unjong-muted"
-                        : o.up ? "text-[#1AC267]" : "text-[#F04452]"
+                        : o.up ? "text-[#F04452]" : "text-[#3182F6]"
                     }`}>{o.change}</p>
                   </div>
                 ))}

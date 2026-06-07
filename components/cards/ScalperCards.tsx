@@ -168,7 +168,7 @@ export function MoversCard() {
                 </div>
                 <div className="flex flex-col items-end flex-shrink-0">
                   <span className="font-semibold text-unjong-primary">{m.price}</span>
-                  <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                  <span className={`flex items-center gap-0.5 text-xs font-semibold ${isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                     <TrendingUp size={10} />
                     {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                   </span>
@@ -346,13 +346,13 @@ export function NetBuyBrokerCard() {
                 <div className="flex items-center gap-3 text-xs">
                   <span className="flex items-center gap-1">
                     <span className="text-unjong-muted">외인</span>
-                    <span className={foreignUp ? "text-[#1AC267] font-semibold" : "text-[#F04452] font-semibold"}>
+                    <span className={foreignUp ? "text-[#F04452] font-semibold" : "text-[#3182F6] font-semibold"}>
                       {foreignUp ? "+" : ""}{n.foreign}억
                     </span>
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="text-unjong-muted">기관</span>
-                    <span className={instUp ? "text-[#1AC267] font-semibold" : "text-[#F04452] font-semibold"}>
+                    <span className={instUp ? "text-[#F04452] font-semibold" : "text-[#3182F6] font-semibold"}>
                       {instUp ? "+" : ""}{n.institution}억
                     </span>
                   </span>

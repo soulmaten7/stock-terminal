@@ -32,9 +32,9 @@ export default function StockChartSection({ symbol }: Props) {
           timeScale: { borderColor: "#E5E7EB", timeVisible: false },
         });
         const series = chart.addCandlestickSeries({
-          upColor: "#1AC267", downColor: "#F04452",
-          borderUpColor: "#1AC267", borderDownColor: "#F04452",
-          wickUpColor: "#1AC267", wickDownColor: "#F04452",
+          upColor: "#F04452", downColor: "#3182F6",
+          borderUpColor: "#F04452", borderDownColor: "#3182F6",
+          wickUpColor: "#F04452", wickDownColor: "#3182F6",
         });
         series.setData(
           res.candles.map((c: { time: string; open: number; high: number; low: number; close: number }) => ({

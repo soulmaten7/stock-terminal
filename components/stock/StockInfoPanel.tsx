@@ -196,7 +196,7 @@ export default function StockInfoPanel({ symbol }: Props) {
           <span className="text-xl font-bold text-unjong-primary tabular-nums">
             {isUS ? `$${data.price.toFixed(2)}` : data.price.toLocaleString()}
           </span>
-          <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+          <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-[#3182F6]" : "text-[#3182F6]"}`}>
             {isUp ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
             {isUp ? "+" : ""}{data.changePct.toFixed(2)}%
           </span>

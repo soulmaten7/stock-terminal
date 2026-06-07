@@ -140,13 +140,13 @@ export function WatchlistPanel() {
                   <div className="ml-auto flex flex-col items-end gap-0.5 shrink-0">
                     <span className="font-semibold text-unjong-primary tabular-nums">{pricesLoading && !p ? "..." : (p?.price ?? "—")}</span>
                     {p && (
-                      <span className={`flex items-center gap-0.5 text-xs font-medium tabular-nums ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                      <span className={`flex items-center gap-0.5 text-xs font-medium tabular-nums ${isUp ? "text-[#3182F6]" : "text-[#3182F6]"}`}>
                         {isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}{isUp ? "+" : ""}{p.changePct.toFixed(2)}%
                       </span>
                     )}
                   </div>
                 </button>
-                <button type="button" onClick={(e) => { e.stopPropagation(); removeItem(item.code); }} className="shrink-0 text-[#F04452] hover:opacity-70 p-0.5" aria-label={`${item.name} 관심 해제`} title="관심 해제">
+                <button type="button" onClick={(e) => { e.stopPropagation(); removeItem(item.code); }} className="shrink-0 text-[#3182F6] hover:opacity-70 p-0.5" aria-label={`${item.name} 관심 해제`} title="관심 해제">
                   <Heart size={14} fill="currentColor" />
                 </button>
               </li>

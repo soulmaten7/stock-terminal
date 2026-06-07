@@ -59,7 +59,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
       {data.map((c, i) => {
         const x = i * cw + cw / 2;
         const up = c.close >= c.open;
-        const color = up ? "#1AC267" : "#F04452";
+        const color = up ? "#F04452" : "#3182F6";
         const top = py(Math.max(c.open, c.close));
         const bot = py(Math.min(c.open, c.close));
         return (
@@ -81,7 +81,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
             y={volBase - vh}
             width={bw}
             height={Math.max(0.5, vh)}
-            fill={up ? "#1AC267" : "#F04452"}
+            fill={up ? "#F04452" : "#3182F6"}
             opacity={0.55}
           />
         );
@@ -159,7 +159,7 @@ export default function HomeStockDetail({ stock }: { stock: HoverStock | null })
               <StockLogo code={stock.symbol} name={stock.name} size={36} />
               <div className="min-w-0">
                 <p className="truncate font-bold text-unjong-primary">{stock.name}</p>
-                <p className={`text-sm font-semibold tabular-nums ${stock.changePercent >= 0 ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                <p className={`text-sm font-semibold tabular-nums ${stock.changePercent >= 0 ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                   {stock.priceText}
                   <span className="ml-1 text-xs">({stock.changePercent >= 0 ? "+" : ""}{stock.changePercent.toFixed(2)}%)</span>
                 </p>

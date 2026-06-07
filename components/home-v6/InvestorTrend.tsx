@@ -31,7 +31,7 @@ function Col({ title, items, valueKey }: { title: string; items: Item[]; valueKe
                   <p className="truncate text-sm font-medium text-unjong-primary">{it.name}</p>
                   <p className="text-xs tabular-nums text-unjong-muted">
                     {it.price.toLocaleString()}원{" "}
-                    <span className={up ? "text-[#1AC267]" : "text-[#F04452]"}>
+                    <span className={up ? "text-[#F04452]" : "text-[#3182F6]"}>
                       {up ? "+" : ""}{it.changePercent.toFixed(2)}%
                     </span>
                   </p>

@@ -72,7 +72,7 @@ export default function HotRoomReviewsModule() {
                   <p className="text-sm font-semibold text-unjong-primary truncate">{r.name}</p>
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {r.is_certified ? (
-                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-[#1AC267]/10 text-[#1AC267]">
+                      <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-[#F04452]/10 text-[#F04452]">
                         <ShieldCheck size={11} /> 금감원 신고 ✓
                       </span>
                     ) : (

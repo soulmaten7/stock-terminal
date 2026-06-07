@@ -20,11 +20,11 @@ export default function HomeClientV6() {
           {/* 시장 상태바 */}
           <div className="flex flex-wrap items-center gap-4 mb-4 text-xs text-unjong-muted">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1AC267]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F04452]" />
               국내 애프터마켓 <span className="font-medium text-unjong-primary">15:30~20:00</span>
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#1AC267]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#F04452]" />
               해외 프리마켓 <span className="font-medium text-unjong-primary">17:00~22:30</span>
             </span>
           </div>

@@ -64,12 +64,12 @@ export default function HomeSectorTheme() {
                   <span className="text-sm font-bold text-unjong-muted tabular-nums">{i + 1}</span>
                   <span className="text-sm font-semibold text-unjong-primary truncate">{s.name}</span>
                 </div>
-                <p className={`text-sm font-bold tabular-nums ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                <p className={`text-sm font-bold tabular-nums ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                   {up ? "+" : ""}{s.changePct.toFixed(1)}%
                 </p>
                 <div className="mt-1.5 h-1.5 rounded-full bg-unjong-surface overflow-hidden">
                   <div
-                    className={`h-full ${up ? "bg-[#1AC267]" : "bg-[#F04452]"}`}
+                    className={`h-full ${up ? "bg-[#F04452]" : "bg-[#3182F6]"}`}
                     style={{ width: `${Math.min(Math.abs(s.changePct) * 12, 100)}%` }}
                   />
                 </div>

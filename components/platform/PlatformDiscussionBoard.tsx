@@ -313,7 +313,7 @@ function PlatformDiscussionItem({ discussion: d, initialVote }: { discussion: Pl
         <button
           type="button"
           onClick={() => handleVote(1)}
-          className={`flex items-center gap-1 text-xs transition-colors ${vote === 1 ? "text-[#1AC267]" : "text-unjong-muted hover:text-[#1AC267]"}`}
+          className={`flex items-center gap-1 text-xs transition-colors ${vote === 1 ? "text-[#F04452]" : "text-unjong-muted hover:text-[#F04452]"}`}
           title="추천"
         >
           <ThumbsUp size={12} fill={vote === 1 ? "currentColor" : "none"} />
@@ -322,7 +322,7 @@ function PlatformDiscussionItem({ discussion: d, initialVote }: { discussion: Pl
         <button
           type="button"
           onClick={() => handleVote(-1)}
-          className={`flex items-center gap-1 text-xs transition-colors ${vote === -1 ? "text-[#F04452]" : "text-unjong-muted hover:text-[#F04452]"}`}
+          className={`flex items-center gap-1 text-xs transition-colors ${vote === -1 ? "text-[#3182F6]" : "text-unjong-muted hover:text-[#3182F6]"}`}
           title="비추천"
         >
           <ThumbsDown size={12} fill={vote === -1 ? "currentColor" : "none"} />

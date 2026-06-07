@@ -96,7 +96,7 @@ export default function StockInsightsTab({ symbol }: { symbol: string }) {
               </tr></thead>
               <tbody>
                 {investors.map((v, i) => {
-                  const cell = (n: number) => <td className={`text-right font-mono ${n > 0 ? "text-[#F04452]" : n < 0 ? "text-[#1AC267]" : "text-unjong-muted"}`}>{n > 0 ? "+" : ""}{n.toLocaleString()}</td>;
+                  const cell = (n: number) => <td className={`text-right font-mono ${n > 0 ? "text-[#3182F6]" : n < 0 ? "text-[#F04452]" : "text-unjong-muted"}`}>{n > 0 ? "+" : ""}{n.toLocaleString()}</td>;
                   const d = v.date?.length === 8 ? `${v.date.slice(4, 6)}.${v.date.slice(6, 8)}` : v.date;
                   return <tr key={i} className="border-b border-unjong-border/50"><td className="py-1 text-unjong-muted font-mono text-xs">{d}</td>{cell(v.foreignBuy)}{cell(v.institutionBuy)}{cell(v.individualBuy)}</tr>;
                 })}
@@ -114,7 +114,7 @@ export default function StockInsightsTab({ symbol }: { symbol: string }) {
             {sectors.map((s) => (
               <div key={s.name} className="flex items-center justify-between rounded-lg bg-unjong-background px-3 py-2">
                 <span className="text-sm text-unjong-primary truncate">{s.name}</span>
-                <span className={`text-sm font-semibold ${s.status === "up" ? "text-[#F04452]" : "text-[#1AC267]"}`}>{s.changePct > 0 ? "+" : ""}{s.changePct}%</span>
+                <span className={`text-sm font-semibold ${s.status === "up" ? "text-[#3182F6]" : "text-[#F04452]"}`}>{s.changePct > 0 ? "+" : ""}{s.changePct}%</span>
               </div>
             ))}
           </div>

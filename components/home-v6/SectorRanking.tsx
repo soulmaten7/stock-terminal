@@ -45,7 +45,7 @@ export default function SectorRanking() {
                   <td className="px-4 py-3 tabular-nums text-unjong-muted">{i + 1}</td>
                   <td className="px-4 py-3 font-medium text-unjong-primary">{s.name}</td>
                   <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{s.index.toLocaleString()}</td>
-                  <td className={`px-4 py-3 text-right font-semibold tabular-nums ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                  <td className={`px-4 py-3 text-right font-semibold tabular-nums ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                     {up ? "+" : ""}{s.changePercent.toFixed(2)}%
                   </td>
                 </tr>

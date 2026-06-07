@@ -90,7 +90,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
             <div className="flex items-baseline gap-2 border-l border-unjong-border pl-4 flex-shrink-0">
               <span className="text-xl font-bold text-unjong-primary tabular-nums">{selectedSymbol.price ?? "—"}</span>
               {selectedSymbol.changePct !== undefined && (
-                <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+                <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-[#3182F6]" : "text-[#3182F6]"}`}>
                   {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
                   {isUp ? "+" : ""}{selectedSymbol.changePct.toFixed(2)}%
                 </span>
@@ -129,7 +129,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
         <div className="mt-2 flex items-baseline gap-2">
           <span className="text-2xl font-bold text-unjong-primary tabular-nums">{selectedSymbol.price ?? "—"}</span>
           {selectedSymbol.changePct !== undefined && (
-            <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-unjong-success" : "text-unjong-danger"}`}>
+            <span className={`flex items-center gap-0.5 text-sm font-semibold ${isUp ? "text-[#3182F6]" : "text-[#3182F6]"}`}>
               {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
               {isUp ? "+" : ""}{selectedSymbol.changePct.toFixed(2)}%
             </span>

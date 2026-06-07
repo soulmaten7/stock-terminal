@@ -94,7 +94,7 @@ export function GlobalIndicesCard() {
               </span>
               <span
                 className={`flex items-center gap-0.5 text-xs font-semibold ${
-                  idx.isUp ? "text-[#1AC267]" : "text-[#F04452]"
+                  idx.isUp ? "text-[#F04452]" : "text-[#3182F6]"
                 }`}
               >
                 {idx.isUp ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
@@ -165,7 +165,7 @@ export function Magnificent7Card() {
               </div>
               <div className="flex flex-col items-end flex-shrink-0">
                 <span className="font-semibold text-unjong-primary tabular-nums">{m.price}</span>
-                <span className={`text-xs font-semibold ${isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                <span className={`text-xs font-semibold ${isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                   {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                 </span>
               </div>
@@ -236,7 +236,7 @@ export function UsMoversCard() {
               </div>
               <div className="flex flex-col items-end flex-shrink-0">
                 <span className="font-semibold text-unjong-primary tabular-nums">{m.price}</span>
-                <span className={`text-xs font-semibold ${isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                <span className={`text-xs font-semibold ${isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                   {isUp ? "+" : ""}{m.changePct.toFixed(1)}%
                 </span>
               </div>

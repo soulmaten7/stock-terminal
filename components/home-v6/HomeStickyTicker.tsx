@@ -63,7 +63,7 @@ export default function HomeStickyTicker({ observeRef }: { observeRef: RefObject
             <span key={i} className="inline-flex items-center gap-1.5 px-4 text-xs">
               <span className="text-unjong-muted">{it.name}</span>
               <span className="font-semibold text-unjong-primary tabular-nums">{it.value}</span>
-              <span className={`tabular-nums ${it.isUp ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+              <span className={`tabular-nums ${it.isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                 {it.changeText ? `${it.changeText} ` : ""}({it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%)
               </span>
             </span>

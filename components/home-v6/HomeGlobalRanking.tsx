@@ -34,7 +34,7 @@ function RankList({ title, rows, loading, router }: { title: string; rows: Row[]
                   </span>
                   <span className="flex-1 text-sm font-medium text-unjong-primary truncate">{r.name}</span>
                   <span className="text-sm text-unjong-primary tabular-nums flex-shrink-0">{r.price}</span>
-                  <span className={`w-14 text-right text-xs font-semibold tabular-nums flex-shrink-0 ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                  <span className={`w-14 text-right text-xs font-semibold tabular-nums flex-shrink-0 ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                     {up ? "+" : ""}{r.changePct.toFixed(1)}%
                   </span>
                 </button>

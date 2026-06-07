@@ -91,7 +91,7 @@ export default function RoomDetailClient({ id }: { id: string }) {
               {PLATFORM_LABEL[room.platform] ?? "기타"}
             </span>
             {room.is_certified ? (
-              <span className="flex items-center gap-1 rounded-full bg-emerald-50 text-[#1AC267] text-xs font-semibold px-2 py-0.5">
+              <span className="flex items-center gap-1 rounded-full bg-emerald-50 text-[#F04452] text-xs font-semibold px-2 py-0.5">
                 <ShieldCheck size={12} /> 금감원 신고업체 ✓
               </span>
             ) : (

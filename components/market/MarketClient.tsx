@@ -226,7 +226,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                             <Heart
                               size={15}
                               fill={mounted && isWatched(r.symbol) ? "currentColor" : "none"}
-                              className={mounted && isWatched(r.symbol) ? "text-[#F04452]" : "text-unjong-muted hover:text-[#F04452]"}
+                              className={mounted && isWatched(r.symbol) ? "text-[#3182F6]" : "text-unjong-muted hover:text-[#3182F6]"}
                             />
                           </button>
                         </td>
@@ -238,7 +238,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                           </div>
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.priceText}</td>
-                        <td className={`px-4 py-3 text-right tabular-nums font-semibold ${up ? "text-[#1AC267]" : "text-[#F04452]"}`}>
+                        <td className={`px-4 py-3 text-right tabular-nums font-semibold ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                           {up ? "+" : ""}{r.changePercent.toFixed(2)}%
                         </td>
                         <td className="px-4 py-3 text-right tabular-nums text-unjong-muted hidden md:table-cell">

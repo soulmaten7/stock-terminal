@@ -33,18 +33,18 @@ export default function StockOrderbookCard({ symbol }: { symbol: string }) {
         <div className="space-y-0.5 text-sm">
           {book.asks.map((a, i) => (
             <div key={`a${i}`} className="grid grid-cols-[1fr_auto] items-center gap-2">
-              <div className="relative h-6 rounded bg-[#F04452]/5">
-                <div className="absolute right-0 top-0 h-full rounded bg-[#F04452]/15" style={{ width: `${(a.volume / maxVol) * 100}%` }} />
+              <div className="relative h-6 rounded bg-[#3182F6]/5">
+                <div className="absolute right-0 top-0 h-full rounded bg-[#3182F6]/15" style={{ width: `${(a.volume / maxVol) * 100}%` }} />
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-unjong-muted">{a.volume.toLocaleString()}</span>
               </div>
-              <span className="w-20 text-right font-mono text-[#F04452]">{a.price.toLocaleString()}</span>
+              <span className="w-20 text-right font-mono text-[#3182F6]">{a.price.toLocaleString()}</span>
             </div>
           ))}
           {book.bids.map((b, i) => (
             <div key={`b${i}`} className="grid grid-cols-[auto_1fr] items-center gap-2">
-              <span className="w-20 text-left font-mono text-[#1AC267]">{b.price.toLocaleString()}</span>
-              <div className="relative h-6 rounded bg-[#1AC267]/5">
-                <div className="absolute left-0 top-0 h-full rounded bg-[#1AC267]/15" style={{ width: `${(b.volume / maxVol) * 100}%` }} />
+              <span className="w-20 text-left font-mono text-[#F04452]">{b.price.toLocaleString()}</span>
+              <div className="relative h-6 rounded bg-[#F04452]/5">
+                <div className="absolute left-0 top-0 h-full rounded bg-[#F04452]/15" style={{ width: `${(b.volume / maxVol) * 100}%` }} />
                 <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-unjong-muted">{b.volume.toLocaleString()}</span>
               </div>
             </div>

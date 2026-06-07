@@ -39,7 +39,7 @@ export default function StockExecutionCard({ symbol }: { symbol: string }) {
               return (
                 <tr key={i} className="border-b border-unjong-border/50">
                   <td className="py-1 text-unjong-muted font-mono text-xs">{fmtTime(e.time)}</td>
-                  <td className={`text-right font-mono ${up ? "text-[#F04452]" : "text-[#1AC267]"}`}>{e.price.toLocaleString()}</td>
+                  <td className={`text-right font-mono ${up ? "text-[#3182F6]" : "text-[#F04452]"}`}>{e.price.toLocaleString()}</td>
                   <td className="text-right text-unjong-muted">{e.volume.toLocaleString()}</td>
                 </tr>
               );

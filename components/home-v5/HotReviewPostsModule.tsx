@@ -20,8 +20,8 @@ type ReviewPost = {
 };
 
 const OUTCOME = {
-  positive: { label: "수익", cls: "bg-[#1AC267]/10 text-[#1AC267]" },
-  negative: { label: "손실", cls: "bg-[#F04452]/10 text-[#F04452]" },
+  positive: { label: "수익", cls: "bg-[#F04452]/10 text-[#F04452]" },
+  negative: { label: "손실", cls: "bg-[#3182F6]/10 text-[#3182F6]" },
   neutral:  { label: "중립", cls: "bg-slate-100 text-unjong-muted" },
 } as const;
 

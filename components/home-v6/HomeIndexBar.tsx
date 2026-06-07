@@ -23,7 +23,7 @@ function moodTag(pct: number): string | null {
 }
 
 function flowColor(v: number): string {
-  return v > 0 ? "text-[#1AC267]" : v < 0 ? "text-[#F04452]" : "text-unjong-muted";
+  return v > 0 ? "text-[#F04452]" : v < 0 ? "text-[#3182F6]" : "text-unjong-muted";
 }
 function flowText(v: number): string {
   return `${v > 0 ? "+" : ""}${v.toLocaleString()}`;
@@ -39,7 +39,7 @@ function Sparkline({ points, up }: { points?: number[]; up: boolean }) {
   const min = Math.min(...points);
   const max = Math.max(...points);
   const range = max - min || 1;
-  const color = up ? "#1AC267" : "#F04452";
+  const color = up ? "#F04452" : "#3182F6";
   const line = points
     .map((p, i) => {
       const x = (i / (points.length - 1)) * w;
@@ -125,7 +125,7 @@ export default function HomeIndexBar() {
                   {tag && (
                     <span
                       className={`shrink-0 text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                        idx.isUp ? "bg-[#1AC267]/10 text-[#1AC267]" : "bg-[#F04452]/10 text-[#F04452]"
+                        idx.isUp ? "bg-[#F04452]/10 text-[#F04452]" : "bg-[#3182F6]/10 text-[#3182F6]"
                       }`}
                     >
                       {tag}
@@ -135,7 +135,7 @@ export default function HomeIndexBar() {
                 <p className="text-[15px] font-bold text-unjong-primary tabular-nums mt-0.5">{idx.value}</p>
                 <p
                   className={`text-xs font-semibold tabular-nums ${
-                    idx.isUp ? "text-[#1AC267]" : "text-[#F04452]"
+                    idx.isUp ? "text-[#F04452]" : "text-[#3182F6]"
                   }`}
                 >
                   {idx.changeText ? `${idx.changeText} ` : ""}({idx.isUp ? "+" : ""}{idx.changePct.toFixed(2)}%)
