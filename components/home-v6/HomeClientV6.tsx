@@ -18,18 +18,6 @@ export default function HomeClientV6() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
         {/* 왼쪽: 상태바 + 인기토론 + (랭킹 | 상세) */}
         <div className="min-w-0">
-          {/* 시장 상태바 */}
-          <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-unjong-muted">
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F04452]" />
-              국내 애프터마켓 <span className="font-medium text-unjong-primary">15:30~20:00</span>
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#F04452]" />
-              해외 프리마켓 <span className="font-medium text-unjong-primary">17:00~22:30</span>
-            </span>
-          </div>
-
           {/* 인기 토론 (주요지수 박스 자리 — 지수는 상단 스트립으로 이동) */}
           <HomePopularDiscussions />
 
