@@ -86,12 +86,16 @@ function CandleChart({ candles }: { candles: Candle[] }) {
           />
         );
       })}
-      {/* 월 축 라벨 */}
-      {labels.map((l, i) => (
-        <text key={`l${i}`} x={l.x} y={h - 3} fontSize={8} fill="#94a3b8" textAnchor="middle">
-          {l.text}
-        </text>
-      ))}
+      {/* 월 축 라벨 (양 끝 잘림 방지: 왼쪽=start, 오른쪽=end) */}
+      {labels.map((l, i) => {
+        const anchor = l.x < 16 ? "start" : l.x > w - 16 ? "end" : "middle";
+        const lx = l.x < 1 ? 1 : l.x > w - 1 ? w - 1 : l.x;
+        return (
+          <text key={`l${i}`} x={lx} y={h - 3} fontSize={8} fill="#94a3b8" textAnchor={anchor}>
+            {l.text}
+          </text>
+        );
+      })}
     </svg>
   );
 }
