@@ -11,9 +11,9 @@ const TABS = [
   { key: "chart", label: "실시간 차트" },
   { key: "category", label: "지금 뜨는 카테고리" },
   { key: "investor", label: "국내 투자자 동향" },
-  { key: "etf", label: "투자상품" },
-  { key: "room", label: "리딩방" },
-  { key: "channel", label: "주식 관련 채널" },
+  { key: "etf", label: "투자상품 랭킹" },
+  { key: "room", label: "리딩방 랭킹" },
+  { key: "channel", label: "주식 관련 채널 랭킹" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 

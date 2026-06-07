@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import HomeStockDetail from "./HomeStockDetail";
+import { type HoverStock } from "@/components/market/MarketClient";
 
 type Row = {
   symbol: string;
@@ -21,11 +23,11 @@ const ETF_RE = /^(KODEX|TIGER|KBSTAR|RISE|ARIRANG|PLUS|ACE|KINDEX|SOL|HANARO|KOS
 
 type SortKey = "pop" | "r1m" | "r3m" | "r6m" | "r1y";
 const SORTS: { key: SortKey; label: string }[] = [
-  { key: "pop", label: "인기순" },
-  { key: "r1m", label: "1개월" },
-  { key: "r3m", label: "3개월" },
-  { key: "r6m", label: "6개월" },
-  { key: "r1y", label: "1년" },
+  { key: "pop", label: "거래대금순" },
+  { key: "r1m", label: "1개월 수익률" },
+  { key: "r3m", label: "3개월 수익률" },
+  { key: "r6m", label: "6개월 수익률" },
+  { key: "r1y", label: "1년 수익률" },
 ];
 
 function chip(active: boolean) {
@@ -47,6 +49,9 @@ function pctColor(v?: number | null): string {
   if (v == null) return "text-unjong-muted";
   return v >= 0 ? "text-[#F04452]" : "text-[#3182F6]";
 }
+function toHover(r: Row): HoverStock {
+  return { symbol: r.symbol, name: r.name, priceText: r.price.toLocaleString(), changePercent: r.changePercent, volume: 0, tradeAmount: r.tradeAmount };
+}
 
 export default function HomeEtfRanking() {
   const router = useRouter();
@@ -55,6 +60,7 @@ export default function HomeEtfRanking() {
   const [popRows, setPopRows] = useState<Row[]>([]);
   const [perfRows, setPerfRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hovered, setHovered] = useState<HoverStock | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -96,17 +102,20 @@ export default function HomeEtfRanking() {
     return () => { cancelled = true; };
   }, []);
 
+  // 정렬·자산 바뀌면 미리보기 리셋(→ 새 1위)
+  useEffect(() => { setHovered(null); }, [sort, asset]);
+
   const isPop = sort === "pop";
   let rows: Row[] = [];
   if (asset === "etf") {
-    if (isPop) {
-      rows = popRows;
-    } else {
+    if (isPop) rows = popRows;
+    else {
       const k = sort as "r1m" | "r3m" | "r6m" | "r1y";
       rows = [...perfRows].filter((r) => r[k] != null).sort((a, b) => (b[k] as number) - (a[k] as number)).slice(0, 15);
     }
   }
   const metricLabel = isPop ? "거래대금" : SORTS.find((s) => s.key === sort)!.label;
+  const previewStock = hovered ?? (rows[0] ? toHover(rows[0]) : null);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
@@ -124,7 +133,7 @@ export default function HomeEtfRanking() {
             </button>
           ))}
         <span className="ml-auto text-[11px] text-unjong-muted">
-          {asset === "etf" ? (isPop ? "거래대금 순 · KRX" : "수익률 · 최근 시세 기준") : ""}
+          {asset === "etf" ? (isPop ? "거래대금 순 · KRX (실시간 아님)" : "기간 수익률 · 최근 시세 기준") : ""}
         </span>
       </div>
 
@@ -139,45 +148,51 @@ export default function HomeEtfRanking() {
       ) : rows.length === 0 ? (
         <EmptyState title="ETF 데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
       ) : (
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-              <th className="w-12 px-4 py-2.5 text-left font-medium">순위</th>
-              <th className="px-4 py-2.5 text-left font-medium">종목명</th>
-              <th className="px-4 py-2.5 text-right font-medium">현재가</th>
-              <th className="px-4 py-2.5 text-right font-medium">등락(1일)</th>
-              <th className="px-4 py-2.5 text-right font-medium">{metricLabel}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => {
-              const up = r.changePercent >= 0;
-              const metric = isPop ? null : (r[sort as "r1m" | "r3m" | "r6m" | "r1y"] ?? null);
-              return (
-                <tr
-                  key={r.symbol}
-                  onClick={() => router.push(`/stock/${r.symbol}`)}
-                  className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
-                >
-                  <td className="px-4 py-3 tabular-nums text-unjong-muted">{i + 1}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2.5">
-                      <StockLogo code={r.symbol} name={r.name} size={28} />
-                      <span className="font-medium text-unjong-primary">{r.name}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.price.toLocaleString()}</td>
-                  <td className={`px-4 py-3 text-right font-semibold tabular-nums ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
-                    {up ? "+" : ""}{r.changePercent.toFixed(2)}%
-                  </td>
-                  <td className={`px-4 py-3 text-right font-semibold tabular-nums ${isPop ? "text-unjong-muted" : pctColor(metric)}`}>
-                    {isPop ? fmtAmount(r.tradeAmount) : pct(metric)}
-                  </td>
+        <div className="flex items-start gap-4 p-2">
+          <div className="min-w-0 flex-1 overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                  <th className="w-12 px-4 py-2.5 text-left font-medium">순위</th>
+                  <th className="px-4 py-2.5 text-left font-medium">종목명</th>
+                  <th className="px-4 py-2.5 text-right font-medium">현재가</th>
+                  <th className="px-4 py-2.5 text-right font-medium">등락(1일)</th>
+                  <th className="px-4 py-2.5 text-right font-medium">{metricLabel}</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => {
+                  const up = r.changePercent >= 0;
+                  const metric = isPop ? null : (r[sort as "r1m" | "r3m" | "r6m" | "r1y"] ?? null);
+                  return (
+                    <tr
+                      key={r.symbol}
+                      onClick={() => router.push(`/stock/${r.symbol}`)}
+                      onMouseEnter={() => setHovered(toHover(r))}
+                      className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
+                    >
+                      <td className="px-4 py-3 tabular-nums text-unjong-muted">{i + 1}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2.5">
+                          <StockLogo code={r.symbol} name={r.name} size={28} />
+                          <span className="font-medium text-unjong-primary">{r.name}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.price.toLocaleString()}</td>
+                      <td className={`px-4 py-3 text-right font-semibold tabular-nums ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
+                        {up ? "+" : ""}{r.changePercent.toFixed(2)}%
+                      </td>
+                      <td className={`px-4 py-3 text-right font-semibold tabular-nums ${isPop ? "text-unjong-muted" : pctColor(metric)}`}>
+                        {isPop ? fmtAmount(r.tradeAmount) : pct(metric)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <HomeStockDetail stock={previewStock} />
+        </div>
       )}
     </section>
   );
