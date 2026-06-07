@@ -25,9 +25,9 @@ function CandleChart({ candles }: { candles: Candle[] }) {
   }
   const data = candles.slice(-60);
   const w = 280;
-  const priceH = 96;
-  const gap = 6;
-  const volH = 22;
+  const priceH = 84;
+  const gap = 2;
+  const volH = 38;
   const labelH = 14;
   const h = priceH + gap + volH + labelH;
   const pad = 4;
@@ -82,7 +82,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
             width={bw}
             height={Math.max(0.5, vh)}
             fill={up ? "#1AC267" : "#F04452"}
-            opacity={0.45}
+            opacity={0.55}
           />
         );
       })}
