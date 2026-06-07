@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Bell, Star, Briefcase, Clock } from "lucide-react";
 import { WatchlistPanel } from "@/components/sidebar/WatchlistPanel";
+import HomeLiveChat from "./HomeLiveChat";
 
 export default function HomeRightRail() {
   const nav = [
@@ -12,15 +13,18 @@ export default function HomeRightRail() {
     { icon: Clock, label: "최근", href: "/" },
   ];
   return (
-    <aside className="hidden lg:flex gap-3 sticky top-5 self-start h-[calc(100vh-6rem)]">
-      {/* 관심종목 (왼쪽, 남은 폭 가득) — 추후 채팅 탭도 이 영역 */}
-      <div className="flex-1 min-w-0">
-        <WatchlistPanel />
+    <aside className="sticky top-5 hidden h-[calc(100vh-6rem)] gap-3 self-start lg:flex">
+      {/* 위=실시간채팅(~반화면) / 아래=관심종목 */}
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <HomeLiveChat />
+        <div className="min-h-0 flex-1 overflow-hidden">
+          <WatchlistPanel />
+        </div>
       </div>
 
       {/* 오른쪽 끝 세로 아이콘 탭 (토스식) */}
       <nav
-        className="flex flex-col items-center gap-5 shrink-0 w-12 bg-unjong-surface rounded-2xl border border-unjong-border shadow-soft py-4"
+        className="flex w-12 shrink-0 flex-col items-center gap-5 rounded-2xl border border-unjong-border bg-unjong-surface py-4 shadow-soft"
         aria-label="우측 바로가기"
       >
         {nav.map((n) => {
@@ -30,7 +34,7 @@ export default function HomeRightRail() {
               key={n.label}
               href={n.href}
               title={n.label}
-              className="flex flex-col items-center gap-1 text-unjong-muted hover:text-unjong-primary transition-colors"
+              className="flex flex-col items-center gap-1 text-unjong-muted transition-colors hover:text-unjong-primary"
             >
               <Icon size={18} />
               <span className="text-[9px]">{n.label}</span>
