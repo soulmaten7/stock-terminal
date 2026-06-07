@@ -59,6 +59,11 @@ export default function RoomDetailClient({ id }: { id: string }) {
     return () => { cancelled = true; };
   }, [id]);
 
+  // 조회수 +1 (페이지 진입 시 1회, RPC — RLS 우회)
+  useEffect(() => {
+    createAnonClient().rpc("increment_room_view", { p_room_id: id });
+  }, [id]);
+
   useEffect(() => {
     if (!room || !user) { setVote(null); return; }
     let cancelled = false;
