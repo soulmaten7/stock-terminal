@@ -22,13 +22,12 @@ type FilterDef = { key: FilterKey; label: string };
 const KR_FILTERS: FilterDef[] = [
   { key: "amount", label: "거래대금" },
   { key: "volume", label: "거래량" },
-  { key: "cap", label: "시가총액" },
-  { key: "up", label: "상승" },
-  { key: "down", label: "하락" },
+  { key: "up", label: "급상승" },
+  { key: "down", label: "급하락" },
 ];
 const US_FILTERS: FilterDef[] = [
-  { key: "up", label: "상승" },
-  { key: "down", label: "하락" },
+  { key: "up", label: "급상승" },
+  { key: "down", label: "급하락" },
 ];
 
 const MARKETS = [
@@ -119,6 +118,12 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
 
   const filters = country === "us" ? US_FILTERS : KR_FILTERS;
 
+  // 토스식 칩: 라운드스퀘어, 선택=진한 채움/흰 글씨, 비선택=글자만
+  const chip = (active: boolean) =>
+    `rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+      active ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
+    }`;
+
   return (
     <div className={embedded ? "" : "px-4 py-6"}>
       {!embedded && (
@@ -128,47 +133,31 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
         </header>
       )}
 
-      {/* 필터 (토스식 한 줄: 국가 · 시장 · 정렬, 구분선) */}
-      <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-2">
+      {/* 필터 (토스식 라운드스퀘어 칩: 국가 ｜ 시장 ｜ 정렬) */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-1 gap-y-2">
         {COUNTRIES.map((c) => (
           <button
             key={c.key}
             type="button"
             onClick={() => { setCountry(c.key); setFilter(c.key === "us" ? "up" : "amount"); setMarket("all"); }}
-            className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-              country === c.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-            }`}
+            className={chip(country === c.key)}
           >
             {c.label}
           </button>
         ))}
 
-        {country === "kr" && <span className="mx-1 h-4 w-px bg-unjong-border" />}
+        {country === "kr" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
         {country === "kr" &&
           MARKETS.map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => setMarket(m.key)}
-              className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                market === m.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-              }`}
-            >
+            <button key={m.key} type="button" onClick={() => setMarket(m.key)} className={chip(market === m.key)}>
               {m.label}
             </button>
           ))}
 
-        {country !== "global" && <span className="mx-1 h-4 w-px bg-unjong-border" />}
+        {country !== "global" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
         {country !== "global" &&
           filters.map((f) => (
-            <button
-              key={f.key}
-              type="button"
-              onClick={() => setFilter(f.key)}
-              className={`rounded-full px-2.5 py-1 text-xs font-medium transition-colors ${
-                filter === f.key ? "bg-unjong-primary text-white" : "bg-unjong-background text-unjong-muted hover:bg-slate-200"
-              }`}
-            >
+            <button key={f.key} type="button" onClick={() => setFilter(f.key)} className={chip(filter === f.key)}>
               {f.label}
             </button>
           ))}
