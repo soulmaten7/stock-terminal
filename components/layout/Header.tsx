@@ -80,8 +80,8 @@ export default function Header() {
           })}
         </nav>
 
-        {/* ── 검색 (남은 폭) ── */}
-        <div className="flex-1 min-w-0 max-w-2xl">
+        {/* ── 검색 (남은 폭 전부 채움 → 우측 아이콘 오른쪽 정렬) ── */}
+        <div className="flex-1 min-w-0">
           <HeaderSearch />
         </div>
 
