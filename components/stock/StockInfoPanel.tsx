@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { LoadingState } from "@/components/ui/State";
+import { StockLogo } from "@/components/ui/StockLogo";
 import { formatKRW, formatPct } from "@/lib/format";
 
 type Props = { symbol: string };
@@ -187,15 +188,20 @@ export default function StockInfoPanel({ symbol }: Props) {
   return (
     <div className="space-y-3">
       {/* 뒤로 */}
-      <Link href="/kr" className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
-        <ArrowLeft size={12} /> 한국주식
+      <Link href={isKr ? "/kr" : "/market"} className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
+        <ArrowLeft size={12} /> {isKr ? "한국주식" : "마켓"}
       </Link>
 
       {/* 종목 헤더 */}
       <div className="bg-unjong-surface rounded-lg border border-unjong-border p-4">
-        <h2 className="text-base font-bold text-unjong-primary">{data.name}</h2>
-        <p className="text-xs text-unjong-muted font-mono">{symbol}</p>
-        <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+        <div className="flex items-center gap-2.5">
+          <StockLogo code={symbol} name={data.name} size={36} />
+          <div className="min-w-0">
+            <h2 className="truncate text-base font-bold text-unjong-primary">{data.name}</h2>
+            <p className="font-mono text-xs text-unjong-muted">{symbol}</p>
+          </div>
+        </div>
+        <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
           <span className="text-2xl font-bold tabular-nums text-unjong-primary">
             {isUS ? `$${data.price.toFixed(2)}` : data.price.toLocaleString()}
           </span>
