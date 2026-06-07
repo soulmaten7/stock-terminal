@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
+import { leverageInfo } from "@/lib/avatar";
 import { Heart } from "lucide-react";
 import { useWatchlist } from "@/stores/watchlistStore";
 
@@ -37,6 +38,17 @@ const MARKETS = [
 ] as const;
 type MarketKey = (typeof MARKETS)[number]["key"];
 
+const PERIODS = [
+  { key: "live", label: "실시간" },
+  { key: "1d", label: "1일" },
+  { key: "1w", label: "1주일" },
+  { key: "1m", label: "1개월" },
+  { key: "3m", label: "3개월" },
+  { key: "6m", label: "6개월" },
+  { key: "1y", label: "1년" },
+] as const;
+type PeriodKey = (typeof PERIODS)[number]["key"];
+
 function fmtAmount(won?: number): string {
   if (!won || won <= 0) return "—";
   if (won >= 1e12) return `${(won / 1e12).toFixed(1)}조`;
@@ -59,6 +71,8 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   const [market, setMarket] = useState<MarketKey>("all");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState<PeriodKey>("live");
+  const [hideRisk, setHideRisk] = useState(false);
 
   useEffect(() => {
     if (country === "global") return;
@@ -117,6 +131,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   }, [country, filter, market]);
 
   const filters = country === "us" ? US_FILTERS : KR_FILTERS;
+  const shownRows = hideRisk ? rows.filter((r) => !leverageInfo(r.name)) : rows;
 
   // 토스식 칩: 라운드스퀘어, 선택=진한 채움/흰 글씨, 비선택=글자만
   const chip = (active: boolean) =>
@@ -161,6 +176,36 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
               {f.label}
             </button>
           ))}
+
+        {/* 기간 + 투자위험 토글 (오른쪽). 실시간만 동작, 나머지 준비 중 */}
+        {country !== "global" && (
+          <div className="ml-auto flex flex-wrap items-center gap-x-1 gap-y-1">
+            {PERIODS.map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                disabled={p.key !== "live"}
+                onClick={() => p.key === "live" && setPeriod(p.key)}
+                title={p.key === "live" ? undefined : "기간별 데이터 준비 중"}
+                className={`${chip(period === p.key)} ${p.key !== "live" ? "cursor-not-allowed opacity-40" : ""}`}
+              >
+                {p.label}
+              </button>
+            ))}
+            <span className="mx-1 h-5 w-px bg-unjong-border" />
+            <button
+              type="button"
+              onClick={() => setHideRisk((v) => !v)}
+              title="레버리지·인버스 ETF 숨기기"
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium transition-colors ${
+                hideRisk ? "text-unjong-primary" : "text-unjong-muted hover:bg-unjong-background"
+              }`}
+            >
+              <span className={`flex h-4 w-4 items-center justify-center rounded text-[10px] leading-none ${hideRisk ? "bg-[#3182F6] text-white" : "border border-unjong-border text-transparent"}`}>✓</span>
+              투자위험 숨기기
+            </button>
+          </div>
+        )}
       </div>
 
       {country === "global" ? (
@@ -176,7 +221,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
           <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "flex-1 min-w-0" : ""}`}>
             {loading ? (
               <LoadingState className="py-10" />
-            ) : rows.length === 0 ? (
+            ) : shownRows.length === 0 ? (
               <EmptyState title="데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
             ) : (
               <table className="w-full text-sm">
@@ -192,7 +237,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r) => {
+                  {shownRows.map((r) => {
                     const up = r.changePercent >= 0;
                     return (
                       <tr
