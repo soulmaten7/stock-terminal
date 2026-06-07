@@ -13,8 +13,8 @@ export default function HomeRightRail() {
     { icon: Clock, label: "최근", href: "/" },
   ];
   return (
-    <aside className="sticky top-5 hidden h-[calc(100vh-6rem)] gap-3 self-start lg:flex">
-      {/* 위=실시간채팅(~반화면) / 아래=관심종목 */}
+    <aside className="hidden gap-3 lg:flex">
+      {/* 위=실시간채팅(고정 아님) / 아래=관심종목(페이지 길이만큼 길게) */}
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <HomeLiveChat />
         <div className="min-h-0 flex-1 overflow-hidden">
@@ -22,9 +22,9 @@ export default function HomeRightRail() {
         </div>
       </div>
 
-      {/* 오른쪽 끝 세로 아이콘 탭 (토스식) */}
+      {/* 오른쪽 끝 세로 아이콘 탭 (상단 정렬) */}
       <nav
-        className="flex w-12 shrink-0 flex-col items-center gap-5 rounded-2xl border border-unjong-border bg-unjong-surface py-4 shadow-soft"
+        className="flex w-12 shrink-0 flex-col items-center gap-5 self-start rounded-2xl border border-unjong-border bg-unjong-surface py-4 shadow-soft"
         aria-label="우측 바로가기"
       >
         {nav.map((n) => {

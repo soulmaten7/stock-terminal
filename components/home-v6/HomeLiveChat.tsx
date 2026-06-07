@@ -109,20 +109,20 @@ export default function HomeLiveChat() {
           ))
         )}
       </div>
-      <div className="shrink-0 border-t border-unjong-border bg-unjong-background p-2">
-        <div className="flex items-center gap-1.5 rounded-md border border-unjong-border bg-unjong-surface px-2 py-1.5">
+      <div className="shrink-0 border-t border-unjong-border p-3">
+        <div className="flex items-center gap-2 rounded-xl border border-unjong-border bg-unjong-background px-3 py-2 transition-colors focus-within:border-unjong-accent">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="실시간채팅..."
+            placeholder="실시간채팅 메시지 입력..."
             maxLength={500}
             className="flex-1 bg-transparent text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
             disabled={sending}
           />
-          <button type="button" onClick={sendMessage} disabled={sending || !input.trim()} className="text-unjong-muted hover:text-unjong-accent disabled:opacity-50">
-            <Send size={14} />
+          <button type="button" onClick={sendMessage} disabled={sending || !input.trim()} className="shrink-0 text-unjong-muted hover:text-unjong-accent disabled:opacity-50">
+            <Send size={16} />
           </button>
         </div>
       </div>
