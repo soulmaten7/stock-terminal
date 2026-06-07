@@ -6,7 +6,7 @@ import { StockLogo } from "@/components/ui/StockLogo";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import type { HoverStock } from "@/components/market/MarketClient";
 
-type Candle = { open: number; high: number; low: number; close: number };
+type Candle = { time: string; open: number; high: number; low: number; close: number; volume: number };
 type Post = { id: string; nickname: string; tier: string | null; content: string; created_at: string };
 
 function timeAgo(iso: string): string {
@@ -23,31 +23,75 @@ function CandleChart({ candles }: { candles: Candle[] }) {
   if (candles.length < 2) {
     return <div className="flex h-32 items-center justify-center text-xs text-unjong-muted">차트 데이터 없음</div>;
   }
-  const data = candles.slice(-50);
+  const data = candles.slice(-60);
   const w = 280;
-  const h = 128;
+  const priceH = 96;
+  const gap = 6;
+  const volH = 22;
+  const labelH = 14;
+  const h = priceH + gap + volH + labelH;
   const pad = 4;
   const max = Math.max(...data.map((c) => c.high));
   const min = Math.min(...data.map((c) => c.low));
   const range = max - min || 1;
+  const maxVol = Math.max(...data.map((c) => c.volume), 1);
   const cw = w / data.length;
-  const y = (v: number) => pad + (h - 2 * pad) * (1 - (v - min) / range);
+  const py = (v: number) => pad + (priceH - 2 * pad) * (1 - (v - min) / range);
+  const volBase = priceH + gap + volH;
+  const bw = Math.max(1.2, cw * 0.6);
+
+  const labels: { x: number; text: string }[] = [];
+  let prevMonth = "";
+  data.forEach((c, i) => {
+    const ym = c.time.slice(0, 7);
+    if (ym !== prevMonth) {
+      prevMonth = ym;
+      const x = i * cw + cw / 2;
+      if (labels.length === 0 || x - labels[labels.length - 1].x > 34) {
+        labels.push({ x, text: `${c.time.slice(2, 4)}.${parseInt(c.time.slice(5, 7), 10)}` });
+      }
+    }
+  });
+
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="h-32 w-full">
+    <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" aria-hidden="true">
+      {/* 캔들 */}
       {data.map((c, i) => {
         const x = i * cw + cw / 2;
         const up = c.close >= c.open;
         const color = up ? "#1AC267" : "#F04452";
-        const top = y(Math.max(c.open, c.close));
-        const bot = y(Math.min(c.open, c.close));
-        const bw = Math.max(1.2, cw * 0.6);
+        const top = py(Math.max(c.open, c.close));
+        const bot = py(Math.min(c.open, c.close));
         return (
           <g key={i}>
-            <line x1={x} x2={x} y1={y(c.high)} y2={y(c.low)} stroke={color} strokeWidth={0.8} />
+            <line x1={x} x2={x} y1={py(c.high)} y2={py(c.low)} stroke={color} strokeWidth={0.8} />
             <rect x={x - bw / 2} y={top} width={bw} height={Math.max(1, bot - top)} fill={color} />
           </g>
         );
       })}
+      {/* 거래량 막대 */}
+      {data.map((c, i) => {
+        const x = i * cw + cw / 2;
+        const up = c.close >= c.open;
+        const vh = (c.volume / maxVol) * volH;
+        return (
+          <rect
+            key={`v${i}`}
+            x={x - bw / 2}
+            y={volBase - vh}
+            width={bw}
+            height={Math.max(0.5, vh)}
+            fill={up ? "#1AC267" : "#F04452"}
+            opacity={0.45}
+          />
+        );
+      })}
+      {/* 월 축 라벨 */}
+      {labels.map((l, i) => (
+        <text key={`l${i}`} x={l.x} y={h - 3} fontSize={8} fill="#94a3b8" textAnchor="middle">
+          {l.text}
+        </text>
+      ))}
     </svg>
   );
 }
