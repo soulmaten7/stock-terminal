@@ -13,6 +13,7 @@ const TABS = [
   { key: "investor", label: "국내 투자자 동향" },
   { key: "etf", label: "투자상품" },
   { key: "room", label: "리딩방" },
+  { key: "channel", label: "주식 관련 채널" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
@@ -42,7 +43,10 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
       {tab === "category" && <SectorRanking />}
       {tab === "investor" && <InvestorTrend />}
       {tab === "etf" && <HomeEtfRanking />}
-      {tab === "room" && <HomeRoomRanking />}
+      {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
+      {tab === "channel" && (
+        <HomeRoomRanking platforms={["youtube", "discord", "instagram", "facebook", "naver_band", "naver_cafe", "other"]} kind="channel" />
+      )}
     </div>
   );
 }

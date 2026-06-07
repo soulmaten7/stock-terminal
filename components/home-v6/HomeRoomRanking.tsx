@@ -8,13 +8,27 @@ import { LoadingState } from "@/components/ui/State";
 import { PlatformLogo } from "./platformLogo";
 import HomeRoomPreview, { type RoomItem } from "./HomeRoomPreview";
 
-export default function HomeRoomRanking() {
+type Kind = "room" | "channel";
+
+const COPY: Record<Kind, { warn: string; empty: string }> = {
+  room: {
+    warn: "운종은 리딩방을 평가하지 않아요. 금감원 신고 여부(사실)와 사용자 평가만 보여줘요. 허위·작전·과장이 많으니 가입·결제 전 충분히 확인하세요.",
+    empty: "아직 등록된 리딩방이 없어요",
+  },
+  channel: {
+    warn: "주식 관련 유튜브·SNS·디스코드 채널이에요. 운종은 채널을 평가하지 않고 사용자 평가만 보여줘요. 투자 판단·결과는 본인 책임이에요.",
+    empty: "아직 등록된 채널이 없어요",
+  },
+};
+
+export default function HomeRoomRanking({ platforms, kind }: { platforms: string[]; kind: Kind }) {
   const [items, setItems] = useState<RoomItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<RoomItem | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
     (async () => {
       try {
         const supabase = createAnonClient();
@@ -22,6 +36,7 @@ export default function HomeRoomRanking() {
           .from("leading_rooms")
           .select("id, platform, name, operator, pricing, external_url, is_certified, like_count, dislike_count, view_count")
           .eq("hidden", false)
+          .in("platform", platforms)
           .order("is_certified", { ascending: false })
           .order("like_count", { ascending: false })
           .order("view_count", { ascending: false })
@@ -36,26 +51,24 @@ export default function HomeRoomRanking() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [platforms, kind]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
-      {/* 운종 정체성 경고 */}
+      {/* 정체성 경고 */}
       <div className="flex items-start gap-2 border-b border-unjong-border bg-amber-50 px-4 py-2.5">
         <AlertTriangle size={14} className="mt-0.5 shrink-0 text-amber-600" />
-        <p className="text-[11px] leading-relaxed text-amber-800">
-          운종은 리딩방을 <b>평가하지 않아요</b>. 금감원 신고 여부(사실)와 사용자 평가만 보여줘요. 허위·작전·과장이 많으니 가입·결제 전 충분히 확인하세요.
-        </p>
+        <p className="text-[11px] leading-relaxed text-amber-800">{COPY[kind].warn}</p>
       </div>
 
       {loading ? (
         <LoadingState className="py-10" />
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
-          <span className="mb-2 text-2xl">📡</span>
-          <p className="text-sm font-medium text-unjong-primary">아직 등록된 리딩방이 없어요</p>
+          <span className="mb-2 text-2xl">{kind === "room" ? "📡" : "📺"}</span>
+          <p className="text-sm font-medium text-unjong-primary">{COPY[kind].empty}</p>
           <Link href="/discussion" className="mt-3 inline-block rounded-lg bg-unjong-primary px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
-            리딩방 디렉토리 보기 →
+            디렉토리 보기 →
           </Link>
         </div>
       ) : (
@@ -76,9 +89,9 @@ export default function HomeRoomRanking() {
                       <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700">
                         <ShieldCheck size={10} /> 금감원 신고 ✓
                       </span>
-                    ) : (
+                    ) : kind === "room" ? (
                       <span className="shrink-0 rounded-full bg-unjong-background px-1.5 py-0.5 text-[10px] text-unjong-muted">신고 미확인</span>
-                    )}
+                    ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-3 text-[11px] tabular-nums text-unjong-muted">
                     <span className="flex items-center gap-0.5"><ThumbsUp size={11} /> {r.like_count}</span>

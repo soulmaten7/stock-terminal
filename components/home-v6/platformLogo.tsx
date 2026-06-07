@@ -6,9 +6,11 @@ export const PLATFORM_LABEL: Record<string, string> = {
   telegram: "텔레그램",
   kakao: "카카오",
   discord: "디스코드",
+  youtube: "유튜브",
+  instagram: "인스타그램",
+  facebook: "페이스북",
   naver_band: "네이버밴드",
   naver_cafe: "네이버카페",
-  youtube: "유튜브",
   other: "기타",
 };
 
@@ -16,18 +18,22 @@ const PLATFORM_DOMAIN: Record<string, string> = {
   telegram: "telegram.org",
   kakao: "kakaocorp.com",
   discord: "discord.com",
+  youtube: "youtube.com",
+  instagram: "instagram.com",
+  facebook: "facebook.com",
   naver_band: "band.us",
   naver_cafe: "naver.com",
-  youtube: "youtube.com",
 };
 
 const PLATFORM_EMOJI: Record<string, string> = {
   telegram: "✈️",
   kakao: "💬",
   discord: "🎮",
+  youtube: "▶️",
+  instagram: "📷",
+  facebook: "👥",
   naver_band: "🟢",
   naver_cafe: "☕",
-  youtube: "▶️",
   other: "📡",
 };
 
