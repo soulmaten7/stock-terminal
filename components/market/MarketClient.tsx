@@ -214,7 +214,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
         <>
 
           {country === "kr" && (
-            <p className="text-xs text-unjong-muted mb-2">국내 시세 KRX 기준 · 최대 약 20분 지연 (실시간 아님)</p>
+            <p className="text-xs text-unjong-muted mb-2">국내 시세 KRX 공식 · 일별(장 마감) 기준 (실시간 아님)</p>
           )}
           {/* 랭킹 테이블 (embedded: 우측 미리보기 — 필터 밑, 테이블과 같은 높이) */}
           <div className={embedded ? "flex items-start gap-4" : ""}>

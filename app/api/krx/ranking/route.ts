@@ -3,11 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// 국내 전종목 시세(거래대금·거래량·시총·등락) — KRX 정보데이터시스템 비공식 JSON (MDCSTAT01501)
-// 약 20분 지연. 실패/빈값이면 빈 배열 반환 → 호출측(MarketClient)이 KIS 30개로 fallback.
+// 국내 전종목 일별매매정보 — KRX 공식 OpenAPI (data-dbg.krx.co.kr). 일별(장 마감 기준).
+// 인증키: .env.local 의 KRX_API_KEY (절대 커밋 금지). 키 없음/실패/빈값 → 빈 배열 → MarketClient 가 KIS 30 fallback.
 
-const KRX_URL = "http://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd";
-const BLD = "dbms/MDC/STAT/standard/MDCSTAT01501";
+const BASE = "http://data-dbg.krx.co.kr/svc/apis/sto";
+const EP = {
+  kospi: `${BASE}/stk_bydd_trd`,
+  kosdaq: `${BASE}/ksq_bydd_trd`,
+};
 
 type KrxRow = Record<string, string>;
 
@@ -16,34 +19,23 @@ function num(s: string | undefined): number {
   const n = Number(String(s).replace(/,/g, ""));
   return Number.isFinite(n) ? n : 0;
 }
-
 function ymd(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}${m}${day}`;
 }
+// ISIN(KR7…12자리)이면 6자리 단축코드로, 아니면 그대로
+function toShort(code: string): string {
+  const c = code.trim();
+  return c.length === 12 ? c.slice(3, 9) : c;
+}
 
-async function fetchKrxForDate(trdDd: string): Promise<KrxRow[]> {
+async function fetchOne(url: string, basDd: string, key: string): Promise<KrxRow[]> {
   try {
-    const body = new URLSearchParams({
-      bld: BLD,
-      mktId: "ALL",
-      trdDd,
-      share: "1",
-      money: "1",
-      csvxls_isNo: "false",
-    });
-    const res = await fetch(KRX_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "User-Agent":
-          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36",
-        Referer:
-          "http://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd?menuId=MDC0201020101",
-      },
-      body: body.toString(),
+    const res = await fetch(`${url}?basDd=${basDd}`, {
+      method: "GET",
+      headers: { AUTH_KEY: key, Accept: "application/json" },
       cache: "no-store",
     });
     if (!res.ok) return [];
@@ -62,35 +54,33 @@ export async function GET(request: NextRequest) {
     200
   );
 
+  const key = (process.env.KRX_API_KEY || "").trim();
+  if (!key) return NextResponse.json({ stocks: [], source: "krx", error: "no_key" });
+
   try {
-    // 최신 영업일 찾기: 오늘부터 최대 8일 거슬러, 데이터 있는 첫 날 사용 (주말·휴장·미집계 대응)
+    const urls =
+      market === "kospi" ? [EP.kospi] : market === "kosdaq" ? [EP.kosdaq] : [EP.kospi, EP.kosdaq];
+
+    // 최신 영업일: 오늘부터 최대 8일 거슬러 데이터 있는 첫 날 (주말·휴장·미집계 대응)
     let rows: KrxRow[] = [];
     let usedDate = "";
     const now = new Date();
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 8 && rows.length === 0; i++) {
       const d = new Date(now);
       d.setDate(now.getDate() - i);
-      const trdDd = ymd(d);
-      rows = await fetchKrxForDate(trdDd);
-      if (rows.length > 0) {
-        usedDate = trdDd;
-        break;
+      const basDd = ymd(d);
+      const parts = await Promise.all(urls.map((u) => fetchOne(u, basDd, key)));
+      const merged = parts.flat();
+      if (merged.length > 0) {
+        rows = merged;
+        usedDate = basDd;
       }
     }
-    if (rows.length === 0) {
-      return NextResponse.json({ stocks: [], source: "krx", error: "empty" });
-    }
+    if (rows.length === 0) return NextResponse.json({ stocks: [], source: "krx", error: "empty" });
 
-    // 시장 필터 (KONEX 제외)
-    const mktOf = (r: KrxRow) => String(r.MKT_NM || "");
-    let filtered = rows.filter((r) => mktOf(r) === "KOSPI" || mktOf(r) === "KOSDAQ");
-    if (market === "kospi") filtered = filtered.filter((r) => mktOf(r) === "KOSPI");
-    else if (market === "kosdaq") filtered = filtered.filter((r) => mktOf(r) === "KOSDAQ");
-
-    // 매핑 (KIS 라우트와 동일한 키로 → MarketClient 매퍼 그대로 재사용)
-    const mapped = filtered.map((r) => ({
-      symbol: String(r.ISU_SRT_CD || ""),
-      name: String(r.ISU_ABBRV || ""),
+    const mapped = rows.map((r) => ({
+      symbol: toShort(String(r.ISU_CD || "")),
+      name: String(r.ISU_NM || "").trim(),
       price: num(r.TDD_CLSPRC),
       changePercent: num(r.FLUC_RT),
       volume: num(r.ACC_TRDVOL),
@@ -98,7 +88,6 @@ export async function GET(request: NextRequest) {
       marketCap: num(r.MKTCAP),
     }));
 
-    // 정렬
     type M = (typeof mapped)[number];
     const sorters: Record<string, (a: M, b: M) => number> = {
       amount: (a, b) => b.tradeAmount - a.tradeAmount,
@@ -107,10 +96,13 @@ export async function GET(request: NextRequest) {
       up: (a, b) => b.changePercent - a.changePercent,
       down: (a, b) => a.changePercent - b.changePercent,
     };
-    const sorted = mapped.sort(sorters[sort] || sorters.amount).slice(0, limit);
-    const stocks = sorted.map((s, i) => ({ rank: i + 1, ...s }));
+    const stocks = mapped
+      .filter((s) => s.symbol && s.price > 0)
+      .sort(sorters[sort] || sorters.amount)
+      .slice(0, limit)
+      .map((s, i) => ({ rank: i + 1, ...s }));
 
-    return NextResponse.json({ stocks, source: "krx", trdDd: usedDate });
+    return NextResponse.json({ stocks, source: "krx", basDd: usedDate });
   } catch (e) {
     return NextResponse.json({
       stocks: [],
