@@ -66,6 +66,75 @@ const DOMAIN_MAP: Record<string, string> = {
   "047810": "koreaaero.com",        // 한국항공우주(KAI)
   "010140": "samsungshi.com",       // 삼성중공업
   "011200": "hmm21.com",            // HMM
+  // ── 엔터·게임 ──
+  "352820": "hybecorp.com",         // 하이브
+  "041510": "smentertainment.com",  // 에스엠
+  "035900": "jype.com",             // JYP Ent.
+  "122870": "ygfamily.com",         // 와이지엔터테인먼트
+  "036570": "ncsoft.com",           // 엔씨소프트
+  "251270": "netmarble.com",        // 넷마블
+  "263750": "pearlabyss.com",       // 펄어비스
+  "293490": "kakaogames.com",       // 카카오게임즈
+  "112040": "wemade.com",           // 위메이드
+  "078340": "com2us.com",           // 컴투스
+  // ── 2차전지·소재·화학·정유 ──
+  "247540": "ecoprobm.co.kr",       // 에코프로비엠
+  "086520": "ecopro.co.kr",         // 에코프로
+  "003670": "poscofuturem.com",     // 포스코퓨처엠
+  "011170": "lottechem.com",        // 롯데케미칼
+  "011780": "kkpc.com",             // 금호석유
+  "010950": "s-oil.com",            // S-Oil
+  "096770": "skinnovation.com",     // SK이노베이션
+  "009830": "hanwhasolutions.com",  // 한화솔루션
+  // ── 반도체·디스플레이·전자부품 ──
+  "011070": "lginnotek.com",        // LG이노텍
+  "034220": "lgdisplay.com",        // LG디스플레이
+  "000990": "dbhitek.com",          // DB하이텍
+  "357780": "soulbrain.co.kr",      // 솔브레인
+  // ── 바이오·제약 ──
+  "196170": "alteogen.com",         // 알테오젠
+  "145020": "hugel.com",            // 휴젤
+  "000100": "yuhan.co.kr",          // 유한양행
+  "302440": "skbioscience.com",     // SK바이오사이언스
+  "326030": "skbp.com",             // SK바이오팜
+  // ── 자동차·부품 ──
+  "018880": "hanonsystems.com",     // 한온시스템
+  "161390": "hankooktire.com",      // 한국타이어앤테크놀로지
+  "064350": "hyundai-rotem.co.kr",  // 현대로템
+  // ── 조선·중공업·방산·기계 ──
+  "012450": "hanwhaaerospace.com",  // 한화에어로스페이스
+  "042660": "hanwhaocean.com",      // 한화오션
+  "034020": "doosanenerbility.com", // 두산에너빌리티
+  "241560": "doosanbobcat.com",     // 두산밥캣
+  // ── 철강·건설 ──
+  "004020": "hyundai-steel.com",    // 현대제철
+  "000720": "hdec.co.kr",           // 현대건설
+  "006360": "gsenc.com",            // GS건설
+  "047040": "daewooenc.com",        // 대우건설
+  "375500": "dlenc.co.kr",          // DL이앤씨
+  // ── 통신·유틸·필수소비 ──
+  "032640": "lguplus.com",          // LG유플러스
+  "036460": "kogas.or.kr",          // 한국가스공사
+  "033780": "ktng.com",             // KT&G
+  // ── 유통·소비재·항공 ──
+  "139480": "emart.com",            // 이마트
+  "004170": "shinsegae.com",        // 신세계
+  "023530": "lotteshopping.com",    // 롯데쇼핑
+  "282330": "bgfretail.com",        // BGF리테일
+  "161890": "kolmar.co.kr",         // 한국콜마
+  "001040": "cj.net",               // CJ
+  "003490": "koreanair.com",        // 대한항공
+  // ── 금융(증권·보험·카드·지주) ──
+  "005940": "nhqv.com",             // NH투자증권
+  "016360": "samsungpop.com",       // 삼성증권
+  "039490": "kiwoom.com",           // 키움증권
+  "071050": "truefriend.com",       // 한국금융지주
+  "029780": "samsungcard.com",      // 삼성카드
+  "001450": "hi.co.kr",             // 현대해상
+  "138930": "bnkfg.com",            // BNK금융지주
+  "175330": "jbfg.com",             // JB금융지주
+  "000880": "hanwha.co.kr",         // 한화
+  "004990": "lotte.co.kr",          // 롯데지주
 };
 
 /** 실로고 URL (logo.dev). 미국=티커 자동, 국내=도메인 매핑. 없으면 null(→아바타). */
@@ -94,5 +163,31 @@ export function leverageInfo(name: string): { label: string; inverse: boolean } 
   else if (/레버리지|LEVERAGE|BULL/.test(n)) mult = "2x";
   if (mult) return { label: mult, inverse };
   if (inverse) return { label: "인", inverse: true };
+  return null;
+}
+
+// 일반 ETF 브랜드 → 배지 {약자, 색}. (레버리지/인버스는 leverageInfo 가 먼저 처리)
+// 이름 앞부분이 브랜드면 매칭. 개별주는 한글명이라 오탐 없음.
+const ETF_BRANDS: { re: RegExp; short: string; color: string; label: string }[] = [
+  { re: /^KODEX/i,     short: "KO", color: "#1428A0", label: "KODEX (삼성자산운용)" },
+  { re: /^TIGER/i,     short: "TI", color: "#E8540E", label: "TIGER (미래에셋자산운용)" },
+  { re: /^RISE/i,      short: "RI", color: "#5B3FD6", label: "RISE (KB자산운용)" },
+  { re: /^KBSTAR/i,    short: "KB", color: "#F5A623", label: "KBSTAR (KB자산운용)" },
+  { re: /^ACE/i,       short: "AC", color: "#D81F2A", label: "ACE (한국투자신탁운용)" },
+  { re: /^SOL/i,       short: "SO", color: "#00A9A5", label: "SOL (신한자산운용)" },
+  { re: /^PLUS/i,      short: "PL", color: "#F36F21", label: "PLUS (한화자산운용)" },
+  { re: /^ARIRANG/i,   short: "AR", color: "#F36F21", label: "ARIRANG (한화자산운용)" },
+  { re: /^HANARO/i,    short: "HN", color: "#00A65A", label: "HANARO (NH아문디자산운용)" },
+  { re: /^KOSEF/i,     short: "KS", color: "#7C3AED", label: "KOSEF (키움투자자산운용)" },
+  { re: /^KIWOOM/i,    short: "KW", color: "#B91C1C", label: "KIWOOM (키움투자자산운용)" },
+  { re: /^TIMEFOLIO/i, short: "TF", color: "#374151", label: "TIMEFOLIO" },
+];
+
+/** 일반 ETF면 브랜드 배지 정보, 아니면 null */
+export function etfBrand(name: string): { short: string; color: string; label: string } | null {
+  const n = (name || "").trim();
+  for (const b of ETF_BRANDS) {
+    if (b.re.test(n)) return { short: b.short, color: b.color, label: b.label };
+  }
   return null;
 }
