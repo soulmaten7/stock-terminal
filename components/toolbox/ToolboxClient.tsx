@@ -68,7 +68,7 @@ export default function ToolboxClient({
     <div className="px-4 py-8">
       {/* 헤더 */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-black">참고 사이트</h1>
+        <h1 className="text-2xl font-bold text-black">주식 관련 링크모음</h1>
         <p className="text-sm text-[#666666] mt-1">
           외부 서비스 큐레이션 · {categories.length} 카테고리 · {totalLinks}개 링크
           {shownLinks !== totalLinks && (

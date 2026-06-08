@@ -1,0 +1,75 @@
+import { createClient } from "@/lib/supabase/server";
+import ToolboxClient from "@/components/toolbox/ToolboxClient";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const metadata = { title: "주식 관련 링크모음 — 운종" };
+
+const CATEGORY_LABELS: Record<string, string> = {
+  news: "뉴스",
+  chart: "차트·분석",
+  disclosure: "공시·규제",
+  research: "리서치·리포트",
+  macro: "거시경제",
+  community: "커뮤니티",
+  exchange: "거래소·증권사",
+};
+const CATEGORY_ORDER = ["news", "chart", "disclosure", "research", "macro", "community", "exchange"];
+
+type LinkRow = {
+  id: number;
+  country: string | null;
+  category: string;
+  site_name: string;
+  site_url: string;
+  description: string | null;
+  logo_url: string | null;
+  display_order: number | null;
+};
+
+export default async function ToolboxPage() {
+  const supabase = await createClient();
+
+  const { data: links } = await supabase
+    .from("link_hub")
+    .select("id, country, category, site_name, site_url, description, logo_url, display_order")
+    .eq("is_active", true)
+    .order("display_order", { ascending: true });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let favSet = new Set<number>();
+  if (user) {
+    const { data: favs } = await supabase
+      .from("link_hub_favorites")
+      .select("link_id")
+      .eq("user_id", user.id);
+    favSet = new Set((favs ?? []).map((f: { link_id: number }) => f.link_id));
+  }
+
+  const rows = (links ?? []) as LinkRow[];
+  const grouped: Record<string, (LinkRow & { isFavorite: boolean })[]> = {};
+  for (const link of rows) {
+    (grouped[link.category] ??= []).push({ ...link, isFavorite: favSet.has(link.id) });
+  }
+
+  const categories = Object.keys(grouped)
+    .sort((a, b) => {
+      const ia = CATEGORY_ORDER.indexOf(a);
+      const ib = CATEGORY_ORDER.indexOf(b);
+      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+    })
+    .map((slug) => ({ slug, label: CATEGORY_LABELS[slug] ?? slug, links: grouped[slug]! }));
+
+  const availableCountries = [...new Set(rows.map((l) => l.country).filter(Boolean))] as string[];
+
+  return (
+    <ToolboxClient
+      initialCategories={categories}
+      availableCountries={availableCountries}
+      isLoggedIn={!!user}
+    />
+  );
+}

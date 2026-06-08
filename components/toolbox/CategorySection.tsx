@@ -2,21 +2,6 @@
 
 import { useState } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
-import PartnerSlot from '@/components/partners/PartnerSlot';
-
-function PartnerSlotPlaceholder({ slotId, slug }: { slotId: string; slug: string }) {
-  if (slug === 'exchange') {
-    return <PartnerSlot slotKey={slotId} variant="compact" className="mb-3" />;
-  }
-  return (
-    <div
-      data-slot={slotId}
-      className="border border-dashed border-[#E5E7EB] rounded-xl px-4 py-3 text-xs text-[#BBBBBB] text-center mb-3"
-    >
-      Partner Slot — W4 구현 예정
-    </div>
-  );
-}
 
 export default function CategorySection({
   slug,
@@ -36,7 +21,7 @@ export default function CategorySection({
   const [open, setOpen] = useState(defaultOpen);
 
   return (
-    <section>
+    <section data-category={slug}>
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between py-3 border-b border-[#E5E7EB] group"
@@ -56,7 +41,6 @@ export default function CategorySection({
 
       {open && (
         <div className="pt-3 pb-4">
-          <PartnerSlotPlaceholder slotId={`toolbox-category-${slug}`} slug={slug} />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {links.map((link) => (
               <LinkCard
