@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Star, Briefcase, Clock } from "lucide-react";
+import { Bell, Star, Clock } from "lucide-react";
 import { WatchlistPanel } from "@/components/sidebar/WatchlistPanel";
 import HomeLiveChat from "./HomeLiveChat";
 
@@ -9,7 +9,6 @@ export default function HomeRightRail() {
   const nav = [
     { icon: Bell, label: "알림", href: "/mypage" },
     { icon: Star, label: "관심", href: "/" },
-    { icon: Briefcase, label: "보유", href: "/mypage" },
     { icon: Clock, label: "최근", href: "/" },
   ];
   return (
