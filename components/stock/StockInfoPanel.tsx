@@ -188,8 +188,8 @@ export default function StockInfoPanel({ symbol }: Props) {
   return (
     <div className="space-y-3">
       {/* 뒤로 */}
-      <Link href={isKr ? "/kr" : "/market"} className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
-        <ArrowLeft size={12} /> {isKr ? "한국주식" : "마켓"}
+      <Link href="/market" className="inline-flex items-center gap-1 text-xs text-unjong-muted hover:text-unjong-primary">
+        <ArrowLeft size={12} /> 마켓
       </Link>
 
       {/* 종목 헤더 */}
