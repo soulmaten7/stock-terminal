@@ -42,7 +42,6 @@ export default function ToolboxClient({
       (l.description ?? '').toLowerCase().includes(q) ||
       l.site_url.toLowerCase().includes(q);
     if (q) {
-      // 검색 모드: 전 카테고리에서 매칭 (탭 무시)
       return categories.flatMap((c) => c.links).filter((l) => inCountry(l) && inQuery(l));
     }
     const cat = categories.find((c) => c.slug === active);
@@ -50,18 +49,8 @@ export default function ToolboxClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categories, active, q, country]);
 
-  const totalLinks = categories.reduce((s, c) => s + c.links.length, 0);
-
   return (
-    <div className="px-6 py-6">
-      {/* 헤더 */}
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-unjong-primary">주식 관련 링크모음</h1>
-        <p className="mt-1 text-sm text-unjong-muted">
-          외부 서비스 큐레이션 · {categories.length} 카테고리 · {totalLinks}개 링크 · 운종은 동선만 안내(허브)
-        </p>
-      </div>
-
+    <div>
       {/* 검색 + 국가 필터 */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <input
@@ -90,9 +79,9 @@ export default function ToolboxClient({
         )}
       </div>
 
-      {/* 카테고리 탭 (검색 중엔 숨김) */}
+      {/* 카테고리 탭 (박스형 — 홈 필터칩 스타일, 검색 중엔 숨김) */}
       {!q && (
-        <div className="mb-3 flex flex-wrap items-center gap-1 border-b border-unjong-border">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           {categories.map((c) => {
             const on = active === c.slug;
             return (
@@ -102,12 +91,12 @@ export default function ToolboxClient({
                 onClick={() => setActive(c.slug)}
                 className={
                   on
-                    ? '-mb-px border-b-2 border-unjong-primary px-3 py-2 text-sm font-bold text-unjong-primary'
-                    : '-mb-px border-b-2 border-transparent px-3 py-2 text-sm font-medium text-unjong-muted hover:text-unjong-primary'
+                    ? 'rounded-lg bg-unjong-primary px-3 py-2 text-sm font-bold text-white'
+                    : 'rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm font-medium text-unjong-muted hover:text-unjong-primary'
                 }
               >
                 {c.label}
-                <span className={`ml-1 text-xs ${on ? 'text-unjong-accent' : 'text-unjong-muted'}`}>{catCount(c)}</span>
+                <span className={`ml-1 text-xs ${on ? 'text-white/70' : 'text-unjong-muted'}`}>{catCount(c)}</span>
               </button>
             );
           })}
