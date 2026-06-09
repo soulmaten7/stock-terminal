@@ -5,10 +5,10 @@ import { BROKERS } from '@/lib/brokers';
 
 export default function BrokerRanking() {
   return (
-    <section className="mb-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5">
-      <div className="mb-3">
-        <h2 className="text-lg font-bold text-unjong-primary">증권사 거래대금 순위</h2>
-        <p className="mt-0.5 text-xs text-unjong-muted">최근 분기 기준 · 근사치(분기 변동)</p>
+    <section className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+      <div className="mb-3 border-b border-unjong-border pb-2">
+        <h2 className="text-lg font-bold text-unjong-primary">증권사 리스트</h2>
+        <p className="mt-0.5 text-xs text-unjong-muted">거래대금 순 · 최근 분기 근사치</p>
       </div>
       <ol className="grid grid-cols-1 gap-0.5">
         {BROKERS.map((b) => (

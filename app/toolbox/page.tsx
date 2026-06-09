@@ -67,23 +67,12 @@ export default async function ToolboxPage() {
     })
     .map((slug) => ({ slug, label: CATEGORY_LABELS[slug] ?? slug, links: grouped[slug]! }));
 
-  const availableCountries = [...new Set(rows.map((l) => l.country).filter(Boolean))] as string[];
-
   return (
     <div className="px-6 py-6">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {/* 좌: 링크 디렉토리 (2칸) */}
-        <div className="min-w-0 lg:col-span-2">
-          <ToolboxClient
-            initialCategories={categories}
-            availableCountries={availableCountries}
-            isLoggedIn={!!user}
-          />
-        </div>
-        {/* 우: 증권사 거래대금 순위 레일 */}
-        <div className="min-w-0">
-          <BrokerRanking />
-        </div>
+      {/* 3등분: 한국 | 미국 | 증권사 리스트 (ToolboxClient가 한국·미국 2칸, BrokerRanking이 3번째) */}
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
+        <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
+        <BrokerRanking />
       </div>
     </div>
   );
