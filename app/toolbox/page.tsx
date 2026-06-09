@@ -71,9 +71,9 @@ export default async function ToolboxPage() {
 
   return (
     <div className="px-6 py-6">
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[2fr_1fr]">
-        {/* 좌: 링크 디렉토리 */}
-        <div className="min-w-0">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        {/* 좌: 링크 디렉토리 (2칸) */}
+        <div className="min-w-0 lg:col-span-2">
           <ToolboxClient
             initialCategories={categories}
             availableCountries={availableCountries}
