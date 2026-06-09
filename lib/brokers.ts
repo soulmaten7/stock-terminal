@@ -23,4 +23,12 @@ export const BROKERS: Broker[] = [
   { rank: 10, name: "토스증권", domain: "tossinvest.com", url: "https://www.tossinvest.com", note: "신규 계좌 급증" },
   { rank: 11, name: "대신증권", domain: "daishin.com", url: "https://www.daishin.com" },
   { rank: 12, name: "한화투자증권", domain: "hanwhawm.com", url: "https://www.hanwhawm.com" },
+  { rank: 13, name: "카카오페이증권", domain: "kakaopaysec.com", url: "https://www.kakaopaysec.com", note: "간편 MTS" },
+  { rank: 14, name: "유안타증권", domain: "myasset.com", url: "https://www.myasset.com" },
+  { rank: 15, name: "현대차증권", domain: "hmsec.com", url: "https://www.hmsec.com" },
+  { rank: 16, name: "교보증권", domain: "iprovest.com", url: "https://www.iprovest.com" },
+  { rank: 17, name: "SK증권", domain: "sks.co.kr", url: "https://www.sks.co.kr" },
+  { rank: 18, name: "유진투자증권", domain: "eugenefn.com", url: "https://www.eugenefn.com" },
+  { rank: 19, name: "IBK투자증권", domain: "ibks.com", url: "https://www.ibks.com" },
+  { rank: 20, name: "DB증권", domain: "dbsec.co.kr", url: "https://www.dbsec.co.kr" },
 ];
