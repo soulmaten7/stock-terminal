@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Star, ExternalLink } from 'lucide-react';
 
 export type LinkItem = {
   id: number;
@@ -60,41 +61,42 @@ export default function LinkCard({
   return (
     <div
       onClick={handleClick}
-      className="bg-white border border-[#E5E7EB] rounded-xl p-4 cursor-pointer hover:border-[#0ABAB5] hover:shadow-md transition-all group flex flex-col gap-2"
+      className="group flex cursor-pointer items-center gap-3 border-b border-unjong-border px-2 py-3 transition-colors last:border-b-0 hover:bg-unjong-background"
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
-            alt=""
-            width={20}
-            height={20}
-            className="rounded flex-shrink-0"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-          />
-          <div className="min-w-0">
-            <p className="font-bold text-black text-sm truncate group-hover:text-[#0ABAB5] transition-colors">
-              {link.site_name}
-            </p>
-            <p className="text-xs text-[#999999] truncate">{domain}</p>
-          </div>
-        </div>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+        alt=""
+        width={22}
+        height={22}
+        className="shrink-0 rounded"
+        onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }}
+      />
+      {/* 이름 + 도메인 */}
+      <div className="flex w-44 shrink-0 flex-col sm:w-52">
+        <span className="truncate text-sm font-bold text-unjong-primary group-hover:text-unjong-accent">
+          {link.site_name}
+        </span>
+        <span className="truncate text-xs text-unjong-muted">{domain}</span>
+      </div>
+      {/* 한 줄 설명 */}
+      <p className="hidden min-w-0 flex-1 truncate text-sm text-unjong-muted sm:block">
+        {link.description || ''}
+      </p>
+      {/* 즐겨찾기 + 외부링크 */}
+      <div className="ml-auto flex shrink-0 items-center gap-2 sm:ml-0">
         {isLoggedIn && (
           <button
+            type="button"
             onClick={handleFav}
             aria-label={fav ? '즐겨찾기 해제' : '즐겨찾기 추가'}
-            className={`flex-shrink-0 text-lg transition-colors ${fav ? 'text-[#0ABAB5]' : 'text-[#E5E7EB] hover:text-[#0ABAB5]'}`}
+            className={`transition-colors ${fav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
           >
-            ★
+            <Star size={16} fill={fav ? 'currentColor' : 'none'} />
           </button>
         )}
+        <ExternalLink size={14} className="text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
-      {link.description && (
-        <p className="text-xs text-[#666666] line-clamp-2 leading-relaxed">
-          {link.description}
-        </p>
-      )}
     </div>
   );
 }
