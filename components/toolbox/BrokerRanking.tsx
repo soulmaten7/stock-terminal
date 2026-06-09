@@ -33,8 +33,15 @@ export default function BrokerRanking() {
               {b.share != null && (
                 <span className="shrink-0 text-xs font-bold text-unjong-accent">{b.share}%</span>
               )}
-              {b.note && <span className="truncate text-xs text-unjong-muted">· {b.note}</span>}
-              <ExternalLink size={13} className="ml-auto shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+              {b.note ? (
+                <span className="min-w-0 flex-1 truncate text-xs text-unjong-muted">· {b.note}</span>
+              ) : (
+                <span className="flex-1" />
+              )}
+              <span className="flex shrink-0 items-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs font-medium text-unjong-muted transition-colors group-hover:border-unjong-accent group-hover:bg-unjong-background group-hover:text-unjong-accent">
+                바로가기
+                <ExternalLink size={11} />
+              </span>
             </a>
           </li>
         ))}
