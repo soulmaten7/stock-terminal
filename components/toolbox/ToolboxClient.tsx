@@ -51,57 +51,59 @@ export default function ToolboxClient({
 
   return (
     <div>
-      {/* 검색 + 국가 필터 */}
-      <div className="mb-4 flex flex-wrap items-center gap-2">
+      {/* 국가 필터 — 왼쪽 정렬 */}
+      {availableCountries.length > 1 && (
+        <div className="mb-3 inline-flex items-center gap-0.5 rounded-lg border border-unjong-border p-0.5">
+          <button
+            type="button"
+            onClick={() => setCountry('all')}
+            className={`rounded px-3 py-1.5 text-sm font-bold transition-colors ${country === 'all' ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:text-unjong-primary'}`}
+          >전체</button>
+          {availableCountries.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => setCountry(c)}
+              className={`rounded px-3 py-1.5 text-sm font-bold transition-colors ${country === c ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:text-unjong-primary'}`}
+            >{countryLabel[c] ?? c}</button>
+          ))}
+        </div>
+      )}
+
+      {/* 탭(왼쪽 박스형) + 검색(오른쪽 컴팩트) */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        {!q ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {categories.map((c) => {
+              const on = active === c.slug;
+              return (
+                <button
+                  key={c.slug}
+                  type="button"
+                  onClick={() => setActive(c.slug)}
+                  className={
+                    on
+                      ? 'rounded-lg bg-unjong-primary px-3 py-2 text-sm font-bold text-white'
+                      : 'rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm font-medium text-unjong-muted hover:text-unjong-primary'
+                  }
+                >
+                  {c.label}
+                  <span className={`ml-1 text-xs ${on ? 'text-white/70' : 'text-unjong-muted'}`}>{catCount(c)}</span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <span className="py-2 text-sm font-medium text-unjong-muted">검색 결과 {visibleLinks.length}</span>
+        )}
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="사이트 검색 (이름, 설명, URL)"
-          className="min-w-[200px] flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-4 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted focus:border-unjong-accent focus:outline-none"
+          placeholder="사이트 검색"
+          className="w-44 shrink-0 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary placeholder:text-unjong-muted focus:border-unjong-accent focus:outline-none sm:w-56"
         />
-        {availableCountries.length > 1 && (
-          <div className="flex items-center gap-0.5 rounded-lg border border-unjong-border p-0.5">
-            <button
-              type="button"
-              onClick={() => setCountry('all')}
-              className={`rounded px-3 py-1.5 text-sm font-bold transition-colors ${country === 'all' ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:text-unjong-primary'}`}
-            >전체</button>
-            {availableCountries.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setCountry(c)}
-                className={`rounded px-3 py-1.5 text-sm font-bold transition-colors ${country === c ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:text-unjong-primary'}`}
-              >{countryLabel[c] ?? c}</button>
-            ))}
-          </div>
-        )}
       </div>
-
-      {/* 카테고리 탭 (박스형 — 홈 필터칩 스타일, 검색 중엔 숨김) */}
-      {!q && (
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          {categories.map((c) => {
-            const on = active === c.slug;
-            return (
-              <button
-                key={c.slug}
-                type="button"
-                onClick={() => setActive(c.slug)}
-                className={
-                  on
-                    ? 'rounded-lg bg-unjong-primary px-3 py-2 text-sm font-bold text-white'
-                    : 'rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm font-medium text-unjong-muted hover:text-unjong-primary'
-                }
-              >
-                {c.label}
-                <span className={`ml-1 text-xs ${on ? 'text-white/70' : 'text-unjong-muted'}`}>{catCount(c)}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
 
       {/* 링크 리스트 (한 줄씩) */}
       {visibleLinks.length === 0 ? (

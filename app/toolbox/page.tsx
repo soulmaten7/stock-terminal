@@ -71,16 +71,20 @@ export default async function ToolboxPage() {
 
   return (
     <div className="px-6 py-6">
-      <div className="mb-5">
-        <h1 className="text-2xl font-bold text-unjong-primary">주식 관련 링크모음</h1>
-        <p className="mt-1 text-sm text-unjong-muted">증권사·뉴스·분석·공시까지 한곳에서 · 운종은 동선만 안내(허브)</p>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
+        {/* 좌: 링크 디렉토리 */}
+        <div className="min-w-0">
+          <ToolboxClient
+            initialCategories={categories}
+            availableCountries={availableCountries}
+            isLoggedIn={!!user}
+          />
+        </div>
+        {/* 우: 증권사 거래대금 순위 레일 */}
+        <div className="min-w-0">
+          <BrokerRanking />
+        </div>
       </div>
-      <BrokerRanking />
-      <ToolboxClient
-        initialCategories={categories}
-        availableCountries={availableCountries}
-        isLoggedIn={!!user}
-      />
     </div>
   );
 }

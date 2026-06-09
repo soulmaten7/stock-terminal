@@ -11,7 +11,7 @@ export default function BrokerRanking() {
         <span className="shrink-0 text-xs text-unjong-muted">최근 분기 기준 · 근사치(분기 변동)</span>
       </div>
       <p className="mb-4 text-xs text-unjong-muted">국내주식 거래대금 점유율 순 · 운종은 거래 안내만(허브)</p>
-      <ol className="grid grid-cols-1 gap-0.5 sm:grid-cols-2">
+      <ol className="grid grid-cols-1 gap-0.5">
         {BROKERS.map((b) => (
           <li key={b.rank}>
             <a
