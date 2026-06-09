@@ -15,10 +15,13 @@ export default function ToolboxClient({
   availableCountries: string[];
   isLoggedIn: boolean;
 }) {
+  const COUNTRY_ORDER = ['KR', 'US', 'GLOBAL'];
+  const orderedCountries = [...availableCountries].sort((a, b) => COUNTRY_ORDER.indexOf(a) - COUNTRY_ORDER.indexOf(b));
+
   const [categories, setCategories] = useState(initialCategories);
   const [active, setActive] = useState(initialCategories[0]?.slug ?? '');
   const [query, setQuery] = useState('');
-  const [country, setCountry] = useState<string>('all');
+  const [country, setCountry] = useState<string>(orderedCountries[0] ?? 'KR');
 
   const handleFavoriteToggle = useCallback((id: number, fav: boolean) => {
     setCategories((prev) =>
@@ -52,14 +55,9 @@ export default function ToolboxClient({
   return (
     <div>
       {/* 국가 필터 — 왼쪽 정렬 */}
-      {availableCountries.length > 1 && (
+      {orderedCountries.length > 0 && (
         <div className="mb-3 inline-flex items-center gap-0.5 rounded-lg border border-unjong-border p-0.5">
-          <button
-            type="button"
-            onClick={() => setCountry('all')}
-            className={`rounded px-3 py-1.5 text-sm font-bold transition-colors ${country === 'all' ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:text-unjong-primary'}`}
-          >전체</button>
-          {availableCountries.map((c) => (
+          {orderedCountries.map((c) => (
             <button
               key={c}
               type="button"
