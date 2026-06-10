@@ -100,7 +100,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
   );
 }
 
-export default function HomeStockDetail({ stock }: { stock: HoverStock | null }) {
+export default function HomeStockDetail({ stock, wide = false }: { stock: HoverStock | null; wide?: boolean }) {
   const [candles, setCandles] = useState<Candle[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
 
@@ -148,7 +148,7 @@ export default function HomeStockDetail({ stock }: { stock: HoverStock | null })
   }, [stock?.symbol]);
 
   return (
-    <aside className="hidden xl:block w-80 shrink-0">
+    <aside className={`hidden xl:block ${wide ? "w-full min-w-0" : "w-80 shrink-0"}`}>
       <div className="sticky top-5 overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
         {!stock ? (
           <div className="p-5 text-sm text-unjong-muted">종목에 마우스를 올리면 상세가 표시됩니다.</div>

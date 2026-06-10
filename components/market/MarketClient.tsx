@@ -217,8 +217,8 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             <p className="text-xs text-unjong-muted mb-2">국내 시세 KRX 공식 · 일별(장 마감) 기준 (실시간 아님)</p>
           )}
           {/* 랭킹 테이블 (embedded: 우측 미리보기 — 필터 밑, 테이블과 같은 높이) */}
-          <div className={embedded ? "flex items-start gap-4" : ""}>
-          <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "flex-1 min-w-0" : ""}`}>
+          <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
+          <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
             {loading ? (
               <LoadingState className="py-10" />
             ) : shownRows.length === 0 ? (
