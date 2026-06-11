@@ -55,8 +55,8 @@ export default function HomeBreakingNews() {
 
   const featured = items.find((it) => it.image) ?? items[0];
   const rest = items.filter((it) => it !== featured);
-  const left = rest.slice(0, 6);
-  const right = rest.slice(6, 12);
+  const leftRest = rest.slice(0, 4);    // 왼쪽 열: 대표 아래 헤드라인
+  const rightRest = rest.slice(4, 13);  // 오른쪽 열: 헤드라인
 
   return (
     <section className="flex h-[46vh] flex-col overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
@@ -75,34 +75,30 @@ export default function HomeBreakingNews() {
         ) : !featured ? (
           <p className="py-8 text-center text-sm text-unjong-muted">속보를 불러오는 중이에요.</p>
         ) : (
-          <>
-            {/* 대표 뉴스 — 이미지(있을 때) + 제목 가로 배치 */}
-            <a href={featured.link} target="_blank" rel="noopener noreferrer"
-              className="group mb-3 flex items-start gap-3"
-            >
-              {featured.image && (
-                <div className="shrink-0 overflow-hidden rounded-lg border border-unjong-border">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={featured.image}
-                    alt=""
-                    className="h-16 w-24 object-cover"
-                    onError={(e) => { const el = e.currentTarget.parentElement; if (el) el.style.display = "none"; }}
-                  />
-                </div>
-              )}
-              <div className="min-w-0">
+          <div className="grid grid-cols-1 gap-x-6 md:grid-cols-2">
+            {/* 왼쪽 열: 대표(이미지, 열 폭만) + 헤드라인 */}
+            <div>
+              <a href={featured.link} target="_blank" rel="noopener noreferrer" className="group mb-1 block">
+                {featured.image && (
+                  <div className="mb-1.5 overflow-hidden rounded-lg border border-unjong-border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={featured.image}
+                      alt=""
+                      className="h-28 w-full object-cover"
+                      onError={(e) => { const el = e.currentTarget.parentElement; if (el) el.style.display = "none"; }}
+                    />
+                  </div>
+                )}
                 <p className="line-clamp-2 text-sm font-bold text-unjong-primary group-hover:text-unjong-accent">{featured.title}</p>
                 <p className="mt-0.5 text-[11px] text-unjong-muted">{featured.publisher} · {timeAgo(featured.publishedAt)}</p>
-              </div>
-            </a>
-
-            {/* 나머지 헤드라인 — 2열 */}
-            <div className="grid grid-cols-1 gap-x-6 border-t border-unjong-border pt-2 md:grid-cols-2">
-              <ul className="space-y-0.5">{left.map((n, i) => <Row key={`l${i}`} n={n} />)}</ul>
-              <ul className="space-y-0.5">{right.map((n, i) => <Row key={`r${i}`} n={n} />)}</ul>
+              </a>
+              <ul className="space-y-0.5">{leftRest.map((n, i) => <Row key={`l${i}`} n={n} />)}</ul>
             </div>
-          </>
+
+            {/* 오른쪽 열: 헤드라인만 */}
+            <ul className="space-y-0.5">{rightRest.map((n, i) => <Row key={`r${i}`} n={n} />)}</ul>
+          </div>
         )}
       </div>
     </section>
