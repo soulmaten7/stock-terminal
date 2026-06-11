@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { LoadingState } from "@/components/ui/State";
 
-type NewsItem = { title: string; link: string; publisher: string; publishedAt: string };
+type NewsItem = { title: string; link: string; publisher: string; publishedAt: string; image?: string };
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -22,7 +22,7 @@ function Row({ n }: { n: NewsItem }) {
         href={n.link}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-baseline gap-2 rounded-lg px-2 py-1.5 transition-colors hover:bg-unjong-background"
+        className="flex items-baseline gap-2 rounded-lg px-1 py-1.5 transition-colors hover:bg-unjong-background"
       >
         <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{n.title}</span>
         <span className="shrink-0 text-[11px] text-unjong-muted">{n.publisher} · {timeAgo(n.publishedAt)}</span>
@@ -53,12 +53,12 @@ export default function HomeBreakingNews() {
     return () => { cancelled = true; clearInterval(t); };
   }, []);
 
-  const left = items.slice(0, 6);
-  const right = items.slice(6, 12);
+  const featured = items.find((it) => it.image) ?? items[0];
+  const rest = items.filter((it) => it !== featured).slice(0, 15);
 
   return (
-    <section className="rounded-2xl border border-unjong-border bg-unjong-surface p-5 shadow-soft">
-      <div className="mb-3 flex items-baseline justify-between">
+    <section className="flex h-[46vh] flex-col overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
+      <div className="flex shrink-0 items-baseline justify-between px-5 pb-3 pt-5">
         <h2 className="flex items-center gap-1.5 text-base font-bold text-unjong-primary">
           🔴 실시간 속보 <span className="text-xs font-normal text-unjong-muted">시장 헤드라인</span>
         </h2>
@@ -67,16 +67,37 @@ export default function HomeBreakingNews() {
         </span>
       </div>
 
-      {loading ? (
-        <LoadingState className="py-8" />
-      ) : items.length === 0 ? (
-        <p className="py-8 text-center text-sm text-unjong-muted">속보를 불러오는 중이에요.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-x-6 md:grid-cols-2">
-          <ul className="space-y-0.5">{left.map((n, i) => <Row key={`l${i}`} n={n} />)}</ul>
-          <ul className="space-y-0.5">{right.map((n, i) => <Row key={`r${i}`} n={n} />)}</ul>
-        </div>
-      )}
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-4">
+        {loading ? (
+          <LoadingState className="py-8" />
+        ) : !featured ? (
+          <p className="py-8 text-center text-sm text-unjong-muted">속보를 불러오는 중이에요.</p>
+        ) : (
+          <>
+            {/* 대표 뉴스 (이미지 있으면 이미지 포함) */}
+            <a href={featured.link} target="_blank" rel="noopener noreferrer" className="group block">
+              {featured.image && (
+                <div className="mb-2 overflow-hidden rounded-lg border border-unjong-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={featured.image}
+                    alt=""
+                    className="h-32 w-full object-cover"
+                    onError={(e) => { const el = e.currentTarget.parentElement; if (el) el.style.display = "none"; }}
+                  />
+                </div>
+              )}
+              <p className="line-clamp-2 text-sm font-bold text-unjong-primary group-hover:text-unjong-accent">{featured.title}</p>
+              <p className="mt-0.5 text-[11px] text-unjong-muted">{featured.publisher} · {timeAgo(featured.publishedAt)}</p>
+            </a>
+
+            {/* 나머지 헤드라인 */}
+            <ul className="mt-3 space-y-0.5 border-t border-unjong-border pt-2">
+              {rest.map((n, i) => <Row key={i} n={n} />)}
+            </ul>
+          </>
+        )}
+      </div>
     </section>
   );
 }

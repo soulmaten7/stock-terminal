@@ -8,6 +8,7 @@ type NewsItem = {
   link: string;
   publisher: string;
   publishedAt: string;
+  image?: string;
 };
 
 const SOURCES = [
@@ -17,6 +18,16 @@ const SOURCES = [
   { name: "이데일리", url: "https://rss.edaily.co.kr/edaily_news_rss.xml" },
   { name: "연합뉴스", url: "https://www.yna.co.kr/rss/economy.xml" },
 ];
+
+function extractImage(itemXml: string): string | undefined {
+  let m = itemXml.match(/<enclosure[^>]*url="([^"]+)"[^>]*type="image/i);
+  if (m) return m[1];
+  m = itemXml.match(/<media:(?:content|thumbnail)[^>]*url="([^"]+)"/i);
+  if (m) return m[1];
+  m = itemXml.match(/<img[^>]*src=["']([^"']+)["']/i);
+  if (m) return m[1];
+  return undefined;
+}
 
 function parseRSS(xml: string, publisher: string): NewsItem[] {
   const items: NewsItem[] = [];
@@ -38,6 +49,7 @@ function parseRSS(xml: string, publisher: string): NewsItem[] {
         link: link.trim(),
         publisher,
         publishedAt: date ? new Date(date).toISOString() : new Date().toISOString(),
+        image: extractImage(itemXml),
       });
     }
   }
