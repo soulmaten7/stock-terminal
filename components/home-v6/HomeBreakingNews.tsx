@@ -56,7 +56,7 @@ export default function HomeBreakingNews() {
   const featured = items.find((it) => it.image) ?? items[0];
   const rest = items.filter((it) => it !== featured);
   const leftRest = rest.slice(0, 2);     // 왼쪽 열: 대표 밑 헤드라인 2개
-  const rightRest = rest.slice(2, 16);   // 오른쪽 열: 헤드라인 (박스 채움)
+  const rightRest = rest.slice(2, 13);   // 오른쪽 열: 헤드라인 11개
 
   return (
     <section className="flex h-[46vh] flex-col overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
