@@ -7,7 +7,21 @@ import { StockLogo } from "@/components/ui/StockLogo";
 import { Heart } from "lucide-react";
 import { useWatchlist } from "@/stores/watchlistStore";
 
-type Row = { rank: number; symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
+type Row = {
+  rank: number;
+  symbol: string;
+  name: string;
+  priceText: string;
+  changePercent: number; // 1일 등락률
+  volume: number;
+  tradeAmount?: number;
+  r1w?: number | null;
+  r1m?: number | null;
+  r3m?: number | null;
+  r6m?: number | null;
+  r1y?: number | null;
+  marketCap?: number;
+};
 
 const COUNTRIES = [
   { key: "kr", label: "국내" },
@@ -37,22 +51,19 @@ const MARKETS = [
 ] as const;
 type MarketKey = (typeof MARKETS)[number]["key"];
 
-const PERIODS = [
-  { key: "live", label: "실시간" },
-  { key: "1d", label: "1일" },
-  { key: "1w", label: "1주일" },
-  { key: "1m", label: "1개월" },
-  { key: "3m", label: "3개월" },
-  { key: "6m", label: "6개월" },
-  { key: "1y", label: "1년" },
-] as const;
-type PeriodKey = (typeof PERIODS)[number]["key"];
-
 function fmtAmount(won?: number): string {
   if (!won || won <= 0) return "—";
   if (won >= 1e12) return `${(won / 1e12).toFixed(1)}조`;
   if (won >= 1e8) return `${Math.round(won / 1e8).toLocaleString()}억`;
   return won.toLocaleString();
+}
+function pct(v?: number | null): string {
+  if (v == null) return "—";
+  return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+}
+function pctColor(v?: number | null): string {
+  if (v == null) return "text-unjong-muted";
+  return v >= 0 ? "text-[#F04452]" : "text-[#3182F6]";
 }
 
 export type HoverStock = { symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
@@ -70,7 +81,6 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   const [market, setMarket] = useState<MarketKey>("all");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<PeriodKey>("live");
 
   useEffect(() => {
     if (country === "global") return;
@@ -107,6 +117,9 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             changePercent: Number(s.changePercent ?? 0),
             volume: Number(s.volume ?? 0),
             tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
+            marketCap: typeof s.marketCap === "number" ? s.marketCap : undefined,
+            // 1주~1년 등락률: 데이터 레이어 연동 전(다음 STEP) → 지금은 미연동(undefined → "—")
+            r1w: undefined, r1m: undefined, r3m: undefined, r6m: undefined, r1y: undefined,
           }));
         } else {
           const dir = filter === "down" ? "down" : "up";
@@ -137,12 +150,33 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
       active ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
     }`;
 
+  // 성적표 기간 칼럼 (1일 = changePercent, 나머지는 Row 필드). 홈(embedded)=핵심 3개, 마켓=6개 전부.
+  const periodCols: { key: string; label: string }[] = embedded
+    ? [
+        { key: "1d", label: "1일" },
+        { key: "r1m", label: "1개월" },
+        { key: "r1y", label: "1년" },
+      ]
+    : [
+        { key: "1d", label: "1일" },
+        { key: "r1w", label: "1주" },
+        { key: "r1m", label: "1개월" },
+        { key: "r3m", label: "3개월" },
+        { key: "r6m", label: "6개월" },
+        { key: "r1y", label: "1년" },
+      ];
+  const showCap = !embedded; // 시총은 마켓 페이지에만(홈은 폭 절약)
+  const periodVal = (r: Row, key: string): number | null | undefined => {
+    if (key === "1d") return r.changePercent;
+    return r[key as "r1w" | "r1m" | "r3m" | "r6m" | "r1y"];
+  };
+
   return (
     <div className={embedded ? "" : "px-4 py-6"}>
       {!embedded && (
         <header className="mb-4">
           <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
-          <p className="mt-1 text-sm text-unjong-muted">실시간 랭킹 — 종목 클릭 시 상세로. (시총·52주 필터·히트맵은 순차 확장)</p>
+          <p className="mt-1 text-sm text-unjong-muted">기간 수익률 성적표 — 종목 클릭 시 상세로. (1주~1년 데이터 순차 연동)</p>
         </header>
       )}
 
@@ -174,55 +208,34 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
               {f.label}
             </button>
           ))}
-
-        {/* 기간 (오른쪽). 실시간만 동작, 나머지 준비 중 */}
-        {country !== "global" && (
-          <div className="ml-auto flex flex-wrap items-center gap-x-1 gap-y-1">
-            {PERIODS.map((p) => (
-              <button
-                key={p.key}
-                type="button"
-                disabled={p.key !== "live"}
-                onClick={() => p.key === "live" && setPeriod(p.key)}
-                title={p.key === "live" ? undefined : "기간별 데이터 준비 중"}
-                className={`${chip(period === p.key)} ${p.key !== "live" ? "cursor-not-allowed opacity-40" : ""}`}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        )}
       </div>
 
       {country === "global" ? (
         <EmptyState icon="🛠️" title="글로벌 마켓 준비 중" description="순차 확장 예정 (STEP 154~)." className="py-12" />
       ) : (
-        <>
-
-          {/* 랭킹 테이블 (embedded: 우측 미리보기 — 필터 밑, 테이블과 같은 높이) */}
-          <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
+        <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
           <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
             {loading ? (
               <LoadingState className="py-10" />
             ) : shownRows.length === 0 ? (
               <EmptyState title="데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
             ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-xs text-unjong-muted border-b border-unjong-border">
-                    <th className="w-8 px-2 py-2.5"></th>
-                    <th className="text-left font-medium px-4 py-2.5 w-12">순위</th>
-                    <th className="text-left font-medium px-4 py-2.5">종목명</th>
-                    <th className="text-right font-medium px-4 py-2.5">현재가</th>
-                    <th className="text-right font-medium px-4 py-2.5">등락률</th>
-                    <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래량</th>
-                    {country === "kr" && <th className="text-right font-medium px-4 py-2.5 hidden md:table-cell">거래대금</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {shownRows.map((r) => {
-                    const up = r.changePercent >= 0;
-                    return (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-xs text-unjong-muted border-b border-unjong-border">
+                      <th className="w-8 px-2 py-2.5"></th>
+                      <th className="text-left font-medium px-3 py-2.5 w-12">순위</th>
+                      <th className="text-left font-medium px-3 py-2.5">종목명</th>
+                      <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">현재가</th>
+                      {periodCols.map((p) => (
+                        <th key={p.key} className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{p.label}</th>
+                      ))}
+                      {showCap && <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">시총</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shownRows.map((r) => (
                       <tr
                         key={r.symbol}
                         onClick={() => router.push(`/stock/${r.symbol}`)}
@@ -247,35 +260,34 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                             />
                           </button>
                         </td>
-                        <td className="px-4 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2.5">
+                        <td className="px-3 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
+                        <td className="px-3 py-3">
+                          <div className="flex items-center gap-2.5 whitespace-nowrap">
                             <StockLogo code={r.symbol} name={r.name} size={28} />
                             <span className="font-medium text-unjong-primary">{r.name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.priceText}</td>
-                        <td className={`px-4 py-3 text-right tabular-nums font-semibold ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
-                          {up ? "+" : ""}{r.changePercent.toFixed(2)}%
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-unjong-muted hidden md:table-cell">
-                          {r.volume ? r.volume.toLocaleString() : "—"}
-                        </td>
-                        {country === "kr" && (
-                          <td className="px-4 py-3 text-right tabular-nums text-unjong-muted hidden md:table-cell">
-                            {fmtAmount(r.tradeAmount)}
-                          </td>
+                        <td className="px-3 py-3 text-right tabular-nums text-unjong-primary whitespace-nowrap">{r.priceText}</td>
+                        {periodCols.map((p) => {
+                          const v = periodVal(r, p.key);
+                          return (
+                            <td key={p.key} className={`px-3 py-3 text-right tabular-nums font-semibold whitespace-nowrap ${pctColor(v)}`}>
+                              {pct(v)}
+                            </td>
+                          );
+                        })}
+                        {showCap && (
+                          <td className="px-3 py-3 text-right tabular-nums text-unjong-muted whitespace-nowrap">{fmtAmount(r.marketCap)}</td>
                         )}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
           {embedded && detailSlot}
-          </div>
-        </>
+        </div>
       )}
     </div>
   );
