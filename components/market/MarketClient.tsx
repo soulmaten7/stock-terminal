@@ -12,7 +12,7 @@ type Row = {
   symbol: string;
   name: string;
   priceText: string;
-  changePercent: number; // 1일 등락률
+  changePercent: number; // 1일전 대비(현재 등락률)
   volume: number;
   tradeAmount?: number;
   r1w?: number | null;
@@ -30,15 +30,24 @@ const COUNTRIES = [
 ] as const;
 type CountryKey = (typeof COUNTRIES)[number]["key"];
 
-// 정렬축 = 거래대금순 + 기간 수익률 (전 상품 공통 — ETF 탭과 동일)
-type SortKey = "amount" | "r1m" | "r3m" | "r6m" | "r1y";
-const SORTS: { key: SortKey; label: string }[] = [
-  { key: "amount", label: "거래대금순" },
-  { key: "r1m", label: "1개월 수익률" },
-  { key: "r3m", label: "3개월 수익률" },
-  { key: "r6m", label: "6개월 수익률" },
-  { key: "r1y", label: "1년 수익률" },
+// 기간칩: 누르면 '등락률' 칼럼이 그 기간(예: 1일전 대비)으로 바뀌고, 그 기준으로 정렬.
+type PeriodKey = "1d" | "1w" | "1m" | "3m" | "6m" | "1y";
+const PERIODS: { key: PeriodKey; label: string }[] = [
+  { key: "1d", label: "1일전" },
+  { key: "1w", label: "1주일전" },
+  { key: "1m", label: "1개월전" },
+  { key: "3m", label: "3개월전" },
+  { key: "6m", label: "6개월전" },
+  { key: "1y", label: "1년전" },
 ];
+const PERIOD_FIELD: Record<PeriodKey, "changePercent" | "r1w" | "r1m" | "r3m" | "r6m" | "r1y"> = {
+  "1d": "changePercent",
+  "1w": "r1w",
+  "1m": "r1m",
+  "3m": "r3m",
+  "6m": "r6m",
+  "1y": "r1y",
+};
 
 const MARKETS = [
   { key: "all", label: "전체" },
@@ -73,12 +82,12 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   useEffect(() => { setMounted(true); }, []);
   const isWatched = (code: string) => watchItems.some((i) => i.code === code);
   const [country, setCountry] = useState<CountryKey>("kr");
-  const [sort, setSort] = useState<SortKey>("amount");
+  const [period, setPeriod] = useState<PeriodKey>("1d"); // 기본=1일전(전일대비 — 표준 뷰, 유지)
   const [market, setMarket] = useState<MarketKey>("all");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 데이터: '거래대금 기준 기본 유니버스'를 한 번만 받아옴(정렬과 분리). 정렬은 아래 클라이언트에서.
+  // 데이터: '거래대금 기준 상위 100 유니버스'를 한 번만 받음. 정렬은 아래 클라이언트에서(기간칩 기준).
   useEffect(() => {
     if (country === "global") return;
     let cancelled = false;
@@ -87,7 +96,6 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
       try {
         let list: Row[] = [];
         if (country === "kr") {
-          // 1순위: KRX 100개(약 20분 지연). 비거나 실패하면 2순위: KIS fallback.
           const krxUrl = `/api/krx/ranking?market=${market}&sort=amount&limit=100`;
           const kisUrl = `/api/kis/volume-rank?market=${market}&sort=amount&limit=100`;
           let raw: Record<string, unknown>[] = [];
@@ -110,7 +118,6 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             volume: Number(s.volume ?? 0),
             tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
             marketCap: typeof s.marketCap === "number" ? s.marketCap : undefined,
-            // 1주~1년 등락률: 데이터 레이어 연동 전(다음 STEP) → undefined("—")
             r1w: undefined, r1m: undefined, r3m: undefined, r6m: undefined, r1y: undefined,
           }));
         } else {
@@ -132,63 +139,42 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
     return () => { cancelled = true; };
   }, [country, market]);
 
-  // 클라이언트 정렬: 거래대금순 = API 순서 그대로 / 기간 수익률 = 값 내림차순(미연동 undefined는 뒤로)
+  const field = PERIOD_FIELD[period];
+  const periodLabel = PERIODS.find((p) => p.key === period)!.label;
+
+  // 클라이언트 정렬: 선택 기간 수익률 내림차순(미연동 undefined는 뒤로). 1일전=값 있음 → 전일대비 순.
   const sortedRows = useMemo(() => {
-    if (sort === "amount") return rows;
-    const key = sort; // r1m | r3m | r6m | r1y
     return [...rows].sort((a, b) => {
-      const av = a[key];
-      const bv = b[key];
+      const av = a[field];
+      const bv = b[field];
       if (av == null && bv == null) return 0;
       if (av == null) return 1;
       if (bv == null) return -1;
       return bv - av;
     });
-  }, [rows, sort]);
+  }, [rows, field]);
 
-  // 토스식 칩: 라운드스퀘어, 선택=진한 채움/흰 글씨, 비선택=글자만
   const chip = (active: boolean) =>
     `rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
       active ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
     }`;
-
-  // 성적표 기간 칼럼 (1일 = changePercent, 나머지는 Row 필드). 홈(embedded)=핵심 3개, 마켓=6개 전부.
-  const periodCols: { key: string; label: string }[] = embedded
-    ? [
-        { key: "1d", label: "1일" },
-        { key: "r1m", label: "1개월" },
-        { key: "r1y", label: "1년" },
-      ]
-    : [
-        { key: "1d", label: "1일" },
-        { key: "r1w", label: "1주" },
-        { key: "r1m", label: "1개월" },
-        { key: "r3m", label: "3개월" },
-        { key: "r6m", label: "6개월" },
-        { key: "r1y", label: "1년" },
-      ];
-  const showCap = !embedded;
-  const periodVal = (r: Row, key: string): number | null | undefined => {
-    if (key === "1d") return r.changePercent;
-    return r[key as "r1w" | "r1m" | "r3m" | "r6m" | "r1y"];
-  };
 
   return (
     <div className={embedded ? "" : "px-4 py-6"}>
       {!embedded && (
         <header className="mb-4">
           <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
-          <p className="mt-1 text-sm text-unjong-muted">기간 수익률 성적표 — 종목 클릭 시 상세로. (1주~1년 데이터 순차 연동)</p>
+          <p className="mt-1 text-sm text-unjong-muted">기간 수익률 성적표 — 기간칩으로 보고 싶은 구간 선택. (1주~1년 데이터 순차 연동)</p>
         </header>
       )}
 
-      {/* 필터: 국가 ｜ 시장 ｜ 정렬(거래대금순·기간 수익률) */}
+      {/* 필터: 국가 ｜ 시장 ｜ 기간칩(1일전~1년전) */}
       <div className="mb-3 flex flex-wrap items-center gap-x-1 gap-y-2">
         {COUNTRIES.map((c) => (
           <button
             key={c.key}
             type="button"
-            onClick={() => { setCountry(c.key); setSort("amount"); setMarket("all"); }}
+            onClick={() => { setCountry(c.key); setPeriod("1d"); setMarket("all"); }}
             className={chip(country === c.key)}
           >
             {c.label}
@@ -205,9 +191,9 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
 
         {country !== "global" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
         {country !== "global" &&
-          SORTS.map((s) => (
-            <button key={s.key} type="button" onClick={() => setSort(s.key)} className={chip(sort === s.key)}>
-              {s.label}
+          PERIODS.map((p) => (
+            <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
+              {p.label}
             </button>
           ))}
       </div>
@@ -230,59 +216,53 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                       <th className="text-left font-medium px-3 py-2.5 w-12">순위</th>
                       <th className="text-left font-medium px-3 py-2.5">종목명</th>
                       <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">현재가</th>
-                      {periodCols.map((p) => (
-                        <th key={p.key} className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{p.label}</th>
-                      ))}
-                      {showCap && <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">시총</th>}
+                      <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{periodLabel} 대비</th>
+                      {!embedded && <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">시총</th>}
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedRows.map((r, i) => (
-                      <tr
-                        key={r.symbol}
-                        onClick={() => router.push(`/stock/${r.symbol}`)}
-                        onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
-                        className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
-                      >
-                        <td className="px-2 py-3">
-                          <button
-                            type="button"
-                            aria-label="관심 토글"
-                            className="p-0.5"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (isWatched(r.symbol)) removeWatch(r.symbol);
-                              else addWatch({ code: r.symbol, name: r.name, market: country === "us" ? "US" : "KOSPI" });
-                            }}
-                          >
-                            <Heart
-                              size={15}
-                              fill={mounted && isWatched(r.symbol) ? "currentColor" : "none"}
-                              className={mounted && isWatched(r.symbol) ? "text-[#3182F6]" : "text-unjong-muted hover:text-[#3182F6]"}
-                            />
-                          </button>
-                        </td>
-                        <td className="px-3 py-3 text-unjong-muted tabular-nums">{i + 1}</td>
-                        <td className="px-3 py-3">
-                          <div className="flex items-center gap-2.5 whitespace-nowrap">
-                            <StockLogo code={r.symbol} name={r.name} size={28} />
-                            <span className="font-medium text-unjong-primary">{r.name}</span>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3 text-right tabular-nums text-unjong-primary whitespace-nowrap">{r.priceText}</td>
-                        {periodCols.map((p) => {
-                          const v = periodVal(r, p.key);
-                          return (
-                            <td key={p.key} className={`px-3 py-3 text-right tabular-nums font-semibold whitespace-nowrap ${pctColor(v)}`}>
-                              {pct(v)}
-                            </td>
-                          );
-                        })}
-                        {showCap && (
-                          <td className="px-3 py-3 text-right tabular-nums text-unjong-muted whitespace-nowrap">{fmtAmount(r.marketCap)}</td>
-                        )}
-                      </tr>
-                    ))}
+                    {sortedRows.map((r, i) => {
+                      const v = r[field];
+                      return (
+                        <tr
+                          key={r.symbol}
+                          onClick={() => router.push(`/stock/${r.symbol}`)}
+                          onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
+                          className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
+                        >
+                          <td className="px-2 py-3">
+                            <button
+                              type="button"
+                              aria-label="관심 토글"
+                              className="p-0.5"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isWatched(r.symbol)) removeWatch(r.symbol);
+                                else addWatch({ code: r.symbol, name: r.name, market: country === "us" ? "US" : "KOSPI" });
+                              }}
+                            >
+                              <Heart
+                                size={15}
+                                fill={mounted && isWatched(r.symbol) ? "currentColor" : "none"}
+                                className={mounted && isWatched(r.symbol) ? "text-[#3182F6]" : "text-unjong-muted hover:text-[#3182F6]"}
+                              />
+                            </button>
+                          </td>
+                          <td className="px-3 py-3 text-unjong-muted tabular-nums">{i + 1}</td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center gap-2.5 whitespace-nowrap">
+                              <StockLogo code={r.symbol} name={r.name} size={28} />
+                              <span className="font-medium text-unjong-primary">{r.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 text-right tabular-nums text-unjong-primary whitespace-nowrap">{r.priceText}</td>
+                          <td className={`px-3 py-3 text-right tabular-nums font-semibold whitespace-nowrap ${pctColor(v)}`}>{pct(v)}</td>
+                          {!embedded && (
+                            <td className="px-3 py-3 text-right tabular-nums text-unjong-muted whitespace-nowrap">{fmtAmount(r.marketCap)}</td>
+                          )}
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

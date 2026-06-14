@@ -33,6 +33,9 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
   return (
     <div>
       <div className="mb-4 flex items-center gap-1 border-b border-unjong-border">
+        {/* '상품 리스트' 라벨 — 주식~리츠 묶음 (리딩방 리스트는 구분선 뒤 별도) */}
+        <span className="mr-1.5 shrink-0 text-xs font-semibold text-unjong-muted">상품 리스트</span>
+        <span className="mr-1 h-4 w-px bg-unjong-border" aria-hidden />
         {TABS.map((t) => (
           <Fragment key={t.key}>
             {/* 리딩방 리스트 앞 구분선 — '상품 성적표'와 '검증 디렉토리' 경계 */}
