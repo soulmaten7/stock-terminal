@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { LoadingState, EmptyState } from "@/components/ui/State";
@@ -21,25 +21,27 @@ type Row = {
 
 const ETF_RE = /^(KODEX|TIGER|KBSTAR|RISE|ARIRANG|PLUS|ACE|KINDEX|SOL|HANARO|KOSEF|TIMEFOLIO|WOORI|KCGI|BNK|파워|TREX|FOCUS|히어로즈|네비게이터|마이티|WON|KIWOOM)/i;
 
-type SortKey = "pop" | "r1m" | "r3m" | "r6m" | "r1y";
-const SORTS: { key: SortKey; label: string }[] = [
-  { key: "pop", label: "거래대금순" },
-  { key: "r1m", label: "1개월 수익률" },
-  { key: "r3m", label: "3개월 수익률" },
-  { key: "r6m", label: "6개월 수익률" },
-  { key: "r1y", label: "1년 수익률" },
+// 기간칩 (주식과 동일). 1주일은 ETF 소스에 없어 "—".
+type PeriodKey = "1d" | "1w" | "1m" | "3m" | "6m" | "1y";
+const PERIODS: { key: PeriodKey; label: string }[] = [
+  { key: "1d", label: "1일전" },
+  { key: "1w", label: "1주일전" },
+  { key: "1m", label: "1개월전" },
+  { key: "3m", label: "3개월전" },
+  { key: "6m", label: "6개월전" },
+  { key: "1y", label: "1년전" },
 ];
+const PERF_FIELD: Partial<Record<PeriodKey, "r1m" | "r3m" | "r6m" | "r1y">> = {
+  "1m": "r1m",
+  "3m": "r3m",
+  "6m": "r6m",
+  "1y": "r1y",
+};
 
 function chip(active: boolean) {
   return `rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
     active ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
   }`;
-}
-function fmtAmount(won?: number): string {
-  if (!won || won <= 0) return "—";
-  if (won >= 1e12) return `${(won / 1e12).toFixed(1)}조`;
-  if (won >= 1e8) return `${Math.round(won / 1e8).toLocaleString()}억`;
-  return won.toLocaleString();
 }
 function pct(v?: number | null): string {
   if (v == null) return "—";
@@ -55,14 +57,15 @@ function toHover(r: Row): HoverStock {
 
 export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "fund" } = {}) {
   const router = useRouter();
-  const [asset, setAsset] = useState<"etf" | "fund">(fixedAsset ?? "etf");
-  const [sort, setSort] = useState<SortKey>("pop");
+  const asset = fixedAsset ?? "etf";
+  const [period, setPeriod] = useState<PeriodKey>("1d"); // 기본=1일전(주식과 동일)
   const [popRows, setPopRows] = useState<Row[]>([]);
   const [perfRows, setPerfRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
   const [hovered, setHovered] = useState<HoverStock | null>(null);
 
   useEffect(() => {
+    if (asset !== "etf") { setLoading(false); return; }
     let cancelled = false;
     setLoading(true);
     (async () => {
@@ -100,44 +103,44 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [asset]);
 
-  // 정렬·자산 바뀌면 미리보기 리셋(→ 새 1위)
-  useEffect(() => { setHovered(null); }, [sort, asset]);
+  useEffect(() => { setHovered(null); }, [period]);
 
-  const isPop = sort === "pop";
-  let rows: Row[] = [];
-  if (asset === "etf") {
-    if (isPop) rows = popRows;
-    else {
-      const k = sort as "r1m" | "r3m" | "r6m" | "r1y";
-      rows = [...perfRows].filter((r) => r[k] != null).sort((a, b) => (b[k] as number) - (a[k] as number)).slice(0, 15);
+  const periodLabel = PERIODS.find((p) => p.key === period)!.label;
+
+  // 1일전 = 거래대금 유니버스(popRows) / 1·3·6·12개월 = 성과(perfRows) / 1주일 = 소스 없음("—")
+  const rows = useMemo(() => {
+    if (period === "1d") {
+      return [...popRows].sort((a, b) => b.changePercent - a.changePercent);
     }
-  }
-  const metricLabel = isPop ? "거래대금" : SORTS.find((s) => s.key === sort)!.label;
+    const f = PERF_FIELD[period];
+    if (!f) return perfRows.slice(0, 15); // 1주일
+    return [...perfRows]
+      .filter((r) => r[f] != null)
+      .sort((a, b) => (b[f] as number) - (a[f] as number))
+      .slice(0, 15);
+  }, [period, popRows, perfRows]);
+
+  const rowVal = (r: Row): number | null | undefined => {
+    if (period === "1d") return r.changePercent;
+    const f = PERF_FIELD[period];
+    return f ? r[f] : undefined;
+  };
+
   const previewStock = hovered ?? (rows[0] ? toHover(rows[0]) : null);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
-      {/* 컨트롤 */}
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-unjong-border px-4 py-3">
-        {!fixedAsset && (
-          <>
-            <div className="flex items-center gap-1">
-              <button type="button" onClick={() => setAsset("etf")} className={chip(asset === "etf")}>ETF</button>
-              <button type="button" onClick={() => setAsset("fund")} className={chip(asset === "fund")}>펀드</button>
-            </div>
-            <span className="mx-1 h-5 w-px bg-unjong-border" />
-          </>
-        )}
-        {asset === "etf" &&
-          SORTS.map((s) => (
-            <button key={s.key} type="button" onClick={() => setSort(s.key)} className={chip(sort === s.key)}>
-              {s.label}
-            </button>
-          ))}
+      {/* 컨트롤: 기간칩 */}
+      <div className="flex flex-wrap items-center gap-x-1 gap-y-2 border-b border-unjong-border px-4 py-3">
+        {PERIODS.map((p) => (
+          <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
+            {p.label}
+          </button>
+        ))}
         <span className="ml-auto text-[11px] text-unjong-muted">
-          {asset === "etf" ? (isPop ? "거래대금 순 · KRX (실시간 아님)" : "기간 수익률 · 최근 시세 기준") : ""}
+          {asset === "etf" ? (period === "1d" ? "거래대금 상위 · KRX (실시간 아님)" : "기간 수익률 · 최근 시세 기준") : ""}
         </span>
       </div>
 
@@ -160,14 +163,12 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
                   <th className="w-12 px-4 py-2.5 text-left font-medium">순위</th>
                   <th className="px-4 py-2.5 text-left font-medium">종목명</th>
                   <th className="px-4 py-2.5 text-right font-medium">현재가</th>
-                  <th className="px-4 py-2.5 text-right font-medium">등락(1일)</th>
-                  <th className="px-4 py-2.5 text-right font-medium">{metricLabel}</th>
+                  <th className="px-4 py-2.5 text-right font-medium whitespace-nowrap">{periodLabel} 대비</th>
                 </tr>
               </thead>
               <tbody>
                 {rows.map((r, i) => {
-                  const up = r.changePercent >= 0;
-                  const metric = isPop ? null : (r[sort as "r1m" | "r3m" | "r6m" | "r1y"] ?? null);
+                  const v = rowVal(r);
                   return (
                     <tr
                       key={r.symbol}
@@ -183,12 +184,7 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
                         </div>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.price.toLocaleString()}</td>
-                      <td className={`px-4 py-3 text-right font-semibold tabular-nums ${up ? "text-[#F04452]" : "text-[#3182F6]"}`}>
-                        {up ? "+" : ""}{r.changePercent.toFixed(2)}%
-                      </td>
-                      <td className={`px-4 py-3 text-right font-semibold tabular-nums ${isPop ? "text-unjong-muted" : pctColor(metric)}`}>
-                        {isPop ? fmtAmount(r.tradeAmount) : pct(metric)}
-                      </td>
+                      <td className={`px-4 py-3 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>
                     </tr>
                   );
                 })}
