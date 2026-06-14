@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
@@ -30,18 +30,14 @@ const COUNTRIES = [
 ] as const;
 type CountryKey = (typeof COUNTRIES)[number]["key"];
 
-type FilterKey = "amount" | "volume" | "cap" | "up" | "down";
-type FilterDef = { key: FilterKey; label: string };
-
-const KR_FILTERS: FilterDef[] = [
-  { key: "amount", label: "거래대금" },
-  { key: "volume", label: "거래량" },
-  { key: "up", label: "급상승" },
-  { key: "down", label: "급하락" },
-];
-const US_FILTERS: FilterDef[] = [
-  { key: "up", label: "급상승" },
-  { key: "down", label: "급하락" },
+// 정렬축 = 거래대금순 + 기간 수익률 (전 상품 공통 — ETF 탭과 동일)
+type SortKey = "amount" | "r1m" | "r3m" | "r6m" | "r1y";
+const SORTS: { key: SortKey; label: string }[] = [
+  { key: "amount", label: "거래대금순" },
+  { key: "r1m", label: "1개월 수익률" },
+  { key: "r3m", label: "3개월 수익률" },
+  { key: "r6m", label: "6개월 수익률" },
+  { key: "r1y", label: "1년 수익률" },
 ];
 
 const MARKETS = [
@@ -77,11 +73,12 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   useEffect(() => { setMounted(true); }, []);
   const isWatched = (code: string) => watchItems.some((i) => i.code === code);
   const [country, setCountry] = useState<CountryKey>("kr");
-  const [filter, setFilter] = useState<FilterKey>("amount");
+  const [sort, setSort] = useState<SortKey>("amount");
   const [market, setMarket] = useState<MarketKey>("all");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // 데이터: '거래대금 기준 기본 유니버스'를 한 번만 받아옴(정렬과 분리). 정렬은 아래 클라이언트에서.
   useEffect(() => {
     if (country === "global") return;
     let cancelled = false;
@@ -90,14 +87,9 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
       try {
         let list: Row[] = [];
         if (country === "kr") {
-          // 1순위: KRX 100개(약 20분 지연). 비거나 실패하면 2순위: KIS 30개 fallback.
-          const krxUrl = `/api/krx/ranking?market=${market}&sort=${filter}&limit=100`;
-          const kisUrl =
-            filter === "amount" || filter === "volume"
-              ? `/api/kis/volume-rank?market=${market}&sort=${filter}&limit=100`
-              : filter === "cap"
-              ? `/api/kis/market-cap?market=${market}&limit=100`
-              : `/api/kis/movers?dir=${filter}&market=${market}&limit=100`;
+          // 1순위: KRX 100개(약 20분 지연). 비거나 실패하면 2순위: KIS fallback.
+          const krxUrl = `/api/krx/ranking?market=${market}&sort=amount&limit=100`;
+          const kisUrl = `/api/kis/volume-rank?market=${market}&sort=amount&limit=100`;
           let raw: Record<string, unknown>[] = [];
           try {
             const j = await (await fetch(krxUrl)).json();
@@ -118,12 +110,11 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             volume: Number(s.volume ?? 0),
             tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
             marketCap: typeof s.marketCap === "number" ? s.marketCap : undefined,
-            // 1주~1년 등락률: 데이터 레이어 연동 전(다음 STEP) → 지금은 미연동(undefined → "—")
+            // 1주~1년 등락률: 데이터 레이어 연동 전(다음 STEP) → undefined("—")
             r1w: undefined, r1m: undefined, r3m: undefined, r6m: undefined, r1y: undefined,
           }));
         } else {
-          const dir = filter === "down" ? "down" : "up";
-          const j = await (await fetch(`/api/yahoo/us-movers?dir=${dir}&count=100`)).json();
+          const j = await (await fetch(`/api/yahoo/us-movers?dir=up&count=100`)).json();
           list = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
             rank: i + 1,
             symbol: String(s.code ?? ""),
@@ -139,10 +130,21 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
       }
     })();
     return () => { cancelled = true; };
-  }, [country, filter, market]);
+  }, [country, market]);
 
-  const filters = country === "us" ? US_FILTERS : KR_FILTERS;
-  const shownRows = rows;
+  // 클라이언트 정렬: 거래대금순 = API 순서 그대로 / 기간 수익률 = 값 내림차순(미연동 undefined는 뒤로)
+  const sortedRows = useMemo(() => {
+    if (sort === "amount") return rows;
+    const key = sort; // r1m | r3m | r6m | r1y
+    return [...rows].sort((a, b) => {
+      const av = a[key];
+      const bv = b[key];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return bv - av;
+    });
+  }, [rows, sort]);
 
   // 토스식 칩: 라운드스퀘어, 선택=진한 채움/흰 글씨, 비선택=글자만
   const chip = (active: boolean) =>
@@ -165,7 +167,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
         { key: "r6m", label: "6개월" },
         { key: "r1y", label: "1년" },
       ];
-  const showCap = !embedded; // 시총은 마켓 페이지에만(홈은 폭 절약)
+  const showCap = !embedded;
   const periodVal = (r: Row, key: string): number | null | undefined => {
     if (key === "1d") return r.changePercent;
     return r[key as "r1w" | "r1m" | "r3m" | "r6m" | "r1y"];
@@ -180,13 +182,13 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
         </header>
       )}
 
-      {/* 필터 (토스식 라운드스퀘어 칩: 국가 ｜ 시장 ｜ 정렬) */}
+      {/* 필터: 국가 ｜ 시장 ｜ 정렬(거래대금순·기간 수익률) */}
       <div className="mb-3 flex flex-wrap items-center gap-x-1 gap-y-2">
         {COUNTRIES.map((c) => (
           <button
             key={c.key}
             type="button"
-            onClick={() => { setCountry(c.key); setFilter(c.key === "us" ? "up" : "amount"); setMarket("all"); }}
+            onClick={() => { setCountry(c.key); setSort("amount"); setMarket("all"); }}
             className={chip(country === c.key)}
           >
             {c.label}
@@ -203,9 +205,9 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
 
         {country !== "global" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
         {country !== "global" &&
-          filters.map((f) => (
-            <button key={f.key} type="button" onClick={() => setFilter(f.key)} className={chip(filter === f.key)}>
-              {f.label}
+          SORTS.map((s) => (
+            <button key={s.key} type="button" onClick={() => setSort(s.key)} className={chip(sort === s.key)}>
+              {s.label}
             </button>
           ))}
       </div>
@@ -217,7 +219,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
           <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
             {loading ? (
               <LoadingState className="py-10" />
-            ) : shownRows.length === 0 ? (
+            ) : sortedRows.length === 0 ? (
               <EmptyState title="데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
             ) : (
               <div className="overflow-x-auto">
@@ -235,7 +237,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                     </tr>
                   </thead>
                   <tbody>
-                    {shownRows.map((r) => (
+                    {sortedRows.map((r, i) => (
                       <tr
                         key={r.symbol}
                         onClick={() => router.push(`/stock/${r.symbol}`)}
@@ -260,7 +262,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                             />
                           </button>
                         </td>
-                        <td className="px-3 py-3 text-unjong-muted tabular-nums">{r.rank}</td>
+                        <td className="px-3 py-3 text-unjong-muted tabular-nums">{i + 1}</td>
                         <td className="px-3 py-3">
                           <div className="flex items-center gap-2.5 whitespace-nowrap">
                             <StockLogo code={r.symbol} name={r.name} size={28} />
