@@ -53,9 +53,9 @@ function toHover(r: Row): HoverStock {
   return { symbol: r.symbol, name: r.name, priceText: r.price.toLocaleString(), changePercent: r.changePercent, volume: 0, tradeAmount: r.tradeAmount };
 }
 
-export default function HomeEtfRanking() {
+export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "fund" } = {}) {
   const router = useRouter();
-  const [asset, setAsset] = useState<"etf" | "fund">("etf");
+  const [asset, setAsset] = useState<"etf" | "fund">(fixedAsset ?? "etf");
   const [sort, setSort] = useState<SortKey>("pop");
   const [popRows, setPopRows] = useState<Row[]>([]);
   const [perfRows, setPerfRows] = useState<Row[]>([]);
@@ -121,11 +121,15 @@ export default function HomeEtfRanking() {
     <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
       {/* 컨트롤 */}
       <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-unjong-border px-4 py-3">
-        <div className="flex items-center gap-1">
-          <button type="button" onClick={() => setAsset("etf")} className={chip(asset === "etf")}>ETF</button>
-          <button type="button" onClick={() => setAsset("fund")} className={chip(asset === "fund")}>펀드</button>
-        </div>
-        <span className="mx-1 h-5 w-px bg-unjong-border" />
+        {!fixedAsset && (
+          <>
+            <div className="flex items-center gap-1">
+              <button type="button" onClick={() => setAsset("etf")} className={chip(asset === "etf")}>ETF</button>
+              <button type="button" onClick={() => setAsset("fund")} className={chip(asset === "fund")}>펀드</button>
+            </div>
+            <span className="mx-1 h-5 w-px bg-unjong-border" />
+          </>
+        )}
         {asset === "etf" &&
           SORTS.map((s) => (
             <button key={s.key} type="button" onClick={() => setSort(s.key)} className={chip(sort === s.key)}>
