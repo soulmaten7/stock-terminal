@@ -33,12 +33,12 @@ type CountryKey = (typeof COUNTRIES)[number]["key"];
 // 기간칩: 누르면 '등락률' 칼럼이 그 기간(예: 1일전 대비)으로 바뀌고, 그 기준으로 정렬.
 type PeriodKey = "1d" | "1w" | "1m" | "3m" | "6m" | "1y";
 const PERIODS: { key: PeriodKey; label: string }[] = [
-  { key: "1d", label: "1일전" },
-  { key: "1w", label: "1주일전" },
-  { key: "1m", label: "1개월전" },
-  { key: "3m", label: "3개월전" },
-  { key: "6m", label: "6개월전" },
-  { key: "1y", label: "1년전" },
+  { key: "1d", label: "1일" },
+  { key: "1w", label: "1주일" },
+  { key: "1m", label: "1개월" },
+  { key: "3m", label: "3개월" },
+  { key: "6m", label: "6개월" },
+  { key: "1y", label: "1년" },
 ];
 const PERIOD_FIELD: Record<PeriodKey, "changePercent" | "r1w" | "r1m" | "r3m" | "r6m" | "r1y"> = {
   "1d": "changePercent",
@@ -216,7 +216,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                       <th className="text-left font-medium px-3 py-2.5 w-12">순위</th>
                       <th className="text-left font-medium px-3 py-2.5">종목명</th>
                       <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">현재가</th>
-                      <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{periodLabel} 대비</th>
+                      <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{periodLabel}전 대비</th>
                       {!embedded && <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">시총</th>}
                     </tr>
                   </thead>

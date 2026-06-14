@@ -24,12 +24,12 @@ const ETF_RE = /^(KODEX|TIGER|KBSTAR|RISE|ARIRANG|PLUS|ACE|KINDEX|SOL|HANARO|KOS
 // 기간칩 (주식과 동일). 1주일은 ETF 소스에 없어 "—".
 type PeriodKey = "1d" | "1w" | "1m" | "3m" | "6m" | "1y";
 const PERIODS: { key: PeriodKey; label: string }[] = [
-  { key: "1d", label: "1일전" },
-  { key: "1w", label: "1주일전" },
-  { key: "1m", label: "1개월전" },
-  { key: "3m", label: "3개월전" },
-  { key: "6m", label: "6개월전" },
-  { key: "1y", label: "1년전" },
+  { key: "1d", label: "1일" },
+  { key: "1w", label: "1주일" },
+  { key: "1m", label: "1개월" },
+  { key: "3m", label: "3개월" },
+  { key: "6m", label: "6개월" },
+  { key: "1y", label: "1년" },
 ];
 const PERF_FIELD: Partial<Record<PeriodKey, "r1m" | "r3m" | "r6m" | "r1y">> = {
   "1m": "r1m",
@@ -163,7 +163,7 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
                   <th className="w-12 px-4 py-2.5 text-left font-medium">순위</th>
                   <th className="px-4 py-2.5 text-left font-medium">종목명</th>
                   <th className="px-4 py-2.5 text-right font-medium">현재가</th>
-                  <th className="px-4 py-2.5 text-right font-medium whitespace-nowrap">{periodLabel} 대비</th>
+                  <th className="px-4 py-2.5 text-right font-medium whitespace-nowrap">{periodLabel}전 대비</th>
                 </tr>
               </thead>
               <tbody>
