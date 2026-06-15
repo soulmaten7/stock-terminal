@@ -104,22 +104,31 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
   const [candles, setCandles] = useState<Candle[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
 
-  // 차트 (국내 6자리, debounce)
+  // 차트: 국내(6자리)=KIS 먼저→비면 yahoo 폴백 / 미국 등=yahoo. debounce.
   useEffect(() => {
-    if (!stock || !/^\d{6}$/.test(stock.symbol)) {
-      setCandles([]);
-      return;
-    }
+    if (!stock) { setCandles([]); return; }
     const code = stock.symbol;
+    const isKr = /^\d{6}$/.test(code);
     let cancelled = false;
     const t = setTimeout(async () => {
-      try {
-        const j = await (await fetch(`/api/kis/chart?symbol=${code}&period=D`)).json();
-        const cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
-        if (!cancelled) setCandles(cs);
-      } catch {
-        if (!cancelled) setCandles([]);
+      let cs: Candle[] = [];
+      if (isKr) {
+        try {
+          const j = await (await fetch(`/api/kis/chart?symbol=${code}&period=D`)).json();
+          cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
+        } catch {
+          cs = [];
+        }
       }
+      if (cs.length < 2) {
+        try {
+          const j = await (await fetch(`/api/yahoo/chart?symbol=${encodeURIComponent(code)}`)).json();
+          cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
+        } catch {
+          /* cs 유지 */
+        }
+      }
+      if (!cancelled) setCandles(cs);
     }, 350);
     return () => { cancelled = true; clearTimeout(t); };
   }, [stock?.symbol]);
