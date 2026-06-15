@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import StockInfoPanel from "./StockInfoPanel";
@@ -12,10 +13,14 @@ type Props = { code: string };
 
 export default function StockPageClient({ code }: Props) {
   const setSelectedSymbol = useUnjongSelectedSymbol((s) => s.setSelectedSymbol);
-  const [stockName, setStockName] = useState<string>(code);
+  const searchParams = useSearchParams();
+  const passedName = searchParams.get("name");
+  const [stockName, setStockName] = useState<string>(passedName || code);
 
-  // 종목명 조회 (한국: stocks DB name_ko · 미국: ticker 그대로)
+  // 종목명: 성적표에서 넘긴 이름(?name=) 있으면 즉시 사용(ETF 등 DB 무관 정확).
+  // 없을 때만 한국 stocks DB name_ko 조회 / 미국은 ticker 그대로.
   useEffect(() => {
+    if (passedName) { setStockName(passedName); return; }
     let cancelled = false;
     const load = async () => {
       if (/^\d{6}$/.test(code)) {
@@ -32,7 +37,7 @@ export default function StockPageClient({ code }: Props) {
     };
     load();
     return () => { cancelled = true; };
-  }, [code]);
+  }, [code, passedName]);
 
   // 종목 페이지 진입 시 selectedSymbol 동기화 (기존 차트·관심종목 활용)
   useEffect(() => {

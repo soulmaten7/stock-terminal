@@ -28,7 +28,6 @@ type PerfRow = { symbol: string; r1w?: number | null; r1m?: number | null; r3m?:
 const COUNTRIES = [
   { key: "kr", label: "국내" },
   { key: "us", label: "미국" },
-  { key: "global", label: "글로벌" },
 ] as const;
 type CountryKey = (typeof COUNTRIES)[number]["key"];
 
@@ -89,7 +88,6 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (country === "global") return;
     let cancelled = false;
     setLoading(true);
     (async () => {
@@ -235,10 +233,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
           ))}
       </div>
 
-      {country === "global" ? (
-        <EmptyState icon="🛠️" title="글로벌 마켓 준비 중" description="순차 확장 예정 (STEP 154~)." className="py-12" />
-      ) : (
-        <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
+      <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
           <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
             {loading ? (
               <LoadingState className="py-10" />
@@ -263,7 +258,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                       return (
                         <tr
                           key={r.symbol}
-                          onClick={() => router.push(`/stock/${r.symbol}`)}
+                          onClick={() => router.push(`/stock/${r.symbol}?name=${encodeURIComponent(r.name)}`)}
                           onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
                           className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
                         >
@@ -307,7 +302,6 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
           </section>
           {embedded && detailSlot}
         </div>
-      )}
     </div>
   );
 }

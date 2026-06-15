@@ -172,7 +172,7 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
                     return (
                       <tr
                         key={r.symbol}
-                        onClick={() => router.push(`/stock/${r.symbol}`)}
+                        onClick={() => router.push(`/stock/${r.symbol}?name=${encodeURIComponent(r.name)}`)}
                         onMouseEnter={() => setHovered(toHover(r))}
                         className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
                       >
