@@ -3,6 +3,7 @@
 import { useState, Fragment, type ReactNode } from "react";
 import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
 import HomeEtfRanking from "./HomeEtfRanking";
+import HomePerfRanking from "./HomePerfRanking";
 import HomeRoomRanking from "./HomeRoomRanking";
 
 const TABS = [
@@ -68,7 +69,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
       {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
       {tab === "etn" && <ComingSoon label="ETN" />}
       {tab === "fund" && <HomeEtfRanking fixedAsset="fund" />}
-      {tab === "reit" && <ComingSoon label="리츠" />}
+      {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
     </div>
   );
