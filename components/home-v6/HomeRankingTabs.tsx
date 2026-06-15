@@ -5,6 +5,7 @@ import MarketClient, { type HoverStock } from "@/components/market/MarketClient"
 import HomeEtfRanking from "./HomeEtfRanking";
 import HomePerfRanking from "./HomePerfRanking";
 import HomeRoomRanking from "./HomeRoomRanking";
+import HomeEtnRanking from "./HomeEtnRanking";
 
 const TABS = [
   { key: "stock", label: "주식" },
@@ -16,17 +17,6 @@ const TABS = [
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
 
-function ComingSoon({ label }: { label: string }) {
-  return (
-    <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
-      <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
-        <span className="mb-2 text-2xl">🗂️</span>
-        <p className="text-sm font-medium text-unjong-primary">{label} 성적표는 준비 중이에요</p>
-        <p className="mt-1 text-xs text-unjong-muted">데이터 소스 연동 후 주식·ETF와 같은 기간 수익률 방식으로 제공해요</p>
-      </div>
-    </section>
-  );
-}
 
 export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
   const [tab, setTab] = useState<TabKey>("stock");
@@ -67,7 +57,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
 
       {tab === "stock" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
-      {tab === "etn" && <ComingSoon label="ETN" />}
+      {tab === "etn" && <HomeEtnRanking />}
       {tab === "fund" && <HomeEtfRanking fixedAsset="fund" />}
       {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
