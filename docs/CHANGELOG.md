@@ -1,6 +1,19 @@
 <!-- 2026-06-15 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-15 — STEP 240·243~246 (데이터 레이어: 기간 수익률 실데이터 + /market 통합 디렉토리)
+
+홈 UI 완성 후 "—" 칸을 실데이터로 채우고, /market을 전 타입 통합 성적표로. 빌드 ✓ 전 STEP. HEAD `bfa7d97`(246).
+
+- **240** ETF 미리보기 폭 주식과 동일(wide+2/3·1/3 그리드) — 적용 완료 `bd4287e`(228~241 기록 땐 미적용이었음)
+- **243** 주식 기간 수익률(1주~1년) 실데이터 — `/api/yahoo/kr-performance`(대표 ~45종목, yahoo 과거 시세·영업일 오프셋 5/21/63/126/252·30분 캐시) + MarketClient **2단계 병합**(KRX 1일 즉시 → 기간 도착 시 심볼 기준). 유니버스 밖은 "—"
+- **244** 리츠 탭 실데이터 — `/api/yahoo/reit-performance`(리츠 14) + **제네릭 `HomePerfRanking`**(단일 소스 기간 랭킹, 리츠/ETN 공용). ComingSoon → 실제 성적표
+- **245** 미국 주식 기간 수익률 — `/api/yahoo/us-performance`(대표 40, us-movers 유니버스 재사용) + MarketClient US 2단계 병합
+- **246** `/market`('상품 리스트') = **전 타입 통합 디렉토리** — 주식·ETF·리츠를 한 테이블에 같은 기간 수익률 자로 가로질러(타입 배지·타입 필터·기간칩). `MarketDirectoryClient` 신규, kr-performance에 name·price 추가해 shape 통일. **핵심 차별점 '가로질러 비교' 실현**
+
+**데이터 현황**: 주식(국내·미국)·ETF·리츠 = yahoo 실데이터 ✅ / **ETN 보류**(yahoo 데이터 없음, 코드 14개 0/14 → KRX ETN 엔드포인트 필요) / **펀드 보류**(KOFIA 소스 필요).
+**다음**: US를 /market 통합에 합류(us-performance에 name 추가) · 종목→증권사 바로가기(허브) · ETN(KRX)·펀드(KOFIA) · AI 해설.
+
 ## 2026-06-15 — STEP 228~241 (V7 UI 전면 재설계: 홈 = 상품 성적표 + 헤더 정리)
 
 전략 대화로 운종 정체성 재확정 → UI 전면 재설계. 빌드 ✓ 전 STEP. HEAD `bbf4e88`(241).
