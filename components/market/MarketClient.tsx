@@ -140,7 +140,8 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
           }
         } else {
           const j = await (await fetch(`/api/yahoo/us-movers?dir=up&count=100`)).json();
-          const list: Row[] = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
+          // 1단계: us-movers(1일) 즉시 표시
+          const base: Row[] = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
             rank: i + 1,
             symbol: String(s.code ?? ""),
             name: String(s.name ?? ""),
@@ -148,7 +149,25 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             changePercent: Number(s.changePct ?? 0),
             volume: Number(s.volume ?? 0),
           }));
-          if (!cancelled) setRows(list);
+          if (!cancelled) { setRows(base); setLoading(false); }
+          // 2단계: 기간 수익률 병합 (티커 기준 · 실패 시 무시)
+          try {
+            const pj = await (await fetch("/api/yahoo/us-performance")).json();
+            const perfMap: Record<string, PerfRow> = {};
+            for (const it of (pj.items ?? []) as PerfRow[]) if (it.symbol) perfMap[String(it.symbol)] = it;
+            if (!cancelled) {
+              setRows((prev) =>
+                prev.map((r) => {
+                  const p = perfMap[r.symbol];
+                  return p
+                    ? { ...r, r1w: p.r1w ?? undefined, r1m: p.r1m ?? undefined, r3m: p.r3m ?? undefined, r6m: p.r6m ?? undefined, r1y: p.r1y ?? undefined }
+                    : r;
+                })
+              );
+            }
+          } catch {
+            /* 기간 수익률 실패 → "—" 유지 */
+          }
         }
       } finally {
         if (!cancelled) setLoading(false);
