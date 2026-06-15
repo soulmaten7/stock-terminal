@@ -23,6 +23,8 @@ type Row = {
   marketCap?: number;
 };
 
+type PerfRow = { symbol: string; r1w?: number | null; r1m?: number | null; r3m?: number | null; r6m?: number | null; r1y?: number | null };
+
 const COUNTRIES = [
   { key: "kr", label: "국내" },
   { key: "us", label: "미국" },
@@ -30,7 +32,6 @@ const COUNTRIES = [
 ] as const;
 type CountryKey = (typeof COUNTRIES)[number]["key"];
 
-// 기간칩: 누르면 '등락률' 칼럼이 그 기간(예: 1일전 대비)으로 바뀌고, 그 기준으로 정렬.
 type PeriodKey = "1d" | "1w" | "1m" | "3m" | "6m" | "1y";
 const PERIODS: { key: PeriodKey; label: string }[] = [
   { key: "1d", label: "1일" },
@@ -82,19 +83,17 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   useEffect(() => { setMounted(true); }, []);
   const isWatched = (code: string) => watchItems.some((i) => i.code === code);
   const [country, setCountry] = useState<CountryKey>("kr");
-  const [period, setPeriod] = useState<PeriodKey>("1d"); // 기본=1일전(전일대비 — 표준 뷰, 유지)
+  const [period, setPeriod] = useState<PeriodKey>("1d");
   const [market, setMarket] = useState<MarketKey>("all");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 데이터: '거래대금 기준 상위 100 유니버스'를 한 번만 받음. 정렬은 아래 클라이언트에서(기간칩 기준).
   useEffect(() => {
     if (country === "global") return;
     let cancelled = false;
     setLoading(true);
     (async () => {
       try {
-        let list: Row[] = [];
         if (country === "kr") {
           const krxUrl = `/api/krx/ranking?market=${market}&sort=amount&limit=100`;
           const kisUrl = `/api/kis/volume-rank?market=${market}&sort=amount&limit=100`;
@@ -109,7 +108,8 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             const j = await (await fetch(kisUrl)).json();
             raw = (j.stocks ?? j.items ?? []) as Record<string, unknown>[];
           }
-          list = raw.map((s, i: number) => ({
+          // 1단계: KRX(1일) 즉시 표시 — 기간 칸은 일단 "—"
+          const base: Row[] = raw.map((s, i: number) => ({
             rank: typeof s.rank === "number" ? s.rank : i + 1,
             symbol: String(s.symbol ?? ""),
             name: String(s.name ?? ""),
@@ -118,11 +118,29 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             volume: Number(s.volume ?? 0),
             tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
             marketCap: typeof s.marketCap === "number" ? s.marketCap : undefined,
-            r1w: undefined, r1m: undefined, r3m: undefined, r6m: undefined, r1y: undefined,
           }));
+          if (!cancelled) { setRows(base); setLoading(false); }
+          // 2단계: 기간 수익률 병합 (느려도 1일은 이미 보임 · 실패 시 무시)
+          try {
+            const j = await (await fetch("/api/yahoo/kr-performance")).json();
+            const perfMap: Record<string, PerfRow> = {};
+            for (const it of (j.items ?? []) as PerfRow[]) if (it.symbol) perfMap[String(it.symbol)] = it;
+            if (!cancelled) {
+              setRows((prev) =>
+                prev.map((r) => {
+                  const p = perfMap[r.symbol];
+                  return p
+                    ? { ...r, r1w: p.r1w ?? undefined, r1m: p.r1m ?? undefined, r3m: p.r3m ?? undefined, r6m: p.r6m ?? undefined, r1y: p.r1y ?? undefined }
+                    : r;
+                })
+              );
+            }
+          } catch {
+            /* 기간 수익률 실패 → "—" 유지 */
+          }
         } else {
           const j = await (await fetch(`/api/yahoo/us-movers?dir=up&count=100`)).json();
-          list = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
+          const list: Row[] = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
             rank: i + 1,
             symbol: String(s.code ?? ""),
             name: String(s.name ?? ""),
@@ -130,8 +148,8 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             changePercent: Number(s.changePct ?? 0),
             volume: Number(s.volume ?? 0),
           }));
+          if (!cancelled) setRows(list);
         }
-        if (!cancelled) setRows(list);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -142,7 +160,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   const field = PERIOD_FIELD[period];
   const periodLabel = PERIODS.find((p) => p.key === period)!.label;
 
-  // 클라이언트 정렬: 선택 기간 수익률 내림차순(미연동 undefined는 뒤로). 1일전=값 있음 → 전일대비 순.
+  // 클라이언트 정렬: 선택 기간 수익률 내림차순(미연동 undefined는 뒤로).
   const sortedRows = useMemo(() => {
     return [...rows].sort((a, b) => {
       const av = a[field];
@@ -164,11 +182,11 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
       {!embedded && (
         <header className="mb-4">
           <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
-          <p className="mt-1 text-sm text-unjong-muted">기간 수익률 성적표 — 기간칩으로 보고 싶은 구간 선택. (1주~1년 데이터 순차 연동)</p>
+          <p className="mt-1 text-sm text-unjong-muted">기간 수익률 성적표 — 기간칩으로 구간 선택. (대표 종목 1주~1년 실데이터)</p>
         </header>
       )}
 
-      {/* 필터: 국가 ｜ 시장 ｜ 기간칩(1일전~1년전) */}
+      {/* 필터: 국가 ｜ 시장 ｜ 기간칩 */}
       <div className="mb-3 flex flex-wrap items-center gap-x-1 gap-y-2">
         {COUNTRIES.map((c) => (
           <button
