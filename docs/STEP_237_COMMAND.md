@@ -1,0 +1,359 @@
+<!-- 2026-06-14 -->
+# STEP 237 — 마켓 테이블: 단일 '[기간] 대비' 칼럼 + 기간칩 토글 + '상품 리스트' 라벨
+
+## 실행 명령어 (Sonnet — 기본)
+```bash
+cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
+```
+> 그 다음: `@docs/STEP_237_COMMAND.md 파일 내용대로 실행해줘`
+
+## 목표 (사용자 확정)
+1. 주식(MarketClient) 테이블에서 **여러 기간 칼럼(1일·1개월·1년) 동시 표시 → 단일 '등락률' 칼럼**으로.
+   - 기간칩 = **1일전 · 1주일전 · 1개월전 · 3개월전 · 6개월전 · 1년전**
+   - 칩을 누르면 그 한 칼럼의 **제목+값**이 바뀜 (예: "1일전 대비" → "1주일전 대비")
+   - 그 기간 수익률 **순으로 정렬**도 됨 (단기·장기 둘 다 한눈에)
+   - **기본 = 1일전** (전일대비 — 표준 뷰, 쭉 유지)
+2. 홈 탭 앞에 **'상품 리스트' 라벨** 추가 (주식~리츠 묶음 / 리딩방 리스트는 구분선 뒤 별도).
+
+> UI-first: 1주~1년·시총 데이터는 다음 STEP. 지금은 1일전만 값이 있고, 1주일전~1년전 누르면 "—"(정상). 기본이 1일전이라 표는 안 비어 있음.
+
+## 전제 상태
+- 현재 HEAD: STEP 235(`72dc575`) 기준. (그 뒤 MarketClient 변경분이 있어도 이 파일 **전체 교체**라 안전)
+- 변경 **2파일**:
+  - `components/market/MarketClient.tsx` (**전체 교체**)
+  - `components/home-v6/HomeRankingTabs.tsx` (**find/replace 1곳** — 라벨 추가)
+- DB·API 변경 0
+
+---
+
+## 작업 1/2 — `components/market/MarketClient.tsx` (파일 전체 교체)
+
+```tsx
+"use client";
+
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { LoadingState, EmptyState } from "@/components/ui/State";
+import { StockLogo } from "@/components/ui/StockLogo";
+import { Heart } from "lucide-react";
+import { useWatchlist } from "@/stores/watchlistStore";
+
+type Row = {
+  rank: number;
+  symbol: string;
+  name: string;
+  priceText: string;
+  changePercent: number; // 1일전 대비(현재 등락률)
+  volume: number;
+  tradeAmount?: number;
+  r1w?: number | null;
+  r1m?: number | null;
+  r3m?: number | null;
+  r6m?: number | null;
+  r1y?: number | null;
+  marketCap?: number;
+};
+
+const COUNTRIES = [
+  { key: "kr", label: "국내" },
+  { key: "us", label: "미국" },
+  { key: "global", label: "글로벌" },
+] as const;
+type CountryKey = (typeof COUNTRIES)[number]["key"];
+
+// 기간칩: 누르면 '등락률' 칼럼이 그 기간(예: 1일전 대비)으로 바뀌고, 그 기준으로 정렬.
+type PeriodKey = "1d" | "1w" | "1m" | "3m" | "6m" | "1y";
+const PERIODS: { key: PeriodKey; label: string }[] = [
+  { key: "1d", label: "1일전" },
+  { key: "1w", label: "1주일전" },
+  { key: "1m", label: "1개월전" },
+  { key: "3m", label: "3개월전" },
+  { key: "6m", label: "6개월전" },
+  { key: "1y", label: "1년전" },
+];
+const PERIOD_FIELD: Record<PeriodKey, "changePercent" | "r1w" | "r1m" | "r3m" | "r6m" | "r1y"> = {
+  "1d": "changePercent",
+  "1w": "r1w",
+  "1m": "r1m",
+  "3m": "r3m",
+  "6m": "r6m",
+  "1y": "r1y",
+};
+
+const MARKETS = [
+  { key: "all", label: "전체" },
+  { key: "kospi", label: "코스피" },
+  { key: "kosdaq", label: "코스닥" },
+] as const;
+type MarketKey = (typeof MARKETS)[number]["key"];
+
+function fmtAmount(won?: number): string {
+  if (!won || won <= 0) return "—";
+  if (won >= 1e12) return `${(won / 1e12).toFixed(1)}조`;
+  if (won >= 1e8) return `${Math.round(won / 1e8).toLocaleString()}억`;
+  return won.toLocaleString();
+}
+function pct(v?: number | null): string {
+  if (v == null) return "—";
+  return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+}
+function pctColor(v?: number | null): string {
+  if (v == null) return "text-unjong-muted";
+  return v >= 0 ? "text-[#F04452]" : "text-[#3182F6]";
+}
+
+export type HoverStock = { symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
+
+export default function MarketClient({ embedded = false, onHover, detailSlot }: { embedded?: boolean; onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
+  const router = useRouter();
+  const watchItems = useWatchlist((s) => s.items);
+  const addWatch = useWatchlist((s) => s.add);
+  const removeWatch = useWatchlist((s) => s.remove);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isWatched = (code: string) => watchItems.some((i) => i.code === code);
+  const [country, setCountry] = useState<CountryKey>("kr");
+  const [period, setPeriod] = useState<PeriodKey>("1d"); // 기본=1일전(전일대비 — 표준 뷰, 유지)
+  const [market, setMarket] = useState<MarketKey>("all");
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 데이터: '거래대금 기준 상위 100 유니버스'를 한 번만 받음. 정렬은 아래 클라이언트에서(기간칩 기준).
+  useEffect(() => {
+    if (country === "global") return;
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      try {
+        let list: Row[] = [];
+        if (country === "kr") {
+          const krxUrl = `/api/krx/ranking?market=${market}&sort=amount&limit=100`;
+          const kisUrl = `/api/kis/volume-rank?market=${market}&sort=amount&limit=100`;
+          let raw: Record<string, unknown>[] = [];
+          try {
+            const j = await (await fetch(krxUrl)).json();
+            raw = (j.stocks ?? []) as Record<string, unknown>[];
+          } catch {
+            raw = [];
+          }
+          if (raw.length === 0) {
+            const j = await (await fetch(kisUrl)).json();
+            raw = (j.stocks ?? j.items ?? []) as Record<string, unknown>[];
+          }
+          list = raw.map((s, i: number) => ({
+            rank: typeof s.rank === "number" ? s.rank : i + 1,
+            symbol: String(s.symbol ?? ""),
+            name: String(s.name ?? ""),
+            priceText: Number(s.price ?? 0).toLocaleString(),
+            changePercent: Number(s.changePercent ?? 0),
+            volume: Number(s.volume ?? 0),
+            tradeAmount: typeof s.tradeAmount === "number" ? s.tradeAmount : undefined,
+            marketCap: typeof s.marketCap === "number" ? s.marketCap : undefined,
+            r1w: undefined, r1m: undefined, r3m: undefined, r6m: undefined, r1y: undefined,
+          }));
+        } else {
+          const j = await (await fetch(`/api/yahoo/us-movers?dir=up&count=100`)).json();
+          list = (j.items ?? []).map((s: Record<string, unknown>, i: number) => ({
+            rank: i + 1,
+            symbol: String(s.code ?? ""),
+            name: String(s.name ?? ""),
+            priceText: String(s.price ?? "—"),
+            changePercent: Number(s.changePct ?? 0),
+            volume: Number(s.volume ?? 0),
+          }));
+        }
+        if (!cancelled) setRows(list);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [country, market]);
+
+  const field = PERIOD_FIELD[period];
+  const periodLabel = PERIODS.find((p) => p.key === period)!.label;
+
+  // 클라이언트 정렬: 선택 기간 수익률 내림차순(미연동 undefined는 뒤로). 1일전=값 있음 → 전일대비 순.
+  const sortedRows = useMemo(() => {
+    return [...rows].sort((a, b) => {
+      const av = a[field];
+      const bv = b[field];
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return bv - av;
+    });
+  }, [rows, field]);
+
+  const chip = (active: boolean) =>
+    `rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+      active ? "bg-unjong-primary text-white" : "text-unjong-muted hover:bg-unjong-background"
+    }`;
+
+  return (
+    <div className={embedded ? "" : "px-4 py-6"}>
+      {!embedded && (
+        <header className="mb-4">
+          <h1 className="text-xl font-bold text-unjong-primary">마켓</h1>
+          <p className="mt-1 text-sm text-unjong-muted">기간 수익률 성적표 — 기간칩으로 보고 싶은 구간 선택. (1주~1년 데이터 순차 연동)</p>
+        </header>
+      )}
+
+      {/* 필터: 국가 ｜ 시장 ｜ 기간칩(1일전~1년전) */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-1 gap-y-2">
+        {COUNTRIES.map((c) => (
+          <button
+            key={c.key}
+            type="button"
+            onClick={() => { setCountry(c.key); setPeriod("1d"); setMarket("all"); }}
+            className={chip(country === c.key)}
+          >
+            {c.label}
+          </button>
+        ))}
+
+        {country === "kr" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
+        {country === "kr" &&
+          MARKETS.map((m) => (
+            <button key={m.key} type="button" onClick={() => setMarket(m.key)} className={chip(market === m.key)}>
+              {m.label}
+            </button>
+          ))}
+
+        {country !== "global" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
+        {country !== "global" &&
+          PERIODS.map((p) => (
+            <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
+              {p.label}
+            </button>
+          ))}
+      </div>
+
+      {country === "global" ? (
+        <EmptyState icon="🛠️" title="글로벌 마켓 준비 중" description="순차 확장 예정 (STEP 154~)." className="py-12" />
+      ) : (
+        <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
+          <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
+            {loading ? (
+              <LoadingState className="py-10" />
+            ) : sortedRows.length === 0 ? (
+              <EmptyState title="데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-xs text-unjong-muted border-b border-unjong-border">
+                      <th className="w-8 px-2 py-2.5"></th>
+                      <th className="text-left font-medium px-3 py-2.5 w-12">순위</th>
+                      <th className="text-left font-medium px-3 py-2.5">종목명</th>
+                      <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">현재가</th>
+                      <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{periodLabel} 대비</th>
+                      {!embedded && <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">시총</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedRows.map((r, i) => {
+                      const v = r[field];
+                      return (
+                        <tr
+                          key={r.symbol}
+                          onClick={() => router.push(`/stock/${r.symbol}`)}
+                          onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
+                          className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
+                        >
+                          <td className="px-2 py-3">
+                            <button
+                              type="button"
+                              aria-label="관심 토글"
+                              className="p-0.5"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (isWatched(r.symbol)) removeWatch(r.symbol);
+                                else addWatch({ code: r.symbol, name: r.name, market: country === "us" ? "US" : "KOSPI" });
+                              }}
+                            >
+                              <Heart
+                                size={15}
+                                fill={mounted && isWatched(r.symbol) ? "currentColor" : "none"}
+                                className={mounted && isWatched(r.symbol) ? "text-[#3182F6]" : "text-unjong-muted hover:text-[#3182F6]"}
+                              />
+                            </button>
+                          </td>
+                          <td className="px-3 py-3 text-unjong-muted tabular-nums">{i + 1}</td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center gap-2.5 whitespace-nowrap">
+                              <StockLogo code={r.symbol} name={r.name} size={28} />
+                              <span className="font-medium text-unjong-primary">{r.name}</span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 text-right tabular-nums text-unjong-primary whitespace-nowrap">{r.priceText}</td>
+                          <td className={`px-3 py-3 text-right tabular-nums font-semibold whitespace-nowrap ${pctColor(v)}`}>{pct(v)}</td>
+                          {!embedded && (
+                            <td className="px-3 py-3 text-right tabular-nums text-unjong-muted whitespace-nowrap">{fmtAmount(r.marketCap)}</td>
+                          )}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+          {embedded && detailSlot}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+> 핵심: 칼럼이 **한 칸('{기간} 대비')**으로. `period` 상태 + `PERIOD_FIELD`로 그 칸의 값/정렬 결정. 기본 `"1d"`. 헤더 `{periodLabel} 대비`. 다중 `periodCols` 제거. 시총은 마켓 페이지(!embedded)만.
+
+---
+
+## 작업 2/2 — `components/home-v6/HomeRankingTabs.tsx` (find/replace 1곳 — '상품 리스트' 라벨)
+
+**찾기:**
+```tsx
+      <div className="mb-4 flex items-center gap-1 border-b border-unjong-border">
+        {TABS.map((t) => (
+```
+**바꾸기:**
+```tsx
+      <div className="mb-4 flex items-center gap-1 border-b border-unjong-border">
+        {/* '상품 리스트' 라벨 — 주식~리츠 묶음 (리딩방 리스트는 구분선 뒤 별도) */}
+        <span className="mr-1.5 shrink-0 text-xs font-semibold text-unjong-muted">상품 리스트</span>
+        <span className="mr-1 h-4 w-px bg-unjong-border" aria-hidden />
+        {TABS.map((t) => (
+```
+> 탭 줄 맨 앞에 작은 '상품 리스트' 라벨 + 구분선. 기존 탭/리딩방 구분선은 그대로.
+
+---
+
+## 빌드 검증 + 커밋·푸시
+```bash
+cd ~/stock-terminal && npm run build
+```
+빌드 ✓ (exit 0) 확인 후:
+```bash
+cd ~/stock-terminal && git add components/market/MarketClient.tsx components/home-v6/HomeRankingTabs.tsx && git commit -m "feat(v7): 마켓 단일 등락률 칼럼+기간칩(1일전~1년전) 토글, 상품 리스트 라벨 (STEP 237)" && git push
+```
+
+## 완료 보고 (Cowork 에게 전달할 것)
+- [ ] `npm run build` exit 0 (미사용/타입 에러 없음) / 커밋·push
+- [ ] 주식 탭 칩 = **1일전 · 1주일전 · 1개월전 · 3개월전 · 6개월전 · 1년전**
+- [ ] 표 등락 칼럼이 **한 칸**, 제목이 칩 따라 바뀜 (기본 "1일전 대비")
+- [ ] 1일전은 값·정렬 작동, 1주일전~1년전은 "—"(데이터 다음 STEP)
+- [ ] 홈 탭 앞에 **'상품 리스트' 라벨** + 구분선, 리딩방 리스트는 맨 끝 그대로
+- [ ] 종목 클릭·관심·hover 그대로
+- ⚠️ 하드 새로고침(Cmd+Shift+R).
+
+## 주의·예상 이슈
+- 단일 칼럼이라 가로 안 넓어짐(스크롤 거의 없음). 시총은 마켓 페이지에만.
+- 기간칩 정렬: 1주~1년은 값이 없어 지금 누르면 순서 그대로(거래대금) + "—". 데이터 연동되면 자동 작동.
+- 다음(238): ETF·펀드 테이블도 같은 단일칼럼/기간칩으로 통일 + 1주~1년·시총 실제 데이터 연동.
+- **문서 TODO**(다음 갱신): STEP 228~237.
+
+---
+> STEP 237 = 마켓 단일 등락률 칼럼 + 기간칩 토글 + 상품 리스트 라벨. 전제 STEP 235(`72dc575`).
+> 다음(238) = ETF/펀드 동일 통일 + 기간 수익률·시총 데이터 연동.
