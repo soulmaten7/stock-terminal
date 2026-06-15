@@ -56,6 +56,7 @@ export async function GET() {
           name: e.name,
           price,
           changePercent: ret(closes, 1) ?? 0,
+          r1w: ret(closes, 5),
           r1m: ret(closes, 21),
           r3m: ret(closes, 63),
           r6m: ret(closes, 126),

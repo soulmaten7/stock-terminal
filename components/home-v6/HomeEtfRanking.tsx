@@ -13,6 +13,7 @@ type Row = {
   price: number;
   changePercent: number;
   tradeAmount?: number;
+  r1w?: number | null;
   r1m?: number | null;
   r3m?: number | null;
   r6m?: number | null;
@@ -30,7 +31,8 @@ const PERIODS: { key: PeriodKey; label: string }[] = [
   { key: "6m", label: "6개월" },
   { key: "1y", label: "1년" },
 ];
-const PERF_FIELD: Partial<Record<PeriodKey, "r1m" | "r3m" | "r6m" | "r1y">> = {
+const PERF_FIELD: Partial<Record<PeriodKey, "r1w" | "r1m" | "r3m" | "r6m" | "r1y">> = {
+  "1w": "r1w",
   "1m": "r1m",
   "3m": "r3m",
   "6m": "r6m",
