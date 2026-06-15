@@ -4,7 +4,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 // ETN 일별매매정보 — KRX 공식 OpenAPI. ?debug=1 이면 원본 응답 진단.
-const EP = "http://data-dbg.krx.co.kr/svc/apis/sto/etn_bydd_trd";
+const EP = "http://data-dbg.krx.co.kr/svc/apis/etp/etn_bydd_trd";
 
 type KrxRow = Record<string, string>;
 
