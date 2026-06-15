@@ -24,6 +24,7 @@ export function createAnonClient(): SupabaseClient {
         persistSession: false,
         autoRefreshToken: false,
         detectSessionInUrl: false,
+        storageKey: "sb-unjong-anon", // 인증 클라(sb-<ref>-auth-token)와 키 분리 → "Multiple GoTrueClient instances" 경고 제거
       },
     });
   }
