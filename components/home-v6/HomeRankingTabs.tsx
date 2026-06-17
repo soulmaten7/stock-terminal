@@ -5,7 +5,6 @@ import MarketClient, { type HoverStock } from "@/components/market/MarketClient"
 import HomeEtfRanking from "./HomeEtfRanking";
 import HomePerfRanking from "./HomePerfRanking";
 import HomeRoomRanking from "./HomeRoomRanking";
-import HomeEtnRanking from "./HomeEtnRanking";
 
 const TABS = [
   { key: "stock", label: "주식" },
@@ -69,7 +68,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
 
       {tab === "stock" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
-      {tab === "etn" && <HomeEtnRanking />}
+      {tab === "etn" && <HomePerfRanking apiPath="/api/krx/etn-performance" emptyLabel="ETN" />}
       {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
     </div>

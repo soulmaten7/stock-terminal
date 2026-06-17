@@ -94,24 +94,12 @@ export default function MarketDirectoryClient() {
           .then((r) => r.json())
           .then((j) => (j.items ?? []) as PerfItem[])
           .catch(() => [] as PerfItem[]);
-      const grabEtn = (): Promise<PerfItem[]> =>
-        fetch("/api/krx/etn")
-          .then((r) => r.json())
-          .then((j) => {
-            const arr = (j.etns ?? []) as Array<{ symbol: string; name: string; price: number; changePercent: number; tradeAmount?: number }>;
-            return [...arr]
-              .sort((a, b) => (b.tradeAmount ?? 0) - (a.tradeAmount ?? 0))
-              .slice(0, 40)
-              .map((e) => ({ symbol: e.symbol, name: e.name, price: e.price, changePercent: e.changePercent })) as PerfItem[];
-          })
-          .catch(() => [] as PerfItem[]);
-
       const [kr, etf, reit, us, etn] = await Promise.all([
         grab("/api/yahoo/kr-performance"),
         grab("/api/yahoo/etf-performance"),
         grab("/api/yahoo/reit-performance"),
         grab("/api/yahoo/us-performance"),
-        grabEtn(),
+        grab("/api/krx/etn-performance"),
       ]);
       const combined: Row[] = [
         ...kr.map((x) => ({ ...x, type: "주식" as TypeKey })),
@@ -147,9 +135,6 @@ export default function MarketDirectoryClient() {
 
   const previewStock = hovered ?? (rows[0] ? toHover(rows[0]) : null);
 
-  // ETN은 1일 시세만 → 기간 선택 시 빈 결과 안내
-  const etnPeriodNote = typeFilter === "ETN" && period !== "1d";
-
   return (
     <div className="px-6 py-5">
       <header className="mb-4">
@@ -175,8 +160,6 @@ export default function MarketDirectoryClient() {
         <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft min-w-0 xl:col-span-2">
           {loading ? (
             <LoadingState className="py-10" />
-          ) : etnPeriodNote ? (
-            <EmptyState title="ETN은 1일 시세만 제공돼요" description="ETN은 기간 수익률 데이터가 없어요. '1일'로 보세요." className="py-10" />
           ) : rows.length === 0 ? (
             <EmptyState title="데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
           ) : (
