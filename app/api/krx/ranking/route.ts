@@ -3,9 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// 국내 전종목 일별매매정보 — KRX 공식 OpenAPI (data-dbg.krx.co.kr). 일별(장 마감 기준).
-// 인증키: .env.local 의 KRX_API_KEY (절대 커밋 금지). 키 없음/실패/빈값 → 빈 배열 → MarketClient 가 KIS 30 fallback.
-
+// 국내 전종목 일별매매정보 — KRX 공식 OpenAPI. 일별(장 마감). 인증키: .env.local KRX_API_KEY.
 const BASE = "http://data-dbg.krx.co.kr/svc/apis/sto";
 const EP = {
   kospi: `${BASE}/stk_bydd_trd`,
@@ -13,6 +11,15 @@ const EP = {
 };
 
 type KrxRow = Record<string, string>;
+type Mapped = {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number;
+  volume: number;
+  tradeAmount: number;
+  marketCap: number;
+};
 
 function num(s: string | undefined): number {
   if (!s) return 0;
@@ -25,7 +32,6 @@ function ymd(d: Date): string {
   const day = String(d.getDate()).padStart(2, "0");
   return `${y}${m}${day}`;
 }
-// ISIN(KR7…12자리)이면 6자리 단축코드로, 아니면 그대로
 function toShort(code: string): string {
   const c = code.trim();
   return c.length === 12 ? c.slice(3, 9) : c;
@@ -46,39 +52,35 @@ async function fetchOne(url: string, basDd: string, key: string): Promise<KrxRow
   }
 }
 
-export async function GET(request: NextRequest) {
-  const market = request.nextUrl.searchParams.get("market") || "all"; // all|kospi|kosdaq
-  const sort = request.nextUrl.searchParams.get("sort") || "amount"; // amount|volume|cap|up|down
-  const limit = Math.min(
-    parseInt(request.nextUrl.searchParams.get("limit") || "100", 10) || 100,
-    200
-  );
+// 시장별 매핑 결과 캐시 (KRX 호출이 느리고 응답이 커서) — 5분
+const cache = new Map<string, { at: number; basDd: string; rows: Mapped[] }>();
+const TTL = 5 * 60 * 1000;
 
-  const key = (process.env.KRX_API_KEY || "").trim();
-  if (!key) return NextResponse.json({ stocks: [], source: "krx", error: "no_key" });
+async function loadMapped(market: string, key: string): Promise<{ rows: Mapped[]; basDd: string }> {
+  const hit = cache.get(market);
+  if (hit && Date.now() - hit.at < TTL) return { rows: hit.rows, basDd: hit.basDd };
 
-  try {
-    const urls =
-      market === "kospi" ? [EP.kospi] : market === "kosdaq" ? [EP.kosdaq] : [EP.kospi, EP.kosdaq];
+  const urls =
+    market === "kospi" ? [EP.kospi] : market === "kosdaq" ? [EP.kosdaq] : [EP.kospi, EP.kosdaq];
 
-    // 최신 영업일: 오늘부터 최대 8일 거슬러 데이터 있는 첫 날 (주말·휴장·미집계 대응)
-    let rows: KrxRow[] = [];
-    let usedDate = "";
-    const now = new Date();
-    for (let i = 0; i < 8 && rows.length === 0; i++) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      const basDd = ymd(d);
-      const parts = await Promise.all(urls.map((u) => fetchOne(u, basDd, key)));
-      const merged = parts.flat();
-      if (merged.length > 0) {
-        rows = merged;
-        usedDate = basDd;
-      }
+  // 최신 영업일: 오늘부터 최대 8일 거슬러 데이터 있는 첫 날
+  let raw: KrxRow[] = [];
+  let usedDate = "";
+  const now = new Date();
+  for (let i = 0; i < 8 && raw.length === 0; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const basDd = ymd(d);
+    const parts = await Promise.all(urls.map((u) => fetchOne(u, basDd, key)));
+    const merged = parts.flat();
+    if (merged.length > 0) {
+      raw = merged;
+      usedDate = basDd;
     }
-    if (rows.length === 0) return NextResponse.json({ stocks: [], source: "krx", error: "empty" });
+  }
 
-    const mapped = rows.map((r) => ({
+  const rows: Mapped[] = raw
+    .map((r) => ({
       symbol: toShort(String(r.ISU_CD || "")),
       name: String(r.ISU_NM || "").trim(),
       price: num(r.TDD_CLSPRC),
@@ -86,9 +88,26 @@ export async function GET(request: NextRequest) {
       volume: num(r.ACC_TRDVOL),
       tradeAmount: num(r.ACC_TRDVAL),
       marketCap: num(r.MKTCAP),
-    }));
+    }))
+    .filter((s) => s.symbol && s.price > 0);
 
-    type M = (typeof mapped)[number];
+  if (rows.length > 0) cache.set(market, { at: Date.now(), basDd: usedDate, rows });
+  return { rows, basDd: usedDate };
+}
+
+export async function GET(request: NextRequest) {
+  const market = request.nextUrl.searchParams.get("market") || "all";
+  const sort = request.nextUrl.searchParams.get("sort") || "amount";
+  const limit = Math.min(parseInt(request.nextUrl.searchParams.get("limit") || "100", 10) || 100, 200);
+
+  const key = (process.env.KRX_API_KEY || "").trim();
+  if (!key) return NextResponse.json({ stocks: [], source: "krx", error: "no_key" });
+
+  try {
+    const { rows: mapped, basDd } = await loadMapped(market, key);
+    if (mapped.length === 0) return NextResponse.json({ stocks: [], source: "krx", error: "empty" });
+
+    type M = Mapped;
     const sorters: Record<string, (a: M, b: M) => number> = {
       amount: (a, b) => b.tradeAmount - a.tradeAmount,
       volume: (a, b) => b.volume - a.volume,
@@ -96,13 +115,12 @@ export async function GET(request: NextRequest) {
       up: (a, b) => b.changePercent - a.changePercent,
       down: (a, b) => a.changePercent - b.changePercent,
     };
-    const stocks = mapped
-      .filter((s) => s.symbol && s.price > 0)
+    const stocks = [...mapped]
       .sort(sorters[sort] || sorters.amount)
       .slice(0, limit)
       .map((s, i) => ({ rank: i + 1, ...s }));
 
-    return NextResponse.json({ stocks, source: "krx", basDd: usedDate });
+    return NextResponse.json({ stocks, source: "krx", basDd });
   } catch (e) {
     return NextResponse.json({
       stocks: [],
