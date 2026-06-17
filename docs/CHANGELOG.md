@@ -1,6 +1,36 @@
 <!-- 2026-06-15 -->
 # 운종(雲從) — 변경 이력
 
+## 2026-06-15 — STEP 254~260 (ETN 실데이터 연결 + 펀드 시도→제거 + 탭 유지)
+
+ETN을 KRX 실데이터로 연결, 펀드는 무료 수익률 소스가 없어 제거. 탭 새로고침 유지. 빌드 ✓ 전 STEP.
+
+- **254** ETN 프로브 `?debug=1` 진단 → HTTP 404(구독 문제 아님, 경로 오류). 커밋 `cfbc6c3`
+- **255** **ETN 엔드포인트 수정** `sto`→`etp`(`/svc/apis/etp/etn_bydd_trd`) → ETN **380종목 실데이터 정상**. 커밋 `02498d1`
+- **256** **ETN 탭 연결** — `HomeEtnRanking`(KRX 1일 시세 성적표·거래대금순/1일 등락순·hover 미리보기). MCP 화면 확인. 커밋 `e9564f3`
+- **257** 펀드 프로브 `/api/fund`(data.go.kr `getStandardCodeInfo` 펀드표준코드). `.env.local` `DATA_GO_KR_KEY`(승인 후 반영 지연 겪음). 커밋 `fd4b842`
+- **258** 펀드 route 검색·유형 필터·필드 매핑(`q`→`fndNm`, `type`→`fndTp`). 확인: `fndTp`(유형) 됨 / `fndNm`(이름)은 **정확일치만** → 키워드 검색 불가. (부수: `MarketClient` `country!=="global"` 타입 에러 제거.) 커밋 `804c015`
+- **259** 펀드 디렉토리 탭(유형 필터·더보기·불러온 목록 검색·네이버 폴백) + **탭 새로고침 유지**(`?tab=`, `HomeRankingTabs` useEffect+replaceState). 커밋 `f6b1a8c`
+- **260** **펀드 탭 제거** — 거래소 상품 아님(은행 판매)·무료 수익률 데이터 없음(data.go.kr·KOFIA 오픈API·예탁결제원 전부 확인)·네이버/토스도 미취급. `HomeFundDirectory`·`/api/fund` 삭제. 탭 = **주식·ETF·ETN·리츠·리딩방 리스트**
+
+**결론**: ETN ✅ 실데이터 → 주식·ETF·ETN·리츠·미국 전부 수익률 됨. **펀드 = 유료 데이터 영역**(무료론 정확·안정 불가, '신뢰' 정체성상 스크래핑 비채택) → 제거.
+**스코프 재정렬**: 거래되는 상품(주식·ETF·ETN·리츠) 수익률 + 리딩방·채널 검증(차별점) + 토론·신뢰.
+
+## 2026-06-15 — STEP 247~253 (틀 기능적 완성: 반쪽 기능 정리·미리보기 차트·ETF 1주일 + ETN 프로브)
+
+"새 기능 X — 만들어둔 틀의 기능적 완성." 빌드 ✓ 전 STEP. HEAD `60fbd48`(253).
+
+- **247** STEP 243~246 아카이브 + 문서 커밋
+- **248** `/market` **글로벌 칩 제거**(`MarketClient` COUNTRIES=kr·us) — 데이터 없는 반쪽 버튼 정리
+- **249** 종목 클릭 시 **이름 전달**(`?name=`, `StockPageClient` useSearchParams) — stocks DB에 ETF 없어 빈 이름 뜨던 갭 메움. 커밋 `539c5fb`
+- **250** **'1 Issue' 해결** — anon Supabase 클라 `storageKey:"sb-unjong-anon"` 분리 → "Multiple GoTrueClient instances" 경고 제거(MCP 콘솔로 확인)
+- **251** **미리보기 차트 yahoo 폴백** — `/api/yahoo/chart` 신규(국내 `.KS/.KQ`·미국 바로) + `HomeStockDetail` 국내=KIS먼저→비면 yahoo·미국=yahoo. **미국·ETF·리츠도 차트**(AAPL ~270봉 MCP 확인)
+- **252** **ETF 1주일(r1w) 메움** — `etf-performance` r1w + `HomeEtfRanking` 매핑. 1주일 '—' 해소. 커밋 `c319d6c`
+- **253** **ETN 프로브** `/api/krx/etn`(KRX `etn_bydd_trd`). MCP로 찔러 확인 → **`empty_or_not_subscribed`** = 키·주식은 정상이나 **ETN 상품 미구독**. 커밋 `60fbd48`
+
+**데이터 현황**: 주식(국내·미국)·ETF·리츠 = yahoo 실데이터 ✅ / 미리보기 차트 = 전 타입 ✅ / **ETN = KRX 'ETN 일별매매정보' 이용신청 대기**(프로브로 미구독 확정) / **펀드 = KOFIA 소스 대기**.
+**남은 결정(사용자 작업)**: ① ETN KRX 구독 ② 펀드 KOFIA ③ 유튜브 팔로워 API 키 ④ 카카오 OAuth(투표) ⑤ AI 해설 빌드 여부(설계 `docs/AI_LENS_SPEC.md` 완료) ⑥ 평가·검증 MVP 2.0 방향.
+
 ## 2026-06-15 — STEP 240·243~246 (데이터 레이어: 기간 수익률 실데이터 + /market 통합 디렉토리)
 
 홈 UI 완성 후 "—" 칸을 실데이터로 채우고, /market을 전 타입 통합 성적표로. 빌드 ✓ 전 STEP. HEAD `bfa7d97`(246).

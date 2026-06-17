@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-09 (STEP 227 — 주식 관련 링크모음 toolbox 구축 + KRX 공식 100)
+> **Last refreshed**: 2026-06-15 (STEP 260 — ETN 실데이터 연결 + 펀드 시도→제거 + 탭 새로고침 유지)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행
-> **현재 커밋**: HEAD `2a3c895` (STEP 227 · 주식 관련 링크모음 toolbox·KRX 공식 100 V7) — 빌드 ✓
+> **현재 커밋**: STEP 260 (펀드 탭 제거 · 탭 = 주식·ETF·ETN·리츠·리딩방) — 정확한 해시는 `git log` 확인 — 빌드 ✓
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 
 ---
