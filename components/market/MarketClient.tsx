@@ -244,7 +244,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                   <thead>
                     <tr className="text-xs text-unjong-muted border-b border-unjong-border">
                       <th className="w-8 px-2 py-2.5"></th>
-                      <th className="text-left font-medium px-3 py-2.5 w-12">순위</th>
+                      <th className="text-left font-medium px-3 py-2.5 whitespace-nowrap">순위</th>
                       <th className="text-left font-medium px-3 py-2.5">종목명</th>
                       <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">현재가</th>
                       <th className="text-right font-medium px-3 py-2.5 whitespace-nowrap">{periodLabel}전 대비</th>
