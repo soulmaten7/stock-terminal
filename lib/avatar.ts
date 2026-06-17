@@ -7,8 +7,9 @@ const PALETTE = [
 ];
 
 export function avatarBg(name: string): string {
+  const s = name || "";
   let h = 0;
-  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
   return PALETTE[h % PALETTE.length];
 }
 

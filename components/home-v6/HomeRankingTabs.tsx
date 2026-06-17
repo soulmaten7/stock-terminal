@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Fragment, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
 import HomeEtfRanking from "./HomeEtfRanking";
 import HomePerfRanking from "./HomePerfRanking";
@@ -14,22 +15,27 @@ const TABS = [
   { key: "room", label: "리딩방 리스트" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
-
+const isTab = (t: string | null): t is TabKey => !!t && TABS.some((x) => x.key === t);
 
 export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
-  const [tab, setTab] = useState<TabKey>("stock");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlTab = searchParams.get("tab");
+  const [tab, setTab] = useState<TabKey>(isTab(urlTab) ? urlTab : "stock");
 
-  // 새로고침해도 현재 탭 유지 (URL ?tab=)
+  // URL ?tab 동기화 — 새로고침 시 탭 유지 + 헤더 홈/로고(=/) 클릭 시 '주식'으로 리셋
   useEffect(() => {
-    const t = new URLSearchParams(window.location.search).get("tab");
-    if (t && TABS.some((x) => x.key === t)) setTab(t as TabKey);
-  }, []);
+    const t = searchParams.get("tab");
+    setTab(isTab(t) ? t : "stock");
+  }, [searchParams]);
 
   function selectTab(k: TabKey) {
     setTab(k);
-    const p = new URLSearchParams(window.location.search);
-    p.set("tab", k);
-    window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}`);
+    const p = new URLSearchParams(Array.from(searchParams.entries()));
+    if (k === "stock") p.delete("tab");
+    else p.set("tab", k);
+    const qs = p.toString();
+    router.replace(qs ? `/?${qs}` : "/", { scroll: false });
   }
 
   return (
