@@ -224,13 +224,12 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             </button>
           ))}
 
-        {country !== "global" && <span className="mx-1.5 h-5 w-px bg-unjong-border" />}
-        {country !== "global" &&
-          PERIODS.map((p) => (
-            <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
-              {p.label}
-            </button>
-          ))}
+        <span className="mx-1.5 h-5 w-px bg-unjong-border" />
+        {PERIODS.map((p) => (
+          <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
+            {p.label}
+          </button>
+        ))}
       </div>
 
       <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
