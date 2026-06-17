@@ -6,13 +6,11 @@ import HomeEtfRanking from "./HomeEtfRanking";
 import HomePerfRanking from "./HomePerfRanking";
 import HomeRoomRanking from "./HomeRoomRanking";
 import HomeEtnRanking from "./HomeEtnRanking";
-import HomeFundDirectory from "./HomeFundDirectory";
 
 const TABS = [
   { key: "stock", label: "주식" },
   { key: "etf", label: "ETF" },
   { key: "etn", label: "ETN" },
-  { key: "fund", label: "펀드" },
   { key: "reit", label: "리츠" },
   { key: "room", label: "리딩방 리스트" },
 ] as const;
@@ -72,7 +70,6 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
       {tab === "stock" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
       {tab === "etn" && <HomeEtnRanking />}
-      {tab === "fund" && <HomeFundDirectory />}
       {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
     </div>
