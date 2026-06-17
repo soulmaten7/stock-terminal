@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, Fragment, type ReactNode } from "react";
+import { useState, useEffect, Fragment, type ReactNode } from "react";
 import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
 import HomeEtfRanking from "./HomeEtfRanking";
 import HomePerfRanking from "./HomePerfRanking";
 import HomeRoomRanking from "./HomeRoomRanking";
 import HomeEtnRanking from "./HomeEtnRanking";
+import HomeFundDirectory from "./HomeFundDirectory";
 
 const TABS = [
   { key: "stock", label: "주식" },
@@ -21,6 +22,19 @@ type TabKey = (typeof TABS)[number]["key"];
 export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
   const [tab, setTab] = useState<TabKey>("stock");
 
+  // 새로고침해도 현재 탭 유지 (URL ?tab=)
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t && TABS.some((x) => x.key === t)) setTab(t as TabKey);
+  }, []);
+
+  function selectTab(k: TabKey) {
+    setTab(k);
+    const p = new URLSearchParams(window.location.search);
+    p.set("tab", k);
+    window.history.replaceState(null, "", `${window.location.pathname}?${p.toString()}`);
+  }
+
   return (
     <div>
       <div className="mb-4 flex items-center gap-1 border-b border-unjong-border">
@@ -30,7 +44,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
             {t.key === "room" && <span className="mx-1 h-4 w-px bg-unjong-border" aria-hidden />}
             <button
               type="button"
-              onClick={() => setTab(t.key)}
+              onClick={() => selectTab(t.key)}
               className={
                 tab === t.key
                   ? "-mb-px border-b-2 border-unjong-primary px-3 py-2 text-sm font-bold text-unjong-primary"
@@ -58,7 +72,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
       {tab === "stock" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
       {tab === "etn" && <HomeEtnRanking />}
-      {tab === "fund" && <HomeEtfRanking fixedAsset="fund" />}
+      {tab === "fund" && <HomeFundDirectory />}
       {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
     </div>
