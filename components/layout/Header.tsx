@@ -8,6 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
 import { HeaderSearch } from '@/components/header/HeaderSearch';
+import { useHomeReset } from '@/stores/homeResetStore';
 
 const COUNTRIES: { code: Country; name: string; flag: string }[] = [
   { code: 'KR', name: '한국', flag: '🇰🇷' },
@@ -32,6 +33,7 @@ export default function Header() {
   const countryRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const currentCountry = COUNTRIES.find((c) => c.code === country)!;
+  const resetHome = useHomeReset((s) => s.reset);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -54,7 +56,7 @@ export default function Header() {
     <header className="bg-unjong-surface border-b border-unjong-border">
       <div className="px-6 h-[60px] flex items-center gap-5">
         {/* ── 로고 ── */}
-        <Link href="/" className="shrink-0 hover:opacity-80 flex items-center gap-1.5">
+        <Link href="/" onClick={resetHome} className="shrink-0 hover:opacity-80 flex items-center gap-1.5">
           <span className="text-lg font-bold tracking-wider text-unjong-primary">UNJONG</span>
           <span className="text-sm text-unjong-muted">운종</span>
         </Link>
@@ -67,6 +69,7 @@ export default function Header() {
               <Link
                 key={m.label}
                 href={m.href}
+                onClick={() => { if (m.href === '/') resetHome(); }}
                 aria-current={isActive ? 'page' : undefined}
                 className={
                   isActive

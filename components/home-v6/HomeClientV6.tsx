@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useHomeReset } from "@/stores/homeResetStore";
 import HomeIndexStrip from "./HomeIndexStrip";
 import HomeRightRail from "./HomeRightRail";
 import HomeStockDetail from "./HomeStockDetail";
@@ -9,6 +10,8 @@ import HomeRankingTabs from "./HomeRankingTabs";
 
 export default function HomeClientV6() {
   const [hovered, setHovered] = useState<HoverStock | null>(null);
+  const resetN = useHomeReset((s) => s.n);
+  useEffect(() => { setHovered(null); }, [resetN]);
 
   return (
     <div className="px-6 py-5">
@@ -17,7 +20,7 @@ export default function HomeClientV6() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-6">
         {/* 왼쪽: 랭킹(성적표) | 상세 2:1 — 속보 제거로 최상단 */}
         <div className="min-w-0">
-          <HomeRankingTabs onHover={setHovered} detailSlot={<HomeStockDetail stock={hovered} wide />} />
+          <HomeRankingTabs key={resetN} onHover={setHovered} detailSlot={<HomeStockDetail stock={hovered} wide />} />
         </div>
 
         {/* 오른쪽: 관심 레일 */}
