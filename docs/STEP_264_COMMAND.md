@@ -1,0 +1,182 @@
+<!-- 2026-06-15 -->
+# STEP 264 — 홈 로딩 속도: KRX ranking route 캐시 추가
+
+## 실행 명령어 (Sonnet — 기본)
+```bash
+cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
+```
+> 그 다음: `@docs/STEP_264_COMMAND.md 파일 내용대로 실행해줘`
+
+## 목표 (성능)
+홈 주식 탭이 느린 원인 = `/api/krx/ranking`이 **캐시 없이 매 요청마다 KRX 공식 API를 2번(코스피+코스닥) 호출**. KRX가 느리고 응답이 커서 새로고침마다 수 초.
+- **시장별 매핑 결과를 5분 인메모리 캐시** → 첫 호출만 KRX, 이후 즉시(정렬·자르기는 캐시에서). 야후 perf route들과 동일 패턴.
+- 일별(장 마감) 데이터라 5분 캐시로 신선도 문제 없음.
+- 동작·응답 형태 동일(캐시만 추가).
+
+## 전제 상태
+- 현재 HEAD: STEP 263 적용 후(`a4cf8c8`)
+- 변경 **1파일**: `app/api/krx/ranking/route.ts` (**전체 교체**)
+
+---
+
+## 작업 1/1 — `app/api/krx/ranking/route.ts` (전체 교체)
+
+```ts
+import { NextRequest, NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+// 국내 전종목 일별매매정보 — KRX 공식 OpenAPI. 일별(장 마감). 인증키: .env.local KRX_API_KEY.
+const BASE = "http://data-dbg.krx.co.kr/svc/apis/sto";
+const EP = {
+  kospi: `${BASE}/stk_bydd_trd`,
+  kosdaq: `${BASE}/ksq_bydd_trd`,
+};
+
+type KrxRow = Record<string, string>;
+type Mapped = {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number;
+  volume: number;
+  tradeAmount: number;
+  marketCap: number;
+};
+
+function num(s: string | undefined): number {
+  if (!s) return 0;
+  const n = Number(String(s).replace(/,/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+function ymd(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}${m}${day}`;
+}
+function toShort(code: string): string {
+  const c = code.trim();
+  return c.length === 12 ? c.slice(3, 9) : c;
+}
+
+async function fetchOne(url: string, basDd: string, key: string): Promise<KrxRow[]> {
+  try {
+    const res = await fetch(`${url}?basDd=${basDd}`, {
+      method: "GET",
+      headers: { AUTH_KEY: key, Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const j = await res.json();
+    return (j.OutBlock_1 ?? j.output ?? j.block1 ?? []) as KrxRow[];
+  } catch {
+    return [];
+  }
+}
+
+// 시장별 매핑 결과 캐시 (KRX 호출이 느리고 응답이 커서) — 5분
+const cache = new Map<string, { at: number; basDd: string; rows: Mapped[] }>();
+const TTL = 5 * 60 * 1000;
+
+async function loadMapped(market: string, key: string): Promise<{ rows: Mapped[]; basDd: string }> {
+  const hit = cache.get(market);
+  if (hit && Date.now() - hit.at < TTL) return { rows: hit.rows, basDd: hit.basDd };
+
+  const urls =
+    market === "kospi" ? [EP.kospi] : market === "kosdaq" ? [EP.kosdaq] : [EP.kospi, EP.kosdaq];
+
+  // 최신 영업일: 오늘부터 최대 8일 거슬러 데이터 있는 첫 날
+  let raw: KrxRow[] = [];
+  let usedDate = "";
+  const now = new Date();
+  for (let i = 0; i < 8 && raw.length === 0; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const basDd = ymd(d);
+    const parts = await Promise.all(urls.map((u) => fetchOne(u, basDd, key)));
+    const merged = parts.flat();
+    if (merged.length > 0) {
+      raw = merged;
+      usedDate = basDd;
+    }
+  }
+
+  const rows: Mapped[] = raw
+    .map((r) => ({
+      symbol: toShort(String(r.ISU_CD || "")),
+      name: String(r.ISU_NM || "").trim(),
+      price: num(r.TDD_CLSPRC),
+      changePercent: num(r.FLUC_RT),
+      volume: num(r.ACC_TRDVOL),
+      tradeAmount: num(r.ACC_TRDVAL),
+      marketCap: num(r.MKTCAP),
+    }))
+    .filter((s) => s.symbol && s.price > 0);
+
+  if (rows.length > 0) cache.set(market, { at: Date.now(), basDd: usedDate, rows });
+  return { rows, basDd: usedDate };
+}
+
+export async function GET(request: NextRequest) {
+  const market = request.nextUrl.searchParams.get("market") || "all";
+  const sort = request.nextUrl.searchParams.get("sort") || "amount";
+  const limit = Math.min(parseInt(request.nextUrl.searchParams.get("limit") || "100", 10) || 100, 200);
+
+  const key = (process.env.KRX_API_KEY || "").trim();
+  if (!key) return NextResponse.json({ stocks: [], source: "krx", error: "no_key" });
+
+  try {
+    const { rows: mapped, basDd } = await loadMapped(market, key);
+    if (mapped.length === 0) return NextResponse.json({ stocks: [], source: "krx", error: "empty" });
+
+    type M = Mapped;
+    const sorters: Record<string, (a: M, b: M) => number> = {
+      amount: (a, b) => b.tradeAmount - a.tradeAmount,
+      volume: (a, b) => b.volume - a.volume,
+      cap: (a, b) => b.marketCap - a.marketCap,
+      up: (a, b) => b.changePercent - a.changePercent,
+      down: (a, b) => a.changePercent - b.changePercent,
+    };
+    const stocks = [...mapped]
+      .sort(sorters[sort] || sorters.amount)
+      .slice(0, limit)
+      .map((s, i) => ({ rank: i + 1, ...s }));
+
+    return NextResponse.json({ stocks, source: "krx", basDd });
+  } catch (e) {
+    return NextResponse.json({
+      stocks: [],
+      source: "krx",
+      error: e instanceof Error ? e.message : String(e),
+    });
+  }
+}
+```
+
+> 변경: 시장별(`all`/`kospi`/`kosdaq`) 매핑 결과를 5분 캐시(`loadMapped`). 정렬·자르기는 캐시에서 → 같은 시장의 반복 로드·정렬 변경은 KRX 재호출 0. 응답 형태 동일.
+
+---
+
+## 빌드 검증 + 커밋·푸시
+```bash
+cd ~/stock-terminal && npm run build
+```
+빌드 ✓ (exit 0) 확인 후:
+```bash
+cd ~/stock-terminal && git add app/api/krx/ranking/route.ts && git commit -m "perf(v7): KRX ranking route 5분 캐시 — 홈 주식 탭 반복 로드 즉시화 (STEP 264)" && git push
+```
+
+## 완료 보고 (Cowork 에게 전달할 것)
+- [ ] `npm run build` exit 0 / 커밋·push
+- [ ] **dev 재시작 후 홈** → 첫 로드는 한 번 KRX 호출(수 초), **그 뒤 새로고침·탭 전환은 즉시** 주식 표 뜸
+- [ ] 정렬(거래대금/시총 등)·코스피/코스닥 전환도 빨라짐(캐시)
+
+## 주의·예상 이슈
+- **서버 재시작 직후 첫 로드는 여전히 한 번 느림**(인메모리 캐시·컴파일 리셋) — 개발 특성. 배포 빌드에선 컴파일 안 기다리고, 캐시도 방문자 간 공유돼 훨씬 빠름.
+- 일별 데이터라 5분 캐시로 신선도 영향 없음(장중에도 전일 마감 기준).
+- **문서 TODO**(다음 갱신): STEP 261~264.
+
+---
+> STEP 264 = KRX ranking 캐시(홈 속도). 전제 STEP 263(`a4cf8c8`).
