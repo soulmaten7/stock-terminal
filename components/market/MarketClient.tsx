@@ -5,6 +5,7 @@ import { LoadingState, EmptyState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { Heart } from "lucide-react";
 import { useWatchlist } from "@/stores/watchlistStore";
+import { useChartRange } from "@/stores/chartRangeStore";
 
 type Row = {
   rank: number;
@@ -84,6 +85,8 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
   const [market, setMarket] = useState<MarketKey>("all");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => { useChartRange.getState().setRange(period); }, [period]);
 
   useEffect(() => {
     let cancelled = false;

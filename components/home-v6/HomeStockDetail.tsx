@@ -6,6 +6,7 @@ import { StockLogo } from "@/components/ui/StockLogo";
 import { isKrxCode } from "@/lib/code";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import { useAuthStore } from "@/stores/authStore";
+import { useChartRange } from "@/stores/chartRangeStore";
 import type { HoverStock } from "@/components/market/MarketClient";
 
 type Candle = { time: string; open: number; high: number; low: number; close: number; volume: number };
@@ -21,11 +22,11 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}일 전`;
 }
 
-function CandleChart({ candles }: { candles: Candle[] }) {
-  if (candles.length < 2) {
+function CandleChart({ candles, days }: { candles: Candle[]; days: number }) {
+  const data = candles.slice(-days);
+  if (data.length < 2) {
     return <div className="flex h-32 items-center justify-center text-xs text-unjong-muted">차트 데이터 없음</div>;
   }
-  const data = candles.slice(-60);
   const w = 280;
   const priceH = 84;
   const gap = 2;
@@ -111,8 +112,12 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
   const [showWrite, setShowWrite] = useState(false);
   const [writeContent, setWriteContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const range = useChartRange((s) => s.range);
+  const RANGE_DAYS: Record<string, number> = { "1d": 3, "1w": 5, "1m": 22, "3m": 66, "6m": 132, "1y": 252 };
+  const RANGE_LABEL: Record<string, string> = { "1d": "1일", "1w": "1주일", "1m": "1개월", "3m": "3개월", "6m": "6개월", "1y": "1년" };
+  const chartDays = RANGE_DAYS[range] ?? 66;
 
-  // 차트: 국내(6자리)=KIS 먼저→비면 yahoo 폴백 / 미국 등=yahoo. debounce.
+  // 차트: yahoo 우선(약 270거래일 — 기간선택용 충분) → 비면 KIS(국내) 폴백. debounce.
   useEffect(() => {
     if (!stock || noChart) { setCandles([]); return; }
     const code = stock.symbol;
@@ -120,17 +125,15 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
     let cancelled = false;
     const t = setTimeout(async () => {
       let cs: Candle[] = [];
-      if (isKr) {
+      try {
+        const j = await (await fetch(`/api/yahoo/chart?symbol=${encodeURIComponent(code)}`)).json();
+        cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
+      } catch {
+        cs = [];
+      }
+      if (cs.length < 2 && isKr) {
         try {
           const j = await (await fetch(`/api/kis/chart?symbol=${code}&period=D`)).json();
-          cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
-        } catch {
-          cs = [];
-        }
-      }
-      if (cs.length < 2) {
-        try {
-          const j = await (await fetch(`/api/yahoo/chart?symbol=${encodeURIComponent(code)}`)).json();
           cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
         } catch {
           /* cs 유지 */
@@ -207,8 +210,8 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
             {/* 캔들차트 — ETN 등 차트 미제공 종목은 블록 자체를 그리지 않음 */}
             {!noChart && (
               <div className="border-b border-unjong-border px-2 py-3">
-                <p className="px-2 pb-1 text-xs text-unjong-muted">일봉</p>
-                <CandleChart candles={candles} />
+                <p className="px-2 pb-1 text-xs text-unjong-muted">일봉 · {RANGE_LABEL[range] ?? "3개월"}</p>
+                <CandleChart candles={candles} days={chartDays} />
               </div>
             )}
 

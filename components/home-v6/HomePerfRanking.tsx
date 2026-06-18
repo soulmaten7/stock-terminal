@@ -7,6 +7,7 @@ import { LoadingState, EmptyState } from "@/components/ui/State";
 import { useWatchlist } from "@/stores/watchlistStore";
 import HomeStockDetail from "./HomeStockDetail";
 import { type HoverStock } from "@/components/market/MarketClient";
+import { useChartRange } from "@/stores/chartRangeStore";
 
 type Row = {
   symbol: string;
@@ -83,7 +84,7 @@ export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false, 
     return () => { cancelled = true; };
   }, [apiPath]);
 
-  useEffect(() => { setHovered(null); }, [period]);
+  useEffect(() => { useChartRange.getState().setRange(period); }, [period]);
 
   const periodLabel = PERIODS.find((p) => p.key === period)!.label;
   const field = FIELD[period];
