@@ -14,7 +14,11 @@ export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   if (!symbol) return NextResponse.json({ candles: [] });
 
-  const hit = cache.get(symbol);
+  const intervalRaw = req.nextUrl.searchParams.get("interval") || "1d";
+  const interval = (["5m", "30m", "1d"].includes(intervalRaw) ? intervalRaw : "1d") as "5m" | "30m" | "1d";
+  const intraday = interval !== "1d";
+  const key = `${symbol}|${interval}`;
+  const hit = cache.get(key);
   if (hit && Date.now() - hit.at < 10 * 60 * 1000) {
     return NextResponse.json({ candles: hit.candles });
   }
@@ -22,11 +26,12 @@ export async function GET(req: NextRequest) {
   // 국내 6자리는 .KS→.KQ 순으로 시도, 그 외(미국 등)는 티커 그대로
   const isKr = isKrxCode(symbol);
   const tickers = isKr ? [`${symbol}.KS`, `${symbol}.KQ`] : [symbol];
-  const period1 = new Date(Date.now() - 400 * 24 * 60 * 60 * 1000);
+  const lookbackDays = interval === "1d" ? 400 : interval === "30m" ? 14 : 8;
+  const period1 = new Date(Date.now() - lookbackDays * 24 * 60 * 60 * 1000);
 
   for (const t of tickers) {
     try {
-      const ch = await yf.chart(t, { period1, interval: "1d" });
+      const ch = await yf.chart(t, { period1, interval });
       const quotes = (ch.quotes ?? []) as Array<{
         date?: Date | string;
         open: number | null;
@@ -40,7 +45,7 @@ export async function GET(req: NextRequest) {
         .map((q) => {
           const d = q.date instanceof Date ? q.date : new Date(String(q.date));
           return {
-            time: d.toISOString().slice(0, 10),
+            time: intraday ? d.toISOString().slice(0, 16) : d.toISOString().slice(0, 10),
             open: Number(q.open),
             high: Number(q.high ?? q.close),
             low: Number(q.low ?? q.close),
@@ -49,7 +54,7 @@ export async function GET(req: NextRequest) {
           };
         });
       if (candles.length >= 2) {
-        cache.set(symbol, { at: Date.now(), candles });
+        cache.set(key, { at: Date.now(), candles });
         return NextResponse.json({ candles });
       }
     } catch {

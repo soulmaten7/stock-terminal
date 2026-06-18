@@ -22,8 +22,8 @@ function timeAgo(iso: string): string {
   return `${Math.floor(h / 24)}일 전`;
 }
 
-function CandleChart({ candles, days }: { candles: Candle[]; days: number }) {
-  const data = candles.slice(-days);
+function CandleChart({ candles, count, intraday }: { candles: Candle[]; count: number; intraday: boolean }) {
+  const data = candles.slice(-count);
   if (data.length < 2) {
     return <div className="flex h-32 items-center justify-center text-xs text-unjong-muted">차트 데이터 없음</div>;
   }
@@ -45,14 +45,17 @@ function CandleChart({ candles, days }: { candles: Candle[]; days: number }) {
   const bw = Math.max(1.2, Math.min(cw * 0.6, 6));
 
   const labels: { x: number; text: string }[] = [];
-  let prevMonth = "";
+  let prevKey = "";
   data.forEach((c, i) => {
-    const ym = c.time.slice(0, 7);
-    if (ym !== prevMonth) {
-      prevMonth = ym;
+    const k = intraday ? c.time.slice(0, 10) : c.time.slice(0, 7);
+    if (k !== prevKey) {
+      prevKey = k;
       const x = i * cw + cw / 2;
       if (labels.length === 0 || x - labels[labels.length - 1].x > 34) {
-        labels.push({ x, text: `${c.time.slice(2, 4)}.${parseInt(c.time.slice(5, 7), 10)}` });
+        const text = intraday
+          ? `${parseInt(c.time.slice(5, 7), 10)}.${parseInt(c.time.slice(8, 10), 10)}`
+          : `${c.time.slice(2, 4)}.${parseInt(c.time.slice(5, 7), 10)}`;
+        labels.push({ x, text });
       }
     }
   });
@@ -113,11 +116,21 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
   const [writeContent, setWriteContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const range = useChartRange((s) => s.range);
-  const RANGE_DAYS: Record<string, number> = { "1d": 3, "1w": 5, "1m": 22, "3m": 66, "6m": 132, "1y": 252 };
-  const RANGE_LABEL: Record<string, string> = { "1d": "1일", "1w": "1주일", "1m": "1개월", "3m": "3개월", "6m": "6개월", "1y": "1년" };
-  const chartDays = RANGE_DAYS[range] ?? 66;
+  // 1일·1주일 = 분봉(빽빽), 1개월~ = 일봉. interval=yahoo 봉간격, count=표시 봉 개수
+  const RANGE_CFG: Record<string, { interval: "5m" | "30m" | "1d"; count: number; label: string }> = {
+    "1d": { interval: "5m", count: 78, label: "1일" },
+    "1w": { interval: "30m", count: 65, label: "1주일" },
+    "1m": { interval: "1d", count: 22, label: "1개월" },
+    "3m": { interval: "1d", count: 66, label: "3개월" },
+    "6m": { interval: "1d", count: 132, label: "6개월" },
+    "1y": { interval: "1d", count: 252, label: "1년" },
+  };
+  const cfg = RANGE_CFG[range] ?? RANGE_CFG["3m"];
+  const chartInterval = cfg.interval;
+  const chartCount = cfg.count;
+  const chartIntraday = chartInterval !== "1d";
 
-  // 차트: yahoo 우선(약 270거래일 — 기간선택용 충분) → 비면 KIS(국내) 폴백. debounce.
+  // 차트: yahoo (1개월~=일봉 / 1일·1주일=분봉). 일봉만 KIS 폴백. interval 바뀌면 재조회. debounce.
   useEffect(() => {
     if (!stock || noChart) { setCandles([]); return; }
     const code = stock.symbol;
@@ -126,12 +139,12 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
     const t = setTimeout(async () => {
       let cs: Candle[] = [];
       try {
-        const j = await (await fetch(`/api/yahoo/chart?symbol=${encodeURIComponent(code)}`)).json();
+        const j = await (await fetch(`/api/yahoo/chart?symbol=${encodeURIComponent(code)}&interval=${chartInterval}`)).json();
         cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
       } catch {
         cs = [];
       }
-      if (cs.length < 2 && isKr) {
+      if (cs.length < 2 && isKr && chartInterval === "1d") {
         try {
           const j = await (await fetch(`/api/kis/chart?symbol=${code}&period=D`)).json();
           cs = ((j.candles ?? []) as Candle[]).filter((c) => c.close > 0);
@@ -142,7 +155,7 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
       if (!cancelled) setCandles(cs);
     }, 350);
     return () => { cancelled = true; clearTimeout(t); };
-  }, [stock?.symbol, noChart]);
+  }, [stock?.symbol, noChart, chartInterval]);
 
   // 커뮤니티 (종목 토론, debounce)
   useEffect(() => {
@@ -210,8 +223,8 @@ export default function HomeStockDetail({ stock, wide = false, noChart = false }
             {/* 캔들차트 — ETN 등 차트 미제공 종목은 블록 자체를 그리지 않음 */}
             {!noChart && (
               <div className="border-b border-unjong-border px-2 py-3">
-                <p className="px-2 pb-1 text-xs text-unjong-muted">일봉 · {RANGE_LABEL[range] ?? "3개월"}</p>
-                <CandleChart candles={candles} days={chartDays} />
+                <p className="px-2 pb-1 text-xs text-unjong-muted">{chartIntraday ? "분봉" : "일봉"} · {cfg.label}</p>
+                <CandleChart candles={candles} count={chartCount} intraday={chartIntraday} />
               </div>
             )}
 
