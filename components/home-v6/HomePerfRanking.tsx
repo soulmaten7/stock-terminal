@@ -55,7 +55,7 @@ function toHover(r: Row): HoverStock {
   return { symbol: r.symbol, name: r.name, priceText: r.price.toLocaleString(), changePercent: r.changePercent, volume: 0 };
 }
 
-export default function HomePerfRanking({ apiPath, emptyLabel }: { apiPath: string; emptyLabel: string }) {
+export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false }: { apiPath: string; emptyLabel: string; noChart?: boolean }) {
   const watchItems = useWatchlist((s) => s.items);
   const addWatch = useWatchlist((s) => s.add);
   const removeWatch = useWatchlist((s) => s.remove);
@@ -173,7 +173,7 @@ export default function HomePerfRanking({ apiPath, emptyLabel }: { apiPath: stri
             </div>
           )}
         </section>
-        <HomeStockDetail stock={previewStock} wide />
+        <HomeStockDetail stock={previewStock} wide noChart={noChart} />
       </div>
     </div>
   );

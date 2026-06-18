@@ -74,7 +74,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
 
       {tab === "stock" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
       {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
-      {tab === "etn" && <HomePerfRanking apiPath="/api/krx/etn-performance" emptyLabel="ETN" />}
+      {tab === "etn" && <HomePerfRanking apiPath="/api/krx/etn-performance" emptyLabel="ETN" noChart />}
       {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}
     </div>

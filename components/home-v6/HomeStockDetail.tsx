@@ -37,13 +37,11 @@ function CandleChart({ candles }: { candles: Candle[] }) {
   const min = Math.min(...data.map((c) => c.low));
   const range = max - min || 1;
   const maxVol = Math.max(...data.map((c) => c.volume), 1);
-  // 봉 너비를 60봉 기준으로 고정 — 종목마다(신규상장 등) 봉 개수가 달라도 두께 동일.
-  // 봉이 60개보다 적으면 오른쪽(최근)부터 정렬하고 왼쪽은 여백으로 둔다.
-  const cw = w / 60;
-  const offset = w - data.length * cw;
+  // 차트폭을 꽉 채우되(빈 여백 없음), 봉이 적어도 몸통이 너무 두꺼워지지 않게 너비 상한(6px).
+  const cw = w / data.length;
   const py = (v: number) => pad + (priceH - 2 * pad) * (1 - (v - min) / range);
   const volBase = priceH + gap + volH;
-  const bw = Math.max(1.2, cw * 0.6);
+  const bw = Math.max(1.2, Math.min(cw * 0.6, 6));
 
   const labels: { x: number; text: string }[] = [];
   let prevMonth = "";
@@ -51,7 +49,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
     const ym = c.time.slice(0, 7);
     if (ym !== prevMonth) {
       prevMonth = ym;
-      const x = offset + i * cw + cw / 2;
+      const x = i * cw + cw / 2;
       if (labels.length === 0 || x - labels[labels.length - 1].x > 34) {
         labels.push({ x, text: `${c.time.slice(2, 4)}.${parseInt(c.time.slice(5, 7), 10)}` });
       }
@@ -62,7 +60,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
     <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" aria-hidden="true">
       {/* 캔들 */}
       {data.map((c, i) => {
-        const x = offset + i * cw + cw / 2;
+        const x = i * cw + cw / 2;
         const up = c.close >= c.open;
         const color = up ? "#F04452" : "#3182F6";
         const top = py(Math.max(c.open, c.close));
@@ -76,7 +74,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
       })}
       {/* 거래량 막대 */}
       {data.map((c, i) => {
-        const x = offset + i * cw + cw / 2;
+        const x = i * cw + cw / 2;
         const up = c.close >= c.open;
         const vh = (c.volume / maxVol) * volH;
         return (
@@ -105,7 +103,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
   );
 }
 
-export default function HomeStockDetail({ stock, wide = false }: { stock: HoverStock | null; wide?: boolean }) {
+export default function HomeStockDetail({ stock, wide = false, noChart = false }: { stock: HoverStock | null; wide?: boolean; noChart?: boolean }) {
   const [candles, setCandles] = useState<Candle[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const user = useAuthStore((s) => s.user);
@@ -116,7 +114,7 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
 
   // 차트: 국내(6자리)=KIS 먼저→비면 yahoo 폴백 / 미국 등=yahoo. debounce.
   useEffect(() => {
-    if (!stock) { setCandles([]); return; }
+    if (!stock || noChart) { setCandles([]); return; }
     const code = stock.symbol;
     const isKr = isKrxCode(code);
     let cancelled = false;
@@ -141,7 +139,7 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
       if (!cancelled) setCandles(cs);
     }, 350);
     return () => { cancelled = true; clearTimeout(t); };
-  }, [stock?.symbol]);
+  }, [stock?.symbol, noChart]);
 
   // 커뮤니티 (종목 토론, debounce)
   useEffect(() => {
@@ -206,11 +204,13 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
               </div>
             </div>
 
-            {/* 캔들차트 */}
-            <div className="border-b border-unjong-border px-2 py-3">
-              <p className="px-2 pb-1 text-xs text-unjong-muted">일봉</p>
-              <CandleChart candles={candles} />
-            </div>
+            {/* 캔들차트 — ETN 등 차트 미제공 종목은 블록 자체를 그리지 않음 */}
+            {!noChart && (
+              <div className="border-b border-unjong-border px-2 py-3">
+                <p className="px-2 pb-1 text-xs text-unjong-muted">일봉</p>
+                <CandleChart candles={candles} />
+              </div>
+            )}
 
             {/* 종목 토론 */}
             <div className="border-b border-unjong-border p-4">
@@ -219,7 +219,7 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
               {/* 글쓰기 — 로그인 후 작성 가능 */}
               {!user ? (
                 <Link href="/auth/login" className="mb-2.5 block rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-center text-xs text-unjong-muted hover:text-unjong-primary">
-                  토론 글쓰기는 로그인 후 가능 · 카카오 로그인 →
+                  토론 글쓰기 로그인후 가능
                 </Link>
               ) : !showWrite ? (
                 <button
