@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Heart } from "lucide-react";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { LoadingState, EmptyState } from "@/components/ui/State";
@@ -59,7 +58,6 @@ function toHover(r: Row): HoverStock {
 }
 
 export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "fund" } = {}) {
-  const router = useRouter();
   const asset = fixedAsset ?? "etf";
   const watchItems = useWatchlist((s) => s.items);
   const addWatch = useWatchlist((s) => s.add);
@@ -136,7 +134,7 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
     return f ? r[f] : undefined;
   };
 
-  const previewStock = hovered ?? (rows[0] ? toHover(rows[0]) : null);
+  const previewStock = hovered;
 
   return (
     <div>
@@ -183,8 +181,7 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
                     return (
                       <tr
                         key={r.symbol}
-                        onClick={() => router.push(`/stock/${r.symbol}?name=${encodeURIComponent(r.name)}`)}
-                        onMouseEnter={() => setHovered(toHover(r))}
+                        onClick={() => setHovered(toHover(r))}
                         className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
                       >
                         <td className="px-2 py-3">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { Heart } from "lucide-react";
@@ -74,7 +73,6 @@ function pctColor(v?: number | null): string {
 export type HoverStock = { symbol: string; name: string; priceText: string; changePercent: number; volume: number; tradeAmount?: number };
 
 export default function MarketClient({ embedded = false, onHover, detailSlot }: { embedded?: boolean; onHover?: (s: HoverStock) => void; detailSlot?: ReactNode }) {
-  const router = useRouter();
   const watchItems = useWatchlist((s) => s.items);
   const addWatch = useWatchlist((s) => s.add);
   const removeWatch = useWatchlist((s) => s.remove);
@@ -257,8 +255,7 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
                       return (
                         <tr
                           key={r.symbol}
-                          onClick={() => router.push(`/stock/${r.symbol}?name=${encodeURIComponent(r.name)}`)}
-                          onMouseEnter={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
+                          onClick={() => onHover?.({ symbol: r.symbol, name: r.name, priceText: r.priceText, changePercent: r.changePercent, volume: r.volume, tradeAmount: r.tradeAmount })}
                           className="border-b border-unjong-border last:border-0 hover:bg-unjong-background cursor-pointer"
                         >
                           <td className="px-2 py-3">

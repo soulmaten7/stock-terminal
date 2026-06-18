@@ -160,7 +160,7 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
     <aside className={`hidden xl:block ${wide ? "w-full min-w-0" : "w-80 shrink-0"}`}>
       <div className="sticky top-5 overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft">
         {!stock ? (
-          <div className="p-5 text-sm text-unjong-muted">종목에 마우스를 올리면 상세가 표시됩니다.</div>
+          <div className="p-5 text-sm text-unjong-muted">종목을 클릭하면 미리보기가 표시됩니다.</div>
         ) : (
           <>
             {/* 헤더 */}
