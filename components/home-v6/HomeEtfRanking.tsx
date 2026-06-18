@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Heart } from "lucide-react";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import { useWatchlist } from "@/stores/watchlistStore";
 import HomeStockDetail from "./HomeStockDetail";
 import { type HoverStock } from "@/components/market/MarketClient";
 
@@ -59,6 +61,12 @@ function toHover(r: Row): HoverStock {
 export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "fund" } = {}) {
   const router = useRouter();
   const asset = fixedAsset ?? "etf";
+  const watchItems = useWatchlist((s) => s.items);
+  const addWatch = useWatchlist((s) => s.add);
+  const removeWatch = useWatchlist((s) => s.remove);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const isWatched = (code: string) => watchItems.some((i) => i.code === code);
   const [period, setPeriod] = useState<PeriodKey>("1d");
   const [popRows, setPopRows] = useState<Row[]>([]);
   const [perfRows, setPerfRows] = useState<Row[]>([]);
@@ -162,10 +170,11 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                    <th className="whitespace-nowrap px-4 py-2.5 text-left font-medium">순위</th>
-                    <th className="px-4 py-2.5 text-left font-medium">종목명</th>
-                    <th className="px-4 py-2.5 text-right font-medium">현재가</th>
-                    <th className="px-4 py-2.5 text-right font-medium whitespace-nowrap">{periodLabel}전 대비</th>
+                    <th className="w-8 px-2 py-2.5"></th>
+                    <th className="whitespace-nowrap px-3 py-2.5 text-left font-medium">순위</th>
+                    <th className="px-3 py-2.5 text-left font-medium">종목명</th>
+                    <th className="px-3 py-2.5 text-right font-medium">현재가</th>
+                    <th className="px-3 py-2.5 text-right font-medium whitespace-nowrap">{periodLabel}전 대비</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -178,15 +187,33 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
                         onMouseEnter={() => setHovered(toHover(r))}
                         className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
                       >
-                        <td className="px-4 py-3 tabular-nums text-unjong-muted">{i + 1}</td>
-                        <td className="px-4 py-3">
+                        <td className="px-2 py-3">
+                          <button
+                            type="button"
+                            aria-label="관심 토글"
+                            className="p-0.5"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (isWatched(r.symbol)) removeWatch(r.symbol);
+                              else addWatch({ code: r.symbol, name: r.name, market: "KOSPI" });
+                            }}
+                          >
+                            <Heart
+                              size={15}
+                              fill={mounted && isWatched(r.symbol) ? "currentColor" : "none"}
+                              className={mounted && isWatched(r.symbol) ? "text-[#3182F6]" : "text-unjong-muted hover:text-[#3182F6]"}
+                            />
+                          </button>
+                        </td>
+                        <td className="px-3 py-3 tabular-nums text-unjong-muted">{i + 1}</td>
+                        <td className="px-3 py-3">
                           <div className="flex items-center gap-2.5">
                             <StockLogo code={r.symbol} name={r.name} size={28} />
                             <span className="font-medium text-unjong-primary">{r.name}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right tabular-nums text-unjong-primary">{r.price.toLocaleString()}</td>
-                        <td className={`px-4 py-3 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>
+                        <td className="px-3 py-3 text-right tabular-nums text-unjong-primary">{r.price.toLocaleString()}</td>
+                        <td className={`px-3 py-3 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>
                       </tr>
                     );
                   })}
