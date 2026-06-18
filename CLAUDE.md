@@ -136,6 +136,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 - [ ] session-context.md에 이번 세션 완료 블록 추가
 - [ ] NEXT_SESSION_START.md 최신 상태로 업데이트
 - [ ] **`docs/NEXT_SESSION_PLAYBOOK.md` 갱신** (다음 세션 마스터 인수인계 — HEAD 해시·STEP 번호·다음 STEP 후보·디자인 변경 등 반영)
+- [ ] **`docs/SESSION_BOOT.md` 갱신** (HEAD·STEP·현재 상태·다음 후보 — 새 세션 최우선 파일)
 - [ ] SESSION_KICKOFF.md `현재 커밋` 표기 갱신
 - [ ] git push
 - [ ] 빌드 에러 없는지 확인 (`npm run build`)
@@ -144,6 +145,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 
 | 파일 | 경로 | 용도 |
 |------|------|------|
+| 🚀 새 세션 부트 | `docs/SESSION_BOOT.md` | **세션 시작 시 최우선** — 정체성·현재 상태·워크플로우·아키텍처·env·명령어·다음 후보 |
 | 개발 명령서 | `CLAUDE_CODE_INSTRUCTIONS.md` | 전체 기능 명세, DB 스키마, 페이지별 상세 |
 | 비즈니스 전략 | `docs/BUSINESS_STRATEGY.md` | 사업 전략, 투자심사 Q&A, AI전략, 수익모델, 확장계획, 핵심 결정 기록 |
 | 시스템 설계 | `docs/SYSTEM_DESIGN.md` | 아키텍처, 페이지별 기능명세, API현황, 채팅설계, 인증/권한, 자동화, 배포체크리스트 |
@@ -171,9 +173,9 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 ## 세션 루틴
 
 ### 세션 시작 시 (Cowork이 처리)
-1. **`docs/NEXT_SESSION_PLAYBOOK.md` 읽기** ← **항상 이것부터** (디테일 마스터 인수인계 — 정체성·페이지 13개·디자인 시스템·STEP 88~135 이력·다음 STEP 후보·환경변수·자주 쓰는 명령어 전부 한 파일)
-2. `docs/SESSION_KICKOFF.md` 보조 확인 (간략 요약 — PLAYBOOK 의 단축본)
-3. `session-context.md` 확인 (TODO 가비지 컬렉션)
+1. **`docs/SESSION_BOOT.md` 읽기** ← **항상 이것부터** (새 세션 부트 — 정체성·현재 상태·워크플로우·아키텍처·env·명령어·다음 후보 전부 한 파일, 매 세션 최신 유지)
+2. `docs/NEXT_SESSION_PLAYBOOK.md` 심화 확인 (디자인 시스템·페이지별 컴포넌트 매핑·STEP 이력 — 필요할 때)
+3. `docs/SESSION_KICKOFF.md` 보조 / `session-context.md` TODO 가비지 컬렉션
 4. 사용자에게 오늘 할 P0 작업 제안 → 확인 후 명령어 작성
 
 ### 작업 중 (역할 분담)
