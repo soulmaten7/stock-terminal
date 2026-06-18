@@ -124,7 +124,7 @@ export default function HomePerfRanking({ apiPath, emptyLabel }: { apiPath: stri
                   <tr className="border-b border-unjong-border text-xs text-unjong-muted">
                     <th className="w-8 px-2 py-2.5"></th>
                     <th className="whitespace-nowrap px-3 py-2.5 text-left font-medium">순위</th>
-                    <th className="px-3 py-2.5 text-left font-medium">종목명</th>
+                    <th className="px-3 py-2.5 text-left font-medium w-full">종목명</th>
                     <th className="px-3 py-2.5 text-right font-medium">현재가</th>
                     <th className="px-3 py-2.5 text-right font-medium whitespace-nowrap">{periodLabel}전 대비</th>
                   </tr>
