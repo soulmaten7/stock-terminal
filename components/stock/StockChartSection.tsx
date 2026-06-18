@@ -7,10 +7,14 @@ type Props = { symbol: string };
 export default function StockChartSection({ symbol }: Props) {
   const chartRef = useRef<HTMLDivElement>(null);
   const [period, setPeriod] = useState<"D" | "W" | "M">("D");
+  const isUS = /^[A-Z.\-]+$/.test(symbol);
 
   useEffect(() => {
-    if (!/^\d{6}$/.test(symbol)) return;
     if (!chartRef.current) return;
+    // 국내(6자리)=KIS(D/W/M) · 미국=yahoo(일봉). 둘 다 {candles:[{time,open,high,low,close}]}.
+    const url = isUS
+      ? `/api/yahoo/chart?symbol=${encodeURIComponent(symbol)}`
+      : `/api/kis/chart?symbol=${symbol}&period=${period}`;
     let chart: ReturnType<typeof import("lightweight-charts").createChart> | null = null;
     let ro: ResizeObserver | null = null;
     let cancelled = false;
@@ -18,7 +22,7 @@ export default function StockChartSection({ symbol }: Props) {
       try {
         const [{ createChart, ColorType, LineStyle }, res] = await Promise.all([
           import("lightweight-charts"),
-          fetch(`/api/kis/chart?symbol=${symbol}&period=${period}`).then((r) => r.json()),
+          fetch(url).then((r) => r.json()),
         ]);
         if (cancelled || !chartRef.current || !res.candles?.length) return;
         chartRef.current.innerHTML = "";
@@ -51,27 +55,25 @@ export default function StockChartSection({ symbol }: Props) {
     };
     load();
     return () => { cancelled = true; if (ro) ro.disconnect(); if (chart) chart.remove(); };
-  }, [symbol, period]);
-
-  const isUS = /^[A-Z.\-]+$/.test(symbol);
-  if (isUS) {
-    return <div className="text-center py-12 text-sm text-unjong-muted">미국 주식 차트는 Yahoo Finance 통합 추후</div>;
-  }
+  }, [symbol, period, isUS]);
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        {(["D", "W", "M"] as const).map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => setPeriod(p)}
-            className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${period === p ? "bg-unjong-primary text-white" : "text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background"}`}
-          >
-            {p === "D" ? "일봉" : p === "W" ? "주봉" : "월봉"}
-          </button>
-        ))}
-      </div>
+      {!isUS && (
+        <div className="flex items-center gap-2">
+          {(["D", "W", "M"] as const).map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPeriod(p)}
+              className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${period === p ? "bg-unjong-primary text-white" : "text-unjong-muted hover:text-unjong-primary hover:bg-unjong-background"}`}
+            >
+              {p === "D" ? "일봉" : p === "W" ? "주봉" : "월봉"}
+            </button>
+          ))}
+        </div>
+      )}
+      {isUS && <p className="text-xs text-unjong-muted">미국 종목 · 일봉 (Yahoo Finance)</p>}
       <div ref={chartRef} className="w-full h-[400px] bg-unjong-background rounded-lg" />
     </div>
   );
