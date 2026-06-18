@@ -202,10 +202,10 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
       )}
 
 
-      <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
-          <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
+      <div className={embedded ? "grid grid-cols-1 gap-4 xl:grid-cols-3" : ""}>
+          <section className={`overflow-hidden xl:overflow-visible rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
             {/* 필터 헤더 바 — 좌: 국가·시장 / 우: 기간칩 */}
-            <div className="flex flex-wrap items-center gap-x-1 gap-y-2 border-b border-unjong-border px-3 py-2">
+            <div className="sticky top-9 z-20 flex flex-wrap items-center gap-x-1 gap-y-2 border-b border-unjong-border bg-unjong-surface px-3 py-2">
               {COUNTRIES.map((c) => (
                 <button
                   key={c.key}
@@ -236,10 +236,10 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
             ) : sortedRows.length === 0 ? (
               <EmptyState title="데이터 없음" description="잠시 후 다시 시도해 주세요." className="py-10" />
             ) : (
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto xl:overflow-visible">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="text-xs text-unjong-muted border-b border-unjong-border">
+                    <tr className="sticky top-[80px] z-10 bg-unjong-surface text-xs text-unjong-muted border-b border-unjong-border">
                       <th className="w-8 px-2 py-2.5"></th>
                       <th className="text-left font-medium px-3 py-2.5 whitespace-nowrap">순위</th>
                       <th className="text-left font-medium px-3 py-2.5 w-full">종목명</th>
