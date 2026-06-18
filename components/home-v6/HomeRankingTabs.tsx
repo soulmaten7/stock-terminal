@@ -3,7 +3,6 @@
 import { useState, useEffect, Fragment, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MarketClient, { type HoverStock } from "@/components/market/MarketClient";
-import HomeEtfRanking from "./HomeEtfRanking";
 import HomePerfRanking from "./HomePerfRanking";
 import HomeRoomRanking from "./HomeRoomRanking";
 
@@ -73,7 +72,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
       </div>
 
       {tab === "stock" && <MarketClient embedded onHover={onHover} detailSlot={detailSlot} />}
-      {tab === "etf" && <HomeEtfRanking fixedAsset="etf" />}
+      {tab === "etf" && <HomePerfRanking apiPath="/api/krx/etf-performance" emptyLabel="ETF" />}
       {tab === "etn" && <HomePerfRanking apiPath="/api/krx/etn-performance" emptyLabel="ETN" noChart />}
       {tab === "reit" && <HomePerfRanking apiPath="/api/yahoo/reit-performance" emptyLabel="리츠" />}
       {tab === "room" && <HomeRoomRanking platforms={["telegram", "kakao"]} kind="room" />}

@@ -22,6 +22,15 @@ const UNIVERSE: { sym: string; name: string }[] = [
   { sym: "400760", name: "NH올원리츠" },
   { sym: "377190", name: "디앤디플랫폼리츠" },
   { sym: "348950", name: "제이알글로벌리츠" },
+  { sym: "088260", name: "이리츠코크렙" },
+  { sym: "140910", name: "에이리츠" },
+  { sym: "145270", name: "케이탑리츠" },
+  { sym: "334890", name: "이지스밸류리츠" },
+  { sym: "350520", name: "이지스레지던스리츠" },
+  { sym: "396690", name: "미래에셋글로벌리츠" },
+  { sym: "338100", name: "NH프라임리츠" },
+  { sym: "357430", name: "마스턴프리미어리츠" },
+  { sym: "417310", name: "코람코더원리츠" },
 ];
 
 function ret(closes: number[], daysAgo: number): number | null {

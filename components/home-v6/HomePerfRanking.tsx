@@ -55,7 +55,7 @@ function toHover(r: Row): HoverStock {
   return { symbol: r.symbol, name: r.name, priceText: r.price.toLocaleString(), changePercent: r.changePercent, volume: 0 };
 }
 
-export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false }: { apiPath: string; emptyLabel: string; noChart?: boolean }) {
+export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false, limit = 100 }: { apiPath: string; emptyLabel: string; noChart?: boolean; limit?: number }) {
   const watchItems = useWatchlist((s) => s.items);
   const addWatch = useWatchlist((s) => s.add);
   const removeWatch = useWatchlist((s) => s.remove);
@@ -92,8 +92,8 @@ export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false }
     return [...allRows]
       .filter((r) => r[field] != null)
       .sort((a, b) => (b[field] as number) - (a[field] as number))
-      .slice(0, 20);
-  }, [allRows, field]);
+      .slice(0, limit);
+  }, [allRows, field, limit]);
 
   const previewStock = hovered;
 

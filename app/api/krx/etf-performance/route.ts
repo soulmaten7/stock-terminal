@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const EP = "http://data-dbg.krx.co.kr/svc/apis/etp/etn_bydd_trd";
+const EP = "http://data-dbg.krx.co.kr/svc/apis/etp/etf_bydd_trd";
 
 type KrxRow = Record<string, string>;
 
@@ -38,7 +38,6 @@ async function fetchDay(basDd: string, key: string): Promise<KrxRow[]> {
   }
 }
 
-// 목표일(daysAgo) 근처에서 데이터 있는 영업일 찾아 스냅샷 (최대 6일 역추적)
 async function snapshot(daysAgo: number, key: string, now: Date): Promise<{ basDd: string; rows: KrxRow[] }> {
   for (let i = 0; i < 6; i++) {
     const d = new Date(now);
