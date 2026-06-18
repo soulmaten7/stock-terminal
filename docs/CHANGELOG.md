@@ -1,5 +1,26 @@
-<!-- 2026-06-15 -->
+<!-- 2026-06-18 -->
 # 운종(雲從) — 변경 이력
+
+## 2026-06-18 — STEP 265~271 (홈 리셋 · 랭킹 표 UI 통일 · 종목 상세 미국 차트) · 종목 상세 점검
+
+빌드 ✓ 전 STEP. **새 기능 X — 사용자 클릭 QA로 발견한 UX·버그 정리 + 종목 상세 점검.**
+
+**홈 리셋·크래시 (2026-06-17)**
+- **265** **avatarBg 빈값 가드** — 종목 상세 진입 시 `name`이 undefined면 `name.length`에서 크래시하던 것을 `const s = name || ""`로 방지. + 헤더 홈/로고 클릭 시 **주식 탭으로 리셋**(탭을 URL `?tab=`로 반응형 관리, `app/page.tsx` `force-dynamic`). 파일: `lib/avatar.ts` · `HomeRankingTabs.tsx` · `app/page.tsx`. 커밋 `837a9df`
+- **266** **홈 완전 리셋** — 헤더 홈/로고 클릭 시 주식·국내·전체·1일까지 전부 초기화. 탭만 바꾸던 265를 보강: zustand 리셋 카운터(`stores/homeResetStore.ts` 신규) + `key` 리마운트로 `MarketClient` 하위 상태(국가·기간)까지 리셋. 파일: `homeResetStore.ts` · `HomeClientV6.tsx` · `Header.tsx`. 커밋 `e5b8b3d`
+
+**랭킹 표 UI 통일 (2026-06-18)**
+- **267** **'순위' 헤더 줄바꿈 수정** — 고정폭(`w-12`)이 좁아 '순위'가 2줄로 깨지던 것 → 고정폭 제거 + `whitespace-nowrap`. 랭킹 4종(주식·ETF·ETN·리츠). 커밋 `5f992fc`
+- **268** **♡ 관심 + 칼럼 정렬 통일** — ETF·ETN·리츠에도 ♡(관심종목) 칼럼 추가(주식엔 이미 있음 → 관심종목에서 함께 보임) + 셀 패딩 `px-3`로 주식과 통일. 파일: `HomePerfRanking.tsx` · `HomeEtfRanking.tsx`. 커밋 `3e85c04`
+- **269** **종목명 칸 `w-full`** — 리츠처럼 이름이 짧으면 칼럼이 좁아져 현재가·대비가 왼쪽으로 밀리던 문제 → 종목명 `th`에 `w-full`로 남는 폭 흡수, 값 칼럼 우측 고정. 전 탭(주식·ETF·ETN·리츠 + /market) 위치 통일. 커밋 `8408560`
+- **270** **미리보기 트리거 hover→행 클릭** — 마우스만 올려도 바뀌던 미리보기를 **행 클릭 시** 표시로 변경. 행 클릭=상세 이동은 제거(상세는 미리보기 안 '종목 상세·토론 보기 →' 버튼). 파일: `MarketClient` · `HomePerfRanking` · `HomeEtfRanking` · `HomeStockDetail`. 커밋 `db791b0`
+
+**종목 상세 미국 차트 (2026-06-18)**
+- **271** **미국 차트 yahoo 연결** — 종목 상세 차트가 미국이면 "미국 주식 차트는 Yahoo Finance 통합 추후" placeholder였던 것 → `/api/yahoo/chart` 일봉 캔들 렌더(국내와 동일 렌더, D/W/M 토글은 숨기고 "미국 종목 · 일봉 (Yahoo Finance)" 라벨). 파일: `StockChartSection.tsx`. 커밋 `8670ba2`
+
+**종목 상세 점검 결론**: 주식·ETF·ETN·리츠·미국 5종 상세 전부 정상.
+- 미국 호가·체결 카드 = `return null`(국내전용 KIS) → 카드 자체 미표시(빈 '로딩 중' 멈춤 없음 — 정상).
+- 미국 좌측 정보패널 = `/api/yahoo/quote-detail` 호출(이름·현재가·시세·재무) → 동작 확인. **추가 작업 불필요.**
 
 ## 2026-06-15 — STEP 261~264 (/market 미국·ETN 합류 + ETN 기간 일관화 + 홈 속도) · 리딩방 설계 기록
 
