@@ -103,7 +103,7 @@ export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false, 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <section className="overflow-hidden xl:overflow-visible rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft min-w-0 xl:col-span-2">
           {/* 기간칩 헤더 바 — 표 바로 위, 우측 정렬 */}
-          <div className="sticky top-9 z-20 flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-unjong-border bg-unjong-surface px-3 py-2">
+          <div className="sticky top-[74px] z-20 flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-unjong-border bg-unjong-surface px-3 py-2">
             <span className="text-[11px] text-unjong-muted">기간 수익률 · 최근 시세 기준</span>
             <div className="ml-auto flex flex-wrap items-center justify-end gap-x-1 gap-y-2">
               {PERIODS.map((p) => (
@@ -121,7 +121,7 @@ export default function HomePerfRanking({ apiPath, emptyLabel, noChart = false, 
             <div className="overflow-x-auto xl:overflow-visible">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="sticky top-[80px] z-10 border-b border-unjong-border bg-unjong-surface text-xs text-unjong-muted">
+                  <tr className="sticky top-[118px] z-10 border-b border-unjong-border bg-unjong-surface text-xs text-unjong-muted">
                     <th className="w-8 px-2 py-2.5"></th>
                     <th className="whitespace-nowrap px-3 py-2.5 text-left font-medium">순위</th>
                     <th className="px-3 py-2.5 text-left font-medium w-full">종목명</th>

@@ -39,7 +39,7 @@ export default function HomeRankingTabs({ onHover, detailSlot }: { onHover?: (s:
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-1 border-b border-unjong-border">
+      <div className="sticky top-9 z-20 mb-4 flex items-center gap-1 border-b border-unjong-border bg-unjong-surface">
         {TABS.map((t) => (
           <Fragment key={t.key}>
             {/* 리딩방 리스트 앞 구분선 — '상품'과 '검증 디렉토리' 경계 */}
