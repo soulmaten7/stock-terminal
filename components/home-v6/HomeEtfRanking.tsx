@@ -138,21 +138,23 @@ export default function HomeEtfRanking({ fixedAsset }: { fixedAsset?: "etf" | "f
 
   return (
     <div>
-      {/* 기간칩 (위, 풀폭 — 주식과 동일 위치/스타일) */}
-      <div className="mb-3 flex flex-wrap items-center gap-x-1 gap-y-2">
-        {PERIODS.map((p) => (
-          <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
-            {p.label}
-          </button>
-        ))}
-        <span className="ml-auto text-[11px] text-unjong-muted">
-          {asset === "etf" ? (period === "1d" ? "거래대금 상위 · KRX (실시간 아님)" : "기간 수익률 · 최근 시세 기준") : ""}
-        </span>
-      </div>
 
       {/* 주식 embedded와 동일: 테이블 카드(2/3) + 미리보기(1/3, wide) */}
       <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-3">
         <section className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft min-w-0 xl:col-span-2">
+          {/* 기간칩 헤더 바 — 표 바로 위, 우측 정렬 */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-unjong-border px-3 py-2">
+            <span className="text-[11px] text-unjong-muted">
+              {period === "1d" ? "거래대금 상위 · KRX (실시간 아님)" : "기간 수익률 · 최근 시세 기준"}
+            </span>
+            <div className="ml-auto flex flex-wrap items-center justify-end gap-x-1 gap-y-2">
+              {PERIODS.map((p) => (
+                <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
           {asset === "fund" ? (
             <div className="flex flex-col items-center justify-center px-4 py-14 text-center">
               <span className="mb-2 text-2xl">🗂️</span>

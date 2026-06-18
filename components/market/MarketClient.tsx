@@ -221,17 +221,20 @@ export default function MarketClient({ embedded = false, onHover, detailSlot }: 
               {m.label}
             </button>
           ))}
-
-        <span className="mx-1.5 h-5 w-px bg-unjong-border" />
-        {PERIODS.map((p) => (
-          <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
-            {p.label}
-          </button>
-        ))}
       </div>
 
       <div className={embedded ? "grid grid-cols-1 items-start gap-4 xl:grid-cols-3" : ""}>
           <section className={`overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-soft ${embedded ? "min-w-0 xl:col-span-2" : ""}`}>
+            {/* 기간칩 헤더 바 — 표 바로 위, 우측 정렬 */}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-unjong-border px-3 py-2">
+              <div className="ml-auto flex flex-wrap items-center justify-end gap-x-1 gap-y-2">
+                {PERIODS.map((p) => (
+                  <button key={p.key} type="button" onClick={() => setPeriod(p.key)} className={chip(period === p.key)}>
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             {loading ? (
               <LoadingState className="py-10" />
             ) : sortedRows.length === 0 ? (
