@@ -5,6 +5,7 @@ import Link from "next/link";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { isKrxCode } from "@/lib/code";
 import { createAnonClient } from "@/lib/supabase/anon-client";
+import { useAuthStore } from "@/stores/authStore";
 import type { HoverStock } from "@/components/market/MarketClient";
 
 type Candle = { time: string; open: number; high: number; low: number; close: number; volume: number };
@@ -36,7 +37,10 @@ function CandleChart({ candles }: { candles: Candle[] }) {
   const min = Math.min(...data.map((c) => c.low));
   const range = max - min || 1;
   const maxVol = Math.max(...data.map((c) => c.volume), 1);
-  const cw = w / data.length;
+  // 봉 너비를 60봉 기준으로 고정 — 종목마다(신규상장 등) 봉 개수가 달라도 두께 동일.
+  // 봉이 60개보다 적으면 오른쪽(최근)부터 정렬하고 왼쪽은 여백으로 둔다.
+  const cw = w / 60;
+  const offset = w - data.length * cw;
   const py = (v: number) => pad + (priceH - 2 * pad) * (1 - (v - min) / range);
   const volBase = priceH + gap + volH;
   const bw = Math.max(1.2, cw * 0.6);
@@ -47,7 +51,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
     const ym = c.time.slice(0, 7);
     if (ym !== prevMonth) {
       prevMonth = ym;
-      const x = i * cw + cw / 2;
+      const x = offset + i * cw + cw / 2;
       if (labels.length === 0 || x - labels[labels.length - 1].x > 34) {
         labels.push({ x, text: `${c.time.slice(2, 4)}.${parseInt(c.time.slice(5, 7), 10)}` });
       }
@@ -58,7 +62,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
     <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" aria-hidden="true">
       {/* 캔들 */}
       {data.map((c, i) => {
-        const x = i * cw + cw / 2;
+        const x = offset + i * cw + cw / 2;
         const up = c.close >= c.open;
         const color = up ? "#F04452" : "#3182F6";
         const top = py(Math.max(c.open, c.close));
@@ -72,7 +76,7 @@ function CandleChart({ candles }: { candles: Candle[] }) {
       })}
       {/* 거래량 막대 */}
       {data.map((c, i) => {
-        const x = i * cw + cw / 2;
+        const x = offset + i * cw + cw / 2;
         const up = c.close >= c.open;
         const vh = (c.volume / maxVol) * volH;
         return (
@@ -104,6 +108,11 @@ function CandleChart({ candles }: { candles: Candle[] }) {
 export default function HomeStockDetail({ stock, wide = false }: { stock: HoverStock | null; wide?: boolean }) {
   const [candles, setCandles] = useState<Candle[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+  const user = useAuthStore((s) => s.user);
+  const [reloadN, setReloadN] = useState(0);
+  const [showWrite, setShowWrite] = useState(false);
+  const [writeContent, setWriteContent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // 차트: 국내(6자리)=KIS 먼저→비면 yahoo 폴백 / 미국 등=yahoo. debounce.
   useEffect(() => {
@@ -155,7 +164,28 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
       }
     }, 350);
     return () => { cancelled = true; clearTimeout(t); };
-  }, [stock?.symbol]);
+  }, [stock?.symbol, reloadN]);
+
+  const handleSubmit = async () => {
+    if (!user || !stock) return;
+    const trimmed = writeContent.trim();
+    if (!trimmed || submitting) return;
+    setSubmitting(true);
+    const supabase = createAnonClient();
+    const { error } = await supabase.from("discussions").insert({
+      symbol: stock.symbol,
+      user_id: user.id,
+      nickname: user.nickname,
+      tier: user.tier ?? 1,
+      content: trimmed,
+    });
+    if (!error) {
+      setWriteContent("");
+      setShowWrite(false);
+      setReloadN((n) => n + 1);
+    }
+    setSubmitting(false);
+  };
 
   return (
     <aside className={`hidden xl:block ${wide ? "w-full min-w-0" : "w-80 shrink-0"}`}>
@@ -182,9 +212,51 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
               <CandleChart candles={candles} />
             </div>
 
-            {/* 커뮤니티 */}
+            {/* 종목 토론 */}
             <div className="border-b border-unjong-border p-4">
-              <p className="mb-2 text-xs font-semibold text-unjong-muted">커뮤니티</p>
+              <p className="mb-2 text-xs font-semibold text-unjong-muted">종목 토론</p>
+
+              {/* 글쓰기 — 로그인 후 작성 가능 */}
+              {!user ? (
+                <Link href="/auth/login" className="mb-2.5 block rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-center text-xs text-unjong-muted hover:text-unjong-primary">
+                  토론 글쓰기는 로그인 후 가능 · 카카오 로그인 →
+                </Link>
+              ) : !showWrite ? (
+                <button
+                  type="button"
+                  onClick={() => setShowWrite(true)}
+                  className="mb-2.5 w-full rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-left text-xs text-unjong-muted hover:text-unjong-primary"
+                >
+                  ✏️ 이 종목, 어떻게 생각하세요?
+                </button>
+              ) : (
+                <div className="mb-2.5 rounded-lg border border-unjong-primary p-2">
+                  <textarea
+                    value={writeContent}
+                    onChange={(e) => setWriteContent(e.target.value)}
+                    placeholder="의견을 남겨보세요. 욕설·홍보는 제한됩니다."
+                    maxLength={5000}
+                    rows={3}
+                    autoFocus
+                    className="w-full resize-none text-xs text-unjong-primary placeholder:text-unjong-muted focus:outline-none"
+                  />
+                  <div className="mt-1 flex items-center justify-end gap-2">
+                    <button type="button" onClick={() => { setShowWrite(false); setWriteContent(""); }} className="text-xs text-unjong-muted">
+                      취소
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSubmit}
+                      disabled={submitting || !writeContent.trim()}
+                      className="rounded bg-unjong-primary px-2.5 py-1 text-xs font-semibold text-white disabled:opacity-50"
+                    >
+                      {submitting ? "..." : "등록"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* 목록 */}
               {posts.length === 0 ? (
                 <p className="text-xs text-unjong-muted">아직 토론이 없어요. 첫 의견을 남겨보세요.</p>
               ) : (
