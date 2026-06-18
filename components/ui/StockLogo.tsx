@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { avatarBg, avatarChar, logoUrl, leverageInfo, etfBrand } from "@/lib/avatar";
+import { isKrxCode } from "@/lib/code";
 
 export function StockLogo({ code, name, size = 28 }: { code: string; name: string; size?: number }) {
   const [err, setErr] = useState(false);
@@ -26,7 +27,7 @@ export function StockLogo({ code, name, size = 28 }: { code: string; name: strin
 
   // 1.5) 일반 ETF(국내 6자리만) → 브랜드 배지 (KODEX·TIGER… / 레버리지는 위에서 처리)
   //      6자리 가드 → 미국 영문명(SOL·ACE 등) 오탐 방지
-  const etf = /^\d{6}$/.test(code) ? etfBrand(name) : null;
+  const etf = isKrxCode(code) ? etfBrand(name) : null;
   if (etf) {
     return (
       <span

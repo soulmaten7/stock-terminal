@@ -1,5 +1,7 @@
 "use client";
 
+import { isKrxCode } from "@/lib/code";
+
 type Broker = { name: string; url: (code: string) => string; deep?: boolean };
 
 // 도메인: KB·한투·신한 검색 확인 / 토스·키움·미래에셋·삼성·NH 공식 도메인
@@ -15,7 +17,7 @@ const BROKERS: Broker[] = [
 ];
 
 export default function BrokerLinks({ code }: { code: string }) {
-  if (!/^\d{6}$/.test(code)) return null; // 국내 종목/ETF만
+  if (!isKrxCode(code)) return null; // 국내 종목/ETF만
 
   return (
     <section className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-soft">

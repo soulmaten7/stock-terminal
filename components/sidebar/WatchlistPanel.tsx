@@ -3,6 +3,7 @@
 import { useEffect, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { TrendingUp, TrendingDown, Heart, Plus } from "lucide-react";
+import { isKrxCode } from "@/lib/code";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { useWatchlist, type WatchlistItem } from "@/stores/watchlistStore";
 import { LoadingState, EmptyState } from "@/components/ui/State";
@@ -73,7 +74,7 @@ export function WatchlistPanel() {
     const raw = addInput.trim().toUpperCase();
     if (!raw) return;
     let item: WatchlistItem;
-    if (/^\d{6}$/.test(raw)) item = { code: raw, name: raw, market: "KOSPI" };
+    if (isKrxCode(raw)) item = { code: raw, name: raw, market: "KOSPI" };
     else if (/^[A-Z.\-]+$/.test(raw)) item = { code: raw, name: raw, market: "US" };
     else return;
     addItem(item);

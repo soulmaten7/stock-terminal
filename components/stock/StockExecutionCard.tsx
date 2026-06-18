@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import { isKrxCode } from "@/lib/code";
 
 type Exec = { time: string; price: number; change: number; changeSign: string; volume: number };
 
@@ -8,7 +9,7 @@ export default function StockExecutionCard({ symbol }: { symbol: string }) {
   const [items, setItems] = useState<Exec[]>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (!/^\d{6}$/.test(symbol)) { setLoading(false); return; }
+    if (!isKrxCode(symbol)) { setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
       try {
@@ -22,7 +23,7 @@ export default function StockExecutionCard({ symbol }: { symbol: string }) {
     return () => { cancelled = true; clearInterval(t); };
   }, [symbol]);
 
-  if (!/^\d{6}$/.test(symbol)) return null;
+  if (!isKrxCode(symbol)) return null;
   const fmtTime = (s: string) => (s?.length === 6 ? `${s.slice(0, 2)}:${s.slice(2, 4)}:${s.slice(4, 6)}` : s);
 
   return (

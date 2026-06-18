@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, type ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { isKrxCode } from '@/lib/code';
 
 interface Execution {
   time: string;
@@ -25,7 +26,7 @@ function fmtTime(t: string): string {
 
 export default function TicksPageClient() {
   const sp = useSearchParams();
-  const initSym = sp.get('symbol') && /^\d{6}$/.test(sp.get('symbol')!) ? sp.get('symbol')! : DEFAULT_SYMBOL;
+  const initSym = sp.get('symbol') && isKrxCode(sp.get('symbol')!) ? sp.get('symbol')! : DEFAULT_SYMBOL;
 
   const [symbol, setSymbol] = useState(initSym);
   const [symbolInput, setSymbolInput] = useState(initSym);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { isKrxCode } from '@/lib/code';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 const BAD_WORDS = ['씨발', '개새끼', '좆'];
@@ -20,7 +21,7 @@ async function extractStockTags(
 
   for (const tok of tokens) {
     // 6자리 숫자는 symbol 로 직접 사용
-    if (/^\d{6}$/.test(tok)) {
+    if (isKrxCode(tok)) {
       symbols.add(tok);
     } else {
       namesToLookup.push(tok);

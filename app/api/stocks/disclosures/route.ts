@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchDart, getDartCorpCode, DartKeyMissingError } from '@/lib/dart';
+import { isKrxCode } from '@/lib/code';
 
 export const runtime = 'nodejs';
 
@@ -134,7 +135,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'symbol 파라미터 필요' }, { status: 400 });
   }
 
-  const isUS = market === 'US' || (market !== 'KR' && !/^\d{6}$/.test(symbol));
+  const isUS = market === 'US' || (market !== 'KR' && !isKrxCode(symbol));
 
   if (isUS) {
     try {

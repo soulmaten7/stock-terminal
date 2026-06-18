@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { StockLogo } from "@/components/ui/StockLogo";
+import { isKrxCode } from "@/lib/code";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import type { HoverStock } from "@/components/market/MarketClient";
 
@@ -108,7 +109,7 @@ export default function HomeStockDetail({ stock, wide = false }: { stock: HoverS
   useEffect(() => {
     if (!stock) { setCandles([]); return; }
     const code = stock.symbol;
-    const isKr = /^\d{6}$/.test(code);
+    const isKr = isKrxCode(code);
     let cancelled = false;
     const t = setTimeout(async () => {
       let cs: Candle[] = [];

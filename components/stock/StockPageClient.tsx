@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
+import { isKrxCode } from "@/lib/code";
 import { createAnonClient } from "@/lib/supabase/anon-client";
 import StockInfoPanel from "./StockInfoPanel";
 import BrokerLinks from "./BrokerLinks";
@@ -23,7 +24,7 @@ export default function StockPageClient({ code }: Props) {
     if (passedName) { setStockName(passedName); return; }
     let cancelled = false;
     const load = async () => {
-      if (/^\d{6}$/.test(code)) {
+      if (isKrxCode(code)) {
         const supabase = createAnonClient();
         const { data } = await supabase
           .from("stocks")

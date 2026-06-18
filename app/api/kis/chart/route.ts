@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchKisApi } from '@/lib/kis';
+import { isKrxCode } from '@/lib/code';
 
 /**
  * KIS 일봉 차트 API
@@ -14,7 +15,7 @@ import { fetchKisApi } from '@/lib/kis';
 export async function GET(request: NextRequest) {
   const sp = request.nextUrl.searchParams;
   const symbol = sp.get('symbol');
-  if (!symbol || !/^\d{6}$/.test(symbol)) {
+  if (!symbol || !isKrxCode(symbol)) {
     return NextResponse.json({ error: 'symbol (6자리 숫자) 필수' }, { status: 400 });
   }
 

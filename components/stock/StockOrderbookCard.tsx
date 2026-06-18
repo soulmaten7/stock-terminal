@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import { isKrxCode } from "@/lib/code";
 
 type Level = { price: number; volume: number };
 type Book = { asks: Level[]; bids: Level[]; totalAskVolume: number; totalBidVolume: number };
@@ -9,7 +10,7 @@ export default function StockOrderbookCard({ symbol }: { symbol: string }) {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    if (!/^\d{6}$/.test(symbol)) { setLoading(false); return; }
+    if (!isKrxCode(symbol)) { setLoading(false); return; }
     let cancelled = false;
     const load = async () => {
       try {
@@ -23,7 +24,7 @@ export default function StockOrderbookCard({ symbol }: { symbol: string }) {
     return () => { cancelled = true; clearInterval(t); };
   }, [symbol]);
 
-  if (!/^\d{6}$/.test(symbol)) return null;
+  if (!isKrxCode(symbol)) return null;
   const maxVol = book ? Math.max(1, ...book.asks.map((a) => a.volume), ...book.bids.map((b) => b.volume)) : 1;
 
   return (

@@ -4,6 +4,7 @@ import { useEffect, useState, FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { isKrxCode } from '@/lib/code';
 
 interface Level {
   price: number;
@@ -92,7 +93,7 @@ export default function OrderBookPageClient() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const v = input.trim();
-    if (/^\d{6}$/.test(v)) {
+    if (isKrxCode(v)) {
       setSymbol(v);
       setBook(null);
     }

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, FormEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { isKrxCode } from '@/lib/code';
 import {
   createChart,
   ColorType,
@@ -31,7 +32,7 @@ type Period = 'D' | 'W' | 'M';
 
 function normalizeSymbol(input: string): { raw: string; isKrx: boolean } {
   const t = input.trim().toUpperCase();
-  if (/^\d{6}$/.test(t)) return { raw: t, isKrx: true };
+  if (isKrxCode(t)) return { raw: t, isKrx: true };
   if (t.includes(':')) return { raw: t, isKrx: false };
   return { raw: `NASDAQ:${t}`, isKrx: false };
 }

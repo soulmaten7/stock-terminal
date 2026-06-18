@@ -6,6 +6,7 @@ import { ArrowLeft, TrendingUp, TrendingDown } from "lucide-react";
 import { LoadingState } from "@/components/ui/State";
 import { StockLogo } from "@/components/ui/StockLogo";
 import { formatKRW, formatPct } from "@/lib/format";
+import { isKrxCode } from "@/lib/code";
 
 type Props = { symbol: string };
 
@@ -33,14 +34,14 @@ export default function StockInfoPanel({ symbol }: Props) {
   const [loading, setLoading] = useState(true);
   const chartRef = useRef<HTMLDivElement>(null);
 
-  const isKr = /^\d{6}$/.test(symbol);
+  const isKr = isKrxCode(symbol);
 
   // ── 종목 정보 로드 (한국: KIS · 미국: Yahoo) ─────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
       try {
-        if (/^\d{6}$/.test(symbol)) {
+        if (isKrxCode(symbol)) {
           const r = await fetch(`/api/kis/price?symbol=${symbol}`);
           const json = await r.json();
           if (cancelled || json.error) return;
@@ -97,7 +98,7 @@ export default function StockInfoPanel({ symbol }: Props) {
 
   // ── 일봉 차트 (한국 주식만, lightweight-charts dynamic import) ───────────────
   useEffect(() => {
-    if (!/^\d{6}$/.test(symbol) || !chartRef.current) return;
+    if (!isKrxCode(symbol) || !chartRef.current) return;
 
     let chart: ReturnType<typeof import("lightweight-charts").createChart> | null = null;
     let ro: ResizeObserver | null = null;

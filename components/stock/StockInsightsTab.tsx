@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
 import { formatKRW, formatPct } from "@/lib/format";
+import { isKrxCode } from "@/lib/code";
 
 type Fin = {
   period: string; periodType: string; year: number;
@@ -17,7 +18,7 @@ const roe = (f: Fin) => (f.netIncome !== null && f.totalEquity ? (f.netIncome / 
 const debtRatio = (f: Fin) => (f.totalLiabilities !== null && f.totalEquity ? (f.totalLiabilities / f.totalEquity) * 100 : null);
 
 export default function StockInsightsTab({ symbol }: { symbol: string }) {
-  const isKr = /^\d{6}$/.test(symbol);
+  const isKr = isKrxCode(symbol);
   const [annual, setAnnual] = useState<Fin[]>([]);
   const [finNote, setFinNote] = useState<string | null>(null);
   const [investors, setInvestors] = useState<Investor[]>([]);

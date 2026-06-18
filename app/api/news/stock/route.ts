@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
+import { isKrxCode } from "@/lib/code";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,7 +59,7 @@ export async function GET(request: NextRequest) {
     if (/^[A-Z.\-]+$/.test(symbol)) {
       market = "US";
       stockName = symbol;
-    } else if (/^\d{6}$/.test(symbol)) {
+    } else if (isKrxCode(symbol)) {
       // stocks DB 에서 한국 종목명
       const { createClient } = await import("@supabase/supabase-js");
       const supabase = createClient(

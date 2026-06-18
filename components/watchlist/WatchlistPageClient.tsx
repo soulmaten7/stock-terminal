@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Trash2, Star, Plus, ArrowUpDown } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { getWatchlist, removeFromWatchlist, addToWatchlist } from '@/lib/watchlist';
+import { isKrxCode } from '@/lib/code';
 
 interface PriceData {
   name: string;
@@ -98,7 +99,7 @@ export default function WatchlistPageClient() {
   const handleAdd = async (e: FormEvent) => {
     e.preventDefault();
     const sym = newSymbol.trim();
-    if (!/^\d{6}$/.test(sym)) { setAddError('6자리 숫자 종목코드를 입력하세요'); return; }
+    if (!isKrxCode(sym)) { setAddError('종목코드 6자리를 입력하세요 (예: 005930, 0193T0)'); return; }
     if (rows.some((r) => r.symbol === sym)) { setAddError('이미 등록된 종목입니다'); return; }
     setAdding(true);
     setAddError('');

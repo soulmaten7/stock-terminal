@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useUnjongSelectedSymbol } from "@/stores/unjongSelectedSymbolStore";
 import { TrendingUp, TrendingDown, X } from "lucide-react";
+import { isKrxCode } from "@/lib/code";
 import type { IChartApi } from "lightweight-charts";
 
 type Tab = "chart" | "overview";
@@ -143,7 +144,7 @@ export function StockDetailPanel({ inline = false }: StockDetailPanelProps) {
 }
 
 // ─── 한국 주식 코드 판별 ───────────────────────────────────────────────────────
-const isKrCode = (s: string) => /^\d{6}$/.test(s);
+const isKrCode = (s: string) => isKrxCode(s);
 
 // ─── ChartTab ─────────────────────────────────────────────────────────────────
 

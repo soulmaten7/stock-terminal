@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
+import { isKrxCode } from "@/lib/code";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   }
 
   // 국내 6자리는 .KS→.KQ 순으로 시도, 그 외(미국 등)는 티커 그대로
-  const isKr = /^\d{6}$/.test(symbol);
+  const isKr = isKrxCode(symbol);
   const tickers = isKr ? [`${symbol}.KS`, `${symbol}.KQ`] : [symbol];
   const period1 = new Date(Date.now() - 400 * 24 * 60 * 60 * 1000);
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { LoadingState, EmptyState } from "@/components/ui/State";
+import { isKrxCode } from "@/lib/code";
 
 type Disclosure = {
   rcept_no?: string;
@@ -24,7 +25,7 @@ function badgeClass(type: string): string {
 }
 
 export default function StockDisclosuresTab({ symbol }: { symbol: string }) {
-  const isKr = /^\d{6}$/.test(symbol);
+  const isKr = isKrxCode(symbol);
   const [items, setItems] = useState<Disclosure[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
