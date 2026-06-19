@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import ToolboxClient from "@/components/toolbox/ToolboxClient";
-import BrokerRanking from "@/components/toolbox/BrokerRanking";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -68,12 +67,8 @@ export default async function HomePage() {
     .map((slug) => ({ slug, label: CATEGORY_LABELS[slug] ?? slug, links: grouped[slug]! }));
 
   return (
-    <div className="px-6 py-6">
-      {/* 게이트웨이: 한국 | 미국 (ToolboxClient) + 증권사 리스트 (BrokerRanking) */}
-      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
-        <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
-        <BrokerRanking />
-      </div>
+    <div className="mx-auto max-w-5xl px-6 py-6">
+      <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
     </div>
   );
 }
