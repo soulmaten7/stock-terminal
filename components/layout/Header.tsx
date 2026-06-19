@@ -18,9 +18,8 @@ const COUNTRIES: { code: Country; name: string; flag: string }[] = [
 // 운종 상단 탭. 토론·평가는 홈(랭킹·인기토론)으로 접근(평가·검증 톱레벨 승격은 UI 완성 후 결정).
 // MY는 우측 프로필 아이콘으로. 거래·코인 제외.
 const MENU = [
-  { href: '/', label: '홈', match: (p: string) => p === '/' },
-  { href: '/market', label: '상품 리스트', match: (p: string) => /^\/(market|kr|us|stock)/.test(p) },
-  { href: '/toolbox', label: '주식 관련 링크모음', match: (p: string) => /^\/toolbox/.test(p) },
+  { href: '/', label: '주식', match: (p: string) => p === '/' },
+  { href: '/coin', label: '코인', match: (p: string) => /^\/coin/.test(p) },
 ] as const;
 
 export default function Header() {
