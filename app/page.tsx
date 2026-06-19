@@ -67,7 +67,7 @@ export default async function HomePage() {
     .map((slug) => ({ slug, label: CATEGORY_LABELS[slug] ?? slug, links: grouped[slug]! }));
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-6">
+    <div className="mx-auto max-w-7xl px-6 py-6">
       <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
     </div>
   );

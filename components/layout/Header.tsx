@@ -7,7 +7,6 @@ import { User, Bell, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
-import { HeaderSearch } from '@/components/header/HeaderSearch';
 import { useHomeReset } from '@/stores/homeResetStore';
 
 const COUNTRIES: { code: Country; name: string; flag: string }[] = [
@@ -53,7 +52,7 @@ export default function Header() {
 
   return (
     <header className="bg-unjong-surface border-b border-unjong-border">
-      <div className="px-6 h-[60px] flex items-center gap-5">
+      <div className="mx-auto max-w-7xl px-6 h-[60px] flex items-center gap-5">
         {/* ── 로고 ── */}
         <Link href="/" onClick={resetHome} className="shrink-0 hover:opacity-80 flex items-center gap-1.5">
           <span className="text-lg font-bold tracking-wider text-unjong-primary">UNJONG</span>
@@ -82,10 +81,8 @@ export default function Header() {
           })}
         </nav>
 
-        {/* ── 검색 (남은 폭 전부 채움 → 우측 아이콘 오른쪽 정렬) ── */}
-        <div className="flex-1 min-w-0">
-          <HeaderSearch />
-        </div>
+        {/* ── 남은 폭 (우측 아이콘 오른쪽 정렬) ── */}
+        <div className="flex-1" />
 
         {/* ── 우측 아이콘 ── */}
         <div className="flex items-center gap-3 shrink-0">

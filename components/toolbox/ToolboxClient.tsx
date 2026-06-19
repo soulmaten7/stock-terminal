@@ -99,7 +99,7 @@ export default function ToolboxClient({
         ) : catLinks.length === 0 ? (
           <Placeholder emoji="🗂️" title={`${cat?.label ?? ''} · ${countryLabel} 링크 준비 중`} />
         ) : (
-          <div className="grid grid-cols-1 gap-1 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-1">
             {catLinks.map((link) => (
               <LinkCard
                 key={link.id}
