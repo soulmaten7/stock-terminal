@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Globe } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
+import SectionHeader from './SectionHeader';
 
 type Advisor = {
   biz_no: string;
@@ -217,6 +218,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
 
   return (
     <section className="min-w-0">
+      <SectionHeader title="리딩방·검증" subtitle="금융감독원 신고 유사투자자문 조회" />
       <p className="mb-3 rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-[11px] leading-relaxed text-unjong-muted">
         출처: 금융감독원 '파인'(매일 갱신). <strong className="text-unjong-primary">'신고'는 안전 보증·인증이 아닙니다.</strong> 운종은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.
       </p>
@@ -304,7 +306,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               {searching ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.' : '이 플랫폼에 등록된 곳이 없습니다.'}
             </p>
           ) : (
-            <ul className="space-y-1">
+            <ul>
               {results.map((a, i) => {
                 const n = (page - 1) * PAGE_SIZE + i + 1;
                 const icon = faviconFor(a.platform, a.homepage);
@@ -312,17 +314,17 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 return (
                   <li
                     key={a.biz_no}
-                    className={`flex items-center gap-2 rounded-lg border px-3 py-2 transition-colors ${
-                      isSel ? 'border-unjong-accent bg-unjong-background' : 'border-unjong-border'
+                    className={`group flex items-center gap-3 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
+                      isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'
                     }`}
                   >
-                    <button type="button" onClick={() => setSelected(a)} className="flex min-w-0 flex-1 items-center gap-2 text-left">
-                      <span className="w-6 shrink-0 text-center text-xs font-bold text-unjong-muted">{n}</span>
+                    <button type="button" onClick={() => setSelected(a)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+                      <span className="w-6 shrink-0 text-center text-sm font-bold text-unjong-muted">{n}</span>
                       {icon ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={icon} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
-                      ) : <Globe size={14} className="shrink-0 text-unjong-muted" />}
-                      <span className="truncate text-sm font-semibold text-unjong-primary">{roomNameOf(a)}</span>
+                        <img src={icon} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
+                      ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
+                      <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{roomNameOf(a)}</span>
                       {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" /> : null}
                     </button>
                     <button
