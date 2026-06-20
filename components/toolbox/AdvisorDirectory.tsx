@@ -244,7 +244,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
           type="text"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="리딩방명·업체명·대표자 전체 검색 (등록 여부 확인)"
+          placeholder="리딩방명·업체명·대표자 전체 검색"
           className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
         />
       </div>
