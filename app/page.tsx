@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import ToolboxClient from "@/components/toolbox/ToolboxClient";
+import HomeIndexStrip from "@/components/home-v6/HomeIndexStrip";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -67,8 +68,11 @@ export default async function HomePage() {
     .map((slug) => ({ slug, label: CATEGORY_LABELS[slug] ?? slug, links: grouped[slug]! }));
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-6">
-      <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
-    </div>
+    <>
+      <HomeIndexStrip />
+      <div className="mx-auto max-w-7xl px-6 py-6">
+        <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
+      </div>
+    </>
   );
 }

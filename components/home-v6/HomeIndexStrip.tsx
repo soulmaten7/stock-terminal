@@ -26,7 +26,7 @@ export default function HomeIndexStrip() {
   const loop = [...items, ...items]; // 끊김 없는 루프용 2배 복제
 
   return (
-    <div className="sticky top-0 z-30 -mx-6 -mt-5 mb-4 flex h-9 items-center border-b border-unjong-border bg-unjong-surface/95 backdrop-blur">
+    <div className="sticky top-0 z-30 flex h-9 items-center border-b border-unjong-border bg-unjong-surface/95 backdrop-blur">
       <div className="relative flex-1 overflow-hidden">
         <div className="ticker-track flex h-full items-center whitespace-nowrap">
           {loop.map((it, i) => (
