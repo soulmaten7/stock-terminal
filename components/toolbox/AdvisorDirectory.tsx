@@ -114,7 +114,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   const [reportError, setReportError] = useState('');
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const platLabel = PLATFORMS.find(([p]) => p === platform)?.[1] ?? '';
 
   useEffect(() => { setPage(1); }, [platform, sort, q]);
   useEffect(() => { setSelected(null); }, [platform, sort, q, page]);
@@ -223,13 +222,29 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
-          className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
-        >
-          + 리딩방 등록
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="flex gap-1">
+            {SORTS.map(([s, label]) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setSort(s)}
+                className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+            className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+          >
+            + 리딩방 등록
+          </button>
+        </div>
       </div>
 
       {/* 검색 */}
@@ -254,27 +269,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       {/* 본문: 리스트 + 미리보기 */}
       <div className="flex gap-4">
         <div className="min-w-0 flex-1">
-          {/* 건수(왼쪽) + 정렬 탭(오른쪽 = 카드 오른쪽 끝에 맞춤) */}
-          <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="min-w-0 truncate px-1 text-xs text-unjong-muted">
-              {searching ? `'${q}' 검색 결과 ${total.toLocaleString()}건` : `${platLabel} ${total.toLocaleString()}곳`}
-              {totalPages > 1 ? ` · ${page}/${totalPages} 페이지` : ''}
-            </p>
-            <div className="flex shrink-0 gap-1">
-              {SORTS.map(([s, label]) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setSort(s)}
-                  className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                    sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
           {loading ? (
             <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
           ) : results.length === 0 ? (
