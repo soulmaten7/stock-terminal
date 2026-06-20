@@ -58,6 +58,8 @@ html {
   /* STEP 127: 13px → 16px (브라우저 기본). rem 기반 Tailwind 텍스트·spacing 이
      네이버 페이 증권 수준 크기(text-xs=12px / text-sm=14px / text-base=16px)로 정렬됨. */
   font-size: 16px;
+  /* 라이트 테마 고정 — OS가 다크모드여도 네이티브 컨트롤(select 드롭다운·입력창)을 밝게 렌더 */
+  color-scheme: light;
 }
 
 body {
