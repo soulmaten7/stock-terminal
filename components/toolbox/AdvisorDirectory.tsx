@@ -182,6 +182,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   }
 
   function openReport(a: Advisor) {
+    if (!isLoggedIn) { setLoginNotice(true); return; }
     setReporting(a); setReportReason(''); setReportContent(''); setReportDone(false); setReportError('');
   }
   async function submitReport() {
@@ -194,9 +195,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error ?? '제출 실패');
-      const id = reporting.biz_no;
-      setResults((prev) => prev.map((x) => x.biz_no === id ? { ...x, report_count: x.report_count + 1 } : x));
-      setSelected((s) => (s && s.biz_no === id ? { ...s, report_count: s.report_count + 1 } : s));
+      // 신고는 '대기'로 접수 — 관리자 확인 후에만 공개 카운트 반영(낙관적 증가 제거)
       setReportDone(true);
     } catch (e) {
       setReportError(e instanceof Error ? e.message : '제출 실패');
@@ -291,7 +290,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
 
       {loginNotice ? (
         <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          <span>좋아요는 로그인 후 이용할 수 있어요.</span>
+          <span>로그인 후 이용할 수 있어요.</span>
           <a href="/auth/login" className="font-semibold underline">로그인</a>
         </div>
       ) : null}
@@ -441,7 +440,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 </div>
                 <label className="mb-1 block text-xs font-medium text-unjong-muted">상세 내용 (선택)</label>
                 <textarea value={reportContent} onChange={(e) => setReportContent(e.target.value)} rows={4} placeholder="구체적인 피해 내용·정황을 적어주세요." className="mb-1 w-full resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
-                <p className="mb-3 text-[11px] leading-relaxed text-unjong-muted">허위 신고는 무고가 될 수 있습니다. 사실에 근거해 작성해주세요. (로그인·본인확인은 추후 적용 예정)</p>
+                <p className="mb-3 text-[11px] leading-relaxed text-unjong-muted">신고는 접수 후 관리자 검토를 거쳐 공개에 반영됩니다. 허위 신고는 무고가 될 수 있으니 사실에 근거해 작성해주세요.</p>
                 {reportError ? <p className="mb-2 text-xs text-red-500">{reportError}</p> : null}
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setReporting(null)} className="flex-1 rounded-lg border border-unjong-border py-2 text-sm font-medium text-unjong-muted hover:bg-unjong-background">취소</button>
