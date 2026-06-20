@@ -40,6 +40,13 @@ export default async function HomePage() {
     .eq("is_active", true)
     .order("display_order", { ascending: true });
 
+  const { data: ytRows } = await supabase
+    .from("youtube_channels")
+    .select("rank, title, thumbnail_url, subscriber_count, channel_url, week_label")
+    .eq("country", "KR")
+    .order("rank", { ascending: true });
+  const youtubeChannels = ytRows ?? [];
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -71,7 +78,7 @@ export default async function HomePage() {
     <>
       <HomeIndexStrip />
       <div className="mx-auto max-w-7xl px-6 py-6">
-        <ToolboxClient initialCategories={categories} isLoggedIn={!!user} />
+        <ToolboxClient initialCategories={categories} isLoggedIn={!!user} youtubeChannels={youtubeChannels} />
       </div>
     </>
   );

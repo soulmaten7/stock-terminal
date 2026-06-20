@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
 import BrokerRanking from './BrokerRanking';
+import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -25,9 +26,11 @@ function Placeholder({ emoji, title, desc }: { emoji: string; title: string; des
 export default function ToolboxClient({
   initialCategories,
   isLoggedIn,
+  youtubeChannels,
 }: {
   initialCategories: Category[];
   isLoggedIn: boolean;
+  youtubeChannels: YtChannel[];
 }) {
   const [country, setCountry] = useState('KR');
   const [categories, setCategories] = useState(initialCategories);
@@ -91,7 +94,11 @@ export default function ToolboxClient({
       {/* 내용 */}
       <div className="p-4">
         {activeTab === 'youtube' ? (
-          <Placeholder emoji="📺" title="유튜브 Top100 — 준비 중" desc="주간 구독자순 한국 주식 유튜브 (자동 갱신 예정)" />
+          country === 'KR' ? (
+            <YoutubeRanking channels={youtubeChannels} />
+          ) : (
+            <Placeholder emoji="🇺🇸" title="미국 주식 유튜브 — 준비 중" />
+          )
         ) : activeTab === 'room' ? (
           <Placeholder emoji="📣" title="리딩방 검증 — 준비 중" desc="신원인증 등록 + 사실(등록/신고) 라벨" />
         ) : activeTab === 'broker' ? (
