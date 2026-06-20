@@ -13,6 +13,11 @@ const COUNTRIES = [
   { code: 'US', label: '🇺🇸 미국' },
 ];
 
+// 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
+const TAB_ORDER = ['news', 'broker', 'youtube', 'chart', 'analysis', 'research', 'disclosure', 'etf', 'ipo', 'macro', 'exchange', 'community', 'room'];
+// link_hub 카테고리가 아닌 특수 탭의 라벨
+const SPECIAL_LABELS: Record<string, string> = { youtube: '유튜브', broker: '증권사', room: '리딩방·검증' };
+
 function Placeholder({ emoji, title, desc }: { emoji: string; title: string; desc?: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -34,15 +39,15 @@ export default function ToolboxClient({
 }) {
   const [country, setCountry] = useState('KR');
   const [categories, setCategories] = useState(initialCategories);
-  const [activeTab, setActiveTab] = useState(initialCategories[0]?.slug ?? 'youtube');
+  const [activeTab, setActiveTab] = useState(TAB_ORDER[0]);
 
-  // 탭 순서: 유튜브 → (link_hub 카테고리) → 증권사 → 리딩방
-  const tabs = [
-    { slug: 'youtube', label: '유튜브' },
-    ...categories.map((c) => ({ slug: c.slug, label: c.label })),
-    { slug: 'broker', label: '증권사' },
-    { slug: 'room', label: '리딩방' },
-  ];
+  // 탭 = TAB_ORDER 순서대로. 특수탭(유튜브·증권사·리딩방)은 항상, 카테고리는 데이터 있을 때만.
+  const tabs = TAB_ORDER.map((slug) => {
+    const special = SPECIAL_LABELS[slug];
+    if (special) return { slug, label: special };
+    const c = categories.find((cat) => cat.slug === slug);
+    return c ? { slug, label: c.label } : null;
+  }).filter((t): t is { slug: string; label: string } => t !== null);
 
   const handleFavoriteToggle = (id: number, fav: boolean) => {
     setCategories((prev) =>

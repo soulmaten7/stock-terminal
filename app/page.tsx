@@ -8,10 +8,10 @@ export const metadata = { title: "운종 — 투자상품에 속지 않게 돕�
 
 const CATEGORY_LABELS: Record<string, string> = {
   news: "뉴스",
-  chart: "차트·분석",
-  analysis: "재무·분석",
-  disclosure: "공시·규제",
-  research: "리서치·리포트",
+  chart: "차트·시세",
+  analysis: "기업·재무",
+  disclosure: "공시·신용",
+  research: "리포트",
   etf: "ETF·펀드",
   ipo: "공모주·배당",
   macro: "거시경제",
