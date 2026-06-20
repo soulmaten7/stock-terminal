@@ -218,7 +218,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         />
       </div>
 
-      {/* 컨트롤 줄 — 본문과 동일 칼럼 구조(리스트폭 + 미리보기폭). 정렬·등록을 카드 오른쪽 끝에 맞춤. */}
+      {/* 컨트롤 줄 — 리스트폭(플랫폼+정렬) + 미리보기폭(등록). 정렬=카드 끝, 등록=미리보기 칸 위. */}
       <div className="mb-2 flex gap-4">
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
           <div className="flex gap-1 overflow-x-auto">
@@ -250,16 +250,26 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 </button>
               ))}
             </div>
+            {/* 모바일 전용(미리보기 칸 없음): 등록 버튼을 정렬 옆에 */}
             <button
               type="button"
               onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
-              className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+              className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white lg:hidden"
             >
               + 리딩방 등록
             </button>
           </div>
         </div>
-        <div className="hidden w-72 shrink-0 lg:block" />
+        {/* 미리보기 폭: 데스크탑 등록 버튼 (오른쪽 정렬) */}
+        <div className="hidden w-72 shrink-0 items-center justify-end lg:flex">
+          <button
+            type="button"
+            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+            className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+          >
+            + 리딩방 등록
+          </button>
+        </div>
       </div>
 
       {loginNotice ? (
