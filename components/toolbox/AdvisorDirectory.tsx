@@ -206,6 +206,18 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         출처: 금융감독원 '파인'(매일 갱신). <strong className="text-unjong-primary">'신고'는 안전 보증·인증이 아닙니다.</strong> 운종은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.
       </p>
 
+      {/* 검색 (맨 위) */}
+      <div className="relative mb-2">
+        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="리딩방명·업체명·대표자 전체 검색"
+          className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
+        />
+      </div>
+
       {/* 플랫폼 탭(왼쪽) + 리딩방 등록 버튼(오른쪽) */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <div className="flex gap-1 overflow-x-auto">
@@ -222,8 +234,27 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             </button>
           ))}
         </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <div className="flex gap-1">
+        <button
+          type="button"
+          onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+          className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+        >
+          + 리딩방 등록
+        </button>
+      </div>
+
+      {loginNotice ? (
+        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <span>좋아요는 로그인 후 이용할 수 있어요.</span>
+          <a href="/auth/login" className="font-semibold underline">로그인</a>
+        </div>
+      ) : null}
+
+      {/* 본문: 리스트 + 미리보기 */}
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1">
+          {/* 정렬 탭 (카드 오른쪽 끝에 맞춰 우측정렬) */}
+          <div className="mb-2 flex justify-end gap-1">
             {SORTS.map(([s, label]) => (
               <button
                 key={s}
@@ -237,38 +268,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
-            className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
-          >
-            + 리딩방 등록
-          </button>
-        </div>
-      </div>
-
-      {/* 검색 */}
-      <div className="relative mb-2">
-        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
-        <input
-          type="text"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="리딩방명·업체명·대표자 전체 검색"
-          className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
-        />
-      </div>
-
-      {loginNotice ? (
-        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          <span>좋아요는 로그인 후 이용할 수 있어요.</span>
-          <a href="/auth/login" className="font-semibold underline">로그인</a>
-        </div>
-      ) : null}
-
-      {/* 본문: 리스트 + 미리보기 */}
-      <div className="flex gap-4">
-        <div className="min-w-0 flex-1">
           {loading ? (
             <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
           ) : results.length === 0 ? (
