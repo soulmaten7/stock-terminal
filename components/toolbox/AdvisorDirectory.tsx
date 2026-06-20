@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Globe } from 'lucide-react';
+import RoomSubmitModal from './RoomSubmitModal';
 
 type Advisor = {
   biz_no: string;
@@ -103,6 +104,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Advisor | null>(null);
   const [loginNotice, setLoginNotice] = useState(false);
+  const [registering, setRegistering] = useState(false);
 
   const [reporting, setReporting] = useState<Advisor | null>(null);
   const [reportReason, setReportReason] = useState('');
@@ -204,6 +206,17 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       <p className="mb-3 rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-[11px] leading-relaxed text-unjong-muted">
         출처: 금융감독원 '파인'(매일 갱신). <strong className="text-unjong-primary">'신고'는 안전 보증·인증이 아닙니다.</strong> 운종은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.
       </p>
+
+      {/* 내 리딩방 등록 */}
+      <div className="mb-2 flex justify-end">
+        <button
+          type="button"
+          onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+          className="rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+        >
+          + 내 리딩방 등록
+        </button>
+      </div>
 
       {/* 플랫폼 탭(왼쪽) + 정렬 탭(오른쪽) */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -413,6 +426,9 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
           </div>
         </div>
       ) : null}
+
+      {/* 내 리딩방 등록 모달 */}
+      {registering ? <RoomSubmitModal onClose={() => setRegistering(false)} /> : null}
     </section>
   );
 }
