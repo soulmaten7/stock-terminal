@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Globe } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
+import SelectDropdown from './SelectDropdown';
 
 type Advisor = {
   biz_no: string;
@@ -428,10 +429,14 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             ) : (
               <>
                 <label className="mb-1 block text-xs font-medium text-unjong-muted">신고 사유</label>
-                <select value={reportReason} onChange={(e) => setReportReason(e.target.value)} className="mb-3 w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent">
-                  <option value="">선택하세요</option>
-                  {REASONS.map((r) => (<option key={r} value={r}>{r}</option>))}
-                </select>
+                <div className="mb-3">
+                  <SelectDropdown
+                    value={reportReason}
+                    onChange={setReportReason}
+                    options={REASONS.map((r) => ({ value: r, label: r }))}
+                    placeholder="선택하세요"
+                  />
+                </div>
                 <label className="mb-1 block text-xs font-medium text-unjong-muted">상세 내용 (선택)</label>
                 <textarea value={reportContent} onChange={(e) => setReportContent(e.target.value)} rows={4} placeholder="구체적인 피해 내용·정황을 적어주세요." className="mb-1 w-full resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
                 <p className="mb-3 text-[11px] leading-relaxed text-unjong-muted">허위 신고는 무고가 될 수 있습니다. 사실에 근거해 작성해주세요. (로그인·본인확인은 추후 적용 예정)</p>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import SelectDropdown from './SelectDropdown';
 
 const PLATFORMS = [['telegram', '텔레그램'], ['kakao', '카카오톡'], ['naver', '네이버'], ['etc', '기타']] as const;
 const inputCls = 'w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent';
@@ -64,9 +65,7 @@ export default function RoomSubmitModal({ onClose }: { onClose: (submitted: bool
             </label>
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-unjong-muted">플랫폼</span>
-              <select value={platform} onChange={(e) => setPlatform(e.target.value)} className={inputCls}>
-                {PLATFORMS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
+              <SelectDropdown value={platform} onChange={setPlatform} options={PLATFORMS.map(([v, l]) => ({ value: v, label: l }))} />
             </label>
             <label className="block">
               <span className="mb-1 block text-xs font-medium text-unjong-muted">링크(입장 URL) *</span>
