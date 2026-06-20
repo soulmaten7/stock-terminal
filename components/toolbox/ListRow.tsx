@@ -1,0 +1,72 @@
+'use client';
+
+import type { ReactNode } from 'react';
+import { ExternalLink } from 'lucide-react';
+
+export type ListRowProps = {
+  href: string;
+  onClick?: () => void;
+  rank?: number;
+  iconUrl?: string | null;
+  iconRound?: boolean;
+  title: string;
+  subtitle?: string;
+  meta?: string;
+  stat?: string;
+  trailing?: ReactNode;
+};
+
+export default function ListRow({
+  href, onClick, rank, iconUrl, iconRound, title, subtitle, meta, stat, trailing,
+}: ListRowProps) {
+  const hasMeta = meta !== undefined;
+  const cls =
+    'group flex cursor-pointer items-center gap-3 border-b border-unjong-border px-2 py-2.5 transition-colors last:border-b-0 hover:bg-unjong-background';
+
+  const inner = (
+    <>
+      {rank !== undefined && (
+        <span className={`w-6 shrink-0 text-center text-sm font-bold ${rank <= 3 ? 'text-unjong-accent' : 'text-unjong-muted'}`}>
+          {rank}
+        </span>
+      )}
+      {iconUrl !== undefined &&
+        (iconUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={iconUrl}
+            alt=""
+            width={24}
+            height={24}
+            className={`h-6 w-6 shrink-0 ${iconRound ? 'rounded-full' : 'rounded'}`}
+            onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }}
+          />
+        ) : (
+          <span className={`h-6 w-6 shrink-0 ${iconRound ? 'rounded-full' : 'rounded'} bg-unjong-background`} />
+        ))}
+      <div className={`flex flex-col ${hasMeta ? 'w-44 shrink-0 sm:w-52' : 'min-w-0 flex-1'}`}>
+        <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{title}</span>
+        {subtitle ? <span className="truncate text-xs text-unjong-muted">{subtitle}</span> : null}
+      </div>
+      {hasMeta && (
+        <p className="hidden min-w-0 flex-1 truncate text-sm text-unjong-muted sm:block">{meta}</p>
+      )}
+      {stat ? <span className="shrink-0 text-xs font-bold text-unjong-accent">{stat}</span> : null}
+      {trailing ? <span className="shrink-0">{trailing}</span> : null}
+      <ExternalLink size={14} className="shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <div onClick={onClick} className={cls}>
+        {inner}
+      </div>
+    );
+  }
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
+      {inner}
+    </a>
+  );
+}

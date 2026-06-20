@@ -5,6 +5,7 @@ import LinkCard, { type LinkItem } from './LinkCard';
 import BrokerRanking from './BrokerRanking';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
+import SectionHeader from './SectionHeader';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -116,16 +117,19 @@ export default function ToolboxClient({
         ) : catLinks.length === 0 ? (
           <Placeholder emoji="🗂️" title={`${cat?.label ?? ''} · ${countryLabel} 링크 준비 중`} />
         ) : (
-          <div className="space-y-1">
-            {catLinks.map((link) => (
-              <LinkCard
-                key={link.id}
-                link={link}
-                isLoggedIn={isLoggedIn}
-                onFavoriteToggle={handleFavoriteToggle}
-              />
-            ))}
-          </div>
+          <section className="min-w-0">
+            <SectionHeader title={cat?.label ?? ''} subtitle={`${catLinks.length}곳 · 운종 큐레이션`} />
+            <div>
+              {catLinks.map((link) => (
+                <LinkCard
+                  key={link.id}
+                  link={link}
+                  isLoggedIn={isLoggedIn}
+                  onFavoriteToggle={handleFavoriteToggle}
+                />
+              ))}
+            </div>
+          </section>
         )}
       </div>
     </div>

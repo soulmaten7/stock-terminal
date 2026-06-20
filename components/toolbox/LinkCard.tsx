@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, ExternalLink } from 'lucide-react';
+import { Star } from 'lucide-react';
+import ListRow from './ListRow';
 
 export type LinkItem = {
   id: number;
@@ -13,9 +14,7 @@ export type LinkItem = {
 };
 
 export default function LinkCard({
-  link,
-  isLoggedIn,
-  onFavoriteToggle,
+  link, isLoggedIn, onFavoriteToggle,
 }: {
   link: LinkItem;
   isLoggedIn: boolean;
@@ -59,33 +58,15 @@ export default function LinkCard({
   };
 
   return (
-    <div
+    <ListRow
+      href={link.site_url}
       onClick={handleClick}
-      className="group flex cursor-pointer items-center gap-3 border-b border-unjong-border px-2 py-3 transition-colors last:border-b-0 hover:bg-unjong-background"
-    >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
-        alt=""
-        width={22}
-        height={22}
-        className="shrink-0 rounded"
-        onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }}
-      />
-      {/* 이름 + 도메인 */}
-      <div className="flex w-44 shrink-0 flex-col sm:w-52">
-        <span className="truncate text-sm font-bold text-unjong-primary group-hover:text-unjong-accent">
-          {link.site_name}
-        </span>
-        <span className="truncate text-xs text-unjong-muted">{domain}</span>
-      </div>
-      {/* 한 줄 설명 */}
-      <p className="hidden min-w-0 flex-1 truncate text-sm text-unjong-muted sm:block">
-        {link.description || ''}
-      </p>
-      {/* 즐겨찾기 + 외부링크 */}
-      <div className="ml-auto flex shrink-0 items-center gap-2 sm:ml-0">
-        {isLoggedIn && (
+      iconUrl={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
+      title={link.site_name}
+      subtitle={domain}
+      meta={link.description || ''}
+      trailing={
+        isLoggedIn ? (
           <button
             type="button"
             onClick={handleFav}
@@ -94,9 +75,8 @@ export default function LinkCard({
           >
             <Star size={16} fill={fav ? 'currentColor' : 'none'} />
           </button>
-        )}
-        <ExternalLink size={14} className="text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
-      </div>
-    </div>
+        ) : undefined
+      }
+    />
   );
 }

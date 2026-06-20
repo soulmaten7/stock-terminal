@@ -1,6 +1,7 @@
 'use client';
 
-import { ExternalLink } from 'lucide-react';
+import ListRow from './ListRow';
+import SectionHeader from './SectionHeader';
 
 export type YtChannel = {
   rank: number;
@@ -29,43 +30,20 @@ export default function YoutubeRanking({ channels }: { channels: YtChannel[] }) 
   const week = channels[0]?.week_label ?? '';
   return (
     <section className="min-w-0">
-      <div className="mb-3 border-b border-unjong-border pb-2">
-        <h2 className="text-lg font-bold text-unjong-primary">한국 주식 유튜브 Top 100</h2>
-        <p className="mt-0.5 text-xs text-unjong-muted">{week} · 구독자순 · 매주 갱신</p>
-      </div>
-      <ol className="grid grid-cols-1 gap-0.5">
+      <SectionHeader title="한국 주식 유튜브 Top 100" subtitle={`${week} · 구독자순 · 매주 갱신`} />
+      <div>
         {channels.map((c) => (
-          <li key={c.rank}>
-            <a
-              href={c.channel_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-unjong-background"
-            >
-              <span className={`w-6 shrink-0 text-center text-sm font-bold ${c.rank <= 3 ? 'text-unjong-accent' : 'text-unjong-muted'}`}>{c.rank}</span>
-              {c.thumbnail_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={c.thumbnail_url}
-                  alt=""
-                  width={28}
-                  height={28}
-                  className="h-7 w-7 shrink-0 rounded-full"
-                  onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }}
-                />
-              ) : (
-                <span className="h-7 w-7 shrink-0 rounded-full bg-unjong-background" />
-              )}
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{c.title}</span>
-              <span className="shrink-0 text-xs font-bold text-unjong-accent">{fmtSubs(c.subscriber_count)}</span>
-              <span className="hidden shrink-0 items-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs font-medium text-unjong-muted transition-colors group-hover:border-unjong-accent group-hover:bg-unjong-background group-hover:text-unjong-accent sm:flex">
-                채널
-                <ExternalLink size={11} />
-              </span>
-            </a>
-          </li>
+          <ListRow
+            key={c.rank}
+            href={c.channel_url}
+            rank={c.rank}
+            iconUrl={c.thumbnail_url}
+            iconRound
+            title={c.title}
+            stat={fmtSubs(c.subscriber_count)}
+          />
         ))}
-      </ol>
+      </div>
     </section>
   );
 }
