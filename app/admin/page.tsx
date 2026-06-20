@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
+import AdminReports from '@/components/admin/AdminReports';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -42,34 +43,7 @@ export default async function AdminPage() {
       {/* 신고 */}
       <section className="mb-12">
         <h2 className="mb-3 text-base font-bold text-unjong-primary">🚨 신고 ({reports.length})</h2>
-        {reports.length === 0 ? (
-          <p className="rounded-lg border border-unjong-border bg-unjong-surface p-6 text-center text-sm text-unjong-muted">아직 신고가 없습니다.</p>
-        ) : (
-          <div className="overflow-x-auto rounded-lg border border-unjong-border">
-            <table className="w-full text-sm">
-              <thead className="bg-unjong-background text-xs text-unjong-muted">
-                <tr>
-                  <th className="px-3 py-2 text-left font-medium">접수</th>
-                  <th className="px-3 py-2 text-left font-medium">대상</th>
-                  <th className="px-3 py-2 text-left font-medium">사유</th>
-                  <th className="px-3 py-2 text-left font-medium">내용</th>
-                  <th className="px-3 py-2 text-left font-medium">상태</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reports.map((r) => (
-                  <tr key={r.id} className="border-t border-unjong-border align-top">
-                    <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{fmt(r.created_at)}</td>
-                    <td className="px-3 py-2 font-medium text-unjong-primary">{r.target_name}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-unjong-primary">{r.reason}</td>
-                    <td className="px-3 py-2 text-unjong-muted">{r.content || '—'}</td>
-                    <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{r.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <AdminReports initial={reports} />
       </section>
 
       {/* 자가등록 */}
