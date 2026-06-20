@@ -5,13 +5,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 100;
-const PLATFORMS = ["telegram", "kakao", "naver", "etc"];
+const PLATFORMS = ["all", "telegram", "kakao", "naver", "etc"];
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const raw = (sp.get("q") ?? "").trim();
   const q = raw.replace(/[^\p{L}\p{N}\s-]/gu, "").slice(0, 50); // or-필터 인젝션 방지
-  const platform = PLATFORMS.includes(sp.get("platform") ?? "") ? (sp.get("platform") as string) : "telegram";
+  const platform = PLATFORMS.includes(sp.get("platform") ?? "") ? (sp.get("platform") as string) : "all";
   const sortParam = sp.get("sort");
   const sort = sortParam === "name_desc" ? "name_desc" : sortParam === "popular" ? "popular" : "name_asc";
   const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
@@ -19,11 +19,11 @@ export async function GET(req: NextRequest) {
   const supabase = await createClient();
   let query = supabase
     .from("advisor_directory")
-    .select("biz_no, company_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, platform", { count: "exact" });
+    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, platform", { count: "exact" });
 
   if (q) {
-    query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%`); // 검색 = 전체
-  } else {
+    query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)
+  } else if (platform !== "all") {
     query = query.eq("platform", platform);
   }
 

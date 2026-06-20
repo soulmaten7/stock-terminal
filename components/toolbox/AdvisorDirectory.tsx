@@ -6,6 +6,7 @@ import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck,
 type Advisor = {
   biz_no: string;
   company_name: string;
+  info_name: string | null;
   representative: string | null;
   valid_from: string | null;
   valid_to: string | null;
@@ -20,9 +21,9 @@ type Advisor = {
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
 const PAGE_SIZE = 100;
-const PLATFORMS = [['telegram', '텔레그램'], ['kakao', '카카오톡'], ['naver', '네이버'], ['etc', '기타']] as const;
+const PLATFORMS = [['all', '전체'], ['telegram', '텔레그램'], ['kakao', '카카오톡'], ['naver', '네이버'], ['etc', '기타']] as const;
 const SORTS = [['name_asc', '가나다 오름차순'], ['name_desc', '가나다 내림차순'], ['popular', '추천순']] as const;
-type PlatformKey = 'telegram' | 'kakao' | 'naver' | 'etc';
+type PlatformKey = 'all' | 'telegram' | 'kakao' | 'naver' | 'etc';
 type SortKey = 'name_asc' | 'name_desc' | 'popular';
 
 function fav(domain: string) {
@@ -40,9 +41,20 @@ function faviconFor(p: string, homepage: string | null): string | null {
 function platformLabel(p: string): string {
   return p === 'telegram' ? '텔레그램' : p === 'kakao' ? '카카오톡' : p === 'naver' ? '네이버' : '기타';
 }
+function roomNameOf(a: Advisor): string {
+  return (a.info_name && a.info_name.trim()) || a.company_name;
+}
 
 function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; onReport: () => void }) {
   const ic = faviconFor(a.platform, a.homepage);
+  const roomName = roomNameOf(a);
+  const showCompany = !!(a.info_name && a.info_name.trim() && a.info_name.trim() !== a.company_name);
+  const rows: [string, string | null][] = [
+    ...(showCompany ? [['등록업체', a.company_name] as [string, string | null]] : []),
+    ['주소', a.address],
+    ['신고기간', `${a.valid_from ?? '—'} ~ ${a.valid_to ?? '—'}`],
+    ['연락처', a.phone],
+  ];
   return (
     <div>
       <div className="mb-1 flex items-center gap-2">
@@ -50,17 +62,17 @@ function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; 
           // eslint-disable-next-line @next/next/no-img-element
           <img src={ic} alt="" width={20} height={20} className="h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
         ) : <Globe size={18} className="text-unjong-muted" />}
-        <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{a.company_name}</h3>
+        <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{roomName}</h3>
       </div>
       <p className="mb-2 text-xs text-unjong-muted">대표 {a.representative ?? '—'}</p>
       <div className="mb-3 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
         <ShieldCheck size={12} /> 금감원 등록 · {platformLabel(a.platform)}
       </div>
       <dl className="space-y-1.5 text-xs">
-        {[['주소', a.address], ['신고기간', `${a.valid_from ?? '—'} ~ ${a.valid_to ?? '—'}`], ['연락처', a.phone]].map(([k, v]) => (
-          <div key={k as string} className="flex gap-2">
+        {rows.map(([k, v]) => (
+          <div key={k} className="flex gap-2">
             <dt className="w-12 shrink-0 text-unjong-muted">{k}</dt>
-            <dd className="min-w-0 flex-1 text-unjong-primary">{(v as string) || '—'}</dd>
+            <dd className="min-w-0 flex-1 text-unjong-primary">{v || '—'}</dd>
           </div>
         ))}
       </dl>
@@ -82,7 +94,7 @@ function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; 
 }
 
 export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }) {
-  const [platform, setPlatform] = useState<PlatformKey>('telegram');
+  const [platform, setPlatform] = useState<PlatformKey>('all');
   const [sort, setSort] = useState<SortKey>('name_asc');
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
@@ -163,7 +175,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
     try {
       const r = await fetch('/api/reports', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target_type: 'fss_advisor', target_id: reporting.biz_no, target_name: reporting.company_name, reason: reportReason, content: reportContent }),
+        body: JSON.stringify({ target_type: 'fss_advisor', target_id: reporting.biz_no, target_name: roomNameOf(reporting), reason: reportReason, content: reportContent }),
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error ?? '제출 실패');
@@ -191,20 +203,19 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
 
   return (
     <section className="min-w-0">
-      {/* 면책 (compact) */}
       <p className="mb-3 rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-[11px] leading-relaxed text-unjong-muted">
         출처: 금융감독원 '파인'(매일 갱신). <strong className="text-unjong-primary">'신고'는 안전 보증·인증이 아닙니다.</strong> 운종은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.
       </p>
 
       {/* 플랫폼 탭(왼쪽) + 정렬 탭(오른쪽) */}
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex gap-1">
+        <div className="flex gap-1 overflow-x-auto">
           {PLATFORMS.map(([p, label]) => (
             <button
               key={p}
               type="button"
               onClick={() => { setQ(''); setPlatform(p); }}
-              className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
                 platform === p && !searching ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
               }`}
             >
@@ -218,7 +229,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               key={s}
               type="button"
               onClick={() => setSort(s)}
-              className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+              className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
                 sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
               }`}
             >
@@ -235,7 +246,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
           type="text"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="업체명·대표자 전체 검색 (등록 여부 확인)"
+          placeholder="리딩방명·업체명·대표자 전체 검색 (등록 여부 확인)"
           className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
         />
       </div>
@@ -280,7 +291,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={icon} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
                       ) : <Globe size={14} className="shrink-0 text-unjong-muted" />}
-                      <span className="truncate text-sm font-semibold text-unjong-primary">{a.company_name}</span>
+                      <span className="truncate text-sm font-semibold text-unjong-primary">{roomNameOf(a)}</span>
                       <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" />
                     </button>
                     <button
@@ -317,7 +328,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             </ul>
           )}
 
-          {/* 페이지네이션 */}
           {!loading && totalPages > 1 ? (
             <div className="mt-4 flex flex-wrap items-center justify-center gap-1">
               <button type="button" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="flex h-8 w-8 items-center justify-center rounded-md border border-unjong-border text-unjong-muted hover:border-unjong-accent disabled:opacity-40" aria-label="이전">
@@ -339,9 +349,9 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
           ) : null}
         </div>
 
-        {/* 미리보기 (데스크탑 우측 고정) */}
+        {/* 미리보기 (데스크탑 우측 — 티커 밑 스티키) */}
         <aside className="hidden w-72 shrink-0 lg:block">
-          <div className="sticky top-20 rounded-xl border border-unjong-border bg-unjong-surface p-4">
+          <div className="sticky top-11 rounded-xl border border-unjong-border bg-unjong-surface p-4">
             {selected ? (
               <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} />
             ) : (
@@ -372,7 +382,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             <div className="mb-3 flex items-start justify-between">
               <div className="min-w-0">
                 <h3 className="text-sm font-bold text-unjong-primary">신고하기</h3>
-                <p className="mt-0.5 truncate text-xs text-unjong-muted">{reporting.company_name}</p>
+                <p className="mt-0.5 truncate text-xs text-unjong-muted">{roomNameOf(reporting)}</p>
               </div>
               <button type="button" onClick={() => setReporting(null)} aria-label="닫기" className="text-unjong-muted hover:text-unjong-primary">
                 <X size={18} />

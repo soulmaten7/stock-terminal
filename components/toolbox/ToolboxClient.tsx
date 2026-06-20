@@ -64,7 +64,7 @@ export default function ToolboxClient({
   const countryLabel = country === 'KR' ? '한국' : '미국';
 
   return (
-    <div className="min-w-0 overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface">
+    <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
       {/* 국가 토글 */}
       <div className="flex items-center gap-1 border-b border-unjong-border p-3">
         {COUNTRIES.map((c) => (
