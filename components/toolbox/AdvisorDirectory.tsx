@@ -218,45 +218,48 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         />
       </div>
 
-      {/* 플랫폼 탭(왼쪽) + 리딩방 등록 버튼(오른쪽) */}
-      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <div className="flex gap-1 overflow-x-auto">
-          {PLATFORMS.map(([p, label]) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => { setQ(''); setPlatform(p); }}
-              className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-                platform === p && !searching ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <div className="flex gap-1">
-            {SORTS.map(([s, label]) => (
+      {/* 컨트롤 줄 — 본문과 동일 칼럼 구조(리스트폭 + 미리보기폭). 정렬·등록을 카드 오른쪽 끝에 맞춤. */}
+      <div className="mb-2 flex gap-4">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
+          <div className="flex gap-1 overflow-x-auto">
+            {PLATFORMS.map(([p, label]) => (
               <button
-                key={s}
+                key={p}
                 type="button"
-                onClick={() => setSort(s)}
-                className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                  sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+                onClick={() => { setQ(''); setPlatform(p); }}
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+                  platform === p && !searching ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
                 }`}
               >
                 {label}
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
-            className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
-          >
-            + 리딩방 등록
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="flex gap-1">
+              {SORTS.map(([s, label]) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSort(s)}
+                  className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                    sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+              className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+            >
+              + 리딩방 등록
+            </button>
+          </div>
         </div>
+        <div className="hidden w-72 shrink-0 lg:block" />
       </div>
 
       {loginNotice ? (
