@@ -112,8 +112,8 @@ export default function Header() {
             </Link>
           ) : (
             <div ref={profileRef} className="relative">
-              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors">
-                <User size={18} />
+              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-unjong-primary text-xs font-bold text-white transition-opacity hover:opacity-90" aria-label="프로필 메뉴" title={user.nickname || user.email || ''}>
+                {(user.nickname || user.email || 'U').charAt(0).toUpperCase()}
               </button>
               {profileOpen && (
                 <div className="absolute top-full mt-2 right-0 w-48 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50">
