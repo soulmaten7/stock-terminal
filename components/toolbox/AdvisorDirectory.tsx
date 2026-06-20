@@ -234,27 +234,8 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             </button>
           ))}
         </div>
-        <button
-          type="button"
-          onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
-          className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
-        >
-          + 리딩방 등록
-        </button>
-      </div>
-
-      {loginNotice ? (
-        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-          <span>좋아요는 로그인 후 이용할 수 있어요.</span>
-          <a href="/auth/login" className="font-semibold underline">로그인</a>
-        </div>
-      ) : null}
-
-      {/* 본문: 리스트 + 미리보기 */}
-      <div className="flex gap-4">
-        <div className="min-w-0 flex-1">
-          {/* 정렬 탭 (카드 오른쪽 끝에 맞춰 우측정렬) */}
-          <div className="mb-2 flex justify-end gap-1">
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="flex gap-1">
             {SORTS.map(([s, label]) => (
               <button
                 key={s}
@@ -268,6 +249,26 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+            className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
+          >
+            + 리딩방 등록
+          </button>
+        </div>
+      </div>
+
+      {loginNotice ? (
+        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <span>좋아요는 로그인 후 이용할 수 있어요.</span>
+          <a href="/auth/login" className="font-semibold underline">로그인</a>
+        </div>
+      ) : null}
+
+      {/* 본문: 리스트 + 미리보기 */}
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1">
           {loading ? (
             <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
           ) : results.length === 0 ? (
