@@ -4,6 +4,7 @@ import { useState } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
 import BrokerRanking from './BrokerRanking';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
+import AdvisorDirectory from './AdvisorDirectory';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -105,7 +106,11 @@ export default function ToolboxClient({
             <Placeholder emoji="🇺🇸" title="미국 주식 유튜브 — 준비 중" />
           )
         ) : activeTab === 'room' ? (
-          <Placeholder emoji="📣" title="리딩방 검증 — 준비 중" desc="신원인증 등록 + 사실(등록/신고) 라벨" />
+          country === 'KR' ? (
+            <AdvisorDirectory />
+          ) : (
+            <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
+          )
         ) : activeTab === 'broker' ? (
           country === 'KR' ? <BrokerRanking /> : <Placeholder emoji="🇺🇸" title="미국 증권사 — 준비 중" />
         ) : catLinks.length === 0 ? (
