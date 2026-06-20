@@ -5,7 +5,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 100;
-// 리딩방·카페 판별: 메신저/커뮤니티 링크 패턴
 const ROOM_PATTERNS = ["t.me", "telegram", "cafe.naver", "naver.me", "band.us"];
 
 export async function GET(req: NextRequest) {
@@ -13,13 +12,14 @@ export async function GET(req: NextRequest) {
   const raw = (sp.get("q") ?? "").trim();
   const q = raw.replace(/[^\p{L}\p{N}\s-]/gu, "").slice(0, 50); // or-필터 인젝션 방지
   const mode = sp.get("mode") === "all" ? "all" : "rooms";
-  const sort = sp.get("sort") === "name_desc" ? "name_desc" : "name_asc";
+  const sortParam = sp.get("sort");
+  const sort = sortParam === "name_desc" ? "name_desc" : sortParam === "popular" ? "popular" : "name_asc";
   const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
 
   const supabase = await createClient();
   let query = supabase
-    .from("fss_advisors")
-    .select("biz_no, company_name, representative, valid_from, valid_to, homepage, phone, address", { count: "exact" });
+    .from("advisor_directory")
+    .select("biz_no, company_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count", { count: "exact" });
 
   if (mode === "rooms") {
     query = query.or(ROOM_PATTERNS.map((p) => `homepage.ilike.%${p}%`).join(","));
@@ -28,7 +28,11 @@ export async function GET(req: NextRequest) {
     query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%`);
   }
 
-  query = query.order("company_name", { ascending: sort === "name_asc" });
+  if (sort === "popular") {
+    query = query.order("like_count", { ascending: false }).order("company_name", { ascending: true });
+  } else {
+    query = query.order("company_name", { ascending: sort === "name_asc" });
+  }
 
   const from = (page - 1) * PAGE_SIZE;
   query = query.range(from, from + PAGE_SIZE - 1);
@@ -36,5 +40,23 @@ export async function GET(req: NextRequest) {
   const { data, count, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ results: data ?? [], total: count ?? 0, page, pageSize: PAGE_SIZE, mode, sort });
+  type Row = { biz_no: string; [k: string]: unknown };
+  let rows = (data ?? []) as Row[];
+
+  // 로그인 시 내가 좋아요한 항목 표시
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user && rows.length) {
+    const ids = rows.map((r) => r.biz_no);
+    const { data: myLikes } = await supabase
+      .from("room_likes")
+      .select("target_id")
+      .eq("user_id", user.id)
+      .in("target_id", ids);
+    const likedSet = new Set((myLikes ?? []).map((l: { target_id: string }) => l.target_id));
+    rows = rows.map((r) => ({ ...r, liked: likedSet.has(r.biz_no) }));
+  } else {
+    rows = rows.map((r) => ({ ...r, liked: false }));
+  }
+
+  return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, mode, sort, loggedIn: !!user });
 }

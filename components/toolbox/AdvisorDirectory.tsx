@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart } from 'lucide-react';
 
 type Advisor = {
   biz_no: string;
@@ -12,10 +12,15 @@ type Advisor = {
   homepage: string | null;
   phone: string | null;
   address: string | null;
+  like_count: number;
+  report_count: number;
+  liked: boolean;
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
 const PAGE_SIZE = 100;
+const SORTS = [['name_asc', '가나다 오름차순'], ['name_desc', '가나다 내림차순'], ['popular', '추천순']] as const;
+type SortKey = 'name_asc' | 'name_desc' | 'popular';
 
 function region(address: string | null): string {
   if (!address) return '';
@@ -31,15 +36,16 @@ function platform(homepage: string | null): string | null {
   return '웹';
 }
 
-export default function AdvisorDirectory() {
+export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [mode, setMode] = useState<'rooms' | 'all'>('rooms');
-  const [sort, setSort] = useState<'name_asc' | 'name_desc'>('name_asc');
+  const [sort, setSort] = useState<SortKey>('name_asc');
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
 
   const [results, setResults] = useState<Advisor[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loginNotice, setLoginNotice] = useState(false);
 
   // 신고 모달
   const [reporting, setReporting] = useState<Advisor | null>(null);
@@ -71,6 +77,33 @@ export default function AdvisorDirectory() {
     return () => clearTimeout(t);
   }, [mode, sort, page, q]);
 
+  useEffect(() => {
+    if (!loginNotice) return;
+    const t = setTimeout(() => setLoginNotice(false), 3000);
+    return () => clearTimeout(t);
+  }, [loginNotice]);
+
+  async function toggleLike(a: Advisor) {
+    if (!isLoggedIn) { setLoginNotice(true); return; }
+    const wasLiked = a.liked;
+    setResults((prev) => prev.map((x) => x.biz_no === a.biz_no
+      ? { ...x, liked: !wasLiked, like_count: x.like_count + (wasLiked ? -1 : 1) } : x));
+    try {
+      const r = await fetch('/api/likes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_id: a.biz_no, target_type: 'fss_advisor' }),
+      });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error ?? 'fail');
+      setResults((prev) => prev.map((x) => x.biz_no === a.biz_no ? { ...x, liked: j.liked, like_count: j.count } : x));
+    } catch {
+      setResults((prev) => prev.map((x) => x.biz_no === a.biz_no
+        ? { ...x, liked: wasLiked, like_count: x.like_count + (wasLiked ? 1 : -1) } : x));
+      setLoginNotice(true);
+    }
+  }
+
   function openReport(a: Advisor) {
     setReporting(a);
     setReportReason('');
@@ -97,6 +130,8 @@ export default function AdvisorDirectory() {
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error ?? '제출 실패');
+      const id = reporting.biz_no;
+      setResults((prev) => prev.map((x) => x.biz_no === id ? { ...x, report_count: x.report_count + 1 } : x));
       setReportDone(true);
     } catch (e) {
       setReportError(e instanceof Error ? e.message : '제출 실패');
@@ -144,27 +179,40 @@ export default function AdvisorDirectory() {
         ))}
       </div>
 
-      {/* 검색 + 정렬 */}
-      <div className="mb-3 flex flex-col gap-2 sm:flex-row">
-        <div className="relative flex-1">
-          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={mode === 'rooms' ? '리딩방·카페 이름 검색' : '업체명 또는 대표자 검색'}
-            className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
-          />
-        </div>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value as 'name_asc' | 'name_desc')}
-          className="rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
-        >
-          <option value="name_asc">가나다 오름차순</option>
-          <option value="name_desc">가나다 내림차순</option>
-        </select>
+      {/* 검색 */}
+      <div className="relative mb-2">
+        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
+        <input
+          type="text"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={mode === 'rooms' ? '리딩방·카페 이름 검색' : '업체명 또는 대표자 검색'}
+          className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
+        />
       </div>
+
+      {/* 정렬 탭 */}
+      <div className="mb-3 flex gap-1 overflow-x-auto">
+        {SORTS.map(([s, label]) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => setSort(s)}
+            className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+              sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {loginNotice ? (
+        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          <span>좋아요는 로그인 후 이용할 수 있어요.</span>
+          <a href="/auth/login" className="font-semibold underline">로그인</a>
+        </div>
+      ) : null}
 
       <p className="mb-2 px-1 text-xs text-unjong-muted">
         {mode === 'rooms' ? '리딩방·주식카페' : '전체 등록업체'} {total.toLocaleString()}곳
@@ -203,28 +251,38 @@ export default function AdvisorDirectory() {
                       신고기간 {a.valid_from ?? '—'} ~ {a.valid_to ?? '—'}
                       {a.phone ? ` · ☎ ${a.phone}` : ''}
                     </p>
-                  </div>
-                  <div className="flex shrink-0 flex-col items-stretch gap-1">
-                    {a.homepage ? (
-                      <a
-                        href={a.homepage}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="flex items-center justify-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
+                    <div className="mt-2 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleLike(a)}
+                        aria-label="좋아요"
+                        className={`flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors ${
+                          a.liked ? 'border-red-300 text-red-500' : 'border-unjong-border text-unjong-muted hover:border-red-300 hover:text-red-500'
+                        }`}
                       >
-                        바로가기 <ExternalLink size={11} />
-                      </a>
-                    ) : null}
-                    <button
-                      type="button"
-                      onClick={() => openReport(a)}
-                      title="신고하기"
-                      aria-label="신고하기"
-                      className="flex items-center justify-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-red-400 hover:text-red-500"
-                    >
-                      <Siren size={12} /> 신고
-                    </button>
+                        <Heart size={12} className={a.liked ? 'fill-red-500' : ''} /> {a.like_count}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openReport(a)}
+                        title="신고하기"
+                        aria-label="신고하기"
+                        className="flex items-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-red-400 hover:text-red-500"
+                      >
+                        <Siren size={12} /> 신고{a.report_count > 0 ? ` ${a.report_count}` : ''}
+                      </button>
+                    </div>
                   </div>
+                  {a.homepage ? (
+                    <a
+                      href={a.homepage}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                      className="flex shrink-0 items-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
+                    >
+                      바로가기 <ExternalLink size={11} />
+                    </a>
+                  ) : null}
                 </div>
               </li>
             );

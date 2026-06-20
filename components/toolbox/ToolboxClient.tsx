@@ -107,7 +107,7 @@ export default function ToolboxClient({
           )
         ) : activeTab === 'room' ? (
           country === 'KR' ? (
-            <AdvisorDirectory />
+            <AdvisorDirectory isLoggedIn={isLoggedIn} />
           ) : (
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
