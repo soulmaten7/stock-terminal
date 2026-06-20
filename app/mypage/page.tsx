@@ -6,11 +6,12 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate, formatNumber } from '@/lib/utils/format';
-import { User, CreditCard, Star, Bell, MessageCircle, Trash2 } from 'lucide-react';
+import { User, CreditCard, Star, Bell, MessageCircle, Trash2, Siren } from 'lucide-react';
 import type { Payment } from '@/types/api';
 import type { Watchlist } from '@/types/user';
 
-type Tab = 'profile' | 'subscription' | 'watchlist' | 'notifications' | 'chat';
+type Tab = 'profile' | 'subscription' | 'watchlist' | 'notifications' | 'chat' | 'reports';
+type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function MyPage() {
   const [watchlistItems, setWatchlistItems] = useState<Watchlist[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('profile');
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [myReports, setMyReports] = useState<MyReport[]>([]);
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -40,6 +42,25 @@ export default function MyPage() {
 
     if (watchlistRes.data) setWatchlistItems(watchlistRes.data);
     if (paymentsRes.data) setPayments(paymentsRes.data);
+
+    try {
+      const repRes = await fetch('/api/reports').then((r) => r.json());
+      setMyReports(repRes.reports ?? []);
+    } catch { /* ignore */ }
+  };
+
+  const withdrawReport = async (id: number) => {
+    const res = await fetch('/api/reports', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id }),
+    });
+    if (res.ok) {
+      setMyReports((prev) => prev.filter((r) => r.id !== id));
+    } else {
+      const j = await res.json().catch(() => ({}));
+      alert(j.error ?? '철회 실패');
+    }
   };
 
   const updateNickname = async () => {
@@ -67,6 +88,7 @@ export default function MyPage() {
     { key: 'watchlist', label: '관심 종목', icon: <Star className="w-4 h-4" /> },
     { key: 'notifications', label: '알림 설정', icon: <Bell className="w-4 h-4" /> },
     { key: 'chat', label: '채팅 관리', icon: <MessageCircle className="w-4 h-4" /> },
+    { key: 'reports', label: '내 신고', icon: <Siren className="w-4 h-4" /> },
   ];
 
   return (
@@ -183,6 +205,36 @@ export default function MyPage() {
             <div className="bg-dark-700 rounded-xl border border-border p-6 space-y-4">
               <h2 className="font-bold">채팅 관리</h2>
               <p className="text-text-secondary text-sm">채팅 기록 및 제재 이력 확인은 준비 중입니다.</p>
+            </div>
+          )}
+
+          {activeTab === 'reports' && (
+            <div className="bg-dark-700 rounded-xl border border-border p-6">
+              <h2 className="font-bold mb-4">내 신고</h2>
+              {myReports.length === 0 ? (
+                <p className="text-text-secondary text-sm">접수한 신고가 없습니다.</p>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead><tr className="text-text-secondary text-sm"><th className="text-left pb-2">대상</th><th className="text-left pb-2">사유</th><th className="text-left pb-2">상태</th><th className="text-left pb-2">접수일</th><th className="text-right pb-2">철회</th></tr></thead>
+                  <tbody>
+                    {myReports.map((r) => (
+                      <tr key={r.id} className="border-t border-border/50">
+                        <td className="py-2">{r.target_name}</td>
+                        <td className="py-2">{r.reason}</td>
+                        <td className="py-2">{r.status === 'confirmed' ? '확인됨' : r.status === 'dismissed' ? '기각됨' : '대기'}</td>
+                        <td className="py-2 text-text-secondary">{formatDate(r.created_at)}</td>
+                        <td className="py-2 text-right">
+                          {r.status === 'confirmed' ? (
+                            <span className="text-text-secondary text-xs">—</span>
+                          ) : (
+                            <button onClick={() => withdrawReport(r.id)} title="철회" className="text-up hover:text-up/80"><Trash2 className="w-4 h-4 inline" /></button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
           )}
         </div>
