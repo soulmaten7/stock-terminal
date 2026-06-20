@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ExternalLink, Search, Siren, X } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck } from 'lucide-react';
 
 type Advisor = {
   biz_no: string;
@@ -15,20 +15,33 @@ type Advisor = {
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
+const PAGE_SIZE = 100;
 
-// 주소 → 시·도 + 시·군·구 (앞 2토큰)
 function region(address: string | null): string {
   if (!address) return '';
   return address.split(' ').slice(0, 2).join(' ');
 }
 
+function platform(homepage: string | null): string | null {
+  if (!homepage) return null;
+  const h = homepage.toLowerCase();
+  if (h.includes('t.me') || h.includes('telegram')) return '텔레그램';
+  if (h.includes('cafe.naver') || h.includes('naver.me')) return '네이버카페';
+  if (h.includes('band.us')) return '밴드';
+  return '웹';
+}
+
 export default function AdvisorDirectory() {
+  const [mode, setMode] = useState<'rooms' | 'all'>('rooms');
+  const [sort, setSort] = useState<'name_asc' | 'name_desc'>('name_asc');
+  const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
+
   const [results, setResults] = useState<Advisor[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // 신고 모달 상태
+  // 신고 모달
   const [reporting, setReporting] = useState<Advisor | null>(null);
   const [reportReason, setReportReason] = useState('');
   const [reportContent, setReportContent] = useState('');
@@ -36,11 +49,15 @@ export default function AdvisorDirectory() {
   const [reportDone, setReportDone] = useState(false);
   const [reportError, setReportError] = useState('');
 
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  useEffect(() => { setPage(1); }, [mode, sort, q]);
+
   useEffect(() => {
     const t = setTimeout(async () => {
       setLoading(true);
       try {
-        const r = await fetch(`/api/advisors?q=${encodeURIComponent(q)}`);
+        const r = await fetch(`/api/advisors?mode=${mode}&sort=${sort}&page=${page}&q=${encodeURIComponent(q)}`);
         const j = await r.json();
         setResults(j.results ?? []);
         setTotal(j.total ?? 0);
@@ -52,7 +69,7 @@ export default function AdvisorDirectory() {
       }
     }, 250);
     return () => clearTimeout(t);
-  }, [q]);
+  }, [mode, sort, page, q]);
 
   function openReport(a: Advisor) {
     setReporting(a);
@@ -88,36 +105,70 @@ export default function AdvisorDirectory() {
     }
   }
 
+  function pageNumbers(): (number | '…')[] {
+    const out: (number | '…')[] = [];
+    const win = 2;
+    const start = Math.max(1, page - win);
+    const end = Math.min(totalPages, page + win);
+    if (start > 1) { out.push(1); if (start > 2) out.push('…'); }
+    for (let i = start; i <= end; i++) out.push(i);
+    if (end < totalPages) { if (end < totalPages - 1) out.push('…'); out.push(totalPages); }
+    return out;
+  }
+
   return (
     <section className="min-w-0">
       {/* 면책 배너 */}
       <div className="mb-3 rounded-xl border border-unjong-border bg-unjong-background p-3">
-        <p className="text-sm font-bold text-unjong-primary">금융감독원 신고 유사투자자문·리딩방 조회</p>
+        <p className="text-sm font-bold text-unjong-primary">금융감독원 신고 유사투자자문·리딩방</p>
         <p className="mt-1 text-xs leading-relaxed text-unjong-muted">
           출처: 금융감독원 금융소비자포털 '파인' (매일 갱신).{' '}
-          '신고'는 정부의 안전 보증·인증이 아닙니다. 운종은 어떤 업체의 안전성·수익성도 보증하지 않으며,
-          사실(신고 여부·기간·연락처)만 제공합니다. 판단은 이용자 몫이며,{' '}
+          '신고'는 정부의 안전 보증·인증이 아닙니다. 운종은 어떤 업체의 안전성·수익성도 보증하지 않으며 사실만 제공합니다.{' '}
           <strong className="text-unjong-primary">신고되지 않은 익명 리딩방은 특히 주의</strong>하세요.
         </p>
       </div>
 
-      {/* 검색창 */}
-      <div className="relative mb-3">
-        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
-        <input
-          type="text"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="업체명 또는 대표자 검색 (예: 귀인마케팅)"
-          className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
-        />
+      {/* 모드 토글 */}
+      <div className="mb-2 flex gap-1">
+        {([['rooms', '리딩방·주식카페'], ['all', '전체 등록업체 조회']] as const).map(([m, label]) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => setMode(m)}
+            className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
+              mode === m ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* 검색 + 정렬 */}
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row">
+        <div className="relative flex-1">
+          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-unjong-muted" />
+          <input
+            type="text"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder={mode === 'rooms' ? '리딩방·카페 이름 검색' : '업체명 또는 대표자 검색'}
+            className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-3 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
+          />
+        </div>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value as 'name_asc' | 'name_desc')}
+          className="rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
+        >
+          <option value="name_asc">가나다 오름차순</option>
+          <option value="name_desc">가나다 내림차순</option>
+        </select>
       </div>
 
       <p className="mb-2 px-1 text-xs text-unjong-muted">
-        {q
-          ? `'${q}' 검색 결과 ${total.toLocaleString()}건`
-          : `전체 ${total.toLocaleString()}개 신고 업체 · 최근 신고순`}
-        {!loading && results.length < total ? ` (상위 ${results.length}개 표시)` : ''}
+        {mode === 'rooms' ? '리딩방·주식카페' : '전체 등록업체'} {total.toLocaleString()}곳
+        {totalPages > 1 ? ` · ${page}/${totalPages} 페이지` : ''}
       </p>
 
       {/* 결과 */}
@@ -125,50 +176,101 @@ export default function AdvisorDirectory() {
         <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
       ) : results.length === 0 ? (
         <p className="py-10 text-center text-sm text-unjong-muted">
-          검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.
+          {q ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.' : '표시할 항목이 없습니다.'}
         </p>
       ) : (
         <ul className="space-y-1">
-          {results.map((a) => (
-            <li key={a.biz_no} className="rounded-lg border border-unjong-border p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-unjong-primary">{a.company_name}</p>
-                  <p className="mt-0.5 text-xs text-unjong-muted">
-                    대표 {a.representative ?? '—'}
-                    {region(a.address) ? ` · ${region(a.address)}` : ''}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  {a.homepage ? (
-                    <a
-                      href={a.homepage}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                      className="flex items-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
+          {results.map((a, i) => {
+            const n = (page - 1) * PAGE_SIZE + i + 1;
+            const pf = platform(a.homepage);
+            return (
+              <li key={a.biz_no} className="rounded-lg border border-unjong-border p-3">
+                <div className="flex items-start gap-3">
+                  <span className="w-7 shrink-0 pt-0.5 text-center text-sm font-bold text-unjong-muted">{n}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-sm font-semibold text-unjong-primary">{a.company_name}</span>
+                      <span className="inline-flex items-center gap-0.5 rounded border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-medium text-emerald-600">
+                        <ShieldCheck size={11} /> 금감원 등록
+                      </span>
+                      {pf ? <span className="rounded border border-unjong-border px-1.5 py-0.5 text-[11px] text-unjong-muted">{pf}</span> : null}
+                    </div>
+                    <p className="mt-0.5 text-xs text-unjong-muted">
+                      대표 {a.representative ?? '—'}
+                      {region(a.address) ? ` · ${region(a.address)}` : ''}
+                    </p>
+                    <p className="mt-0.5 text-xs text-unjong-muted">
+                      신고기간 {a.valid_from ?? '—'} ~ {a.valid_to ?? '—'}
+                      {a.phone ? ` · ☎ ${a.phone}` : ''}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-stretch gap-1">
+                    {a.homepage ? (
+                      <a
+                        href={a.homepage}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="flex items-center justify-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
+                      >
+                        바로가기 <ExternalLink size={11} />
+                      </a>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => openReport(a)}
+                      title="신고하기"
+                      aria-label="신고하기"
+                      className="flex items-center justify-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-red-400 hover:text-red-500"
                     >
-                      홈페이지 <ExternalLink size={11} />
-                    </a>
-                  ) : null}
-                  <button
-                    type="button"
-                    onClick={() => openReport(a)}
-                    title="신고하기"
-                    aria-label="신고하기"
-                    className="flex items-center gap-1 rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-red-400 hover:text-red-500"
-                  >
-                    <Siren size={12} /> 신고
-                  </button>
+                      <Siren size={12} /> 신고
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-unjong-muted">
-                <span>신고기간 {a.valid_from ?? '—'} ~ {a.valid_to ?? '—'}</span>
-                {a.phone ? <span>☎ {a.phone}</span> : null}
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
+
+      {/* 페이지네이션 */}
+      {!loading && totalPages > 1 ? (
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-1">
+          <button
+            type="button"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-unjong-border text-unjong-muted hover:border-unjong-accent disabled:opacity-40"
+            aria-label="이전"
+          >
+            <ChevronLeft size={15} />
+          </button>
+          {pageNumbers().map((p, idx) =>
+            p === '…' ? (
+              <span key={`e${idx}`} className="px-1 text-xs text-unjong-muted">…</span>
+            ) : (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPage(p)}
+                className={`h-8 min-w-[2rem] rounded-md px-2 text-sm font-medium transition-colors ${
+                  p === page ? 'bg-unjong-primary text-white' : 'border border-unjong-border text-unjong-muted hover:border-unjong-accent'
+                }`}
+              >
+                {p}
+              </button>
+            )
+          )}
+          <button
+            type="button"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            className="flex h-8 w-8 items-center justify-center rounded-md border border-unjong-border text-unjong-muted hover:border-unjong-accent disabled:opacity-40"
+            aria-label="다음"
+          >
+            <ChevronRight size={15} />
+          </button>
+        </div>
+      ) : null}
 
       {/* 신고 모달 */}
       {reporting ? (
