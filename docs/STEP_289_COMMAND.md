@@ -1,3 +1,76 @@
+<!-- 2026-06-20 -->
+# STEP 289 — [V7 ④-2] 리딩방·검증: 신고 기능 (🚨 신고 → DB 접수)
+
+## 🔧 실행 (Sonnet)
+```bash
+cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
+```
+그다음 터미널에:
+```
+@docs/STEP_289_COMMAND.md 파일 내용대로 실행해줘
+```
+
+- **전제 상태(HEAD)**: STEP 288(`09a4069`). 빌드 ✓.
+- **사전 작업(완료, DB 직접)**: `room_reports` 테이블 생성 끝. RLS on + 정책 없음 → **서버 라우트(service role)로만 기록**, 익명 직접 insert 차단(스팸 방지). 조회는 관리자(대시보드)만.
+- **설계 방침**: 기능부터 완성. **로그인·본인확인·메일 알림은 나중 레이어**(지금은 자리만).
+
+---
+
+## 🎯 목표
+
+리딩방·검증 카드마다 **🚨 신고 버튼** → 누르면 사유·내용 입력 모달 → 제출하면 **`room_reports` 테이블에 접수**. 관리자(너)가 DB에서 확인.
+
+> 파일 2개: 신고 접수 API 신규 + AdvisorDirectory 전체 교체(신고 버튼·모달 추가).
+
+---
+
+## 📄 파일 1 (신규 생성) — `app/api/reports/route.ts`
+
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const REASONS = ["허위·과장 수익률", "환불 거부", "미등록·사칭 의심", "리딩방 먹튀(잠적)", "불법 추천·미신고 자문", "기타"];
+
+export async function POST(req: NextRequest) {
+  let body: { target_type?: string; target_id?: string; target_name?: string; reason?: string; content?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "잘못된 요청" }, { status: 400 });
+  }
+
+  const target_name = String(body.target_name ?? "").trim().slice(0, 200);
+  const reason = String(body.reason ?? "").trim();
+  const content = String(body.content ?? "").trim().slice(0, 2000);
+  const target_id = String(body.target_id ?? "").trim().slice(0, 100) || null;
+  const target_type = String(body.target_type ?? "fss_advisor").trim().slice(0, 40);
+
+  if (!target_name || !REASONS.includes(reason)) {
+    return NextResponse.json({ error: "필수 항목 누락" }, { status: 400 });
+  }
+
+  const supabase = createAdminClient();
+  const { error } = await supabase.from("room_reports").insert({
+    target_type,
+    target_id,
+    target_name,
+    reason,
+    content: content || null,
+  });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+```
+
+---
+
+## 📄 파일 2 (전체 교체) — `components/toolbox/AdvisorDirectory.tsx`
+
+```tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -94,8 +167,8 @@ export default function AdvisorDirectory() {
       <div className="mb-3 rounded-xl border border-unjong-border bg-unjong-background p-3">
         <p className="text-sm font-bold text-unjong-primary">금융감독원 신고 유사투자자문·리딩방 조회</p>
         <p className="mt-1 text-xs leading-relaxed text-unjong-muted">
-          출처: 금융감독원 금융소비자포털 '파인' (매일 갱신).{' '}
-          '신고'는 정부의 안전 보증·인증이 아닙니다. 운종은 어떤 업체의 안전성·수익성도 보증하지 않으며,
+          출처: 금융감독원 금융소비자포털 ‘파인’ (매일 갱신).{' '}
+          ‘신고’는 정부의 안전 보증·인증이 아닙니다. 운종은 어떤 업체의 안전성·수익성도 보증하지 않으며,
           사실(신고 여부·기간·연락처)만 제공합니다. 판단은 이용자 몫이며,{' '}
           <strong className="text-unjong-primary">신고되지 않은 익명 리딩방은 특히 주의</strong>하세요.
         </p>
@@ -115,7 +188,7 @@ export default function AdvisorDirectory() {
 
       <p className="mb-2 px-1 text-xs text-unjong-muted">
         {q
-          ? `'${q}' 검색 결과 ${total.toLocaleString()}건`
+          ? `‘${q}’ 검색 결과 ${total.toLocaleString()}건`
           : `전체 ${total.toLocaleString()}개 신고 업체 · 최근 신고순`}
         {!loading && results.length < total ? ` (상위 ${results.length}개 표시)` : ''}
       </p>
@@ -241,3 +314,33 @@ export default function AdvisorDirectory() {
     </section>
   );
 }
+```
+
+---
+
+## ✅ 검증
+
+```bash
+npm run build
+```
+- 빌드 무에러 (lucide `Siren`·`X` import 포함).
+
+개발 서버(`npm run dev`, 포트 3333):
+1. 리딩방·검증 탭 → 각 카드 우측에 **🚨 신고** 버튼.
+2. 신고 클릭 → 모달(사유 선택 + 내용) → **신고하기** → "신고가 접수되었습니다."
+3. 사유 안 고르면 신고 버튼 비활성.
+4. (선택) 취소/X로 닫힘.
+
+> 접수 확인은 내가 Supabase `room_reports` 테이블에서 직접 조회해줄게(실행 후 알려줘).
+
+---
+
+## 📦 커밋·푸시
+
+```bash
+cd ~/stock-terminal && git add -A && git commit -m "feat(v7): 리딩방·검증 신고 기능 - 카드별 신고 버튼+모달, /api/reports로 room_reports 접수 (V7 ④-2, STEP 289)" && git push
+```
+
+---
+
+> **한 줄 요약**: 리딩방·검증 카드마다 🚨 신고 버튼 → 사유·내용 모달 → `/api/reports`가 `room_reports`에 접수(서버 service role, 익명 직접쓰기 차단). 로그인·본인확인·메일은 다음 레이어.
