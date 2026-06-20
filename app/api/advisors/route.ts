@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const supabase = await createClient();
   let query = supabase
     .from("advisor_directory")
-    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, platform", { count: "exact" });
+    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, platform, source, intro", { count: "exact" });
 
   if (q) {
     query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)

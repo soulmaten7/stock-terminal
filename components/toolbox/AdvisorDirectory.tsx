@@ -17,6 +17,8 @@ type Advisor = {
   like_count: number;
   report_count: number;
   platform: string;
+  source: string;
+  intro: string | null;
   liked: boolean;
 };
 
@@ -49,12 +51,18 @@ function roomNameOf(a: Advisor): string {
 function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; onReport: () => void }) {
   const ic = faviconFor(a.platform, a.homepage);
   const roomName = roomNameOf(a);
-  const rows: [string, string | null][] = [
-    ['등록업체', a.company_name],
-    ['대표', a.representative],
-    ['주소', a.address],
-    ['신고기간', `${a.valid_from ?? '—'} ~ ${a.valid_to ?? '—'}`],
-  ];
+  const isFss = a.source === 'fss';
+  const rows: [string, string | null][] = isFss
+    ? [
+        ['등록업체', a.company_name],
+        ['대표', a.representative],
+        ['주소', a.address],
+        ['신고기간', `${a.valid_from ?? '—'} ~ ${a.valid_to ?? '—'}`],
+      ]
+    : [
+        ['운영 업체', a.company_name],
+        ['소개', a.intro],
+      ];
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
@@ -64,9 +72,15 @@ function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; 
         ) : <Globe size={18} className="text-unjong-muted" />}
         <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{roomName}</h3>
       </div>
-      <div className="mb-3 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
-        <ShieldCheck size={12} /> 금감원 등록 · {platformLabel(a.platform)}
-      </div>
+      {isFss ? (
+        <div className="mb-3 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
+          <ShieldCheck size={12} /> 금감원 등록 · {platformLabel(a.platform)}
+        </div>
+      ) : (
+        <div className="mb-3 inline-flex items-center gap-1 rounded border border-unjong-border bg-unjong-background px-2 py-0.5 text-[11px] font-medium text-unjong-muted">
+          이용자 등록 · {platformLabel(a.platform)}
+        </div>
+      )}
       <dl className="space-y-1.5 text-xs">
         {rows.map(([k, v]) => (
           <div key={k} className="flex gap-2">
@@ -308,7 +322,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                         <img src={icon} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
                       ) : <Globe size={14} className="shrink-0 text-unjong-muted" />}
                       <span className="truncate text-sm font-semibold text-unjong-primary">{roomNameOf(a)}</span>
-                      <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" />
+                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" /> : null}
                     </button>
                     <button
                       type="button"
