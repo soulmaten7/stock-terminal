@@ -48,30 +48,28 @@ function roomNameOf(a: Advisor): string {
 function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; onReport: () => void }) {
   const ic = faviconFor(a.platform, a.homepage);
   const roomName = roomNameOf(a);
-  const showCompany = !!(a.info_name && a.info_name.trim() && a.info_name.trim() !== a.company_name);
   const rows: [string, string | null][] = [
-    ...(showCompany ? [['등록업체', a.company_name] as [string, string | null]] : []),
+    ['등록업체', a.company_name],
+    ['대표', a.representative],
     ['주소', a.address],
     ['신고기간', `${a.valid_from ?? '—'} ~ ${a.valid_to ?? '—'}`],
-    ['연락처', a.phone],
   ];
   return (
     <div>
-      <div className="mb-1 flex items-center gap-2">
+      <div className="mb-2 flex items-center gap-2">
         {ic ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={ic} alt="" width={20} height={20} className="h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
         ) : <Globe size={18} className="text-unjong-muted" />}
         <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{roomName}</h3>
       </div>
-      <p className="mb-2 text-xs text-unjong-muted">대표 {a.representative ?? '—'}</p>
       <div className="mb-3 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
         <ShieldCheck size={12} /> 금감원 등록 · {platformLabel(a.platform)}
       </div>
       <dl className="space-y-1.5 text-xs">
         {rows.map(([k, v]) => (
           <div key={k} className="flex gap-2">
-            <dt className="w-12 shrink-0 text-unjong-muted">{k}</dt>
+            <dt className="w-14 shrink-0 text-unjong-muted">{k}</dt>
             <dd className="min-w-0 flex-1 text-unjong-primary">{v || '—'}</dd>
           </div>
         ))}
