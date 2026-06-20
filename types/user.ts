@@ -3,7 +3,7 @@ export interface User {
   email: string;
   nickname: string;
   avatar_url: string | null;
-  role: 'free' | 'premium' | 'pro';
+  role: 'free' | 'premium' | 'pro' | 'admin';
   tier: 1 | 2 | 3;
   bio: string | null;
   oauth_provider: string | null;

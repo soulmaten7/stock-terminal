@@ -122,6 +122,9 @@ export default function Header() {
                     <p className="text-sm text-unjong-muted">{user.email}</p>
                   </div>
                   <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>마이페이지</Link>
+                  {user.role === 'admin' ? (
+                    <Link href="/admin" className="block px-4 py-2.5 text-sm font-semibold text-unjong-accent hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>관리자</Link>
+                  ) : null}
                   <div className="border-t border-unjong-border" />
                   <button onClick={handleLogout} className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-unjong-danger font-bold hover:bg-unjong-background">
                     <LogOut className="w-4 h-4" /> 로그아웃
