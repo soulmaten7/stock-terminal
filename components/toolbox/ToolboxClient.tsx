@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
-import BrokerRanking from './BrokerRanking';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
 import MarketBoard from './MarketBoard';
-import SectionHeader from './SectionHeader';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -17,9 +15,9 @@ const COUNTRIES = [
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
-const TAB_ORDER = ['market', 'news', 'broker', 'youtube', 'chart', 'analysis', 'research', 'disclosure', 'etf', 'ipo', 'macro', 'exchange', 'community', 'room'];
+const TAB_ORDER = ['market', 'news', 'youtube', 'chart', 'analysis', 'research', 'disclosure', 'etf', 'ipo', 'macro', 'exchange', 'community', 'room'];
 // link_hub 카테고리가 아닌 특수 탭의 라벨
-const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', broker: '증권사', room: '리딩방·검증' };
+const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', room: '리딩방·검증' };
 
 function Placeholder({ emoji, title, desc }: { emoji: string; title: string; desc?: string }) {
   return (
@@ -119,13 +117,10 @@ export default function ToolboxClient({
           ) : (
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
-        ) : activeTab === 'broker' ? (
-          country === 'KR' ? <BrokerRanking /> : <Placeholder emoji="🇺🇸" title="미국 증권사 — 준비 중" />
         ) : catLinks.length === 0 ? (
           <Placeholder emoji="🗂️" title={`${cat?.label ?? ''} · ${countryLabel} 링크 준비 중`} />
         ) : (
           <section className="min-w-0">
-            <SectionHeader title={cat?.label ?? ''} subtitle={`${catLinks.length}곳 · 운종 큐레이션`} />
             <div>
               {catLinks.map((link) => (
                 <LinkCard
