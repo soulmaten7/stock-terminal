@@ -36,7 +36,7 @@ export default async function AdminPage() {
   const subs = (subsData ?? []) as Submission[];
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-8">
+    <div className="mx-auto max-w-7xl px-6 py-8">
       <h1 className="text-xl font-bold text-unjong-primary">운종 관리자</h1>
       <p className="mb-8 mt-1 text-sm text-unjong-muted">신고·자가등록 접수 현황 · 최신순</p>
 
