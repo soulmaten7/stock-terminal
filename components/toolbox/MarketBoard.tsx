@@ -133,57 +133,61 @@ export default function MarketBoard() {
         ))}
       </div>
 
-      {/* 종목 표 — 전체 폭(1년까지 안 잘림) */}
-      <div className="overflow-x-auto">
-        {loading ? (
-          <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
-        ) : sorted.length === 0 ? (
-          <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
-        ) : (
-          <table className="w-full min-w-[800px] text-sm">
-            <thead>
-              <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                <th className="px-2 py-2.5 text-left font-medium">#</th>
-                <th className="w-full px-3 py-2.5 text-left font-medium">종목명</th>
-                <th className="whitespace-nowrap px-3 py-2.5 text-right font-medium">현재가</th>
-                {PERIODS.map((p) => (
-                  <th key={p.key} className="whitespace-nowrap px-3 py-2.5 text-right font-medium">
-                    <button
-                      type="button"
-                      onClick={() => clickHeader(p.key)}
-                      className={`inline-flex items-center gap-0.5 hover:text-unjong-primary ${sortKey === p.key ? 'font-bold text-unjong-accent' : ''}`}
-                    >
-                      {p.label}{sortKey === p.key ? (sortDir === 'desc' ? ' ▼' : ' ▲') : ''}
-                    </button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {sorted.map((r, i) => (
-                <tr key={r.symbol} className="border-b border-unjong-border last:border-0 hover:bg-unjong-background">
-                  <td className="px-2 py-2.5 tabular-nums text-unjong-muted">{i + 1}</td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-2.5 whitespace-nowrap">
-                      <StockLogo code={r.symbol} name={r.name} size={24} />
-                      <span className="font-medium text-unjong-primary">{r.name}</span>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
-                  {PERIODS.map((p) => {
-                    const v = r[p.field] as number | null | undefined;
-                    return <td key={p.key} className={`whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>;
-                  })}
+      {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1 overflow-x-auto">
+          {loading ? (
+            <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
+          ) : sorted.length === 0 ? (
+            <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
+          ) : (
+            <table className="w-full min-w-[720px] text-sm">
+              <thead>
+                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                  <th className="px-2 py-2.5 text-left font-medium">#</th>
+                  <th className="w-full px-2 py-2.5 text-left font-medium">종목명</th>
+                  <th className="whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
+                  {PERIODS.map((p) => (
+                    <th key={p.key} className="whitespace-nowrap px-2 py-2.5 text-right font-medium">
+                      <button
+                        type="button"
+                        onClick={() => clickHeader(p.key)}
+                        className={`inline-flex items-center gap-0.5 hover:text-unjong-primary ${sortKey === p.key ? 'font-bold text-unjong-accent' : ''}`}
+                      >
+                        {p.label}{sortKey === p.key ? (sortDir === 'desc' ? ' ▼' : ' ▲') : ''}
+                      </button>
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+              </thead>
+              <tbody>
+                {sorted.map((r, i) => (
+                  <tr key={r.symbol} className="border-b border-unjong-border last:border-0 hover:bg-unjong-background">
+                    <td className="px-2 py-2.5 tabular-nums text-unjong-muted">{i + 1}</td>
+                    <td className="px-2 py-2.5">
+                      <div className="flex items-center gap-2 whitespace-nowrap">
+                        <StockLogo code={r.symbol} name={r.name} size={22} />
+                        <span className="font-medium text-unjong-primary">{r.name}</span>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
+                    {PERIODS.map((p) => {
+                      const v = r[p.field] as number | null | undefined;
+                      return <td key={p.key} className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>;
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
 
-      {/* 증권사 순위 — 표 아래 전체 폭 (증권사 탭과 동일, 전 증권사) */}
-      <div className="mt-8 border-t border-unjong-border pt-6">
-        <BrokerRanking />
+        {/* 우측: 증권사 순위 — 기존 미리보기 자리, 스크롤 따라오게 sticky */}
+        <aside className="hidden w-72 shrink-0 lg:block">
+          <div className="sticky top-11">
+            <BrokerRanking />
+          </div>
+        </aside>
       </div>
     </section>
   );
