@@ -16,7 +16,6 @@ export default function BrokerRanking({ hideHeader = false }: { hideHeader?: boo
             rank={b.rank}
             iconUrl={`https://www.google.com/s2/favicons?domain=${b.domain}&sz=64`}
             title={b.name}
-            subtitle={b.note ?? undefined}
             stat={b.share != null ? `${b.share}%` : undefined}
           />
         ))}
