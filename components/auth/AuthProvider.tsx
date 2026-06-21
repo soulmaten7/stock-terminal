@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
 
@@ -33,7 +34,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     // setTimeout으로 콜백 밖(=auth 락 해제 후)에서 실행한다.
     // 콜백 안에서 await supabase.* 를 호출하면 auth 락 데드락이 발생해
     // getSession()이 영원히 멈춘다(= 로그인 상태가 화면에 안 뜸).
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: unknown, session: Session | null) => {
       if (session?.user) {
         const uid = session.user.id;
         setTimeout(() => { fetchProfile(uid); }, 0);

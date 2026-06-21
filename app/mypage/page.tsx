@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate, formatNumber } from '@/lib/utils/format';
-import { User, CreditCard, Star, MessageCircle, Trash2, Siren } from 'lucide-react';
+import { User, CreditCard, Star, Trash2, Siren } from 'lucide-react';
 import type { Payment } from '@/types/api';
 import type { Watchlist } from '@/types/user';
 
-type Tab = 'profile' | 'subscription' | 'watchlist' | 'chat' | 'reports';
+type Tab = 'profile' | 'subscription' | 'watchlist' | 'reports';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
@@ -86,12 +86,11 @@ export default function MyPage() {
     { key: 'profile', label: '프로필', icon: <User className="w-4 h-4" /> },
     { key: 'subscription', label: '구독 관리', icon: <CreditCard className="w-4 h-4" /> },
     { key: 'watchlist', label: '관심 종목', icon: <Star className="w-4 h-4" /> },
-    { key: 'chat', label: '채팅 관리', icon: <MessageCircle className="w-4 h-4" /> },
     { key: 'reports', label: '내 신고', icon: <Siren className="w-4 h-4" /> },
   ];
 
   return (
-    <div className="px-6 py-8">
+    <div className="mx-auto max-w-7xl px-6 py-8">
       <h1 className="text-2xl font-bold mb-8">마이페이지</h1>
 
       <div className="flex gap-8">
@@ -190,13 +189,6 @@ export default function MyPage() {
                   </tbody>
                 </table>
               )}
-            </div>
-          )}
-
-          {activeTab === 'chat' && (
-            <div className="bg-dark-700 rounded-xl border border-border p-6 space-y-4">
-              <h2 className="font-bold">채팅 관리</h2>
-              <p className="text-text-secondary text-sm">채팅 기록 및 제재 이력 확인은 준비 중입니다.</p>
             </div>
           )}
 
