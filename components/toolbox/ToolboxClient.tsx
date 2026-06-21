@@ -6,6 +6,8 @@ import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
 import MarketBoard from './MarketBoard';
 import NewsFeed from './NewsFeed';
+import DartFeed from './DartFeed';
+import MacroFeed from './MacroFeed';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -128,6 +130,26 @@ export default function ToolboxClient({
           ) : (
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
+        ) : (activeTab === 'news' || activeTab === 'disclosure' || activeTab === 'macro') && country === 'KR' ? (
+          <div className="flex gap-4">
+            <div className="min-w-0 flex-1">
+              {catLinks.length > 0 ? (
+                catLinks.map((link) => (
+                  <LinkCard
+                    key={link.id}
+                    link={link}
+                    isLoggedIn={isLoggedIn}
+                    onFavoriteToggle={handleFavoriteToggle}
+                  />
+                ))
+              ) : (
+                <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
+              )}
+            </div>
+            <aside className="hidden w-96 shrink-0 lg:block">
+              {activeTab === 'news' ? <NewsFeed /> : activeTab === 'disclosure' ? <DartFeed /> : <MacroFeed />}
+            </aside>
+          </div>
         ) : catLinks.length === 0 ? (
           <Placeholder emoji="🗂️" title={`${cat?.label ?? ''} · ${countryLabel} 링크 준비 중`} />
         ) : (
@@ -142,11 +164,6 @@ export default function ToolboxClient({
                 />
               ))}
             </div>
-            {activeTab === 'news' && country === 'KR' ? (
-              <aside className="hidden w-96 shrink-0 lg:block">
-                <NewsFeed />
-              </aside>
-            ) : null}
           </div>
         )}
       </div>
