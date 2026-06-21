@@ -8,6 +8,7 @@ import MarketBoard from './MarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import MacroFeed from './MacroFeed';
+import DividendFeed from './DividendFeed';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -23,7 +24,7 @@ const TAB_ORDER = ['market', 'news', 'youtube', 'chart', 'analysis', 'research',
 const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', room: '리딩방·검증' };
 
 // 우측 피드가 붙는 탭(한국 전용) + 탭별 피드 컴포넌트
-const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf'];
+const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf', 'ipo'];
 function feedFor(tab: string) {
   switch (tab) {
     case 'news': return <NewsFeed />;
@@ -32,6 +33,7 @@ function feedFor(tab: string) {
     case 'analysis': return <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
     case 'research': return <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
     case 'etf': return <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
+    case 'ipo': return <DividendFeed />;
     default: return null;
   }
 }
