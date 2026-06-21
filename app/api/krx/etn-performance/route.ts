@@ -24,18 +24,25 @@ function toShort(code: string): string {
 }
 
 async function fetchDay(basDd: string, key: string): Promise<KrxRow[]> {
-  try {
-    const res = await fetch(`${EP}?basDd=${basDd}`, {
-      method: "GET",
-      headers: { AUTH_KEY: key, Accept: "application/json" },
-      cache: "no-store",
-    });
-    if (!res.ok) return [];
-    const j = await res.json();
-    return (j.OutBlock_1 ?? j.output ?? []) as KrxRow[];
-  } catch {
-    return [];
+  // 일시적 실패 대비 2회 시도
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch(`${EP}?basDd=${basDd}`, {
+        method: "GET",
+        headers: { AUTH_KEY: key, Accept: "application/json" },
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const j = await res.json();
+        const rows = (j.OutBlock_1 ?? j.output ?? []) as KrxRow[];
+        if (rows.length > 0) return rows;
+      }
+    } catch {
+      /* 재시도 */
+    }
+    if (attempt === 0) await new Promise((r) => setTimeout(r, 250));
   }
+  return [];
 }
 
 // 목표일(daysAgo) 근처에서 데이터 있는 영업일 찾아 스냅샷 (최대 6일 역추적)
@@ -129,6 +136,9 @@ export async function GET(req: NextRequest) {
     .slice(0, 100);
 
   const data = { items };
-  cache = { at: Date.now(), data };
+  // 1주일·1년 스냅샷이 비어 있으면(일시적 실패) 캐시하지 않음 → 다음 요청에 재계산
+  if (w.rows.length > 0 && y.rows.length > 0) {
+    cache = { at: Date.now(), data };
+  }
   return NextResponse.json(data);
 }
