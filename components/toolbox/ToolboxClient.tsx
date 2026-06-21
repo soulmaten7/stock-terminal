@@ -8,7 +8,7 @@ import MarketBoard from './MarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import MacroFeed from './MacroFeed';
-import DividendFeed from './DividendFeed';
+import OfferingsFeed from './OfferingsFeed';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -33,7 +33,7 @@ function feedFor(tab: string) {
     case 'analysis': return <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
     case 'research': return <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
     case 'etf': return <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
-    case 'ipo': return <DividendFeed />;
+    case 'ipo': return <OfferingsFeed />;
     default: return null;
   }
 }
