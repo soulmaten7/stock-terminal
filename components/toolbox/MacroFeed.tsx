@@ -8,11 +8,11 @@ function Row({ it }: { it: Indicator }) {
   const up = it.change != null && it.change > 0;
   const down = it.change != null && it.change < 0;
   return (
-    <div className="flex items-center justify-between border-b border-unjong-border py-2 last:border-0">
+    <div className="flex items-center justify-between border-b border-unjong-border py-2.5 last:border-0">
       <span className="min-w-0 flex-1 truncate pr-2 text-[13px] text-unjong-primary">{it.label}</span>
       <span className="shrink-0 text-right">
         <span className="text-sm font-semibold text-unjong-primary">{it.value}</span>
-        {it.unit ? <span className="ml-0.5 text-[11px] text-unjong-muted">{it.unit}</span> : null}
+        {it.unit ? <span className="ml-0.5 text-[10px] text-unjong-muted">{it.unit}</span> : null}
         {it.change != null ? (
           <span className={`ml-1 text-[11px] ${up ? 'text-red-500' : down ? 'text-blue-500' : 'text-unjong-muted'}`}>
             {up ? '▲' : down ? '▼' : ''}{Math.abs(it.change)}
@@ -27,6 +27,7 @@ export default function MacroFeed() {
   const [kr, setKr] = useState<Indicator[]>([]);
   const [us, setUs] = useState<Indicator[]>([]);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<'kr' | 'us'>('kr');
 
   useEffect(() => {
     let cancelled = false;
@@ -40,20 +41,43 @@ export default function MacroFeed() {
   if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">지표 불러오는 중…</p>;
   if (kr.length === 0 && us.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">지표를 불러오지 못했습니다.</p>;
 
+  const list = view === 'kr' ? kr : us;
+
   return (
     <div>
-      {kr.length > 0 ? (
-        <>
-          <p className="mb-1 text-sm font-bold text-unjong-primary">🇰🇷 한국 지표</p>
-          <div className="mb-4">{kr.map((it, i) => <Row key={`kr${i}`} it={it} />)}</div>
-        </>
-      ) : null}
-      {us.length > 0 ? (
-        <>
-          <p className="mb-1 text-sm font-bold text-unjong-primary">🇺🇸 미국 지표</p>
-          <div>{us.map((it, i) => <Row key={`us${i}`} it={it} />)}</div>
-        </>
-      ) : null}
+      <p className="mb-2 text-sm font-bold text-unjong-primary">주요 경제지표</p>
+
+      {/* 한국/미국 토글 */}
+      <div className="mb-2 flex gap-1">
+        <button
+          type="button"
+          onClick={() => setView('kr')}
+          className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+            view === 'kr' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+          }`}
+        >
+          🇰🇷 한국
+        </button>
+        <button
+          type="button"
+          onClick={() => setView('us')}
+          className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+            view === 'us' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+          }`}
+        >
+          🇺🇸 미국
+        </button>
+      </div>
+
+      {/* 박스 */}
+      <div className="rounded-xl border border-unjong-border bg-unjong-surface px-3">
+        {list.length > 0 ? (
+          list.map((it, i) => <Row key={`${view}${i}`} it={it} />)
+        ) : (
+          <p className="py-8 text-center text-sm text-unjong-muted">데이터 없음</p>
+        )}
+      </div>
+
       <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">출처: 한국은행 ECOS · 미국 FRED. 발표 주기에 따라 갱신됩니다.</p>
     </div>
   );
