@@ -135,7 +135,6 @@ export default function MarketBoard() {
         </div>
         <div className="hidden w-72 shrink-0 lg:block">
           <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-          <p className="text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
         </div>
       </div>
 
@@ -191,6 +190,7 @@ export default function MarketBoard() {
         {/* 우측: 증권사 리스트(헤더는 위 컨트롤 줄로 이동) — 스크롤 따라오게 sticky */}
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-11">
+            <p className="border-b border-unjong-border px-1 py-2.5 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
             <BrokerRanking hideHeader />
           </div>
         </aside>
