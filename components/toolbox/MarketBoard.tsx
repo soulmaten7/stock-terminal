@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ExternalLink } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
-import { BROKERS } from '@/lib/brokers';
+import BrokerRanking from './BrokerRanking';
 
 type Row = {
   symbol: string;
@@ -42,47 +41,6 @@ function pct(v?: number | null): string {
 function pctColor(v?: number | null): string {
   if (v == null) return 'text-unjong-muted';
   return v >= 0 ? 'text-[#F04452]' : 'text-[#3182F6]';
-}
-
-// ── 미니 캔들차트 ──
-type Candle = { time: string; open: number; high: number; low: number; close: number; volume: number };
-function MiniChart({ candles }: { candles: Candle[] }) {
-  const data = candles.filter((c) => c.close > 0).slice(-120);
-  if (data.length < 2) {
-    return <div className="flex h-28 items-center justify-center text-xs text-unjong-muted">차트 데이터 없음</div>;
-  }
-  const w = 248, priceH = 96, gap = 2, volH = 28, h = priceH + gap + volH, pad = 4;
-  const max = Math.max(...data.map((c) => c.high));
-  const min = Math.min(...data.map((c) => c.low));
-  const range = max - min || 1;
-  const maxVol = Math.max(...data.map((c) => c.volume), 1);
-  const cw = w / data.length;
-  const py = (v: number) => pad + (priceH - 2 * pad) * (1 - (v - min) / range);
-  const volBase = priceH + gap + volH;
-  const bw = Math.max(1, Math.min(cw * 0.6, 5));
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="block w-full" aria-hidden="true">
-      {data.map((c, i) => {
-        const x = i * cw + cw / 2;
-        const up = c.close >= c.open;
-        const color = up ? '#F04452' : '#3182F6';
-        const top = py(Math.max(c.open, c.close));
-        const bot = py(Math.min(c.open, c.close));
-        return (
-          <g key={i}>
-            <line x1={x} x2={x} y1={py(c.high)} y2={py(c.low)} stroke={color} strokeWidth={0.8} />
-            <rect x={x - bw / 2} y={top} width={bw} height={Math.max(1, bot - top)} fill={color} />
-          </g>
-        );
-      })}
-      {data.map((c, i) => {
-        const x = i * cw + cw / 2;
-        const up = c.close >= c.open;
-        const vh = (c.volume / maxVol) * volH;
-        return <rect key={`v${i}`} x={x - bw / 2} y={volBase - vh} width={bw} height={Math.max(0.5, vh)} fill={up ? '#F04452' : '#3182F6'} opacity={0.5} />;
-      })}
-    </svg>
-  );
 }
 
 async function fetchRows(tab: SubTab): Promise<Row[]> {
@@ -130,28 +88,13 @@ export default function MarketBoard() {
   const [loading, setLoading] = useState(true);
   const [sortKey, setSortKey] = useState<PeriodKey>('1d');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
-  const [selected, setSelected] = useState<Row | null>(null);
-  const [candles, setCandles] = useState<Candle[]>([]);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
-    setSelected(null);
     fetchRows(tab).then((r) => { if (!cancelled) { setRows(r); setLoading(false); } });
     return () => { cancelled = true; };
   }, [tab]);
-
-  useEffect(() => {
-    if (!selected) { setCandles([]); return; }
-    let cancelled = false;
-    const t = setTimeout(async () => {
-      try {
-        const j = await (await fetch(`/api/yahoo/chart?symbol=${encodeURIComponent(selected.symbol)}&interval=1d`)).json();
-        if (!cancelled) setCandles((j.candles ?? []) as Candle[]);
-      } catch { if (!cancelled) setCandles([]); }
-    }, 200);
-    return () => { cancelled = true; clearTimeout(t); };
-  }, [selected?.symbol]);
 
   const sortField = PERIODS.find((p) => p.key === sortKey)!.field;
   const sorted = useMemo(() => {
@@ -190,104 +133,57 @@ export default function MarketBoard() {
         ))}
       </div>
 
-      <div className="flex gap-4">
-        <div className="min-w-0 flex-1 overflow-x-auto">
-          {loading ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
-          ) : sorted.length === 0 ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
-          ) : (
-            <table className="w-full min-w-[640px] text-sm">
-              <thead>
-                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="px-2 py-2.5 text-left font-medium">#</th>
-                  <th className="px-3 py-2.5 text-left font-medium">종목명</th>
-                  <th className="whitespace-nowrap px-3 py-2.5 text-right font-medium">현재가</th>
-                  {PERIODS.map((p) => (
-                    <th key={p.key} className="whitespace-nowrap px-3 py-2.5 text-right font-medium">
-                      <button
-                        type="button"
-                        onClick={() => clickHeader(p.key)}
-                        className={`inline-flex items-center gap-0.5 hover:text-unjong-primary ${sortKey === p.key ? 'font-bold text-unjong-accent' : ''}`}
-                      >
-                        {p.label}{sortKey === p.key ? (sortDir === 'desc' ? ' ▼' : ' ▲') : ''}
-                      </button>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {sorted.map((r, i) => {
-                  const isSel = selected?.symbol === r.symbol;
-                  return (
-                    <tr
-                      key={r.symbol}
-                      onClick={() => setSelected(r)}
-                      className={`cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background ${isSel ? 'bg-unjong-background' : ''}`}
+      {/* 종목 표 — 전체 폭(1년까지 안 잘림) */}
+      <div className="overflow-x-auto">
+        {loading ? (
+          <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
+        ) : sorted.length === 0 ? (
+          <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
+        ) : (
+          <table className="w-full min-w-[800px] text-sm">
+            <thead>
+              <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                <th className="px-2 py-2.5 text-left font-medium">#</th>
+                <th className="w-full px-3 py-2.5 text-left font-medium">종목명</th>
+                <th className="whitespace-nowrap px-3 py-2.5 text-right font-medium">현재가</th>
+                {PERIODS.map((p) => (
+                  <th key={p.key} className="whitespace-nowrap px-3 py-2.5 text-right font-medium">
+                    <button
+                      type="button"
+                      onClick={() => clickHeader(p.key)}
+                      className={`inline-flex items-center gap-0.5 hover:text-unjong-primary ${sortKey === p.key ? 'font-bold text-unjong-accent' : ''}`}
                     >
-                      <td className="px-2 py-2.5 tabular-nums text-unjong-muted">{i + 1}</td>
-                      <td className="px-3 py-2.5">
-                        <div className="flex items-center gap-2.5 whitespace-nowrap">
-                          <StockLogo code={r.symbol} name={r.name} size={24} />
-                          <span className="font-medium text-unjong-primary">{r.name}</span>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
-                      {PERIODS.map((p) => {
-                        const v = r[p.field] as number | null | undefined;
-                        return <td key={p.key} className={`whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>;
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
+                      {p.label}{sortKey === p.key ? (sortDir === 'desc' ? ' ▼' : ' ▲') : ''}
+                    </button>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((r, i) => (
+                <tr key={r.symbol} className="border-b border-unjong-border last:border-0 hover:bg-unjong-background">
+                  <td className="px-2 py-2.5 tabular-nums text-unjong-muted">{i + 1}</td>
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-2.5 whitespace-nowrap">
+                      <StockLogo code={r.symbol} name={r.name} size={24} />
+                      <span className="font-medium text-unjong-primary">{r.name}</span>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
+                  {PERIODS.map((p) => {
+                    const v = r[p.field] as number | null | undefined;
+                    return <td key={p.key} className={`whitespace-nowrap px-3 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>;
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
-        {/* 미리보기 — 리딩방과 동일 크기·위치 */}
-        <aside className="hidden w-72 shrink-0 lg:block">
-          <div className="sticky top-11 rounded-xl border border-unjong-border bg-unjong-surface p-4">
-            {!selected ? (
-              <p className="py-12 text-center text-xs leading-relaxed text-unjong-muted">종목을 선택하면<br />차트와 증권사 바로가기가 표시됩니다.</p>
-            ) : (
-              <div>
-                <div className="mb-2 flex items-center gap-2">
-                  <StockLogo code={selected.symbol} name={selected.name} size={28} />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-unjong-primary">{selected.name}</p>
-                    <p className={`text-xs font-semibold tabular-nums ${pctColor(selected.changePercent)}`}>
-                      {selected.price ? selected.price.toLocaleString() : '—'} <span className="ml-0.5">({pct(selected.changePercent)})</span>
-                    </p>
-                  </div>
-                </div>
-                <div className="mb-1 rounded-lg border border-unjong-border bg-unjong-background p-2">
-                  <MiniChart candles={candles} />
-                </div>
-                <p className="mb-3 text-[10px] text-unjong-muted">일봉 · 지연 시세(참고용)</p>
-                <p className="mb-1.5 text-xs font-semibold text-unjong-muted">증권사 바로가기</p>
-                <ul className="space-y-0.5">
-                  {BROKERS.slice(0, 8).map((b) => (
-                    <li key={b.rank}>
-                      <a
-                        href={b.url}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="group flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-unjong-background"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={`https://www.google.com/s2/favicons?domain=${b.domain}&sz=64`} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
-                        <span className="flex-1 truncate text-xs text-unjong-primary group-hover:text-unjong-accent">{b.name}</span>
-                        <ExternalLink size={11} className="shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">운종은 거래를 중개하지 않습니다. 거래는 증권사에서 진행됩니다.</p>
-              </div>
-            )}
-          </div>
-        </aside>
+      {/* 증권사 순위 — 표 아래 전체 폭 (증권사 탭과 동일, 전 증권사) */}
+      <div className="mt-8 border-t border-unjong-border pt-6">
+        <BrokerRanking />
       </div>
     </section>
   );
