@@ -115,10 +115,6 @@ export default function MarketBoard() {
 
   return (
     <section className="min-w-0">
-      <div className="mb-3 border-b border-unjong-border pb-2">
-        <h2 className="text-lg font-bold text-unjong-primary">종목·상품</h2>
-      </div>
-
       {/* 컨트롤 줄: 좌=하위탭 / 우(w-72)=증권사 바로가기 헤더 */}
       <div className="mb-2 flex items-center gap-4">
         <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">

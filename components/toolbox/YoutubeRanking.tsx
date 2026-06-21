@@ -1,7 +1,6 @@
 'use client';
 
 import ListRow from './ListRow';
-import SectionHeader from './SectionHeader';
 
 export type YtChannel = {
   rank: number;
@@ -27,10 +26,8 @@ export default function YoutubeRanking({ channels }: { channels: YtChannel[] }) 
       </div>
     );
   }
-  const week = channels[0]?.week_label ?? '';
   return (
     <section className="min-w-0">
-      <SectionHeader title="한국 주식 유튜브 Top 100" subtitle={`${week} · 구독자순 · 매주 갱신`} />
       <div>
         {channels.map((c) => (
           <ListRow

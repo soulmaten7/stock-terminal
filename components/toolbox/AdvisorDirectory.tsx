@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Globe } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
-import SectionHeader from './SectionHeader';
 
 type Advisor = {
   biz_no: string;
@@ -217,7 +216,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
 
   return (
     <section className="min-w-0">
-      <SectionHeader title="리딩방·검증" subtitle="금융감독원 신고 유사투자자문 조회" />
       <p className="mb-3 rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-[11px] leading-relaxed text-unjong-muted">
         출처: 금융감독원 '파인'(매일 갱신). <strong className="text-unjong-primary">'신고'는 안전 보증·인증이 아닙니다.</strong> 운종은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.
       </p>
