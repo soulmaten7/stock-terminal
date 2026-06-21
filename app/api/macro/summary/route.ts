@@ -15,7 +15,7 @@ type Indicator = {
 let cache: { at: number; data: unknown } | null = null;
 
 const ECOS_KEYSTAT = "https://ecos.bok.or.kr/api/KeyStatisticList";
-const KR_KEYWORDS = ["기준금리", "국고채(3년)", "원/달러", "소비자물가지수", "코스피"];
+const KR_KEYWORDS = ["기준금리", "국고채수익률(3년)", "원/달러", "소비자물가지수", "코스피"];
 
 const FRED = "https://api.stlouisfed.org/fred/series/observations";
 const US_SERIES: { id: string; label: string; unit: string }[] = [
