@@ -41,7 +41,7 @@ export async function GET() {
         const h = $(el).attr("href") || "";
         return /[?&]no=\d+/.test(h) && !h.includes("nostock"); // 종목 상세(no=) O, 뉴스(nostock) X
       });
-      if (links.length !== 1) return; // 1개=진짜 데이터 행 / 0·다수=뉴스·컨테이너 행
+      if (links.length === 0) return; // 종목 링크 없는 행만 제외 (각 행에 종목명+분석 2개 링크 → 컨테이너는 아래 sub 길이 가드로 제외)
       const a = links.first();
       const name = a.text().replace(/\s+/g, " ").trim();
       if (!name) return;
