@@ -36,8 +36,12 @@ export async function GET() {
       const $tr = $(tr);
       // 종목 상세 링크(o=v&no=)가 정확히 1개인 "진짜 데이터 행"만.
       // (뉴스 행=o=v&m=nostock / 표 컨테이너 행=링크 수십 개 → 제외)
-      const links = $tr.find('a[href*="o=v&no="]');
-      if (links.length !== 1) return;
+      // o=v 셀렉터(&는 cheerio 셀렉터에서 매칭 불가)로 찾고, 디코딩된 href로 필터
+      const links = $tr.find('a[href*="o=v"]').filter((_, el) => {
+        const h = $(el).attr("href") || "";
+        return /[?&]no=\d+/.test(h) && !h.includes("nostock"); // 종목 상세(no=) O, 뉴스(nostock) X
+      });
+      if (links.length !== 1) return; // 1개=진짜 데이터 행 / 0·다수=뉴스·컨테이너 행
       const a = links.first();
       const name = a.text().replace(/\s+/g, " ").trim();
       if (!name) return;
@@ -47,6 +51,7 @@ export async function GET() {
       if (dateIdx < 0) return;
 
       const sub = cells[dateIdx] || "";
+      if (sub.length > 30) return; // 깨끗한 날짜 셀("2026.07.23~07.24")만 — 컨테이너 행 방어
       const priceRaw = cells[dateIdx + 1] || "";
       const band = cells[dateIdx + 2] || "";
       const rate = cells.slice(dateIdx + 1).find((c) => /\d[\d.]*\s*:\s*1/.test(c)) || "";
