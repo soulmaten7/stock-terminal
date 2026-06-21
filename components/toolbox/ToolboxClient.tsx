@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
@@ -42,6 +42,16 @@ export default function ToolboxClient({
   const [country, setCountry] = useState('KR');
   const [categories, setCategories] = useState(initialCategories);
   const [activeTab, setActiveTab] = useState(TAB_ORDER[0]);
+
+  // 새로고침해도 마지막 탭/국가 유지
+  useEffect(() => {
+    const t = localStorage.getItem('unjong_tab');
+    if (t && TAB_ORDER.includes(t)) setActiveTab(t);
+    const c = localStorage.getItem('unjong_country');
+    if (c === 'KR' || c === 'US') setCountry(c);
+  }, []);
+  useEffect(() => { localStorage.setItem('unjong_tab', activeTab); }, [activeTab]);
+  useEffect(() => { localStorage.setItem('unjong_country', country); }, [country]);
 
   // 탭 = TAB_ORDER 순서대로. 특수탭(유튜브·증권사·리딩방)은 항상, 카테고리는 데이터 있을 때만.
   const tabs = TAB_ORDER.map((slug) => {

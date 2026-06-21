@@ -43,7 +43,7 @@ export default function NewsFeed() {
       <a href={featured.link} target="_blank" rel="noopener noreferrer nofollow" className="group mb-3 block overflow-hidden rounded-xl border border-unjong-border">
         {featured.image ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={featured.image} alt="" className="h-36 w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          <img src={featured.image} alt="" referrerPolicy="no-referrer" loading="lazy" className="h-36 w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         ) : null}
         <div className="p-3">
           <p className="line-clamp-2 text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{featured.title}</p>
