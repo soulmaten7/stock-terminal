@@ -1,4 +1,4 @@
-export const metadata = { title: "서비스 소개 | 운종" };
+export const metadata = { title: "서비스 소개" };
 
 const PILLARS: { t: string; d: string }[] = [
   { t: "정확한 정보", d: "흩어진 금융·투자 정보를 한곳에 정리해, 출발점에서 헤매지 않게 합니다." },
@@ -8,7 +8,7 @@ const PILLARS: { t: string; d: string }[] = [
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-7xl px-6 py-12">
       <h1 className="mb-2 text-2xl font-bold text-unjong-primary">운종 소개</h1>
       <p className="mb-8 text-base font-medium text-unjong-accent">투자상품에 속지 않게 돕는 곳</p>
 

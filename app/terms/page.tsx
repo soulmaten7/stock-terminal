@@ -1,4 +1,4 @@
-export const metadata = { title: "이용약관 | 운종" };
+export const metadata = { title: "이용약관" };
 
 const ARTICLES: { h: string; body: string[] }[] = [
   {
@@ -72,7 +72,7 @@ const ARTICLES: { h: string; body: string[] }[] = [
 
 export default function TermsPage() {
   return (
-    <div className="mx-auto max-w-3xl px-6 py-12">
+    <div className="mx-auto max-w-7xl px-6 py-12">
       <h1 className="mb-1 text-2xl font-bold text-unjong-primary">이용약관</h1>
       <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-06-20</p>
 
