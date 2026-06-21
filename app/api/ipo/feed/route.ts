@@ -34,9 +34,13 @@ export async function GET() {
     const items: IpoItem[] = [];
     $("tr").each((_, tr) => {
       const $tr = $(tr);
-      const a = $tr.find('a[href*="o=v"]').first();
+      // 종목 상세 링크(o=v&no=)가 정확히 1개인 "진짜 데이터 행"만.
+      // (뉴스 행=o=v&m=nostock / 표 컨테이너 행=링크 수십 개 → 제외)
+      const links = $tr.find('a[href*="o=v&no="]');
+      if (links.length !== 1) return;
+      const a = links.first();
       const name = a.text().replace(/\s+/g, " ").trim();
-      if (!a.length || !name) return;
+      if (!name) return;
 
       const cells = $tr.find("td").map((_, td) => $(td).text().replace(/\s+/g, " ").trim()).get();
       const dateIdx = cells.findIndex((c) => /\d{4}\.\d{2}\.\d{2}/.test(c));
