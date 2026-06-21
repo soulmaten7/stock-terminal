@@ -171,7 +171,7 @@ export default function MarketBoard() {
                     <td className="px-2 py-2.5 tabular-nums text-unjong-muted">{i + 1}</td>
                     <td className="px-2 py-2.5">
                       <div className="flex items-center gap-2 whitespace-nowrap">
-                        <StockLogo code={r.symbol} name={r.name} size={22} />
+                        <StockLogo code={r.symbol} name={r.name} size={24} />
                         <span className="font-medium text-unjong-primary">{r.name}</span>
                       </div>
                     </td>
