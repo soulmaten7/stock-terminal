@@ -5,6 +5,7 @@ import LinkCard, { type LinkItem } from './LinkCard';
 import BrokerRanking from './BrokerRanking';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
+import MarketBoard from './MarketBoard';
 import SectionHeader from './SectionHeader';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
@@ -16,9 +17,9 @@ const COUNTRIES = [
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
-const TAB_ORDER = ['news', 'broker', 'youtube', 'chart', 'analysis', 'research', 'disclosure', 'etf', 'ipo', 'macro', 'exchange', 'community', 'room'];
+const TAB_ORDER = ['market', 'news', 'broker', 'youtube', 'chart', 'analysis', 'research', 'disclosure', 'etf', 'ipo', 'macro', 'exchange', 'community', 'room'];
 // link_hub 카테고리가 아닌 특수 탭의 라벨
-const SPECIAL_LABELS: Record<string, string> = { youtube: '유튜브', broker: '증권사', room: '리딩방·검증' };
+const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', broker: '증권사', room: '리딩방·검증' };
 
 function Placeholder({ emoji, title, desc }: { emoji: string; title: string; desc?: string }) {
   return (
@@ -100,7 +101,13 @@ export default function ToolboxClient({
 
       {/* 내용 */}
       <div className="p-4">
-        {activeTab === 'youtube' ? (
+        {activeTab === 'market' ? (
+          country === 'KR' ? (
+            <MarketBoard />
+          ) : (
+            <Placeholder emoji="🇺🇸" title="미국 종목·상품 — 준비 중" />
+          )
+        ) : activeTab === 'youtube' ? (
           country === 'KR' ? (
             <YoutubeRanking channels={youtubeChannels} />
           ) : (
