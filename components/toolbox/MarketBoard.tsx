@@ -117,20 +117,26 @@ export default function MarketBoard() {
     <section className="min-w-0">
       <div className="mb-3 border-b border-unjong-border pb-2">
         <h2 className="text-lg font-bold text-unjong-primary">종목·상품</h2>
-        <p className="mt-0.5 text-xs text-unjong-muted">기간별 수익률 · 지연 시세(참고용) · 기간 컬럼을 누르면 그 기준 순으로 정렬</p>
       </div>
 
-      <div className="mb-2 flex gap-1 overflow-x-auto">
-        {SUBTABS.map((s) => (
-          <button
-            key={s.key}
-            type="button"
-            onClick={() => setTab(s.key)}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${tab === s.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
-          >
-            {s.label}
-          </button>
-        ))}
+      {/* 컨트롤 줄: 좌=하위탭 / 우(w-72)=증권사 바로가기 헤더 */}
+      <div className="mb-2 flex items-center gap-4">
+        <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+          {SUBTABS.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              onClick={() => setTab(s.key)}
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${tab === s.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </div>
+        <div className="hidden w-72 shrink-0 lg:block">
+          <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
+          <p className="text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
+        </div>
       </div>
 
       {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
@@ -182,10 +188,10 @@ export default function MarketBoard() {
           )}
         </div>
 
-        {/* 우측: 증권사 순위 — 기존 미리보기 자리, 스크롤 따라오게 sticky */}
+        {/* 우측: 증권사 리스트(헤더는 위 컨트롤 줄로 이동) — 스크롤 따라오게 sticky */}
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-11">
-            <BrokerRanking />
+            <BrokerRanking hideHeader />
           </div>
         </aside>
       </div>

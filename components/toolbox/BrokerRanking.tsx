@@ -4,10 +4,10 @@ import ListRow from './ListRow';
 import SectionHeader from './SectionHeader';
 import { BROKERS } from '@/lib/brokers';
 
-export default function BrokerRanking() {
+export default function BrokerRanking({ hideHeader = false }: { hideHeader?: boolean }) {
   return (
     <section className="min-w-0">
-      <SectionHeader title="증권사" subtitle="거래대금순 · 최근 분기 근사치" />
+      {!hideHeader && <SectionHeader title="증권사" subtitle="거래대금순 · 최근 분기 근사치" />}
       <div>
         {BROKERS.map((b) => (
           <ListRow
