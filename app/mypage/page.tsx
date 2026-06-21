@@ -6,11 +6,11 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate, formatNumber } from '@/lib/utils/format';
-import { User, CreditCard, Star, Bell, MessageCircle, Trash2, Siren } from 'lucide-react';
+import { User, CreditCard, Star, MessageCircle, Trash2, Siren } from 'lucide-react';
 import type { Payment } from '@/types/api';
 import type { Watchlist } from '@/types/user';
 
-type Tab = 'profile' | 'subscription' | 'watchlist' | 'notifications' | 'chat' | 'reports';
+type Tab = 'profile' | 'subscription' | 'watchlist' | 'chat' | 'reports';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
@@ -86,7 +86,6 @@ export default function MyPage() {
     { key: 'profile', label: '프로필', icon: <User className="w-4 h-4" /> },
     { key: 'subscription', label: '구독 관리', icon: <CreditCard className="w-4 h-4" /> },
     { key: 'watchlist', label: '관심 종목', icon: <Star className="w-4 h-4" /> },
-    { key: 'notifications', label: '알림 설정', icon: <Bell className="w-4 h-4" /> },
     { key: 'chat', label: '채팅 관리', icon: <MessageCircle className="w-4 h-4" /> },
     { key: 'reports', label: '내 신고', icon: <Siren className="w-4 h-4" /> },
   ];
@@ -191,13 +190,6 @@ export default function MyPage() {
                   </tbody>
                 </table>
               )}
-            </div>
-          )}
-
-          {activeTab === 'notifications' && (
-            <div className="bg-dark-700 rounded-xl border border-border p-6 space-y-4">
-              <h2 className="font-bold">알림 설정</h2>
-              <p className="text-text-secondary text-sm">알림 기능은 준비 중입니다.</p>
             </div>
           )}
 
