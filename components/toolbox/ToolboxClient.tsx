@@ -22,6 +22,20 @@ const TAB_ORDER = ['market', 'news', 'youtube', 'chart', 'analysis', 'research',
 // link_hub 카테고리가 아닌 특수 탭의 라벨
 const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', room: '리딩방·검증' };
 
+// 우측 피드가 붙는 탭(한국 전용) + 탭별 피드 컴포넌트
+const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf'];
+function feedFor(tab: string) {
+  switch (tab) {
+    case 'news': return <NewsFeed />;
+    case 'disclosure': return <DartFeed />;
+    case 'macro': return <MacroFeed />;
+    case 'analysis': return <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
+    case 'research': return <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
+    case 'etf': return <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
+    default: return null;
+  }
+}
+
 function Placeholder({ emoji, title, desc }: { emoji: string; title: string; desc?: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -130,7 +144,7 @@ export default function ToolboxClient({
           ) : (
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
-        ) : (activeTab === 'news' || activeTab === 'disclosure' || activeTab === 'macro') && country === 'KR' ? (
+        ) : FEED_TABS.includes(activeTab) && country === 'KR' ? (
           <div className="flex gap-4">
             <div className="min-w-0 flex-1">
               {catLinks.length > 0 ? (
@@ -147,7 +161,7 @@ export default function ToolboxClient({
               )}
             </div>
             <aside className="hidden w-96 shrink-0 lg:block">
-              {activeTab === 'news' ? <NewsFeed /> : activeTab === 'disclosure' ? <DartFeed /> : <MacroFeed />}
+              {feedFor(activeTab)}
             </aside>
           </div>
         ) : catLinks.length === 0 ? (

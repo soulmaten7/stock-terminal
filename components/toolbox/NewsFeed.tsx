@@ -16,18 +16,18 @@ function timeAgo(pub: string): string {
   return `${Math.floor(h / 24)}일 전`;
 }
 
-export default function NewsFeed() {
+export default function NewsFeed({ query, title }: { query?: string; title?: string }) {
   const [items, setItems] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/news/feed')
+    fetch('/api/news/feed' + (query ? '?q=' + encodeURIComponent(query) : ''))
       .then((r) => r.json())
       .then((j) => { if (!cancelled) { setItems(j.items ?? []); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [query]);
 
   if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">최신 뉴스 불러오는 중…</p>;
   if (items.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">뉴스를 불러오지 못했습니다.</p>;
@@ -37,7 +37,7 @@ export default function NewsFeed() {
 
   return (
     <div>
-      <p className="mb-2 text-sm font-bold text-unjong-primary">최신 뉴스</p>
+      <p className="mb-2 text-sm font-bold text-unjong-primary">{title || '최신 뉴스'}</p>
 
       {/* 대표 기사 */}
       <a href={featured.link} target="_blank" rel="noopener noreferrer nofollow" className="group mb-3 block overflow-hidden rounded-xl border border-unjong-border">
