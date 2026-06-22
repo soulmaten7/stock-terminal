@@ -4,7 +4,7 @@ import HomeIndexStrip from "@/components/home-v6/HomeIndexStrip";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "트릴리언 — 투자상품에 속지 않게 돕는 곳" };
+export const metadata = { title: "Trillion — 흩어진 금융정보를 한눈에" };
 
 const CATEGORY_LABELS: Record<string, string> = {
   news: "뉴스",
@@ -77,7 +77,7 @@ export default async function HomePage() {
   return (
     <>
       <HomeIndexStrip />
-      <div className="mx-auto max-w-7xl px-6 py-6">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <ToolboxClient initialCategories={categories} isLoggedIn={!!user} youtubeChannels={youtubeChannels} />
       </div>
     </>

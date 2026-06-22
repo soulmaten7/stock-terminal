@@ -147,7 +147,7 @@ export default function ToolboxClient({
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
         ) : FEED_TABS.includes(activeTab) && country === 'KR' ? (
-          <div className="flex gap-4">
+          <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
             <div className="min-w-0 flex-1">
               {catLinks.length > 0 ? (
                 catLinks.map((link) => (
@@ -162,7 +162,7 @@ export default function ToolboxClient({
                 <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
               )}
             </div>
-            <aside className="hidden w-96 shrink-0 lg:block">
+            <aside className="w-full shrink-0 lg:w-96">
               {feedFor(activeTab)}
             </aside>
           </div>
