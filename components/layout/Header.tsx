@@ -49,16 +49,16 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-unjong-surface border-b border-unjong-border">
-      <div className="mx-auto max-w-7xl px-6 h-[60px] flex items-center gap-5">
-        {/* ── 로고 ── */}
-        <Link href="/" onClick={resetHome} className="shrink-0 hover:opacity-80 flex items-center gap-1.5">
-          <span className="text-lg font-bold tracking-wider text-unjong-primary">Trillion</span>
-          <span className="text-sm text-unjong-muted">트릴리언</span>
+    <header className="border-b border-white/10 bg-[#0E1116]">
+      <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-5 px-6">
+        {/* 로고 */}
+        <Link href="/" onClick={resetHome} className="flex shrink-0 items-center gap-1.5 hover:opacity-80">
+          <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
+          <span className="text-sm text-white/45">트릴리언</span>
         </Link>
 
-        {/* ── 네비 탭 ── */}
-        <nav className="flex items-center shrink-0" aria-label="메인 네비">
+        {/* 네비 탭 */}
+        <nav className="flex shrink-0 items-center" aria-label="메인 네비">
           {MENU.map((m) => {
             const isActive = m.match(pathname);
             return (
@@ -69,8 +69,8 @@ export default function Header() {
                 aria-current={isActive ? 'page' : undefined}
                 className={
                   isActive
-                    ? 'px-3 py-2 text-sm font-bold text-unjong-primary'
-                    : 'px-3 py-2 text-sm font-medium text-unjong-muted hover:text-unjong-primary transition-colors'
+                    ? 'px-3 py-2 text-sm font-bold text-white'
+                    : 'px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:text-white'
                 }
               >
                 {m.label}
@@ -81,16 +81,16 @@ export default function Header() {
 
         <div className="flex-1" />
 
-        {/* ── 우측 아이콘 ── */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* 우측 아이콘 */}
+        <div className="flex shrink-0 items-center gap-3">
           <div ref={countryRef} className="relative">
-            <button type="button" onClick={() => setCountryOpen(!countryOpen)} className="text-base p-1 hover:opacity-70 transition-opacity" aria-label="국가 선택" title={currentCountry.name}>
+            <button type="button" onClick={() => setCountryOpen(!countryOpen)} className="p-1 text-base transition-opacity hover:opacity-70" aria-label="국가 선택" title={currentCountry.name}>
               {currentCountry.flag}
             </button>
             {countryOpen && (
-              <div className="absolute top-full mt-2 right-0 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50 min-w-[140px]">
+              <div className="absolute right-0 top-full z-50 mt-2 min-w-[140px] overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
                 {COUNTRIES.map((c) => (
-                  <button key={c.code} onClick={() => { setCountry(c.code); setCountryOpen(false); }} className={`flex items-center gap-3 w-full px-4 py-3 text-sm hover:bg-unjong-background ${country === c.code ? 'text-unjong-accent font-bold' : 'text-unjong-primary'}`}>
+                  <button key={c.code} onClick={() => { setCountry(c.code); setCountryOpen(false); }} className={`flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-unjong-background ${country === c.code ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
                     <span className="text-lg">{c.flag}</span>
                     <span>{c.name}</span>
                   </button>
@@ -99,23 +99,23 @@ export default function Header() {
             )}
           </div>
 
-          {/* 즐겨찾기 페이지 */}
-          <Link href="/favorites" className="p-1 text-unjong-muted transition-colors hover:text-unjong-accent" aria-label="즐겨찾기" title="즐겨찾기">
+          {/* 즐겨찾기 */}
+          <Link href="/favorites" className="p-1 text-white/70 transition-colors hover:text-[#2DD4BF]" aria-label="즐겨찾기" title="즐겨찾기">
             <Star size={18} />
           </Link>
 
           {!user ? (
-            <Link href="/auth/login" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="로그인">
+            <Link href="/auth/login" className="p-1 text-white/70 transition-colors hover:text-white" title="로그인">
               <User size={18} />
             </Link>
           ) : (
             <div ref={profileRef} className="relative">
-              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-unjong-primary text-xs font-bold text-white transition-opacity hover:opacity-90" aria-label="프로필 메뉴" title={user.nickname || user.email || ''}>
+              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2DD4BF] text-xs font-bold text-[#0E1116] transition-opacity hover:opacity-90" aria-label="프로필 메뉴" title={user.nickname || user.email || ''}>
                 {(user.nickname || user.email || 'U').charAt(0).toUpperCase()}
               </button>
               {profileOpen && (
-                <div className="absolute top-full mt-2 right-0 w-48 bg-unjong-surface border border-unjong-border shadow-lg overflow-hidden z-50">
-                  <div className="px-4 py-3 border-b border-unjong-border">
+                <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
+                  <div className="border-b border-unjong-border px-4 py-3">
                     <p className="text-sm font-bold text-unjong-primary">{user.nickname}</p>
                     <p className="text-sm text-unjong-muted">{user.email}</p>
                   </div>
@@ -124,8 +124,8 @@ export default function Header() {
                     <Link href="/admin" className="block px-4 py-2.5 text-sm font-semibold text-unjong-accent hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>관리자</Link>
                   ) : null}
                   <div className="border-t border-unjong-border" />
-                  <button onClick={handleLogout} className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-unjong-danger font-bold hover:bg-unjong-background">
-                    <LogOut className="w-4 h-4" /> 로그아웃
+                  <button onClick={handleLogout} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-bold text-unjong-danger hover:bg-unjong-background">
+                    <LogOut className="h-4 w-4" /> 로그아웃
                   </button>
                 </div>
               )}

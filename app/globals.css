@@ -8,9 +8,9 @@
   --color-dark-600: #EEEEEE;
   --color-text-primary: #000000;
   --color-text-secondary: #000000;
-  --color-accent: #0ABAB5;
+  --color-accent: #2DD4BF;
   --color-accent-light: #6BBFBA;
-  --color-accent-dark: #088F8C;
+  --color-accent-dark: #14A89B;
   --color-gold: #C9A96E;
   --color-premium: #C9A96E;
   --color-up: #FF4D4D;
@@ -22,8 +22,8 @@
   --color-surface-dark-card: #161B22;
   --color-surface-dark-border: #2D3748;
   /* 트릴리언(雲從) 브랜드 팔레트 */
-  --color-unjong-primary: #0F1E3D;
-  --color-unjong-accent: #D4AF37;
+  --color-unjong-primary: #0E1116;
+  --color-unjong-accent: #2DD4BF;
   --color-unjong-success: #0E7C7B;
   --color-unjong-danger: #C73E3A;
   --color-unjong-muted: #6B7280;
