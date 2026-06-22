@@ -26,13 +26,13 @@ export default function HomeIndexStrip() {
   const loop = [...items, ...items]; // 끊김 없는 루프용 2배 복제
 
   return (
-    <div className="sticky top-0 z-30 flex h-9 items-center border-b border-unjong-border bg-unjong-surface/95 backdrop-blur">
+    <div className="sticky top-0 z-30 flex h-9 items-center border-b border-white/10 bg-[#0E1116]">
       <div className="relative flex-1 overflow-hidden">
         <div className="ticker-track flex h-full items-center whitespace-nowrap">
           {loop.map((it, i) => (
             <span key={i} className="inline-flex items-center gap-1.5 px-4 text-xs">
-              <span className="text-unjong-muted">{it.name}</span>
-              <span className="font-semibold tabular-nums text-unjong-primary">{it.value}</span>
+              <span className="text-white/45">{it.name}</span>
+              <span className="font-semibold tabular-nums text-white">{it.value}</span>
               <span className={`tabular-nums ${it.isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
                 {it.changeText ? `${it.changeText} ` : ""}({it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%)
               </span>
