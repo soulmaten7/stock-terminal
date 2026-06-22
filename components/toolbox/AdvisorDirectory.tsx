@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Globe } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Star, Globe } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
 
@@ -180,6 +180,28 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
     }
   }
 
+  const [favs, setFavs] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (!isLoggedIn) { setFavs(new Set()); return; }
+    fetch('/api/rooms/favorite')
+      .then((r) => r.json())
+      .then((j) => setFavs(new Set((j.favorites ?? []).map((f: { biz_no: string }) => f.biz_no))))
+      .catch(() => {});
+  }, [isLoggedIn]);
+  async function toggleFav(a: Advisor) {
+    if (!isLoggedIn) { setLoginNotice(true); return; }
+    const isFav = favs.has(a.biz_no);
+    setFavs((prev) => { const n = new Set(prev); if (isFav) n.delete(a.biz_no); else n.add(a.biz_no); return n; });
+    try {
+      await fetch('/api/rooms/favorite', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ biz_no: a.biz_no, favorite: !isFav }),
+      });
+    } catch {
+      setFavs((prev) => { const n = new Set(prev); if (isFav) n.add(a.biz_no); else n.delete(a.biz_no); return n; });
+    }
+  }
+
   function openReport(a: Advisor) {
     if (!isLoggedIn) { setLoginNotice(true); return; }
     setReporting(a); setReportReason(''); setReportContent(''); setReportDone(false); setReportError('');
@@ -323,6 +345,15 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{roomNameOf(a)}</span>
                       {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" /> : null}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => toggleFav(a)}
+                      aria-label={favs.has(a.biz_no) ? '즐겨찾기 해제' : '즐겨찾기'}
+                      title="즐겨찾기"
+                      className={`shrink-0 transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+                    >
+                      <Star size={14} fill={favs.has(a.biz_no) ? 'currentColor' : 'none'} />
                     </button>
                     <button
                       type="button"
