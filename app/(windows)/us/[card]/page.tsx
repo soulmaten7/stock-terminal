@@ -7,7 +7,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { card } = await params;
   return {
     title: `미국주식창 / ${card}`,
-    description: `운종 미국주식창 ${card} 디테일 페이지.`,
+    description: `트릴리언 미국주식창 ${card} 디테일 페이지.`,
   };
 }
 

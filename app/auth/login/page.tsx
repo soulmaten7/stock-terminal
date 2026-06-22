@@ -57,10 +57,10 @@ export default function LoginPage() {
           돌아가기
         </Link>
 
-        {/* 운종 로고 */}
+        {/* 트릴리언 로고 */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
-            UNJONG <span className="text-base text-unjong-muted font-medium">운종</span>
+            Trillion <span className="text-base text-unjong-muted font-medium">트릴리언</span>
           </h1>
           <p className="text-sm text-unjong-muted">투자상품에 속지 않게 돕는 곳</p>
         </div>
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
         {/* 약관 */}
         <p className="text-xs text-unjong-muted text-center mt-6 leading-relaxed">
-          로그인 시 운종의 <Link href="/terms" className="underline">이용약관</Link> 및{" "}
+          로그인 시 트릴리언의 <Link href="/terms" className="underline">이용약관</Link> 및{" "}
           <Link href="/privacy" className="underline">개인정보처리방침</Link> 에 동의한 것으로 간주됩니다
         </p>
       </div>

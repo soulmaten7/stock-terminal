@@ -107,7 +107,7 @@ export default function DiscussionItem({ discussion: d, initialVote = 0 }: Props
   const handleReport = async () => {
     if (!user) return notifyLogin();
     if (reported || reporting) return;
-    if (!confirm(`이 게시글을 신고하시겠습니까?\n\n"${d.content.slice(0, 50)}..."\n\n허위 신고 시 운종 닉네임 신뢰 점수가 감소합니다.`)) return;
+    if (!confirm(`이 게시글을 신고하시겠습니까?\n\n"${d.content.slice(0, 50)}..."\n\n허위 신고 시 트릴리언 닉네임 신뢰 점수가 감소합니다.`)) return;
 
     setReporting(true);
     const supabase = createAnonClient();

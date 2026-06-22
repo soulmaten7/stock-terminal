@@ -238,7 +238,7 @@ export default function RoomDetailClient({ id }: { id: string }) {
         <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
           <AlertTriangle size={14} className="mt-0.5 flex-shrink-0 text-amber-600" />
           <p className="text-xs leading-normal text-amber-800">
-            운종은 투자 권유·중개를 하지 않으며, 인증 뱃지는 금융감독원 신고 여부만 의미합니다. 신고 = 수익 보장 아님. 토론·평가는 사용자 개인 의견입니다.
+            트릴리언은 투자 권유·중개를 하지 않으며, 인증 뱃지는 금융감독원 신고 여부만 의미합니다. 신고 = 수익 보장 아님. 토론·평가는 사용자 개인 의견입니다.
           </p>
         </div>
       </aside>

@@ -2,7 +2,7 @@ import { ChatPanel } from "./ChatPanel";
 import { WatchlistPanel } from "./WatchlistPanel";
 
 /**
- * 운종 좌측 사이드 (폭 300px)
+ * 트릴리언 좌측 사이드 (폭 300px)
  * 채팅 65% + 관심종목 35% 고정 비율 — 모든 창 동일
  */
 export function UnjongSidebar() {

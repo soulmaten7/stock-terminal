@@ -53,8 +53,8 @@ export default function Header() {
       <div className="mx-auto max-w-7xl px-6 h-[60px] flex items-center gap-5">
         {/* ── 로고 ── */}
         <Link href="/" onClick={resetHome} className="shrink-0 hover:opacity-80 flex items-center gap-1.5">
-          <span className="text-lg font-bold tracking-wider text-unjong-primary">UNJONG</span>
-          <span className="text-sm text-unjong-muted">운종</span>
+          <span className="text-lg font-bold tracking-wider text-unjong-primary">Trillion</span>
+          <span className="text-sm text-unjong-muted">트릴리언</span>
         </Link>
 
         {/* ── 네비 탭 ── */}

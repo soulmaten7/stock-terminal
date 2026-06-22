@@ -4,7 +4,7 @@ import HomeIndexStrip from "@/components/home-v6/HomeIndexStrip";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "운종 — 투자상품에 속지 않게 돕는 곳" };
+export const metadata = { title: "트릴리언 — 투자상품에 속지 않게 돕는 곳" };
 
 const CATEGORY_LABELS: Record<string, string> = {
   news: "뉴스",

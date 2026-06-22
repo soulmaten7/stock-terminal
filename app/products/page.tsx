@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import ProductsClient from "@/components/platform/ProductsClient";
 
-export const metadata = { title: "상품 디렉토리 — 운종" };
+export const metadata = { title: "상품 디렉토리 — 트릴리언" };
 
 export default function ProductsPage() {
   return (

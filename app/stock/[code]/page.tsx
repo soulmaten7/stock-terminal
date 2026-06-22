@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import StockPageClient from "@/components/stock/StockPageClient";
 
-export const metadata = { title: "종목 — 운종" };
+export const metadata = { title: "종목 — 트릴리언" };
 
 type Props = {
   params: Promise<{ code: string }>;

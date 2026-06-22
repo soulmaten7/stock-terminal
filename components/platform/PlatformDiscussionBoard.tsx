@@ -118,7 +118,7 @@ export default function PlatformDiscussionBoard({ targetType, targetId }: Props)
       <header className="flex items-center justify-between bg-unjong-surface rounded-lg border border-unjong-border px-4 py-3">
         <div>
           <h2 className="text-base font-semibold text-unjong-primary">💬 사용자 평가</h2>
-          <p className="text-xs text-unjong-muted">운종은 평가 X · 사용자 토론·추천/비추천만 제공</p>
+          <p className="text-xs text-unjong-muted">트릴리언은 평가 X · 사용자 토론·추천/비추천만 제공</p>
         </div>
         <div className="flex items-center gap-1">
           <button
@@ -282,7 +282,7 @@ function PlatformDiscussionItem({ discussion: d, initialVote }: { discussion: Pl
   const handleReport = async () => {
     if (!user) return notifyLogin();
     if (reported || reporting) return;
-    if (!confirm("이 평가를 신고하시겠습니까?\n\n허위 신고 시 운종 닉네임 신뢰 점수가 감소합니다.")) return;
+    if (!confirm("이 평가를 신고하시겠습니까?\n\n허위 신고 시 트릴리언 닉네임 신뢰 점수가 감소합니다.")) return;
     setReporting(true);
     const supabase = createAnonClient();
     const { error } = await supabase

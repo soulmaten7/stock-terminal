@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HeaderSearch } from "./HeaderSearch";
 
-// 토스식 상단 4탭 (운종). 뉴스는 종목 안+홈으로, 평가·검증은 토론·평가 탭으로 통합. 거래·코인 제외.
+// 토스식 상단 4탭 (트릴리언). 뉴스는 종목 안+홈으로, 평가·검증은 토론·평가 탭으로 통합. 거래·코인 제외.
 const MENU = [
   { href: "/", label: "홈", match: (p: string) => p === "/" },
   { href: "/market", label: "마켓", match: (p: string) => /^\/(market|kr|us|stock)/.test(p) },

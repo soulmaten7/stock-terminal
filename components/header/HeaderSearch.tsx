@@ -131,7 +131,7 @@ export function HeaderSearch() {
         onKeyDown={handleKeyDown}
         placeholder="🔍 종목 검색 (예: 삼성전자, 005930, AAPL)"
         className="w-full rounded-md border border-unjong-border bg-unjong-surface py-2 pl-10 pr-9 text-sm text-unjong-primary placeholder:text-unjong-muted focus:outline-none focus:border-unjong-accent transition-colors"
-        aria-label="운종 종목 검색"
+        aria-label="트릴리언 종목 검색"
         autoComplete="off"
       />
       {query && (

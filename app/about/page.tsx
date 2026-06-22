@@ -9,11 +9,11 @@ const PILLARS: { t: string; d: string }[] = [
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
-      <h1 className="mb-2 text-2xl font-bold text-unjong-primary">운종 소개</h1>
+      <h1 className="mb-2 text-2xl font-bold text-unjong-primary">트릴리언 소개</h1>
       <p className="mb-8 text-base font-medium text-unjong-accent">투자상품에 속지 않게 돕는 곳</p>
 
       <p className="mb-10 text-sm leading-relaxed text-unjong-muted">
-        운종(雲從)은 정확한 정보, 솔직한 토론, 검증된 신뢰로 투자자가 잘못된 정보나 과장된
+        트릴리언(雲從)은 정확한 정보, 솔직한 토론, 검증된 신뢰로 투자자가 잘못된 정보나 과장된
         상품에 속지 않도록 돕는 플랫폼입니다. 주식·상품·리딩방을 한곳에서 교차검증하세요.
       </p>
 
@@ -27,8 +27,8 @@ export default function AboutPage() {
       </div>
 
       <p className="mt-10 text-xs leading-relaxed text-unjong-muted">
-        운종은 금융상품의 매매·중개·투자자문을 제공하지 않으며, 어떠한 거래도 중개하지
-        않습니다. 정보·대화·허브·신뢰의 역할만 합니다. 운종이 제공하는 정보는 참고용이며,
+        트릴리언은 금융상품의 매매·중개·투자자문을 제공하지 않으며, 어떠한 거래도 중개하지
+        않습니다. 정보·대화·허브·신뢰의 역할만 합니다. 트릴리언이 제공하는 정보는 참고용이며,
         투자 권유나 자문이 아닙니다.
       </p>
     </div>

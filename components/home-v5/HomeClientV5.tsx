@@ -68,7 +68,7 @@ export default function HomeClientV5() {
 
         {/* 가운데: 신뢰 우선 위계 */}
         <main className="space-y-5">
-          {/* ① 검증·평가 — 운종 정체성 (맨 위) */}
+          {/* ① 검증·평가 — 트릴리언 정체성 (맨 위) */}
           <section>
             <h2 className="text-lg font-bold text-unjong-primary mb-3 flex items-center gap-1.5">
               🛡️ 검증·평가

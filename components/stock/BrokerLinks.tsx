@@ -40,7 +40,7 @@ export default function BrokerLinks({ code }: { code: string }) {
           </a>
         ))}
       </div>
-      <p className="mt-2 text-[10px] text-unjong-muted">운종은 정보·동선만 안내해요(거래 중개 X).</p>
+      <p className="mt-2 text-[10px] text-unjong-muted">트릴리언은 정보·동선만 안내해요(거래 중개 X).</p>
     </section>
   );
 }

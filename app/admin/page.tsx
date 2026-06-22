@@ -5,7 +5,7 @@ import AdminReports from '@/components/admin/AdminReports';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const metadata = { title: '운종 관리자' };
+export const metadata = { title: '트릴리언 관리자' };
 
 type Report = { id: number; target_name: string; reason: string; content: string | null; status: string; created_at: string };
 type Submission = { id: number; room_name: string; company_name: string | null; platform: string; homepage: string; fss_matched: boolean; status: string; created_at: string };
@@ -37,7 +37,7 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="text-xl font-bold text-unjong-primary">운종 관리자</h1>
+      <h1 className="text-xl font-bold text-unjong-primary">트릴리언 관리자</h1>
       <p className="mb-8 mt-1 text-sm text-unjong-muted">신고·자가등록 접수 현황 · 최신순</p>
 
       {/* 신고 */}

@@ -14,10 +14,10 @@ type ChatMessage = {
   created_at: string;
 };
 
-// STEP 114: 단타/장타/미장 3채널 → 운종 전체 채팅 1채널 (general) 통합.
+// STEP 114: 단타/장타/미장 3채널 → 트릴리언 전체 채팅 1채널 (general) 통합.
 // 종목별 채팅은 STEP 115 에서 별도 구현.
 const ROOM_META: Record<string, { window: string; emoji: string }> = {
-  general: { window: "운종 전체 채팅", emoji: "💬" },
+  general: { window: "트릴리언 전체 채팅", emoji: "💬" },
 };
 
 function formatTime(iso: string): string {

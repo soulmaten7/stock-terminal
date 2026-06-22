@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import ProductDetailClient from "@/components/platform/ProductDetailClient";
 
-export const metadata = { title: "상품 평가 — 운종" };
+export const metadata = { title: "상품 평가 — 트릴리언" };
 
 type Props = { params: Promise<{ id: string }> };
 

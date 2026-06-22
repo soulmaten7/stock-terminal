@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import RoomDetailClient from "@/components/platform/RoomDetailClient";
 
-export const metadata = { title: "리딩방 평가 — 운종" };
+export const metadata = { title: "리딩방 평가 — 트릴리언" };
 
 type Props = { params: Promise<{ id: string }> };
 

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import RoomsClient from "@/components/platform/RoomsClient";
 
-export const metadata = { title: "리딩방 디렉토리 — 운종" };
+export const metadata = { title: "리딩방 디렉토리 — 트릴리언" };
 
 export default function RoomsPage() {
   return (

@@ -14,7 +14,7 @@ type Disclosure = {
   source_url: string;
 };
 
-// 주의가 필요한 공시 유형 (운종 신뢰 — 위험 신호 강조)
+// 주의가 필요한 공시 유형 (트릴리언 신뢰 — 위험 신호 강조)
 const CAUTION = new Set(["유상증자", "CB발행", "대주주변동", "합병분할"]);
 
 function badgeClass(type: string): string {

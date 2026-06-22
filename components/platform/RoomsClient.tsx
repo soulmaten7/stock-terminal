@@ -77,7 +77,7 @@ export default function RoomsClient() {
       <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
         <AlertTriangle size={16} className="text-amber-600 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-amber-800 leading-normal">
-          운종은 리딩방을 <strong>평가하지 않습니다</strong>. 사용자 토론만 제공합니다. 리딩방은 허위·작전·과장이 많으니
+          트릴리언은 리딩방을 <strong>평가하지 않습니다</strong>. 사용자 토론만 제공합니다. 리딩방은 허위·작전·과장이 많으니
           가입·결제 전 충분히 검토하고, 손실 책임은 본인에게 있습니다.
         </p>
       </div>

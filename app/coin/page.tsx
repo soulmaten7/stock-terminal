@@ -1,4 +1,4 @@
-export const metadata = { title: "코인 — 운종 (준비 중)" };
+export const metadata = { title: "코인 — 트릴리언 (준비 중)" };
 
 export default function CoinPage() {
   return (

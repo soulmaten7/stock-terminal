@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
-export const metadata = { title: "경제 캘린더 — 운종" };
+export const metadata = { title: "경제 캘린더 — 트릴리언" };
 
 export default function CalendarPage() {
   return (
@@ -21,7 +21,7 @@ export default function CalendarPage() {
         Investing.com 경제 캘린더 열기
         <ExternalLink size={16} />
       </a>
-      <p className="text-xs text-unjong-muted mt-4">운종은 외부 정확한 정보로 동선 안내 (허브 정체성)</p>
+      <p className="text-xs text-unjong-muted mt-4">트릴리언은 외부 정확한 정보로 동선 안내 (허브 정체성)</p>
       <div className="mt-8">
         <Link href="/" className="text-xs text-unjong-muted hover:text-unjong-primary">← 홈으로</Link>
       </div>

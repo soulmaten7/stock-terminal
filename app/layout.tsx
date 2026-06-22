@@ -21,14 +21,14 @@ const playfair = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "운종 — 투자상품에 속지 않게 돕는 곳",
-    template: "%s | 운종",
+    default: "트릴리언 — 투자상품에 속지 않게 돕는 곳",
+    template: "%s | 트릴리언",
   },
   description:
-    "운종 — 정확한 정보 + 솔직한 토론 + 검증된 신뢰로 투자상품에 속지 않게 돕는 곳. " +
+    "트릴리언 — 정확한 정보 + 솔직한 토론 + 검증된 신뢰로 투자상품에 속지 않게 돕는 곳. " +
     "주식·상품·리딩방을 한곳에서 교차검증하세요.",
   keywords: [
-    "운종",
+    "트릴리언",
     "한국 주식",
     "주식 커뮤니티",
     "투자상품 평가",
@@ -37,9 +37,9 @@ export const metadata: Metadata = {
     "ETF 평가",
     "신뢰 평가 허브",
   ],
-  authors: [{ name: "운종" }],
+  authors: [{ name: "트릴리언" }],
   openGraph: {
-    title: "운종",
+    title: "트릴리언",
     description: "투자상품에 속지 않게 돕는 곳 — 정확한 정보 + 솔직한 토론 + 검증된 신뢰",
     type: "website",
     locale: "ko_KR",
