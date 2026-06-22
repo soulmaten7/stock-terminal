@@ -486,4 +486,4 @@ cd ~/stock-terminal && rm -f .git/index.lock
 
 > **PLAYBOOK 사용법**: 매 세션 종료 시 이 파일을 갱신하라. 다음 세션 Cowork 이 이 파일만 읽어도 100% 동기화 가능하도록.
 >
-> **이 PLAYBOOK 마지막 갱신**: 2026-06-04 STEP 153 종료 (V7 — 마켓 국내+미국 랭킹) + 문서 갱신 시점 · 마지막 코드 `33e72f7`
+> **⚠️ 이 PLAYBOOK 본문(§1~)은 V6/STEP153 시점 히스토리** — 현재 상태는 이 파일 **상단 스냅샷(STEP 345 · `c0b3035`, 2026-06-22)** 및 `docs/SESSION_BOOT.md` 기준.
