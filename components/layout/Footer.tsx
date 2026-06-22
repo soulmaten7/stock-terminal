@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <footer className="mt-auto border-t border-white/10 bg-[#0E1116]">
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* 브랜드 */}
           <div className="col-span-2 md:col-span-1">
@@ -44,7 +44,7 @@ export default function Footer() {
 
       {/* Disclaimer */}
       <div className="border-t border-white/10 bg-[#15191F]">
-        <div className="mx-auto max-w-7xl px-6 py-6">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
           <p className="mb-3 text-sm leading-relaxed text-white/80">
             본 사이트는 공개된 금융 데이터·정보를 정리하여 제공하며, 투자 권유 또는 투자 자문이 아닙니다.
             모든 투자 판단과 그에 따른 결과의 책임은 이용자 본인에게 있습니다.

@@ -50,11 +50,11 @@ export default function Header() {
 
   return (
     <header className="border-b border-white/10 bg-[#0E1116]">
-      <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-5 px-6">
+      <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
         {/* 로고 */}
         <Link href="/" onClick={resetHome} className="flex shrink-0 items-center gap-1.5 hover:opacity-80">
           <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
-          <span className="text-sm text-white/45">트릴리언</span>
+          <span className="hidden text-sm text-white/45 sm:inline">트릴리언</span>
         </Link>
 
         {/* 네비 탭 */}
