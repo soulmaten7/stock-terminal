@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Bell, LogOut } from 'lucide-react';
+import { User, Star, LogOut } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
@@ -33,10 +33,30 @@ export default function Header() {
   const currentCountry = COUNTRIES.find((c) => c.code === country)!;
   const resetHome = useHomeReset((s) => s.reset);
 
+  const [favOpen, setFavOpen] = useState(false);
+  const [favorites, setFavorites] = useState<{ id: number; name: string; url: string }[]>([]);
+  const [favLoading, setFavLoading] = useState(false);
+  const favRef = useRef<HTMLDivElement>(null);
+
+  const loadFavs = async () => {
+    setFavLoading(true);
+    try {
+      const r = await fetch('/api/toolbox/favorite');
+      const j = await r.json();
+      setFavorites(j.favorites ?? []);
+    } catch {
+      /* noop */
+    } finally {
+      setFavLoading(false);
+    }
+  };
+  const favHost = (u: string) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } };
+
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (countryRef.current && !countryRef.current.contains(e.target as Node)) setCountryOpen(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+      if (favRef.current && !favRef.current.contains(e.target as Node)) setFavOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -102,9 +122,54 @@ export default function Header() {
             )}
           </div>
 
-          <button type="button" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" aria-label="알림">
-            <Bell size={18} />
-          </button>
+          {/* 즐겨찾기 */}
+          <div ref={favRef} className="relative">
+            <button
+              type="button"
+              onClick={() => { const next = !favOpen; setFavOpen(next); if (next) loadFavs(); }}
+              className="p-1 text-unjong-muted transition-colors hover:text-unjong-accent"
+              aria-label="즐겨찾기"
+              title="즐겨찾기"
+            >
+              <Star size={18} />
+            </button>
+            {favOpen && (
+              <div className="absolute right-0 top-full z-50 mt-2 w-72 overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
+                <div className="flex items-center gap-1.5 border-b border-unjong-border px-4 py-2.5">
+                  <Star size={14} className="text-unjong-accent" fill="currentColor" />
+                  <span className="text-sm font-bold text-unjong-primary">즐겨찾기</span>
+                </div>
+                {!user ? (
+                  <div className="px-4 py-6 text-center">
+                    <p className="text-sm leading-relaxed text-unjong-muted">로그인하면 카테고리에서 별표한<br />링크를 모아볼 수 있어요.</p>
+                    <Link href="/auth/login" onClick={() => setFavOpen(false)} className="mt-2 inline-block text-sm font-semibold text-unjong-accent">로그인 →</Link>
+                  </div>
+                ) : favLoading ? (
+                  <p className="px-4 py-6 text-center text-sm text-unjong-muted">불러오는 중…</p>
+                ) : favorites.length === 0 ? (
+                  <p className="px-4 py-6 text-center text-sm leading-relaxed text-unjong-muted">아직 즐겨찾기가 없어요.<br />카테고리 목록에서 ⭐를 눌러 추가하세요.</p>
+                ) : (
+                  <ul className="max-h-80 overflow-y-auto py-1">
+                    {favorites.map((f) => (
+                      <li key={f.id}>
+                        <a
+                          href={f.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => setFavOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2 hover:bg-unjong-background"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={`https://www.google.com/s2/favicons?domain=${favHost(f.url)}&sz=64`} alt="" className="h-4 w-4 shrink-0" />
+                          <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{f.name}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
 
           {!user ? (
             <Link href="/auth/login" className="p-1 text-unjong-muted hover:text-unjong-primary transition-colors" title="로그인">

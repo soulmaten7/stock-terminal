@@ -27,3 +27,27 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ ok: true, linkId, favorite });
 }
+
+// 헤더 즐겨찾기 드롭다운 — 로그인 유저가 별표한 링크 목록
+export async function GET() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ favorites: [], auth: false });
+
+  const { data: favs } = await supabase
+    .from('link_hub_favorites')
+    .select('link_id')
+    .eq('user_id', user.id);
+  const ids = (favs ?? []).map((f: { link_id: number }) => f.link_id);
+  if (ids.length === 0) return NextResponse.json({ favorites: [], auth: true });
+
+  const { data: links } = await supabase
+    .from('link_hub')
+    .select('id, site_name, site_url, category')
+    .in('id', ids);
+
+  const favorites = (links ?? []).map((l: { id: number; site_name: string; site_url: string; category: string }) => ({
+    id: l.id, name: l.site_name, url: l.site_url, category: l.category,
+  }));
+  return NextResponse.json({ favorites, auth: true });
+}
