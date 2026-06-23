@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Star, Globe } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
+import RoomReviews from './RoomReviews';
 
 type Advisor = {
   biz_no: string;
@@ -49,7 +50,7 @@ function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
 
-function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; onReport: () => void }) {
+function PreviewBody({ a, onLike, onReport, isLoggedIn, onRequireLogin }: { a: Advisor; onLike: () => void; onReport: () => void; isLoggedIn: boolean; onRequireLogin: () => void }) {
   const ic = faviconFor(a.platform, a.homepage);
   const roomName = roomNameOf(a);
   const isFss = a.source === 'fss';
@@ -103,6 +104,7 @@ function PreviewBody({ a, onLike, onReport }: { a: Advisor; onLike: () => void; 
           바로가기 <ExternalLink size={13} />
         </a>
       ) : null}
+      <RoomReviews bizNo={a.biz_no} isLoggedIn={isLoggedIn} onRequireLogin={onRequireLogin} />
     </div>
   );
 }
@@ -179,6 +181,18 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       setLoginNotice(true);
     }
   }
+
+  const [summary, setSummary] = useState<Record<string, { avg: number; count: number }>>({});
+  useEffect(() => {
+    const ids = results.map((r) => r.biz_no).filter(Boolean);
+    if (ids.length === 0) { setSummary({}); return; }
+    let cancelled = false;
+    fetch(`/api/reviews/summary?ids=${encodeURIComponent(ids.join(','))}`)
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled) setSummary(j.summary ?? {}); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [results]);
 
   const [favs, setFavs] = useState<Set<string>>(new Set());
   useEffect(() => {
@@ -345,6 +359,11 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{roomNameOf(a)}</span>
                       {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" /> : null}
+                      {summary[a.biz_no]?.count ? (
+                        <span className="ml-1 inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold text-amber-500">
+                          <Star size={12} className="fill-amber-400 text-amber-400" /> {summary[a.biz_no]?.avg?.toFixed(1)}
+                        </span>
+                      ) : null}
                     </button>
                     <button
                       type="button"
@@ -414,7 +433,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-11 rounded-xl border border-unjong-border bg-unjong-surface p-4">
             {selected ? (
-              <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} />
+              <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} isLoggedIn={isLoggedIn} onRequireLogin={() => setLoginNotice(true)} />
             ) : (
               <p className="py-12 text-center text-xs leading-relaxed text-unjong-muted">왼쪽에서 리딩방을 선택하면<br />여기에 금감원 정보가 표시됩니다.</p>
             )}
@@ -431,7 +450,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 <X size={18} />
               </button>
             </div>
-            <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} />
+            <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} isLoggedIn={isLoggedIn} onRequireLogin={() => setLoginNotice(true)} />
           </div>
         </div>
       ) : null}
