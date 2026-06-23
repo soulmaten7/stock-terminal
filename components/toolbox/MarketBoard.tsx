@@ -26,12 +26,12 @@ const SUBTABS: { key: SubTab; label: string }[] = [
 ];
 
 type PeriodKey = '1d' | '1w' | '1m' | '3m' | '6m' | '1y';
-const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
+const PERIODS: { key: PeriodKey; label: string; field: keyof Row; hideSm?: boolean }[] = [
   { key: '1d', label: '1일', field: 'changePercent' },
   { key: '1w', label: '1주일', field: 'r1w' },
-  { key: '1m', label: '1개월', field: 'r1m' },
-  { key: '3m', label: '3개월', field: 'r3m' },
-  { key: '6m', label: '6개월', field: 'r6m' },
+  { key: '1m', label: '1개월', field: 'r1m', hideSm: true },
+  { key: '3m', label: '3개월', field: 'r3m', hideSm: true },
+  { key: '6m', label: '6개월', field: 'r6m', hideSm: true },
   { key: '1y', label: '1년', field: 'r1y' },
 ];
 
@@ -150,7 +150,7 @@ export default function MarketBoard() {
           ) : sorted.length === 0 ? (
             <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
           ) : (
-            <table className="w-full min-w-[720px] text-sm">
+            <table className="w-full min-w-[540px] text-sm sm:min-w-[720px]">
               <thead>
                 <tr className="border-b border-unjong-border text-xs text-unjong-muted">
                   <th className="px-2 py-2.5 text-left font-medium">
@@ -159,7 +159,7 @@ export default function MarketBoard() {
                   <th className="w-full px-2 py-2.5 text-left font-medium">종목명</th>
                   <th className="whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
                   {PERIODS.map((p) => (
-                    <th key={p.key} className="whitespace-nowrap px-2 py-2.5 text-right font-medium">
+                    <th key={p.key} className={`whitespace-nowrap px-2 py-2.5 text-right font-medium ${p.hideSm ? 'hidden sm:table-cell' : ''}`}>
                       <button
                         type="button"
                         onClick={() => clickHeader(p.key)}
@@ -184,7 +184,7 @@ export default function MarketBoard() {
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
                     {PERIODS.map((p) => {
                       const v = r[p.field] as number | null | undefined;
-                      return <td key={p.key} className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</td>;
+                      return <td key={p.key} className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)} ${p.hideSm ? 'hidden sm:table-cell' : ''}`}>{pct(v)}</td>;
                     })}
                   </tr>
                 ))}
