@@ -117,7 +117,7 @@ export default function ToolboxClient({
             key={t.slug}
             type="button"
             onClick={() => setActiveTab(t.slug)}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+            className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors sm:py-1.5 ${
               activeTab === t.slug ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >

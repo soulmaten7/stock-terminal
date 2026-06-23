@@ -55,4 +55,10 @@
 - 헤더 메뉴(주식/코인) 너무 좁으면 간격.
 
 ## 🔎 STEP 380 스윕 결과
-(STEP 380 실행 시 자동 기록됨 — 비어 있으면 아직 미실행)
+components/admin/AdminSubmissions.tsx:60:              <td className="max-w-[200px] truncate px-3 py-2 text-xs">
+components/common/ComingSoonCard.tsx:29:          <p className="text-[#999999] text-sm leading-relaxed mb-3 max-w-[240px]">
+components/toolbox/MarketBoard.tsx:122:      {/* 컨트롤 줄: 좌=하위탭 / 우(w-72)=증권사 바로가기 헤더 */}
+app/layout.tsx:58:          <div className="w-full max-w-[1984px] mx-auto flex-1 flex flex-col">
+app/mypage/page.tsx:108:              <table className="w-full min-w-[480px] text-sm">
+
+판단 메모: max-w-[200px]/max-w-[240px]는 텍스트 클램프용(overflow 제한), max-w-[1984px]는 전체 레이아웃 최대폭(무해), min-w-[480px] 마이페이지 신고 표는 overflow-x-auto 안에 있어 가로 스크롤 문제 없음. MarketBoard w-72 주석(실 코드 아님). → 아침에 실제 폰으로 확인 후 필요 시 조정.
