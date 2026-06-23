@@ -11,16 +11,16 @@ let _cache: { data: unknown; at: number } | null = null;
 const _TTL = 30_000;
 
 const INDEX_SYMBOLS = [
-  { symbol: "^KS11", name: "코스피" },
-  { symbol: "^KQ11", name: "코스닥" },
-  { symbol: "USDKRW=X", name: "원/달러" },
+  { symbol: "^KS11", name: "KOSPI" },
+  { symbol: "^KQ11", name: "KOSDAQ" },
+  { symbol: "USDKRW=X", name: "USD/KRW" },
   { symbol: "^GSPC", name: "S&P 500" },
-  { symbol: "^IXIC", name: "나스닥" },
-  { symbol: "^DJI", name: "다우" },
-  { symbol: "^SOX", name: "필라델피아 반도체" },
+  { symbol: "^IXIC", name: "NASDAQ" },
+  { symbol: "^DJI", name: "Dow Jones" },
+  { symbol: "^SOX", name: "SOX" },
   { symbol: "^VIX", name: "VIX" },
-  { symbol: "GC=F", name: "금" },
-  { symbol: "BTC-USD", name: "비트코인" },
+  { symbol: "GC=F", name: "Gold" },
+  { symbol: "BTC-USD", name: "Bitcoin" },
 ];
 
 export async function GET() {
