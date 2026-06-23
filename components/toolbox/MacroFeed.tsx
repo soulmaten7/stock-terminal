@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getCache, setCache } from '@/lib/clientCache';
 
 type Indicator = { country: 'KR' | 'US'; label: string; value: string; unit: string; date: string | null; change: number | null };
 
@@ -24,21 +25,28 @@ function Row({ it }: { it: Indicator }) {
 }
 
 export default function MacroFeed() {
-  const [kr, setKr] = useState<Indicator[]>([]);
-  const [us, setUs] = useState<Indicator[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cached = getCache<{ kr: Indicator[]; us: Indicator[] }>('macro');
+  const [kr, setKr] = useState<Indicator[]>(cached?.kr ?? []);
+  const [us, setUs] = useState<Indicator[]>(cached?.us ?? []);
+  const [loading, setLoading] = useState(cached === undefined);
   const [view, setView] = useState<'kr' | 'us'>('kr');
 
   useEffect(() => {
     let cancelled = false;
     fetch('/api/macro/summary')
       .then((r) => r.json())
-      .then((j) => { if (!cancelled) { setKr(j.kr ?? []); setUs(j.us ?? []); setLoading(false); } })
+      .then((j) => { if (!cancelled) { const k = j.kr ?? []; const u = j.us ?? []; setKr(k); setUs(u); setCache('macro', { kr: k, us: u }); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">지표 불러오는 중…</p>;
+  if (loading) return (
+    <div className="space-y-2 py-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-12 animate-pulse rounded-lg bg-unjong-background" />
+      ))}
+    </div>
+  );
   if (kr.length === 0 && us.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">지표를 불러오지 못했습니다.</p>;
 
   const list = view === 'kr' ? kr : us;

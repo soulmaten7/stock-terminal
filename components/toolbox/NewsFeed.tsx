@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { getCache, setCache } from '@/lib/clientCache';
 
 type NewsItem = { title: string; link: string; source: string; pubDate: string; image?: string | null };
 
@@ -17,19 +18,26 @@ function timeAgo(pub: string): string {
 }
 
 export default function NewsFeed({ query, title }: { query?: string; title?: string }) {
-  const [items, setItems] = useState<NewsItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = 'news:' + (query ?? '');
+  const [items, setItems] = useState<NewsItem[]>(() => getCache<NewsItem[]>(cacheKey) ?? []);
+  const [loading, setLoading] = useState(() => getCache(cacheKey) === undefined);
 
   useEffect(() => {
     let cancelled = false;
     fetch('/api/news/feed' + (query ? '?q=' + encodeURIComponent(query) : ''))
       .then((r) => r.json())
-      .then((j) => { if (!cancelled) { setItems(j.items ?? []); setLoading(false); } })
+      .then((j) => { if (!cancelled) { const list = j.items ?? []; setItems(list); setCache(cacheKey, list); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, [query]);
 
-  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">최신 뉴스 불러오는 중…</p>;
+  if (loading) return (
+    <div className="space-y-2 py-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-14 animate-pulse rounded-lg bg-unjong-background" />
+      ))}
+    </div>
+  );
   if (items.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">뉴스를 불러오지 못했습니다.</p>;
 
   const featured = items[0];

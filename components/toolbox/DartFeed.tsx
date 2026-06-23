@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
+import { getCache, setCache } from '@/lib/clientCache';
 
 type DartItem = {
   corp: string; title: string; cls: string; stockCode: string;
@@ -20,19 +21,25 @@ function dateLabel(yyyymmdd: string): string {
 }
 
 export default function DartFeed() {
-  const [items, setItems] = useState<DartItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [items, setItems] = useState<DartItem[]>(() => getCache<DartItem[]>('dart') ?? []);
+  const [loading, setLoading] = useState(() => getCache('dart') === undefined);
 
   useEffect(() => {
     let cancelled = false;
     fetch('/api/dart/feed')
       .then((r) => r.json())
-      .then((j) => { if (!cancelled) { setItems(j.items ?? []); setLoading(false); } })
+      .then((j) => { if (!cancelled) { const list = j.items ?? []; setItems(list); setCache('dart', list); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
-  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">최신 공시 불러오는 중…</p>;
+  if (loading) return (
+    <div className="space-y-2 py-2">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="h-14 animate-pulse rounded-lg bg-unjong-background" />
+      ))}
+    </div>
+  );
   if (items.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">공시를 불러오지 못했습니다.</p>;
 
   return (

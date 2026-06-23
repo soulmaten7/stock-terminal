@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import BrokerRanking from './BrokerRanking';
 
@@ -84,15 +85,17 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
 
 export default function MarketBoard() {
   const [tab, setTab] = useState<SubTab>('stock');
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock') ?? []);
+  const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
   const [sortKey, setSortKey] = useState<PeriodKey | 'amount'>('amount');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    fetchRows(tab).then((r) => { if (!cancelled) { setRows(r); setLoading(false); } });
+    const ck = 'market:' + tab;
+    const cached = getCache<Row[]>(ck);
+    if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
+    fetchRows(tab).then((r) => { if (!cancelled) { setRows(r); setCache(ck, r); setLoading(false); } });
     return () => { cancelled = true; };
   }, [tab]);
 
