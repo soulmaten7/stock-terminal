@@ -1,5 +1,27 @@
-<!-- 2026-06-22 -->
-# 운종(雲從) — 변경 이력
+<!-- 2026-06-23 -->
+# Trillion(트릴리언) — 변경 이력
+
+## 2026-06-23 — STEP 346~360 · 🔴 리브랜드 Trillion + 모바일 반응형 + 리딩방 신뢰 재정비(평가 구축→철회→관심순)
+
+빌드 ✓ 전 STEP. HEAD `7e1d7d3`(360). **운종/UNJONG → Trillion/트릴리언 리브랜드 + 모바일 반응형 토대 + 리딩방을 '미검증 평가' 빼고 '사실+관심순'으로 재정비.**
+
+**리브랜드(351~353)**: 운종/UNJONG → **Trillion / 트릴리언**(사업자명 **원트릴리언**, 사업자번호 **210-39-33812**, `docs/LAUNCH_INFO.md`). 포지셔닝 = **"흩어진 금융정보를 한눈에"**(정보 허브 — '안 속는 곳'에서 재정렬). 디자인 = **미드나잇 `#0E1116` + 민트 `#2DD4BF`** — 헤더·푸터·지수티커 다크화(352~353). 코드 식별자(`unjong-*`)·DB는 대소문자 달라 그대로 유지(안전). 헤더 언어설정(한/미)은 **한국판 완성 후로 보류**.
+
+**즐겨찾기 일원화(348~350·357)**: 헤더 알림→**즐겨찾기**, 전용 페이지 `/favorites`(HTML5 드래그 순서) + 리딩방 즐겨찾기(`room_favorites`, `RoomFavoritesClient`). 357 링크 즐겨찾기(`LinkCard`)도 비로그인에 별 노출 + 클릭 시 `/auth/login` 유도(게이팅 통일). 서버는 전 동작 `401`+RLS.
+
+**모바일 반응형(354~355)**: `body{min-width:1280px}` 제거(데스크톱 강제폭 해제 — 모바일 가로스크롤 주범) + 게이트웨이 피드 모바일 스택(`flex-col lg:flex-row`) + 헤더 작은폰 넘침 해소(gap-3 px-4 sm:↑ + 보조텍스트 `hidden sm:inline`) + 푸터 패딩. 활성 surface 전수 코드 점검 = 피드 카드형·표 `overflow-x-auto`·리딩방 모바일 하단시트 등 **이미 반응형**(비반응형 그리드는 legacy 미라우팅). ⚠️ 이 환경 Chrome resize_window는 렌더 뷰포트 미반영(`innerWidth` 1920 고정) → **모바일 실측은 사용자 폰 몫.**
+
+**🔴 리딩방 신뢰 재정비 — 평가 구축→철회→관심순(356~360, 이번 세션 핵심 결정)**:
+- 356 별점(1~5)·후기(`room_reviews`) + 358 리뷰 신고·관리자 숨김(`room_review_reports`·`/admin` ⭐리뷰 섹션) **구축·검증 완료**했으나 →
+- **사용자 결정(철회)**: 리딩방은 텔레그램·카톡 등 **off-platform → 이용 증빙 불가** → 거짓·악의 리뷰를 막을 수 없고 명예훼손 리스크 → "안 속는 곳" 정체성과 충돌. **별점·후기·좋아요(♥) 전부 제거.**
+- 359: 리뷰 UI·라우트(`/api/reviews*`)·`RoomReviews`·`AdminReviews`·♥(`toggleLike`)·추천순 **제거** → **즐겨찾기로 일원화**. 리딩방엔 **사실(금감원 등록·신고) + 즐겨찾기 + 바로가기**만.
+- 360: 정렬 = **관심(누적 즐겨찾기)순 기본 + 가나다↑↓**(화살표 아이콘). 뷰 `advisor_directory`에 `favorite_count` 추가, `/api/advisors` `sort=interest`. 행에 관심 수(0 숨김), 토글 낙관적 ±1. ✅ Chrome으로 정렬탭·토글·DB 검증.
+
+**DB 변경(MCP 직접, git 아님)**: `room_reviews`·`room_review_reports` 테이블 **생성 후 dormant 보존**(앱 미사용, 되살리기용) · `advisor_directory` 뷰에 **`favorite_count`**(room_favorites 집계, 카운트만 노출) 추가 · `room_favorites`에 `position` · `room_likes` dormant(♥ 제거). soulmaten7=admin 유지. **운종 전용 ref `qxkmwlkchyxfzxbonhtj`(표시명 OT-Marketing)** — POTAL `zyurflkhiregundhisky` 금지.
+
+**🔑 유지 교훈**: Turbopack은 **API 라우트 변경/삭제를 자동 갱신 안 함** → `pkill -f "next dev"; rm -rf .next; npm run dev` 클린 재시작 필수(356·358·359·360 전부 해당). 컴포넌트만 바뀌면 HMR/새로고침으로 충분.
+
+**▶ 다음 후보(보류)**: 마이페이지 '내 즐겨찾기' 정비 · 모바일 폰 실측 정밀 수정 · 출시 전 데이터 정리(데모·dormant 테이블·키 rotate) · 이메일/도메인(trillion.* 변형 — 사용자 작업) · 푸터 대표자·주소 채우기 · 언어 i18n(한국판 완성 후).
 
 ## 2026-06-22 — STEP 312~345 · 게이트웨이 완성: 종목·상품 탭 + 우측 피드 8종 + 관리자·모더레이션·로그인 마무리
 
