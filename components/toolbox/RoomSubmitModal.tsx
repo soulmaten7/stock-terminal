@@ -53,8 +53,8 @@ export default function RoomSubmitModal({ onClose }: { onClose: (submitted: bool
 
         {done ? (
           <div className="py-8 text-center">
-            <p className="text-sm font-medium text-unjong-primary">등록이 접수되었습니다.</p>
-            <p className="mt-1 text-xs leading-relaxed text-unjong-muted">목록에 표시됩니다. (금감원 등록 확인 배지는 본인확인 도입 후 부여)</p>
+            <p className="text-sm font-medium text-unjong-primary">등록 신청이 접수되었습니다.</p>
+            <p className="mt-1 text-xs leading-relaxed text-unjong-muted">관리자 검토 후 공개됩니다. (금감원 등록 확인 배지는 본인확인 도입 후 부여)</p>
             <button type="button" onClick={() => onClose(true)} className="mt-4 rounded-lg bg-unjong-primary px-4 py-2 text-sm font-semibold text-white">닫기</button>
           </div>
         ) : (

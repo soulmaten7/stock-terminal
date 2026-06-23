@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
   const { error } = await admin.from("room_submissions").insert({
     room_name, company_name, biz_no, platform, homepage, intro,
-    user_id: user.id, fss_matched, fss_biz_no, status: "public",
+    user_id: user.id, fss_matched, fss_biz_no, status: "pending",
   });
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
