@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import ToolboxClient from "@/components/toolbox/ToolboxClient";
-import HomeIndexStrip from "@/components/home-v6/HomeIndexStrip";
+import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
