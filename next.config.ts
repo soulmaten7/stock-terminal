@@ -11,12 +11,17 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return [
-      { source: "/scalper", destination: "/kr", permanent: true },
-      { source: "/scalper/:path*", destination: "/kr/:path*", permanent: true },
-      { source: "/longterm", destination: "/kr", permanent: true },
-      { source: "/longterm/:path*", destination: "/kr/:path*", permanent: true },
+    // 옛 버전 잔재 라우트 → 홈 (현재 게이트웨이 미사용 · 옛 디자인/브랜드 노출 차단)
+    const legacy = [
+      "/scalper", "/longterm",
+      "/market", "/stock", "/room", "/rooms",
+      "/news", "/products", "/product",
+      "/discussion", "/calendar", "/global",
     ];
+    return legacy.flatMap((p) => [
+      { source: p, destination: "/", permanent: false },
+      { source: `${p}/:path*`, destination: "/", permanent: false },
+    ]);
   },
   async headers() {
     return [
