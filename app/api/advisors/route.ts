@@ -13,13 +13,13 @@ export async function GET(req: NextRequest) {
   const q = raw.replace(/[^\p{L}\p{N}\s-]/gu, "").slice(0, 50); // or-필터 인젝션 방지
   const platform = PLATFORMS.includes(sp.get("platform") ?? "") ? (sp.get("platform") as string) : "all";
   const sortParam = sp.get("sort");
-  const sort = sortParam === "name_desc" ? "name_desc" : sortParam === "popular" ? "popular" : "name_asc";
+  const sort = sortParam === "name_desc" ? "name_desc" : sortParam === "interest" ? "interest" : "name_asc";
   const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
 
   const supabase = await createClient();
   let query = supabase
     .from("advisor_directory")
-    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, platform, source, intro", { count: "exact" });
+    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, favorite_count, platform, source, intro", { count: "exact" });
 
   if (q) {
     query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)
@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
     query = query.eq("platform", platform);
   }
 
-  if (sort === "popular") {
-    query = query.order("like_count", { ascending: false }).order("company_name", { ascending: true });
+  if (sort === "interest") {
+    query = query.order("favorite_count", { ascending: false }).order("company_name", { ascending: true });
   } else {
     query = query.order("company_name", { ascending: sort === "name_asc" });
   }

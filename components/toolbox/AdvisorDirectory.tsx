@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
 
@@ -16,6 +16,7 @@ type Advisor = {
   phone: string | null;
   address: string | null;
   report_count: number;
+  favorite_count: number;
   platform: string;
   source: string;
   intro: string | null;
@@ -24,9 +25,13 @@ type Advisor = {
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
 const PAGE_SIZE = 100;
 const PLATFORMS = [['all', '전체'], ['telegram', '텔레그램'], ['kakao', '카카오톡'], ['naver', '네이버'], ['etc', '기타']] as const;
-const SORTS = [['name_asc', '가나다 오름차순'], ['name_desc', '가나다 내림차순']] as const;
 type PlatformKey = 'all' | 'telegram' | 'kakao' | 'naver' | 'etc';
-type SortKey = 'name_asc' | 'name_desc';
+type SortKey = 'interest' | 'name_asc' | 'name_desc';
+const SORTS: { key: SortKey; label: string; dir?: 'up' | 'down' }[] = [
+  { key: 'interest', label: '관심순' },
+  { key: 'name_asc', label: '가나다', dir: 'up' },
+  { key: 'name_desc', label: '가나다', dir: 'down' },
+];
 
 function fav(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
@@ -104,7 +109,7 @@ function PreviewBody({ a, onReport }: { a: Advisor; onReport: () => void }) {
 
 export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [platform, setPlatform] = useState<PlatformKey>('all');
-  const [sort, setSort] = useState<SortKey>('name_asc');
+  const [sort, setSort] = useState<SortKey>('interest');
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
 
@@ -163,7 +168,10 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   async function toggleFav(a: Advisor) {
     if (!isLoggedIn) { setLoginNotice(true); return; }
     const isFav = favs.has(a.biz_no);
+    const delta = isFav ? -1 : 1;
     setFavs((prev) => { const n = new Set(prev); if (isFav) n.delete(a.biz_no); else n.add(a.biz_no); return n; });
+    setResults((prev) => prev.map((x) => x.biz_no === a.biz_no ? { ...x, favorite_count: Math.max(0, x.favorite_count + delta) } : x));
+    setSelected((s) => (s && s.biz_no === a.biz_no ? { ...s, favorite_count: Math.max(0, s.favorite_count + delta) } : s));
     try {
       await fetch('/api/rooms/favorite', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -171,6 +179,8 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       });
     } catch {
       setFavs((prev) => { const n = new Set(prev); if (isFav) n.add(a.biz_no); else n.delete(a.biz_no); return n; });
+      setResults((prev) => prev.map((x) => x.biz_no === a.biz_no ? { ...x, favorite_count: Math.max(0, x.favorite_count - delta) } : x));
+      setSelected((s) => (s && s.biz_no === a.biz_no ? { ...s, favorite_count: Math.max(0, s.favorite_count - delta) } : s));
     }
   }
 
@@ -245,16 +255,17 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <div className="flex gap-1">
-              {SORTS.map(([s, label]) => (
+              {SORTS.map(({ key, label, dir }) => (
                 <button
-                  key={s}
+                  key={key}
                   type="button"
-                  onClick={() => setSort(s)}
-                  className={`shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                    sort === s ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+                  onClick={() => setSort(key)}
+                  className={`flex shrink-0 items-center gap-0.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                    sort === key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
                   }`}
                 >
                   {label}
+                  {dir === 'up' ? <ArrowUp size={12} /> : dir === 'down' ? <ArrowDown size={12} /> : null}
                 </button>
               ))}
             </div>
@@ -322,10 +333,11 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       type="button"
                       onClick={() => toggleFav(a)}
                       aria-label={favs.has(a.biz_no) ? '즐겨찾기 해제' : '즐겨찾기'}
-                      title="즐겨찾기"
-                      className={`shrink-0 transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+                      title="관심(즐겨찾기)"
+                      className={`flex shrink-0 items-center gap-0.5 text-xs tabular-nums transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
                     >
                       <Star size={14} fill={favs.has(a.biz_no) ? 'currentColor' : 'none'} />
+                      {a.favorite_count > 0 ? <span>{a.favorite_count}</span> : null}
                     </button>
                     <button
                       type="button"
