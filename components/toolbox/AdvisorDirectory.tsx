@@ -53,7 +53,7 @@ function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
 
-function PreviewBody({ a, onReport }: { a: Advisor; onReport: () => void }) {
+function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport: () => void; isFav: boolean; onToggleFav: () => void }) {
   const ic = faviconFor(a.platform, a.homepage);
   const roomName = roomNameOf(a);
   const isFss = a.source === 'fss';
@@ -76,6 +76,14 @@ function PreviewBody({ a, onReport }: { a: Advisor; onReport: () => void }) {
           <img src={ic} alt="" width={20} height={20} className="h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
         ) : <Globe size={18} className="text-unjong-muted" />}
         <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{roomName}</h3>
+        <button
+          type="button"
+          onClick={onToggleFav}
+          aria-label={isFav ? '즐겨찾기 해제' : '즐겨찾기'}
+          className={`shrink-0 transition-colors ${isFav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+        >
+          <Star size={18} fill={isFav ? 'currentColor' : 'none'} />
+        </button>
       </div>
       {isFss ? (
         <div className="mb-3 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
@@ -401,7 +409,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-11 rounded-xl border border-unjong-border bg-unjong-surface p-4">
             {selected ? (
-              <PreviewBody a={selected} onReport={() => openReport(selected)} />
+              <PreviewBody a={selected} onReport={() => openReport(selected)} isFav={favs.has(selected.biz_no)} onToggleFav={() => toggleFav(selected)} />
             ) : (
               <p className="py-12 text-center text-xs leading-relaxed text-unjong-muted">왼쪽에서 리딩방을 선택하면<br />여기에 금감원 정보가 표시됩니다.</p>
             )}
@@ -418,7 +426,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 <X size={18} />
               </button>
             </div>
-            <PreviewBody a={selected} onReport={() => openReport(selected)} />
+            <PreviewBody a={selected} onReport={() => openReport(selected)} isFav={favs.has(selected.biz_no)} onToggleFav={() => toggleFav(selected)} />
           </div>
         </div>
       ) : null}

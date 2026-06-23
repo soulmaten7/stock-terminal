@@ -26,8 +26,12 @@ export default function YoutubeRanking({ channels }: { channels: YtChannel[] }) 
       </div>
     );
   }
+  const weekLabel = channels[0]?.week_label;
   return (
     <section className="min-w-0">
+      {weekLabel ? (
+        <p className="border-b border-unjong-border px-1 py-2.5 text-[11px] text-unjong-muted">{weekLabel} 기준 · 매주 자동 갱신</p>
+      ) : null}
       <div>
         {channels.map((c) => (
           <ListRow

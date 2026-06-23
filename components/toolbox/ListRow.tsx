@@ -53,7 +53,9 @@ export default function ListRow({
       )}
       {stat ? <span className="shrink-0 text-xs font-bold text-unjong-accent">{stat}</span> : null}
       {trailing ? <span className="shrink-0">{trailing}</span> : null}
-      <ExternalLink size={14} className="shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+      <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[11px] text-unjong-muted group-hover:text-unjong-accent">
+        바로가기 <ExternalLink size={12} />
+      </span>
     </>
   );
 
