@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getCache, setCache } from '@/lib/clientCache';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
@@ -113,10 +114,11 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
 
-  const [results, setResults] = useState<Advisor[]>([]);
-  const [total, setTotal] = useState(0);
-  const [searching, setSearching] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const cachedInit = getCache<{ results: Advisor[]; total: number; searching: boolean }>('advisors:all:interest:1:');
+  const [results, setResults] = useState<Advisor[]>(cachedInit?.results ?? []);
+  const [total, setTotal] = useState(cachedInit?.total ?? 0);
+  const [searching, setSearching] = useState(cachedInit?.searching ?? false);
+  const [loading, setLoading] = useState(cachedInit === undefined);
   const [selected, setSelected] = useState<Advisor | null>(null);
   const [loginNotice, setLoginNotice] = useState(false);
   const [registering, setRegistering] = useState(false);
@@ -134,16 +136,21 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   useEffect(() => { setSelected(null); }, [platform, sort, q, page]);
 
   useEffect(() => {
+    const cacheKey = `advisors:${platform}:${sort}:${page}:${q}`;
+    const cached = getCache<{ results: Advisor[]; total: number; searching: boolean }>(cacheKey);
+    if (cached) { setResults(cached.results); setTotal(cached.total); setSearching(cached.searching); setLoading(false); }
+    else { setLoading(true); }
     const t = setTimeout(async () => {
-      setLoading(true);
       try {
         const r = await fetch(`/api/advisors?platform=${platform}&sort=${sort}&page=${page}&q=${encodeURIComponent(q)}`);
         const j = await r.json();
-        setResults(j.results ?? []);
-        setTotal(j.total ?? 0);
-        setSearching(!!j.searching);
+        const nextResults = j.results ?? [];
+        const nextTotal = j.total ?? 0;
+        const nextSearching = !!j.searching;
+        setResults(nextResults); setTotal(nextTotal); setSearching(nextSearching);
+        setCache(cacheKey, { results: nextResults, total: nextTotal, searching: nextSearching });
       } catch {
-        setResults([]); setTotal(0);
+        if (!cached) { setResults([]); setTotal(0); }
       } finally {
         setLoading(false);
       }
@@ -302,7 +309,11 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       <div className="flex gap-4">
         <div className="min-w-0 flex-1">
           {loading ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
+            <ul className="space-y-2 py-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <li key={i} className="h-16 animate-pulse rounded-lg bg-unjong-background" />
+              ))}
+            </ul>
           ) : results.length === 0 ? (
             <p className="py-10 text-center text-sm text-unjong-muted">
               {searching ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.' : '이 플랫폼에 등록된 곳이 없습니다.'}
