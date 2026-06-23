@@ -20,6 +20,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app"),
   title: {
     default: "Trillion — 흩어진 금융정보를 한눈에",
     template: "%s | Trillion",
