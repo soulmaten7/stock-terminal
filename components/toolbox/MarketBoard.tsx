@@ -199,6 +199,13 @@ export default function MarketBoard() {
           <BrokerRanking hideHeader />
         </aside>
       </div>
+
+      {/* 모바일: 증권사 바로가기 (표 아래 — 데스크탑은 우측 aside) */}
+      <div className="mt-5 lg:hidden">
+        <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
+        <p className="border-b border-unjong-border px-1 py-2 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
+        <BrokerRanking hideHeader />
+      </div>
     </section>
   );
 }

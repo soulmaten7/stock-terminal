@@ -420,7 +420,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       {/* 미리보기 (모바일 하단 시트) */}
       {selected ? (
         <div className="fixed inset-0 z-40 flex items-end bg-black/40 lg:hidden">
-          <div className="max-h-[80vh] w-full overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-4">
+          <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-3 sm:p-4">
             <div className="mb-1 flex justify-end">
               <button type="button" onClick={() => setSelected(null)} aria-label="닫기" className="text-unjong-muted hover:text-unjong-primary">
                 <X size={18} />
