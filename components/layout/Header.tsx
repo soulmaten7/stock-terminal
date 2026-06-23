@@ -52,7 +52,13 @@ export default function Header() {
     <header className="border-b border-white/10 bg-[#0E1116]">
       <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
         {/* 로고 */}
-        <Link href="/" onClick={resetHome} className="flex shrink-0 items-center gap-1.5 hover:opacity-80">
+        <Link href="/" onClick={resetHome} className="flex shrink-0 items-center gap-2 hover:opacity-80">
+          <svg width="22" height="22" viewBox="0 0 100 100" className="shrink-0" aria-hidden="true">
+            <rect x="16" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
+            <rect x="42.5" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
+            <rect x="69" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
+            <rect x="42.5" y="35" width="15" height="43" rx="2.5" fill="#2DD4BF" />
+          </svg>
           <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
           <span className="hidden text-sm text-white/45 sm:inline">트릴리언</span>
         </Link>
