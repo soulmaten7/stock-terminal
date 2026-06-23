@@ -86,7 +86,7 @@ export default function MarketBoard() {
   const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortKey, setSortKey] = useState<PeriodKey>('1d');
+  const [sortKey, setSortKey] = useState<PeriodKey | 'amount'>('amount');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
 
   useEffect(() => {
@@ -96,8 +96,9 @@ export default function MarketBoard() {
     return () => { cancelled = true; };
   }, [tab]);
 
-  const sortField = PERIODS.find((p) => p.key === sortKey)!.field;
+  const sortField = sortKey === 'amount' ? null : PERIODS.find((p) => p.key === sortKey)!.field;
   const sorted = useMemo(() => {
+    if (!sortField) return rows.slice(0, 100); // 거래대금순(원래 순서) — 대형주 우선이라 기간 데이터가 차 있음
     return [...rows].sort((a, b) => {
       const av = a[sortField] as number | null | undefined;
       const bv = b[sortField] as number | null | undefined;
@@ -138,14 +139,20 @@ export default function MarketBoard() {
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
           {loading ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>
+            <div className="space-y-2 py-2">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="h-9 animate-pulse rounded bg-unjong-background" />
+              ))}
+            </div>
           ) : sorted.length === 0 ? (
             <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
           ) : (
             <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="px-2 py-2.5 text-left font-medium">#</th>
+                  <th className="px-2 py-2.5 text-left font-medium">
+                    <button type="button" onClick={() => { setSortKey('amount'); setSortDir('desc'); }} title="거래대금순" className={`hover:text-unjong-primary ${sortKey === 'amount' ? 'font-bold text-unjong-accent' : ''}`}>#</button>
+                  </th>
                   <th className="w-full px-2 py-2.5 text-left font-medium">종목명</th>
                   <th className="whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
                   {PERIODS.map((p) => (
