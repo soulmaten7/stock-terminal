@@ -6,6 +6,8 @@ import { Star, Trash2 } from 'lucide-react';
 type Review = { id: number; rating: number; content: string | null; created_at: string; nickname: string; mine: boolean };
 type Mine = { id: number; rating: number; content: string | null } | null;
 
+const REPORT_REASONS = ['욕설·비방', '허위·사실무근', '광고·스팸', '도배·중복', '기타'];
+
 function timeAgo(s: string): string {
   const t = new Date(s).getTime();
   if (!t) return '';
@@ -47,6 +49,19 @@ export default function RoomReviews({ bizNo, isLoggedIn, onRequireLogin }: { biz
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
+  const [reportingId, setReportingId] = useState<number | null>(null);
+  const [reportedIds, setReportedIds] = useState<Set<number>>(new Set());
+
+  async function sendReport(reviewId: number, reason: string) {
+    setReportingId(null);
+    setReportedIds((s) => new Set(s).add(reviewId));
+    try {
+      await fetch('/api/reviews/report', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review_id: reviewId, reason }),
+      });
+    } catch { /* 낙관적 유지 */ }
+  }
 
   async function load() {
     setLoading(true);
@@ -153,6 +168,20 @@ export default function RoomReviews({ bizNo, isLoggedIn, onRequireLogin }: { biz
                 <span className="ml-auto text-[11px] text-unjong-muted">{timeAgo(rv.created_at)}</span>
               </div>
               {rv.content ? <p className="mt-1 text-xs leading-relaxed text-unjong-muted">{rv.content}</p> : null}
+              {!rv.mine ? (
+                reportedIds.has(rv.id) ? (
+                  <span className="mt-1 inline-block text-[11px] text-unjong-muted">신고됨</span>
+                ) : reportingId === rv.id ? (
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                    {REPORT_REASONS.map((rs) => (
+                      <button key={rs} type="button" onClick={() => sendReport(rv.id, rs)} className="rounded-md border border-unjong-border px-1.5 py-0.5 text-[11px] text-unjong-muted transition-colors hover:border-red-400 hover:text-red-500">{rs}</button>
+                    ))}
+                    <button type="button" onClick={() => setReportingId(null)} className="px-1 text-[11px] text-unjong-muted">취소</button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => { if (!isLoggedIn) { onRequireLogin(); return; } setReportingId(rv.id); }} className="mt-1 text-[11px] text-unjong-muted hover:text-red-500">신고</button>
+                )
+              ) : null}
             </li>
           ))}
         </ul>

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import AdminReports from '@/components/admin/AdminReports';
+import AdminReviews from '@/components/admin/AdminReviews';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,6 +10,7 @@ export const metadata = { title: '트릴리언 관리자' };
 
 type Report = { id: number; target_name: string; reason: string; content: string | null; status: string; created_at: string };
 type Submission = { id: number; room_name: string; company_name: string | null; platform: string; homepage: string; fss_matched: boolean; status: string; created_at: string };
+type Review = { id: number; target_id: string; nickname: string | null; rating: number; content: string | null; status: string; report_count: number; created_at: string };
 
 function fmt(ts: string) {
   return new Date(ts).toLocaleString('ko-KR', { dateStyle: 'short', timeStyle: 'short' });
@@ -32,8 +34,10 @@ export default async function AdminPage() {
   const admin = createAdminClient();
   const { data: reportsData } = await admin.from('room_reports').select('*').order('created_at', { ascending: false }).limit(300);
   const { data: subsData } = await admin.from('room_submissions').select('*').order('created_at', { ascending: false }).limit(300);
+  const { data: reviewsData } = await admin.from('room_reviews').select('id, target_id, nickname, rating, content, status, report_count, created_at').order('report_count', { ascending: false }).order('created_at', { ascending: false }).limit(300);
   const reports = (reportsData ?? []) as Report[];
   const subs = (subsData ?? []) as Submission[];
+  const reviews = (reviewsData ?? []) as Review[];
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
@@ -44,6 +48,12 @@ export default async function AdminPage() {
       <section className="mb-12">
         <h2 className="mb-3 text-base font-bold text-unjong-primary">🚨 신고 ({reports.length})</h2>
         <AdminReports initial={reports} />
+      </section>
+
+      {/* 리뷰 관리 */}
+      <section className="mb-12">
+        <h2 className="mb-3 text-base font-bold text-unjong-primary">⭐ 리뷰 ({reviews.length}) · 신고순</h2>
+        <AdminReviews initial={reviews} />
       </section>
 
       {/* 자가등록 */}
