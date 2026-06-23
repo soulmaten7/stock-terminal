@@ -55,7 +55,7 @@ export default function Footer() {
             신고되지 않은 익명 리딩방은 특히 주의하시기 바랍니다.
           </p>
           <div className="text-sm text-white/60">
-            <p>상호명: 원트릴리언 | 대표자: [추후 입력] | 사업자등록번호: 210-39-33812 | 주소: [추후 입력]</p>
+            <p>상호명: 원트릴리언 | 대표자: 장은태 | 사업자등록번호: 210-39-33812 | 주소: 제주 서귀포시 동문로 55 2층</p>
           </div>
           <div className="mt-6 border-t border-white/10 pt-4 text-center text-sm text-white/70">
             &copy; 2026 Trillion. All rights reserved.
