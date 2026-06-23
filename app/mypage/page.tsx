@@ -5,19 +5,10 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate } from '@/lib/utils/format';
-import { User, Star, Siren, Trash2, ExternalLink, Globe } from 'lucide-react';
+import { User, Siren, Trash2 } from 'lucide-react';
 
-type Tab = 'profile' | 'favorites' | 'reports';
+type Tab = 'profile' | 'reports';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
-type LinkFav = { id: number; name: string; url: string; category: string };
-
-const LINK_CAT_LABELS: Record<string, string> = {
-  news: '뉴스', chart: '차트·시세', analysis: '기업·재무', disclosure: '공시·신용',
-  research: '리포트', etf: 'ETF·펀드', ipo: '공모주·배당', macro: '거시경제',
-  community: '커뮤니티', exchange: '거래소',
-};
-const LINK_CAT_ORDER = ['news', 'chart', 'analysis', 'disclosure', 'research', 'etf', 'ipo', 'macro', 'community', 'exchange'];
-type RoomFav = { biz_no: string; name: string; homepage: string | null; platform: string };
 
 export default function MyPage() {
   const router = useRouter();
@@ -25,8 +16,6 @@ export default function MyPage() {
   const [activeTab, setActiveTab] = useState<Tab>('profile');
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
-  const [linkFavs, setLinkFavs] = useState<LinkFav[]>([]);
-  const [roomFavs, setRoomFavs] = useState<RoomFav[]>([]);
   const [myReports, setMyReports] = useState<MyReport[]>([]);
 
   useEffect(() => {
@@ -40,13 +29,7 @@ export default function MyPage() {
 
   const loadData = async () => {
     try {
-      const [lf, rf, rep] = await Promise.all([
-        fetch('/api/toolbox/favorite').then((r) => r.json()).catch(() => ({})),
-        fetch('/api/rooms/favorite').then((r) => r.json()).catch(() => ({})),
-        fetch('/api/reports').then((r) => r.json()).catch(() => ({})),
-      ]);
-      setLinkFavs(lf.favorites ?? []);
-      setRoomFavs(rf.favorites ?? []);
+      const rep = await fetch('/api/reports').then((r) => r.json()).catch(() => ({}));
       setMyReports(rep.reports ?? []);
     } catch { /* ignore */ }
   };
@@ -74,7 +57,6 @@ export default function MyPage() {
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'profile', label: '프로필', icon: <User size={16} /> },
-    { key: 'favorites', label: '내 즐겨찾기', icon: <Star size={16} /> },
     { key: 'reports', label: '내 신고', icon: <Siren size={16} /> },
   ];
 
@@ -114,52 +96,6 @@ export default function MyPage() {
             <label className="mb-1 block text-sm text-unjong-muted">가입일</label>
             <p className="text-sm text-unjong-primary">{formatDate(user.created_at)}</p>
           </div>
-        </div>
-      )}
-
-      {activeTab === 'favorites' && (
-        <div className="space-y-6">
-          <section>
-            <h2 className="mb-2 text-sm font-bold text-unjong-primary">리딩방 ({roomFavs.length})</h2>
-            {roomFavs.length === 0 ? (
-              <p className="rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center text-sm text-unjong-muted">즐겨찾기한 리딩방이 없습니다.</p>
-            ) : (
-              <ul className="overflow-hidden rounded-xl border border-unjong-border bg-unjong-surface">
-                {roomFavs.map((r) => (
-                  <li key={r.biz_no} className="flex items-center gap-2 border-b border-unjong-border px-4 py-2.5 last:border-0">
-                    <Globe size={15} className="shrink-0 text-unjong-muted" />
-                    <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{r.name}</span>
-                    {r.homepage ? <a href={r.homepage} target="_blank" rel="noopener noreferrer nofollow" className="shrink-0 text-unjong-muted hover:text-unjong-accent"><ExternalLink size={14} /></a> : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-          <section>
-            <h2 className="mb-2 text-sm font-bold text-unjong-primary">링크 ({linkFavs.length})</h2>
-            {linkFavs.length === 0 ? (
-              <p className="rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center text-sm text-unjong-muted">즐겨찾기한 링크가 없습니다.</p>
-            ) : (
-              <div className="space-y-4">
-                {Array.from(new Set(linkFavs.map((l) => l.category)))
-                  .sort((a, b) => (LINK_CAT_ORDER.indexOf(a) + 1 || 99) - (LINK_CAT_ORDER.indexOf(b) + 1 || 99))
-                  .map((cat) => (
-                    <div key={cat}>
-                      <h3 className="mb-1.5 text-xs font-semibold text-unjong-muted">{LINK_CAT_LABELS[cat] ?? cat}</h3>
-                      <ul className="overflow-hidden rounded-xl border border-unjong-border bg-unjong-surface">
-                        {linkFavs.filter((l) => l.category === cat).map((l) => (
-                          <li key={l.id} className="flex items-center gap-2 border-b border-unjong-border px-4 py-2.5 last:border-0">
-                            <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{l.name}</span>
-                            <a href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="shrink-0 text-unjong-muted hover:text-unjong-accent"><ExternalLink size={14} /></a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
-              </div>
-            )}
-          </section>
-          <p className="text-xs text-unjong-muted">순서 변경·정리는 <a href="/favorites" className="font-semibold text-unjong-accent hover:underline">즐겨찾기 페이지</a>에서 할 수 있어요.</p>
         </div>
       )}
 
