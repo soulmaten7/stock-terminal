@@ -111,7 +111,7 @@ export default function ToolboxClient({
       </div>
 
       {/* 카테고리 탭 */}
-      <div className="flex gap-1 overflow-x-auto border-b border-unjong-border px-3 py-2">
+      <div className="flex gap-1 overflow-x-auto border-b border-unjong-border px-2 py-2 sm:px-3">
         {tabs.map((t) => (
           <button
             key={t.slug}
@@ -127,7 +127,7 @@ export default function ToolboxClient({
       </div>
 
       {/* 내용 */}
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         {activeTab === 'market' ? (
           country === 'KR' ? (
             <MarketBoard />

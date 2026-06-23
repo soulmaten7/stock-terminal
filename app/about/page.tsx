@@ -8,7 +8,7 @@ const PILLARS: { t: string; d: string }[] = [
 
 export default function AboutPage() {
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12">
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <h1 className="mb-2 text-2xl font-bold text-unjong-primary">트릴리언 소개</h1>
       <p className="mb-8 text-base font-medium text-unjong-accent">흩어진 금융정보를 한눈에</p>
 
