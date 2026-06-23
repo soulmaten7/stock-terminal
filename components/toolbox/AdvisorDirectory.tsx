@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Heart, Star, Globe } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
 import SelectDropdown from './SelectDropdown';
-import RoomReviews from './RoomReviews';
 
 type Advisor = {
   biz_no: string;
@@ -16,20 +15,18 @@ type Advisor = {
   homepage: string | null;
   phone: string | null;
   address: string | null;
-  like_count: number;
   report_count: number;
   platform: string;
   source: string;
   intro: string | null;
-  liked: boolean;
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
 const PAGE_SIZE = 100;
 const PLATFORMS = [['all', '전체'], ['telegram', '텔레그램'], ['kakao', '카카오톡'], ['naver', '네이버'], ['etc', '기타']] as const;
-const SORTS = [['name_asc', '가나다 오름차순'], ['name_desc', '가나다 내림차순'], ['popular', '추천순']] as const;
+const SORTS = [['name_asc', '가나다 오름차순'], ['name_desc', '가나다 내림차순']] as const;
 type PlatformKey = 'all' | 'telegram' | 'kakao' | 'naver' | 'etc';
-type SortKey = 'name_asc' | 'name_desc' | 'popular';
+type SortKey = 'name_asc' | 'name_desc';
 
 function fav(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
@@ -50,7 +47,7 @@ function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
 
-function PreviewBody({ a, onLike, onReport, isLoggedIn, onRequireLogin }: { a: Advisor; onLike: () => void; onReport: () => void; isLoggedIn: boolean; onRequireLogin: () => void }) {
+function PreviewBody({ a, onReport }: { a: Advisor; onReport: () => void }) {
   const ic = faviconFor(a.platform, a.homepage);
   const roomName = roomNameOf(a);
   const isFss = a.source === 'fss';
@@ -92,9 +89,6 @@ function PreviewBody({ a, onLike, onReport, isLoggedIn, onRequireLogin }: { a: A
         ))}
       </dl>
       <div className="mt-3 flex items-center gap-3 text-xs">
-        <button type="button" onClick={onLike} className={`flex items-center gap-1 ${a.liked ? 'text-red-500' : 'text-unjong-muted hover:text-red-500'}`}>
-          <Heart size={13} className={a.liked ? 'fill-red-500' : ''} /> {a.like_count}
-        </button>
         <button type="button" onClick={onReport} className="flex items-center gap-1 text-unjong-muted hover:text-red-500">
           <Siren size={13} /> 신고 {a.report_count}
         </button>
@@ -104,7 +98,6 @@ function PreviewBody({ a, onLike, onReport, isLoggedIn, onRequireLogin }: { a: A
           바로가기 <ExternalLink size={13} />
         </a>
       ) : null}
-      <RoomReviews bizNo={a.biz_no} isLoggedIn={isLoggedIn} onRequireLogin={onRequireLogin} />
     </div>
   );
 }
@@ -158,41 +151,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
     const t = setTimeout(() => setLoginNotice(false), 3000);
     return () => clearTimeout(t);
   }, [loginNotice]);
-
-  async function toggleLike(a: Advisor) {
-    if (!isLoggedIn) { setLoginNotice(true); return; }
-    const wasLiked = a.liked;
-    const apply = (liked: boolean, delta: number) => {
-      setResults((prev) => prev.map((x) => x.biz_no === a.biz_no ? { ...x, liked, like_count: x.like_count + delta } : x));
-      setSelected((s) => (s && s.biz_no === a.biz_no ? { ...s, liked, like_count: s.like_count + delta } : s));
-    };
-    apply(!wasLiked, wasLiked ? -1 : 1);
-    try {
-      const r = await fetch('/api/likes', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ target_id: a.biz_no, target_type: 'fss_advisor' }),
-      });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error ?? 'fail');
-      setResults((prev) => prev.map((x) => x.biz_no === a.biz_no ? { ...x, liked: j.liked, like_count: j.count } : x));
-      setSelected((s) => (s && s.biz_no === a.biz_no ? { ...s, liked: j.liked, like_count: j.count } : s));
-    } catch {
-      apply(wasLiked, wasLiked ? 1 : -1);
-      setLoginNotice(true);
-    }
-  }
-
-  const [summary, setSummary] = useState<Record<string, { avg: number; count: number }>>({});
-  useEffect(() => {
-    const ids = results.map((r) => r.biz_no).filter(Boolean);
-    if (ids.length === 0) { setSummary({}); return; }
-    let cancelled = false;
-    fetch(`/api/reviews/summary?ids=${encodeURIComponent(ids.join(','))}`)
-      .then((r) => r.json())
-      .then((j) => { if (!cancelled) setSummary(j.summary ?? {}); })
-      .catch(() => {});
-    return () => { cancelled = true; };
-  }, [results]);
 
   const [favs, setFavs] = useState<Set<string>>(new Set());
   useEffect(() => {
@@ -359,11 +317,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{roomNameOf(a)}</span>
                       {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" /> : null}
-                      {summary[a.biz_no]?.count ? (
-                        <span className="ml-1 inline-flex shrink-0 items-center gap-0.5 text-xs font-semibold text-amber-500">
-                          <Star size={12} className="fill-amber-400 text-amber-400" /> {summary[a.biz_no]?.avg?.toFixed(1)}
-                        </span>
-                      ) : null}
                     </button>
                     <button
                       type="button"
@@ -373,14 +326,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       className={`shrink-0 transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
                     >
                       <Star size={14} fill={favs.has(a.biz_no) ? 'currentColor' : 'none'} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => toggleLike(a)}
-                      aria-label="좋아요"
-                      className={`flex shrink-0 items-center gap-0.5 text-xs ${a.liked ? 'text-red-500' : 'text-unjong-muted hover:text-red-500'}`}
-                    >
-                      <Heart size={13} className={a.liked ? 'fill-red-500' : ''} /> {a.like_count}
                     </button>
                     <button
                       type="button"
@@ -433,7 +378,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         <aside className="hidden w-72 shrink-0 lg:block">
           <div className="sticky top-11 rounded-xl border border-unjong-border bg-unjong-surface p-4">
             {selected ? (
-              <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} isLoggedIn={isLoggedIn} onRequireLogin={() => setLoginNotice(true)} />
+              <PreviewBody a={selected} onReport={() => openReport(selected)} />
             ) : (
               <p className="py-12 text-center text-xs leading-relaxed text-unjong-muted">왼쪽에서 리딩방을 선택하면<br />여기에 금감원 정보가 표시됩니다.</p>
             )}
@@ -450,7 +395,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 <X size={18} />
               </button>
             </div>
-            <PreviewBody a={selected} onLike={() => toggleLike(selected)} onReport={() => openReport(selected)} isLoggedIn={isLoggedIn} onRequireLogin={() => setLoginNotice(true)} />
+            <PreviewBody a={selected} onReport={() => openReport(selected)} />
           </div>
         </div>
       ) : null}
