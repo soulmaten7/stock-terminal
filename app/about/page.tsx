@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto max-w-7xl px-6 py-12">
       <h1 className="mb-2 text-2xl font-bold text-unjong-primary">트릴리언 소개</h1>
-      <p className="mb-8 text-base font-medium text-unjong-accent">투자상품에 속지 않게 돕는 곳</p>
+      <p className="mb-8 text-base font-medium text-unjong-accent">흩어진 금융정보를 한눈에</p>
 
       <p className="mb-10 text-sm leading-relaxed text-unjong-muted">
         트릴리언(雲從)은 정확한 정보, 솔직한 토론, 검증된 신뢰로 투자자가 잘못된 정보나 과장된
