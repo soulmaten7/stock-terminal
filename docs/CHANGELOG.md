@@ -1,6 +1,26 @@
 <!-- 2026-06-23 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-06-23 (이어서 2) — STEP 364~369 · 출시 준비(도메인·이메일·로고) + 종목·상품 랜딩 안정화
+
+HEAD `bb04a13`(369). 빌드 ✓. **출시 로지스틱스(도메인·이메일·로고) 확정 + 데스크톱 랜딩 완성도.**
+- **🌐 도메인 확정**: **onetrillion.app**(가비아 등록. `.app`=HTTPS 강제, 핀테크/신뢰에 +). 사이트 주소 = `https://onetrillion.app`(metadataBase·robots·sitemap 반영). ⚠️ **아직 미배포(로컬만)** — 배포는 모든 작업 끝낸 뒤 한 번에(Vercel 예정).
+- **✉️ 이메일 확정**: **contact@onetrillion.app**(구글 워크스페이스 Business Starter). 가비아 DNS에 TXT(소유인증)+MX(`1 smtp.google.com.`) 설정·검증 완료(dns.google로 확인). 푸터 반영(365).
+- **🎨 로고 확정**: **T 모노그램**(윗줄 3블록+기둥='T', 흩어진→하나. 미드나잇#0E1116+민트#2DD4BF) — Claude Design 3안(수렴허브/T모노/렌즈) 중 선택. 프롬프트 `docs/LOGO_PROMPT.md`. 파비콘·앱아이콘·OG·헤더 전면 적용(369).
+- **364** 파비콘(`app/icon.svg`)·OG/apple 이미지(`next/og` ImageResponse)·metadataBase. **365** 푸터 이메일. **366** robots(+`/admin`·`/mypage`·`/auth` 색인 차단)·sitemap·브랜드 404(`not-found`). **367** 푸터 사업자 표시(대표자 **장은태**·주소 **제주 서귀포시 동문로 55 2층**).
+- **368 종목·상품 랜딩 안정화** 🔴: 기본 정렬 '1일'→**거래대금순**(대형주=yahoo 기간데이터 참 → 빈 컬럼"—" 해소) + **스켈레톤** 로딩("불러오는 중…" 대체). '#' 헤더=거래대금순 복귀. (원인: 기간 수익률은 yahoo 대형주 UNIVERSE만 → 1일정렬 시 소형주가 위로 가 죄다 "—"였음.)
+- ▶ **다음(사용자 지정 순서)**: ① 사용자가 본 PC 문제 정리→수정 → ② 모바일 반응형 완성 → ③ **플레이스토어·앱스토어 등록**(연결제 준비됨, 웹앱 래핑 필요). robots/sitemap은 배포 직전 재확인. SPF/DKIM(메일 발신)도 배포·발신 시점에.
+- ⚠️ 데이터: 데모 `room_submissions` sub:1·검증용테스트 = status `rejected`(공개 X). 테스트 신고 2건 dismissed.
+
+## 2026-06-23 (이어서) — STEP 361~363 · 마이페이지 버그·재구성 + 옛 라우트 차단 + 자가등록 승인제
+
+HEAD `32cb51d`(363). 빌드 ✓. STEP 346~360 후 같은 세션에서 이어서 진행한 디테일 정비.
+- **361 마이페이지 정비**: 🔴 **AuthProvider 레이스**(세션 있을 때 `setLoading(false)`를 즉시 호출 → user가 null인 찰나에 마이페이지가 `/auth/login`으로 튕김) → `fetchProfile` 완료 시점으로 미뤄 루트 수정(STEP 319 동기콜백 원칙 유지). 마이페이지 재구성(죽은 탭 구독·관심종목 제거 → 프로필·**내 즐겨찾기**(링크+리딩방)·내 신고, `unjong-*` 토큰·모바일). 로그인·소개 옛 태그라인 → "흩어진 금융정보를 한눈에".
+- **362 옛 라우트 차단**: `next.config.ts` redirects — 안 쓰는 legacy 라우트 12종(`/market`·`/stock`·`/room`·`/rooms`·`/news`·`/products`·`/product`·`/discussion`·`/calendar`·`/global`·`/scalper`·`/longterm`) → 홈(`/`). 옛 운종 디자인·브랜드 페이지 노출 차단(코드는 보존, 도달만 막음 — 실제 삭제는 출시 전).
+- **363 자가등록 승인제**: '+리딩방 등록'이 즉시 공개(`status:'public'`)였던 구멍 → **pending(대기) → 관리자 승인 후 공개**. 신규 `/api/admin/submissions`(approve/reject, admin) + `AdminSubmissions` 컴포넌트(승인/반려 버튼) + 등록 모달 "관리자 검토 후 공개" 안내. 신고 모더레이션과 동일 원칙.
+- **데이터 정리(MCP)**: 데모 리딩방 `room_submissions` sub:1('운종 데모 리딩방(테스트)') status `public`→`rejected`(공개 목록에서 제거·되살리기 가능). 테스트 신고 2건(LW주식공부·BDBC, 둘 다 dismissed)은 관리자 전용이라 유지.
+- ⚠️ **미검증(클린 재시작 후 확인 예정)**: 363 자가등록 승인 플로우(등록→대기→승인→공개).
+
 ## 2026-06-23 — STEP 346~360 · 🔴 리브랜드 Trillion + 모바일 반응형 + 리딩방 신뢰 재정비(평가 구축→철회→관심순)
 
 빌드 ✓ 전 STEP. HEAD `7e1d7d3`(360). **운종/UNJONG → Trillion/트릴리언 리브랜드 + 모바일 반응형 토대 + 리딩방을 '미검증 평가' 빼고 '사실+관심순'으로 재정비.**

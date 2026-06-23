@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-23 (STEP 360 — Trillion 리브랜드 + 모바일 + 리딩방 평가 철회→관심순)
-> **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행
-> **현재 커밋**: `7e1d7d3` (STEP 360 · 관심(누적 즐겨찾기)순 정렬) — 빌드 ✓
+> **Last refreshed**: 2026-06-23 (STEP 369 — 출시준비: 도메인 onetrillion.app·이메일·T모노그램 로고 + 종목·상품 랜딩 안정화)
+> **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (⚠️ 미배포 — 배포 한 번에 Vercel 예정)
+> **현재 커밋**: `bb04a13` (STEP 369 · T 모노그램 로고 적용) — 빌드 ✓
 > ⚠️ **최신 상태는 `docs/SESSION_BOOT.md` 기준** (이 파일 본문 §1~는 V6/271 히스토리). 🔑 라우트 수정 후 재시작은 `pkill -f "next dev" && rm -rf .next && npm run dev`.
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 
