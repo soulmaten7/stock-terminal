@@ -151,6 +151,18 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     else { setSortKey(k); setSortDir('desc'); }
   }
 
+  function pageNumbers(): (number | '…')[] {
+    const out: (number | '…')[] = [];
+    const cur = page + 1;
+    const win = 2;
+    const start = Math.max(1, cur - win);
+    const end = Math.min(totalPages, cur + win);
+    if (start > 1) { out.push(1); if (start > 2) out.push('…'); }
+    for (let i = start; i <= end; i++) out.push(i);
+    if (end < totalPages) { if (end < totalPages - 1) out.push('…'); out.push(totalPages); }
+    return out;
+  }
+
   return (
     <section className="min-w-0">
       {/* 컨트롤 줄: 좌=하위탭 / 우(w-72)=증권사 바로가기 헤더 */}
@@ -195,21 +207,21 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
           ) : sorted.length === 0 ? (
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
           ) : (
-            <table className="w-full min-w-[320px] text-sm sm:min-w-[720px]">
+            <table className="w-full min-w-[320px] table-fixed text-sm sm:min-w-[760px]">
               <thead>
                 <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">
+                  <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">
                     <button type="button" onClick={() => { setSortKey('amount'); setSortDir('desc'); }} title="거래대금순" className={`hover:text-unjong-primary ${sortKey === 'amount' ? 'font-bold text-unjong-accent' : ''}`}>#</button>
                   </th>
                   <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
-                  <th className="whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
-                  <th className="whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium sm:hidden">
+                  <th className="w-[88px] whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
+                  <th className="w-[84px] whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium sm:hidden">
                     <select value={mobilePeriod} onChange={(e) => setMobilePeriod(e.target.value as PeriodKey)} className="rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none">
                       {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
                     </select>
                   </th>
                   {PERIODS.map((p) => (
-                    <th key={p.key} className="hidden whitespace-nowrap px-2 py-2.5 text-right font-medium sm:table-cell">
+                    <th key={p.key} className="hidden w-[84px] whitespace-nowrap px-2 py-2.5 text-right font-medium sm:table-cell">
                       <button
                         type="button"
                         onClick={() => clickHeader(p.key)}
@@ -227,9 +239,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   <tr key={r.symbol} onClick={() => setSelectedStock(r)} className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background">
                     <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
-                      <div className="flex items-center gap-2 whitespace-nowrap">
+                      <div className="flex min-w-0 items-center gap-2">
                         <StockLogo code={r.symbol} name={r.name} size={24} />
-                        <span className="font-medium text-unjong-primary">{r.name}</span>
+                        <span className="truncate font-medium text-unjong-primary">{r.name}</span>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
@@ -253,26 +265,26 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               </tbody>
             </table>
           )}
-          {/* 페이지네이션 */}
+          {/* 페이지네이션 — 숫자 페이지 (리딩방과 동일 방식) */}
           {!loading && sorted.length > PAGE_SIZE && (
-            <div className="flex items-center justify-between border-t border-unjong-border px-2 py-2.5 text-xs text-unjong-muted">
-              <button
-                type="button"
-                disabled={page === 0}
-                onClick={() => setPage((p) => p - 1)}
-                className="rounded px-2 py-1 hover:bg-unjong-background disabled:opacity-30"
-              >
-                ← 이전
-              </button>
-              <span>{page + 1} / {totalPages} 페이지 (총 {sorted.length.toLocaleString()} 종목)</span>
-              <button
-                type="button"
-                disabled={page >= totalPages - 1}
-                onClick={() => setPage((p) => p + 1)}
-                className="rounded px-2 py-1 hover:bg-unjong-background disabled:opacity-30"
-              >
-                다음 →
-              </button>
+            <div className="flex flex-wrap items-center justify-center gap-1 border-t border-unjong-border px-2 py-3 text-xs">
+              <button type="button" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">←</button>
+              {pageNumbers().map((n, i) =>
+                n === '…' ? (
+                  <span key={`e${i}`} className="px-1 text-unjong-muted">…</span>
+                ) : (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setPage((n as number) - 1)}
+                    className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-primary font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                  >
+                    {n}
+                  </button>
+                )
+              )}
+              <button type="button" disabled={page >= totalPages - 1} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">→</button>
+              <span className="ml-2 text-unjong-muted">총 {sorted.length.toLocaleString()} 종목</span>
             </div>
           )}
         </div>
