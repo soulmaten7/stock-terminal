@@ -49,7 +49,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
   if (tab === 'stock') {
     let raw: Record<string, unknown>[] = [];
     try {
-      const j = await (await fetch('/api/krx/ranking?market=all&sort=amount&limit=100')).json();
+      const j = await (await fetch('/api/krx/ranking?market=all&sort=amount&limit=2600')).json();
       raw = (j.stocks ?? []) as Record<string, unknown>[];
     } catch { raw = []; }
     if (raw.length === 0) {
@@ -92,6 +92,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d');
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -115,6 +117,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
 
   useEffect(() => {
     let cancelled = false;
+    setSearch('');
+    setPage(0);
     const ck = 'market:' + tab;
     const cached = getCache<Row[]>(ck);
     if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
@@ -124,17 +128,22 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
 
   const sortField = sortKey === 'amount' ? null : PERIODS.find((p) => p.key === sortKey)!.field;
   const mobileField = PERIODS.find((p) => p.key === mobilePeriod)!.field;
+  const PAGE_SIZE = 50;
   const sorted = useMemo(() => {
-    if (!sortField) return rows.slice(0, 100); // 거래대금순(원래 순서) — 대형주 우선이라 기간 데이터가 차 있음
-    return [...rows].sort((a, b) => {
+    const q = search.trim().toUpperCase();
+    const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
+    if (!sortField) return base;
+    return [...base].sort((a, b) => {
       const av = a[sortField] as number | null | undefined;
       const bv = b[sortField] as number | null | undefined;
       if (av == null && bv == null) return 0;
       if (av == null) return 1;
       if (bv == null) return -1;
       return sortDir === 'desc' ? bv - av : av - bv;
-    }).slice(0, 100);
-  }, [rows, sortField, sortDir]);
+    });
+  }, [rows, sortField, sortDir, search]);
+  const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
   function clickHeader(k: PeriodKey) {
     if (sortKey === k) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
@@ -165,6 +174,17 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
       {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
+          {/* 검색 */}
+          <div className="mb-2 flex items-center gap-2">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+              placeholder="종목명·코드 검색"
+              className="w-full max-w-xs rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+            />
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
+          </div>
           {loading ? (
             <div className="space-y-2 py-2">
               {Array.from({ length: 12 }).map((_, i) => (
@@ -172,7 +192,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               ))}
             </div>
           ) : sorted.length === 0 ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
+            <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
           ) : (
             <table className="w-full min-w-[320px] text-sm sm:min-w-[720px]">
               <thead>
@@ -202,7 +222,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 </tr>
               </thead>
               <tbody>
-                {sorted.map((r, i) => (
+                {paginated.map((r, i) => (
                   <tr key={r.symbol} className="border-b border-unjong-border last:border-0 hover:bg-unjong-background">
                     <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
@@ -231,6 +251,28 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 ))}
               </tbody>
             </table>
+          )}
+          {/* 페이지네이션 */}
+          {!loading && sorted.length > PAGE_SIZE && (
+            <div className="flex items-center justify-between border-t border-unjong-border px-2 py-2.5 text-xs text-unjong-muted">
+              <button
+                type="button"
+                disabled={page === 0}
+                onClick={() => setPage((p) => p - 1)}
+                className="rounded px-2 py-1 hover:bg-unjong-background disabled:opacity-30"
+              >
+                ← 이전
+              </button>
+              <span>{page + 1} / {totalPages} 페이지 (총 {sorted.length.toLocaleString()} 종목)</span>
+              <button
+                type="button"
+                disabled={page >= totalPages - 1}
+                onClick={() => setPage((p) => p + 1)}
+                className="rounded px-2 py-1 hover:bg-unjong-background disabled:opacity-30"
+              >
+                다음 →
+              </button>
+            </div>
           )}
         </div>
 

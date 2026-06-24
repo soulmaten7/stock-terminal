@@ -98,7 +98,7 @@ async function loadMapped(market: string, key: string): Promise<{ rows: Mapped[]
 export async function GET(request: NextRequest) {
   const market = request.nextUrl.searchParams.get("market") || "all";
   const sort = request.nextUrl.searchParams.get("sort") || "amount";
-  const limit = Math.min(parseInt(request.nextUrl.searchParams.get("limit") || "100", 10) || 100, 200);
+  const limit = Math.min(parseInt(request.nextUrl.searchParams.get("limit") || "100", 10) || 100, 3000);
 
   const key = (process.env.KRX_API_KEY || "").trim();
   if (!key) return NextResponse.json({ stocks: [], source: "krx", error: "no_key" });
