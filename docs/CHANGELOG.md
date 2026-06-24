@@ -1,5 +1,20 @@
-<!-- 2026-06-23 -->
+<!-- 2026-06-24 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-06-24 — STEP 370~385 · 코드 헬스 → 캐시 → UX 디테일 → 모바일 반응형 → 종목·상품 고도화
+
+HEAD `badf4c9`(385). 빌드 ✓. **데스크톱 안정화 + 전면 모바일 반응형 + 종목·상품 탭 대폭 고도화(관심종목·전체 페이지네이션·검색·증권사 시트).**
+- **코드 헬스(370·372)**: 죽은 legacy 라우트 11+컴포넌트 27(370, HomeIndexStrip만 layout으로 보존 이동) + 죽은 API 라우트 ~55(372, 옛 종목상세·KIS·home·stocks 등). 빌드 페이지 **144→28**. 크론(fss-advisors·youtube-refresh)·활성 보존. **371** 지수 티커 한글→영어(KOSPI·NASDAQ…). ⚠️ 라우트 삭제라 클린 재시작 필수.
+- **속도(373·374)**: `lib/clientCache.ts`(Map, stale-while-revalidate) — 피드 5종·MarketBoard(373)·AdvisorDirectory(374)가 받은 데이터 캐시 → **재방문 즉시 표시**(백그라운드 갱신) + 첫 로딩 스켈레톤. 컴포넌트만(새로고침 적용).
+- **UX 디테일(375)**: 리딩방 미리보기 카드 ⭐(리스트 동기화) · 링크행 "바로가기🔗" 항상표시(`ListRow` 한 곳=LinkCard·BrokerRanking·Youtube 전부) · 유튜브 "N월 N주차 기준"(week_label) · 마이페이지 즐겨찾기 카테고리 섹션 · 푸터 카카오톡 제거.
+- **즐겨찾기 일원화(376)**: 마이페이지 '내 즐겨찾기' 탭 = `/favorites` 중복 → **탭 제거**(미사용 import·state 정리). 헤더 ⭐ → `/favorites` 단일. 마이페이지 = 프로필+내신고.
+- **📱 모바일 반응형(377~381·385, 마스터 `docs/MOBILE_BUILD_PLAN.md`)**: 377 패딩 `px-4 sm:px-6`·푸터·게이트웨이 / 378 표 일부 컬럼 `sm:`부터(→381 대체) / 379 증권사 바로가기 모바일 **표 아래** + 뉴스 이미지·바텀시트 / 380 탭 터치타깃 + 고정폭 스윕 / **381 표 모바일 = 기간 6컬럼→드롭다운 1칸**(select 1일~1년) + `#`간격 축소 + min-w 320 / **385 종목 클릭 시트 = 증권사 바로가기 리스트(모바일 전용 `lg:hidden`)**. 아침 체크리스트 `docs/MOBILE_MORNING_CHECKLIST.md`.
+- **⭐ 관심종목(382)**: 기존 `watchlist` 테이블 재사용(구 죽은코드 잔재) + **`name_ko TEXT` Cowork이 Supabase MCP로 추가**(RLS·정책 "Users can manage own watchlist" 기존). `/api/watchlist` GET/POST(upsert onConflict user_id,symbol,market) + MarketBoard 행 맨 오른쪽 ⭐(stopPropagation) + `/favorites` 관심종목 섹션(`WatchlistClient`).
+- **전체 종목+검색(383)**: KRX ranking cap 200→3000, MarketBoard 전 종목(~2,600) 로드 → 50/페이지(이전·다음, 행번호 절대순위 `page*50+i+1`) + 검색(종목명·코드 전 종목 필터). ⚠️ **현재가·1일=전 종목(KRX), 1주~1년=야후 UNIVERSE 45개만**("—") → 긴 기간 확장 후속.
+- **종목 클릭 시트(384→385)**: 384는 정보링크(네이버/DART/TradingView/KIND)였으나 → **385에서 증권사 바로가기 리스트 + 모바일 전용으로 교정**(사용자 의도: 모바일은 증권사 리스트가 한눈에 안 보임 → 종목 클릭으로 접근).
+- **🔑 워크플로우**: STEP 382~385는 Claude Code(Sonnet) 자율 작성 → Cowork 검토·교정(별 위치 좌→우, 행번호, DB컬럼, 시트 내용). **돌리기 전 Cowork 검토** 권장.
+- **검증**: 이 환경 Chrome 마우스 CDP 멈춤 → **JavaScript 실행으로 종단검증**(관심종목 DB저장·페이지 51번·검색·증권사 시트·`lg:hidden` display:none 전부 OK).
+- ▶ **다음**: ① 모바일 실측 미세조정 → ② 모바일 마무리 → ③ 배포(Vercel·onetrillion.app) → ④ 앱스토어.
 
 ## 2026-06-23 (이어서 2) — STEP 364~369 · 출시 준비(도메인·이메일·로고) + 종목·상품 랜딩 안정화
 

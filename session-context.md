@@ -1,6 +1,19 @@
-<!-- 2026-06-23 -->
+<!-- 2026-06-24 -->
 <!-- Last GC: 2026-06-04 (마이그레이션 020·021·022 적용 + FSS 1,738건 적재 완료 시점) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## STEP 370~385 (2026-06-24) — 코드 헬스·캐시·UX·모바일 반응형·종목상품 고도화 ✅
+
+HEAD `badf4c9`(385). 빌드 ✓.
+- **코드 헬스**: 죽은 라우트·컴포넌트(370)·API ~55(372) 삭제(빌드 144→28, 크론·활성 보존) · 371 티커 영어.
+- **속도(373·374)**: `lib/clientCache.ts` 탭 캐시(stale-while-revalidate)+스켈레톤 → 전 탭 재방문 즉시.
+- **375 UX**: 미리보기 ⭐·바로가기 라벨(ListRow)·유튜브 기준일·마이페이지 카테고리 섹션·카카오톡 제거. **376** 마이페이지 즐겨찾기 탭 제거(→/favorites 일원화).
+- **📱 모바일(377~381·385)**: 패딩 px-4 sm:px-6·푸터·게이트웨이 / 표 기간 **드롭다운**(381) / 증권사 표아래(379) / 터치타깃(380) / 종목클릭→증권사 시트 **모바일 전용**(385). 마스터 `MOBILE_BUILD_PLAN.md`·체크리스트 `MOBILE_MORNING_CHECKLIST.md`.
+- **⭐ 관심종목(382)**: `watchlist` 테이블(+`name_ko`, Cowork MCP) + `/api/watchlist` + 행 ⭐(맨 오른쪽) + `/favorites` 섹션(`WatchlistClient`).
+- **전체+검색(383)**: KRX cap 3000, ~2,600 종목 50/페이지+검색. ⚠️ 1주~1년=야후 UNIVERSE 45개만("—").
+- **DB(MCP, git 아님)**: `watchlist.name_ko TEXT` 추가(RLS·정책 "Users can manage own watchlist" 기존). soulmaten7=admin. 운종 ref `qxkmwlkchyxfzxbonhtj`.
+- ⚠️ 검증: Chrome 마우스 CDP 멈춤 → **JS 실행으로 종단검증**(전부 OK). STEP 382~385 Claude Code 자율작성→Cowork 교정 4건(돌리기 전 검토 권장).
+- ▶ **다음**: 모바일 실측 미세조정(`MOBILE_MORNING_CHECKLIST.md`) → 모바일 마무리 → 배포(Vercel) → 앱스토어.
 
 ## STEP 361~369 (2026-06-23) — 마이페이지·신뢰·출시준비(도메인·이메일·로고)·랜딩 ✅
 

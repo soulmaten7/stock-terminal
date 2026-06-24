@@ -1,7 +1,21 @@
-<!-- 2026-06-23 -->
+<!-- 2026-06-24 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
-> 🔵 **2026-06-23 · 현재 상태 (STEP 369, HEAD `bb04a13`, 빌드 ✓) — 최신은 이 배너.**
+> 🟢 **2026-06-24 · 현재 상태 (STEP 385, HEAD `badf4c9`, 빌드 ✓) — 최신은 이 배너.**
+> **이번 세션(370~385) = 코드 헬스 → 캐시 → UX 디테일 → 모바일 반응형 → 종목·상품 고도화(관심종목·전체 페이지네이션·검색·증권사 시트).**
+> - **코드 헬스(370·372)**: 죽은 legacy 라우트 11+컴포넌트 27(370) + 죽은 API 라우트 ~55(372) 삭제(빌드 페이지 144→28, 크론·활성 보존). **371** 지수 티커 영어화.
+> - **속도(373·374)**: 탭 데이터 **클라이언트 캐시(stale-while-revalidate, `lib/clientCache.ts`)** + 피드 스켈레톤 → 모든 탭(피드·종목표·리딩방) **재방문 즉시**. 컴포넌트만(새 라우트 아님).
+> - **UX 디테일(375)**: 리딩방 미리보기 ⭐ + 링크행 "바로가기🔗" 항상표시(ListRow 한 곳=증권사·뉴스·유튜브 전부) + 유튜브 "N월 N주차 기준"(week_label) + 마이페이지 즐겨찾기 카테고리 섹션 + 푸터 카카오톡 제거.
+> - **즐겨찾기 일원화(376)**: 마이페이지 '내 즐겨찾기' 탭 **제거** → 헤더 ⭐ → `/favorites` 단일(중복 해소). 마이페이지 = 프로필+내신고.
+> - **📱 모바일 반응형(377~381·385)**: 페이지 패딩 `px-4 sm:px-6`·푸터·게이트웨이(377) / **MarketBoard 표** 모바일 = 기간 6컬럼→**드롭다운 1칸**(381, select 1일~1년) + `#`간격 축소 + min-w 320 / 증권사 바로가기 모바일 **표 아래** 노출(379) / 터치타깃(380) / 종목 클릭 → **증권사 바로가기 시트(모바일 전용 `lg:hidden`)**(385). 마스터 `docs/MOBILE_BUILD_PLAN.md` · 아침 체크리스트 `docs/MOBILE_MORNING_CHECKLIST.md`. ⚠️ 이 환경 Chrome **마우스 CDP 멈춤·resize 미반영** → 검증은 **JavaScript 실행**으로(클릭·API). 실측은 사용자 폰.
+> - **⭐ 관심종목 watchlist(382)**: 기존 **`watchlist` 테이블 재사용**(구 죽은코드 잔재) + **`name_ko TEXT` 컬럼을 Cowork이 Supabase MCP로 추가**(RLS·정책 "Users can manage own watchlist" 기존). `/api/watchlist` GET/POST(upsert onConflict user_id,symbol,market) + MarketBoard 행 **맨 오른쪽 ⭐**(stopPropagation) + `/favorites` 관심종목 섹션(`WatchlistClient`). **JS 종단검증 OK**(별→DB저장→/favorites표시→해제).
+> - **전체 종목+검색(383)**: KRX ranking cap **200→3000**, MarketBoard 전 종목(~2,600) 로드 → **50/페이지**(이전/다음, 행번호 절대순위 `page*50+i+1`) + **검색**(종목명·코드 전 종목 필터). ⚠️ **현재가·1일=전 종목(KRX), 1주~1년=야후 UNIVERSE 45개만**("—") → 긴 기간 확장은 후속(야후 on-demand/UNIVERSE 확대).
+> - **🔑 워크플로우 메모**: STEP 382~385는 **Claude Code(Sonnet)가 자율 작성** → Cowork이 **검토·교정**(별 위치 좌→우, 행번호 절대순위, DB컬럼 추가, 시트 내용 정보링크→증권사). 자율작성은 빠르나 **돌리기 전 Cowork 검토** 권장(이번 4건 잡음).
+> **▶ 다음(사용자 지정 순서)**: ① 모바일 실측 미세조정(`MOBILE_MORNING_CHECKLIST.md`) → ② 모바일 마무리 → ③ **배포(Vercel·onetrillion.app)** → ④ 앱스토어. (긴 기간 데이터 확장·카카오 로그인·i18n은 별도 후속.)
+>
+> ⬇️ **(아래 🔵 369 배너는 직전 작업.)**
+
+> 🔵 **2026-06-23 · (직전) STEP 369, HEAD `bb04a13`, 빌드 ✓.**
 > **출시 로지스틱스 확정**: 도메인 **onetrillion.app**(가비아·.app HTTPS강제) · 이메일 **contact@onetrillion.app**(구글 워크스페이스 Business Starter, 가비아 DNS TXT+MX `1 smtp.google.com.` 검증완료) · 로고 **T 모노그램**(미드나잇#0E1116+민트#2DD4BF, 파비콘·앱아이콘·OG·헤더 적용 STEP369, 프롬프트 `docs/LOGO_PROMPT.md`). ⚠️ **아직 미배포(로컬만)** — 배포는 모든 작업 후 한 번에(Vercel). 사이트주소=`https://onetrillion.app`(metadataBase). 사업자: 원트릴리언·210-39-33812·대표 **장은태**·**제주 서귀포시 동문로 55 2층**.
 > **364~369**: 364 파비콘·OG·metadataBase / 365 푸터 이메일 / 366 robots(+admin·mypage·auth 색인차단)·sitemap·404 / 367 푸터 사업자표시 / **368 종목·상품 랜딩 안정화(거래대금순 기본+스켈레톤 — 빈 컬럼"—"·느린 첫인상 해소)** / 369 T모노그램 로고.
 > **▶ 다음(사용자 지정 순서)**: ① 사용자가 본 PC 문제 정리→수정 → ② 모바일 반응형 완성 → ③ 플레이스토어·앱스토어 등록(연결제 준비됨, 웹앱 래핑 필요). robots/sitemap·SPF/DKIM은 배포 직전.
