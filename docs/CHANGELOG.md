@@ -1,9 +1,11 @@
 <!-- 2026-06-24 -->
 # Trillion(트릴리언) — 변경 이력
 
-## 2026-06-24 — STEP 370~385 · 코드 헬스 → 캐시 → UX 디테일 → 모바일 반응형 → 종목·상품 고도화
+## 2026-06-24 — STEP 370~392 · 코드 헬스 → 캐시 → UX → 모바일 반응형 → 종목·상품 고도화 → 종목 표 마무리 + 전면 코드 감사·정리
 
-HEAD `badf4c9`(385). 빌드 ✓. **데스크톱 안정화 + 전면 모바일 반응형 + 종목·상품 탭 대폭 고도화(관심종목·전체 페이지네이션·검색·증권사 시트).**
+HEAD `8424e9b`(392). 빌드 ✓. **데스크톱 안정화 + 전면 모바일 반응형 + 종목·상품 대폭 고도화 + 종목 표 마무리 + 전면 코드 감사·정리.**
+- **종목 표 마무리(386·392)**: `table-fixed`+칸별 고정폭(정렬·데이터 변해도 컬럼 위치 고정) + 숫자 페이지네이션(`← 1 2 3 … 52 →`, 리딩방 `pageNumbers()` 통일). 392: 잘린 종목명 데스크탑 hover 툴팁 + 모바일 시트 풀네임(truncate 제거) + toggleWatch 실패 시 revert.
+- **🔍 전면 코드 감사·정리(387~391, 3-에이전트 감사)**: **🔴보안 387** 미사용·무인증 `rooms/[id]/verify`(admin 클라=RLS 우회로 누구나 '검증됨' 마킹 가능) 삭제 · **🧹388** 죽은 코드 27파일(미사용 스토어7·컴포넌트7[TopNav·TickerBar·RightFixedNav 등]·lib8[payment·chat·stockCalculations·깨진 watchlist 등]·타입4 + `/api/likes`) · **389** 국가 상태 `useCountryStore` 통합+persist(헤더 플래그↔게이트웨이 동기화, 로컬 useState+localStorage 제거) · **390** 등락 색 토큰화(`--color-unjong-up`#F04452·`--color-unjong-down`#3182F6) · **391** non-null 단언 방어·관심종목 effect unmount 가드·로그아웃 시 clientCache 클리어. ⚠️ **감사 오탐 보존**: `etf/etn/reit-performance` 라우트·`room_likes` 테이블은 동적 fetch/라이브 DB 존재라 **사용 중**(grep·migration 기준 오탐).
 - **코드 헬스(370·372)**: 죽은 legacy 라우트 11+컴포넌트 27(370, HomeIndexStrip만 layout으로 보존 이동) + 죽은 API 라우트 ~55(372, 옛 종목상세·KIS·home·stocks 등). 빌드 페이지 **144→28**. 크론(fss-advisors·youtube-refresh)·활성 보존. **371** 지수 티커 한글→영어(KOSPI·NASDAQ…). ⚠️ 라우트 삭제라 클린 재시작 필수.
 - **속도(373·374)**: `lib/clientCache.ts`(Map, stale-while-revalidate) — 피드 5종·MarketBoard(373)·AdvisorDirectory(374)가 받은 데이터 캐시 → **재방문 즉시 표시**(백그라운드 갱신) + 첫 로딩 스켈레톤. 컴포넌트만(새로고침 적용).
 - **UX 디테일(375)**: 리딩방 미리보기 카드 ⭐(리스트 동기화) · 링크행 "바로가기🔗" 항상표시(`ListRow` 한 곳=LinkCard·BrokerRanking·Youtube 전부) · 유튜브 "N월 N주차 기준"(week_label) · 마이페이지 즐겨찾기 카테고리 섹션 · 푸터 카카오톡 제거.

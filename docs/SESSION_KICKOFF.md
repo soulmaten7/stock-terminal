@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-06-24 (STEP 385 — 전면 모바일 반응형 + 관심종목·전체 페이지네이션·검색·증권사 시트)
+> **Last refreshed**: 2026-06-24 (STEP 392 — 종목 표 마무리·전면 코드 감사·정리 + 모바일·관심종목·페이지네이션·검색)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (⚠️ 미배포 — 배포 한 번에 Vercel 예정)
-> **현재 커밋**: `badf4c9` (STEP 385 · 종목 클릭 증권사 시트 모바일전용) — 빌드 ✓
+> **현재 커밋**: `8424e9b` (STEP 392 · 종목명 풀네임·토글 revert) — 빌드 ✓
 > ⚠️ **최신 상태는 `docs/SESSION_BOOT.md` 기준** (이 파일 본문 §1~는 V6/271 히스토리). 🔑 라우트 수정 후 재시작은 `pkill -f "next dev" && rm -rf .next && npm run dev`.
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
 

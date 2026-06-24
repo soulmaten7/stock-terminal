@@ -1,8 +1,8 @@
 <!-- 2026-06-24 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
-> 🟢 **2026-06-24 · 현재 상태 (STEP 385, HEAD `badf4c9`, 빌드 ✓) — 최신은 이 배너.**
-> **이번 세션(370~385) = 코드 헬스 → 캐시 → UX 디테일 → 모바일 반응형 → 종목·상품 고도화(관심종목·전체 페이지네이션·검색·증권사 시트).**
+> 🟢 **2026-06-24 · 현재 상태 (STEP 392, HEAD `8424e9b`, 빌드 ✓) — 최신은 이 배너.**
+> **이번 세션(370~392) = 코드 헬스 → 캐시 → UX → 모바일 반응형 → 종목·상품 고도화(관심종목·페이지네이션·검색·증권사 시트) → 종목 표 마무리 + 전면 코드 감사·정리.**
 > - **코드 헬스(370·372)**: 죽은 legacy 라우트 11+컴포넌트 27(370) + 죽은 API 라우트 ~55(372) 삭제(빌드 페이지 144→28, 크론·활성 보존). **371** 지수 티커 영어화.
 > - **속도(373·374)**: 탭 데이터 **클라이언트 캐시(stale-while-revalidate, `lib/clientCache.ts`)** + 피드 스켈레톤 → 모든 탭(피드·종목표·리딩방) **재방문 즉시**. 컴포넌트만(새 라우트 아님).
 > - **UX 디테일(375)**: 리딩방 미리보기 ⭐ + 링크행 "바로가기🔗" 항상표시(ListRow 한 곳=증권사·뉴스·유튜브 전부) + 유튜브 "N월 N주차 기준"(week_label) + 마이페이지 즐겨찾기 카테고리 섹션 + 푸터 카카오톡 제거.
@@ -10,7 +10,9 @@
 > - **📱 모바일 반응형(377~381·385)**: 페이지 패딩 `px-4 sm:px-6`·푸터·게이트웨이(377) / **MarketBoard 표** 모바일 = 기간 6컬럼→**드롭다운 1칸**(381, select 1일~1년) + `#`간격 축소 + min-w 320 / 증권사 바로가기 모바일 **표 아래** 노출(379) / 터치타깃(380) / 종목 클릭 → **증권사 바로가기 시트(모바일 전용 `lg:hidden`)**(385). 마스터 `docs/MOBILE_BUILD_PLAN.md` · 아침 체크리스트 `docs/MOBILE_MORNING_CHECKLIST.md`. ⚠️ 이 환경 Chrome **마우스 CDP 멈춤·resize 미반영** → 검증은 **JavaScript 실행**으로(클릭·API). 실측은 사용자 폰.
 > - **⭐ 관심종목 watchlist(382)**: 기존 **`watchlist` 테이블 재사용**(구 죽은코드 잔재) + **`name_ko TEXT` 컬럼을 Cowork이 Supabase MCP로 추가**(RLS·정책 "Users can manage own watchlist" 기존). `/api/watchlist` GET/POST(upsert onConflict user_id,symbol,market) + MarketBoard 행 **맨 오른쪽 ⭐**(stopPropagation) + `/favorites` 관심종목 섹션(`WatchlistClient`). **JS 종단검증 OK**(별→DB저장→/favorites표시→해제).
 > - **전체 종목+검색(383)**: KRX ranking cap **200→3000**, MarketBoard 전 종목(~2,600) 로드 → **50/페이지**(이전/다음, 행번호 절대순위 `page*50+i+1`) + **검색**(종목명·코드 전 종목 필터). ⚠️ **현재가·1일=전 종목(KRX), 1주~1년=야후 UNIVERSE 45개만**("—") → 긴 기간 확장은 후속(야후 on-demand/UNIVERSE 확대).
-> - **🔑 워크플로우 메모**: STEP 382~385는 **Claude Code(Sonnet)가 자율 작성** → Cowork이 **검토·교정**(별 위치 좌→우, 행번호 절대순위, DB컬럼 추가, 시트 내용 정보링크→증권사). 자율작성은 빠르나 **돌리기 전 Cowork 검토** 권장(이번 4건 잡음).
+> - **🔑 워크플로우 메모**: STEP 382~385는 **Claude Code(Sonnet)가 자율 작성** → Cowork이 **검토·교정**(별 위치 좌→우, 행번호 절대순위, DB컬럼 추가, 시트 내용 정보링크→증권사). 자율작성은 빠르나 **돌리기 전 Cowork 검토** 권장.
+> - **📐 종목 표 마무리(386·392)**: `table-fixed`+칸별 고정폭(정렬·데이터 변해도 컬럼 위치 고정) + **숫자 페이지네이션**(`← 1 2 3 … 52 →`, 리딩방 `pageNumbers()`와 통일). 392: 잘린 종목명 **데스크탑 hover 툴팁 + 모바일 시트 풀네임** + toggleWatch 실패 revert.
+> - **🔍 전면 코드 감사·정리(387~391, 3-에이전트 감사)**: **🔴보안 387** 미사용·무인증 `rooms/[id]/verify`(admin 클라 RLS 우회) 삭제 · **🧹388** 죽은 코드 27파일 삭제(미사용 스토어7·컴포넌트7[TopNav·TickerBar 등]·lib8·타입4 + `/api/likes`; `lib/watchlist.ts`=없는 테이블 `watchlists` 조회한 깨진 코드) · **389** 국가 상태 `useCountryStore`로 통합+persist(헤더 플래그↔게이트웨이 동기화) · **390** 등락 색 토큰화(`unjong-up`#F04452/`unjong-down`#3182F6) · **391** non-null 방어·관심종목 effect 가드·로그아웃 캐시 클리어. ⚠️ **감사 오탐 보존**: etf/etn/reit-performance 라우트·room_likes 테이블은 **사용 중**(동적 fetch라 grep 오탐).
 > **▶ 다음(사용자 지정 순서)**: ① 모바일 실측 미세조정(`MOBILE_MORNING_CHECKLIST.md`) → ② 모바일 마무리 → ③ **배포(Vercel·onetrillion.app)** → ④ 앱스토어. (긴 기간 데이터 확장·카카오 로그인·i18n은 별도 후속.)
 >
 > ⬇️ **(아래 🔵 369 배너는 직전 작업.)**
