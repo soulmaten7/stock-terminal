@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { ExternalLink, Star, X } from 'lucide-react';
+import { Star, X } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import BrokerRanking from './BrokerRanking';
@@ -290,54 +290,28 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         <p className="border-b border-unjong-border px-1 py-2 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
         <BrokerRanking hideHeader />
       </div>
-      {/* 종목 외부보기 바텀시트 */}
+      {/* 종목 클릭 → 증권사 바로가기 (모바일 전용 — PC는 우측 리스트로 한눈에 보임) */}
       {selectedStock && (
-        <>
+        <div className="lg:hidden">
           <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setSelectedStock(null)} />
-          <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-4 shadow-xl sm:p-5">
-            {/* 헤더 */}
+          <div className="fixed inset-x-0 bottom-0 z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-4 shadow-xl">
             <div className="mb-3 flex items-center gap-3">
-              <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={36} />
+              <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={32} />
               <div className="min-w-0 flex-1">
                 <p className="truncate font-bold text-unjong-primary">{selectedStock.name}</p>
-                <p className="font-mono text-xs text-unjong-muted">{selectedStock.symbol}</p>
+                <p className="font-mono text-xs text-unjong-muted">
+                  {selectedStock.symbol} · {selectedStock.price ? selectedStock.price.toLocaleString() : '—'}
+                  <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
+                </p>
               </div>
               <button type="button" onClick={() => setSelectedStock(null)} aria-label="닫기" className="shrink-0 text-unjong-muted hover:text-unjong-primary">
                 <X size={20} />
               </button>
             </div>
-            {/* 가격 */}
-            <div className="mb-4 flex items-baseline gap-2">
-              <span className="text-2xl font-bold tabular-nums text-unjong-primary">
-                {selectedStock.price ? selectedStock.price.toLocaleString() : '—'}
-              </span>
-              <span className={`text-sm font-semibold tabular-nums ${pctColor(selectedStock.changePercent)}`}>
-                {pct(selectedStock.changePercent)}
-              </span>
-              <span className="text-xs text-unjong-muted">KRX · 전일 종가</span>
-            </div>
-            {/* 외부 링크 2×2 그리드 */}
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { label: '네이버 금융', href: `https://finance.naver.com/item/main.naver?code=${selectedStock.symbol}` },
-                { label: 'DART 공시', href: `https://dart.fss.or.kr/dsab007/search.ax?textCrpNm=${encodeURIComponent(selectedStock.name)}` },
-                { label: 'TradingView', href: `https://www.tradingview.com/chart/?symbol=KRX:${selectedStock.symbol}` },
-                { label: 'KRX KIND', href: `https://kind.krx.co.kr/corpgeneral/corpsearch.do?method=loadInitPage&searchCodeType=&searchCorpName=${encodeURIComponent(selectedStock.name)}` },
-              ].map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer nofollow"
-                  className="flex items-center justify-between rounded-xl border border-unjong-border px-3 py-2.5 text-sm font-medium text-unjong-primary transition-colors hover:bg-unjong-background hover:text-unjong-accent"
-                >
-                  {link.label}
-                  <ExternalLink size={12} className="shrink-0 text-unjong-muted" />
-                </a>
-              ))}
-            </div>
+            <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
+            <BrokerRanking hideHeader />
           </div>
-        </>
+        </div>
       )}
     </section>
   );
