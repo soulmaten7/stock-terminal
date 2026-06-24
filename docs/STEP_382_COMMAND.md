@@ -28,12 +28,7 @@ cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
 ALTER TABLE public.watchlist ADD COLUMN IF NOT EXISTS name_ko TEXT;
 ```
 
-파일 저장 후 **Supabase MCP로 적용**:
-```
-mcp__claude_ai_Supabase__execute_sql 으로
-ALTER TABLE public.watchlist ADD COLUMN IF NOT EXISTS name_ko TEXT;
-실행 (프로젝트: 운종 전용, ref qxkmwlkchyxfzxbonhtj)
-```
+> ✅ **DB 적용은 Cowork이 이미 완료함** — 라이브 `watchlist` 테이블에 `name_ko TEXT` 추가 끝(RLS·정책 "Users can manage own watchlist" 기존 그대로). 위 `.sql` 파일은 **저장소 기록용**이니 파일만 생성하면 됨. Claude Code가 DB에 직접 실행할 필요 **없음**.
 
 ---
 
@@ -224,37 +219,49 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     const ck = 'market:' + tab;
 ```
 
-### ④-D 별 th + td 추가 (thead에 1줄, tbody 행마다 1줄)
+### ④-D 별 th + td 추가 — **표 맨 오른쪽** (사용자 요청: 가장 오른쪽 별 자리)
 
-**찾기 (thead):**
+> `PERIODS.map(...)` **닫힘 직후**에 삽입 → 데스크탑은 1년 뒤, 모바일은 기간 드롭다운 뒤 = 항상 맨 오른쪽.
+
+**찾기 (thead 끝):**
 ```tsx
-                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">
+                    </th>
+                  ))}
+                </tr>
+              </thead>
 ```
 **바꾸기:**
 ```tsx
-                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="w-8 py-2.5 pl-2 pr-0"><Star size={12} className="text-unjong-muted" /></th>
-                  <th className="py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">
+                    </th>
+                  ))}
+                  <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
+                </tr>
+              </thead>
 ```
 
-**찾기 (tbody — # 번호 td):**
+**찾기 (tbody 행 끝):**
 ```tsx
-                    <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{i + 1}</td>
+                    })}
+                  </tr>
+                ))}
+              </tbody>
 ```
 **바꾸기:**
 ```tsx
-                    <td className="py-2.5 pl-2 pr-0">
+                    })}
+                    <td className="w-9 px-1 py-2.5 text-center">
                       <button
                         type="button"
                         onClick={() => toggleWatch(r)}
                         aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
                         className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
                       >
-                        <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
+                        <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
                       </button>
                     </td>
-                    <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{i + 1}</td>
+                  </tr>
+                ))}
+              </tbody>
 ```
 
 ---

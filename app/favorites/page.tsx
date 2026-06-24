@@ -1,5 +1,6 @@
 import FavoritesClient from '@/components/favorites/FavoritesClient';
 import RoomFavoritesClient from '@/components/favorites/RoomFavoritesClient';
+import WatchlistClient from '@/components/favorites/WatchlistClient';
 
 export const metadata = { title: '즐겨찾기' };
 
@@ -10,6 +11,11 @@ export default function FavoritesPage() {
         <h1 className="text-xl font-bold text-unjong-primary">⭐ 즐겨찾기</h1>
         <p className="mt-1 text-sm text-unjong-muted">별표한 링크·리딩방 모음 — 각 섹션에서 드래그로 순서를 바꿀 수 있어요.</p>
       </div>
+
+      <section className="mb-7">
+        <h2 className="mb-2 text-sm font-bold text-unjong-primary">관심종목</h2>
+        <WatchlistClient />
+      </section>
 
       <section className="mb-7">
         <h2 className="mb-2 text-sm font-bold text-unjong-primary">링크</h2>

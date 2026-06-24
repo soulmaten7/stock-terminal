@@ -130,7 +130,7 @@ export default function ToolboxClient({
       <div className="p-3 sm:p-4">
         {activeTab === 'market' ? (
           country === 'KR' ? (
-            <MarketBoard />
+            <MarketBoard isLoggedIn={isLoggedIn} />
           ) : (
             <Placeholder emoji="🇺🇸" title="미국 종목·상품 — 준비 중" />
           )

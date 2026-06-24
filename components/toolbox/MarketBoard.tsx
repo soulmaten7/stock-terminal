@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { Star } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import BrokerRanking from './BrokerRanking';
@@ -83,13 +84,34 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
   } catch { return []; }
 }
 
-export default function MarketBoard() {
+export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock') ?? []);
   const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
   const [sortKey, setSortKey] = useState<PeriodKey | 'amount'>('amount');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d');
+  const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    fetch('/api/watchlist')
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.watchlist) setWatchSet(new Set((j.watchlist as { symbol: string }[]).map((w) => w.symbol)));
+      })
+      .catch(() => {});
+  }, [isLoggedIn]);
+
+  const toggleWatch = (r: Row) => {
+    if (!isLoggedIn) { window.location.href = '/auth/login'; return; }
+    const add = !watchSet.has(r.symbol);
+    setWatchSet((prev) => { const n = new Set(prev); add ? n.add(r.symbol) : n.delete(r.symbol); return n; });
+    fetch('/api/watchlist', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol: r.symbol, name_ko: r.name, market: 'KRX', country: 'KR', add }),
+    }).catch(() => {});
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -176,6 +198,7 @@ export default function MarketBoard() {
                       </button>
                     </th>
                   ))}
+                  <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
                 </tr>
               </thead>
               <tbody>
@@ -194,6 +217,16 @@ export default function MarketBoard() {
                       const v = r[p.field] as number | null | undefined;
                       return <td key={p.key} className={`hidden whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums sm:table-cell ${pctColor(v)}`}>{pct(v)}</td>;
                     })}
+                    <td className="w-9 px-1 py-2.5 text-center">
+                      <button
+                        type="button"
+                        onClick={() => toggleWatch(r)}
+                        aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
+                        className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+                      >
+                        <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
