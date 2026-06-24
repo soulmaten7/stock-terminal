@@ -169,19 +169,31 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
 
   return (
     <section className="min-w-0">
-      {/* 컨트롤 줄: 좌=하위탭 / 우(w-72)=증권사 바로가기 헤더 */}
+      {/* 컨트롤 줄: 좌=하위탭+검색(같은 줄) / 우(w-72)=증권사 바로가기 헤더 */}
       <div className="mb-2 flex items-center gap-4">
-        <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
-          {SUBTABS.map((s) => (
-            <button
-              key={s.key}
-              type="button"
-              onClick={() => setTab(s.key)}
-              className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
-            >
-              {s.label}
-            </button>
-          ))}
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+            {SUBTABS.map((s) => (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => setTab(s.key)}
+                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+              placeholder="종목명·코드 검색"
+              className="w-32 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent sm:w-48"
+            />
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
+          </div>
         </div>
         <div className="hidden w-72 shrink-0 lg:block">
           <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
@@ -191,17 +203,6 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
       {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
-          {/* 검색 */}
-          <div className="mb-2 flex items-center gap-2">
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-              placeholder="종목명·코드 검색"
-              className="w-full max-w-xs rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
-            />
-            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
-          </div>
           {loading ? (
             <div className="space-y-2 py-2">
               {Array.from({ length: 12 }).map((_, i) => (
