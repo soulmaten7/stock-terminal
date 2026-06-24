@@ -225,7 +225,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               <tbody>
                 {paginated.map((r, i) => (
                   <tr key={r.symbol} onClick={() => setSelectedStock(r)} className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background">
-                    <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{i + 1}</td>
+                    <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex items-center gap-2 whitespace-nowrap">
                         <StockLogo code={r.symbol} name={r.name} size={24} />
