@@ -115,7 +115,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     fetch('/api/watchlist', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ symbol: r.symbol, name_ko: r.name, market: 'KRX', country: 'KR', add }),
-    }).catch(() => {});
+    }).then((res) => { if (!res.ok) throw new Error('watchlist'); }).catch(() => {
+      setWatchSet((prev) => { const n = new Set(prev); add ? n.delete(r.symbol) : n.add(r.symbol); return n; });
+    });
   };
 
   useEffect(() => {
@@ -243,7 +245,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex min-w-0 items-center gap-2">
                         <StockLogo code={r.symbol} name={r.name} size={24} />
-                        <span className="truncate font-medium text-unjong-primary">{r.name}</span>
+                        <span title={r.name} className="truncate font-medium text-unjong-primary">{r.name}</span>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
@@ -312,7 +314,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             <div className="mb-3 flex items-center gap-3">
               <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={32} />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-bold text-unjong-primary">{selectedStock.name}</p>
+                <p className="font-bold leading-snug text-unjong-primary">{selectedStock.name}</p>
                 <p className="font-mono text-xs text-unjong-muted">
                   {selectedStock.symbol} · {selectedStock.price ? selectedStock.price.toLocaleString() : '—'}
                   <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
