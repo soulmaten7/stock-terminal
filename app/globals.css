@@ -34,6 +34,9 @@
   --color-unjong-dark-bg: #0A0A0A;
   --color-unjong-dark-surface: #1C1C1E;
   --color-unjong-dark-border: #2C2C2E;
+  /* 종목 등락 색 (상승=빨강, 하락=파랑) */
+  --color-unjong-up: #F04452;
+  --color-unjong-down: #3182F6;
   /* STEP 129: 토스 스타일 보조 톤 */
   --color-toss-blue: #3182F6;
   --color-toss-red: #F04452;

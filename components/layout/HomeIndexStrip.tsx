@@ -33,7 +33,7 @@ export default function HomeIndexStrip() {
             <span key={i} className="inline-flex items-center gap-1.5 px-4 text-xs">
               <span className="text-white/45">{it.name}</span>
               <span className="font-semibold tabular-nums text-white">{it.value}</span>
-              <span className={`tabular-nums ${it.isUp ? "text-[#F04452]" : "text-[#3182F6]"}`}>
+              <span className={`tabular-nums ${it.isUp ? "text-unjong-up" : "text-unjong-down"}`}>
                 {it.changeText ? `${it.changeText} ` : ""}({it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%)
               </span>
             </span>

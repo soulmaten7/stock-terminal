@@ -42,7 +42,7 @@ function pct(v?: number | null): string {
 }
 function pctColor(v?: number | null): string {
   if (v == null) return 'text-unjong-muted';
-  return v >= 0 ? 'text-[#F04452]' : 'text-[#3182F6]';
+  return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
 
 async function fetchRows(tab: SubTab): Promise<Row[]> {
