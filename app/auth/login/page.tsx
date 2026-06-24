@@ -50,7 +50,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* 뒤로가기 */}
         <Link
-          href="/kr"
+          href="/"
           className="inline-flex items-center gap-1 text-sm text-unjong-muted hover:text-unjong-primary mb-6"
         >
           <ArrowLeft size={14} />
