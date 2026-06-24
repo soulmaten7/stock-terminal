@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Star } from 'lucide-react';
+import { ExternalLink, Star, X } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import BrokerRanking from './BrokerRanking';
@@ -92,6 +92,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d');
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
+  const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
 
@@ -223,7 +224,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               </thead>
               <tbody>
                 {paginated.map((r, i) => (
-                  <tr key={r.symbol} className="border-b border-unjong-border last:border-0 hover:bg-unjong-background">
+                  <tr key={r.symbol} onClick={() => setSelectedStock(r)} className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background">
                     <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex items-center gap-2 whitespace-nowrap">
@@ -240,7 +241,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
                         type="button"
-                        onClick={() => toggleWatch(r)}
+                        onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                         aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
                         className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
                       >
@@ -289,6 +290,55 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         <p className="border-b border-unjong-border px-1 py-2 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
         <BrokerRanking hideHeader />
       </div>
+      {/* 종목 외부보기 바텀시트 */}
+      {selectedStock && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setSelectedStock(null)} />
+          <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-4 shadow-xl sm:p-5">
+            {/* 헤더 */}
+            <div className="mb-3 flex items-center gap-3">
+              <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={36} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-bold text-unjong-primary">{selectedStock.name}</p>
+                <p className="font-mono text-xs text-unjong-muted">{selectedStock.symbol}</p>
+              </div>
+              <button type="button" onClick={() => setSelectedStock(null)} aria-label="닫기" className="shrink-0 text-unjong-muted hover:text-unjong-primary">
+                <X size={20} />
+              </button>
+            </div>
+            {/* 가격 */}
+            <div className="mb-4 flex items-baseline gap-2">
+              <span className="text-2xl font-bold tabular-nums text-unjong-primary">
+                {selectedStock.price ? selectedStock.price.toLocaleString() : '—'}
+              </span>
+              <span className={`text-sm font-semibold tabular-nums ${pctColor(selectedStock.changePercent)}`}>
+                {pct(selectedStock.changePercent)}
+              </span>
+              <span className="text-xs text-unjong-muted">KRX · 전일 종가</span>
+            </div>
+            {/* 외부 링크 2×2 그리드 */}
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { label: '네이버 금융', href: `https://finance.naver.com/item/main.naver?code=${selectedStock.symbol}` },
+                { label: 'DART 공시', href: `https://dart.fss.or.kr/dsab007/search.ax?textCrpNm=${encodeURIComponent(selectedStock.name)}` },
+                { label: 'TradingView', href: `https://www.tradingview.com/chart/?symbol=KRX:${selectedStock.symbol}` },
+                { label: 'KRX KIND', href: `https://kind.krx.co.kr/corpgeneral/corpsearch.do?method=loadInitPage&searchCodeType=&searchCorpName=${encodeURIComponent(selectedStock.name)}` },
+              ].map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="flex items-center justify-between rounded-xl border border-unjong-border px-3 py-2.5 text-sm font-medium text-unjong-primary transition-colors hover:bg-unjong-background hover:text-unjong-accent"
+                >
+                  {link.label}
+                  <ExternalLink size={12} className="shrink-0 text-unjong-muted" />
+                </a>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }
