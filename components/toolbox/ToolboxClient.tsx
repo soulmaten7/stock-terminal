@@ -9,11 +9,12 @@ import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import MacroFeed from './MacroFeed';
 import OfferingsFeed from './OfferingsFeed';
+import { useCountryStore, type Country } from '@/stores/countryStore';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
 
-const COUNTRIES = [
+const COUNTRIES: { code: Country; label: string }[] = [
   { code: 'KR', label: '🇰🇷 한국' },
   { code: 'US', label: '🇺🇸 미국' },
 ];
@@ -57,19 +58,16 @@ export default function ToolboxClient({
   isLoggedIn: boolean;
   youtubeChannels: YtChannel[];
 }) {
-  const [country, setCountry] = useState('KR');
+  const { country, setCountry } = useCountryStore();
   const [categories, setCategories] = useState(initialCategories);
   const [activeTab, setActiveTab] = useState(TAB_ORDER[0]);
 
-  // 새로고침해도 마지막 탭/국가 유지
+  // 새로고침해도 마지막 탭 유지 (국가는 useCountryStore persist가 담당)
   useEffect(() => {
     const t = localStorage.getItem('unjong_tab');
     if (t && TAB_ORDER.includes(t)) setActiveTab(t);
-    const c = localStorage.getItem('unjong_country');
-    if (c === 'KR' || c === 'US') setCountry(c);
   }, []);
   useEffect(() => { localStorage.setItem('unjong_tab', activeTab); }, [activeTab]);
-  useEffect(() => { localStorage.setItem('unjong_country', country); }, [country]);
 
   // 탭 = TAB_ORDER 순서대로. 특수탭(유튜브·증권사·리딩방)은 항상, 카테고리는 데이터 있을 때만.
   const tabs = TAB_ORDER.map((slug) => {

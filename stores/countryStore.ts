@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export type Country = 'KR' | 'US';
 
@@ -7,7 +8,12 @@ interface CountryState {
   setCountry: (country: Country) => void;
 }
 
-export const useCountryStore = create<CountryState>((set) => ({
-  country: 'KR',
-  setCountry: (country) => set({ country }),
-}));
+export const useCountryStore = create<CountryState>()(
+  persist(
+    (set) => ({
+      country: 'KR',
+      setCountry: (country) => set({ country }),
+    }),
+    { name: 'trillion-country' }
+  )
+);
