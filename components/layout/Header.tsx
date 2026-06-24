@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { User, Star, LogOut } from 'lucide-react';
+import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
@@ -44,6 +45,7 @@ export default function Header() {
     const supabase = createClient();
     await supabase.auth.signOut();
     useAuthStore.getState().setUser(null);
+    clearCache();
     setProfileOpen(false);
     router.push('/');
   };

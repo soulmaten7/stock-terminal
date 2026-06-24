@@ -98,12 +98,14 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
 
   useEffect(() => {
     if (!isLoggedIn) return;
+    let cancelled = false;
     fetch('/api/watchlist')
       .then((r) => r.json())
       .then((j) => {
-        if (j.watchlist) setWatchSet(new Set((j.watchlist as { symbol: string }[]).map((w) => w.symbol)));
+        if (!cancelled && j.watchlist) setWatchSet(new Set((j.watchlist as { symbol: string }[]).map((w) => w.symbol)));
       })
       .catch(() => {});
+    return () => { cancelled = true; };
   }, [isLoggedIn]);
 
   const toggleWatch = (r: Row) => {
@@ -127,8 +129,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     return () => { cancelled = true; };
   }, [tab]);
 
-  const sortField = sortKey === 'amount' ? null : PERIODS.find((p) => p.key === sortKey)!.field;
-  const mobileField = PERIODS.find((p) => p.key === mobilePeriod)!.field;
+  const sortField = sortKey === 'amount' ? null : (PERIODS.find((p) => p.key === sortKey)?.field ?? null);
+  const mobileField = PERIODS.find((p) => p.key === mobilePeriod)?.field ?? PERIODS[0].field;
   const PAGE_SIZE = 50;
   const sorted = useMemo(() => {
     const q = search.trim().toUpperCase();

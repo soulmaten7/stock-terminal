@@ -9,3 +9,8 @@ export function getCache<T>(key: string): T | undefined {
 export function setCache(key: string, value: unknown): void {
   store.set(key, value);
 }
+
+// 로그아웃 시 호출 — 메모리 캐시 비워 다음 사용자가 신선한 데이터 받게.
+export function clearCache(): void {
+  store.clear();
+}
