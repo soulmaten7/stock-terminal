@@ -89,6 +89,7 @@ export default function MarketBoard() {
   const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
   const [sortKey, setSortKey] = useState<PeriodKey | 'amount'>('amount');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+  const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d');
 
   useEffect(() => {
     let cancelled = false;
@@ -100,6 +101,7 @@ export default function MarketBoard() {
   }, [tab]);
 
   const sortField = sortKey === 'amount' ? null : PERIODS.find((p) => p.key === sortKey)!.field;
+  const mobileField = PERIODS.find((p) => p.key === mobilePeriod)!.field;
   const sorted = useMemo(() => {
     if (!sortField) return rows.slice(0, 100); // 거래대금순(원래 순서) — 대형주 우선이라 기간 데이터가 차 있음
     return [...rows].sort((a, b) => {
@@ -150,16 +152,21 @@ export default function MarketBoard() {
           ) : sorted.length === 0 ? (
             <p className="py-10 text-center text-sm text-unjong-muted">데이터가 없습니다. 잠시 후 다시 시도해 주세요.</p>
           ) : (
-            <table className="w-full min-w-[540px] text-sm sm:min-w-[720px]">
+            <table className="w-full min-w-[320px] text-sm sm:min-w-[720px]">
               <thead>
                 <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="px-2 py-2.5 text-left font-medium">
+                  <th className="py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">
                     <button type="button" onClick={() => { setSortKey('amount'); setSortDir('desc'); }} title="거래대금순" className={`hover:text-unjong-primary ${sortKey === 'amount' ? 'font-bold text-unjong-accent' : ''}`}>#</button>
                   </th>
-                  <th className="w-full px-2 py-2.5 text-left font-medium">종목명</th>
+                  <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
                   <th className="whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
+                  <th className="whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium sm:hidden">
+                    <select value={mobilePeriod} onChange={(e) => setMobilePeriod(e.target.value as PeriodKey)} className="rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none">
+                      {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+                    </select>
+                  </th>
                   {PERIODS.map((p) => (
-                    <th key={p.key} className={`whitespace-nowrap px-2 py-2.5 text-right font-medium ${p.hideSm ? 'hidden sm:table-cell' : ''}`}>
+                    <th key={p.key} className="hidden whitespace-nowrap px-2 py-2.5 text-right font-medium sm:table-cell">
                       <button
                         type="button"
                         onClick={() => clickHeader(p.key)}
@@ -174,17 +181,18 @@ export default function MarketBoard() {
               <tbody>
                 {sorted.map((r, i) => (
                   <tr key={r.symbol} className="border-b border-unjong-border last:border-0 hover:bg-unjong-background">
-                    <td className="px-2 py-2.5 tabular-nums text-unjong-muted">{i + 1}</td>
-                    <td className="px-2 py-2.5">
+                    <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{i + 1}</td>
+                    <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex items-center gap-2 whitespace-nowrap">
                         <StockLogo code={r.symbol} name={r.name} size={24} />
                         <span className="font-medium text-unjong-primary">{r.name}</span>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
+                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums sm:hidden ${pctColor(r[mobileField] as number | null | undefined)}`}>{pct(r[mobileField] as number | null | undefined)}</td>
                     {PERIODS.map((p) => {
                       const v = r[p.field] as number | null | undefined;
-                      return <td key={p.key} className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(v)} ${p.hideSm ? 'hidden sm:table-cell' : ''}`}>{pct(v)}</td>;
+                      return <td key={p.key} className={`hidden whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums sm:table-cell ${pctColor(v)}`}>{pct(v)}</td>;
                     })}
                   </tr>
                 ))}
