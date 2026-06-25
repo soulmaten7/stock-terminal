@@ -65,7 +65,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
       changePercent: Number(s.changePercent ?? 0),
     }));
     try {
-      const j = await (await fetch('/api/yahoo/kr-performance')).json();
+      const j = await (await fetch('/api/krx/kr-performance')).json();
       const map: Record<string, Row> = {};
       for (const it of (j.items ?? []) as Row[]) if (it.symbol) map[String(it.symbol)] = it;
       return rows.map((r) => {
