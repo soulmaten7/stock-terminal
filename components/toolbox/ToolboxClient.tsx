@@ -69,13 +69,22 @@ export default function ToolboxClient({
   }, []);
   useEffect(() => { localStorage.setItem('unjong_tab', activeTab); }, [activeTab]);
 
-  // 탭 = TAB_ORDER 순서대로. 특수탭(유튜브·증권사·리딩방)은 항상, 카테고리는 데이터 있을 때만.
+  // 탭 = TAB_ORDER 순서. 현재 국가에 콘텐츠가 있는 탭만 표시.
+  // - 특수탭(종목·상품·유튜브·리딩방) = 라이브 데이터(KRX·유튜브·금감원)라 한국 전용
+  // - 카테고리 탭 = 해당 국가에 큐레이션 링크가 있을 때만 → 미국 '준비 중' 벽 제거(깨끗한 링크 허브)
   const tabs = TAB_ORDER.map((slug) => {
     const special = SPECIAL_LABELS[slug];
-    if (special) return { slug, label: special };
+    if (special) return country === 'KR' ? { slug, label: special } : null;
     const c = categories.find((cat) => cat.slug === slug);
-    return c ? { slug, label: c.label } : null;
+    const hasLinks = !!c && c.links.some((l) => l.country === country);
+    return hasLinks ? { slug, label: c!.label } : null;
   }).filter((t): t is { slug: string; label: string } => t !== null);
+
+  // 국가 전환 시 현재 탭이 그 국가에 없으면 첫 유효 탭으로 이동
+  useEffect(() => {
+    if (tabs.length && !tabs.some((t) => t.slug === activeTab)) setActiveTab(tabs[0].slug);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [country, activeTab]);
 
   const handleFavoriteToggle = (id: number, fav: boolean) => {
     setCategories((prev) =>
