@@ -17,7 +17,6 @@ const COUNTRIES: { code: Country; name: string; flag: string }[] = [
 
 const MENU = [
   { href: '/', label: '주식', match: (p: string) => p === '/' },
-  { href: '/coin', label: '코인', match: (p: string) => /^\/coin/.test(p) },
 ] as const;
 
 export default function Header() {

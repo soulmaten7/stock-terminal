@@ -13,7 +13,7 @@ export default function AboutPage() {
       <p className="mb-8 text-base font-medium text-unjong-accent">흩어진 금융정보를 한눈에</p>
 
       <p className="mb-10 text-sm leading-relaxed text-unjong-muted">
-        트릴리언(雲從)은 정확한 정보, 솔직한 토론, 검증된 신뢰로 투자자가 잘못된 정보나 과장된
+        트릴리언은 정확한 정보, 솔직한 토론, 검증된 신뢰로 투자자가 잘못된 정보나 과장된
         상품에 속지 않도록 돕는 플랫폼입니다. 주식·상품·리딩방을 한곳에서 교차검증하세요.
       </p>
 
