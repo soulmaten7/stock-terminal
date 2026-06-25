@@ -17,6 +17,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-bold text-white">서비스</h4>
             <ul className="space-y-2">
+              <li><Link href="/" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">주식·상품</Link></li>
               <li><Link href="/about" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">서비스 소개</Link></li>
             </ul>
           </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { GripVertical, X, ExternalLink, Globe } from 'lucide-react';
 
 type RoomFav = { biz_no: string; name: string; homepage: string | null; platform: string };
@@ -16,6 +17,7 @@ function iconOf(p: string, homepage: string | null): string | null {
 
 export default function RoomFavoritesClient() {
   const [items, setItems] = useState<RoomFav[]>([]);
+  const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
   const dragIdx = useRef<number | null>(null);
 
@@ -23,7 +25,7 @@ export default function RoomFavoritesClient() {
     let cancelled = false;
     fetch('/api/rooms/favorite')
       .then((r) => r.json())
-      .then((j) => { if (!cancelled) { setItems(j.favorites ?? []); setLoading(false); } })
+      .then((j) => { if (!cancelled) { setItems(j.favorites ?? []); setAuth(j.auth !== false); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
@@ -49,6 +51,14 @@ export default function RoomFavoritesClient() {
   };
 
   if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>;
+  if (!auth) {
+    return (
+      <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
+        <p className="text-sm text-unjong-muted">로그인하면 리딩방을 모아볼 수 있어요.</p>
+        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">로그인 →</Link>
+      </div>
+    );
+  }
   if (items.length === 0) {
     return <p className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center text-sm text-unjong-muted">리딩방·검증에서 ⭐를 누르면 여기 모여요.</p>;
   }

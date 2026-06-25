@@ -16,6 +16,7 @@ export default function MyPage() {
   const [activeTab, setActiveTab] = useState<Tab>('profile');
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [myReports, setMyReports] = useState<MyReport[]>([]);
 
   useEffect(() => {
@@ -37,9 +38,15 @@ export default function MyPage() {
   const updateNickname = async () => {
     if (!user || !nickname.trim()) return;
     setSaving(true);
+    setSaveMsg(null);
     const supabase = createClient();
-    await supabase.from('users').update({ nickname: nickname.trim() }).eq('id', user.id);
-    useAuthStore.getState().setUser({ ...user, nickname: nickname.trim() });
+    const { error } = await supabase.from('users').update({ nickname: nickname.trim() }).eq('id', user.id);
+    if (error) {
+      setSaveMsg({ ok: false, text: '저장에 실패했어요. 잠시 후 다시 시도해주세요.' });
+    } else {
+      useAuthStore.getState().setUser({ ...user, nickname: nickname.trim() });
+      setSaveMsg({ ok: true, text: '닉네임을 저장했어요.' });
+    }
     setSaving(false);
   };
 
@@ -84,9 +91,10 @@ export default function MyPage() {
           <div>
             <label className="mb-1 block text-sm text-unjong-muted">닉네임</label>
             <div className="flex gap-2">
-              <input value={nickname} onChange={(e) => setNickname(e.target.value)} className="flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
+              <input value={nickname} onChange={(e) => { setNickname(e.target.value); setSaveMsg(null); }} className="flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
               <button type="button" onClick={updateNickname} disabled={saving} className="shrink-0 rounded-lg bg-unjong-primary px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? '저장 중…' : '변경'}</button>
             </div>
+            {saveMsg ? <p className={`mt-1.5 text-xs ${saveMsg.ok ? 'text-emerald-600' : 'text-red-500'}`}>{saveMsg.text}</p> : null}
           </div>
           <div>
             <label className="mb-1 block text-sm text-unjong-muted">이메일</label>
