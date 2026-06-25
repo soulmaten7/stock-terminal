@@ -1,7 +1,19 @@
 <!-- 2026-06-24 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
-> 🟢 **2026-06-24 · 현재 상태 (STEP 392, HEAD `8424e9b`, 빌드 ✓) — 최신은 이 배너.**
+> 🟢 **2026-06-24 (최신) · Supabase 전용 프로젝트 이전 + 배포 + 구글 로그인 LIVE (STEP 394, HEAD `e6afa23`, 빌드 ✓) — 최신은 이 배너.**
+> **한 줄: Trillion 데이터를 전용 Supabase로 이사 → Vercel 배포 → 구글 로그인 작동. 새 세션은 아래 식별자부터 외울 것.**
+> - **🆕 Supabase = 신규 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** (구 `qxkmwlkchyxfzxbonhtj`/"OT-Marketing"=타 데이터와 섞여 있어 폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.)
+> - **🆕 배포 URL = `https://stock-terminal-delta.vercel.app`** (env 5개 새 프로젝트값 교체, SERVICE_ROLE_KEY는 새 형식 `sb_secret_...`=supabase-js 2.101 정식 지원).
+> - **🆕 구글 로그인 = LIVE.** Google OAuth 새 콜백 `https://ccbwxcszdoyjxvckedfp.supabase.co/auth/v1/callback` 추가 + Supabase Auth Google 활성화 + Site URL `stock-terminal-delta.vercel.app`. (첫 실패 "Unable to exchange external code"=Client Secret 불일치 → 구글에서 secret 새로 발급해 해결.)
+> - **인프라 작업(Cowork MCP 직접)**: pg_dump 직결 차단(IPv6·풀러) → **Supabase MCP introspection으로 완전판 스키마 재구성** 후 NEW에 마이그레이션 5개 적용(`trillion_01_tables`→`02_fk_and_indexes`→`03_rls_policies`→`04_functions_triggers`→`05_views`). 결과 **37테이블+뷰2(advisor_directory·stock_snapshot_v)+함수9+트리거7(회원가입 on_auth_user_created→handle_new_user 포함)+FK34+RLS정책61, RLS 구멍 0**(OLD의 무방비 banner_clicks·chat_reports 제거로 더 안전). 데이터 link_hub100·products10·youtube100 MCP 복사(행수·URL 검증), fss_advisors는 크론 재적재 **1,804건**. 시드더미·테스트행은 의도 제외. 문서 `docs/SUPABASE_MIGRATION.md`·`SUPABASE_MIGRATION_HANDOFF.md`.
+> - **STEP 393(`64003e1`)** 로그인 후 죽은 `/kr`→홈(`/`) 리다이렉트 수정(`app/auth/callback/route.ts` `next` 기본값·`app/auth/login/page.tsx` 링크). **STEP 394(`e6afa23`)** 종목 검색박스를 `주식 ETF ETN 리츠` 하위탭과 **같은 줄 우측**으로 이동(`MarketBoard.tsx`, 모바일 w-32/sm+ w-48).
+> - **⚠️ 남은 선택**: ① DATABASE_URL 구값(앱 런타임 미사용·무해, `lib/supabase/admin.ts`가 SERVICE_ROLE_KEY만 씀 — 로컬 DB작업 시에만 교체) · ② `middleware.ts` 없음(현재 로그인 정상이나 토큰 만료~1h 후 SSR 세션 갱신 안정성 위해 추후 복구 권장, 필수 아님) · ③ OLD "OT-Marketing"은 며칠 안정 후 정리 판단.
+> **▶ 다음 1순위: onetrillion.app 도메인 연결** — 가비아 DNS A/CNAME(이메일 MX 유지) + Vercel 도메인 추가 + Supabase Site URL·구글 OAuth를 onetrillion.app로 갱신(또는 병행).
+>
+> ⬇️ **(아래 🟢 STEP 392 배너는 직전 작업 상태.)**
+
+> 🟢 **2026-06-24 · 현재 상태 (STEP 392, HEAD `8424e9b`, 빌드 ✓) — 직전 코드 상태.**
 > **이번 세션(370~392) = 코드 헬스 → 캐시 → UX → 모바일 반응형 → 종목·상품 고도화(관심종목·페이지네이션·검색·증권사 시트) → 종목 표 마무리 + 전면 코드 감사·정리.**
 > - **코드 헬스(370·372)**: 죽은 legacy 라우트 11+컴포넌트 27(370) + 죽은 API 라우트 ~55(372) 삭제(빌드 페이지 144→28, 크론·활성 보존). **371** 지수 티커 영어화.
 > - **속도(373·374)**: 탭 데이터 **클라이언트 캐시(stale-while-revalidate, `lib/clientCache.ts`)** + 피드 스켈레톤 → 모든 탭(피드·종목표·리딩방) **재방문 즉시**. 컴포넌트만(새 라우트 아님).

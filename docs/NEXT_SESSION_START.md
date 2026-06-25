@@ -1,7 +1,18 @@
 <!-- 2026-06-24 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-24 현재 (STEP 392)** — HEAD `8424e9b`, 빌드 ✓. **데스크톱 안정화 + 전면 모바일 반응형 + 종목·상품 고도화 + 종목 표 마무리 + 전면 코드 감사·정리.**
+> 🆕 **2026-06-24 (최신) — STEP 394, HEAD `e6afa23`, 빌드 ✓. Supabase 전용 프로젝트 이전 + Vercel 배포 + 구글 로그인 LIVE.** 최신은 이 블록.
+> - **🆕 Supabase = 신규 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** 구 `qxkmwlkchyxfzxbonhtj`("OT-Marketing")=타 데이터 혼재로 폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
+> - **🆕 배포 = `https://stock-terminal-delta.vercel.app`** (env 5개 새값 교체, SERVICE_ROLE_KEY 새 형식 `sb_secret_...`). **🆕 구글 로그인 = 작동**(새 콜백 `https://ccbwxcszdoyjxvckedfp.supabase.co/auth/v1/callback` + Supabase Auth Google + Site URL 새 도메인; 첫 실패는 Client Secret 불일치 → 구글에서 새로 발급해 해결).
+> - 인프라(Cowork MCP): pg_dump 차단 → **MCP introspection으로 완전판 스키마 재구성** → 마이그레이션 5개. **37테이블+뷰2+함수9+트리거7(회원가입 트리거 포함)+FK34+RLS61, RLS 구멍 0.** 데이터 link_hub100·products10·youtube100 복사 + fss_advisors 크론 **1,804건**. 문서 `docs/SUPABASE_MIGRATION.md`·`SUPABASE_MIGRATION_HANDOFF.md`.
+> - **STEP 393(`64003e1`)** 로그인 후 죽은 `/kr`→홈(`/`) 리다이렉트 · **STEP 394(`e6afa23`)** 종목 검색박스를 하위탭 같은 줄 우측으로 이동(`MarketBoard.tsx`).
+> - **⚠️ 남은 선택**: DATABASE_URL 구값(앱 런타임 미사용·무해) · `middleware.ts` 없음(현재 로그인 정상이나 토큰 만료~1h 후 SSR 세션 갱신 안정성 위해 추후 복구 권장, 필수 아님) · OLD "OT-Marketing"은 며칠 안정 후 정리.
+> - **▶ 다음 1순위: onetrillion.app 도메인 연결** — 가비아 DNS A/CNAME(이메일 MX 유지) + Vercel 도메인 추가 + Supabase Site URL·구글 OAuth onetrillion.app로 갱신(또는 병행). 그다음 middleware.ts 복구(선택) → 앱스토어.
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-24 이어서).
+>
+> ⬇️ **(아래는 직전 — STEP 392 코드 상태.)**
+
+> 🆕 **(직전) 2026-06-24 (STEP 392)** — HEAD `8424e9b`, 빌드 ✓. **데스크톱 안정화 + 전면 모바일 반응형 + 종목·상품 고도화 + 종목 표 마무리 + 전면 코드 감사·정리.**
 > - **코드 헬스(370·372)** 죽은 라우트·컴포넌트·API 삭제(144→28) · **371** 티커 영어 · **속도(373·374)** 탭 클라이언트 캐시+스켈레톤(재방문 즉시) · **375** UX 디테일 5종 · **376** 마이페이지 즐겨찾기 탭 제거(→/favorites).
 > - **📱 모바일(377~381·385)**: 패딩·푸터·게이트웨이 + 표 기간 **드롭다운**(381) + 증권사 표아래(379) + 터치타깃 + 종목클릭→**증권사 시트(모바일 전용)**(385). `MOBILE_BUILD_PLAN.md`·`MOBILE_MORNING_CHECKLIST.md`.
 > - **⭐ 관심종목(382)** watchlist+name_ko(Cowork MCP)+`/api/watchlist`+행 ⭐+`/favorites` · **전체+검색(383)** ~2,600종목 50/페이지+검색(1주~1년=야후 45개만).

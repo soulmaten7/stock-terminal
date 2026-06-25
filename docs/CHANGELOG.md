@@ -1,6 +1,21 @@
 <!-- 2026-06-24 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-06-24 (이어서) — Supabase 전용 프로젝트 분리 + 배포 + 구글 로그인 활성화 + /kr·검색박스 수정
+
+HEAD `e6afa23`(394). 빌드 ✓. **흩어진 데이터를 Trillion 전용 Supabase로 이사 → Vercel 배포 → 구글 로그인 LIVE.** STEP 393~394 코드 수정 2건은 Claude Code, 인프라(Supabase 분리·배포·OAuth)는 Cowork이 MCP·가이드로 직접 수행.
+- **🔵 Supabase 전용 프로젝트 분리(대형 인프라, Cowork MCP 직접)**: 기존 `qxkmwlkchyxfzxbonhtj`(표시명 "OT-Marketing", ap-southeast-1)에 Trillion 데이터가 타 프로젝트와 섞여 있던 것을 → **신규 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울)** 전용 프로젝트로 이사.
+  - 방식: pg_dump 직결=IPv6 차단·풀러도 막힘 → **Supabase MCP 카탈로그 introspection으로 완전판 스키마 재구성** 후 NEW 적용(초기 `_trillion_schema.sql` 768줄 재구성본은 컬럼 누락[dividends·quant_factors·financials 등] 있어 폐기). 마이그레이션 5개: `trillion_01_tables`→`02_fk_and_indexes`→`03_rls_policies`→`04_functions_triggers`→`05_views`.
+  - 결과: **37 테이블**(잔재 10개=advertisers·banners·banner_clicks·payments·partners·partner_slots·partner_leads·partner_clicks·chat_messages·chat_reports 제외) + 뷰 2(advisor_directory·stock_snapshot_v) + 함수 9 + 트리거 7 + auth.users 회원가입 트리거(on_auth_user_created→handle_new_user) + FK 34 + RLS 정책 61. **RLS 구멍 0개**(OLD의 무방비 banner_clicks·chat_reports가 제거되어 더 안전).
+  - 데이터: link_hub 100·products 10·youtube_channels 100 = MCP로 복사(행수·URL 일치 검증). fss_advisors는 배포 후 크론으로 재적재 → **1,804건 동기화 완료**. 시드 더미(예시 리딩방 5)·테스트 자가등록(2, rejected)은 의도적 제외(새 프로젝트가 더 깨끗).
+  - 문서: `docs/SUPABASE_MIGRATION.md`(상태)·`docs/SUPABASE_MIGRATION_HANDOFF.md`(사용자 단계 가이드). ⚠️ POTAL ref `zyurflkhiregundhisky` 절대 금지 유지. 코드 식별자 `unjong-*`·DB 표시명 대소문자 차이로 유지.
+- **🚀 Vercel 배포 — `stock-terminal-delta.vercel.app`**: env 5개를 새 프로젝트 값으로 교체(NEXT_PUBLIC_SUPABASE_URL·NEXT_PUBLIC_SUPABASE_ANON_KEY·SUPABASE_SERVICE_ROLE_KEY[새 형식 `sb_secret_...`, supabase-js 2.101 정식 지원]·SUPABASE_PROJECT_REF·DATABASE_URL). CRON_SECRET은 Vercel에만. ⚠️ DATABASE_URL은 아직 구 프로젝트값이나 **앱 런타임 미사용**(코드에서 `lib/supabase/admin.ts`가 SERVICE_ROLE_KEY만 사용) → 무해, 로컬 DB작업 시에만 교체.
+- **🔑 구글 로그인 활성화(사용자+Cowork 가이드)**: Google Cloud Console OAuth 클라이언트 리디렉션 URI에 새 콜백 `https://ccbwxcszdoyjxvckedfp.supabase.co/auth/v1/callback` 추가(기존 콜백 유지) + Supabase 새 프로젝트 Auth→Providers→Google 활성화(Client ID/Secret) + URL Configuration(Site URL=`https://stock-terminal-delta.vercel.app`, Redirect URLs=`.../**`·`http://localhost:3333/**`). 첫 시도 실패 "Unable to exchange external code"=Client Secret 불일치 → 구글에서 secret **새로 발급**(Add secret)해서 해결 → **구글 로그인 정상 동작 확인.**
+- **STEP 393 — 로그인 후 죽은 `/kr` → 홈(`/`) 리다이렉트 수정**(`64003e1`): 로그인은 됐으나 콜백이 V7때 삭제된 `/kr`로 보내 404. `app/auth/callback/route.ts`의 `next` 기본값 `/kr`→`/`, `app/auth/login/page.tsx` 돌아가기 링크 `/kr`→`/`.
+- **STEP 394 — 종목 검색박스를 하위탭 같은 줄 우측으로 이동**(`e6afa23`): `components/toolbox/MarketBoard.tsx` 검색박스가 표 위 별도 줄(2줄)이던 것을 `주식 ETF ETN 리츠` 하위탭과 **같은 줄 우측**으로 이동(표 우측 1년/☆ 위 정렬). 모바일 w-32, sm+ w-48.
+- **남은 선택사항**: ① DATABASE_URL 구값(런타임 미사용·무해) · ② `middleware.ts` 없음(STEP 299에서 추가했다 정리 때 사라짐 — 현재 로그인 정상이나 토큰 만료~1h 후 SSR 세션 갱신 안정성 위해 추후 복구 권장, 필수 아님) · ③ OLD "OT-Marketing" 프로젝트는 Trillion 용도로 더 안 씀(며칠 안정 후 정리 판단).
+- ▶ **다음 1순위: onetrillion.app 도메인 연결**(가비아 DNS A/CNAME, 이메일 MX 유지) + Vercel 도메인 추가 + Supabase Site URL·구글 OAuth를 onetrillion.app로 갱신(또는 병행).
+
 ## 2026-06-24 — STEP 370~392 · 코드 헬스 → 캐시 → UX → 모바일 반응형 → 종목·상품 고도화 → 종목 표 마무리 + 전면 코드 감사·정리
 
 HEAD `8424e9b`(392). 빌드 ✓. **데스크톱 안정화 + 전면 모바일 반응형 + 종목·상품 대폭 고도화 + 종목 표 마무리 + 전면 코드 감사·정리.**

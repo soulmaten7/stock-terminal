@@ -2,6 +2,16 @@
 <!-- Last GC: 2026-06-04 (마이그레이션 020·021·022 적용 + FSS 1,738건 적재 완료 시점) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## (이어서 2026-06-24) STEP 393~394 + 인프라 — Supabase 전용 분리 + 배포 + 구글 로그인 LIVE ✅
+
+HEAD `e6afa23`(394). 빌드 ✓. **흩어진 데이터를 Trillion 전용 Supabase로 이사 → Vercel 배포 → 구글 로그인 작동.** 인프라(Supabase 분리·배포·OAuth)는 Cowork이 MCP·가이드로 직접, 코드 2건은 Claude Code.
+- **🔵 Supabase 전용 분리(Cowork MCP)**: 구 `qxkmwlkchyxfzxbonhtj`("OT-Marketing", ap-southeast-1, 타 데이터 혼재) → **신규 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울)** 이사. pg_dump 직결 차단(IPv6·풀러) → **MCP introspection으로 완전판 스키마 재구성**(초기 768줄 재구성본은 컬럼 누락[dividends·quant_factors·financials]으로 폐기) → 마이그레이션 5개(`trillion_01_tables`→`02_fk_and_indexes`→`03_rls_policies`→`04_functions_triggers`→`05_views`). 결과 **37테이블+뷰2(advisor_directory·stock_snapshot_v)+함수9+트리거7(회원가입 on_auth_user_created→handle_new_user)+FK34+RLS정책61, RLS 구멍 0**(OLD 무방비 banner_clicks·chat_reports 제거로 더 안전). 데이터 link_hub100·products10·youtube100 MCP 복사(행수·URL 검증)+fss_advisors 크론 재적재 **1,804건**. 시드더미·테스트행 의도 제외. 문서 `docs/SUPABASE_MIGRATION.md`·`SUPABASE_MIGRATION_HANDOFF.md`. ⚠️ POTAL ref `zyurflkhiregundhisky` 금지 유지, 코드 `unjong-*`·DB 표시명 대소문자 차이로 유지.
+- **🚀 Vercel 배포 `stock-terminal-delta.vercel.app`**: env 5개 새값 교체(URL·ANON·SERVICE_ROLE[새 형식 `sb_secret_...`=supabase-js 2.101 지원]·PROJECT_REF·DATABASE_URL), CRON_SECRET Vercel만. ⚠️ DATABASE_URL은 구값이나 **앱 런타임 미사용**(`lib/supabase/admin.ts`가 SERVICE_ROLE_KEY만 사용)=무해.
+- **🔑 구글 로그인 LIVE**: Google OAuth 새 콜백 `https://ccbwxcszdoyjxvckedfp.supabase.co/auth/v1/callback` 추가 + Supabase Auth Google 활성화 + Site URL `stock-terminal-delta.vercel.app`. 첫 실패 "Unable to exchange external code"=Client Secret 불일치 → 구글 secret 새로 발급해 해결 → 정상 동작 확인.
+- **STEP 393(`64003e1`)** 로그인 후 죽은 `/kr`→홈(`/`) 리다이렉트(`app/auth/callback/route.ts` `next` 기본값·`app/auth/login/page.tsx` 링크). **STEP 394(`e6afa23`)** 종목 검색박스를 `주식 ETF ETN 리츠` 하위탭 **같은 줄 우측**으로 이동(`MarketBoard.tsx`, 모바일 w-32/sm+ w-48).
+- **⚠️ 남은 선택**: DATABASE_URL 구값(런타임 미사용·무해) · `middleware.ts` 없음(STEP 299에서 추가했다 정리 때 사라짐 — 현재 로그인 정상이나 토큰 만료~1h 후 SSR 세션 갱신 안정성 위해 추후 복구 권장, 필수 아님) · OLD "OT-Marketing"은 며칠 안정 후 정리 판단.
+- ▶ **다음 1순위: onetrillion.app 도메인 연결**(가비아 DNS A/CNAME, 이메일 MX 유지) + Vercel 도메인 추가 + Supabase Site URL·구글 OAuth onetrillion.app로 갱신(또는 병행). 그다음: middleware.ts 복구(선택) → 앱스토어.
+
 ## STEP 370~392 (2026-06-24) — 코드 헬스·캐시·UX·모바일·종목상품 고도화 + 종목표 마무리 + 전면 감사 정리 ✅
 
 HEAD `8424e9b`(392). 빌드 ✓.
@@ -15,7 +25,7 @@ HEAD `8424e9b`(392). 빌드 ✓.
 - **전체+검색(383)**: KRX cap 3000, ~2,600 종목 50/페이지+검색. ⚠️ 1주~1년=야후 UNIVERSE 45개만("—").
 - **DB(MCP, git 아님)**: `watchlist.name_ko TEXT` 추가(RLS·정책 "Users can manage own watchlist" 기존). soulmaten7=admin. 운종 ref `qxkmwlkchyxfzxbonhtj`.
 - ⚠️ 검증: Chrome 마우스 CDP 멈춤 → **JS 실행으로 종단검증**(전부 OK). STEP 382~385 Claude Code 자율작성→Cowork 교정 4건(돌리기 전 검토 권장).
-- ▶ **다음**: 모바일 실측 미세조정(`MOBILE_MORNING_CHECKLIST.md`) → 모바일 마무리 → 배포(Vercel) → 앱스토어.
+- ▶ **다음**: ~~배포(Vercel)~~ ✅완료(위 이어서 블록 — Supabase 전용 분리·배포·구글 로그인 LIVE) → onetrillion.app 도메인 연결 → 모바일 실측 미세조정(`MOBILE_MORNING_CHECKLIST.md`) → 앱스토어.
 
 ## STEP 361~369 (2026-06-23) — 마이페이지·신뢰·출시준비(도메인·이메일·로고)·랜딩 ✅
 
