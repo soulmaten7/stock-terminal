@@ -1,7 +1,17 @@
-<!-- 2026-06-24 -->
+<!-- 2026-06-25 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-24 (최신) — STEP 394, HEAD `e6afa23`, 빌드 ✓. Supabase 전용 프로젝트 이전 + Vercel 배포 + 구글 로그인 LIVE.** 최신은 이 블록.
+> 🆕 **2026-06-25 (최신) — STEP 402, HEAD `52ebd5f`. 배포 ✓ onetrillion.app 라이브.** 완성도 패스 8개 STEP + 데이터/인프라. 최신은 이 블록.
+> - **상태**: 배포 = **onetrillion.app 라이브**(도메인 연결 완료, DNS·MX 보존·SSL 자동). DB = NEW "Trillion" 프로젝트 `ccbwxcszdoyjxvckedfp`(ap-northeast-2). POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
+> - **완성도 패스(395~402)**: 395 **KR 전종목 기간 수익률**(`app/api/krx/kr-performance` — 커버 종목 46→2,768) / 396 **country-aware 탭**(US 선택 시 KR 전용 탭 숨김) / 397(P0) privacy 대표·연락처·about 한자 제거·헤더 코인 메뉴 제거 / 398 no-op(false positive — Next 16 `proxy.ts`로 세션 갱신 이미 동작) / 399 거시경제 "YYYY.MM 기준" 표시 / 400 유튜브 수집<30 throw+기존 보존 / 401 공모주 빈결과·에러 5분 캐시 / 402(P2) 푸터 "주식·상품" 링크·닉네임 저장 피드백·리딩방 즐겨찾기 비로그인 카드 통일.
+> - **데이터/인프라**: 배당 복원(NEW 0건 → OLD에서 top-60+27 MCP 복사, JB금융지주 9.9%·HD현대 9.61%, `exDate` NULL→"—") · US 링크허브 67개/10카테고리(`docs/US_LINK_HUB_CURATION.md`) · Supabase 전용 이전 + onetrillion.app 도메인 연결.
+> - 커밋: STEP 395~401 = `e21f2cc`, STEP 397~402 최종 = **`52ebd5f`**.
+> - **▶ 다음 후보(보류)**: KR 링크 큐레이션 품질 재점검(US 67개처럼 정밀 검수) · advisors 검색+플랫폼 동시 필터(`else if`라 검색 시 플랫폼 무시 — UI 의도적 either/or라 합치려면 재설계, 보류) · 뉴스 og:image 경량화(6→3)+빈 fallback · admin 페이지네이션(현 limit 300) · 토론/평가 첫 콘텐츠 시딩 · 전체 i18n(현 UI 한국어 유지) · "리포트/차트" 탭 라벨-콘텐츠 불일치 정리.
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-25).
+>
+> ⬇️ **(아래는 직전 — STEP 394 상태.)**
+
+> 🆕 **(직전) 2026-06-24 — STEP 394, HEAD `e6afa23`, 빌드 ✓. Supabase 전용 프로젝트 이전 + Vercel 배포 + 구글 로그인 LIVE.**
 > - **🆕 Supabase = 신규 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** 구 `qxkmwlkchyxfzxbonhtj`("OT-Marketing")=타 데이터 혼재로 폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
 > - **🆕 배포 = `https://stock-terminal-delta.vercel.app`** (env 5개 새값 교체, SERVICE_ROLE_KEY 새 형식 `sb_secret_...`). **🆕 구글 로그인 = 작동**(새 콜백 `https://ccbwxcszdoyjxvckedfp.supabase.co/auth/v1/callback` + Supabase Auth Google + Site URL 새 도메인; 첫 실패는 Client Secret 불일치 → 구글에서 새로 발급해 해결).
 > - 인프라(Cowork MCP): pg_dump 차단 → **MCP introspection으로 완전판 스키마 재구성** → 마이그레이션 5개. **37테이블+뷰2+함수9+트리거7(회원가입 트리거 포함)+FK34+RLS61, RLS 구멍 0.** 데이터 link_hub100·products10·youtube100 복사 + fss_advisors 크론 **1,804건**. 문서 `docs/SUPABASE_MIGRATION.md`·`SUPABASE_MIGRATION_HANDOFF.md`.

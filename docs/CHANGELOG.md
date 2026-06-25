@@ -1,5 +1,21 @@
-<!-- 2026-06-24 -->
+<!-- 2026-06-25 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-06-25 — STEP 395~402 · 완성도 패스(전종목 수익률·country-aware·신선도 가드·P2 묶음) + 배당 복원 + US 링크허브 + 인프라(Supabase 전용 이전·도메인 연결)
+
+HEAD `52ebd5f`(402). 배포 ✓ **onetrillion.app 라이브.** **흩어진 디테일을 메우는 완성도 패스 8개 STEP + 데이터/인프라.** STEP 395~401 = `e21f2cc`, STEP 397~402 최종 = **`52ebd5f`** → onetrillion.app 반영 완료. DB = NEW "Trillion" 프로젝트(`ccbwxcszdoyjxvckedfp`).
+- **STEP 395 — KR 전종목 기간 수익률**: 신규 `app/api/krx/kr-performance/route.ts`(KRX `bydd_trd` 기준일 + 5개 과거 날짜 오프셋 7/30/91/182/365일, 휴장일 백워크). `MarketBoard`가 symbol로 r1w~r1y 병합. **기간 수익률 커버 종목 46 → 2,768**(기존 야후 UNIVERSE 45개만 → KRX 전종목으로 확대, 긴 기간 "—" 대폭 해소).
+- **STEP 396 — country-aware 탭**: `components/toolbox/ToolboxClient.tsx` US 선택 시 KR 전용 탭(종목·상품/유튜브/리딩방·검증) 숨김 → 링크 있는 탭만 노출(빈 화면 방지).
+- **STEP 397 (P0) — 법정/메뉴 정리**: privacy 대표/연락처 입력(장은태 / contact@onetrillion.app), about 한자 雲從 표기 제거, Header에서 코인 메뉴 제거(주식만).
+- **STEP 398 — no-op(false positive)**: audit이 `middleware.ts` 부재를 지적했으나, Next 16은 middleware.ts 대신 `proxy.ts`를 쓰고 이미 세션 갱신이 동작 중 → 변경 없음. **교훈: audit 발견은 코드로 검증 후 STEP화.**
+- **STEP 399 — 거시경제 지표 기준일자 표시**: `components/toolbox/MacroFeed.tsx` `fmtDate` 헬퍼 + "YYYY.MM 기준" 표기(신선도 신뢰).
+- **STEP 400 — 유튜브 주간 갱신 안전가드**: `lib/youtube.ts` 수집 < 30이면 throw + 기존 데이터 보존(빈 테이블 사고 방지).
+- **STEP 401 — 공모주 피드 빈결과/에러 5분 캐시**: `app/api/ipo/feed/route.ts`(38 스크래핑 장애 시 재시도 폭주 방지).
+- **STEP 402 (P2 묶음)**: 푸터 서비스 컬럼 "주식·상품"(`/`) 링크 추가 + 마이페이지 닉네임 저장 성공/실패 인라인 피드백 + `RoomFavoritesClient` 비로그인 "로그인하세요" 카드 분기 통일(3개 즐겨찾기 섹션 일관화).
+- **🔵 배당 데이터 복원(MCP, git 아님)**: NEW 프로젝트 `dividends` 0건 → OLD(`qxkmwlkchyxfzxbonhtj`)에서 **top-60 고배당 + 참조 27종목 복사**(Supabase MCP). 공유 DB라 즉시 반영. 상위: JB금융지주 9.9%·HD현대 9.61% 등. `exDate`는 NULL → "—" 표기.
+- **🔵 US 링크허브 큐레이션**: 67개 사이트/10카테고리(`docs/US_LINK_HUB_CURATION.md`, 2차 레드팀 검수로 dead URL 제거).
+- **🔵 인프라(이전 단계)**: Supabase 마이그레이션 OLD→NEW "Trillion"(`ccbwxcszdoyjxvckedfp`, ap-northeast-2) 완료, **onetrillion.app 도메인 연결**(DNS 라이브, MX 보존, SSL 자동).
+- ▶ **다음 후보(보류)**: KR 링크 큐레이션 품질 재점검(US 67개처럼 정밀 검수) · advisors 검색+플랫폼 동시 필터(`app/api/advisors/route.ts` `else if`라 검색 시 플랫폼 무시 — UI가 의도적 either/or이라 합치려면 재설계, 보류) · 뉴스 og:image 스크래핑 경량화(6→3)+빈 fallback · admin 페이지네이션(현 limit 300) · 토론/평가 첫 콘텐츠 시딩 · 전체 i18n(현 UI 한국어 유지) · "리포트/차트" 탭 라벨-콘텐츠 불일치 정리.
 
 ## 2026-06-24 (이어서) — Supabase 전용 프로젝트 분리 + 배포 + 구글 로그인 활성화 + /kr·검색박스 수정
 

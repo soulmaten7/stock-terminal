@@ -1,7 +1,18 @@
-<!-- 2026-06-24 -->
+<!-- 2026-06-25 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
-> 🟢 **2026-06-24 (최신) · Supabase 전용 프로젝트 이전 + 배포 + 구글 로그인 LIVE (STEP 394, HEAD `e6afa23`, 빌드 ✓) — 최신은 이 배너.**
+> 🟢 **2026-06-25 (최신) · 완성도 패스 STEP 395~402 + 데이터/인프라 (HEAD `52ebd5f`) — 배포 ✓ onetrillion.app 라이브 — 최신은 이 배너.**
+> **한 줄: 흩어진 디테일을 메우는 완성도 패스 8개 STEP(전종목 수익률·country-aware·신선도 가드·P2 묶음) + 배당 복원 + US 링크허브 + 인프라(Supabase 전용 이전·도메인 연결). onetrillion.app 라이브.**
+> - **🆕 배포 = `https://onetrillion.app` 라이브** (도메인 연결 완료 — DNS 라이브, 이메일 MX 보존, SSL 자동). 이전 `stock-terminal-delta.vercel.app`도 유효.
+> - **🆕 DB = NEW 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** (구 `qxkmwlkchyxfzxbonhtj`/"OT-Marketing"=폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.)
+> - **🆕 최신 STEP = 402.** 커밋: STEP 395~401 = `e21f2cc`, STEP 397~402 최종 = **`52ebd5f`** → onetrillion.app 반영 완료.
+> - **완성도 패스(395~402)**: **395 KR 전종목 기간 수익률** — 신규 `app/api/krx/kr-performance/route.ts`(KRX `bydd_trd` 기준일 + 5개 과거날짜 오프셋 7/30/91/182/365일, 휴장일 백워크), `MarketBoard`가 symbol로 r1w~r1y 병합 → **커버 종목 46 → 2,768**(긴 기간 "—" 대폭 해소) / **396 country-aware 탭**(`ToolboxClient` US 선택 시 KR 전용 탭[종목·상품/유튜브/리딩방·검증] 숨김) / **397(P0)** privacy 대표·연락처(장은태 / contact@onetrillion.app)·about 한자 雲從 제거·Header 코인 메뉴 제거(주식만) / **398 no-op(false positive)** — Next 16은 `middleware.ts` 대신 `proxy.ts`를 쓰고 세션 갱신 이미 동작 중(교훈: audit 발견은 코드로 검증 후 STEP화) / **399** 거시경제 "YYYY.MM 기준" 표시(`MacroFeed` `fmtDate`, 신선도 신뢰) / **400** 유튜브 주간 갱신 수집<30이면 throw+기존 보존(`lib/youtube.ts`, 빈 테이블 사고 방지) / **401** 공모주 피드 빈결과·에러 5분 캐시(`app/api/ipo/feed`) / **402(P2 묶음)** 푸터 "주식·상품"(`/`) 링크·마이페이지 닉네임 저장 인라인 피드백·`RoomFavoritesClient` 비로그인 카드 분기 통일.
+> - **데이터/인프라(MCP·git 아님)**: **배당 복원** NEW `dividends` 0건 → OLD(`qxkmwlkchyxfzxbonhtj`)에서 top-60 고배당+참조 27종목 복사(공유 DB라 즉시 반영, JB금융지주 9.9%·HD현대 9.61%, `exDate` NULL→"—") · **US 링크허브** 67개/10카테고리(`docs/US_LINK_HUB_CURATION.md`, 2차 레드팀 검수 dead URL 제거) · **Supabase 전용 이전**(OLD→NEW "Trillion") + **onetrillion.app 도메인 연결**.
+> - **▶ 다음 후보(보류)**: ① KR 링크 큐레이션 품질 재점검(US 67개처럼 정밀 검수) · ② advisors 검색+플랫폼 동시 필터(`app/api/advisors/route.ts` `else if`라 검색 시 플랫폼 무시 — `AdvisorDirectory` UI가 의도적 either/or[플랫폼 클릭=검색 해제, `!searching` 게이트]라 합치려면 UI 재설계 필요 → 보류) · ③ 뉴스 og:image 스크래핑 경량화(6→3)+빈 fallback · ④ admin 페이지네이션(현 limit 300) · ⑤ 토론/평가 첫 콘텐츠 시딩 · ⑥ 전체 i18n(현 UI 한국어 유지, 추후 언어권별 세팅) · ⑦ "리포트/차트" 탭 라벨-콘텐츠 불일치 정리.
+>
+> ⬇️ **(아래 🟢 STEP 394 배너는 직전 작업 상태.)**
+
+> 🟢 **2026-06-24 · Supabase 전용 프로젝트 이전 + 배포 + 구글 로그인 LIVE (STEP 394, HEAD `e6afa23`, 빌드 ✓) — 직전 작업 상태.**
 > **한 줄: Trillion 데이터를 전용 Supabase로 이사 → Vercel 배포 → 구글 로그인 작동. 새 세션은 아래 식별자부터 외울 것.**
 > - **🆕 Supabase = 신규 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** (구 `qxkmwlkchyxfzxbonhtj`/"OT-Marketing"=타 데이터와 섞여 있어 폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.)
 > - **🆕 배포 URL = `https://stock-terminal-delta.vercel.app`** (env 5개 새 프로젝트값 교체, SERVICE_ROLE_KEY는 새 형식 `sb_secret_...`=supabase-js 2.101 정식 지원).

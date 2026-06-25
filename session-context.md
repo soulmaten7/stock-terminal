@@ -1,6 +1,23 @@
-<!-- 2026-06-24 -->
-<!-- Last GC: 2026-06-04 (마이그레이션 020·021·022 적용 + FSS 1,738건 적재 완료 시점) -->
+<!-- 2026-06-25 -->
+<!-- Last GC: 2026-06-25 (완성도 패스 STEP 395~402 완료 — TODO 정리·다음 후보 갱신) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## (이어서 2026-06-25) STEP 395~402 + 데이터/인프라 — 완성도 패스 + 배당 복원 + US 허브 + onetrillion.app 라이브 ✅
+
+HEAD `52ebd5f`(402). 배포 ✓ **onetrillion.app 라이브.** **흩어진 디테일을 메우는 완성도 패스 8개 STEP + 데이터/인프라.** STEP 395~401 = `e21f2cc`, STEP 397~402 최종 = **`52ebd5f`**. DB = NEW "Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 395 KR 전종목 수익률**: 신규 `app/api/krx/kr-performance/route.ts`(KRX `bydd_trd` 기준일 + 5개 과거날짜 오프셋 7/30/91/182/365일, 휴장일 백워크). `MarketBoard`가 symbol로 r1w~r1y 병합. **커버 종목 46 → 2,768**(긴 기간 "—" 대폭 해소).
+- **STEP 396 country-aware 탭**: `components/toolbox/ToolboxClient.tsx` US 선택 시 KR 전용 탭(종목·상품/유튜브/리딩방·검증) 숨김 → 링크 있는 탭만.
+- **STEP 397 (P0)**: privacy 대표/연락처(장은태 / contact@onetrillion.app), about 한자 雲從 제거, Header 코인 메뉴 제거(주식만).
+- **STEP 398 no-op(false positive)**: Next 16은 `middleware.ts` 대신 `proxy.ts`를 쓰고 이미 세션 갱신 동작 중 → 변경 없음. 교훈: audit 발견은 코드로 검증 후 STEP화.
+- **STEP 399 거시경제 기준일자**: `components/toolbox/MacroFeed.tsx` `fmtDate` + "YYYY.MM 기준"(신선도 신뢰).
+- **STEP 400 유튜브 안전가드**: `lib/youtube.ts` 수집 < 30이면 throw + 기존 보존(빈 테이블 사고 방지).
+- **STEP 401 공모주 빈결과/에러 5분 캐시**: `app/api/ipo/feed/route.ts`(스크래핑 장애 시 재시도 폭주 방지).
+- **STEP 402 (P2 묶음)**: 푸터 "주식·상품"(`/`) 링크 + 마이페이지 닉네임 저장 인라인 피드백 + `RoomFavoritesClient` 비로그인 카드 분기 통일.
+- **🔵 배당 복원(MCP, git 아님)**: NEW `dividends` 0건 → OLD(`qxkmwlkchyxfzxbonhtj`)에서 top-60 고배당 + 참조 27종목 복사. 즉시 반영(공유 DB). 상위 JB금융지주 9.9%·HD현대 9.61%. `exDate` NULL→"—".
+- **🔵 US 링크허브**: 67개 사이트/10카테고리(`docs/US_LINK_HUB_CURATION.md`, 2차 레드팀 검수 dead URL 제거).
+- **🔵 인프라(이전 단계)**: Supabase OLD→NEW "Trillion"(`ccbwxcszdoyjxvckedfp`, ap-northeast-2) 이전 완료 + **onetrillion.app 도메인 연결**(DNS 라이브, MX 보존, SSL 자동).
+
+**▶ 다음 후보(보류)**: KR 링크 큐레이션 품질 재점검(US 67개처럼 정밀 검수) · advisors 검색+플랫폼 동시 필터(`app/api/advisors/route.ts` `else if`라 검색 시 플랫폼 무시 — `AdvisorDirectory` UI가 의도적 either/or[플랫폼 클릭=검색 해제, `!searching` 게이트]라 합치려면 UI 재설계 필요 → 보류) · 뉴스 og:image 스크래핑 경량화(6→3)+빈 fallback · admin 페이지네이션(현 limit 300) · 토론/평가 첫 콘텐츠 시딩 · 전체 i18n(현 UI 한국어 유지, 추후 언어권별 세팅) · "리포트/차트" 탭 라벨-콘텐츠 불일치 정리.
 
 ## (이어서 2026-06-24) STEP 393~394 + 인프라 — Supabase 전용 분리 + 배포 + 구글 로그인 LIVE ✅
 

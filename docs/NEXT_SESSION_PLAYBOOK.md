@@ -1,10 +1,12 @@
-<!-- 2026-06-24 -->
+<!-- 2026-06-25 -->
 # Trillion(트릴리언) — 다음 세션 PLAYBOOK
 
 > **이 파일은 무엇인가**: 다음 세션을 처음부터 끝까지 이해하고 진행하기 위한 마스터 인수인계 파일. 다른 어떤 문서를 안 봐도 이 파일만으로 작업 시작 가능.
 >
-> **시점 스냅샷**: **2026-06-24 STEP 392 종료** — (369 이후) 코드 헬스 정리 → 탭 캐시 → UX → **전면 모바일 반응형**(표 기간 드롭다운·증권사 시트 등) → **종목·상품 고도화**(관심종목 watchlist·전체 ~2,600 페이지네이션·검색·table-fixed·숫자페이지) → **전면 코드 감사·정리**(🔴보안 verify 삭제·죽은코드 27파일·국가상태 통합·색상 토큰·견고성). ⚠️ 미배포(로컬) — 배포 한 번에 Vercel. 사업자 대표 장은태·제주 서귀포시 동문로 55 2층. **📌 370~392 세부는 `docs/SESSION_BOOT.md` 최상단 배너가 최신·정본**(이 PLAYBOOK 본문 §은 312~369 히스토리 보존).
-> **HEAD 커밋**: `8424e9b` (STEP 392 · 종목명 풀네임·토글 revert). 빌드 ✓. (369 = `bb04a13`.)
+> **시점 스냅샷**: **2026-06-25 STEP 402 종료** — (394 이후) **완성도 패스 8개 STEP**: 395 KR 전종목 기간 수익률(`app/api/krx/kr-performance`, 커버 46→2,768) · 396 country-aware 탭(US 선택 시 KR 전용 탭 숨김) · 397(P0) privacy 대표·연락처·about 한자 제거·헤더 코인 메뉴 제거 · 398 no-op(false positive — Next 16 `proxy.ts`로 세션 갱신 이미 동작) · 399 거시경제 "YYYY.MM 기준" · 400 유튜브 수집<30 throw+보존 · 401 공모주 빈결과·에러 5분 캐시 · 402(P2) 푸터 링크·닉네임 피드백·리딩방 즐겨찾기 비로그인 카드 통일. **+ 배당 복원(MCP, NEW 0건→OLD top-60+27 복사)·US 링크허브 67개·Supabase 전용 이전·onetrillion.app 도메인 연결.** **배포 ✓ onetrillion.app 라이브.** 사업자 대표 장은태·제주 서귀포시 동문로 55 2층. **📌 370~402 세부는 `docs/SESSION_BOOT.md` 최상단 배너가 최신·정본**(이 PLAYBOOK 본문 §은 312~369 히스토리 보존).
+> **HEAD 커밋**: `52ebd5f` (STEP 397~402 최종). 배포 ✓. (STEP 395~401 = `e21f2cc` · 394 = `e6afa23` · 369 = `bb04a13`.)
+> **DB**: NEW 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2). 구 `qxkmwlkchyxfzxbonhtj`("OT-Marketing")=폐기 예정. POTAL ref `zyurflkhiregundhisky`=절대 금지.
+> **▶ 다음 후보(보류)**: KR 링크 큐레이션 품질 재점검 · advisors 검색+플랫폼 동시 필터(`else if`라 검색 시 플랫폼 무시 — UI 의도적 either/or라 합치려면 재설계, 보류) · 뉴스 og:image 경량화(6→3)+빈 fallback · admin 페이지네이션(limit 300) · 토론/평가 첫 콘텐츠 시딩 · 전체 i18n(현 UI 한국어 유지) · "리포트/차트" 탭 라벨-콘텐츠 불일치 정리.
 > **🔑 다음 세션 필독 교훈**: Turbopack이 **API 라우트 변경을 자동 갱신 안 함** → 피드/라우트 수정 후 반드시 **`pkill -f "next dev" && rm -rf .next && npm run dev`** 클린 재시작(`lsof kill`만으론 옛 서버 안 죽음). 코드/키 검증은 **MCP(Chrome)·`?debug=1`**로.
 > **이번 세션(312~345) 큰 줄기**: 312~317 관리자·신고 모더레이션·디자인 통일 / 318~322 마이페이지 정리·🔴로그인 데드락(`AuthProvider` 콜백 동기+setTimeout, 되돌리지 말 것)·법정 페이지 / 323~331 종목·상품 탭 / 332~333 게이트웨이 정리 / 334~345 우측 피드 8종. 신규 라우트 5종(news·dart·macro·dividend·ipo `/feed`), 컴포넌트 8종. env: `.env.local` NAVER 키 추가·ECOS placeholder→실제 키. DB 스키마 변경 0.
 >
