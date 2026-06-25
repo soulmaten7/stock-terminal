@@ -70,7 +70,10 @@ export async function refreshYoutubeTop100() {
     updated_at: new Date().toISOString(),
   }));
 
-  // 4) 한국 채널 전체 교체(delete → insert)
+  // 4) 한국 채널 전체 교체 — 수집이 충분할 때만(빈/부분 수집으로 테이블 비우는 사고 방지)
+  if (rows.length < 30) {
+    throw new Error(`수집 채널 ${rows.length}개로 너무 적음 — 기존 데이터 보존(교체 중단)`);
+  }
   const supabase = createAdminClient();
   await supabase.from("youtube_channels").delete().eq("country", "KR");
   const { error } = await supabase.from("youtube_channels").insert(rows);
