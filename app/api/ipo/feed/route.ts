@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 type IpoItem = { name: string; sub: string; price: string; band: string; rate: string; underwriter: string; link: string };
 
-let cache: { at: number; data: unknown } | null = null;
+let cache: { at: number; data: unknown; empty: boolean } | null = null;
 
 function absUrl(href: string): string {
   try { return new URL(href, "http://www.38.co.kr/html/fund/index.htm").href; }
@@ -14,7 +14,8 @@ function absUrl(href: string): string {
 }
 
 export async function GET() {
-  if (cache && Date.now() - cache.at < 60 * 60 * 1000) {
+  // 정상 1h, 빈 결과 5m 캐시(스크래핑 깨졌을 때 매 요청 재시도 폭주 방지)
+  if (cache && Date.now() - cache.at < (cache.empty ? 5 * 60 * 1000 : 60 * 60 * 1000)) {
     return NextResponse.json(cache.data);
   }
   try {
@@ -78,9 +79,11 @@ export async function GET() {
       .slice(0, 15);
 
     const data = { items: list };
-    if (list.length > 0) cache = { at: Date.now(), data };
+    cache = { at: Date.now(), data, empty: list.length === 0 };
     return NextResponse.json(data);
   } catch (e) {
-    return NextResponse.json({ items: [], error: String(e) });
+    const data = { items: [], error: String(e) };
+    cache = { at: Date.now(), data, empty: true };
+    return NextResponse.json(data);
   }
 }
