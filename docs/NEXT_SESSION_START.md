@@ -1,7 +1,18 @@
-<!-- 2026-06-25 -->
+<!-- 2026-06-26 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-25 (최신) — STEP 402, HEAD `52ebd5f`. 배포 ✓ onetrillion.app 라이브.** 완성도 패스 8개 STEP + 데이터/인프라. 최신은 이 블록.
+> 🆕 **2026-06-26 (최신) — STEP 412, HEAD `9984804`. 배포 ✓ onetrillion.app 라이브.** 미국 시장을 KR과 동등한 종목 탭으로 끌어올린 세션 + KR 링크허브 재점검 + AI 분석 전망 레이어 전략. 최신은 이 블록.
+> - **상태**: 배포 = **onetrillion.app 라이브**(이번 세션 첫 배포 — STEP 404~412 + 세션 문서). DB = NEW "Trillion" `ccbwxcszdoyjxvckedfp`(ap-northeast-2). POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
+> - **US 종목 탭 KR-parity(405~412)**: 405 US 종목 탭 신설(`app/api/yahoo/us-performance` 193 유니버스 + `UsMarketBoard.tsx`) / 406 KR 구조 통일(하위탭·기간 드롭다운·증권사 사이드바) / 407 US ETF(73, `us-etf-performance`)+하위탭 **`주식 | ETF`**(미국 기준, ETN·리츠 제거) / 408 **US 주식 전종목**(`data/us_symbols.json` 6,936 + `us-list` batch quote + `us-quote` 기간 lazy) / 409 KR 데스크탑 기간 드롭다운 통일 / 410 종목표 UI 리파인(`lib/currency.ts` 통화 현지화·드롭다운 1일부터·자동정렬·화살표·간격·로고) / **411 US 기간 백그라운드 미리계산**(`us_stock_perf` 테이블+`lib/usPerf.ts`+`app/api/cron/us-perf` 매일 22시 UTC `vercel.json`+us-list에 1년·DB조인+lazy 제거→전기간 정렬; 핵심: 1일·1년·거래대금=quote 즉시, 1주~6개월=크론 DB) / 412 **헤더=언어 선택기**(시장과 분리, `Header.tsx` useCountryStore 제거, 한국어/English 준비중).
+> - **데이터/전략**: **KR 링크허브 65→71**(MCP 즉시 라이브 — FIX 연합인포맥스·KRX https, 소프트삭제 클리앙·Investing.com 포럼, ADD 8 한국IR협의회·KOFIA·코스닥협회·IRGO·증권플러스비상장·KCIF·KIEP·토스피드, `docs/KR_LINK_HUB_CURATION.md`) · **`us_stock_perf` 상위 200 데모 적재**(전 종목은 prod 크론 자동) · **Trillion AI 분석 로드맵**(`docs/BUSINESS_STRATEGY.md` §3 — 2층 구조: 현=정리/무신고, 최종=전망 유료 구독, 검증 기법 skill화, 매수추천 X·전망 O, 유사투자자문업 신고 추후·법률자문 필수, 투명성=차별점, 데이터+MVP 먼저).
+> - 커밋: STEP 405~412 + 문서 = **`9984804`**.
+> - ⚠️ **US 1주~6개월 전 종목**은 prod 크론 첫 실행(22시 UTC) 후 완성(현재 상위 200 데모만). KR 데이터값 이상(개발환경) — 라이브 실데이터 확인 권장.
+> - **▶ 다음 후보**: ④ **평가 디렉토리(MVP 2.0 차별화 축) 심화** · US 정렬 토글 KR-parity(화살표 일관) · KR 데이터값 라이브 검증 · US ETF/기타상품 확장·증권사 US 연결·다른 시장(일본 등) · (최종) Trillion AI 분석 전망 레이어(`docs/BUSINESS_STRATEGY.md` §3).
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-26).
+>
+> ⬇️ **(아래는 직전 — STEP 402 상태.)**
+
+> 🆕 **(직전) 2026-06-25 — STEP 402, HEAD `52ebd5f`. 배포 ✓ onetrillion.app 라이브.** 완성도 패스 8개 STEP + 데이터/인프라.
 > - **상태**: 배포 = **onetrillion.app 라이브**(도메인 연결 완료, DNS·MX 보존·SSL 자동). DB = NEW "Trillion" 프로젝트 `ccbwxcszdoyjxvckedfp`(ap-northeast-2). POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
 > - **완성도 패스(395~402)**: 395 **KR 전종목 기간 수익률**(`app/api/krx/kr-performance` — 커버 종목 46→2,768) / 396 **country-aware 탭**(US 선택 시 KR 전용 탭 숨김) / 397(P0) privacy 대표·연락처·about 한자 제거·헤더 코인 메뉴 제거 / 398 no-op(false positive — Next 16 `proxy.ts`로 세션 갱신 이미 동작) / 399 거시경제 "YYYY.MM 기준" 표시 / 400 유튜브 수집<30 throw+기존 보존 / 401 공모주 빈결과·에러 5분 캐시 / 402(P2) 푸터 "주식·상품" 링크·닉네임 저장 피드백·리딩방 즐겨찾기 비로그인 카드 통일.
 > - **데이터/인프라**: 배당 복원(NEW 0건 → OLD에서 top-60+27 MCP 복사, JB금융지주 9.9%·HD현대 9.61%, `exDate` NULL→"—") · US 링크허브 67개/10카테고리(`docs/US_LINK_HUB_CURATION.md`) · Supabase 전용 이전 + onetrillion.app 도메인 연결.

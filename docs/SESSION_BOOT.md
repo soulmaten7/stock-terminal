@@ -1,7 +1,19 @@
-<!-- 2026-06-25 -->
+<!-- 2026-06-26 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
-> 🟢 **2026-06-25 (최신) · 완성도 패스 STEP 395~402 + 데이터/인프라 (HEAD `52ebd5f`) — 배포 ✓ onetrillion.app 라이브 — 최신은 이 배너.**
+> 🟢 **2026-06-26 (최신) · US 종목 탭 KR-parity STEP 405~412 + KR 링크허브 71 + AI 로드맵 (HEAD `9984804`) — 배포 ✓ onetrillion.app 라이브 — 최신은 이 배너.**
+> **한 줄: 미국 시장을 KR과 동등한 종목 탭으로 끌어올린 세션 — US 종목 탭 신설→KR 구조 통일→ETF→전종목 lazy→종목표 UI 리파인→US 기간 백그라운드 미리계산(크론+DB)→헤더 언어 선택기. + KR 링크허브 65→71 재점검 + Trillion AI 분석 전망 레이어 전략 기록. onetrillion.app 라이브.**
+> - **🆕 배포 = `https://onetrillion.app` 라이브**(이번 세션 첫 배포 — STEP 404~412 + 세션 문서). 이전 `stock-terminal-delta.vercel.app`도 유효.
+> - **🆕 DB = NEW 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** **신규 테이블 `us_stock_perf`**(symbol/r1w/r1m/r3m/r6m, RLS public read — 상위 200 데모 적재, 전 종목은 prod 크론 22시 UTC 자동). KR `link_hub` **71 큐레이션**. (구 `qxkmwlkchyxfzxbonhtj`/"OT-Marketing"=폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.)
+> - **🆕 최신 STEP = 412.** 커밋: STEP 405~412 + 문서 = **`9984804`** → onetrillion.app 반영 완료.
+> - **US 종목 탭 KR-parity(405~412)**: **405** US 종목 탭 신설 — `app/api/yahoo/us-performance`(193 유니버스) + 새 `components/toolbox/UsMarketBoard.tsx` + `ToolboxClient` US 종목·상품 탭 / **406** US 표를 KR 구조로 통일(하위탭 주식/ETF/ETN/리츠 + 기간 드롭다운 + 증권사 사이드바, `BrokerRanking` 미러) / **407** US ETF 데이터(73, `app/api/yahoo/us-etf-performance`) + 하위탭을 미국 기준 **`주식 | ETF`**로 정리(ETN·리츠 제거 — 미국 시장 특성) / **408** US 주식 **전종목 lazy** — `data/us_symbols.json`(6,936=주식6,121+ETF815, NYSE/나스닥/AMEX 공식 심볼) + `app/api/yahoo/us-list`(전 종목 batch quote, 거래대금순) + `app/api/yahoo/us-quote`(기간 lazy) / **409** KR 표 데스크탑도 기간 드롭다운 통일(`MarketBoard.tsx`, KR↔US 동일 — 모바일은 이미 드롭다운) / **410** 종목표 UI 리파인 — `lib/currency.ts`(통화 현지화 KR 원/US $)·드롭다운 1일부터(고정 1일 컬럼 흡수)·드롭다운 선택 시 자동 정렬·정렬 화살표 lucide 18px·컬럼 간격·로고 키움·증권사 리스트 높이 정렬(KR·US 양쪽) / **411 US 기간 백그라운드 미리계산(option C)** — `us_stock_perf` 테이블 + `lib/usPerf.ts`(전 종목 chart→메모리계산→일괄 upsert) + `app/api/cron/us-perf`(매일 22시 UTC, `vercel.json` 등록, CRON_SECRET, maxDuration 300) + us-list에 **1년**(quote `fiftyTwoWeekChangePercent` 무료)+DB 조인 + UsMarketBoard **lazy 제거→전 기간 정렬**+화살표. **핵심: 1일·1년·거래대금=quote 즉시, 1주~6개월=크론 DB.** / **412** 헤더를 **언어 선택기**로(시장과 분리) — `Header.tsx` useCountryStore 제거, 한국어🇰🇷/English🇺🇸(준비중). 시장은 페이지 한국/미국 토글이 담당.
+> - **데이터/전략(MCP·git 아님)**: **KR 링크허브 재점검** 65→71(FIX 연합인포맥스→einfomax.co.kr·KRX 정보데이터시스템 http→https, 소프트삭제 클리앙·Investing.com 포럼, ADD 8 한국IR협의회·KOFIA·코스닥협회·IRGO·증권플러스비상장·KCIF·KIEP·토스증권피드, display_order 재정렬, `docs/KR_LINK_HUB_CURATION.md`) · `us_stock_perf` 상위 200 데모 적재 · **Trillion AI 분석 — 최종 단계 로드맵(전망 레이어)** `docs/BUSINESS_STRATEGY.md` §3 추가 — 2층 구조(현 핵심=정리/무신고, 최종=전망 유료 구독), 검증 기법 skill화→구독, 매수추천 X·전망 O, 기법 국가불문→데이터 기반=해자, **유사투자자문업 신고**(자본시장법) 추후·각국 규제 상이·법률자문 필수, 투명성(신고·방법론·트랙레코드)=차별점, 우선순위는 데이터+MVP 먼저(참조 AI Berkshire, MIT).
+> - ⚠️ **US 1주~6개월 전 종목**은 prod 크론 첫 실행(22시 UTC) 후 완성(현재 상위 200 데모만). **KR 데이터값 이상(개발환경)** — 라이브 실데이터 확인 권장.
+> - **▶ 다음 후보**: ① **평가 디렉토리(MVP 2.0 차별화 축) 심화** · ② US 정렬 토글 KR-parity(화살표 일관) · ③ KR 데이터값 라이브 검증 · ④ US ETF/기타상품 확장·증권사 US 연결·다른 시장(일본 등) · ⑤ (최종) Trillion AI 분석 전망 레이어(`docs/BUSINESS_STRATEGY.md` §3).
+>
+> ⬇️ **(아래 🟢 STEP 402 배너는 직전 작업 상태.)**
+
+> 🟢 **2026-06-25 · 완성도 패스 STEP 395~402 + 데이터/인프라 (HEAD `52ebd5f`) — 배포 ✓ onetrillion.app 라이브 — 직전 작업 상태.**
 > **한 줄: 흩어진 디테일을 메우는 완성도 패스 8개 STEP(전종목 수익률·country-aware·신선도 가드·P2 묶음) + 배당 복원 + US 링크허브 + 인프라(Supabase 전용 이전·도메인 연결). onetrillion.app 라이브.**
 > - **🆕 배포 = `https://onetrillion.app` 라이브** (도메인 연결 완료 — DNS 라이브, 이메일 MX 보존, SSL 자동). 이전 `stock-terminal-delta.vercel.app`도 유효.
 > - **🆕 DB = NEW 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** (구 `qxkmwlkchyxfzxbonhtj`/"OT-Marketing"=폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.)
