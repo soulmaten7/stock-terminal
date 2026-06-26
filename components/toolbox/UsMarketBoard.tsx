@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Star } from 'lucide-react';
+import { Star, X } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
+import BrokerRanking from './BrokerRanking';
 
 type Row = {
   symbol: string;
@@ -18,10 +19,19 @@ type Row = {
   amount?: number; // 거래대금(USD) — 정렬 전용(표시 X)
 };
 
-// 기간 탭: 5번째 컬럼 1개를 선택 기간으로 보여줌(1일 컬럼은 고정).
+// 하위 카테고리 탭 — KR MarketBoard와 동일 구성. 'stock'만 라이브, 나머지는 '준비 중'.
+type SubTab = 'stock' | 'etf' | 'etn' | 'reit';
+const SUBTABS: { key: SubTab; label: string }[] = [
+  { key: 'stock', label: '주식' },
+  { key: 'etf', label: 'ETF' },
+  { key: 'etn', label: 'ETN' },
+  { key: 'reit', label: '리츠' },
+];
+
+// 기간 드롭다운: 현재가+1일 고정 후 단일 컬럼을 선택 기간으로 표시(KR 모바일 select 방식을 전 폭 재사용).
 type PeriodKey = '1w' | '1m' | '3m' | '6m' | '1y';
 const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
-  { key: '1w', label: '1주', field: 'r1w' },
+  { key: '1w', label: '1주일', field: 'r1w' },
   { key: '1m', label: '1개월', field: 'r1m' },
   { key: '3m', label: '3개월', field: 'r3m' },
   { key: '6m', label: '6개월', field: 'r6m' },
@@ -38,7 +48,7 @@ function pctColor(v?: number | null): string {
 }
 function usd(v?: number | null): string {
   if (v == null || !v) return '—';
-  return '$' + v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function fetchRows(): Promise<Row[]> {
@@ -52,23 +62,29 @@ async function fetchRows(): Promise<Row[]> {
 }
 
 export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+  const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('us-stock') ?? []);
   const [loading, setLoading] = useState(() => getCache('us-stock') === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1w');
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
+  const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
 
-  // 데이터 로드 (서버 30분 캐시 + 클라 메모리 캐시 stale-while-revalidate)
+  // 'stock' 탭만 데이터 로드(서버 30분 캐시 + 클라 메모리 캐시 stale-while-revalidate).
+  // ETF/ETN/리츠는 fetch 안 함 — '준비 중' 빈 상태로만 노출.
   useEffect(() => {
+    if (tab !== 'stock') { setSearch(''); setPage(0); return; }
     let cancelled = false;
+    setSearch('');
+    setPage(0);
     const cached = getCache<Row[]>('us-stock');
     if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
     fetchRows().then((r) => { if (!cancelled) { setRows(r); setCache('us-stock', r); setLoading(false); } });
     return () => { cancelled = true; };
-  }, []);
+  }, [tab]);
 
-  // 관심종목 동기화 (로그인 시) — KR과 동일하게 symbol 집합으로 관리
+  // 관심종목 동기화(로그인 시) — KR과 동일하게 symbol 집합 관리.
   useEffect(() => {
     if (!isLoggedIn) return;
     let cancelled = false;
@@ -94,7 +110,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   };
 
   const PAGE_SIZE = 50;
-  // 거래대금(amount) 내림차순 고정 + 검색 필터(티커·이름)
+  // 거래대금(amount) 내림차순 고정(최다거래 우선) + 검색 필터(티커·이름).
   const sorted = useMemo(() => {
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
@@ -104,7 +120,6 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
   const periodField = PERIODS.find((p) => p.key === period)?.field ?? 'r1w';
-  const periodLabel = PERIODS.find((p) => p.key === period)?.label ?? '1주';
 
   function pageNumbers(): (number | '…')[] {
     const out: (number | '…')[] = [];
@@ -120,18 +135,18 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
   return (
     <section className="min-w-0">
-      {/* 컨트롤 줄: 좌=기간 탭 / 우=검색 */}
+      {/* 컨트롤 줄: 좌=하위탭+검색(같은 줄) / 우(w-72)=증권사 바로가기 헤더 — KR 미러 */}
       <div className="mb-2 flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
-            {PERIODS.map((p) => (
+            {SUBTABS.map((s) => (
               <button
-                key={p.key}
+                key={s.key}
                 type="button"
-                onClick={() => setPeriod(p.key)}
-                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${period === p.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                onClick={() => setTab(s.key)}
+                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
-                {p.label}
+                {s.label}
               </button>
             ))}
           </div>
@@ -146,87 +161,132 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
           </div>
         </div>
+        <div className="hidden w-72 shrink-0 lg:block">
+          <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
+        </div>
       </div>
 
-      <div className="min-w-0 overflow-x-auto">
-        {loading ? (
-          <div className="space-y-2 py-2">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="h-9 animate-pulse rounded bg-unjong-background" />
-            ))}
-          </div>
-        ) : sorted.length === 0 ? (
-          <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
-        ) : (
-          <table className="w-full min-w-[320px] table-fixed text-sm sm:min-w-[600px]">
-            <thead>
-              <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
-                <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목</th>
-                <th className="w-[96px] whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
-                <th className="w-[72px] whitespace-nowrap px-2 py-2.5 text-right font-medium">1일</th>
-                <th className="w-[80px] whitespace-nowrap px-2 py-2.5 text-right font-medium">{periodLabel}</th>
-                <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginated.map((r, i) => (
-                <tr
-                  key={r.symbol}
-                  onClick={() => window.open(`https://finance.yahoo.com/quote/${r.symbol}`, '_blank', 'noopener,noreferrer')}
-                  className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
-                >
-                  <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
-                  <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <StockLogo code={r.symbol} name={r.name} size={24} />
-                      <span className="min-w-0">
-                        <span className="font-bold text-unjong-primary">{r.symbol}</span>
-                        <span title={r.name} className="ml-1.5 truncate text-xs text-unjong-muted">{r.name}</span>
-                      </span>
-                    </div>
-                  </td>
-                  <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{usd(r.price)}</td>
-                  <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r.changePercent)}`}>{pct(r.changePercent)}</td>
-                  <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r[periodField] as number | null | undefined)}`}>{pct(r[periodField] as number | null | undefined)}</td>
-                  <td className="w-9 px-1 py-2.5 text-center">
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
-                      aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
-                      className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
-                    >
-                      <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
-                    </button>
-                  </td>
-                </tr>
+      {/* 좌: 종목 표 / 우: 증권사 리스트 — KR 미러(flex gap-4) */}
+      <div className="flex gap-4">
+        <div className="min-w-0 flex-1 overflow-x-auto">
+          {tab !== 'stock' ? (
+            <p className="py-16 text-center text-sm text-unjong-muted">준비 중</p>
+          ) : loading ? (
+            <div className="space-y-2 py-2">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div key={i} className="h-9 animate-pulse rounded bg-unjong-background" />
               ))}
-            </tbody>
-          </table>
-        )}
-        {/* 페이지네이션 — 숫자 페이지 (MarketBoard와 동일 방식) */}
-        {!loading && sorted.length > PAGE_SIZE && (
-          <div className="flex flex-wrap items-center justify-center gap-1 border-t border-unjong-border px-2 py-3 text-xs">
-            <button type="button" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">←</button>
-            {pageNumbers().map((n, i) =>
-              n === '…' ? (
-                <span key={`e${i}`} className="px-1 text-unjong-muted">…</span>
-              ) : (
-                <button
-                  key={n}
-                  type="button"
-                  onClick={() => setPage((n as number) - 1)}
-                  className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-primary font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
-                >
-                  {n}
-                </button>
-              )
-            )}
-            <button type="button" disabled={page >= totalPages - 1} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">→</button>
-            <span className="ml-2 text-unjong-muted">총 {sorted.length.toLocaleString()} 종목</span>
-          </div>
-        )}
+            </div>
+          ) : sorted.length === 0 ? (
+            <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
+          ) : (
+            <table className="w-full min-w-[320px] table-fixed text-sm sm:min-w-[600px]">
+              <thead>
+                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                  <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
+                  <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
+                  <th className="w-[96px] whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
+                  <th className="w-[72px] whitespace-nowrap px-2 py-2.5 text-right font-medium">1일</th>
+                  {/* 기간 드롭다운(KR 모바일 select 마크업 재사용) — 표시 필드만 변경, refetch 없음 */}
+                  <th className="w-[88px] whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium">
+                    <select value={period} onChange={(e) => setPeriod(e.target.value as PeriodKey)} className="rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none">
+                      {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+                    </select>
+                  </th>
+                  <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginated.map((r, i) => (
+                  <tr key={r.symbol} onClick={() => setSelectedStock(r)} className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background">
+                    <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
+                    <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <StockLogo code={r.symbol} name={r.name} size={24} />
+                        <span className="min-w-0">
+                          <span className="font-bold text-unjong-primary">{r.symbol}</span>
+                          <span title={r.name} className="ml-1.5 truncate text-xs text-unjong-muted">{r.name}</span>
+                        </span>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{usd(r.price)}</td>
+                    <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r.changePercent)}`}>{pct(r.changePercent)}</td>
+                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums ${pctColor(r[periodField] as number | null | undefined)}`}>{pct(r[periodField] as number | null | undefined)}</td>
+                    <td className="w-9 px-1 py-2.5 text-center">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
+                        aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
+                        className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+                      >
+                        <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+          {/* 페이지네이션 — 숫자 페이지 (KR MarketBoard와 동일 방식) */}
+          {tab === 'stock' && !loading && sorted.length > PAGE_SIZE && (
+            <div className="flex flex-wrap items-center justify-center gap-1 border-t border-unjong-border px-2 py-3 text-xs">
+              <button type="button" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">←</button>
+              {pageNumbers().map((n, i) =>
+                n === '…' ? (
+                  <span key={`e${i}`} className="px-1 text-unjong-muted">…</span>
+                ) : (
+                  <button
+                    key={n}
+                    type="button"
+                    onClick={() => setPage((n as number) - 1)}
+                    className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-primary font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                  >
+                    {n}
+                  </button>
+                )
+              )}
+              <button type="button" disabled={page >= totalPages - 1} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">→</button>
+              <span className="ml-2 text-unjong-muted">총 {sorted.length.toLocaleString()} 종목</span>
+            </div>
+          )}
+        </div>
+
+        {/* 우측: 증권사 리스트(헤더는 위 컨트롤 줄로 이동) — KR과 동일하게 BrokerRanking 재사용 */}
+        <aside className="hidden w-72 shrink-0 lg:block">
+          <p className="border-b border-unjong-border px-1 py-2.5 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
+          <BrokerRanking hideHeader />
+        </aside>
       </div>
+
+      {/* 모바일: 증권사 바로가기 (표 아래 — 데스크탑은 우측 aside) — KR 미러 */}
+      <div className="mt-5 lg:hidden">
+        <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
+        <p className="border-b border-unjong-border px-1 py-2 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
+        <BrokerRanking hideHeader />
+      </div>
+      {/* 종목 클릭 → 증권사 바텀시트 (모바일 전용) — KR 미러 */}
+      {selectedStock && (
+        <div className="lg:hidden">
+          <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setSelectedStock(null)} />
+          <div className="fixed inset-x-0 bottom-0 z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-4 shadow-xl">
+            <div className="mb-3 flex items-center gap-3">
+              <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={32} />
+              <div className="min-w-0 flex-1">
+                <p className="font-bold leading-snug text-unjong-primary">{selectedStock.symbol}</p>
+                <p className="font-mono text-xs text-unjong-muted">
+                  {selectedStock.name} · {usd(selectedStock.price)}
+                  <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
+                </p>
+              </div>
+              <button type="button" onClick={() => setSelectedStock(null)} aria-label="닫기" className="shrink-0 text-unjong-muted hover:text-unjong-primary">
+                <X size={20} />
+              </button>
+            </div>
+            <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
+            <BrokerRanking hideHeader />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
