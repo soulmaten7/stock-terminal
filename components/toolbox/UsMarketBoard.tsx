@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Star, X, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, X, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
@@ -69,8 +69,9 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
-  const [period, setPeriod] = useState<PeriodKey>('1d'); // 기본 1일
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 선택 기간 정렬 방향 토글(전 기간 적용)
+  const [period, setPeriod] = useState<PeriodKey>('1d'); // 표시 기간 컬럼 선택값(셀 표시·기간 정렬 대상) — 기본 1일
+  const [sortKey, setSortKey] = useState<'name' | 'price' | PeriodKey>('price'); // 정렬 키 — 기본 현재가
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 정렬 방향 — 기본 내림차순
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
@@ -82,6 +83,8 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     let cancelled = false;
     setSearch('');
     setPage(0);
+    setSortKey('price'); // 하위탭 전환 시 현재가 내림차순으로 리셋
+    setSortDir('desc');
     const key = CACHE_KEYS[tab];
     const cached = getCache<Row[]>(key);
     if (cached) { setRows(cached); setLoading(false); } else { setRows([]); setLoading(true); }
@@ -115,23 +118,50 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   };
 
   const PAGE_SIZE = 50;
+  // 셀 표시용 기간 필드(드롭다운 선택) — 정렬과 별개.
   const periodField = PERIODS.find((p) => p.key === period)?.field ?? 'changePercent';
-  // 선택 기간으로 전 종목 정렬(1일~1년 모두 행에 데이터 있음). null은 항상 뒤로. 검색 필터(티커·이름) 공통.
+  // 기간 정렬 시 사용할 필드(sortKey가 기간키일 때만). name·price는 별도 분기.
+  const sortPeriodField = PERIODS.find((p) => p.key === sortKey)?.field ?? null;
+  // sortKey(name|price|기간)로 전 종목 정렬. 기간은 null 항상 뒤로. 검색 필터(티커·이름) 공통.
   const sorted = useMemo(() => {
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
+    const dir = sortDir === 'desc' ? -1 : 1;
+    if (sortKey === 'name') {
+      // 종목명(회사명): 영문 로캘 문자열 비교
+      return [...base].sort((a, b) => a.name.localeCompare(b.name, 'en') * dir);
+    }
+    if (sortKey === 'price') {
+      // 현재가: 숫자 비교
+      return [...base].sort((a, b) => ((a.price ?? 0) - (b.price ?? 0)) * dir);
+    }
+    // 기간키: 해당 기간 필드 숫자 비교, null은 항상 뒤로
+    if (!sortPeriodField) return base;
     return [...base].sort((a, b) => {
-      const av = a[periodField] as number | null | undefined;
-      const bv = b[periodField] as number | null | undefined;
+      const av = a[sortPeriodField] as number | null | undefined;
+      const bv = b[sortPeriodField] as number | null | undefined;
       if (av == null && bv == null) return 0;
       if (av == null) return 1;
       if (bv == null) return -1;
       return sortDir === 'desc' ? bv - av : av - bv;
     });
-  }, [rows, search, periodField, sortDir]);
+  }, [rows, search, sortKey, sortPeriodField, sortDir]);
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
+
+  function clickHeader(k: 'name' | 'price' | PeriodKey) {
+    if (sortKey === k) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
+    else { setSortKey(k); setSortDir('desc'); }
+  }
+
+  // 정렬 헤더 화살표 — 활성(현재 정렬 키)=▲/▼ accent, 비활성=흐린 ↕(클릭 가능 암시). KR 미러.
+  function sortArrow(k: 'name' | 'price' | PeriodKey) {
+    if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
+    return sortDir === 'desc'
+      ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />
+      : <ChevronUp size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />;
+  }
 
   // 기간 셀 값: 선택 기간 필드를 행에서 직접 읽음(주식=us-list 조인, ETF=etf-performance). null=데이터 없음(—).
   function periodCell(r: Row): number | null | undefined {
@@ -199,22 +229,42 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               <thead>
                 <tr className="h-[46px] border-b border-unjong-border text-xs text-unjong-muted">
                   <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
-                  <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
-                  <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">현재가</th>
+                  <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">
+                    <button
+                      type="button"
+                      onClick={() => clickHeader('name')}
+                      aria-label={sortKey === 'name' ? `종목명 ${sortDir === 'desc' ? '내림차순' : '오름차순'}` : '종목명순 정렬'}
+                      title="종목명순 정렬(클릭 시 오름/내림 전환)"
+                      className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-accent' : ''}`}
+                    >
+                      종목명{sortArrow('name')}
+                    </button>
+                  </th>
+                  <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
+                    <button
+                      type="button"
+                      onClick={() => clickHeader('price')}
+                      aria-label={sortKey === 'price' ? `현재가 ${sortDir === 'desc' ? '내림차순' : '오름차순'}` : '현재가순 정렬'}
+                      title="현재가순 정렬(클릭 시 오름/내림 전환)"
+                      className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-accent' : ''}`}
+                    >
+                      현재가{sortArrow('price')}
+                    </button>
+                  </th>
                   {/* 기간 드롭다운(1일부터) — 선택 기간으로 전 종목 자동 정렬 + 옆 토글로 오름/내림. KR 미러 */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
-                      <select value={period} onChange={(e) => { setPeriod(e.target.value as PeriodKey); setSortDir('desc'); setPage(0); }} className="rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none">
+                      <select value={period} onChange={(e) => { const k = e.target.value as PeriodKey; setPeriod(k); setSortKey(k); setSortDir('desc'); setPage(0); }} className="rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none">
                         {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
                       </select>
                       <button
                         type="button"
-                        onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))}
-                        aria-label={`선택 기간 ${sortDir === 'desc' ? '오름차순' : '내림차순'}으로 정렬`}
+                        onClick={() => clickHeader(period)}
+                        aria-label={sortKey === period ? `선택 기간 ${sortDir === 'desc' ? '오름차순' : '내림차순'}으로 정렬` : '선택 기간으로 정렬'}
                         title="선택 기간순 정렬(클릭 시 오름/내림 전환)"
-                        className="shrink-0 text-unjong-accent transition-colors hover:text-unjong-primary"
+                        className="shrink-0 transition-colors hover:text-unjong-primary"
                       >
-                        {sortDir === 'desc' ? <ChevronDown size={18} strokeWidth={2.5} /> : <ChevronUp size={18} strokeWidth={2.5} />}
+                        {sortArrow(period)}
                       </button>
                     </span>
                   </th>

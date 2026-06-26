@@ -91,8 +91,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock') ?? []);
   const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
-  const [sortKey, setSortKey] = useState<PeriodKey | 'amount'>('amount');
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+  const [sortKey, setSortKey] = useState<'name' | 'price' | PeriodKey>('price'); // 기본 현재가 정렬
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 기본 내림차순
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d'); // 단일 기간 컬럼 선택값(데스크탑·모바일 공용) — 기본 1일
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
@@ -127,6 +127,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     let cancelled = false;
     setSearch('');
     setPage(0);
+    setSortKey('price'); // 하위탭 전환 시 현재가 내림차순으로 리셋
+    setSortDir('desc');
     const ck = 'market:' + tab;
     const cached = getCache<Row[]>(ck);
     if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
@@ -134,28 +136,48 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     return () => { cancelled = true; };
   }, [tab]);
 
-  const sortField = sortKey === 'amount' ? null : (PERIODS.find((p) => p.key === sortKey)?.field ?? null);
+  // 셀 표시용 기간 필드(드롭다운 선택) — 정렬과 별개. 정렬은 sortKey('name'|'price'|기간)로 결정.
   const mobileField = PERIODS.find((p) => p.key === mobilePeriod)?.field ?? PERIODS[0].field;
+  // 기간 정렬 시 사용할 필드(sortKey가 기간키일 때만). name·price는 별도 분기.
+  const sortPeriodField = PERIODS.find((p) => p.key === sortKey)?.field ?? null;
   const PAGE_SIZE = 50;
   const sorted = useMemo(() => {
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
-    if (!sortField) return base;
+    const dir = sortDir === 'desc' ? -1 : 1;
+    if (sortKey === 'name') {
+      // 종목명: 한글 로캘 문자열 비교
+      return [...base].sort((a, b) => a.name.localeCompare(b.name, 'ko') * dir);
+    }
+    if (sortKey === 'price') {
+      // 현재가: 숫자 비교
+      return [...base].sort((a, b) => ((a.price ?? 0) - (b.price ?? 0)) * dir);
+    }
+    // 기간키: 해당 기간 필드 숫자 비교, null은 항상 뒤로
+    if (!sortPeriodField) return base;
     return [...base].sort((a, b) => {
-      const av = a[sortField] as number | null | undefined;
-      const bv = b[sortField] as number | null | undefined;
+      const av = a[sortPeriodField] as number | null | undefined;
+      const bv = b[sortPeriodField] as number | null | undefined;
       if (av == null && bv == null) return 0;
       if (av == null) return 1;
       if (bv == null) return -1;
       return sortDir === 'desc' ? bv - av : av - bv;
     });
-  }, [rows, sortField, sortDir, search]);
+  }, [rows, sortKey, sortPeriodField, sortDir, search]);
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
-  function clickHeader(k: PeriodKey) {
+  function clickHeader(k: 'name' | 'price' | PeriodKey) {
     if (sortKey === k) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
     else { setSortKey(k); setSortDir('desc'); }
+  }
+
+  // 정렬 헤더 화살표 — 활성(현재 정렬 키)=▲/▼ accent, 비활성=흐린 ↕(클릭 가능 암시).
+  function sortArrow(k: 'name' | 'price' | PeriodKey) {
+    if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
+    return sortDir === 'desc'
+      ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />
+      : <ChevronUp size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />;
   }
 
   function pageNumbers(): (number | '…')[] {
@@ -218,11 +240,29 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             <table className="w-full min-w-[320px] table-fixed text-sm sm:min-w-[760px]">
               <thead>
                 <tr className="h-[46px] border-b border-unjong-border text-xs text-unjong-muted">
-                  <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">
-                    <button type="button" onClick={() => { setSortKey('amount'); setSortDir('desc'); }} title="거래대금순" className={`hover:text-unjong-primary ${sortKey === 'amount' ? 'font-bold text-unjong-accent' : ''}`}>#</button>
+                  <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
+                  <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">
+                    <button
+                      type="button"
+                      onClick={() => clickHeader('name')}
+                      aria-label={sortKey === 'name' ? `종목명 ${sortDir === 'desc' ? '내림차순' : '오름차순'}` : '종목명순 정렬'}
+                      title="종목명순 정렬(클릭 시 오름/내림 전환)"
+                      className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-accent' : ''}`}
+                    >
+                      종목명{sortArrow('name')}
+                    </button>
                   </th>
-                  <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
-                  <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">현재가</th>
+                  <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
+                    <button
+                      type="button"
+                      onClick={() => clickHeader('price')}
+                      aria-label={sortKey === 'price' ? `현재가 ${sortDir === 'desc' ? '내림차순' : '오름차순'}` : '현재가순 정렬'}
+                      title="현재가순 정렬(클릭 시 오름/내림 전환)"
+                      className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-accent' : ''}`}
+                    >
+                      현재가{sortArrow('price')}
+                    </button>
+                  </th>
                   {/* 단일 기간 컬럼: 드롭다운으로 기간 선택(1일부터) + 옆 토글로 해당 기간 정렬(데스크탑·모바일 동일, US 미러) */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
@@ -234,9 +274,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                         onClick={() => clickHeader(mobilePeriod)}
                         aria-label={sortKey === mobilePeriod ? `선택 기간 ${sortDir === 'desc' ? '오름차순' : '내림차순'}으로 정렬` : '선택 기간으로 정렬'}
                         title="선택 기간순 정렬(클릭 시 오름/내림 전환)"
-                        className={`shrink-0 transition-colors hover:text-unjong-primary ${sortKey === mobilePeriod ? 'text-unjong-accent' : 'text-unjong-muted'}`}
+                        className="shrink-0 transition-colors hover:text-unjong-primary"
                       >
-                        {sortKey === mobilePeriod ? (sortDir === 'desc' ? <ChevronDown size={18} strokeWidth={2.5} /> : <ChevronUp size={18} strokeWidth={2.5} />) : <ArrowUpDown size={18} />}
+                        {sortArrow(mobilePeriod)}
                       </button>
                     </span>
                   </th>
