@@ -50,7 +50,59 @@ async function ogImage(url: string): Promise<string | null> {
   }
 }
 
+const US_RSS = "https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EGSPC&region=US&lang=en-US";
+
+function unCdata(s: string): string {
+  const m = s.match(/<!\[CDATA\[([\s\S]*?)\]\]>/);
+  return (m ? m[1] : s)
+    .replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&#39;/g, "'")
+    .trim();
+}
+
+// US: Yahoo ^GSPC RSS(키리스). <item>의 title(CDATA)/link/pubDate를 정규식으로 추출 → KR과 동일 shape.
+async function usNews(): Promise<NewsItem[]> {
+  const res = await fetch(US_RSS, {
+    headers: { "User-Agent": "Mozilla/5.0" },
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error("yahoo_" + res.status);
+  const xml = await res.text();
+
+  const items: NewsItem[] = [];
+  const blocks = xml.match(/<item\b[\s\S]*?<\/item>/g) ?? [];
+  for (const b of blocks) {
+    const title = unCdata((b.match(/<title>([\s\S]*?)<\/title>/) ?? ["", ""])[1]);
+    const link = ((b.match(/<link>([\s\S]*?)<\/link>/) ?? ["", ""])[1]).trim();
+    const pubDate = ((b.match(/<pubDate>([\s\S]*?)<\/pubDate>/) ?? ["", ""])[1]).trim();
+    if (!title || !link) continue;
+    items.push({ title, link, source: hostOf(link), pubDate, image: null });
+  }
+  // 최신순 정렬 후 상위 20
+  items.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  return items.slice(0, 20);
+}
+
 export async function GET(req: Request) {
+  const market = (new URL(req.url).searchParams.get("market") || new URL(req.url).searchParams.get("country") || "").trim().toUpperCase();
+
+  // ── US 분기(Yahoo ^GSPC RSS, 키리스) ──
+  if (market === "US") {
+    const hit = cache.get("US");
+    if (hit && Date.now() - hit.at < 10 * 60 * 1000) {
+      return NextResponse.json(hit.data);
+    }
+    try {
+      const items = await usNews();
+      const data = { items };
+      cache.set("US", { at: Date.now(), data });
+      return NextResponse.json(data);
+    } catch (e) {
+      return NextResponse.json({ items: [], error: String(e) });
+    }
+  }
+
+  // ── KR 분기(네이버 검색 API) — 기존 그대로 ──
   const id = (process.env.NAVER_CLIENT_ID || "").trim();
   const secret = (process.env.NAVER_CLIENT_SECRET || "").trim();
   if (!id || !secret) return NextResponse.json({ items: [], error: "no_key" });

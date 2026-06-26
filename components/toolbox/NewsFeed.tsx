@@ -17,19 +17,22 @@ function timeAgo(pub: string): string {
   return `${Math.floor(h / 24)}일 전`;
 }
 
-export default function NewsFeed({ query, title }: { query?: string; title?: string }) {
-  const cacheKey = 'news:' + (query ?? '');
+export default function NewsFeed({ query, title, country = 'KR' }: { query?: string; title?: string; country?: 'KR' | 'US' }) {
+  // US는 Yahoo ^GSPC RSS(키리스, query 무시). KR은 네이버 검색(query 사용).
+  const isUs = country === 'US';
+  const url = isUs ? '/api/news/feed?market=US' : '/api/news/feed' + (query ? '?q=' + encodeURIComponent(query) : '');
+  const cacheKey = isUs ? 'news:us' : 'news:' + (query ?? '');
   const [items, setItems] = useState<NewsItem[]>(() => getCache<NewsItem[]>(cacheKey) ?? []);
   const [loading, setLoading] = useState(() => getCache(cacheKey) === undefined);
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/news/feed' + (query ? '?q=' + encodeURIComponent(query) : ''))
+    fetch(url)
       .then((r) => r.json())
       .then((j) => { if (!cancelled) { const list = j.items ?? []; setItems(list); setCache(cacheKey, list); setLoading(false); } })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [query]);
+  }, [url]);
 
   if (loading) return (
     <div className="space-y-2 py-2">
@@ -74,7 +77,7 @@ export default function NewsFeed({ query, title }: { query?: string; title?: str
         ))}
       </ul>
 
-      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">출처: 네이버 뉴스 검색. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.</p>
+      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">{isUs ? '출처: Yahoo Finance (S&P 500). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : '출처: 네이버 뉴스 검색. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.'}</p>
     </div>
   );
 }

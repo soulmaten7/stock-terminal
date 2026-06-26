@@ -31,14 +31,14 @@ const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf',
 // 피드별 지원 국가 — 단일 'KR' 가드 대체. 점진 확장(뉴스·공시는 후속 STEP에서 US 추가).
 // 현재 macro만 US 개방(/api/macro/summary가 ECOS+FRED 둘 다 반환). 나머지는 KR 전용 유지.
 const FEED_COUNTRY_SUPPORT: Record<string, ('KR' | 'US')[]> = {
-  news: ['KR'], disclosure: ['KR'], macro: ['KR', 'US'],
+  news: ['KR', 'US'], disclosure: ['KR'], macro: ['KR', 'US'],
   analysis: ['KR'], research: ['KR'], etf: ['KR'], ipo: ['KR'],
 };
 function feedSupports(tab: string, c: 'KR' | 'US') { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
 
 function feedFor(tab: string, country: 'KR' | 'US') {
   switch (tab) {
-    case 'news': return <NewsFeed />;
+    case 'news': return <NewsFeed country={country} />;
     case 'disclosure': return <DartFeed />;
     case 'macro': return <MacroFeed defaultView={country === 'US' ? 'us' : 'kr'} />;
     case 'analysis': return <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
