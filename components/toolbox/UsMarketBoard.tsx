@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Star, X, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, X, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import BrokerRanking from './BrokerRanking';
 
-// ETF 행은 r1w..r1y를 가짐(us-etf-performance가 한 번에 줌, 동기).
-// 주식 행은 us-list가 현재가·1일·amount만 줌 → 기간 수익률은 periodMap으로 lazy 보강.
+// 주식·ETF 행 모두 r1w..r1y를 가짐 — 주식은 us-list가 us_stock_perf(크론 미리계산) 조인 + r1y(quote),
+// ETF는 us-etf-performance가 한 번에 줌. 두 탭 동일 shape → 전 기간 정렬 가능.
 type Row = {
   symbol: string;
   name: string;
@@ -29,7 +29,7 @@ const SUBTABS: { key: SubTab; label: string }[] = [
   { key: 'etf', label: 'ETF' },
 ];
 
-// 기간 드롭다운: 현재가 다음 단일 컬럼을 선택 기간으로 표시(1일부터). 1일=changePercent(리스트 행에 있음·non-lazy), 1주일~1년=lazy(periodMap).
+// 기간 드롭다운: 현재가 다음 단일 컬럼을 선택 기간으로 표시(1일부터). 모든 기간이 행에 직접 있음(주식=us-list 조인, ETF=etf-performance).
 type PeriodKey = '1d' | '1w' | '1m' | '3m' | '6m' | '1y';
 const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
   { key: '1d', label: '1일', field: 'changePercent' },
@@ -48,7 +48,7 @@ function pctColor(v?: number | null): string {
   if (v == null) return 'text-unjong-muted';
   return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
-// 하위탭별 데이터 소스 — 주식=전종목 목록(us-list, batch quote / 기간은 lazy), ETF=us-etf-performance(기간 포함).
+// 하위탭별 데이터 소스 — 주식=전종목 목록(us-list, batch quote + us_stock_perf 조인 / 전 기간 포함), ETF=us-etf-performance(기간 포함).
 const ENDPOINTS: Record<SubTab, string> = {
   stock: '/api/yahoo/us-list',
   etf: '/api/yahoo/us-etf-performance',
@@ -70,16 +70,11 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1d'); // 기본 1일
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 1일 정렬 방향 토글(긴 기간은 amount 고정이라 무영향)
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 선택 기간 정렬 방향 토글(전 기간 적용)
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
-  // 주식 기간 수익률 lazy 캐시 — `${sym}|${period}` 키. 보이는 페이지 50종목만 채움. ETF는 미사용.
-  const [periodMap, setPeriodMap] = useState<Record<string, number | null>>(
-    () => getCache<Record<string, number | null>>('us-stock-periodmap') ?? {}
-  );
-  const [periodLoading, setPeriodLoading] = useState(false);
 
   // 탭별 데이터 로드 — 주식/ETF 각각 별도 라우트·캐시 키(서버 30분 캐시 + 클라 메모리 캐시 SWR).
   // 탭 전환 시 해당 탭 캐시를 즉시 표시 후 백그라운드 재검증.
@@ -120,58 +115,27 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   };
 
   const PAGE_SIZE = 50;
-  // 기본=거래대금(amount) 내림차순(최다거래 우선). 드롭다운 '1일' 선택 시 changePercent 정렬(데이터가 리스트 행에 있음).
-  // '1주일~1년'은 lazy(periodMap)라 전 행이 안 채워져 정렬 불가 → amount-desc 유지(옵션 A). 검색 필터(티커·이름) 공통.
+  const periodField = PERIODS.find((p) => p.key === period)?.field ?? 'changePercent';
+  // 선택 기간으로 전 종목 정렬(1일~1년 모두 행에 데이터 있음). null은 항상 뒤로. 검색 필터(티커·이름) 공통.
   const sorted = useMemo(() => {
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
-    if (period === '1d') {
-      const dir = sortDir === 'desc' ? -1 : 1;
-      return [...base].sort((a, b) => ((a.changePercent ?? 0) - (b.changePercent ?? 0)) * dir);
-    }
-    return [...base].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0));
-  }, [rows, search, period, sortDir]);
+    return [...base].sort((a, b) => {
+      const av = a[periodField] as number | null | undefined;
+      const bv = b[periodField] as number | null | undefined;
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return sortDir === 'desc' ? bv - av : av - bv;
+    });
+  }, [rows, search, periodField, sortDir]);
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
-  const periodField = PERIODS.find((p) => p.key === period)?.field ?? 'r1w';
 
-  // 보이는 페이지의 sym 목록(검색+페이지 반영). 의존성 키로 쓰려고 문자열로 고정.
-  const visibleSyms = paginated.map((r) => r.symbol);
-  const visibleKey = visibleSyms.join(',');
-
-  // 주식 탭 전용 기간 lazy: 보이는 50종목 중 `${sym}|${period}` 미캐시분만 us-quote로 요청 → periodMap 머지.
-  // visibleKey 또는 period가 바뀌면 재평가. ETF 탭은 이 effect를 건너뜀(행이 r필드를 직접 가짐).
-  useEffect(() => {
-    if (tab !== 'stock') return;
-    if (period === '1d') return; // 1일은 리스트 행 changePercent 사용 — lazy fetch 불필요
-    if (visibleSyms.length === 0) return;
-    const need = visibleSyms.filter((s) => periodMap[`${s}|${period}`] === undefined);
-    if (need.length === 0) return; // 전부 캐시됨 → 재fetch 없음
-    let cancelled = false;
-    setPeriodLoading(true);
-    fetch(`/api/yahoo/us-quote?syms=${encodeURIComponent(need.join(','))}&period=${period}`)
-      .then((r) => r.json())
-      .then((j: { rets?: Record<string, number | null> }) => {
-        if (cancelled) return;
-        setPeriodMap((prev) => {
-          const next = { ...prev };
-          for (const s of need) next[`${s}|${period}`] = (j.rets?.[s] ?? null);
-          setCache('us-stock-periodmap', next);
-          return next;
-        });
-      })
-      .catch(() => {})
-      .finally(() => { if (!cancelled) setPeriodLoading(false); });
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, visibleKey, period]);
-
-  // 기간 셀 값 통합: 1일=changePercent(리스트 행, non-lazy). ETF 긴 기간=r필드, 주식 긴 기간=periodMap(lazy). undefined=로딩 중(…)·null=데이터 없음(—).
+  // 기간 셀 값: 선택 기간 필드를 행에서 직접 읽음(주식=us-list 조인, ETF=etf-performance). null=데이터 없음(—).
   function periodCell(r: Row): number | null | undefined {
-    if (period === '1d') return r.changePercent;
-    if (tab === 'etf') return r[periodField] as number | null | undefined;
-    return periodMap[`${r.symbol}|${period}`];
+    return r[periodField] as number | null | undefined;
   }
 
   function pageNumbers(): (number | '…')[] {
@@ -237,20 +201,20 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
                   <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">현재가</th>
-                  {/* 기간 드롭다운(1일부터) — '1일'은 자동 정렬(changePercent), 긴 기간은 표시만(lazy, amount 정렬 유지). KR 미러 */}
+                  {/* 기간 드롭다운(1일부터) — 선택 기간으로 전 종목 자동 정렬 + 옆 토글로 오름/내림. KR 미러 */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
-                    <span className="inline-flex items-center justify-end gap-0.5">
-                      <select value={period} onChange={(e) => { setPeriod(e.target.value as PeriodKey); setSortDir('desc'); setPage(0); }} className={`rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none ${tab === 'stock' && periodLoading ? 'opacity-60' : ''}`}>
+                    <span className="inline-flex items-center justify-end gap-1.5">
+                      <select value={period} onChange={(e) => { setPeriod(e.target.value as PeriodKey); setSortDir('desc'); setPage(0); }} className="rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none">
                         {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
                       </select>
                       <button
                         type="button"
-                        onClick={() => { if (period === '1d') setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); }}
-                        aria-label="선택 기간으로 정렬"
-                        title={period === '1d' ? '1일 등락순 정렬' : '긴 기간은 거래대금순 고정(표시만)'}
-                        className={`ml-1.5 shrink-0 hover:text-unjong-primary ${period === '1d' ? 'text-unjong-accent' : 'cursor-default text-unjong-border'}`}
+                        onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))}
+                        aria-label={`선택 기간 ${sortDir === 'desc' ? '오름차순' : '내림차순'}으로 정렬`}
+                        title="선택 기간순 정렬(클릭 시 오름/내림 전환)"
+                        className="shrink-0 text-unjong-accent transition-colors hover:text-unjong-primary"
                       >
-                        {period === '1d' ? (sortDir === 'desc' ? <ChevronDown size={16} /> : <ChevronUp size={16} />) : <ArrowUpDown size={16} />}
+                        {sortDir === 'desc' ? <ChevronDown size={18} strokeWidth={2.5} /> : <ChevronUp size={18} strokeWidth={2.5} />}
                       </button>
                     </span>
                   </th>

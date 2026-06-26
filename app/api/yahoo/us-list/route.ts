@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
 import symbols from "@/data/us_symbols.json";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,6 +22,11 @@ type Item = {
   name: string;
   price: number;
   changePercent: number; // 1일
+  r1w: number | null; // 1주 — us_stock_perf 조인(크론 미리계산)
+  r1m: number | null; // 1개월 — 동
+  r3m: number | null; // 3개월 — 동
+  r6m: number | null; // 6개월 — 동
+  r1y: number | null; // 1년 — quote의 fiftyTwoWeekChangePercent(즉시)
   amount: number; // 거래대금(USD) = 현재가 × 거래량 — 정렬 전용
 };
 
@@ -72,6 +78,11 @@ export async function GET() {
             (q as { symbol: string }).symbol,
           price,
           changePercent: (q as { regularMarketChangePercent?: number }).regularMarketChangePercent ?? 0,
+          r1w: null, // us_stock_perf 조인으로 아래에서 채움
+          r1m: null,
+          r3m: null,
+          r6m: null,
+          r1y: (q as { fiftyTwoWeekChangePercent?: number }).fiftyTwoWeekChangePercent ?? null, // 1년(무료)
           amount: price * vol,
         });
       }
@@ -83,6 +94,25 @@ export async function GET() {
 
   // 평탄화 후 거래대금 내림차순(최다거래 우선)
   const items = perChunk.flat().sort((a, b) => b.amount - a.amount);
+
+  // us_stock_perf(크론 미리계산) 조인 — 1주~6개월을 종목별로 머지. 테이블 비면 null 유지("—").
+  try {
+    const sb = createAdminClient();
+    const { data: perf } = await sb.from("us_stock_perf").select("symbol,r1w,r1m,r3m,r6m");
+    if (perf && perf.length > 0) {
+      const map = new Map<string, { r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null }>();
+      for (const p of perf as { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null }[]) {
+        map.set(p.symbol, { r1w: p.r1w, r1m: p.r1m, r3m: p.r3m, r6m: p.r6m });
+      }
+      for (const it of items) {
+        const p = map.get(it.symbol);
+        if (p) { it.r1w = p.r1w; it.r1m = p.r1m; it.r3m = p.r3m; it.r6m = p.r6m; }
+      }
+    }
+  } catch {
+    // 조인 실패해도 quote 기반(현재가·1일·1년·거래대금)은 그대로 — 1주~6개월만 "—"
+  }
+
   const data = { items };
   cache = { at: Date.now(), data };
   return NextResponse.json(data);

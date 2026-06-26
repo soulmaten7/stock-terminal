@@ -225,18 +225,18 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">현재가</th>
                   {/* 단일 기간 컬럼: 드롭다운으로 기간 선택(1일부터) + 옆 토글로 해당 기간 정렬(데스크탑·모바일 동일, US 미러) */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
-                    <span className="inline-flex items-center justify-end gap-0.5">
+                    <span className="inline-flex items-center justify-end gap-1.5">
                       <select value={mobilePeriod} onChange={(e) => { const k = e.target.value as PeriodKey; setMobilePeriod(k); setSortKey(k); setSortDir('desc'); setPage(0); }} className="rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none">
                         {DROPDOWN_PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
                       </select>
                       <button
                         type="button"
                         onClick={() => clickHeader(mobilePeriod)}
-                        aria-label="선택 기간으로 정렬"
-                        title="선택 기간순 정렬"
-                        className={`ml-1.5 shrink-0 hover:text-unjong-primary ${sortKey === mobilePeriod ? 'text-unjong-accent' : 'text-unjong-muted'}`}
+                        aria-label={sortKey === mobilePeriod ? `선택 기간 ${sortDir === 'desc' ? '오름차순' : '내림차순'}으로 정렬` : '선택 기간으로 정렬'}
+                        title="선택 기간순 정렬(클릭 시 오름/내림 전환)"
+                        className={`shrink-0 transition-colors hover:text-unjong-primary ${sortKey === mobilePeriod ? 'text-unjong-accent' : 'text-unjong-muted'}`}
                       >
-                        {sortKey === mobilePeriod ? (sortDir === 'desc' ? <ChevronDown size={16} /> : <ChevronUp size={16} />) : <ArrowUpDown size={16} />}
+                        {sortKey === mobilePeriod ? (sortDir === 'desc' ? <ChevronDown size={18} strokeWidth={2.5} /> : <ChevronUp size={18} strokeWidth={2.5} />) : <ArrowUpDown size={18} />}
                       </button>
                     </span>
                   </th>
