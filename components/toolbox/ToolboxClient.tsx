@@ -25,13 +25,22 @@ const TAB_ORDER = ['market', 'chart', 'news', 'disclosure', 'research', 'analysi
 // link_hub 카테고리가 아닌 특수 탭의 라벨
 const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', room: '리딩방·검증' };
 
-// 우측 피드가 붙는 탭(한국 전용) + 탭별 피드 컴포넌트
+// 우측 피드가 붙는 탭 + 탭별 피드 컴포넌트
 const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf', 'ipo'];
-function feedFor(tab: string) {
+
+// 피드별 지원 국가 — 단일 'KR' 가드 대체. 점진 확장(뉴스·공시는 후속 STEP에서 US 추가).
+// 현재 macro만 US 개방(/api/macro/summary가 ECOS+FRED 둘 다 반환). 나머지는 KR 전용 유지.
+const FEED_COUNTRY_SUPPORT: Record<string, ('KR' | 'US')[]> = {
+  news: ['KR'], disclosure: ['KR'], macro: ['KR', 'US'],
+  analysis: ['KR'], research: ['KR'], etf: ['KR'], ipo: ['KR'],
+};
+function feedSupports(tab: string, c: 'KR' | 'US') { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
+
+function feedFor(tab: string, country: 'KR' | 'US') {
   switch (tab) {
     case 'news': return <NewsFeed />;
     case 'disclosure': return <DartFeed />;
-    case 'macro': return <MacroFeed />;
+    case 'macro': return <MacroFeed defaultView={country === 'US' ? 'us' : 'kr'} />;
     case 'analysis': return <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
     case 'research': return <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
     case 'etf': return <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
@@ -83,7 +92,9 @@ export default function ToolboxClient({
     }
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
-    return hasLinks ? { slug, label: c!.label } : null;
+    // 피드 지원국가면 큐레이션 링크가 없어도 탭 노출(예: US 거시는 FRED 라이브) → KR 동작은 동일.
+    const show = hasLinks || feedSupports(slug, country);
+    return show && c ? { slug, label: c.label } : null;
   }).filter((t): t is { slug: string; label: string } => t !== null);
 
   // 국가 전환 시 현재 탭이 그 국가에 없으면 첫 유효 탭으로 이동
@@ -159,7 +170,7 @@ export default function ToolboxClient({
           ) : (
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
-        ) : FEED_TABS.includes(activeTab) && country === 'KR' ? (
+        ) : FEED_TABS.includes(activeTab) && feedSupports(activeTab, country) ? (
           <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
             <div className="min-w-0 flex-1">
               {catLinks.length > 0 ? (
@@ -176,7 +187,7 @@ export default function ToolboxClient({
               )}
             </div>
             <aside className="w-full shrink-0 lg:w-96">
-              {feedFor(activeTab)}
+              {feedFor(activeTab, country)}
             </aside>
           </div>
         ) : catLinks.length === 0 ? (

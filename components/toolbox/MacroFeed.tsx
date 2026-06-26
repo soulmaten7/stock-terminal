@@ -40,12 +40,12 @@ function Row({ it }: { it: Indicator }) {
   );
 }
 
-export default function MacroFeed() {
+export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' | 'us' } = {}) {
   const cached = getCache<{ kr: Indicator[]; us: Indicator[] }>('macro');
   const [kr, setKr] = useState<Indicator[]>(cached?.kr ?? []);
   const [us, setUs] = useState<Indicator[]>(cached?.us ?? []);
   const [loading, setLoading] = useState(cached === undefined);
-  const [view, setView] = useState<'kr' | 'us'>('kr');
+  const [view, setView] = useState<'kr' | 'us'>(defaultView);
 
   useEffect(() => {
     let cancelled = false;
