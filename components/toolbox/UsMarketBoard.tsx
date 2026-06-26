@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Star, X } from 'lucide-react';
+import { Star, X, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
+import { formatPrice } from '@/lib/currency';
 import BrokerRanking from './BrokerRanking';
 
 // ETF 행은 r1w..r1y를 가짐(us-etf-performance가 한 번에 줌, 동기).
@@ -28,9 +29,10 @@ const SUBTABS: { key: SubTab; label: string }[] = [
   { key: 'etf', label: 'ETF' },
 ];
 
-// 기간 드롭다운: 현재가+1일 고정 후 단일 컬럼을 선택 기간으로 표시(KR 모바일 select 방식을 전 폭 재사용).
-type PeriodKey = '1w' | '1m' | '3m' | '6m' | '1y';
+// 기간 드롭다운: 현재가 다음 단일 컬럼을 선택 기간으로 표시(1일부터). 1일=changePercent(리스트 행에 있음·non-lazy), 1주일~1년=lazy(periodMap).
+type PeriodKey = '1d' | '1w' | '1m' | '3m' | '6m' | '1y';
 const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
+  { key: '1d', label: '1일', field: 'changePercent' },
   { key: '1w', label: '1주일', field: 'r1w' },
   { key: '1m', label: '1개월', field: 'r1m' },
   { key: '3m', label: '3개월', field: 'r3m' },
@@ -46,11 +48,6 @@ function pctColor(v?: number | null): string {
   if (v == null) return 'text-unjong-muted';
   return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
-function usd(v?: number | null): string {
-  if (v == null || !v) return '—';
-  return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
 // 하위탭별 데이터 소스 — 주식=전종목 목록(us-list, batch quote / 기간은 lazy), ETF=us-etf-performance(기간 포함).
 const ENDPOINTS: Record<SubTab, string> = {
   stock: '/api/yahoo/us-list',
@@ -72,7 +69,8 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
-  const [period, setPeriod] = useState<PeriodKey>('1w');
+  const [period, setPeriod] = useState<PeriodKey>('1d'); // 기본 1일
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 1일 정렬 방향 토글(긴 기간은 amount 고정이라 무영향)
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
@@ -122,12 +120,17 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   };
 
   const PAGE_SIZE = 50;
-  // 거래대금(amount) 내림차순 고정(최다거래 우선) + 검색 필터(티커·이름).
+  // 기본=거래대금(amount) 내림차순(최다거래 우선). 드롭다운 '1일' 선택 시 changePercent 정렬(데이터가 리스트 행에 있음).
+  // '1주일~1년'은 lazy(periodMap)라 전 행이 안 채워져 정렬 불가 → amount-desc 유지(옵션 A). 검색 필터(티커·이름) 공통.
   const sorted = useMemo(() => {
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
+    if (period === '1d') {
+      const dir = sortDir === 'desc' ? -1 : 1;
+      return [...base].sort((a, b) => ((a.changePercent ?? 0) - (b.changePercent ?? 0)) * dir);
+    }
     return [...base].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0));
-  }, [rows, search]);
+  }, [rows, search, period, sortDir]);
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
@@ -141,6 +144,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   // visibleKey 또는 period가 바뀌면 재평가. ETF 탭은 이 effect를 건너뜀(행이 r필드를 직접 가짐).
   useEffect(() => {
     if (tab !== 'stock') return;
+    if (period === '1d') return; // 1일은 리스트 행 changePercent 사용 — lazy fetch 불필요
     if (visibleSyms.length === 0) return;
     const need = visibleSyms.filter((s) => periodMap[`${s}|${period}`] === undefined);
     if (need.length === 0) return; // 전부 캐시됨 → 재fetch 없음
@@ -163,8 +167,9 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, visibleKey, period]);
 
-  // 기간 셀 값 통합: ETF 행은 r필드, 주식 행은 periodMap. undefined면 아직 로딩 중(…)·null이면 데이터 없음(—).
+  // 기간 셀 값 통합: 1일=changePercent(리스트 행, non-lazy). ETF 긴 기간=r필드, 주식 긴 기간=periodMap(lazy). undefined=로딩 중(…)·null=데이터 없음(—).
   function periodCell(r: Row): number | null | undefined {
+    if (period === '1d') return r.changePercent;
     if (tab === 'etf') return r[periodField] as number | null | undefined;
     return periodMap[`${r.symbol}|${period}`];
   }
@@ -228,16 +233,26 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
           ) : (
             <table className="w-full min-w-[320px] table-fixed text-sm sm:min-w-[600px]">
               <thead>
-                <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                <tr className="h-[46px] border-b border-unjong-border text-xs text-unjong-muted">
                   <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
                   <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
-                  <th className="w-[96px] whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
-                  <th className="w-[72px] whitespace-nowrap px-2 py-2.5 text-right font-medium">1일</th>
-                  {/* 기간 드롭다운(KR 모바일 select 마크업 재사용) — 표시 필드만 변경, refetch 없음 */}
-                  <th className="w-[88px] whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium">
-                    <select value={period} onChange={(e) => setPeriod(e.target.value as PeriodKey)} className={`rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none ${tab === 'stock' && periodLoading ? 'opacity-60' : ''}`}>
-                      {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
-                    </select>
+                  <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">현재가</th>
+                  {/* 기간 드롭다운(1일부터) — '1일'은 자동 정렬(changePercent), 긴 기간은 표시만(lazy, amount 정렬 유지). KR 미러 */}
+                  <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
+                    <span className="inline-flex items-center justify-end gap-0.5">
+                      <select value={period} onChange={(e) => { setPeriod(e.target.value as PeriodKey); setSortDir('desc'); setPage(0); }} className={`rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none ${tab === 'stock' && periodLoading ? 'opacity-60' : ''}`}>
+                        {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => { if (period === '1d') setSortDir((d) => (d === 'desc' ? 'asc' : 'desc')); }}
+                        aria-label="선택 기간으로 정렬"
+                        title={period === '1d' ? '1일 등락순 정렬' : '긴 기간은 거래대금순 고정(표시만)'}
+                        className={`ml-1.5 shrink-0 hover:text-unjong-primary ${period === '1d' ? 'text-unjong-accent' : 'cursor-default text-unjong-border'}`}
+                      >
+                        {period === '1d' ? (sortDir === 'desc' ? <ChevronDown size={16} /> : <ChevronUp size={16} />) : <ArrowUpDown size={16} />}
+                      </button>
+                    </span>
                   </th>
                   <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
                 </tr>
@@ -247,17 +262,16 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <tr key={r.symbol} onClick={() => setSelectedStock(r)} className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background">
                     <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <StockLogo code={r.symbol} name={r.name} size={24} />
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <StockLogo code={r.symbol} name={r.name} size={32} />
                         <span className="min-w-0">
                           <span className="font-bold text-unjong-primary">{r.symbol}</span>
                           <span title={r.name} className="ml-1.5 truncate text-xs text-unjong-muted">{r.name}</span>
                         </span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{usd(r.price)}</td>
-                    <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r.changePercent)}`}>{pct(r.changePercent)}</td>
-                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
+                    <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'US') : '—'}</td>
+                    <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
                         type="button"
@@ -299,7 +313,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
         {/* 우측: 증권사 리스트(헤더는 위 컨트롤 줄로 이동) — KR과 동일하게 BrokerRanking 재사용 */}
         <aside className="hidden w-72 shrink-0 lg:block">
-          <p className="border-b border-unjong-border px-1 py-2.5 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
+          <p className="flex h-[46px] items-center border-b border-unjong-border px-1 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
           <BrokerRanking hideHeader />
         </aside>
       </div>
@@ -320,7 +334,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               <div className="min-w-0 flex-1">
                 <p className="font-bold leading-snug text-unjong-primary">{selectedStock.symbol}</p>
                 <p className="font-mono text-xs text-unjong-muted">
-                  {selectedStock.name} · {usd(selectedStock.price)}
+                  {selectedStock.name} · {selectedStock.price ? formatPrice(selectedStock.price, 'US') : '—'}
                   <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
                 </p>
               </div>
