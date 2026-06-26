@@ -19,13 +19,11 @@ type Row = {
   amount?: number; // 거래대금(USD) — 정렬 전용(표시 X)
 };
 
-// 하위 카테고리 탭 — KR MarketBoard와 동일 구성. 'stock'만 라이브, 나머지는 '준비 중'.
-type SubTab = 'stock' | 'etf' | 'etn' | 'reit';
+// 하위 카테고리 탭 — 미국 시장 기준(주식 | ETF). 둘 다 라이브(각각 별도 라우트 fetch).
+type SubTab = 'stock' | 'etf';
 const SUBTABS: { key: SubTab; label: string }[] = [
   { key: 'stock', label: '주식' },
   { key: 'etf', label: 'ETF' },
-  { key: 'etn', label: 'ETN' },
-  { key: 'reit', label: '리츠' },
 ];
 
 // 기간 드롭다운: 현재가+1일 고정 후 단일 컬럼을 선택 기간으로 표시(KR 모바일 select 방식을 전 폭 재사용).
@@ -51,9 +49,16 @@ function usd(v?: number | null): string {
   return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-async function fetchRows(): Promise<Row[]> {
+// 하위탭별 데이터 소스 — 주식/ETF가 각각 별도 라우트 + 별도 캐시 키.
+const ENDPOINTS: Record<SubTab, string> = {
+  stock: '/api/yahoo/us-performance',
+  etf: '/api/yahoo/us-etf-performance',
+};
+const CACHE_KEYS: Record<SubTab, string> = { stock: 'us-stock', etf: 'us-etf' };
+
+async function fetchRows(tab: SubTab): Promise<Row[]> {
   try {
-    const j = await (await fetch('/api/yahoo/us-performance')).json();
+    const j = await (await fetch(ENDPOINTS[tab])).json();
     return ((j.items ?? []) as Row[]).map((r) => ({
       symbol: r.symbol, name: r.name, price: r.price, changePercent: r.changePercent,
       r1w: r.r1w, r1m: r.r1m, r3m: r.r3m, r6m: r.r6m, r1y: r.r1y, amount: r.amount,
@@ -63,24 +68,24 @@ async function fetchRows(): Promise<Row[]> {
 
 export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const [tab, setTab] = useState<SubTab>('stock');
-  const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('us-stock') ?? []);
-  const [loading, setLoading] = useState(() => getCache('us-stock') === undefined);
+  const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
+  const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1w');
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
 
-  // 'stock' 탭만 데이터 로드(서버 30분 캐시 + 클라 메모리 캐시 stale-while-revalidate).
-  // ETF/ETN/리츠는 fetch 안 함 — '준비 중' 빈 상태로만 노출.
+  // 탭별 데이터 로드 — 주식/ETF 각각 별도 라우트·캐시 키(서버 30분 캐시 + 클라 메모리 캐시 SWR).
+  // 탭 전환 시 해당 탭 캐시를 즉시 표시 후 백그라운드 재검증.
   useEffect(() => {
-    if (tab !== 'stock') { setSearch(''); setPage(0); return; }
     let cancelled = false;
     setSearch('');
     setPage(0);
-    const cached = getCache<Row[]>('us-stock');
-    if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
-    fetchRows().then((r) => { if (!cancelled) { setRows(r); setCache('us-stock', r); setLoading(false); } });
+    const key = CACHE_KEYS[tab];
+    const cached = getCache<Row[]>(key);
+    if (cached) { setRows(cached); setLoading(false); } else { setRows([]); setLoading(true); }
+    fetchRows(tab).then((r) => { if (!cancelled) { setRows(r); setCache(key, r); setLoading(false); } });
     return () => { cancelled = true; };
   }, [tab]);
 
@@ -169,9 +174,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
       {/* 좌: 종목 표 / 우: 증권사 리스트 — KR 미러(flex gap-4) */}
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
-          {tab !== 'stock' ? (
-            <p className="py-16 text-center text-sm text-unjong-muted">준비 중</p>
-          ) : loading ? (
+          {loading ? (
             <div className="space-y-2 py-2">
               {Array.from({ length: 12 }).map((_, i) => (
                 <div key={i} className="h-9 animate-pulse rounded bg-unjong-background" />
@@ -228,7 +231,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             </table>
           )}
           {/* 페이지네이션 — 숫자 페이지 (KR MarketBoard와 동일 방식) */}
-          {tab === 'stock' && !loading && sorted.length > PAGE_SIZE && (
+          {!loading && sorted.length > PAGE_SIZE && (
             <div className="flex flex-wrap items-center justify-center gap-1 border-t border-unjong-border px-2 py-3 text-xs">
               <button type="button" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">←</button>
               {pageNumbers().map((n, i) =>
