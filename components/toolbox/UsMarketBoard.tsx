@@ -228,9 +228,9 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex min-w-0 items-center gap-2.5">
                         <StockLogo code={r.symbol} name={r.name} size={32} />
-                        <span className="min-w-0">
+                        <span className="min-w-0 truncate">
                           <span className="font-bold text-unjong-primary">{r.symbol}</span>
-                          <span title={r.name} className="ml-1.5 truncate text-xs text-unjong-muted">{r.name}</span>
+                          <span title={r.name} className="ml-1.5 text-xs text-unjong-muted">{r.name}</span>
                         </span>
                       </div>
                     </td>
