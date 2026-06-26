@@ -5,6 +5,7 @@ import LinkCard, { type LinkItem } from './LinkCard';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
 import MarketBoard from './MarketBoard';
+import UsMarketBoard from './UsMarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import MacroFeed from './MacroFeed';
@@ -74,7 +75,12 @@ export default function ToolboxClient({
   // - 카테고리 탭 = 해당 국가에 큐레이션 링크가 있을 때만 → 미국 '준비 중' 벽 제거(깨끗한 링크 허브)
   const tabs = TAB_ORDER.map((slug) => {
     const special = SPECIAL_LABELS[slug];
-    if (special) return country === 'KR' ? { slug, label: special } : null;
+    if (special) {
+      // market(종목·상품)은 미국도 라이브 데이터(Yahoo) 제공 → KR/US 모두 노출.
+      // youtube·room은 한국 전용 데이터라 KR만.
+      if (slug === 'market') return { slug, label: special };
+      return country === 'KR' ? { slug, label: special } : null;
+    }
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
     return hasLinks ? { slug, label: c!.label } : null;
@@ -139,7 +145,7 @@ export default function ToolboxClient({
           country === 'KR' ? (
             <MarketBoard isLoggedIn={isLoggedIn} />
           ) : (
-            <Placeholder emoji="🇺🇸" title="미국 종목·상품 — 준비 중" />
+            <UsMarketBoard isLoggedIn={isLoggedIn} />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (

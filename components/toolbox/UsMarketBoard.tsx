@@ -1,0 +1,232 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { Star } from 'lucide-react';
+import { getCache, setCache } from '@/lib/clientCache';
+import { StockLogo } from '@/components/ui/StockLogo';
+
+type Row = {
+  symbol: string;
+  name: string;
+  price: number;
+  changePercent: number; // 1일
+  r1w?: number | null;
+  r1m?: number | null;
+  r3m?: number | null;
+  r6m?: number | null;
+  r1y?: number | null;
+  amount?: number; // 거래대금(USD) — 정렬 전용(표시 X)
+};
+
+// 기간 탭: 5번째 컬럼 1개를 선택 기간으로 보여줌(1일 컬럼은 고정).
+type PeriodKey = '1w' | '1m' | '3m' | '6m' | '1y';
+const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
+  { key: '1w', label: '1주', field: 'r1w' },
+  { key: '1m', label: '1개월', field: 'r1m' },
+  { key: '3m', label: '3개월', field: 'r3m' },
+  { key: '6m', label: '6개월', field: 'r6m' },
+  { key: '1y', label: '1년', field: 'r1y' },
+];
+
+function pct(v?: number | null): string {
+  if (v == null) return '—';
+  return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
+}
+function pctColor(v?: number | null): string {
+  if (v == null) return 'text-unjong-muted';
+  return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
+}
+function usd(v?: number | null): string {
+  if (v == null || !v) return '—';
+  return '$' + v.toLocaleString('en-US', { maximumFractionDigits: 2 });
+}
+
+async function fetchRows(): Promise<Row[]> {
+  try {
+    const j = await (await fetch('/api/yahoo/us-performance')).json();
+    return ((j.items ?? []) as Row[]).map((r) => ({
+      symbol: r.symbol, name: r.name, price: r.price, changePercent: r.changePercent,
+      r1w: r.r1w, r1m: r.r1m, r3m: r.r3m, r6m: r.r6m, r1y: r.r1y, amount: r.amount,
+    }));
+  } catch { return []; }
+}
+
+export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+  const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('us-stock') ?? []);
+  const [loading, setLoading] = useState(() => getCache('us-stock') === undefined);
+  const [period, setPeriod] = useState<PeriodKey>('1w');
+  const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
+
+  // 데이터 로드 (서버 30분 캐시 + 클라 메모리 캐시 stale-while-revalidate)
+  useEffect(() => {
+    let cancelled = false;
+    const cached = getCache<Row[]>('us-stock');
+    if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
+    fetchRows().then((r) => { if (!cancelled) { setRows(r); setCache('us-stock', r); setLoading(false); } });
+    return () => { cancelled = true; };
+  }, []);
+
+  // 관심종목 동기화 (로그인 시) — KR과 동일하게 symbol 집합으로 관리
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    let cancelled = false;
+    fetch('/api/watchlist')
+      .then((r) => r.json())
+      .then((j) => {
+        if (!cancelled && j.watchlist) setWatchSet(new Set((j.watchlist as { symbol: string }[]).map((w) => w.symbol)));
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isLoggedIn]);
+
+  const toggleWatch = (r: Row) => {
+    if (!isLoggedIn) { window.location.href = '/auth/login'; return; }
+    const add = !watchSet.has(r.symbol);
+    setWatchSet((prev) => { const n = new Set(prev); add ? n.add(r.symbol) : n.delete(r.symbol); return n; });
+    fetch('/api/watchlist', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol: r.symbol, name_ko: r.name, market: 'US', country: 'US', add }),
+    }).then((res) => { if (!res.ok) throw new Error('watchlist'); }).catch(() => {
+      setWatchSet((prev) => { const n = new Set(prev); add ? n.delete(r.symbol) : n.add(r.symbol); return n; });
+    });
+  };
+
+  const PAGE_SIZE = 50;
+  // 거래대금(amount) 내림차순 고정 + 검색 필터(티커·이름)
+  const sorted = useMemo(() => {
+    const q = search.trim().toUpperCase();
+    const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
+    return [...base].sort((a, b) => (b.amount ?? 0) - (a.amount ?? 0));
+  }, [rows, search]);
+  const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+
+  const periodField = PERIODS.find((p) => p.key === period)?.field ?? 'r1w';
+  const periodLabel = PERIODS.find((p) => p.key === period)?.label ?? '1주';
+
+  function pageNumbers(): (number | '…')[] {
+    const out: (number | '…')[] = [];
+    const cur = page + 1;
+    const win = 2;
+    const start = Math.max(1, cur - win);
+    const end = Math.min(totalPages, cur + win);
+    if (start > 1) { out.push(1); if (start > 2) out.push('…'); }
+    for (let i = start; i <= end; i++) out.push(i);
+    if (end < totalPages) { if (end < totalPages - 1) out.push('…'); out.push(totalPages); }
+    return out;
+  }
+
+  return (
+    <section className="min-w-0">
+      {/* 컨트롤 줄: 좌=기간 탭 / 우=검색 */}
+      <div className="mb-2 flex items-center gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+            {PERIODS.map((p) => (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setPeriod(p.key)}
+                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${period === p.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+              placeholder="티커·종목명 검색"
+              className="w-32 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent sm:w-48"
+            />
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
+          </div>
+        </div>
+      </div>
+
+      <div className="min-w-0 overflow-x-auto">
+        {loading ? (
+          <div className="space-y-2 py-2">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="h-9 animate-pulse rounded bg-unjong-background" />
+            ))}
+          </div>
+        ) : sorted.length === 0 ? (
+          <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
+        ) : (
+          <table className="w-full min-w-[320px] table-fixed text-sm sm:min-w-[600px]">
+            <thead>
+              <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
+                <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목</th>
+                <th className="w-[96px] whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
+                <th className="w-[72px] whitespace-nowrap px-2 py-2.5 text-right font-medium">1일</th>
+                <th className="w-[80px] whitespace-nowrap px-2 py-2.5 text-right font-medium">{periodLabel}</th>
+                <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginated.map((r, i) => (
+                <tr
+                  key={r.symbol}
+                  onClick={() => window.open(`https://finance.yahoo.com/quote/${r.symbol}`, '_blank', 'noopener,noreferrer')}
+                  className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background"
+                >
+                  <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
+                  <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <StockLogo code={r.symbol} name={r.name} size={24} />
+                      <span className="min-w-0">
+                        <span className="font-bold text-unjong-primary">{r.symbol}</span>
+                        <span title={r.name} className="ml-1.5 truncate text-xs text-unjong-muted">{r.name}</span>
+                      </span>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{usd(r.price)}</td>
+                  <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r.changePercent)}`}>{pct(r.changePercent)}</td>
+                  <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r[periodField] as number | null | undefined)}`}>{pct(r[periodField] as number | null | undefined)}</td>
+                  <td className="w-9 px-1 py-2.5 text-center">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
+                      aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
+                      className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+                    >
+                      <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {/* 페이지네이션 — 숫자 페이지 (MarketBoard와 동일 방식) */}
+        {!loading && sorted.length > PAGE_SIZE && (
+          <div className="flex flex-wrap items-center justify-center gap-1 border-t border-unjong-border px-2 py-3 text-xs">
+            <button type="button" disabled={page === 0} onClick={() => setPage((p) => Math.max(0, p - 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">←</button>
+            {pageNumbers().map((n, i) =>
+              n === '…' ? (
+                <span key={`e${i}`} className="px-1 text-unjong-muted">…</span>
+              ) : (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setPage((n as number) - 1)}
+                  className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-primary font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                >
+                  {n}
+                </button>
+              )
+            )}
+            <button type="button" disabled={page >= totalPages - 1} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">→</button>
+            <span className="ml-2 text-unjong-muted">총 {sorted.length.toLocaleString()} 종목</span>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
