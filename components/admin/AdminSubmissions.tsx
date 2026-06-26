@@ -9,9 +9,14 @@ function fmt(ts: string) {
 }
 const STATUS_LABEL: Record<string, string> = { pending: '대기', public: '공개', rejected: '반려' };
 
+const ADMIN_PAGE_SIZE = 50;
+
 export default function AdminSubmissions({ initial }: { initial: Submission[] }) {
   const [subs, setSubs] = useState(initial);
   const [busy, setBusy] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(subs.length / ADMIN_PAGE_SIZE));
+  const pageSubs = subs.slice((page - 1) * ADMIN_PAGE_SIZE, page * ADMIN_PAGE_SIZE);
 
   async function setAction(id: number, action: 'approve' | 'reject') {
     setBusy(id);
@@ -35,6 +40,7 @@ export default function AdminSubmissions({ initial }: { initial: Submission[] })
   }
 
   return (
+    <>
     <div className="overflow-x-auto rounded-lg border border-unjong-border">
       <table className="w-full text-sm">
         <thead className="bg-unjong-background text-xs text-unjong-muted">
@@ -50,7 +56,7 @@ export default function AdminSubmissions({ initial }: { initial: Submission[] })
           </tr>
         </thead>
         <tbody>
-          {subs.map((s) => (
+          {pageSubs.map((s) => (
             <tr key={s.id} className="border-t border-unjong-border align-top">
               <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{fmt(s.created_at)}</td>
               <td className="px-3 py-2 font-medium text-unjong-primary">{s.room_name}</td>
@@ -76,5 +82,13 @@ export default function AdminSubmissions({ initial }: { initial: Submission[] })
         </tbody>
       </table>
     </div>
+    {totalPages > 1 ? (
+      <div className="mt-3 flex items-center justify-center gap-3 text-sm">
+        <button type="button" disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className="rounded-md border border-unjong-border px-3 py-1 text-unjong-muted transition-colors hover:border-unjong-accent disabled:opacity-40">이전</button>
+        <span className="text-xs text-unjong-muted">{page} / {totalPages}</span>
+        <button type="button" disabled={page >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="rounded-md border border-unjong-border px-3 py-1 text-unjong-muted transition-colors hover:border-unjong-accent disabled:opacity-40">다음</button>
+      </div>
+    ) : null}
+    </>
   );
 }

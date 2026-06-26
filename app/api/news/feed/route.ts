@@ -85,7 +85,7 @@ export async function GET(req: Request) {
       })
       .filter((x) => x.title && x.link);
 
-    const TOP = Math.min(6, parsed.length);
+    const TOP = Math.min(3, parsed.length); // og:image 스크래핑 대상 축소(6→3) — 느린 외부 fetch 줄이기, 없으면 image:null로 안전 fallback
     await Promise.all(
       parsed.slice(0, TOP).map(async (it) => {
         const tries: string[] = [];

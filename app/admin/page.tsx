@@ -27,8 +27,8 @@ export default async function AdminPage() {
   }
 
   const admin = createAdminClient();
-  const { data: reportsData } = await admin.from('room_reports').select('*').order('created_at', { ascending: false }).limit(300);
-  const { data: subsData } = await admin.from('room_submissions').select('*').order('created_at', { ascending: false }).limit(300);
+  const { data: reportsData } = await admin.from('room_reports').select('*').order('created_at', { ascending: false }).limit(1000);
+  const { data: subsData } = await admin.from('room_submissions').select('*').order('created_at', { ascending: false }).limit(1000);
   const reports = (reportsData ?? []) as Report[];
   const subs = (subsData ?? []) as Submission[];
 
