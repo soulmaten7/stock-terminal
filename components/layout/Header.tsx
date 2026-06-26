@@ -6,13 +6,13 @@ import { useRouter, usePathname } from 'next/navigation';
 import { User, Star, LogOut } from 'lucide-react';
 import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
-import { useCountryStore, type Country } from '@/stores/countryStore';
 import { createClient } from '@/lib/supabase/client';
 import { useHomeReset } from '@/stores/homeResetStore';
 
-const COUNTRIES: { code: Country; name: string; flag: string }[] = [
-  { code: 'KR', name: '한국', flag: '🇰🇷' },
-  { code: 'US', name: '미국', flag: '🇺🇸' },
+// 헤더 = 언어 선택(시장 선택 아님 — 시장은 페이지의 한국/미국 토글이 담당).
+const LANGS: { code: 'ko' | 'en'; name: string; flag: string; ready: boolean }[] = [
+  { code: 'ko', name: '한국어', flag: '🇰🇷', ready: true },
+  { code: 'en', name: 'English', flag: '🇺🇸', ready: false }, // 영어 번역 준비 중(i18n)
 ];
 
 const MENU = [
@@ -23,17 +23,16 @@ export default function Header() {
   const router = useRouter();
   const pathname = usePathname() ?? '/';
   const { user } = useAuthStore();
-  const { country, setCountry } = useCountryStore();
-  const [countryOpen, setCountryOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const countryRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const currentCountry = COUNTRIES.find((c) => c.code === country)!;
+  const currentLang = LANGS[0]; // 현재 한국어(번역 추가 전까지 고정 표시)
   const resetHome = useHomeReset((s) => s.reset);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (countryRef.current && !countryRef.current.contains(e.target as Node)) setCountryOpen(false);
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
@@ -90,16 +89,29 @@ export default function Header() {
 
         {/* 우측 아이콘 */}
         <div className="flex shrink-0 items-center gap-3">
-          <div ref={countryRef} className="relative">
-            <button type="button" onClick={() => setCountryOpen(!countryOpen)} className="p-1 text-base transition-opacity hover:opacity-70" aria-label="국가 선택" title={currentCountry.name}>
-              {currentCountry.flag}
+          {/* 언어 선택 (시장 선택 아님 — 시장은 페이지의 한국/미국 토글) */}
+          <div ref={langRef} className="relative">
+            <button type="button" onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1.5 p-1 text-sm text-white/80 transition-opacity hover:opacity-70" aria-label="언어 선택" title="언어 선택">
+              <span className="hidden font-medium sm:inline">{currentLang.name}</span>
+              <span className="text-base">{currentLang.flag}</span>
             </button>
-            {countryOpen && (
-              <div className="absolute right-0 top-full z-50 mt-2 min-w-[140px] overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
-                {COUNTRIES.map((c) => (
-                  <button key={c.code} onClick={() => { setCountry(c.code); setCountryOpen(false); }} className={`flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-unjong-background ${country === c.code ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
-                    <span className="text-lg">{c.flag}</span>
-                    <span>{c.name}</span>
+            {langOpen && (
+              <div className="absolute right-0 top-full z-50 mt-2 min-w-[170px] overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
+                {LANGS.map((l) => (
+                  <button
+                    key={l.code}
+                    type="button"
+                    onClick={() => setLangOpen(false)}
+                    disabled={!l.ready}
+                    className={`flex w-full items-center gap-2 px-4 py-3 text-sm ${
+                      l.ready
+                        ? `hover:bg-unjong-background ${l.code === currentLang.code ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`
+                        : 'cursor-not-allowed text-unjong-muted'
+                    }`}
+                  >
+                    <span>{l.name}</span>
+                    <span className="text-base">{l.flag}</span>
+                    {!l.ready && <span className="ml-auto text-[11px] text-unjong-muted">준비 중</span>}
                   </button>
                 ))}
               </div>
