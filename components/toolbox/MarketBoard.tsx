@@ -35,6 +35,8 @@ const PERIODS: { key: PeriodKey; label: string; field: keyof Row; hideSm?: boole
   { key: '6m', label: '6개월', field: 'r6m', hideSm: true },
   { key: '1y', label: '1년', field: 'r1y' },
 ];
+// 단일 기간 컬럼 드롭다운 옵션 — 1일 고정 컬럼 이후를 한 컬럼으로(US 표와 동일). 1일 제외.
+const DROPDOWN_PERIODS = PERIODS.filter((p) => p.key !== '1d');
 
 function pct(v?: number | null): string {
   if (v == null) return '—';
@@ -90,7 +92,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
   const [sortKey, setSortKey] = useState<PeriodKey | 'amount'>('amount');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
-  const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d');
+  const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1w'); // 단일 기간 컬럼 선택값(데스크탑·모바일 공용)
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
@@ -220,22 +222,32 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   </th>
                   <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">종목명</th>
                   <th className="w-[88px] whitespace-nowrap px-2 py-2.5 text-right font-medium">현재가</th>
-                  <th className="w-[84px] whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium sm:hidden">
-                    <select value={mobilePeriod} onChange={(e) => setMobilePeriod(e.target.value as PeriodKey)} className="rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none">
-                      {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
-                    </select>
+                  <th className="w-[72px] whitespace-nowrap px-2 py-2.5 text-right font-medium">
+                    <button
+                      type="button"
+                      onClick={() => clickHeader('1d')}
+                      className={`inline-flex items-center gap-0.5 hover:text-unjong-primary ${sortKey === '1d' ? 'font-bold text-unjong-accent' : ''}`}
+                    >
+                      1일{sortKey === '1d' ? (sortDir === 'desc' ? ' ▼' : ' ▲') : ''}
+                    </button>
                   </th>
-                  {PERIODS.map((p) => (
-                    <th key={p.key} className="hidden w-[84px] whitespace-nowrap px-2 py-2.5 text-right font-medium sm:table-cell">
+                  {/* 단일 기간 컬럼: 드롭다운으로 기간 선택 + 옆 토글로 해당 기간 정렬(데스크탑·모바일 동일, US 미러) */}
+                  <th className="w-[92px] whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium">
+                    <span className="inline-flex items-center justify-end gap-0.5">
+                      <select value={mobilePeriod} onChange={(e) => setMobilePeriod(e.target.value as PeriodKey)} className="rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none">
+                        {DROPDOWN_PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+                      </select>
                       <button
                         type="button"
-                        onClick={() => clickHeader(p.key)}
-                        className={`inline-flex items-center gap-0.5 hover:text-unjong-primary ${sortKey === p.key ? 'font-bold text-unjong-accent' : ''}`}
+                        onClick={() => clickHeader(mobilePeriod)}
+                        aria-label="선택 기간으로 정렬"
+                        title="선택 기간순 정렬"
+                        className={`shrink-0 hover:text-unjong-primary ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
                       >
-                        {p.label}{sortKey === p.key ? (sortDir === 'desc' ? ' ▼' : ' ▲') : ''}
+                        {sortKey === mobilePeriod ? (sortDir === 'desc' ? '▼' : '▲') : '↕'}
                       </button>
-                    </th>
-                  ))}
+                    </span>
+                  </th>
                   <th className="w-9 px-1 py-2.5 text-center font-medium"><Star size={12} className="mx-auto text-unjong-muted" /></th>
                 </tr>
               </thead>
@@ -250,11 +262,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{r.price ? r.price.toLocaleString() : '—'}</td>
-                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums sm:hidden ${pctColor(r[mobileField] as number | null | undefined)}`}>{pct(r[mobileField] as number | null | undefined)}</td>
-                    {PERIODS.map((p) => {
-                      const v = r[p.field] as number | null | undefined;
-                      return <td key={p.key} className={`hidden whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums sm:table-cell ${pctColor(v)}`}>{pct(v)}</td>;
-                    })}
+                    <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r.changePercent)}`}>{pct(r.changePercent)}</td>
+                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums ${pctColor(r[mobileField] as number | null | undefined)}`}>{pct(r[mobileField] as number | null | undefined)}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
                         type="button"
