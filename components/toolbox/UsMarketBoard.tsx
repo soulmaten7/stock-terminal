@@ -6,6 +6,8 @@ import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import BrokerRanking from './BrokerRanking';
 
+// ETF 행은 r1w..r1y를 가짐(us-etf-performance가 한 번에 줌, 동기).
+// 주식 행은 us-list가 현재가·1일·amount만 줌 → 기간 수익률은 periodMap으로 lazy 보강.
 type Row = {
   symbol: string;
   name: string;
@@ -49,12 +51,12 @@ function usd(v?: number | null): string {
   return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// 하위탭별 데이터 소스 — 주식/ETF가 각각 별도 라우트 + 별도 캐시 키.
+// 하위탭별 데이터 소스 — 주식=전종목 목록(us-list, batch quote / 기간은 lazy), ETF=us-etf-performance(기간 포함).
 const ENDPOINTS: Record<SubTab, string> = {
-  stock: '/api/yahoo/us-performance',
+  stock: '/api/yahoo/us-list',
   etf: '/api/yahoo/us-etf-performance',
 };
-const CACHE_KEYS: Record<SubTab, string> = { stock: 'us-stock', etf: 'us-etf' };
+const CACHE_KEYS: Record<SubTab, string> = { stock: 'us-stock-list', etf: 'us-etf' };
 
 async function fetchRows(tab: SubTab): Promise<Row[]> {
   try {
@@ -75,6 +77,11 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  // 주식 기간 수익률 lazy 캐시 — `${sym}|${period}` 키. 보이는 페이지 50종목만 채움. ETF는 미사용.
+  const [periodMap, setPeriodMap] = useState<Record<string, number | null>>(
+    () => getCache<Record<string, number | null>>('us-stock-periodmap') ?? {}
+  );
+  const [periodLoading, setPeriodLoading] = useState(false);
 
   // 탭별 데이터 로드 — 주식/ETF 각각 별도 라우트·캐시 키(서버 30분 캐시 + 클라 메모리 캐시 SWR).
   // 탭 전환 시 해당 탭 캐시를 즉시 표시 후 백그라운드 재검증.
@@ -125,6 +132,42 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
   const periodField = PERIODS.find((p) => p.key === period)?.field ?? 'r1w';
+
+  // 보이는 페이지의 sym 목록(검색+페이지 반영). 의존성 키로 쓰려고 문자열로 고정.
+  const visibleSyms = paginated.map((r) => r.symbol);
+  const visibleKey = visibleSyms.join(',');
+
+  // 주식 탭 전용 기간 lazy: 보이는 50종목 중 `${sym}|${period}` 미캐시분만 us-quote로 요청 → periodMap 머지.
+  // visibleKey 또는 period가 바뀌면 재평가. ETF 탭은 이 effect를 건너뜀(행이 r필드를 직접 가짐).
+  useEffect(() => {
+    if (tab !== 'stock') return;
+    if (visibleSyms.length === 0) return;
+    const need = visibleSyms.filter((s) => periodMap[`${s}|${period}`] === undefined);
+    if (need.length === 0) return; // 전부 캐시됨 → 재fetch 없음
+    let cancelled = false;
+    setPeriodLoading(true);
+    fetch(`/api/yahoo/us-quote?syms=${encodeURIComponent(need.join(','))}&period=${period}`)
+      .then((r) => r.json())
+      .then((j: { rets?: Record<string, number | null> }) => {
+        if (cancelled) return;
+        setPeriodMap((prev) => {
+          const next = { ...prev };
+          for (const s of need) next[`${s}|${period}`] = (j.rets?.[s] ?? null);
+          setCache('us-stock-periodmap', next);
+          return next;
+        });
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setPeriodLoading(false); });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, visibleKey, period]);
+
+  // 기간 셀 값 통합: ETF 행은 r필드, 주식 행은 periodMap. undefined면 아직 로딩 중(…)·null이면 데이터 없음(—).
+  function periodCell(r: Row): number | null | undefined {
+    if (tab === 'etf') return r[periodField] as number | null | undefined;
+    return periodMap[`${r.symbol}|${period}`];
+  }
 
   function pageNumbers(): (number | '…')[] {
     const out: (number | '…')[] = [];
@@ -192,7 +235,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <th className="w-[72px] whitespace-nowrap px-2 py-2.5 text-right font-medium">1일</th>
                   {/* 기간 드롭다운(KR 모바일 select 마크업 재사용) — 표시 필드만 변경, refetch 없음 */}
                   <th className="w-[88px] whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-medium">
-                    <select value={period} onChange={(e) => setPeriod(e.target.value as PeriodKey)} className="rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none">
+                    <select value={period} onChange={(e) => setPeriod(e.target.value as PeriodKey)} className={`rounded border border-unjong-border bg-unjong-surface px-1 py-1 text-xs font-medium text-unjong-primary outline-none ${tab === 'stock' && periodLoading ? 'opacity-60' : ''}`}>
                       {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
                     </select>
                   </th>
@@ -214,7 +257,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     </td>
                     <td className="whitespace-nowrap px-2 py-2.5 text-right tabular-nums text-unjong-primary">{usd(r.price)}</td>
                     <td className={`whitespace-nowrap px-2 py-2.5 text-right font-semibold tabular-nums ${pctColor(r.changePercent)}`}>{pct(r.changePercent)}</td>
-                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums ${pctColor(r[periodField] as number | null | undefined)}`}>{pct(r[periodField] as number | null | undefined)}</td>
+                    <td className={`whitespace-nowrap py-2.5 pl-1 pr-2 text-right font-semibold tabular-nums ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
                         type="button"

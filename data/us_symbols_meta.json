@@ -1,0 +1,35 @@
+{
+  "generated": "2026-06-25",
+  "count": 6936,
+  "stocks": 6121,
+  "etfs": 815,
+  "source": "STOCKS: rreichel3/US-Stock-Symbols compact ticker lists (nasdaq/nyse/amex) -- COMPLETE common-stock universe. ETFs: Nasdaq Trader nasdaqlisted+otherlisted ETF=Y rows (only A-C retrieved; WebFetch truncated) + curated allowlist of ~230 major real ETFs. Names also enriched from SEC company_tickers.json (top ~1056 by mktcap) + GitHub full_tickers (partial).",
+  "notes": "IMPORTANT CAVEATS: (1) Every large source truncated at WebFetch's ~79KB cap; only the compact per-exchange ticker lists and compact symbol arrays came through COMPLETE. (2) The rreichel3 lists are COMMON-STOCK-ONLY -- they contain essentially no ETFs (SPY/QQQ/VOO/GLD absent), because most US ETFs trade on NYSE Arca which those lists omit. ETF coverage here is therefore PARTIAL: authoritative ETFs only for the A-C alphabet slice that the Nasdaq Trader files returned before truncation, PLUS a curated allowlist of ~230 widely-traded ETFs (all real, verifiable tickers/names). ETFs whose ticker starts with D-Z and is not in the allowlist are MISSING. (3) Cleaning excluded preferred/series (^/$), warrants (/WS and paired W/WW suffixes), units, rights, and any name-confirmed Warrant/Unit/Right/Preferred/Depositary/Notes. (4) Class shares converted to Yahoo '-' format (e.g. BRK/A->BRK-A, BF/B->BF-B, AKO/A->AKO-A). (5) Stocks beyond the A-C name slice / non-megacaps use the ticker itself as a non-fabricated name placeholder -- Yahoo Finance returns the real long name at quote time. No symbols were fabricated.",
+  "placeholder_names": 4231,
+  "stats": {
+    "raw": 7143,
+    "drop_marker": 385,
+    "drop_name": 232,
+    "drop_test": 0,
+    "drop_suffix": 389,
+    "kept": 6137,
+    "etf_from_pipe": 586,
+    "etf_from_allowlist": 213,
+    "etf_override": 0
+  },
+  "class_share_conversions_sample": [
+    "AKO/A->AKO-A",
+    "AKO/B->AKO-B",
+    "BF/A->BF-A",
+    "BF/B->BF-B",
+    "BIO/B->BIO-B",
+    "BRK/A->BRK-A",
+    "BRK/B->BRK-B",
+    "CRD/A->CRD-A",
+    "CRD/B->CRD-B",
+    "HEI/A->HEI-A",
+    "HVT/A->HVT-A",
+    "WSO/B->WSO-B"
+  ],
+  "class_share_conversions_total": 12
+}
