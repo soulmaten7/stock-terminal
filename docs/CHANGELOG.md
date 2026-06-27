@@ -1,5 +1,23 @@
-<!-- 2026-06-26 -->
+<!-- 2026-06-27 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-06-27 — STEP 413~421 · US 시장 완전체(거시·뉴스·공시 4기둥) + 종목표 정렬 재설계 + 모바일 폴리시 + 기간 드롭다운 리파인 + 배포
+
+HEAD `fac8fb1`(413~421 + 문서). 배포 ✓ **onetrillion.app 라이브.** **미국 시장을 종목·상품에 이어 거시(FRED)·뉴스(Yahoo)·공시(SEC EDGAR)까지 확장해 KR과 동등한 4기둥으로 완성한 세션** + 종목표 정렬 전면 재설계(KR·US 동일) + 모바일 디테일 폴리시. DB = NEW "Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 413 — 피드 국가맵 리팩터 + 거시 US 노출**: `components/toolbox/ToolboxClient.tsx`의 단일 `country==='KR'` 가드를 `FEED_COUNTRY_SUPPORT` 맵으로 교체 → **거시(macro) US 노출**(FRED 데이터 이미 완성, 가드만 풀림) + `MacroFeed` `defaultView` prop.
+- **STEP 414 — US 뉴스 피드**: `/api/news/feed?market=US` = Yahoo `^GSPC` RSS(키리스 실시간 증시 헤드라인) 정규식 파싱 + `NewsFeed` `country` prop.
+- **STEP 415 (flagship) — US 공시 피드**: `/api/sec/feed`(SEC EDGAR `getcurrent` 8-K Atom, UA=`SEC_USER_AGENT`) + 새 `components/toolbox/SecFeed.tsx`(DartFeed 미러) + disclosure US 개방. **DART의 미국 짝.**
+- **STEP 416 — 모바일 US 종목명 클램프**: 종목명 셀 `truncate`(긴 이름 가로 오버플로 방지).
+- **STEP 417 — 종목표 정렬 재설계(KR·US 동일)**: 종목명(가나다/알파벳)·현재가·기간 **헤더 클릭 정렬 + ▲/▼ 항상 표시**, **기본 현재가↓**(탭 전환 시 리셋), `#`는 번호만(클릭 X), **거래대금 정렬 제거**.
+- **STEP 418 — 죽은 라우트 삭제**: `app/api/yahoo/us-quote`·`us-performance`(호출처 0, -368줄). (옛 `/api/sec`는 `lib/api/sec.ts`가 써서 유지.)
+- **STEP 419 — 모바일 3종**: ① 표 아래 **증권사 중복 제거**(클릭 시트에만) ② `ListRow` ⭐·바로가기 **우측정렬**(전 링크탭 적용) ③ **종목 클릭 시트에 현재가 + 1일~1년 수익률** 추가.
+- **STEP 420 — 기간 선택 커스텀 드롭다운**: 네이티브 `<select>` 교체 → 모바일 일관 렌더·작은 인라인·바깥클릭 닫힘.
+- **STEP 421 — 기간 라벨 "전" 표기**: 1일전·1주일전·1개월전·3개월전·6개월전·1년전(PERIODS 배열+시트 하드코딩 둘 다) + 드롭다운 **버튼·목록 폭 일치**.
+- **🔵 결정**: 거래소 분리(코스피/코스닥, NYSE/나스닥) **안 함** — 검색·정렬로 충분 + US는 데이터 태그 없음 → 주식 탭 통합 유지.
+- **🚀 배포**: STEP 413~421 + 세션 문서 → **onetrillion.app 라이브**.
+- **현황**: **US 시장 완전체** = 종목·상품(전종목+ETF) + 거시(FRED) + 뉴스(Yahoo) + 공시(SEC EDGAR) **4기둥**, KR↔US UI 통일. DB `us_stock_perf` 상위 200 데모 적재 → **prod 크론 매일 22시 UTC** 전종목 자동(라이브 후 첫 실행 시 1주~6개월 전부 채워짐).
+- ⚠️ KR 데이터값이 개발환경에선 이상(페니주·고가) — 라이브 실데이터 확인 권장.
+- ▶ **다음 후보**: ④ 평가 디렉토리(MVP 2.0 차별화 축) 심화 · US 1주~6개월 전종목 크론 라이브 채워졌는지 확인 · 추가 모바일 폴리시(실폰 발견 시) · 리포트·실적·ETF·공모주·배당 US 피드 = 보류(키리스 한계/데이터) · (최종) Trillion AI 분석 전망 레이어(`docs/BUSINESS_STRATEGY.md` §3).
 
 ## 2026-06-26 — STEP 405~412 · US 종목 탭 신설·KR 구조 통일·종목표 UI 리파인·US 기간 백그라운드 미리계산·언어 선택기 + KR 링크허브 71 큐레이션 + Trillion AI 분석 로드맵 + 배포
 
