@@ -107,7 +107,7 @@ export default function LoginPage() {
 
           <div className="border-t border-unjong-border pt-4 text-center space-y-1">
             <p className="text-xs text-unjong-muted">
-              로그인 없이도 채팅·관심종목 사용 가능합니다
+              로그인 없이도 관심종목을 사용할 수 있습니다
             </p>
             <p className="text-xs text-unjong-muted">
               단 닉네임·관심종목이 이 브라우저에만 저장됩니다

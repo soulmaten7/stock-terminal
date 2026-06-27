@@ -33,7 +33,6 @@ export const metadata: Metadata = {
     "주식 커뮤니티",
     "투자상품 평가",
     "리딩방 검증",
-    "주식 토론",
     "ETF 평가",
     "신뢰 평가 허브",
   ],
