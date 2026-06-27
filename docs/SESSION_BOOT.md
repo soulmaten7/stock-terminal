@@ -1,6 +1,8 @@
 <!-- 2026-06-27 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
+> 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준 · 2026-06-27 합의). **한국 완성 감사 = `docs/KR_COMPLETENESS_AUDIT.md`.** 현재 **Phase 0 완료 → 다음 Phase 2(광고 슬롯) 후보.** 새 세션은 이 BOOT 다음으로 ROADMAP을 본다.
+
 > 🟢 **2026-06-27 (최신) · US 시장 완전체(거시·뉴스·공시 4기둥) STEP 413~421 + 종목표 정렬 재설계 + 모바일 폴리시 (HEAD `fac8fb1`) — 배포 ✓ onetrillion.app 라이브 — 최신은 이 배너.**
 > **한 줄: 미국 시장을 종목·상품에 이어 거시(FRED)·뉴스(Yahoo)·공시(SEC EDGAR)까지 확장해 KR과 동등한 4기둥으로 완성한 세션 — 피드 국가맵 리팩터+거시 US→US 뉴스(Yahoo RSS)→US 공시(SEC EDGAR 8-K, DART의 미국 짝)→종목표 정렬 전면 재설계(헤더 클릭·▲/▼)→모바일 폴리시(증권사 중복 제거·우측정렬·종목 시트 수익률)→기간 커스텀 드롭다운·"전" 라벨. onetrillion.app 라이브.**
 > - **🆕 배포 = `https://onetrillion.app` 라이브**(STEP 413~421 + 세션 문서). 이전 `stock-terminal-delta.vercel.app`도 유효.
