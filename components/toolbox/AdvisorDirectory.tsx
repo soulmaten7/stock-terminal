@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
@@ -130,6 +130,22 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   const [selected, setSelected] = useState<Advisor | null>(null);
   const [loginNotice, setLoginNotice] = useState(false);
   const [registering, setRegistering] = useState(false);
+
+  // 모바일 하단 시트: 핸들을 잡고 아래로 드래그하면 닫힘
+  const [sheetDragY, setSheetDragY] = useState(0);
+  const dragStartY = useRef<number | null>(null);
+  function onSheetTouchStart(e: ReactTouchEvent) {
+    dragStartY.current = e.touches[0].clientY;
+  }
+  function onSheetTouchMove(e: ReactTouchEvent) {
+    if (dragStartY.current === null) return;
+    setSheetDragY(Math.max(0, e.touches[0].clientY - dragStartY.current)); // 아래로만
+  }
+  function onSheetTouchEnd() {
+    if (sheetDragY > 90) setSelected(null); // 충분히 내리면 닫기
+    setSheetDragY(0);                        // 아니면 제자리로 스냅백
+    dragStartY.current = null;
+  }
 
   const [reporting, setReporting] = useState<Advisor | null>(null);
   const [reportReason, setReportReason] = useState('');
@@ -417,16 +433,32 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         </aside>
       </div>
 
-      {/* 미리보기 (모바일 하단 시트) */}
+      {/* 미리보기 (모바일 하단 시트 — 바깥 터치 또는 아래로 드래그하면 닫힘) */}
       {selected ? (
-        <div className="fixed inset-0 z-40 flex items-end bg-black/40 lg:hidden">
-          <div className="max-h-[85vh] w-full overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-3 sm:p-4">
-            <div className="mb-1 flex justify-end">
-              <button type="button" onClick={() => setSelected(null)} aria-label="닫기" className="text-unjong-muted hover:text-unjong-primary">
-                <X size={18} />
-              </button>
+        <div
+          className="fixed inset-0 z-40 flex items-end bg-black/40 lg:hidden"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="max-h-[85vh] w-full overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface pb-5 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              transform: `translateY(${sheetDragY}px)`,
+              transition: sheetDragY ? 'none' : 'transform 0.2s ease',
+            }}
+          >
+            {/* 드래그 핸들 — 잡고 아래로 내리면 닫힘 */}
+            <div
+              className="flex cursor-grab touch-none justify-center px-3 pb-2 pt-3 active:cursor-grabbing"
+              onTouchStart={onSheetTouchStart}
+              onTouchMove={onSheetTouchMove}
+              onTouchEnd={onSheetTouchEnd}
+            >
+              <span className="h-1.5 w-10 rounded-full bg-unjong-border" />
             </div>
-            <PreviewBody a={selected} onReport={() => openReport(selected)} isFav={favs.has(selected.biz_no)} onToggleFav={() => toggleFav(selected)} />
+            <div className="px-3 sm:px-4">
+              <PreviewBody a={selected} onReport={() => openReport(selected)} isFav={favs.has(selected.biz_no)} onToggleFav={() => toggleFav(selected)} />
+            </div>
           </div>
         </div>
       ) : null}
