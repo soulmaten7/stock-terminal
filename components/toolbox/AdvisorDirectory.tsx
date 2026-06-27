@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown } from 'lucide-react';
-import RoomSubmitModal from './RoomSubmitModal';
+import { useRouter } from 'next/navigation';
 import SelectDropdown from './SelectDropdown';
 
 type Advisor = {
@@ -147,7 +147,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
   const [loading, setLoading] = useState(cachedInit === undefined);
   const [selected, setSelected] = useState<Advisor | null>(null);
   const [loginNotice, setLoginNotice] = useState(false);
-  const [registering, setRegistering] = useState(false);
+  const router = useRouter();
 
   // 모바일 하단 시트: 핸들을 잡고 아래로 드래그하면 닫힘
   const [sheetDragY, setSheetDragY] = useState(0);
@@ -321,7 +321,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             {/* 모바일 전용(미리보기 칸 없음): 등록 버튼을 정렬 옆에 */}
             <button
               type="button"
-              onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+              onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } router.push('/business'); }}
               className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white lg:hidden"
             >
               + 리딩방 등록
@@ -332,7 +332,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         <div className="hidden w-72 shrink-0 items-center justify-end lg:flex">
           <button
             type="button"
-            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } setRegistering(true); }}
+            onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } router.push('/business'); }}
             className="shrink-0 rounded-lg border border-unjong-accent px-3 py-1.5 text-xs font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white"
           >
             + 리딩방 등록
@@ -528,8 +528,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
         </div>
       ) : null}
 
-      {/* 내 리딩방 등록 모달 */}
-      {registering ? <RoomSubmitModal onClose={() => setRegistering(false)} /> : null}
     </section>
   );
 }

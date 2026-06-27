@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import AdminReports from '@/components/admin/AdminReports';
 import AdminSubmissions from '@/components/admin/AdminSubmissions';
+import AdminBusinessClaims from '@/components/admin/AdminBusinessClaims';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -10,6 +11,7 @@ export const metadata = { title: '트릴리언 관리자' };
 
 type Report = { id: number; target_name: string; reason: string; content: string | null; status: string; created_at: string };
 type Submission = { id: number; room_name: string; company_name: string | null; platform: string; homepage: string; fss_matched: boolean; status: string; created_at: string };
+type BizClaim = { id: string; biz_no: string; company_name: string; contact: string | null; doc_signed: string | null; status: string; created_at: string };
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -32,6 +34,25 @@ export default async function AdminPage() {
   const reports = (reportsData ?? []) as Report[];
   const subs = (subsData ?? []) as Submission[];
 
+  // 업체 인증 신청(클레임) + 업체명 매핑 + 서류 서명 URL
+  const { data: claimsData } = await admin.from('business_claims').select('id, biz_no, contact, doc_url, status, created_at').order('created_at', { ascending: false }).limit(500);
+  const claimRows = claimsData ?? [];
+  const claimBizNos = [...new Set(claimRows.map((c) => c.biz_no as string))];
+  const nameMap: Record<string, string> = {};
+  if (claimBizNos.length) {
+    const { data: bizes } = await admin.from('fss_advisors').select('biz_no, company_name').in('biz_no', claimBizNos);
+    for (const b of bizes ?? []) nameMap[b.biz_no as string] = b.company_name as string;
+  }
+  const claims: BizClaim[] = [];
+  for (const c of claimRows) {
+    let doc_signed: string | null = null;
+    if (c.doc_url) {
+      const { data: sig } = await admin.storage.from('business-docs').createSignedUrl(c.doc_url as string, 3600);
+      doc_signed = sig?.signedUrl ?? null;
+    }
+    claims.push({ id: c.id as string, biz_no: c.biz_no as string, company_name: nameMap[c.biz_no as string] ?? (c.biz_no as string), contact: (c.contact as string) ?? null, doc_signed, status: c.status as string, created_at: c.created_at as string });
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <h1 className="text-xl font-bold text-unjong-primary">트릴리언 관리자</h1>
@@ -44,9 +65,15 @@ export default async function AdminPage() {
       </section>
 
       {/* 자가등록 */}
-      <section>
+      <section className="mb-12">
         <h2 className="mb-3 text-base font-bold text-unjong-primary">📝 자가등록 ({subs.length}) · 대기는 승인해야 공개</h2>
         <AdminSubmissions initial={subs} />
+      </section>
+
+      {/* 업체 인증 신청(클레임) */}
+      <section>
+        <h2 className="mb-3 text-base font-bold text-unjong-primary">🛡 업체 인증 신청 ({claims.length}) · 서류 확인 후 승인하면 verified·게재</h2>
+        <AdminBusinessClaims initial={claims} />
       </section>
     </div>
   );
