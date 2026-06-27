@@ -32,12 +32,12 @@ const SUBTABS: { key: SubTab; label: string }[] = [
 // 기간 드롭다운: 현재가 다음 단일 컬럼을 선택 기간으로 표시(1일부터). 모든 기간이 행에 직접 있음(주식=us-list 조인, ETF=etf-performance).
 type PeriodKey = '1d' | '1w' | '1m' | '3m' | '6m' | '1y';
 const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
-  { key: '1d', label: '1일', field: 'changePercent' },
-  { key: '1w', label: '1주일', field: 'r1w' },
-  { key: '1m', label: '1개월', field: 'r1m' },
-  { key: '3m', label: '3개월', field: 'r3m' },
-  { key: '6m', label: '6개월', field: 'r6m' },
-  { key: '1y', label: '1년', field: 'r1y' },
+  { key: '1d', label: '1일전', field: 'changePercent' },
+  { key: '1w', label: '1주일전', field: 'r1w' },
+  { key: '1m', label: '1개월전', field: 'r1m' },
+  { key: '3m', label: '3개월전', field: 'r3m' },
+  { key: '6m', label: '6개월전', field: 'r6m' },
+  { key: '1y', label: '1년전', field: 'r1y' },
 ];
 
 function pct(v?: number | null): string {
@@ -265,19 +265,19 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   {/* 기간 드롭다운(1일부터) — 선택 기간으로 전 종목 자동 정렬 + 옆 토글로 오름/내림. KR 미러 */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
-                      <div ref={periodRef} className="relative">
+                      <div ref={periodRef} className="relative w-[4.75rem]">
                         <button
                           type="button"
                           onClick={() => setPeriodOpen((o) => !o)}
                           aria-haspopup="listbox"
                           aria-expanded={periodOpen}
-                          className="flex items-center gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
+                          className="flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
                         >
                           {PERIODS.find((p) => p.key === period)?.label ?? '기간'}
                           <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {periodOpen ? (
-                          <div role="listbox" className="absolute right-0 top-full z-50 mt-1 min-w-[5rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                          <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
                             {PERIODS.map((p) => (
                               <button
                                 key={p.key}
@@ -394,12 +394,12 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               </div>
               <div className="grid grid-cols-3 gap-x-2 gap-y-2.5">
                 {([
-                  ['1일', selectedStock.changePercent],
-                  ['1주일', selectedStock.r1w],
-                  ['1개월', selectedStock.r1m],
-                  ['3개월', selectedStock.r3m],
-                  ['6개월', selectedStock.r6m],
-                  ['1년', selectedStock.r1y],
+                  ['1일전', selectedStock.changePercent],
+                  ['1주일전', selectedStock.r1w],
+                  ['1개월전', selectedStock.r1m],
+                  ['3개월전', selectedStock.r3m],
+                  ['6개월전', selectedStock.r6m],
+                  ['1년전', selectedStock.r1y],
                 ] as [string, number | null | undefined][]).map(([label, v]) => (
                   <div key={label} className="flex flex-col">
                     <span className="text-[11px] text-unjong-muted">{label}</span>
