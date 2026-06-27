@@ -51,10 +51,12 @@ export default function ListRow({
       {hasMeta && (
         <p className="hidden min-w-0 flex-1 truncate text-sm text-unjong-muted sm:block">{meta}</p>
       )}
-      {stat ? <span className="shrink-0 text-xs font-bold text-unjong-accent">{stat}</span> : null}
-      {trailing ? <span className="shrink-0">{trailing}</span> : null}
-      <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[11px] text-unjong-muted group-hover:text-unjong-accent">
-        바로가기 <ExternalLink size={12} />
+      <span className="ml-auto flex shrink-0 items-center gap-2.5">
+        {stat ? <span className="shrink-0 text-xs font-bold text-unjong-accent">{stat}</span> : null}
+        {trailing ? <span className="shrink-0">{trailing}</span> : null}
+        <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[11px] text-unjong-muted group-hover:text-unjong-accent">
+          바로가기 <ExternalLink size={12} />
+        </span>
       </span>
     </>
   );

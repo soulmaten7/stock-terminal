@@ -332,12 +332,6 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
         </aside>
       </div>
 
-      {/* 모바일: 증권사 바로가기 (표 아래 — 데스크탑은 우측 aside) — KR 미러 */}
-      <div className="mt-5 lg:hidden">
-        <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-        <p className="border-b border-unjong-border px-1 py-2 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
-        <BrokerRanking hideHeader />
-      </div>
       {/* 종목 클릭 → 증권사 바텀시트 (모바일 전용) — KR 미러 */}
       {selectedStock && (
         <div className="lg:hidden">
@@ -355,6 +349,28 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               <button type="button" onClick={() => setSelectedStock(null)} aria-label="닫기" className="shrink-0 text-unjong-muted hover:text-unjong-primary">
                 <X size={20} />
               </button>
+            </div>
+            {/* 종목 정보 — 현재가 + 기간별 수익률 (증권사 목록 위) */}
+            <div className="mb-4 rounded-xl border border-unjong-border bg-unjong-background p-3">
+              <div className="mb-2 flex items-baseline justify-between">
+                <span className="text-xs text-unjong-muted">현재가</span>
+                <span className="text-base font-bold tabular-nums text-unjong-primary">{selectedStock.price ? formatPrice(selectedStock.price, 'US') : '—'}</span>
+              </div>
+              <div className="grid grid-cols-3 gap-x-2 gap-y-2.5">
+                {([
+                  ['1일', selectedStock.changePercent],
+                  ['1주일', selectedStock.r1w],
+                  ['1개월', selectedStock.r1m],
+                  ['3개월', selectedStock.r3m],
+                  ['6개월', selectedStock.r6m],
+                  ['1년', selectedStock.r1y],
+                ] as [string, number | null | undefined][]).map(([label, v]) => (
+                  <div key={label} className="flex flex-col">
+                    <span className="text-[11px] text-unjong-muted">{label}</span>
+                    <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
             <BrokerRanking hideHeader />
