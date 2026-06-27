@@ -3,29 +3,11 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { MessageCircle, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const handleKakaoLogin = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "kakao",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) throw error;
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-      setLoading(false);
-    }
-  };
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -73,16 +55,6 @@ export default function LoginPage() {
               로그인하면 닉네임과 관심종목이 모든 기기에서 동기화됩니다
             </p>
           </div>
-
-          <button
-            type="button"
-            onClick={handleKakaoLogin}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-md bg-[#FEE500] text-[#000] font-semibold py-3 hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            <MessageCircle size={18} />
-            {loading ? "이동 중..." : "카카오로 시작하기"}
-          </button>
 
           <button
             type="button"
