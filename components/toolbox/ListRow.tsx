@@ -14,22 +14,27 @@ export type ListRowProps = {
   meta?: string;
   stat?: string;
   trailing?: ReactNode;
+  sponsored?: boolean; // 광고(스폰서) 행 — '광고' 라벨 + 하이라이트, 사실 랭킹과 분리
 };
 
 export default function ListRow({
-  href, onClick, rank, iconUrl, iconRound, title, subtitle, meta, stat, trailing,
+  href, onClick, rank, iconUrl, iconRound, title, subtitle, meta, stat, trailing, sponsored,
 }: ListRowProps) {
   const hasMeta = meta !== undefined;
   const cls =
-    'group flex cursor-pointer items-center gap-3 border-b border-unjong-border px-2 py-2.5 transition-colors last:border-b-0 hover:bg-unjong-background';
+    `group flex cursor-pointer items-center gap-3 border-b border-unjong-border px-2 py-2.5 transition-colors last:border-b-0 hover:bg-unjong-background${
+      sponsored ? ' bg-unjong-accent/[0.06] ring-1 ring-inset ring-unjong-accent/25' : ''
+    }`;
 
   const inner = (
     <>
-      {rank !== undefined && (
+      {sponsored ? (
+        <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">광고</span>
+      ) : rank !== undefined ? (
         <span className={`w-6 shrink-0 text-center text-sm font-bold ${rank <= 3 ? 'text-unjong-accent' : 'text-unjong-muted'}`}>
           {rank}
         </span>
-      )}
+      ) : null}
       {iconUrl !== undefined &&
         (iconUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
