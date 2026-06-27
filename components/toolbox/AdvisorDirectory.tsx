@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
+import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown } from 'lucide-react';
 import RoomSubmitModal from './RoomSubmitModal';
@@ -51,6 +51,24 @@ function platformLabel(p: string): string {
 }
 function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
+}
+
+// 🧪 TEST — 인피드 광고 행(리딩방 N개마다 1개, Coupang/Naver식). 광고라도 사실(금감원 배지)은 안 가림. 실제 광고주 아님 — 추후 DB 연동으로 교체.
+const AD_EVERY = 10;
+function SponsoredRoomRow() {
+  return (
+    <li className="flex items-center gap-3 border-b border-b-unjong-border border-l-2 border-l-unjong-accent bg-unjong-accent/[0.06] px-2 py-2.5 ring-1 ring-inset ring-unjong-accent/25">
+      <span className="flex min-w-0 flex-1 items-center gap-3">
+        <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">광고</span>
+        <Globe size={18} className="shrink-0 text-unjong-muted" />
+        <span className="truncate text-sm font-semibold text-unjong-primary">예시 리딩방 (광고 미리보기)</span>
+        <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" />
+      </span>
+      <a href="#" onClick={(e) => e.preventDefault()} aria-label="바로가기" className="flex shrink-0 items-center rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted">
+        <ExternalLink size={12} />
+      </a>
+    </li>
+  );
 }
 
 function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport: () => void; isFav: boolean; onToggleFav: () => void }) {
@@ -349,8 +367,9 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 const icon = faviconFor(a.platform, a.homepage);
                 const isSel = selected?.biz_no === a.biz_no;
                 return (
-                  <li
-                    key={a.biz_no}
+                  <Fragment key={a.biz_no}>
+                    {i > 0 && i % AD_EVERY === 0 ? <SponsoredRoomRow /> : null}
+                    <li
                     className={`group flex items-center gap-3 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'
                     }`}
@@ -395,6 +414,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       </a>
                     ) : null}
                   </li>
+                  </Fragment>
                 );
               })}
             </ul>
