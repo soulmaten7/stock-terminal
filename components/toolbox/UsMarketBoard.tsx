@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Star, X, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
+import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
@@ -74,6 +74,22 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 정렬 방향 — 기본 내림차순
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
+
+  // 모바일 하단 시트: 핸들을 잡고 아래로 드래그하면 닫힘 (리딩방 시트와 동일)
+  const [sheetDragY, setSheetDragY] = useState(0);
+  const dragStartY = useRef<number | null>(null);
+  function onSheetTouchStart(e: ReactTouchEvent) {
+    dragStartY.current = e.touches[0].clientY;
+  }
+  function onSheetTouchMove(e: ReactTouchEvent) {
+    if (dragStartY.current === null) return;
+    setSheetDragY(Math.max(0, e.touches[0].clientY - dragStartY.current));
+  }
+  function onSheetTouchEnd() {
+    if (sheetDragY > 90) setSelectedStock(null);
+    setSheetDragY(0);
+    dragStartY.current = null;
+  }
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림
@@ -372,7 +388,19 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
       {selectedStock && (
         <div className="lg:hidden">
           <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setSelectedStock(null)} />
-          <div className="fixed inset-x-0 bottom-0 z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface p-4 shadow-xl">
+          <div
+            className="fixed inset-x-0 bottom-0 z-50 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-unjong-border bg-unjong-surface px-4 pb-4 pt-2 shadow-xl"
+            style={{ transform: `translateY(${sheetDragY}px)`, transition: sheetDragY ? 'none' : 'transform 0.2s ease' }}
+          >
+            {/* 드래그 핸들 — 잡고 아래로 내리면 닫힘 (바깥 터치로도 닫힘) */}
+            <div
+              className="flex touch-none cursor-grab justify-center pb-3 pt-1 active:cursor-grabbing"
+              onTouchStart={onSheetTouchStart}
+              onTouchMove={onSheetTouchMove}
+              onTouchEnd={onSheetTouchEnd}
+            >
+              <span className="h-1.5 w-10 rounded-full bg-unjong-border" />
+            </div>
             <div className="mb-3 flex items-center gap-3">
               <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={32} />
               <div className="min-w-0 flex-1">
@@ -382,9 +410,6 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
                 </p>
               </div>
-              <button type="button" onClick={() => setSelectedStock(null)} aria-label="닫기" className="shrink-0 text-unjong-muted hover:text-unjong-primary">
-                <X size={20} />
-              </button>
             </div>
             {/* 종목 정보 — 현재가 + 기간별 수익률 (증권사 목록 위) */}
             <div className="mb-4 rounded-xl border border-unjong-border bg-unjong-background p-3">
