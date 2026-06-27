@@ -9,12 +9,26 @@ function weekLabel(d: Date): string {
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${wk}주차`;
 }
 
+// 채널 자기소개를 가볍게 정리(AI 아님): 첫 의미있는 줄 → 홍보·연락처 줄 스킵 → 이모지 제거 → ~40자. 깔끔한 줄 없으면 빈칸.
+function cleanDesc(raw: string): string {
+  const lines = (raw || "").replace(/\r/g, "").split("\n").map((l) => l.trim()).filter(Boolean);
+  let line = "";
+  for (const l of lines) {
+    if (/https?:\/\/|www\.|@|\b(문의|협찬|구독|좋아요|알림설정|멤버십|이메일|e-?mail|contact|business|inquiry)\b/i.test(l)) continue;
+    line = l;
+    break;
+  }
+  line = line.replace(/\p{Extended_Pictographic}/gu, "").replace(/\s+/g, " ").trim();
+  return line.length > 40 ? line.slice(0, 40).trim() + "…" : line;
+}
+
 type Chan = {
   channel_id: string;
   title: string;
   thumbnail_url: string;
   subscriber_count: number;
   channel_url: string;
+  description: string;
 };
 
 export async function refreshYoutubeTop100() {
@@ -55,6 +69,7 @@ export async function refreshYoutubeTop100() {
         thumbnail_url: c.snippet?.thumbnails?.default?.url ?? "",
         subscriber_count: subs,
         channel_url: `https://www.youtube.com/channel/${c.id}`,
+        description: cleanDesc(c.snippet?.description ?? ""),
       });
     }
   }

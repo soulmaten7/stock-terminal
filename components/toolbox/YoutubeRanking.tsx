@@ -9,6 +9,7 @@ export type YtChannel = {
   subscriber_count: number;
   channel_url: string;
   week_label: string | null;
+  description?: string | null;
 };
 
 function fmtSubs(n: number) {
@@ -41,6 +42,7 @@ export default function YoutubeRanking({ channels }: { channels: YtChannel[] }) 
             iconUrl={c.thumbnail_url}
             iconRound
             title={c.title}
+            meta={c.description ?? ''}
             stat={fmtSubs(c.subscriber_count)}
           />
         ))}

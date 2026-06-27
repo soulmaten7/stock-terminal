@@ -42,7 +42,7 @@ export default async function HomePage() {
 
   const { data: ytRows } = await supabase
     .from("youtube_channels")
-    .select("rank, title, thumbnail_url, subscriber_count, channel_url, week_label")
+    .select("rank, title, thumbnail_url, subscriber_count, channel_url, week_label, description")
     .eq("country", "KR")
     .order("rank", { ascending: true });
   const youtubeChannels = ytRows ?? [];
