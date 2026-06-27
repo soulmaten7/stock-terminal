@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Star, X, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -98,6 +98,17 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림
+  const periodRef = useRef<HTMLDivElement>(null);
+
+  // 기간 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러)
+  useEffect(() => {
+    function onDoc(e: MouseEvent) {
+      if (periodRef.current && !periodRef.current.contains(e.target as Node)) setPeriodOpen(false);
+    }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
 
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -266,9 +277,34 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   {/* 단일 기간 컬럼: 드롭다운으로 기간 선택(1일부터) + 옆 토글로 해당 기간 정렬(데스크탑·모바일 동일, US 미러) */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
-                      <select value={mobilePeriod} onChange={(e) => { const k = e.target.value as PeriodKey; setMobilePeriod(k); setSortKey(k); setSortDir('desc'); setPage(0); }} className="rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none">
-                        {DROPDOWN_PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
-                      </select>
+                      <div ref={periodRef} className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setPeriodOpen((o) => !o)}
+                          aria-haspopup="listbox"
+                          aria-expanded={periodOpen}
+                          className="flex items-center gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
+                        >
+                          {DROPDOWN_PERIODS.find((p) => p.key === mobilePeriod)?.label ?? '기간'}
+                          <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {periodOpen ? (
+                          <div role="listbox" className="absolute right-0 top-full z-50 mt-1 min-w-[5rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                            {DROPDOWN_PERIODS.map((p) => (
+                              <button
+                                key={p.key}
+                                type="button"
+                                role="option"
+                                aria-selected={p.key === mobilePeriod}
+                                onClick={() => { setMobilePeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpen(false); }}
+                                className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                              >
+                                {p.label}
+                              </button>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                       <button
                         type="button"
                         onClick={() => clickHeader(mobilePeriod)}

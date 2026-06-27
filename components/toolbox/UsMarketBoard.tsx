@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Star, X, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -76,6 +76,17 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
+  const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림
+  const periodRef = useRef<HTMLDivElement>(null);
+
+  // 기간 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러) — KR 미러
+  useEffect(() => {
+    function onDoc(e: MouseEvent) {
+      if (periodRef.current && !periodRef.current.contains(e.target as Node)) setPeriodOpen(false);
+    }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
 
   // 탭별 데이터 로드 — 주식/ETF 각각 별도 라우트·캐시 키(서버 30분 캐시 + 클라 메모리 캐시 SWR).
   // 탭 전환 시 해당 탭 캐시를 즉시 표시 후 백그라운드 재검증.
@@ -254,9 +265,34 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   {/* 기간 드롭다운(1일부터) — 선택 기간으로 전 종목 자동 정렬 + 옆 토글로 오름/내림. KR 미러 */}
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
-                      <select value={period} onChange={(e) => { const k = e.target.value as PeriodKey; setPeriod(k); setSortKey(k); setSortDir('desc'); setPage(0); }} className="rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none">
-                        {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
-                      </select>
+                      <div ref={periodRef} className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setPeriodOpen((o) => !o)}
+                          aria-haspopup="listbox"
+                          aria-expanded={periodOpen}
+                          className="flex items-center gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
+                        >
+                          {PERIODS.find((p) => p.key === period)?.label ?? '기간'}
+                          <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {periodOpen ? (
+                          <div role="listbox" className="absolute right-0 top-full z-50 mt-1 min-w-[5rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                            {PERIODS.map((p) => (
+                              <button
+                                key={p.key}
+                                type="button"
+                                role="option"
+                                aria-selected={p.key === period}
+                                onClick={() => { setPeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpen(false); }}
+                                className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                              >
+                                {p.label}
+                              </button>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                       <button
                         type="button"
                         onClick={() => clickHeader(period)}
