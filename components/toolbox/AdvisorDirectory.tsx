@@ -107,10 +107,6 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
-        {ic ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={ic} alt="" width={20} height={20} className="h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
-        ) : <Globe size={18} className="text-unjong-muted" />}
         <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{isFss ? a.company_name : roomName}</h3>
         <button
           type="button"
@@ -147,7 +143,13 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
       </dl>
       <div className="mt-3 flex items-center justify-between gap-3 text-xs">
         {isFss && channelOf(a) ? (
-          <span className="min-w-0 truncate text-unjong-muted">{channelOf(a)}</span>
+          <span className="flex min-w-0 items-center gap-1.5 text-unjong-muted">
+            {ic ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={ic} alt="" width={16} height={16} className="h-4 w-4 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
+            ) : <Globe size={14} className="shrink-0 text-unjong-muted" />}
+            <span className="truncate">{channelOf(a)}</span>
+          </span>
         ) : <span />}
         <button type="button" onClick={onReport} className="flex shrink-0 items-center gap-1 text-unjong-muted hover:text-red-500">
           <Siren size={13} /> 신고 {a.report_count}
