@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const digits = q.replace(/\D/g, "");
   let query = admin
     .from("fss_advisors")
-    .select("biz_no, company_name, representative, valid_from, valid_to, address");
+    .select("biz_no, company_name, representative, phone, valid_from, valid_to, address");
   if (digits.length >= 10) query = query.eq("biz_no", digits.slice(0, 10));
   else query = query.ilike("company_name", `%${q.replace(/[%,()]/g, "")}%`);
   const { data, error } = await query.limit(20);
