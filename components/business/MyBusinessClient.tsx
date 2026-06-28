@@ -47,7 +47,7 @@ export default function MyBusinessClient() {
   if (businesses.length === 0) {
     return (
       <div className="rounded-xl border border-unjong-border bg-unjong-surface p-6 text-center">
-        <p className="text-sm text-unjong-muted">아직 인증한 업체가 없어요. 위 <b className="text-unjong-primary">업체 인증</b> 탭에서 본인 업체를 찾아 인증하세요.</p>
+        <p className="text-sm text-unjong-muted">아직 인증한 업체가 없어요. 위 <b className="text-unjong-primary">리딩방 등록</b> 탭에서 본인 업체를 찾아 인증하세요.</p>
       </div>
     );
   }

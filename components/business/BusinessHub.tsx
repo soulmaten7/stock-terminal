@@ -21,8 +21,8 @@ export default function BusinessHub() {
   }, []);
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'claim', label: '업체 인증', icon: <ShieldCheck size={16} /> },
-    { key: 'manage', label: '내 업체 관리', icon: <Store size={16} /> },
+    { key: 'claim', label: '리딩방 등록', icon: <ShieldCheck size={16} /> },
+    { key: 'manage', label: '내 리딩방 관리', icon: <Store size={16} /> },
   ];
 
   return (
