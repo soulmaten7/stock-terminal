@@ -29,12 +29,7 @@ type Advisor = {
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
 const PAGE_SIZE = 100;
 type PlatformKey = 'all' | 'telegram' | 'kakao' | 'naver' | 'etc';
-type SortKey = 'interest' | 'name_asc' | 'name_desc';
-const SORTS: { key: SortKey; label: string; dir?: 'up' | 'down' }[] = [
-  { key: 'interest', label: '관심순' },
-  { key: 'name_asc', label: '가나다', dir: 'up' },
-  { key: 'name_desc', label: '가나다', dir: 'down' },
-];
+type SortKey = 'interest' | 'company_asc' | 'company_desc' | 'channel_asc' | 'channel_desc';
 
 function fav(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
@@ -334,6 +329,13 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
     return out;
   }
 
+  const sortToggle = (col: 'company' | 'channel') => {
+    setSort((prev) => (prev === `${col}_asc` ? `${col}_desc` : `${col}_asc`) as SortKey);
+    setPage(1);
+  };
+  const sortArrow = (col: 'company' | 'channel') =>
+    sort === `${col}_asc` ? <ArrowUp size={11} /> : sort === `${col}_desc` ? <ArrowDown size={11} /> : <ArrowUp size={11} className="opacity-20" />;
+
   return (
     <section className="min-w-0">
       <p className="mb-3 rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-[11px] leading-relaxed text-unjong-muted">
@@ -356,22 +358,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       <div className="mb-2 flex gap-4">
         <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
           <div className="flex shrink-0 items-center gap-2">
-            <div className="flex gap-1">
-              {SORTS.map(({ key, label, dir }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setSort(key)}
-                  className={`flex shrink-0 items-center gap-0.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                    sort === key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
-                  }`}
-                >
-                  {label}
-                  {dir === 'up' ? <ArrowUp size={12} /> : dir === 'down' ? <ArrowDown size={12} /> : null}
-                </button>
-              ))}
-            </div>
-            {/* 모바일 전용(미리보기 칸 없음): 등록 버튼을 정렬 옆에 */}
+            {/* 모바일 전용(미리보기 칸 없음): 등록 버튼 */}
             <button
               type="button"
               onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } router.push('/business'); }}
@@ -415,11 +402,11 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             </p>
           ) : (
             <>
-              <div className="grid grid-cols-[1.75rem_1.5fr_1fr_7rem] items-center gap-2 border-b border-l-2 border-l-transparent border-b-unjong-border px-2 py-1.5 text-[11px] font-medium text-unjong-muted">
+              <div className="grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-l-2 border-l-transparent border-b-unjong-border px-2 py-1.5 text-[11px] font-medium text-unjong-muted">
                 <span className="text-center">#</span>
-                <span>등록업체명</span>
-                <span>채널명</span>
-                <span />
+                <button type="button" onClick={() => sortToggle('company')} className={`flex items-center gap-0.5 ${sort.startsWith('company') ? 'text-unjong-primary' : 'hover:text-unjong-primary'}`}>등록업체명 {sortArrow('company')}</button>
+                <button type="button" onClick={() => sortToggle('channel')} className={`flex items-center gap-0.5 ${sort.startsWith('channel') ? 'text-unjong-primary' : 'hover:text-unjong-primary'}`}>채널명 {sortArrow('channel')}</button>
+                <button type="button" onClick={() => { setSort('interest'); setPage(1); }} className={`flex items-center justify-end gap-0.5 ${sort === 'interest' ? 'text-unjong-accent' : 'hover:text-unjong-primary'}`}>관심 <Star size={11} fill={sort === 'interest' ? 'currentColor' : 'none'} /></button>
               </div>
               <ul>
               {results.map((a, i) => {
@@ -429,7 +416,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                   <Fragment key={a.biz_no}>
                     {i > 0 && i % AD_EVERY === 0 ? <SponsoredRoomRow /> : null}
                     <li
-                    className={`group grid grid-cols-[1.75rem_1.5fr_1fr_7rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
+                    className={`group grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'
                     }`}
                   >
@@ -452,26 +439,6 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                         <Star size={14} fill={favs.has(a.biz_no) ? 'currentColor' : 'none'} />
                         {a.favorite_count > 0 ? <span>{a.favorite_count}</span> : null}
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => openReport(a)}
-                        title="신고하기"
-                        aria-label="신고하기"
-                        className="flex shrink-0 items-center gap-0.5 text-xs text-unjong-muted hover:text-red-500"
-                      >
-                        <Siren size={13} /> {a.report_count > 0 ? a.report_count : ''}
-                      </button>
-                      {a.homepage ? (
-                        <a
-                          href={a.homepage}
-                          target="_blank"
-                          rel="noopener noreferrer nofollow"
-                          title="바로가기"
-                          className="flex shrink-0 items-center rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
-                        >
-                          <ExternalLink size={12} />
-                        </a>
-                      ) : null}
                     </span>
                   </li>
                   </Fragment>

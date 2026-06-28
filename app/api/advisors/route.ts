@@ -13,8 +13,8 @@ export async function GET(req: NextRequest) {
   const raw = (sp.get("q") ?? "").trim();
   const q = raw.replace(/[^\p{L}\p{N}\s-]/gu, "").slice(0, 50); // or-필터 인젝션 방지
   const platform = PLATFORMS.includes(sp.get("platform") ?? "") ? (sp.get("platform") as string) : "all";
-  const sortParam = sp.get("sort");
-  const sort = sortParam === "name_desc" ? "name_desc" : sortParam === "interest" ? "interest" : "name_asc";
+  const sortParam = sp.get("sort") ?? "";
+  const sort = ["interest", "company_asc", "company_desc", "channel_asc", "channel_desc"].includes(sortParam) ? sortParam : "interest";
   const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
 
   const supabase = await createClient();
@@ -30,8 +30,10 @@ export async function GET(req: NextRequest) {
 
   if (sort === "interest") {
     query = query.order("favorite_count", { ascending: false }).order("company_name", { ascending: true });
+  } else if (sort === "channel_asc" || sort === "channel_desc") {
+    query = query.order("info_name", { ascending: sort === "channel_asc", nullsFirst: false }).order("company_name", { ascending: true });
   } else {
-    query = query.order("company_name", { ascending: sort === "name_asc" });
+    query = query.order("company_name", { ascending: sort === "company_asc" });
   }
 
   const from = (page - 1) * PAGE_SIZE;
