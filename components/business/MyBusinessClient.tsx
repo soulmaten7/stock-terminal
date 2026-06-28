@@ -53,7 +53,7 @@ export default function MyBusinessClient() {
   }
   return (
     <div className="space-y-4">
-      <p className="text-sm text-unjong-muted">금감원 등록 정보는 자동 표시되며 수정할 수 없어요. 소개·링크·관리자만 관리할 수 있어요.</p>
+      <p className="text-sm text-unjong-muted">금감원 신고 정보는 자동 표시되며 수정할 수 없어요. 소개·링크·관리자만 관리할 수 있어요.</p>
       {businesses.map((b) => <BizCard key={b.biz_no} biz={b} onChange={load} />)}
     </div>
   );
@@ -136,7 +136,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
       {/* ── 금감원 검증 사실 (읽기 전용 · 디렉토리에 보이는 그대로) ── */}
       <div className="mb-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
         <div className="mb-2 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
-          <ShieldCheck size={12} /> 금감원 검증 사실 · 자동 표시
+          <ShieldCheck size={12} /> 유사투자자문 신고 · 자동 표시
         </div>
         <dl className="space-y-1 text-xs">
           <InfoRow k="등록업체" v={biz.company_name} />
@@ -150,7 +150,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
             <a href={biz.homepage} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-1 text-unjong-muted hover:text-unjong-accent">바로가기 <ExternalLink size={11} /></a>
           ) : null}
         </div>
-        <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">위 정보는 금감원 등록 데이터라 수정할 수 없어요. 사용자에게 이 모습 그대로 표시됩니다.</p>
+        <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">위 정보는 금감원 신고 데이터라 수정할 수 없어요. 사용자에게 이 모습 그대로 표시됩니다.</p>
       </div>
 
       {/* 소개 (편집 가능) */}

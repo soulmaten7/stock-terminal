@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,6 +64,16 @@ export async function GET(req: NextRequest) {
       (linkMap[l.biz_no] ??= []).push({ type: l.type, url: l.url, label: l.label, is_paid: l.is_paid });
     }
     rows = rows.map((r) => ({ ...r, biz_links: linkMap[r.biz_no] ?? [] }));
+  }
+
+  // 운영자 인증(클레임+진위확인 통과) 플래그 — 서버(admin)에서만, 공개 boolean
+  if (rows.length) {
+    const ids = rows.map((r) => r.biz_no);
+    const admin = createAdminClient();
+    const { data: vmembers } = await admin
+      .from("business_members").select("biz_no").eq("status", "verified").in("biz_no", ids);
+    const verifiedSet = new Set((vmembers ?? []).map((m: { biz_no: string }) => m.biz_no));
+    rows = rows.map((r) => ({ ...r, verified_owner: verifiedSet.has(r.biz_no) }));
   }
 
   return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, platform, sort, searching: !!q, loggedIn: !!user });

@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { getCache, setCache } from '@/lib/clientCache';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SelectDropdown from './SelectDropdown';
 
@@ -22,6 +22,7 @@ type Advisor = {
   source: string;
   intro: string | null;
   biz_links?: { type: string; url: string; label: string | null; is_paid: boolean }[];
+  verified_owner?: boolean;
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
@@ -64,7 +65,7 @@ function SponsoredRoomRow() {
         <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">광고</span>
         <Globe size={18} className="shrink-0 text-unjong-muted" />
         <span className="truncate text-sm font-semibold text-unjong-primary">예시 리딩방 (광고 미리보기)</span>
-        <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" />
+        <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" />
       </span>
       <a href="#" onClick={(e) => e.preventDefault()} aria-label="바로가기" className="flex shrink-0 items-center rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted">
         <ExternalLink size={12} />
@@ -105,15 +106,22 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
           <Star size={18} fill={isFav ? 'currentColor' : 'none'} />
         </button>
       </div>
-      {isFss ? (
-        <div className="mb-3 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
-          <ShieldCheck size={12} /> 금감원 등록 · {platformLabel(a.platform)}
-        </div>
-      ) : (
-        <div className="mb-3 inline-flex items-center gap-1 rounded border border-unjong-border bg-unjong-background px-2 py-0.5 text-[11px] font-medium text-unjong-muted">
-          이용자 등록 · {platformLabel(a.platform)}
-        </div>
-      )}
+      <div className="mb-3 flex flex-wrap items-center gap-1.5">
+        {isFss ? (
+          <span className="inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
+            <ShieldCheck size={12} /> 유사투자자문 신고 · {platformLabel(a.platform)}
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 rounded border border-unjong-border bg-unjong-background px-2 py-0.5 text-[11px] font-medium text-unjong-muted">
+            이용자 등록 · {platformLabel(a.platform)}
+          </span>
+        )}
+        {a.verified_owner ? (
+          <span className="inline-flex items-center gap-1 rounded border border-unjong-accent/40 bg-unjong-accent/10 px-2 py-0.5 text-[11px] font-medium text-unjong-accent">
+            <UserCheck size={12} /> 운영자 인증
+          </span>
+        ) : null}
+      </div>
       <dl className="space-y-1.5 text-xs">
         {rows.map(([k, v]) => (
           <div key={k} className="flex gap-2">
@@ -400,7 +408,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                         <img src={icon} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
                       ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{roomNameOf(a)}</span>
-                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="금감원 등록" /> : null}
+                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
                     </button>
                     <button
                       type="button"

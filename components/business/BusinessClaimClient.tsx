@@ -81,7 +81,7 @@ export default function BusinessClaimClient() {
 
       {searched && results.length === 0 ? (
         <p className="rounded-lg border border-unjong-border bg-unjong-background px-3 py-4 text-center text-sm text-unjong-muted">
-          금감원 등록 명부에서 못 찾았어요. <strong className="text-unjong-primary">등록된 업체만</strong> 게재할 수 있습니다.
+          금감원 신고 명부에서 못 찾았어요. <strong className="text-unjong-primary">신고된 업체만</strong> 게재할 수 있습니다.
         </p>
       ) : null}
 

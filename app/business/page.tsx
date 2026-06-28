@@ -14,7 +14,7 @@ export default async function BusinessPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <h1 className="mb-1 text-xl font-bold text-unjong-primary">내 업체·리딩방 관리</h1>
       <p className="mb-6 text-sm leading-relaxed text-unjong-muted">
-        금감원 등록 업체만 게재할 수 있어요. 본인 업체를 찾아 인증을 신청하면, 관리자 확인 후 직접 리딩방·채널 링크를 관리할 수 있습니다.
+        금감원에 유사투자자문 신고된 업체만 게재할 수 있어요. 본인 업체를 찾아 인증을 신청하면, 관리자 확인 후 직접 리딩방·채널 링크를 관리할 수 있습니다.
       </p>
       <BusinessClaimClient />
     </div>
