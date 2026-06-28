@@ -46,9 +46,8 @@ export default function MyBusinessClient() {
   if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>;
   if (businesses.length === 0) {
     return (
-      <div className="rounded-xl border border-unjong-border bg-unjong-surface p-8 text-center">
-        <p className="text-sm text-unjong-muted">아직 인증한 업체가 없어요.</p>
-        <a href="/business" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">업체 인증하기 →</a>
+      <div className="rounded-xl border border-unjong-border bg-unjong-surface p-6 text-center">
+        <p className="text-sm text-unjong-muted">아직 인증한 업체가 없어요. 아래 <b className="text-unjong-primary">새 업체 인증</b>에서 본인 업체를 찾아 인증하세요.</p>
       </div>
     );
   }
