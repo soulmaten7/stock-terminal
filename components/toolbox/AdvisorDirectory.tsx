@@ -2,9 +2,10 @@
 
 import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { getCache, setCache } from '@/lib/clientCache';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, Globe, ArrowUp, ArrowDown, UserCheck } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, ArrowUp, ArrowDown, UserCheck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SelectDropdown from './SelectDropdown';
+import AdSlotRow from './AdSlotRow';
 
 type Advisor = {
   biz_no: string;
@@ -50,23 +51,8 @@ function channelOf(a: Advisor): string | null {
   return name || null;
 }
 
-// 🧪 TEST — 인피드 광고 행(리딩방 N개마다 1개, Coupang/Naver식). 광고라도 사실(금감원 배지)은 안 가림. 실제 광고주 아님 — 추후 DB 연동으로 교체.
+// 인피드 광고 슬롯 — '예시'가 아니라 '광고 문의하기' CTA(/advertise). 맨 위 + N개마다. (AdSlotRow 공용)
 const AD_EVERY = 10;
-function SponsoredRoomRow() {
-  return (
-    <li className="flex items-center gap-3 border-b border-b-unjong-border border-l-2 border-l-unjong-accent bg-unjong-accent/[0.06] px-2 py-2.5 ring-1 ring-inset ring-unjong-accent/25">
-      <span className="flex min-w-0 flex-1 items-center gap-3">
-        <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">광고</span>
-        <Globe size={18} className="shrink-0 text-unjong-muted" />
-        <span className="truncate text-sm font-semibold text-unjong-primary">예시 리딩방 (광고 미리보기)</span>
-        <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" />
-      </span>
-      <a href="#" onClick={(e) => e.preventDefault()} aria-label="바로가기" className="flex shrink-0 items-center rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted">
-        <ExternalLink size={12} />
-      </a>
-    </li>
-  );
-}
 
 function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport: () => void; isFav: boolean; onToggleFav: () => void }) {
   const roomName = roomNameOf(a);
@@ -413,7 +399,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 const ch = channelOf(a);
                 return (
                   <Fragment key={a.biz_no}>
-                    {i > 0 && i % AD_EVERY === 0 ? <SponsoredRoomRow /> : null}
+                    {i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" label="○○리딩방" /></li> : null}
                     <li
                     className={`group grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'

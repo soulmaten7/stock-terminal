@@ -139,9 +139,7 @@ export default function Header() {
                     <p className="text-sm text-unjong-muted">{user.email}</p>
                   </div>
                   <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>마이페이지</Link>
-                  {user.role === 'admin' ? (
-                    <Link href="/admin" className="block px-4 py-2.5 text-sm font-semibold text-unjong-accent hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>관리자</Link>
-                  ) : null}
+                  <Link href="/advertise" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>광고 문의</Link>
                   <div className="border-t border-unjong-border" />
                   <button onClick={handleLogout} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-bold text-unjong-danger hover:bg-unjong-background">
                     <LogOut className="h-4 w-4" /> 로그아웃

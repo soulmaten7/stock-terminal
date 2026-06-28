@@ -35,6 +35,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-bold text-white">문의</h4>
             <ul className="space-y-2 text-sm text-white/80">
+              <li><Link href="/advertise" className="transition-colors hover:text-[#2DD4BF]">광고 문의</Link></li>
               <li>이메일: <a href="mailto:contact@onetrillion.app" className="transition-colors hover:text-[#2DD4BF]">contact@onetrillion.app</a></li>
               <li>운영시간: 평일 09:00 ~ 18:00</li>
             </ul>
