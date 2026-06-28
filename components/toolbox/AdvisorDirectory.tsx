@@ -27,7 +27,6 @@ type Advisor = {
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
 const PAGE_SIZE = 100;
-const PLATFORMS = [['all', '전체'], ['telegram', '텔레그램'], ['kakao', '카카오톡'], ['naver', '네이버'], ['etc', '기타']] as const;
 type PlatformKey = 'all' | 'telegram' | 'kakao' | 'naver' | 'etc';
 type SortKey = 'interest' | 'name_asc' | 'name_desc';
 const SORTS: { key: SortKey; label: string; dir?: 'up' | 'down' }[] = [
@@ -55,6 +54,7 @@ const LINK_TYPE_LABEL: Record<string, string> = { room: '리딩방', youtube: '�
 function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
+function hostOf(u: string): string { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } }
 
 // 🧪 TEST — 인피드 광고 행(리딩방 N개마다 1개, Coupang/Naver식). 광고라도 사실(금감원 배지)은 안 가림. 실제 광고주 아님 — 추후 DB 연동으로 교체.
 const AD_EVERY = 10;
@@ -80,7 +80,6 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
   const isFss = a.source === 'fss';
   const rows: [string, string | null][] = isFss
     ? [
-        ['등록업체', a.company_name],
         ['대표', a.representative],
         ['주소', a.address],
         ['신고기간', `${a.valid_from ?? '—'} ~ ${a.valid_to ?? '—'}`],
@@ -89,19 +88,38 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
         ['운영 업체', a.company_name],
         ['소개', a.intro],
       ];
+  const [og, setOg] = useState<{ title: string | null; image: string | null; description: string | null; siteName: string | null; status: string } | null>(null);
+  const [ogLoading, setOgLoading] = useState(false);
+  useEffect(() => {
+    setOg(null);
+    if (!a.homepage) { setOgLoading(false); return; }
+    let cancelled = false;
+    setOgLoading(true);
+    fetch(`/api/link-preview?url=${encodeURIComponent(a.homepage)}`)
+      .then((r) => r.json())
+      .then((d) => { if (!cancelled) setOg(d); })
+      .catch(() => { if (!cancelled) setOg(null); })
+      .finally(() => { if (!cancelled) setOgLoading(false); });
+    return () => { cancelled = true; };
+  }, [a.homepage]);
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2">
+      <div className="mb-2 flex items-start gap-2">
         {ic ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={ic} alt="" width={20} height={20} className="h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
-        ) : <Globe size={18} className="text-unjong-muted" />}
-        <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{roomName}</h3>
+          <img src={ic} alt="" width={20} height={20} className="mt-0.5 h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
+        ) : <Globe size={18} className="mt-0.5 text-unjong-muted" />}
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate text-sm font-bold text-unjong-primary">{isFss ? a.company_name : roomName}</h3>
+          {isFss && a.info_name && a.info_name.trim() && a.info_name !== a.company_name ? (
+            <p className="truncate text-[11px] text-unjong-muted">{a.info_name}</p>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={onToggleFav}
           aria-label={isFav ? '즐겨찾기 해제' : '즐겨찾기'}
-          className={`shrink-0 transition-colors ${isFav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+          className={`mt-0.5 shrink-0 transition-colors ${isFav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
         >
           <Star size={18} fill={isFav ? 'currentColor' : 'none'} />
         </button>
@@ -136,9 +154,26 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
         </button>
       </div>
       {a.homepage ? (
-        <a href={a.homepage} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
-          바로가기 <ExternalLink size={13} />
-        </a>
+        <div className="mt-3">
+          {ogLoading ? (
+            <div className="mb-2 h-24 animate-pulse rounded-lg bg-unjong-background" />
+          ) : og && og.status === 'ok' && (og.image || og.title) ? (
+            <a href={a.homepage} target="_blank" rel="noopener noreferrer nofollow" className="mb-2 block overflow-hidden rounded-lg border border-unjong-border transition-colors hover:border-unjong-accent">
+              {og.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={og.image} alt="" className="h-28 w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+              ) : null}
+              <div className="p-2.5">
+                <p className="line-clamp-1 text-xs font-semibold text-unjong-primary">{og.title || hostOf(a.homepage)}</p>
+                {og.description ? <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-unjong-muted">{og.description}</p> : null}
+                <p className="mt-1 truncate text-[10px] text-unjong-muted">{og.siteName || hostOf(a.homepage)}</p>
+              </div>
+            </a>
+          ) : null}
+          <a href={a.homepage} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
+            연결링크 바로가기 <ExternalLink size={13} />
+          </a>
+        </div>
       ) : null}
       {a.biz_links && a.biz_links.length > 0 ? (
         <div className="mt-3 border-t border-unjong-border pt-3">
@@ -162,7 +197,7 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
 }
 
 export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }) {
-  const [platform, setPlatform] = useState<PlatformKey>('all');
+  const [platform] = useState<PlatformKey>('all');
   const [sort, setSort] = useState<SortKey>('interest');
   const [page, setPage] = useState(1);
   const [q, setQ] = useState('');
@@ -314,21 +349,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
 
       {/* 컨트롤 줄 — 리스트폭(플랫폼+정렬) + 미리보기폭(등록). 정렬=카드 끝, 등록=미리보기 칸 위. */}
       <div className="mb-2 flex gap-4">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-2">
-          <div className="flex gap-1 overflow-x-auto">
-            {PLATFORMS.map(([p, label]) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => { setQ(''); setPlatform(p); }}
-                className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-semibold transition-colors ${
-                  platform === p && !searching ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
+        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2">
           <div className="flex shrink-0 items-center gap-2">
             <div className="flex gap-1">
               {SORTS.map(({ key, label, dir }) => (
@@ -385,7 +406,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
             </ul>
           ) : results.length === 0 ? (
             <p className="py-10 text-center text-sm text-unjong-muted">
-              {searching ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.' : '이 플랫폼에 등록된 곳이 없습니다.'}
+              {searching ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.' : '등록된 곳이 없습니다.'}
             </p>
           ) : (
             <ul>
@@ -407,8 +428,15 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={icon} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
                       ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
-                      <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{roomNameOf(a)}</span>
-                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
+                      <span className="flex min-w-0 flex-1 flex-col">
+                        <span className="flex items-center gap-1.5">
+                          <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{a.company_name}</span>
+                          {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
+                        </span>
+                        {a.info_name && a.info_name.trim() && a.info_name !== a.company_name ? (
+                          <span className="truncate text-[11px] text-unjong-muted">{a.info_name}</span>
+                        ) : null}
+                      </span>
                     </button>
                     <button
                       type="button"
