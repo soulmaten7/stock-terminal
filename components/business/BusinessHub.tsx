@@ -1,18 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Store, ShieldCheck } from 'lucide-react';
 import MyBusinessClient from './MyBusinessClient';
 import BusinessClaimClient from './BusinessClaimClient';
 
-type Tab = 'manage' | 'claim';
+type Tab = 'claim' | 'manage';
 
 export default function BusinessHub() {
-  const [tab, setTab] = useState<Tab>('manage');
+  const [tab, setTab] = useState<Tab>('claim');
+
+  // 스마트 기본 탭: 인증된 업체 있으면 '관리'로
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/business/mine')
+      .then((r) => r.json())
+      .then((j) => { if (!cancelled && (j.businesses?.length ?? 0) > 0) setTab('manage'); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
+    { key: 'claim', label: '업체 인증', icon: <ShieldCheck size={16} /> },
     { key: 'manage', label: '내 업체 관리', icon: <Store size={16} /> },
-    { key: 'claim', label: '새 업체 인증', icon: <ShieldCheck size={16} /> },
   ];
+
   return (
     <div>
       <div className="mb-6 flex gap-1 overflow-x-auto border-b border-unjong-border">
@@ -29,7 +41,7 @@ export default function BusinessHub() {
           </button>
         ))}
       </div>
-      {tab === 'manage' ? <MyBusinessClient /> : <BusinessClaimClient />}
+      {tab === 'claim' ? <BusinessClaimClient /> : <MyBusinessClient />}
     </div>
   );
 }
