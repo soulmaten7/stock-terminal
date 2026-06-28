@@ -1,7 +1,19 @@
-<!-- 2026-06-27 -->
+<!-- 2026-06-28 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-27 (최신) — STEP 421, HEAD `fac8fb1`. 배포 ✓ onetrillion.app 라이브.** 미국 시장을 거시(FRED)·뉴스(Yahoo)·공시(SEC EDGAR)까지 확장해 KR과 동등한 4기둥으로 완성한 세션 + 종목표 정렬 전면 재설계 + 모바일 폴리시. 최신은 이 블록.
+> 🆕 **2026-06-28 (최신) — STEP 422~448, HEAD `6596ccb`(push 완료).** 리딩방·검증을 '업체 클레임·인증·광고' 시스템 + OG 링크 프리뷰 + 표형 디렉토리로 완성 + ROADMAP §3 게재·광고 정책 확정. 최신은 이 블록.
+> - **상태**: HEAD `6596ccb`(STEP 448) push 완료 → **배포 반영 확인 필요**(직전 라이브=fac8fb1/421). DB = NEW "Trillion" `ccbwxcszdoyjxvckedfp`(ap-northeast-2). POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
+> - **ROADMAP §3 정책 확정(단일 기준)**: 게재=금감원 유사투자자문 신고된 곳만(미신고=게재 X, 검색 경고+신고만). 라벨="유사투자자문 신고"(신고제·금융투자업 아님). 3층 뱃지(① 유사투자자문 신고=자동·무료 ② 운영자 인증=클레임+국세청 진위확인·무료 ③ 광고=신고+인증한 곳만·유료). 사실은 안 판다·노출(순위)만 판다. "신고=입장권" 플라이휠. 광고=순위 부스트+매체 가드레일 3개. ⚠️ 광고비 수취 전 법률자문 필수.
+> - **클레임·인증(430~441)**: `/business` 검색→국세청 진위확인→서류→관리자 검토→운영자 인증→마이페이지 '내 업체'→디렉토리. DB `business_*` 4테이블+RLS. 라벨+운영자 인증 뱃지.
+> - **디렉토리 폴리시(442~448)**: 플랫폼 탭 제거·리스트 표화(컬럼 헤더 클릭 정렬·행 ⭐만)·OG 링크 프리뷰(`lib/og.ts`+`/api/link-preview`+`/api/admin/crawl-previews` dev 배치+`link_previews`)·채널명 OG 폴백·미리보기 재배치(아이콘=채널명 앞).
+> - **기타(422~429)**: 토론 제거·카카오 제거(구글만)·증권사 광고 슬롯·유튜브 소개·인피드 광고(테스트).
+> - **테스트 정리**: 배포 전 테스트 클레임 데이터 전부 삭제(business_links/members/claims=0). `link_previews` 실 OG 유지.
+> - **▶ 다음 후보**: ① **관리자/마이페이지 화면 점검**(다음 STEP 예정) · ② 배포 후 `fss-advisors` 크론 실작동 확인(CRON_SECRET·Vercel 로그) · ③ 결제 PG+본인인증(Phase 2 후반, 광고 상위노출) · ④ 옛 자가등록 죽은코드 정리 · ⑤ 금융투자업 등급 지도 확장(투자자문사 탭) · ⑥ (최종) Trillion AI 전망.
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-28) · 정책 **`docs/ROADMAP.md` §3**.
+>
+> ⬇️ **(아래는 직전 — STEP 421 상태.)**
+
+> 🆕 **2026-06-27 — STEP 421, HEAD `fac8fb1`. 배포 ✓ onetrillion.app 라이브.** 미국 시장을 거시(FRED)·뉴스(Yahoo)·공시(SEC EDGAR)까지 확장해 KR과 동등한 4기둥으로 완성한 세션 + 종목표 정렬 전면 재설계 + 모바일 폴리시. (직전 작업.)
 > - **상태**: 배포 = **onetrillion.app 라이브**(STEP 413~421 + 세션 문서). DB = NEW "Trillion" `ccbwxcszdoyjxvckedfp`(ap-northeast-2). POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.
 > - **US 시장 완전체(413~415, 4기둥 완성)**: 413 피드 국가맵 리팩터(`ToolboxClient` 단일 `country==='KR'` 가드 → `FEED_COUNTRY_SUPPORT` 맵) + **거시(macro) US 노출**(FRED 데이터 이미 완성, 가드만 풀림)+`MacroFeed` `defaultView` prop / 414 **US 뉴스 피드**(`/api/news/feed?market=US` = Yahoo `^GSPC` RSS 키리스 실시간 헤드라인 정규식 파싱+`NewsFeed` `country` prop) / **415(flagship) US 공시 피드**(`/api/sec/feed` = SEC EDGAR `getcurrent` 8-K Atom, UA=`SEC_USER_AGENT` + 새 `SecFeed`[DartFeed 미러] + disclosure US 개방 — **DART의 미국 짝**). → US = 종목·상품 + 거시·뉴스·공시 **4기둥**.
 > - **종목표 정렬 재설계(417, KR·US 동일)**: 종목명(가나다/알파벳)·현재가·기간 **헤더 클릭 정렬 + ▲/▼ 항상 표시**, **기본 현재가↓**(탭 전환 시 리셋), `#`=번호만(클릭 X), **거래대금 정렬 제거**. (416 모바일 US 종목명 `truncate` 클램프 선행.)

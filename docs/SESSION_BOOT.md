@@ -1,9 +1,21 @@
-<!-- 2026-06-27 -->
+<!-- 2026-06-28 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
-> 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준 · 2026-06-27 합의). **한국 완성 감사 = `docs/KR_COMPLETENESS_AUDIT.md`.** 현재 **Phase 0 완료 → 다음 Phase 2(광고 슬롯) 후보.** 새 세션은 이 BOOT 다음으로 ROADMAP을 본다.
+> 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대 — 광고·게재 시스템) 진행 중**: 업체 클레임·인증·디렉토리 완성, 결제 PG·본인인증만 남음(Phase 2 후반). 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책)** 을 본다.
 
-> 🟢 **2026-06-27 (최신) · US 시장 완전체(거시·뉴스·공시 4기둥) STEP 413~421 + 종목표 정렬 재설계 + 모바일 폴리시 (HEAD `fac8fb1`) — 배포 ✓ onetrillion.app 라이브 — 최신은 이 배너.**
+> 🟢 **2026-06-28 (최신) · 리딩방·검증 = MVP 2.0 평가 디렉토리 완성 (STEP 422~448, HEAD `6596ccb`, push 완료) — 최신은 이 배너.**
+> **한 줄: 리딩방·검증 탭을 '업체 클레임·인증·광고' 시스템 + OG 링크 프리뷰 + 표형 디렉토리로 완성하고, ROADMAP §3에 게재·광고 정책을 확정한 세션. 금감원 유사투자자문 신고 데이터를 주체로, 인증한 업체가 채널 링크를 관리(1무료+추가유료), 광고는 노출(순위)만 판다. + 토론 제거·카카오 제거·수익≠retention 정리.**
+> - **🆕 최신 STEP = 448. HEAD = `6596ccb`** (push 완료 → 배포 반영 확인 필요. 직전 라이브 = `fac8fb1`/421). 주요 커밋: 클레임빌드 → `a2c0b5f`(436~440) → 441 → ROADMAP → 442·443 → 파비콘 → `25f0147`(444~446) → `60a7d7f`(447) → `6596ccb`(448). DB = NEW "Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **🗺️ ROADMAP §3 정책 확정(단일 기준)**: 게재 = **금감원 유사투자자문 신고된 곳만**(미신고=게재 X, 검색 경고+신고만). 라벨 = **"유사투자자문 신고"**(등록 아님 — 신고제, 금융투자업 아님). **3층 뱃지**: ① 유사투자자문 신고(규제 사실·자동·무료) ② 운영자 인증(클레임+국세청 진위확인·무료) ③ 광고(신고+인증한 곳만·유료). **원칙: 사실은 안 판다(무료·자동), 파는 건 노출(순위)뿐**(X 블루체크 반면교사). "신고=입장권" 플라이휠(미신고는 금감원 신고부터→fss 갱신→클레임). 광고=순위 부스트일 뿐(배너 X)+매체 가드레일 3개(콘텐츠 가이드·신고 임계치 제한·"광고" 라벨). ⚠️ 광고비 수취 전 법률자문 필수.
+> - **업체 클레임·인증 파이프라인(STEP 430~441)**: `/business` 검색→**국세청 진위확인**(`lib/nts.ts`, data.go.kr)→서류 업로드(`business-docs` 버킷)→관리자 검토(`/admin`)→운영자 인증→마이페이지 **'내 업체'**(검증사실 미리보기·소개·무료링크1+추가유료스텁·관리자공유 1명)→디렉토리 노출. DB `business_members/claims/links/listing`(+RLS). 라벨 "유사투자자문 신고"+"운영자 인증" 뱃지(441).
+> - **디렉토리 폴리시(STEP 442~448)**: 플랫폼 탭 제거(전부 한 번에) · **리스트 표화**(`#·등록업체명·채널명` 컬럼 헤더 클릭 정렬, 행은 ⭐만) · **OG 링크 프리뷰**(카톡식 카드) = `lib/og.ts`(fetchOg+EUC-KR 디코딩)+`/api/link-preview`(lazy 캐시)+`/api/admin/crawl-previews`(dev 배치 전체 1회 크롤)+`link_previews` 테이블 · **채널명 = info_name 없으면 OG 제목 폴백** · 미리보기 재배치(헤더=업체명, 채널명+신고 한 줄, 플랫폼 아이콘=채널명 앞, OG 카드+연결링크 바로가기).
+> - **기타 결정(STEP 422~429)**: 모바일 시트 UX · 토론 전면 제거 · 카카오 로그인 제거(구글만) · 수익≠retention(광고=생존/AI=프리미엄) · 종목 상세=Trillion AI 자리(비워둠) · 증권사 광고 슬롯·유튜브 채널 소개 한 줄·리딩방 인피드 광고(테스트 프리뷰).
+> - **DB(MCP·git 아님)**: business_* 4테이블+RLS, `business-docs` 버킷, `link_previews` 테이블(OG 캐시), soulmaten7 role=admin. **배포 전 테스트 클레임 데이터 전부 삭제**(business_links/members/claims=0, link_previews 실 OG 유지).
+> - **▶ 다음 후보**: ① **관리자/마이페이지 화면 점검**(다음 STEP 예정) · ② 배포 후 `fss-advisors` 크론 실작동 확인(CRON_SECRET·Vercel 로그 — 디스클레이머 "매일 갱신" 근거) · ③ 결제 PG + 본인인증(Phase 2 후반, 광고 상위노출 활성화) · ④ 옛 자가등록 죽은코드 정리(`RoomSubmitModal`·`room_submissions`·`/api/rooms/submit` 등 orphan) · ⑤ 금융투자업 등급 지도 확장(투자자문사 탭) · ⑥ (최종) Trillion AI 전망.
+>
+> ⬇️ **(아래 🟢 STEP 421 배너는 직전 작업 상태.)**
+
+> 🟢 **2026-06-27 · US 시장 완전체(거시·뉴스·공시 4기둥) STEP 413~421 + 종목표 정렬 재설계 + 모바일 폴리시 (HEAD `fac8fb1`) — 배포 ✓ onetrillion.app 라이브 — 직전 작업 상태.**
 > **한 줄: 미국 시장을 종목·상품에 이어 거시(FRED)·뉴스(Yahoo)·공시(SEC EDGAR)까지 확장해 KR과 동등한 4기둥으로 완성한 세션 — 피드 국가맵 리팩터+거시 US→US 뉴스(Yahoo RSS)→US 공시(SEC EDGAR 8-K, DART의 미국 짝)→종목표 정렬 전면 재설계(헤더 클릭·▲/▼)→모바일 폴리시(증권사 중복 제거·우측정렬·종목 시트 수익률)→기간 커스텀 드롭다운·"전" 라벨. onetrillion.app 라이브.**
 > - **🆕 배포 = `https://onetrillion.app` 라이브**(STEP 413~421 + 세션 문서). 이전 `stock-terminal-delta.vercel.app`도 유효.
 > - **🆕 DB = NEW 전용 프로젝트 `ccbwxcszdoyjxvckedfp`("Trillion", ap-northeast-2 서울).** `us_stock_perf`(symbol/r1w/r1m/r3m/r6m, RLS public read — 상위 200 데모 적재, 전 종목은 **prod 크론 매일 22시 UTC** 자동; 라이브 후 첫 실행 시 1주~6개월 전부 채워짐). KR `link_hub` 71 큐레이션. (구 `qxkmwlkchyxfzxbonhtj`/"OT-Marketing"=폐기 예정. POTAL ref `zyurflkhiregundhisky`는 여전히 절대 금지.)
