@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { formatBizNo } from '@/lib/utils/format';
 import { ShieldCheck, Trash2, ExternalLink, Plus, UserPlus, X, Siren } from 'lucide-react';
 
 type Link = { id: string; type: string; url: string; label: string | null; status: string; is_paid?: boolean };
@@ -130,7 +131,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
         <h3 className="font-bold text-unjong-primary">{biz.company_name}</h3>
         <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-medium text-emerald-600">인증됨</span>
         {!isOwner ? <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[11px] text-unjong-muted">관리자</span> : null}
-        <span className="text-xs text-unjong-muted">{biz.biz_no}</span>
+        <span className="text-xs text-unjong-muted">{formatBizNo(biz.biz_no)}</span>
       </div>
 
       {/* ── 금감원 검증 사실 (읽기 전용 · 디렉토리에 보이는 그대로) ── */}

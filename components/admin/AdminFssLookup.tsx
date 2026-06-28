@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
+import { formatBizNo, formatPhone } from '@/lib/utils/format';
 
 type Fss = { biz_no: string; company_name: string; representative: string | null; phone: string | null; valid_from: string | null; valid_to: string | null; address: string | null };
 
@@ -56,9 +57,9 @@ export default function AdminFssLookup() {
               {results.map((f) => (
                 <tr key={f.biz_no} className="border-t border-unjong-border">
                   <td className="px-3 py-2 font-medium text-unjong-primary">{f.company_name}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{f.biz_no}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{formatBizNo(f.biz_no)}</td>
                   <td className="px-3 py-2 text-xs text-unjong-primary">{f.representative || '—'}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{f.phone || '—'}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{formatPhone(f.phone)}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{f.valid_from ?? '—'} ~ {f.valid_to ?? '—'}</td>
                 </tr>
               ))}

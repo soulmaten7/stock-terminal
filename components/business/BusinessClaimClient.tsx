@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Search, ShieldCheck } from 'lucide-react';
+import { formatBizNo } from '@/lib/utils/format';
 
 type Biz = { biz_no: string; company_name: string; representative: string | null; valid_from: string | null; valid_to: string | null; address: string | null };
 
@@ -95,7 +96,7 @@ export default function BusinessClaimClient() {
                   <div className="flex items-center gap-2">
                     <ShieldCheck size={14} className="shrink-0 text-emerald-600" />
                     <span className="font-semibold text-unjong-primary">{b.company_name}</span>
-                    <span className="text-xs text-unjong-muted">{b.biz_no}</span>
+                    <span className="text-xs text-unjong-muted">{formatBizNo(b.biz_no)}</span>
                   </div>
                   <p className="mt-0.5 text-xs text-unjong-muted">대표 {b.representative ?? '—'} · 신고기간 {b.valid_from ?? '—'} ~ {b.valid_to ?? '—'}</p>
                 </button>

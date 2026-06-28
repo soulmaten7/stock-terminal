@@ -37,3 +37,22 @@ export function formatTime(dateStr: string): string {
 export function formatDateTime(dateStr: string): string {
   return `${formatDate(dateStr)} ${formatTime(dateStr)}`;
 }
+
+// 사업자등록번호 XXX-XX-XXXXX (입력 하이픈 무관 → 표시 통일)
+export function formatBizNo(s: string | null | undefined): string {
+  if (!s) return '—';
+  const d = String(s).replace(/\D/g, '');
+  if (d.length === 10) return `${d.slice(0, 3)}-${d.slice(3, 5)}-${d.slice(5)}`;
+  return String(s);
+}
+
+// 연락처 하이픈 통일 (휴대폰·지역번호 일반 패턴)
+export function formatPhone(s: string | null | undefined): string {
+  if (!s) return '—';
+  const d = String(s).replace(/\D/g, '');
+  if (d.length === 11) return `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+  if (d.length === 10 && d.startsWith('02')) return `${d.slice(0, 2)}-${d.slice(2, 6)}-${d.slice(6)}`;
+  if (d.length === 10) return `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}`;
+  if (d.length === 9 && d.startsWith('02')) return `${d.slice(0, 2)}-${d.slice(2, 5)}-${d.slice(5)}`;
+  return String(s);
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { formatBizNo, formatPhone } from '@/lib/utils/format';
 
 type BizClaim = { id: string; biz_no: string; company_name: string; representative: string | null; contact: string | null; nts_valid: string | null; start_dt: string | null; doc_signed: string | null; status: string; created_at: string };
 
@@ -63,8 +64,8 @@ export default function AdminBusinessClaims({ initial }: { initial: BizClaim[] }
               <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{fmt(c.created_at)}</td>
               <td className="px-3 py-2 font-medium text-unjong-primary">{c.company_name}</td>
               <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-primary">{c.representative || '—'}</td>
-              <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{c.biz_no}</td>
-              <td className="px-3 py-2 text-xs text-unjong-primary">{c.contact || '—'}</td>
+              <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{formatBizNo(c.biz_no)}</td>
+              <td className="px-3 py-2 text-xs text-unjong-primary">{formatPhone(c.contact)}</td>
               <td className="whitespace-nowrap px-3 py-2 text-xs text-unjong-muted">{fmtStartDt(c.start_dt)}</td>
               <td className="whitespace-nowrap px-3 py-2 text-xs">{ntsBadge(c.nts_valid)}</td>
               <td className="whitespace-nowrap px-3 py-2 text-xs">
