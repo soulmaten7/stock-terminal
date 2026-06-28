@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import AdminReports from '@/components/admin/AdminReports';
-import AdminSubmissions from '@/components/admin/AdminSubmissions';
 import AdminBusinessClaims from '@/components/admin/AdminBusinessClaims';
 
 export const runtime = 'nodejs';
@@ -10,7 +9,6 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: '트릴리언 관리자' };
 
 type Report = { id: number; target_name: string; reason: string; content: string | null; status: string; created_at: string };
-type Submission = { id: number; room_name: string; company_name: string | null; platform: string; homepage: string; fss_matched: boolean; status: string; created_at: string };
 type BizClaim = { id: string; biz_no: string; company_name: string; contact: string | null; doc_signed: string | null; status: string; created_at: string };
 
 export default async function AdminPage() {
@@ -30,9 +28,7 @@ export default async function AdminPage() {
 
   const admin = createAdminClient();
   const { data: reportsData } = await admin.from('room_reports').select('*').order('created_at', { ascending: false }).limit(1000);
-  const { data: subsData } = await admin.from('room_submissions').select('*').order('created_at', { ascending: false }).limit(1000);
   const reports = (reportsData ?? []) as Report[];
-  const subs = (subsData ?? []) as Submission[];
 
   // 업체 인증 신청(클레임) + 업체명 매핑 + 서류 서명 URL
   const { data: claimsData } = await admin.from('business_claims').select('id, biz_no, contact, doc_url, status, created_at').order('created_at', { ascending: false }).limit(500);
@@ -56,18 +52,12 @@ export default async function AdminPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <h1 className="text-xl font-bold text-unjong-primary">트릴리언 관리자</h1>
-      <p className="mb-8 mt-1 text-sm text-unjong-muted">신고·자가등록 접수 현황 · 최신순</p>
+      <p className="mb-8 mt-1 text-sm text-unjong-muted">신고·업체 인증 신청 현황 · 최신순</p>
 
       {/* 신고 */}
       <section className="mb-12">
         <h2 className="mb-3 text-base font-bold text-unjong-primary">🚨 신고 ({reports.length})</h2>
         <AdminReports initial={reports} />
-      </section>
-
-      {/* 자가등록 */}
-      <section className="mb-12">
-        <h2 className="mb-3 text-base font-bold text-unjong-primary">📝 자가등록 ({subs.length}) · 대기는 승인해야 공개</h2>
-        <AdminSubmissions initial={subs} />
       </section>
 
       {/* 업체 인증 신청(클레임) */}

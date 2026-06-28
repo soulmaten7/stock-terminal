@@ -21,6 +21,7 @@ type Advisor = {
   platform: string;
   source: string;
   intro: string | null;
+  biz_links?: { type: string; url: string; label: string | null; is_paid: boolean }[];
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
@@ -49,6 +50,7 @@ function faviconFor(p: string, homepage: string | null): string | null {
 function platformLabel(p: string): string {
   return p === 'telegram' ? '텔레그램' : p === 'kakao' ? '카카오톡' : p === 'naver' ? '네이버' : '기타';
 }
+const LINK_TYPE_LABEL: Record<string, string> = { room: '리딩방', youtube: '유튜브', site: '사이트' };
 function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
@@ -129,6 +131,23 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
         <a href={a.homepage} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
           바로가기 <ExternalLink size={13} />
         </a>
+      ) : null}
+      {a.biz_links && a.biz_links.length > 0 ? (
+        <div className="mt-3 border-t border-unjong-border pt-3">
+          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-unjong-muted">
+            업체 제공 <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] font-normal">업체가 직접 등록</span>
+          </div>
+          <div className="space-y-1.5">
+            {a.biz_links.map((l, i) => (
+              <a key={i} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 rounded-lg border border-unjong-border px-3 py-2 text-xs transition-colors hover:border-unjong-accent">
+                <span className="shrink-0 rounded bg-unjong-background px-1.5 py-0.5 text-[10px] font-medium text-unjong-muted">{LINK_TYPE_LABEL[l.type] ?? l.type}</span>
+                {l.is_paid ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-600">광고</span> : null}
+                <span className="min-w-0 flex-1 truncate text-unjong-primary">{l.label || l.url}</span>
+                <ExternalLink size={12} className="shrink-0 text-unjong-muted" />
+              </a>
+            ))}
+          </div>
+        </div>
       ) : null}
     </div>
   );

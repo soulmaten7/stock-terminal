@@ -53,5 +53,17 @@ export async function GET(req: NextRequest) {
     rows = rows.map((r) => ({ ...r, liked: false }));
   }
 
+  // 업체 제공 링크(공개 active) 붙이기 — RLS: business_links public-read active
+  if (rows.length) {
+    const ids = rows.map((r) => r.biz_no);
+    const { data: bizLinks } = await supabase
+      .from("business_links").select("biz_no, type, url, label, is_paid").in("biz_no", ids).eq("status", "active");
+    const linkMap: Record<string, { type: string; url: string; label: string | null; is_paid: boolean }[]> = {};
+    for (const l of (bizLinks ?? []) as { biz_no: string; type: string; url: string; label: string | null; is_paid: boolean }[]) {
+      (linkMap[l.biz_no] ??= []).push({ type: l.type, url: l.url, label: l.label, is_paid: l.is_paid });
+    }
+    rows = rows.map((r) => ({ ...r, biz_links: linkMap[r.biz_no] ?? [] }));
+  }
+
   return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, platform, sort, searching: !!q, loggedIn: !!user });
 }

@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDate } from '@/lib/utils/format';
-import { User, Siren, Trash2 } from 'lucide-react';
+import { User, Siren, Trash2, Store } from 'lucide-react';
+import MyBusinessClient from '@/components/business/MyBusinessClient';
 
-type Tab = 'profile' | 'reports';
+type Tab = 'profile' | 'reports' | 'business';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
@@ -65,6 +66,7 @@ export default function MyPage() {
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'profile', label: '프로필', icon: <User size={16} /> },
     { key: 'reports', label: '내 신고', icon: <Siren size={16} /> },
+    { key: 'business', label: '내 업체', icon: <Store size={16} /> },
   ];
 
   return (
@@ -139,6 +141,8 @@ export default function MyPage() {
           )}
         </div>
       )}
+
+      {activeTab === 'business' && <MyBusinessClient />}
     </div>
   );
 }
