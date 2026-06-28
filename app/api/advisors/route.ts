@@ -76,5 +76,19 @@ export async function GET(req: NextRequest) {
     rows = rows.map((r) => ({ ...r, verified_owner: verifiedSet.has(r.biz_no) }));
   }
 
+  // OG 제목(채널명 fallback) 붙이기 — link_previews는 서비스롤만 읽힘
+  if (rows.length) {
+    const admin2 = createAdminClient();
+    const homes = Array.from(new Set(rows.map((r) => r.homepage).filter(Boolean))) as string[];
+    const ogMap: Record<string, string> = {};
+    if (homes.length) {
+      const { data: ogs } = await admin2.from("link_previews").select("url, og_title, status").in("url", homes);
+      for (const o of (ogs ?? []) as { url: string; og_title: string | null; status: string }[]) {
+        if (o.status === "ok" && o.og_title) ogMap[o.url] = o.og_title;
+      }
+    }
+    rows = rows.map((r) => ({ ...r, og_title: r.homepage ? (ogMap[r.homepage as string] ?? null) : null }));
+  }
+
   return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, platform, sort, searching: !!q, loggedIn: !!user });
 }

@@ -23,6 +23,7 @@ type Advisor = {
   intro: string | null;
   biz_links?: { type: string; url: string; label: string | null; is_paid: boolean }[];
   verified_owner?: boolean;
+  og_title?: string | null;
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
@@ -55,6 +56,12 @@ function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
 function hostOf(u: string): string { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } }
+function cleanTitle(t: string): string { return t.split(/[-|:·—–]/)[0].trim().slice(0, 30); }
+function channelOf(a: Advisor): string | null {
+  if (a.info_name && a.info_name.trim() && a.info_name !== a.company_name) return a.info_name.trim();
+  if (a.og_title && a.og_title.trim()) { const c = cleanTitle(a.og_title); if (c && c !== a.company_name) return c; }
+  return null;
+}
 
 // 🧪 TEST — 인피드 광고 행(리딩방 N개마다 1개, Coupang/Naver식). 광고라도 사실(금감원 배지)은 안 가림. 실제 광고주 아님 — 추후 DB 연동으로 교체.
 const AD_EVERY = 10;
@@ -104,22 +111,17 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
   }, [a.homepage]);
   return (
     <div>
-      <div className="mb-2 flex items-start gap-2">
+      <div className="mb-2 flex items-center gap-2">
         {ic ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={ic} alt="" width={20} height={20} className="mt-0.5 h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
-        ) : <Globe size={18} className="mt-0.5 text-unjong-muted" />}
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-bold text-unjong-primary">{isFss ? a.company_name : roomName}</h3>
-          {isFss && a.info_name && a.info_name.trim() && a.info_name !== a.company_name ? (
-            <p className="truncate text-[11px] text-unjong-muted">{a.info_name}</p>
-          ) : null}
-        </div>
+          <img src={ic} alt="" width={20} height={20} className="h-5 w-5 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
+        ) : <Globe size={18} className="text-unjong-muted" />}
+        <h3 className="min-w-0 flex-1 truncate text-sm font-bold text-unjong-primary">{isFss ? a.company_name : roomName}</h3>
         <button
           type="button"
           onClick={onToggleFav}
           aria-label={isFav ? '즐겨찾기 해제' : '즐겨찾기'}
-          className={`mt-0.5 shrink-0 transition-colors ${isFav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+          className={`shrink-0 transition-colors ${isFav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
         >
           <Star size={18} fill={isFav ? 'currentColor' : 'none'} />
         </button>
@@ -148,8 +150,11 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
           </div>
         ))}
       </dl>
-      <div className="mt-3 flex items-center gap-3 text-xs">
-        <button type="button" onClick={onReport} className="flex items-center gap-1 text-unjong-muted hover:text-red-500">
+      <div className="mt-3 flex items-center justify-between gap-3 text-xs">
+        {isFss && channelOf(a) ? (
+          <span className="min-w-0 truncate text-unjong-muted">{channelOf(a)}</span>
+        ) : <span />}
+        <button type="button" onClick={onReport} className="flex shrink-0 items-center gap-1 text-unjong-muted hover:text-red-500">
           <Siren size={13} /> 신고 {a.report_count}
         </button>
       </div>
@@ -409,70 +414,71 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               {searching ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.' : '등록된 곳이 없습니다.'}
             </p>
           ) : (
-            <ul>
+            <>
+              <div className="grid grid-cols-[1.75rem_1.5fr_1fr_7rem] items-center gap-2 border-b border-l-2 border-l-transparent border-b-unjong-border px-2 py-1.5 text-[11px] font-medium text-unjong-muted">
+                <span className="text-center">#</span>
+                <span>등록업체명</span>
+                <span>채널명</span>
+                <span />
+              </div>
+              <ul>
               {results.map((a, i) => {
                 const n = (page - 1) * PAGE_SIZE + i + 1;
-                const icon = faviconFor(a.platform, a.homepage);
                 const isSel = selected?.biz_no === a.biz_no;
                 return (
                   <Fragment key={a.biz_no}>
                     {i > 0 && i % AD_EVERY === 0 ? <SponsoredRoomRow /> : null}
                     <li
-                    className={`group flex items-center gap-3 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
+                    className={`group grid grid-cols-[1.75rem_1.5fr_1fr_7rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'
                     }`}
                   >
-                    <button type="button" onClick={() => setSelected(a)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                      <span className="w-6 shrink-0 text-center text-sm font-bold text-unjong-muted">{n}</span>
-                      {icon ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={icon} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded" onError={(e) => { (e.target as HTMLImageElement).style.visibility = 'hidden'; }} />
-                      ) : <Globe size={18} className="shrink-0 text-unjong-muted" />}
-                      <span className="flex min-w-0 flex-1 flex-col">
-                        <span className="flex items-center gap-1.5">
-                          <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{a.company_name}</span>
-                          {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
-                        </span>
-                        {a.info_name && a.info_name.trim() && a.info_name !== a.company_name ? (
-                          <span className="truncate text-[11px] text-unjong-muted">{a.info_name}</span>
-                        ) : null}
-                      </span>
+                    <span className="text-center text-sm font-bold text-unjong-muted">{n}</span>
+                    <button type="button" onClick={() => setSelected(a)} className="flex min-w-0 items-center gap-1.5 text-left">
+                      <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{a.company_name}</span>
+                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => toggleFav(a)}
-                      aria-label={favs.has(a.biz_no) ? '즐겨찾기 해제' : '즐겨찾기'}
-                      title="관심(즐겨찾기)"
-                      className={`flex shrink-0 items-center gap-0.5 text-xs tabular-nums transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
-                    >
-                      <Star size={14} fill={favs.has(a.biz_no) ? 'currentColor' : 'none'} />
-                      {a.favorite_count > 0 ? <span>{a.favorite_count}</span> : null}
+                    <button type="button" onClick={() => setSelected(a)} className="min-w-0 truncate text-left text-xs text-unjong-muted">
+                      {channelOf(a) ?? '—'}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => openReport(a)}
-                      title="신고하기"
-                      aria-label="신고하기"
-                      className="flex shrink-0 items-center gap-0.5 text-xs text-unjong-muted hover:text-red-500"
-                    >
-                      <Siren size={13} /> {a.report_count > 0 ? a.report_count : ''}
-                    </button>
-                    {a.homepage ? (
-                      <a
-                        href={a.homepage}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        title="바로가기"
-                        className="flex shrink-0 items-center rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
+                    <span className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => toggleFav(a)}
+                        aria-label={favs.has(a.biz_no) ? '즐겨찾기 해제' : '즐겨찾기'}
+                        title="관심(즐겨찾기)"
+                        className={`flex shrink-0 items-center gap-0.5 text-xs tabular-nums transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
                       >
-                        <ExternalLink size={12} />
-                      </a>
-                    ) : null}
+                        <Star size={14} fill={favs.has(a.biz_no) ? 'currentColor' : 'none'} />
+                        {a.favorite_count > 0 ? <span>{a.favorite_count}</span> : null}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => openReport(a)}
+                        title="신고하기"
+                        aria-label="신고하기"
+                        className="flex shrink-0 items-center gap-0.5 text-xs text-unjong-muted hover:text-red-500"
+                      >
+                        <Siren size={13} /> {a.report_count > 0 ? a.report_count : ''}
+                      </button>
+                      {a.homepage ? (
+                        <a
+                          href={a.homepage}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          title="바로가기"
+                          className="flex shrink-0 items-center rounded-md border border-unjong-border px-2 py-1 text-xs text-unjong-muted transition-colors hover:border-unjong-accent hover:text-unjong-accent"
+                        >
+                          <ExternalLink size={12} />
+                        </a>
+                      ) : null}
+                    </span>
                   </li>
                   </Fragment>
                 );
               })}
             </ul>
+            </>
           )}
 
           {!loading && totalPages > 1 ? (
