@@ -10,7 +10,7 @@ interface LayoutShellProps {
 export default function LayoutShell({ children, footer }: LayoutShellProps) {
   return (
     <>
-      <main className="flex-1 min-w-0">
+      <main className="flex-1 min-w-0 min-h-[calc(100svh_-_61px)]">
         {children}
       </main>
       {footer}

@@ -6,34 +6,43 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 100;
-const PLATFORMS = ["all", "telegram", "kakao", "naver", "etc"];
+const VIEWS = ["fss", "verified", "interest"];
 
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const raw = (sp.get("q") ?? "").trim();
   const q = raw.replace(/[^\p{L}\p{N}\s-]/gu, "").slice(0, 50); // or-필터 인젝션 방지
-  const platform = PLATFORMS.includes(sp.get("platform") ?? "") ? (sp.get("platform") as string) : "all";
-  const sortParam = sp.get("sort") ?? "";
-  const sort = ["interest", "company_asc", "company_desc", "channel_asc", "channel_desc"].includes(sortParam) ? sortParam : "interest";
+  const view = VIEWS.includes(sp.get("view") ?? "") ? (sp.get("view") as string) : "fss";
+  const dir = sp.get("dir") === "desc" ? "desc" : "asc";
   const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
 
   const supabase = await createClient();
+  const admin = createAdminClient();
+
+  // 인증 리딩방 뷰 = 운영자 인증(verified)된 biz_no만. 먼저 추려서 필터(현재는 소수).
+  let verifiedIds: string[] | null = null;
+  if (view === "verified") {
+    const { data: vm } = await admin
+      .from("business_members").select("biz_no").eq("status", "verified");
+    verifiedIds = Array.from(new Set((vm ?? []).map((m: { biz_no: string }) => m.biz_no)));
+    if (verifiedIds.length === 0) {
+      return NextResponse.json({ results: [], total: 0, page, pageSize: PAGE_SIZE, view, dir, searching: !!q, loggedIn: false });
+    }
+  }
+
   let query = supabase
     .from("advisor_directory")
     .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, favorite_count, platform, source, intro", { count: "exact" });
 
+  if (verifiedIds) query = query.in("biz_no", verifiedIds);
   if (q) {
     query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)
-  } else if (platform !== "all") {
-    query = query.eq("platform", platform);
   }
 
-  if (sort === "interest") {
-    query = query.order("favorite_count", { ascending: false }).order("company_name", { ascending: true });
-  } else if (sort === "channel_asc" || sort === "channel_desc") {
-    query = query.order("info_name", { ascending: sort === "channel_asc", nullsFirst: false }).order("company_name", { ascending: true });
+  if (view === "interest") {
+    query = query.order("favorite_count", { ascending: dir === "asc" }).order("company_name", { ascending: true });
   } else {
-    query = query.order("company_name", { ascending: sort === "company_asc" });
+    query = query.order("company_name", { ascending: dir !== "desc" });
   }
 
   const from = (page - 1) * PAGE_SIZE;
@@ -56,7 +65,7 @@ export async function GET(req: NextRequest) {
     rows = rows.map((r) => ({ ...r, liked: false }));
   }
 
-  // 업체 제공 링크(공개 active) 붙이기 — RLS: business_links public-read active
+  // 업체 제공 링크(공개 active)
   if (rows.length) {
     const ids = rows.map((r) => r.biz_no);
     const { data: bizLinks } = await supabase
@@ -68,29 +77,19 @@ export async function GET(req: NextRequest) {
     rows = rows.map((r) => ({ ...r, biz_links: linkMap[r.biz_no] ?? [] }));
   }
 
-  // 운영자 인증(클레임+진위확인 통과) 플래그 — 서버(admin)에서만, 공개 boolean
+  // 운영자 인증 플래그(채널명·뱃지 게이팅용)
   if (rows.length) {
     const ids = rows.map((r) => r.biz_no);
-    const admin = createAdminClient();
-    const { data: vmembers } = await admin
-      .from("business_members").select("biz_no").eq("status", "verified").in("biz_no", ids);
-    const verifiedSet = new Set((vmembers ?? []).map((m: { biz_no: string }) => m.biz_no));
+    let verifiedSet: Set<string>;
+    if (verifiedIds) {
+      verifiedSet = new Set(verifiedIds);
+    } else {
+      const { data: vmembers } = await admin
+        .from("business_members").select("biz_no").eq("status", "verified").in("biz_no", ids);
+      verifiedSet = new Set((vmembers ?? []).map((m: { biz_no: string }) => m.biz_no));
+    }
     rows = rows.map((r) => ({ ...r, verified_owner: verifiedSet.has(r.biz_no) }));
   }
 
-  // OG 제목(채널명 fallback) 붙이기 — link_previews는 서비스롤만 읽힘
-  if (rows.length) {
-    const admin2 = createAdminClient();
-    const homes = Array.from(new Set(rows.map((r) => r.homepage).filter(Boolean))) as string[];
-    const ogMap: Record<string, string> = {};
-    if (homes.length) {
-      const { data: ogs } = await admin2.from("link_previews").select("url, og_title, status").in("url", homes);
-      for (const o of (ogs ?? []) as { url: string; og_title: string | null; status: string }[]) {
-        if (o.status === "ok" && o.og_title) ogMap[o.url] = o.og_title;
-      }
-    }
-    rows = rows.map((r) => ({ ...r, og_title: r.homepage ? (ogMap[r.homepage as string] ?? null) : null }));
-  }
-
-  return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, platform, sort, searching: !!q, loggedIn: !!user });
+  return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, view, dir, searching: !!q, loggedIn: !!user });
 }

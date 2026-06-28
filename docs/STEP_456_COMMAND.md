@@ -1,3 +1,131 @@
+<!-- 2026-06-28 -->
+# STEP 456 — 리딩방·검증 3뷰 재편 (채널명=인증한 곳만 + 인증뱃지)
+
+## 🔧 실행 (Sonnet)
+```bash
+cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
+```
+```
+@docs/STEP_456_COMMAND.md 파일 내용대로 실행해줘
+```
+
+## 🎯 목표
+1. **채널명 = 직접 '인증'한 곳만** 노출. 미인증은 "—". OG·금감원 리딩방명 추측 채널명 전부 제거.
+2. 채널명 앞에 **✓ 운영자 인증 뱃지**(UserCheck) prefix.
+3. 컨트롤 줄 좌측에 **3개 뷰 탭**(각 ↕ 정렬): **금감원 등록업체**(기본·가나다) / **인증 리딩방**(인증된 것만 필터) / **관심도순**(전체 ⭐순). 등록·관리 버튼은 우측.
+4. 기존 컬럼헤더 정렬 제거(탭이 대체). 미리보기: 미인증=금감원 사실만(대표·주소·신고기간, 바로가기·OG 없음), 인증=✓채널명+바로가기+OG카드.
+
+## 전제
+- 최신 main(STEP 455). 파일 2개 전체 교체.
+- **route.ts(API) 바뀜 → 클린 재시작 필요** (아래 확인 참고).
+
+---
+
+## (1) `app/api/advisors/route.ts` — 전체 교체
+**아래 내용으로 파일 전체 덮어써:**
+```ts
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const PAGE_SIZE = 100;
+const VIEWS = ["fss", "verified", "interest"];
+
+export async function GET(req: NextRequest) {
+  const sp = req.nextUrl.searchParams;
+  const raw = (sp.get("q") ?? "").trim();
+  const q = raw.replace(/[^\p{L}\p{N}\s-]/gu, "").slice(0, 50); // or-필터 인젝션 방지
+  const view = VIEWS.includes(sp.get("view") ?? "") ? (sp.get("view") as string) : "fss";
+  const dir = sp.get("dir") === "desc" ? "desc" : "asc";
+  const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
+
+  const supabase = await createClient();
+  const admin = createAdminClient();
+
+  // 인증 리딩방 뷰 = 운영자 인증(verified)된 biz_no만. 먼저 추려서 필터(현재는 소수).
+  let verifiedIds: string[] | null = null;
+  if (view === "verified") {
+    const { data: vm } = await admin
+      .from("business_members").select("biz_no").eq("status", "verified");
+    verifiedIds = Array.from(new Set((vm ?? []).map((m: { biz_no: string }) => m.biz_no)));
+    if (verifiedIds.length === 0) {
+      return NextResponse.json({ results: [], total: 0, page, pageSize: PAGE_SIZE, view, dir, searching: !!q, loggedIn: false });
+    }
+  }
+
+  let query = supabase
+    .from("advisor_directory")
+    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, favorite_count, platform, source, intro", { count: "exact" });
+
+  if (verifiedIds) query = query.in("biz_no", verifiedIds);
+  if (q) {
+    query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)
+  }
+
+  if (view === "interest") {
+    query = query.order("favorite_count", { ascending: dir === "asc" }).order("company_name", { ascending: true });
+  } else {
+    query = query.order("company_name", { ascending: dir !== "desc" });
+  }
+
+  const from = (page - 1) * PAGE_SIZE;
+  query = query.range(from, from + PAGE_SIZE - 1);
+
+  const { data, count, error } = await query;
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  type Row = { biz_no: string; [k: string]: unknown };
+  let rows = (data ?? []) as Row[];
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user && rows.length) {
+    const ids = rows.map((r) => r.biz_no);
+    const { data: myLikes } = await supabase
+      .from("room_likes").select("target_id").eq("user_id", user.id).in("target_id", ids);
+    const likedSet = new Set((myLikes ?? []).map((l: { target_id: string }) => l.target_id));
+    rows = rows.map((r) => ({ ...r, liked: likedSet.has(r.biz_no) }));
+  } else {
+    rows = rows.map((r) => ({ ...r, liked: false }));
+  }
+
+  // 업체 제공 링크(공개 active)
+  if (rows.length) {
+    const ids = rows.map((r) => r.biz_no);
+    const { data: bizLinks } = await supabase
+      .from("business_links").select("biz_no, type, url, label, is_paid").in("biz_no", ids).eq("status", "active");
+    const linkMap: Record<string, { type: string; url: string; label: string | null; is_paid: boolean }[]> = {};
+    for (const l of (bizLinks ?? []) as { biz_no: string; type: string; url: string; label: string | null; is_paid: boolean }[]) {
+      (linkMap[l.biz_no] ??= []).push({ type: l.type, url: l.url, label: l.label, is_paid: l.is_paid });
+    }
+    rows = rows.map((r) => ({ ...r, biz_links: linkMap[r.biz_no] ?? [] }));
+  }
+
+  // 운영자 인증 플래그(채널명·뱃지 게이팅용)
+  if (rows.length) {
+    const ids = rows.map((r) => r.biz_no);
+    let verifiedSet: Set<string>;
+    if (verifiedIds) {
+      verifiedSet = new Set(verifiedIds);
+    } else {
+      const { data: vmembers } = await admin
+        .from("business_members").select("biz_no").eq("status", "verified").in("biz_no", ids);
+      verifiedSet = new Set((vmembers ?? []).map((m: { biz_no: string }) => m.biz_no));
+    }
+    rows = rows.map((r) => ({ ...r, verified_owner: verifiedSet.has(r.biz_no) }));
+  }
+
+  return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, view, dir, searching: !!q, loggedIn: !!user });
+}
+```
+
+---
+
+## (2) `components/toolbox/AdvisorDirectory.tsx` — 전체 교체
+**아래 내용으로 파일 전체 덮어써:**
+```tsx
 'use client';
 
 import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
@@ -565,3 +693,21 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
     </section>
   );
 }
+```
+
+---
+
+## 확인 (route.ts 바뀜 → 클린 재시작 후)
+```bash
+pkill -f "next dev"; rm -rf .next; npm run dev
+```
+- **금감원 등록업체** 탭(기본): 1,804개 전체, 가나다순. 채널명 전부 "—"(인증 0이라 정상). 탭 클릭 시 ↕ 토글(가나다↔역순).
+- **인증 리딩방** 탭: "아직 인증된 리딩방이 없어요…" 빈 상태(정상).
+- **관심도순** 탭: 전체 ⭐순.
+- 행 클릭 → 미리보기: 금감원 사실만(대표·주소·신고기간), 바로가기·OG 카드 **없음**.
+- 빌드 에러 없음 (`npm run build`).
+
+> 인증된 업체가 생기면: 그 행만 채널명에 **✓ + 채널명**, 미리보기에 ✓채널명 + 바로가기 + OG 카드 노출. (인증 리딩방 탭에도 등장)
+
+## 빌드·커밋
+- 보류. 확인 후 STEP 451~456 묶어 커밋.
