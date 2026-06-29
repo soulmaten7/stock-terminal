@@ -24,6 +24,12 @@ type Advisor = {
   intro: string | null;
   biz_links?: { type: string; url: string; label: string | null; is_paid: boolean }[];
   verified_owner?: boolean;
+  // 채널 단위 행(인증 리딩방 뷰) — 활성 business_link 1개 = 1행
+  channel_id?: string;
+  channel_label?: string | null;
+  channel_url?: string | null;
+  channel_platform?: string | null;
+  channel_is_paid?: boolean;
 };
 
 const REASONS = ['허위·과장 수익률', '환불 거부', '미등록·사칭 의심', '리딩방 먹튀(잠적)', '불법 추천·미신고 자문', '기타'];
@@ -44,11 +50,16 @@ function roomNameOf(a: Advisor): string {
   return (a.info_name && a.info_name.trim()) || a.company_name;
 }
 function hostOf(u: string): string { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return u; } }
-// 채널명 = 운영자가 직접 '인증'한 곳만 노출. 미인증은 null → "—". (OG·추측 채널명은 쓰지 않음)
+// 채널명 = 인증한 곳만. 채널 단위 행이면 그 채널명, 업체 단위 행이면 첫 링크/리딩방명. 미인증 → null("—").
 function channelOf(a: Advisor): string | null {
+  if (a.channel_id) return (a.channel_label && a.channel_label.trim()) || a.company_name || null;
   if (!a.verified_owner) return null;
   const name = (a.info_name && a.info_name.trim()) || (a.biz_links && a.biz_links[0]?.label?.trim()) || a.company_name;
   return name || null;
+}
+// 행 키 — 채널 단위 행은 channel_id, 업체 단위 행은 biz_no
+function rowKey(a: Advisor): string {
+  return a.channel_id ?? a.biz_no;
 }
 
 // 인피드 광고 슬롯 — '예시'가 아니라 '광고 문의하기' CTA(/advertise). 맨 위 + N개마다. (AdSlotRow 공용)
@@ -68,21 +79,22 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
         ['운영 업체', a.company_name],
         ['소개', a.intro],
       ];
+  // 채널 단위 행이면 그 채널 링크, 업체 단위면 홈페이지를 미리보기 대상으로
+  const linkUrl = a.channel_url || a.homepage;
   const [og, setOg] = useState<{ title: string | null; image: string | null; description: string | null; siteName: string | null; status: string } | null>(null);
   const [ogLoading, setOgLoading] = useState(false);
   useEffect(() => {
     setOg(null);
-    // 채널(홈페이지) 연결은 '인증'된 곳만 — 미인증은 OG 카드도 띄우지 않음
-    if (!a.verified_owner || !a.homepage) { setOgLoading(false); return; }
+    if (!a.verified_owner || !linkUrl) { setOgLoading(false); return; }
     let cancelled = false;
     setOgLoading(true);
-    fetch(`/api/link-preview?url=${encodeURIComponent(a.homepage)}`)
+    fetch(`/api/link-preview?url=${encodeURIComponent(linkUrl)}`)
       .then((r) => r.json())
       .then((d) => { if (!cancelled) setOg(d); })
       .catch(() => { if (!cancelled) setOg(null); })
       .finally(() => { if (!cancelled) setOgLoading(false); });
     return () => { cancelled = true; };
-  }, [a.homepage, a.verified_owner]);
+  }, [linkUrl, a.verified_owner]);
   return (
     <div>
       <div className="mb-2 flex items-center gap-2">
@@ -131,29 +143,29 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
           <Siren size={13} /> 신고 {a.report_count}
         </button>
       </div>
-      {a.verified_owner && a.homepage ? (
+      {a.verified_owner && linkUrl ? (
         <div className="mt-3">
           {ogLoading ? (
             <div className="mb-2 h-24 animate-pulse rounded-lg bg-unjong-background" />
           ) : og && og.status === 'ok' && (og.image || og.title) ? (
-            <a href={a.homepage} target="_blank" rel="noopener noreferrer nofollow" className="mb-2 block overflow-hidden rounded-lg border border-unjong-border transition-colors hover:border-unjong-accent">
+            <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="mb-2 block overflow-hidden rounded-lg border border-unjong-border transition-colors hover:border-unjong-accent">
               {og.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={og.image} alt="" className="h-28 w-full object-cover" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
               ) : null}
               <div className="p-2.5">
-                <p className="line-clamp-1 text-xs font-semibold text-unjong-primary">{og.title || hostOf(a.homepage)}</p>
+                <p className="line-clamp-1 text-xs font-semibold text-unjong-primary">{og.title || hostOf(linkUrl)}</p>
                 {og.description ? <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-unjong-muted">{og.description}</p> : null}
-                <p className="mt-1 truncate text-[10px] text-unjong-muted">{og.siteName || hostOf(a.homepage)}</p>
+                <p className="mt-1 truncate text-[10px] text-unjong-muted">{og.siteName || hostOf(linkUrl)}</p>
               </div>
             </a>
           ) : null}
-          <a href={a.homepage} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
+          <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
             연결링크 바로가기 <ExternalLink size={13} />
           </a>
         </div>
       ) : null}
-      {a.biz_links && a.biz_links.length > 0 ? (
+      {!a.channel_id && a.biz_links && a.biz_links.length > 0 ? (
         <div className="mt-3 border-t border-unjong-border pt-3">
           <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-medium text-unjong-muted">
             업체 제공 <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] font-normal">업체가 직접 등록</span>
@@ -395,11 +407,11 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               <ul>
               {results.map((a, i) => {
                 const n = (page - 1) * PAGE_SIZE + i + 1;
-                const isSel = selected?.biz_no === a.biz_no;
+                const isSel = selected ? rowKey(selected) === rowKey(a) : false;
                 const ch = channelOf(a);
                 return (
-                  <Fragment key={a.biz_no}>
-                    {i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" label="○○리딩방" /></li> : null}
+                  <Fragment key={rowKey(a)}>
+                    {i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" /></li> : null}
                     <li
                     className={`group grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'

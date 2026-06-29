@@ -58,8 +58,9 @@ export default function Footer() {
           <div className="text-sm text-white/60">
             <p>상호명: 원트릴리언 | 대표자: 장은태 | 사업자등록번호: 210-39-33812 | 주소: 제주 서귀포시 동문로 55 2층</p>
           </div>
-          <div className="mt-6 border-t border-white/10 pt-4 text-center text-sm text-white/70">
-            &copy; 2026 Trillion. All rights reserved.
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-4 text-center text-sm text-white/70">
+            <span>&copy; 2026 Trillion. All rights reserved.</span>
+            <Link href="/admin/login" className="text-white/40 transition-colors hover:text-white/70">관리자</Link>
           </div>
         </div>
       </div>

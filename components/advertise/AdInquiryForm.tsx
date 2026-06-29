@@ -33,7 +33,8 @@ export default function AdInquiryForm({ defaultSlot = 'other' }: { defaultSlot?:
     e.preventDefault();
     setError('');
     if (!company.trim()) { setError('회사명을 입력해 주세요'); return; }
-    if (!email.trim() && !phone.trim()) { setError('이메일 또는 연락처 중 하나는 입력해 주세요'); return; }
+    if (!email.trim()) { setError('이메일을 입력해 주세요'); return; }
+    if (!phone.trim()) { setError('연락처를 입력해 주세요'); return; }
     setSubmitting(true);
     try {
       const r = await fetch('/api/advertise/inquiry', {
@@ -65,8 +66,8 @@ export default function AdInquiryForm({ defaultSlot = 'other' }: { defaultSlot?:
       </div>
       <Field label="회사명 *" value={company} onChange={setCompany} placeholder="예: ○○증권 / ○○리딩방" />
       <Field label="담당자" value={contactName} onChange={setContactName} placeholder="이름 (선택)" />
-      <Field label="이메일" value={email} onChange={setEmail} placeholder="you@company.com" type="email" />
-      <Field label="연락처" value={phone} onChange={setPhone} placeholder="010-0000-0000" />
+      <Field label="이메일 *" value={email} onChange={setEmail} placeholder="you@company.com" type="email" />
+      <Field label="연락처 *" value={phone} onChange={setPhone} placeholder="010-0000-0000" />
       <div>
         <label className="mb-1 block text-xs font-medium text-unjong-muted">문의 내용</label>
         <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={4} placeholder="노출 희망 위치·예산·기간 등 자유롭게 적어주세요." className="w-full resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />

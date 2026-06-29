@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
   const slot = SLOTS.includes(String(body.slot ?? "")) ? String(body.slot) : "other";
 
   if (!company) return NextResponse.json({ error: "회사명을 입력해 주세요" }, { status: 400 });
-  if (!email && !phone) return NextResponse.json({ error: "이메일 또는 연락처 중 하나는 입력해 주세요" }, { status: 400 });
+  if (!email) return NextResponse.json({ error: "이메일을 입력해 주세요" }, { status: 400 });
+  if (!phone) return NextResponse.json({ error: "연락처를 입력해 주세요" }, { status: 400 });
 
   // 광고주는 비로그인일 수 있음 — 로그인 필수 아님. 로그인 상태면 user.id 기록.
   const supabase = await createClient();

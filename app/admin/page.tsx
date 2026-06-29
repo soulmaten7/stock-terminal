@@ -4,6 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import AdminReports from '@/components/admin/AdminReports';
 import AdminBusinessClaims from '@/components/admin/AdminBusinessClaims';
 import AdminFssLookup from '@/components/admin/AdminFssLookup';
+import AdminAdInquiries from '@/components/admin/AdminAdInquiries';
+import AdminTabs from '@/components/admin/AdminTabs';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -11,6 +13,7 @@ export const metadata = { title: '트릴리언 관리자' };
 
 type Report = { id: number; target_name: string; reason: string; content: string | null; status: string; created_at: string };
 type BizClaim = { id: string; biz_no: string; company_name: string; representative: string | null; contact: string | null; nts_valid: string | null; start_dt: string | null; doc_signed: string | null; status: string; created_at: string };
+type AdInquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -51,28 +54,22 @@ export default async function AdminPage() {
     claims.push({ id: c.id as string, biz_no: c.biz_no as string, company_name: nameMap[c.biz_no as string] ?? (c.biz_no as string), representative: repMap[c.biz_no as string] ?? null, contact: (c.contact as string) ?? null, nts_valid: (c.nts_valid as string) ?? null, start_dt: (c.start_dt as string) ?? null, doc_signed, status: c.status as string, created_at: c.created_at as string });
   }
 
+  // 광고 문의(ad_inquiries)
+  const { data: inquiriesData } = await admin.from('ad_inquiries').select('*').order('created_at', { ascending: false }).limit(500);
+  const inquiries = (inquiriesData ?? []) as AdInquiry[];
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <h1 className="text-xl font-bold text-unjong-primary">트릴리언 관리자</h1>
-      <p className="mb-8 mt-1 text-sm text-unjong-muted">금감원 조회 · 신고 · 업체 인증 신청</p>
-
-      {/* 금감원 신고 조회 */}
-      <section className="mb-12">
-        <h2 className="mb-3 text-base font-bold text-unjong-primary">🔎 금감원 신고 조회 · 사업자번호로 등록 여부 확인</h2>
-        <AdminFssLookup />
-      </section>
-
-      {/* 신고 */}
-      <section className="mb-12">
-        <h2 className="mb-3 text-base font-bold text-unjong-primary">🚨 신고 ({reports.length})</h2>
-        <AdminReports initial={reports} />
-      </section>
-
-      {/* 업체 인증 신청(클레임) */}
-      <section>
-        <h2 className="mb-3 text-base font-bold text-unjong-primary">🛡 업체 인증 신청 ({claims.length}) · 서류 확인 후 승인하면 verified·게재</h2>
-        <AdminBusinessClaims initial={claims} />
-      </section>
+      <p className="mb-6 mt-1 text-sm text-unjong-muted">업체 클레임 · 신고 · 광고 문의 · 금감원 조회</p>
+      <AdminTabs
+        tabs={[
+          { key: 'claims', label: `업체 클레임 (${claims.length})`, node: <AdminBusinessClaims initial={claims} /> },
+          { key: 'reports', label: `신고 (${reports.length})`, node: <AdminReports initial={reports} /> },
+          { key: 'inquiries', label: `광고 문의 (${inquiries.length})`, node: <AdminAdInquiries initial={inquiries} /> },
+          { key: 'fss', label: '금감원 조회', node: <AdminFssLookup /> },
+        ]}
+      />
     </div>
   );
 }

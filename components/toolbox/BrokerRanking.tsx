@@ -13,7 +13,7 @@ export default function BrokerRanking({ hideHeader = false }: { hideHeader?: boo
     <section className="min-w-0 text-sm">
       {!hideHeader && <SectionHeader title="증권사" subtitle="거래대금순 · 최근 분기 근사치" />}
       <div>
-        <AdSlotRow slot="broker" label="○○증권" />
+        <AdSlotRow slot="broker" />
         {BROKERS.map((b, i) => (
           <Fragment key={b.rank}>
             <ListRow
@@ -23,7 +23,7 @@ export default function BrokerRanking({ hideHeader = false }: { hideHeader?: boo
               title={b.name}
               stat={b.share != null ? `${b.share}%` : undefined}
             />
-            {(i + 1) % AD_EVERY === 0 && i + 1 < BROKERS.length ? <AdSlotRow slot="broker" label="○○증권" /> : null}
+            {(i + 1) % AD_EVERY === 0 && i + 1 < BROKERS.length ? <AdSlotRow slot="broker" /> : null}
           </Fragment>
         ))}
       </div>
