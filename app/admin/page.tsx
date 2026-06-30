@@ -61,13 +61,19 @@ export default async function AdminPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <h1 className="text-xl font-bold text-unjong-primary">트릴리언 관리자</h1>
-      <p className="mb-6 mt-1 text-sm text-unjong-muted">업체 클레임 · 신고 · 광고 문의 · 금감원 조회</p>
+
+      {/* 금감원 조회 — 상시 검색 도구(탭 밖, 맨 위). 클레임 심사하며 바로 조회. */}
+      <section className="mb-6 mt-4">
+        <h2 className="mb-1.5 text-xs font-medium text-unjong-muted">🔎 금감원 신고 조회 (사업자번호·업체명)</h2>
+        <AdminFssLookup />
+      </section>
+
+      {/* 처리 큐 — 쌓이면 처리하는 작업함 */}
       <AdminTabs
         tabs={[
           { key: 'claims', label: `업체 클레임 (${claims.length})`, node: <AdminBusinessClaims initial={claims} /> },
           { key: 'reports', label: `신고 (${reports.length})`, node: <AdminReports initial={reports} /> },
           { key: 'inquiries', label: `광고 문의 (${inquiries.length})`, node: <AdminAdInquiries initial={inquiries} /> },
-          { key: 'fss', label: '금감원 조회', node: <AdminFssLookup /> },
         ]}
       />
     </div>

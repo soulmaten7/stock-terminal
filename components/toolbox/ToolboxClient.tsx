@@ -28,6 +28,11 @@ const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtu
 
 // 우측 피드가 붙는 탭 + 탭별 피드 컴포넌트
 const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf', 'ipo'];
+// 모바일 서브탭에서 '모아보기(피드)' 쪽 라벨 (링크 ↔ 피드 분리)
+const FEED_SUB_LABEL: Record<string, string> = {
+  news: '최신 뉴스', disclosure: '최신 공시', macro: '주요 지표',
+  analysis: '실적·재무 뉴스', research: '목표주가 뉴스', etf: 'ETF 뉴스', ipo: '청약 일정',
+};
 
 // 피드별 지원 국가 — 단일 'KR' 가드 대체. 점진 확장(뉴스·공시는 후속 STEP에서 US 추가).
 // 현재 macro만 US 개방(/api/macro/summary가 ECOS+FRED 둘 다 반환). 나머지는 KR 전용 유지.
@@ -72,13 +77,14 @@ export default function ToolboxClient({
   const { country, setCountry } = useCountryStore();
   const [categories, setCategories] = useState(initialCategories);
   const [activeTab, setActiveTab] = useState(TAB_ORDER[0]);
+  const [feedSub, setFeedSub] = useState<'links' | 'feed'>('links'); // 모바일 서브탭(링크/모아보기)
 
   // 새로고침해도 마지막 탭 유지 (국가는 useCountryStore persist가 담당)
   useEffect(() => {
     const t = localStorage.getItem('unjong_tab');
     if (t && TAB_ORDER.includes(t)) setActiveTab(t);
   }, []);
-  useEffect(() => { localStorage.setItem('unjong_tab', activeTab); }, [activeTab]);
+  useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('links'); }, [activeTab]);
 
   // 탭 = TAB_ORDER 순서. 현재 국가에 콘텐츠가 있는 탭만 표시.
   // - 특수탭(종목·상품·유튜브·리딩방) = 라이브 데이터(KRX·유튜브·금감원)라 한국 전용
@@ -172,24 +178,31 @@ export default function ToolboxClient({
             <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
           )
         ) : FEED_TABS.includes(activeTab) && feedSupports(activeTab, country) ? (
-          <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
-            <div className="min-w-0 flex-1">
-              {catLinks.length > 0 ? (
-                catLinks.map((link) => (
-                  <LinkCard
-                    key={link.id}
-                    link={link}
-                    isLoggedIn={isLoggedIn}
-                    onFavoriteToggle={handleFavoriteToggle}
-                  />
-                ))
-              ) : (
-                <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
-              )}
+          <div>
+            {/* 모바일 전용 서브탭 — 링크 ↔ 모아보기 (데스크탑은 2단이라 숨김) */}
+            <div className="mb-3 flex gap-1 lg:hidden">
+              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>링크</button>
+              <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{FEED_SUB_LABEL[activeTab] ?? '모아보기'}</button>
             </div>
-            <aside className="w-full shrink-0 lg:w-96">
-              {feedFor(activeTab, country)}
-            </aside>
+            <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
+              <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>
+                {catLinks.length > 0 ? (
+                  catLinks.map((link) => (
+                    <LinkCard
+                      key={link.id}
+                      link={link}
+                      isLoggedIn={isLoggedIn}
+                      onFavoriteToggle={handleFavoriteToggle}
+                    />
+                  ))
+                ) : (
+                  <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
+                )}
+              </div>
+              <aside className={`w-full shrink-0 lg:w-96 ${feedSub === 'feed' ? '' : 'hidden'} lg:block`}>
+                {feedFor(activeTab, country)}
+              </aside>
+            </div>
           </div>
         ) : catLinks.length === 0 ? (
           <Placeholder emoji="🗂️" title={`${cat?.label ?? ''} · ${countryLabel} 링크 준비 중`} />

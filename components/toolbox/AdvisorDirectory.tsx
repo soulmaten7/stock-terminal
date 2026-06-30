@@ -389,13 +389,23 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               ))}
             </ul>
           ) : results.length === 0 ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">
-              {searching
-                ? '검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.'
-                : view === 'verified'
-                ? '아직 인증된 리딩방이 없어요. 운영자가 본인 업체를 인증하면 여기에 표시됩니다.'
-                : '등록된 곳이 없습니다.'}
-            </p>
+            searching ? (
+              <p className="py-10 text-center text-sm text-unjong-muted">검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.</p>
+            ) : view === 'verified' ? (
+              <div className="mt-2 rounded-xl border border-unjong-border bg-unjong-surface p-6 text-center">
+                <p className="text-sm font-semibold text-unjong-primary">아직 인증된 리딩방이 없어요.</p>
+                <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-unjong-muted">본인 리딩방이세요? 금감원 유사투자자문 신고 + 운영자 인증을 마치면 <b className="text-unjong-accent">무료로 게재</b>돼요.</p>
+                <button
+                  type="button"
+                  onClick={() => { if (!isLoggedIn) { setLoginNotice(true); return; } router.push('/business'); }}
+                  className="mt-4 inline-flex items-center gap-1 rounded-lg bg-unjong-accent px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                >
+                  리딩방 등록·관리 <ChevronRight size={14} />
+                </button>
+              </div>
+            ) : (
+              <p className="py-10 text-center text-sm text-unjong-muted">등록된 곳이 없습니다.</p>
+            )
           ) : (
             <>
               <div className="grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-l-2 border-l-transparent border-b-unjong-border px-2 py-1.5 text-[11px] font-medium text-unjong-muted">
