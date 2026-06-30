@@ -1,7 +1,17 @@
 <!-- 2026-06-30 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-30 (최신) — STEP 466~468, HEAD `205c8ef` · 배포 ✓ onetrillion.app.** 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의. 최신은 이 블록.
+> 🆕 **2026-06-30 (최신) — STEP 469~472, HEAD `b741ead` · 배포 ✓ onetrillion.app.** 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선. 최신은 이 블록.
+> - **상태**: HEAD `b741ead` = origin/main = 라이브(STEP 422~472 전부 배포 완료). DB="Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **469**: 모든 리스트 맨 위 광고 제거(`AdvisorDirectory`·`BrokerRanking`·피드/일반 링크) → 10개마다(이후부터) 통일.
+> - **471**: 헤더 코인 탭 클릭 시 "준비 중이에요" 팝오버(항상 뜨던 뱃지 제거, `coinOpen`+`coinRef`+outside-click).
+> - **472**: TAB_ORDER `exchange`→`community` 앞, `CLUSTER_START` 상수, 탭바 묶음 구분선, `거래소`→`거래소·기관`.
+> - **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise) · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ Trillion AI 전망.
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-30) · 정책 **`docs/ROADMAP.md` §3**.
+>
+> ⬇️ (아래 STEP 466~468 블록은 직전 작업.)
+
+> 🆕 **2026-06-30 — STEP 466~468, HEAD `205c8ef` · 배포 ✓ onetrillion.app.** 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의. 최신은 이 블록.
 > - **상태**: HEAD `205c8ef` = origin/main = 라이브(STEP 422~468 전부 배포 완료). DB="Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **466·467**: 종목·상품 표(KR/US) 데스크탑 행 클릭 → 1일~1년 수익률 가로 패노라마(아코디언·모바일은 하단 시트) + 표 10행마다 광고(`slot=broker`).
 > - **468**: 유튜브 10개마다 / 피드 링크·커뮤니티·거래소 맨 위+10개마다 광고 + 새 `feed`(콘텐츠 피드) 슬롯(`AdSlotRow`·`AdInquiryForm`·`/advertise`).

@@ -3,7 +3,17 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-06-30 (최신) · 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의 (STEP 466~468, HEAD `205c8ef`, 배포 ✓ onetrillion.app) — 최신은 이 배너.**
+> 🟢 **2026-06-30 (최신) · 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선 (STEP 469~472, HEAD `b741ead`, 배포 ✓ onetrillion.app) — 최신은 이 배너.**
+> **한 줄: 전 리스트 맨 위 광고 제거(10개 이후만) + 헤더 코인 탭 클릭 시 팝오버(준비중 뱃지 제거) + 탭 5묶음 재정렬·거래소→거래소·기관·세로 구분선.**
+> - **🆕 최신 STEP = 472. HEAD = `b741ead`. 배포 = `onetrillion.app` 라이브**(STEP 422~472 전부 push·배포 완료, origin/main 최신). DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **STEP 469 — 광고 슬롯 맨위 제거**: `AdvisorDirectory`·`BrokerRanking`·피드/일반 링크 탭 맨 위 광고 제거 → **10개마다(이후부터)** 통일. `i > 0 &&` 가드 / `BROKERS.map()` 앞 `<AdSlotRow>` 제거.
+> - **STEP 471 — 헤더 코인 팝오버**: 항상 뜨던 "준비중" 뱃지 제거 → 코인 클릭 시만 "준비 중이에요" 팝오버. `coinOpen` state + `coinRef` + outside-click handler → `Header.tsx`. (STEP 470은 471로 대체됨.)
+> - **STEP 472 — 탭 5묶음 재정렬 + 구분선**: `TAB_ORDER`에서 `exchange`를 `community` 앞으로. `CLUSTER_START = new Set(['news', 'etf', 'exchange', 'community'])`. 탭바에 `Fragment`+`<span aria-hidden ...>` 묶음 구분선(뉴스·ETF·거래소·기관·커뮤니티 앞). `app/page.tsx` `거래소`→`거래소·기관`.
+> - **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise 눈으로) · ② Phase 2 결제 PG + 빌링 테이블(도메스틱 PG/글로벌 MoR) + 본인인증 · ③ Trillion AI 전망(Phase 5). ※ 결제 UI는 stub, 기능은 Phase 2a.
+>
+> ⬇️ **(아래 🟢 STEP 466~468 배너는 직전 세션 상태.)**
+
+> 🟢 **2026-06-30 · 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의 (STEP 466~468, HEAD `205c8ef`, 배포 ✓ onetrillion.app) — 직전 세션 상태.**
 > **한 줄: 종목·상품 표(KR/US) 데스크탑 행 클릭 → 1일~1년 수익률 가로 패노라마(모바일은 하단 시트) + 표 10행마다 광고 문의 행. 유튜브·피드·커뮤니티·거래소 리스트에도 광고 문의 슬롯 + 새 'feed'(콘텐츠 피드) 슬롯 신설.**
 > - **🆕 최신 STEP = 468. HEAD = `205c8ef`. 배포 = `onetrillion.app` 라이브**(STEP 422~468 전부 push·배포 완료, origin/main 최신). DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **STEP 466·467 — 수익률 패노라마 + 표 광고**: KR·US 종목·상품 표 데스크탑 행 클릭 → 1일~1년 수익률 가로 펼침(아코디언·재클릭 닫힘·`hidden lg:table-row`·`Fragment`), 모바일은 기존 하단 시트. 표 10행마다 `AdSlotRow slot="broker"`(페이지 마지막 행 뒤 생략).

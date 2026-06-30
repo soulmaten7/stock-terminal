@@ -1,6 +1,15 @@
 <!-- 2026-06-30 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-06-30 — STEP 469~472 · 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선
+
+HEAD `b741ead`. **배포 ✓ `onetrillion.app`**(STEP 422~472 전부 push·배포 완료, origin/main 최신). DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
+- **STEP 469 — 광고 슬롯 맨위 제거**: `AdvisorDirectory`·`BrokerRanking`·피드 링크·일반 링크 탭 **맨 위 광고 제거** → **10개마다(이후부터)** 패턴으로 통일. 첫 콘텐츠 바로 광고 없는 깔끔한 진입.
+- **STEP 470** — 헤더 코인 준비중 뱃지 스타일(471로 대체됨).
+- **STEP 471 — 헤더 코인 탭 팝오버**: "준비중" 항상 뜨던 뱃지 제거 → **코인 클릭 시만 "준비 중이에요" 팝오버**(바깥 클릭 닫힘). `coinOpen` state + `coinRef` + outside-click handler(`Header.tsx`).
+- **STEP 472 — 탭 5묶음 재정렬 + 거래소·기관 + 구분선**: TAB_ORDER에서 `exchange`를 `community` 앞으로(거래소·기관 묶음). `CLUSTER_START` 상수 + 탭바에 얇은 세로 **묶음 구분선**(뉴스·ETF·거래소·기관·커뮤니티 앞). `거래소` → **`거래소·기관`** 리네임(KRX+유관기관 포함). `app/page.tsx` 라벨 수정.
+- **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise) · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ Trillion AI 전망(Phase 5).
+
 ## 2026-06-30 — STEP 466~468 · 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의
 
 HEAD `205c8ef`. **배포 ✓ `onetrillion.app` 라이브**(STEP 422~468 전부 push·배포 완료, origin/main 최신). **종목·상품 표에 기간 수익률 인라인 펼침 + 모든 리스트 탭에 광고 문의 슬롯을 확장한 세션.** DB = "Trillion"(`ccbwxcszdoyjxvckedfp`).

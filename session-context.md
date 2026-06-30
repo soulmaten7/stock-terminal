@@ -2,6 +2,15 @@
 <!-- Last GC: 2026-06-30 (STEP 456~468 완료 — 채널 단위 게재 + /advertise + /admin + 결제 레일 §3 + 약관 정비 + 모바일 서브탭 + 수익률 패노라마 + 전 리스트 광고 슬롯. 배포 ✓ 205c8ef) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## (이어서 2026-06-30) STEP 469~472 — 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선 ✅
+
+HEAD `b741ead`. **배포 ✓ `onetrillion.app`**(STEP 422~472 전부 push·배포, origin/main 최신). DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **469**: `AdvisorDirectory`·`BrokerRanking`·피드/일반 링크 탭 맨 위 광고 제거 → 10개마다(이후부터) 통일.
+- **470**: 헤더 코인 뱃지(471로 대체).
+- **471**: 헤더 코인 탭 클릭 시 "준비 중이에요" 팝오버(`coinOpen`+`coinRef`+outside-click, `Header.tsx`).
+- **472**: TAB_ORDER `exchange`→`community` 앞으로, `CLUSTER_START` 상수, 탭바 묶음 구분선(Fragment+`span`), `거래소`→`거래소·기관`(app/page.tsx).
+- ▶ **다음**: 모바일 패스(리딩방·검증/business/advertise) · Phase 2 결제 PG+빌링 테이블+본인인증 · Trillion AI 전망.
+
 ## (이어서 2026-06-30) STEP 466~468 — 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의 ✅
 
 HEAD `205c8ef`. **배포 ✓ `onetrillion.app`**(STEP 422~468 전부 push·배포, origin/main 최신). DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
