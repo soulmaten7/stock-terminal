@@ -3,14 +3,14 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-06-30 (최신) · 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭 (STEP 462~465, 로컬 HEAD `e770a1b`, ⚠️미배포) — 최신은 이 배너.**
+> 🟢 **2026-06-30 (최신) · 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭 (STEP 462~465, 배포 ✓ onetrillion.app) — 최신은 이 배너.**
 > **한 줄: 구 자가등록 잔재 완전 삭제 + 약관 문구 정정, verified view 빈 상태 온보딩 CTA, /admin FSS 조회 상시화·탭 3개 정리, FEED_TABS 모바일 서브탭 [링크 | 모아보기] 추가(데스크탑 2단 그대로).**
-> - **🆕 최신 STEP = 465. 로컬 HEAD = `e770a1b`. ⚠️ origin/main = `939f12b`(=현재 라이브) — 로컬이 27커밋 앞섬(STEP 422~465 전부 미배포).** **배포 = `git push`(422~465 한 번에) → Vercel 자동 빌드.** DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **🆕 최신 STEP = 465. 배포 = `onetrillion.app` 라이브** (STEP 422~465 전부 push·배포 완료, origin/main 최신). 매 묶음 `git push` 시 Vercel 자동 빌드. DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **STEP 462 — 약관 정비 + 고아 파일 삭제**: 약관/개인정보 "자가등록"→"업체 인증(게재)" 정정. 구 자가등록 플로우 파일 4개 완전 삭제(RoomSubmitModal·rooms/submit·AdminSubmissions·admin/submissions).
 > - **STEP 463 — verified view 온보딩 CTA**: 인증 리딩방 탭 빈 상태 → "무료로 게재" 온보딩 카드 + "지금 등록하기" → /business.
 > - **STEP 464 — /admin 레이아웃 정리**: 금감원 조회를 탭 밖 상시 검색으로(제목 아래). 처리 큐 탭 3개[클레임·신고·광고 문의] — 금감원 탭 제거 + 부제목 제거.
 > - **STEP 465 — FEED_TABS 모바일 서브탭**: 뉴스·공시·거시·분석·리포트·ETF·공모주 7개 탭에 `lg:hidden` 서브탭 [링크 | {FEED_SUB_LABEL}] 추가. 탭 전환 시 '링크' 자동 리셋.
-> - **▶ 다음**: ① **배포(`git push` 422~465) + onetrillion.app 검증** · ② **Phase 2 결제 PG + 빌링 테이블 + 본인인증** · ③ Trillion AI 전망(Phase 5).
+> - **▶ 다음**: ① **모바일 패스 마저**(리딩방·검증/business/advertise) + onetrillion.app 462~465 반영 검증 · ② **Phase 2 결제 PG + 빌링 테이블(provider 무관: 도메스틱 PG/글로벌 MoR) + 본인인증** · ③ Trillion AI 전망(Phase 5). ※ 토스페이먼츠 빌링 가입 = 가입비 22만+연관리비 11만(나중에 결제), 결제 UI는 stub로 먼저.
 >
 > ⬇️ **(아래 🟢 STEP 456~461 배너는 직전 세션 상태.)**
 

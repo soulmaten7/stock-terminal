@@ -77,14 +77,14 @@ export default function ToolboxClient({
   const { country, setCountry } = useCountryStore();
   const [categories, setCategories] = useState(initialCategories);
   const [activeTab, setActiveTab] = useState(TAB_ORDER[0]);
-  const [feedSub, setFeedSub] = useState<'links' | 'feed'>('links'); // 모바일 서브탭(링크/모아보기)
+  const [feedSub, setFeedSub] = useState<'links' | 'feed'>('feed'); // 모바일 서브탭(모아보기 먼저)
 
   // 새로고침해도 마지막 탭 유지 (국가는 useCountryStore persist가 담당)
   useEffect(() => {
     const t = localStorage.getItem('unjong_tab');
     if (t && TAB_ORDER.includes(t)) setActiveTab(t);
   }, []);
-  useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('links'); }, [activeTab]);
+  useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('feed'); }, [activeTab]);
 
   // 탭 = TAB_ORDER 순서. 현재 국가에 콘텐츠가 있는 탭만 표시.
   // - 특수탭(종목·상품·유튜브·리딩방) = 라이브 데이터(KRX·유튜브·금감원)라 한국 전용
@@ -181,8 +181,8 @@ export default function ToolboxClient({
           <div>
             {/* 모바일 전용 서브탭 — 링크 ↔ 모아보기 (데스크탑은 2단이라 숨김) */}
             <div className="mb-3 flex gap-1 lg:hidden">
-              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>링크</button>
               <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{FEED_SUB_LABEL[activeTab] ?? '모아보기'}</button>
+              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>링크모음</button>
             </div>
             <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
               <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>
