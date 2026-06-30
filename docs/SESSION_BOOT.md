@@ -3,9 +3,20 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-06-30 (최신) · 광고·채널 수익 인프라(무료 티어) + /advertise 문의 + /admin 탭·게이트 (STEP 456~461, 로컬 HEAD `687263d`, ⚠️미배포) — 최신은 이 배너.**
+> 🟢 **2026-06-30 (최신) · 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭 (STEP 462~465, 로컬 HEAD `e770a1b`, ⚠️미배포) — 최신은 이 배너.**
+> **한 줄: 구 자가등록 잔재 완전 삭제 + 약관 문구 정정, verified view 빈 상태 온보딩 CTA, /admin FSS 조회 상시화·탭 3개 정리, FEED_TABS 모바일 서브탭 [링크 | 모아보기] 추가(데스크탑 2단 그대로).**
+> - **🆕 최신 STEP = 465. 로컬 HEAD = `e770a1b`. ⚠️ origin/main = `939f12b`(=현재 라이브) — 로컬이 27커밋 앞섬(STEP 422~465 전부 미배포).** **배포 = `git push`(422~465 한 번에) → Vercel 자동 빌드.** DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **STEP 462 — 약관 정비 + 고아 파일 삭제**: 약관/개인정보 "자가등록"→"업체 인증(게재)" 정정. 구 자가등록 플로우 파일 4개 완전 삭제(RoomSubmitModal·rooms/submit·AdminSubmissions·admin/submissions).
+> - **STEP 463 — verified view 온보딩 CTA**: 인증 리딩방 탭 빈 상태 → "무료로 게재" 온보딩 카드 + "지금 등록하기" → /business.
+> - **STEP 464 — /admin 레이아웃 정리**: 금감원 조회를 탭 밖 상시 검색으로(제목 아래). 처리 큐 탭 3개[클레임·신고·광고 문의] — 금감원 탭 제거 + 부제목 제거.
+> - **STEP 465 — FEED_TABS 모바일 서브탭**: 뉴스·공시·거시·분석·리포트·ETF·공모주 7개 탭에 `lg:hidden` 서브탭 [링크 | {FEED_SUB_LABEL}] 추가. 탭 전환 시 '링크' 자동 리셋.
+> - **▶ 다음**: ① **배포(`git push` 422~465) + onetrillion.app 검증** · ② **Phase 2 결제 PG + 빌링 테이블 + 본인인증** · ③ Trillion AI 전망(Phase 5).
+>
+> ⬇️ **(아래 🟢 STEP 456~461 배너는 직전 세션 상태.)**
+
+> 🟢 **2026-06-30 · 광고·채널 수익 인프라(무료 티어) + /advertise 문의 + /admin 탭·게이트 (STEP 456~461, 로컬 HEAD `687263d`) — 직전 작업 상태.**
 > **한 줄: 리딩방·검증을 '채널 단위 게재' 모델로 완성한 세션 — 인증 리딩방=채널 단위(무료 1채널 + 추가 ₩5만/월, 독립 행), /advertise 공개 문의 페이지, /admin 탭형+전용 로그인 게이트, 결제·빌링 레일(리딩방+AI 구독 공용)을 ROADMAP §3에 확정. 무료 티어는 풀로 작동, 결제 PG만 Phase 2.**
-> - **🆕 최신 STEP = 461. 로컬 HEAD = `687263d`. ⚠️ origin/main = `939f12b`(=현재 라이브) — 로컬이 26커밋 앞섬(STEP 422~461 전부 미배포).** 라이브 onetrillion.app엔 /advertise 등 새 라우트 없음(404 확인). **배포 = `git push`(422~461 한 번에) → Vercel 자동 빌드.** DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **🆕 최신 STEP = 461. 로컬 HEAD = `687263d`.**
 > - **채널 단위 디렉토리(STEP 456·459)**: 리딩방·검증 = 3뷰 탭 [금감원 등록업체 | 인증 리딩방 | 관심도순](각 ↕). **채널명 = 운영자 '인증'한 곳만**(✓UserCheck 뱃지). **인증 리딩방 뷰 = 채널 단위** — 활성 `business_links` 1개 = 독립 행(같은 업체명·다른 채널명, **교차연결 안 함** = 독립이 추가 결제 동기). `expires_at` 만료 필터(미결제→자동 비공개 절반 이미 구현). `api/advisors` verified 브랜치 채널 단위 + `AdvisorDirectory` `channel_*`·`rowKey`.
 > - **/advertise 광고 문의(STEP 457·460)**: 공개 페이지(2단: 슬롯[증권사/리딩방]+§3 정책 / 문의 폼) → `ad_inquiries` 저장(테이블 MCP 생성, RLS 서비스롤). 폼=이메일+전화 **둘 다 필수**. 광고 슬롯(증권사 `BrokerRanking`·리딩방 `AdvisorDirectory`)을 가짜 광고주 → **"광고 문의하기" CTA**(`AdSlotRow` /advertise?slot=) 맨위+10개마다. 진입점=슬롯·헤더 드롭다운·푸터.
 > - **/admin 탭형 + 게이트(STEP 458)**: `/admin`=탭 [업체 클레임 | 신고 | 광고 문의 | 금감원 조회](`AdminTabs`). 광고 문의 탭(`AdminAdInquiries`)=접수 목록+상태(신규/연락함/종료), **"연락함" 클릭=위치별 템플릿 mailto**(`api/admin/ad-inquiries` PATCH). **`/admin/login` 전용 게이트**(구글→`?next=/admin`→role 체크) + 헤더 드롭다운 관리자 제거 + 푸터 © 작은 관리자 링크.

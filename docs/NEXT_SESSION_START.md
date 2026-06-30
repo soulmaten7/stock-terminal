@@ -1,14 +1,25 @@
 <!-- 2026-06-30 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-30 (최신) — STEP 456~461, 로컬 HEAD `687263d`(⚠️미배포).** 채널 단위 게재 모델 + /advertise 문의 + /admin 탭·게이트 + 결제·빌링 레일(§3). 최신은 이 블록.
+> 🆕 **2026-06-30 (최신) — STEP 462~465, 로컬 HEAD `e770a1b`(⚠️미배포).** 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭. 최신은 이 블록.
+> - **상태**: 로컬 HEAD `e770a1b`. ⚠️ **origin/main=`939f12b`(=라이브) — STEP 422~465 미배포(27커밋 ahead).** **배포=`git push`(422~465 한 번에).** DB="Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **462**: 약관 "자가등록"→"업체 인증" 정정 + 구 자가등록 잔재 4파일 삭제(RoomSubmitModal·rooms/submit·AdminSubmissions·admin/submissions).
+> - **463**: 리딩방·검증 verified view 빈 상태 → 온보딩 CTA ("무료로 게재" → /business).
+> - **464**: /admin 금감원 조회 탭 밖 상시(제목 아래)·처리 큐 탭 3개[클레임·신고·광고 문의]·부제목 제거.
+> - **465**: FEED_TABS 7개 모바일 서브탭 [링크 | 모아보기] (데스크탑 `lg:hidden` 그대로, 탭 전환 시 '링크' 리셋, `FEED_SUB_LABEL`).
+> - **▶ 다음**: ① 배포(`git push` 422~465)+onetrillion.app 검증+크론 · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ Trillion AI 전망.
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-30) · 정책 **`docs/ROADMAP.md` §3**.
+>
+> ⬇️ (아래 2026-06-30 이전 블록은 직전 작업.)
+
+> 🆕 **2026-06-30 — STEP 456~461, 로컬 HEAD `687263d`(⚠️미배포).** 채널 단위 게재 모델 + /advertise 문의 + /admin 탭·게이트 + 결제·빌링 레일(§3). 최신은 이 블록.
 > - **상태**: 로컬 HEAD `687263d`. ⚠️ **origin/main=`939f12b`(=라이브) — STEP 422~461 미배포(26커밋 ahead).** /advertise 등 새 라우트는 라이브에 없음(404 확인). **배포=`git push`(422~461 한 번에).** DB="Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **채널 단위(456·459)**: 3뷰 탭(금감원 등록업체/인증 리딩방/관심도순), 채널명=인증한 곳만(✓), 인증 리딩방=채널 단위(독립 행·교차연결X·`expires_at` 만료필터).
 > - **/advertise(457·460)**: 공개 문의(슬롯+§3+폼)→`ad_inquiries`, 이메일+전화 필수, 광고 슬롯="광고 문의하기" CTA(맨위+10개마다).
 > - **/admin(458)**: 탭형 [클레임|신고|광고 문의|금감원 조회]+광고 문의(연락함=템플릿 mailto)+`/admin/login` 게이트+푸터 관리자.
 > - **운영자 UI(461)**: `/business` "게재 채널" 무료 1+추가 ₩5만/월 stub.
 > - **§3 결제·빌링 레일**: 리딩방+AI 구독 공용, 빌링키 정기결제→자동 게재/비공개, PG 토스·포트원 후보, 키=사용자·법률자문.
-> - **▶ 다음**: ① 배포(`git push` 422~461)+onetrillion.app 검증+크론 · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ 옛 자가등록 죽은코드 · ④ Trillion AI 전망.
+> - **▶ 다음**: ① 배포(`git push` 422~461)+onetrillion.app 검증+크론 · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ Trillion AI 전망.
 > - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-30) · 정책 **`docs/ROADMAP.md` §3**.
 >
 > ⬇️ (아래 2026-06-28 블록은 직전 작업.)
