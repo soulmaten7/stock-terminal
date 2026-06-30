@@ -1,8 +1,17 @@
 <!-- 2026-06-30 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-30 (최신) — STEP 462~465, 로컬 HEAD `e770a1b`(⚠️미배포).** 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭. 최신은 이 블록.
-> - **상태**: 로컬 HEAD `e770a1b`. ⚠️ **origin/main=`939f12b`(=라이브) — STEP 422~465 미배포(27커밋 ahead).** **배포=`git push`(422~465 한 번에).** DB="Trillion" `ccbwxcszdoyjxvckedfp`.
+> 🆕 **2026-06-30 (최신) — STEP 466~468, HEAD `205c8ef` · 배포 ✓ onetrillion.app.** 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의. 최신은 이 블록.
+> - **상태**: HEAD `205c8ef` = origin/main = 라이브(STEP 422~468 전부 배포 완료). DB="Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **466·467**: 종목·상품 표(KR/US) 데스크탑 행 클릭 → 1일~1년 수익률 가로 패노라마(아코디언·모바일은 하단 시트) + 표 10행마다 광고(`slot=broker`).
+> - **468**: 유튜브 10개마다 / 피드 링크·커뮤니티·거래소 맨 위+10개마다 광고 + 새 `feed`(콘텐츠 피드) 슬롯(`AdSlotRow`·`AdInquiryForm`·`/advertise`).
+> - **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise) · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ Trillion AI 전망.
+> - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-30) · 정책 **`docs/ROADMAP.md` §3**.
+>
+> ⬇️ (아래 STEP 462~465 블록은 직전 작업.)
+
+> 🆕 **2026-06-30 — STEP 462~465, HEAD `e770a1b` · 배포 ✓.** 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭. (직전 작업)
+> - **상태**: 배포 완료(`205c8ef`에 포함). DB="Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **462**: 약관 "자가등록"→"업체 인증" 정정 + 구 자가등록 잔재 4파일 삭제(RoomSubmitModal·rooms/submit·AdminSubmissions·admin/submissions).
 > - **463**: 리딩방·검증 verified view 빈 상태 → 온보딩 CTA ("무료로 게재" → /business).
 > - **464**: /admin 금감원 조회 탭 밖 상시(제목 아래)·처리 큐 탭 3개[클레임·신고·광고 문의]·부제목 제거.

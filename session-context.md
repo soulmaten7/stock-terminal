@@ -1,6 +1,14 @@
 <!-- 2026-06-30 -->
-<!-- Last GC: 2026-06-30 (STEP 456~465 완료 — 채널 단위 게재 모델 + /advertise 문의 + /admin 탭·게이트 + 결제·빌링 레일 §3 + 약관 정비 + 모바일 서브탭. ⚠️ STEP 422~465 미배포) -->
+<!-- Last GC: 2026-06-30 (STEP 456~468 완료 — 채널 단위 게재 + /advertise + /admin + 결제 레일 §3 + 약관 정비 + 모바일 서브탭 + 수익률 패노라마 + 전 리스트 광고 슬롯. 배포 ✓ 205c8ef) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## (이어서 2026-06-30) STEP 466~468 — 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의 ✅
+
+HEAD `205c8ef`. **배포 ✓ `onetrillion.app`**(STEP 422~468 전부 push·배포, origin/main 최신). DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **466·467**: KR·US 종목·상품 표 데스크탑 행 클릭 → 1일~1년 수익률 가로 패노라마(아코디언·재클릭 닫힘·`hidden lg:table-row`·`Fragment`), 모바일은 기존 하단 시트. 표 10행마다 `AdSlotRow slot="broker"`.
+- **468**: 유튜브 Top100 10개마다 / 피드 링크(뉴스·공시·리포트·거시·ETF·공모주)·커뮤니티·거래소 맨 위+10개마다 광고. 새 **`feed`(콘텐츠 피드) 슬롯** — `AdSlotRow` 타입·`AdInquiryForm` 옵션·`/advertise` 카드·화이트리스트.
+- **라이브 검증(Chrome MCP)**: KR 효성중공업 `+267.45%`·US BRK-A 패노라마, 표 10행마다 광고, 유튜브 10~90위·뉴스 맨 위 광고 — 정상.
+- ▶ **다음**: 모바일 패스(리딩방·검증/business/advertise) · Phase 2 결제 PG+빌링 테이블+본인인증 · Trillion AI 전망(Phase 5).
 
 ## (이어서 2026-06-30) STEP 462~465 — 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭 ✅
 

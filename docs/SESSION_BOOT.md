@@ -3,7 +3,17 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-06-30 (최신) · 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭 (STEP 462~465, 배포 ✓ onetrillion.app) — 최신은 이 배너.**
+> 🟢 **2026-06-30 (최신) · 종목·상품 수익률 패노라마 + 전 리스트 10개마다 광고 문의 (STEP 466~468, HEAD `205c8ef`, 배포 ✓ onetrillion.app) — 최신은 이 배너.**
+> **한 줄: 종목·상품 표(KR/US) 데스크탑 행 클릭 → 1일~1년 수익률 가로 패노라마(모바일은 하단 시트) + 표 10행마다 광고 문의 행. 유튜브·피드·커뮤니티·거래소 리스트에도 광고 문의 슬롯 + 새 'feed'(콘텐츠 피드) 슬롯 신설.**
+> - **🆕 최신 STEP = 468. HEAD = `205c8ef`. 배포 = `onetrillion.app` 라이브**(STEP 422~468 전부 push·배포 완료, origin/main 최신). DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
+> - **STEP 466·467 — 수익률 패노라마 + 표 광고**: KR·US 종목·상품 표 데스크탑 행 클릭 → 1일~1년 수익률 가로 펼침(아코디언·재클릭 닫힘·`hidden lg:table-row`·`Fragment`), 모바일은 기존 하단 시트. 표 10행마다 `AdSlotRow slot="broker"`(페이지 마지막 행 뒤 생략).
+> - **STEP 468 — 다른 탭 광고 + 'feed' 슬롯**: 유튜브 10개마다 / 피드 링크·커뮤니티·거래소 맨 위+10개마다. 새 `feed`(콘텐츠 피드) 슬롯 — `AdSlotRow` 타입·`AdInquiryForm` 옵션·`/advertise` 카드 3번째·URL 화이트리스트.
+> - **라이브 검증(Chrome MCP)**: KR 효성중공업 `+267.45%`·US BRK-A 패노라마, 표 10행마다 광고 4개/페이지, 유튜브 10~90위(100 뒤 생략)·뉴스 맨 위 광고 — 정상.
+> - **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise 눈으로) · ② Phase 2 결제 PG + 빌링 테이블(도메스틱 PG/글로벌 MoR) + 본인인증 · ③ Trillion AI 전망(Phase 5). ※ 결제 UI는 stub, 기능은 Phase 2a.
+>
+> ⬇️ **(아래 🟢 STEP 462~465 배너는 직전 세션 상태.)**
+
+> 🟢 **2026-06-30 · 약관 정비·빈 상태 CTA·관리자 UX·모바일 서브탭 (STEP 462~465, 배포 ✓ onetrillion.app) — 직전 세션 상태.**
 > **한 줄: 구 자가등록 잔재 완전 삭제 + 약관 문구 정정, verified view 빈 상태 온보딩 CTA, /admin FSS 조회 상시화·탭 3개 정리, FEED_TABS 모바일 서브탭 [링크 | 모아보기] 추가(데스크탑 2단 그대로).**
 > - **🆕 최신 STEP = 465. 배포 = `onetrillion.app` 라이브** (STEP 422~465 전부 push·배포 완료, origin/main 최신). 매 묶음 `git push` 시 Vercel 자동 빌드. DB = "Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **STEP 462 — 약관 정비 + 고아 파일 삭제**: 약관/개인정보 "자가등록"→"업체 인증(게재)" 정정. 구 자가등록 플로우 파일 4개 완전 삭제(RoomSubmitModal·rooms/submit·AdminSubmissions·admin/submissions).
