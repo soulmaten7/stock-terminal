@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
+import AdSlotRow from './AdSlotRow';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
 import MarketBoard from './MarketBoard';
@@ -187,14 +188,19 @@ export default function ToolboxClient({
             <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
               <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>
                 {catLinks.length > 0 ? (
-                  catLinks.map((link) => (
-                    <LinkCard
-                      key={link.id}
-                      link={link}
-                      isLoggedIn={isLoggedIn}
-                      onFavoriteToggle={handleFavoriteToggle}
-                    />
-                  ))
+                  <>
+                    <AdSlotRow slot="feed" />
+                    {catLinks.map((link, i) => (
+                      <Fragment key={link.id}>
+                        <LinkCard
+                          link={link}
+                          isLoggedIn={isLoggedIn}
+                          onFavoriteToggle={handleFavoriteToggle}
+                        />
+                        {(i + 1) % 10 === 0 && i + 1 < catLinks.length ? <AdSlotRow slot="feed" /> : null}
+                      </Fragment>
+                    ))}
+                  </>
                 ) : (
                   <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
                 )}
@@ -209,13 +215,16 @@ export default function ToolboxClient({
         ) : (
           <div className="flex gap-4">
             <div className="min-w-0 flex-1">
-              {catLinks.map((link) => (
-                <LinkCard
-                  key={link.id}
-                  link={link}
-                  isLoggedIn={isLoggedIn}
-                  onFavoriteToggle={handleFavoriteToggle}
-                />
+              <AdSlotRow slot="feed" />
+              {catLinks.map((link, i) => (
+                <Fragment key={link.id}>
+                  <LinkCard
+                    link={link}
+                    isLoggedIn={isLoggedIn}
+                    onFavoriteToggle={handleFavoriteToggle}
+                  />
+                  {(i + 1) % 10 === 0 && i + 1 < catLinks.length ? <AdSlotRow slot="feed" /> : null}
+                </Fragment>
               ))}
             </div>
           </div>

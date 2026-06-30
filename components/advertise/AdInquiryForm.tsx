@@ -6,6 +6,7 @@ import SelectDropdown from '@/components/toolbox/SelectDropdown';
 const SLOT_OPTIONS = [
   { value: 'broker', label: '증권사 슬롯 (종목·상품)' },
   { value: 'room', label: '리딩방 슬롯 (리딩방·검증)' },
+  { value: 'feed', label: '콘텐츠 피드 (뉴스·리포트·유튜브 등)' },
   { value: 'other', label: '기타 · 일반 문의' },
 ];
 

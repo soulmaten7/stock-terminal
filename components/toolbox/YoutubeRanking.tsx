@@ -1,6 +1,8 @@
 'use client';
 
+import { Fragment } from 'react';
 import ListRow from './ListRow';
+import AdSlotRow from './AdSlotRow';
 
 export type YtChannel = {
   rank: number;
@@ -34,17 +36,19 @@ export default function YoutubeRanking({ channels }: { channels: YtChannel[] }) 
         <p className="border-b border-unjong-border px-1 py-2.5 text-[11px] text-unjong-muted">{weekLabel} 기준 · 매주 자동 갱신</p>
       ) : null}
       <div>
-        {channels.map((c) => (
-          <ListRow
-            key={c.rank}
-            href={c.channel_url}
-            rank={c.rank}
-            iconUrl={c.thumbnail_url}
-            iconRound
-            title={c.title}
-            meta={c.description ?? ''}
-            stat={fmtSubs(c.subscriber_count)}
-          />
+        {channels.map((c, i) => (
+          <Fragment key={c.rank}>
+            <ListRow
+              href={c.channel_url}
+              rank={c.rank}
+              iconUrl={c.thumbnail_url}
+              iconRound
+              title={c.title}
+              meta={c.description ?? ''}
+              stat={fmtSubs(c.subscriber_count)}
+            />
+            {(i + 1) % 10 === 0 && i + 1 < channels.length ? <AdSlotRow slot="feed" /> : null}
+          </Fragment>
         ))}
       </div>
     </section>

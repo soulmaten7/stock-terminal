@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 
 // 광고 슬롯 — 미니멀 CTA. '광고 문의하기'만.
-export default function AdSlotRow({ slot }: { slot: 'broker' | 'room' }) {
+export default function AdSlotRow({ slot }: { slot: 'broker' | 'room' | 'feed' }) {
   return (
     <Link
       href={`/advertise?slot=${slot}`}

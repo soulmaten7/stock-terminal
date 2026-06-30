@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import BrokerRanking from './BrokerRanking';
+import AdSlotRow from './AdSlotRow';
 
 type Row = {
   symbol: string;
@@ -337,7 +338,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               </thead>
               <tbody>
                 {paginated.map((r, i) => (
-                  <tr key={r.symbol} onClick={() => setSelectedStock(r)} className="cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background">
+                  <Fragment key={r.symbol}>
+                  <tr onClick={() => setSelectedStock((s) => (s?.symbol === r.symbol ? null : r))} className={`cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background ${selectedStock?.symbol === r.symbol ? 'bg-unjong-background' : ''}`}>
                     <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex min-w-0 items-center gap-2.5">
@@ -358,6 +360,34 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </button>
                     </td>
                   </tr>
+                  {/* 데스크탑 전용: 행 클릭 시 1일~1년 수익률 패노라마 펼침(모바일은 하단 시트가 대신) */}
+                  {selectedStock?.symbol === r.symbol ? (
+                    <tr className="hidden border-b border-unjong-border bg-unjong-background/50 lg:table-row">
+                      <td colSpan={5} className="px-4 py-3">
+                        <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
+                          <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
+                          {([
+                            ['1일전', r.changePercent],
+                            ['1주일전', r.r1w],
+                            ['1개월전', r.r1m],
+                            ['3개월전', r.r3m],
+                            ['6개월전', r.r6m],
+                            ['1년전', r.r1y],
+                          ] as [string, number | null | undefined][]).map(([label, v]) => (
+                            <div key={label} className="flex min-w-[3.5rem] flex-col">
+                              <span className="text-[11px] text-unjong-muted">{label}</span>
+                              <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null}
+                  {/* 10행마다 광고 문의 행 (증권사 사이드바와 동일 패턴, 페이지 마지막 행 뒤엔 생략) */}
+                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
+                    <tr><td colSpan={5} className="p-0"><AdSlotRow slot="broker" /></td></tr>
+                  ) : null}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
