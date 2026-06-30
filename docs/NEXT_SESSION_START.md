@@ -6,7 +6,9 @@
 > - **469**: 모든 리스트 맨 위 광고 제거(`AdvisorDirectory`·`BrokerRanking`·피드/일반 링크) → 10개마다(이후부터) 통일.
 > - **471**: 헤더 코인 탭 클릭 시 "준비 중이에요" 팝오버(항상 뜨던 뱃지 제거, `coinOpen`+`coinRef`+outside-click).
 > - **472**: TAB_ORDER `exchange`→`community` 앞, `CLUSTER_START` 상수, 탭바 묶음 구분선, `거래소`→`거래소·기관`.
-> - **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise) · ② Phase 2 결제 PG+빌링 테이블+본인인증 · ③ Trillion AI 전망.
+> - **🔗 링크 풀충전(MCP 직접·git 아님)**: KR `link_hub` 73→**138**(전 카테고리 2배+, 빈 탭 다 채움). US **67**(아직 미충전 → 다음 작업). ⚠️ 마이그레이션 아님.
+> - **📱 모바일 패스 완료**: Chrome MCP 라이브 점검 OK → AI·광고 빼면 KR 베타 가능 판단.
+> - **▶ 다음**: ① **US 링크 풀충전**(KR 138 수준) · ② Phase 2 결제 PG+빌링+본인인증 · ③ Trillion AI 전망. (모바일=완료.)
 > - 상세 **`docs/SESSION_BOOT.md`(최우선)** · `docs/CHANGELOG.md`(2026-06-30) · 정책 **`docs/ROADMAP.md` §3**.
 >
 > ⬇️ (아래 STEP 466~468 블록은 직전 작업.)

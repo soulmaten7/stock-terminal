@@ -9,7 +9,9 @@
 > - **STEP 469 — 광고 슬롯 맨위 제거**: `AdvisorDirectory`·`BrokerRanking`·피드/일반 링크 탭 맨 위 광고 제거 → **10개마다(이후부터)** 통일. `i > 0 &&` 가드 / `BROKERS.map()` 앞 `<AdSlotRow>` 제거.
 > - **STEP 471 — 헤더 코인 팝오버**: 항상 뜨던 "준비중" 뱃지 제거 → 코인 클릭 시만 "준비 중이에요" 팝오버. `coinOpen` state + `coinRef` + outside-click handler → `Header.tsx`. (STEP 470은 471로 대체됨.)
 > - **STEP 472 — 탭 5묶음 재정렬 + 구분선**: `TAB_ORDER`에서 `exchange`를 `community` 앞으로. `CLUSTER_START = new Set(['news', 'etf', 'exchange', 'community'])`. 탭바에 `Fragment`+`<span aria-hidden ...>` 묶음 구분선(뉴스·ETF·거래소·기관·커뮤니티 앞). `app/page.tsx` `거래소`→`거래소·기관`.
-> - **▶ 다음**: ① 모바일 패스(리딩방·검증/business/advertise 눈으로) · ② Phase 2 결제 PG + 빌링 테이블(도메스틱 PG/글로벌 MoR) + 본인인증 · ③ Trillion AI 전망(Phase 5). ※ 결제 UI는 stub, 기능은 Phase 2a.
+> - **🔗 링크 허브 풀충전 (MCP 직접 — git/마이그레이션 아님!)**: KR `link_hub` **73→138개**(전 10개 카테고리 2배+, 빈 탭 다 채움·도메인 웹검색 검증). ⚠️ **DB 직접 입력이라 코드/마이그레이션엔 없음.** **US는 67개(아직 미충전 → 다음 작업).** 원칙="추리지 말고 다 넣는다(허브=수집)".
+> - **📱 모바일 패스 완료**: Chrome MCP 라이브 점검(종목·푸터·피드·리딩방·링크) 깨짐 없음 → AI·광고 빼면 **KR 탭 베타 출시 가능 수준**.
+> - **▶ 다음**: ① **US 링크 풀충전**(KR 수준 138개로) · ② Phase 2 결제 PG + 빌링 테이블(도메스틱 PG/글로벌 MoR) + 본인인증 · ③ Trillion AI 전망(Phase 5). (모바일 패스=완료.) ※ 결제 UI는 stub, 기능은 Phase 2a.
 >
 > ⬇️ **(아래 🟢 STEP 466~468 배너는 직전 세션 상태.)**
 
