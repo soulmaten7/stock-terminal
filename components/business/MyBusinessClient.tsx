@@ -163,15 +163,15 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
 
       {/* ── 업체 제공 링크 ── */}
       <label className="mb-1 flex flex-wrap items-center gap-1.5 text-xs font-medium text-unjong-muted">
-        업체 제공 링크 <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] font-normal">업체가 직접 등록</span>
+        게재 채널 <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] font-normal">리딩방·검증 &gt; 인증 리딩방에 노출</span>
       </label>
       <ul className="mb-2 space-y-1.5">
-        {biz.links.length === 0 ? <li className="text-xs text-unjong-muted">아직 등록한 링크가 없어요. 무료 링크 1개를 등록할 수 있어요.</li> : null}
+        {biz.links.length === 0 ? <li className="text-xs text-unjong-muted">아직 등록한 채널이 없어요. 무료 채널 1개를 등록하면 인증 리딩방에 노출돼요.</li> : null}
         {biz.links.map((l) => (
           <li key={l.id} className="flex items-center gap-2 rounded-lg border border-unjong-border px-3 py-2 text-sm">
             <span className="shrink-0 rounded bg-unjong-background px-1.5 py-0.5 text-[11px] font-medium text-unjong-muted">{TYPE_LABEL[l.type] ?? l.type}</span>
             {l.is_paid
-              ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-600">광고</span>
+              ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-600">유료</span>
               : <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600">무료</span>}
             <span className="min-w-0 flex-1 truncate text-unjong-primary">{l.label || l.url}</span>
             <a href={l.url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-unjong-muted hover:text-unjong-accent"><ExternalLink size={14} /></a>
@@ -184,29 +184,29 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
       {canAddFree ? (
         addOpen ? (
           <div className="mb-4 space-y-1.5 rounded-lg border border-unjong-border p-3">
+            <input value={lLabel} onChange={(e) => setLLabel(e.target.value)} maxLength={60} placeholder="채널명 (예: ○○ 무료방)" className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
             <div className="flex gap-2">
               <select value={lType} onChange={(e) => setLType(e.target.value)} className="shrink-0 rounded-lg border border-unjong-border bg-unjong-surface px-2 py-2 text-sm text-unjong-primary outline-none" style={{ colorScheme: 'light' }}>
                 {TYPE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
-              <input value={lUrl} onChange={(e) => { setLUrl(e.target.value); setLErr(''); }} placeholder="https://… 링크 주소" className="min-w-0 flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
+              <input value={lUrl} onChange={(e) => { setLUrl(e.target.value); setLErr(''); }} placeholder="https://… 채널 링크" className="min-w-0 flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
             </div>
-            <input value={lLabel} onChange={(e) => setLLabel(e.target.value)} maxLength={60} placeholder="표시 이름 (선택)" className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
             {lErr ? <p className="text-xs text-red-500">{lErr}</p> : null}
             <div className="flex gap-2">
-              <button type="button" onClick={addFreeLink} disabled={lBusy} className="flex-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white disabled:opacity-50">{lBusy ? '등록…' : '무료 링크 등록'}</button>
+              <button type="button" onClick={addFreeLink} disabled={lBusy} className="flex-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white disabled:opacity-50">{lBusy ? '등록…' : '무료 채널 등록'}</button>
               <button type="button" onClick={() => { setAddOpen(false); setLErr(''); }} className="shrink-0 rounded-lg border border-unjong-border px-3 py-2 text-sm text-unjong-muted">취소</button>
             </div>
           </div>
         ) : (
           <button type="button" onClick={() => setAddOpen(true)} className="mb-4 flex w-full items-center justify-center gap-1.5 rounded-lg border border-unjong-accent py-2 text-sm font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white">
-            <Plus size={14} /> 링크 추가 <span className="text-[11px]">(무료 · 1개)</span>
+            <Plus size={14} /> 채널 추가 <span className="text-[11px]">(무료 · 1개)</span>
           </button>
         )
       ) : payNote ? (
-        <p className="mb-4 rounded-lg border border-dashed border-unjong-accent/40 bg-unjong-accent/5 px-3 py-2.5 text-center text-xs leading-relaxed text-unjong-muted">추가 링크 결제 기능 <b className="text-unjong-accent">준비 중</b>이에요 — 곧 링크당 광고(유료)로 게재할 수 있어요.</p>
+        <p className="mb-4 rounded-lg border border-dashed border-unjong-accent/40 bg-unjong-accent/5 px-3 py-2.5 text-center text-xs leading-relaxed text-unjong-muted">추가 채널은 <b className="text-unjong-accent">채널당 월 5만원</b>이에요. 결제 기능 <b className="text-unjong-accent">준비 중</b> — 결제하면 자동 게재, 미결제 시 자동 비공개됩니다.</p>
       ) : (
         <button type="button" onClick={() => setPayNote(true)} className="mb-4 flex w-full items-center justify-center gap-1.5 rounded-lg border border-unjong-accent py-2 text-sm font-semibold text-unjong-accent transition-colors hover:bg-unjong-accent hover:text-white">
-          <Plus size={14} /> 링크 추가 <span className="text-[11px]">(광고 · 유료 · 링크당)</span>
+          <Plus size={14} /> 채널 추가 <span className="text-[11px]">(₩5만/월 · 채널당)</span>
         </button>
       )}
 

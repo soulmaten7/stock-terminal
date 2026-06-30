@@ -1,5 +1,16 @@
-<!-- 2026-06-28 -->
+<!-- 2026-06-30 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-06-30 — STEP 456~461 · 채널 단위 게재 모델 + /advertise 문의 + /admin 탭·게이트 + 결제·빌링 레일(§3)
+
+로컬 HEAD `687263d`(STEP 461). ⚠️ **origin/main=`939f12b`(=현재 라이브) — STEP 422~461 전부 미배포(로컬 26커밋 ahead).** **리딩방·검증을 '채널 단위 게재' 모델로 완성하고 광고 문의·관리자 동선·결제 레일을 확정한 세션.** DB = "Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **채널 단위 디렉토리(456·459)**: 리딩방·검증=3뷰 탭 [금감원 등록업체 | 인증 리딩방 | 관심도순](각 ↕). 채널명=운영자 '인증'한 곳만(✓UserCheck 뱃지). 인증 리딩방 뷰=**채널 단위**(활성 `business_links` 1개=독립 행, 같은 업체명·다른 채널명, 교차연결 X). `expires_at` 만료 필터. `api/advisors` verified 채널 브랜치 + `AdvisorDirectory` `channel_*`·`rowKey`.
+- **/advertise 광고 문의(457·460)**: 공개 페이지(2단: 슬롯[증권사/리딩방]+§3 정책 / 폼)→`ad_inquiries`(테이블 MCP 생성, RLS 서비스롤). 폼=이메일+전화 **둘 다 필수**. 광고 슬롯(증권사·리딩방)→"광고 문의하기" CTA(`AdSlotRow`, /advertise?slot=, 맨위+10개마다). 진입점=슬롯·헤더 드롭다운·푸터.
+- **/admin 탭+게이트(458)**: 탭 [업체 클레임 | 신고 | 광고 문의 | 금감원 조회](`AdminTabs`). 광고 문의 탭(`AdminAdInquiries`)=목록+상태(신규/연락함/종료), "연락함"=위치별 템플릿 **mailto**(`api/admin/ad-inquiries` PATCH). `/admin/login` 전용 게이트(구글→`?next=/admin`→role) + 헤더 드롭다운 관리자 제거 + 푸터 © 작은 관리자 링크.
+- **운영자 채널 UI(461)**: `/business`>내 업체 관리=**"게재 채널"**(링크→채널 용어), 채널명 우선 입력, 무료 1채널 + 추가="채널당 월 5만원·결제하면 자동 게재/미결제 자동 비공개"(Phase 2 stub). 유료 뱃지 '광고'→'유료'(추가 채널=게재지 광고 아님).
+- **🗺️ ROADMAP §3 추가**: 게재 가격 모델(무료 1채널/추가 ₩5만·채널 단위) + **결제·빌링 레일**(리딩방 게재 + AI 구독 **공용**, 빌링키 정기결제→성공 webhook=`expires_at` 연장/실패=자동 비공개, PG 후보 토스페이먼츠 빌링·포트원, ⚠️ PG 키=사용자(.env)·수취 전 법률자문+통신판매업 신고+약관+환불·세금). 단계: 지금 무료/Phase 2 PG/Phase 5 AI.
+- **DB(MCP·git 아님)**: `ad_inquiries` 신규(RLS 서비스롤). **테스트 데이터 전부 정리**(business_members/links/claims·ad_inquiries=0; link_previews 999·fss_advisors 1804 실데이터 유지). soulmaten7 admin.
+- ▶ **다음 후보**: ① 배포(`git push` 422~461) + onetrillion.app 검증 + fss-advisors 크론 확인 · ② Phase 2 결제 PG + 빌링 테이블 + 본인인증 · ③ 옛 자가등록 죽은코드 정리 · ④ Trillion AI 전망(Phase 5).
 
 ## 2026-06-28 — STEP 422~455 · 리딩방·검증 MVP 2.0(클레임·인증·광고 + OG 프리뷰 + 표형 디렉토리) + ROADMAP §3 정책 + 관리자·운영자 동선 정리
 
