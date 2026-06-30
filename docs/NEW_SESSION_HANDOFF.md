@@ -1,0 +1,153 @@
+<!-- 2026-06-30 -->
+# 🚀 Trillion(트릴리언) — 새 세션 시작 핸드오프
+
+> **이 파일 하나만 읽으면 새 세션이 바로 업무 가능하도록 만든 완전 자급형 문서.**
+> 더 깊은 히스토리 = `docs/SESSION_BOOT.md`(배너 누적) · `docs/CHANGELOG.md` · 정책 = `docs/ROADMAP.md` §3.
+> **갱신 시점: 2026-06-30 · HEAD `b741ead`(STEP 472) · 배포 ✓ onetrillion.app 라이브.**
+
+---
+
+## 1. Trillion이 뭔가 (정체성 — 최신)
+
+- **사업자**: 원트릴리언 · 대표 **장은태** · 사업자번호 **210-39-33812** · 도메인 **onetrillion.app** · 문의 contact@onetrillion.app.
+- **본질 (2026-06 갱신)** = ① **흩어진 금융정보를 한눈에** (정보 애그리게이션 허브) + ② **AI 기반 구독** (Phase 5, 아직 미착수 — 장기 메인 수익).
+- ⚠️ **옛 "투자상품에 안 속게 돕는 신뢰" 정체성은 폐기됨.** 신뢰·검증(리딩방·검증 탭)은 여러 정보 surface 중 하나일 뿐, 더 이상 중심축 아님.
+- **거래 X** (정보·허브·링크 연결만). **대화/토론도 전면 제거됨**(다시 넣지 말 것).
+- 디자인 = 미드나잇 `#0E1116` + 민트 `#2DD4BF`. 코드 식별자는 `unjong-*`(리브랜드 전 잔재, 유지).
+
+## 2. 지금 상태 (2026-06-30)
+
+- 최신 코드 **HEAD `b741ead` = STEP 472**, 그 위 문서 커밋 = origin/main 동기화 완료. **배포 ✓ onetrillion.app 라이브**(STEP 422~472 전부 push·배포).
+- **AI·광고를 빼고 보면 KR(한국) 탭 = 베타 출시 가능 수준**(이번 세션 라이브 점검·판단). 모바일 패스도 완료.
+
+## 3. 아키텍처 / 스택
+
+- **Next.js 16 App Router** (Turbopack, dev 포트 **3333**) · **Tailwind v4** · **Zustand**(`countryStore`·`authStore`).
+- **Supabase** = `@supabase/ssr`, 프로젝트 **"Trillion" `ccbwxcszdoyjxvckedfp`** (ap-northeast-2). server/browser client + admin client(SERVICE_ROLE, RLS 우회).
+  - ⚠️ **POTAL ref `zyurflkhiregundhisky`는 절대 금지** (다른 프로젝트). 구 `qxkmwlkchyxfzxbonhtj`("OT-Marketing")도 폐기.
+- **Vercel 크론**(`vercel.json`): `fss-advisors`(매일 19시 UTC — 금감원 신고 갱신, "매일 갱신" 근거) · `youtube-refresh`(주간) · `us-perf`(매일 22시 UTC — US 기간 수익률 미리계산).
+- **홈(`/`)** = `app/page.tsx`(서버, `force-dynamic`) → `ToolboxClient` 게이트웨이. 국가 토글(KR/US) + 세부 탭.
+- 로그인 = 구글 OAuth(Supabase). `/admin` 별도 로그인 게이트(`/admin/login`, role 체크).
+
+## 4. KR 탭 구조 (5묶음 · 13 세부탭)
+
+탭바(`TAB_ORDER` in `ToolboxClient.tsx`), 묶음 사이 세로 구분선(`CLUSTER_START`):
+
+| 묶음 | 탭 |
+|------|-----|
+| 📊 시세·데이터 | 종목·상품 · 차트·시세 |
+| 📰 정보·분석 | 뉴스 · 공시·신용 · 리포트 · 기업·재무 · 거시경제 |
+| 💼 상품 | ETF·펀드 · 공모주·배당 |
+| 🏛 거래소·기관 | 거래소·기관 |
+| 👥 사람·의견 | 커뮤니티 · 유튜브 · 리딩방·검증 |
+
+- **헤더 자산군 탭**: `주식`(활성) · `코인`(준비중 — 클릭 시 "준비 중이에요" 팝오버, 페이지 이동 X). 거대 금융 플랫폼 확장 자리 예약.
+- 특수탭(종목·상품·유튜브·리딩방)=라이브 데이터라 라벨이 코드(`SPECIAL_LABELS`). 나머지=`app/page.tsx` `CATEGORY_LABELS`.
+- 종목·상품: KRX 실데이터 ~2,600 + 정렬·검색·페이지네이션·관심⭐ + **데스크탑 행 클릭 → 1일~1년 수익률 패노라마**(모바일=하단 시트).
+- 피드 탭(뉴스·공시·리포트·기업재무·거시·ETF·공모주): 좌 큐레이션 링크 + 우 라이브 피드. 모바일은 서브탭 `[모아보기 | 링크모음]`.
+
+## 5. DB 데이터 현황
+
+- **`link_hub`**: **KR 138 · US 67.** ⚠️ **MCP 직접 insert로 채움 — 마이그레이션/git에 없음!** US는 아직 KR 수준 미충전(= 다음 작업).
+- **`fss_advisors`** 1,804행(금감원 유사투자자문 신고, 크론 매일 갱신) — 리딩방·검증 탭의 주체 데이터.
+- **`youtube_channels`** 100(주간 크론). **`us_stock_perf`** 상위 200 데모(전 종목은 prod 크론 자동).
+- **`ad_inquiries`**(광고 문의, RLS 서비스롤) · **`business_*`** 4테이블(업체 클레임·인증·채널·게재) + `business-docs` 버킷 · `link_previews`(OG 캐시 999).
+- **테스트 데이터 전부 정리됨**(business_*·ad_inquiries = 0). soulmaten7 = admin role.
+
+## 6. 수익 모델 (현재/미래)
+
+- **리딩방 게재(도메스틱)**: 인증 업체당 **무료 1채널** + **추가 채널 ₩5만/월**. 단위=채널(연결 링크), 독립 행(교차연결 X — 독립이 추가 결제 동기). `business_links.expires_at` 만료 시 자동 비공개.
+- **광고 문의(`/advertise`)**: 슬롯 `broker`(종목·상품)·`room`(리딩방)·`feed`(콘텐츠 피드) → `ad_inquiries`. 관리자(`/admin`)에서 처리(연락함=템플릿 mailto).
+- **광고 슬롯 노출**: 리스트 **10개 이후마다**(맨 위 광고 없음 — STEP 469).
+- ⚠️ **결제는 전부 UI만 만들어둔 stub — 기능 미구현(Phase 2a 의도적 보류).** PG 붙이기 전 **법률자문 + 통신판매업 신고 + 정기결제 약관 + 환불·세금** 필요.
+- **장기 메인 수익 = AI 구독(Phase 5).** 광고·채널 게재는 부차(생존). 결제 레일은 리딩방+AI 구독 **공용**(한 번 만들어 두 번 씀).
+
+## 7. 워크플로우 (⚠️ 중요 — 역할 혼용 금지)
+
+- **Cowork(나) = 두뇌**: 대화·설계·결정 + 코드/명령어/문서 **작성**. DB 변경(링크 등)은 Supabase MCP로 직접. **실행·빌드·git은 안 함.**
+- **Claude Code = 손**: Cowork이 만든 STEP/명령어 **실행**, 빌드 확인, git commit/push.
+- **STEP 파일 방식**: Cowork이 `docs/STEP_N_COMMAND.md` 작성 → 사용자가 Claude Code에 `@docs/STEP_N_COMMAND.md 파일 내용대로 실행해줘`.
+- **Claude Code 실행**: `cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet` (Opus는 Cowork이 🔴 표시한 복잡한 디버깅/리팩토링만).
+- 🔑 **Turbopack 함정**: **API 라우트·서버 컴포넌트(`page.tsx`·`CATEGORY_LABELS` 등) 변경을 자동 갱신 안 함** → 라우트/서버 수정 후 반드시 클린 재시작: `pkill -f "next dev"; rm -rf .next && npm run dev`. **클라이언트 컴포넌트는 HMR로 즉시 반영.**
+- **DB 변경(링크·데이터)은 즉시 라이브** — 코드 아니라 배포 불필요(prod도 같은 Supabase).
+- **배포/푸시는 사용자가 명시적으로 "커밋/배포해"라고 할 때만.**
+- 검증은 Chrome MCP(`navigate`+`get_page_text`/`screenshot`)로 localhost:3333·onetrillion.app 직접 확인.
+
+## 8. 보안 경계 (Cowork이 못 하는 것)
+
+- 키·비밀번호·토큰·SERVICE_ROLE·CRON_SECRET·PG 키(토스 빌링)·data.go.kr 키 **입력/취급 불가.** 비밀은 **사용자 → `.env.local` → 서비스**. 코드는 `process.env.X` 참조만.
+- 결제 실행·금전 이동 불가. 권한/공유 설정 변경 불가. 영구 삭제 불가.
+
+## 9. 핵심 파일 맵
+
+| 영역 | 파일 |
+|------|------|
+| 홈/게이트웨이 | `app/page.tsx`(`CATEGORY_LABELS`·`CATEGORY_ORDER`) · `components/toolbox/ToolboxClient.tsx`(`TAB_ORDER`·`CLUSTER_START`·피드맵·국가가드) |
+| 종목 표 | `components/toolbox/MarketBoard.tsx`(KR) · `UsMarketBoard.tsx`(US) |
+| 리딩방·검증 | `components/toolbox/AdvisorDirectory.tsx`(3뷰 탭·채널 단위) |
+| 유튜브 | `components/toolbox/YoutubeRanking.tsx` |
+| 광고 슬롯 | `components/toolbox/AdSlotRow.tsx`(slot broker/room/feed) |
+| 헤더 | `components/layout/Header.tsx`(`MENU` 주식/코인·언어선택·프로필) |
+| 광고 문의 | `app/advertise/` + `components/advertise/AdInquiryForm.tsx` |
+| 관리자 | `app/admin/`(탭형) + `app/admin/login/` |
+| 업체 인증 | `components/business/` + `/business` |
+| 문서 | `docs/SESSION_BOOT.md`(상세) · `docs/CHANGELOG.md` · `docs/ROADMAP.md`(정책§3) · `session-context.md`(TODO) · `CLAUDE.md`(지침) |
+
+## 10. ▶ 다음 작업 (우선순위)
+
+1. **US 링크 풀충전 (1순위 · 사용자 확정)** — `link_hub` US **67 → 풀충전**. ⚠️ **KR 138 "미러"가 아니라 "미국 자국 시장 기준"으로 재설계**(미국 리테일·전문가가 실제 쓰는 사이트 중심, 영문 전용도 다 넣음). 방식은 KR과 동일(웹검색 도메인 검증 → Supabase MCP `insert`·즉시 라이브). **상세 전략 = 아래 §12.**
+2. **Phase 2 결제** — 토스페이먼츠 빌링(도메스틱 게재)/MoR Paddle·Lemon Squeezy(글로벌 AI 구독). `subscriptions`·`billing_events` 테이블 + 빌링키 정기결제 + webhook → `expires_at` 동기화 → 자동 게재/비공개. **전제: 사용자가 토스 가입(가입비 22만+연관리비 11만) + 법률자문 + 통신판매업 신고.** 결제 UI는 이미 stub로 있음.
+3. **Trillion AI (Phase 5)** — 종목 분석/아침 브리핑/공시·뉴스 요약을 구독형으로. **전제: 유사투자자문업 신고(자본시장법) + 법률자문.** 출력은 '투명한 계산'.
+4. (선택) 추가한 링크 중 죽은 URL 점검 · 13개도 많다 싶으면 비슷한 탭 병합 검토.
+
+## 11. 이번 세션(2026-06-30) 한 일 — 요약
+
+- **STEP 466~468**: 종목·상품 표(KR/US) 데스크탑 수익률 패노라마 + 전 리스트 10개마다 광고 문의(유튜브·피드 포함) + 새 `feed` 슬롯.
+- **STEP 469·471·472**: 광고 슬롯 맨 위 제거(10개 이후만) · 헤더 코인 탭(클릭 시 준비중 팝오버, 470은 471로 대체) · 세부 탭 5묶음 재정렬 + `거래소`→`거래소·기관` + 구분선.
+- **🔗 링크 허브 풀충전**: KR `link_hub` 73→138(전 10개 카테고리 2배+, 빈 탭 다 채움, 도메인 웹검색 검증) — MCP 직접.
+- **📱 모바일 패스 완료**: Chrome MCP 라이브 점검 깨짐 없음.
+- **세션 문서 3중 교차검증 갱신** 완료.
+
+---
+
+## 12. 🌍 멀티 국가 탭 전략 — US 완성 → 일본·중국·… (2026-06-30 사용자 확정 방향)
+
+### 12-1. 핵심 원칙: 각 국가 탭 = 그 나라 "자국 시장 기준" (⚠️ KR 미러 아님)
+- 각 국가 탭은 **한국 시장 기준이 아니라 해당 국가 자국 기준**으로 구성한다. (US=미국 리테일/전문가가 실제 쓰는 것, JP=일본 현지 기준 …)
+- 한국에서 안 보이거나 **영문/현지어 전용이어도 넣는다** — 오히려 그 나라 현지인이 쓰는 디테일한 사이트일수록 가치. **"한국에서 잘 안 쓰니 빼자"는 금지 — 다 넣는다.**
+- **근거 ① (번역 시대)**: 번역이 쉬운 시대 → 영문/현지어 사이트도 사용자에게 무조건 이득.
+- **근거 ② (AI 무기)**: 미래 **Trillion AI**가 해당 종목/상품에 모든 주식 분석 기법을 적용할 때, 이 디테일한 현지 소스들이 **빠짐없는 데이터 무기**가 된다.
+- **탭 라벨은 한국어 유지**(미국·일본·중국…), 콘텐츠만 자국 기준.
+
+### 12-2. US 완성 (다음 세션 1순위)
+- US `link_hub` **67개 → 미국 자국 기준으로 풀충전**(KR 138 복붙이 아니라, 미국에서 실제 쓰는 것 중심으로 재설계).
+- 종목 데이터는 이미 US 라이브(Yahoo·`us_stock_perf` 크론) — **링크 허브를 자국 기준으로 채우는 게 핵심.**
+- **US 고유 사이트 후보**(카테고리별 · 미국 기준):
+  - 공시/규제: SEC EDGAR · FINRA · 13F 트래커(WhaleWisdom·Fintel) · Form4 인사이더
+  - 시세/차트/데이터: Yahoo Finance · Google Finance · TradingView · Finviz · Koyfin · Barchart · StockCharts · MarketWatch
+  - 뉴스: Bloomberg · CNBC · WSJ · Barron's · Reuters · Benzinga · The Motley Fool
+  - 분석/리서치: Seeking Alpha · Morningstar · Simply Wall St · Zacks · TipRanks
+  - 어닝/캘린더: Earnings Whispers · Nasdaq Earnings Calendar
+  - ETF/펀드: etf.com · ETFdb(VettaFi) · Morningstar
+  - 거시: FRED · BEA · BLS · U.S. Treasury · Federal Reserve
+  - 커뮤니티: Reddit(r/stocks·r/wallstreetbets·r/investing) · StockTwits
+  - 거래소/기관: NYSE · NASDAQ · CBOE · OCC · SIPC
+  → KR과 동일 방식(웹검색 도메인 검증 → Supabase MCP insert·즉시 라이브). 카테고리 슬러그는 KR 셋 재사용 가능하되 US 특성에 맞게 조정.
+
+### 12-3. 멀티 국가 로드맵 (시장 선정 — 1차 분석 · ⚠️ 다음 세션서 현재 데이터로 검증)
+선정 기준: ① 시장 규모(시총·거래대금) ② 한국 리테일 관심·접근성(서학개미 보관액·순매수 상위국) ③ 현지 정보 사이트 풍부도 ④ AI 분석 활용가치.
+
+| 순위 | 시장 | 이유 |
+|------|------|------|
+| 1 | 🇺🇸 미국 | 글로벌 시총 압도적 1위(~절반), 서학개미 최대 집중. **진행 중.** |
+| 2 | 🇯🇵 일본 | 아시아 2위(도쿄증권거래소·닛케이), 지리·문화 근접, 반도체·상사·엔캐리 관심. |
+| 3 | 🇨🇳 중국 + 🇭🇰 홍콩 | 거대 시장(상하이·선전 A주·항셍), 중국 테크 관심 큼. 접근/규제 복잡(후강퉁·港股) → 정보 사이트 위주. |
+| 4 | 🇪🇺 유럽 | 영국(LSE)·독일(DAX)·프랑스 — 럭셔리·산업재·방산. |
+| 5 | 🇮🇳 인도 | 고성장 신흥(Nifty/Sensex), 글로벌 자금 유입 부상. |
+| 6 | 🇻🇳 베트남 · 🇹🇼 대만 | 베트남=한국 리테일 관심 큼 / 대만=TSMC 등 반도체. |
+
+→ **다음 세션 시작 시: 현재 시총 순위 + 한국예탁결제원 '국가별 서학개미 보관금액·순매수' 데이터를 웹검색으로 확인해 순위를 데이터로 확정**한 뒤, US 완성 → 2순위부터 각국 자국 기준으로 하나씩.
+
+---
+
+> **새 세션 첫 행동 권장**: 이 파일 정독 → `session-context.md` TODO 가비지 컬렉션 → **US 탭을 "미국 자국 기준"으로 완성(§12)** 부터 시작 (또는 사용자에게 시장 우선순위 데이터 검증 먼저 할지 확인) → STEP 작성.
