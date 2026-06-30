@@ -23,7 +23,9 @@ const COUNTRIES: { code: Country; label: string }[] = [
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
-const TAB_ORDER = ['market', 'chart', 'news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'community', 'exchange', 'youtube', 'room'];
+const TAB_ORDER = ['market', 'chart', 'news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'exchange', 'community', 'youtube', 'room'];
+// 탭 묶음 경계 — 각 묶음의 첫 탭 앞에 얇은 구분선(시세 | 정보 | 상품 | 거래소·기관 | 사람)
+const CLUSTER_START = new Set(['news', 'etf', 'exchange', 'community']);
 // link_hub 카테고리가 아닌 특수 탭의 라벨
 const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', room: '리딩방·검증' };
 
@@ -143,18 +145,22 @@ export default function ToolboxClient({
       </div>
 
       {/* 카테고리 탭 */}
-      <div className="flex gap-1 overflow-x-auto border-b border-unjong-border px-2 py-2 sm:px-3">
-        {tabs.map((t) => (
-          <button
-            key={t.slug}
-            type="button"
-            onClick={() => setActiveTab(t.slug)}
-            className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors sm:py-1.5 ${
-              activeTab === t.slug ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
-            }`}
-          >
-            {t.label}
-          </button>
+      <div className="flex items-stretch gap-1 overflow-x-auto border-b border-unjong-border px-2 py-2 sm:px-3">
+        {tabs.map((t, i) => (
+          <Fragment key={t.slug}>
+            {i > 0 && CLUSTER_START.has(t.slug) ? (
+              <span aria-hidden className="mx-1 my-1 w-px shrink-0 self-stretch bg-unjong-border" />
+            ) : null}
+            <button
+              type="button"
+              onClick={() => setActiveTab(t.slug)}
+              className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors sm:py-1.5 ${
+                activeTab === t.slug ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+              }`}
+            >
+              {t.label}
+            </button>
+          </Fragment>
         ))}
       </div>
 
@@ -188,19 +194,16 @@ export default function ToolboxClient({
             <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
               <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>
                 {catLinks.length > 0 ? (
-                  <>
-                    <AdSlotRow slot="feed" />
-                    {catLinks.map((link, i) => (
-                      <Fragment key={link.id}>
-                        <LinkCard
-                          link={link}
-                          isLoggedIn={isLoggedIn}
-                          onFavoriteToggle={handleFavoriteToggle}
-                        />
-                        {(i + 1) % 10 === 0 && i + 1 < catLinks.length ? <AdSlotRow slot="feed" /> : null}
-                      </Fragment>
-                    ))}
-                  </>
+                  catLinks.map((link, i) => (
+                    <Fragment key={link.id}>
+                      <LinkCard
+                        link={link}
+                        isLoggedIn={isLoggedIn}
+                        onFavoriteToggle={handleFavoriteToggle}
+                      />
+                      {(i + 1) % 10 === 0 && i + 1 < catLinks.length ? <AdSlotRow slot="feed" /> : null}
+                    </Fragment>
+                  ))
                 ) : (
                   <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
                 )}
@@ -215,7 +218,6 @@ export default function ToolboxClient({
         ) : (
           <div className="flex gap-4">
             <div className="min-w-0 flex-1">
-              <AdSlotRow slot="feed" />
               {catLinks.map((link, i) => (
                 <Fragment key={link.id}>
                   <LinkCard

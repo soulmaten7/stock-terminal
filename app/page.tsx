@@ -16,7 +16,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   ipo: "공모주·배당",
   macro: "거시경제",
   community: "커뮤니티",
-  exchange: "거래소",
+  exchange: "거래소·기관",
 };
 const CATEGORY_ORDER = ["news", "chart", "analysis", "disclosure", "research", "etf", "ipo", "macro", "community", "exchange"];
 

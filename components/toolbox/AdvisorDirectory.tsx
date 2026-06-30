@@ -421,7 +421,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 const ch = channelOf(a);
                 return (
                   <Fragment key={rowKey(a)}>
-                    {i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" /></li> : null}
+                    {i > 0 && i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" /></li> : null}
                     <li
                     className={`group grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'

@@ -16,7 +16,8 @@ const LANGS: { code: 'ko' | 'en'; name: string; flag: string; ready: boolean }[]
 ];
 
 const MENU = [
-  { href: '/', label: '주식', match: (p: string) => p === '/' },
+  { href: '/', label: '주식', ready: true, match: (p: string) => p === '/' },
+  { href: '/coin', label: '코인', ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장
 ] as const;
 
 export default function Header() {
@@ -25,8 +26,10 @@ export default function Header() {
   const { user } = useAuthStore();
   const [langOpen, setLangOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [coinOpen, setCoinOpen] = useState(false); // '코인' 클릭 시 준비중 안내 팝오버
   const langRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const coinRef = useRef<HTMLDivElement>(null);
   const currentLang = LANGS[0]; // 현재 한국어(번역 추가 전까지 고정 표시)
   const resetHome = useHomeReset((s) => s.reset);
 
@@ -34,6 +37,7 @@ export default function Header() {
     function handleClick(e: MouseEvent) {
       if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
+      if (coinRef.current && !coinRef.current.contains(e.target as Node)) setCoinOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -67,6 +71,27 @@ export default function Header() {
         <nav className="flex shrink-0 items-center" aria-label="메인 네비">
           {MENU.map((m) => {
             const isActive = m.match(pathname);
+            // 준비 중 탭(코인 등): 클릭 시 팝오버
+            if (!m.ready) {
+              return (
+                <div key={m.label} ref={coinRef} className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setCoinOpen((o) => !o)}
+                    aria-haspopup="true"
+                    aria-expanded={coinOpen}
+                    className="px-3 py-2 text-sm font-medium text-white/80 transition-colors hover:text-white"
+                  >
+                    {m.label}
+                  </button>
+                  {coinOpen && (
+                    <div className="absolute left-1/2 top-full z-50 mt-1 -translate-x-1/2 whitespace-nowrap rounded-md border border-unjong-border bg-unjong-surface px-3 py-1.5 text-xs font-medium text-unjong-primary shadow-lg">
+                      준비 중이에요
+                    </div>
+                  )}
+                </div>
+              );
+            }
             return (
               <Link
                 key={m.label}
