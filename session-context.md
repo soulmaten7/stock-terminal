@@ -2,6 +2,12 @@
 <!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## (이어서 2026-07-01) STEP 492v2 — CN 전종목 108→7,098 (HKEX+후강퉁·선강퉁) ✅
+
+**HEAD TBD.** 7,098 종목 파싱 완료. HK 2808/r1w 2581·SS 1856/26·SZ 2012/26·ETF 412/248.
+⚠️ A주 chart Yahoo Finance 400(현재가·1일 라이브, r1w~r6m "—").
+- ▶ **다음**: prod 라이브 검증 or Phase 2 결제 PG or 인도 탭.
+
 ## (이어서 2026-07-01) STEP 485~492 완료 · 중국 탭 완성(홍콩·상해·심천·ETF) ✅
 
 전부 실행·push 완료. **HEAD TBD.** DB="Trillion"(`ccbwxcszdoyjxvckedfp`).

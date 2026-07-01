@@ -1,6 +1,14 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-01 — STEP 492v2 — CN 전종목 확충: HKEX 공식목록+후강퉁·선강퉁 (108→7,098, HK 2808/SS 1856/SZ 2012/ETF 412)
+
+- `data/cn_symbols.json` 교체: 108 큐레이션 → **7,098 전종목** (HKEX ListOfSecurities.xlsx + SSE_Securities.csv + SZSE_Securities.csv)
+- HK 4자리 포맷(`0700.HK`) 수정(HKEX 5자리 `00700` → `int().zfill(4)` 변환)
+- SSE/SZSE CSV TAB 구분자 처리(`load_csv_tsv` 함수, UTF-16 인코딩)
+- 크론 재시딩: **2,821개 r1w 계산** (HK 2,581/2,808 = 92%, ETF 248/412 = 60%)
+- ⚠️ A주(SS/SZ) chart Yahoo Finance 400 — 현재가·1일 라이브, r1w~r6m "—" (Yahoo 제한)
+
 ## 2026-07-01 — STEP 485~492 완료 · 중국 탭 완성(홍콩·상해·심천·ETF) + JP 번역·서브탭·풀심볼 확장 (HEAD TBD, push ✓)
 
 - **STEP 485**: US·JP 뉴스 한국어 번역 — `translateTitles()` (비공식 구글번역 gtx + `translation_cache` Supabase 테이블).
