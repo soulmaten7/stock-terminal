@@ -1,4 +1,6 @@
 // 종목 아바타/로고 유틸 — 주요 종목은 실로고(favicon), 나머지는 레터 아바타 폴백.
+import cnLogoDomains from "@/data/cn_logo_domains.json";
+import jpLogoDomains from "@/data/jp_logo_domains.json";
 
 const PALETTE = [
   "#FEE2E2", "#FEF3C7", "#D1FAE5", "#DBEAFE",
@@ -181,6 +183,12 @@ const CN_DOMAIN_MAP: Record<string, string> = {
   "000063.SZ": "zte.com.cn", "002230.SZ": "iflytek.com",
 };
 
+// 야후 프로필에서 자동 수집한 도메인(code→domain, ""=수집했으나 홈페이지 없음). 손매핑 다음 우선순위.
+const AUTO_DOMAINS: Record<string, string> = {
+  ...(jpLogoDomains as Record<string, string>),
+  ...(cnLogoDomains as Record<string, string>),
+};
+
 /** 실로고 URL (logo.dev). 미국=티커 자동, 국내=도메인 매핑. 없으면 null(→아바타). */
 export function logoUrl(code: string): string | null {
   // 미국: 영문 티커 → logo.dev 티커 엔드포인트(7만 종목 자동)
@@ -202,6 +210,13 @@ export function logoUrl(code: string): string | null {
     return LOGODEV_TOKEN
       ? `https://img.logo.dev/${cn}?token=${LOGODEV_TOKEN}&size=128&retina=true`
       : `https://www.google.com/s2/favicons?sz=128&domain=${cn}`;
+  }
+  // 자동 수집 도메인(야후 프로필) — 위 손매핑에 없을 때(홍콩·중국·일본 롱테일)
+  const auto = AUTO_DOMAINS[code];
+  if (auto) {
+    return LOGODEV_TOKEN
+      ? `https://img.logo.dev/${auto}?token=${LOGODEV_TOKEN}&size=128&retina=true`
+      : `https://www.google.com/s2/favicons?sz=128&domain=${auto}`;
   }
   // 국내: 6자리 → 도메인 매핑
   const domain = DOMAIN_MAP[code];
