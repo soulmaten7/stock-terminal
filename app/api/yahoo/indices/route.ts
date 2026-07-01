@@ -13,7 +13,9 @@ const _TTL = 30_000;
 const INDEX_SYMBOLS = [
   { symbol: "^KS11", name: "KOSPI" },
   { symbol: "^KQ11", name: "KOSDAQ" },
+  { symbol: "^N225", name: "Nikkei 225" },
   { symbol: "USDKRW=X", name: "USD/KRW" },
+  { symbol: "JPY=X", name: "USD/JPY" },
   { symbol: "^GSPC", name: "S&P 500" },
   { symbol: "^IXIC", name: "NASDAQ" },
   { symbol: "^DJI", name: "Dow Jones" },
