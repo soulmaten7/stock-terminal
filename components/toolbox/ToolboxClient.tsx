@@ -22,6 +22,7 @@ const COUNTRIES: { code: Country; label: string }[] = [
   { code: 'KR', label: '🇰🇷 한국' },
   { code: 'US', label: '🇺🇸 미국' },
   { code: 'JP', label: '🇯🇵 일본' },
+  { code: 'CN', label: '🇨🇳 중국' },
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
@@ -42,8 +43,8 @@ const FEED_SUB_LABEL: Record<string, string> = {
 // 피드별 지원 국가 — 단일 'KR' 가드 대체. 점진 확장(뉴스·공시는 후속 STEP에서 US 추가).
 // 현재 macro만 US 개방(/api/macro/summary가 ECOS+FRED 둘 다 반환). 나머지는 KR 전용 유지.
 const FEED_COUNTRY_SUPPORT: Record<string, Country[]> = {
-  news: ['KR', 'US', 'JP'], disclosure: ['KR', 'US'], macro: ['KR', 'US'],
-  analysis: ['KR', 'US', 'JP'], research: ['KR', 'US', 'JP'], etf: ['KR', 'US', 'JP'], ipo: ['KR', 'US', 'JP'],
+  news: ['KR', 'US', 'JP', 'CN'], disclosure: ['KR', 'US'], macro: ['KR', 'US'],
+  analysis: ['KR', 'US', 'JP', 'CN'], research: ['KR', 'US', 'JP', 'CN'], etf: ['KR', 'US', 'JP', 'CN'], ipo: ['KR', 'US', 'JP', 'CN'],
 };
 function feedSupports(tab: string, c: Country) { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
 
@@ -56,21 +57,29 @@ function feedFor(tab: string, country: Country) {
       ? <NewsFeed country="US" query="US stock company earnings results" title="미국 실적·기업 뉴스" />
       : country === 'JP'
       ? <NewsFeed country="JP" query="決算 業績 日本株" title="일본 실적·기업 뉴스" />
+      : country === 'CN'
+      ? <NewsFeed country="CN" query="業績 財報 港股 A股" title="중화권 실적·기업 뉴스" />
       : <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
     case 'research': return country === 'US'
       ? <NewsFeed country="US" query="stock analyst rating price target upgrade downgrade" title="미국 애널리스트·리포트 뉴스" />
       : country === 'JP'
       ? <NewsFeed country="JP" query="アナリスト 目標株価 レーティング" title="일본 애널리스트·리포트 뉴스" />
+      : country === 'CN'
+      ? <NewsFeed country="CN" query="目標價 評級 券商 港股" title="중화권 애널리스트·리포트 뉴스" />
       : <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
     case 'etf': return country === 'US'
       ? <NewsFeed country="US" query="ETF fund inflows stock market" title="미국 ETF·펀드 뉴스" />
       : country === 'JP'
       ? <NewsFeed country="JP" query="ETF 投資信託 日本" title="일본 ETF·펀드 뉴스" />
+      : country === 'CN'
+      ? <NewsFeed country="CN" query="ETF 基金 港股 A股" title="중화권 ETF·펀드 뉴스" />
       : <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
     case 'ipo': return country === 'US'
       ? <NewsFeed country="US" query="IPO stock market debut listing" title="미국 IPO·공모 뉴스" />
       : country === 'JP'
       ? <NewsFeed country="JP" query="IPO 新規上場 日本" title="일본 IPO·공모 뉴스" />
+      : country === 'CN'
+      ? <NewsFeed country="CN" query="新股 IPO 上市 港股" title="중화권 IPO·공모 뉴스" />
       : <OfferingsFeed />;
     default: return null;
   }
@@ -142,7 +151,7 @@ export default function ToolboxClient({
 
   const cat = categories.find((c) => c.slug === activeTab);
   const catLinks = cat ? cat.links.filter((l) => l.country === country) : [];
-  const countryLabel = ({ KR: '한국', US: '미국', JP: '일본' } as Record<Country, string>)[country];
+  const countryLabel = ({ KR: '한국', US: '미국', JP: '일본', CN: '중국' } as Record<Country, string>)[country];
 
   return (
     <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
@@ -189,8 +198,10 @@ export default function ToolboxClient({
             <MarketBoard isLoggedIn={isLoggedIn} />
           ) : country === 'US' ? (
             <UsMarketBoard isLoggedIn={isLoggedIn} />
-          ) : (
+          ) : country === 'JP' ? (
             <JpMarketBoard isLoggedIn={isLoggedIn} />
+          ) : (
+            <Placeholder emoji="🇨🇳" title="중국·홍콩 종목보드 — 준비 중" desc="곧 제공됩니다" />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (

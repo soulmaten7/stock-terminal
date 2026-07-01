@@ -235,6 +235,22 @@ export async function GET(req: Request) {
     }
   }
 
+  // ── CN 분기(Google News, 중화권·번체) — JP와 동일 패턴 + 한국어 번역 ──
+  if (market === "CN") {
+    const q = (new URL(req.url).searchParams.get("q") || "").trim();
+    const key = "CN:" + q;
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
+    try {
+      const items = await googleNews(q || "港股 恒生指數 A股 中國股市", "zh-HK", "HK", "HK:zh-Hant");
+      const data = { items: await translateTitles(items, "ko") };
+      cache.set(key, { at: Date.now(), data });
+      return NextResponse.json(data);
+    } catch (e) {
+      return NextResponse.json({ items: [], error: String(e) });
+    }
+  }
+
   // ── KR 분기(네이버 검색 API) — 기존 그대로 ──
   const id = (process.env.NAVER_CLIENT_ID || "").trim();
   const secret = (process.env.NAVER_CLIENT_SECRET || "").trim();
