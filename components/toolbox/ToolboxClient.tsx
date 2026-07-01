@@ -7,6 +7,7 @@ import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
 import MarketBoard from './MarketBoard';
 import UsMarketBoard from './UsMarketBoard';
+import JpMarketBoard from './JpMarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import SecFeed from './SecFeed';
@@ -182,7 +183,7 @@ export default function ToolboxClient({
           ) : country === 'US' ? (
             <UsMarketBoard isLoggedIn={isLoggedIn} />
           ) : (
-            <Placeholder emoji="🇯🇵" title="일본 종목 — 준비 중" desc="종목·시세는 다음 업데이트에 추가돼요." />
+            <JpMarketBoard isLoggedIn={isLoggedIn} />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (
