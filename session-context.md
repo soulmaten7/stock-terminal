@@ -1,6 +1,16 @@
-<!-- 2026-06-30 -->
-<!-- Last GC: 2026-06-30 (STEP 456~472 완료 + 🔗링크 허브 풀충전(KR 138·MCP직접·git아님) + 📱모바일 패스 완료. 배포 ✓ b741ead/onetrillion.app. 다음=US 링크 풀충전) -->
+<!-- 2026-07-01 -->
+<!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## (이어서 2026-07-01) 🔗 US 링크 허브 풀충전 67→139 (미국 자국 기준·MCP 직접·라이브 검증) ✅
+
+코드 변경 없음(DB 직접 insert). HEAD 그대로 `b741ead`(문서 커밋만 추가 예정). DB="Trillion"(`ccbwxcszdoyjxvckedfp`). **배포 불필요**(prod도 같은 Supabase → 즉시 라이브).
+- **US `link_hub` 67 → 139**(KR 140 동급). 원칙="미국 자국 기준·다 넣는다"(핸드오프 §12). KR 미러 아님, 영문 전용도 포함.
+- **카테고리별(기존→현재)**: analysis 8→14·chart 6→12·community 6→13·disclosure 6→13·etf 5→12·exchange 5→13·ipo 7→12·macro 8→18·news 8→18·research 8→14 (총 +72행).
+- **방식**: 웹검색으로 특화 도메인 검증(인사이더·13F·의원매매·지역연준·SPAC 등) → Supabase MCP 직접 insert. ⚠️ 웹검증 결과 제외: QuickFS(서비스 종료 확인)·SPACInsider/Econoday/ADP(도메인 미확인).
+- **대표 신규**: SEC·FINRA·Fed·CFTC·OCC·SIPC·DTCC·IEX·MSRB(기관) / OpenInsider·WhaleWisdom·Fintel·Capitol Trades·Quiver(공시) / Motley Fool·Investopedia·Forbes·Fortune·IBD·Kiplinger·CNN Business(뉴스) / ISM·Conference Board·Atlanta Fed GDPNow·NY Fed Nowcast·EIA·Yardeni(거시) / iShares·Vanguard·SPDR·Invesco·Portfolio Visualizer(ETF) / Simply Wall St·Finbox·YCharts·Fiscal.ai(분석) / Stock Rover·Validea·AlphaSpread·AAII·StreetInsider(리서치) / Google Finance·TC2000·Trade Ideas·Webull(차트) / Sure Dividend·DRIP Champions(배당).
+- **라이브 검증(Chrome MCP)**: onetrillion.app → 🇺🇸 미국 → 뉴스 탭에서 신규 10개(Motley Fool~Axios) 정상 노출·한국어 설명·10번째 뒤 광고슬롯·라이브 피드 확인.
+- ▶ **다음**: 멀티 국가 2순위(일본) — 현재 시총 순위 + 한국예탁결제원 서학개미 보관금액·순매수 웹검색 확정 후 일본 자국 기준 충전. 또는 Phase 2 결제(토스 빌링) / Trillion AI(Phase 5).
 
 ## (이어서 2026-06-30) STEP 469~472 — 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선 ✅
 

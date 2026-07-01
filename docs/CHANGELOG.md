@@ -1,5 +1,13 @@
-<!-- 2026-06-30 -->
+<!-- 2026-07-01 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-01 — 🔗 US 링크 허브 풀충전 (67→139 · 미국 자국 기준 · MCP 직접 · 라이브 검증)
+
+코드 변경 없음(DB 직접 insert). HEAD `b741ead` 유지. DB="Trillion" `ccbwxcszdoyjxvckedfp`. **prod 같은 Supabase → 즉시 라이브·배포 불필요.**
+- **`link_hub` US 67 → 139**(KR 140 동급). 원칙=미국 자국 기준·다 넣는다(영문 전용 포함), KR 미러 아님.
+- 카테고리별(기존→현재): analysis 8→14 · chart 6→12 · community 6→13 · disclosure 6→13 · etf 5→12 · exchange 5→13 · ipo 7→12 · macro 8→18 · news 8→18 · research 8→14 (총 +72행).
+- 특화 도메인 웹검색 검증(인사이더·13F·의원매매·지역연준 등) 후 insert. 제외: QuickFS(서비스 종료)·SPACInsider/Econoday/ADP(미확인).
+- 라이브 검증(Chrome MCP): onetrillion.app US 뉴스 탭 신규 10개(Motley Fool·Investopedia·Business Insider·Forbes·Fortune·TheStreet·IBD·Kiplinger·CNN Business·Axios) 정상 노출.
 
 ## 2026-06-30 — STEP 469~472 · 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선
 

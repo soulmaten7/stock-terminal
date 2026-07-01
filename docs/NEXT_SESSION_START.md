@@ -1,7 +1,9 @@
-<!-- 2026-06-30 -->
+<!-- 2026-07-01 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-06-30 (최신) — STEP 469~472, HEAD `b741ead` · 배포 ✓ onetrillion.app.** 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선. 최신은 이 블록.
+> 🆕 **2026-07-01 (최신) — US 링크 허브 풀충전 완료.** `link_hub` US **67→139**(미국 자국 기준·MCP 직접·즉시 라이브·git 아님). onetrillion.app US 뉴스 탭 라이브 검증. 코드 변경 없음(HEAD `b741ead` 유지). **▶ 다음 = 멀티 국가 2순위(일본): 시총 순위 + 서학개미 보관금액 웹검색 확정 후 일본 자국 기준 충전. 또는 Phase 2 결제.**
+>
+> 🆕 **2026-06-30 — STEP 469~472, HEAD `b741ead` · 배포 ✓ onetrillion.app.** 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선.
 > - **상태**: HEAD `b741ead` = origin/main = 라이브(STEP 422~472 전부 배포 완료). DB="Trillion" `ccbwxcszdoyjxvckedfp`.
 > - **469**: 모든 리스트 맨 위 광고 제거(`AdvisorDirectory`·`BrokerRanking`·피드/일반 링크) → 10개마다(이후부터) 통일.
 > - **471**: 헤더 코인 탭 클릭 시 "준비 중이에요" 팝오버(항상 뜨던 뱃지 제거, `coinOpen`+`coinRef`+outside-click).

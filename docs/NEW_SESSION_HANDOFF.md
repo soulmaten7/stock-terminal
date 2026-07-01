@@ -1,9 +1,10 @@
-<!-- 2026-06-30 -->
+<!-- 2026-07-01 -->
 # 🚀 Trillion(트릴리언) — 새 세션 시작 핸드오프
 
 > **이 파일 하나만 읽으면 새 세션이 바로 업무 가능하도록 만든 완전 자급형 문서.**
 > 더 깊은 히스토리 = `docs/SESSION_BOOT.md`(배너 누적) · `docs/CHANGELOG.md` · 정책 = `docs/ROADMAP.md` §3.
-> **갱신 시점: 2026-06-30 · HEAD `b741ead`(STEP 472) · 배포 ✓ onetrillion.app 라이브.**
+> **갱신 시점: 2026-07-01 · HEAD `b741ead`(STEP 472) · 배포 ✓ onetrillion.app 라이브.**
+> **🆕 2026-07-01: US 링크 허브 풀충전 완료 — `link_hub` US 67→139(미국 자국 기준·MCP 직접·즉시 라이브·git 아님). KR 140과 동급. 다음 = 멀티 국가 2순위(일본) 또는 Phase 2 결제.**
 
 ---
 
@@ -15,10 +16,11 @@
 - **거래 X** (정보·허브·링크 연결만). **대화/토론도 전면 제거됨**(다시 넣지 말 것).
 - 디자인 = 미드나잇 `#0E1116` + 민트 `#2DD4BF`. 코드 식별자는 `unjong-*`(리브랜드 전 잔재, 유지).
 
-## 2. 지금 상태 (2026-06-30)
+## 2. 지금 상태 (2026-07-01)
 
 - 최신 코드 **HEAD `b741ead` = STEP 472**, 그 위 문서 커밋 = origin/main 동기화 완료. **배포 ✓ onetrillion.app 라이브**(STEP 422~472 전부 push·배포).
 - **AI·광고를 빼고 보면 KR(한국) 탭 = 베타 출시 가능 수준**(이번 세션 라이브 점검·판단). 모바일 패스도 완료.
+- **🆕 2026-07-01: US 링크 허브 풀충전 완료** — `link_hub` US **67→139**(미국 자국 기준, 10개 카테고리 전부 KR 동급). onetrillion.app US 뉴스 탭 라이브 검증 완료. US 탭도 KR 수준 정보 밀도 확보. (코드 변경 없음·DB 직접이라 배포 불필요.)
 
 ## 3. 아키텍처 / 스택
 
@@ -48,7 +50,7 @@
 
 ## 5. DB 데이터 현황
 
-- **`link_hub`**: **KR 138 · US 67.** ⚠️ **MCP 직접 insert로 채움 — 마이그레이션/git에 없음!** US는 아직 KR 수준 미충전(= 다음 작업).
+- **`link_hub`**: **KR 138(active) · US 139(2026-07-01 풀충전 완료).** ⚠️ **MCP 직접 insert로 채움 — 마이그레이션/git에 없음!** US는 미국 자국 기준으로 KR 동급 충전 완료(10 카테고리 전부). ⚠️ DB 백업/이전 시 `link_hub`는 git에 없으므로 별도 export 필수.
 - **`fss_advisors`** 1,804행(금감원 유사투자자문 신고, 크론 매일 갱신) — 리딩방·검증 탭의 주체 데이터.
 - **`youtube_channels`** 100(주간 크론). **`us_stock_perf`** 상위 200 데모(전 종목은 prod 크론 자동).
 - **`ad_inquiries`**(광고 문의, RLS 서비스롤) · **`business_*`** 4테이블(업체 클레임·인증·채널·게재) + `business-docs` 버킷 · `link_previews`(OG 캐시 999).
@@ -95,7 +97,7 @@
 
 ## 10. ▶ 다음 작업 (우선순위)
 
-1. **US 링크 풀충전 (1순위 · 사용자 확정)** — `link_hub` US **67 → 풀충전**. ⚠️ **KR 138 "미러"가 아니라 "미국 자국 시장 기준"으로 재설계**(미국 리테일·전문가가 실제 쓰는 사이트 중심, 영문 전용도 다 넣음). 방식은 KR과 동일(웹검색 도메인 검증 → Supabase MCP `insert`·즉시 라이브). **상세 전략 = 아래 §12.**
+1. ✅ **US 링크 풀충전 완료 (2026-07-01)** — `link_hub` US **67→139**(미국 자국 기준·KR 동급·onetrillion.app 라이브 검증). 상세 = §12-2. **→ 새 1순위: 멀티 국가 2순위(일본).** §12-3대로 먼저 현재 시총 순위 + 한국예탁결제원 '국가별 서학개미 보관금액·순매수'를 웹검색으로 확인해 국가 순서를 데이터로 확정 → 일본 `link_hub`를 일본 자국 기준으로 충전(방식 동일: 웹검색 도메인 검증 → Supabase MCP insert·즉시 라이브).
 2. **Phase 2 결제** — 토스페이먼츠 빌링(도메스틱 게재)/MoR Paddle·Lemon Squeezy(글로벌 AI 구독). `subscriptions`·`billing_events` 테이블 + 빌링키 정기결제 + webhook → `expires_at` 동기화 → 자동 게재/비공개. **전제: 사용자가 토스 가입(가입비 22만+연관리비 11만) + 법률자문 + 통신판매업 신고.** 결제 UI는 이미 stub로 있음.
 3. **Trillion AI (Phase 5)** — 종목 분석/아침 브리핑/공시·뉴스 요약을 구독형으로. **전제: 유사투자자문업 신고(자본시장법) + 법률자문.** 출력은 '투명한 계산'.
 4. (선택) 추가한 링크 중 죽은 URL 점검 · 13개도 많다 싶으면 비슷한 탭 병합 검토.
@@ -119,9 +121,9 @@
 - **근거 ② (AI 무기)**: 미래 **Trillion AI**가 해당 종목/상품에 모든 주식 분석 기법을 적용할 때, 이 디테일한 현지 소스들이 **빠짐없는 데이터 무기**가 된다.
 - **탭 라벨은 한국어 유지**(미국·일본·중국…), 콘텐츠만 자국 기준.
 
-### 12-2. US 완성 (다음 세션 1순위)
-- US `link_hub` **67개 → 미국 자국 기준으로 풀충전**(KR 138 복붙이 아니라, 미국에서 실제 쓰는 것 중심으로 재설계).
-- 종목 데이터는 이미 US 라이브(Yahoo·`us_stock_perf` 크론) — **링크 허브를 자국 기준으로 채우는 게 핵심.**
+### 12-2. US 완성 ✅ 완료 (2026-07-01)
+> **결과: `link_hub` US 67→139 충전 완료.** 카테고리별(기존→현재): analysis 8→14 · chart 6→12 · community 6→13 · disclosure 6→13 · etf 5→12 · exchange 5→13 · ipo 7→12 · macro 8→18 · news 8→18 · research 8→14. 추가 대표 예: (기관) SEC·FINRA·Fed·CFTC·OCC·SIPC·DTCC·IEX·MSRB EMMA · (공시) OpenInsider·WhaleWisdom·Fintel·BamSEC·Capitol Trades·Quiver Quantitative·FINRA BrokerCheck · (뉴스) Motley Fool·Investopedia·Business Insider·Forbes·Fortune·TheStreet·IBD·Kiplinger·CNN Business·Axios · (거시) FOMC·ISM·Conference Board·U.Michigan 심리·Atlanta Fed GDPNow·NY Fed Nowcast·EIA·Yardeni·Treasury Direct · (ETF) VettaFi·ETF Research Center·Portfolio Visualizer·iShares·Vanguard·SPDR·Invesco · (분석) Simply Wall St·Finbox·YCharts·Fiscal.ai·Value Line · (리서치) Nasdaq Earnings·StreetInsider·AAII·Stock Rover·Validea·AlphaSpread · (차트) Google Finance·Webull·TC2000·Trade Ideas·ChartMill·BigCharts · (배당/IPO) Stock Analysis IPO·Sure Dividend·DRIP Champions·Nasdaq Dividend Calendar. ⚠️ 웹검색 검증 결과 QuickFS(서비스 종료)·SPACInsider/Econoday/ADP(미확인)는 제외.
+- 종목 데이터는 이미 US 라이브(Yahoo·`us_stock_perf` 크론) — 링크 허브까지 자국 기준으로 채워 US 4기둥(시세·정보·거시·공시) + 허브 완성.
 - **US 고유 사이트 후보**(카테고리별 · 미국 기준):
   - 공시/규제: SEC EDGAR · FINRA · 13F 트래커(WhaleWisdom·Fintel) · Form4 인사이더
   - 시세/차트/데이터: Yahoo Finance · Google Finance · TradingView · Finviz · Koyfin · Barchart · StockCharts · MarketWatch
