@@ -2,6 +2,17 @@
 <!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## (이어서 2026-07-01) STEP 479~484 완료 · 일본 탭 완성 + 레버리지 배지 오탐 수정 ✅
+
+전부 실행·push 완료. **HEAD `44e0aac`.** DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 479**: `Country = 'KR'|'US'|'JP'` + 🇯🇵 토글 + `FEED_COUNTRY_SUPPORT` JP(5탭) + link_hub JP 자동 노출.
+- **STEP 480**: `JpMarketBoard`(Yahoo `.T`·¥·모바일 카드형·바텀시트) + `jp_stock_perf`(Supabase) + `/api/cron/jp-perf`(08:00 UTC) + `formatPrice JP` + vercel.json 크론. **72행 시딩 완료**.
+- **STEP 481**: Google News 일본 5탭(뉴스·실적·리포트·ETF·IPO) + `googleNews()` 공통화(US·JP).
+- **STEP 482**: 마키 `^N225`·`JPY=X` 추가(12개 글로벌 지수).
+- **STEP 483**: `JP_DOMAIN_MAP` 73항목(`lib/avatar.ts`) + `JpMarketBoard` 3곳 `.T` 숨김.
+- **STEP 484**: `leverageInfo` 단어경계(`\b`) — BEAR/BULL/INVERSE/LEVERAGE/2X/3X 영문 오탐 수정.
+- ▶ **다음**: prod 라이브 검증(일본 탭·배지) → 중국/홍콩 or 인도 탭 or Phase 2 결제 PG.
+
 ## (이어서 2026-07-01) STEP 473~478 완료 · KR 딜레이 제거(스냅샷 2769행) + KR/US 모바일 개편 + 플레이북 §4-2 ✅
 
 전부 실행·push·배포 완료. **HEAD `8795c1b`.** DB="Trillion"(`ccbwxcszdoyjxvckedfp`).

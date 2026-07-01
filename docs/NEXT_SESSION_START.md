@@ -1,7 +1,10 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-01 (최신) — STEP 473~478 완료 (HEAD `8795c1b`, 배포 ✓).** US 피드 파리티(뉴스 이미지+모아보기 4탭) + KR 종목 딜레이 제거(크론 스냅샷 2,769행 시딩→로딩 즉시) + KR/US 모바일 개편(카드형+바텀시트 스냅+PC식 정렬) + US 링크 67→139. **▶ 다음 = prod 라이브 검증(Google News Vercel IP·모바일·속도) → 멀티 국가 2순위(일본, `docs/COUNTRY_TAB_PLAYBOOK.md`).**
+> 🆕 **2026-07-01 (최신) — STEP 479~484 완료 (HEAD `44e0aac`, push ✓).** 일본 탭 완성: `JpMarketBoard`(Yahoo `.T` 72종목·¥ 통화·모바일 카드형·바텀시트) + `jp_stock_perf` 크론(08:00 UTC) + 72행 시딩 완료 + Google News 일본(5탭: 뉴스·실적·리포트·ETF·IPO) + 닛케이225+USD/JPY 마키 추가 + `JP_DOMAIN_MAP` 73항목 실로고 + `.T` 접미어 표시 숨김 + 레버리지·인버스 배지 단어경계(`\b`) 오탐 수정.
+> **▶ 다음 = prod 라이브 검증(일본 탭·배지 픽스) → 중국/홍콩 or 인도 탭(`COUNTRY_TAB_PLAYBOOK`) or Phase 2 결제 PG.**
+>
+> 🆕 **2026-07-01 — STEP 473~478 완료 (HEAD `8795c1b`, 배포 ✓).** US 피드 파리티(뉴스 이미지+모아보기 4탭) + KR 종목 딜레이 제거(크론 스냅샷 2,769행 시딩→로딩 즉시) + KR/US 모바일 개편(카드형+바텀시트 스냅+PC식 정렬) + US 링크 67→139. (직전)
 >
 > 🆕 **2026-06-30 — STEP 469~472, HEAD `b741ead` · 배포 ✓ onetrillion.app.** 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선.
 > - **상태**: HEAD `b741ead` = origin/main = 라이브(STEP 422~472 전부 배포 완료). DB="Trillion" `ccbwxcszdoyjxvckedfp`.

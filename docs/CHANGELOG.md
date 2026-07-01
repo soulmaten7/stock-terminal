@@ -1,6 +1,15 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-01 — STEP 479~484 완료 · 일본 탭 완성(종목·뉴스·로고·닛케이225) + 레버리지 배지 오탐 수정 (HEAD `44e0aac`, push ✓)
+
+- **STEP 479**: `Country` 타입 `'JP'` 추가 + 🇯🇵 국가 토글 + `FEED_COUNTRY_SUPPORT` JP 확장(5탭) + `link_hub` JP 자동 노출.
+- **STEP 480**: `JpMarketBoard` 신설(Yahoo `.T` 72종목·¥ 통화·바텀시트·모바일 카드형) + `jp_stock_perf` 테이블·크론(`/api/cron/jp-perf`, 08:00 UTC=17:00 JST) + `formatPrice` JP(`¥`) + vercel.json 크론 추가. **72행 시딩 완료**.
+- **STEP 481**: 뉴스 피드 JP 분기(`market=JP`) + Google News 일본 로케일(`ja/JP/JP:ja`) + `googleNews()` 공통화(US·JP 공유). JP 뉴스·실적·리포트·ETF·IPO 피드 5종 라이브.
+- **STEP 482**: 상단 마키 `^N225`(닛케이 225) + `JPY=X`(USD/JPY) 추가 → 12개 글로벌 지수.
+- **STEP 483**: `JP_DOMAIN_MAP` 73항목 `lib/avatar.ts` 추가 → 일본 종목 실로고(logo.dev 도메인 방식). `JpMarketBoard` 3곳 `.T` 접미어 숨김(표시만, 로고 조회는 풀 심볼 유지).
+- **STEP 484**: 레버리지·인버스 배지 영문명 오탐 수정 — 단어 경계(`\b`) 적용(BEAR/BULL/INVERSE/LEVERAGE/2X/3X). "RBC Bearings" 등 정상 종목명 제외, 실제 ETF명만 배지.
+
 ## 2026-07-01 — STEP 473~478 완료 · US 피드 파리티 + KR 딜레이 제거 + KR/US 모바일 개편 (HEAD `8795c1b`, 전부 push·배포)
 
 - **STEP 473**: US 탭 피드 파리티 — 뉴스 대표이미지(og:image) + 모아보기 4탭(Google News 토픽·기업재무/리포트/ETF/공모주). ⚠️ prod Google News(Vercel IP) 미검증.
