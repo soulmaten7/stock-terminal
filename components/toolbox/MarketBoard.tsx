@@ -465,7 +465,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       <p className="truncate text-[15px] font-bold leading-tight text-unjong-primary">{r.name}</p>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
-                        <span className={`shrink-0 tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
+                        <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
                           <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === mobilePeriod)?.label}</span>
                           {pct(r[mobileField] as number | null | undefined)}
                         </span>
