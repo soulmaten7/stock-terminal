@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Country = 'KR' | 'US';
+export type Country = 'KR' | 'US' | 'JP';
 
 interface CountryState {
   country: Country;

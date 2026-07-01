@@ -20,6 +20,7 @@ type Category = { slug: string; label: string; links: LinkWithCountry[] };
 const COUNTRIES: { code: Country; label: string }[] = [
   { code: 'KR', label: '🇰🇷 한국' },
   { code: 'US', label: '🇺🇸 미국' },
+  { code: 'JP', label: '🇯🇵 일본' },
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
@@ -39,13 +40,14 @@ const FEED_SUB_LABEL: Record<string, string> = {
 
 // 피드별 지원 국가 — 단일 'KR' 가드 대체. 점진 확장(뉴스·공시는 후속 STEP에서 US 추가).
 // 현재 macro만 US 개방(/api/macro/summary가 ECOS+FRED 둘 다 반환). 나머지는 KR 전용 유지.
-const FEED_COUNTRY_SUPPORT: Record<string, ('KR' | 'US')[]> = {
+const FEED_COUNTRY_SUPPORT: Record<string, Country[]> = {
   news: ['KR', 'US'], disclosure: ['KR', 'US'], macro: ['KR', 'US'],
   analysis: ['KR', 'US'], research: ['KR', 'US'], etf: ['KR', 'US'], ipo: ['KR', 'US'],
 };
-function feedSupports(tab: string, c: 'KR' | 'US') { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
+function feedSupports(tab: string, c: Country) { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
 
-function feedFor(tab: string, country: 'KR' | 'US') {
+function feedFor(tab: string, country: Country) {
+  if (country === 'JP') return null; // 일본 피드는 후속 STEP
   switch (tab) {
     case 'news': return <NewsFeed country={country} />;
     case 'disclosure': return country === 'US' ? <SecFeed /> : <DartFeed />;
@@ -132,7 +134,7 @@ export default function ToolboxClient({
 
   const cat = categories.find((c) => c.slug === activeTab);
   const catLinks = cat ? cat.links.filter((l) => l.country === country) : [];
-  const countryLabel = country === 'KR' ? '한국' : '미국';
+  const countryLabel = ({ KR: '한국', US: '미국', JP: '일본' } as Record<Country, string>)[country];
 
   return (
     <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
@@ -177,8 +179,10 @@ export default function ToolboxClient({
         {activeTab === 'market' ? (
           country === 'KR' ? (
             <MarketBoard isLoggedIn={isLoggedIn} />
-          ) : (
+          ) : country === 'US' ? (
             <UsMarketBoard isLoggedIn={isLoggedIn} />
+          ) : (
+            <Placeholder emoji="🇯🇵" title="일본 종목 — 준비 중" desc="종목·시세는 다음 업데이트에 추가돼요." />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (
