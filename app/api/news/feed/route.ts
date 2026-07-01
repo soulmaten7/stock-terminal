@@ -83,17 +83,83 @@ async function usNews(): Promise<NewsItem[]> {
   return items.slice(0, 20);
 }
 
+// US 토픽 피드: Google News RSS(키리스, 영문 토픽 검색). <item>의 title/link/pubDate/<source> 추출.
+async function googleNewsUS(query: string): Promise<NewsItem[]> {
+  const url =
+    "https://news.google.com/rss/search?q=" +
+    encodeURIComponent(query) +
+    "&hl=en-US&gl=US&ceid=US:en";
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+      Accept: "application/rss+xml,application/xml,text/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
+    cache: "no-store",
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error("gnews_" + res.status);
+  const xml = await res.text();
+
+  const items: NewsItem[] = [];
+  const blocks = xml.match(/<item\b[\s\S]*?<\/item>/g) ?? [];
+  for (const b of blocks) {
+    let title = unCdata((b.match(/<title>([\s\S]*?)<\/title>/) ?? ["", ""])[1]);
+    const link = ((b.match(/<link>([\s\S]*?)<\/link>/) ?? ["", ""])[1]).trim();
+    const pubDate = ((b.match(/<pubDate>([\s\S]*?)<\/pubDate>/) ?? ["", ""])[1]).trim();
+    const sm = b.match(/<source[^>]*url="([^"]*)"[^>]*>([\s\S]*?)<\/source>/);
+    const srcName = sm ? unCdata(sm[2]) : "";
+    const srcUrl = sm ? sm[1] : "";
+    // Google News 제목 끝의 " - 언론사" 접미어 제거
+    if (srcName && title.endsWith(" - " + srcName)) {
+      title = title.slice(0, -(" - " + srcName).length).trim();
+    }
+    const source = hostOf(srcUrl) || srcName;
+    if (!title || !link) continue;
+    items.push({ title, link, source, pubDate, image: null });
+  }
+  items.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  return items.slice(0, 20);
+}
+
 export async function GET(req: Request) {
   const market = (new URL(req.url).searchParams.get("market") || new URL(req.url).searchParams.get("country") || "").trim().toUpperCase();
 
-  // ── US 분기(Yahoo ^GSPC RSS, 키리스) ──
+  // ── US 분기 ──
   if (market === "US") {
-    const hit = cache.get("US");
-    if (hit && Date.now() - hit.at < 10 * 60 * 1000) {
-      return NextResponse.json(hit.data);
+    const q = (new URL(req.url).searchParams.get("q") || "").trim();
+
+    // US 토픽 피드(기업·재무·리포트·ETF·공모주) — Google News RSS(키리스)
+    if (q) {
+      const key = "US:" + q;
+      const hit = cache.get(key);
+      if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
+      try {
+        const items = await googleNewsUS(q);
+        const data = { items };
+        cache.set(key, { at: Date.now(), data });
+        return NextResponse.json(data);
+      } catch (e) {
+        return NextResponse.json({ items: [], error: String(e) });
+      }
     }
+
+    // US 메인 뉴스 — Yahoo ^GSPC RSS(키리스) + 대표기사 og:image(상위 3건)
+    const hit = cache.get("US");
+    if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
     try {
-      const items = await usNews();
+      const parsed = await usNews();
+      const TOP = Math.min(3, parsed.length);
+      await Promise.all(
+        parsed.slice(0, TOP).map(async (it) => {
+          const img = await ogImage(it.link);
+          if (img) it.image = img;
+        })
+      );
+      let fi = parsed.findIndex((it) => it.image);
+      if (fi < 0) fi = 0;
+      const items = [parsed[fi], ...parsed.filter((_, i) => i !== fi)];
       const data = { items };
       cache.set("US", { at: Date.now(), data });
       return NextResponse.json(data);

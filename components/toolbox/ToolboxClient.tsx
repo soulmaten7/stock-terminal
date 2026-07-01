@@ -41,7 +41,7 @@ const FEED_SUB_LABEL: Record<string, string> = {
 // 현재 macro만 US 개방(/api/macro/summary가 ECOS+FRED 둘 다 반환). 나머지는 KR 전용 유지.
 const FEED_COUNTRY_SUPPORT: Record<string, ('KR' | 'US')[]> = {
   news: ['KR', 'US'], disclosure: ['KR', 'US'], macro: ['KR', 'US'],
-  analysis: ['KR'], research: ['KR'], etf: ['KR'], ipo: ['KR'],
+  analysis: ['KR', 'US'], research: ['KR', 'US'], etf: ['KR', 'US'], ipo: ['KR', 'US'],
 };
 function feedSupports(tab: string, c: 'KR' | 'US') { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
 
@@ -50,10 +50,18 @@ function feedFor(tab: string, country: 'KR' | 'US') {
     case 'news': return <NewsFeed country={country} />;
     case 'disclosure': return country === 'US' ? <SecFeed /> : <DartFeed />;
     case 'macro': return <MacroFeed defaultView={country === 'US' ? 'us' : 'kr'} />;
-    case 'analysis': return <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
-    case 'research': return <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
-    case 'etf': return <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
-    case 'ipo': return <OfferingsFeed />;
+    case 'analysis': return country === 'US'
+      ? <NewsFeed country="US" query="US stock company earnings results" title="미국 실적·기업 뉴스" />
+      : <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
+    case 'research': return country === 'US'
+      ? <NewsFeed country="US" query="stock analyst rating price target upgrade downgrade" title="미국 애널리스트·리포트 뉴스" />
+      : <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
+    case 'etf': return country === 'US'
+      ? <NewsFeed country="US" query="ETF fund inflows stock market" title="미국 ETF·펀드 뉴스" />
+      : <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
+    case 'ipo': return country === 'US'
+      ? <NewsFeed country="US" query="IPO stock market debut listing" title="미국 IPO·공모 뉴스" />
+      : <OfferingsFeed />;
     default: return null;
   }
 }
