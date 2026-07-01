@@ -121,13 +121,16 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   }
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
-  const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림
+  const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림(데스크탑)
   const periodRef = useRef<HTMLDivElement>(null);
+  const [periodOpenM, setPeriodOpenM] = useState(false); // 기간 커스텀 드롭다운 열림(모바일)
+  const periodRefM = useRef<HTMLDivElement>(null);
 
   // 기간 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러)
   useEffect(() => {
     function onDoc(e: MouseEvent) {
       if (periodRef.current && !periodRef.current.contains(e.target as Node)) setPeriodOpen(false);
+      if (periodRefM.current && !periodRefM.current.contains(e.target as Node)) setPeriodOpenM(false);
     }
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
@@ -289,15 +292,35 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               </button>
               <div className="flex-1" />
               <span className="inline-flex items-center gap-1">
-                <select
-                  value={mobilePeriod}
-                  onChange={(e) => { const p = e.target.value as PeriodKey; setMobilePeriod(p); setSortKey(p); setSortDir('desc'); setPage(0); }}
-                  aria-label="기간 선택 및 정렬"
-                  className={`rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs outline-none ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
-                >
-                  {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
-                </select>
-                <button type="button" onClick={() => clickHeader(mobilePeriod)} aria-label="선택 기간 정렬 방향" className="text-unjong-muted">
+                <div ref={periodRefM} className="relative w-[4.75rem]">
+                  <button
+                    type="button"
+                    onClick={() => setPeriodOpenM((o) => !o)}
+                    aria-haspopup="listbox"
+                    aria-expanded={periodOpenM}
+                    className={`flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs outline-none hover:border-unjong-accent ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                  >
+                    {PERIODS.find((p) => p.key === mobilePeriod)?.label ?? '기간'}
+                    <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
+                  </button>
+                  {periodOpenM ? (
+                    <div role="listbox" className="absolute right-0 top-full z-50 mt-1 w-[4.75rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                      {PERIODS.map((p) => (
+                        <button
+                          key={p.key}
+                          type="button"
+                          role="option"
+                          aria-selected={p.key === mobilePeriod}
+                          onClick={() => { setMobilePeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpenM(false); }}
+                          className={`block w-full px-2 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <button type="button" onClick={() => clickHeader(mobilePeriod)} aria-label="선택 기간 정렬 방향" className="shrink-0 text-unjong-muted">
                   {sortArrow(mobilePeriod)}
                 </button>
               </span>
