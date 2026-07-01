@@ -13,9 +13,7 @@ const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 // data/us_symbols.json: [{ sym, name, type }] — 주식만(type==='stock') 추림(~6,121)
 type Sym = { sym: string; name: string; type: string };
-const STOCK_SYMS: string[] = (symbols as Sym[])
-  .filter((s) => s.type === "stock")
-  .map((s) => s.sym);
+const ALL_SYMS = symbols as Sym[];
 
 type Item = {
   symbol: string;
@@ -29,8 +27,6 @@ type Item = {
   r1y: number | null; // 1년 — quote의 fiftyTwoWeekChangePercent(즉시)
   amount: number; // 거래대금(USD) = 현재가 × 거래량 — 정렬 전용
 };
-
-let cache: { at: number; data: { items: Item[] } } | null = null;
 
 // N개씩 청크
 function chunk<T>(arr: T[], n: number): T[][] {
@@ -53,14 +49,20 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
   return out;
 }
 
-export async function GET() {
-  // 15분 인메모리 캐시
-  if (cache && Date.now() - cache.at < 15 * 60 * 1000) {
-    return NextResponse.json(cache.data);
+const cacheByType = new Map<string, { at: number; data: { items: Item[] } }>();
+
+export async function GET(req: Request) {
+  const type = (new URL(req.url).searchParams.get("type") || "stock").trim();
+  const SYMS = ALL_SYMS.filter((s) => s.type === type).map((s) => s.sym);
+
+  // 15분 인메모리 캐시(type별)
+  const hit = cacheByType.get(type);
+  if (hit && Date.now() - hit.at < 15 * 60 * 1000) {
+    return NextResponse.json(hit.data);
   }
 
-  // 100개씩 묶어 batch quote, 동시 6청크까지. (~62 청크 × 6동시 — 야후 부담 최소화)
-  const chunks = chunk(STOCK_SYMS, 100);
+  // 100개씩 묶어 batch quote
+  const chunks = chunk(SYMS, 100);
   const perChunk = await mapLimit(chunks, 6, async (syms): Promise<Item[]> => {
     try {
       const r = await yf.quote(syms);
@@ -114,6 +116,6 @@ export async function GET() {
   }
 
   const data = { items };
-  cache = { at: Date.now(), data };
+  cacheByType.set(type, { at: Date.now(), data });
   return NextResponse.json(data);
 }

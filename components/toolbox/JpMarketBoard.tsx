@@ -24,9 +24,11 @@ type Row = {
 };
 
 // 하위 카테고리 탭 — 미국 시장 기준(주식 | ETF). 둘 다 라이브(각각 별도 라우트 fetch).
-type SubTab = 'stock';
+type SubTab = 'stock' | 'etf' | 'reit';
 const SUBTABS: { key: SubTab; label: string }[] = [
   { key: 'stock', label: '종목' },
+  { key: 'etf', label: 'ETF' },
+  { key: 'reit', label: '리츠' },
 ];
 
 // 기간 드롭다운: 현재가 다음 단일 컬럼을 선택 기간으로 표시(1일부터). 모든 기간이 행에 직접 있음(주식=us-list 조인, ETF=etf-performance).
@@ -51,8 +53,10 @@ function pctColor(v?: number | null): string {
 // 하위탭별 데이터 소스 — 주식=전종목 목록(us-list, batch quote + us_stock_perf 조인 / 전 기간 포함), ETF=us-etf-performance(기간 포함).
 const ENDPOINTS: Record<SubTab, string> = {
   stock: '/api/yahoo/jp-list',
+  etf: '/api/yahoo/jp-list?type=etf',
+  reit: '/api/yahoo/jp-list?type=reit',
 };
-const CACHE_KEYS: Record<SubTab, string> = { stock: 'jp-stock-list' };
+const CACHE_KEYS: Record<SubTab, string> = { stock: 'jp-stock-list', etf: 'jp-etf-list', reit: 'jp-reit-list' };
 
 async function fetchRows(tab: SubTab): Promise<Row[]> {
   try {

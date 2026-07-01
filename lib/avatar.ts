@@ -193,11 +193,11 @@ export function logoUrl(code: string): string | null {
 /** 레버리지/인버스 ETF면 배지 정보(이름 파싱), 아니면 null */
 export function leverageInfo(name: string): { label: string; inverse: boolean } | null {
   const n = (name || "").toUpperCase();
-  const inverse = /인버스|\bINVERSE\b|\bBEAR\b/.test(n);
+  const inverse = /인버스|\bINVERSE\b|\bBEAR\b|インバース|ベア/.test(n);
   let mult: string | null = null;
-  if (/\b3\s*X\b|3배/.test(n)) mult = "3x";
-  else if (/\b2\s*X\b|2배/.test(n)) mult = "2x";
-  else if (/레버리지|\bLEVERAGE\b|\bBULL\b/.test(n)) mult = "2x";
+  if (/\b3\s*X\b|3배|3倍/.test(n)) mult = "3x";
+  else if (/\b2\s*X\b|2배|2倍|ダブル/.test(n)) mult = "2x";
+  else if (/레버리지|\bLEVERAGE\b|\bBULL\b|レバレッジ|ブル/.test(n)) mult = "2x";
   if (mult) return { label: mult, inverse };
   if (inverse) return { label: "인", inverse: true };
   return null;

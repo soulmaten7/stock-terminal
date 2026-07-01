@@ -11,7 +11,7 @@ const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 // data/us_symbols.json: [{ sym, name, type }] — 주식만(type==='stock') 추림(~6,121)
 type Sym = { sym: string; name: string; type: string };
 const STOCK_SYMS: string[] = (symbols as Sym[])
-  .filter((s) => s.type === "stock")
+  .filter((s) => s.type === "stock" || s.type === "etf" || s.type === "reit")
   .map((s) => s.sym);
 
 // us-performance와 동일 ret 패턴 — daysAgo 거래일 전 종가 대비 수익률(%)
