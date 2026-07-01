@@ -1,6 +1,12 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-01 — STEP 493 — A주(SS/SZ) r1w~r6m 東方財富 kline 대체 (Yahoo 400 → 6,697개 계산)
+
+- `lib/cnPerf.ts`: `.SS`/`.SZ` → 東方財富 `push2his.eastmoney.com` kline(secid 1.=상해/0.=심천, 전복권, 일봉 260일)
+- `.HK`/`.ETF(HK)` = Yahoo chart 유지
+- 재시딩: **6,697개** (이전 2,821 → +3,876). SS 1,856/1,856(100%), SZ 2,012/2,012(100%), HK 2,589/2,808(92%), ETF 248/412(60%)
+
 ## 2026-07-01 — STEP 492v2 — CN 전종목 확충: HKEX 공식목록+후강퉁·선강퉁 (108→7,098, HK 2808/SS 1856/SZ 2012/ETF 412)
 
 - `data/cn_symbols.json` 교체: 108 큐레이션 → **7,098 전종목** (HKEX ListOfSecurities.xlsx + SSE_Securities.csv + SZSE_Securities.csv)

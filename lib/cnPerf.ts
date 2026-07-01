@@ -34,6 +34,28 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
   return out;
 }
 
+// A주(.SS/.SZ) 일봉 종가 — 東方財富(Eastmoney) 무료 kline. Yahoo가 A주 과거시세(chart)를 400으로 차단해 대체.
+// secid: 1.=상해(.SS) / 0.=심천(.SZ). klt=101 일봉, fqt=1 전복권. fields2=f51(날짜),f53(종가).
+async function eastmoneyCloses(secid: string): Promise<number[]> {
+  try {
+    const url =
+      `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}` +
+      `&fields1=f1&fields2=f51,f53&klt=101&fqt=1&end=20500101&lmt=260`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0", Referer: "https://quote.eastmoney.com/" },
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return [];
+    const j = (await res.json()) as { data?: { klines?: string[] } };
+    const klines = j.data?.klines ?? [];
+    return klines
+      .map((k) => parseFloat(k.split(",")[1]))
+      .filter((c) => isFinite(c) && c > 0);
+  } catch {
+    return [];
+  }
+}
+
 type PerfRow = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
 
 export async function computeCnPerf(): Promise<{ ok: true; computed: number; at: string }> {
@@ -42,11 +64,20 @@ export async function computeCnPerf(): Promise<{ ok: true; computed: number; at:
 
   const results = await mapLimit(ALL_SYMS, 12, async (sym): Promise<PerfRow | null> => {
     try {
-      const ch = await yf.chart(sym, { period1, interval: "1d" });
-      const quotes = (ch.quotes ?? []) as Array<{ close: number | null }>;
-      const closes = quotes
-        .map((q) => q.close)
-        .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
+      let closes: number[];
+      if (sym.endsWith(".HK")) {
+        // 홍콩·ETF → Yahoo chart (정상 동작)
+        const ch = await yf.chart(sym, { period1, interval: "1d" });
+        const quotes = (ch.quotes ?? []) as Array<{ close: number | null }>;
+        closes = quotes
+          .map((q) => q.close)
+          .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
+      } else {
+        // 상해(.SS)·심천(.SZ) A주 → 東方財富 kline (Yahoo 차단 대체)
+        const code = sym.replace(/\.(SS|SZ)$/, "");
+        const secid = (sym.endsWith(".SS") ? "1." : "0.") + code;
+        closes = await eastmoneyCloses(secid);
+      }
       if (closes.length < 6) return null; // 1주(5거래일)도 못 채우면 스킵
       return {
         symbol: sym,
