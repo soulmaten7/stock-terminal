@@ -102,8 +102,15 @@ export async function GET(req: Request) {
   // jp_stock_perf(크론 미리계산) 조인 — 1주~6개월을 종목별로 머지. 테이블 비면 null 유지("—").
   try {
     const sb = createAdminClient();
-    const { data: perf } = await sb.from("jp_stock_perf").select("symbol,r1w,r1m,r3m,r6m");
-    if (perf && perf.length > 0) {
+    type P = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
+    const perf: P[] = [];
+    for (let from = 0; from < 20000; from += 1000) {
+      const { data } = await sb.from("jp_stock_perf").select("symbol,r1w,r1m,r3m,r6m").range(from, from + 999);
+      if (!data || data.length === 0) break;
+      perf.push(...(data as P[]));
+      if (data.length < 1000) break;
+    }
+    if (perf.length > 0) {
       const map = new Map<string, { r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null }>();
       for (const p of perf as { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null }[]) {
         map.set(p.symbol, { r1w: p.r1w, r1m: p.r1m, r3m: p.r3m, r6m: p.r6m });
