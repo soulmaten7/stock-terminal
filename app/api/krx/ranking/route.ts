@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -99,6 +100,34 @@ export async function GET(request: NextRequest) {
   const market = request.nextUrl.searchParams.get("market") || "all";
   const sort = request.nextUrl.searchParams.get("sort") || "amount";
   const limit = Math.min(parseInt(request.nextUrl.searchParams.get("limit") || "100", 10) || 100, 3000);
+
+  // ── 스냅샷 우선(크론 미리계산) — 즉시 서빙, 딜레이 없음 ──
+  try {
+    const sb = createAdminClient();
+    let q = sb
+      .from("kr_stock_snapshot")
+      .select("symbol,name,market,price,change_percent,volume,trade_amount,market_cap");
+    if (market === "kospi" || market === "kosdaq") q = q.eq("market", market);
+    const col =
+      sort === "volume" ? "volume" : sort === "cap" ? "market_cap" : sort === "up" || sort === "down" ? "change_percent" : "trade_amount";
+    const asc = sort === "down";
+    const { data, error } = await q.order(col, { ascending: asc, nullsFirst: false }).limit(limit);
+    if (!error && data && data.length > 0) {
+      const stocks = data.map((s, i) => ({
+        rank: i + 1,
+        symbol: s.symbol,
+        name: s.name,
+        price: Number(s.price) || 0,
+        changePercent: Number(s.change_percent) || 0,
+        volume: Number(s.volume) || 0,
+        tradeAmount: Number(s.trade_amount) || 0,
+        marketCap: Number(s.market_cap) || 0,
+      }));
+      return NextResponse.json({ stocks, source: "kr_snapshot" });
+    }
+  } catch {
+    /* 스냅샷 실패 → 아래 라이브 fallback */
+  }
 
   const key = (process.env.KRX_API_KEY || "").trim();
   if (!key) return NextResponse.json({ stocks: [], source: "krx", error: "no_key" });

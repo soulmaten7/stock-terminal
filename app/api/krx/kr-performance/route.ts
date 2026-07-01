@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,6 +74,18 @@ let cache: { at: number; data: unknown } | null = null;
 const TTL = 30 * 60 * 1000;
 
 export async function GET() {
+  // ── 스냅샷 우선(크론 미리계산) ──
+  try {
+    const sb = createAdminClient();
+    const { data, error } = await sb
+      .from("kr_stock_snapshot")
+      .select("symbol,r1w,r1m,r3m,r6m,r1y")
+      .limit(5000);
+    if (!error && data && data.length > 0) return NextResponse.json({ items: data });
+  } catch {
+    /* 스냅샷 실패 → 라이브 fallback */
+  }
+
   const key = (process.env.KRX_API_KEY || "").trim();
   if (!key) return NextResponse.json({ items: [], error: "no_key" });
   if (cache && Date.now() - cache.at < TTL) return NextResponse.json(cache.data);

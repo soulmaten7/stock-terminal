@@ -2,6 +2,7 @@
   "crons": [
     { "path": "/api/cron/fss-advisors", "schedule": "0 19 * * *" },
     { "path": "/api/cron/youtube-refresh", "schedule": "0 0 * * 1" },
-    { "path": "/api/cron/us-perf", "schedule": "0 22 * * *" }
+    { "path": "/api/cron/us-perf", "schedule": "0 22 * * *" },
+    { "path": "/api/cron/kr-perf", "schedule": "0 10 * * *" }
   ]
 }
