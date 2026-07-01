@@ -138,6 +138,35 @@ const DOMAIN_MAP: Record<string, string> = {
   "004990": "lotte.co.kr",          // 롯데지주
 };
 
+// 일본: NNNN.T → 회사 도메인 (로고 조회용). 없으면 아바타 폴백.
+const JP_DOMAIN_MAP: Record<string, string> = {
+  "7203.T": "toyota.com", "6758.T": "sony.com", "9984.T": "softbank.jp",
+  "8306.T": "mufg.jp", "6861.T": "keyence.com", "9983.T": "fastretailing.com",
+  "6098.T": "recruit.co.jp", "8058.T": "mitsubishicorp.com", "6501.T": "hitachi.com",
+  "8035.T": "tel.com", "6857.T": "advantest.com", "4063.T": "shinetsu.co.jp",
+  "9432.T": "ntt.com", "9433.T": "kddi.com", "7974.T": "nintendo.com",
+  "6902.T": "denso.com", "7267.T": "honda.com", "8316.T": "smfg.co.jp",
+  "8411.T": "mizuho-fg.com", "6367.T": "daikin.com", "4519.T": "chugai-pharm.co.jp",
+  "6594.T": "nidec.com", "6702.T": "fujitsu.com", "6503.T": "mitsubishielectric.com",
+  "7741.T": "hoya.com", "4568.T": "daiichisankyo.com", "8001.T": "itochu.co.jp",
+  "8031.T": "mitsui.com", "2914.T": "jt.com", "4502.T": "takeda.com",
+  "6981.T": "murata.com", "7751.T": "canon.com", "6301.T": "komatsu.com",
+  "8766.T": "tokiomarinehd.com", "9020.T": "jreast.co.jp", "4661.T": "olc.co.jp",
+  "6273.T": "smcworld.com", "6954.T": "fanuc.co.jp", "4543.T": "terumo.com",
+  "7011.T": "mhi.com", "8053.T": "sumitomocorp.com", "8002.T": "marubeni.com",
+  "9022.T": "jr-central.co.jp", "4901.T": "fujifilm.com", "6752.T": "panasonic.com",
+  "7269.T": "suzuki.co.jp", "7201.T": "nissan-global.com", "8267.T": "aeon.info",
+  "3382.T": "7andi.com", "9613.T": "nttdata.com", "6146.T": "disco.co.jp",
+  "6920.T": "lasertec.co.jp", "8591.T": "orix.co.jp", "8725.T": "ms-ad-hd.com",
+  "4452.T": "kao.com", "2802.T": "ajinomoto.com", "4523.T": "eisai.com",
+  "6971.T": "kyocera.com", "6762.T": "tdk.com", "5108.T": "bridgestone.com",
+  "7270.T": "subaru.co.jp", "7259.T": "aisin.com", "6326.T": "kubota.com",
+  "4578.T": "otsuka.com", "9101.T": "nyk.com", "5401.T": "nipponsteel.com",
+  "8801.T": "mitsuifudosan.co.jp", "8802.T": "mec.co.jp", "9434.T": "softbank.jp",
+  "4689.T": "lycorp.co.jp", "6178.T": "japanpost.jp", "7182.T": "jp-bank.japanpost.jp",
+  "8630.T": "sompo-hd.com",
+};
+
 /** 실로고 URL (logo.dev). 미국=티커 자동, 국내=도메인 매핑. 없으면 null(→아바타). */
 export function logoUrl(code: string): string | null {
   // 미국: 영문 티커 → logo.dev 티커 엔드포인트(7만 종목 자동)
@@ -145,6 +174,13 @@ export function logoUrl(code: string): string | null {
     return LOGODEV_TOKEN
       ? `https://img.logo.dev/ticker/${code}?token=${LOGODEV_TOKEN}&size=128&retina=true`
       : null;
+  }
+  // 일본: NNNN.T → 도메인 매핑
+  const jp = JP_DOMAIN_MAP[code];
+  if (jp) {
+    return LOGODEV_TOKEN
+      ? `https://img.logo.dev/${jp}?token=${LOGODEV_TOKEN}&size=128&retina=true`
+      : `https://www.google.com/s2/favicons?sz=128&domain=${jp}`;
   }
   // 국내: 6자리 → 도메인 매핑
   const domain = DOMAIN_MAP[code];

@@ -391,7 +391,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <div className="flex min-w-0 items-center gap-2.5">
                         <StockLogo code={r.symbol} name={r.name} size={32} />
                         <span className="min-w-0 truncate">
-                          <span className="font-bold text-unjong-primary">{r.symbol}</span>
+                          <span className="font-bold text-unjong-primary">{r.symbol.replace(/\.T$/, '')}</span>
                           <span title={r.name} className="ml-1.5 text-xs text-unjong-muted">{r.name}</span>
                         </span>
                       </div>
@@ -451,7 +451,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <span className="w-5 shrink-0 text-center text-xs tabular-nums text-unjong-muted">{page * PAGE_SIZE + i + 1}</span>
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
+                      <p className="truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol.replace(/\.T$/, '')}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'JP') : '—'}</span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
@@ -526,7 +526,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               <div className="mb-3 flex items-center gap-3">
                 <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={32} />
                 <div className="min-w-0 flex-1">
-                  <p className="font-bold leading-snug text-unjong-primary">{selectedStock.symbol}</p>
+                  <p className="font-bold leading-snug text-unjong-primary">{selectedStock.symbol.replace(/\.T$/, '')}</p>
                   <p className="font-mono text-xs text-unjong-muted">
                     {selectedStock.name} · {selectedStock.price ? formatPrice(selectedStock.price, 'JP') : '—'}
                     <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
