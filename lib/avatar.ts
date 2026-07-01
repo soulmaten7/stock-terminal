@@ -167,6 +167,20 @@ const JP_DOMAIN_MAP: Record<string, string> = {
   "8630.T": "sompo-hd.com",
 };
 
+const CN_DOMAIN_MAP: Record<string, string> = {
+  "0700.HK": "tencent.com", "9988.HK": "alibabagroup.com", "3690.HK": "meituan.com",
+  "0941.HK": "chinamobileltd.com", "0005.HK": "hsbc.com", "1299.HK": "aia.com",
+  "1810.HK": "mi.com", "1211.HK": "byd.com", "9618.HK": "jd.com",
+  "9999.HK": "netease.com", "9888.HK": "baidu.com", "1024.HK": "kuaishou.com",
+  "9866.HK": "nio.com", "0388.HK": "hkex.com.hk", "0981.HK": "smics.com",
+  "2318.HK": "pingan.cn", "2020.HK": "anta.com", "0175.HK": "geely.com",
+  "9626.HK": "bilibili.com", "9633.HK": "nongfuspring.com",
+  "600519.SS": "moutaichina.com", "300750.SZ": "catl.com", "002594.SZ": "byd.com",
+  "000333.SZ": "midea.com", "000651.SZ": "gree.com", "002415.SZ": "hikvision.com",
+  "300059.SZ": "eastmoney.com", "600036.SS": "cmbchina.com", "601318.SS": "pingan.cn",
+  "000063.SZ": "zte.com.cn", "002230.SZ": "iflytek.com",
+};
+
 /** 실로고 URL (logo.dev). 미국=티커 자동, 국내=도메인 매핑. 없으면 null(→아바타). */
 export function logoUrl(code: string): string | null {
   // 미국: 영문 티커 → logo.dev 티커 엔드포인트(7만 종목 자동)
@@ -182,6 +196,13 @@ export function logoUrl(code: string): string | null {
       ? `https://img.logo.dev/${jp}?token=${LOGODEV_TOKEN}&size=128&retina=true`
       : `https://www.google.com/s2/favicons?sz=128&domain=${jp}`;
   }
+  // 중화권: 티커.HK/.SS/.SZ → 도메인 매핑
+  const cn = CN_DOMAIN_MAP[code];
+  if (cn) {
+    return LOGODEV_TOKEN
+      ? `https://img.logo.dev/${cn}?token=${LOGODEV_TOKEN}&size=128&retina=true`
+      : `https://www.google.com/s2/favicons?sz=128&domain=${cn}`;
+  }
   // 국내: 6자리 → 도메인 매핑
   const domain = DOMAIN_MAP[code];
   if (!domain) return null;
@@ -193,11 +214,11 @@ export function logoUrl(code: string): string | null {
 /** 레버리지/인버스 ETF면 배지 정보(이름 파싱), 아니면 null */
 export function leverageInfo(name: string): { label: string; inverse: boolean } | null {
   const n = (name || "").toUpperCase();
-  const inverse = /인버스|\bINVERSE\b|\bBEAR\b|インバース|ベア/.test(n);
+  const inverse = /인버스|\bINVERSE\b|\bBEAR\b|インバース|ベア|反向|看空/.test(n);
   let mult: string | null = null;
   if (/\b3\s*X\b|3배|3倍/.test(n)) mult = "3x";
-  else if (/\b2\s*X\b|2배|2倍|ダブル/.test(n)) mult = "2x";
-  else if (/레버리지|\bLEVERAGE\b|\bBULL\b|レバレッジ|ブル/.test(n)) mult = "2x";
+  else if (/\b2\s*X\b|2배|2倍|ダブル|兩倍|二倍/.test(n)) mult = "2x";
+  else if (/레버리지|\bLEVERAGE\b|\bBULL\b|レバレッジ|ブル|槓桿|看多/.test(n)) mult = "2x";
   if (mult) return { label: mult, inverse };
   if (inverse) return { label: "인", inverse: true };
   return null;

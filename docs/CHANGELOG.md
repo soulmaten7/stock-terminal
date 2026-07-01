@@ -1,6 +1,17 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-01 — STEP 485~492 완료 · 중국 탭 완성(홍콩·상해·심천·ETF) + JP 번역·서브탭·풀심볼 확장 (HEAD TBD, push ✓)
+
+- **STEP 485**: US·JP 뉴스 한국어 번역 — `translateTitles()` (비공식 구글번역 gtx + `translation_cache` Supabase 테이블).
+- **STEP 486**: JP ETF·REIT 서브탭(3탭: 종목/ETF/리츠) + 일본어 레버리지 배지(`レバレッジ/インバース/ダブル`) + `cacheByType` 서브탭별 캐시.
+- **STEP 487**: `JP_NAME_MAP` 우선 → Yahoo 발행사명 오버라이드(1570.T=NOMURAname→NF 日経平均レバレッジ(2倍)).
+- **STEP 488**: US 리츠 서브탭(27개 REIT·`/api/yahoo/us-reit-performance`) + `UsMarketBoard` 3탭(주식/ETF/리츠).
+- **STEP 489**: JPX 공식 목록(`data_j.xls`) 파싱 → `jp_symbols.json` 72→4,268개(주식 3,739/ETF 466/리츠 63).
+- **STEP 490**: Supabase 1,000행 limit 수정 — `jp_stock_perf`·`us_stock_perf` 페이지네이션(`.range()` 루프). JP 2,582/3,724 r1w 채움, US 6,052/6,081.
+- **STEP 491**: 중국/HK 탭 배선 — `Country='CN'` + `FEED_COUNTRY_SUPPORT` CN 5탭 + Google News 중화권(`zh-HK/HK/HK:zh-Hant`) + 항셍·CSI300·USD/CNY 마키 인덱스(15개) + `NewsFeed` CN 분기.
+- **STEP 492**: `CnMarketBoard` 완전 배선 — `lib/currency.ts` HK·CN + `CN_DOMAIN_MAP` 31항목 + `logoUrl` CN 분기 + `leverageInfo` 중국어(反向/看空/槓桿/看多/兩倍/二倍) + `ToolboxClient` import+플레이스홀더 교체 + vercel.json cn-perf 크론. **108개 r1w 시딩 완료(HK40/SS30/SZ26/ETF12 전부 채움)**.
+
 ## 2026-07-01 — STEP 479~484 완료 · 일본 탭 완성(종목·뉴스·로고·닛케이225) + 레버리지 배지 오탐 수정 (HEAD `44e0aac`, push ✓)
 
 - **STEP 479**: `Country` 타입 `'JP'` 추가 + 🇯🇵 국가 토글 + `FEED_COUNTRY_SUPPORT` JP 확장(5탭) + `link_hub` JP 자동 노출.

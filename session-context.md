@@ -2,6 +2,19 @@
 <!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## (이어서 2026-07-01) STEP 485~492 완료 · 중국 탭 완성(홍콩·상해·심천·ETF) ✅
+
+전부 실행·push 완료. **HEAD TBD.** DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 485**: US·JP 뉴스 한국어 번역(`translateTitles` + `translation_cache`).
+- **STEP 486**: JP ETF·REIT 서브탭 + 일본어 레버리지 배지 + 서브탭별 `cacheByType`.
+- **STEP 487**: `JP_NAME_MAP` → Yahoo 발행사명 오버라이드.
+- **STEP 488**: US 리츠 서브탭(27개 REIT).
+- **STEP 489**: JPX 공식 목록 → `jp_symbols.json` 4,268개(주식/ETF/리츠).
+- **STEP 490**: Supabase 1,000행 limit `.range()` 페이지네이션 수정.
+- **STEP 491**: `Country='CN'` + FEED CN 5탭 + 항셍·CSI300·USD/CNY 마키.
+- **STEP 492**: `CnMarketBoard` 완전 배선 — HK·CN 통화 + CN_DOMAIN_MAP 31항목 + leverageInfo 중국어 + ToolboxClient 교체 + 크론. **108개 시딩(HK40/SS30/SZ26/ETF12)**.
+- ▶ **다음**: HKEX 공식 목록으로 HK 전종목 확충(STEP 493) or prod 라이브 검증 or Phase 2 결제 PG.
+
 ## (이어서 2026-07-01) STEP 479~484 완료 · 일본 탭 완성 + 레버리지 배지 오탐 수정 ✅
 
 전부 실행·push 완료. **HEAD `44e0aac`.** DB="Trillion"(`ccbwxcszdoyjxvckedfp`).

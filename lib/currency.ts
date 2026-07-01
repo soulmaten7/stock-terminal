@@ -3,6 +3,8 @@ const CURRENCY: Record<string, { sym: string; pos: 'pre' | 'suf'; frac: number; 
   KR: { sym: '원', pos: 'suf', frac: 0, locale: 'ko-KR' },
   US: { sym: '$', pos: 'pre', frac: 2, locale: 'en-US' },
   JP: { sym: '¥', pos: 'pre', frac: 0, locale: 'ja-JP' },
+  HK: { sym: 'HK$', pos: 'pre', frac: 2, locale: 'en-HK' },
+  CN: { sym: '¥', pos: 'pre', frac: 2, locale: 'zh-CN' },
 };
 
 export function formatPrice(v: number, country: string): string {

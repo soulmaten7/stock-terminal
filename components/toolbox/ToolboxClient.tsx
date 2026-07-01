@@ -8,6 +8,7 @@ import AdvisorDirectory from './AdvisorDirectory';
 import MarketBoard from './MarketBoard';
 import UsMarketBoard from './UsMarketBoard';
 import JpMarketBoard from './JpMarketBoard';
+import CnMarketBoard from './CnMarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import SecFeed from './SecFeed';
@@ -201,7 +202,7 @@ export default function ToolboxClient({
           ) : country === 'JP' ? (
             <JpMarketBoard isLoggedIn={isLoggedIn} />
           ) : (
-            <Placeholder emoji="🇨🇳" title="중국·홍콩 종목보드 — 준비 중" desc="곧 제공됩니다" />
+            <CnMarketBoard isLoggedIn={isLoggedIn} />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (

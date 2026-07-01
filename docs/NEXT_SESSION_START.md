@@ -1,7 +1,10 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-01 (최신) — STEP 479~484 완료 (HEAD `44e0aac`, push ✓).** 일본 탭 완성: `JpMarketBoard`(Yahoo `.T` 72종목·¥ 통화·모바일 카드형·바텀시트) + `jp_stock_perf` 크론(08:00 UTC) + 72행 시딩 완료 + Google News 일본(5탭: 뉴스·실적·리포트·ETF·IPO) + 닛케이225+USD/JPY 마키 추가 + `JP_DOMAIN_MAP` 73항목 실로고 + `.T` 접미어 표시 숨김 + 레버리지·인버스 배지 단어경계(`\b`) 오탐 수정.
+> 🆕 **2026-07-01 (최신) — STEP 485~492 완료.** 중국 탭 완성: `CnMarketBoard`(홍콩·상해·심천·ETF 4서브탭·현재가 라이브·1주~6개월 크론) + 뉴스 번역(`translateTitles`) + JP 4,268종목 확장 + US REIT 서브탭 + Supabase 1,000행 limit 수정 + 항셍·CSI300 마키. **108개 r1w 시딩 완료(HK40/SS30/SZ26/ETF12)**.
+> **▶ 다음 = HKEX 공식 목록 HK 전종목 확충(STEP 493·JPX 489 방식) or prod 라이브 검증 or Phase 2 결제 PG.**
+>
+> 🆕 **2026-07-01 — STEP 479~484 완료 (HEAD `44e0aac`, push ✓).** 일본 탭 완성: `JpMarketBoard`(Yahoo `.T` 72종목·¥ 통화·모바일 카드형·바텀시트) + `jp_stock_perf` 크론(08:00 UTC) + 72행 시딩 완료 + Google News 일본(5탭: 뉴스·실적·리포트·ETF·IPO) + 닛케이225+USD/JPY 마키 추가 + `JP_DOMAIN_MAP` 73항목 실로고 + `.T` 접미어 표시 숨김 + 레버리지·인버스 배지 단어경계(`\b`) 오탐 수정.
 > **▶ 다음 = prod 라이브 검증(일본 탭·배지 픽스) → 중국/홍콩 or 인도 탭(`COUNTRY_TAB_PLAYBOOK`) or Phase 2 결제 PG.**
 >
 > 🆕 **2026-07-01 — STEP 473~478 완료 (HEAD `8795c1b`, 배포 ✓).** US 피드 파리티(뉴스 이미지+모아보기 4탭) + KR 종목 딜레이 제거(크론 스냅샷 2,769행 시딩→로딩 즉시) + KR/US 모바일 개편(카드형+바텀시트 스냅+PC식 정렬) + US 링크 67→139. (직전)
