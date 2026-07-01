@@ -4,7 +4,7 @@
 > **이 파일 하나만 읽으면 새 세션이 바로 업무 가능하도록 만든 완전 자급형 문서.**
 > 더 깊은 히스토리 = `docs/SESSION_BOOT.md`(배너 누적) · `docs/CHANGELOG.md` · 정책 = `docs/ROADMAP.md` §3.
 > **갱신 시점: 2026-07-01 · HEAD `8795c1b`(STEP 478/476) · 배포 ✓ onetrillion.app 라이브.**
-> **🆕 2026-07-01 세션: ① US 링크 67→139 · ② US 피드 파리티(뉴스 이미지+모아보기 4탭, STEP 473) · ③ KR 종목 딜레이 제거(크론 미리계산+`kr_stock_snapshot`, STEP 474·2,769행 시딩) · ④ KR/US 모바일 개편(카드형+바텀시트 스냅+PC식 정렬, STEP 475~478·476). ▶ 다음 = prod 라이브 검증 + 멀티 국가 2순위(일본).**
+> **🆕 2026-07-01 세션: ① US 링크 67→139 · ② US 피드 파리티(뉴스 이미지+모아보기 4탭, STEP 473) · ③ KR 종목 딜레이 제거(크론 미리계산+`kr_stock_snapshot`, STEP 474·2,769행 시딩) · ④ KR/US 모바일 개편(카드형+바텀시트 스냅+PC식 정렬, STEP 475~478·476). prod 라이브 검증 ✓(Google News·이미지·KR 스냅샷 680ms). ▶ 다음 = 멀티 국가 2순위(일본).**
 
 ---
 
@@ -21,7 +21,7 @@
 - 최신 코드 **HEAD `8795c1b` = STEP 476**(STEP 473~478 포함), origin/main 동기화·**배포 ✓ onetrillion.app 라이브.**
 - **KR 종목 로딩 딜레이(~10초) 해결** — `kr_stock_snapshot` 크론 미리계산 서빙(STEP 474). 스냅샷 **2,769행 시딩 완료**(기준일 20260630). 화면=스냅샷 즉시 SELECT, 비면 라이브 fallback.
 - **KR·US 종목표 모바일 개편 완료** — 카드형(종목명/티커 강조·현재가 축소) + 바텀시트 스냅포인트(50/66vh·overscroll 차단) + PC 동일 정렬 헤더(종목명·현재가·기간 커스텀 드롭다운). `MarketBoard`·`UsMarketBoard` 둘 다.
-- **US 탭 피드 파리티** — 뉴스 대표이미지 + 기업재무·리포트·ETF·공모주 모아보기(Google News 토픽, STEP 473). ⚠️ **prod에서 Google News(Vercel IP) 정상 여부 미검증** — 다음 세션 확인.
+- **US 탭 피드 파리티** — 뉴스 대표이미지 + 기업재무·리포트·ETF·공모주 모아보기(Google News 토픽, STEP 473). ✅ **prod 라이브 검증 완료(2026-07-01)**: onetrillion.app에서 Google News 정상 반환(Vercel IP 차단 없음)·뉴스 이미지 O·KR ranking `source:"kr_snapshot"` 680ms.
 - **AI·광고 빼면 KR 탭 = 베타 가능 수준.**
 - **🆕 2026-07-01: US 링크 허브 풀충전 완료** — `link_hub` US **67→139**(미국 자국 기준, 10개 카테고리 전부 KR 동급). onetrillion.app US 뉴스 탭 라이브 검증 완료. US 탭도 KR 수준 정보 밀도 확보. (코드 변경 없음·DB 직접이라 배포 불필요.)
 
@@ -100,7 +100,7 @@
 
 ## 10. ▶ 다음 작업 (우선순위)
 
-1. **prod 라이브 검증 (1순위 · 미완료)** — onetrillion.app에서 Chrome MCP로: ① US 뉴스/리포트/ETF/공모주 **모아보기(Google News)가 Vercel 서버 IP에서 안 막히고 뜨는지**(로컬은 OK) ② KR/US **모바일 종목표**(카드형·시트·PC식 정렬 헤더) ③ KR 종목 **로딩 속도**(스냅샷 서빙 `source:"kr_snapshot"`). Google News가 prod에서 비면 대체 소스로 전환(STEP 473 리스크 노트).
+1. ✅ **prod 라이브 검증 완료 (2026-07-01)** — onetrillion.app API 확인: US 모아보기 Google News 정상(Vercel IP 차단 없음)·뉴스 이미지 O·KR `source:"kr_snapshot"` 680ms. **→ 새 1순위 = 아래 2(일본).** (남은 확인: 모바일 UI를 실제 폰/Chrome 반응형으로 눈으로 한 번.)
 2. **멀티 국가 2순위(일본)** — `docs/COUNTRY_TAB_PLAYBOOK.md`대로. 먼저 시총 순위 + 한국예탁결제원 서학개미 보관금액·순매수 웹검색으로 국가 순서 확정 → 일본 `link_hub` 자국 기준 충전 → 배관(유니언 확장)·종목보드(크론 스냅샷)·피드 배선(STEP 473/474 미러).
 3. **Phase 2 결제** — 토스페이먼츠 빌링/구독(`subscriptions`·`billing_events`)+빌링키 정기결제+webhook. 전제: 토스 가입+법률자문+통신판매업.
 4. **Trillion AI (Phase 5)** — 종목분석/브리핑/요약 구독형. 전제: 유사투자자문업 신고+법률자문.
@@ -114,7 +114,7 @@
 - **STEP 475·477·478** — KR 종목표 모바일: 카드형(종목명 강조·현재가 축소) + 바텀시트 스냅포인트(50/66vh·overscroll) + PC 동일 정렬 헤더(기간 커스텀 드롭다운). `MarketBoard.tsx`.
 - **STEP 476** — US 종목표 모바일 동일 미러. `UsMarketBoard.tsx`.
 - **`docs/COUNTRY_TAB_PLAYBOOK.md` 신설** — 국가 탭 표준 틀(구성요소·touch-point·DoD·구현순서·6개국 소스 매트릭스) + §4-2 성능/모바일 전 국가 표준.
-- ▶ **미완료: prod Google News/모바일/속도 라이브 검증**(다음 세션 1순위).
+- ✅ **prod 라이브 검증 완료**: onetrillion.app에서 Google News(Vercel IP 차단 없음)·뉴스 이미지·KR 스냅샷 680ms 정상. ▶ 다음 = 일본 탭.
 
 ---
 
