@@ -14,6 +14,7 @@ const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 // data/us_symbols.json: [{ sym, name, type }] — 주식만(type==='stock') 추림(~6,121)
 type Sym = { sym: string; name: string; type: string };
 const ALL_SYMS = symbols as Sym[];
+const NAME_MAP = new Map(ALL_SYMS.map((s) => [s.sym, s.name]));
 
 type Item = {
   symbol: string;
@@ -75,6 +76,7 @@ export async function GET(req: Request) {
         rows.push({
           symbol: (q as { symbol: string }).symbol,
           name:
+            NAME_MAP.get((q as { symbol: string }).symbol) ||
             (q as { shortName?: string }).shortName ||
             (q as { longName?: string }).longName ||
             (q as { symbol: string }).symbol,
