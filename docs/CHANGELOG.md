@@ -1,6 +1,15 @@
 <!-- 2026-07-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-01 — STEP 473~478 완료 · US 피드 파리티 + KR 딜레이 제거 + KR/US 모바일 개편 (HEAD `8795c1b`, 전부 push·배포)
+
+- **STEP 473**: US 탭 피드 파리티 — 뉴스 대표이미지(og:image) + 모아보기 4탭(Google News 토픽·기업재무/리포트/ETF/공모주). ⚠️ prod Google News(Vercel IP) 미검증.
+- **STEP 474**: KR 종목 딜레이 제거 — `kr_stock_snapshot` 테이블(MCP) + `/api/cron/kr-perf`(`lib/krSnapshot`) + ranking/kr-performance 스냅샷 우선 서빙 + vercel 크론(10 UTC). **2,769행 시딩 완료**(기준일 20260630) → 로딩 ~10초→즉시.
+- **STEP 475·477·478**: KR 종목표 모바일 — 카드형(종목명 강조·현재가 축소) + 바텀시트 스냅포인트(50/66vh·overscroll-contain) + PC 동일 정렬 헤더(종목명·현재가·기간 커스텀 드롭다운, native select 제거).
+- **STEP 476**: US 종목표 모바일 동일 미러(`UsMarketBoard`).
+- **`COUNTRY_TAB_PLAYBOOK.md` 신설 + §4-2**: 국가 탭 표준 틀 + 종목보드 성능(크론 미리계산 필수)·모바일 = 전 국가 공통 표준.
+- ▶ 미완료: prod 라이브 검증(Google News·모바일·속도).
+
 ## 2026-07-01 — 🔗 US 링크 허브 풀충전 (67→139 · 미국 자국 기준 · MCP 직접 · 라이브 검증)
 
 코드 변경 없음(DB 직접 insert). HEAD `b741ead` 유지. DB="Trillion" `ccbwxcszdoyjxvckedfp`. **prod 같은 Supabase → 즉시 라이브·배포 불필요.**

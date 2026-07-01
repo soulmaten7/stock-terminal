@@ -2,6 +2,16 @@
 <!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## (이어서 2026-07-01) STEP 473~478 완료 · KR 딜레이 제거(스냅샷 2769행) + KR/US 모바일 개편 + 플레이북 §4-2 ✅
+
+전부 실행·push·배포 완료. **HEAD `8795c1b`.** DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 473**(US 피드 파리티): 뉴스 대표이미지(og:image) + 기업재무/리포트/ETF/공모주 모아보기(Google News 토픽·키리스). `route.ts`·`NewsFeed`·`ToolboxClient`. ⚠️ prod Google News(Vercel IP) 미검증.
+- **STEP 474**(KR 딜레이 제거): 원인=`krx/ranking`·`kr-performance` force-dynamic+인메모리(콜드스타트 소멸) 매 접속 KRX 전종목 라이브. → `kr_stock_snapshot`(MCP) + `/api/cron/kr-perf`(`lib/krSnapshot`) + 스냅샷 우선 서빙 + vercel 크론(10 UTC). **크론 1회 호출로 2,769행 시딩 완료**(기준일 20260630) → 로딩 10초→즉시. (dev/prod 같은 DB라 한 번에 양쪽.)
+- **STEP 475·477·478**(KR 모바일): 카드형(종목명 강조·현재가 축소) + 바텀시트 스냅(50/66vh·overscroll-contain) + PC 동일 정렬 헤더(기간 native select→커스텀 드롭다운). 반복 피드백 반영(정렬 컬럼 헤더식·아이콘 개선).
+- **STEP 476**(US 모바일): 동일 미러(`UsMarketBoard`).
+- **플레이북 §4-2 신설**: 종목보드=크론 미리계산 필수(라이브 fetch 금지)+모바일 카드형·바텀시트 = 전 국가 공통 표준.
+- ▶ **미완료 = prod 라이브 검증**(Google News Vercel IP·모바일·속도). 이후 일본 탭(`docs/COUNTRY_TAB_PLAYBOOK.md`).
+
 ## (이어서 2026-07-01) 🔗 US 링크 허브 풀충전 67→139 (미국 자국 기준·MCP 직접·라이브 검증) ✅
 
 코드 변경 없음(DB 직접 insert). HEAD 그대로 `b741ead`(문서 커밋만 추가 예정). DB="Trillion"(`ccbwxcszdoyjxvckedfp`). **배포 불필요**(prod도 같은 Supabase → 즉시 라이브).
