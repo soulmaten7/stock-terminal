@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -123,6 +124,56 @@ async function googleNews(query: string, hl = "en-US", gl = "US", ceid = "US:en"
   return items.slice(0, 20);
 }
 
+// ── 번역(비공식 구글번역·키리스) + translation_cache ──
+async function translateOne(text: string, target: string): Promise<string | null> {
+  try {
+    const url =
+      "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" +
+      target + "&dt=t&q=" + encodeURIComponent(text);
+    const res = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(4000) });
+    if (!res.ok) return null;
+    const j = (await res.json()) as [Array<[string]>];
+    const out = (j[0] || []).map((s) => (s && s[0]) || "").join("");
+    return out || null;
+  } catch {
+    return null;
+  }
+}
+
+async function transMapLimit<T>(arr: T[], limit: number, fn: (x: T) => Promise<void>): Promise<void> {
+  let idx = 0;
+  async function worker() { while (idx < arr.length) { const cur = idx++; await fn(arr[cur]); } }
+  await Promise.all(Array.from({ length: Math.min(limit, arr.length) }, () => worker()));
+}
+
+// 기사 제목을 target 언어로 번역(캐시 우선). 실패/동일 시 원문 유지.
+async function translateTitles(items: NewsItem[], target: string): Promise<NewsItem[]> {
+  if (!items.length) return items;
+  try {
+    const sb = createAdminClient();
+    const titles = [...new Set(items.map((i) => i.title).filter(Boolean))];
+    const map = new Map<string, string>();
+    const { data: cached } = await sb
+      .from("translation_cache")
+      .select("src_text,translated")
+      .eq("target_lang", target)
+      .in("src_text", titles);
+    for (const c of (cached || []) as { src_text: string; translated: string }[]) map.set(c.src_text, c.translated);
+    const misses = titles.filter((t) => !map.has(t));
+    const newRows: { target_lang: string; src_text: string; translated: string }[] = [];
+    await transMapLimit(misses, 8, async (t) => {
+      const tr = await translateOne(t, target);
+      if (tr && tr !== t) { map.set(t, tr); newRows.push({ target_lang: target, src_text: t, translated: tr }); }
+    });
+    if (newRows.length) {
+      try { await sb.from("translation_cache").upsert(newRows, { onConflict: "target_lang,src_text" }); } catch {}
+    }
+    return items.map((i) => ({ ...i, title: map.get(i.title) || i.title }));
+  } catch {
+    return items;
+  }
+}
+
 export async function GET(req: Request) {
   const market = (new URL(req.url).searchParams.get("market") || new URL(req.url).searchParams.get("country") || "").trim().toUpperCase();
 
@@ -137,7 +188,7 @@ export async function GET(req: Request) {
       if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
       try {
         const items = await googleNews(q, "en-US", "US", "US:en");
-        const data = { items };
+        const data = { items: await translateTitles(items, "ko") };
         cache.set(key, { at: Date.now(), data });
         return NextResponse.json(data);
       } catch (e) {
@@ -160,7 +211,7 @@ export async function GET(req: Request) {
       let fi = parsed.findIndex((it) => it.image);
       if (fi < 0) fi = 0;
       const items = [parsed[fi], ...parsed.filter((_, i) => i !== fi)];
-      const data = { items };
+      const data = { items: await translateTitles(items, "ko") };
       cache.set("US", { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
@@ -176,7 +227,7 @@ export async function GET(req: Request) {
     if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
     try {
       const items = await googleNews(q || "日経平均 株式市場 日本株", "ja", "JP", "JP:ja");
-      const data = { items };
+      const data = { items: await translateTitles(items, "ko") };
       cache.set(key, { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
