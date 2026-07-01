@@ -272,34 +272,35 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
           ) : (
             <>
-            <div className="mb-3 flex items-center gap-2 sm:hidden">
-              <span className="text-xs text-unjong-muted">정렬</span>
-              <select
-                value={sortKey}
-                onChange={(e) => {
-                  const v = e.target.value as 'name' | 'price' | PeriodKey;
-                  setSortKey(v); setSortDir('desc'); setPage(0);
-                  if (v !== 'name' && v !== 'price') setMobilePeriod(v as PeriodKey);
-                }}
-                className="rounded-lg border border-unjong-border bg-unjong-surface px-2 py-1.5 text-xs font-medium text-unjong-primary outline-none"
-              >
-                <option value="price">현재가</option>
-                <option value="name">종목명</option>
-                <option value="1d">1일 수익률</option>
-                <option value="1w">1주일 수익률</option>
-                <option value="1m">1개월 수익률</option>
-                <option value="3m">3개월 수익률</option>
-                <option value="6m">6개월 수익률</option>
-                <option value="1y">1년 수익률</option>
-              </select>
+            <div className="mb-1.5 flex items-center gap-3 border-b border-unjong-border pb-2 text-xs sm:hidden">
               <button
                 type="button"
-                onClick={() => setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))}
-                aria-label="정렬 방향 전환"
-                className="rounded-lg border border-unjong-border px-2 py-1.5 text-xs font-medium text-unjong-muted"
+                onClick={() => clickHeader('name')}
+                className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
-                {sortDir === 'desc' ? '↓ 내림' : '↑ 오름'}
+                종목명{sortArrow('name')}
               </button>
+              <button
+                type="button"
+                onClick={() => clickHeader('price')}
+                className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+              >
+                현재가{sortArrow('price')}
+              </button>
+              <div className="flex-1" />
+              <span className="inline-flex items-center gap-1">
+                <select
+                  value={mobilePeriod}
+                  onChange={(e) => { const p = e.target.value as PeriodKey; setMobilePeriod(p); setSortKey(p); setSortDir('desc'); setPage(0); }}
+                  aria-label="기간 선택 및 정렬"
+                  className={`rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs outline-none ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                >
+                  {PERIODS.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+                </select>
+                <button type="button" onClick={() => clickHeader(mobilePeriod)} aria-label="선택 기간 정렬 방향" className="text-unjong-muted">
+                  {sortArrow(mobilePeriod)}
+                </button>
+              </span>
             </div>
             <table className="hidden w-full table-fixed text-sm sm:table sm:min-w-[760px]">
               <thead>
@@ -438,9 +439,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <span className="w-5 shrink-0 text-center text-xs tabular-nums text-unjong-muted">{page * PAGE_SIZE + i + 1}</span>
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium text-unjong-primary">{r.name}</p>
+                      <p className="truncate text-[15px] font-bold leading-tight text-unjong-primary">{r.name}</p>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
-                        <span className="tabular-nums text-unjong-primary">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
+                        <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
                         <span className={`shrink-0 tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
                           <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === mobilePeriod)?.label}</span>
                           {pct(r[mobileField] as number | null | undefined)}
