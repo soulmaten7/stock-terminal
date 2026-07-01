@@ -84,11 +84,11 @@ async function usNews(): Promise<NewsItem[]> {
 }
 
 // US 토픽 피드: Google News RSS(키리스, 영문 토픽 검색). <item>의 title/link/pubDate/<source> 추출.
-async function googleNewsUS(query: string): Promise<NewsItem[]> {
+async function googleNews(query: string, hl = "en-US", gl = "US", ceid = "US:en"): Promise<NewsItem[]> {
   const url =
     "https://news.google.com/rss/search?q=" +
     encodeURIComponent(query) +
-    "&hl=en-US&gl=US&ceid=US:en";
+    "&hl=" + hl + "&gl=" + gl + "&ceid=" + ceid;
   const res = await fetch(url, {
     headers: {
       "User-Agent":
@@ -136,7 +136,7 @@ export async function GET(req: Request) {
       const hit = cache.get(key);
       if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
       try {
-        const items = await googleNewsUS(q);
+        const items = await googleNews(q, "en-US", "US", "US:en");
         const data = { items };
         cache.set(key, { at: Date.now(), data });
         return NextResponse.json(data);
@@ -162,6 +162,22 @@ export async function GET(req: Request) {
       const items = [parsed[fi], ...parsed.filter((_, i) => i !== fi)];
       const data = { items };
       cache.set("US", { at: Date.now(), data });
+      return NextResponse.json(data);
+    } catch (e) {
+      return NextResponse.json({ items: [], error: String(e) });
+    }
+  }
+
+  // ── JP 분기(Google News, 일본어) ──
+  if (market === "JP") {
+    const q = (new URL(req.url).searchParams.get("q") || "").trim();
+    const key = "JP:" + q;
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
+    try {
+      const items = await googleNews(q || "日経平均 株式市場 日本株", "ja", "JP", "JP:ja");
+      const data = { items };
+      cache.set(key, { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
       return NextResponse.json({ items: [], error: String(e) });
