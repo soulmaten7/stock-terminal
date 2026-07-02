@@ -3,21 +3,17 @@
 // npx tsx scripts/backtest_momentum.ts
 import YahooFinance from "yahoo-finance2";
 import { momentum121 } from "../lib/momentum";
+import symbols from "../data/us_symbols.json";
 
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 // F-Score 백테스트와 동일 유니버스(비교 위해). 생존편향 있음 — 방향성 참고용.
-const UNIVERSE = [
-  "AAPL","MSFT","NVDA","GOOGL","META","AMZN","AVGO","ORCL","CSCO","INTC","AMD","QCOM","TXN","MU","IBM","HPQ",
-  "JPM","BAC","WFC","GS","C","AXP",
-  "JNJ","PFE","MRK","ABBV","LLY","UNH","BMY","GILD","AMGN","CVS",
-  "WMT","COST","HD","LOW","TGT","NKE","SBUX","MCD","KO","PEP","PG","CL","KHC","MO",
-  "CAT","DE","BA","GE","HON","MMM","UPS","FDX","LMT","RTX",
-  "XOM","CVX","COP","SLB","OXY",
-  "LIN","FCX","NUE","NEM","DOW",
-  "DIS","NFLX","CMCSA","T","VZ",
-  "GM","F","M","KSS","GPS","BBY",
-];
+// 넓은 유니버스: us_symbols(주식)에서 고루 ~250 표본(가격만이라 EDGAR보다 넉넉히).
+type Sym = { sym: string; name: string; type: string };
+const allStocks = (symbols as Sym[]).filter((s) => s.type === "stock").map((s) => s.sym);
+const N = 250;
+const stepU = Math.max(1, Math.floor(allStocks.length / N));
+const UNIVERSE = allStocks.filter((_, i) => i % stepU === 0).slice(0, N);
 
 const HOLD_MONTHS = 3;
 const MIN_STOCKS = 15; // 분위 형성 최소 종목

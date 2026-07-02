@@ -3,20 +3,16 @@
 // npx tsx scripts/backtest_lowvol.ts
 import YahooFinance from "yahoo-finance2";
 import { realizedVol } from "../lib/lowvol";
+import symbols from "../data/us_symbols.json";
 
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
-const UNIVERSE = [
-  "AAPL","MSFT","NVDA","GOOGL","META","AMZN","AVGO","ORCL","CSCO","INTC","AMD","QCOM","TXN","MU","IBM","HPQ",
-  "JPM","BAC","WFC","GS","C","AXP",
-  "JNJ","PFE","MRK","ABBV","LLY","UNH","BMY","GILD","AMGN","CVS",
-  "WMT","COST","HD","LOW","TGT","NKE","SBUX","MCD","KO","PEP","PG","CL","KHC","MO",
-  "CAT","DE","BA","GE","HON","MMM","UPS","FDX","LMT","RTX",
-  "XOM","CVX","COP","SLB","OXY",
-  "LIN","FCX","NUE","NEM","DOW",
-  "DIS","NFLX","CMCSA","T","VZ",
-  "GM","F","M","KSS","GPS","BBY",
-];
+// 넓은 유니버스: us_symbols(주식)에서 고루 ~250 표본. 저변동 이례현상은 원래 넓은 못에서 나타남.
+type Sym = { sym: string; name: string; type: string };
+const allStocks = (symbols as Sym[]).filter((s) => s.type === "stock").map((s) => s.sym);
+const N = 250;
+const stepU = Math.max(1, Math.floor(allStocks.length / N));
+const UNIVERSE = allStocks.filter((_, i) => i % stepU === 0).slice(0, N);
 
 const HOLD_DAYS = 91; // ~3개월
 const MIN_STOCKS = 15;
