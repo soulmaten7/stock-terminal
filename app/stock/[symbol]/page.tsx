@@ -63,7 +63,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
         ))}
       </div>
       <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">
-        9개 재무 규칙 중 통과 개수(전년 대비 개선) = <b className="text-unjong-primary">재무 건전성</b> 지표예요. 검증(2014~2023 미국) 결과 <b className="text-unjong-primary">대형주에선 점수와 수익률의 뚜렷한 관계가 없었어요</b> — 소형·가치주에서 더 유효(정설). 수익 예측이 아니라 건전성 해석으로 보세요.
+        9개 재무 규칙 중 통과 개수(전년 대비 개선) = <b className="text-unjong-primary">재무 건전성</b> 지표예요. 자체 검증(미국 넓은 표본 2014~24)에선 <b className="text-unjong-primary">점수와 이후 수익률의 유효한 관계가 없었어요</b>(저점수 낙폭과대주 반등이 오히려 큼). <b className="text-unjong-primary">수익 예측이 아니라 재무 건전성 해석</b>으로만 보세요.
       </p>
     </div>
   );
@@ -74,6 +74,25 @@ export default function StockLensPage() {
   const symbol = decodeURIComponent(String(params?.symbol || ''));
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
+  const [aiContent, setAiContent] = useState<string | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  async function askAI() {
+    setAiLoading(true);
+    try {
+      const r = await fetch('/api/ai-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ symbol, name: data?.name, lenses: data?.lenses, fscore: data?.fscore }),
+      });
+      const j = await r.json();
+      setAiContent(j.content || 'AI 종합을 불러오지 못했어요.');
+    } catch {
+      setAiContent('AI 종합 생성 중 오류가 났어요.');
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (!symbol) return;
@@ -135,8 +154,29 @@ export default function StockLensPage() {
         </div>
       )}
 
+      {!loading && (data?.lenses?.length || data?.fscore) ? (
+        <div className="mt-4">
+          {aiContent ? (
+            <div className="rounded-xl border border-unjong-accent/40 bg-unjong-background p-4">
+              <p className="mb-1 text-sm font-bold text-unjong-primary">🤖 AI 종합</p>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-unjong-primary">{aiContent}</p>
+              <p className="mt-2 text-[11px] text-unjong-muted">렌즈 데이터를 정리한 해석이에요 · 예측·투자권유 아님</p>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={askAI}
+              disabled={aiLoading}
+              className="w-full rounded-xl bg-unjong-primary py-3 text-sm font-semibold text-white transition-opacity disabled:opacity-60"
+            >
+              {aiLoading ? 'AI가 종합하는 중…' : '🤖 AI 종합 보기 — 렌즈를 한눈에 정리'}
+            </button>
+          )}
+        </div>
+      ) : null}
+
       <p className="mt-6 text-center text-[11px] text-unjong-muted">
-        결정론 기법 렌즈(무료). 곧 실시간 뉴스·공시를 종합한 &quot;AI보기&quot;가 추가됩니다.
+        결정론 기법 렌즈(무료) + AI 종합. 예측이 아니라 정직한 해석이에요.
       </p>
     </main>
   );
