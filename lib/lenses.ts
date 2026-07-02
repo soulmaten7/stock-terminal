@@ -92,16 +92,17 @@ export function technicalLens(closes: number[]): LensRead {
   };
 }
 
-// ── 밸류에이션 렌즈 ── PER 절대기준 러프 판정(장기 관점). 섹터 맥락 없이는 참고용.
+// ── 밸류(가치) 렌즈 ── 검증: 투자가능($5+)서 싼(고 E/P·B/M) 종목이 비싼 종목 대비 이후수익 우위(E/P 강함·B/M 조건부).
+// 표시는 단일종목 절대 PER·PBR(러프) — 검증된 건 "상대적으로 싼 것"의 우위지 절대 임계값이 아님. 섹터내 상대비교로.
 export function valuationLens(pe: number | null, pb: number | null): LensRead {
   const peLab = pe == null || pe <= 0 ? null : pe < 10 ? "저평가" : pe > 25 ? "고평가" : "적정";
   return {
     key: "valuation",
-    name: "밸류에이션",
+    name: "밸류(가치)",
     short: null,
     long: peLab,
     detail: { PER: round(pe), PBR: round(pb) },
-    note: "PER 절대기준 러프 판정 — 아직 백테스트 미검증(참고용). 섹터·성장성 무시하면 오독.",
+    note: "가치 프리미엄 검증됨: 투자가능($5+) 종목에서 E/P(순이익/시총=1/PER) 상위(싼)군이 하위(비싼)군 대비 이후 12개월 +10.2%p/년(13년 중 11년 우위). B/M(장부/시총=1/PBR)은 +5.5%p·조건부(성장주 강세기 2018~19엔 역전). 단 이 카드의 PER·PBR은 단일종목 절대값 — 같은 업종 내 상대비교로 볼 것(섹터·성장성 무시하면 오독). 예측·보장 아님.",
   };
 }
 

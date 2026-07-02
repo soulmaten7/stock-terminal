@@ -40,6 +40,8 @@ const CONCEPTS: Record<string, string[]> = {
   currentLiabilities: ["LiabilitiesCurrent"],
   longTermDebt: ["LongTermDebtNoncurrent", "LongTermDebt", "LongTermDebtAndCapitalLeaseObligations"],
   shares: ["CommonStockSharesOutstanding", "WeightedAverageNumberOfSharesOutstandingBasic", "WeightedAverageNumberOfDilutedSharesOutstanding"],
+  // 자기자본(B/M 밸류 팩터용). 지배+비지배 포함 태그도 후보 — 은행·보험 등 금융주도 유효(밸류는 F-Score와 달리 금융 제외 안 함).
+  stockholdersEquity: ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest"],
 };
 
 let _cikMap: Record<string, string> | null = null;
@@ -78,7 +80,7 @@ function annualByFY(facts: Record<string, Record<string, { units?: Record<string
   return null;
 }
 
-export type EdgarRow = FRow & { fy: number };
+export type EdgarRow = FRow & { fy: number; stockholdersEquity: number | null };
 
 // ticker의 연도별 재무행(오름차순). 공백 처리: 매출=gross+cost 역산 / 매출총이익=gross 또는 rev-cost / 장기부채 공백=0.
 export async function edgarRows(ticker: string): Promise<EdgarRow[]> {
@@ -117,6 +119,7 @@ export async function edgarRows(ticker: string): Promise<EdgarRow[]> {
       longTermDebt: get("longTermDebt") ?? 0, // 공백 → 무차입 간주(0)
       operatingCashFlow: get("operatingCashFlow"),
       ordinarySharesNumber: get("shares"),
+      stockholdersEquity: get("stockholdersEquity"),
     });
   }
   return rows;
