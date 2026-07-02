@@ -4,6 +4,7 @@
 
 import { momentum121FromDaily, momentumLabel } from "./momentum";
 import { realizedVol, volLabel } from "./lowvol";
+import { sma, rsi, rsiState, maTrend } from "./technical";
 
 export type LensRead = {
   key: string;
@@ -27,26 +28,6 @@ function ret(closes: number[], daysAgo: number): number | null {
   return (now / past - 1) * 100;
 }
 
-function sma(closes: number[], n: number): number | null {
-  if (closes.length < n) return null;
-  let s = 0;
-  for (let i = closes.length - n; i < closes.length; i++) s += closes[i];
-  return s / n;
-}
-
-// RSI(14) — Wilder 단순화(최근 period 평균)
-function rsi(closes: number[], period = 14): number | null {
-  if (closes.length < period + 1) return null;
-  let gain = 0, loss = 0;
-  for (let i = closes.length - period; i < closes.length; i++) {
-    const d = closes[i] - closes[i - 1];
-    if (d >= 0) gain += d; else loss -= d;
-  }
-  const avgG = gain / period, avgL = loss / period;
-  if (avgL === 0) return 100;
-  const rs = avgG / avgL;
-  return 100 - 100 / (1 + rs);
-}
 
 // ── 모멘텀 렌즈 ── 단기=1·3개월 추세 / 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +).
 export function momentumLens(closes: number[]): LensRead {
@@ -76,8 +57,8 @@ export function technicalLens(closes: number[]): LensRead {
   const hi = win.length ? Math.max(...win) : null;
   const lo = win.length ? Math.min(...win) : null;
   const pos52 = last != null && hi != null && lo != null && hi > lo ? ((last - lo) / (hi - lo)) * 100 : null;
-  const shortLab = r == null ? null : r > 70 ? "과열" : r < 30 ? "침체" : "중립";
-  const longLab = last != null && ma200 != null ? (last >= ma200 ? "상승추세" : "하락추세") : null;
+  const shortLab = rsiState(r);
+  const longLab = maTrend(last, ma200);
   return {
     key: "technical",
     name: "기술",
@@ -88,7 +69,7 @@ export function technicalLens(closes: number[]): LensRead {
       "200일선대비%": last != null && ma200 ? round((last / ma200 - 1) * 100) : null,
       "52주위치%": round(pos52),
     },
-    note: "RSI·이동평균 기반 추세·과열 — 아직 백테스트 미검증(단독 신호 약함, 참고용).",
+    note: "검증 결과(투자가능 $5+·2014~24): RSI 침체/과열의 '평균회귀'는 미작동 — 오히려 과열 종목이 이후 3개월 더 나았음(+1.14% vs 침체 +0.23%). 추세 지속(모멘텀)이 평균회귀를 압도하기 때문. 200일선 위 종목은 아래보다 +0.76%p/3M(연 ~3%) 우위지만 완만·단독 신호로는 약함. → RSI·52주위치는 '지금 상태' 표시일 뿐 매매신호 아님, 추세는 모멘텀 렌즈로 보는 게 나음. 참고용.",
   };
 }
 
