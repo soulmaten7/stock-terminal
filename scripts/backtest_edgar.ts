@@ -4,21 +4,17 @@
 import YahooFinance from "yahoo-finance2";
 import { computeFScore } from "../lib/fscore";
 import { edgarRows } from "../lib/edgar";
+import symbols from "../data/us_symbols.json";
 
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 // 대표 US ~75(대형+중형+가치·경기민감 섞음). 생존편향 있음 — 방향성 참고용.
-const UNIVERSE = [
-  "AAPL","MSFT","NVDA","GOOGL","META","AMZN","AVGO","ORCL","CSCO","INTC","AMD","QCOM","TXN","MU","IBM","HPQ",
-  "JPM","BAC","WFC","GS","C","AXP",
-  "JNJ","PFE","MRK","ABBV","LLY","UNH","BMY","GILD","AMGN","CVS",
-  "WMT","COST","HD","LOW","TGT","NKE","SBUX","MCD","KO","PEP","PG","CL","KHC","MO",
-  "CAT","DE","BA","GE","HON","MMM","UPS","FDX","LMT","RTX",
-  "XOM","CVX","COP","SLB","OXY",
-  "LIN","FCX","NUE","NEM","DOW",
-  "DIS","NFLX","CMCSA","T","VZ",
-  "GM","F","M","KSS","GPS","BBY",
-];
+// 넓은 유니버스: us_symbols(주식)에서 고루 ~200 표본(대형+중형+소형) — 대형주 편향 제거.
+type Sym = { sym: string; name: string; type: string };
+const allStocks = (symbols as Sym[]).filter((s) => s.type === "stock").map((s) => s.sym);
+const N = 200;
+const stepU = Math.max(1, Math.floor(allStocks.length / N));
+const UNIVERSE = allStocks.filter((_, i) => i % stepU === 0).slice(0, N);
 
 const COHORTS = [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023];
 const HOLD_DAYS = 365;
@@ -38,7 +34,7 @@ for (const y of COHORTS) buckets[y] = { high: [], mid: [], low: [] };
 let scored = 0, tickersOk = 0;
 
 async function run() {
-  await mapLimit(UNIVERSE, 4, async (sym) => {
+  await mapLimit(UNIVERSE, 6, async (sym) => {
     try {
       const rows = await edgarRows(sym);
       if (rows.length < 2) return;

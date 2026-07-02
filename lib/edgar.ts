@@ -10,8 +10,31 @@ const CONCEPTS: Record<string, string[]> = {
   netIncome: ["NetIncomeLoss"],
   totalAssets: ["Assets"],
   operatingCashFlow: ["NetCashProvidedByUsedInOperatingActivities", "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations"],
-  totalRevenue: ["Revenues", "RevenueFromContractWithCustomerExcludingAssessedTax", "SalesRevenueNet"],
-  costOfRevenue: ["CostOfRevenue", "CostOfGoodsAndServicesSold", "CostOfGoodsSold"],
+  totalRevenue: [
+    "RevenueFromContractWithCustomerExcludingAssessedTax", // ASC606(현행 표준·대다수)
+    "Revenues",
+    "RevenueFromContractWithCustomerIncludingAssessedTax",
+    "SalesRevenueNet", // 구 표준
+    "SalesRevenueGoodsNet",
+    "SalesRevenueServicesNet",
+    "RevenuesNetOfInterestExpense", // 은행류
+    "TotalRevenuesAndOtherIncome",
+    "RegulatedAndUnregulatedOperatingRevenue", // 유틸리티
+    "RealEstateRevenueNet", // 부동산
+    "OilAndGasRevenue", // 정유·에너지
+    "HealthCareOrganizationRevenue", // 헬스케어
+    "RoyaltyRevenue", // 로열티
+  ],
+  costOfRevenue: [
+    "CostOfRevenue",
+    "CostOfRevenues",
+    "CostOfOperatingRevenues",
+    "CostOfSales",
+    "CostOfGoodsAndServicesSold",
+    "CostOfGoodsSold",
+    "CostOfServices",
+    "CostOfGoodsSoldExcludingDepreciationDepletionAndAmortization",
+  ],
   grossProfit: ["GrossProfit"],
   currentAssets: ["AssetsCurrent"],
   currentLiabilities: ["LiabilitiesCurrent"],
