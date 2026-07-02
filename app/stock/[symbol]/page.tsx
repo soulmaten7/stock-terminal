@@ -63,7 +63,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
         ))}
       </div>
       <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">
-        9개 재무 규칙 중 통과 개수(전년 대비 개선). 7↑ 우량 · 3↓ 부실. <b className="text-unjong-primary">재무 건전성 해석일 뿐 예측이 아니에요.</b> 과거 유효성은 데이터 한계(무료 재무 5년)로 아직 검증 전 — 참고용.
+        9개 재무 규칙 중 통과 개수(전년 대비 개선) = <b className="text-unjong-primary">재무 건전성</b> 지표예요. 검증(2014~2023 미국) 결과 <b className="text-unjong-primary">대형주에선 점수와 수익률의 뚜렷한 관계가 없었어요</b> — 소형·가치주에서 더 유효(정설). 수익 예측이 아니라 건전성 해석으로 보세요.
       </p>
     </div>
   );
