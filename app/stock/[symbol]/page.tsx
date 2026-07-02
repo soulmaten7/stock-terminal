@@ -12,7 +12,9 @@ type LensRead = {
   detail: Record<string, number | null>;
   note?: string;
 };
-type LensResp = { symbol: string; name?: string; price?: number | null; lenses?: LensRead[]; error?: string };
+type FCriterion = { key: string; label: string; pass: boolean; note: string };
+type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
+type LensResp = { symbol: string; name?: string; price?: number | null; lenses?: LensRead[]; fscore?: FScoreResp | null; error?: string };
 
 // 라벨 → 색 (긍정=up / 부정=down / 과열=경고 / 중립·적정=muted)
 function labelColor(l: string | null): string {
@@ -21,6 +23,50 @@ function labelColor(l: string | null): string {
   if (['약세', '하락추세', '고평가', '침체'].includes(l)) return 'text-unjong-down';
   if (l === '과열') return 'text-amber-500';
   return 'text-unjong-muted';
+}
+
+function gradeColor(g: string): string {
+  if (g === '우량') return 'text-unjong-up';
+  if (g === '부실') return 'text-unjong-down';
+  return 'text-unjong-muted';
+}
+
+function FScoreCard({ f }: { f: FScoreResp }) {
+  if (!f.supported) {
+    return (
+      <div className="mb-3 rounded-xl border border-unjong-border p-4">
+        <div className="mb-1 font-bold text-unjong-primary">피오트로스키 F-Score</div>
+        <p className="text-sm text-unjong-muted">{f.reason || '이 종목은 F-Score를 적용할 수 없어요.'}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="mb-3 rounded-xl border border-unjong-border p-4">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div>
+          <span className="font-bold text-unjong-primary">피오트로스키 F-Score</span>
+          {f.asOf ? <span className="ml-2 text-[11px] text-unjong-muted">{f.asOf} 기준</span> : null}
+        </div>
+        <div className="flex items-baseline gap-1.5">
+          <span className="text-2xl font-bold tabular-nums text-unjong-primary">{f.score}</span>
+          <span className="text-sm text-unjong-muted">/ {f.max}</span>
+          <span className={`ml-1 text-sm font-bold ${gradeColor(f.grade)}`}>{f.grade}</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
+        {f.criteria.map((c) => (
+          <div key={c.key} className="flex items-start gap-1.5 text-xs">
+            <span className={c.pass ? 'text-unjong-up' : 'text-unjong-down'}>{c.pass ? '✓' : '✗'}</span>
+            <span className="text-unjong-primary">{c.label}</span>
+            <span className="ml-auto tabular-nums text-unjong-muted">{c.note}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">
+        9개 재무 규칙 중 통과 개수(전년 대비 개선). 7↑ 우량 · 3↓ 부실. 재무 건전성 해석일 뿐 예측이 아니에요.
+      </p>
+    </div>
+  );
 }
 
 export default function StockLensPage() {
@@ -61,10 +107,13 @@ export default function StockLensPage() {
         <div className="mt-4 space-y-3">
           {[0, 1, 2].map((i) => <div key={i} className="h-24 animate-pulse rounded-xl bg-unjong-background" />)}
         </div>
-      ) : lenses.length === 0 ? (
-        <p className="mt-8 text-center text-sm text-unjong-muted">데이터를 불러오지 못했어요. (일부 종목은 아직 지원되지 않을 수 있어요)</p>
       ) : (
-        <div className="mt-4 space-y-3">
+        <div className="mt-4">
+          {data?.fscore ? <FScoreCard f={data.fscore} /> : null}
+          {lenses.length === 0 && !data?.fscore ? (
+            <p className="mt-4 text-center text-sm text-unjong-muted">데이터를 불러오지 못했어요. (일부 종목은 아직 지원되지 않을 수 있어요)</p>
+          ) : null}
+          <div className="space-y-3">
           {lenses.map((L) => (
             <div key={L.key} className="rounded-xl border border-unjong-border p-4">
               <div className="mb-2 flex items-center justify-between gap-2">
@@ -82,6 +131,7 @@ export default function StockLensPage() {
               {L.note ? <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">※ {L.note}</p> : null}
             </div>
           ))}
+          </div>
         </div>
       )}
 

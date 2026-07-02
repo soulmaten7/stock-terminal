@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
 import { momentumLens, technicalLens, valuationLens } from "@/lib/lenses";
+import { computeFScore, type FRow } from "@/lib/fscore";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,7 +55,42 @@ export async function GET(req: Request) {
     }
 
     const lenses = [momentumLens(closes), technicalLens(closes), valuationLens(pe, pb)];
-    const data = { symbol, resolved, name, price, lenses };
+
+    // F-Score (연간 재무 — fundamentalsTimeSeries). 실패/미지원 시 null/supported:false로 안전 처리.
+    let fscore: unknown = null;
+    try {
+      const fts = await yf.fundamentalsTimeSeries(resolved, {
+        period1: new Date(Date.now() - 6 * 365 * 24 * 60 * 60 * 1000),
+        period2: new Date(),
+        type: "annual",
+        module: "all",
+      });
+      const raw = (Array.isArray(fts) ? fts : []) as Array<Record<string, unknown>>;
+      const rows: FRow[] = raw
+        .map((r) => ({
+          date: r.date,
+          totalRevenue: (r.totalRevenue as number) ?? null,
+          grossProfit: (r.grossProfit as number) ?? null,
+          costOfRevenue: (r.costOfRevenue as number) ?? null,
+          netIncome: (r.netIncome as number) ?? null,
+          totalAssets: (r.totalAssets as number) ?? null,
+          currentAssets: (r.currentAssets as number) ?? null,
+          currentLiabilities: (r.currentLiabilities as number) ?? null,
+          longTermDebt: (r.longTermDebt as number) ?? null,
+          operatingCashFlow: (r.operatingCashFlow as number) ?? null,
+          ordinarySharesNumber: (r.ordinarySharesNumber as number) ?? null,
+        }))
+        .sort((a, b) => {
+          const da = a.date instanceof Date ? a.date.getTime() : new Date(String(a.date)).getTime();
+          const db = b.date instanceof Date ? b.date.getTime() : new Date(String(b.date)).getTime();
+          return da - db;
+        });
+      fscore = computeFScore(rows);
+    } catch {
+      fscore = null;
+    }
+
+    const data = { symbol, resolved, name, price, lenses, fscore };
     cache.set(symbol, { at: Date.now(), data });
     return NextResponse.json(data);
   } catch (e) {
