@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-07-02 (STEP 510~523 — 🏁 무료 AI 렌즈층 5종 전부 검증·판정 완결)
+> **Last refreshed**: 2026-07-02 (STEP 525~537 — 🏁 신뢰도 업그레이드 사이클 종료·5렌즈 t·알파 재검)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (앱 배포 ✓ onetrillion.app)
-> **현재 커밋**: `64a5d9a` (STEP 523 — 기술 검증 반영·무료 렌즈 5종 완결)
+> **현재 커밋**: `5bdf56f` (STEP 537 — 기술 신뢰도 확정·5렌즈 신뢰도 재검 종료)
 > **🔗 링크 허브**: KR `link_hub` **138**·US 67 (⚠️ MCP 직접 insert·마이그레이션 아님, US 미충전). **📱 모바일 패스=이번 세션 완료.**
 > ⚠️ **최신 상태는 `docs/SESSION_BOOT.md` 기준** (이 파일 본문 §1~는 V6/271 히스토리). 🔑 라우트 수정 후 재시작은 `pkill -f "next dev" && rm -rf .next && npm run dev`.
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
