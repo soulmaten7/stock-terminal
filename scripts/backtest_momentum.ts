@@ -1,22 +1,23 @@
-// 12-1 모멘텀 다년 백테스트 (Jegadeesh-Titman 횡단면). 가격만 — 야후 深가격.
-// 매월 유니버스를 12-1 모멘텀으로 3분위(상/중/하) → 이후 3개월 수익률 비교. lib/momentum 공유.
+// 12-1 모멘텀 백테스트 v2 — 신뢰도 강화(월별 롱숏 시계열·t값·샤프·확대표본). Jegadeesh-Titman.
+// 방법: 매월 12-1 모멘텀으로 정렬 → 상/하위 3분위 동일가중 → **1개월 보유**(비중첩) 롱숏(상−하) 월수익 시계열
+//        → 연율수익·연율변동성·**t값(유의성)**·**샤프(위험대비)**·양(+)의 달 비율. lib/momentum + lib/backtest_stats 공유.
+// ⚠️ 생존편향(현존 종목만·상장폐지 미포함) 잔존 = 무료 데이터의 근본 한계. 표본 N은 확대했으나 전체 유니버스는 아님.
+//    → "논문급 방법론"에 근접(유의성·위험대비까지)하되 "논문급 데이터 정합성(CRSP)"은 아님. 정직하게 표기.
 // npx tsx scripts/backtest_momentum.ts
 import YahooFinance from "yahoo-finance2";
 import { momentum121 } from "../lib/momentum";
+import { tertileLongShort, annualizedMean, annualizedVol, tStat, sharpe, mean, fracPositive } from "../lib/backtest_stats";
 import symbols from "../data/us_symbols.json";
 
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
-// F-Score 백테스트와 동일 유니버스(비교 위해). 생존편향 있음 — 방향성 참고용.
-// 넓은 유니버스: us_symbols(주식)에서 고루 ~250 표본(가격만이라 EDGAR보다 넉넉히).
 type Sym = { sym: string; name: string; type: string };
 const allStocks = (symbols as Sym[]).filter((s) => s.type === "stock").map((s) => s.sym);
-const N = 250;
+const N = 500; // 확대 표본(기존 250 → 500). ⚠️ 생존편향 잔존·전체 유니버스 아님. 더 키우려면 이 값만 상향.
 const stepU = Math.max(1, Math.floor(allStocks.length / N));
 const UNIVERSE = allStocks.filter((_, i) => i % stepU === 0).slice(0, N);
 
-const HOLD_MONTHS = 3;
-const MIN_STOCKS = 15; // 분위 형성 최소 종목
+const MIN_STOCKS = 20; // 분위 형성 최소 종목/월
 
 async function mapLimit<T>(arr: T[], limit: number, fn: (x: T) => Promise<void>) {
   let i = 0;
@@ -40,38 +41,42 @@ async function monthlyCloses(sym: string): Promise<Record<number, number>> {
 
 async function run() {
   const data: Record<string, Record<number, number>> = {};
-  await mapLimit(UNIVERSE, 6, async (s) => { try { data[s] = await monthlyCloses(s); } catch { data[s] = {}; } });
+  let ok = 0;
+  await mapLimit(UNIVERSE, 6, async (s) => { try { const d = await monthlyCloses(s); if (Object.keys(d).length) { data[s] = d; ok++; } } catch { /* skip */ } });
 
   let minM = Infinity, maxM = -Infinity;
   for (const s in data) for (const k in data[s]) { const n = Number(k); if (n < minM) minM = n; if (n > maxM) maxM = n; }
 
-  const top: number[] = [], mid: number[] = [], bot: number[] = [];
-  let rebalances = 0;
-  for (let m = minM + 12; m + HOLD_MONTHS <= maxM; m++) {
-    const obs: { mom: number; fwd: number }[] = [];
+  // 매월: signal=12-1 모멘텀, ret=1개월 보유 수익률(비중첩). $5+ 유동성 필터.
+  const months: { signal: number; ret: number }[][] = [];
+  for (let m = minM + 12; m + 1 <= maxM; m++) {
+    const obs: { signal: number; ret: number }[] = [];
     for (const s in data) {
       const M = data[s];
       const mom = momentum121(M[m - 12] ?? null, M[m - 1] ?? null);
-      const pE = M[m], pX = M[m + HOLD_MONTHS];
-      if (mom == null || pE == null || pX == null || pE < 5) continue; // pE<$5 = 페니스탁 제외(유동성 프록시)
-      obs.push({ mom, fwd: (pX / pE - 1) * 100 });
+      const pE = M[m], pX = M[m + 1];
+      if (mom == null || pE == null || pX == null || pE < 5) continue;
+      obs.push({ signal: mom, ret: (pX / pE - 1) * 100 });
     }
-    if (obs.length < MIN_STOCKS) continue;
-    rebalances++;
-    obs.sort((a, b) => a.mom - b.mom); // 오름차순: 앞=저모멘텀
-    const n = obs.length, t = Math.floor(n / 3);
-    for (let i = 0; i < n; i++) { const f = obs[i].fwd; if (i < t) bot.push(f); else if (i >= n - t) top.push(f); else mid.push(f); }
+    months.push(obs);
   }
 
-  const avg = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : null);
-  const fmt = (v: number | null) => (v == null ? "n/a" : (v >= 0 ? "+" : "") + v.toFixed(2) + "%");
-  const ann = (v: number | null) => (v == null ? "n/a" : (v >= 0 ? "+" : "") + (v * (12 / HOLD_MONTHS)).toFixed(1) + "%");
-  const sp = avg(top) != null && avg(bot) != null ? (avg(top) as number) - (avg(bot) as number) : null;
-  console.log(`\n종목 ${Object.values(data).filter((d) => Object.keys(d).length).length}/${UNIVERSE.length} · 리밸런스 ${rebalances}회 · 보유 ${HOLD_MONTHS}개월`);
-  console.log(`상위 3분위(고모멘텀): ${HOLD_MONTHS}개월 ${fmt(avg(top))} (연율 ${ann(avg(top))}) · n=${top.length}`);
-  console.log(`중위 3분위          : ${HOLD_MONTHS}개월 ${fmt(avg(mid))} (연율 ${ann(avg(mid))}) · n=${mid.length}`);
-  console.log(`하위 3분위(저모멘텀): ${HOLD_MONTHS}개월 ${fmt(avg(bot))} (연율 ${ann(avg(bot))}) · n=${bot.length}`);
-  console.log(`\n모멘텀 프리미엄 (상−하): ${HOLD_MONTHS}개월 ${fmt(sp)} (연율 ${ann(sp)})`);
-  console.log("※ 월간 리밸런스(중첩 보유)·생존편향·유니버스~75. 방향성 참고용.");
+  const { ls, hi, lo, kept } = tertileLongShort(months, 1 / 3, MIN_STOCKS);
+
+  const pct = (v: number) => (isFinite(v) ? (v >= 0 ? "+" : "") + v.toFixed(2) + "%" : "n/a");
+  const num = (v: number, d = 2) => (isFinite(v) ? v.toFixed(d) : "n/a");
+
+  console.log(`\n[모멘텀 v2 · 월별 롱숏(1개월 보유·동일가중·3분위)]`);
+  console.log(`종목 ${ok}/${UNIVERSE.length}(표본 N=${N}) · 유효 리밸런스 ${kept}개월`);
+  console.log(`상위 3분위(고모멘텀) 연율: ${pct(annualizedMean(hi))}`);
+  console.log(`하위 3분위(저모멘텀) 연율: ${pct(annualizedMean(lo))}`);
+  console.log(`─────────────────────────────`);
+  console.log(`롱숏(상−하) 월평균: ${pct(mean(ls))}`);
+  console.log(`롱숏 연율 수익 : ${pct(annualizedMean(ls))}`);
+  console.log(`롱숏 연율 변동성: ${pct(annualizedVol(ls))}`);
+  console.log(`▶ t값(H0:평균=0): ${num(tStat(ls))}   ← |t|>2면 5% 유의(방향성 근거 격상)`);
+  console.log(`▶ 샤프(연율)    : ${num(sharpe(ls))}   ← 위험대비 수익`);
+  console.log(`▶ 양(+)의 달 비율: ${pct(fracPositive(ls) * 100)} (${kept}개월 중)`);
+  console.log(`\n※ 1개월 보유=비중첩(t값 정직). 생존편향 잔존(현존 종목만)·표본 N=${N}(전체 아님). 논문급 '방법론' 근접이나 CRSP급 '데이터'는 아님. French 알파·거래비용은 STEP 526.`);
 }
 run();
