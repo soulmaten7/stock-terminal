@@ -6,7 +6,7 @@
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
 > **Last refreshed**: 2026-06-30 (STEP 469~472 — 광고 슬롯 맨위 제거 + 헤더 코인 팝오버 + 탭 5묶음 재정렬·구분선)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (배포 ✓ onetrillion.app — STEP 422~472 라이브)
-> **현재 커밋**: `b741ead` (STEP 469~472) = origin/main = 라이브
+> **현재 커밋**: `628b14d` (STEP 499 — AI보기 진입 버튼) = origin/main = 라이브
 > **🔗 링크 허브**: KR `link_hub` **138**·US 67 (⚠️ MCP 직접 insert·마이그레이션 아님, US 미충전). **📱 모바일 패스=이번 세션 완료.**
 > ⚠️ **최신 상태는 `docs/SESSION_BOOT.md` 기준** (이 파일 본문 §1~는 V6/271 히스토리). 🔑 라우트 수정 후 재시작은 `pkill -f "next dev" && rm -rf .next && npm run dev`.
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.

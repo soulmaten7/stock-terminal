@@ -1,6 +1,17 @@
-<!-- 2026-07-01 -->
+<!-- 2026-07-02 -->
 <!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## 2026-07-02 — STEP 494~499 완료 · JP/CN 이름 우선·로고·렌즈 엔진+페이지·AI보기 진입 ✅
+
+**HEAD `628b14d`** (push ✓). DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 494**: JP/CN 보드 이름 우선 표시(이름 굵게→코드 작게 회색)
+- **STEP 495**: Yahoo assetProfile 로고 도메인 자동수집 — `cn_logo_domains.json`(5,205) · `jp_logo_domains.json`(2,762) — `AUTO_DOMAINS` 병합
+- **STEP 496**: KR 모바일 수익률 `text-[13px]` 글자 수정
+- **STEP 497**: 결정론 렌즈 엔진 MVP — `lib/lenses.ts` + `/api/lens`(야후 온디맨드·30분 캐시)
+- **STEP 498**: `/stock/[symbol]` 렌즈 3카드 페이지 + `/stock` 레거시 리다이렉트 제거
+- **STEP 499**: 4개 보드에 "🧭 AI보기" 진입 버튼(모바일 바텀시트+데스크탑 펼침) · KR 6자리→`.KS`/`.KQ` 자동 해석
+- ▶ **다음**: (1) 재무 렌즈(F-Score·Z — DART+야후 재무제표) · (2) 유료 "AI보기"(LLM 뉴스·공시 맥락 종합) · (3) US 링크 풀충전 · (4) Phase 2 결제 PG
 
 ## (이어서 2026-07-01) STEP 492v2 — CN 전종목 108→7,098 (HKEX+후강퉁·선강퉁) ✅
 

@@ -1,5 +1,14 @@
-<!-- 2026-07-01 -->
+<!-- 2026-07-02 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-02 — STEP 494~499 — JP/CN 이름 우선 표시·로고 자동수집·KR 모바일 글자·렌즈 엔진+페이지+AI보기 진입
+
+- **STEP 494**: JP/CN 보드 이름 우선 표시 (이름 굵게 → 코드 작게 회색)
+- **STEP 495**: `scripts/gen_logo_domains.mjs` Yahoo assetProfile 자동 수집 → `data/cn_logo_domains.json`(5,205) + `data/jp_logo_domains.json`(2,762). `lib/avatar.ts` AUTO_DOMAINS 적용
+- **STEP 496**: `MarketBoard.tsx` 모바일 수익률 텍스트 `text-[13px]` 추가(너무 작은 글자 수정)
+- **STEP 497**: `lib/lenses.ts`(모멘텀·기술·밸류 순수 계산) + `app/api/lens/route.ts`(야후 온디맨드+30분 캐시) 렌즈 엔진 MVP
+- **STEP 498**: `app/stock/[symbol]/page.tsx` 렌즈 3개 카드 UI. `next.config.ts` `/stock` 레거시 리다이렉트 제거(307 버그 수정)
+- **STEP 499**: 4개 보드(KR·US·JP·CN) 모바일 바텀시트 + 데스크탑 펼침에 "🧭 AI보기" 진입 버튼. `/api/lens` KR 6자리→`.KS`/`.KQ` 자동 해석. HEAD `628b14d`
 
 ## 2026-07-01 — STEP 493 — A주(SS/SZ) r1w~r6m 東方財富 kline 대체 (Yahoo 400 → 6,697개 계산)
 
