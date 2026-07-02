@@ -8,11 +8,13 @@ import { sma, rsi, rsiState, maTrend } from "./technical";
 
 export type LensRead = {
   key: string;
-  name: string;
+  nameEn: string; // 영문 정식 명칭(앵커 — 세계 공통)
+  name: string;   // 한글 짧은 명칭
+  summary: string; // 한 줄 요약(언제/무엇에 쓰나)
   short: string | null; // 단기 방향 라벨
   long: string | null;  // 장기 방향 라벨
   detail: Record<string, number | null>; // 근거 수치(투명 공개)
-  note?: string;
+  note?: string; // 상세 검증 근거·한계(접기)
 };
 
 function round(v: number | null): number | null {
@@ -40,7 +42,9 @@ export function momentumLens(closes: number[]): LensRead {
   const lab = (v: number | null) => (v == null ? null : v > 5 ? "강세" : v < -5 ? "약세" : "중립");
   return {
     key: "momentum",
-    name: "모멘텀(12-1)",
+    nameEn: "Momentum (12-1)",
+    name: "모멘텀",
+    summary: "최근 1년(마지막 달 제외) 강했던 종목이 계속 오를지 — 추세장·주도주에 유용해요.",
     short: lab(avg([r1, r3])),
     long: momentumLabel(m121),
     detail: { "12-1모멘텀%": round(m121), "1개월%": round(r1), "3개월%": round(r3), "6개월%": round(r6), "12개월%": round(r12) },
@@ -61,7 +65,9 @@ export function technicalLens(closes: number[]): LensRead {
   const longLab = maTrend(last, ma200);
   return {
     key: "technical",
+    nameEn: "Technical (RSI · MA)",
     name: "기술",
+    summary: "과열·추세·52주 위치 등 '지금 상태'를 표시 — 참고용(단독 매매신호 아님).",
     short: shortLab,
     long: longLab,
     detail: {
@@ -79,7 +85,9 @@ export function valuationLens(pe: number | null, pb: number | null): LensRead {
   const peLab = pe == null || pe <= 0 ? null : pe < 10 ? "저평가" : pe > 25 ? "고평가" : "적정";
   return {
     key: "valuation",
+    nameEn: "Value (E/P · B/M)",
     name: "밸류(가치)",
+    summary: "이익·자산 대비 싼지 봐요 — 성숙·안정 업종에서 장기 관점.",
     short: null,
     long: peLab,
     detail: { PER: round(pe), PBR: round(pb) },
@@ -92,7 +100,9 @@ export function lowVolLens(closes: number[]): LensRead {
   const vol = realizedVol(closes, 252);
   return {
     key: "lowvol",
-    name: "저변동성(위험)",
+    nameEn: "Low Volatility (BAB)",
+    name: "저변동성",
+    summary: "덜 흔들리는 종목이 위험 대비 유리 — 하락장 방어에 유용해요.",
     short: null,
     long: volLabel(vol),
     detail: { "연변동성%": round(vol) },
