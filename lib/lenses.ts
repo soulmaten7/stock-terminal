@@ -2,6 +2,8 @@
 // 원칙: 예측(❌)이 아니라 해석(⭕). 근거 수치를 항상 함께 노출(투명). 여기선 순수 계산만(테스트 쉬움).
 // 데이터(가격배열·PER·PBR)는 라우트에서 조달해 주입.
 
+import { momentum121FromDaily, momentumLabel } from "./momentum";
+
 export type LensRead = {
   key: string;
   name: string;
@@ -45,9 +47,10 @@ function rsi(closes: number[], period = 14): number | null {
   return 100 - 100 / (1 + rs);
 }
 
-// ── 모멘텀 렌즈 ── 단기=1·3개월, 장기=6·12개월 수익률 평균
+// ── 모멘텀 렌즈 ── 단기=1·3개월 추세 / 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +).
 export function momentumLens(closes: number[]): LensRead {
   const r1 = ret(closes, 21), r3 = ret(closes, 63), r6 = ret(closes, 126), r12 = ret(closes, 252);
+  const m121 = momentum121FromDaily(closes);
   const avg = (xs: (number | null)[]) => {
     const v = xs.filter((x): x is number => x != null);
     return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
@@ -55,10 +58,11 @@ export function momentumLens(closes: number[]): LensRead {
   const lab = (v: number | null) => (v == null ? null : v > 5 ? "강세" : v < -5 ? "약세" : "중립");
   return {
     key: "momentum",
-    name: "모멘텀",
+    name: "모멘텀(12-1)",
     short: lab(avg([r1, r3])),
-    long: lab(avg([r6, r12])),
-    detail: { "1개월%": round(r1), "3개월%": round(r3), "6개월%": round(r6), "12개월%": round(r12) },
+    long: momentumLabel(m121),
+    detail: { "12-1모멘텀%": round(m121), "1개월%": round(r1), "3개월%": round(r3), "6개월%": round(r6), "12개월%": round(r12) },
+    note: "12-1 모멘텀은 백테스트(2013~·미국)에서 고모멘텀군이 저모멘텀군 대비 연 +4%p — 완만하지만 검증된 방향성. 비용·생존편향 전, 보장 아님.",
   };
 }
 
