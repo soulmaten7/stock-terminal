@@ -9,6 +9,7 @@ type LensRead = {
   nameEn: string;
   name: string;
   summary: string;
+  about: string;
   short: string | null;
   long: string | null;
   detail: Record<string, number | null>;
@@ -47,6 +48,7 @@ function TraiMark({ size = 28 }: { size?: number }) {
 }
 
 const SUMMARY_CLASS = 'cursor-pointer list-none text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
+const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
 function FScoreCard({ f }: { f: FScoreResp }) {
   if (!f.supported) {
@@ -81,6 +83,10 @@ function FScoreCard({ f }: { f: FScoreResp }) {
           </div>
         ))}
       </div>
+      <details className="mt-3">
+        <summary className={LEARN_CLASS}>▾ 이 기법이란?</summary>
+        <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">회계학자 피오트로스키가 2000년 만든, 기업 재무 건강을 9개 항목으로 점수 매기는 체크리스트예요(수익성·부채·효율의 전년 대비 개선). 원래 값싼 가치주 중 &lsquo;진짜 부실한 곳&rsquo;을 걸러내려 만들었어요 — 그래서 수익 예측이 아니라 재무 건전성 판단에 씁니다.</p>
+      </details>
       <details className="mt-3 border-t border-unjong-border pt-2">
         <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
         <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">
@@ -168,6 +174,12 @@ export default function StockLensPage() {
                 </div>
               </div>
               <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary/80">{L.summary}</p>
+              {L.about ? (
+                <details className="mt-2">
+                  <summary className={LEARN_CLASS}>▾ 이 기법이란?</summary>
+                  <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
+                </details>
+              ) : null}
               <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-unjong-muted">
                 {Object.entries(L.detail).map(([k, v]) => (
                   <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
