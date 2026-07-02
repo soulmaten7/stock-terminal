@@ -20,19 +20,27 @@ export async function GET(req: Request) {
   if (hit && Date.now() - hit.at < 30 * 60 * 1000) return NextResponse.json(hit.data);
 
   try {
-    // 최근 ~400일 일봉 → 모멘텀·기술 계산용 종가 배열
-    const ch = await yf.chart(symbol, {
-      period1: new Date(Date.now() - 400 * 24 * 60 * 60 * 1000),
-      interval: "1d",
-    });
-    const closes = (ch.quotes ?? [])
-      .map((q) => q.close)
-      .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
+    const period1 = new Date(Date.now() - 400 * 24 * 60 * 60 * 1000);
+    // KR 보드는 6자리 코드(예: 005930) → 야후 심볼로 해석(.KS 우선, 실패 시 .KQ). 그 외(NVDA·7203.T·0700.HK)는 그대로.
+    const candidates = /^\d{6}$/.test(symbol) ? [symbol + ".KS", symbol + ".KQ"] : [symbol];
+    let resolved = symbol;
+    let closes: number[] = [];
+    for (const cand of candidates) {
+      try {
+        const ch = await yf.chart(cand, { period1, interval: "1d" });
+        const cs = (ch.quotes ?? [])
+          .map((q) => q.close)
+          .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
+        if (cs.length >= 30) { resolved = cand; closes = cs; break; }
+      } catch {
+        /* 다음 후보 시도 */
+      }
+    }
 
-    // 현재가·PER·PBR·이름 (밸류에이션 렌즈용)
+    // 현재가·PER·PBR·이름 (밸류에이션 렌즈용) — 해석된 심볼로 조회
     let pe: number | null = null, pb: number | null = null, name = symbol, price: number | null = null;
     try {
-      const q = await yf.quote(symbol);
+      const q = await yf.quote(resolved);
       pe = (q as { trailingPE?: number }).trailingPE ?? null;
       pb = (q as { priceToBook?: number }).priceToBook ?? null;
       name = (q as { shortName?: string }).shortName || (q as { longName?: string }).longName || name;
@@ -42,11 +50,11 @@ export async function GET(req: Request) {
     }
 
     if (closes.length < 30) {
-      return NextResponse.json({ symbol, name, price, lenses: [], error: "insufficient_data" });
+      return NextResponse.json({ symbol, resolved, name, price, lenses: [], error: "insufficient_data" });
     }
 
     const lenses = [momentumLens(closes), technicalLens(closes), valuationLens(pe, pb)];
-    const data = { symbol, name, price, lenses };
+    const data = { symbol, resolved, name, price, lenses };
     cache.set(symbol, { at: Date.now(), data });
     return NextResponse.json(data);
   } catch (e) {

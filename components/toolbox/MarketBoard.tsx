@@ -426,6 +426,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       <td colSpan={5} className="px-4 py-3">
                         <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
                           <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
+                          <a href={`/stock/${r.symbol}`} className="text-[11px] font-semibold text-unjong-accent hover:underline">🧭 AI보기 →</a>
                           {([
                             ['1일전', r.changePercent],
                             ['1주일전', r.r1w],
@@ -567,6 +568,12 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   ))}
                 </div>
               </div>
+              <a
+                href={`/stock/${selectedStock.symbol}`}
+                className="mb-3 flex items-center justify-center gap-1.5 rounded-lg bg-unjong-primary py-2.5 text-sm font-semibold text-white active:opacity-90"
+              >
+                🧭 AI보기 — 기법별 전망
+              </a>
               <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
               <BrokerRanking hideHeader />
             </div>
