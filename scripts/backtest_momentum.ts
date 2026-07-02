@@ -53,7 +53,7 @@ async function run() {
       const M = data[s];
       const mom = momentum121(M[m - 12] ?? null, M[m - 1] ?? null);
       const pE = M[m], pX = M[m + HOLD_MONTHS];
-      if (mom == null || pE == null || pX == null || pE <= 0) continue;
+      if (mom == null || pE == null || pX == null || pE < 5) continue; // pE<$5 = 페니스탁 제외(유동성 프록시)
       obs.push({ mom, fwd: (pX / pE - 1) * 100 });
     }
     if (obs.length < MIN_STOCKS) continue;

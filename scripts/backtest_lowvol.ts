@@ -52,7 +52,7 @@ async function run() {
       const ser = data[s]; if (!ser.length) continue;
       const v = volAt(ser, D);
       const pE = priceAtOrAfter(ser, D), pX = priceAtOrAfter(ser, D + HOLD_DAYS * 864e5);
-      if (v == null || pE == null || pX == null || pE <= 0) continue;
+      if (v == null || pE == null || pX == null || pE < 5) continue; // pE<$5 = 페니스탁 제외(유동성 프록시)
       obs.push({ vol: v, fwd: (pX / pE - 1) * 100 });
     }
     if (obs.length < MIN_STOCKS) continue;
