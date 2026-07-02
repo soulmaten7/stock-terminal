@@ -132,7 +132,7 @@ export default function StockLensPage() {
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
       <Link href="/" className="text-sm text-unjong-muted hover:text-unjong-accent">← 홈</Link>
 
-      <div className="mt-3 max-w-3xl">
+      <div className="mt-3 max-w-4xl">
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
           <h1 className="text-xl font-bold text-unjong-primary">{data?.name || ticker}</h1>
           <span className="text-sm text-unjong-muted">{ticker}</span>
@@ -147,13 +147,13 @@ export default function StockLensPage() {
       </div>
 
       {loading ? (
-        <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          {[0, 1, 2, 3].map((i) => <div key={i} className="h-32 animate-pulse rounded-xl bg-unjong-background" />)}
+        <div className="mt-4 max-w-4xl space-y-3">
+          {[0, 1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-xl bg-unjong-background" />)}
         </div>
       ) : lenses.length === 0 && !data?.fscore ? (
         <p className="mt-6 text-center text-sm text-unjong-muted">데이터를 불러오지 못했어요. (일부 종목은 아직 지원되지 않을 수 있어요)</p>
       ) : (
-        <div className="mt-4 grid items-start gap-3 lg:grid-cols-2">
+        <div className="mt-4 max-w-4xl space-y-3">
           {data?.fscore ? <FScoreCard f={data.fscore} /> : null}
           {lenses.map((L) => (
             <div key={L.key} className="rounded-xl border border-unjong-border bg-white p-4">
@@ -185,7 +185,7 @@ export default function StockLensPage() {
       )}
 
       {!loading && (data?.lenses?.length || data?.fscore) ? (
-        <div className="mt-4 max-w-3xl">
+        <div className="mt-4 max-w-4xl">
           {aiContent ? (
             <div className="rounded-xl border border-unjong-accent/40 bg-unjong-background p-4">
               <div className="mb-2 flex items-center gap-2">
@@ -213,7 +213,7 @@ export default function StockLensPage() {
         </div>
       ) : null}
 
-      <p className="mt-6 max-w-3xl text-center text-[11px] text-unjong-muted">
+      <p className="mt-6 max-w-4xl text-center text-[11px] text-unjong-muted">
         결정론 기법 렌즈(무료) + TRAI 종합. 예측이 아니라 정직한 해석이에요.
       </p>
     </main>
