@@ -2,6 +2,17 @@
 <!-- Last GC: 2026-07-01 (US 링크 허브 풀충전 67→139·미국 자국 기준·MCP직접·git아님·라이브 검증. STEP 456~472 코드=b741ead 배포 완료. 다음=멀티 국가 2순위 일본 or Phase 2 결제) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-02 — STEP 500~507 완료 · F-Score 1사이클(정찰→엔진→백테스트→정직반영) ✅
+
+**HEAD `cc3dc99`** (push ✓). DB="Trillion"(`ccbwxcszdoyjxvckedfp`).
+- **STEP 500~501**: 야후 구 재무모듈 사망 확인 → `fundamentalsTimeSeries` 전환. 필드 실측.
+- **STEP 502**: `lib/fscore.ts` 9기준 엔진 + `/api/lens` F-Score 통합 + 렌즈 카드 UI
+- **STEP 503**: 야후 5년 한계 → 2023 단일 코호트 백테스트, spread +4%p
+- **STEP 504**: "데이터 한계로 검증 전 — 참고용" 문구
+- **STEP 505~506**: EDGAR 어댑터(`lib/edgar.ts`) + 10코호트 다년 백테스트 → 대형주에서 점수↔수익 불분명
+- **STEP 507**: 카드 최종 정직 문구 확정 ("건전성 해석, 수익 예측 아님")
+- ▶ **다음**: (1) 모멘텀 렌즈(가격만, 야후 다년 백테스트 가능 → "검증까지 첫 완주 사이클") · (2) 深재무 F-Score(US, EDGAR) 제품 승격 · (3) US 링크 풀충전 · (4) Phase 2 결제 PG
+
 ## 2026-07-02 — STEP 494~499 완료 · JP/CN 이름 우선·로고·렌즈 엔진+페이지·AI보기 진입 ✅
 
 **HEAD `628b14d`** (push ✓). DB="Trillion"(`ccbwxcszdoyjxvckedfp`).

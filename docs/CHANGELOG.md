@@ -1,6 +1,17 @@
 <!-- 2026-07-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-02 — STEP 500~507 — F-Score 1사이클 완주 (정찰→엔진→렌즈→백테스트→정직반영)
+
+- **STEP 500**: `scripts/probe_fscore.mjs` — 야후 구 재무모듈(2024-11 사망) 확인 → `fundamentalsTimeSeries` 전환 필요
+- **STEP 501**: `scripts/probe_fts.mjs` — `fundamentalsTimeSeries` 필드 실측. 비금융주 전 필드 OK, 금융주 currentAssets/grossProfit MISSING
+- **STEP 502**: `lib/fscore.ts`(9기준 순수계산) + `app/api/lens/route.ts`(fts fetch+fscore) + 렌즈 페이지 F-Score 카드. 검증: NVDA 4/9·JNJ 4/9·JPM 미지원·삼성 6/9
+- **STEP 503**: `scripts/backtest_fscore.ts` — 야후 재무 5년 한계로 2023 단일 코호트만 가능. spread +4.0%p (2023 코호트, n=37/46/7)
+- **STEP 504**: F-Score 카드 "검증 전 — 참고용" 문구 (데이터 한계 정직 반영)
+- **STEP 505**: `scripts/probe_edgar.mjs` — SEC EDGAR companyfacts 정찰. 2009~·무료·US 전종목. 주요 필드 10년+ 확인
+- **STEP 506**: `lib/edgar.ts`(어댑터) + `scripts/backtest_edgar.ts`(10코호트 백테스트). 결과: 대형주에서 점수↔수익 관계 불분명(중>고, 저 n=9)
+- **STEP 507**: F-Score 카드 최종 문구 "대형주에선 점수와 수익률의 뚜렷한 관계 없었어요 — 소형·가치주에서 더 유효(정설)". HEAD `cc3dc99`
+
 ## 2026-07-02 — STEP 494~499 — JP/CN 이름 우선 표시·로고 자동수집·KR 모바일 글자·렌즈 엔진+페이지+AI보기 진입
 
 - **STEP 494**: JP/CN 보드 이름 우선 표시 (이름 굵게 → 코드 작게 회색)
