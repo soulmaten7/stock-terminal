@@ -63,7 +63,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
         ))}
       </div>
       <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">
-        9개 재무 규칙 중 통과 개수(전년 대비 개선) = <b className="text-unjong-primary">재무 건전성</b> 지표예요. 자체 검증(미국 넓은 표본 2014~24)에선 <b className="text-unjong-primary">점수와 이후 수익률의 유효한 관계가 없었어요</b>(저점수 낙폭과대주 반등이 오히려 큼). <b className="text-unjong-primary">수익 예측이 아니라 재무 건전성 해석</b>으로만 보세요.
+        9개 재무 규칙 중 통과 개수(전년 대비 개선) = <b className="text-unjong-primary">재무 건전성</b> 지표예요. 자체 검증(미국 넓은 표본·12년·월별 롱숏)에선 <b className="text-unjong-primary">점수와 이후 수익률에 유효한 관계가 없었어요</b>(t≈0.7·시장/규모/가치 조정 후에도 무의미). <b className="text-unjong-primary">수익 예측이 아니라 재무 건전성 해석</b>으로만 보세요 — 원래 용도도 저평가(저PBR) 가치주 안에서 부실을 거르는 필터랍니다.
       </p>
     </div>
   );
