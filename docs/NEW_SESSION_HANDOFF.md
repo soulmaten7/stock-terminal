@@ -1,10 +1,11 @@
-<!-- 2026-07-01 -->
+<!-- 2026-07-02 -->
 # 🚀 Trillion(트릴리언) — 새 세션 시작 핸드오프
 
 > **이 파일 하나만 읽으면 새 세션이 바로 업무 가능하도록 만든 완전 자급형 문서.**
 > 더 깊은 히스토리 = `docs/SESSION_BOOT.md`(배너 누적) · `docs/CHANGELOG.md` · 정책 = `docs/ROADMAP.md` §3.
-> **갱신 시점: 2026-07-01 · HEAD `8795c1b`(STEP 478/476) · 배포 ✓ onetrillion.app 라이브.**
-> **🆕 2026-07-01 세션: ① US 링크 67→139 · ② US 피드 파리티(뉴스 이미지+모아보기 4탭, STEP 473) · ③ KR 종목 딜레이 제거(크론 미리계산+`kr_stock_snapshot`, STEP 474·2,769행 시딩) · ④ KR/US 모바일 개편(카드형+바텀시트 스냅+PC식 정렬, STEP 475~478·476). prod 라이브 검증 ✓(Google News·이미지·KR 스냅샷 680ms). ▶ 다음 = 멀티 국가 2순위(일본).**
+> **갱신 시점: 2026-07-02 · HEAD `64a5d9a`(STEP 523) · 앱 배포 ✓ onetrillion.app.**
+> **🆕 2026-07-02 (최신): 🏁 무료 AI 렌즈층 5종 전부 검증·판정 완결(STEP 510~523).** `/stock/[symbol]` 렌즈 = **✅검증** 모멘텀(12-1 +2.4%p/년)·저변동(저−고 +7.4%/년·위험 25%)·F-Score(재무 건전성 해석·수익예측 무의미)·밸류(E/P 싼−비쌈 +10.2%p/년·B/M 조건부) / **⚪참고용** 기술(RSI 평균회귀 기각·200일선 약한 +3%/년). **투자가능 $5+ 유니버스** 기준. 메타교훈 = "유니버스가 결과 지배"·"같은 데이터 다른 시각"(§0-7). 검증엔진 `lib/{momentum,lowvol,technical,fscore,edgar}.ts`+`scripts/backtest_*.ts`, 살아있는 문서 `docs/LENS_DEV_PLAYBOOK.md`(#1~17)·`LENS_STRENGTH_MAP.md`. **원칙: 예측 아닌 정직한 방향성. 수익화·유료 AI보기(STEP 511 보류)·UX는 전 기법 검증 후로. ▶ 다음 = KR/글로벌 렌즈 확장(가격기반 즉시·재무는 DART) or 새 기법(퀄리티·마법공식).**
+> (직전 2026-07-01: US 링크 67→139 · US 피드 파리티 · KR 종목 딜레이 제거 · KR/US 모바일 개편.)
 
 ---
 
@@ -18,7 +19,8 @@
 
 ## 2. 지금 상태 (2026-07-01)
 
-- 최신 코드 **HEAD `8795c1b` = STEP 476**(STEP 473~478 포함), origin/main 동기화·**배포 ✓ onetrillion.app 라이브.**
+- 최신 코드 **HEAD `64a5d9a` = STEP 523**(무료 AI 렌즈 5종 검증 완결·STEP 510~523), origin/main 동기화·**앱 배포 ✓ onetrillion.app.**
+- **🏁 무료 AI 렌즈층 완결(2026-07-02)** — `/stock/[symbol]` 5렌즈 전부 백테스트 판정(투자가능 $5+): 모멘텀·저변동·F-Score·밸류(E/P) ✅검증 / 기술 ⚪참고용. 검증 스크립트·플레이북(#1~17)·적합영역 지도 = durable 자산. 수익화·UX는 전 기법 검증 후로 보류(사용자 지침).
 - **KR 종목 로딩 딜레이(~10초) 해결** — `kr_stock_snapshot` 크론 미리계산 서빙(STEP 474). 스냅샷 **2,769행 시딩 완료**(기준일 20260630). 화면=스냅샷 즉시 SELECT, 비면 라이브 fallback.
 - **KR·US 종목표 모바일 개편 완료** — 카드형(종목명/티커 강조·현재가 축소) + 바텀시트 스냅포인트(50/66vh·overscroll 차단) + PC 동일 정렬 헤더(종목명·현재가·기간 커스텀 드롭다운). `MarketBoard`·`UsMarketBoard` 둘 다.
 - **US 탭 피드 파리티** — 뉴스 대표이미지 + 기업재무·리포트·ETF·공모주 모아보기(Google News 토픽, STEP 473). ✅ **prod 라이브 검증 완료(2026-07-01)**: onetrillion.app에서 Google News 정상 반환(Vercel IP 차단 없음)·뉴스 이미지 O·KR ranking `source:"kr_snapshot"` 680ms.
