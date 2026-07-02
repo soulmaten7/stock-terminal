@@ -3,6 +3,7 @@
 // 데이터(가격배열·PER·PBR)는 라우트에서 조달해 주입.
 
 import { momentum121FromDaily, momentumLabel } from "./momentum";
+import { realizedVol, volLabel } from "./lowvol";
 
 export type LensRead = {
   key: string;
@@ -62,7 +63,7 @@ export function momentumLens(closes: number[]): LensRead {
     short: lab(avg([r1, r3])),
     long: momentumLabel(m121),
     detail: { "12-1모멘텀%": round(m121), "1개월%": round(r1), "3개월%": round(r3), "6개월%": round(r6), "12개월%": round(r12) },
-    note: "12-1 모멘텀은 백테스트(2013~·미국)에서 고모멘텀군이 저모멘텀군 대비 연 +4%p — 완만하지만 검증된 방향성. 비용·생존편향 전, 보장 아님.",
+    note: "12-1 모멘텀: 백테스트(주가 $5+ 투자가능 종목)에서 고모멘텀군이 저모멘텀군 대비 연 +2.4%p. 유동성 있는 종목 한정 — 페니스탁 포함하면 오히려 역전. 완만·보장 아님.",
   };
 }
 
@@ -87,6 +88,7 @@ export function technicalLens(closes: number[]): LensRead {
       "200일선대비%": last != null && ma200 ? round((last / ma200 - 1) * 100) : null,
       "52주위치%": round(pos52),
     },
+    note: "RSI·이동평균 기반 추세·과열 — 아직 백테스트 미검증(단독 신호 약함, 참고용).",
   };
 }
 
@@ -99,6 +101,19 @@ export function valuationLens(pe: number | null, pb: number | null): LensRead {
     short: null,
     long: peLab,
     detail: { PER: round(pe), PBR: round(pb) },
-    note: "PER 절대기준 러프 판정 — 섹터·성장성 따라 다름(참고용). 과거 밴드 비교는 다음 단계.",
+    note: "PER 절대기준 러프 판정 — 아직 백테스트 미검증(참고용). 섹터·성장성 무시하면 오독.",
+  };
+}
+
+// ── 저변동성 렌즈 ── 실현변동성(위험). 검증: 투자가능($5+) 유니버스서 저변동군이 위험 낮고 수익 우위.
+export function lowVolLens(closes: number[]): LensRead {
+  const vol = realizedVol(closes, 252);
+  return {
+    key: "lowvol",
+    name: "저변동성(위험)",
+    short: null,
+    long: volLabel(vol),
+    detail: { "연변동성%": round(vol) },
+    note: "실현변동성=위험. 백테스트(투자가능 종목)서 저변동군이 고변동 대비 위험 낮고 수익도 우위(위험대비 우수) — 방어·위험관리 관점. 수익 보장 아님.",
   };
 }

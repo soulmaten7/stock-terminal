@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
-import { momentumLens, technicalLens, valuationLens } from "@/lib/lenses";
+import { momentumLens, technicalLens, valuationLens, lowVolLens } from "@/lib/lenses";
 import { computeFScore, type FRow } from "@/lib/fscore";
 
 export const runtime = "nodejs";
@@ -54,7 +54,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ symbol, resolved, name, price, lenses: [], error: "insufficient_data" });
     }
 
-    const lenses = [momentumLens(closes), technicalLens(closes), valuationLens(pe, pb)];
+    const lenses = [momentumLens(closes), lowVolLens(closes), technicalLens(closes), valuationLens(pe, pb)];
 
     // F-Score (연간 재무 — fundamentalsTimeSeries). 실패/미지원 시 null/supported:false로 안전 처리.
     let fscore: unknown = null;
