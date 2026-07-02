@@ -1,6 +1,11 @@
 <!-- 2026-07-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-02 — STEP 508~509 — 모멘텀 1사이클 완주 (12-1 백테스트+렌즈 canonical 정리)
+
+- **STEP 508**: `lib/momentum.ts`(12-1 함수) + `scripts/backtest_momentum.ts`. 148회 리밸런스·n=3,670. 프리미엄 **연율 +4.1%** 확인
+- **STEP 509**: `lib/lenses.ts` 모멘텀 렌즈 → canonical 12-1 + detail(12-1%) + note(백테스트 검증 문구). HEAD `59cb0c1`
+
 ## 2026-07-02 — STEP 500~507 — F-Score 1사이클 완주 (정찰→엔진→렌즈→백테스트→정직반영)
 
 - **STEP 500**: `scripts/probe_fscore.mjs` — 야후 구 재무모듈(2024-11 사망) 확인 → `fundamentalsTimeSeries` 전환 필요
