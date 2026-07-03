@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
-import { momentumLens, technicalLens, valuationLens, lowVolLens, qualityLens } from "@/lib/lenses";
+import { momentumLens, technicalLens, valuationLens, lowVolLens, qualityLens, assetGrowthLens } from "@/lib/lenses";
 import { pickLocale } from "@/lib/lensCopy";
 import { computeFScore, type FRow } from "@/lib/fscore";
 
@@ -94,6 +94,10 @@ export async function GET(req: Request) {
       const lr = rows[rows.length - 1];
       const gp = lr?.grossProfit ?? (lr?.totalRevenue != null && lr?.costOfRevenue != null ? lr.totalRevenue - lr.costOfRevenue : null);
       lenses.push(qualityLens(gp, lr?.totalAssets ?? null, locale));
+      // 자산성장(Asset Growth·CMA) — 최신 연도 총자산 전년比 증가율. 표본 약함(독립 축이나 유의 미달). 2년치 필요.
+      const prev = rows[rows.length - 2];
+      const agPct = lr?.totalAssets != null && prev?.totalAssets != null && prev.totalAssets > 0 ? (lr.totalAssets / prev.totalAssets - 1) * 100 : null;
+      lenses.push(assetGrowthLens(agPct, locale));
     } catch {
       fscore = null;
     }

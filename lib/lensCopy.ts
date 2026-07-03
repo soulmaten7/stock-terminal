@@ -7,7 +7,7 @@ type LensText = { name: string; what: string; about: string };
 type FscoreText = { name: string; subtitle: string; what: string; na: string; about: string };
 
 export const LENS_COPY: Record<Locale, {
-  momentum: LensText; lowvol: LensText; valuation: LensText; quality: LensText; technical: LensText; fscore: FscoreText;
+  momentum: LensText; lowvol: LensText; valuation: LensText; quality: LensText; assetgrowth: LensText; technical: LensText; fscore: FscoreText;
 }> = {
   ko: {
     momentum: {
@@ -29,6 +29,11 @@ export const LENS_COPY: Record<Locale, {
       name: "퀄리티",
       what: "회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.",
       about: "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
+    },
+    assetgrowth: {
+      name: "자산성장",
+      what: "회사가 자산(몸집)을 얼마나 빠르게 불리는지 보는 방법 — 너무 공격적으로 키우면 이후 성과가 약한 편이에요.",
+      about: "회사가 설비 투자·인수 등으로 자산을 얼마나 공격적으로 늘리는지 보는 지표예요. 2008년 쿠퍼·굴렌·실이 '자산을 빠르게 불린 회사일수록 이후 수익은 오히려 약하다'를 데이터로 밝혔어요(과잉 투자·무리한 확장 경계). 파마·프렌치 5팩터 중 투자 팩터(CMA)이기도 해요 — 자본을 신중히 쓰는 회사를 선호하는 관점이에요.",
     },
     technical: {
       name: "기술",
@@ -62,6 +67,11 @@ export const LENS_COPY: Record<Locale, {
       name: "Quality",
       what: "How efficiently a company turns its assets into profit — good for finding sturdy, high-quality names.",
       about: "Gauges company quality by gross profits divided by assets ('gross profitability'). Novy-Marx showed in 2013 that quality matters as much as cheapness — companies that reliably squeeze profit from their assets tend to do better over the long run.",
+    },
+    assetgrowth: {
+      name: "Asset Growth",
+      what: "How fast a company is expanding its asset base — growing too aggressively has historically meant weaker returns afterward.",
+      about: "Tracks how aggressively a company grows its assets through capex, acquisitions, and the like. Cooper, Gulen, and Schill showed in 2008 that firms expanding fastest tended to underperform later — a caution against overinvestment and empire-building. It's the investment factor (CMA) in the Fama-French five-factor model, favoring companies that spend capital with discipline.",
     },
     technical: {
       name: "Technical",

@@ -150,3 +150,23 @@ export function qualityLens(grossProfit: number | null, totalAssets: number | nu
     note: "퀄리티(Gross Profitability, Novy-Marx): 매출총이익/총자산. 백테스트(투자가능 $5+·13코호트) 고−저 롱숏 t≈2.9·샤프 0.78·FF3 알파 t≈2.5(시장/규모/가치 넘는 독립 프리미엄)·회전율 낮아 비용 강건 → 검증. 단 수익 '수준'은 생존편향·동일가중으로 과대(방향·유의만 신뢰). ROE는 별도 검증서 유의 미달(대형주 편중)이라 제외. 은행은 매출총이익 구조상 미적용.",
   };
 }
+
+// ── 자산성장(Asset Growth·투자팩터) 렌즈 ── 총자산 전년比 증가율. 표본 약함: 방향·독립성은 진짜(βHML낮음=밸류와 별개)이나 우리 표본 유의 미달.
+// 라벨=확장 강도(공격적/보통/보수적 · verdict 아님). 고성장=역사적으로 이후 수익 약세 경향(과잉투자 경계).
+export function assetGrowthLens(assetGrowthPct: number | null, locale: Locale = "ko"): LensRead {
+  const c = LENS_COPY[locale].assetgrowth;
+  const lab = assetGrowthPct == null ? null : assetGrowthPct > 20 ? "공격적" : assetGrowthPct < 5 ? "보수적" : "보통";
+  return {
+    key: "assetgrowth",
+    grade: "표본 약함",
+    gradeTier: "partial",
+    nameEn: "Asset Growth (CMA)",
+    name: c.name,
+    summary: c.what,
+    about: c.about,
+    short: null,
+    long: lab,
+    detail: { "자산성장%": round(assetGrowthPct) },
+    note: "자산성장(Asset Growth·투자팩터 — Cooper-Gulen-Schill 2008 / Fama-French 5팩터 CMA): 총자산 전년比 증가율. 백테스트(투자가능 $5+·13코호트) 저−고(보수−공격) 롱숏 방향은 +(연 ~+8%)이고 시장·규모·가치(FF3)와 독립적(βHML≈0.17 — 밸류의 재포장이 아닌 별개의 '자본 규율' 축)이나, 우리 표본선 통계적으로 유의 미달(t≈1.6). → '자산을 공격적으로 키운 회사가 이후 수익이 약한 편'이라는 방향은 학계 정설(과잉투자 경계)이나 우리 데이터론 확신 못 함(표본 약함). 자본 규율의 참고 축으로 보세요. 예측·보장 아님. 은행 등은 자산 성격이 달라 해석 주의.",
+  };
+}
