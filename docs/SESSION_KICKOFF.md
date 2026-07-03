@@ -4,9 +4,9 @@
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-07-03 (STEP 539~549 — 표현 개편·포지셔닝·다국어 카피(ko/en)·6번째 기법 퀄리티)
+> **Last refreshed**: 2026-07-03 (STEP 539~555 — 표현·포지셔닝·다국어·7기법(퀄리티+자산성장)·카드 직관화)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (앱 배포 ✓ onetrillion.app)
-> **현재 커밋**: `ae9a457` (STEP 549 — 퀄리티(GP/A) 6번째 기법·검증)
+> **현재 커밋**: `0ecc2c0` (STEP 555 — 렌즈 카드 직관화: 판정 문장+근거 수치 병기)
 > **🔗 링크 허브**: KR `link_hub` **138**·US 67 (⚠️ MCP 직접 insert·마이그레이션 아님, US 미충전). **📱 모바일 패스=이번 세션 완료.**
 > ⚠️ **최신 상태는 `docs/SESSION_BOOT.md` 기준** (이 파일 본문 §1~는 V6/271 히스토리). 🔑 라우트 수정 후 재시작은 `pkill -f "next dev" && rm -rf .next && npm run dev`.
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.
