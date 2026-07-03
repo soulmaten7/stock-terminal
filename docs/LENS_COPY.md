@@ -23,6 +23,10 @@
 - **ko (미적용)**: 이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.
 - **en (n/a)**: Can't be scored here — banks and insurers are built differently, so these checks don't apply.
 
+## Quality (GP/A) · 검증
+- **ko**: 회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.
+- **en**: How efficiently a company turns its assets into profit — good for finding sturdy, high-quality names.
+
 ## Technical (RSI · MA) · 참고용
 - **ko**: 차트로 지금 과열인지·흐름이 위인지 보는 방법 — 현재 상태를 빠르게 훑는 참고용이에요.
 - **en**: Reads the chart for overheating and which way the trend leans — a quick gut-check, for reference only.

@@ -7,7 +7,7 @@ type LensText = { name: string; what: string; about: string };
 type FscoreText = { name: string; subtitle: string; what: string; na: string; about: string };
 
 export const LENS_COPY: Record<Locale, {
-  momentum: LensText; lowvol: LensText; valuation: LensText; technical: LensText; fscore: FscoreText;
+  momentum: LensText; lowvol: LensText; valuation: LensText; quality: LensText; technical: LensText; fscore: FscoreText;
 }> = {
   ko: {
     momentum: {
@@ -24,6 +24,11 @@ export const LENS_COPY: Record<Locale, {
       name: "밸류(가치)",
       what: "버는 돈·가진 자산에 비해 주가가 싼지 보는 방법 — 길게 보는 투자에 잘 맞아요.",
       about: "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄의 가치투자에서 출발해, 파마·프렌치가 '싼 주식이 장기적으로 낫다'(가치 프리미엄)를 데이터로 정립했어요 — 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
+    },
+    quality: {
+      name: "퀄리티",
+      what: "회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.",
+      about: "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
     },
     technical: {
       name: "기술",
@@ -52,6 +57,11 @@ export const LENS_COPY: Record<Locale, {
       name: "Value",
       what: "Whether the price looks cheap next to a company's earnings and assets — suited to the long game.",
       about: "Buying stocks priced cheap relative to a company's earnings and net assets. It traces back to Benjamin Graham's value investing, and Fama and French established in the data that cheap stocks tend to win over the long run (the value premium). The premise: the market oversells unpopular stocks.",
+    },
+    quality: {
+      name: "Quality",
+      what: "How efficiently a company turns its assets into profit — good for finding sturdy, high-quality names.",
+      about: "Gauges company quality by gross profits divided by assets ('gross profitability'). Novy-Marx showed in 2013 that quality matters as much as cheapness — companies that reliably squeeze profit from their assets tend to do better over the long run.",
     },
     technical: {
       name: "Technical",

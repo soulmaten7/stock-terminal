@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
-import { momentumLens, technicalLens, valuationLens, lowVolLens } from "@/lib/lenses";
+import { momentumLens, technicalLens, valuationLens, lowVolLens, qualityLens } from "@/lib/lenses";
 import { pickLocale } from "@/lib/lensCopy";
 import { computeFScore, type FRow } from "@/lib/fscore";
 
@@ -90,6 +90,10 @@ export async function GET(req: Request) {
           return da - db;
         });
       fscore = computeFScore(rows);
+      // 퀄리티(GP/A) — 최신 연도 매출총이익/총자산. 매출총이익 없으면(은행) null → 카드 "—".
+      const lr = rows[rows.length - 1];
+      const gp = lr?.grossProfit ?? (lr?.totalRevenue != null && lr?.costOfRevenue != null ? lr.totalRevenue - lr.costOfRevenue : null);
+      lenses.push(qualityLens(gp, lr?.totalAssets ?? null, locale));
     } catch {
       fscore = null;
     }

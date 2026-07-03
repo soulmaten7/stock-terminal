@@ -129,3 +129,24 @@ export function lowVolLens(closes: number[], locale: Locale = "ko"): LensRead {
     note: "저변동성(BAB): 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님.",
   };
 }
+
+// ── 퀄리티(Quality) 렌즈 ── Gross Profitability(GP/A, Novy-Marx). 검증: 고 GP/A가 저 GP/A 대비 우위(FF3 알파 유의).
+// GP/A = 매출총이익/총자산. 라벨은 수준 서술(높음/보통/낮음 · verdict 아님). 은행은 매출총이익 없어 미적용(null).
+export function qualityLens(grossProfit: number | null, totalAssets: number | null, locale: Locale = "ko"): LensRead {
+  const c = LENS_COPY[locale].quality;
+  const gpa = grossProfit != null && totalAssets != null && totalAssets > 0 ? (grossProfit / totalAssets) * 100 : null;
+  const lab = gpa == null ? null : gpa > 40 ? "높음" : gpa < 15 ? "낮음" : "보통";
+  return {
+    key: "quality",
+    grade: "검증",
+    gradeTier: "strong",
+    nameEn: "Quality (GP/A)",
+    name: c.name,
+    summary: c.what,
+    about: c.about,
+    short: null,
+    long: lab,
+    detail: { "GP/A%": round(gpa) },
+    note: "퀄리티(Gross Profitability, Novy-Marx): 매출총이익/총자산. 백테스트(투자가능 $5+·13코호트) 고−저 롱숏 t≈2.9·샤프 0.78·FF3 알파 t≈2.5(시장/규모/가치 넘는 독립 프리미엄)·회전율 낮아 비용 강건 → 검증. 단 수익 '수준'은 생존편향·동일가중으로 과대(방향·유의만 신뢰). ROE는 별도 검증서 유의 미달(대형주 편중)이라 제외. 은행은 매출총이익 구조상 미적용.",
+  };
+}
