@@ -12,6 +12,8 @@ export type LensRead = {
   name: string;   // 한글 짧은 명칭
   summary: string; // 한 줄 요약(언제/무엇에 쓰나)
   about: string; // 이 기법이란?(개념·유래·왜 쓰나 — 쉬운 설명)
+  grade: string; // 신뢰도 배지 텍스트(카드 겉면 — 얼마나 믿을 만한가)
+  gradeTier: "strong" | "partial" | "ref"; // 배지 색 계열
   short: string | null; // 단기 방향 라벨
   long: string | null;  // 장기 방향 라벨
   detail: Record<string, number | null>; // 근거 수치(투명 공개)
@@ -43,6 +45,8 @@ export function momentumLens(closes: number[]): LensRead {
   const lab = (v: number | null) => (v == null ? null : v > 5 ? "강세" : v < -5 ? "약세" : "중립");
   return {
     key: "momentum",
+    grade: "검증",
+    gradeTier: "strong",
     nameEn: "Momentum (12-1)",
     name: "모멘텀",
     summary: "최근 1년(마지막 달 제외) 강했던 종목이 계속 오를지 — 추세장·주도주에 유용해요.",
@@ -67,6 +71,8 @@ export function technicalLens(closes: number[]): LensRead {
   const longLab = maTrend(last, ma200);
   return {
     key: "technical",
+    grade: "참고용",
+    gradeTier: "ref",
     nameEn: "Technical (RSI · MA)",
     name: "기술",
     summary: "과열·추세·52주 위치 등 '지금 상태'를 표시 — 참고용(단독 매매신호 아님).",
@@ -88,6 +94,8 @@ export function valuationLens(pe: number | null, pb: number | null): LensRead {
   const peLab = pe == null || pe <= 0 ? null : pe < 10 ? "낮음" : pe > 25 ? "높음" : "보통";
   return {
     key: "valuation",
+    grade: "표본 약함",
+    gradeTier: "partial",
     nameEn: "Value (E/P · B/M)",
     name: "밸류(가치)",
     summary: "이익·자산 대비 싼지 봐요 — 성숙·안정 업종에서 장기 관점.",
@@ -104,6 +112,8 @@ export function lowVolLens(closes: number[]): LensRead {
   const vol = realizedVol(closes, 252);
   return {
     key: "lowvol",
+    grade: "검증(방어)",
+    gradeTier: "strong",
     nameEn: "Low Volatility (BAB)",
     name: "저변동성",
     summary: "덜 흔들리는 종목이 위험 대비 유리 — 하락장 방어에 유용해요.",

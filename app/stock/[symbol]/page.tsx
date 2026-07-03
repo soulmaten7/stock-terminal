@@ -10,6 +10,8 @@ type LensRead = {
   name: string;
   summary: string;
   about: string;
+  grade: string;
+  gradeTier: 'strong' | 'partial' | 'ref';
   short: string | null;
   long: string | null;
   detail: Record<string, number | null>;
@@ -32,6 +34,13 @@ function gradeColor(g: string): string {
   if (g === '우량') return 'text-unjong-up';
   if (g === '부실') return 'text-unjong-down';
   return 'text-unjong-muted';
+}
+
+// 신뢰도 배지 색 — strong=민트(검증)·partial=앰버(조건부/해석)·ref=회색(참고)
+function gradeBadgeClass(tier: string): string {
+  if (tier === 'strong') return 'bg-unjong-accent/15 text-unjong-accent';
+  if (tier === 'partial') return 'bg-amber-50 text-amber-600';
+  return 'bg-unjong-background text-unjong-muted';
 }
 
 // TRAI 로고 뱃지 — 민트 T 모노그램(브랜드 색). AI 종합 분석의 브랜드 마크.
@@ -64,7 +73,10 @@ function FScoreCard({ f }: { f: FScoreResp }) {
     <div className="rounded-xl border border-unjong-border bg-white p-4">
       <div className="mb-2 flex items-start justify-between gap-2">
         <div>
-          <div className="font-bold text-unjong-primary">Piotroski F-Score</div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-unjong-primary">Piotroski F-Score</span>
+            <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성 해석</span>
+          </div>
           <div className="mt-0.5 text-xs text-unjong-accent">F-스코어 · 재무 건전성{f.asOf ? ` · ${f.asOf} 기준` : ''}</div>
         </div>
         <div className="flex items-baseline gap-1.5">
@@ -84,7 +96,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
         ))}
       </div>
       <details className="mt-3">
-        <summary className={LEARN_CLASS}>▾ 이 기법이란?</summary>
+        <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
         <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">회계학자 피오트로스키가 2000년 만든, 기업 재무 건강을 9개 항목으로 점수 매기는 체크리스트예요(수익성·부채·효율의 전년 대비 개선). 원래 값싼 가치주 중 &lsquo;진짜 부실한 곳&rsquo;을 걸러내려 만들었어요 — 그래서 수익 예측이 아니라 재무 건전성 판단에 씁니다.</p>
       </details>
       <details className="mt-3 border-t border-unjong-border pt-2">
@@ -165,7 +177,10 @@ export default function StockLensPage() {
             <div key={L.key} className="rounded-xl border border-unjong-border bg-white p-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="font-bold text-unjong-primary">{L.nameEn}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-bold text-unjong-primary">{L.nameEn}</span>
+                    <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
+                  </div>
                   <div className="mt-0.5 text-xs text-unjong-accent">{L.name}</div>
                 </div>
                 <div className="flex items-center gap-3 whitespace-nowrap pt-0.5 text-xs">
@@ -176,7 +191,7 @@ export default function StockLensPage() {
               <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary/80">{L.summary}</p>
               {L.about ? (
                 <details className="mt-2">
-                  <summary className={LEARN_CLASS}>▾ 이 기법이란?</summary>
+                  <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
                   <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
                 </details>
               ) : null}
