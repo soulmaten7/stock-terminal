@@ -87,6 +87,98 @@ export const LENS_COPY: Record<Locale, {
   },
 };
 
+// ── 직관 판정(reading) — 렌즈가 이 종목을 어떻게 읽는지 "판정 문장 + 쉬운 해석"(상태별·언어별). ──
+// 원칙: 예측 아님(상단 공통 전제) · 각 기법 시각 · 숫자는 카드에 그대로(근거 수치) · 쉬운말. 상태키=lib/lenses가 계산.
+type Reading = { phrase: string; plain: string };
+type LensReadings = Record<string, Reading>;
+
+export const LENS_READINGS: Record<Locale, {
+  momentum: LensReadings; lowvol: LensReadings; valuation: LensReadings; quality: LensReadings; assetgrowth: LensReadings; technical: LensReadings; fscore: LensReadings;
+}> = {
+  ko: {
+    momentum: {
+      up: { phrase: "강하게 오르는 흐름", plain: "최근 꾸준히 오르고 있어요. 이 기법은 오르던 흐름이 한동안 더 이어진다고 봐요." },
+      flat: { phrase: "뚜렷한 방향은 없음", plain: "최근 오르내림이 섞여 방향이 뚜렷하지 않아요. 이 기법 시각에선 지금 신호가 약해요." },
+      down: { phrase: "힘이 빠지는 흐름", plain: "최근 흐름이 약해지고 있어요. 이 기법은 약한 흐름도 한동안 이어지기 쉽다고 봐요." },
+    },
+    lowvol: {
+      calm: { phrase: "차분하고 안정적", plain: "가격이 크게 출렁이지 않는 편이에요. 하락장에서 방어적으로 버티기 좋은 성격이에요." },
+      mid: { phrase: "보통 수준의 변동", plain: "가격 변동이 특별히 크지도 작지도 않은 편이에요." },
+      jumpy: { phrase: "출렁임이 큰 편", plain: "가격이 크게 요동치는 편이에요. 변동을 감당할 수 있을 때 어울려요." },
+    },
+    valuation: {
+      cheap: { phrase: "이익 대비 싼 편", plain: "버는 돈에 비해 주가가 낮은 '가치주' 성격이에요. 길게 보는 투자에서 눈여겨보는 특징이에요." },
+      mid: { phrase: "보통 수준의 가격", plain: "이익 대비 주가가 특별히 싸지도 비싸지도 않은 편이에요." },
+      rich: { phrase: "이익 대비 비싼 편", plain: "버는 돈에 비해 주가가 높은 편이에요. 성장 기대가 미리 반영됐을 수 있어요." },
+      na: { phrase: "값을 낼 수 없음", plain: "이익 정보가 없어 이 기법으론 판단하기 어려워요." },
+    },
+    quality: {
+      high: { phrase: "알짜로 잘 버는 우량", plain: "자산 대비 이익을 꾸준히 잘 내는 회사예요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요." },
+      mid: { phrase: "보통 수준의 수익성", plain: "자산 대비 수익성이 특별히 높지도 낮지도 않은 편이에요." },
+      low: { phrase: "수익성이 낮은 편", plain: "자산 대비 벌어들이는 이익이 적은 편이에요." },
+      na: { phrase: "값을 낼 수 없음", plain: "은행 등은 매출총이익 구조가 달라 이 기법을 적용하지 않아요." },
+    },
+    assetgrowth: {
+      aggressive: { phrase: "공격적으로 확장 중", plain: "자산을 빠르게 불리는 회사예요. 역사적으로 이렇게 급히 몸집을 키운 회사는 이후 성과가 약한 편이라, 참고해서 볼 신호예요." },
+      mid: { phrase: "보통 속도로 성장", plain: "자산을 늘리는 속도가 과하지도 정체도 아닌 편이에요." },
+      conservative: { phrase: "보수적으로 운영", plain: "자산을 무리해서 늘리지 않는 편이에요. 역사적으로 자본을 아껴 쓰는 회사가 이후 성과가 나은 편이었어요." },
+      na: { phrase: "값을 낼 수 없음", plain: "재무 정보가 부족해 이 기법으론 판단하기 어려워요." },
+    },
+    technical: {
+      up: { phrase: "추세는 위쪽", plain: "지금 가격이 장기 평균선 위에 있어요. 단기 흐름을 빠르게 훑는 참고용이에요." },
+      flat: { phrase: "방향은 뚜렷하지 않음", plain: "장기 평균선 근처를 오가는 상태예요. 참고용으로만 보세요." },
+      down: { phrase: "추세는 아래쪽", plain: "지금 가격이 장기 평균선 아래에 있어요. 단기 상태를 참고하는 용도예요." },
+    },
+    fscore: {
+      strong: { phrase: "재무가 튼튼한 편", plain: "9개 항목 중 많은 항목을 통과했어요. 재무 건전성이 좋은 편이에요(수익 예측은 아니에요)." },
+      mid: { phrase: "보통 수준의 재무", plain: "9개 항목 중 절반 정도를 통과했어요." },
+      weak: { phrase: "부실 신호 주의", plain: "통과한 항목이 적어요. 재무가 부실할 수 있으니 주의해서 보세요." },
+      na: { phrase: "점수를 낼 수 없음", plain: "은행·보험은 재무 구조가 달라 이 점수를 적용하지 않아요." },
+    },
+  },
+  en: {
+    momentum: {
+      up: { phrase: "Climbing strongly", plain: "It's been rising steadily. This lens expects an existing uptrend to persist for a while." },
+      flat: { phrase: "No clear direction", plain: "Recent moves are mixed, with no clear trend. The signal is weak here right now." },
+      down: { phrase: "Losing steam", plain: "The trend has been weakening. This lens expects a weak trend to tend to persist too." },
+    },
+    lowvol: {
+      calm: { phrase: "Calm and steady", plain: "The price doesn't swing much — a defensive profile that tends to hold up in down markets." },
+      mid: { phrase: "Average swings", plain: "Volatility is neither especially high nor low." },
+      jumpy: { phrase: "Swings a lot", plain: "The price moves sharply. Suits you when you can stomach the swings." },
+    },
+    valuation: {
+      cheap: { phrase: "Cheap vs. earnings", plain: "The price is low relative to what it earns — a value profile worth watching in the long game." },
+      mid: { phrase: "Fairly priced", plain: "The price isn't especially cheap or expensive versus earnings." },
+      rich: { phrase: "Pricey vs. earnings", plain: "The price is high relative to earnings — growth expectations may be priced in." },
+      na: { phrase: "Can't be scored", plain: "No earnings data, so this lens can't judge it." },
+    },
+    quality: {
+      high: { phrase: "A sturdy earner", plain: "It reliably turns assets into profit — a high-quality profile worth watching." },
+      mid: { phrase: "Average profitability", plain: "Profitability versus assets is neither especially high nor low." },
+      low: { phrase: "Low profitability", plain: "It earns relatively little from its assets." },
+      na: { phrase: "Can't be scored", plain: "Banks and the like are built differently, so this lens doesn't apply." },
+    },
+    assetgrowth: {
+      aggressive: { phrase: "Expanding aggressively", plain: "It's growing assets fast. Historically, companies that bulk up this quickly have tended to lag afterward — a signal to watch." },
+      mid: { phrase: "Growing at a normal pace", plain: "It's growing assets at neither an excessive nor a stalled pace." },
+      conservative: { phrase: "Runs conservatively", plain: "It doesn't overextend its assets. Historically, disciplined spenders have tended to fare better afterward." },
+      na: { phrase: "Can't be scored", plain: "Not enough financial data for this lens to judge." },
+    },
+    technical: {
+      up: { phrase: "Trend leans up", plain: "The price sits above its long-term average. A quick read of short-term action, for reference." },
+      flat: { phrase: "No clear trend", plain: "It's hovering near its long-term average. Treat this as reference only." },
+      down: { phrase: "Trend leans down", plain: "The price sits below its long-term average. For reference on the current state." },
+    },
+    fscore: {
+      strong: { phrase: "Financially sturdy", plain: "It passes many of the 9 checks — solid financial health (not a return forecast)." },
+      mid: { phrase: "Middling financials", plain: "It passes about half of the 9 checks." },
+      weak: { phrase: "Watch for weakness", plain: "It passes few checks — financials may be weak, so look carefully." },
+      na: { phrase: "Can't be scored", plain: "Banks and insurers are built differently, so this score doesn't apply." },
+    },
+  },
+};
+
 export function pickLocale(v: string | null | undefined): Locale {
   return v === "en" ? "en" : "ko";
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { LENS_COPY } from '@/lib/lensCopy';
+import { LENS_COPY, LENS_READINGS } from '@/lib/lensCopy';
 
 type LensRead = {
   key: string;
@@ -17,6 +17,7 @@ type LensRead = {
   long: string | null;
   detail: Record<string, number | null>;
   note?: string;
+  verdict?: { phrase: string; plain: string; tone: 'pos' | 'warn' | 'flat' } | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
@@ -35,6 +36,13 @@ function gradeColor(g: string): string {
   if (g === '우량') return 'text-unjong-up';
   if (g === '부실') return 'text-unjong-down';
   return 'text-unjong-muted';
+}
+
+// 판정(reading) 색조 — pos=민트(우호적 읽기)·warn=앰버(주의 읽기)·flat=중립(기본색). '이 기법 시각'일 뿐 예측 아님(상단 전제).
+function verdictColor(tone?: string): string {
+  if (tone === 'pos') return 'text-unjong-accent';
+  if (tone === 'warn') return 'text-amber-600';
+  return 'text-unjong-primary';
 }
 
 // 신뢰도 배지 색 — strong=민트(검증)·partial=앰버(조건부/해석)·ref=회색(참고)
@@ -85,6 +93,9 @@ function FScoreCard({ f }: { f: FScoreResp }) {
       </div>
     );
   }
+  const fState = f.score >= 7 ? 'strong' : f.score <= 3 ? 'weak' : 'mid';
+  const fRead = LENS_READINGS.ko.fscore[fState];
+  const fCol = fState === 'strong' ? 'text-unjong-accent' : fState === 'weak' ? 'text-amber-600' : 'text-unjong-primary';
   return (
     <div className="rounded-xl border border-unjong-border bg-white p-4">
       <div className="mb-2 flex items-start justify-between gap-2">
@@ -101,7 +112,11 @@ function FScoreCard({ f }: { f: FScoreResp }) {
           <span className={`ml-1 text-sm font-bold ${gradeColor(f.grade)}`}>{f.grade}</span>
         </div>
       </div>
-      <p className="mb-3 text-xs leading-relaxed text-unjong-primary/80">{LENS_COPY.ko.fscore.what}</p>
+      <div className="mb-2.5">
+        <p className={`text-[15px] font-bold ${fCol}`}>{fRead.phrase}</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
+      </div>
+      <p className="mb-3 text-[11px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p>
       <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
         {f.criteria.map((c) => (
           <div key={c.key} className="flex items-start gap-1.5 text-xs">
@@ -177,7 +192,7 @@ export default function StockLensPage() {
         ) : null}
 
         <p className="mt-3 rounded-lg bg-unjong-background px-3 py-2 text-xs leading-relaxed text-unjong-muted">
-          기법 렌즈는 <b className="text-unjong-primary">예측이 아니라 방향성 해석</b>이에요. 각 기법 기준으로 지금 어떻게 보이는지를 근거 수치와 함께 보여줄 뿐, 투자 판단은 본인 몫입니다.
+          아래는 <b className="text-unjong-primary">각 기법이 이 종목을 보는 시각</b>이에요 — 예측이 아니라 "이 기법으로 보면 이렇게 읽힌다". 기법마다 다르게 볼 수 있고, 그 차이가 정보예요. 판단 근거가 되는 정확한 수치도 카드마다 함께 있어요.
         </p>
 
         {style ? (
@@ -216,14 +231,21 @@ export default function StockLensPage() {
                   <span className="text-unjong-muted">장기 <b className={labelColor(L.long)}>{L.long ?? '—'}</b></span>
                 </div>
               </div>
-              <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary/80">{L.summary}</p>
+              {L.verdict ? (
+                <div className="mt-2.5">
+                  <p className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p>
+                </div>
+              ) : null}
+              <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.summary}</p>
               {L.about ? (
                 <details className="mt-2">
                   <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
                   <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
                 </details>
               ) : null}
-              <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-unjong-muted">
+              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2 text-[12px] text-unjong-muted">
+                <span className="font-medium text-unjong-primary/70">근거 수치</span>
                 {Object.entries(L.detail).map(([k, v]) => (
                   <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
                 ))}
