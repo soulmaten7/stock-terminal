@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import YahooFinance from "yahoo-finance2";
 import { momentumLens, technicalLens, valuationLens, lowVolLens } from "@/lib/lenses";
+import { pickLocale } from "@/lib/lensCopy";
 import { computeFScore, type FRow } from "@/lib/fscore";
 
 export const runtime = "nodejs";
@@ -14,10 +15,13 @@ const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 const cache = new Map<string, { at: number; data: unknown }>();
 
 export async function GET(req: Request) {
-  const symbol = (new URL(req.url).searchParams.get("symbol") || "").trim();
+  const url = new URL(req.url);
+  const symbol = (url.searchParams.get("symbol") || "").trim();
   if (!symbol) return NextResponse.json({ error: "no_symbol" }, { status: 400 });
+  const locale = pickLocale(url.searchParams.get("lang")); // 기본 ko · ?lang=en
+  const cacheKey = `${symbol}:${locale}`;
 
-  const hit = cache.get(symbol);
+  const hit = cache.get(cacheKey);
   if (hit && Date.now() - hit.at < 30 * 60 * 1000) return NextResponse.json(hit.data);
 
   try {
@@ -54,7 +58,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ symbol, resolved, name, price, lenses: [], error: "insufficient_data" });
     }
 
-    const lenses = [momentumLens(closes), lowVolLens(closes), technicalLens(closes), valuationLens(pe, pb)];
+    const lenses = [momentumLens(closes, locale), lowVolLens(closes, locale), technicalLens(closes, locale), valuationLens(pe, pb, locale)];
 
     // F-Score (연간 재무 — fundamentalsTimeSeries). 실패/미지원 시 null/supported:false로 안전 처리.
     let fscore: unknown = null;
@@ -91,7 +95,7 @@ export async function GET(req: Request) {
     }
 
     const data = { symbol, resolved, name, price, lenses, fscore };
-    cache.set(symbol, { at: Date.now(), data });
+    cache.set(cacheKey, { at: Date.now(), data });
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ symbol, error: String(e) }, { status: 200 });

@@ -71,7 +71,7 @@ export function computeFScore(rowsAsc: FRow[]): FScore {
   if (!ok(T) || !ok(P)) {
     return {
       supported: false,
-      reason: "이 업종(예: 금융)은 F-Score 미적용 — 유동비율·매출총이익 등 재무 구조가 달라요",
+      reason: "이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.",
       score: 0,
       max: 9,
       grade: "-",

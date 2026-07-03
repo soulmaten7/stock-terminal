@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { LENS_COPY } from '@/lib/lensCopy';
 
 type LensRead = {
   key: string;
@@ -100,7 +101,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
           <span className={`ml-1 text-sm font-bold ${gradeColor(f.grade)}`}>{f.grade}</span>
         </div>
       </div>
-      <p className="mb-3 text-xs leading-relaxed text-unjong-primary/80">9개 재무 규칙으로 건전성을 점검 — 부실 회피 필터예요(수익 예측 아님).</p>
+      <p className="mb-3 text-xs leading-relaxed text-unjong-primary/80">{LENS_COPY.ko.fscore.what}</p>
       <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
         {f.criteria.map((c) => (
           <div key={c.key} className="flex items-start gap-1.5 text-xs">

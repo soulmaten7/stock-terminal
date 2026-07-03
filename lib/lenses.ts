@@ -5,6 +5,7 @@
 import { momentum121FromDaily, momentumLabel } from "./momentum";
 import { realizedVol, volLabel } from "./lowvol";
 import { sma, rsi, rsiState, maTrend } from "./technical";
+import { LENS_COPY, type Locale } from "./lensCopy";
 
 export type LensRead = {
   key: string;
@@ -35,7 +36,8 @@ function ret(closes: number[], daysAgo: number): number | null {
 
 
 // ── 모멘텀 렌즈 ── 단기=1·3개월 추세 / 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +).
-export function momentumLens(closes: number[]): LensRead {
+export function momentumLens(closes: number[], locale: Locale = "ko"): LensRead {
+  const c = LENS_COPY[locale].momentum;
   const r1 = ret(closes, 21), r3 = ret(closes, 63), r6 = ret(closes, 126), r12 = ret(closes, 252);
   const m121 = momentum121FromDaily(closes);
   const avg = (xs: (number | null)[]) => {
@@ -48,8 +50,8 @@ export function momentumLens(closes: number[]): LensRead {
     grade: "검증",
     gradeTier: "strong",
     nameEn: "Momentum (12-1)",
-    name: "모멘텀",
-    summary: "최근 1년(마지막 달 제외) 강했던 종목이 계속 오를지 — 추세장·주도주에 유용해요.",
+    name: c.name,
+    summary: c.what,
     about: "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
     short: lab(avg([r1, r3])),
     long: momentumLabel(m121),
@@ -59,7 +61,8 @@ export function momentumLens(closes: number[]): LensRead {
 }
 
 // ── 기술 렌즈 ── 단기=RSI(과열/침체), 장기=200일선 대비(추세)
-export function technicalLens(closes: number[]): LensRead {
+export function technicalLens(closes: number[], locale: Locale = "ko"): LensRead {
+  const c = LENS_COPY[locale].technical;
   const r = rsi(closes);
   const last = closes.length ? closes[closes.length - 1] : null;
   const ma200 = sma(closes, 200);
@@ -74,8 +77,8 @@ export function technicalLens(closes: number[]): LensRead {
     grade: "참고용",
     gradeTier: "ref",
     nameEn: "Technical (RSI · MA)",
-    name: "기술",
-    summary: "과열·추세·52주 위치 등 '지금 상태'를 표시 — 참고용(단독 매매신호 아님).",
+    name: c.name,
+    summary: c.what,
     about: "차트의 가격·패턴으로 '지금 과열인지, 추세가 위인지'를 보는 전통적 기술적 분석이에요. RSI는 1978년 와일더가 만든 과열·침체 지표, 이동평균선은 일정 기간의 평균 가격이에요 — 단기 흐름을 빠르게 훑는 참고 도구예요(단독 신호로는 약함).",
     short: shortLab,
     long: longLab,
@@ -90,15 +93,16 @@ export function technicalLens(closes: number[]): LensRead {
 
 // ── 밸류(가치) 렌즈 ── 검증: 투자가능($5+)서 싼(고 E/P·B/M) 종목이 비싼 종목 대비 우위(정설이나 우리 표본선 약함).
 // ⚠️ 라벨은 "저평가/고평가"(가치 판단·verdict) 대신 "낮음/보통/높음"(PER 수준 사실)로 — 절대 임계값의 verdict는 검증 밖(상대·섹터내 비교가 맞음). 중립 표시.
-export function valuationLens(pe: number | null, pb: number | null): LensRead {
+export function valuationLens(pe: number | null, pb: number | null, locale: Locale = "ko"): LensRead {
+  const c = LENS_COPY[locale].valuation;
   const peLab = pe == null || pe <= 0 ? null : pe < 10 ? "낮음" : pe > 25 ? "높음" : "보통";
   return {
     key: "valuation",
     grade: "표본 약함",
     gradeTier: "partial",
     nameEn: "Value (E/P · B/M)",
-    name: "밸류(가치)",
-    summary: "이익·자산 대비 싼지 봐요 — 성숙·안정 업종에서 장기 관점.",
+    name: c.name,
+    summary: c.what,
     about: "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄의 가치투자에서 출발해, 파마·프렌치가 '싼 주식이 장기적으로 낫다'(가치 프리미엄)를 데이터로 정립했어요 — 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
     short: null,
     long: peLab,
@@ -108,15 +112,16 @@ export function valuationLens(pe: number | null, pb: number | null): LensRead {
 }
 
 // ── 저변동성 렌즈 ── 실현변동성(위험). 검증: 투자가능($5+) 유니버스서 저변동군이 위험 낮고 수익 우위.
-export function lowVolLens(closes: number[]): LensRead {
+export function lowVolLens(closes: number[], locale: Locale = "ko"): LensRead {
+  const c = LENS_COPY[locale].lowvol;
   const vol = realizedVol(closes, 252);
   return {
     key: "lowvol",
     grade: "검증(방어)",
     gradeTier: "strong",
     nameEn: "Low Volatility (BAB)",
-    name: "저변동성",
-    summary: "덜 흔들리는 종목이 위험 대비 유리 — 하락장 방어에 유용해요.",
+    name: c.name,
+    summary: c.what,
     about: "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
     short: null,
     long: volLabel(vol),
