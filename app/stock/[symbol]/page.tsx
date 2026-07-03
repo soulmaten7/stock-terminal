@@ -113,7 +113,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
       </div>
       <details className="mt-3">
         <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
-        <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">회계학자 피오트로스키가 2000년 만든, 기업 재무 건강을 9개 항목으로 점수 매기는 체크리스트예요(수익성·부채·효율의 전년 대비 개선). 원래 값싼 가치주 중 &lsquo;진짜 부실한 곳&rsquo;을 걸러내려 만들었어요 — 그래서 수익 예측이 아니라 재무 건전성 판단에 씁니다.</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.about}</p>
       </details>
       <details className="mt-3 border-t border-unjong-border pt-2">
         <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
