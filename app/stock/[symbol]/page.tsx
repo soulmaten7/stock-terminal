@@ -43,6 +43,21 @@ function gradeBadgeClass(tier: string): string {
   return 'bg-unjong-background text-unjong-muted';
 }
 
+// 기법 엇갈림 = 정보. 방향 축의 핵심 긴장(모멘텀 × 밸류)만 읽어 종목 '성향'을 서술(예측·매수신호 아님).
+// 5개를 억지로 한 표로 뭉치지 않음(축이 다름: 저변동·F-Score는 위험·건전성 축).
+function styleRead(lenses: LensRead[]): string | null {
+  const mom = lenses.find((l) => l.key === 'momentum');
+  const val = lenses.find((l) => l.key === 'valuation');
+  if (!mom || !val) return null;
+  const bull = mom.long === '강세', bear = mom.long === '약세';
+  const cheap = val.long === '낮음', pricey = val.long === '높음';
+  if (bull && pricey) return '모멘텀↑ · 밸류 비쌈 → 모멘텀·성장 성격 (추세엔 부합, 가치엔 불리)';
+  if (bear && cheap) return '모멘텀↓ · 밸류 쌈 → 가치·역발상 성격 (가치엔 부합, 추세엔 불리)';
+  if (bull && cheap) return '모멘텀↑ · 밸류도 쌈 → 드문 정렬 (추세·가치 모두 우호)';
+  if (bear && pricey) return '모멘텀↓ · 밸류 비쌈 → 둘 다 비우호 (주의)';
+  return '뚜렷한 성향 없음 — 중립 구간';
+}
+
 // TRAI 로고 뱃지 — 민트 T 모노그램(브랜드 색). AI 종합 분석의 브랜드 마크.
 function TraiMark({ size = 28 }: { size?: number }) {
   return (
@@ -145,6 +160,7 @@ export default function StockLensPage() {
 
   const lenses = data?.lenses ?? [];
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ)$/, '');
+  const style = styleRead(lenses);
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -162,6 +178,17 @@ export default function StockLensPage() {
         <p className="mt-3 rounded-lg bg-unjong-background px-3 py-2 text-xs leading-relaxed text-unjong-muted">
           기법 렌즈는 <b className="text-unjong-primary">예측이 아니라 방향성 해석</b>이에요. 각 기법 기준으로 지금 어떻게 보이는지를 근거 수치와 함께 보여줄 뿐, 투자 판단은 본인 몫입니다.
         </p>
+
+        {style ? (
+          <div className="mt-3 rounded-lg border border-unjong-border bg-white px-3 py-2.5">
+            <p className="text-xs font-semibold text-unjong-primary">
+              <span className="text-unjong-accent">기법 성향</span> · {style}
+            </p>
+            <p className="mt-1 text-[11px] leading-relaxed text-unjong-muted">
+              여러 기법이 같은 방향이면 신뢰가 높고, 엇갈리면 그 자체가 정보(종목의 성격·불확실성)예요 — 억지로 하나의 점수로 합치지 마세요.
+            </p>
+          </div>
+        ) : null}
       </div>
 
       {loading ? (
