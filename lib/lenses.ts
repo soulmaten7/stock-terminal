@@ -82,10 +82,10 @@ export function technicalLens(closes: number[]): LensRead {
   };
 }
 
-// ── 밸류(가치) 렌즈 ── 검증: 투자가능($5+)서 싼(고 E/P·B/M) 종목이 비싼 종목 대비 이후수익 우위(E/P 강함·B/M 조건부).
-// 표시는 단일종목 절대 PER·PBR(러프) — 검증된 건 "상대적으로 싼 것"의 우위지 절대 임계값이 아님. 섹터내 상대비교로.
+// ── 밸류(가치) 렌즈 ── 검증: 투자가능($5+)서 싼(고 E/P·B/M) 종목이 비싼 종목 대비 우위(정설이나 우리 표본선 약함).
+// ⚠️ 라벨은 "저평가/고평가"(가치 판단·verdict) 대신 "낮음/보통/높음"(PER 수준 사실)로 — 절대 임계값의 verdict는 검증 밖(상대·섹터내 비교가 맞음). 중립 표시.
 export function valuationLens(pe: number | null, pb: number | null): LensRead {
-  const peLab = pe == null || pe <= 0 ? null : pe < 10 ? "저평가" : pe > 25 ? "고평가" : "적정";
+  const peLab = pe == null || pe <= 0 ? null : pe < 10 ? "낮음" : pe > 25 ? "높음" : "보통";
   return {
     key: "valuation",
     nameEn: "Value (E/P · B/M)",

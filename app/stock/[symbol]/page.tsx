@@ -22,8 +22,8 @@ type LensResp = { symbol: string; name?: string; price?: number | null; lenses?:
 // 라벨 → 색 (긍정=up / 부정=down / 과열=경고 / 중립·적정=muted)
 function labelColor(l: string | null): string {
   if (!l) return 'text-unjong-muted';
-  if (['강세', '상승추세', '저평가'].includes(l)) return 'text-unjong-up';
-  if (['약세', '하락추세', '고평가', '침체'].includes(l)) return 'text-unjong-down';
+  if (['강세', '상승추세'].includes(l)) return 'text-unjong-up';
+  if (['약세', '하락추세', '침체'].includes(l)) return 'text-unjong-down';
   if (l === '과열') return 'text-amber-500';
   return 'text-unjong-muted';
 }
