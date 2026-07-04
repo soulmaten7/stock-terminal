@@ -85,6 +85,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
             <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성 해석</span>
             <span className="text-xs text-unjong-accent">F-스코어 · 재무 건전성</span>
           </div>
+          <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}{f.asOf ? ` · ${f.asOf} 기준` : ''}</p>
           <p className={`mt-2 text-base font-bold ${fCol}`}>{fRead.phrase}</p>
           <div className="mt-2 text-[12px] text-unjong-muted"><span className="font-medium text-unjong-primary/70">점수</span> <span className="tabular-nums text-unjong-primary">{f.score}</span> / {f.max}</div>
         </div>
@@ -94,8 +95,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
       </button>
       {open ? (
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3">
-          <p className="text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
-          <p className="mb-3 mt-2 text-[11px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}{f.asOf ? ` · ${f.asOf} 기준` : ''}</p>
+          <p className="mb-3 text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
           <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
             {f.criteria.map((c) => (
               <div key={c.key} className="flex items-start gap-1.5 text-xs">
@@ -200,6 +200,7 @@ export default function StockLensPage() {
                     <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
                     <span className="text-xs text-unjong-accent">{L.name}</span>
                   </div>
+                  <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">{L.summary}</p>
                   {L.verdict ? (
                     <p className={`mt-2 text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
                   ) : (
@@ -223,7 +224,6 @@ export default function StockLensPage() {
                     <span>단기 <b className={labelColor(L.short)}>{L.short ?? '—'}</b></span>
                     <span>장기 <b className={labelColor(L.long)}>{L.long ?? '—'}</b></span>
                   </div>
-                  <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.summary}</p>
                   {L.about ? (
                     <details className="mt-2">
                       <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
