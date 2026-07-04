@@ -91,7 +91,7 @@ export function computeFScore(rowsAsc: FRow[]): FScore {
     { key: "roa_pos", group: "수익성", label: "ROA 양수", plain: "돈을 벌어요·흑자", pass: roa(T) > 0, note: `ROA ${pct(roa(T))}` },
     { key: "cfo_pos", group: "수익성", label: "영업현금흐름 양수", plain: "팔아서 진짜 현금이 들어와요", pass: (T.operatingCashFlow as number) > 0, note: `CFO ${big(T.operatingCashFlow)}` },
     { key: "roa_up", group: "수익성", label: "ROA 개선", plain: "작년보다 더 잘 벌어요", pass: roa(T) > roa(P), note: `${pct(roa(P))} → ${pct(roa(T))}` },
-    { key: "accrual", group: "수익성", label: "이익의 질", plain: "번 돈이 진짜 통장에 들어와요", pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `현금 ${big(T.operatingCashFlow)} > 순익 ${big(T.netIncome)}` },
+    { key: "accrual", group: "수익성", label: "이익의 질", plain: "번 돈이 진짜 통장에 들어와요", pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `현금 ${big(T.operatingCashFlow)} · 순익 ${big(T.netIncome)}` },
     { key: "lever_dn", group: "재무 안정성", label: "장기부채비율 하락", plain: "빚 부담이 줄었어요", pass: lev(T) < lev(P), note: `${pct(lev(P))} → ${pct(lev(T))}` },
     { key: "liq_up", group: "재무 안정성", label: "유동비율 개선", plain: "급할 때 갚을 돈이 늘었어요", pass: cr(T) > cr(P), note: `${cr(P).toFixed(2)} → ${cr(T).toFixed(2)}` },
     { key: "no_dilute", group: "재무 안정성", label: "신주발행 없음", plain: "주식을 새로 안 찍어냈어요", pass: (T.ordinarySharesNumber as number) <= (P.ordinarySharesNumber as number) * 1.001, note: `${big(P.ordinarySharesNumber)} → ${big(T.ordinarySharesNumber)}` },
