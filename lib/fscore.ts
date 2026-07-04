@@ -3,7 +3,7 @@
 // 입력: fundamentalsTimeSeries(annual) 연도 오름차순 행. 최신(T)·전기(P) 2년으로 Δ 판정.
 // ROA는 단순화(NI/기말총자산) — 원논문(기초자산) 대비 편의버전, 신호 취지 동일. 항상 근거수치 노출.
 
-export type FCriterion = { key: string; label: string; pass: boolean; note: string };
+export type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 export type FScore = {
   supported: boolean;
   reason?: string;
@@ -86,16 +86,17 @@ export function computeFScore(rowsAsc: FRow[]): FScore {
   const at = (r: FRow) => (r.totalRevenue as number) / (r.totalAssets as number);
   const pct = (v: number) => (v * 100).toFixed(1) + "%";
 
+  // 3그룹(수익성 4·재무 안정성 3·효율성 2) — GuruFocus·Stockopedia 표준 그룹핑. label=전문용어 / plain=쉬운 풀이(카드 괄호).
   const c: FCriterion[] = [
-    { key: "roa_pos", label: "① ROA 양수", pass: roa(T) > 0, note: `ROA ${pct(roa(T))}` },
-    { key: "cfo_pos", label: "② 영업현금흐름 양수", pass: (T.operatingCashFlow as number) > 0, note: `CFO ${big(T.operatingCashFlow)}` },
-    { key: "roa_up", label: "③ ROA 개선", pass: roa(T) > roa(P), note: `${pct(roa(P))} → ${pct(roa(T))}` },
-    { key: "accrual", label: "④ 이익의 질(CFO>순이익)", pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `CFO ${big(T.operatingCashFlow)} vs 순익 ${big(T.netIncome)}` },
-    { key: "lever_dn", label: "⑤ 장기부채비율 하락", pass: lev(T) < lev(P), note: `${pct(lev(P))} → ${pct(lev(T))}` },
-    { key: "liq_up", label: "⑥ 유동비율 개선", pass: cr(T) > cr(P), note: `${cr(P).toFixed(2)} → ${cr(T).toFixed(2)}` },
-    { key: "no_dilute", label: "⑦ 신주발행 없음", pass: (T.ordinarySharesNumber as number) <= (P.ordinarySharesNumber as number) * 1.001, note: `주식수 ${big(P.ordinarySharesNumber)} → ${big(T.ordinarySharesNumber)}` },
-    { key: "margin_up", label: "⑧ 매출총이익률 개선", pass: gm(T) > gm(P), note: `${pct(gm(P))} → ${pct(gm(T))}` },
-    { key: "turn_up", label: "⑨ 자산회전율 개선", pass: at(T) > at(P), note: `${at(P).toFixed(2)} → ${at(T).toFixed(2)}` },
+    { key: "roa_pos", group: "수익성", label: "ROA 양수", plain: "돈을 벌어요·흑자", pass: roa(T) > 0, note: `ROA ${pct(roa(T))}` },
+    { key: "cfo_pos", group: "수익성", label: "영업현금흐름 양수", plain: "팔아서 진짜 현금이 들어와요", pass: (T.operatingCashFlow as number) > 0, note: `CFO ${big(T.operatingCashFlow)}` },
+    { key: "roa_up", group: "수익성", label: "ROA 개선", plain: "작년보다 더 잘 벌어요", pass: roa(T) > roa(P), note: `${pct(roa(P))} → ${pct(roa(T))}` },
+    { key: "accrual", group: "수익성", label: "이익의 질", plain: "번 돈이 진짜 통장에 들어와요", pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `현금 ${big(T.operatingCashFlow)} > 순익 ${big(T.netIncome)}` },
+    { key: "lever_dn", group: "재무 안정성", label: "장기부채비율 하락", plain: "빚 부담이 줄었어요", pass: lev(T) < lev(P), note: `${pct(lev(P))} → ${pct(lev(T))}` },
+    { key: "liq_up", group: "재무 안정성", label: "유동비율 개선", plain: "급할 때 갚을 돈이 늘었어요", pass: cr(T) > cr(P), note: `${cr(P).toFixed(2)} → ${cr(T).toFixed(2)}` },
+    { key: "no_dilute", group: "재무 안정성", label: "신주발행 없음", plain: "주식을 새로 안 찍어냈어요", pass: (T.ordinarySharesNumber as number) <= (P.ordinarySharesNumber as number) * 1.001, note: `${big(P.ordinarySharesNumber)} → ${big(T.ordinarySharesNumber)}` },
+    { key: "margin_up", group: "효율성", label: "매출총이익률 개선", plain: "팔면 남는 게 많아졌어요", pass: gm(T) > gm(P), note: `${pct(gm(P))} → ${pct(gm(T))}` },
+    { key: "turn_up", group: "효율성", label: "자산회전율 개선", plain: "가진 걸로 더 많이 팔아요", pass: at(T) > at(P), note: `${at(P).toFixed(2)} → ${at(T).toFixed(2)}` },
   ];
 
   const score = c.filter((x) => x.pass).length;
