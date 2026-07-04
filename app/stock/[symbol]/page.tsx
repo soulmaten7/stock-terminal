@@ -63,19 +63,6 @@ function gradeBadgeClass(tier: string): string {
   return 'bg-unjong-background text-unjong-muted';
 }
 
-// TRAI 로고 뱃지 — 민트 T 모노그램(브랜드 색). AI 종합 분석의 브랜드 마크.
-function TraiMark({ size = 28 }: { size?: number }) {
-  return (
-    <span
-      aria-hidden
-      className="flex flex-shrink-0 items-center justify-center rounded-lg bg-unjong-accent font-bold leading-none text-white"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.56) }}
-    >
-      T
-    </span>
-  );
-}
-
 const SUMMARY_CLASS = 'cursor-pointer list-none text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
 const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
@@ -176,25 +163,6 @@ export default function StockLensPage() {
   const symbol = decodeURIComponent(String(params?.symbol || ''));
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
-  const [aiContent, setAiContent] = useState<string | null>(null);
-  const [aiLoading, setAiLoading] = useState(false);
-
-  async function askAI() {
-    setAiLoading(true);
-    try {
-      const r = await fetch('/api/ai-view', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ symbol, name: data?.name, lenses: data?.lenses, fscore: data?.fscore }),
-      });
-      const j = await r.json();
-      setAiContent(j.content || 'TRAI 종합을 불러오지 못했어요.');
-    } catch {
-      setAiContent('TRAI 종합 생성 중 오류가 났어요.');
-    } finally {
-      setAiLoading(false);
-    }
-  }
 
   useEffect(() => {
     if (!symbol) return;
@@ -302,37 +270,8 @@ export default function StockLensPage() {
         </div>
       )}
 
-      {!loading && (data?.lenses?.length || data?.fscore) ? (
-        <div className="mt-4 max-w-4xl">
-          {aiContent ? (
-            <div className="rounded-xl border border-unjong-accent/40 bg-unjong-background p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <TraiMark size={22} />
-                <span className="text-sm font-bold text-unjong-primary">TRAI 종합 분석</span>
-              </div>
-              <p className="whitespace-pre-line text-sm leading-relaxed text-unjong-primary">{aiContent}</p>
-              <p className="mt-2 text-[11px] text-unjong-muted">렌즈 데이터를 정리한 해석이에요 · 예측·투자권유 아님</p>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={askAI}
-              disabled={aiLoading}
-              className="flex w-full items-center gap-3 rounded-xl border border-unjong-accent/50 bg-unjong-background p-4 text-left transition hover:border-unjong-accent disabled:opacity-60"
-            >
-              <TraiMark size={28} />
-              <span className="flex-1">
-                <span className="block text-sm font-semibold text-unjong-primary">{aiLoading ? 'TRAI가 종합하는 중…' : 'TRAI 종합 분석'}</span>
-                <span className="block text-[11px] text-unjong-muted">5개 렌즈를 한눈에 정리 · 예측 아님</span>
-              </span>
-              {!aiLoading ? <span aria-hidden className="text-lg text-unjong-accent">→</span> : null}
-            </button>
-          )}
-        </div>
-      ) : null}
-
       <p className="mt-6 max-w-4xl text-center text-[11px] text-unjong-muted">
-        결정론 기법 렌즈(무료) + TRAI 종합. 예측이 아니라 정직한 해석이에요.
+        검증된 기법 렌즈로 이 종목을 읽어드려요 — 예측도, 권유도 아니에요. 판단은 당신 몫이에요.
       </p>
     </main>
   );
