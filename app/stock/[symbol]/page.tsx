@@ -66,7 +66,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
   const [open, setOpen] = useState(false);
   if (!f.supported) {
     return (
-      <div className="rounded-xl border border-unjong-border bg-white p-4">
+      <div className="rounded-2xl border border-unjong-border bg-white p-4 shadow-sm">
         <div className="font-bold text-unjong-primary">Piotroski F-Score</div>
         <div className="mt-0.5 text-xs text-unjong-accent">F-스코어 · 재무 건전성</div>
         <p className="mt-2 text-sm text-unjong-muted">{f.reason || '이 종목은 F-Score를 적용할 수 없어요.'}</p>
@@ -77,23 +77,23 @@ function FScoreCard({ f }: { f: FScoreResp }) {
   const fRead = LENS_READINGS.ko.fscore[fState];
   const fCol = fState === 'strong' ? 'text-unjong-accent' : fState === 'weak' ? 'text-amber-600' : 'text-unjong-primary';
   return (
-    <div className="rounded-xl border border-unjong-border bg-white">
-      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-2 p-4 text-left">
+    <div className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
+      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="font-bold text-unjong-primary">Piotroski F-Score</span>
             <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성 해석</span>
             <span className="text-xs text-unjong-accent">F-스코어 · 재무 건전성</span>
           </div>
-          <p className={`mt-1.5 text-[15px] font-bold ${fCol}`}>{fRead.phrase}</p>
+          <p className={`mt-2 text-base font-bold ${fCol}`}>{fRead.phrase}</p>
+          <div className="mt-2 text-[12px] text-unjong-muted"><span className="font-medium text-unjong-primary/70">점수</span> <span className="tabular-nums text-unjong-primary">{f.score}</span> / {f.max}</div>
         </div>
-        <div className="flex items-center gap-2 whitespace-nowrap pt-0.5">
-          <span><span className="text-xl font-bold tabular-nums text-unjong-primary">{f.score}</span><span className="text-sm text-unjong-muted">/{f.max}</span></span>
-          <span className="text-unjong-muted">{open ? '▴' : '▾'}</span>
-        </div>
+        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+        </span>
       </button>
       {open ? (
-        <div className="border-t border-unjong-border px-4 pb-4 pt-3">
+        <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3">
           <p className="text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
           <p className="mb-3 mt-2 text-[11px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}{f.asOf ? ` · ${f.asOf} 기준` : ''}</p>
           <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
@@ -187,13 +187,13 @@ export default function StockLensPage() {
       ) : lenses.length === 0 && !data?.fscore ? (
         <p className="mt-6 text-center text-sm text-unjong-muted">데이터를 불러오지 못했어요. (일부 종목은 아직 지원되지 않을 수 있어요)</p>
       ) : (
-        <div className="mt-4 max-w-4xl space-y-3">
+        <div className="mt-4 max-w-4xl space-y-4">
           {data?.fscore ? <FScoreCard f={data.fscore} /> : null}
           {lenses.map((L) => {
             const isOpen = openLens.has(L.key);
             return (
-            <div key={L.key} className="rounded-xl border border-unjong-border bg-white">
-              <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full items-start justify-between gap-2 p-4 text-left hover:bg-unjong-background/40">
+            <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
+              <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="font-bold text-unjong-primary">{L.nameEn}</span>
@@ -201,21 +201,23 @@ export default function StockLensPage() {
                     <span className="text-xs text-unjong-accent">{L.name}</span>
                   </div>
                   {L.verdict ? (
-                    <p className={`mt-1.5 text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
+                    <p className={`mt-2 text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
                   ) : (
-                    <p className="mt-1.5 text-sm text-unjong-muted">단기 {L.short ?? '—'} · 장기 {L.long ?? '—'}</p>
+                    <p className="mt-2 text-sm text-unjong-muted">단기 {L.short ?? '—'} · 장기 {L.long ?? '—'}</p>
                   )}
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-unjong-muted">
+                    <span className="font-medium text-unjong-primary/70">근거 수치</span>
+                    {Object.entries(L.detail).map(([k, v]) => (
+                      <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
+                    ))}
+                  </div>
                 </div>
-                <span className="pt-1 text-xs text-unjong-muted">{isOpen ? '▴' : '▾'}</span>
+                <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+                </span>
               </button>
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-3 text-[12px] text-unjong-muted">
-                <span className="font-medium text-unjong-primary/70">근거 수치</span>
-                {Object.entries(L.detail).map(([k, v]) => (
-                  <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
-                ))}
-              </div>
               {isOpen ? (
-                <div className="border-t border-unjong-border px-4 pb-4 pt-3">
+                <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3">
                   {L.verdict ? <p className="text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
                   <div className="mt-2 flex items-center gap-3 text-xs text-unjong-muted">
                     <span>단기 <b className={labelColor(L.short)}>{L.short ?? '—'}</b></span>
