@@ -32,12 +32,6 @@ function labelColor(l: string | null): string {
   return 'text-unjong-muted';
 }
 
-function gradeColor(g: string): string {
-  if (g === '우량') return 'text-unjong-up';
-  if (g === '부실') return 'text-unjong-down';
-  return 'text-unjong-muted';
-}
-
 // 판정(reading) 색조 — pos=민트(우호적 읽기)·warn=앰버(주의 읽기)·flat=중립(기본색). '이 기법 시각'일 뿐 예측 아님(상단 전제).
 function verdictColor(tone?: string): string {
   if (tone === 'pos') return 'text-unjong-accent';
@@ -50,21 +44,6 @@ function gradeBadgeClass(tier: string): string {
   if (tier === 'strong') return 'bg-unjong-accent/15 text-unjong-accent';
   if (tier === 'partial') return 'bg-amber-50 text-amber-600';
   return 'bg-unjong-background text-unjong-muted';
-}
-
-// 기법 엇갈림 = 정보. 방향 축의 핵심 긴장(모멘텀 × 밸류)만 읽어 종목 '성향'을 서술(예측·매수신호 아님).
-// 5개를 억지로 한 표로 뭉치지 않음(축이 다름: 저변동·F-Score는 위험·건전성 축).
-function styleRead(lenses: LensRead[]): string | null {
-  const mom = lenses.find((l) => l.key === 'momentum');
-  const val = lenses.find((l) => l.key === 'valuation');
-  if (!mom || !val) return null;
-  const bull = mom.long === '강세', bear = mom.long === '약세';
-  const cheap = val.long === '낮음', pricey = val.long === '높음';
-  if (bull && pricey) return '모멘텀↑ · 밸류 비쌈 → 모멘텀·성장 성격 (추세엔 부합, 가치엔 불리)';
-  if (bear && cheap) return '모멘텀↓ · 밸류 쌈 → 가치·역발상 성격 (가치엔 부합, 추세엔 불리)';
-  if (bull && cheap) return '모멘텀↑ · 밸류도 쌈 → 드문 정렬 (추세·가치 모두 우호)';
-  if (bear && pricey) return '모멘텀↓ · 밸류 비쌈 → 둘 다 비우호 (주의)';
-  return '뚜렷한 성향 없음 — 중립 구간';
 }
 
 // TRAI 로고 뱃지 — 민트 T 모노그램(브랜드 색). AI 종합 분석의 브랜드 마크.
@@ -84,6 +63,7 @@ const SUMMARY_CLASS = 'cursor-pointer list-none text-[11px] text-unjong-muted ho
 const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
 function FScoreCard({ f }: { f: FScoreResp }) {
+  const [open, setOpen] = useState(false);
   if (!f.supported) {
     return (
       <div className="rounded-xl border border-unjong-border bg-white p-4">
@@ -97,45 +77,46 @@ function FScoreCard({ f }: { f: FScoreResp }) {
   const fRead = LENS_READINGS.ko.fscore[fState];
   const fCol = fState === 'strong' ? 'text-unjong-accent' : fState === 'weak' ? 'text-amber-600' : 'text-unjong-primary';
   return (
-    <div className="rounded-xl border border-unjong-border bg-white p-4">
-      <div className="mb-2 flex items-start justify-between gap-2">
-        <div>
-          <div className="flex items-center gap-1.5">
+    <div className="rounded-xl border border-unjong-border bg-white">
+      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-2 p-4 text-left">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-1.5">
             <span className="font-bold text-unjong-primary">Piotroski F-Score</span>
             <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성 해석</span>
+            <span className="text-xs text-unjong-accent">F-스코어 · 재무 건전성</span>
           </div>
-          <div className="mt-0.5 text-xs text-unjong-accent">F-스코어 · 재무 건전성{f.asOf ? ` · ${f.asOf} 기준` : ''}</div>
+          <p className={`mt-1.5 text-[15px] font-bold ${fCol}`}>{fRead.phrase}</p>
         </div>
-        <div className="flex items-baseline gap-1.5">
-          <span className="text-2xl font-bold tabular-nums text-unjong-primary">{f.score}</span>
-          <span className="text-sm text-unjong-muted">/ {f.max}</span>
-          <span className={`ml-1 text-sm font-bold ${gradeColor(f.grade)}`}>{f.grade}</span>
+        <div className="flex items-center gap-2 whitespace-nowrap pt-0.5">
+          <span><span className="text-xl font-bold tabular-nums text-unjong-primary">{f.score}</span><span className="text-sm text-unjong-muted">/{f.max}</span></span>
+          <span className="text-unjong-muted">{open ? '▴' : '▾'}</span>
         </div>
-      </div>
-      <div className="mb-2.5">
-        <p className={`text-[15px] font-bold ${fCol}`}>{fRead.phrase}</p>
-        <p className="mt-1 text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
-      </div>
-      <p className="mb-3 text-[11px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p>
-      <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
-        {f.criteria.map((c) => (
-          <div key={c.key} className="flex items-start gap-1.5 text-xs">
-            <span className={c.pass ? 'text-unjong-up' : 'text-unjong-down'}>{c.pass ? '✓' : '✗'}</span>
-            <span className="text-unjong-primary">{c.label}</span>
-            <span className="ml-auto tabular-nums text-unjong-muted">{c.note}</span>
+      </button>
+      {open ? (
+        <div className="border-t border-unjong-border px-4 pb-4 pt-3">
+          <p className="text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
+          <p className="mb-3 mt-2 text-[11px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}{f.asOf ? ` · ${f.asOf} 기준` : ''}</p>
+          <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
+            {f.criteria.map((c) => (
+              <div key={c.key} className="flex items-start gap-1.5 text-xs">
+                <span className={c.pass ? 'text-unjong-up' : 'text-unjong-down'}>{c.pass ? '✓' : '✗'}</span>
+                <span className="text-unjong-primary">{c.label}</span>
+                <span className="ml-auto tabular-nums text-unjong-muted">{c.note}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <details className="mt-3">
-        <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
-        <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.about}</p>
-      </details>
-      <details className="mt-3 border-t border-unjong-border pt-2">
-        <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
-        <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">
-          자체 검증(미국 넓은 표본·12년·월별 롱숏)에선 점수와 이후 수익률에 유효한 관계가 없었어요(t≈0.7·시장/규모/가치 조정 후에도 무의미). 수익 예측이 아니라 재무 건전성 해석으로만 보세요 — 원래 용도도 저평가(저PBR) 가치주 안에서 부실을 거르는 필터랍니다.
-        </p>
-      </details>
+          <details className="mt-3">
+            <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
+            <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.about}</p>
+          </details>
+          <details className="mt-3 border-t border-unjong-border pt-2">
+            <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
+            <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">
+              자체 검증(미국 넓은 표본·12년·월별 롱숏)에선 점수와 이후 수익률에 유효한 관계가 없었어요(t≈0.7·시장/규모/가치 조정 후에도 무의미). 수익 예측이 아니라 재무 건전성 해석으로만 보세요 — 원래 용도도 저평가(저PBR) 가치주 안에서 부실을 거르는 필터랍니다.
+            </p>
+          </details>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -174,9 +155,10 @@ export default function StockLensPage() {
       .catch(() => setLoading(false));
   }, [symbol]);
 
+  const [openLens, setOpenLens] = useState<Set<string>>(new Set());
   const lenses = data?.lenses ?? [];
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ)$/, '');
-  const style = styleRead(lenses);
+  const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
@@ -195,16 +177,7 @@ export default function StockLensPage() {
           아래는 <b className="text-unjong-primary">각 기법이 이 종목을 보는 시각</b>이에요 — 예측이 아니라 "이 기법으로 보면 이렇게 읽힌다". 기법마다 다르게 볼 수 있고, 그 차이가 정보예요. 판단 근거가 되는 정확한 수치도 카드마다 함께 있어요.
         </p>
 
-        {style ? (
-          <div className="mt-3 rounded-lg border border-unjong-border bg-white px-3 py-2.5">
-            <p className="text-xs font-semibold text-unjong-primary">
-              <span className="text-unjong-accent">기법 성향</span> · {style}
-            </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-unjong-muted">
-              여러 기법이 같은 방향이면 신뢰가 높고, 엇갈리면 그 자체가 정보(종목의 성격·불확실성)예요 — 억지로 하나의 점수로 합치지 마세요.
-            </p>
-          </div>
-        ) : null}
+        <p className="mt-2 text-[11px] text-unjong-muted">각 렌즈를 눌러 상세(쉬운 해석·유래·검증 근거)를 펼쳐 보세요.</p>
       </div>
 
       {loading ? (
@@ -216,48 +189,56 @@ export default function StockLensPage() {
       ) : (
         <div className="mt-4 max-w-4xl space-y-3">
           {data?.fscore ? <FScoreCard f={data.fscore} /> : null}
-          {lenses.map((L) => (
-            <div key={L.key} className="rounded-xl border border-unjong-border bg-white p-4">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <div className="flex items-center gap-1.5">
+          {lenses.map((L) => {
+            const isOpen = openLens.has(L.key);
+            return (
+            <div key={L.key} className="rounded-xl border border-unjong-border bg-white">
+              <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full items-start justify-between gap-2 p-4 text-left hover:bg-unjong-background/40">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5">
                     <span className="font-bold text-unjong-primary">{L.nameEn}</span>
                     <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
+                    <span className="text-xs text-unjong-accent">{L.name}</span>
                   </div>
-                  <div className="mt-0.5 text-xs text-unjong-accent">{L.name}</div>
+                  {L.verdict ? (
+                    <p className={`mt-1.5 text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
+                  ) : (
+                    <p className="mt-1.5 text-sm text-unjong-muted">단기 {L.short ?? '—'} · 장기 {L.long ?? '—'}</p>
+                  )}
                 </div>
-                <div className="flex items-center gap-3 whitespace-nowrap pt-0.5 text-xs">
-                  <span className="text-unjong-muted">단기 <b className={labelColor(L.short)}>{L.short ?? '—'}</b></span>
-                  <span className="text-unjong-muted">장기 <b className={labelColor(L.long)}>{L.long ?? '—'}</b></span>
-                </div>
-              </div>
-              {L.verdict ? (
-                <div className="mt-2.5">
-                  <p className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
-                  <p className="mt-1 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p>
-                </div>
-              ) : null}
-              <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.summary}</p>
-              {L.about ? (
-                <details className="mt-2">
-                  <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
-                  <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
-                </details>
-              ) : null}
-              <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2 text-[12px] text-unjong-muted">
+                <span className="pt-1 text-xs text-unjong-muted">{isOpen ? '▴' : '▾'}</span>
+              </button>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 pb-3 text-[12px] text-unjong-muted">
                 <span className="font-medium text-unjong-primary/70">근거 수치</span>
                 {Object.entries(L.detail).map(([k, v]) => (
                   <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
                 ))}
               </div>
-              {L.note ? (
-                <details className="mt-2.5 border-t border-unjong-border pt-2">
-                  <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
-                  <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
-                </details>
+              {isOpen ? (
+                <div className="border-t border-unjong-border px-4 pb-4 pt-3">
+                  {L.verdict ? <p className="text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
+                  <div className="mt-2 flex items-center gap-3 text-xs text-unjong-muted">
+                    <span>단기 <b className={labelColor(L.short)}>{L.short ?? '—'}</b></span>
+                    <span>장기 <b className={labelColor(L.long)}>{L.long ?? '—'}</b></span>
+                  </div>
+                  <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.summary}</p>
+                  {L.about ? (
+                    <details className="mt-2">
+                      <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
+                      <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
+                    </details>
+                  ) : null}
+                  {L.note ? (
+                    <details className="mt-2.5">
+                      <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
+                      <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
+                    </details>
+                  ) : null}
+                </div>
               ) : null}
             </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
