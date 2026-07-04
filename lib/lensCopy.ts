@@ -130,9 +130,9 @@ export const LENS_READINGS: Record<Locale, {
       down: { phrase: "추세는 아래쪽", plain: "지금 가격이 장기 평균선 아래에 있어요. 단기 상태를 참고하는 용도예요." },
     },
     fscore: {
-      strong: { phrase: "재무가 튼튼한 편", plain: "9개 항목 중 많은 항목을 통과했어요. 재무 건전성이 좋은 편이에요(수익 예측은 아니에요)." },
-      mid: { phrase: "보통 수준의 재무", plain: "9개 항목 중 절반 정도를 통과했어요." },
-      weak: { phrase: "부실 신호 주의", plain: "통과한 항목이 적어요. 재무가 부실할 수 있으니 주의해서 보세요." },
+      strong: { phrase: "재무가 튼튼한 편", plain: "재무 건전성이 좋은 편이에요 — 9개 중 대부분 통과. 부실할 가능성은 낮아요(단, 오를지 예측은 아니에요)." },
+      mid: { phrase: "보통 수준의 재무", plain: "재무 건전성은 중간이에요 — 아주 튼튼하지도, 부실하지도 않아요. 부실 회사를 거를 때 보는 참고용이지 오를지 예측은 아니에요." },
+      weak: { phrase: "부실 신호 주의", plain: "재무가 약한 편이에요 — 통과 항목이 적어요. 부실 위험을 참고하는 신호예요(예측은 아님)." },
       na: { phrase: "점수를 낼 수 없음", plain: "은행·보험은 재무 구조가 달라 이 점수를 적용하지 않아요." },
     },
   },
@@ -176,6 +176,30 @@ export const LENS_READINGS: Record<Locale, {
       weak: { phrase: "Watch for weakness", plain: "It passes few checks — financials may be weak, so look carefully." },
       na: { phrase: "Can't be scored", plain: "Banks and insurers are built differently, so this score doesn't apply." },
     },
+  },
+};
+
+// 스펙트럼 3구간 라벨 [왼쪽, 가운데, 오른쪽] — 이 종목이 이 기법 눈엔 어디쯤인지 위치로. 켜지는 칸=lib/lenses가 상태로 계산.
+export const SPECTRUM_LABELS: Record<Locale, {
+  momentum: [string, string, string]; lowvol: [string, string, string]; valuation: [string, string, string]; quality: [string, string, string]; assetgrowth: [string, string, string]; technical: [string, string, string]; fscore: [string, string, string];
+}> = {
+  ko: {
+    momentum: ["약세", "중립", "강세"],
+    lowvol: ["안정적", "보통", "출렁임"],
+    valuation: ["싼 편", "보통", "비싼 편"],
+    quality: ["낮음", "보통", "알짜"],
+    assetgrowth: ["보수적", "보통", "공격적"],
+    technical: ["추세 아래", "중립", "추세 위"],
+    fscore: ["약함", "보통", "튼튼"],
+  },
+  en: {
+    momentum: ["Weak", "Neutral", "Strong"],
+    lowvol: ["Calm", "Average", "Jumpy"],
+    valuation: ["Cheap", "Fair", "Pricey"],
+    quality: ["Low", "Average", "High"],
+    assetgrowth: ["Conservative", "Moderate", "Aggressive"],
+    technical: ["Below", "Neutral", "Above"],
+    fscore: ["Weak", "Medium", "Strong"],
   },
 };
 

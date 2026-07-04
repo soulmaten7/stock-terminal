@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { LENS_COPY, LENS_READINGS } from '@/lib/lensCopy';
+import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS } from '@/lib/lensCopy';
 
 type LensRead = {
   key: string;
@@ -18,6 +18,8 @@ type LensRead = {
   detail: Record<string, number | null>;
   note?: string;
   verdict?: { phrase: string; plain: string; tone: 'pos' | 'warn' | 'flat' } | null;
+  spectrum?: { labels: [string, string, string]; active: number } | null;
+  headline?: string | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
@@ -37,6 +39,20 @@ function verdictColor(tone?: string): string {
   if (tone === 'pos') return 'text-unjong-accent';
   if (tone === 'warn') return 'text-amber-600';
   return 'text-unjong-primary';
+}
+
+// 3구간 스펙트럼 — 이 종목이 이 기법 눈엔 어디쯤인지 위치로. 켜지는 칸만 색조. 모든 기법 공통(패밀리룩).
+function Spectrum({ labels, active, tone }: { labels: [string, string, string]; active: number; tone?: string }) {
+  const on = tone === 'pos' ? 'border-unjong-accent bg-unjong-accent/10 text-unjong-accent'
+    : tone === 'warn' ? 'border-amber-400 bg-amber-50 text-amber-600'
+    : 'border-unjong-muted bg-unjong-background text-unjong-primary';
+  return (
+    <div className="mt-2.5 flex gap-1.5">
+      {labels.map((l, i) => (
+        <span key={i} className={`flex-1 rounded-md border py-1 text-center text-[12px] ${i === active ? `font-medium ${on}` : 'border-unjong-border text-unjong-muted'}`}>{l}</span>
+      ))}
+    </div>
+  );
 }
 
 // 신뢰도 배지 색 — strong=민트(검증)·partial=앰버(조건부/해석)·ref=회색(참고)
@@ -76,6 +92,8 @@ function FScoreCard({ f }: { f: FScoreResp }) {
   const fState = f.score >= 7 ? 'strong' : f.score <= 3 ? 'weak' : 'mid';
   const fRead = LENS_READINGS.ko.fscore[fState];
   const fCol = fState === 'strong' ? 'text-unjong-accent' : fState === 'weak' ? 'text-amber-600' : 'text-unjong-primary';
+  const fActive = fState === 'strong' ? 2 : fState === 'weak' ? 0 : 1;
+  const fTone = fState === 'strong' ? 'pos' : fState === 'weak' ? 'warn' : 'flat';
   return (
     <div className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
       <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
@@ -93,12 +111,17 @@ function FScoreCard({ f }: { f: FScoreResp }) {
       </button>
       {open ? (
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3">
-          <div className="mb-2.5 flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2">
             <p className={`text-base font-bold ${fCol}`}>{fRead.phrase}</p>
             <span className="text-[13px] text-unjong-muted">점수 <span className="tabular-nums font-medium text-unjong-primary">{f.score}</span> / {f.max}</span>
           </div>
-          <p className="mb-3 text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
-          <div className="grid grid-cols-1 gap-y-1.5 sm:grid-cols-2 sm:gap-x-4">
+          <Spectrum labels={SPECTRUM_LABELS.ko.fscore} active={fActive} tone={fTone} />
+          <p className="mt-2.5 text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
+          <details className="mt-2.5">
+            <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
+            <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.about}</p>
+          </details>
+          <div className="mt-3 grid grid-cols-1 gap-y-1.5 border-t border-unjong-border pt-3 sm:grid-cols-2 sm:gap-x-4">
             {f.criteria.map((c) => (
               <div key={c.key} className="flex items-start gap-1.5 text-xs">
                 <span className={c.pass ? 'text-unjong-up' : 'text-unjong-down'}>{c.pass ? '✓' : '✗'}</span>
@@ -108,10 +131,6 @@ function FScoreCard({ f }: { f: FScoreResp }) {
             ))}
           </div>
           <details className="mt-3">
-            <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
-            <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.about}</p>
-          </details>
-          <details className="mt-3 border-t border-unjong-border pt-2">
             <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
             <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">
               자체 검증(미국 넓은 표본·12년·월별 롱숏)에선 점수와 이후 수익률에 유효한 관계가 없었어요(t≈0.7·시장/규모/가치 조정 후에도 무의미). 수익 예측이 아니라 재무 건전성 해석으로만 보세요 — 원래 용도도 저평가(저PBR) 가치주 안에서 부실을 거르는 필터랍니다.
@@ -211,12 +230,20 @@ export default function StockLensPage() {
               {isOpen ? (
                 <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3">
                   {L.verdict ? (
-                    <>
+                    <div className="flex items-baseline justify-between gap-2">
                       <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
-                      <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p>
-                    </>
+                      {L.headline ? <span className="whitespace-nowrap text-[12px] text-unjong-muted">{L.headline}</span> : null}
+                    </div>
                   ) : null}
-                  <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-unjong-muted">
+                  {L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null}
+                  {L.verdict ? <p className="mt-2.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
+                  {L.about ? (
+                    <details className="mt-2.5">
+                      <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
+                      <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
+                    </details>
+                  ) : null}
+                  <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2.5 text-[12px] text-unjong-muted">
                     <span className="font-medium text-unjong-primary/70">근거 수치</span>
                     {Object.entries(L.detail).map(([k, v]) => (
                       <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
@@ -226,12 +253,6 @@ export default function StockLensPage() {
                     <span>단기 <b className={labelColor(L.short)}>{L.short ?? '—'}</b></span>
                     <span>장기 <b className={labelColor(L.long)}>{L.long ?? '—'}</b></span>
                   </div>
-                  {L.about ? (
-                    <details className="mt-2.5">
-                      <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
-                      <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
-                    </details>
-                  ) : null}
                   {L.note ? (
                     <details className="mt-2.5">
                       <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
