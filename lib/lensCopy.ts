@@ -203,6 +203,95 @@ export const SPECTRUM_LABELS: Record<Locale, {
   },
 };
 
+// "이 기법 방향" — 그 기법 '방법대로'의 방향(시간축 + 유리/불리/중립 + 정직 꼬리표). 예측 아님(역사적 base-rate 경향).
+// 모든 기법이 수익 방향은 아님: 저변동=위험 / F-Score=건전성 / 기술=상태 축을 지킴.
+export const LENS_OUTLOOK: Record<Locale, {
+  momentum: Record<string, string>; lowvol: Record<string, string>; valuation: Record<string, string>; quality: Record<string, string>; assetgrowth: Record<string, string>; technical: Record<string, string>; fscore: Record<string, string>;
+}> = {
+  ko: {
+    momentum: {
+      up: "단기~중기 유리한 편 — 강한 추세는 역사적으로 한동안 이어지는 편이에요 (검증된 경향·보장은 아님).",
+      flat: "지금은 뚜렷한 방향 없음 — 추세가 약해 이 기법 신호가 약해요.",
+      down: "단기~중기 불리한 편 — 약한 흐름도 한동안 이어지기 쉬운 편이에요 (검증된 경향·보장 아님).",
+    },
+    lowvol: {
+      calm: "위험: 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
+      mid: "위험: 보통 — 수익 방향이 아니라 변동성 관점이에요.",
+      jumpy: "위험: 큰 편 — 크게 출렁여요. 변동을 감당할 수 있을 때 (수익 방향 아님).",
+    },
+    valuation: {
+      cheap: "장기 유리한 편 — 싼 주식은 역사적으로 장기 우위 (가치 프리미엄, 단 최근 표본선 약함).",
+      mid: "장기: 중립 — 가격이 특별히 싸지도 비싸지도 않아요.",
+      rich: "장기 불리한 편 — 비싼 주식은 역사적으로 장기 수익이 약한 편 (단, 우리 표본선 약함).",
+      na: "판단 불가 — 이익 정보가 없어요.",
+    },
+    quality: {
+      high: "장기 유리한 편 — 알짜 우량주는 역사적으로 장기 우위 (검증된 경향).",
+      mid: "장기: 중립 — 수익성이 특별히 높지도 낮지도 않아요.",
+      low: "장기 불리한 편 — 수익성 낮은 회사는 역사적으로 장기 열위 (검증된 경향).",
+      na: "판단 불가 — 은행 등은 이 기법 미적용.",
+    },
+    assetgrowth: {
+      aggressive: "장기 불리한 편 — 공격적 확장은 역사적으로 이후 성과가 약한 편 (단, 표본 약함).",
+      mid: "장기: 중립 — 성장 속도가 과하지도 정체도 아니에요.",
+      conservative: "장기 유리한 편 — 자본을 아껴 쓴 회사가 역사적으로 이후 나은 편 (단, 표본 약함).",
+      na: "판단 불가 — 재무 정보 부족.",
+    },
+    technical: {
+      up: "단기 상태: 추세 위 — 참고용이에요 (모멘텀과 겹치는 신호).",
+      flat: "단기 상태: 방향 불분명 — 참고용.",
+      down: "단기 상태: 추세 아래 — 참고용이에요 (모멘텀과 겹치는 신호).",
+    },
+    fscore: {
+      strong: "건전성: 좋은 편 — 부실 가능성 낮아요 (수익 방향 예측은 아님).",
+      mid: "건전성: 중간 — 부실 회피 참고용이지 수익 방향은 아니에요.",
+      weak: "건전성: 약한 편 — 부실 위험 참고 신호예요 (수익 방향 아님).",
+      na: "점수 불가 — 은행·보험 미적용.",
+    },
+  },
+  en: {
+    momentum: {
+      up: "Short-to-mid term: leans favorable — strong trends have historically tended to persist (validated tendency, not a guarantee).",
+      flat: "No clear direction now — the trend is weak, so this lens' signal is faint.",
+      down: "Short-to-mid term: leans unfavorable — weak trends have tended to persist too (validated, not a guarantee).",
+    },
+    lowvol: {
+      calm: "Risk: low (defensive) — a risk view, not a return call.",
+      mid: "Risk: average — a volatility view, not a return call.",
+      jumpy: "Risk: high — it swings a lot; for those who can stomach it (not a return call).",
+    },
+    valuation: {
+      cheap: "Long term: leans favorable — cheap stocks have historically won long-term (value premium; weak in our recent sample).",
+      mid: "Long term: neutral — neither especially cheap nor pricey.",
+      rich: "Long term: leans unfavorable — pricey stocks have historically lagged long-term (weak in our sample).",
+      na: "Can't judge — no earnings data.",
+    },
+    quality: {
+      high: "Long term: leans favorable — high-quality names have historically won long-term (validated).",
+      mid: "Long term: neutral — profitability is middling.",
+      low: "Long term: leans unfavorable — low-profitability names have historically lagged (validated).",
+      na: "Can't judge — doesn't apply to banks etc.",
+    },
+    assetgrowth: {
+      aggressive: "Long term: leans unfavorable — aggressive expanders have historically lagged afterward (weak in our sample).",
+      mid: "Long term: neutral — growth pace is moderate.",
+      conservative: "Long term: leans favorable — disciplined spenders have historically fared better (weak in our sample).",
+      na: "Can't judge — not enough data.",
+    },
+    technical: {
+      up: "Short-term state: trend up — reference only (overlaps momentum).",
+      flat: "Short-term state: unclear — reference only.",
+      down: "Short-term state: trend down — reference only (overlaps momentum).",
+    },
+    fscore: {
+      strong: "Health: good — low distress odds (not a return forecast).",
+      mid: "Health: medium — a distress-avoidance check, not a return call.",
+      weak: "Health: weak — a distress-risk flag (not a return call).",
+      na: "Can't score — doesn't apply to banks/insurers.",
+    },
+  },
+};
+
 export function pickLocale(v: string | null | undefined): Locale {
   return v === "en" ? "en" : "ko";
 }

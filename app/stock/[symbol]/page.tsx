@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS } from '@/lib/lensCopy';
+import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS, LENS_OUTLOOK } from '@/lib/lensCopy';
 
 type LensRead = {
   key: string;
@@ -20,6 +20,7 @@ type LensRead = {
   verdict?: { phrase: string; plain: string; tone: 'pos' | 'warn' | 'flat' } | null;
   spectrum?: { labels: [string, string, string]; active: number } | null;
   headline?: string | null;
+  outlook?: string | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
@@ -116,7 +117,10 @@ function FScoreCard({ f }: { f: FScoreResp }) {
             <span className="text-[13px] text-unjong-muted">점수 <span className="tabular-nums font-medium text-unjong-primary">{f.score}</span> / {f.max}</span>
           </div>
           <Spectrum labels={SPECTRUM_LABELS.ko.fscore} active={fActive} tone={fTone} />
-          <p className="mt-2.5 text-[13px] leading-relaxed text-unjong-primary/90">{fRead.plain}</p>
+          <div className="mt-2.5">
+            <p className="text-[11px] font-medium text-unjong-muted">이 기법 방향</p>
+            <p className="mt-0.5 text-[13px] leading-relaxed text-unjong-primary/90">{LENS_OUTLOOK.ko.fscore[fState]}</p>
+          </div>
           <details className="mt-2.5">
             <summary className={LEARN_CLASS}>▾ F-스코어 알아보기</summary>
             <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.about}</p>
@@ -236,7 +240,12 @@ export default function StockLensPage() {
                     </div>
                   ) : null}
                   {L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null}
-                  {L.verdict ? <p className="mt-2.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
+                  {L.outlook ? (
+                    <div className="mt-2.5">
+                      <p className="text-[11px] font-medium text-unjong-muted">이 기법 방향</p>
+                      <p className="mt-0.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
+                    </div>
+                  ) : (L.verdict ? <p className="mt-2.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
                   {L.about ? (
                     <details className="mt-2.5">
                       <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
