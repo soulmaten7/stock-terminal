@@ -22,6 +22,7 @@ export type LensRead = {
   about: string; // 이 기법이란?(개념·유래·왜 쓰나 — 쉬운 설명)
   grade: string; // 신뢰도 배지 텍스트(카드 겉면 — 얼마나 믿을 만한가)
   gradeTier: "strong" | "partial" | "ref"; // 배지 색 계열
+  horizon: "short" | "mid" | "long"; // 시간축(단기/중기/장기) — 스트립·그룹핑용
   short: string | null; // 단기 방향 라벨
   long: string | null;  // 장기 방향 라벨
   detail: Record<string, number | null>; // 근거 수치(투명 공개 — 카드에 그대로 노출)
@@ -32,6 +33,7 @@ export type LensRead = {
   outlook?: string | null;    // "이 기법 방향": 그 기법 방법대로의 시간축+유리/불리+정직 꼬리표(예측 아님·base-rate)
   value?: number | null;      // 스크리닝용 언어중립 대표 숫자(모멘텀=12-1%·저변동=연변동성%·밸류=PER·퀄리티=GP/A%·자산성장=성장%·기술=200일선대비%)
   state?: string | null;      // 스크리닝용 언어중립 상태키(up/down/flat · cheap/rich/mid/na · high/low · calm/jumpy · aggressive/conservative 등)
+  percentile?: number | null; // 팩터 상대순위(0~100·높을수록 우호 방향). US 유니버스서 /api/lens가 주입. 없으면 null(비US·소형주).
 };
 
 // "이 기법 방향" 문자열 — 상태 없으면 null.
@@ -76,6 +78,7 @@ export function momentumLens(closes: number[], locale: Locale = "ko"): LensRead 
     grade: "검증",
     gradeTier: "strong",
     nameEn: "Momentum (12-1)",
+    horizon: "mid",
     name: c.name,
     summary: c.what,
     about: c.about,
@@ -110,6 +113,7 @@ export function technicalLens(closes: number[], locale: Locale = "ko"): LensRead
     grade: "참고용",
     gradeTier: "ref",
     nameEn: "Technical (RSI · MA)",
+    horizon: "short",
     name: c.name,
     summary: c.what,
     about: c.about,
@@ -141,6 +145,7 @@ export function valuationLens(pe: number | null, pb: number | null, locale: Loca
     grade: "표본 약함",
     gradeTier: "partial",
     nameEn: "Value (E/P · B/M)",
+    horizon: "long",
     name: c.name,
     summary: c.what,
     about: c.about,
@@ -167,6 +172,7 @@ export function lowVolLens(closes: number[], locale: Locale = "ko"): LensRead {
     grade: "검증(방어)",
     gradeTier: "strong",
     nameEn: "Low Volatility (BAB)",
+    horizon: "long",
     name: c.name,
     summary: c.what,
     about: c.about,
@@ -195,6 +201,7 @@ export function qualityLens(grossProfit: number | null, totalAssets: number | nu
     grade: "검증",
     gradeTier: "strong",
     nameEn: "Quality (GP/A)",
+    horizon: "long",
     name: c.name,
     summary: c.what,
     about: c.about,
@@ -222,6 +229,7 @@ export function assetGrowthLens(assetGrowthPct: number | null, locale: Locale = 
     grade: "표본 약함",
     gradeTier: "partial",
     nameEn: "Asset Growth (CMA)",
+    horizon: "long",
     name: c.name,
     summary: c.what,
     about: c.about,
