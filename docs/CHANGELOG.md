@@ -1,5 +1,16 @@
-<!-- 2026-07-04 -->
+<!-- 2026-07-05 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-05 — STEP 579~583 — 시간축(단기·중기·장기) 재구성 + 실시간 이벤트(공시) 사실 레이어 (US 완성형)
+
+- **STEP 579 (백엔드·HEAD f2c70d1)**: `LensRead.horizon`(모멘텀=중기·기술=단기·밸류/저변동/퀄리티/자산성장=장기) + `/api/lens` 퍼센타일 주입 — DB 함수 `lens_percentiles`(029·방향별: 모멘텀·퀄리티 높을수록 / 저변동·밸류·자산성장 낮을수록 우호)로 lens_scores(US 1000) 대비 랭크. 비US는 null(방향만).
+- **STEP 580 (UI·HEAD be7c96f)**: 종목 페이지 = **시간축 스트립**(단기 RSI존·중기 모멘텀 퍼센타일·장기 팩터 pill+"N중 M 우호") + **기법별 best-viz**(팩터=퍼센타일 게이지·기술=RSI존·F=체크리스트) + **단/중/장 그룹핑**. 퍼센타일 없으면(비US) 방향 폴백. `HorizonStrip`·`PctGauge`·`RsiZone`.
+- **STEP 581 (이벤트 백엔드·HEAD 4b0aa97)**: `lib/eightK.ts`(8-K item→렌즈 매핑·A 근거흔듦/B 새맥락/general·`flagLens`) + `/api/events`(EDGAR `submissions.json` items **결정론 분류**·NLP 없이·US) + `docs/EVENT_LAYER_SPEC.md`(3회 검수). NVDA 5.02·2.02 실데이터 검증.
+- **STEP 582 (이벤트 UI·HEAD bc2674a)**: "최근 중대 공시·이벤트" 리스트 + 렌즈 카드 **⚠️(A·근거 흔듦)/📌(B·새 사실)** 플래그. 사실만·"좋다/나쁘다 판단 안 함". 오너리스크(5.02)·실적(2.02)이 관련 렌즈에 연결 = 사용자 문제의식("사건 반영 안 됨") 해소.
+- **STEP 583 (정직화·HEAD c39117b)**: 눈검수 4수정 — 5.02="임원·이사진 변동"(과장 제거·대부분 루틴·`flagLens=false` 리스트만) · F-Score 카드에도 플래그 배선 · 9.01 노이즈 제거(중대 item만) · A/B 박스 분리(`FlagChip`·`FlagBox`). **원칙: 서브내용 무관 확실 이벤트만 렌즈 플래그.**
+- **전략 결정 (BUSINESS_STRATEGY 2026-07-05)**: **"3개의 시계"** — 팩터 렌즈=하루1회(Stockopedia 표준)·이벤트(공시)=즉시·뉴스/WIIM=연속·Pro. **펀더 신선도=애널 추정치 변경**(Zacks·매일)=진짜 staleness 해법(뉴스 아님). free/pro=StockTitan 딜레이 티어. 공시=DART(한국)+EDGAR(미국) 무료.
+- **유료 벤치마크**: Stockopedia(팩터 퍼센타일 0~100·매일)·StockTitan(8-K **AI 원문 요약**·속도 티어)·Benzinga WIIM(촉매+거래량)·TipRanks(반면교사=한 점수로 뭉갬)·Zacks(추정치)·AskEdgar(무료20/Pro).
+- **▶ 다음**: ② **AI 원문 실독 요약**(8-K 본문/EX-99.1 읽어 정확한 한 줄·무료N/Pro — StockTitan식) → 거래량 맥락(WIIM-lite) → 추정치 변경 렌즈(US) → KR 공시(DART·별도 테이블). 세부 문구 미세조정.
 
 ## 2026-07-04 — STEP 570~577 — 스크리닝 인프라 + F-Score 실물·표시 헌장 + TRAI 정체성 결정 + 6카드 헌장
 

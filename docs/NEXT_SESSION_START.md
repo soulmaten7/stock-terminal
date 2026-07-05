@@ -1,7 +1,13 @@
-<!-- 2026-07-04 -->
+<!-- 2026-07-05 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-04 (최신) — STEP 570~577 완료 (HEAD `be86401`). 스크리닝 인프라 + F-Score 실물·표시 헌장 + 🔴 TRAI 정체성 결정 + 6카드 헌장.**
+> 🆕 **2026-07-05 (최신) — STEP 579~583 완료 (HEAD `c39117b`). 시간축(단기·중기·장기) 재구성 + 실시간 이벤트(공시) 사실 레이어 (US 완성형).**
+> - **시간축(579~580)**: `LensRead.horizon`(모멘텀=중기·기술=단기·재무계열=장기) + 퍼센타일(`lens_percentiles` 029·방향별·lens_scores US 1000, 비US null) → **시간축 스트립**(단기 RSI존·중기 모멘텀 퍼센타일·장기 팩터 "N중 M 우호") + **기법별 best-viz**(퍼센타일 게이지·RSI존·체크리스트) + **단/중/장 그룹핑**. 비US 방향 폴백.
+> - **이벤트층(581~583)**: `lib/eightK.ts`(8-K item→렌즈·A⚠️/B📌/general·`flagLens`) + `/api/events`(EDGAR submissions items **결정론 분류**·US) + `EVENT_LAYER_SPEC.md`. "최근 중대 공시·이벤트" 리스트 + 렌즈 카드 ⚠️/📌. 정직화(583): 5.02="임원·이사진 변동"(리스트만)·F-Score 플래그·9.01 제거·A/B 분리. **사실만·예측 없음·판단은 사용자.**
+> - **전략(BUSINESS_STRATEGY 07-05)**: **"3개의 시계"**(팩터=하루1회·이벤트=즉시·뉴스=Pro)·**펀더 신선도=추정치 변경**(Zacks)·free/pro=StockTitan 티어·공시 DART+EDGAR 무료. 벤치마크: Stockopedia·StockTitan(8-K AI요약)·Benzinga WIIM·Zacks·AskEdgar.
+> - **▶ 다음 = ② AI 원문 실독 요약**(8-K 본문 읽어 정확한 한 줄·무료N/Pro·StockTitan식) → 거래량 맥락(WIIM-lite) → 추정치 렌즈(US) → KR 공시(DART). 세부 문구 미세조정.
+>
+> 🆕 **2026-07-04 (직전) — STEP 570~577 완료 (HEAD `be86401`). 스크리닝 인프라 + F-Score 실물·표시 헌장 + 🔴 TRAI 정체성 결정 + 6카드 헌장.**
 > - **스크리닝 토대(570~573)**: 공용 엔진 `lensCompute`(카드=배치 계산 일치)·value/state → `lens_scores` 테이블 → `lensPrecompute`(시총 상위 1000·flush) → 매일 20:00 UTC 크론. **스크리너 UI는 안 만듦**(사용자: 종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 미리계산=대기.
 > - **F-Score 실물+헌장(574)**: 성적표→부실 위험 체크·이름 크게·이게 뭐예요 박스·9칸 트래커·9항목 3그룹(전문용어+쉬운풀이)·등급 범례. **`docs/LENS_DISPLAY_CHARTER.md` 신설**(7카드 규칙). 유료 대조(GuruFocus·Stockopedia) 구조 표준 일치·우리 쉬운말/정직(t≈0.7) 우위. + 픽스(575).
 > - **🔴 TRAI 제거+정체성(576)**: "AI 종합"이 사용자 판단권 침해 → 제거. 리서치(Danelfin·TipRanks) → ④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막). **정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단하는 앱".**
