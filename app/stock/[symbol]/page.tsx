@@ -185,11 +185,11 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
 const SUMMARY_CLASS = 'cursor-pointer list-none text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
 const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
-// 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 근거 주의 우선, 아니면 📌 새 사실.
+// 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 자료 갱신 우선, 아니면 📌 새 소식.
 function FlagChip({ flags }: { flags?: Flag[] }) {
   if (!flags?.length) return null;
   const a = flags.some((x) => x.klass === 'A');
-  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-50 text-amber-600' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? '근거 주의' : '새 사실'}</span>;
+  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-50 text-amber-600' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? '자료 갱신' : '새 소식'}</span>;
 }
 
 // 렌즈 플래그 박스(펼침) — A(근거 흔듦)/B(새 사실) 분리. 방향 판정 아님.
@@ -201,13 +201,13 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
     <div className="mb-3 space-y-2">
       {aFlags.length ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600"><AlertTriangle size={11} /> 이 점수 근거가 최근 바뀌었을 수 있어요</p>
+          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600"><AlertTriangle size={11} /> 이 점수는 옛 자료 기준이에요 — 최근 새 공시가 나왔거든요</p>
           {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
       {bFlags.length ? (
         <div className="rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[11px] font-medium text-unjong-accent"><Info size={11} /> 최근 사실 — 이 점수엔 아직 없어요</p>
+          <p className="flex items-center gap-1 text-[11px] font-medium text-unjong-accent"><Info size={11} /> 이 점수엔 아직 안 들어간 최근 소식이에요</p>
           {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
@@ -235,7 +235,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
-            <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성</span>
+            <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">재무 건전성</span>
             <span className="text-xs text-unjong-muted">· 부실 위험 체크</span>
             <FlagChip flags={flags} />
           </div>
@@ -295,15 +295,15 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
 
           {/* 자세히 — 점수 기준·유래·왜 건전성 */}
           <details className="mt-2.5">
-            <summary className={SUMMARY_CLASS}>▾ 점수 기준 · 유래 · 왜 &apos;건전성&apos; 등급인지</summary>
+            <summary className={SUMMARY_CLASS}>▾ 점수 기준 · 유래 · 왜 &apos;재무 건전성&apos;인지</summary>
             <div className="mt-2 space-y-2 border-l-2 border-unjong-border pl-2.5">
               <div>
                 <p className="text-[11.5px] font-medium text-unjong-primary">점수 읽는 법</p>
                 <p className="text-[12px] leading-relaxed text-unjong-muted">실무에선 보통 <span className="text-unjong-primary">7점↑ 양호 · 4~6 중간 · 0~3 취약</span>으로 봐요. 피오트로스키가 만든 9개 신호를 더한 값이에요(높을수록 튼튼).</p>
               </div>
               <div>
-                <p className="text-[11.5px] font-medium text-unjong-primary">왜 &apos;건전성&apos; 등급이에요?</p>
-                <p className="text-[12px] leading-relaxed text-unjong-muted">회계학자 피오트로스키가 2000년, 저평가 가치주 중 <span className="text-unjong-primary">진짜 부실한 곳을 걸러내려</span> 만든 지표예요. 다만 우리 넓은 표본·12년 백테스트에선 점수와 이후 수익률에 유효한 관계가 없었어요(t≈0.7). 그래서 &apos;수익 예측&apos;이 아니라 <span className="text-unjong-primary">재무 건전성 해석</span>으로만 써요 — 그게 이 렌즈 등급이 &apos;건전성&apos;인 이유예요.</p>
+                <p className="text-[11.5px] font-medium text-unjong-primary">왜 &apos;재무 건전성&apos;이에요?</p>
+                <p className="text-[12px] leading-relaxed text-unjong-muted">회계학자 피오트로스키가 2000년, 저평가 가치주 중 <span className="text-unjong-primary">진짜 부실한 곳을 걸러내려</span> 만든 지표예요. 다만 우리 넓은 표본·12년 백테스트에선 점수와 이후 수익률에 유효한 관계가 없었어요(t≈0.7). 그래서 &apos;수익 예측&apos;이 아니라 <span className="text-unjong-primary">재무 건전성 해석</span>으로만 써요 — 그게 이 렌즈 등급이 &apos;재무 건전성&apos;인 이유예요.</p>
               </div>
             </div>
           </details>
@@ -508,10 +508,10 @@ export default function StockLensPage() {
           <p className="text-sm text-unjong-muted">현재가 {data.price.toLocaleString()}</p>
         ) : null}
 
-        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법 <b className="text-unjong-primary">렌즈</b>로 이 종목을 읽어드려요 — <b className="text-unjong-primary">예측도 &apos;사라&apos;도 아니에요.</b> 시간축(단·중·장기)마다 결이 다르면 그게 정보.</p>
+        <p className="mt-3 text-xs leading-relaxed text-unjong-muted"><b className="text-unjong-primary">오를지 맞히는 게 아니에요.</b> 검증된 기법들이 이 종목을 어떻게 보는지 그대로 보여드려요 — 시선이 엇갈리면 그게 오히려 봐야 할 지점이고요.</p>
         <details className="mt-1">
           <summary className={LEARN_CLASS}>▾ 이 화면 읽는 법 · 신뢰도 등급</summary>
-          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b> — <span className="text-unjong-accent">검증</span> · <span className="text-amber-600">표본약함</span> · <span className="text-unjong-muted">참고용</span> · <span className="text-amber-600">건전성</span>. 각 렌즈를 눌러 상세(해석·유래·검증)를 펼쳐요. <b className="text-unjong-primary">최근 공시</b>는 사실만 전해요(예측 없음). 우리는 &quot;사라/사지마라&quot; 안 해요.</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-600">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-600">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요. <b className="text-unjong-primary">최근 공시</b>는 사실만 전하고, 사라·사지마라는 하지 않아요.</p>
         </details>
       </div>
 

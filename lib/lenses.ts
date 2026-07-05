@@ -142,7 +142,7 @@ export function valuationLens(pe: number | null, pb: number | null, locale: Loca
   const vState = pe == null || pe <= 0 ? "na" : pe < 10 ? "cheap" : pe > 25 ? "rich" : "mid";
   return {
     key: "valuation",
-    grade: "표본 약함",
+    grade: "약한 신호",
     gradeTier: "partial",
     nameEn: "Value (E/P · B/M)",
     horizon: "long",
@@ -226,7 +226,7 @@ export function assetGrowthLens(assetGrowthPct: number | null, locale: Locale = 
   const agState = assetGrowthPct == null ? "na" : assetGrowthPct > 20 ? "aggressive" : assetGrowthPct < 5 ? "conservative" : "mid";
   return {
     key: "assetgrowth",
-    grade: "표본 약함",
+    grade: "약한 신호",
     gradeTier: "partial",
     nameEn: "Asset Growth (CMA)",
     horizon: "long",
