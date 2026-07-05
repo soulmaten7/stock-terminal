@@ -81,11 +81,14 @@ function FScoreCard({ f }: { f: FScoreResp }) {
   const GROUPS: Array<[string, string]> = [['수익성', '돈 버는 힘'], ['재무 안정성', '빚·자금'], ['효율성', '장사 효율']];
   return (
     <div className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
-      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
-        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
-          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성</span>
-          <span className="text-xs text-unjong-muted">· 부실 위험 체크</span>
+      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
+            <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성</span>
+            <span className="text-xs text-unjong-muted">· 부실 위험 체크</span>
+          </div>
+          {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p> : null}
         </div>
         <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
@@ -214,19 +217,23 @@ export default function StockLensPage() {
             <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
               <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <span className="font-bold text-unjong-primary">{L.nameEn}</span>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
                     <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
-                    <span className="text-xs text-unjong-accent">{L.name}</span>
+                    <span className="text-xs text-unjong-muted">· {L.name}</span>
                   </div>
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p>
+                  {!isOpen ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p> : null}
                 </div>
                 <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
                 </span>
               </button>
               {isOpen ? (
-                <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3">
+                <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
+                  <div className="mb-3.5 rounded-xl border border-unjong-border bg-white p-3">
+                    <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
+                    <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
+                  </div>
                   {L.verdict ? (
                     <div className="flex items-baseline justify-between gap-2">
                       <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
