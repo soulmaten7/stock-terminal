@@ -330,37 +330,59 @@ function buildLensFlags(events: MatEvent[]): Record<string, Flag[]> {
 
 // 이벤트 사실 레이어 — 최근 중대 8-K(사실만·예측 없음). 렌즈 점수엔 안 섞임.
 function EventLayer({ events }: { events: MatEvent[] }) {
+  const [showRoutine, setShowRoutine] = useState(false);
   if (!events.length) return null;
+  const sevRank = (e: MatEvent) => e.defs.reduce((m, d) => Math.max(m, d.severity === 'serious' ? 2 : d.severity === 'watch' ? 1 : 0), 0);
+  const material = events.filter((e) => sevRank(e) >= 1).sort((a, b) => sevRank(b) - sevRank(a)); // 중대(serious/watch)=기본 노출
+  const routine = events.filter((e) => sevRank(e) === 0); // 루틴(info)=묶어 접힘
+  const groups: { label: string; count: number }[] = [];
+  for (const e of routine) {
+    const l = e.defs[0]?.label ?? '기타';
+    const g = groups.find((x) => x.label === l);
+    if (g) g.count += 1; else groups.push({ label: l, count: 1 });
+  }
+  const row = (e: MatEvent, i: number) => {
+    const d = e.defs[0];
+    if (!d) return null;
+    const why = d.klass === 'A' ? '이 종목 재무 렌즈 근거를 흔들 수 있어요' : d.klass === 'B' ? '렌즈엔 아직 없는 새 사실' : '참고 사실';
+    return (
+      <li key={i}>
+        <a href={e.link} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
+          <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${sevDot(d.severity)}`} />
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+              <span className="text-[13px] font-medium text-unjong-primary">{d.label}</span>
+              {e.defs.length > 1 ? <span className="text-[11px] text-unjong-muted">외 {e.defs.length - 1}건</span> : null}
+              <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{e.defs.map((x) => x.item).join('·')}</span>
+            </div>
+            <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date} · {why}</p>
+          </div>
+          <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+        </a>
+      </li>
+    );
+  };
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시·이벤트</span>
         <span className="text-[11px] text-unjong-muted">SEC EDGAR · 실시간</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">방금 일어난 <b className="text-unjong-primary">사실</b>이에요 — 아래 기법 렌즈(느린 추세)엔 아직 안 섞였어요. 판단은 당신 몫.</p>
-      <ul className="mt-2.5 space-y-1.5">
-        {events.map((e, i) => {
-          const d = e.defs[0];
-          if (!d) return null;
-          const why = d.klass === 'A' ? '이 종목 재무 렌즈 근거를 흔들 수 있어요' : d.klass === 'B' ? '렌즈엔 아직 없는 새 사실' : '참고 사실';
-          return (
-            <li key={i}>
-              <a href={e.link} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
-                <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${sevDot(d.severity)}`} />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                    <span className="text-[13px] font-medium text-unjong-primary">{d.label}</span>
-                    {e.defs.length > 1 ? <span className="text-[11px] text-unjong-muted">외 {e.defs.length - 1}건</span> : null}
-                    <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{e.defs.map((x) => x.item).join('·')}</span>
-                  </div>
-                  <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date} · {why}</p>
-                </div>
-                <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">방금 일어난 <b className="text-unjong-primary">사실</b>이에요 — 렌즈(느린 추세)엔 아직 안 섞였어요. 판단은 당신 몫.</p>
+      {material.length ? (
+        <ul className="mt-2.5 space-y-1.5">{material.map(row)}</ul>
+      ) : (
+        <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[12px] text-unjong-muted">최근 <b className="text-unjong-primary">중대한 사건은 없어요</b> — 정기 공시만 있어요.</p>
+      )}
+      {routine.length ? (
+        <div className="mt-2">
+          <button type="button" onClick={() => setShowRoutine((v) => !v)} className="flex w-full items-center gap-1 text-left text-[11px] text-unjong-muted hover:text-unjong-accent">
+            <span className={`inline-block transition-transform ${showRoutine ? 'rotate-90' : ''}`}>▸</span>
+            <span>정기 공시 {routine.length}건 <span className="text-unjong-muted/80">· {groups.map((g) => `${g.label} ${g.count}`).join(' · ')}</span></span>
+          </button>
+          {showRoutine ? <ul className="mt-1.5 space-y-1.5">{routine.map(row)}</ul> : null}
+        </div>
+      ) : null}
       <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭 시 SEC 원문. 좋다/나쁘다 판단은 하지 않아요 — 사실만 전해요.</p>
     </div>
   );
@@ -474,6 +496,10 @@ export default function StockLensPage() {
       <Link href="/" className="text-sm text-unjong-muted hover:text-unjong-accent">← 홈</Link>
 
       <div className="mt-3 max-w-4xl">
+        <div className="mb-1.5 flex items-center gap-2">
+          <span className="rounded-md bg-unjong-primary px-2 py-0.5 text-[11px] font-bold tracking-wide text-white">AI LENS</span>
+          <span className="text-[11px] text-unjong-muted">검증된 기법으로 이 종목을 읽는 여러 관점</span>
+        </div>
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
           <h1 className="text-xl font-bold text-unjong-primary">{data?.name || ticker}</h1>
           <span className="text-sm text-unjong-muted">{ticker}</span>
@@ -482,12 +508,11 @@ export default function StockLensPage() {
           <p className="text-sm text-unjong-muted">현재가 {data.price.toLocaleString()}</p>
         ) : null}
 
-        <div className="mt-3 rounded-lg bg-unjong-background px-3 py-2.5">
-          <p className="text-[11px] font-medium text-unjong-muted">이 화면 읽는 법</p>
-          <p className="mt-1 text-xs leading-relaxed text-unjong-muted">각 렌즈는 <b className="text-unjong-primary">&apos;예측&apos;이 아니라</b>, 검증된 기법이 이 종목을 어떻게 읽는지예요. <b className="text-unjong-primary">시간축(단기·중기·장기)</b>마다 결이 다를 수 있고 그 차이가 정보예요. 카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span> · <span className="text-amber-600">표본약함</span> · <span className="text-unjong-muted">참고용</span> · <span className="text-amber-600">건전성</span>. 우리는 &quot;사라/사지마라&quot; 안 해요.</p>
-        </div>
-
-        <p className="mt-2 text-[11px] text-unjong-muted">각 렌즈를 눌러 상세(쉬운 해석·유래·검증 근거)를 펼쳐 보세요.</p>
+        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법 <b className="text-unjong-primary">렌즈</b>로 이 종목을 읽어드려요 — <b className="text-unjong-primary">예측도 &apos;사라&apos;도 아니에요.</b> 시간축(단·중·장기)마다 결이 다르면 그게 정보.</p>
+        <details className="mt-1">
+          <summary className={LEARN_CLASS}>▾ 이 화면 읽는 법 · 신뢰도 등급</summary>
+          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b> — <span className="text-unjong-accent">검증</span> · <span className="text-amber-600">표본약함</span> · <span className="text-unjong-muted">참고용</span> · <span className="text-amber-600">건전성</span>. 각 렌즈를 눌러 상세(해석·유래·검증)를 펼쳐요. <b className="text-unjong-primary">최근 공시</b>는 사실만 전해요(예측 없음). 우리는 &quot;사라/사지마라&quot; 안 해요.</p>
+        </details>
       </div>
 
       {loading ? (
