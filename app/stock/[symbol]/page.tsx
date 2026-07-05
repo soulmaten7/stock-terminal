@@ -126,6 +126,16 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' }));
   if (fscore?.supported) longPills.push({ label: 'F-Score', tone: fscore.score >= 7 ? 'pos' : fscore.score <= 3 ? 'warn' : 'flat' });
   const favN = longPills.filter((p) => p.tone === 'pos').length;
+  const unfavN = longPills.filter((p) => p.tone === 'warn').length;
+  const lStrong = Math.ceil(longPills.length * 0.6);
+  let lWord = '—';
+  let lTone: 'pos' | 'warn' | 'flat' = 'flat';
+  if (longPills.length) {
+    if (favN >= lStrong) { lWord = '대체로 우호적'; lTone = 'pos'; }
+    else if (unfavN >= lStrong) { lWord = '대체로 비우호적'; lTone = 'warn'; }
+    else if (favN === 0 && unfavN === 0) { lWord = '뚜렷하지 않음'; }
+    else { lWord = '엇갈림'; }
+  }
   const pillClass = (t: string) => t === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : t === 'warn' ? 'bg-amber-50 text-amber-600' : 'bg-unjong-background text-unjong-muted';
 
   return (
@@ -170,11 +180,11 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
           <div className="mt-2 flex flex-wrap gap-1">
             {longPills.length ? longPills.map((p, i) => <span key={i} className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${pillClass(p.tone)}`}>{p.label}</span>) : <span className="text-[11px] text-unjong-muted">—</span>}
           </div>
-          {longPills.length ? <p className="mt-2 text-[12px] font-medium text-unjong-primary">{longPills.length}중 <span className="text-unjong-accent">{favN}</span> 우호 <span className="font-normal text-unjong-muted">· 종합점수 아님(개수)</span></p> : null}
+          {longPills.length ? <p className={`mt-2 text-[12px] font-medium ${toneText(lTone)}`}>{lWord} <span className="font-normal text-unjong-muted">· {longPills.length}개 중 {favN}개 우호</span></p> : null}
         </div>
       </div>
       <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[12px] leading-relaxed text-unjong-muted">
-        단기 <b className={toneText(sTone)}>{sWord}</b> · 중기 <b className={toneText(mTone)}>{mWord}</b> · 장기 <b className="text-unjong-primary">{longPills.length}중 {favN} 우호</b> — 시간축마다 결이 달라요.
+        단기 <b className={toneText(sTone)}>{sWord}</b> · 중기 <b className={toneText(mTone)}>{mWord}</b> · 장기 <b className={toneText(lTone)}>{lWord}</b> — 시간축마다 결이 달라요.
       </div>
     </div>
   );
