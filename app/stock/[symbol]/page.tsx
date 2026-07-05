@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { LENS_COPY } from '@/lib/lensCopy';
-import { AlertTriangle, Info, ExternalLink } from 'lucide-react';
+import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';
 
 type LensRead = {
   key: string;
@@ -337,7 +337,42 @@ function buildLensFlags(events: MatEvent[]): Record<string, Flag[]> {
 }
 
 // 이벤트 사실 레이어 — 최근 중대 8-K(사실만·예측 없음). 렌즈 점수엔 안 섞임.
-function EventLayer({ events }: { events: MatEvent[] }) {
+// R1: 8-K accession을 SEC 링크에서 추출.
+function accFromLink(link: string): string {
+  const m = link.match(/edgar\/data\/\d+\/([^/]+)\//);
+  return m ? m[1] : '';
+}
+
+// R1: 공시 원문 AI 요약(지연 로드·전역 캐시). LLM은 원문을 읽어 '사실'만 — 예측·판정 아님.
+function AiFilingSummary({ symbol, link, items }: { symbol: string; link: string; items: string[] }) {
+  const [text, setText] = useState('');
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  useEffect(() => {
+    let alive = true;
+    if (!accFromLink(link)) { setState('error'); return; }
+    const q = new URLSearchParams({ symbol, link, items: items.join(',') }).toString();
+    fetch('/api/events/summary?' + q)
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [symbol, link]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (state === 'error') return null; // 실패 시 조용히 숨김(원문 링크는 위에 있음)
+  return (
+    <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
+      <div className="mb-1 flex items-center gap-1">
+        <Sparkles size={11} className="text-unjong-accent" />
+        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+      </div>
+      {state === 'loading'
+        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+    </div>
+  );
+}
+
+function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) {
   const [showRoutine, setShowRoutine] = useState(false);
   if (!events.length) return null;
   const sevRank = (e: MatEvent) => e.defs.reduce((m, d) => Math.max(m, d.severity === 'serious' ? 2 : d.severity === 'watch' ? 1 : 0), 0);
@@ -349,7 +384,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
     const g = groups.find((x) => x.label === l);
     if (g) g.count += 1; else groups.push({ label: l, count: 1 });
   }
-  const row = (e: MatEvent, i: number) => {
+  const row = (e: MatEvent, i: number, withAi = false) => {
     const d = e.defs[0];
     if (!d) return null;
     const why = d.klass === 'A' ? '이 종목 재무 렌즈 근거를 흔들 수 있어요' : d.klass === 'B' ? '렌즈엔 아직 없는 새 사실' : '참고 사실';
@@ -367,6 +402,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
           </div>
           <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
         </a>
+        {withAi ? <AiFilingSummary symbol={symbol} link={e.link} items={e.items} /> : null}
       </li>
     );
   };
@@ -378,7 +414,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
       </div>
       <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
       {material.length ? (
-        <ul className="mt-2.5 space-y-1.5">{material.map(row)}</ul>
+        <ul className="mt-2.5 space-y-1.5">{material.map((e, i) => row(e, i, true))}</ul>
       ) : (
         <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[12px] text-unjong-muted">최근 <b className="text-unjong-primary">중대한 사건은 없어요</b> — 정기 공시만 있어요.</p>
       )}
@@ -388,7 +424,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
             <span className={`inline-block transition-transform ${showRoutine ? 'rotate-90' : ''}`}>▸</span>
             <span>정기 공시 {routine.length}건 <span className="text-unjong-muted/80">· {groups.map((g) => `${g.label} ${g.count}`).join(' · ')}</span></span>
           </button>
-          {showRoutine ? <ul className="mt-1.5 space-y-1.5">{routine.map(row)}</ul> : null}
+          {showRoutine ? <ul className="mt-1.5 space-y-1.5">{routine.map((e, i) => row(e, i))}</ul> : null}
         </div>
       ) : null}
       <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 SEC 원문으로 가요.</p>
@@ -537,7 +573,7 @@ export default function StockLensPage() {
       ) : (
         <div className="mt-4 max-w-4xl">
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
-          <EventLayer events={events} />
+          <EventLayer events={events} symbol={symbol} />
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
             const showFs = h === 'long' && !!(data && data.fscore);
