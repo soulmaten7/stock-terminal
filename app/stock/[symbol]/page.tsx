@@ -199,7 +199,7 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
     <div className="mb-3 space-y-2">
       {aFlags.length ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600"><AlertTriangle size={11} /> 이 점수는 옛 자료 기준이에요 — 최근 새 공시가 나왔거든요</p>
+          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600"><AlertTriangle size={11} /> 최근 새 공시가 나왔어요 (이 점수엔 아직 반영 전)</p>
           {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
@@ -209,7 +209,7 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
           {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
-      <p className="text-[10px] text-unjong-muted">자세한 건 위 &apos;최근 공시&apos;에서 원문으로.</p>
+      <p className="text-[10px] text-unjong-muted">원문은 위 &apos;최근 공시&apos;에서 볼 수 있어요.</p>
     </div>
   );
 }
@@ -366,7 +366,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시·이벤트</span>
         <span className="text-[11px] text-unjong-muted">SEC EDGAR · 실시간</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">방금 일어난 <b className="text-unjong-primary">사실</b>이에요 — 아직 렌즈 점수엔 안 섞였어요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
       {material.length ? (
         <ul className="mt-2.5 space-y-1.5">{material.map(row)}</ul>
       ) : (
@@ -387,7 +387,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
 }
 
 const H_TITLE: Record<string, string> = { short: '단기', mid: '중기', long: '장기' };
-const H_SUB: Record<string, string> = { short: '며칠~주 · 지금 눌릴 수 있는지', mid: '수개월 · 흐름의 관성', long: '분기~년 · 오래 봐도 될 몸인지' };
+const H_SUB: Record<string, string> = { short: '며칠~주', mid: '수개월', long: '분기~년' };
 
 export default function StockLensPage() {
   const params = useParams();
@@ -439,7 +439,12 @@ export default function StockLensPage() {
               <span className="text-xs text-unjong-muted">· {L.name}</span>
               <FlagChip flags={cardFlags} />
             </div>
-            {!isOpen ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p> : null}
+            {!isOpen ? (L.verdict ? (
+              <div className="mt-1.5 flex items-baseline gap-x-2">
+                <span className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
+                {L.headline ? <span className="text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
+              </div>
+            ) : <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p>) : null}
           </div>
           <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
@@ -506,7 +511,7 @@ export default function StockLensPage() {
           <p className="text-sm text-unjong-muted">현재가 {data.price.toLocaleString()}</p>
         ) : null}
 
-        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 각자 어떻게 보는지 보여드려요 — <b className="text-unjong-primary">매수·매도 권유가 아니라, 스스로 판단하는 출발점</b>으로요. 기법끼리 엇갈리는 지점이 특히 중요하고요.</p>
+        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 저마다 어떻게 보는지 보여드려요. <b className="text-unjong-primary">사고팔 신호가 아니라, 스스로 판단할 재료</b>예요.</p>
         <details className="mt-1">
           <summary className={LEARN_CLASS}>▾ 이 화면 읽는 법 · 신뢰도 등급</summary>
           <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-600">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-600">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요.</p>
