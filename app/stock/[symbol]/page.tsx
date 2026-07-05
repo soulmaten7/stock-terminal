@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { LENS_COPY } from '@/lib/lensCopy';
+import { AlertTriangle, Info, ExternalLink } from 'lucide-react';
 
 type LensRead = {
   key: string;
@@ -27,6 +28,9 @@ type LensRead = {
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
 type LensResp = { symbol: string; name?: string; price?: number | null; lenses?: LensRead[]; fscore?: FScoreResp | null; error?: string };
+type EventDef = { item: string; label: string; klass: 'A' | 'B' | 'general'; lenses: string[]; severity: 'info' | 'watch' | 'serious' };
+type MatEvent = { date: string; items: string[]; defs: EventDef[]; link: string };
+type EventsResp = { symbol: string; events?: MatEvent[] };
 
 // 판정(reading) 색조 — pos=민트(우호적 읽기)·warn=앰버(주의 읽기)·flat=중립(기본색). '이 기법 시각'일 뿐 예측 아님(상단 전제).
 function verdictColor(tone?: string): string {
@@ -275,6 +279,59 @@ function FScoreCard({ f }: { f: FScoreResp }) {
   );
 }
 
+// 이벤트 severity → 점 색(사실의 무게지 방향 아님)
+function sevDot(sev: string): string {
+  return sev === 'serious' ? 'bg-unjong-danger' : sev === 'watch' ? 'bg-amber-400' : 'bg-unjong-muted';
+}
+
+// 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
+function buildLensFlags(events: MatEvent[]): Record<string, { klass: 'A' | 'B'; label: string; date: string }[]> {
+  const map: Record<string, { klass: 'A' | 'B'; label: string; date: string }[]> = {};
+  for (const e of events) for (const d of e.defs) {
+    if (d.klass === 'general') continue;
+    for (const key of d.lenses) (map[key] ||= []).push({ klass: d.klass, label: d.label, date: e.date });
+  }
+  return map;
+}
+
+// 이벤트 사실 레이어 — 최근 중대 8-K(사실만·예측 없음). 렌즈 점수엔 안 섞임.
+function EventLayer({ events }: { events: MatEvent[] }) {
+  if (!events.length) return null;
+  return (
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시·이벤트</span>
+        <span className="text-[11px] text-unjong-muted">SEC EDGAR · 실시간</span>
+      </div>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">방금 일어난 <b className="text-unjong-primary">사실</b>이에요 — 아래 기법 렌즈(느린 추세)엔 아직 안 섞였어요. 판단은 당신 몫.</p>
+      <ul className="mt-2.5 space-y-1.5">
+        {events.map((e, i) => {
+          const d = e.defs[0];
+          if (!d) return null;
+          const why = d.klass === 'A' ? '이 종목 재무 렌즈 근거를 흔들 수 있어요' : d.klass === 'B' ? '렌즈엔 아직 없는 새 사실' : '참고 사실';
+          return (
+            <li key={i}>
+              <a href={e.link} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
+                <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${sevDot(d.severity)}`} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                    <span className="text-[13px] font-medium text-unjong-primary">{d.label}</span>
+                    {e.defs.length > 1 ? <span className="text-[11px] text-unjong-muted">외 {e.defs.length - 1}건</span> : null}
+                    <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{e.items.join('·')}</span>
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date} · {why}</p>
+                </div>
+                <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭 시 SEC 원문. 좋다/나쁘다 판단은 하지 않아요 — 사실만 전해요.</p>
+    </div>
+  );
+}
+
 const H_TITLE: Record<string, string> = { short: '단기', mid: '중기', long: '장기' };
 const H_SUB: Record<string, string> = { short: '며칠~주 · 지금 눌릴 수 있는지', mid: '수개월 · 흐름의 관성', long: '분기~년 · 오래 봐도 될 몸인지' };
 
@@ -283,6 +340,7 @@ export default function StockLensPage() {
   const symbol = decodeURIComponent(String(params?.symbol || ''));
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<MatEvent[]>([]);
 
   useEffect(() => {
     if (!symbol) return;
@@ -293,13 +351,26 @@ export default function StockLensPage() {
       .catch(() => setLoading(false));
   }, [symbol]);
 
+  useEffect(() => {
+    if (!symbol) return;
+    let cancelled = false;
+    fetch('/api/events?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j: EventsResp) => { if (!cancelled) setEvents(j.events ?? []); })
+      .catch(() => { if (!cancelled) setEvents([]); });
+    return () => { cancelled = true; };
+  }, [symbol]);
+
   const [openLens, setOpenLens] = useState<Set<string>>(new Set());
   const lenses = data?.lenses ?? [];
+  const lensFlags = buildLensFlags(events);
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ)$/, '');
   const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
   const renderCard = (L: LensRead) => {
     const isOpen = openLens.has(L.key);
+    const cardFlags = lensFlags[L.key];
+    const flag = cardFlags?.[0];
     const viz = L.key === 'technical'
       ? <RsiZone rsi={L.detail['RSI(14)'] ?? null} maPct={L.detail['200일선대비%'] ?? null} />
       : (L.percentile != null && FACTOR_ENDS[L.key])
@@ -313,6 +384,7 @@ export default function StockLensPage() {
               <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
               <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
               <span className="text-xs text-unjong-muted">· {L.name}</span>
+              {flag ? <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${flag.klass === 'A' ? 'bg-amber-50 text-amber-600' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{flag.klass === 'A' ? <AlertTriangle size={10} /> : <Info size={10} />}{flag.klass === 'A' ? '근거 주의' : '새 사실'}</span> : null}
             </div>
             {!isOpen ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p> : null}
           </div>
@@ -322,6 +394,13 @@ export default function StockLensPage() {
         </button>
         {isOpen ? (
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
+            {cardFlags?.length ? (
+              <div className={`mb-3 rounded-lg border px-2.5 py-2 ${cardFlags[0].klass === 'A' ? 'border-amber-200 bg-amber-50/60' : 'border-unjong-accent/30 bg-unjong-accent/5'}`}>
+                <p className={`flex items-center gap-1 text-[11px] font-medium ${cardFlags[0].klass === 'A' ? 'text-amber-600' : 'text-unjong-accent'}`}>{cardFlags[0].klass === 'A' ? <><AlertTriangle size={11} /> 이 점수 근거가 최근 흔들렸어요</> : <><Info size={11} /> 최근 사실 — 이 점수엔 아직 없어요</>}</p>
+                {cardFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
+                <p className="mt-1 text-[10px] text-unjong-muted">방향 판정 아님 — 위 &apos;최근 공시&apos;에서 원문 확인.</p>
+              </div>
+            ) : null}
             <div className="mb-3.5 rounded-xl border border-unjong-border bg-white p-3">
               <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
               <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
@@ -393,6 +472,7 @@ export default function StockLensPage() {
       ) : (
         <div className="mt-4 max-w-4xl">
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
+          <EventLayer events={events} />
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
             const showFs = h === 'long' && !!(data && data.fscore);
