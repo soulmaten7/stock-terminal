@@ -28,7 +28,8 @@ type LensRead = {
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
 type LensResp = { symbol: string; name?: string; price?: number | null; lenses?: LensRead[]; fscore?: FScoreResp | null; error?: string };
-type EventDef = { item: string; label: string; klass: 'A' | 'B' | 'general'; lenses: string[]; severity: 'info' | 'watch' | 'serious' };
+type EventDef = { item: string; label: string; klass: 'A' | 'B' | 'general'; lenses: string[]; severity: 'info' | 'watch' | 'serious'; flagLens: boolean };
+type Flag = { klass: 'A' | 'B'; label: string; date: string };
 type MatEvent = { date: string; items: string[]; defs: EventDef[]; link: string };
 type EventsResp = { symbol: string; events?: MatEvent[] };
 
@@ -184,7 +185,38 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
 const SUMMARY_CLASS = 'cursor-pointer list-none text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
 const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
-function FScoreCard({ f }: { f: FScoreResp }) {
+// 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 근거 주의 우선, 아니면 📌 새 사실.
+function FlagChip({ flags }: { flags?: Flag[] }) {
+  if (!flags?.length) return null;
+  const a = flags.some((x) => x.klass === 'A');
+  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-50 text-amber-600' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? '근거 주의' : '새 사실'}</span>;
+}
+
+// 렌즈 플래그 박스(펼침) — A(근거 흔듦)/B(새 사실) 분리. 방향 판정 아님.
+function FlagBox({ flags }: { flags?: Flag[] }) {
+  if (!flags?.length) return null;
+  const aFlags = flags.filter((x) => x.klass === 'A');
+  const bFlags = flags.filter((x) => x.klass === 'B');
+  return (
+    <div className="mb-3 space-y-2">
+      {aFlags.length ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-2">
+          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600"><AlertTriangle size={11} /> 이 점수 근거가 최근 바뀌었을 수 있어요</p>
+          {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
+        </div>
+      ) : null}
+      {bFlags.length ? (
+        <div className="rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 px-2.5 py-2">
+          <p className="flex items-center gap-1 text-[11px] font-medium text-unjong-accent"><Info size={11} /> 최근 사실 — 이 점수엔 아직 없어요</p>
+          {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
+        </div>
+      ) : null}
+      <p className="text-[10px] text-unjong-muted">방향 판정 아님 — 위 &apos;최근 공시&apos;에서 원문 확인.</p>
+    </div>
+  );
+}
+
+function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
   const [open, setOpen] = useState(false);
   if (!f.supported) {
     return (
@@ -205,6 +237,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
             <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
             <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">건전성</span>
             <span className="text-xs text-unjong-muted">· 부실 위험 체크</span>
+            <FlagChip flags={flags} />
           </div>
           {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p> : null}
         </div>
@@ -214,6 +247,7 @@ function FScoreCard({ f }: { f: FScoreResp }) {
       </button>
       {open ? (
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
+          <FlagBox flags={flags} />
           {/* 이게 뭐예요? — 지금 뭘 하는지만 */}
           <div className="rounded-xl border border-unjong-border bg-white p-3">
             <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
@@ -285,10 +319,10 @@ function sevDot(sev: string): string {
 }
 
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
-function buildLensFlags(events: MatEvent[]): Record<string, { klass: 'A' | 'B'; label: string; date: string }[]> {
-  const map: Record<string, { klass: 'A' | 'B'; label: string; date: string }[]> = {};
+function buildLensFlags(events: MatEvent[]): Record<string, Flag[]> {
+  const map: Record<string, Flag[]> = {};
   for (const e of events) for (const d of e.defs) {
-    if (d.klass === 'general') continue;
+    if (d.klass === 'general' || !d.flagLens) continue; // 확실히 영향 주는 이벤트만 렌즈 플래그(애매한 건 리스트에만)
     for (const key of d.lenses) (map[key] ||= []).push({ klass: d.klass, label: d.label, date: e.date });
   }
   return map;
@@ -317,7 +351,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
                   <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
                     <span className="text-[13px] font-medium text-unjong-primary">{d.label}</span>
                     {e.defs.length > 1 ? <span className="text-[11px] text-unjong-muted">외 {e.defs.length - 1}건</span> : null}
-                    <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{e.items.join('·')}</span>
+                    <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{e.defs.map((x) => x.item).join('·')}</span>
                   </div>
                   <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date} · {why}</p>
                 </div>
@@ -370,7 +404,6 @@ export default function StockLensPage() {
   const renderCard = (L: LensRead) => {
     const isOpen = openLens.has(L.key);
     const cardFlags = lensFlags[L.key];
-    const flag = cardFlags?.[0];
     const viz = L.key === 'technical'
       ? <RsiZone rsi={L.detail['RSI(14)'] ?? null} maPct={L.detail['200일선대비%'] ?? null} />
       : (L.percentile != null && FACTOR_ENDS[L.key])
@@ -384,7 +417,7 @@ export default function StockLensPage() {
               <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
               <span className={`rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
               <span className="text-xs text-unjong-muted">· {L.name}</span>
-              {flag ? <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${flag.klass === 'A' ? 'bg-amber-50 text-amber-600' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{flag.klass === 'A' ? <AlertTriangle size={10} /> : <Info size={10} />}{flag.klass === 'A' ? '근거 주의' : '새 사실'}</span> : null}
+              <FlagChip flags={cardFlags} />
             </div>
             {!isOpen ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p> : null}
           </div>
@@ -394,13 +427,7 @@ export default function StockLensPage() {
         </button>
         {isOpen ? (
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
-            {cardFlags?.length ? (
-              <div className={`mb-3 rounded-lg border px-2.5 py-2 ${cardFlags[0].klass === 'A' ? 'border-amber-200 bg-amber-50/60' : 'border-unjong-accent/30 bg-unjong-accent/5'}`}>
-                <p className={`flex items-center gap-1 text-[11px] font-medium ${cardFlags[0].klass === 'A' ? 'text-amber-600' : 'text-unjong-accent'}`}>{cardFlags[0].klass === 'A' ? <><AlertTriangle size={11} /> 이 점수 근거가 최근 흔들렸어요</> : <><Info size={11} /> 최근 사실 — 이 점수엔 아직 없어요</>}</p>
-                {cardFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
-                <p className="mt-1 text-[10px] text-unjong-muted">방향 판정 아님 — 위 &apos;최근 공시&apos;에서 원문 확인.</p>
-              </div>
-            ) : null}
+            <FlagBox flags={cardFlags} />
             <div className="mb-3.5 rounded-xl border border-unjong-border bg-white p-3">
               <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
               <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
@@ -485,7 +512,7 @@ export default function StockLensPage() {
                 </div>
                 <div className="space-y-4">
                   {group.map(renderCard)}
-                  {showFs && data && data.fscore ? <FScoreCard f={data.fscore} /> : null}
+                  {showFs && data && data.fscore ? <FScoreCard f={data.fscore} flags={lensFlags['fscore']} /> : null}
                 </div>
               </section>
             );
