@@ -131,9 +131,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   return (
     <div className="rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
       <div className="mb-2.5 flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">시간축으로 한눈에</span>
-        <span className="text-[11px] text-unjong-muted">방향이지 정답 아님</span>
-      </div>
+        <span className="text-[13px] font-bold text-unjong-primary">시간축으로 한눈에</span>      </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {/* 단기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
@@ -176,7 +174,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
         </div>
       </div>
       <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[12px] leading-relaxed text-unjong-muted">
-        단기 <b className={toneText(sTone)}>{sWord}</b> · 중기 <b className={toneText(mTone)}>{mWord}</b> · 장기 <b className="text-unjong-primary">{longPills.length}중 {favN} 우호</b> — 시간축마다 결이 달라요. 어떻게 볼지는 당신 몫.
+        단기 <b className={toneText(sTone)}>{sWord}</b> · 중기 <b className={toneText(mTone)}>{mWord}</b> · 장기 <b className="text-unjong-primary">{longPills.length}중 {favN} 우호</b> — 시간축마다 결이 달라요.
       </div>
     </div>
   );
@@ -211,7 +209,7 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
           {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
-      <p className="text-[10px] text-unjong-muted">방향 판정 아님 — 위 &apos;최근 공시&apos;에서 원문 확인.</p>
+      <p className="text-[10px] text-unjong-muted">자세한 건 위 &apos;최근 공시&apos;에서 원문으로.</p>
     </div>
   );
 }
@@ -368,7 +366,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시·이벤트</span>
         <span className="text-[11px] text-unjong-muted">SEC EDGAR · 실시간</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">방금 일어난 <b className="text-unjong-primary">사실</b>이에요 — 렌즈(느린 추세)엔 아직 안 섞였어요. 판단은 당신 몫.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">방금 일어난 <b className="text-unjong-primary">사실</b>이에요 — 아직 렌즈 점수엔 안 섞였어요.</p>
       {material.length ? (
         <ul className="mt-2.5 space-y-1.5">{material.map(row)}</ul>
       ) : (
@@ -383,7 +381,7 @@ function EventLayer({ events }: { events: MatEvent[] }) {
           {showRoutine ? <ul className="mt-1.5 space-y-1.5">{routine.map(row)}</ul> : null}
         </div>
       ) : null}
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭 시 SEC 원문. 좋다/나쁘다 판단은 하지 않아요 — 사실만 전해요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 SEC 원문으로 가요.</p>
     </div>
   );
 }
@@ -508,10 +506,10 @@ export default function StockLensPage() {
           <p className="text-sm text-unjong-muted">현재가 {data.price.toLocaleString()}</p>
         ) : null}
 
-        <p className="mt-3 text-xs leading-relaxed text-unjong-muted"><b className="text-unjong-primary">오를지 맞히는 게 아니에요.</b> 검증된 기법들이 이 종목을 어떻게 보는지 그대로 보여드려요 — 시선이 엇갈리면 그게 오히려 봐야 할 지점이고요.</p>
+        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 각자 어떻게 보는지 보여드려요 — <b className="text-unjong-primary">매수·매도 권유가 아니라, 스스로 판단하는 출발점</b>으로요. 기법끼리 엇갈리는 지점이 특히 중요하고요.</p>
         <details className="mt-1">
           <summary className={LEARN_CLASS}>▾ 이 화면 읽는 법 · 신뢰도 등급</summary>
-          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-600">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-600">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요. <b className="text-unjong-primary">최근 공시</b>는 사실만 전하고, 사라·사지마라는 하지 않아요.</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-600">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-600">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요.</p>
         </details>
       </div>
 
@@ -545,9 +543,7 @@ export default function StockLensPage() {
         </div>
       )}
 
-      <p className="mt-6 max-w-4xl text-center text-[11px] text-unjong-muted">
-        검증된 기법 렌즈로 이 종목을 읽어드려요 — 예측도, 권유도 아니에요. 판단은 당신 몫이에요.
-      </p>
+      {/* 페이지 하단 디스클레이머 제거 — 법적 문구는 전역 푸터에 있음(반복 제거) */}
     </main>
   );
 }
