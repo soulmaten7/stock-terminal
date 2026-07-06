@@ -1,6 +1,16 @@
 <!-- 2026-07-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-06 — STEP 595~598 — KR 공시 이벤트 층 + R1-KR(DART 원문) + US 3라운드 검증·R3 밸류 누수 픽스
+
+- **STEP 595(+595B) — KR 공시 이벤트 층 (HEAD `c55016b`)**: `lib/dartEvents.ts`(corp_code→DART `list.json` 중대공시 키워드 필터)+`/api/kr-events`+`KrEventLayer`(`isKR` 감지→DART층, US는 EDGAR). `dart_corp_codes` 빈 것 발견 → `scripts/seed_dart_corp_codes.ts`(corpCode.xml·상장사 **3,922** 시드·`fflate`). SK하이닉스 공시 반환 검증.
+- **STEP 596 — R1-KR DART 원문 요약 (HEAD `a246b81`)**: `lib/dartSummary.ts`(document.xml zip→**EUC-KR 디코딩**→텍스트)+`/api/kr-events/summary`+`KrFilingSummary`. `filing_summaries` 캐시(accession=rcept_no) US와 공유. SK하이닉스 나스닥 상장공시 정확 요약(한글 안 깨짐)·정기보고서 키워드 추가. = **"US 완성형 → 데이터 교체" 실증.**
+- **STEP 597 — US 3라운드 중복검수**: 11종목×R1/R2/R3. **R1 실적(2.02) EX-99.1 첨부 경로 실증**(AAPL·MSFT 실적 숫자 정확 추출 — 유일 미검증 경로였음).
+- **STEP 598 — R3 밸류 누수 픽스 (HEAD `24b3438`)**: **Cowork이 MCP로 캐시 실물 직접 검수** → R3 밸류 의견 누수 발견(BAC "과대평가"·INTC "목표주가 200달러"·JPM "공정가치") — "매도" regex는 오탐이나 그 카드가 가리킨 R3는 진짜 누수. R3 프롬프트 강화(구체 사건만·밸류판단/목표주가/투자의견 금지·사건 없으면 숨김)+R2 "예정" 방지. 캐시 비워 재생성 → 3라운드 누수 0. **MCP 재검수: BAC/INTC/JPM 숨김·나머지 구체 사건만.**
+- **🎉 US(R1+R2+R3) 확정** — 3라운드 검증 + Cowork MCP 독립 재검수 통과. (R2 미세 "예정" 표현은 GPT 한계·가드레일 무관·경미.) **KR = 공시층+R1 완료.**
+- **🔒 검증 규칙 확립**: STEP 명령서는 Claude Code가 **동일 검증을 3회 반복**해 일관 결과 확인 후 보고(플레이키 방지). Cowork은 **MCP로 캐시 실물 독립 재검수**.
+- ▶ **다음**: 다른 국가탭 확장(R2-KR·R3-KR·JP/CN)은 **사용자 승인 후에만**.
+
 ## 2026-07-06 — STEP 591~593 — 🎉 AI 브리핑 레이어 US 완성형 빌드(R1+R2+R3) 라이브
 
 - **STEP 591 (R1·HEAD `e0d033d`)**: 8-K 공시 원문 AI 요약 — `lib/eightKSummary.ts`(본문+EX-99.x 추출·HTML strip) + `app/api/events/summary`(지연 생성·`filing_summaries` 전역 캐시·SSRF 가드·gpt-4o-mini 사실만) + 이벤트 카드 지연 "AI 요약". 라이브 검증: NVDA 5.02(임원 변동) 원문 정확 요약·예측 0.
