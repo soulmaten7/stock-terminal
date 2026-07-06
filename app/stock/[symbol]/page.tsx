@@ -327,6 +327,47 @@ function sevDot(sev: string): string {
 }
 
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
+// STEP 595: KR 공시 이벤트 층(DART). US EventLayer(EDGAR)의 KR 짝. 원문 요약(R1-KR)은 이후 STEP.
+type KrEvent = { date: string; report_nm: string; rcept_no: string; url: string };
+function KrEventLayer({ symbol }: { symbol: string }) {
+  const [events, setEvents] = useState<KrEvent[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/kr-events?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .catch(() => { if (alive) setLoaded(true); });
+    return () => { alive = false; };
+  }, [symbol]);
+  if (!loaded || !events.length) return null;
+  const fmtD = (s: string) => (/^\d{8}$/.test(s) ? `${s.slice(0, 4)}.${s.slice(4, 6)}.${s.slice(6, 8)}` : s);
+  return (
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
+        <span className="text-[11px] text-unjong-muted">DART · 실시간</span>
+      </div>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <ul className="mt-2.5 space-y-1.5">
+        {events.map((e, i) => (
+          <li key={i}>
+            <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
+              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-unjong-accent" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.report_nm}</p>
+                <p className="mt-0.5 text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
+              </div>
+              <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 DART 원문으로 가요.</p>
+    </div>
+  );
+}
+
 // R3: 종목 최근 뉴스 요약 + 중립 토픽 태그(지연·조건부·헤드라인 없으면 숨김). 뉴스=사실 브리핑, 감성 점수 아님.
 function StockNewsBrief({ symbol }: { symbol: string }) {
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
@@ -497,6 +538,7 @@ const H_SUB: Record<string, string> = { short: '며칠~주', mid: '수개월', l
 export default function StockLensPage() {
   const params = useParams();
   const symbol = decodeURIComponent(String(params?.symbol || ''));
+  const isKR = /^\d{6}(\.(KS|KQ))?$/i.test(symbol); // KR 6자리(±.KS/.KQ) → DART 공시 층
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
@@ -633,8 +675,8 @@ export default function StockLensPage() {
         <div className="mt-4 max-w-4xl">
           <StockBrief symbol={symbol} />
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
-          <EventLayer events={events} symbol={symbol} />
-          <StockNewsBrief symbol={symbol} />
+          {isKR ? <KrEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
+          {isKR ? null : <StockNewsBrief symbol={symbol} />}
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
             const showFs = h === 'long' && !!(data && data.fscore);
