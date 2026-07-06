@@ -5,6 +5,7 @@ import { getDartCorpName } from '@/lib/dart';
 import { fetchYahooName } from '@/lib/lensCompute';
 import { getJpName } from '@/lib/jpName';
 import { getCnName } from '@/lib/cnName';
+import { KR_SEARCH_ALIAS } from '@/lib/krName';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -20,7 +21,9 @@ const SYSTEM =
   '(C) 가격·방향 전망: 오를 것·내릴 것·상승 전망·하락 전망·강세 전망·~할 것으로 보인다·~으로 예상된다·~이 기대된다. ' +
   '(D) 투자심리·기관포지션 변동만 있는 뉴스: 기관이 주식을 매입/매도했다는 보고 자체(실적/공시 사건 없이 포지션만). ' +
   '위 유형만 있는 헤드라인은 통째로 무시. 서로 다른 기사·회사의 내용을 하나로 잇거나 인과관계로 엮지 말고, 각 사실은 개별 헤드라인에서 확인되는 그대로만 쓰세요(불확실한 연결은 생략). 구체 사건이 하나도 없으면 summary를 빈 문자열("")로 두세요. ' +
-  'summary는 반드시 한국어로 씁니다 — 헤드라인이 영어·일본어여도 한국어로 옮겨서. 해요체 2~3문장. 태그도 한국어. 태그는 사건 토픽만(예: 실적·신제품·계약·인사·소송·규제) — 주가·목표주가·전망·투자자관심 태그 금지. ' +
+  'summary는 반드시 한국어로 씁니다 — 헤드라인이 영어·일본어·중국어여도 한국어로 옮겨서. 해요체 2~3문장. 태그도 한국어. 태그는 사건 토픽만(예: 실적·신제품·계약·인사·소송·규제) — 주가·목표주가·전망·투자자관심 태그 금지. ' +
+  '회사명·제품명은 한국에서 통용되는 표기로 옮기세요(한자·외국어 원명을 그대로 두지 말 것 — 예: 任天堂→닌텐도, 阿里巴巴→알리바바, ソニー→소니). ' +
+  '통화·수량 단위는 원문 그대로 유지하세요 — 일본 엔(円)을 "원"으로, 중국 위안(元)을 "원"으로 임의 변환 금지(엔은 "엔", 위안은 "위안"). ' +
   'JSON만 출력: {"summary":"...","tags":["...","..."]}';
 
 export async function GET(req: NextRequest) {
@@ -36,7 +39,8 @@ export async function GET(req: NextRequest) {
 
   // 국가별 뉴스 소스: KR=한글명·ko, JP=일본명·ja, 그 외=영어 (US 코드 그대로·소스만 교체)
   const code6 = symbol.replace(/\.(KS|KQ)$/i, '');
-  const krName = /^\d{6}$/.test(code6) ? await getDartCorpName(code6) : null;
+  // KR: 공식 상장명이 영문+플랫폼명 충돌(예: NAVER)인 소수 종목은 한글 별칭으로 검색. 그 외는 DART 한글명.
+  const krName = /^\d{6}$/.test(code6) ? (KR_SEARCH_ALIAS[code6] || (await getDartCorpName(code6))) : null;
   // JP: 일본어 종목명(jp_names·JPX 시드) 우선 → ja 검색이 진짜 일본어 기사를 물게. 없으면 야후 영어명 폴백.
   const jpName = !krName && /\.T$/i.test(symbol) ? ((await getJpName(symbol)) || (await fetchYahooName(symbol))) : null;
   // CN: 중국어 종목명(cn_names) 우선 → HK=번체(zh-HK)·A주=간체(zh-CN) 검색이 진짜 중국어 기사를 물게. 없으면 야후 영어명 폴백.
@@ -112,6 +116,11 @@ export async function GET(req: NextRequest) {
     .join(' ')
     .trim();
   if (!summary) return NextResponse.json({ summary: null, tags: [] });
+
+  // 후처리3: JP/CN 브리핑 통화 단위 교정(결정론) — 일본·중국 금액은 엔·위안인데 LLM이 '원'으로 오표기하는 경향.
+  // 숫자(+조/억/만/천 단위) 바로 뒤의 '원'만 치환 → '원가·원자재·원인' 등 일반어(앞이 숫자가 아님)는 건드리지 않음. KR 경로는 이 블록을 타지 않음.
+  if (jpName) summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, '$1엔');
+  else if (cnName) summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, '$1위안');
 
   await sb.from('news_briefs').upsert(
     { symbol, as_of: today, summary_ko: summary, tags, model: 'gpt-4o-mini' },
