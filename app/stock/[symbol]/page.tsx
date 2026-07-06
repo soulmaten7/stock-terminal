@@ -327,6 +327,35 @@ function sevDot(sev: string): string {
 }
 
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
+// R1-KR: DART 공시 원문 AI 요약(지연·전역 캐시). US AiFilingSummary의 KR 짝.
+function KrFilingSummary({ rcept, symbol, nm }: { rcept: string; symbol: string; nm: string }) {
+  const [text, setText] = useState('');
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  useEffect(() => {
+    let alive = true;
+    if (!/^\d{14}$/.test(rcept)) { setState('error'); return; }
+    const q = new URLSearchParams({ rcept, symbol, nm }).toString();
+    fetch('/api/kr-events/summary?' + q)
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [rcept]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (state === 'error') return null; // 실패 시 조용히 숨김(원문 링크는 위에)
+  return (
+    <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
+      <div className="mb-1 flex items-center gap-1">
+        <Sparkles size={11} className="text-unjong-accent" />
+        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+      </div>
+      {state === 'loading'
+        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+    </div>
+  );
+}
+
 // STEP 595: KR 공시 이벤트 층(DART). US EventLayer(EDGAR)의 KR 짝. 원문 요약(R1-KR)은 이후 STEP.
 type KrEvent = { date: string; report_nm: string; rcept_no: string; url: string };
 function KrEventLayer({ symbol }: { symbol: string }) {
@@ -360,6 +389,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
+            <KrFilingSummary rcept={e.rcept_no} symbol={symbol} nm={e.report_nm} />
           </li>
         ))}
       </ul>

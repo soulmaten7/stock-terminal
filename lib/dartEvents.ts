@@ -6,6 +6,7 @@ const MATERIAL_KW = [
   '유상증자', '무상증자', '감자', '합병', '분할', '영업(잠정)', '실적', '매출액', '영업이익',
   '배당', '자기주식', '자사주', '최대주주', '대주주', '상장폐지', '감사보고서', '주요사항보고서',
   '전환사채', '신주인수권', '교환사채', '공급계약', '단일판매', '수주', '횡령', '배임', '소송', '회생', '파산',
+  '분기보고서', '반기보고서', '사업보고서', '잠정실적', '투자판단', '주식소각', '주식분할', '자산양수도',
 ];
 
 export type DartEvent = { date: string; report_nm: string; rcept_no: string; url: string };
@@ -25,7 +26,7 @@ export async function fetchDartMaterial(symbol: string, limit = 6): Promise<Dart
   let list: Array<Record<string, string>> = [];
   try {
     const res = await fetchDart<{ list?: Array<Record<string, string>> }>('/list.json', {
-      corp_code: corp, bgn_de: fmt(bgn), end_de: fmt(now), page_count: '40', page_no: '1',
+      corp_code: corp, bgn_de: fmt(bgn), end_de: fmt(now), page_count: '100', page_no: '1',
     });
     list = res?.list || [];
   } catch {
