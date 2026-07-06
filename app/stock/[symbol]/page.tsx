@@ -327,6 +327,35 @@ function sevDot(sev: string): string {
 }
 
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
+// R2: 종목 브리핑(지연 로드·하루 1회 캐시). LLM이 결정론 판정+공시 사실로 '핵심 긴장+지켜볼 것'을 1문단 — 예측·판정 아님.
+function StockBrief({ symbol }: { symbol: string }) {
+  const [brief, setBrief] = useState('');
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  useEffect(() => {
+    let alive = true;
+    setState('loading');
+    fetch('/api/brief?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.brief) { setBrief(j.brief); setState('done'); } else setState('error'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [symbol]);
+  if (state === 'error') return null; // 실패 시 조용히 숨김
+  return (
+    <div className="mb-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <Sparkles size={14} className="text-unjong-accent" />
+        <span className="text-[13px] font-bold text-unjong-accent">이 종목 브리핑</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">AI · 사실만</span>
+      </div>
+      {state === 'loading'
+        ? <p className="text-[12px] text-unjong-muted">브리핑 만드는 중…</p>
+        : <p className="text-[13px] leading-relaxed text-unjong-primary">{brief}</p>}
+      {state === 'done' ? <p className="mt-1.5 text-[10px] leading-relaxed text-unjong-muted">검증된 기법 판정 + 공시 사실 기반 · 방향 판단은 하지 않아요</p> : null}
+    </div>
+  );
+}
+
 function buildLensFlags(events: MatEvent[]): Record<string, Flag[]> {
   const map: Record<string, Flag[]> = {};
   for (const e of events) for (const d of e.defs) {
@@ -572,6 +601,7 @@ export default function StockLensPage() {
         <p className="mt-6 text-center text-sm text-unjong-muted">데이터를 불러오지 못했어요. (일부 종목은 아직 지원되지 않을 수 있어요)</p>
       ) : (
         <div className="mt-4 max-w-4xl">
+          <StockBrief symbol={symbol} />
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
           <EventLayer events={events} symbol={symbol} />
           {(['short', 'mid', 'long'] as const).map((h) => {
