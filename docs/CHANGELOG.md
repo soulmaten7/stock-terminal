@@ -1,6 +1,14 @@
 <!-- 2026-07-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-06 — STEP 591~593 — 🎉 AI 브리핑 레이어 US 완성형 빌드(R1+R2+R3) 라이브
+
+- **STEP 591 (R1·HEAD `e0d033d`)**: 8-K 공시 원문 AI 요약 — `lib/eightKSummary.ts`(본문+EX-99.x 추출·HTML strip) + `app/api/events/summary`(지연 생성·`filing_summaries` 전역 캐시·SSRF 가드·gpt-4o-mini 사실만) + 이벤트 카드 지연 "AI 요약". 라이브 검증: NVDA 5.02(임원 변동) 원문 정확 요약·예측 0.
+- **STEP 592 (R2·HEAD `3b51efe`)**: 종목 브리핑 — `app/api/brief`(서버 `computeSymbolLenses` 재계산+공시 → 핵심 긴장+지켜볼 것·`stock_briefings` 종목+날짜 캐시) + 최상단 `StockBrief` 카드. 검증: NVDA "중기 강세 vs 장기 비싼 밸류 엇갈림 + 임원변동·실적 지켜보기"·예측 0.
+- **STEP 593 (R3·HEAD `28cc508`)**: 뉴스 요약 — `lib/stockNews.ts`(Google News RSS) + `app/api/news-brief`(사실 요약+중립 토픽태그·JSON 모드·`news_briefs` 캐시·조건부) + 이벤트 아래 `StockNewsBrief`. 검증: NVDA 실적·주가·투자자관심 토픽(방향 태그 아님). R3 v1 한계=티커 검색 노이즈·분석가 동향 서술(선 안 넘음).
+- **마이그레이션(MCP·Trillion `ccbwxcszdoyjxvckedfp`)**: 030 filing_summaries · 031 stock_briefings · 032 news_briefs (전역 캐시·public read RLS).
+- **🎉 US 완성형(R1+R2+R3) 완결** — 전부 무료·공개·지연생성+캐시·LLM 사실만·예측 0. ▶ 다음 = R1-KR(DART)부터 국가탭 데이터 교체 → 전 국가탭 → SEO.
+
 ## 2026-07-06 — STEP 584~589 마감 + 🔴 AI 브리핑 레이어(R1~R3) 전략·설계 (무료·공개·SEO 모델)
 
 - **STEP 584~589 (코드·문서·HEAD `3f4b647`)**: 584 문서매듭 · **585 페이지명 "AI LENS"** + '이 화면 읽는 법'(progressive disclosure) + 이벤트 severity 재구성(중대 노출·루틴 접힘) · **586 한국어 보이스 v1**(원어민 전문가 톤 재집필: 표본약함→약한 신호·건전성→재무 건전성·근거주의→자료 갱신 · `VOICE_GUIDE.md` 신설) · **587 전문가 톤 1차**(접힘 카드=판정+수치 선언형 · 디스클레이머 통합=상단 1줄+법적문구 전역푸터) · **588 판정 보이스 v2**(구어 제거: 강하게 오르는 흐름→강한 상승 추세·알짜로 잘 버는 우량→높은 수익성) · **589 시간축 스트립 초보 정리**(장기 칸 합의도 단어-우선[엇갈림/대체로 우호적]·암호 꼬리표 제거).
