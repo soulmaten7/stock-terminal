@@ -17,12 +17,15 @@ function timeAgo(pub: string): string {
   return `${Math.floor(h / 24)}일 전`;
 }
 
-export default function NewsFeed({ query, title, country = 'KR' }: { query?: string; title?: string; country?: 'KR' | 'US' | 'JP' | 'CN' }) {
+export default function NewsFeed({ query, title, country = 'KR' }: { query?: string; title?: string; country?: 'KR' | 'US' | 'JP' | 'CN' | 'VN' }) {
   // US는 Yahoo ^GSPC RSS(키리스, query 무시). KR은 네이버 검색(query 사용).
   const isUs = country === 'US';
   const isJp = country === 'JP';
   const isCn = country === 'CN';
-  const url = isCn
+  const isVn = country === 'VN';
+  const url = isVn
+    ? '/api/news/feed?market=VN' + (query ? '&q=' + encodeURIComponent(query) : '')
+    : isCn
     ? '/api/news/feed?market=CN' + (query ? '&q=' + encodeURIComponent(query) : '')
     : isJp
     ? '/api/news/feed?market=JP' + (query ? '&q=' + encodeURIComponent(query) : '')

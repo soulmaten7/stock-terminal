@@ -251,6 +251,22 @@ export async function GET(req: Request) {
     }
   }
 
+  // ── VN 분기(Google News, 베트남어) — CN과 동일 패턴 + 한국어 번역 ──
+  if (market === "VN") {
+    const q = (new URL(req.url).searchParams.get("q") || "").trim();
+    const key = "VN:" + q;
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
+    try {
+      const items = await googleNews(q || "chứng khoán Việt Nam VN-Index", "vi", "VN", "VN:vi");
+      const data = { items: await translateTitles(items, "ko") };
+      cache.set(key, { at: Date.now(), data });
+      return NextResponse.json(data);
+    } catch (e) {
+      return NextResponse.json({ items: [], error: String(e) });
+    }
+  }
+
   // ── KR 분기(네이버 검색 API) — 기존 그대로 ──
   const id = (process.env.NAVER_CLIENT_ID || "").trim();
   const secret = (process.env.NAVER_CLIENT_SECRET || "").trim();
