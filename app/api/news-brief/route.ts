@@ -4,6 +4,7 @@ import { fetchStockNews } from '@/lib/stockNews';
 import { getDartCorpName } from '@/lib/dart';
 import { fetchYahooName } from '@/lib/lensCompute';
 import { getJpName } from '@/lib/jpName';
+import { getCnName } from '@/lib/cnName';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -38,14 +39,16 @@ export async function GET(req: NextRequest) {
   const krName = /^\d{6}$/.test(code6) ? await getDartCorpName(code6) : null;
   // JP: 일본어 종목명(jp_names·JPX 시드) 우선 → ja 검색이 진짜 일본어 기사를 물게. 없으면 야후 영어명 폴백.
   const jpName = !krName && /\.T$/i.test(symbol) ? ((await getJpName(symbol)) || (await fetchYahooName(symbol))) : null;
-  const cnName = !krName && !jpName && /\.(HK|SS|SZ)$/i.test(symbol) ? await fetchYahooName(symbol) : null;
+  // CN: 중국어 종목명(cn_names) 우선 → HK=번체(zh-HK)·A주=간체(zh-CN) 검색이 진짜 중국어 기사를 물게. 없으면 야후 영어명 폴백.
+  const cnName = !krName && !jpName && /\.(HK|SS|SZ)$/i.test(symbol) ? ((await getCnName(symbol)) || (await fetchYahooName(symbol))) : null;
+  const cnLocale: 'zh' | 'zh-hk' = /\.HK$/i.test(symbol) ? 'zh-hk' : 'zh';
   const label = krName || jpName || cnName || symbol;
   let news = krName
     ? await fetchStockNews(krName, 8, 'ko')
     : jpName
     ? await fetchStockNews(jpName, 8, 'ja')
     : cnName
-    ? await fetchStockNews(cnName, 8, 'zh')
+    ? await fetchStockNews(cnName, 8, cnLocale)
     : await fetchStockNews(`${symbol} stock`, 8);
   // 로컬 로케일 뉴스가 0건이면 영어로 재시도 (중국 A주 등 로컬 검색 실패 대비 — 요약은 후처리가 한국어로 번역)
   if (!news.length && (krName || jpName || cnName)) {
