@@ -291,6 +291,8 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 현재가{sortArrow('price')}
               </button>
               <div className="flex-1" />
+              <span className="inline-flex items-center gap-1 text-unjong-muted"><TLensLogo size={11} color="#2DD4BF" />AI 렌즈</span>
+              <div className="flex-1" />
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button
@@ -352,6 +354,11 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     </button>
                   </th>
                   {/* 기간 드롭다운(1일부터) — 선택 기간으로 전 종목 자동 정렬 + 옆 토글로 오름/내림. */}
+                  <th className="w-[70px] whitespace-nowrap px-2 py-2.5 text-center font-medium">
+                    <span className="inline-flex items-center justify-center gap-1 text-unjong-muted">
+                      <TLensLogo size={11} color="#2DD4BF" />AI 렌즈
+                    </span>
+                  </th>
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
                       <div ref={periodRef} className="relative w-[4.75rem]">
@@ -411,6 +418,11 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, curCode) : '—'}</td>
+                    <td className="px-2 py-2.5 text-center">
+                      <span className="inline-flex h-[22px] w-[26px] items-center justify-center rounded-md" style={{ background: 'rgba(45,212,191,0.14)' }}>
+                        <TLensLogo size={13} color="#2DD4BF" />
+                      </span>
+                    </td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
@@ -426,7 +438,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   {/* 데스크탑 전용: 행 클릭 시 1일~1년 수익률 패노라마 펼침(모바일은 하단 시트가 대신) */}
                   {selectedStock?.symbol === r.symbol ? (
                     <tr className="hidden border-b border-unjong-border bg-unjong-background/50 lg:table-row">
-                      <td colSpan={5} className="px-4 py-3">
+                      <td colSpan={6} className="px-4 py-3">
                         <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
                           <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
                           <AiLensBadge href={`/stock/${r.symbol}`} arrow />
@@ -449,7 +461,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   ) : null}
                   {/* 10행마다 광고 문의 행 (증권사 사이드바와 동일 패턴, 페이지 마지막 행 뒤엔 생략) */}
                   {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
-                    <tr><td colSpan={5} className="p-0"><AdSlotRow slot="broker" /></td></tr>
+                    <tr><td colSpan={6} className="p-0"><AdSlotRow slot="broker" /></td></tr>
                   ) : null}
                   </Fragment>
                 ))}
@@ -469,6 +481,9 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <p className="truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.name}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.symbol.replace(/\.(HK|SS|SZ)$/, '')}</span></p>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, curCode) : '—'}</span>
+                        <span className="inline-flex h-[18px] w-[22px] shrink-0 items-center justify-center rounded" style={{ background: 'rgba(45,212,191,0.14)' }}>
+                          <TLensLogo size={11} color="#2DD4BF" />
+                        </span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
                           <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === period)?.label}</span>
                           {periodCell(r) === undefined ? '…' : pct(periodCell(r))}
