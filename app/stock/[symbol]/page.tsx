@@ -708,7 +708,7 @@ export default function StockLensPage() {
           <StockBrief symbol={symbol} />
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
           {isKR ? <KrEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
-          {isKR ? null : <StockNewsBrief symbol={symbol} />}
+          <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
             const showFs = h === 'long' && !!(data && data.fscore);

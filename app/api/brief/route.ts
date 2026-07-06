@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { computeSymbolLenses } from '@/lib/lensCompute';
 import { fetchMaterial8K } from '@/lib/eightK';
+import { fetchDartMaterial } from '@/lib/dartEvents';
 import { createAdminClient } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
   const data = await computeSymbolLenses(symbol);
   const lenses = data.lenses || [];
   if (!lenses.length && !data.fscore) return NextResponse.json({ error: 'no_data' }, { status: 200 });
-  const events = await fetchMaterial8K(symbol, 5).catch(() => []);
+  const code6 = symbol.replace(/\.(KS|KQ)$/i, ''); // 공시 소스 분기용(KR 6자리)
 
   const lensFacts = lenses
     .filter((l) => l.verdict?.phrase)
@@ -42,9 +43,17 @@ export async function GET(req: NextRequest) {
   const fsc = data.fscore as { supported?: boolean; score?: number; max?: number; grade?: string } | null | undefined;
   const fs = fsc?.supported
     ? `- F-Score(장기·재무건전성): ${fsc.score}/${fsc.max} (${fsc.grade})` : '';
-  const evFacts = events.length
-    ? events.map((e) => `- ${e.date} ${e.defs[0]?.label ?? ''}(${e.items.join(',')})${e.defs[0]?.klass === 'A' ? ' ※재무 렌즈 근거 갱신 가능' : ''}`).join('\n')
-    : '(최근 중대 공시 없음)';
+  // 공시 사실: KR(6자리)=DART, 그 외=EDGAR 8-K (US 코드 그대로, 소스만 교체)
+  let evFacts: string;
+  if (/^\d{6}$/.test(code6)) {
+    const dartEv = await fetchDartMaterial(symbol, 5).catch(() => []);
+    evFacts = dartEv.length ? dartEv.map((e) => `- ${e.date} ${e.report_nm}`).join('\n') : '(최근 중대 공시 없음)';
+  } else {
+    const events = await fetchMaterial8K(symbol, 5).catch(() => []);
+    evFacts = events.length
+      ? events.map((e) => `- ${e.date} ${e.defs[0]?.label ?? ''}(${e.items.join(',')})${e.defs[0]?.klass === 'A' ? ' ※재무 렌즈 근거 갱신 가능' : ''}`).join('\n')
+      : '(최근 중대 공시 없음)';
+  }
   const facts = `종목: ${symbol}${data.name ? ` (${data.name})` : ''}\n\n[검증된 기법 판정]\n${lensFacts}\n${fs}\n\n[최근 중대 공시]\n${evFacts}`;
 
   // 3) LLM 브리핑

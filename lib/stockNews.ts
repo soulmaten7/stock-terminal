@@ -2,8 +2,9 @@
 // 여기선 헤드라인만 가져온다(LLM 요약은 라우트). 프레임워크 무관.
 export type Headline = { title: string; date: string; source: string };
 
-export async function fetchStockNews(query: string, limit = 8): Promise<Headline[]> {
-  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'ko' = 'en'): Promise<Headline[]> {
+  const loc = locale === 'ko' ? 'hl=ko&gl=KR&ceid=KR:ko' : 'hl=en-US&gl=US&ceid=US:en';
+  const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&${loc}`;
   try {
     const r = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TrillionBot/1.0; +https://onetrillion.app)' },

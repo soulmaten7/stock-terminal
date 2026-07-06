@@ -41,3 +41,17 @@ export async function getDartCorpCode(symbol: string): Promise<string | null> {
     .maybeSingle();
   return (data as { corp_code: string } | null)?.corp_code ?? null;
 }
+
+// KR 6자리(005930·005930.KS) → DART 한글 종목명(예: "삼성전자"). R3 한국 뉴스 검색어용.
+export async function getDartCorpName(symbol: string): Promise<string | null> {
+  const code6 = symbol.replace(/\.(KS|KQ)$/i, '').trim();
+  if (!/^\d{6}$/.test(code6)) return null;
+  const { createClient } = await import('@/lib/supabase/server');
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('dart_corp_codes')
+    .select('corp_name')
+    .eq('stock_code', code6)
+    .maybeSingle();
+  return (data as { corp_name: string } | null)?.corp_name ?? null;
+}

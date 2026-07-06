@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchStockNews } from '@/lib/stockNews';
+import { getDartCorpName } from '@/lib/dart';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -15,7 +16,7 @@ const SYSTEM =
   '(B) 밸류에이션 판단: 과대평가·과대 평가·저평가·저 평가·공정가치·공정 가치·적정가치·비싸다·싸다·저렴·프리미엄. ' +
   '(C) 가격·방향 전망: 오를 것·내릴 것·상승 전망·하락 전망·강세 전망·~할 것으로 보인다·~으로 예상된다·~이 기대된다. ' +
   '(D) 투자심리·기관포지션 변동만 있는 뉴스: 기관이 주식을 매입/매도했다는 보고 자체(실적/공시 사건 없이 포지션만). ' +
-  '위 유형만 있는 헤드라인은 통째로 무시. 구체 사건이 하나도 없으면 summary를 빈 문자열("")로 두세요. ' +
+  '위 유형만 있는 헤드라인은 통째로 무시. 서로 다른 기사·회사의 내용을 하나로 잇거나 인과관계로 엮지 말고, 각 사실은 개별 헤드라인에서 확인되는 그대로만 쓰세요(불확실한 연결은 생략). 구체 사건이 하나도 없으면 summary를 빈 문자열("")로 두세요. ' +
   '해요체 2~3문장. 태그는 사건 토픽만(예: 실적·신제품·계약·인사·소송·규제) — 주가·목표주가·전망·투자자관심 태그 금지. ' +
   'JSON만 출력: {"summary":"...","tags":["...","..."]}';
 
@@ -30,7 +31,13 @@ export async function GET(req: NextRequest) {
     .from('news_briefs').select('summary_ko, tags').eq('symbol', symbol).eq('as_of', today).maybeSingle();
   if (hit?.summary_ko) return NextResponse.json({ summary: hit.summary_ko, tags: hit.tags || [], cached: true });
 
-  const news = await fetchStockNews(`${symbol} stock`, 8);
+  // KR(6자리)이면 한글 종목명 + 한국 로케일 뉴스, 그 외는 영어 (US 코드 그대로, 소스만 교체)
+  const code6 = symbol.replace(/\.(KS|KQ)$/i, '');
+  const krName = /^\d{6}$/.test(code6) ? await getDartCorpName(code6) : null;
+  const label = krName || symbol;
+  const news = krName
+    ? await fetchStockNews(krName, 8, 'ko')
+    : await fetchStockNews(`${symbol} stock`, 8);
   if (!news.length) return NextResponse.json({ summary: null, tags: [] });
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -44,7 +51,7 @@ export async function GET(req: NextRequest) {
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: SYSTEM },
-        { role: 'user', content: `${symbol} 최근 뉴스 헤드라인:\n${headlines}` },
+        { role: 'user', content: `${label} 최근 뉴스 헤드라인:\n${headlines}` },
       ],
       max_tokens: 320,
       temperature: 0.2,
