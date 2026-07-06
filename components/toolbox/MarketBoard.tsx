@@ -1,6 +1,8 @@
 'use client';
+import { AiLensBadge, TLensLogo } from '@/components/AiLensBadge';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
+import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
 import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -101,6 +103,13 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   // 모바일 하단 시트 스냅포인트: 50vh 기본 → 위로 끌면 66vh, 아래로 끌면 축소/닫힘
   const [sheetDragY, setSheetDragY] = useState(0);
   const [sheetExpanded, setSheetExpanded] = useState(false);
+
+  // 종목 시트 선택을 URL(?s=)에 동기화 — 종목 페이지에서 "뒤로" 시 그 시트가 복원됨
+  useSheetSync(rows, setSelectedStock, setSheetExpanded);
+  const selectStock = (next: Row | null) => {
+    if (next) { setSelectedStock(next); openSheetUrl(next.symbol); }
+    else if (!closeSheetUrl()) setSelectedStock(null);
+  };
   const dragStartY = useRef<number | null>(null);
   function onSheetTouchStart(e: ReactTouchEvent) {
     dragStartY.current = e.touches[0].clientY;
@@ -114,7 +123,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     if (dy < -60) setSheetExpanded(true);          // 위로 끌기 → 확장(66vh)
     else if (dy > 90) {
       if (sheetExpanded) setSheetExpanded(false);  // 아래로: 확장상태면 축소(50vh)
-      else setSelectedStock(null);                 // 기본상태면 닫기
+      else selectStock(null);                 // 기본상태면 닫기
     }
     setSheetDragY(0);
     dragStartY.current = null;
@@ -399,7 +408,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               <tbody>
                 {paginated.map((r, i) => (
                   <Fragment key={r.symbol}>
-                  <tr onClick={() => setSelectedStock((s) => (s?.symbol === r.symbol ? null : r))} className={`cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background ${selectedStock?.symbol === r.symbol ? 'bg-unjong-background' : ''}`}>
+                  <tr onClick={() => selectStock(selectedStock?.symbol === r.symbol ? null : r)} className={`cursor-pointer border-b border-unjong-border last:border-0 hover:bg-unjong-background ${selectedStock?.symbol === r.symbol ? 'bg-unjong-background' : ''}`}>
                     <td className="py-2.5 pl-2 pr-0.5 tabular-nums text-unjong-muted sm:px-2">{page * PAGE_SIZE + i + 1}</td>
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex min-w-0 items-center gap-2.5">
@@ -426,7 +435,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       <td colSpan={5} className="px-4 py-3">
                         <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
                           <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
-                          <a href={`/stock/${r.symbol}`} className="text-[11px] font-semibold text-unjong-accent hover:underline">TRAI →</a>
+                          <AiLensBadge href={`/stock/${r.symbol}`} arrow />
                           {([
                             ['1일전', r.changePercent],
                             ['1주일전', r.r1w],
@@ -457,7 +466,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               {paginated.map((r, i) => (
                 <Fragment key={r.symbol}>
                   <div
-                    onClick={() => { setSheetExpanded(false); setSelectedStock((s) => (s?.symbol === r.symbol ? null : r)); }}
+                    onClick={() => { setSheetExpanded(false); selectStock(selectedStock?.symbol === r.symbol ? null : r); }}
                     className="flex cursor-pointer items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 active:bg-unjong-background"
                   >
                     <span className="w-5 shrink-0 text-center text-xs tabular-nums text-unjong-muted">{page * PAGE_SIZE + i + 1}</span>
@@ -521,7 +530,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
       {/* 종목 클릭 → 증권사 바로가기 (모바일 전용 — PC는 우측 리스트로 한눈에 보임) */}
       {selectedStock && (
         <div className="lg:hidden">
-          <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setSelectedStock(null)} />
+          <div className="fixed inset-0 z-40 bg-black/40" onClick={() => selectStock(null)} />
           <div
             className="fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl border-t border-unjong-border bg-unjong-surface shadow-xl"
             style={{ height: sheetExpanded ? '66vh' : '50vh', transform: `translateY(${Math.max(0, sheetDragY)}px)`, transition: sheetDragY ? 'none' : 'transform 0.2s ease, height 0.2s ease' }}
@@ -548,10 +557,6 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 </div>
               </div>
               <div className="mb-4 rounded-xl border border-unjong-border bg-unjong-background p-3">
-                <div className="mb-2 flex items-baseline justify-between">
-                  <span className="text-xs text-unjong-muted">현재가</span>
-                  <span className="text-base font-bold tabular-nums text-unjong-primary">{selectedStock.price ? formatPrice(selectedStock.price, 'KR') : '—'}</span>
-                </div>
                 <div className="grid grid-cols-3 gap-x-2 gap-y-2.5">
                   {([
                     ['1일전', selectedStock.changePercent],
@@ -572,7 +577,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 href={`/stock/${selectedStock.symbol}`}
                 className="mb-3 flex items-center justify-center gap-1.5 rounded-lg bg-unjong-primary py-2.5 text-sm font-semibold text-white active:opacity-90"
               >
-                TRAI — 기법별 전망
+                <TLensLogo size={16} color="#2DD4BF" /> AI 렌즈
               </a>
               <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
               <BrokerRanking hideHeader />

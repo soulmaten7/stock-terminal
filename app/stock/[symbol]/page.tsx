@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LENS_COPY } from '@/lib/lensCopy';
+import { AiLensBadge } from '@/components/AiLensBadge';
 import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';
 
 type LensRead = {
@@ -567,6 +568,7 @@ const H_SUB: Record<string, string> = { short: '며칠~주', mid: '수개월', l
 
 export default function StockLensPage() {
   const params = useParams();
+  const router = useRouter();
   const symbol = decodeURIComponent(String(params?.symbol || ''));
   const isKR = /^\d{6}(\.(KS|KQ))?$/i.test(symbol); // KR 6자리(±.KS/.KQ) → DART 공시 층
   const [data, setData] = useState<LensResp | null>(null);
@@ -673,11 +675,11 @@ export default function StockLensPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <Link href="/" className="text-sm text-unjong-muted hover:text-unjong-accent">← 홈</Link>
+      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="text-sm text-unjong-muted hover:text-unjong-accent">← 뒤로</button>
 
       <div className="mt-3 max-w-4xl">
         <div className="mb-1.5 flex items-center gap-2">
-          <span className="rounded-md bg-unjong-primary px-2 py-0.5 text-[11px] font-bold tracking-wide text-white">AI LENS</span>
+          <AiLensBadge pill />
           <span className="text-[11px] text-unjong-muted">검증된 기법으로 이 종목을 읽는 여러 관점</span>
         </div>
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
