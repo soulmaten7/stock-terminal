@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchStockNews } from '@/lib/stockNews';
 import { getDartCorpName } from '@/lib/dart';
+import { fetchYahooName } from '@/lib/lensCompute';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -17,7 +18,7 @@ const SYSTEM =
   '(C) 가격·방향 전망: 오를 것·내릴 것·상승 전망·하락 전망·강세 전망·~할 것으로 보인다·~으로 예상된다·~이 기대된다. ' +
   '(D) 투자심리·기관포지션 변동만 있는 뉴스: 기관이 주식을 매입/매도했다는 보고 자체(실적/공시 사건 없이 포지션만). ' +
   '위 유형만 있는 헤드라인은 통째로 무시. 서로 다른 기사·회사의 내용을 하나로 잇거나 인과관계로 엮지 말고, 각 사실은 개별 헤드라인에서 확인되는 그대로만 쓰세요(불확실한 연결은 생략). 구체 사건이 하나도 없으면 summary를 빈 문자열("")로 두세요. ' +
-  '해요체 2~3문장. 태그는 사건 토픽만(예: 실적·신제품·계약·인사·소송·규제) — 주가·목표주가·전망·투자자관심 태그 금지. ' +
+  'summary는 반드시 한국어로 씁니다 — 헤드라인이 영어·일본어여도 한국어로 옮겨서. 해요체 2~3문장. 태그도 한국어. 태그는 사건 토픽만(예: 실적·신제품·계약·인사·소송·규제) — 주가·목표주가·전망·투자자관심 태그 금지. ' +
   'JSON만 출력: {"summary":"...","tags":["...","..."]}';
 
 export async function GET(req: NextRequest) {
@@ -31,12 +32,15 @@ export async function GET(req: NextRequest) {
     .from('news_briefs').select('summary_ko, tags').eq('symbol', symbol).eq('as_of', today).maybeSingle();
   if (hit?.summary_ko) return NextResponse.json({ summary: hit.summary_ko, tags: hit.tags || [], cached: true });
 
-  // KR(6자리)이면 한글 종목명 + 한국 로케일 뉴스, 그 외는 영어 (US 코드 그대로, 소스만 교체)
+  // 국가별 뉴스 소스: KR=한글명·ko, JP=일본명·ja, 그 외=영어 (US 코드 그대로·소스만 교체)
   const code6 = symbol.replace(/\.(KS|KQ)$/i, '');
   const krName = /^\d{6}$/.test(code6) ? await getDartCorpName(code6) : null;
-  const label = krName || symbol;
+  const jpName = !krName && /\.T$/i.test(symbol) ? await fetchYahooName(symbol) : null;
+  const label = krName || jpName || symbol;
   const news = krName
     ? await fetchStockNews(krName, 8, 'ko')
+    : jpName
+    ? await fetchStockNews(jpName, 8, 'ja')
     : await fetchStockNews(`${symbol} stock`, 8);
   if (!news.length) return NextResponse.json({ summary: null, tags: [] });
 
@@ -51,7 +55,7 @@ export async function GET(req: NextRequest) {
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: SYSTEM },
-        { role: 'user', content: `${label} 최근 뉴스 헤드라인:\n${headlines}` },
+        { role: 'user', content: `오늘은 ${today}입니다. 아래는 ${label} 관련 뉴스 헤드라인입니다. 규칙: (1) summary·tags 반드시 한국어(영어·일본어 헤드라인이어도 한국어로 옮겨서). (2) 최근(약 2개월 이내) 사건만 — 명시된 과거 연도(예: 2023년)의 실적·수치 등 오래된 내용은 제외. (3) 구체 사건 없으면 summary 빈 문자열.\n\n${headlines}` },
       ],
       max_tokens: 320,
       temperature: 0.2,
@@ -66,6 +70,35 @@ export async function GET(req: NextRequest) {
     summary = (p.summary || '').trim();
     tags = Array.isArray(p.tags) ? p.tags.slice(0, 4).map((t: unknown) => String(t)) : [];
   } catch { /* 파싱 실패 = 요약 없음 */ }
+  if (!summary) return NextResponse.json({ summary: null, tags: [] });
+
+  // 후처리1: 요약이 한국어가 아니면 한국어로 번역(야후 영어 상호 → 영어 기사가 잡히는 케이스 방어)
+  if (!/[가-힣]/.test(summary)) {
+    try {
+      const tr = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: '다음을 자연스러운 한국어 뉴스체(해요체)로 옮깁니다. 내용 추가·의견 금지, 사실만.' },
+            { role: 'user', content: summary },
+          ],
+          max_tokens: 320, temperature: 0.2,
+        }),
+        signal: AbortSignal.timeout(20000),
+      });
+      if (tr.ok) { const t = (((await tr.json()).choices?.[0]?.message?.content) || '').trim(); if (/[가-힣]/.test(t)) summary = t; }
+    } catch { /* 번역 실패 시 원문 유지 */ }
+  }
+
+  // 후처리2: 작년 이전 연도(예: 2023) 언급 문장 제거 — 구글이 옛 기사를 최근으로 재순환시키는 것 방어(결정론)
+  const yrCut = new Date().getFullYear() - 1;
+  summary = summary
+    .split(/(?<=[.!?。])\s+/)
+    .filter((s) => { const ys = s.match(/20\d\d/g); return !ys || !ys.some((y) => parseInt(y, 10) < yrCut); })
+    .join(' ')
+    .trim();
   if (!summary) return NextResponse.json({ summary: null, tags: [] });
 
   await sb.from('news_briefs').upsert(

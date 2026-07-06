@@ -2,8 +2,8 @@
 // 여기선 헤드라인만 가져온다(LLM 요약은 라우트). 프레임워크 무관.
 export type Headline = { title: string; date: string; source: string };
 
-export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'ko' = 'en'): Promise<Headline[]> {
-  const loc = locale === 'ko' ? 'hl=ko&gl=KR&ceid=KR:ko' : 'hl=en-US&gl=US&ceid=US:en';
+export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'ko' | 'ja' = 'en'): Promise<Headline[]> {
+  const loc = locale === 'ko' ? 'hl=ko&gl=KR&ceid=KR:ko' : locale === 'ja' ? 'hl=ja&gl=JP&ceid=JP:ja' : 'hl=en-US&gl=US&ceid=US:en';
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&${loc}`;
   try {
     const r = await fetch(url, {
@@ -13,12 +13,15 @@ export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'k
     if (!r.ok) return [];
     const xml = await r.text();
     const strip = (s: string) => s.replace(/<!\[CDATA\[|\]\]>/g, '').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
+    const cutoff = Date.now() - 60 * 86400000; // 최근성: pubDate 60일 넘은 오래된 기사 제외(과거 기사 재부상 방지)
     const out: Headline[] = [];
     for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
       const b = m[1];
       const title = strip(b.match(/<title>([\s\S]*?)<\/title>/)?.[1] || '');
       const date = (b.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1] || '').trim();
       const source = strip(b.match(/<source[^>]*>([\s\S]*?)<\/source>/)?.[1] || '');
+      const ts = date ? Date.parse(date) : NaN;
+      if (Number.isFinite(ts) && ts < cutoff) continue; // 오래된 기사 스킵
       if (title) out.push({ title, date, source });
       if (out.length >= limit) break;
     }

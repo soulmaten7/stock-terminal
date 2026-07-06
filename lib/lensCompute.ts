@@ -21,6 +21,16 @@ export type SymbolLenses = {
 
 // 심볼 1개 → 7팩터(모멘텀·저변동·기술·밸류·퀄리티·자산성장) + F-Score.
 // 야후 3콜(chart 400일 · quote · fundamentalsTimeSeries 6년). 부분 실패해도 가능한 렌즈는 계산(안전).
+// 종목의 야후 표시명(shortName·없으면 longName). R3 일본 뉴스 검색어용(일본 상호가 오면 그대로 사용).
+export async function fetchYahooName(symbol: string): Promise<string | null> {
+  try {
+    const q = await yf.quote(symbol);
+    return (q as { shortName?: string }).shortName || (q as { longName?: string }).longName || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function computeSymbolLenses(symbol: string, locale: Locale = "ko"): Promise<SymbolLenses> {
   const period1 = new Date(Date.now() - 400 * 24 * 60 * 60 * 1000);
   // KR 보드 6자리 코드(예: 005930) → 야후 심볼 해석(.KS 우선, 실패 시 .KQ). 그 외(NVDA·7203.T·0700.HK)는 그대로.
