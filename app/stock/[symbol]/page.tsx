@@ -327,6 +327,36 @@ function sevDot(sev: string): string {
 }
 
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
+// R3: 종목 최근 뉴스 요약 + 중립 토픽 태그(지연·조건부·헤드라인 없으면 숨김). 뉴스=사실 브리핑, 감성 점수 아님.
+function StockNewsBrief({ symbol }: { symbol: string }) {
+  const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
+  const [state, setState] = useState<'loading' | 'done' | 'hide'>('loading');
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/news-brief?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.summary) { setD({ summary: j.summary, tags: j.tags || [] }); setState('done'); } else setState('hide'); })
+      .catch(() => { if (alive) setState('hide'); });
+    return () => { alive = false; };
+  }, [symbol]);
+  if (state === 'hide') return null;
+  return (
+    <div className="mt-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <Sparkles size={13} className="text-unjong-accent" />
+        <span className="text-[13px] font-bold text-unjong-accent">최근 뉴스</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">AI · 사실만</span>
+      </div>
+      {state === 'loading' || !d
+        ? <p className="text-[12px] text-unjong-muted">뉴스 읽는 중…</p>
+        : (<>
+            <p className="text-[13px] leading-relaxed text-unjong-primary">{d.summary}</p>
+            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((t, i) => <span key={i} className="rounded-full border border-unjong-border bg-white px-2 py-0.5 text-[10px] text-unjong-muted">{t}</span>)}</div> : null}
+          </>)}
+    </div>
+  );
+}
+
 // R2: 종목 브리핑(지연 로드·하루 1회 캐시). LLM이 결정론 판정+공시 사실로 '핵심 긴장+지켜볼 것'을 1문단 — 예측·판정 아님.
 function StockBrief({ symbol }: { symbol: string }) {
   const [brief, setBrief] = useState('');
@@ -604,6 +634,7 @@ export default function StockLensPage() {
           <StockBrief symbol={symbol} />
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
           <EventLayer events={events} symbol={symbol} />
+          <StockNewsBrief symbol={symbol} />
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
             const showFs = h === 'long' && !!(data && data.fscore);
