@@ -9,6 +9,7 @@ import MarketBoard from './MarketBoard';
 import UsMarketBoard from './UsMarketBoard';
 import JpMarketBoard from './JpMarketBoard';
 import CnMarketBoard from './CnMarketBoard';
+import VnMarketBoard from './VnMarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import SecFeed from './SecFeed';
@@ -20,11 +21,11 @@ type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
 
 const COUNTRIES: { code: Country; label: string }[] = [
-  { code: 'KR', label: '🇰🇷 한국' },
-  { code: 'US', label: '🇺🇸 미국' },
-  { code: 'JP', label: '🇯🇵 일본' },
-  { code: 'CN', label: '🇨🇳 중국' },
-  { code: 'VN', label: '🇻🇳 베트남' },
+  { code: 'KR', label: '한국' },
+  { code: 'US', label: '미국' },
+  { code: 'JP', label: '일본' },
+  { code: 'CN', label: '중국' },
+  { code: 'VN', label: '베트남' },
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
@@ -213,7 +214,7 @@ export default function ToolboxClient({
           ) : country === 'CN' ? (
             <CnMarketBoard isLoggedIn={isLoggedIn} />
           ) : (
-            <Placeholder emoji="🇻🇳" title="베트남 종목·상품 — 준비 중" desc="곧 제공됩니다" />
+            <VnMarketBoard isLoggedIn={isLoggedIn} />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (

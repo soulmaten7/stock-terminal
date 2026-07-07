@@ -1,0 +1,69 @@
+// 베트남 전종목(HOSE+HNX ~654) 1주~6개월 수익률 백그라운드 미리계산 → vn_stock_perf 테이블에 일괄 저장.
+// vn-list가 이 값을 조인해 내려줌(요청 시점 lazy chart 호출 제거). 크론(/api/cron/vn-perf)이 하루 1회 호출.
+import YahooFinance from "yahoo-finance2";
+import { createAdminClient } from "./supabase/admin";
+import symbols from "../data/vn_symbols.json";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
+
+type Sym = { sym: string; name: string; market: string };
+const STOCK_SYMS: string[] = (symbols as Sym[]).map((s) => s.sym);
+
+function ret(closes: number[], daysAgo: number): number | null {
+  if (closes.length < daysAgo + 1) return null;
+  const past = closes[closes.length - 1 - daysAgo];
+  const now = closes[closes.length - 1];
+  if (!past || !now) return null;
+  return (now / past - 1) * 100;
+}
+
+async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(arr.length);
+  let idx = 0;
+  async function worker() {
+    while (idx < arr.length) {
+      const cur = idx++;
+      out[cur] = await fn(arr[cur]);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, arr.length) }, () => worker()));
+  return out;
+}
+
+type PerfRow = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
+
+export async function computeVnPerf(): Promise<{ ok: true; computed: number; at: string }> {
+  const period1 = new Date(Date.now() - 280 * 24 * 60 * 60 * 1000);
+
+  const results = await mapLimit(STOCK_SYMS, 12, async (sym): Promise<PerfRow | null> => {
+    try {
+      const ch = await yf.chart(sym, { period1, interval: "1d" });
+      const quotes = (ch.quotes ?? []) as Array<{ close: number | null }>;
+      const closes = quotes
+        .map((q) => q.close)
+        .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
+      if (closes.length < 6) return null;
+      return {
+        symbol: sym,
+        r1w: ret(closes, 5),
+        r1m: ret(closes, 21),
+        r3m: ret(closes, 63),
+        r6m: ret(closes, 126),
+      };
+    } catch {
+      return null;
+    }
+  });
+
+  const rows = results.filter((r): r is PerfRow => r !== null);
+  const at = new Date().toISOString();
+  const payload = rows.map((r) => ({ ...r, updated_at: at }));
+
+  const sb = createAdminClient();
+  for (let i = 0; i < payload.length; i += 500) {
+    const { error } = await sb.from("vn_stock_perf").upsert(payload.slice(i, i + 500), { onConflict: "symbol" });
+    if (error) throw error;
+  }
+
+  return { ok: true, computed: payload.length, at };
+}
