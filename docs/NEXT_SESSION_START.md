@@ -1,7 +1,8 @@
 <!-- 2026-07-07 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-07 (최신) — STEP 635~639 (HEAD `aa525a5`): 🔍 한국어 SEO 1차 완결 — 종목페이지 SSR·사이트맵·구조화데이터.**
+> 🆕 **2026-07-07 (최신) — STEP 635~643 (HEAD `6c5e9d7`): 🔍 한국어 SEO 완결 — 종목 SSR·사이트맵·구조화데이터 + 구글·네이버 서치엔진 등록 + 해외종목 한글명 121종.**
+> - **641·642**: 구글 서치콘솔 + 네이버 서치어드바이저 인증(`layout.tsx verification`) + sitemap 제출(구글 19,983 URL 성공). **643**: 해외종목 한글명(애플·테슬라·도요타·텐센트, `resolveStockName` 오버라이드·영문 병기·META 등 사이트맵 합류). **▶ 다음=한국어 광고 설정.**
 > - **635 종목 서버컴포넌트 (`ff7f95d`)**: `generateMetadata`(종목명 유니크 title/desc/canonical/OG)·`lib/stockName.ts`(KR=`kr_stock_snapshot`·해외=번들 JSON)·h1 SSR 이름주입·JSON-LD(Breadcrumb+Corporation). page.tsx→`StockLensClient.tsx`.
 > - **636 사이트맵 (`58e89ec`)**: 정적5→**약 21,800 URL**(KR 0.7·해외 0.5). **637 홈 (`0046c2c`)**: Organization+WebSite JSON-LD(SearchAction=종목 검색페이지 생기면).
 > - **638 라이브 검증→639 픽스 (`aa525a5`)**: 봇 초기HTML엔 회사명 정상이나 하이드레이션 후 `/api/lens`(야후 영문)가 h1을 "SamsungElec"로 덮음 → **h1 `initialName||data.name`로 네이티브 유지** + US "- Common Stock" 잡음 제거(`cleanUsName`). 재검증 통과(삼성전자·SK하이닉스·トヨタ·Apple Inc.).
