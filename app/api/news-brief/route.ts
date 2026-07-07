@@ -6,6 +6,7 @@ import { fetchYahooName } from '@/lib/lensCompute';
 import { getJpName } from '@/lib/jpName';
 import { getCnName } from '@/lib/cnName';
 import { KR_SEARCH_ALIAS } from '@/lib/krName';
+import { getVnName } from '@/lib/vnName';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -46,17 +47,21 @@ export async function GET(req: NextRequest) {
   // CN: 중국어 종목명(cn_names) 우선 → HK=번체(zh-HK)·A주=간체(zh-CN) 검색이 진짜 중국어 기사를 물게. 없으면 야후 영어명 폴백.
   const cnName = !krName && !jpName && /\.(HK|SS|SZ)$/i.test(symbol) ? ((await getCnName(symbol)) || (await fetchYahooName(symbol))) : null;
   const cnLocale: 'zh' | 'zh-hk' = /\.HK$/i.test(symbol) ? 'zh-hk' : 'zh';
-  const label = krName || jpName || cnName || symbol;
+  // VN: 베트남어 종목명(vn_names·vnstock HOSE) 우선 → vi 검색이 진짜 베트남어 기사를 물게. 없으면 야후 영문명 폴백.
+  const vnName = !krName && !jpName && !cnName && /\.VN$/i.test(symbol) ? ((await getVnName(symbol)) || (await fetchYahooName(symbol))) : null;
+  const label = krName || jpName || cnName || vnName || symbol;
   let news = krName
     ? await fetchStockNews(krName, 8, 'ko')
     : jpName
     ? await fetchStockNews(jpName, 8, 'ja')
     : cnName
     ? await fetchStockNews(cnName, 8, cnLocale)
+    : vnName
+    ? await fetchStockNews(vnName, 8, 'vi')
     : await fetchStockNews(`${symbol} stock`, 8);
-  // 로컬 로케일 뉴스가 0건이면 영어로 재시도 (중국 A주 등 로컬 검색 실패 대비 — 요약은 후처리가 한국어로 번역)
-  if (!news.length && (krName || jpName || cnName)) {
-    news = await fetchStockNews(`${krName || jpName || cnName} stock`, 8, 'en');
+  // 로컬 로케일 뉴스가 0건이면 영어로 재시도 (로컬 검색 실패 대비 — 요약은 후처리가 한국어로 번역)
+  if (!news.length && (krName || jpName || cnName || vnName)) {
+    news = await fetchStockNews(`${krName || jpName || cnName || vnName} stock`, 8, 'en');
   }
   if (!news.length) return NextResponse.json({ summary: null, tags: [] });
 
@@ -121,6 +126,7 @@ export async function GET(req: NextRequest) {
   // 숫자(+조/억/만/천 단위) 바로 뒤의 '원'만 치환 → '원가·원자재·원인' 등 일반어(앞이 숫자가 아님)는 건드리지 않음. KR 경로는 이 블록을 타지 않음.
   if (jpName) summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, '$1엔');
   else if (cnName) summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, '$1위안');
+  else if (vnName) summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, '$1동');
 
   await sb.from('news_briefs').upsert(
     { symbol, as_of: today, summary_ko: summary, tags, model: 'gpt-4o-mini' },

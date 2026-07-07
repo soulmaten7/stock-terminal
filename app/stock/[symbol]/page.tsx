@@ -597,7 +597,7 @@ export default function StockLensPage() {
   const [openLens, setOpenLens] = useState<Set<string>>(new Set());
   const lenses = data?.lenses ?? [];
   const lensFlags = buildLensFlags(events);
-  const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ)$/, '');
+  const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ|VN)$/, '');
   const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
   const renderCard = (L: LensRead) => {

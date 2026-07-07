@@ -2,8 +2,8 @@
 // 여기선 헤드라인만 가져온다(LLM 요약은 라우트). 프레임워크 무관.
 export type Headline = { title: string; date: string; source: string };
 
-export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'ko' | 'ja' | 'zh' | 'zh-hk' = 'en'): Promise<Headline[]> {
-  const loc = locale === 'ko' ? 'hl=ko&gl=KR&ceid=KR:ko' : locale === 'ja' ? 'hl=ja&gl=JP&ceid=JP:ja' : locale === 'zh' ? 'hl=zh-CN&gl=CN&ceid=CN:zh-Hans' : locale === 'zh-hk' ? 'hl=zh-HK&gl=HK&ceid=HK:zh-Hant' : 'hl=en-US&gl=US&ceid=US:en';
+export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'ko' | 'ja' | 'zh' | 'zh-hk' | 'vi' = 'en'): Promise<Headline[]> {
+  const loc = locale === 'ko' ? 'hl=ko&gl=KR&ceid=KR:ko' : locale === 'ja' ? 'hl=ja&gl=JP&ceid=JP:ja' : locale === 'zh' ? 'hl=zh-CN&gl=CN&ceid=CN:zh-Hans' : locale === 'zh-hk' ? 'hl=zh-HK&gl=HK&ceid=HK:zh-Hant' : locale === 'vi' ? 'hl=vi&gl=VN&ceid=VN:vi' : 'hl=en-US&gl=US&ceid=US:en';
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&${loc}`;
   try {
     const r = await fetch(url, {
