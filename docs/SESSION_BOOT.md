@@ -5,7 +5,13 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-07 (최신) · STEP 635~643 완료 (HEAD `6c5e9d7`) — 🔍 한국어 SEO 완결: 종목 SSR·사이트맵·구조화데이터 + 구글·네이버 등록 + 해외 한글명 121종.**
+> 🟢 **2026-07-07 (최신) · STEP 645~648 완료 — 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
+> - **645 매매처 DB 배선(`0023fda`)**: `brokers` 테이블(KR·US·JP·VN·GB 75행·MCP 생성) 화면 배선(`/api/brokers?region=KR`+`BrokerRanking`, 정적 lib/brokers.ts는 폴백). **언어권 기준**(플레이북 §4-3)—한국어=전탭 KR증권사(일본탭 한국증권사=버그 아님·의도)·CN만 미보유(중국어판 시).
+> - **646~647 JP 공시=EDINET(`0ea7189`·`5d9e90a`)**: "무료소스 없어 보류"=룰위반 → **EDINET(금융청 무료 공식 API·키 env)**로 청산. `jp_disclosures`(마이그 039)+`lib/edinet.ts`(7203.T→72030)+크론 미리계산(회사필터 없어 날짜별). **라이브 12,466건·2,148개사·臨時報告書 2,260건**·도요타·소니 有報/臨時報告書 확인. dedup(doc_id) 픽스로 45일 백필 완결.
+> - **648 헤더 로고→홈 픽스**: `useHomeReset` 미소비+국가/탭 persist 탓 → resetHome=국가KR+localStorage탭market, ToolboxClient가 n 구독해 탭=종목·상품·서브=모아보기+콘텐츠 리마운트(보드=주식). 로고/'주식'→한국탭·종목·상품·주식.
+> - **⚠️ env 교훈**: `.env.local`=로컬 전용→배포 안 됨. 프로덕션은 Vercel 대시보드 env 등록+**재배포** 필수(배포 시점에 구워짐). **▶ 다음=JP STEP 649(JpEventLayer+R1 UI) · 완전성 GB(RNS)→VN→CN · 광고.**
+>
+> 🟢 **2026-07-07 · STEP 635~643 완료 (HEAD `6c5e9d7`) — 🔍 한국어 SEO 완결: 종목 SSR·사이트맵·구조화데이터 + 구글·네이버 등록 + 해외 한글명 121종.**
 > - **641·642 검색엔진 등록**: 구글 서치콘솔 + 네이버 서치어드바이저 소유권 인증(`layout.tsx verification`) + sitemap.xml 양쪽 제출(구글 19,983 URL 성공). **643 해외종목 한글명 121종**(`data/foreign_ko_names.json`·`resolveStockName` 오버라이드) — 애플·테슬라·엔비디아·도요타·텐센트, 영문 병기, META·BABA 사이트맵 합류. 라이브 검증 통과. **▶ 다음=한국어 광고 설정.**
 > - **635 종목 서버컴포넌트 (`ff7f95d`)**: 봇 실측 진단(클라렌더→봇엔 코드만·회사명 없음·메타 루트공통·JSON-LD 0·sitemap 정적5) → `generateMetadata`(종목명 유니크 title/desc/canonical/OG) + `lib/stockName.ts`(KR=`kr_stock_snapshot`·해외=번들 JSON) + h1 SSR 이름주입 + JSON-LD(Breadcrumb+Corporation). page.tsx→`StockLensClient.tsx`.
 > - **636 사이트맵 (`58e89ec`)**: 정적5→**약 21,800 URL**(KR 0.7·해외 19,038 0.5·revalidate 1d). **637 홈 (`0046c2c`)**: Organization+WebSite JSON-LD(SearchAction=종목 검색페이지 생기면).

@@ -1,14 +1,16 @@
 <!-- 2026-07-07 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-07 (최신) — STEP 635~643 (HEAD `6c5e9d7`): 🔍 한국어 SEO 완결 — 종목 SSR·사이트맵·구조화데이터 + 구글·네이버 서치엔진 등록 + 해외종목 한글명 121종.**
+> 🆕 **2026-07-07 (최신) — STEP 645~648: 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
+> - **645(`0023fda`)** 매매처 정적→DB(`brokers` 75행·`/api/brokers?region=KR`·언어권 기준·CN만 미보유). **646~647(`0ea7189`·`5d9e90a`)** JP 공시=EDINET(무료 공식·키 env)·`jp_disclosures`+크론 미리계산·**라이브 12,466건·2,148개사·臨時報告書 2,260**·도요타/소니 확인·dedup 픽스로 백필 완결.
+> - **648** 헤더 로고→홈(한국탭·종목·상품·주식) 리셋 픽스(resetHome 국가KR+탭market·ToolboxClient n 구독). **⚠️ env 교훈: .env.local≠배포, Vercel 대시보드 등록+재배포 필요.** **▶ 다음=JP STEP 649(JpEventLayer+R1 UI)·완전성 GB(RNS)→VN→CN·광고.**
 > - **641·642**: 구글 서치콘솔 + 네이버 서치어드바이저 인증(`layout.tsx verification`) + sitemap 제출(구글 19,983 URL 성공). **643**: 해외종목 한글명(애플·테슬라·도요타·텐센트, `resolveStockName` 오버라이드·영문 병기·META 등 사이트맵 합류). **▶ 다음=한국어 광고 설정.**
 > - **635 종목 서버컴포넌트 (`ff7f95d`)**: `generateMetadata`(종목명 유니크 title/desc/canonical/OG)·`lib/stockName.ts`(KR=`kr_stock_snapshot`·해외=번들 JSON)·h1 SSR 이름주입·JSON-LD(Breadcrumb+Corporation). page.tsx→`StockLensClient.tsx`.
 > - **636 사이트맵 (`58e89ec`)**: 정적5→**약 21,800 URL**(KR 0.7·해외 0.5). **637 홈 (`0046c2c`)**: Organization+WebSite JSON-LD(SearchAction=종목 검색페이지 생기면).
 > - **638 라이브 검증→639 픽스 (`aa525a5`)**: 봇 초기HTML엔 회사명 정상이나 하이드레이션 후 `/api/lens`(야후 영문)가 h1을 "SamsungElec"로 덮음 → **h1 `initialName||data.name`로 네이티브 유지** + US "- Common Stock" 잡음 제거(`cleanUsName`). 재검증 통과(삼성전자·SK하이닉스·トヨタ·Apple Inc.).
 > - **교훈**: 클라렌더=봇 빈페이지 → 서버컴포넌트+generateMetadata가 SEO 핵심. 야후 lens명 vs SSR 네이티브명 불일치 → SSR 우선. ▶ **다음=구글 서치콘솔 sitemap 제출 등 SEO 마무리 → 한국어 광고 설정.**
 
-> 🆕 **2026-07-06 (최신) — STEP 622~630 (HEAD `3f38f33`): 🇻🇳 베트남 탭 + 🇬🇧 영국 탭 완성(빠짐없이) + 완전성 원칙.**
+> 🆕 **2026-07-06 — STEP 622~630 (HEAD `3f38f33`): 🇻🇳 베트남 탭 + 🇬🇧 영국 탭 완성(빠짐없이) + 완전성 원칙.**
 > - **🇻🇳 VN (623~627)**: 링크49·배관(vi·₫)·보드(HOSE 387·야후 `.VN`·vnstock 유니버스)·**지수바 VN-Index/VN30(VnDirect 대체·야후 미커버)**·매매처13·R3(`vn_names`·vi·3중 검수). 东方財富/HNX 미커버→텐센트/HOSE-only.
 > - **🇬🇧 GB (628~630)**: 링크46·배관(en-GB·펜스`p`)·보드(FTSE 350·349·야후 `.L`·Wikipedia 유니버스+영문명)·**지수바 FTSE 100/250**·매매처12·R3(`gb_names`·en-GB·3중 검수).
 > - **🔴 완전성 원칙 못박음**(CLAUDE.md+플레이북 §0): 새 탭 착수 전 플레이북 재독·MVP≠축소·**DoD 전 항목(지수바·매매처) 빠짐없이**·소스 막히면 대체.

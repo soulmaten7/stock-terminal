@@ -1,6 +1,14 @@
 <!-- 2026-07-07 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-07 — STEP 645~648 — 완전성 청산①(매매처 DB)·②-JP(EDINET 공시)·헤더 홈 픽스 ✅
+
+- **645 매매처 정적→DB 배선 (`0023fda`)**: `brokers` 테이블(MCP 생성·KR20·US17·JP13·VN13·GB12=75행)을 화면에 배선 — `/api/brokers?region=KR` + `BrokerRanking` 테이블 조회(정적 `lib/brokers.ts`는 폴백). **언어권 기준 설계**(플레이북 §4-3): 한국어=전 탭에 KR 증권사, 언어 스위처 생기면 region만 교체(일본탭에 한국 증권사=버그 아님·의도). CN만 미보유(중국어판 시 추가). 라이브 검증(KR20·US Schwab/Fidelity·JP SBI/楽天).
+- **646~647 JP 공시 데이터층 = EDINET (`0ea7189`·`5d9e90a`)**: 예전 "무료 소스 없어 보류"=완전성 룰 위반 → **EDINET(금융청 무료 공식 API·키=env)**로 제대로 청산. `jp_disclosures` 테이블(MCP·마이그 039) + `lib/edinet.ts`(secCodeOf 7203.T→72030) + 크론 `/api/cron/jp-disclosures`(회사필터 없어 날짜별 긁어 미리계산) + vercel.json 크론. **라이브 검증: 12,466건·2,148개사·중대공시(臨時報告書·current_report_reason) 2,260건**, 도요타(72030)·소니(67580) 有報(≈10-K)·臨時報告書(≈8-K) 확인. dedup(doc_id) 픽스로 45일 전체 백필 완결(ON CONFLICT 방지).
+- **⚠️ 배포 교훈**: `.env.local`=로컬 전용, 배포엔 안 올라감 → 프로덕션은 **Vercel 대시보드에 env 등록 + 재배포**해야 적용(env는 배포 시점에 구워짐). EDINET 등록=키 팝업(팝업허용 필수)·해외 SMS는 +82.
+- **648 헤더 로고→홈 리셋 픽스**: 로고/'주식' 클릭 시 무조건 홈(언어권 기본=한국어→한국탭·종목·상품·주식)으로. 원인=`useHomeReset`이 아무 데서도 소비 안 됨 + 국가(`countryStore` persist)·탭(localStorage) 유지. → `homeResetStore.reset`=국가 KR+localStorage 탭 market 리셋, `ToolboxClient`가 n 구독→탭=종목·상품·서브=모아보기 + 콘텐츠 div 리마운트(보드 서브필터=주식 초기화).
+- ▶ **다음**: JP STEP 649 = JpEventLayer + R1 원문 요약(종목페이지 UI) · 완전성 청산 GB(RNS)→VN→CN · 광고.
+
 ## 2026-07-07 — STEP 640~643 + 검색엔진 등록 — 🔍 한국어 SEO 완결 ✅
 
 - **640 세션 문서 갱신 (`21a87d9`)**: STEP 635~639 반영·4문서 날짜 07-07.

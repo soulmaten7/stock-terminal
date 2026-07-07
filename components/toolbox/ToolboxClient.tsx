@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import LinkCard, { type LinkItem } from './LinkCard';
 import AdSlotRow from './AdSlotRow';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
@@ -17,6 +17,7 @@ import SecFeed from './SecFeed';
 import MacroFeed from './MacroFeed';
 import OfferingsFeed from './OfferingsFeed';
 import { useCountryStore, type Country } from '@/stores/countryStore';
+import { useHomeReset } from '@/stores/homeResetStore';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -137,6 +138,16 @@ export default function ToolboxClient({
   }, []);
   useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('feed'); }, [activeTab]);
 
+  // 헤더 로고/'주식' 클릭 → 홈 리셋. 국가는 store가 KR로, 여기선 탭=종목·상품·서브=모아보기로.
+  // (첫 마운트는 건너뜀. 보드 서브필터[주식/ETF…]는 아래 콘텐츠 div가 n으로 리마운트되며 주식으로 초기화.)
+  const homeResetN = useHomeReset((s) => s.n);
+  const homeMounted = useRef(false);
+  useEffect(() => {
+    if (!homeMounted.current) { homeMounted.current = true; return; }
+    setActiveTab('market');
+    setFeedSub('feed');
+  }, [homeResetN]);
+
   // 탭 = TAB_ORDER 순서. 현재 국가에 콘텐츠가 있는 탭만 표시.
   // - 특수탭(종목·상품·유튜브·리딩방) = 라이브 데이터(KRX·유튜브·금감원)라 한국 전용
   // - 카테고리 탭 = 해당 국가에 큐레이션 링크가 있을 때만 → 미국 '준비 중' 벽 제거(깨끗한 링크 허브)
@@ -212,8 +223,8 @@ export default function ToolboxClient({
         ))}
       </div>
 
-      {/* 내용 */}
-      <div className="p-3 sm:p-4">
+      {/* 내용 — 홈 리셋(n) 시 리마운트해 보드 서브필터(주식/ETF…)까지 초기화 */}
+      <div className="p-3 sm:p-4" key={`content-${homeResetN}`}>
         {activeTab === 'market' ? (
           country === 'KR' ? (
             <MarketBoard isLoggedIn={isLoggedIn} />
