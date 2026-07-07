@@ -32,10 +32,19 @@ export async function GET(req: NextRequest) {
   }
   if (!rows.length) return NextResponse.json({ ok: true, upserted: 0, days });
 
+  // doc_id 중복 제거 — 같은 문서가 여러 날짜 리스트에 나올 수 있어, 한 upsert 배치 내 PK 충돌(ON CONFLICT 2회) 방지.
+  const seen = new Set<string>();
+  const uniq = rows.filter((r) => {
+    const id = String(r.doc_id);
+    if (seen.has(id)) return false;
+    seen.add(id);
+    return true;
+  });
+
   const sb = createAdminClient();
   let upserted = 0;
-  for (let i = 0; i < rows.length; i += 500) {
-    const chunk = rows.slice(i, i + 500);
+  for (let i = 0; i < uniq.length; i += 500) {
+    const chunk = uniq.slice(i, i + 500);
     const { error } = await sb.from("jp_disclosures").upsert(chunk, { onConflict: "doc_id" });
     if (error) return NextResponse.json({ error: error.message, upserted }, { status: 500 });
     upserted += chunk.length;
