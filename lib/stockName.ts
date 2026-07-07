@@ -31,6 +31,17 @@ export function tickerOf(symbol: string): string {
   return symbol.replace(/\.(KS|KQ|T|HK|SS|SZ|VN|L)$/i, "");
 }
 
+// US 상장명 잡음 제거: "Apple Inc. - Common Stock" → "Apple Inc." (야후 lens명과 정합·제목 깔끔)
+function cleanUsName(n: string): string {
+  const c = n
+    .replace(/\s*[-–]?\s*Common Stock\s*$/i, "")
+    .replace(/\s*[-–]?\s*Common Shares\s*$/i, "")
+    .replace(/\s*[-–]?\s*Ordinary Shares\s*$/i, "")
+    .replace(/[,\s]+$/, "")
+    .trim();
+  return c || n;
+}
+
 export type StockNameInfo = { name: string; country: "KR" | "US" | "JP" | "CN" | "VN" | "GB" };
 
 // 심볼 하나의 표시명을 서버에서 해석. 없으면 null(호출부가 티커로 폴백).
@@ -68,7 +79,7 @@ export async function resolveStockName(symbol: string): Promise<StockNameInfo | 
   }
   if (/^[A-Z]{1,5}$/.test(s)) {
     const n = (_us ||= toMap(usSymbols as SymRow[])).get(s);
-    return n ? { name: n, country: "US" } : null;
+    return n ? { name: cleanUsName(n), country: "US" } : null;
   }
   return null;
 }

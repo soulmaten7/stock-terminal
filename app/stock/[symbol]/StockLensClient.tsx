@@ -683,7 +683,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <span className="text-[11px] text-unjong-muted">검증된 기법으로 이 종목을 읽는 여러 관점</span>
         </div>
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
-          <h1 className="text-xl font-bold text-unjong-primary">{data?.name || initialName || ticker}</h1>
+          <h1 className="text-xl font-bold text-unjong-primary">{initialName || data?.name || ticker}</h1>
           <span className="text-sm text-unjong-muted">{ticker}</span>
         </div>
         {data?.price != null ? (
