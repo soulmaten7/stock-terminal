@@ -1,6 +1,8 @@
 // 종목 아바타/로고 유틸 — 주요 종목은 실로고(favicon), 나머지는 레터 아바타 폴백.
 import cnLogoDomains from "@/data/cn_logo_domains.json";
 import jpLogoDomains from "@/data/jp_logo_domains.json";
+import vnLogoDomains from "@/data/vn_logo_domains.json";
+import gbLogoDomains from "@/data/gb_logo_domains.json";
 
 const PALETTE = [
   "#FEE2E2", "#FEF3C7", "#D1FAE5", "#DBEAFE",
@@ -187,6 +189,8 @@ const CN_DOMAIN_MAP: Record<string, string> = {
 const AUTO_DOMAINS: Record<string, string> = {
   ...(jpLogoDomains as Record<string, string>),
   ...(cnLogoDomains as Record<string, string>),
+  ...(vnLogoDomains as Record<string, string>),
+  ...(gbLogoDomains as Record<string, string>),
 };
 
 /** 실로고 URL (logo.dev). 미국=티커 자동, 국내=도메인 매핑. 없으면 null(→아바타). */
