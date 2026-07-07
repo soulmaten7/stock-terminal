@@ -31,6 +31,33 @@ type LinkRow = {
   display_order: number | null;
 };
 
+// 홈 구조화 데이터 — 구글이 '이 사이트=Trillion(트릴리언) 금융 정보 허브'라고 이해하도록.
+// Organization(발행처) + WebSite(사이트). 종목 검색 결과 페이지가 없어 SearchAction은 넣지 않음(가짜 마크업 금지).
+const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
+const HOME_JSONLD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${SITE_BASE}/#organization`,
+      name: "Trillion",
+      alternateName: ["트릴리언", "원트릴리언"],
+      url: SITE_BASE,
+      logo: `${SITE_BASE}/icon.svg`,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_BASE}/#website`,
+      name: "Trillion",
+      alternateName: "트릴리언",
+      url: SITE_BASE,
+      inLanguage: "ko-KR",
+      description: "흩어진 금융정보를 한곳에 모아 한눈에 — 시세·뉴스·공시·거시지표·ETF·공모주, 그리고 리딩방 검증까지.",
+      publisher: { "@id": `${SITE_BASE}/#organization` },
+    },
+  ],
+};
+
 export default async function HomePage() {
   const supabase = await createClient();
 
@@ -76,6 +103,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HOME_JSONLD) }} />
       <HomeIndexStrip />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <ToolboxClient initialCategories={categories} isLoggedIn={!!user} youtubeChannels={youtubeChannels} />
