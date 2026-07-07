@@ -399,6 +399,49 @@ function KrEventLayer({ symbol }: { symbol: string }) {
   );
 }
 
+// STEP 650: JP 공시 이벤트 층(EDINET·미리계산). US EventLayer(EDGAR)·KR KrEventLayer(DART)의 JP 짝.
+// 원문 = /api/jp-events/doc 프록시(키 서버측 PDF). R1 한국어 요약은 STEP 651.
+type JpEvent = { doc_id: string; title: string; date: string; reason: string | null; material: boolean; type_code: string | null };
+function JpEventLayer({ symbol }: { symbol: string }) {
+  const [events, setEvents] = useState<JpEvent[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/jp-events?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .catch(() => { if (alive) setLoaded(true); });
+    return () => { alive = false; };
+  }, [symbol]);
+  if (!loaded || !events.length) return null;
+  const fmtD = (s: string) => { const d = new Date(s); return isNaN(+d) ? s : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`; };
+  return (
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
+        <span className="text-[11px] text-unjong-muted">EDINET · 金融庁</span>
+      </div>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <ul className="mt-2.5 space-y-1.5">
+        {events.map((e, i) => (
+          <li key={i}>
+            <a href={`/api/jp-events/doc?docid=${encodeURIComponent(e.doc_id)}`} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
+              <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">중대</span>}</p>
+                {e.reason && <p className="mt-0.5 truncate text-[11px] text-unjong-muted">{e.reason}</p>}
+                <p className="mt-0.5 text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
+              </div>
+              <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 EDINET 원문(PDF)으로 가요.</p>
+    </div>
+  );
+}
+
 // R3: 종목 최근 뉴스 요약 + 중립 토픽 태그(지연·조건부·헤드라인 없으면 숨김). 뉴스=사실 브리핑, 감성 점수 아님.
 function StockNewsBrief({ symbol }: { symbol: string }) {
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
@@ -571,6 +614,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const router = useRouter();
   const symbol = decodeURIComponent(String(params?.symbol || ''));
   const isKR = /^\d{6}(\.(KS|KQ))?$/i.test(symbol); // KR 6자리(±.KS/.KQ) → DART 공시 층
+  const isJP = /^\d{4}\.T$/i.test(symbol); // JP 4자리.T → EDINET 공시 층
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
@@ -707,7 +751,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         <div className="mt-4 max-w-4xl">
           <StockBrief symbol={symbol} />
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
-          {isKR ? <KrEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
+          {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
           <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
