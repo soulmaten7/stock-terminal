@@ -30,7 +30,7 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
   return out;
 }
 
-type PerfRow = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
+type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
 
 export async function computeVnPerf(): Promise<{ ok: true; computed: number; at: string }> {
   const period1 = new Date(Date.now() - 280 * 24 * 60 * 60 * 1000);
@@ -45,6 +45,7 @@ export async function computeVnPerf(): Promise<{ ok: true; computed: number; at:
       if (closes.length < 6) return null;
       return {
         symbol: sym,
+        r1d: ret(closes, 1),
         r1w: ret(closes, 5),
         r1m: ret(closes, 21),
         r3m: ret(closes, 63),

@@ -90,10 +90,10 @@ export async function GET() {
 
   try {
     const sb = createAdminClient();
-    type P = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
+    type P = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
     const perf: P[] = [];
     for (let from = 0; from < 20000; from += 1000) {
-      const { data } = await sb.from("vn_stock_perf").select("symbol,r1w,r1m,r3m,r6m").range(from, from + 999);
+      const { data } = await sb.from("vn_stock_perf").select("symbol,r1d,r1w,r1m,r3m,r6m").range(from, from + 999);
       if (!data || data.length === 0) break;
       perf.push(...(data as P[]));
       if (data.length < 1000) break;
@@ -103,7 +103,7 @@ export async function GET() {
       for (const p of perf) map.set(p.symbol, p);
       for (const it of items) {
         const p = map.get(it.symbol);
-        if (p) { it.r1w = p.r1w; it.r1m = p.r1m; it.r3m = p.r3m; it.r6m = p.r6m; }
+        if (p) { it.r1w = p.r1w; it.r1m = p.r1m; it.r3m = p.r3m; it.r6m = p.r6m; if (p.r1d != null) it.changePercent = p.r1d; }
       }
     }
   } catch {
