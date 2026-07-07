@@ -10,6 +10,7 @@ import UsMarketBoard from './UsMarketBoard';
 import JpMarketBoard from './JpMarketBoard';
 import CnMarketBoard from './CnMarketBoard';
 import VnMarketBoard from './VnMarketBoard';
+import GbMarketBoard from './GbMarketBoard';
 import NewsFeed from './NewsFeed';
 import DartFeed from './DartFeed';
 import SecFeed from './SecFeed';
@@ -225,7 +226,7 @@ export default function ToolboxClient({
           ) : country === 'VN' ? (
             <VnMarketBoard isLoggedIn={isLoggedIn} />
           ) : (
-            <Placeholder emoji="🇬🇧" title="영국 종목·상품 — 준비 중" desc="곧 제공됩니다" />
+            <GbMarketBoard isLoggedIn={isLoggedIn} />
           )
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (
