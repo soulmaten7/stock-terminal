@@ -3,6 +3,7 @@ import cnLogoDomains from "@/data/cn_logo_domains.json";
 import jpLogoDomains from "@/data/jp_logo_domains.json";
 import vnLogoDomains from "@/data/vn_logo_domains.json";
 import gbLogoDomains from "@/data/gb_logo_domains.json";
+import krLogoDomains from "@/data/kr_logo_domains.json";
 
 const PALETTE = [
   "#FEE2E2", "#FEF3C7", "#D1FAE5", "#DBEAFE",
@@ -222,8 +223,8 @@ export function logoUrl(code: string): string | null {
       ? `https://img.logo.dev/${auto}?token=${LOGODEV_TOKEN}&size=128&retina=true`
       : `https://www.google.com/s2/favicons?sz=128&domain=${auto}`;
   }
-  // 국내: 6자리 → 도메인 매핑
-  const domain = DOMAIN_MAP[code];
+  // 국내: 6자리 → 손매핑(101·고품질) 우선, 없으면 DART hm_url 수집 도메인.
+  const domain = DOMAIN_MAP[code] || (krLogoDomains as Record<string, string>)[code];
   if (!domain) return null;
   return LOGODEV_TOKEN
     ? `https://img.logo.dev/${domain}?token=${LOGODEV_TOKEN}&size=128&retina=true`
