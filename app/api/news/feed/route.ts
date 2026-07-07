@@ -267,6 +267,22 @@ export async function GET(req: Request) {
     }
   }
 
+  // ── GB 분기(Google News, 영국·영어) — 번역 불필요 ──
+  if (market === "GB") {
+    const q = (new URL(req.url).searchParams.get("q") || "").trim();
+    const key = "GB:" + q;
+    const hit = cache.get(key);
+    if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
+    try {
+      const items = await googleNews(q || "FTSE 100 UK stock market", "en-GB", "GB", "GB:en");
+      const data = { items };
+      cache.set(key, { at: Date.now(), data });
+      return NextResponse.json(data);
+    } catch (e) {
+      return NextResponse.json({ items: [], error: String(e) });
+    }
+  }
+
   // ── KR 분기(네이버 검색 API) — 기존 그대로 ──
   const id = (process.env.NAVER_CLIENT_ID || "").trim();
   const secret = (process.env.NAVER_CLIENT_SECRET || "").trim();

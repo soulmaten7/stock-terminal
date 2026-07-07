@@ -17,13 +17,16 @@ function timeAgo(pub: string): string {
   return `${Math.floor(h / 24)}일 전`;
 }
 
-export default function NewsFeed({ query, title, country = 'KR' }: { query?: string; title?: string; country?: 'KR' | 'US' | 'JP' | 'CN' | 'VN' }) {
+export default function NewsFeed({ query, title, country = 'KR' }: { query?: string; title?: string; country?: 'KR' | 'US' | 'JP' | 'CN' | 'VN' | 'GB' }) {
   // US는 Yahoo ^GSPC RSS(키리스, query 무시). KR은 네이버 검색(query 사용).
   const isUs = country === 'US';
   const isJp = country === 'JP';
   const isCn = country === 'CN';
   const isVn = country === 'VN';
-  const url = isVn
+  const isGb = country === 'GB';
+  const url = isGb
+    ? '/api/news/feed?market=GB' + (query ? '&q=' + encodeURIComponent(query) : '')
+    : isVn
     ? '/api/news/feed?market=VN' + (query ? '&q=' + encodeURIComponent(query) : '')
     : isCn
     ? '/api/news/feed?market=CN' + (query ? '&q=' + encodeURIComponent(query) : '')
@@ -88,7 +91,7 @@ export default function NewsFeed({ query, title, country = 'KR' }: { query?: str
         ))}
       </ul>
 
-      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">{isCn ? '출처: Google News (중화권). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : isJp ? '출처: Google News (일본). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : isUs ? (query ? '출처: Google News. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : '출처: Yahoo Finance (S&P 500). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.') : '출처: 네이버 뉴스 검색. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.'}</p>
+      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">{isCn ? '출처: Google News (중화권). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : isJp ? '출처: Google News (일본). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : isGb ? '출처: Google News (영국). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : isUs ? (query ? '출처: Google News. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.' : '출처: Yahoo Finance (S&P 500). 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.') : '출처: 네이버 뉴스 검색. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.'}</p>
     </div>
   );
 }
