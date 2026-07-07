@@ -6,7 +6,7 @@ const CURRENCY: Record<string, { sym: string; pos: 'pre' | 'suf'; frac: number; 
   HK: { sym: 'HK$', pos: 'pre', frac: 2, locale: 'en-HK' },
   CN: { sym: '¥', pos: 'pre', frac: 2, locale: 'zh-CN' },
   VN: { sym: '₫', pos: 'suf', frac: 0, locale: 'vi-VN' },
-  GB: { sym: 'p', pos: 'suf', frac: 2, locale: 'en-GB' },
+  GB: { sym: 'p', pos: 'suf', frac: 0, locale: 'en-GB' },
 };
 
 export function formatPrice(v: number, country: string): string {
