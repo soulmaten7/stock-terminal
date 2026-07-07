@@ -402,6 +402,33 @@ function KrEventLayer({ symbol }: { symbol: string }) {
 // STEP 650: JP 공시 이벤트 층(EDINET·미리계산). US EventLayer(EDGAR)·KR KrEventLayer(DART)의 JP 짝.
 // 원문 = /api/jp-events/doc 프록시(키 서버측 PDF). R1 한국어 요약은 STEP 651.
 type JpEvent = { doc_id: string; title: string; date: string; reason: string | null; material: boolean; type_code: string | null };
+// R1-JP: EDINET 원문(CSV) AI 한국어 요약(지연·전역 캐시). KR KrFilingSummary의 JP 짝.
+function JpFilingSummary({ docid, symbol, nm }: { docid: string; symbol: string; nm: string }) {
+  const [text, setText] = useState('');
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  useEffect(() => {
+    let alive = true;
+    const q = new URLSearchParams({ docid, symbol, nm }).toString();
+    fetch('/api/jp-events/summary?' + q)
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [docid]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (state === 'error') return null; // 실패 시 조용히 숨김(원문 PDF 링크는 위에)
+  return (
+    <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
+      <div className="mb-1 flex items-center gap-1">
+        <Sparkles size={11} className="text-unjong-accent" />
+        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+      </div>
+      {state === 'loading'
+        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+    </div>
+  );
+}
 function JpEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<JpEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -434,6 +461,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
+            <JpFilingSummary docid={e.doc_id} symbol={symbol} nm={e.title} />
           </li>
         ))}
       </ul>
