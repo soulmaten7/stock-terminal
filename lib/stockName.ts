@@ -10,6 +10,7 @@ import jpSymbols from "@/data/jp_symbols.json";
 import cnSymbols from "@/data/cn_symbols.json";
 import vnSymbols from "@/data/vn_symbols.json";
 import gbSymbols from "@/data/gb_symbols.json";
+import foreignKo from "@/data/foreign_ko_names.json";
 
 type SymRow = { sym: string; name: string };
 
@@ -42,7 +43,11 @@ function cleanUsName(n: string): string {
   return c || n;
 }
 
-export type StockNameInfo = { name: string; country: "KR" | "US" | "JP" | "CN" | "VN" | "GB" };
+export type StockNameInfo = { name: string; en?: string; country: "KR" | "US" | "JP" | "CN" | "VN" | "GB" };
+
+// 해외종목 한글명 오버라이드(서학개미 검색용) — 티커→한글명. 예: TSLA→테슬라, 7203.T→도요타.
+// JSON에 없는 종목(META·BABA 등)도 여기 있으면 한글명 반환.
+const FK = foreignKo as Record<string, string>;
 
 // 심볼 하나의 표시명을 서버에서 해석. 없으면 null(호출부가 티커로 폴백).
 export async function resolveStockName(symbol: string): Promise<StockNameInfo | null> {
@@ -61,25 +66,33 @@ export async function resolveStockName(symbol: string): Promise<StockNameInfo | 
     return null;
   }
 
+  const ko = FK[s]; // 해외종목 한글명 오버라이드 (있으면 표시명 = 한글, 원어명은 en으로 보존)
+
   if (/\.T$/i.test(symbol)) {
-    const n = (_jp ||= toMap(jpSymbols as SymRow[])).get(s);
-    return n ? { name: n, country: "JP" } : null;
+    const en = (_jp ||= toMap(jpSymbols as SymRow[])).get(s);
+    if (ko) return { name: ko, en: en || undefined, country: "JP" };
+    return en ? { name: en, country: "JP" } : null;
   }
   if (/\.(HK|SS|SZ)$/i.test(symbol)) {
-    const n = (_cn ||= toMap(cnSymbols as SymRow[])).get(s);
-    return n ? { name: n, country: "CN" } : null;
+    const en = (_cn ||= toMap(cnSymbols as SymRow[])).get(s);
+    if (ko) return { name: ko, en: en || undefined, country: "CN" };
+    return en ? { name: en, country: "CN" } : null;
   }
   if (/\.VN$/i.test(symbol)) {
-    const n = (_vn ||= toMap(vnSymbols as SymRow[])).get(s);
-    return n ? { name: n, country: "VN" } : null;
+    const en = (_vn ||= toMap(vnSymbols as SymRow[])).get(s);
+    if (ko) return { name: ko, en: en || undefined, country: "VN" };
+    return en ? { name: en, country: "VN" } : null;
   }
   if (/\.L$/i.test(symbol)) {
-    const n = (_gb ||= toMap(gbSymbols as SymRow[])).get(s);
-    return n ? { name: n, country: "GB" } : null;
+    const en = (_gb ||= toMap(gbSymbols as SymRow[])).get(s);
+    if (ko) return { name: ko, en: en || undefined, country: "GB" };
+    return en ? { name: en, country: "GB" } : null;
   }
   if (/^[A-Z]{1,5}$/.test(s)) {
-    const n = (_us ||= toMap(usSymbols as SymRow[])).get(s);
-    return n ? { name: cleanUsName(n), country: "US" } : null;
+    const raw = (_us ||= toMap(usSymbols as SymRow[])).get(s);
+    const en = raw ? cleanUsName(raw) : undefined;
+    if (ko) return { name: ko, en, country: "US" }; // META·BABA 등 JSON에 없어도 한글명 반환
+    return en ? { name: en, country: "US" } : null;
   }
   return null;
 }

@@ -19,14 +19,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const info = await resolveStockName(symbol);
   const name = info?.name || ticker;
   const hasName = !!info?.name;
+  const en = info?.en && info.en !== info?.name ? info.en : undefined; // 원어/영문명(한글 오버라이드 시 병기)
 
   const label = hasName ? `${name} (${ticker})` : ticker;
   const title = `${label} 주가·AI 렌즈·뉴스·공시`;
-  const description = `${name}${hasName ? `(${ticker})` : ""} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
+  const idPart = hasName ? `(${en ? `${en}·` : ""}${ticker})` : "";
+  const description = `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
   const url = `${BASE}/stock/${symbol}`;
 
   const kw = hasName
-    ? [name, `${name} 주가`, `${name} 전망`, `${name} 뉴스`, `${name} 공시`, ticker, "AI 렌즈", "Trillion"]
+    ? [name, `${name} 주가`, `${name} 전망`, `${name} 뉴스`, `${name} 공시`, ...(en ? [en] : []), ticker, "AI 렌즈", "Trillion"]
     : [ticker, "주가", "AI 렌즈", "Trillion"];
 
   return {
@@ -65,7 +67,9 @@ export default async function StockPage({ params }: Params) {
     },
   ];
   if (info?.name) {
-    graph.push({ "@type": "Corporation", name: info.name, tickerSymbol: ticker, url });
+    const corp: Record<string, unknown> = { "@type": "Corporation", name: info.name, tickerSymbol: ticker, url };
+    if (info.en && info.en !== info.name) corp.alternateName = info.en; // 원어/영문명
+    graph.push(corp);
   }
   const jsonLd = { "@context": "https://schema.org", "@graph": graph };
 

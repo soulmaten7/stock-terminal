@@ -5,6 +5,7 @@ import jpSymbols from "@/data/jp_symbols.json";
 import cnSymbols from "@/data/cn_symbols.json";
 import vnSymbols from "@/data/vn_symbols.json";
 import gbSymbols from "@/data/gb_symbols.json";
+import foreignKo from "@/data/foreign_ko_names.json";
 
 // 사이트맵 = 봇에게 "이 페이지들이 있다"고 알리는 목록.
 // 기존엔 정적 5개뿐이라 수천 종목 페이지를 구글이 발견할 길이 없었음 → 전 종목 추가.
@@ -54,15 +55,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 해외 종목 (US/JP/CN/VN/GB) — 번들 JSON
-  const overseas = [
-    ...(usSymbols as Sym[]),
-    ...(jpSymbols as Sym[]),
-    ...(cnSymbols as Sym[]),
-    ...(vnSymbols as Sym[]),
-    ...(gbSymbols as Sym[]),
-  ]
-    .map((r) => r.sym)
-    .filter(Boolean);
+  const overseas = Array.from(
+    new Set(
+      [
+        ...(usSymbols as Sym[]),
+        ...(jpSymbols as Sym[]),
+        ...(cnSymbols as Sym[]),
+        ...(vnSymbols as Sym[]),
+        ...(gbSymbols as Sym[]),
+      ]
+        .map((r) => r.sym)
+        .filter(Boolean)
+        .concat(Object.keys(foreignKo as Record<string, string>)), // META·BABA 등 JSON 누락분도 사이트맵에
+    ),
+  );
   const overseasEntries: MetadataRoute.Sitemap = overseas.map((s) => ({
     url: `${base}/stock/${encodeURIComponent(s)}`,
     lastModified: now,
