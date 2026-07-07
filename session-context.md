@@ -1,6 +1,15 @@
-<!-- 2026-07-06 -->
+<!-- 2026-07-07 -->
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## 2026-07-07 — STEP 635~639 · 🔍 한국어 SEO 1차 (종목 SSR·사이트맵·구조화데이터) ✅
+
+**HEAD `aa525a5`.** 봇 시점 실측 진단 → 종목 페이지가 클라렌더라 봇엔 코드만·회사명 없음·메타 루트공통·JSON-LD 0·sitemap 정적 5개 = 최대 구멍.
+- **635 종목 서버컴포넌트**: `generateMetadata`(종목명 유니크 메타) + `lib/stockName.ts`(KR=`kr_stock_snapshot`·해외=번들 JSON) + h1 SSR 이름주입 + JSON-LD(Breadcrumb+Corporation). page.tsx→`StockLensClient.tsx`.
+- **636 사이트맵**: 정적5→약 21,800 URL. **637 홈**: Organization+WebSite JSON-LD.
+- **638 검증→639 픽스**: 하이드레이션 후 `/api/lens`(야후 영문)가 h1을 "SamsungElec"로 덮던 문제 → h1 `initialName||data.name`(네이티브 유지) + US "Common Stock" 잡음 제거. 라이브 재검증 통과.
+- **교훈**: 클라렌더=봇 빈페이지 → 서버컴포넌트가 SEO 핵심. 야후 lens명 vs SSR 네이티브명 불일치 → SSR 우선.
+- ▶ **다음**: 구글 서치콘솔 sitemap 제출 → 한국어 광고 설정.
 
 ## 2026-07-06 — STEP 622~630 · 🇻🇳 베트남 탭 + 🇬🇧 영국 탭 완성(빠짐없이) + 완전성 원칙 ✅
 

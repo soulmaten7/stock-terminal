@@ -1,5 +1,16 @@
-<!-- 2026-07-06 -->
+<!-- 2026-07-07 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-07 — STEP 635~639 — 🔍 한국어 SEO 1차 (종목 SSR·사이트맵·구조화데이터) ✅
+
+- **문제(봇 실측)**: 종목 페이지가 클라렌더 → 봇엔 코드(005930)만·회사명 없음·메타 전부 루트공통·JSON-LD 0·sitemap 정적 5개 = 최대 SEO 구멍.
+- **635 종목페이지 서버컴포넌트 전환 (`ff7f95d`)**: `generateMetadata`(종목명 유니크 title/desc/canonical/OG) + `lib/stockName.ts`(서버 이름해석 — KR=`kr_stock_snapshot`·US/JP/CN/VN/GB=번들 JSON) + h1에 SSR 이름 주입(봇이 회사명 봄) + JSON-LD(BreadcrumbList+Corporation). 기존 page.tsx→`StockLensClient.tsx` 이동.
+- **636 사이트맵 전 종목 (`58e89ec`)**: 정적 5 → **약 21,800 URL**(KR 스냅샷 0.7·해외 번들 19,038 0.5·revalidate 1d).
+- **637 홈 구조화데이터 (`0046c2c`)**: Organization+WebSite JSON-LD. SearchAction은 종목 검색결과 페이지 없어 제외(가짜 마크업 금지).
+- **638 라이브 검증**(브라우저 원시 DOM): 종목/홈 JSON-LD·sitemap 19,983 URL·국가별 유니크 제목 통과. **발견**: h1이 하이드레이션 후 `/api/lens`(야후 영문)로 덮여 "SamsungElec" 깜빡 + US "- Common Stock" 잡음.
+- **639 후속 픽스 (`aa525a5`)**: h1 우선순위 `initialName || data.name`(SSR 네이티브 유지 — 삼성전자·SK하이닉스·トヨタ 깜빡임 제거·title과 일치) + `cleanUsName`(US "Common Stock" 접미 제거→Apple Inc.). 재검증 통과.
+- **교훈**: 클라렌더=봇에 빈 페이지 → 서버컴포넌트+generateMetadata가 SEO 핵심. `/api/lens`(야후 영문)와 SSR 이름소스가 달라 하이드레이션 후 표기 뒤집힘 → SSR 네이티브 이름 우선으로 확정.
+- ▶ **다음**: 구글 서치콘솔 sitemap 제출 등 SEO 마무리 → 한국어 광고 설정.
 
 ## 2026-07-06 — STEP 622~630 — 🇻🇳 베트남 탭 + 🇬🇧 영국 탭 완성(빠짐없이) + 완전성 원칙
 
