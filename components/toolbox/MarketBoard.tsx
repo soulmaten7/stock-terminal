@@ -1,5 +1,5 @@
 'use client';
-import { AiLensBadge, TLensLogo } from '@/components/AiLensBadge';
+import { TLensLogo } from '@/components/AiLensBadge';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
@@ -7,7 +7,6 @@ import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import BrokerRanking from './BrokerRanking';
 import AdSlotRow from './AdSlotRow';
 
 type Row = {
@@ -49,6 +48,92 @@ function pct(v?: number | null): string {
 function pctColor(v?: number | null): string {
   if (v == null) return 'text-unjong-muted';
   return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
+}
+
+function gradeBadgeClass(tier: string): string {
+  if (tier === 'strong') return 'bg-unjong-accent/15 text-unjong-accent';
+  if (tier === 'partial') return 'bg-amber-50 text-amber-600';
+  return 'bg-unjong-background text-unjong-muted';
+}
+
+type LensItem = { key: string; name: string; grade: string; gradeTier: string; verdict?: { phrase: string; tone: string } | null };
+
+function LensPreview({ stock }: { stock: Row | null }) {
+  const [lenses, setLenses] = useState<LensItem[] | null>(null);
+  const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  useEffect(() => {
+    if (!stock) { setState('idle'); setLenses(null); return; }
+    let alive = true; setState('loading');
+    fetch('/api/lens?symbol=' + encodeURIComponent(stock.symbol))
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; setLenses(j.lenses || []); setState('done'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [stock?.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!stock) {
+    return (
+      <div className="rounded-2xl border border-unjong-border bg-white p-4 text-center">
+        <TLensLogo size={22} color="#2DD4BF" />
+        <p className="mt-2 text-sm font-semibold text-unjong-primary">종목을 선택하면 AI 렌즈가 읽어드려요</p>
+        <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 어떻게 보는지 요약해요.</p>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-2xl border border-unjong-border bg-white p-4">
+      <div className="flex items-center gap-2.5">
+        <StockLogo code={stock.symbol} name={stock.name} size={32} />
+        <div className="min-w-0">
+          <p className="truncate font-semibold text-unjong-primary">{stock.name}</p>
+          <p className="text-[12px] tabular-nums text-unjong-muted">{stock.price ? formatPrice(stock.price, 'KR') : '—'}</p>
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-y-2">
+        {([
+          ['1일', stock.changePercent],
+          ['1주', stock.r1w],
+          ['1개월', stock.r1m],
+          ['3개월', stock.r3m],
+          ['6개월', stock.r6m],
+          ['1년', stock.r1y],
+        ] as [string, number | null | undefined][]).map(([l, v]) => (
+          <div key={l} className="flex flex-col">
+            <span className="text-[11px] text-unjong-muted">{l}</span>
+            <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 border-t border-unjong-border pt-3">
+        <div className="mb-1.5 flex items-center gap-1">
+          <TLensLogo size={12} color="#2DD4BF" />
+          <span className="text-[12px] font-semibold text-unjong-primary">AI 렌즈</span>
+        </div>
+        {state === 'loading' ? (
+          <p className="text-[12px] text-unjong-muted">렌즈 읽는 중…</p>
+        ) : state === 'done' && lenses?.length ? (
+          <ul className="space-y-1">
+            {lenses.map((l) => (
+              <li key={l.key} className="flex items-center justify-between gap-2 text-[12px]">
+                <span className="text-unjong-primary">{l.name}</span>
+                <span className="flex shrink-0 items-center gap-1.5">
+                  {l.verdict?.phrase ? (
+                    <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-accent' : l.verdict.tone === 'warn' ? 'text-amber-600' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
+                  ) : null}
+                  <span className={`rounded px-1 py-0.5 text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-[12px] text-unjong-muted">렌즈 정보 준비 중</p>
+        )}
+      </div>
+      <a href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
+        전체 렌즈·근거 보기 →
+      </a>
+    </div>
+  );
 }
 
 async function fetchRows(tab: SubTab): Promise<Row[]> {
@@ -240,7 +325,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
 
   return (
     <section className="min-w-0">
-      {/* 컨트롤 줄: 좌=하위탭+검색(같은 줄) / 우(w-72)=증권사 바로가기 헤더 */}
+      {/* 컨트롤 줄: 좌=하위탭+검색(같은 줄) / 우(w-96)=렌즈 패널 자리 확보 */}
       <div className="mb-2 flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
@@ -266,9 +351,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
           </div>
         </div>
-        <div className="hidden w-72 shrink-0 lg:block">
-          <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-        </div>
+        <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
       {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
@@ -441,30 +524,6 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </button>
                     </td>
                   </tr>
-                  {/* 데스크탑 전용: 행 클릭 시 1일~1년 수익률 패노라마 펼침(모바일은 하단 시트가 대신) */}
-                  {selectedStock?.symbol === r.symbol ? (
-                    <tr className="hidden border-b border-unjong-border bg-unjong-background/50 lg:table-row">
-                      <td colSpan={6} className="px-4 py-3">
-                        <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
-                          <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
-                          <AiLensBadge href={`/stock/${r.symbol}`} arrow />
-                          {([
-                            ['1일전', r.changePercent],
-                            ['1주일전', r.r1w],
-                            ['1개월전', r.r1m],
-                            ['3개월전', r.r3m],
-                            ['6개월전', r.r6m],
-                            ['1년전', r.r1y],
-                          ] as [string, number | null | undefined][]).map(([label, v]) => (
-                            <div key={label} className="flex min-w-[3.5rem] flex-col">
-                              <span className="text-[11px] text-unjong-muted">{label}</span>
-                              <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
                   {/* 10행마다 광고 문의 행 (증권사 사이드바와 동일 패턴, 페이지 마지막 행 뒤엔 생략) */}
                   {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
                     <tr><td colSpan={6} className="p-0"><AdSlotRow slot="broker" /></td></tr>
@@ -535,14 +594,13 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
           )}
         </div>
 
-        {/* 우측: 증권사 리스트(헤더는 위 컨트롤 줄로 이동) — 스크롤 따라오게 sticky */}
-        <aside className="hidden w-72 shrink-0 lg:block">
-          <p className="flex h-[46px] items-center border-b border-unjong-border px-1 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
-          <BrokerRanking hideHeader />
+        {/* 우측: AI 렌즈 미리보기 패널 — 종목 선택 시 수익률+렌즈 표시, 미선택 시 안내 */}
+        <aside className="hidden w-96 shrink-0 lg:block">
+          <LensPreview stock={selectedStock} />
         </aside>
       </div>
 
-      {/* 종목 클릭 → 증권사 바로가기 (모바일 전용 — PC는 우측 리스트로 한눈에 보임) */}
+      {/* 종목 클릭 → 수익률·렌즈 시트 (모바일 전용 — PC는 우측 렌즈 패널) */}
       {selectedStock && (
         <div className="lg:hidden">
           <div className="fixed inset-0 z-40 bg-black/40" onClick={() => selectStock(null)} />
@@ -594,8 +652,6 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               >
                 <TLensLogo size={16} color="#2DD4BF" /> AI 렌즈
               </a>
-              <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-              <BrokerRanking hideHeader />
             </div>
           </div>
         </div>
