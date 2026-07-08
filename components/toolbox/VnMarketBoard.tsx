@@ -429,10 +429,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   ))}
                 </div>
               </div>
-              <a href={`/stock/${selectedStock.symbol}`}
-                className="mb-3 flex items-center justify-center gap-1.5 rounded-lg bg-unjong-primary py-2.5 text-sm font-semibold text-white active:opacity-90">
-                <TLensLogo size={16} color="#2DD4BF" /> AI 렌즈
-              </a>
+              <LensPreview stock={selectedStock} market="VN" compact />
             </div>
           </div>
         </div>
