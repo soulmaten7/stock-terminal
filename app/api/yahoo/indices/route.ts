@@ -17,27 +17,36 @@ type IndexItem = {
   changePct: number;
   isUp: boolean;
   spark: number[];
+  group: string;
 };
 
 const INDEX_SYMBOLS = [
-  { symbol: "^KS11", name: "KOSPI" },
-  { symbol: "^KQ11", name: "KOSDAQ" },
-  { symbol: "^N225", name: "Nikkei 225" },
-  { symbol: "USDKRW=X", name: "USD/KRW" },
-  { symbol: "JPY=X", name: "USD/JPY" },
-  { symbol: "^HSI", name: "Hang Seng" },
-  { symbol: "000300.SS", name: "CSI 300" },
-  { symbol: "CNY=X", name: "USD/CNY" },
-  { symbol: "GBP=X", name: "USD/GBP" },
-  { symbol: "^GSPC", name: "S&P 500" },
-  { symbol: "^IXIC", name: "NASDAQ" },
-  { symbol: "^DJI", name: "Dow Jones" },
-  { symbol: "^FTSE", name: "FTSE 100" },
-  { symbol: "^FTMC", name: "FTSE 250" },
-  { symbol: "^SOX", name: "SOX" },
-  { symbol: "^VIX", name: "VIX" },
-  { symbol: "GC=F", name: "Gold" },
-  { symbol: "BTC-USD", name: "Bitcoin" },
+  // 🇰🇷 KR
+  { symbol: "^KS11", name: "KOSPI", group: "KR" },
+  { symbol: "^KQ11", name: "KOSDAQ", group: "KR" },
+  // 🇯🇵 JP
+  { symbol: "^N225", name: "Nikkei 225", group: "JP" },
+  { symbol: "^TPX", name: "TOPIX", group: "JP" },
+  // 🇨🇳 CN + 🇭🇰 HK
+  { symbol: "000001.SS", name: "상하이종합", group: "CN" },
+  { symbol: "000300.SS", name: "CSI 300", group: "CN" },
+  { symbol: "^HSI", name: "Hang Seng", group: "CN" },
+  // 🇺🇸 US
+  { symbol: "^DJI", name: "Dow Jones", group: "US" },
+  { symbol: "^IXIC", name: "NASDAQ", group: "US" },
+  { symbol: "^GSPC", name: "S&P 500", group: "US" },
+  { symbol: "^SOX", name: "SOX", group: "US" },
+  // 🇬🇧 GB
+  { symbol: "^FTSE", name: "FTSE 100", group: "GB" },
+  { symbol: "^FTMC", name: "FTSE 250", group: "GB" },
+  // 🌐 시장·환율·원자재
+  { symbol: "^VIX", name: "VIX", group: "ETC" },
+  { symbol: "USDKRW=X", name: "USD/KRW", group: "ETC" },
+  { symbol: "JPY=X", name: "USD/JPY", group: "ETC" },
+  { symbol: "CNY=X", name: "USD/CNY", group: "ETC" },
+  { symbol: "GBP=X", name: "USD/GBP", group: "ETC" },
+  { symbol: "GC=F", name: "Gold", group: "ETC" },
+  { symbol: "BTC-USD", name: "Bitcoin", group: "ETC" },
 ];
 
 // 베트남 지수 — 야후 미커버(^VNINDEX 등 값 없음) → VnDirect dchart(공개 EOD OHLC)로 대체.
@@ -69,6 +78,7 @@ async function fetchVnIndex(meta: { symbol: string; name: string }): Promise<Ind
       changePct,
       isUp: changePct >= 0,
       spark: closes.slice(-30),
+      group: "VN",
     };
   } catch {
     return null;
@@ -110,18 +120,19 @@ export async function GET() {
             changePct,
             isUp: changePct >= 0,
             spark,
+            group: meta.group,
           };
         })
       ),
       Promise.all(VN_INDICES.map(fetchVnIndex)),
     ]);
 
-    // 베트남 지수를 아시아 블록(USD/CNY) 뒤에 삽입
+    // VN 블록을 마지막 CN(=Hang Seng) 뒤에 삽입 → KR→JP→CN→VN→US→GB→ETC 순서
     const vnItems = vnRaw.filter((x): x is IndexItem => x !== null);
-    const cnyIdx = yahooItems.findIndex((x) => x.name === "USD/CNY");
+    const lastCn = yahooItems.map((x) => x.group).lastIndexOf("CN");
     const merged =
-      cnyIdx >= 0
-        ? [...yahooItems.slice(0, cnyIdx + 1), ...vnItems, ...yahooItems.slice(cnyIdx + 1)]
+      lastCn >= 0
+        ? [...yahooItems.slice(0, lastCn + 1), ...vnItems, ...yahooItems.slice(lastCn + 1)]
         : [...yahooItems, ...vnItems];
 
     const payload = { items: merged.filter((x) => x.value !== "0") };
