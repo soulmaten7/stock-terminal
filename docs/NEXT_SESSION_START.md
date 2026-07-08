@@ -1,7 +1,11 @@
 <!-- 2026-07-08 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-08 (최신·3rd) — STEP 659~661: 🇨🇳 CN 공시 완결(A주 cninfo + HK HKEXnews) + R1. 공식 공시 = US·KR·JP·GB·CN(6시장).**
+> 🆕 **2026-07-08 (최신·4th) — STEP 662~664: 증권사 독립 탭 + 종목 보드 AI 렌즈 미리보기(PC 레일+모바일 시트) + 광고 CTA 정리. HEAD `53db7fa`.**
+> - **662** BrokerRanking 독립 탭(ToolboxClient `broker`). **663D** `lib/marketDate.ts`(브리핑 `as_of`=시장 타임존 날짜). **663** KR 우측 레일=LensPreview(렌즈+브리핑·디바운스·w-96). **663B** `LensPreview.tsx` 공유 추출+6개 보드 미러+`compact` 프롭+Next Link. **663E** 모바일 시트 6개 보드 `<LensPreview compact />`. **664** 종목 리스트 10행마다 broker AdSlotRow 반복 → 하단 1개만(광고주 0 정직화).
+> - **▶ 다음 = 광고 대화(진짜 광고 데이터 모델·게재·결제 설계 — 사용자와 전략 논의부터)** 또는 국가 추가(인도·대만). ⚠️ 배포 후 cninfo·HKEXnews Vercel 도달성 실측 대기.
+
+> 🆕 **2026-07-08 (3rd) — STEP 659~661: 🇨🇳 CN 공시 완결(A주 cninfo + HK HKEXnews) + R1. 공식 공시 = US·KR·JP·GB·CN(6시장).**
 > - **659(`f3fee9b`)** CnEventLayer=cninfo 공식 공시(A주·topSearch orgId+hisAnnouncement)·isCN. **660(`73dfc9b`)** CnFilingSummary R1(PDF→unpdf→중국어→한국어·`filing_summaries` CN+id·格力 정확). **661(`4404424`)** HK=HKEXnews(`.HK` 공시층+R1·CnEventLayer/CnFilingSummary 재사용·isCN에 `.HK`·summary SSRF 확장 HK+id). **CN 완결.**
 > - ⚠️ **배포 후 cninfo·HKEXnews Vercel 도달성 실측**(东方財富 IP차단 전례). 🧠 Phase 5 메모=`docs/AI_BRIEFING_SPEC.md`(TradingAgents 강세/약세 병치·지금 적용 안 함). **▶ 다음 = 광고(대화 먼저 — 사용자 지침)** 또는 국가 추가(인도·대만).
 

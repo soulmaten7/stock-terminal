@@ -2,6 +2,17 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-08 (4th) — STEP 662~664 · 증권사 독립 탭 + AI 렌즈 미리보기 + 광고 CTA 정리 ✅
+
+**HEAD `53db7fa`(663E, 664 직후 갱신).** 종목 보드 UX 정리 완성.
+- **662**: BrokerRanking 증권사 독립 탭 신설(ToolboxClient `broker` 탭).
+- **663D**: `lib/marketDate.ts` — 브리핑·뉴스요약 `as_of` = 시장 타임존 날짜(UTC→KST/EST/JST).
+- **663**: KR 레일 우측 aside=LensPreview(렌즈+브리핑·디바운스 700ms·BrokerRanking 사이드바 제거).
+- **663B**: `LensPreview.tsx` 공유 추출·6개 보드 레일 미러·`compact` 프롭·Next Link CTA.
+- **663E**: 6개 보드 모바일 바텀시트 "AI 렌즈" `<a>` → `<LensPreview compact />`.
+- **664**: 6개 보드 10행마다 broker AdSlotRow 반복 제거 → 하단 1개만.
+- ▶ **다음**: 광고 대화(진짜 광고 데이터 모델·게재·결제) 또는 국가 추가.
+
 ## 2026-07-08 (3rd) — STEP 659~661 · 🇨🇳 CN 공시 완결(A주+HK) + R1 ✅
 
 **HEAD `4404424`.** CN 종목 페이지 공시층+R1 완성 → 공식 공시 = US·KR·JP·GB·CN 5개국(6시장).

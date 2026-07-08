@@ -322,9 +322,6 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       </button>
                     </td>
                   </tr>
-                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
-                    <tr><td colSpan={6} className="p-0"><AdSlotRow slot="broker" /></td></tr>
-                  ) : null}
                   </Fragment>
                 ))}
               </tbody>
@@ -358,9 +355,11 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>
                   </div>
-                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? <AdSlotRow slot="broker" /> : null}
                 </Fragment>
               ))}
+            </div>
+            <div className="mt-2">
+              <AdSlotRow slot="broker" />
             </div>
             </>
           )}

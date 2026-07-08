@@ -439,10 +439,6 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </button>
                     </td>
                   </tr>
-                  {/* 10행마다 광고 문의 행 (증권사 사이드바와 동일 패턴, 페이지 마지막 행 뒤엔 생략) */}
-                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
-                    <tr><td colSpan={6} className="p-0"><AdSlotRow slot="broker" /></td></tr>
-                  ) : null}
                   </Fragment>
                 ))}
               </tbody>
@@ -479,9 +475,11 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>
                   </div>
-                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? <AdSlotRow slot="broker" /> : null}
                 </Fragment>
               ))}
+            </div>
+            <div className="mt-2">
+              <AdSlotRow slot="broker" />
             </div>
             </>
           )}
@@ -561,12 +559,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   ))}
                 </div>
               </div>
-              <a
-                href={`/stock/${selectedStock.symbol}`}
-                className="mb-3 flex items-center justify-center gap-1.5 rounded-lg bg-unjong-primary py-2.5 text-sm font-semibold text-white active:opacity-90"
-              >
-                <TLensLogo size={16} color="#2DD4BF" /> AI 렌즈
-              </a>
+              <LensPreview stock={selectedStock} market="KR" compact />
             </div>
           </div>
         </div>

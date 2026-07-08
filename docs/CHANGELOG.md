@@ -1,6 +1,16 @@
 <!-- 2026-07-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-08 (4th) — STEP 662~664 — 증권사 독립 탭 + 종목 보드 우측 레일=AI 렌즈 미리보기(렌즈+브리핑·PC/모바일) + 광고 CTA 정리 ✅
+
+- **662 증권사 독립 탭(`ToolboxClient`)**: BrokerRanking을 종목보드 사이드바에서 분리 → Toolbox 상단탭 `broker` 독립 신설. TAB_ORDER에 `'broker'` 추가·SPECIAL_LABELS·랜더 분기.
+- **663D `marketDate` lib**: 브리핑·뉴스요약 `as_of`를 UTC 대신 시장 로컬 타임존(KST/EST/JST 등) 기준 날짜로(`lib/marketDate.ts`·`marketTz(symbol)`·`Intl.DateTimeFormat('en-CA')`). UTC/KST 어긋남 해소.
+- **663 KR 레일 LensPreview**: MarketBoard 우측 aside를 증권사→`LensPreview`(렌즈+브리핑 카드·디바운스 700ms·`gradeBadgeClass`·w-96). BrokerRanking 사이드바 제거.
+- **663B LensPreview 공유 추출 + 6개 보드 미러**: `components/toolbox/LensPreview.tsx` 공유 컴포넌트 신설(`LensRow` 타입·compact 프롭·Next Link CTA). US·JP·CN·VN·GB 4개 보드도 동일하게 우측 레일=LensPreview. AiLensBadge 파노라마 제거.
+- **663E 모바일 하단 시트 LensPreview compact**: 6개 보드 모바일 바텀시트의 "AI 렌즈" `<a>` 버튼 → `<LensPreview compact />`. PC 레일과 동일(렌즈+브리핑). HEAD `53db7fa`.
+- **664 광고 CTA 정리(`HEAD 이번`)**: 6개 보드 종목 리스트 10행마다 반복 삽입되던 broker AdSlotRow 제거 → 리스트 **하단 1개만**. 광고주 0인 현재 정직화. 진짜 광고 데이터 모델(승인·결제)은 광고 대화 시 처리.
+- ▶ **다음**: 광고 대화(진짜 광고 데이터 모델·게재·결제 설계) 또는 국가 추가(인도·대만).
+
 ## 2026-07-08 (3rd) — STEP 659~661 — 🇨🇳 CN 공시 완결 (A주 cninfo + HK HKEXnews, R1 6개국) ✅
 
 - **659 CN A주 이벤트층 `CnEventLayer` (`f3fee9b`)**: `/api/cn-events`(symbol.SS/.SZ → cninfo `topSearch` orgId → `hisAnnouncement` 8건) + `CnEventLayer`·isCN 배선. 노이즈 필터(减持/质押/日常关联交易/龙虎榜) + MATERIAL 키워드(业绩/分红/收购/重大合同 등). 10분 인메모리 캐시.
