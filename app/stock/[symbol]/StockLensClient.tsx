@@ -539,6 +539,46 @@ function GbEventLayer({ symbol }: { symbol: string }) {
   );
 }
 
+type VnEvent = { id: string; title: string; date: string; source: string; url: string; material: boolean };
+function VnEventLayer({ symbol }: { symbol: string }) {
+  const [events, setEvents] = useState<VnEvent[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/vn-events?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .catch(() => { if (alive) setLoaded(true); });
+    return () => { alive = false; };
+  }, [symbol]);
+  if (!loaded || !events.length) return null;
+  return (
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
+        <span className="text-[11px] text-unjong-muted">공시 · HOSE</span>
+      </div>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <ul className="mt-2.5 space-y-1.5">
+        {events.map((e) => (
+          <li key={e.id}>
+            <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
+              <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
+              <div className="min-w-0 flex-1">
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">중대</span>}</p>
+                <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date}</p>
+              </div>
+              <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
+            </a>
+            {/* STEP 658에서 <VnFilingSummary url={e.url} symbol={symbol} nm={e.title} /> 추가 */}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 원문(Google News·CafeF 등)으로 가요.</p>
+    </div>
+  );
+}
+
 // R3: 종목 최근 뉴스 요약 + 중립 토픽 태그(지연·조건부·헤드라인 없으면 숨김). 뉴스=사실 브리핑, 감성 점수 아님.
 function StockNewsBrief({ symbol }: { symbol: string }) {
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
@@ -713,6 +753,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const isKR = /^\d{6}(\.(KS|KQ))?$/i.test(symbol); // KR 6자리(±.KS/.KQ) → DART 공시 층
   const isJP = /^\d{4}\.T$/i.test(symbol); // JP 4자리.T → EDINET 공시 층
   const isGB = /\.L$/i.test(symbol); // GB {TIDM}.L → RNS(Investegate) 공시 층
+  const isVN = /\.VN$/i.test(symbol); // VN {TICKER}.VN → 공시(Google News RSS·vi) 층
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
@@ -849,7 +890,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         <div className="mt-4 max-w-4xl">
           <StockBrief symbol={symbol} />
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
-          {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
+          {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
           <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
