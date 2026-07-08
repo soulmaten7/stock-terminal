@@ -11,7 +11,8 @@
 > - **651 JP R1(`e95017f`)**: `/api/jp-events/summary`(EDINET CSV type=5→fflate unzip→일본어 본문→gpt-4o-mini 한국어 요약→filing_summaries) + `JpFilingSummary`. **docType 실측 수정**(180 臨時報告書·190·120·160·270; 350/360=大量保有 노이즈였음). 라이브: 도요타 임시보고서(주총 이사선임 찬성률)·자기주식(3.65조엔)·사업보고서 정확.
 > - **653 GB 공시층(`7a7f3f6`)**: `/api/gb-events`(symbol.L→TIDM→Investegate `/company/{TIDM}` HTML 파싱→노이즈 필터[Form 8.x·TR-1·PDMR]→최근 8·온디맨드+캐시) + `GbEventLayer`·isGB. **소스=Investegate/RNS** — GB엔 EDINET급 공식 무료 종합 API 없음(FCA NSM=정식보고서만·완전성 미달·종합 RNS는 LSEG 상업약관) → 온디맨드+캐시+원문 링크 귀속으로 완화. **Vercel→Investegate 도달성 라이브 통과**(Shell). ⚠️ Barclays 등 대형 금융=Form 8.x 도배로 빈 층(MVP 수용).
 > - **654 GB R1(`fef75ee`)**: `/api/gb-events/summary`({source}-announcement 본문→gpt-4o-mini 한국어 요약→filing_summaries[`GB`+id]·SSRF 방지) + `GbFilingSummary` + MATERIAL 확장(quarter·update·buyback). 라이브: Shell Q2 아웃룩(610-650 kboe/d·LNG 7.4-7.8MT·마진 $240/t) 정확.
-> - **▶ 다음 = 완전성 VN 공시 정찰(HOSE/HNX)→CN → 광고(대화 먼저).**
+> - **656 VN 공시 정찰**(코드 없음): VN도 EDINET급 공식 무료 종합 API 없음. **TCBS 공개 API(`apipubaws.tcbs.com.vn`) 도달되나 `tcanalysis/v1/ticker/...` 경로 폐기(404·이동)** → 엔드포인트 네트워크 캡처 필요/대안 CafeF·Vietstock 스크랩(GB 방식). 빌드는 다음 세션.
+> - **▶ 다음 = VN 공시(공시층+R1): `docs/NEXT_SESSION_VN_PLAN.md` 먼저 읽고 착수 → CN → 광고(대화 먼저).**
 >
 > 🟢 **2026-07-07 · STEP 645~648 완료 — 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
 > - **645 매매처 DB 배선(`0023fda`)**: `brokers` 테이블(KR·US·JP·VN·GB 75행·MCP 생성) 화면 배선(`/api/brokers?region=KR`+`BrokerRanking`, 정적 lib/brokers.ts는 폴백). **언어권 기준**(플레이북 §4-3)—한국어=전탭 KR증권사(일본탭 한국증권사=버그 아님·의도)·CN만 미보유(중국어판 시).

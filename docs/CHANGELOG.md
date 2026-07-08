@@ -9,7 +9,8 @@
 - **653 GB 공시 이벤트층 = RNS via Investegate (`7a7f3f6`)**: 정찰 결과 GB엔 EDINET급 공식 무료 종합 API 없음 — FCA NSM=정식보고서만(트레이딩업데이트·M&A 누락·완전성 미달), 종합 RNS는 LSEG 상업약관. → **Investegate**(서버렌더·무료·회사별 페이지) 온디맨드+캐시+원문 링크 귀속(ToS 완화). `/api/gb-events`(symbol.L→TIDM→`/company/{TIDM}` HTML 파싱→노이즈 필터[Form 8.x·Rule 8·TR-1·PDMR]→material→최근 8) + `GbEventLayer`·isGB. **Vercel→Investegate 도달성 라이브 통과**(Shell 공시 파싱). ⚠️ Barclays 등 대형 금융=자기가 낸 Form 8.x(남의 회사 포지션)로 page1 도배→빈 층(MVP 수용).
 - **654 GB R1 원문 요약 (`fef75ee`)**: `/api/gb-events/summary`(Investegate 상세→`{source}-announcement` 컨테이너 본문 추출[gnw/rns/prn…·HTML제거·푸터컷·12k]→gpt-4o-mini 한국어 사실 요약→`filing_summaries`[`GB`+id] 캐시·SSRF 방지 URL 검증) + `GbFilingSummary` + `MATERIAL` 정규식 확장(quarter·q1~4·update·outlook·buyback·agreement 등). 라이브: Shell Q2 아웃룩(생산 610-650 kboe/d·LNG 7.4-7.8 MT·화학마진 약 $240/tonne·7/30 발표) 한국어 요약 정확.
 - **📊 공시 R1 현황**: **US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS)** = 4개국 공시층+원문요약 완성. 남은 완전성 = **VN·CN 공시**.
-- ▶ **다음**: 완전성 VN 공시 정찰(HOSE/HNX·Vietstock)→CN → 광고(대화 먼저).
+- **656 VN 공시 정찰**(코드 없음·investigation): VN도 EDINET급 공식 무료 종합 API 없음. **TCBS 공개 API(`apipubaws.tcbs.com.vn`)는 도달되나 `tcanalysis/v1/ticker/...` 경로 폐기(404·이동)** → 회사-이벤트 엔드포인트는 네트워크 캡처 필요(추측 실패 확인). 대안=CafeF/Vietstock 서버렌더 스크랩(GB Investegate 방식). VN 빌드는 다음 세션 — **자급형 실행계획 `docs/NEXT_SESSION_VN_PLAN.md` 신설**(정찰 결과·빌드 계획·미러 원본·함정 전부).
+- ▶ **다음**: **VN 공시(공시층+R1) — `docs/NEXT_SESSION_VN_PLAN.md` 먼저 읽고 착수** → CN → 광고(대화 먼저).
 
 ## 2026-07-07 — STEP 645~648 — 완전성 청산①(매매처 DB)·②-JP(EDINET 공시)·헤더 홈 픽스 ✅
 

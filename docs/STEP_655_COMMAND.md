@@ -22,4 +22,4 @@ cd ~/stock-terminal && git status --short
 cd ~/stock-terminal && git add CLAUDE.md docs/CHANGELOG.md session-context.md docs/NEXT_SESSION_START.md docs/SESSION_BOOT.md docs/NEW_SESSION_HANDOFF.md docs/NEXT_SESSION_PLAYBOOK.md docs/SESSION_KICKOFF.md docs/STEP_655_COMMAND.md && git commit -m "docs: 세션 문서 정리 — STEP 649~654 반영(KR 로고·JP/GB 공시 R1)·07-08·HEAD fef75ee·3중 검수" && git push
 ```
 
-## ✅ 완료 시 → 완전성 GB 완결 + 문서 매듭. 다음 세션/다음 작업: 완전성 VN 공시 정찰(HOSE/HNX)→CN → 광고(대화 먼저).
+## ✅ 완료 시 → 완전성 GB 완결 + 문서 매듭. 다음 작업: VN 공시(공시층+R1) — STEP 656 정찰 완료, **`docs/NEXT_SESSION_VN_PLAN.md` 먼저 읽고 착수** → CN → 광고(대화 먼저).
