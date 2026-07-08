@@ -540,6 +540,33 @@ function GbEventLayer({ symbol }: { symbol: string }) {
 }
 
 type CnEvent = { id: string; title: string; date: string; source: string; url: string; pdf: string; material: boolean };
+function CnFilingSummary({ pdf, symbol, nm, id }: { pdf: string; symbol: string; nm: string; id: string }) {
+  const [text, setText] = useState('');
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  useEffect(() => {
+    let alive = true;
+    if (!pdf) { setState('error'); return; }
+    const q = new URLSearchParams({ pdf, symbol, nm, id }).toString();
+    fetch('/api/cn-events/summary?' + q)
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [pdf]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (state === 'error') return null;
+  return (
+    <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
+      <div className="mb-1 flex items-center gap-1">
+        <Sparkles size={11} className="text-unjong-accent" />
+        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+      </div>
+      {state === 'loading'
+        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+    </div>
+  );
+}
 function CnEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<CnEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -570,7 +597,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
-            {/* STEP 660에서 <CnFilingSummary pdf={e.pdf} symbol={symbol} nm={e.title} id={e.id} /> 추가 */}
+            <CnFilingSummary pdf={e.pdf} symbol={symbol} nm={e.title} id={e.id} />
           </li>
         ))}
       </ul>
