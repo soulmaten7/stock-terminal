@@ -1,5 +1,5 @@
 'use client';
-import { AiLensBadge, TLensLogo } from '@/components/AiLensBadge';
+import { TLensLogo } from '@/components/AiLensBadge';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
@@ -7,7 +7,7 @@ import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import BrokerRanking from './BrokerRanking';
+import LensPreview from './LensPreview';
 import AdSlotRow from './AdSlotRow';
 
 type Row = {
@@ -199,9 +199,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
           </div>
         </div>
-        <div className="hidden w-72 shrink-0 lg:block">
-          <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-        </div>
+        <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
       <div className="flex gap-4">
@@ -328,29 +326,6 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       </button>
                     </td>
                   </tr>
-                  {selectedStock?.symbol === r.symbol ? (
-                    <tr className="hidden border-b border-unjong-border bg-unjong-background/50 lg:table-row">
-                      <td colSpan={6} className="px-4 py-3">
-                        <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
-                          <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
-                          <AiLensBadge href={`/stock/${r.symbol}`} arrow />
-                          {([
-                            ['1일전', r.changePercent],
-                            ['1주일전', r.r1w],
-                            ['1개월전', r.r1m],
-                            ['3개월전', r.r3m],
-                            ['6개월전', r.r6m],
-                            ['1년전', r.r1y],
-                          ] as [string, number | null | undefined][]).map(([label, v]) => (
-                            <div key={label} className="flex min-w-[3.5rem] flex-col">
-                              <span className="text-[11px] text-unjong-muted">{label}</span>
-                              <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
                   {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
                     <tr><td colSpan={6} className="p-0"><AdSlotRow slot="broker" /></td></tr>
                   ) : null}
@@ -412,9 +387,8 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
           )}
         </div>
 
-        <aside className="hidden w-72 shrink-0 lg:block">
-          <p className="flex h-[46px] items-center border-b border-unjong-border px-1 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
-          <BrokerRanking hideHeader />
+        <aside className="hidden w-96 shrink-0 lg:block">
+          <LensPreview stock={selectedStock} market="VN" />
         </aside>
       </div>
 
@@ -459,8 +433,6 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 className="mb-3 flex items-center justify-center gap-1.5 rounded-lg bg-unjong-primary py-2.5 text-sm font-semibold text-white active:opacity-90">
                 <TLensLogo size={16} color="#2DD4BF" /> AI 렌즈
               </a>
-              <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-              <BrokerRanking hideHeader />
             </div>
           </div>
         </div>

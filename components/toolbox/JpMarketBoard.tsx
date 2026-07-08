@@ -1,5 +1,5 @@
 'use client';
-import { AiLensBadge, TLensLogo } from '@/components/AiLensBadge';
+import { TLensLogo } from '@/components/AiLensBadge';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
@@ -7,7 +7,7 @@ import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import BrokerRanking from './BrokerRanking';
+import LensPreview from './LensPreview';
 import AdSlotRow from './AdSlotRow';
 
 // 주식·ETF 행 모두 r1w..r1y를 가짐 — 주식은 us-list가 us_stock_perf(크론 미리계산) 조인 + r1y(quote),
@@ -230,7 +230,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
   return (
     <section className="min-w-0">
-      {/* 컨트롤 줄: 좌=하위탭+검색(같은 줄) / 우(w-72)=증권사 바로가기 헤더 — KR 미러 */}
+      {/* 컨트롤 줄: 좌=하위탭+검색(같은 줄) / 우(w-96)=렌즈 패널 자리 확보 */}
       <div className="mb-2 flex items-center gap-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
@@ -256,9 +256,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
           </div>
         </div>
-        <div className="hidden w-72 shrink-0 lg:block">
-          <p className="text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-        </div>
+        <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
       {/* 좌: 종목 표 / 우: 증권사 리스트 — KR 미러(flex gap-4) */}
@@ -434,30 +432,6 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       </button>
                     </td>
                   </tr>
-                  {/* 데스크탑 전용: 행 클릭 시 1일~1년 수익률 패노라마 펼침(모바일은 하단 시트가 대신) */}
-                  {selectedStock?.symbol === r.symbol ? (
-                    <tr className="hidden border-b border-unjong-border bg-unjong-background/50 lg:table-row">
-                      <td colSpan={6} className="px-4 py-3">
-                        <div className="flex flex-wrap items-center gap-x-8 gap-y-2.5">
-                          <span className="text-[11px] font-semibold text-unjong-muted">기간 수익률</span>
-                          <AiLensBadge href={`/stock/${r.symbol}`} arrow />
-                          {([
-                            ['1일전', r.changePercent],
-                            ['1주일전', r.r1w],
-                            ['1개월전', r.r1m],
-                            ['3개월전', r.r3m],
-                            ['6개월전', r.r6m],
-                            ['1년전', r.r1y],
-                          ] as [string, number | null | undefined][]).map(([label, v]) => (
-                            <div key={label} className="flex min-w-[3.5rem] flex-col">
-                              <span className="text-[11px] text-unjong-muted">{label}</span>
-                              <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </td>
-                    </tr>
-                  ) : null}
                   {/* 10행마다 광고 문의 행 (증권사 사이드바와 동일 패턴, 페이지 마지막 행 뒤엔 생략) */}
                   {(i + 1) % 10 === 0 && i + 1 < paginated.length ? (
                     <tr><td colSpan={6} className="p-0"><AdSlotRow slot="broker" /></td></tr>
@@ -528,10 +502,9 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
           )}
         </div>
 
-        {/* 우측: 증권사 리스트(헤더는 위 컨트롤 줄로 이동) — KR과 동일하게 BrokerRanking 재사용 */}
-        <aside className="hidden w-72 shrink-0 lg:block">
-          <p className="flex h-[46px] items-center border-b border-unjong-border px-1 text-[11px] text-unjong-muted">최근 분기 거래대금순</p>
-          <BrokerRanking hideHeader />
+        {/* 우측: AI 렌즈 미리보기 패널 */}
+        <aside className="hidden w-96 shrink-0 lg:block">
+          <LensPreview stock={selectedStock} market="JP" />
         </aside>
       </div>
 
@@ -585,8 +558,6 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               >
                 <TLensLogo size={16} color="#2DD4BF" /> AI 렌즈
               </a>
-              <p className="mb-1 text-sm font-bold text-unjong-primary">증권사 바로가기</p>
-              <BrokerRanking hideHeader />
             </div>
           </div>
         </div>
