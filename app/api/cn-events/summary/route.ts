@@ -14,11 +14,13 @@ export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const nm = req.nextUrl.searchParams.get("nm") || "";
   const id = (req.nextUrl.searchParams.get("id") || "").trim();
-  // SSRF 방지 — cninfo 정적 PDF만 허용.
-  if (!/^https?:\/\/static\.cninfo\.com\.cn\/.+\.PDF$/i.test(pdf) || !id) {
+  // SSRF 방지 — cninfo 정적 PDF 또는 HKEXnews PDF만 허용.
+  const okCninfo = /^https?:\/\/static\.cninfo\.com\.cn\/.+\.PDF$/i.test(pdf);
+  const okHkex = /^https?:\/\/www\d?\.hkexnews\.hk\/.+\.(pdf|PDF)$/i.test(pdf);
+  if ((!okCninfo && !okHkex) || !id) {
     return NextResponse.json({ error: "bad url" }, { status: 400 });
   }
-  const acc = "CN" + id;
+  const acc = (okHkex ? "HK" : "CN") + id;
 
   const sb = createAdminClient();
   const { data: hit } = await sb.from("filing_summaries").select("summary_ko").eq("accession", acc).maybeSingle();
@@ -28,7 +30,7 @@ export async function GET(req: NextRequest) {
   let text = "";
   try {
     const res = await fetch(pdf, {
-      headers: { "User-Agent": UA, Referer: "http://www.cninfo.com.cn/" },
+      headers: { "User-Agent": UA, Referer: okHkex ? "https://www1.hkexnews.hk/" : "http://www.cninfo.com.cn/" },
       cache: "no-store",
       signal: AbortSignal.timeout(20000),
     });
@@ -53,11 +55,11 @@ export async function GET(req: NextRequest) {
         {
           role: "system",
           content:
-            "당신은 중국 상장사 공시(중국어)를 한국 개인투자자에게 사실만 전달하는 애널리스트입니다. 공시에 실제로 쓰인 내용만 2~3문장 한국어로 요약합니다. 규칙: (1) 예측·전망·투자 추천(사라/팔아라·목표가) 절대 금지 (2) 공시에 없는 내용 추가 금지 (3) \"무슨 일이 일어났는지\" 사실만(금액·비율·일정 등) (4) 숫자·통화(위안 元)는 원문 그대로 (5) 반드시 한국어로, 해요체·군더더기 없이. 영어·중국어로 답하지 마세요.",
+            "당신은 중국·홍콩 상장사 공시(중국어 또는 영어)를 한국 개인투자자에게 사실만 전달하는 애널리스트입니다. 공시에 실제로 쓰인 내용만 2~3문장 한국어로 요약합니다. 규칙: (1) 예측·전망·투자 추천(사라/팔아라·목표가) 절대 금지 (2) 공시에 없는 내용 추가 금지 (3) \"무슨 일이 일어났는지\" 사실만(금액·비율·일정 등) (4) 숫자·통화(위안 元·홍콩달러 HKD)는 원문 그대로 (5) 반드시 한국어로, 해요체·군더더기 없이.",
         },
         {
           role: "user",
-          content: `중국 공시(${nm || "제목없음"}) 원문(중국어)입니다. 무슨 일이 일어났는지 한국어로 2~3문장 사실 요약:\n\n${text}`,
+          content: `중국·홍콩 공시(${nm || "제목없음"}) 원문입니다. 무슨 일이 일어났는지 한국어로 2~3문장 사실 요약:\n\n${text}`,
         },
       ],
       max_tokens: 320,

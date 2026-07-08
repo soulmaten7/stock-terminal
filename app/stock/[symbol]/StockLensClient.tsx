@@ -583,7 +583,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
-        <span className="text-[11px] text-unjong-muted">공시 · 巨潮资讯</span>
+        <span className="text-[11px] text-unjong-muted">{events[0]?.source === 'HKEXnews' ? '공시 · HKEX' : '공시 · 巨潮资讯'}</span>
       </div>
       <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
       <ul className="mt-2.5 space-y-1.5">
@@ -601,7 +601,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 원문(巨潮资讯网 공시)으로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{events[0]?.source === 'HKEXnews' ? '클릭하면 원문(HKEXnews 공시)으로 가요.' : '클릭하면 원문(巨潮资讯网 공시)으로 가요.'}</p>
     </div>
   );
 }
@@ -846,7 +846,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const isJP = /^\d{4}\.T$/i.test(symbol); // JP 4자리.T → EDINET 공시 층
   const isGB = /\.L$/i.test(symbol); // GB {TIDM}.L → RNS(Investegate) 공시 층
   const isVN = /\.VN$/i.test(symbol); // VN {TICKER}.VN → 공시(Google News RSS·vi) 층
-  const isCN = /\d{6}\.(SS|SZ)$/i.test(symbol); // CN A주 → cninfo 공시 층 (HK는 STEP 661)
+  const isCN = /(\d{6}\.(SS|SZ)|\d{1,5}\.HK)$/i.test(symbol); // A주 cninfo + HK HKEXnews
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
