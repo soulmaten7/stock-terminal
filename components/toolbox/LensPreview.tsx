@@ -23,7 +23,7 @@ function gradeBadgeClass(tier: string): string {
 type LensItem = { key: string; name: string; grade: string; gradeTier: string; verdict?: { phrase: string; tone: string } | null };
 export type LensRow = { symbol: string; name: string; price?: number | null; changePercent?: number | null; r1w?: number | null; r1m?: number | null; r3m?: number | null; r6m?: number | null; r1y?: number | null };
 
-export default function LensPreview({ stock, market }: { stock: LensRow | null; market: string }) {
+export default function LensPreview({ stock, market, compact = false }: { stock: LensRow | null; market: string; compact?: boolean }) {
   const [lenses, setLenses] = useState<LensItem[] | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [brief, setBrief] = useState('');
@@ -53,6 +53,7 @@ export default function LensPreview({ stock, market }: { stock: LensRow | null; 
   }, [stock?.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!stock) {
+    if (compact) return null;
     return (
       <div className="rounded-2xl border border-unjong-border bg-white p-4 text-center">
         <TLensLogo size={22} color="#2DD4BF" />
@@ -62,30 +63,34 @@ export default function LensPreview({ stock, market }: { stock: LensRow | null; 
     );
   }
   return (
-    <div className="rounded-2xl border border-unjong-border bg-white p-4">
-      <div className="flex items-center gap-2.5">
-        <StockLogo code={stock.symbol} name={stock.name} size={32} />
-        <div className="min-w-0">
-          <p className="truncate font-semibold text-unjong-primary">{stock.name}</p>
-          <p className="text-[12px] tabular-nums text-unjong-muted">{stock.price ? formatPrice(stock.price, market) : '—'}</p>
-        </div>
-      </div>
-      <div className="mt-3 grid grid-cols-3 gap-y-2">
-        {([
-          ['1일', stock.changePercent],
-          ['1주', stock.r1w],
-          ['1개월', stock.r1m],
-          ['3개월', stock.r3m],
-          ['6개월', stock.r6m],
-          ['1년', stock.r1y],
-        ] as [string, number | null | undefined][]).map(([l, v]) => (
-          <div key={l} className="flex flex-col">
-            <span className="text-[11px] text-unjong-muted">{l}</span>
-            <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
+    <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-white p-4'}>
+      {!compact && (
+        <>
+          <div className="flex items-center gap-2.5">
+            <StockLogo code={stock.symbol} name={stock.name} size={32} />
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-unjong-primary">{stock.name}</p>
+              <p className="text-[12px] tabular-nums text-unjong-muted">{stock.price ? formatPrice(stock.price, market) : '—'}</p>
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="mt-3 border-t border-unjong-border pt-3">
+          <div className="mt-3 grid grid-cols-3 gap-y-2">
+            {([
+              ['1일전', stock.changePercent],
+              ['1주일전', stock.r1w],
+              ['1개월전', stock.r1m],
+              ['3개월전', stock.r3m],
+              ['6개월전', stock.r6m],
+              ['1년전', stock.r1y],
+            ] as [string, number | null | undefined][]).map(([l, v]) => (
+              <div key={l} className="flex flex-col">
+                <span className="whitespace-nowrap text-[11px] text-unjong-muted">{l}</span>
+                <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+      <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
         <div className="mb-1.5 flex items-center gap-1">
           <TLensLogo size={12} color="#2DD4BF" />
           <span className="text-[12px] font-semibold text-unjong-primary">AI 렌즈</span>
@@ -120,7 +125,7 @@ export default function LensPreview({ stock, market }: { stock: LensRow | null; 
           {briefState === 'loading' ? (
             <p className="text-[12px] text-unjong-muted">브리핑 만드는 중…</p>
           ) : (
-            <p className="text-[12px] leading-relaxed text-unjong-primary">{brief}</p>
+            <p className="text-[13px] leading-6 text-unjong-primary">{brief}</p>
           )}
         </div>
       )}

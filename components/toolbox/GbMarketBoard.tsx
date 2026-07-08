@@ -1,5 +1,4 @@
 'use client';
-import { TLensLogo } from '@/components/AiLensBadge';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
@@ -218,8 +217,6 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 현재가{sortArrow('price')}
               </button>
               <div className="flex-1" />
-              <span className="inline-flex items-center gap-1 text-unjong-muted"><TLensLogo size={11} color="#2DD4BF" />AI 렌즈</span>
-              <div className="flex-1" />
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button type="button" onClick={() => setPeriodOpenM((o) => !o)} aria-haspopup="listbox" aria-expanded={periodOpenM}
@@ -244,6 +241,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 </button>
               </span>
             </div>
+            <p className="mb-1.5 hidden text-[11px] text-unjong-muted lg:block">종목을 클릭하면 우측에 <span className="font-medium text-unjong-accent">AI 렌즈·브리핑</span>이 나와요.</p>
             <table className="hidden w-full table-fixed text-sm sm:table sm:min-w-[600px]">
               <thead>
                 <tr className="h-[46px] border-b border-unjong-border text-xs text-unjong-muted">
@@ -259,11 +257,6 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-accent' : ''}`}>
                       현재가{sortArrow('price')}
                     </button>
-                  </th>
-                  <th className="w-[70px] whitespace-nowrap px-2 py-2.5 text-center font-medium">
-                    <span className="inline-flex items-center justify-center gap-1 text-unjong-muted">
-                      <TLensLogo size={11} color="#2DD4BF" />AI 렌즈
-                    </span>
                   </th>
                   <th className="w-[116px] whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-medium sm:pr-4">
                     <span className="inline-flex items-center justify-end gap-1.5">
@@ -308,11 +301,6 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'GB') : '—'}</td>
-                    <td className="px-2 py-2.5 text-center">
-                      <span className="inline-flex h-[22px] w-[26px] items-center justify-center rounded-md" style={{ background: 'rgba(45,212,191,0.14)' }}>
-                        <TLensLogo size={13} color="#2DD4BF" />
-                      </span>
-                    </td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button type="button" onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
@@ -340,9 +328,6 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       </p>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'GB') : '—'}</span>
-                        <span className="inline-flex h-[18px] w-[22px] shrink-0 items-center justify-center rounded" style={{ background: 'rgba(45,212,191,0.14)' }}>
-                          <TLensLogo size={11} color="#2DD4BF" />
-                        </span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
                           <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === period)?.label}</span>
                           {periodCell(r) === undefined ? '…' : pct(periodCell(r))}
