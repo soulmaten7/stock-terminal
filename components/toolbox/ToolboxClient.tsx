@@ -5,6 +5,7 @@ import LinkCard, { type LinkItem } from './LinkCard';
 import AdSlotRow from './AdSlotRow';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
 import AdvisorDirectory from './AdvisorDirectory';
+import BrokerRanking from './BrokerRanking';
 import MarketBoard from './MarketBoard';
 import UsMarketBoard from './UsMarketBoard';
 import JpMarketBoard from './JpMarketBoard';
@@ -32,11 +33,11 @@ const COUNTRIES: { code: Country; label: string }[] = [
 ];
 
 // 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
-const TAB_ORDER = ['market', 'chart', 'news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'exchange', 'community', 'youtube', 'room'];
+const TAB_ORDER = ['market', 'chart', 'news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'exchange', 'community', 'youtube', 'room'];
 // 탭 묶음 경계 — 각 묶음의 첫 탭 앞에 얇은 구분선(시세 | 정보 | 상품 | 거래소·기관 | 사람)
 const CLUSTER_START = new Set(['news', 'etf', 'exchange', 'community']);
 // link_hub 카테고리가 아닌 특수 탭의 라벨
-const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', youtube: '유튜브', room: '리딩방·검증' };
+const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', broker: '증권사', youtube: '유튜브', room: '리딩방·검증' };
 
 // 우측 피드가 붙는 탭 + 탭별 피드 컴포넌트
 const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf', 'ipo'];
@@ -154,9 +155,9 @@ export default function ToolboxClient({
   const tabs = TAB_ORDER.map((slug) => {
     const special = SPECIAL_LABELS[slug];
     if (special) {
-      // market(종목·상품)은 미국도 라이브 데이터(Yahoo) 제공 → KR/US 모두 노출.
+      // market(종목·상품)·broker(증권사)는 전 국가 노출(각각 Yahoo 라이브·KR 증권사 언어권 기준).
       // youtube·room은 한국 전용 데이터라 KR만.
-      if (slug === 'market') return { slug, label: special };
+      if (slug === 'market' || slug === 'broker') return { slug, label: special };
       return country === 'KR' ? { slug, label: special } : null;
     }
     const c = categories.find((cat) => cat.slug === slug);
@@ -239,6 +240,10 @@ export default function ToolboxClient({
           ) : (
             <GbMarketBoard isLoggedIn={isLoggedIn} />
           )
+        ) : activeTab === 'broker' ? (
+          <div className="mx-auto w-full max-w-3xl">
+            <BrokerRanking />
+          </div>
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (
             <YoutubeRanking channels={youtubeChannels} />
