@@ -1,6 +1,15 @@
 <!-- 2026-07-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-08 (2nd) — STEP 657~658 — 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계 보류) ✅
+
+- **657 VN 이벤트층 `VnEventLayer` (`04cae64`)**: `/api/vn-events`(symbol.VN→ticker) + `VnEventLayer`·isVN 배선. **소스 정찰**: TCBS `tcanalysis` v1/v2 전 경로 404(폐기)·CafeF AJAX(`Events_RelatedNews_New.aspx`) 200이나 빈 `<ul>`(세션/쿠키 필요)·HNX/SSI/VnDirect/Fireant DNS/SSL 도달불가 → **Google News RSS(hl=vi&gl=VN)** 만 안정 동작. `{ticker} kết quả kinh doanh OR cổ tức OR báo cáo tài chính OR đại hội OR phát hành OR sáp nhập` 쿼리로 재무 이벤트 필터·최근 8·10분 캐시.
+- **657B VN 진짜 공시 재도전=Vietstock → NO-GO (`5459b0b`)**: Vietstock 공시 AJAX(`/data/getdocument`) 토큰 플로우 실측 → `__RequestVerificationToken`이 **JS 렌더 후 삽입**(정적 HTML len=0)·토큰 없으면 Error 페이지(240KB) 반환 → **서버사이드 fetch로 토큰 획득 불가**. → Google News 유지하되 **정직 라벨**: 헤더 "최근 주요 뉴스·이벤트"·태그 "뉴스 · Google News"(뉴스를 공시로 위장 금지). US·KR·JP·GB=공식 공시 vs VN=뉴스·이벤트로 정직 구분.
+- **658 VN R1 `VnFilingSummary` → resolve 0% (`1b8e1e1`)**: `/api/vn-events/summary`(구글뉴스 링크→기사 본문 resolve→베트남어→한국어 요약·`filing_summaries`[`VN`+id]·SSRF=news.google.com 한정·한국어아님→번역 폴백·동₫ 통화교정) + `VnFilingSummary`(GbFilingSummary 미러·실패시 숨김). **결과: resolve 0%** — Google News RSS `<link>` `/rss/articles/CBMi...` URL은 서버사이드 `fetch(redirect:follow)`로 **400 반환**(JS전용 디코딩·batchexecute 필요)·RSS description/source 태그 어디에도 실제 기사 URL 없음. 로컬·Vercel 동일 0%. → 항목별 `VnFilingSummary` 전부 조용히 숨김(코드는 무해·보존).
+- **🏁 VN 마감 판정**: VN엔 US/KR/JP/GB 같은 공식 공시원문 소스 없음(TCBS 폐기·CafeF 세션·Vietstock JS토큰·구글뉴스 JS디코딩 벽). 베트남 시장 규모 대비 노력 상한 도달 → **VN = 이벤트층(뉴스·이벤트) + R3 한국어 뉴스요약으로 커버, R1은 보류**(VnFilingSummary 코드는 숨김상태로 보존, 나중 진짜 소스 생기면 배선만). 사용자 승인(2026-07-08).
+- **📊 공시 R1 현황**: US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS) = 4개국 공식 공시 R1. VN=뉴스 이벤트층+R3(R1 보류). 남은 완전성 = **CN 공시**.
+- ▶ **다음**: **CN 공시**(cninfo·HKEXnews·⚠️东方財富 IP차단 전례로 **도달성 프로브 먼저** — `docs/NEXT_SESSION_CN_PLAN.md`) 또는 광고(대화 먼저).
+
 ## 2026-07-08 — STEP 649~654 — KR 종목 로고 + JP·GB 공시 R1 완성(공시층+원문요약) ✅
 
 - **649 KR 종목 로고 수집 (`52805ab`)**: 한국탭 보드 로고 반쪽(글자 아바타)—원인=`lib/avatar.ts` 하드코딩 `DOMAIN_MAP` 101개뿐. → DART 기업개황(`company.json`)의 `hm_url`(홈페이지)를 소스로 `scripts/collect_kr_logo_domains.ts`(dart_corp_codes 전 상장사 순회)→`data/kr_logo_domains.json` **3,578 도메인**(상장 3,922 중 91%·hm_url 없는 344만 글자 폴백). `lib/avatar.ts` KR 조회=`DOMAIN_MAP`(손매핑 101 우선)+수집 폴백. 라이브: 효성중공업·두산·삼양식품·HD현대일렉트릭 실로고.

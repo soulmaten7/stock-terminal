@@ -5,7 +5,14 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-08 (최신) · STEP 649~654 완료 — KR 종목 로고 수집 + JP·GB 공시 R1 완성(공시층+원문요약). 공시 R1 = US·KR·JP·GB 4개국.**
+> 🟢 **2026-07-08 (최신·2nd) · STEP 657~658 완료 — 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계로 보류).**
+> - **657 VnEventLayer(`04cae64`)**: `/api/vn-events`+isVN. 정찰=TCBS `tcanalysis` 전경로 404·CafeF AJAX 빈응답(세션필요)·HNX/SSI 도달불가 → **Google News RSS(vi·VN)** 만 안정. 재무 키워드 필터·최근 8·10분 캐시.
+> - **657B Vietstock 재도전 NO-GO(`5459b0b`)**: 공시 AJAX `__RequestVerificationToken`이 JS 렌더 후 삽입(정적 HTML엔 없음)→서버fetch 토큰불가. → Google News 유지+**정직 라벨**("최근 주요 뉴스·이벤트 · Google News"·뉴스≠공시 위장 금지).
+> - **658 VnFilingSummary R1 → resolve 0%(`1b8e1e1`)**: 구글뉴스 `/rss/articles/CBMi...` 링크=JS전용 디코딩(서버fetch 400·batchexecute 필요)·RSS에 원문 URL 없음. 로컬·Vercel 동일 0% → 항목별 숨김(코드 무해·보존).
+> - **🏁 VN 마감**: 공식 공시원문 소스 부재(TCBS 폐기·CafeF 세션·Vietstock JS토큰·구글뉴스 JS디코딩). 소형 시장 노력상한 → VN=이벤트층+R3 뉴스요약으로 커버, R1 보류(코드 보존·나중 소스 생기면 배선). **공시 R1 공식=US·KR·JP·GB 4개국 유지.**
+> - **▶ 다음 = CN 공시**(cninfo·HKEXnews·⚠️东方財富 IP차단 전례로 **도달성 프로브 먼저**·`docs/NEXT_SESSION_CN_PLAN.md`) **또는 광고(대화 먼저).**
+>
+> 🟢 **2026-07-08 · STEP 649~654 완료 — KR 종목 로고 수집 + JP·GB 공시 R1 완성(공시층+원문요약). 공시 R1 = US·KR·JP·GB 4개국.**
 > - **649 KR 로고(`52805ab`)**: DART 기업개황 `hm_url`→`data/kr_logo_domains.json` **3,578 도메인**(상장 3,922 중 91%). `lib/avatar.ts` KR=DOMAIN_MAP(손 101 우선)+수집 폴백. 한국탭 보드 실로고(효성중공업·두산·삼양식품·HD현대일렉트릭) 라이브.
 > - **650 JP 공시층(`1c3dadd`)**: `/api/jp-events`(secCode→jp_disclosures·docType 한국어 라벨) + `/api/jp-events/doc`(EDINET PDF 프록시·키 서버측) + `JpEventLayer`(KrEventLayer 미러)·isJP. 도요타·소니 라이브.
 > - **651 JP R1(`e95017f`)**: `/api/jp-events/summary`(EDINET CSV type=5→fflate unzip→일본어 본문→gpt-4o-mini 한국어 요약→filing_summaries) + `JpFilingSummary`. **docType 실측 수정**(180 臨時報告書·190·120·160·270; 350/360=大量保有 노이즈였음). 라이브: 도요타 임시보고서(주총 이사선임 찬성률)·자기주식(3.65조엔)·사업보고서 정확.
