@@ -244,6 +244,9 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 {s.label}
               </button>
             ))}
+            <p className="ml-2 hidden shrink-0 items-center self-center whitespace-nowrap text-[11px] text-unjong-muted lg:flex">
+              종목 클릭 시 우측에 <span className="ml-1 font-medium text-unjong-accent">AI 렌즈·브리핑</span>
+            </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <input
@@ -322,7 +325,6 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 </button>
               </span>
             </div>
-            <p className="mb-1.5 hidden text-[11px] text-unjong-muted lg:block">종목을 클릭하면 우측에 <span className="font-medium text-unjong-accent">AI 렌즈·브리핑</span>이 나와요.</p>
             <table className="hidden w-full table-fixed text-sm sm:table sm:min-w-[600px]">
               <thead>
                 <tr className="h-[46px] border-b border-unjong-border text-xs text-unjong-muted">
