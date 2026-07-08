@@ -3,6 +3,7 @@ import { computeSymbolLenses } from '@/lib/lensCompute';
 import { fetchMaterial8K } from '@/lib/eightK';
 import { fetchDartMaterial } from '@/lib/dartEvents';
 import { createAdminClient } from '@/lib/supabase/admin';
+import { marketDate } from '@/lib/marketDate';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest) {
   if (!symbol) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
 
   const sb = createAdminClient();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = marketDate(symbol);
 
   // 1) 캐시(종목+날짜)
   const { data: hit } = await sb

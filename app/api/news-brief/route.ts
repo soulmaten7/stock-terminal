@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchStockNews } from '@/lib/stockNews';
 import { getDartCorpName } from '@/lib/dart';
 import { fetchYahooName } from '@/lib/lensCompute';
+import { marketDate } from '@/lib/marketDate';
 import { getJpName } from '@/lib/jpName';
 import { getCnName } from '@/lib/cnName';
 import { KR_SEARCH_ALIAS } from '@/lib/krName';
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
   if (!symbol) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
 
   const sb = createAdminClient();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = marketDate(symbol);
 
   const { data: hit } = await sb
     .from('news_briefs').select('summary_ko, tags').eq('symbol', symbol).eq('as_of', today).maybeSingle();
