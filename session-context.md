@@ -1,6 +1,16 @@
-<!-- 2026-07-07 -->
+<!-- 2026-07-08 -->
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## 2026-07-08 — STEP 649~654 · KR 로고 + JP·GB 공시 R1 완성(공시층+원문요약) ✅
+
+**HEAD `fef75ee`.** 완전성 완성 — JP·GB 종목 페이지가 공시층+원문요약으로 US·KR 동급.
+- **649 KR 로고(`52805ab`)**: DART 기업개황 `hm_url`→`data/kr_logo_domains.json` **3,578 도메인**(상장 3,922 중 91%). `lib/avatar.ts` KR=DOMAIN_MAP(손매핑 101 우선)+수집 폴백. 보드 실로고(효성중공업·두산·삼양식품·HD현대일렉트릭) 라이브.
+- **650 JP 공시층(`1c3dadd`)**: `/api/jp-events`(secCode→jp_disclosures·docType 한국어 라벨·화이트리스트)+`/api/jp-events/doc`(EDINET PDF 프록시·키 서버측)+`JpEventLayer`(KrEventLayer 미러·中大[臨時] 배지)·isJP.
+- **651 JP R1(`e95017f`)**: `/api/jp-events/summary`(EDINET CSV type=5→`fflate` unzip→일본어 본문 추출→gpt-4o-mini 한국어 사실 요약→`filing_summaries`)+`JpFilingSummary`. **docType 실측 수정**(임시보고서=**180**·訂正 190·사업 120·반기 160·공개매수 270; 이전 맵의 350/360은 大量保有 노이즈였음). 라이브 정확(도요타 주총 이사선임·자기주식 3.65조엔·사업보고서).
+- **653 GB 공시층(`7a7f3f6`)**: **소스=Investegate/RNS** — 정찰 결과 GB엔 EDINET급 공식 무료 종합 API 없음(FCA NSM=정식보고서만·완전성 미달·종합 RNS는 LSEG 상업약관) → 온디맨드+캐시+원문 링크 귀속으로 완화. `/api/gb-events`(symbol.L→TIDM→`/company/{TIDM}` HTML 파싱→노이즈 필터[Form 8.x·TR-1·PDMR]→material→최근 8)+`GbEventLayer`·isGB. **Vercel→Investegate 도달성 라이브 통과**(Shell). ⚠️ Barclays 등 대형 금융=Form 8.x 도배로 빈 층(MVP 수용).
+- **654 GB R1(`fef75ee`)**: `/api/gb-events/summary`(`{source}-announcement` 본문 추출→gpt-4o-mini 한국어 사실 요약→`filing_summaries`[`GB`+id]·SSRF 방지)+`GbFilingSummary`+MATERIAL 정규식 확장(quarter·update·buyback). 라이브 정확(Shell Q2 아웃룩 610-650 kboe/d·마진 $240/t).
+- **📊 공시 R1 = US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS) 4개국 완성.** ▶ **다음**: 완전성 VN 공시(HOSE/HNX)→CN → 광고(대화 먼저).
 
 ## 2026-07-07 — STEP 645~648 · 완전성 청산(매매처·JP공시) + 헤더 홈 픽스 ✅
 

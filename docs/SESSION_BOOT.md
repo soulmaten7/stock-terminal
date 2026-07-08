@@ -1,11 +1,19 @@
-<!-- 2026-07-07 -->
+<!-- 2026-07-08 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-07 (최신) · STEP 645~648 완료 — 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
+> 🟢 **2026-07-08 (최신) · STEP 649~654 완료 — KR 종목 로고 수집 + JP·GB 공시 R1 완성(공시층+원문요약). 공시 R1 = US·KR·JP·GB 4개국.**
+> - **649 KR 로고(`52805ab`)**: DART 기업개황 `hm_url`→`data/kr_logo_domains.json` **3,578 도메인**(상장 3,922 중 91%). `lib/avatar.ts` KR=DOMAIN_MAP(손 101 우선)+수집 폴백. 한국탭 보드 실로고(효성중공업·두산·삼양식품·HD현대일렉트릭) 라이브.
+> - **650 JP 공시층(`1c3dadd`)**: `/api/jp-events`(secCode→jp_disclosures·docType 한국어 라벨) + `/api/jp-events/doc`(EDINET PDF 프록시·키 서버측) + `JpEventLayer`(KrEventLayer 미러)·isJP. 도요타·소니 라이브.
+> - **651 JP R1(`e95017f`)**: `/api/jp-events/summary`(EDINET CSV type=5→fflate unzip→일본어 본문→gpt-4o-mini 한국어 요약→filing_summaries) + `JpFilingSummary`. **docType 실측 수정**(180 臨時報告書·190·120·160·270; 350/360=大量保有 노이즈였음). 라이브: 도요타 임시보고서(주총 이사선임 찬성률)·자기주식(3.65조엔)·사업보고서 정확.
+> - **653 GB 공시층(`7a7f3f6`)**: `/api/gb-events`(symbol.L→TIDM→Investegate `/company/{TIDM}` HTML 파싱→노이즈 필터[Form 8.x·TR-1·PDMR]→최근 8·온디맨드+캐시) + `GbEventLayer`·isGB. **소스=Investegate/RNS** — GB엔 EDINET급 공식 무료 종합 API 없음(FCA NSM=정식보고서만·완전성 미달·종합 RNS는 LSEG 상업약관) → 온디맨드+캐시+원문 링크 귀속으로 완화. **Vercel→Investegate 도달성 라이브 통과**(Shell). ⚠️ Barclays 등 대형 금융=Form 8.x 도배로 빈 층(MVP 수용).
+> - **654 GB R1(`fef75ee`)**: `/api/gb-events/summary`({source}-announcement 본문→gpt-4o-mini 한국어 요약→filing_summaries[`GB`+id]·SSRF 방지) + `GbFilingSummary` + MATERIAL 확장(quarter·update·buyback). 라이브: Shell Q2 아웃룩(610-650 kboe/d·LNG 7.4-7.8MT·마진 $240/t) 정확.
+> - **▶ 다음 = 완전성 VN 공시 정찰(HOSE/HNX)→CN → 광고(대화 먼저).**
+>
+> 🟢 **2026-07-07 · STEP 645~648 완료 — 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
 > - **645 매매처 DB 배선(`0023fda`)**: `brokers` 테이블(KR·US·JP·VN·GB 75행·MCP 생성) 화면 배선(`/api/brokers?region=KR`+`BrokerRanking`, 정적 lib/brokers.ts는 폴백). **언어권 기준**(플레이북 §4-3)—한국어=전탭 KR증권사(일본탭 한국증권사=버그 아님·의도)·CN만 미보유(중국어판 시).
 > - **646~647 JP 공시=EDINET(`0ea7189`·`5d9e90a`)**: "무료소스 없어 보류"=룰위반 → **EDINET(금융청 무료 공식 API·키 env)**로 청산. `jp_disclosures`(마이그 039)+`lib/edinet.ts`(7203.T→72030)+크론 미리계산(회사필터 없어 날짜별). **라이브 12,466건·2,148개사·臨時報告書 2,260건**·도요타·소니 有報/臨時報告書 확인. dedup(doc_id) 픽스로 45일 백필 완결.
 > - **648 헤더 로고→홈 픽스**: `useHomeReset` 미소비+국가/탭 persist 탓 → resetHome=국가KR+localStorage탭market, ToolboxClient가 n 구독해 탭=종목·상품·서브=모아보기+콘텐츠 리마운트(보드=주식). 로고/'주식'→한국탭·종목·상품·주식.

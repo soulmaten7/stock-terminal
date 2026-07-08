@@ -1,5 +1,15 @@
-<!-- 2026-07-07 -->
+<!-- 2026-07-08 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-08 — STEP 649~654 — KR 종목 로고 + JP·GB 공시 R1 완성(공시층+원문요약) ✅
+
+- **649 KR 종목 로고 수집 (`52805ab`)**: 한국탭 보드 로고 반쪽(글자 아바타)—원인=`lib/avatar.ts` 하드코딩 `DOMAIN_MAP` 101개뿐. → DART 기업개황(`company.json`)의 `hm_url`(홈페이지)를 소스로 `scripts/collect_kr_logo_domains.ts`(dart_corp_codes 전 상장사 순회)→`data/kr_logo_domains.json` **3,578 도메인**(상장 3,922 중 91%·hm_url 없는 344만 글자 폴백). `lib/avatar.ts` KR 조회=`DOMAIN_MAP`(손매핑 101 우선)+수집 폴백. 라이브: 효성중공업·두산·삼양식품·HD현대일렉트릭 실로고.
+- **650 JP 공시 이벤트층 (`1c3dadd`)**: STEP 646 `jp_disclosures`(12,466건)를 종목 페이지에 표시 — `/api/jp-events`(symbol→secCode→최근 8·docType 한국어 라벨·화이트리스트) + `/api/jp-events/doc`(EDINET PDF 프록시·type=2·키 서버측) + `JpEventLayer`(KrEventLayer 미러·중대[臨時] 배지)·isJP 분기. 도요타·소니 라이브.
+- **651 JP R1 원문 요약 (`e95017f`)**: `/api/jp-events/summary`(EDINET 원문 CSV type=5 다운로드→`fflate` unzip→일본어 본문 추출[탭·UTF-16LE·HTML제거·서술형만]→gpt-4o-mini 한국어 사실 요약→`filing_summaries` 캐시) + `JpFilingSummary`(KrFilingSummary 미러). **docType 실측 수정**: 임시보고서=**180**(訂正=190)·사업보고서 120·반기 160·공개매수 270; 이전 맵의 350/360은 실은 大量保有 노이즈였음(DB 실측). 임시보고서 reason은 법조문 코드("第19条…")라 무의미→본문 요약 필수. 라이브: 도요타 임시보고서(제122회 주총 이사 6명 선임·찬성 95.97~98.94%)·자기주식(3.65조엔·목표 99.99%)·사업보고서 정확.
+- **653 GB 공시 이벤트층 = RNS via Investegate (`7a7f3f6`)**: 정찰 결과 GB엔 EDINET급 공식 무료 종합 API 없음 — FCA NSM=정식보고서만(트레이딩업데이트·M&A 누락·완전성 미달), 종합 RNS는 LSEG 상업약관. → **Investegate**(서버렌더·무료·회사별 페이지) 온디맨드+캐시+원문 링크 귀속(ToS 완화). `/api/gb-events`(symbol.L→TIDM→`/company/{TIDM}` HTML 파싱→노이즈 필터[Form 8.x·Rule 8·TR-1·PDMR]→material→최근 8) + `GbEventLayer`·isGB. **Vercel→Investegate 도달성 라이브 통과**(Shell 공시 파싱). ⚠️ Barclays 등 대형 금융=자기가 낸 Form 8.x(남의 회사 포지션)로 page1 도배→빈 층(MVP 수용).
+- **654 GB R1 원문 요약 (`fef75ee`)**: `/api/gb-events/summary`(Investegate 상세→`{source}-announcement` 컨테이너 본문 추출[gnw/rns/prn…·HTML제거·푸터컷·12k]→gpt-4o-mini 한국어 사실 요약→`filing_summaries`[`GB`+id] 캐시·SSRF 방지 URL 검증) + `GbFilingSummary` + `MATERIAL` 정규식 확장(quarter·q1~4·update·outlook·buyback·agreement 등). 라이브: Shell Q2 아웃룩(생산 610-650 kboe/d·LNG 7.4-7.8 MT·화학마진 약 $240/tonne·7/30 발표) 한국어 요약 정확.
+- **📊 공시 R1 현황**: **US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS)** = 4개국 공시층+원문요약 완성. 남은 완전성 = **VN·CN 공시**.
+- ▶ **다음**: 완전성 VN 공시 정찰(HOSE/HNX·Vietstock)→CN → 광고(대화 먼저).
 
 ## 2026-07-07 — STEP 645~648 — 완전성 청산①(매매처 DB)·②-JP(EDINET 공시)·헤더 홈 픽스 ✅
 

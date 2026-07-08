@@ -1,7 +1,11 @@
-<!-- 2026-07-07 -->
+<!-- 2026-07-08 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-07 (최신) — STEP 645~648: 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
+> 🆕 **2026-07-08 (최신) — STEP 649~654: KR 로고 + JP·GB 공시 R1 완성(공시층+원문요약). 공시 R1 = US·KR·JP·GB 4개국.**
+> - **649(`52805ab`)** KR 로고 수집(DART `hm_url`→`kr_logo_domains.json` 3,578 도메인·보드 실로고). **650(`1c3dadd`)** JP 공시층(`/api/jp-events`+EDINET PDF 프록시+`JpEventLayer`·isJP). **651(`e95017f`)** JP R1(EDINET CSV type=5→`fflate`→일본어 본문→gpt-4o-mini 한국어 요약·`filing_summaries`)·**docType 실측 수정**(임시보고서=180·350/360은 大量保有 노이즈였음). 라이브 정확(도요타 주총·자기주식·사업보고서).
+> - **653(`7a7f3f6`)** GB 공시층=**Investegate/RNS**(GB엔 EDINET급 공식 무료 종합 API 없음·NSM=정식보고서만·RNS는 LSEG 약관 → 온디맨드+캐시+원문 링크 귀속으로 완화)·`/api/gb-events`(symbol.L→TIDM→HTML 파싱·노이즈 필터 Form 8.x·TR-1·PDMR)+`GbEventLayer`·isGB·**Vercel 도달성 통과**(⚠️Barclays 등 대형 금융=Form 8.x 도배로 빈 층). **654(`fef75ee`)** GB R1(`{source}-announcement` 본문→한국어 요약·`filing_summaries`[`GB`+id]·SSRF 방지)+MATERIAL 확장. 라이브 정확(Shell Q2 아웃룩). **▶ 다음=완전성 VN 공시(HOSE/HNX)→CN → 광고(대화 먼저).**
+
+> 🆕 **2026-07-07 — STEP 645~648: 완전성 청산(매매처 DB·JP공시 EDINET) + 헤더 홈 픽스.**
 > - **645(`0023fda`)** 매매처 정적→DB(`brokers` 75행·`/api/brokers?region=KR`·언어권 기준·CN만 미보유). **646~647(`0ea7189`·`5d9e90a`)** JP 공시=EDINET(무료 공식·키 env)·`jp_disclosures`+크론 미리계산·**라이브 12,466건·2,148개사·臨時報告書 2,260**·도요타/소니 확인·dedup 픽스로 백필 완결.
 > - **648** 헤더 로고→홈(한국탭·종목·상품·주식) 리셋 픽스(resetHome 국가KR+탭market·ToolboxClient n 구독). **⚠️ env 교훈: .env.local≠배포, Vercel 대시보드 등록+재배포 필요.** **▶ 다음=JP STEP 649(JpEventLayer+R1 UI)·완전성 GB(RNS)→VN→CN·광고.**
 > - **641·642**: 구글 서치콘솔 + 네이버 서치어드바이저 인증(`layout.tsx verification`) + sitemap 제출(구글 19,983 URL 성공). **643**: 해외종목 한글명(애플·테슬라·도요타·텐센트, `resolveStockName` 오버라이드·영문 병기·META 등 사이트맵 합류). **▶ 다음=한국어 광고 설정.**
