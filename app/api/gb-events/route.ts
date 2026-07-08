@@ -14,7 +14,7 @@ const NOISE = [
   /notice of redemption/i, /admission to trading/i, /price monitoring/i,
 ];
 // 제목에 실이벤트 키워드가 있으면 "중대" 배지.
-const MATERIAL = /result|trading|interim|half.?year|full.?year|prelim|acquisi|disposal|merger|offer|dividend|board|directorate|appoint|resign|contract|placing|fundrais|capital raise|guidance|profit|strateg|agm|general meeting|circular|recommend|response|joint venture|contract win|final results/i;
+const MATERIAL = /result|trading|interim|half.?year|full.?year|prelim|quarter|\bq[1-4]\b|update|outlook|earnings|revenue|acquisi|disposal|merger|offer|agreement|completion|proposed|partnership|dividend|buyback|buy.?back|board|directorate|appoint|resign|contract|placing|fundrais|capital raise|guidance|profit|strateg|agm|general meeting|circular|recommend|response|joint venture/i;
 
 function tidmOf(symbol: string): string | null {
   const m = symbol.match(/^([A-Za-z0-9.\-]+)\.L$/i);

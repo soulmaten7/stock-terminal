@@ -473,6 +473,33 @@ function JpEventLayer({ symbol }: { symbol: string }) {
 // STEP 653: GB 공시 이벤트 층(RNS via Investegate·온디맨드). US/KR/JP 이벤트층의 GB 짝.
 // 제목은 영어(RNS 원문). R1 한국어 요약은 STEP 654. 원문=Investegate 링크(귀속).
 type GbEvent = { id: string; title: string; date: string; time: string; source: string; url: string; material: boolean };
+// R1-GB: RNS 공시(Investegate 상세) 원문 AI 한국어 요약(지연·전역 캐시). KR/JP FilingSummary의 GB 짝.
+function GbFilingSummary({ url, symbol, nm }: { url: string; symbol: string; nm: string }) {
+  const [text, setText] = useState('');
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  useEffect(() => {
+    let alive = true;
+    const q = new URLSearchParams({ url, symbol, nm }).toString();
+    fetch('/api/gb-events/summary?' + q)
+      .then((r) => r.json())
+      .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
+      .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [url]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (state === 'error') return null; // 실패 시 조용히 숨김(원문 링크는 위에)
+  return (
+    <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
+      <div className="mb-1 flex items-center gap-1">
+        <Sparkles size={11} className="text-unjong-accent" />
+        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+      </div>
+      {state === 'loading'
+        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+    </div>
+  );
+}
 function GbEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<GbEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -503,6 +530,7 @@ function GbEventLayer({ symbol }: { symbol: string }) {
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
+            <GbFilingSummary url={e.url} symbol={symbol} nm={e.title} />
           </li>
         ))}
       </ul>
