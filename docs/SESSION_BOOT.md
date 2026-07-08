@@ -5,7 +5,16 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-08 (최신·2nd) · STEP 657~658 완료 — 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계로 보류).**
+> 🟢 **2026-07-08 (최신·3rd) · STEP 659~661 완료 — 🇨🇳 CN 공시 완결(A주 cninfo + HK HKEXnews) + R1. 공식 공시 = US·KR·JP·GB·CN 5개국(6시장).**
+> - **659 CnEventLayer(`f3fee9b`)**: `/api/cn-events`(A주 `.SS`/`.SZ`)·isCN. **cninfo(巨潮资讯网=증감회 지정 공식 공시)** — topSearch로 code→orgId(하드코딩 금지·형식 제각각) + hisAnnouncement 목록·온디맨드+10분 캐시. NOISE/MATERIAL 중국어 필터.
+> - **660 CnFilingSummary R1(`73dfc9b`)**: `/api/cn-events/summary`(adjunctUrl PDF→**unpdf** 텍스트추출→중국어→한국어 사실요약→`filing_summaries`[`CN`+id]·SSRF static.cninfo). 라이브 정확(格力 주주총회 참석·의결권·안건 통과). 텍스트 PDF·번역폴백 불필요.
+> - **661 HK(`4404424`)**: HKEXnews로 `.HK` 공시층+R1 — cn-events 라우트에 HK 브랜치(prefix.do JSONP→stockId→titleSearchServlet·MATERIAL_HK) + isCN에 `.HK` + summary SSRF에 hkexnews(accession=`HK`+id·프롬프트 "중국어 또는 영어"). **CnEventLayer·CnFilingSummary 재사용**(라벨 동적 HKEXnews vs 巨潮). **CN 완결 = A주+HK.**
+> - **⚠️ 배포 후 실측 대기**: cninfo·HKEXnews가 Vercel(미 데이터센터 IP)서 되는지(东方財富 IP차단 전례) — `onetrillion.app/api/cn-events?symbol=000651.SZ`·`0700.HK` 직접 호출.
+> - **📊 공식 공시 R1 = US·KR·JP·GB·CN(A주+HK).** VN=뉴스 이벤트층+R3(R1 소스한계 보류).
+> - **🧠 Phase 5 메모**(`docs/AI_BRIEFING_SPEC.md`): TradingAgents 참고 — 종합 브리핑 시 강세/약세 재료 각각 생성 후 병치(승자판정 없음). **지금 R2엔 적용 안 함**(억지 금지·기존 엇갈림 표시로 충분).
+> - **▶ 다음 = 광고(대화 먼저 — 사용자 지침)** 또는 국가 추가(인도·대만).
+>
+> 🟢 **2026-07-08 (2nd) · STEP 657~658 완료 — 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계로 보류).**
 > - **657 VnEventLayer(`04cae64`)**: `/api/vn-events`+isVN. 정찰=TCBS `tcanalysis` 전경로 404·CafeF AJAX 빈응답(세션필요)·HNX/SSI 도달불가 → **Google News RSS(vi·VN)** 만 안정. 재무 키워드 필터·최근 8·10분 캐시.
 > - **657B Vietstock 재도전 NO-GO(`5459b0b`)**: 공시 AJAX `__RequestVerificationToken`이 JS 렌더 후 삽입(정적 HTML엔 없음)→서버fetch 토큰불가. → Google News 유지+**정직 라벨**("최근 주요 뉴스·이벤트 · Google News"·뉴스≠공시 위장 금지).
 > - **658 VnFilingSummary R1 → resolve 0%(`1b8e1e1`)**: 구글뉴스 `/rss/articles/CBMi...` 링크=JS전용 디코딩(서버fetch 400·batchexecute 필요)·RSS에 원문 URL 없음. 로컬·Vercel 동일 0% → 항목별 숨김(코드 무해·보존).

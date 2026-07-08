@@ -1,7 +1,11 @@
 <!-- 2026-07-08 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-08 (최신·2nd) — STEP 657~658: 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계 보류).**
+> 🆕 **2026-07-08 (최신·3rd) — STEP 659~661: 🇨🇳 CN 공시 완결(A주 cninfo + HK HKEXnews) + R1. 공식 공시 = US·KR·JP·GB·CN(6시장).**
+> - **659(`f3fee9b`)** CnEventLayer=cninfo 공식 공시(A주·topSearch orgId+hisAnnouncement)·isCN. **660(`73dfc9b`)** CnFilingSummary R1(PDF→unpdf→중국어→한국어·`filing_summaries` CN+id·格力 정확). **661(`4404424`)** HK=HKEXnews(`.HK` 공시층+R1·CnEventLayer/CnFilingSummary 재사용·isCN에 `.HK`·summary SSRF 확장 HK+id). **CN 완결.**
+> - ⚠️ **배포 후 cninfo·HKEXnews Vercel 도달성 실측**(东方財富 IP차단 전례). 🧠 Phase 5 메모=`docs/AI_BRIEFING_SPEC.md`(TradingAgents 강세/약세 병치·지금 적용 안 함). **▶ 다음 = 광고(대화 먼저 — 사용자 지침)** 또는 국가 추가(인도·대만).
+
+> 🆕 **2026-07-08 (2nd) — STEP 657~658: 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계 보류).**
 > - **657(`04cae64`)** VnEventLayer=Google News RSS(vi·VN)·isVN (TCBS `tcanalysis` 404·CafeF 세션필요·HNX 도달불가로 대체). **657B(`5459b0b`)** Vietstock 진짜공시 NO-GO(토큰 JS렌더)→Google News 유지+정직 라벨("뉴스·이벤트"). **658(`1b8e1e1`)** VnFilingSummary R1 구현했으나 **구글뉴스 `/rss/articles/CBMi...` 링크=JS전용 디코딩(서버fetch 400)로 resolve 0%**→항목별 숨김(코드 보존).
 > - **🏁 VN 마감**: 공식 공시원문 소스 없음(TCBS·CafeF·Vietstock·구글뉴스 전부 벽). 소형 시장 노력상한 → VN=이벤트층+R3 뉴스요약 커버, R1 보류. **▶ 다음 = CN 공시(cninfo·HKEXnews·⚠️东方財富 IP차단 전례로 도달성 프로브 먼저): `docs/NEXT_SESSION_CN_PLAN.md` 먼저 읽고 착수 → 또는 광고(대화 먼저).**
 
