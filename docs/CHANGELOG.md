@@ -1,6 +1,14 @@
 <!-- 2026-07-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-08 (3rd) — STEP 659~661 — 🇨🇳 CN 공시 완결 (A주 cninfo + HK HKEXnews, R1 6개국) ✅
+
+- **659 CN A주 이벤트층 `CnEventLayer` (`f3fee9b`)**: `/api/cn-events`(symbol.SS/.SZ → cninfo `topSearch` orgId → `hisAnnouncement` 8건) + `CnEventLayer`·isCN 배선. 노이즈 필터(减持/质押/日常关联交易/龙虎榜) + MATERIAL 키워드(业绩/分红/收购/重大合同 등). 10분 인메모리 캐시.
+- **660 CN R1 `CnFilingSummary` (`73dfc9b`)**: `/api/cn-events/summary`(`unpdf` PDF 텍스트 추출→gpt-4o-mini 한국어 사실 요약→`filing_summaries`[`CN`+id] 캐시·SSRF=static.cninfo.com.cn PDF·한국어 아님→번역 폴백·위안 통화교정).
+- **661 CN HK 이벤트층 + R1 (`e5a7b55`)**: HKEXnews(홍콩거래소 공식 공시) 배선 — `cn-events` 라우트에 HK 브랜치 추가(prefix.do JSONP→stockId→titleSearchServlet 20건·NOISE_HK/MATERIAL_HK 필터·DATE_TIME DD/MM/YYYY→ISO 변환). `isCN`에 `.HK` 포함(A주+HK 통합). `cn-events/summary` SSRF 확장(hkexnews.hk PDF 허용·accession=`HK`+id·시스템 프롬프트 "중국어 또는 영어"). `CnEventLayer` 라벨 동적(HKEXnews → "공시 · HKEX" / cninfo → "공시 · 巨潮资讯"). 기존 `CnEventLayer`·`CnFilingSummary` 재사용(신규 컴포넌트 없음).
+- **📊 공시 R1 현황**: **US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS)·CN A주(cninfo)·CN HK(HKEXnews)** = 6개국(6소스) 공시층+원문요약 완성. VN=뉴스·이벤트층(R1 소스 없음·보류).
+- ▶ **다음**: 광고(대화 먼저) 또는 국가 추가(인도·대만).
+
 ## 2026-07-08 (2nd) — STEP 657~658 — 🇻🇳 VN 공시층(뉴스·이벤트) + VN 마감(R1 소스한계 보류) ✅
 
 - **657 VN 이벤트층 `VnEventLayer` (`04cae64`)**: `/api/vn-events`(symbol.VN→ticker) + `VnEventLayer`·isVN 배선. **소스 정찰**: TCBS `tcanalysis` v1/v2 전 경로 404(폐기)·CafeF AJAX(`Events_RelatedNews_New.aspx`) 200이나 빈 `<ul>`(세션/쿠키 필요)·HNX/SSI/VnDirect/Fireant DNS/SSL 도달불가 → **Google News RSS(hl=vi&gl=VN)** 만 안정 동작. `{ticker} kết quả kinh doanh OR cổ tức OR báo cáo tài chính OR đại hội OR phát hành OR sáp nhập` 쿼리로 재무 이벤트 필터·최근 8·10분 캐시.
