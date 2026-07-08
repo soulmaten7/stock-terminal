@@ -555,26 +555,25 @@ function VnEventLayer({ symbol }: { symbol: string }) {
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
-        <span className="text-[11px] text-unjong-muted">공시 · HOSE</span>
+        <span className="text-[13px] font-bold text-unjong-primary">최근 주요 뉴스·이벤트</span>
+        <span className="text-[11px] text-unjong-muted">뉴스 · Google News</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 뉴스·이벤트예요.</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">중대</span>}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">주요</span>}</p>
                 <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
-            {/* STEP 658에서 <VnFilingSummary url={e.url} symbol={symbol} nm={e.title} /> 추가 */}
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 원문(Google News·CafeF 등)으로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 원문 뉴스로 가요.</p>
     </div>
   );
 }
