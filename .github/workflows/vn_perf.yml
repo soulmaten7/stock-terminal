@@ -11,6 +11,13 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: "22" }
       - run: npm i @supabase/supabase-js
+      - name: VCI sanity probe (FPT + SHS)
+        run: |
+          node --input-type=module -e '
+          const to=Math.floor(Date.now()/1000);
+          const r=await fetch("https://trading.vietcap.com.vn/api/chart/OHLCChart/gap-chart",{method:"POST",headers:{"Content-Type":"application/json","User-Agent":"Mozilla/5.0","Referer":"https://trading.vietcap.com.vn/"},body:JSON.stringify({timeFrame:"ONE_DAY",symbols:["FPT","SHS"],to,countBack:5})});
+          const t=await r.text(); console.log("status",r.status,"len",t.length,"body",t.slice(0,300));
+          '
       - name: Compute VN perf via VCI
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
