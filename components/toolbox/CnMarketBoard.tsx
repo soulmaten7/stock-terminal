@@ -21,6 +21,7 @@ type Row = {
   r6m?: number | null;
   r1y?: number | null;
   amount?: number; // 거래대금 — 정렬 전용(표시 X)
+  cur?: string; // 종목별 통화(CN/HK) — ETF 탭 혼재 통화 대응
 };
 
 // 하위 카테고리 탭 — 중화권 시장 기준(홍콩 | 상해A | 심천A | ETF). 각각 별도 라우트 fetch.
@@ -68,6 +69,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
     return ((j.items ?? []) as Row[]).map((r) => ({
       symbol: r.symbol, name: r.name, price: r.price, changePercent: r.changePercent,
       r1w: r.r1w, r1m: r.r1m, r3m: r.r3m, r6m: r.r6m, r1y: r.r1y, amount: r.amount,
+      cur: r.cur,
     }));
   } catch { return []; }
 }
@@ -414,7 +416,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                         </span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, curCode) : '—'}</td>
+                    <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, r.cur || curCode) : '—'}</td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
@@ -444,7 +446,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.name}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.symbol.replace(/\.(HK|SS|SZ)$/, '')}</span></p>
                       <div className="mt-1 flex items-center justify-between gap-2">
-                        <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, curCode) : '—'}</span>
+                        <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, r.cur || curCode) : '—'}</span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
                           <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === period)?.label}</span>
                           {periodCell(r) === undefined ? '…' : pct(periodCell(r))}
@@ -494,7 +496,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
         {/* 우측: AI 렌즈 미리보기 패널 */}
         <aside className="hidden w-96 shrink-0 lg:block">
-          <LensPreview stock={selectedStock} market={curCode} />
+          <LensPreview stock={selectedStock} market={selectedStock?.cur || curCode} />
         </aside>
       </div>
 
@@ -520,7 +522,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 <div className="min-w-0 flex-1">
                   <p className="font-bold leading-snug text-unjong-primary">{selectedStock.name}</p>
                   <p className="font-mono text-xs text-unjong-muted">
-                    {selectedStock.symbol.replace(/\.(HK|SS|SZ)$/, '')} · {selectedStock.price ? formatPrice(selectedStock.price, curCode) : '—'}
+                    {selectedStock.symbol.replace(/\.(HK|SS|SZ)$/, '')} · {selectedStock.price ? formatPrice(selectedStock.price, selectedStock.cur || curCode) : '—'}
                     <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
                   </p>
                 </div>
@@ -542,7 +544,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   ))}
                 </div>
               </div>
-              <LensPreview stock={selectedStock} market={curCode} compact />
+              <LensPreview stock={selectedStock} market={selectedStock.cur || curCode} compact />
             </div>
           </div>
         </div>
