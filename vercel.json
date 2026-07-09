@@ -25,10 +25,6 @@
       "schedule": "0 8 * * *"
     },
     {
-      "path": "/api/cron/vn-perf",
-      "schedule": "0 8 * * *"
-    },
-    {
       "path": "/api/cron/gb-perf",
       "schedule": "0 8 * * *"
     },
