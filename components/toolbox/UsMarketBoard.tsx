@@ -74,7 +74,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1d'); // 표시 기간 컬럼 선택값(셀 표시·기간 정렬 대상) — 기본 1일
-  const [sortKey, setSortKey] = useState<'name' | 'price' | PeriodKey>('price'); // 정렬 키 — 기본 현재가
+  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount'); // 정렬 키 — 기본 거래대금순
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 정렬 방향 — 기본 내림차순
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
@@ -130,7 +130,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     let cancelled = false;
     setSearch('');
     setPage(0);
-    setSortKey('price'); // 하위탭 전환 시 현재가 내림차순으로 리셋
+    setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
     setSortDir('desc');
     const key = CACHE_KEYS[tab];
     const cached = getCache<Row[]>(key);
@@ -174,6 +174,9 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
     const dir = sortDir === 'desc' ? -1 : 1;
+    if (sortKey === 'amount') {
+      return [...base].sort((a, b) => (Number(b.amount ?? 0) - Number(a.amount ?? 0)) * dir);
+    }
     if (sortKey === 'name') {
       // 종목명(회사명): 영문 로캘 문자열 비교
       return [...base].sort((a, b) => a.name.localeCompare(b.name, 'en') * dir);
@@ -197,13 +200,13 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
 
-  function clickHeader(k: 'name' | 'price' | PeriodKey) {
+  function clickHeader(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey === k) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
     else { setSortKey(k); setSortDir('desc'); }
   }
 
   // 정렬 헤더 화살표 — 활성(현재 정렬 키)=▲/▼ accent, 비활성=흐린 ↕(클릭 가능 암시). KR 미러.
-  function sortArrow(k: 'name' | 'price' | PeriodKey) {
+  function sortArrow(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
     return sortDir === 'desc'
       ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />

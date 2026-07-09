@@ -19,6 +19,7 @@ type Row = {
   r3m?: number | null;
   r6m?: number | null;
   r1y?: number | null;
+  amount?: number; // 거래대금(KRW) — 정렬 전용(표시 X)
 };
 
 type SubTab = 'stock' | 'etf' | 'etn' | 'reit';
@@ -68,6 +69,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
       name: String(s.name ?? ''),
       price: Number(s.price ?? 0),
       changePercent: Number(s.changePercent ?? 0),
+      amount: Number(s.amount ?? 0),
     }));
     try {
       const j = await (await fetch('/api/krx/kr-performance')).json();
@@ -84,7 +86,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
     const j = await (await fetch(api)).json();
     return ((j.items ?? []) as Row[]).map((r) => ({
       symbol: r.symbol, name: r.name, price: r.price, changePercent: r.changePercent,
-      r1w: r.r1w, r1m: r.r1m, r3m: r.r3m, r6m: r.r6m, r1y: r.r1y,
+      r1w: r.r1w, r1m: r.r1m, r3m: r.r3m, r6m: r.r6m, r1y: r.r1y, amount: Number(r.amount ?? 0),
     }));
   } catch { return []; }
 }
@@ -93,7 +95,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const [tab, setTab] = useState<SubTab>('stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock') ?? []);
   const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
-  const [sortKey, setSortKey] = useState<'name' | 'price' | PeriodKey>('price'); // 기본 현재가 정렬
+  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount'); // 기본 거래대금순
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 기본 내림차순
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d'); // 단일 기간 컬럼 선택값(데스크탑·모바일 공용) — 기본 1일
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
@@ -172,7 +174,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     let cancelled = false;
     setSearch('');
     setPage(0);
-    setSortKey('price'); // 하위탭 전환 시 현재가 내림차순으로 리셋
+    setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
     setSortDir('desc');
     const ck = 'market:' + tab;
     const cached = getCache<Row[]>(ck);
@@ -190,6 +192,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
     const dir = sortDir === 'desc' ? -1 : 1;
+    if (sortKey === 'amount') {
+      return [...base].sort((a, b) => (Number(b.amount || 0) - Number(a.amount || 0)) * dir);
+    }
     if (sortKey === 'name') {
       // 종목명: 한글 로캘 문자열 비교
       return [...base].sort((a, b) => a.name.localeCompare(b.name, 'ko') * dir);
@@ -212,13 +217,13 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
-  function clickHeader(k: 'name' | 'price' | PeriodKey) {
+  function clickHeader(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey === k) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
     else { setSortKey(k); setSortDir('desc'); }
   }
 
   // 정렬 헤더 화살표 — 활성(현재 정렬 키)=▲/▼ accent, 비활성=흐린 ↕(클릭 가능 암시).
-  function sortArrow(k: 'name' | 'price' | PeriodKey) {
+  function sortArrow(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
     return sortDir === 'desc'
       ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />

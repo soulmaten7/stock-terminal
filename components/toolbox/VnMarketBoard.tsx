@@ -61,7 +61,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEY) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEY) === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1d');
-  const [sortKey, setSortKey] = useState<'name' | 'price' | PeriodKey>('price');
+  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount');
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
@@ -107,7 +107,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
   useEffect(() => {
     let cancelled = false;
-    setSearch(''); setPage(0); setSortKey('price'); setSortDir('desc');
+    setSearch(''); setPage(0); setSortKey('amount'); setSortDir('desc');
     const cached = getCache<Row[]>(CACHE_KEY);
     if (cached) { setRows(cached); setLoading(false); } else { setRows([]); setLoading(true); }
     fetchRows().then((r) => { if (!cancelled) { setRows(r); setCache(CACHE_KEY, r); setLoading(false); } });
@@ -145,6 +145,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
     const dir = sortDir === 'desc' ? -1 : 1;
+    if (sortKey === 'amount') return [...base].sort((a, b) => (Number(b.amount ?? 0) - Number(a.amount ?? 0)) * dir);
     if (sortKey === 'name') return [...base].sort((a, b) => a.name.localeCompare(b.name, 'vi') * dir);
     if (sortKey === 'price') return [...base].sort((a, b) => ((a.price ?? 0) - (b.price ?? 0)) * dir);
     if (!sortPeriodField) return base;
@@ -160,11 +161,11 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
 
-  function clickHeader(k: 'name' | 'price' | PeriodKey) {
+  function clickHeader(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey === k) setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'));
     else { setSortKey(k); setSortDir('desc'); }
   }
-  function sortArrow(k: 'name' | 'price' | PeriodKey) {
+  function sortArrow(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
     return sortDir === 'desc'
       ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />
