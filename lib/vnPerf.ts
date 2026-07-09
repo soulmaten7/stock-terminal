@@ -1,13 +1,19 @@
-// 베트남 전종목(HOSE+HNX ~654) 1주~6개월 수익률 백그라운드 미리계산 → vn_stock_perf 테이블에 일괄 저장.
-// vn-list가 이 값을 조인해 내려줌(요청 시점 lazy chart 호출 제거). 크론(/api/cron/vn-perf)이 하루 1회 호출.
-import YahooFinance from "yahoo-finance2";
+// 베트남 전종목(HOSE 403+HNX 299=702) 1일~1년 수익률 백그라운드 미리계산 → vn_stock_perf 테이블에 일괄 저장.
+// 가격 소스: VCI(Vietcap) — 야후는 HNX 미커버. HOSE+HNX 완전판. vn-list가 이 값을 서빙.
 import { createAdminClient } from "./supabase/admin";
 import symbols from "../data/vn_symbols.json";
 
-const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
-
 type Sym = { sym: string; name: string; market: string };
 const STOCK_SYMS: string[] = (symbols as Sym[]).map((s) => s.sym);
+
+const VCI_URL = "https://trading.vietcap.com.vn/api/chart/OHLCChart/gap-chart";
+const VCI_HEADERS = {
+  "Content-Type": "application/json",
+  "User-Agent": "Mozilla/5.0",
+  Referer: "https://trading.vietcap.com.vn/",
+};
+// VCI 응답은 이미 풀 VND — 스케일 불필요
+const COUNT_BACK = 420; // 400 캘린더일 ≈ 276 거래일 > 252(r1y)
 
 function ret(closes: number[], daysAgo: number): number | null {
   if (closes.length < daysAgo + 1) return null;
@@ -17,36 +23,63 @@ function ret(closes: number[], daysAgo: number): number | null {
   return (now / past - 1) * 100;
 }
 
-async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>): Promise<R[]> {
-  const out: R[] = new Array(arr.length);
-  let idx = 0;
-  async function worker() {
-    while (idx < arr.length) {
-      const cur = idx++;
-      out[cur] = await fn(arr[cur]);
+async function vciBatch(
+  tickers: string[]
+): Promise<Map<string, { closes: number[]; lastVol: number }>> {
+  const to = Math.floor(Date.now() / 1000);
+  try {
+    const res = await fetch(VCI_URL, {
+      method: "POST",
+      headers: VCI_HEADERS,
+      body: JSON.stringify({ timeFrame: "ONE_DAY", symbols: tickers, to, countBack: COUNT_BACK }),
+      signal: AbortSignal.timeout(30000),
+    });
+    if (!res.ok) return new Map();
+    const j = await res.json();
+    const arr: unknown[] = Array.isArray(j) ? j : [];
+    const out = new Map<string, { closes: number[]; lastVol: number }>();
+    for (const d of arr as Array<{ symbol: string; c: number[]; v: number[] }>) {
+      const closes = (d.c ?? []).filter((c) => typeof c === "number" && c > 0);
+      if (closes.length < 6) continue;
+      const v = Array.isArray(d.v) ? d.v : [];
+      out.set(d.symbol, { closes, lastVol: v.length ? Number(v[v.length - 1]) : 0 });
     }
+    return out;
+  } catch {
+    return new Map();
   }
-  await Promise.all(Array.from({ length: Math.min(limit, arr.length) }, () => worker()));
-  return out;
 }
 
-type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
+type PerfRow = {
+  symbol: string;
+  r1d: number | null;
+  r1w: number | null;
+  r1m: number | null;
+  r3m: number | null;
+  r6m: number | null;
+  price: number | null;
+  amount: number | null;
+  r1y: number | null;
+};
 
 export async function computeVnPerf(): Promise<{ ok: true; computed: number; at: string }> {
-  const LOOKBACK_DAYS = 400; // 252거래일(1년) 확보용 — 400 캘린더일 ≈ 276 거래일
-  const period1 = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
+  const BATCH = 50;
+  const rows: PerfRow[] = [];
 
-  const results = await mapLimit(STOCK_SYMS, 12, async (sym): Promise<PerfRow | null> => {
-    try {
-      const ch = await yf.chart(sym, { period1, interval: "1d" });
-      const bars = (ch.quotes ?? []) as Array<{ close: number | null; volume: number | null }>;
-      const closes = bars
-        .map((b) => b.close)
-        .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
-      if (closes.length < 6) return null;
+  for (let i = 0; i < STOCK_SYMS.length; i += BATCH) {
+    const chunk = STOCK_SYMS.slice(i, i + BATCH);
+    // VCI는 .VN 없이 티커만 받음
+    const tickers = chunk.map((s) => s.replace(/\.VN$/i, ""));
+    const batchMap = await vciBatch(tickers);
+
+    for (let j = 0; j < chunk.length; j++) {
+      const sym = chunk[j];
+      const ticker = tickers[j];
+      const d = batchMap.get(ticker);
+      if (!d) continue;
+      const { closes, lastVol } = d;
       const price = closes[closes.length - 1];
-      const lastVol = bars[bars.length - 1]?.volume ?? null;
-      return {
+      rows.push({
         symbol: sym,
         r1d: ret(closes, 1),
         r1w: ret(closes, 5),
@@ -55,14 +88,11 @@ export async function computeVnPerf(): Promise<{ ok: true; computed: number; at:
         r6m: ret(closes, 126),
         r1y: ret(closes, 252),
         price,
-        amount: lastVol != null && lastVol > 0 ? price * lastVol : null,
-      };
-    } catch {
-      return null;
+        amount: lastVol > 0 ? price * lastVol : null,
+      });
     }
-  });
+  }
 
-  const rows = results.filter((r): r is PerfRow => r !== null);
   const at = new Date().toISOString();
   const payload = rows.map((r) => ({ ...r, updated_at: at }));
 
