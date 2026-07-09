@@ -57,6 +57,14 @@ function channelOf(a: Advisor): string | null {
   const name = (a.info_name && a.info_name.trim()) || (a.biz_links && a.biz_links[0]?.label?.trim()) || a.company_name;
   return name || null;
 }
+// 인증 채널 없을 때 보여줄 공개 채널(금감원 homepage). 있으면 {label, url}.
+function publicChannelOf(a: Advisor): { label: string; url: string } | null {
+  if (a.channel_id || a.verified_owner) return null;
+  if (!a.homepage || !a.homepage.trim()) return null;
+  const p = a.platform;
+  const label = p === 'telegram' ? '텔레그램' : p === 'kakao' ? '카카오' : p === 'youtube' ? '유튜브' : '홈페이지';
+  return { label, url: a.homepage.trim() };
+}
 // 행 키 — 채널 단위 행은 channel_id, 업체 단위 행은 biz_no
 function rowKey(a: Advisor): string {
   return a.channel_id ?? a.biz_no;
@@ -419,6 +427,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 const n = (page - 1) * PAGE_SIZE + i + 1;
                 const isSel = selected ? rowKey(selected) === rowKey(a) : false;
                 const ch = channelOf(a);
+                const pub = publicChannelOf(a);
                 return (
                   <Fragment key={rowKey(a)}>
                     {i > 0 && i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" /></li> : null}
@@ -432,16 +441,19 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{a.company_name}</span>
                       {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
                     </button>
-                    <button type="button" onClick={() => setSelected(a)} className="flex min-w-0 items-center gap-1 text-left text-xs">
+                    <div className="flex min-w-0 items-center gap-1 text-left text-xs">
                       {ch ? (
-                        <>
-                          <UserCheck size={12} className="shrink-0 text-unjong-accent" aria-label="운영자 인증" />
-                          <span className="truncate text-unjong-primary">{ch}</span>
-                        </>
+                        <><UserCheck size={12} className="shrink-0 text-unjong-accent" aria-label="운영자 인증" /><span className="truncate text-unjong-primary">{ch}</span></>
+                      ) : pub ? (
+                        <a href={pub.url} target="_blank" rel="noopener noreferrer nofollow" onClick={(e) => e.stopPropagation()}
+                           className="flex min-w-0 items-center gap-1 text-unjong-muted hover:text-unjong-accent">
+                          <ExternalLink size={12} className="shrink-0" />
+                          <span className="truncate">{pub.label}</span>
+                        </a>
                       ) : (
                         <span className="text-unjong-muted">—</span>
                       )}
-                    </button>
+                    </div>
                     <span className="flex items-center justify-end gap-2">
                       <button
                         type="button"
