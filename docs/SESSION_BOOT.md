@@ -1,11 +1,22 @@
-<!-- 2026-07-08 -->
+<!-- 2026-07-09 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-08 (최신·3rd) · STEP 659~661 완료 — 🇨🇳 CN 공시 완결(A주 cninfo + HK HKEXnews) + R1. 공식 공시 = US·KR·JP·GB·CN 5개국(6시장).**
+> 🟢 **2026-07-09 (최신·4th) · STEP 662~667 완료 — UI 리파인 묶음 + 🌍 LOCALE_SOURCE_PLAYBOOK 신설 (HEAD `51e28c3`).**
+> - **662 증권사 독립 탭**: BrokerRanking을 종목보드 사이드바에서 분리 → 상단탭 `broker` 신설(전 국가·KR 증권사·언어권 기준).
+> - **663·663B 우측 레일 = AI 렌즈 미리보기**: 종목보드 우측(증권사 자리)을 `components/toolbox/LensPreview.tsx`(공유·`LensRow`·compact·Next Link CTA)로 교체 — **선택 종목의 렌즈 읽기 + R2 브리핑(디바운스 700ms) + 기간수익률** + "전체 렌즈 보기". 6개 보드 전부 미러. **663E 모바일 하단 시트도 동일(compact).** 인라인 패노라마·증권사 사이드바 제거.
+> - **663D `lib/marketDate.ts`**: 브리핑·뉴스요약 `as_of`를 UTC→**시장 로컬 타임존 날짜**(심볼 접미사→TZ). 캐시=DB 공유·하루 1회 생성(다수 사용자 효율).
+> - **664 광고 CTA 정리**: 6개 보드 10행마다 반복 broker AdSlotRow 제거 → 리스트 하단 1개만(광고주 0 정직화·진짜 게재는 광고 대화).
+> - **665·665B 표 가독성**: 반복 AI렌즈 아이콘 컬럼 제거(5열)+클릭 힌트(컨트롤 줄 하위탭 뒤)·미리보기 수익률 `1일전/1주일전…` 통일·브리핑 13px.
+> - **666 지수 티커 6개국**: TOPIX(`^TPX`)·상하이종합(`000001.SS`) 추가(22개)·국가 블록 순서(KR→JP→CN→VN→US→GB→ETC)+구분선. **라이브 확인(두 심볼 Yahoo 정상).**
+> - **667 색 대비**: 검증 배지 민트글씨(1.9:1)→다크틸(`text-unjong-success`·AA)·빨강/파랑 범례. (muted는 이미 AA·유지·라이트 톤 유지.)
+> - **🌍 `docs/LOCALE_SOURCE_PLAYBOOK.md` 신설**: 언어권 데이터소스 **발견·검증·기록 런북** — "런북=프로그램, LLM=인터프리터". 의미우선 스키마(정체·목적·필수속성·인스턴스) + 발견 결정트리 + 검증게이트(web_fetch JSON 빈값·Vercel IP차단·JS토큰·인코딩·경로추측금지) + 실패원장 + relevance 규칙 + 서학개미/6개국 공시 실측 통합. **CLAUDE.md 참조 등록.** 새 locale·데이터소스 착수 전 필독.
+> - **▶ 다음 = 광고 대화**(진짜 광고 데이터 모델·게재·결제 — 전략 논의 먼저) **또는 서학개미 relevance 파이프라인**(플레이북 §5·data.go.kr 키 필요). ⚠️ 배포 후 cninfo·HKEXnews·지수 Vercel 도달성 최종 실측(로컬 dev 캐시 탓 지연 가능).
+>
+> 🟢 **2026-07-08 (3rd) · STEP 659~661 완료 — 🇨🇳 CN 공시 완결(A주 cninfo + HK HKEXnews) + R1. 공식 공시 = US·KR·JP·GB·CN 5개국(6시장).**
 > - **659 CnEventLayer(`f3fee9b`)**: `/api/cn-events`(A주 `.SS`/`.SZ`)·isCN. **cninfo(巨潮资讯网=증감회 지정 공식 공시)** — topSearch로 code→orgId(하드코딩 금지·형식 제각각) + hisAnnouncement 목록·온디맨드+10분 캐시. NOISE/MATERIAL 중국어 필터.
 > - **660 CnFilingSummary R1(`73dfc9b`)**: `/api/cn-events/summary`(adjunctUrl PDF→**unpdf** 텍스트추출→중국어→한국어 사실요약→`filing_summaries`[`CN`+id]·SSRF static.cninfo). 라이브 정확(格力 주주총회 참석·의결권·안건 통과). 텍스트 PDF·번역폴백 불필요.
 > - **661 HK(`4404424`)**: HKEXnews로 `.HK` 공시층+R1 — cn-events 라우트에 HK 브랜치(prefix.do JSONP→stockId→titleSearchServlet·MATERIAL_HK) + isCN에 `.HK` + summary SSRF에 hkexnews(accession=`HK`+id·프롬프트 "중국어 또는 영어"). **CnEventLayer·CnFilingSummary 재사용**(라벨 동적 HKEXnews vs 巨潮). **CN 완결 = A주+HK.**
