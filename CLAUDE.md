@@ -150,6 +150,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 - [ ] **`docs/NEXT_SESSION_PLAYBOOK.md` 갱신** (다음 세션 마스터 인수인계 — HEAD 해시·STEP 번호·다음 STEP 후보·디자인 변경 등 반영)
 - [ ] **`docs/SESSION_BOOT.md` 갱신** (HEAD·STEP·현재 상태·다음 후보 — 새 세션 최우선 파일)
 - [ ] SESSION_KICKOFF.md `현재 커밋` 표기 갱신
+- [ ] 🅿️ **보류 기능(parked) 있으면 배선 보존 + `docs/PARKED_*_ACTIVATION.md` + `LOCALE_SOURCE_PLAYBOOK` 원장 기록** (막힌 소스를 가짜로 채우지 말고, 작동하는 코드는 남기고 스위치만 OFF — §보류 기능 프로토콜)
 - [ ] git push
 - [ ] 빌드 에러 없는지 확인 (`npm run build`)
 
@@ -164,6 +165,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 | 프로젝트 맥락 | `session-context.md` | TODO, 히스토리, 핵심 수치 |
 | 변경 이력 | `docs/CHANGELOG.md` | 세션별 변경사항 |
 | 다음 세션 가이드 | `docs/NEXT_SESSION_START.md` | 최신 상태 요약 + 다음 할 일 |
+| 🌍 언어권 소스 지침 | `docs/LOCALE_SOURCE_PLAYBOOK.md` | 새 언어권 데이터소스 발견·검증·기록 런북(의미우선 스키마·검증게이트·실패원장). 새 locale·데이터소스 착수 전 필독 |
 | DB 스키마 | `supabase/migrations/001_initial_schema.sql` | Supabase 테이블 정의 |
 | 환경변수 | `.env.local` | API 키 (반드시 운종 전용 Supabase, 구 stock-platform 명) |
 

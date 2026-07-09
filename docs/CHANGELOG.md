@@ -1,6 +1,20 @@
 <!-- 2026-07-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-09 (2nd) — STEP 668~672D — 보드 성능 스냅샷화 + 데이터 정확성 검수 Round 1 + VN HNX 보류(배선 완비) ✅
+
+- **성능(668·668B)**: VN·US·CN·JP·GB 종목 보드 = 라이브 야후→**크론 스냅샷 DB 서빙**(KR 미러). 로딩 수초→수백ms. 크론 룩백 280→400일로 **r1y 복구**. 6개국 전부 즉시화.
+- **검수 Round 1(코드/데이터 대조)** — 유니버스·이름·태깅 실측으로 실제 문제 다수 발견·수정:
+  - **669 US 종목명**: us_symbols.json **placeholder 4,231(61%)** = 이름이 티커 → **SEC `company_tickers.json`**로 실명 보강 → 55(0%). (라이브 quote 제거로 드러난 문제·정적 1회 보강.)
+  - **670 CN ETF 오태깅**: A주 ETF 363개(상해 5xx·심천 15x)가 `market:'ss'/'sz'`로 주식탭 오염 → **`type`(stock/etf) 필드** 도입, 주식탭 ETF 제외 + ETF탭에 A주 ETF **종목별 통화(CNY)** 표시.
+  - 유니버스 크기 확인: JP 4,256·CN 7,098·US 6,936(88% 커버·나머지 상폐추정)·GB 349(FTSE350)·VN 387→403(vnstock HOSE).
+- **671~672D VN HNX 사가** → **HOSE 403 확정 + HNX 보류(배선 완비)**:
+  - 야후 `.VN`=HOSE 전용(HNX "No data"). 유일 소스 **VCI(Vietcap)** 발견(vnstock 소스에서 엔드포인트 추출)·HNX 커버 확인.
+  - VCI가 **클라우드 IP 지속요청 소프트차단**: Vercel `[]`·**GitHub Actions(Azure)도 일회 프로브만 통과, 배치 반복 시 차단**(⚠️"프로브 통과≠지속 통과" 교훈). 로컬/거주지 IP만 안정.
+  - → **Yahoo HOSE 403 복구**(672D·보드 정상·VJC 139,000 VND 스케일 정상). **HNX는 배선 완비 후 보류**: `scripts/vn_hnx_vci_cron.mjs`(VCI 페처) + `docs/PARKED_HNX_VCI_ACTIVATION.md`(활성화 체크리스트·VPS 거주지 IP 필요).
+- **🅿️ 보류 기능 프로토콜 표준화**(사용자 확정): 소스가 근본적으로 막히면 가짜로 채우지 말고 **작동 코드 보존+PARKED 문서+원장 기록**. `LOCALE_SOURCE_PLAYBOOK §11` 신설 + `CLAUDE.md` 세션종료 체크리스트 추가. 플레이북 §8-10/11 실패원장(야후 HNX·VCI IP차단).
+- ▶ **다음**: 데이터 검수 **Round 2(Chrome 라이브 눈검수)·Round 3(교차 레퍼런스)** + CN #2(A주 소형주 ~1,600) → 그 후 **한국어 광고**(원 순서: 검수→광고→다국어).
+
 ## 2026-07-09 — STEP 668 — ⚡ 5개 보드 가격 스냅샷화(라이브 야후 제거 → DB 서빙) ✅
 
 - **마이그레이션 `040_perf_snapshot.sql`**: VN·US·CN·JP·GB `*_stock_perf` 테이블에 `price·amount·r1y` + US/CN/JP/GB에 `r1d` 추가. Applied.

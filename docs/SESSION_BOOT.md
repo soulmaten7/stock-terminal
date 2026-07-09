@@ -5,7 +5,14 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-09 (최신·4th) · STEP 662~667 완료 — UI 리파인 묶음 + 🌍 LOCALE_SOURCE_PLAYBOOK 신설 (HEAD `51e28c3`).**
+> 🟢 **2026-07-09 (최신·5th) · STEP 668~672D — 보드 성능 스냅샷화 + 데이터 검수 Round 1 + VN HNX 보류(배선 완비).**
+> - **성능(668·668B)**: 5개 보드(VN·US·CN·JP·GB) 라이브 야후→**크론 스냅샷 DB 서빙**(KR 미러)·즉시화·r1y 룩백 400일 복구.
+> - **검수 Round 1**: **669 US 종목명 SEC 실명 보강**(placeholder 4,231→55). **670 CN ETF 오태깅**(type 필드·주식탭 정화·ETF탭 종목별 통화).
+> - **VN HNX(671~672D)**: 야후=HOSE전용→VCI 발견(HNX 커버)→**VCI가 클라우드 IP(Vercel·GH Actions) 지속요청 차단**("프로브≠지속" 교훈)→**Yahoo HOSE 403 복구**+**HNX 보류(배선 완비)**: `scripts/vn_hnx_vci_cron.mjs`+`docs/PARKED_HNX_VCI_ACTIVATION.md`(VPS 거주지 IP 필요).
+> - **🅿️ 보류 기능 프로토콜 표준화**: `LOCALE_SOURCE_PLAYBOOK §11`+세션종료 체크리스트. 막힌 소스=가짜 금지·배선 보존·기록.
+> - **▶ 다음 = 데이터 검수 Round 2(Chrome 라이브)·Round 3(교차) + CN #2(A주 소형주) → 한국어 광고.** ⚠️ cninfo/HKEXnews/지수 Vercel 도달성 최종 실측 잔여.
+>
+> 🟢 **2026-07-09 (4th) · STEP 662~667 완료 — UI 리파인 묶음 + 🌍 LOCALE_SOURCE_PLAYBOOK 신설 (HEAD `51e28c3`).**
 > - **662 증권사 독립 탭**: BrokerRanking을 종목보드 사이드바에서 분리 → 상단탭 `broker` 신설(전 국가·KR 증권사·언어권 기준).
 > - **663·663B 우측 레일 = AI 렌즈 미리보기**: 종목보드 우측(증권사 자리)을 `components/toolbox/LensPreview.tsx`(공유·`LensRow`·compact·Next Link CTA)로 교체 — **선택 종목의 렌즈 읽기 + R2 브리핑(디바운스 700ms) + 기간수익률** + "전체 렌즈 보기". 6개 보드 전부 미러. **663E 모바일 하단 시트도 동일(compact).** 인라인 패노라마·증권사 사이드바 제거.
 > - **663D `lib/marketDate.ts`**: 브리핑·뉴스요약 `as_of`를 UTC→**시장 로컬 타임존 날짜**(심볼 접미사→TZ). 캐시=DB 공유·하루 1회 생성(다수 사용자 효율).

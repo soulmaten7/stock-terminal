@@ -2,6 +2,16 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-09 (3rd) — STEP 668~672D · 성능 스냅샷 + 데이터 검수 Round 1 + VN HNX 보류 ✅
+
+**VN HEAD = HOSE 403 복구 커밋.** 6개 보드 즉시화 + 검수로 실제 데이터 문제 다수 수정.
+- **성능(668·668B)**: 5개 보드 라이브 야후→크론 스냅샷 DB 서빙·r1y 룩백 400일 복구.
+- **669 US 종목명**: SEC company_tickers.json로 placeholder 4,231→55 실명 보강.
+- **670 CN ETF 오태깅**: type 필드로 주식탭 정화 + ETF탭 A주 ETF 종목별 통화(CNY).
+- **VN HNX(671~672D)**: 야후=HOSE전용→VCI(HNX 커버)→**VCI 클라우드 IP 차단**(Vercel·GH Actions "프로브≠지속")→**Yahoo HOSE 403 복구** + **HNX 보류(배선 완비)**: `scripts/vn_hnx_vci_cron.mjs`+`docs/PARKED_HNX_VCI_ACTIVATION.md`(VPS 필요).
+- **🅿️ 보류 기능 프로토콜 표준화**: `LOCALE_SOURCE_PLAYBOOK §11`+CLAUDE.md 세션종료 체크리스트.
+- ▶ **다음**: 데이터 검수 Round 2(Chrome)·Round 3 + CN #2(소형주) → 한국어 광고. ⚠️ Vercel 도달성 최종 실측 잔여.
+
 ## 2026-07-09 (2) — STEP 668 · ⚡ 5개 보드 가격 스냅샷화 ✅
 
 **HEAD (이번 커밋).** VN·US·CN·JP·GB list 라이브 yf.quote 완전 제거 → DB 서빙(KR 미러).
