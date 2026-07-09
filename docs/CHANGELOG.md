@@ -1,6 +1,14 @@
 <!-- 2026-07-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-09 — STEP 668 — ⚡ 5개 보드 가격 스냅샷화(라이브 야후 제거 → DB 서빙) ✅
+
+- **마이그레이션 `040_perf_snapshot.sql`**: VN·US·CN·JP·GB `*_stock_perf` 테이블에 `price·amount·r1y` + US/CN/JP/GB에 `r1d` 추가. Applied.
+- **`lib/{vn,us,cn,jp,gb}Perf.ts`**: `PerfRow`에 `price·amount·r1d·r1y` 추가. `yf.chart` bars에서 `volume`도 추출 → `amount = price × vol`. CN A주: `eastmoneyBars` 업그레이드(`fields2=f51,f53,f57`) — f57 거래대금 직접 저장(price×vol 대신). 280일 룩백에서 `r1y(252거래일)` 포함 저장.
+- **`app/api/yahoo/{vn,gb,us,cn,jp}-list/route.ts`**: `yf.quote` 라이브 페치 완전 제거. `{cc}_stock_perf` SELECT(`symbol,price,r1d,r1w,r1m,r3m,r6m,r1y,amount`) → 인메모리 15분 캐시. CN `?market=` / JP `?type=` 파라미터 유지(DB에서 SYMS Set으로 필터). 응답 < 1s (이전 yf.quote 수초 → 테이블 300ms).
+- **크론 트리거**: VN 385, GB 349, CN 4008, JP 1080 computed. US Yahoo rate-limit(앞선 ~5.8k 요청 누적) → **로컬 0 computed · Vercel 배포 후 prod 크론 수동 트리거 필요**.
+- **TSC**: `EXIT 0`. console.log 없음.
+
 ## 2026-07-09 — STEP 665~667 + 🌍 LOCALE_SOURCE_PLAYBOOK — 가독성 리파인 마감 + 지수 티커 6개국 + 검증 배지 AA + 언어권 소스 런북 ✅
 
 - **🌍 `docs/LOCALE_SOURCE_PLAYBOOK.md` 신설**: 언어권 데이터소스 **발견·검증·기록 런북**("런북=프로그램·LLM=인터프리터"). 의미우선 스키마(정체·목적·필수속성·인스턴스) + 발견 결정트리 + 검증게이트(web_fetch JSON 빈값·Vercel IP차단·JS토큰·인코딩·경로추측금지) + 실패원장 9건 + relevance 규칙 + 서학개미/6개국 공시 실측 통합. **CLAUDE.md 참조 테이블 등록.** (이번 세션 "언어권 확장 방법론" 대화의 실체 산출물 — 하드코딩 대신 "방법·정의"를 코드화.)

@@ -34,29 +34,36 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
   return out;
 }
 
-// A주(.SS/.SZ) 일봉 종가 — 東方財富(Eastmoney) 무료 kline. Yahoo가 A주 과거시세(chart)를 400으로 차단해 대체.
-// secid: 1.=상해(.SS) / 0.=심천(.SZ). klt=101 일봉, fqt=1 전복권. fields2=f51(날짜),f53(종가).
-async function eastmoneyCloses(secid: string): Promise<number[]> {
+// A주(.SS/.SZ) 일봉 종가+거래대금 — 東方財富(Eastmoney) 무료 kline. Yahoo가 A주 과거시세(chart)를 400으로 차단해 대체.
+// secid: 1.=상해(.SS) / 0.=심천(.SZ). klt=101 일봉, fqt=1 전복권.
+// fields2=f51(날짜),f53(종가),f57(거래대금·원 단위).
+async function eastmoneyBars(secid: string): Promise<{ closes: number[]; lastAmount: number | null }> {
   try {
     const url =
       `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}` +
-      `&fields1=f1&fields2=f51,f53&klt=101&fqt=1&end=20500101&lmt=260`;
+      `&fields1=f1&fields2=f51,f53,f57&klt=101&fqt=1&end=20500101&lmt=260`;
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0", Referer: "https://quote.eastmoney.com/" },
       signal: AbortSignal.timeout(8000),
     });
-    if (!res.ok) return [];
+    if (!res.ok) return { closes: [], lastAmount: null };
     const j = (await res.json()) as { data?: { klines?: string[] } };
     const klines = j.data?.klines ?? [];
-    return klines
+    const closes = klines
       .map((k) => parseFloat(k.split(",")[1]))
       .filter((c) => isFinite(c) && c > 0);
+    const lastK = klines[klines.length - 1];
+    const rawAmt = lastK ? parseFloat(lastK.split(",")[2]) : NaN;
+    return {
+      closes,
+      lastAmount: isFinite(rawAmt) && rawAmt > 0 ? rawAmt : null,
+    };
   } catch {
-    return [];
+    return { closes: [], lastAmount: null };
   }
 }
 
-type PerfRow = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
+type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
 
 export async function computeCnPerf(): Promise<{ ok: true; computed: number; at: string }> {
   // 약 280 달력일 룩백 — 6개월(126 거래일) + 비거래일 버퍼 충분
@@ -65,26 +72,43 @@ export async function computeCnPerf(): Promise<{ ok: true; computed: number; at:
   const results = await mapLimit(ALL_SYMS, 12, async (sym): Promise<PerfRow | null> => {
     try {
       let closes: number[];
+      let lastVol: number | null = null;
+      let eastAmt: number | null = null;
+
       if (sym.endsWith(".HK")) {
         // 홍콩·ETF → Yahoo chart (정상 동작)
         const ch = await yf.chart(sym, { period1, interval: "1d" });
-        const quotes = (ch.quotes ?? []) as Array<{ close: number | null }>;
-        closes = quotes
-          .map((q) => q.close)
+        const bars = (ch.quotes ?? []) as Array<{ close: number | null; volume: number | null }>;
+        closes = bars
+          .map((b) => b.close)
           .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
+        lastVol = bars[bars.length - 1]?.volume ?? null;
       } else {
         // 상해(.SS)·심천(.SZ) A주 → 東方財富 kline (Yahoo 차단 대체)
         const code = sym.replace(/\.(SS|SZ)$/, "");
         const secid = (sym.endsWith(".SS") ? "1." : "0.") + code;
-        closes = await eastmoneyCloses(secid);
+        const res = await eastmoneyBars(secid);
+        closes = res.closes;
+        eastAmt = res.lastAmount;
       }
       if (closes.length < 6) return null; // 1주(5거래일)도 못 채우면 스킵
+      const price = closes[closes.length - 1];
+      const amount =
+        eastAmt != null
+          ? eastAmt
+          : lastVol != null && lastVol > 0
+          ? price * lastVol
+          : null;
       return {
         symbol: sym,
+        r1d: ret(closes, 1),
         r1w: ret(closes, 5),
         r1m: ret(closes, 21),
         r3m: ret(closes, 63),
         r6m: ret(closes, 126),
+        r1y: ret(closes, 252),
+        price,
+        amount,
       };
     } catch {
       return null;

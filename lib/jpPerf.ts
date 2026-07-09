@@ -37,7 +37,7 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
   return out;
 }
 
-type PerfRow = { symbol: string; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null };
+type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
 
 export async function computeJpPerf(): Promise<{ ok: true; computed: number; at: string }> {
   // 약 280 달력일 룩백 — 6개월(126 거래일) + 비거래일 버퍼 충분
@@ -47,17 +47,23 @@ export async function computeJpPerf(): Promise<{ ok: true; computed: number; at:
   const results = await mapLimit(STOCK_SYMS, 12, async (sym): Promise<PerfRow | null> => {
     try {
       const ch = await yf.chart(sym, { period1, interval: "1d" });
-      const quotes = (ch.quotes ?? []) as Array<{ close: number | null }>;
-      const closes = quotes
-        .map((q) => q.close)
+      const bars = (ch.quotes ?? []) as Array<{ close: number | null; volume: number | null }>;
+      const closes = bars
+        .map((b) => b.close)
         .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
       if (closes.length < 6) return null; // 1주(5거래일)도 못 채우면 스킵
+      const price = closes[closes.length - 1];
+      const lastVol = bars[bars.length - 1]?.volume ?? null;
       return {
         symbol: sym,
+        r1d: ret(closes, 1),
         r1w: ret(closes, 5),
         r1m: ret(closes, 21),
         r3m: ret(closes, 63),
         r6m: ret(closes, 126),
+        r1y: ret(closes, 252),
+        price,
+        amount: lastVol != null && lastVol > 0 ? price * lastVol : null,
       };
     } catch {
       return null; // 종목별 실패는 스킵
