@@ -27,10 +27,16 @@ async function fetchBatch(tickers) { // tickers = ['SHS', ...] (.VN 제거됨)
 
 const rows = [];
 const at = new Date().toISOString();
+let firstBatch = true;
 for (const grp of chunk(syms, 40)) {                     // 배치 40개씩
   const tickers = grp.map((s) => s.replace(/\.VN$/i, ""));
   let data = [];
-  try { data = await fetchBatch(tickers); } catch { data = []; }
+  try { data = await fetchBatch(tickers); } catch(e) { console.error("fetchBatch err:", e.message); data = []; }
+  if (firstBatch) {
+    console.log("1st batch tickers:", tickers.slice(0,5), "response type:", typeof data, "isArr:", Array.isArray(data), "len:", Array.isArray(data)?data.length:"n/a");
+    if (Array.isArray(data) && data.length > 0) console.log("sample[0] keys:", Object.keys(data[0]));
+    firstBatch = false;
+  }
   const byT = new Map(data.map((d) => [d.symbol, d]));
   for (const s of grp) {
     const d = byT.get(s.replace(/\.VN$/i, ""));
