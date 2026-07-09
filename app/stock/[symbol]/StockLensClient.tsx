@@ -44,9 +44,9 @@ function toneText(tone?: string): string {
   return tone === 'pos' ? 'text-unjong-accent' : tone === 'warn' ? 'text-amber-600' : 'text-unjong-muted';
 }
 
-// 신뢰도 배지 색 — strong=민트(검증)·partial=앰버(조건부/해석)·ref=회색(참고)
+// 신뢰도 배지 색 — strong=다크틸(검증·AA)·partial=앰버·ref=회색
 function gradeBadgeClass(tier: string): string {
-  if (tier === 'strong') return 'bg-unjong-accent/15 text-unjong-accent';
+  if (tier === 'strong') return 'bg-unjong-accent/12 text-unjong-success';
   if (tier === 'partial') return 'bg-amber-50 text-amber-600';
   return 'bg-unjong-background text-unjong-muted';
 }

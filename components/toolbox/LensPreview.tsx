@@ -15,7 +15,7 @@ function pctColor(v?: number | null): string {
   return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
 function gradeBadgeClass(tier: string): string {
-  if (tier === 'strong') return 'bg-unjong-accent/15 text-unjong-accent';
+  if (tier === 'strong') return 'bg-unjong-accent/12 text-unjong-success';
   if (tier === 'partial') return 'bg-amber-50 text-amber-600';
   return 'bg-unjong-background text-unjong-muted';
 }
