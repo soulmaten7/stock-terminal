@@ -41,7 +41,7 @@ async function eastmoneyBars(secid: string): Promise<{ closes: number[]; lastAmo
   try {
     const url =
       `https://push2his.eastmoney.com/api/qt/stock/kline/get?secid=${secid}` +
-      `&fields1=f1&fields2=f51,f53,f57&klt=101&fqt=1&end=20500101&lmt=260`;
+      `&fields1=f1&fields2=f51,f53,f57&klt=101&fqt=1&end=20500101&lmt=420`;  // 400일 캘린더 ≈ 276거래일 커버
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0", Referer: "https://quote.eastmoney.com/" },
       signal: AbortSignal.timeout(8000),
@@ -67,7 +67,8 @@ type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: nu
 
 export async function computeCnPerf(): Promise<{ ok: true; computed: number; at: string }> {
   // 약 280 달력일 룩백 — 6개월(126 거래일) + 비거래일 버퍼 충분
-  const period1 = new Date(Date.now() - 280 * 24 * 60 * 60 * 1000);
+  const LOOKBACK_DAYS = 400; // 252거래일(1년) 확보용 — 400 캘린더일 ≈ 276 거래일
+  const period1 = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
 
   const results = await mapLimit(ALL_SYMS, 12, async (sym): Promise<PerfRow | null> => {
     try {

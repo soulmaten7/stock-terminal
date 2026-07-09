@@ -41,7 +41,8 @@ type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: nu
 
 export async function computeUsPerf(): Promise<{ ok: true; computed: number; at: string }> {
   // 약 280 달력일 룩백 — 6개월(126 거래일) + 비거래일 버퍼 충분
-  const period1 = new Date(Date.now() - 280 * 24 * 60 * 60 * 1000);
+  const LOOKBACK_DAYS = 400; // 252거래일(1년) 확보용 — 400 캘린더일 ≈ 276 거래일
+  const period1 = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
 
   // 동시 12개씩 — ~6,121종목 약 3분(300초 안). 종목별 try/catch→null.
   const results = await mapLimit(STOCK_SYMS, 12, async (sym): Promise<PerfRow | null> => {

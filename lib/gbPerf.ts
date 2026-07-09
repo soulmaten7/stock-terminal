@@ -33,7 +33,8 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
 type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
 
 export async function computeGbPerf(): Promise<{ ok: true; computed: number; at: string }> {
-  const period1 = new Date(Date.now() - 280 * 24 * 60 * 60 * 1000);
+  const LOOKBACK_DAYS = 400; // 252거래일(1년) 확보용 — 400 캘린더일 ≈ 276 거래일
+  const period1 = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
 
   const results = await mapLimit(STOCK_SYMS, 12, async (sym): Promise<PerfRow | null> => {
     try {
