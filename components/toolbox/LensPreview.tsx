@@ -28,6 +28,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [brief, setBrief] = useState('');
   const [briefState, setBriefState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  const [etf, setEtf] = useState<{ isFund?: boolean; category?: string | null; expenseRatio?: number | null; holdings?: { sym: string; name: string; weight: number }[] } | null>(null);
 
   useEffect(() => {
     if (!stock) { setState('idle'); setLenses(null); return; }
@@ -36,6 +37,17 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
       .then((r) => r.json())
       .then((j) => { if (!alive) return; setLenses(j.lenses || []); setState('done'); })
       .catch(() => { if (alive) setState('error'); });
+    return () => { alive = false; };
+  }, [stock?.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ETF/펀드면 구성 요약(렌즈 대신) — /api/etf-holdings
+  useEffect(() => {
+    if (!stock) { setEtf(null); return; }
+    let alive = true; setEtf(null);
+    fetch('/api/etf-holdings?symbol=' + encodeURIComponent(stock.symbol))
+      .then((r) => r.json())
+      .then((j) => { if (alive) setEtf(j); })
+      .catch(() => {});
     return () => { alive = false; };
   }, [stock?.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -90,6 +102,26 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
           </div>
         </>
       )}
+      {etf?.isFund ? (
+        <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
+          <div className="mb-1.5 flex items-center gap-1">
+            <TLensLogo size={12} color="#2DD4BF" />
+            <span className="text-[12px] font-semibold text-unjong-primary">TR-AI 렌즈 · 구성</span>
+            <span className="ml-auto text-[10px] text-unjong-muted">상품 구성</span>
+          </div>
+          {etf.category ? <p className="text-[12px] text-unjong-muted">추종·유형 <span className="font-medium text-unjong-primary">{etf.category}</span></p> : null}
+          <ul className="mt-1 space-y-1">
+            {(etf.holdings ?? []).slice(0, 3).map((h) => (
+              <li key={h.sym || h.name} className="flex items-center justify-between gap-2 text-[12px]">
+                <span className="min-w-0 truncate text-unjong-primary">{h.name}</span>
+                <span className="shrink-0 font-semibold tabular-nums text-unjong-primary">{(h.weight * 100).toFixed(1)}%</span>
+              </li>
+            ))}
+          </ul>
+          {etf.expenseRatio != null ? <p className="mt-1 text-[11px] text-unjong-muted">보수율 {(etf.expenseRatio * 100).toFixed(2)}%</p> : null}
+        </div>
+      ) : (
+        <>
       <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
         <div className="mb-1.5 flex items-center gap-1">
           <TLensLogo size={12} color="#2DD4BF" />
@@ -128,6 +160,8 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
             <p className="text-[13px] leading-6 text-unjong-primary">{brief}</p>
           )}
         </div>
+      )}
+        </>
       )}
       <Link href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
         TR-AI 렌즈·근거 보기 →
