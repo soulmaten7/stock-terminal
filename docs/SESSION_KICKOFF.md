@@ -1,12 +1,12 @@
-<!-- 2026-07-08 -->
+<!-- 2026-07-10 -->
 # Trillion(트릴리언) — 새 세션 즉시 시작 파일
 
 > ⭐ **더 디테일한 마스터 인수인계**: `docs/NEXT_SESSION_PLAYBOOK.md` (이 파일은 그 단축본)
 >
 > 이 파일을 처음부터 끝까지 읽으면 바로 작업 시작 가능.
-> **Last refreshed**: 2026-07-08 (STEP 649~654 — 공시 R1 US·KR·JP·GB 4개국 완성[JP EDINET·GB Investegate/RNS]+KR 로고 수집; 이전 539~577 — …·카드 패밀리룩·이 기법 방향·**스크리닝 인프라·F-Score 실물·표시 헌장·TRAI 정체성 결정·6카드 헌장**)
+> **Last refreshed**: 2026-07-10 (STEP 673~690 — 🔴 브랜드 대개편[3기둥 무기·직시·자립·멍거 목소리]+탭 14→3[종목·정보·검증]+"AI 렌즈"→"TR-AI 렌즈"+ETF "상품 구성"[Yahoo topHoldings/네이버 etfAnalysis]+광고 수익화 기반; 이전 649~654 — 공시 R1 US·KR·JP·GB 4개국)
 > **실행 환경**: Mac 로컬 `~/stock-terminal` 에서 직접 실행 (앱 배포 ✓ onetrillion.app)
-> **현재 커밋**: `fef75ee` (STEP 654 — 공시 R1 US·KR·JP·GB 4개국. 이전 `be86401` STEP 577 — 6카드 표시 헌장 적용. 앞선 570~573=스크리닝 토대 · 574=F-Score 실물+표시 헌장 · 🔴576=TRAI 정체성 결정["정직한 재료로 사용자 판단"])
+> **현재 커밋**: `f21fa07` (STEP 690 — 🔴 브랜드 대개편[3기둥·멍거]+탭 3개[종목·정보·검증]+TR-AI 렌즈+ETF "상품 구성"+광고 수익화 기반. 이전 `fef75ee` STEP 654 — 공시 R1 US·KR·JP·GB 4개국)
 > **🔗 링크 허브**: KR `link_hub` **138**·US 67 (⚠️ MCP 직접 insert·마이그레이션 아님, US 미충전). **📱 모바일 패스=이번 세션 완료.**
 > ⚠️ **최신 상태는 `docs/SESSION_BOOT.md` 기준** (이 파일 본문 §1~는 V6/271 히스토리). 🔑 라우트 수정 후 재시작은 `pkill -f "next dev" && rm -rf .next && npm run dev`.
 > 세션이 끝날 때마다 이 파일과 NEXT_SESSION_START.md 반드시 업데이트할 것.

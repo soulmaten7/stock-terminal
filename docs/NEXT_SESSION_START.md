@@ -1,7 +1,15 @@
 <!-- 2026-07-10 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-09 (최신·2nd) — STEP 668~672D: 보드 성능 스냅샷화 + 데이터 검수 Round 1 + VN HNX 보류.**
+> 🆕 **2026-07-10 (최신) — STEP 673~690 + 🔴 브랜드 대개편: 정체성 3기둥(무기·직시·자립) + TR-AI 렌즈 + 탭 3개(종목·정보·검증) + ETF "상품 구성". HEAD `f21fa07` · STEP 690.**
+> - **🔴 브랜드 정체성 대개편**(`docs/BRAND_IDENTITY.md` 재작성): 3기둥 = 무기(Arm·TR-AI 렌즈)·직시(See·1차 재료)·자립(Compete·판단은 당신). 뿌리=프로메테우스·칸트(Sapere aude)·그레이엄·멍거. 목소리=멍거 톤("덜 멍청하게"). 근간="예언·추천 안 함, 불을 건넨다, 성공=당신이 우릴 덜 필요로 하게 됨". 슬로건 타이틀 "전문가 시각으로, TR-AI가 무료로 분석해 드립니다"·설명 "가격은 시장이 붙이고, 가치는 당신이 매깁니다 — 판단은 당신 몫". 옛 운종 태그라인=[이력].
+> - **682** "AI 렌즈"→**"TR-AI 렌즈"** 명칭 통일(중앙 `AiLensBadge.lensLabel()` 다국어). **광고 수익화**(`docs/AD_MONETIZATION_PLAYBOOK.md` 신설·`lib/ads.ts`): 슬롯+어필리에이트+요금표+언어권 합법성 원장(KR=자본시장법상 퍼블리셔 어필리에이트 없음→직접 광고 제휴·진짜 파이=AI구독+증권사 성과형).
+> - **680·685 탭 14→3 재구조**(`ToolboxClient.tsx`): 상단=종목·정보·검증, 나머지 12개(뉴스·공시·리포트·기업재무·거시·ETF·공모주·증권사·차트·거래소·토론커뮤니티·유튜브)="정보" 하위탭·증권사=정보 하위(참조 디렉토리)·검증=상단(KR 게이팅). 근거=catch-all 금지+빅테크식 최소. **677·681** 미리보기 광고 완전 제거→리스트 10개마다 일원화·태그라인 3곳 새 문구. **678·679** OG/SEO(layout 메타·홈 title override 제거)·상하이종합→SSE Composite.
+> - **683·684** 증권사 20곳 중립 사실 note(Supabase `brokers.note`·이름 옆·PC 너비). **685** 종목 리스트 10개마다 증권사 데모 광고(KR 대신증권·`BrokerAdRow`·`lib/ads.boardBrokerAd`).
+> - **686~690 ETF/상품 구성**(`docs/ETF_LENS_PLAN.md`): `/stock/{ETF}`가 기업재무 렌즈 대신 **"상품 구성"** 뷰(상위보유·섹터·보수율·운용사·추종지수). US=Yahoo topHoldings·KR=네이버 m.stock `etfAnalysis`(키 없음·Vercel 도달 확인). `lib/instrumentType.ts`·`app/api/etf-holdings/route.ts`·`EtfLensClient.tsx`·미리보기 요약. **영숫자 KRX 코드(0193T0) 인식 버그 수정.** 라벨="상품 구성"(AI 분석 아님)·REIT=단일주식·ETN=구성없음. **3중 검수 통과**(코드 8파일·Supabase 브로커 20/20·라이브 US/KR ETF·브로커 API·홈 3탭/OG).
+> - **▶ 다음 = ETF 증권사 거래연결(수익화) · ETN 정제 · JP/CN/VN/GB ETF 구성 · AI 구독(Phase 5) · 오늘 개편 모바일 실사용 QA.**
+
+> 🆕 **2026-07-09 (2nd) — STEP 668~672D: 보드 성능 스냅샷화 + 데이터 검수 Round 1 + VN HNX 보류.**
 > - **성능(668·668B)**: 5개 보드 라이브 야후→크론 스냅샷 DB 서빙(즉시화)·r1y 룩백 400일. **669** US 종목명 SEC 실명 보강(placeholder 4,231→55). **670** CN ETF 오태깅 수정(type 필드·주식탭 정화·ETF탭 종목별 CNY).
 > - **VN(671~672D)**: 야후=HOSE전용→VCI 발견→**VCI 클라우드 IP 차단(Vercel·GH Actions·"프로브≠지속" 교훈)**→**Yahoo HOSE 403 복구**+**HNX 보류(배선 완비)**: `scripts/vn_hnx_vci_cron.mjs`+`docs/PARKED_HNX_VCI_ACTIVATION.md`(VPS 거주지 IP).
 > - **🅿️ 보류 기능 프로토콜**: `LOCALE_SOURCE_PLAYBOOK §11`+세션종료 체크리스트(막힌 소스=가짜 금지·배선 보존·기록).

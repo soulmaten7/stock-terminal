@@ -1,11 +1,23 @@
-<!-- 2026-07-09 -->
+<!-- 2026-07-10 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-09 (최신·5th) · STEP 668~672D — 보드 성능 스냅샷화 + 데이터 검수 Round 1 + VN HNX 보류(배선 완비).**
+> 🟢 **2026-07-10 (최신) · STEP 673~690 + 🔴 브랜드 대개편 — 정체성 3기둥(무기·직시·자립) + TR-AI 렌즈 + 탭 3개(종목·정보·검증) + ETF "상품 구성" (HEAD `f21fa07` · STEP 690).**
+> - **🔴 브랜드 정체성 대개편**(`docs/BRAND_IDENTITY.md` 재작성): 3기둥 = **무기**(Arm·TR-AI 렌즈)·**직시**(See·1차 재료)·**자립**(Compete·판단은 당신). 정신적 뿌리 = 프로메테우스·칸트(Sapere aude)·그레이엄·멍거. 목소리 = 멍거 톤(건조·인센티브·"덜 멍청하게"). 가드레일 = "무장하되 벼린다"(칼=명료함이지 대박 아님). 근간 = "예언·추천 안 함, 불을 건넨다, 성공=당신이 우릴 덜 필요로 하게 됨". 슬로건/OG 타이틀 "전문가 시각으로, TR-AI가 무료로 분석해 드립니다"·설명 "가격은 시장이 붙이고, 가치는 당신이 매깁니다 — 판단은 당신 몫". 옛 운종 태그라인=[이력] 보존.
+> - **682 "AI 렌즈"→"TR-AI 렌즈" 명칭 통일**(엔진 브랜드): 중앙 `AiLensBadge.lensLabel()` 다국어. 미리보기·6보드 힌트·종목 페이지 반영.
+> - **광고 수익화**(`docs/AD_MONETIZATION_PLAYBOOK.md` 신설·`lib/ads.ts`): 슬롯 인벤토리+어필리에이트+요금표+언어권 합법성 원장(KR 채움). 한국=자본시장법상 퍼블리셔 어필리에이트 없음→직접 광고 제휴 경로. 리딩방 광고=중심축서 내림. 진짜 파이=AI구독+증권사 어필리에이트(성과형).
+> - **680·685 탭 14→3 재구조**(`ToolboxClient.tsx`): 상단 = 종목·정보·검증. 나머지 12개(뉴스·공시·리포트·기업재무·거시·ETF·공모주·증권사·차트·거래소·토론커뮤니티·유튜브) = **"정보" 하위탭**. 증권사=정보 하위(참조 디렉토리)·검증=상단탭(KR 게이팅)·유튜브=KR 게이팅. 근거=catch-all 금지(네이버·다음·야후 관행)+빅테크식 최소·직관.
+> - **677·681 미리보기 광고 완전 제거**→광고는 리스트 10개마다로 일원화. UI 태그라인 3곳(푸터·about·로그인) 새 문구. **678·679** OG/SEO 문구(`app/layout.tsx` 메타·홈 `app/page.tsx` title override 제거→layout `title.default` 단일 소스). **상하이종합→SSE Composite**(지수 티커 영문 통일).
+> - **683·684 증권사 소개글**: 20곳 계열/유형 중립 사실 note(Supabase `brokers.note` 갱신·옛 "20년 연속 1위" 대체·SK증권=독립계)·이름 옆(`ListRow` meta)·PC 너비. **685** 종목 리스트 10개마다 증권사 데모 광고(KR 대신증권·`BrokerAdRow`·`lib/ads.boardBrokerAd`)="거래처 안내"지 투자권유 아님.
+> - **686~690 ETF/상품 구성**(`docs/ETF_LENS_PLAN.md`): `/stock/{ETF}`가 기업재무 렌즈 대신 **"상품 구성"** 뷰(상위보유·섹터·보수율·운용사·추종지수). US=Yahoo topHoldings·KR=네이버 m.stock `etfAnalysis`(키 없음·Vercel 도달 확인). `lib/instrumentType.ts`·`app/api/etf-holdings/route.ts`·`EtfLensClient.tsx`·미리보기 요약(`LensPreview`). **영숫자 KRX 코드(0193T0) 인식 버그 수정**(`krCode /^\d[0-9A-Z]{5}$/`). 라벨="상품 구성"(AI 분석 아님·정체성). REIT=단일주식·ETN=구성없음·KRX getJsonData=LOGOUT→네이버 채택. 증권사 거래연결(수익화)=별도·미룸.
+> - **3중 검수 통과**: 코드리뷰 8파일 클린 + Supabase 브로커 20/20·홍보 0 + 라이브 US/KR ETF·브로커 API·홈 3탭/OG + 링크 카테고리 전부 채워짐.
+> - **신규 파일**: `docs/BRAND_IDENTITY.md`(재작성)·`docs/AD_MONETIZATION_PLAYBOOK.md`·`docs/ETF_LENS_PLAN.md`·`lib/ads.ts`·`lib/instrumentType.ts`·`components/toolbox/BrokerAdRow.tsx`·`app/api/etf-holdings/route.ts`·`app/stock/[symbol]/EtfLensClient.tsx`·STEP 파일 673~690.
+> - **▶ 다음 = ETF 증권사 거래연결(수익화) · ETN 정제 · JP/CN/VN/GB ETF 구성 · AI 구독(Phase 5) · 오늘 개편 모바일 실사용 QA.**
+>
+> 🟢 **2026-07-09 (5th) · STEP 668~672D — 보드 성능 스냅샷화 + 데이터 검수 Round 1 + VN HNX 보류(배선 완비).**
 > - **성능(668·668B)**: 5개 보드(VN·US·CN·JP·GB) 라이브 야후→**크론 스냅샷 DB 서빙**(KR 미러)·즉시화·r1y 룩백 400일 복구.
 > - **검수 Round 1**: **669 US 종목명 SEC 실명 보강**(placeholder 4,231→55). **670 CN ETF 오태깅**(type 필드·주식탭 정화·ETF탭 종목별 통화).
 > - **VN HNX(671~672D)**: 야후=HOSE전용→VCI 발견(HNX 커버)→**VCI가 클라우드 IP(Vercel·GH Actions) 지속요청 차단**("프로브≠지속" 교훈)→**Yahoo HOSE 403 복구**+**HNX 보류(배선 완비)**: `scripts/vn_hnx_vci_cron.mjs`+`docs/PARKED_HNX_VCI_ACTIVATION.md`(VPS 거주지 IP 필요).
