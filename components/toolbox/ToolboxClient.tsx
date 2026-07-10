@@ -292,7 +292,7 @@ export default function ToolboxClient({
             <GbMarketBoard isLoggedIn={isLoggedIn} />
           )
         ) : activeTab === 'broker' ? (
-          <div className="mx-auto w-full max-w-3xl">
+          <div className="w-full">
             <BrokerRanking />
           </div>
         ) : activeTab === 'youtube' ? (

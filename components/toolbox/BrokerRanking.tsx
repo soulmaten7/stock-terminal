@@ -33,6 +33,7 @@ export default function BrokerRanking({ hideHeader = false, region = 'KR' }: { h
               rank={b.rank}
               iconUrl={`https://www.google.com/s2/favicons?domain=${b.domain}&sz=64`}
               title={b.name}
+              subtitle={b.note}
               stat={b.share != null ? `${b.share}%` : undefined}
             />
             {(i + 1) % AD_EVERY === 0 && i + 1 < brokers.length ? <AdSlotRow slot="broker" /> : null}
