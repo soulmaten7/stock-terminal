@@ -20,9 +20,9 @@
 ## §1 데이터 소스 (프로브 결과 2026-07-10)
 
 - 🇺🇸 **US ETF = Yahoo `quoteSummary(topHoldings, fundProfile)` — ✅ 지금 바로 됨.** 프로브(SPY·QQQ): 상위 10보유(심볼·이름·비중)·섹터 비중·보수율(annualReportExpenseRatio)·운용사(family). **우리가 이미 쓰는 의존성**(리스크 0). 단 상위 10만(전체 아님) — 요약엔 충분.
-- 🇰🇷 **KR ETF = Yahoo에 없음**(069500.KS "No fundamentals data") → **KRX 필요**:
-  - KRX Data Marketplace OTP 방식(`data.krx.co.kr` getJsonData.cmd·pykrx가 쓰는 방식·키 불필요) 또는 KRX OpenAPI(`openapi.krx.co.kr`·키·10k/일).
-  - ⚠️ **클라우드 IP 차단 리스크**(CN 东方財富·VN VCI 전례) → **프로브 필수 + 크론 스냅샷 DB 패턴**(막히면 off-Vercel GitHub Actions). 대체: 네이버 금융 ETF 구성종목 테이블.
+- 🇰🇷 **KR ETF = 네이버 m.stock `etfAnalysis` — ✅ 채택(키 없음·풍부).** 프로브(069500 KODEX200): 상위10보유(itemCode·비중 "32.95%")·섹터·국가·자산 비중·**추종지수(etfBaseIndex "코스피 200")**·운용사(issuerName)·보수율(totalFee 0.15)·AUM. `GET https://m.stock.naver.com/api/stock/{code}/etfAnalysis`.
+  - ❌ **KRX getJsonData.cmd = "LOGOUT"**(세션쿠키 세워도 동일 — 안티스크래핑·OTP 게이트). 불안정 → 미채택. 공식 대안=KRX OpenAPI/data.go.kr(키 필요).
+  - ⚠️ **네이버 Vercel(미 IP) 도달성 배포 실측 필요**("프로브≠지속"·东方財富/VCI 전례). 막히면 크론 스냅샷 or off-Vercel(GitHub Actions).
 - **ETN(KR)** = KRX(`api/krx/etn` 이미 있음) + 기초지수 구성.
 - 이미 보유: `api/krx/etf-performance`·`api/krx/etn`·`api/yahoo/us-etf-performance`·`reit-performance`(가격·성과). **구성종목만 신규.**
 

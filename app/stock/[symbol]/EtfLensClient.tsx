@@ -20,11 +20,17 @@ type EtfData = {
 };
 
 const SECTOR_KO: Record<string, string> = {
+  // Yahoo(US)
   realestate: '부동산', consumer_cyclical: '경기소비재', basic_materials: '소재',
   consumer_defensive: '필수소비재', technology: '기술', financial_services: '금융',
   healthcare: '헬스케어', industrials: '산업재', communication_services: '커뮤니케이션',
   energy: '에너지', utilities: '유틸리티',
+  // 네이버(KR)
+  it: 'IT·기술', financials: '금융', materials: '소재', health_care: '헬스케어',
+  consumer_discretionary: '경기소비재', consumer_staples: '필수소비재',
+  communication: '커뮤니케이션', real_estate: '부동산',
 };
+const sectorLabel = (k: string) => SECTOR_KO[(k ?? '').toLowerCase()] ?? k;
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export default function EtfLensClient({ symbol, initialName }: { symbol: string; initialName?: string }) {
@@ -65,7 +71,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
         </div>
         <div className="grid grid-cols-3 gap-y-2 text-center">
           <div><p className="text-[11px] text-unjong-muted">운용사</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
-          <div><p className="text-[11px] text-unjong-muted">유형</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
+          <div><p className="text-[11px] text-unjong-muted">추종·유형</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
           <div><p className="text-[11px] text-unjong-muted">보수율(연)</p><p className="text-sm font-semibold text-unjong-primary">{data?.expenseRatio != null ? pct(data.expenseRatio) : '—'}</p></div>
         </div>
       </div>
@@ -103,7 +109,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
               <ul className="space-y-1.5">
                 {[...data!.sectors].sort((a, b) => b.weight - a.weight).map((s) => (
                   <li key={s.key} className="flex items-center gap-2 text-[12px]">
-                    <span className="w-20 shrink-0 truncate text-unjong-muted">{SECTOR_KO[s.key] ?? s.key}</span>
+                    <span className="w-20 shrink-0 truncate text-unjong-muted">{sectorLabel(s.key)}</span>
                     <span className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-unjong-background">
                       <span className="absolute inset-y-0 left-0 rounded-full bg-unjong-primary/30" style={{ width: `${s.weight * 100}%` }} />
                     </span>
