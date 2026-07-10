@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { getCache, setCache } from '@/lib/clientCache';
-import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, ArrowUp, ArrowDown, UserCheck } from 'lucide-react';
+import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, ArrowUp, ArrowDown, UserCheck, Send, PlayCircle, Globe, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import SelectDropdown from './SelectDropdown';
 import AdSlotRow from './AdSlotRow';
@@ -44,6 +44,12 @@ const VIEW_TABS: { key: View; label: string }[] = [
 
 function platformLabel(p: string): string {
   return p === 'telegram' ? '텔레그램' : p === 'kakao' ? '카카오톡' : p === 'naver' ? '네이버' : '기타';
+}
+function PlatformIcon({ p, className }: { p?: string | null; className?: string }) {
+  if (p === 'telegram') return <Send size={12} className={className} />;
+  if (p === 'youtube') return <PlayCircle size={12} className={className} />;
+  if (p === 'kakao') return <MessageCircle size={12} className={className} />;
+  return <Globe size={12} className={className} />;
 }
 const LINK_TYPE_LABEL: Record<string, string> = { room: '리딩방', youtube: '유튜브', site: '사이트' };
 function roomNameOf(a: Advisor): string {
@@ -93,7 +99,7 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
   const [ogLoading, setOgLoading] = useState(false);
   useEffect(() => {
     setOg(null);
-    if (!a.verified_owner || !linkUrl) { setOgLoading(false); return; }
+    if (!linkUrl) { setOgLoading(false); return; }
     let cancelled = false;
     setOgLoading(true);
     fetch(`/api/link-preview?url=${encodeURIComponent(linkUrl)}`)
@@ -151,7 +157,7 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
           <Siren size={13} /> 신고 {a.report_count}
         </button>
       </div>
-      {a.verified_owner && linkUrl ? (
+      {linkUrl ? (
         <div className="mt-3">
           {ogLoading ? (
             <div className="mb-2 h-24 animate-pulse rounded-lg bg-unjong-background" />
@@ -168,9 +174,18 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
               </div>
             </a>
           ) : null}
-          <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
-            연결링크 바로가기 <ExternalLink size={13} />
-          </a>
+          {a.verified_owner ? (
+            <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
+              연결링크 바로가기 <ExternalLink size={13} />
+            </a>
+          ) : (
+            <>
+              <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg border border-unjong-border py-2 text-sm font-semibold text-unjong-primary hover:border-unjong-accent hover:text-unjong-accent">
+                <PlatformIcon p={a.platform} /> {platformLabel(a.platform)} 바로가기 <ExternalLink size={12} />
+              </a>
+              <p className="mt-1 text-center text-[10px] text-unjong-muted">금감원 신고 시 제출된 공개 링크 · 미인증</p>
+            </>
+          )}
         </div>
       ) : null}
       {!a.channel_id && a.biz_links && a.biz_links.length > 0 ? (
@@ -447,7 +462,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                       ) : pub ? (
                         <a href={pub.url} target="_blank" rel="noopener noreferrer nofollow" onClick={(e) => e.stopPropagation()}
                            className="flex min-w-0 items-center gap-1 text-unjong-muted hover:text-unjong-accent">
-                          <ExternalLink size={12} className="shrink-0" />
+                          <PlatformIcon p={a.platform} className="shrink-0" />
                           <span className="truncate">{pub.label}</span>
                         </a>
                       ) : (
