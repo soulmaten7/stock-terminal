@@ -22,11 +22,11 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app"),
   title: {
-    default: "Trillion — 흩어진 금융정보를 한눈에",
+    default: "Trillion — 전문가 시각의 무료 주식 분석",
     template: "%s | Trillion",
   },
   description:
-    "흩어진 금융정보를 한곳에 모아 한눈에 — 시세·뉴스·공시·거시지표·ETF·공모주, 그리고 리딩방 검증까지. Trillion.",
+    "전문가 시각의 분석을 TR-AI가 무료로. 시세·뉴스·공시·거시·ETF·공모주부터 리딩방 검증까지 — 가치 판단은 당신 몫.",
   keywords: [
     "트릴리언",
     "한국 주식",
@@ -35,11 +35,16 @@ export const metadata: Metadata = {
     "리딩방 검증",
     "ETF 평가",
     "신뢰 평가 허브",
+    "주식 분석",
+    "무료 주식 분석",
+    "AI 주식 분석",
+    "TR-AI",
   ],
   authors: [{ name: "Trillion" }],
   openGraph: {
-    title: "Trillion",
-    description: "흩어진 금융정보를 한눈에 — 시세·뉴스·공시·거시·리딩방 검증",
+    title: "전문가 시각으로, TR-AI가 무료로 분석해 드립니다",
+    description: "가격은 시장이 붙이고, 가치는 당신이 매깁니다. 우린 그 가치를 볼 수 있게 거들 뿐 — 판단은 당신 몫입니다.",
+    siteName: "Trillion",
     type: "website",
     locale: "ko_KR",
   },
