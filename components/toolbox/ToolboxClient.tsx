@@ -35,24 +35,25 @@ const COUNTRIES: { code: Country; label: string }[] = [
 // ── 2단 네비 (2026-07-10 재구조) ──────────────────────────────
 // 상단 4탭: 종목 · 정보 · 증권사 · 검증. "정보" 안에 나머지를 하위탭으로 접음.
 // 근거: 빅테크식 최소·직관 네비 + catch-all 금지(네이버·다음·야후 관행) — 자세히는 docs/BRAND_IDENTITY.md.
-const TOP_TABS = ['market', 'info', 'broker', 'room'] as const;
+const TOP_TABS = ['market', 'info', 'room'] as const;
 type TopTab = (typeof TOP_TABS)[number];
-const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보', broker: '증권사', room: '검증' };
+const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보', room: '검증' };
 
-// "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부 링크성은 뒤(구분선으로 분리·곁가지).
-const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'chart', 'exchange', 'community', 'youtube'];
+// "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부·거래처(증권사·차트·거래소·커뮤니티·유튜브)는 구분선 뒤.
+// 증권사=참조 디렉토리로 강등(트래픽 낮음). 수익은 종목 리스트 인리스트 광고로(설계: docs/AD_MONETIZATION_PLAYBOOK).
+const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'chart', 'exchange', 'community', 'youtube'];
 // 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨로 폴백.
 const INFO_LABELS: Record<string, string> = {
   news: '뉴스', disclosure: '공시', research: '리포트', analysis: '기업·재무', macro: '거시', etf: 'ETF', ipo: '공모주',
-  chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
+  broker: '증권사', chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
 };
-// 외부 링크성 하위탭 — 구분선 뒤로(곁가지 표시)
-const INFO_EXTERNAL = new Set(['chart', 'exchange', 'community', 'youtube']);
+// 외부·거래처 하위탭 — 구분선 뒤로(곁가지 표시)
+const INFO_EXTERNAL = new Set(['broker', 'chart', 'exchange', 'community', 'youtube']);
 // 유효 slug 전체(로컬스토리지 복원 검증용)
-const ALL_SLUGS = ['market', 'broker', 'room', ...INFO_ORDER];
+const ALL_SLUGS = ['market', 'room', ...INFO_ORDER];
 
 function topOf(slug: string): TopTab {
-  if (slug === 'market' || slug === 'broker' || slug === 'room') return slug as TopTab;
+  if (slug === 'market' || slug === 'room') return slug as TopTab;
   return 'info';
 }
 
@@ -171,6 +172,7 @@ export default function ToolboxClient({
 
   // ── 하위탭(정보) 가용성: 국가별. 피드는 지원국가, 링크 카테고리는 링크 존재, 유튜브는 KR. ──
   const infoSubs = INFO_ORDER.map((slug) => {
+    if (slug === 'broker') return { slug, label: INFO_LABELS.broker }; // 증권사 = 전 국가 참조 디렉토리(항상)
     if (slug === 'youtube') return country === 'KR' ? { slug, label: INFO_LABELS.youtube } : null;
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);

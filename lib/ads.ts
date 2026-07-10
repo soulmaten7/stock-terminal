@@ -93,3 +93,13 @@ export const RATE_CARD: RateCardEntry[] = [
 export function soldCreative(_slotId: string, _locale = 'ko'): { label: string; href: string } | null {
   return null;
 }
+
+// ── 인리스트 증권사 광고(종목 보드 10개마다) ──────────────────
+// 한국은 퍼블리셔 어필리에이트가 없음(자본시장법) → 직접 광고 제휴가 수익 경로.
+// 지금은 하우스(데모) 광고: 낮은 순위 증권사를 넣어 인벤토리 시연(프리미엄 자리는 상위사 유료 판매 여지).
+// 실제 유료 광고주/제휴 잡히면 이 함수만 교체(또는 DB 연결). 광고는 "거래처 안내"지 "투자권유" 아님(§5 KR).
+export interface BoardBrokerAd { name: string; domain: string; url: string; note?: string; cta?: string; }
+export function boardBrokerAd(locale: string): BoardBrokerAd | null {
+  if (locale === 'ko') return { name: '대신증권', domain: 'daishin.com', url: 'https://www.daishin.com', note: '대신금융그룹(독립계)', cta: '계좌개설' };
+  return null; // 다른 언어권: 주식 어필리에이트 활발 → 제휴/광고주 확보 시 채움
+}

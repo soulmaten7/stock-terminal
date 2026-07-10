@@ -6,7 +6,7 @@ import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import AdSlotRow from './AdSlotRow';
+import { BrokerAdTr, BrokerAdCard } from './BrokerAdRow';
 import LensPreview from './LensPreview';
 
 type Row = {
@@ -438,6 +438,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </button>
                     </td>
                   </tr>
+                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? <BrokerAdTr colSpan={5} /> : null}
                   </Fragment>
                 ))}
               </tbody>
@@ -471,11 +472,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>
                   </div>
+                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? <BrokerAdCard /> : null}
                 </Fragment>
               ))}
-            </div>
-            <div className="mt-2">
-              <AdSlotRow slot="broker" />
             </div>
             </>
           )}
