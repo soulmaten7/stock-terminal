@@ -28,7 +28,7 @@ const INDEX_SYMBOLS = [
   { symbol: "^N225", name: "Nikkei 225", group: "JP" },
   { symbol: "^TPX", name: "TOPIX", group: "JP" },
   // 🇨🇳 CN + 🇭🇰 HK
-  { symbol: "000001.SS", name: "상하이종합", group: "CN" },
+  { symbol: "000001.SS", name: "SSE Composite", group: "CN" },
   { symbol: "000300.SS", name: "CSI 300", group: "CN" },
   { symbol: "^HSI", name: "Hang Seng", group: "CN" },
   // 🇺🇸 US
