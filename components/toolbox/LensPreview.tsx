@@ -28,7 +28,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [brief, setBrief] = useState('');
   const [briefState, setBriefState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
-  const [etf, setEtf] = useState<{ isFund?: boolean; category?: string | null; expenseRatio?: number | null; holdings?: { sym: string; name: string; weight: number }[] } | null>(null);
+  const [etf, setEtf] = useState<{ isFund?: boolean; fundType?: string; category?: string | null; expenseRatio?: number | null; holdings?: { sym: string; name: string; weight: number }[] } | null>(null);
 
   useEffect(() => {
     if (!stock) { setState('idle'); setLenses(null); return; }
@@ -106,19 +106,25 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
           <div className="mb-1.5 flex items-center gap-1">
             <Layers size={12} className="text-unjong-accent" />
-            <span className="text-[12px] font-semibold text-unjong-primary">상품 구성</span>
+            <span className="text-[12px] font-semibold text-unjong-primary">{etf.fundType === 'etn' ? '상품 정보' : '상품 구성'}</span>
             <span className="ml-auto text-[10px] text-unjong-muted">AI 분석 아님</span>
           </div>
-          {etf.category ? <p className="text-[12px] text-unjong-muted">추종·유형 <span className="font-medium text-unjong-primary">{etf.category}</span></p> : null}
-          <ul className="mt-1 space-y-1">
-            {(etf.holdings ?? []).slice(0, 3).map((h) => (
-              <li key={h.sym || h.name} className="flex items-center justify-between gap-2 text-[12px]">
-                <span className="min-w-0 truncate text-unjong-primary">{h.name}</span>
-                <span className="shrink-0 font-semibold tabular-nums text-unjong-primary">{(h.weight * 100).toFixed(1)}%</span>
-              </li>
-            ))}
-          </ul>
-          {etf.expenseRatio != null ? <p className="mt-1 text-[11px] text-unjong-muted">보수율 {(etf.expenseRatio * 100).toFixed(2)}%</p> : null}
+          {etf.fundType === 'etn' ? (
+            <p className="text-[12px] leading-5 text-unjong-muted">ETN(전략형 상품)이라 개별 구성종목이 없어요. 발행사 신용·레버리지 특성은 자세히 보기에서.</p>
+          ) : (
+            <>
+              {etf.category ? <p className="text-[12px] text-unjong-muted">추종·유형 <span className="font-medium text-unjong-primary">{etf.category}</span></p> : null}
+              <ul className="mt-1 space-y-1">
+                {(etf.holdings ?? []).slice(0, 3).map((h) => (
+                  <li key={h.sym || h.name} className="flex items-center justify-between gap-2 text-[12px]">
+                    <span className="min-w-0 truncate text-unjong-primary">{h.name}</span>
+                    <span className="shrink-0 font-semibold tabular-nums text-unjong-primary">{(h.weight * 100).toFixed(1)}%</span>
+                  </li>
+                ))}
+              </ul>
+              {etf.expenseRatio != null ? <p className="mt-1 text-[11px] text-unjong-muted">보수율 {(etf.expenseRatio * 100).toFixed(2)}%</p> : null}
+            </>
+          )}
         </div>
       ) : (
         <>
@@ -164,7 +170,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         </>
       )}
       <Link href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
-        {etf?.isFund ? '상품 구성 자세히 보기' : 'TR-AI 렌즈·근거 보기'} →
+        {etf?.isFund ? (etf.fundType === 'etn' ? '상품 정보 자세히 보기' : '상품 구성 자세히 보기') : 'TR-AI 렌즈·근거 보기'} →
       </Link>
     </div>
   );

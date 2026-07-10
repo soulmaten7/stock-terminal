@@ -8,6 +8,7 @@ type Holding = { sym: string; name: string; weight: number };
 type Sector = { key: string; weight: number };
 type EtfData = {
   isFund: boolean;
+  fundType?: 'etf' | 'etn' | 'stock';
   symbol: string;
   family: string | null;
   category: string | null;
@@ -49,6 +50,8 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
   const hasHoldings = (data?.holdings?.length ?? 0) > 0;
   const maxW = hasHoldings ? Math.max(...data!.holdings.map((h) => h.weight)) : 1;
+  const isEtn = data?.fundType === 'etn';
+  const leveraged = /레버리지|인버스|\dX/i.test(initialName ?? '');
 
   return (
     <div className="mx-auto w-full max-w-3xl px-3 py-4 sm:px-4">
@@ -57,10 +60,23 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
       {/* 헤더 */}
       <div className="flex items-center gap-2">
         <h1 className="text-xl font-bold text-unjong-primary">{initialName || ticker}</h1>
-        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[11px] font-medium text-unjong-muted">ETF · 구성</span>
+        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[11px] font-medium text-unjong-muted">{isEtn ? 'ETN · 상품 정보' : 'ETF · 구성'}</span>
       </div>
       <p className="mt-0.5 text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
 
+      {isEtn ? (
+        /* ETN = 전략형(바스켓 없음) → 상품 정보 + 주의 */
+        <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-5">
+          <div className="mb-2 flex items-center gap-1.5">
+            <Layers size={14} className="text-unjong-accent" />
+            <span className="text-[13px] font-semibold text-unjong-primary">상품 정보</span>
+            <span className="ml-auto text-[10px] text-unjong-muted">ETN · AI 분석 아님</span>
+          </div>
+          <p className="text-[13px] leading-6 text-unjong-primary">이 상품은 <b>ETN(상장지수증권)</b>이에요. 발행 증권사가 기초지수 수익률을 약정해 지급하는 <b>전략형 상품</b>으로, ETF와 달리 <b>개별 구성종목(바스켓)이 없어요.</b> 상품명에 발행사·추종 지수·유형(레버리지·인버스)이 담겨 있어요.</p>
+          <p className="mt-3 rounded-lg bg-amber-50 p-2.5 text-[12px] leading-5 text-amber-700">⚠️ ETN은 발행사 신용위험이 있어요.{leveraged ? ' 레버리지·인버스형은 기초지수를 배수·반대로 추종해 장기 보유 시 가치가 깎일 수 있어요(변동성 손실).' : ''}</p>
+        </div>
+      ) : (
+        <>
       {/* 개요 카드 */}
       <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-4">
         <div className="mb-2 flex items-center gap-1.5">
@@ -120,14 +136,16 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
           )}
         </>
       )}
+        </>
+      )}
 
       {/* 출처 */}
       {data?.sourceUrl && (
         <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex items-center gap-1 text-[11px] text-unjong-muted hover:text-unjong-accent">
-          구성 출처: {data.source} <ExternalLink size={11} />
+          정보 출처: {data.source} <ExternalLink size={11} />
         </a>
       )}
-      <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">상품 구성 정보이며 어디서 거래하든 동일합니다. 사고팔 신호가 아니라 스스로 판단할 재료예요.</p>
+      <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">상품 정보이며 어디서 거래하든 동일합니다. 사고팔 신호가 아니라 스스로 판단할 재료예요.</p>
     </div>
   );
 }
