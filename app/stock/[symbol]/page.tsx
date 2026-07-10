@@ -6,7 +6,9 @@
 // 인터랙티브 본문은 StockLensClient(클라)가 그대로 담당.
 import type { Metadata } from "next";
 import { resolveStockName, tickerOf } from "@/lib/stockName";
+import { getInstrumentType } from "@/lib/instrumentType";
 import StockLensClient from "./StockLensClient";
+import EtfLensClient from "./EtfLensClient";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
 
@@ -73,10 +75,16 @@ export default async function StockPage({ params }: Params) {
   }
   const jsonLd = { "@context": "https://schema.org", "@graph": graph };
 
+  const kind = await getInstrumentType(symbol); // ETF/펀드면 구성 뷰로 분기(기업재무 렌즈 대신)
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <StockLensClient initialName={info?.name || undefined} />
+      {kind === "fund" ? (
+        <EtfLensClient symbol={symbol} initialName={info?.name || undefined} />
+      ) : (
+        <StockLensClient initialName={info?.name || undefined} />
+      )}
     </>
   );
 }
