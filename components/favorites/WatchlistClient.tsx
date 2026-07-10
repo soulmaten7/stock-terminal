@@ -49,10 +49,13 @@ export default function WatchlistClient() {
   return (
     <ul className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface">
       {items.map((f) => (
-        <li key={`${f.symbol}:${f.market}`} className="flex items-center gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0">
-          <StockLogo code={f.symbol} name={f.name_ko ?? f.symbol} size={22} />
-          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary">{f.name_ko ?? f.symbol}</span>
-          <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
+        <li key={`${f.symbol}:${f.market}`} className="group flex items-center gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background">
+          {/* 행(로고·이름·티커) 전체 클릭 → 종목 상세. 앱 공통 동선(LensPreview '자세히 보기'와 동일 /stock/[symbol]). 해제(X)만 분리. */}
+          <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 items-center gap-2">
+            <StockLogo code={f.symbol} name={f.name_ko ?? f.symbol} size={22} />
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{f.name_ko ?? f.symbol}</span>
+            <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
+          </Link>
           <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label="관심종목 해제" className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
             <X size={15} />
           </button>

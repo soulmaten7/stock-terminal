@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -8,6 +9,7 @@ import { ArrowLeft } from "lucide-react";
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -30,14 +32,15 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-unjong-background p-4">
       <div className="w-full max-w-md">
-        {/* 뒤로가기 */}
-        <Link
-          href="/"
+        {/* 뒤로가기 — 홈 고정이 아니라 직전 화면으로(히스토리 없으면 홈). 종목 상세와 동일 동작. */}
+        <button
+          type="button"
+          onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }}
           className="inline-flex items-center gap-1 text-sm text-unjong-muted hover:text-unjong-primary mb-6"
         >
           <ArrowLeft size={14} />
           돌아가기
-        </Link>
+        </button>
 
         {/* 트릴리언 로고 */}
         <div className="text-center mb-8">
