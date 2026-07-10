@@ -32,12 +32,29 @@ const COUNTRIES: { code: Country; label: string }[] = [
   { code: 'GB', label: '영국' },
 ];
 
-// 탭 표시 순서 (V7 재정렬): 뉴스·증권사·유튜브 앞으로, 리딩방 끝
-const TAB_ORDER = ['market', 'chart', 'news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'exchange', 'community', 'youtube', 'room'];
-// 탭 묶음 경계 — 각 묶음의 첫 탭 앞에 얇은 구분선(시세 | 정보 | 상품 | 거래소·기관 | 사람)
-const CLUSTER_START = new Set(['news', 'etf', 'exchange', 'community']);
-// link_hub 카테고리가 아닌 특수 탭의 라벨
-const SPECIAL_LABELS: Record<string, string> = { market: '종목·상품', broker: '증권사', youtube: '유튜브', room: '리딩방·검증' };
+// ── 2단 네비 (2026-07-10 재구조) ──────────────────────────────
+// 상단 4탭: 종목 · 정보 · 증권사 · 검증. "정보" 안에 나머지를 하위탭으로 접음.
+// 근거: 빅테크식 최소·직관 네비 + catch-all 금지(네이버·다음·야후 관행) — 자세히는 docs/BRAND_IDENTITY.md.
+const TOP_TABS = ['market', 'info', 'broker', 'room'] as const;
+type TopTab = (typeof TOP_TABS)[number];
+const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보', broker: '증권사', room: '검증' };
+
+// "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부 링크성은 뒤(구분선으로 분리·곁가지).
+const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'chart', 'exchange', 'community', 'youtube'];
+// 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨로 폴백.
+const INFO_LABELS: Record<string, string> = {
+  news: '뉴스', disclosure: '공시', research: '리포트', analysis: '기업·재무', macro: '거시', etf: 'ETF', ipo: '공모주',
+  chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
+};
+// 외부 링크성 하위탭 — 구분선 뒤로(곁가지 표시)
+const INFO_EXTERNAL = new Set(['chart', 'exchange', 'community', 'youtube']);
+// 유효 slug 전체(로컬스토리지 복원 검증용)
+const ALL_SLUGS = ['market', 'broker', 'room', ...INFO_ORDER];
+
+function topOf(slug: string): TopTab {
+  if (slug === 'market' || slug === 'broker' || slug === 'room') return slug as TopTab;
+  return 'info';
+}
 
 // 우측 피드가 붙는 탭 + 탭별 피드 컴포넌트
 const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf', 'ipo'];
@@ -129,18 +146,21 @@ export default function ToolboxClient({
 }) {
   const { country, setCountry } = useCountryStore();
   const [categories, setCategories] = useState(initialCategories);
-  const [activeTab, setActiveTab] = useState(TAB_ORDER[0]);
+  const [activeTab, setActiveTab] = useState<string>('market');
+  const [lastInfoSub, setLastInfoSub] = useState<string>('news'); // "정보" 재진입 시 마지막 하위탭 기억
   const [feedSub, setFeedSub] = useState<'links' | 'feed'>('feed'); // 모바일 서브탭(모아보기 먼저)
 
   // 새로고침해도 마지막 탭 유지 (국가는 useCountryStore persist가 담당)
   useEffect(() => {
     const t = localStorage.getItem('unjong_tab');
-    if (t && TAB_ORDER.includes(t)) setActiveTab(t);
+    if (t && ALL_SLUGS.includes(t)) {
+      setActiveTab(t);
+      if (INFO_ORDER.includes(t)) setLastInfoSub(t);
+    }
   }, []);
   useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('feed'); }, [activeTab]);
 
-  // 헤더 로고/'주식' 클릭 → 홈 리셋. 국가는 store가 KR로, 여기선 탭=종목·상품·서브=모아보기로.
-  // (첫 마운트는 건너뜀. 보드 서브필터[주식/ETF…]는 아래 콘텐츠 div가 n으로 리마운트되며 주식으로 초기화.)
+  // 헤더 로고/'주식' 클릭 → 홈 리셋. 국가는 store가 KR로, 여기선 탭=종목·서브=모아보기로.
   const homeResetN = useHomeReset((s) => s.n);
   const homeMounted = useRef(false);
   useEffect(() => {
@@ -149,29 +169,42 @@ export default function ToolboxClient({
     setFeedSub('feed');
   }, [homeResetN]);
 
-  // 탭 = TAB_ORDER 순서. 현재 국가에 콘텐츠가 있는 탭만 표시.
-  // - 특수탭(종목·상품·유튜브·리딩방) = 라이브 데이터(KRX·유튜브·금감원)라 한국 전용
-  // - 카테고리 탭 = 해당 국가에 큐레이션 링크가 있을 때만 → 미국 '준비 중' 벽 제거(깨끗한 링크 허브)
-  const tabs = TAB_ORDER.map((slug) => {
-    const special = SPECIAL_LABELS[slug];
-    if (special) {
-      // market(종목·상품)·broker(증권사)는 전 국가 노출(각각 Yahoo 라이브·KR 증권사 언어권 기준).
-      // youtube·room은 한국 전용 데이터라 KR만.
-      if (slug === 'market' || slug === 'broker') return { slug, label: special };
-      return country === 'KR' ? { slug, label: special } : null;
-    }
+  // ── 하위탭(정보) 가용성: 국가별. 피드는 지원국가, 링크 카테고리는 링크 존재, 유튜브는 KR. ──
+  const infoSubs = INFO_ORDER.map((slug) => {
+    if (slug === 'youtube') return country === 'KR' ? { slug, label: INFO_LABELS.youtube } : null;
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
-    // 피드 지원국가면 큐레이션 링크가 없어도 탭 노출(예: US 거시는 FRED 라이브) → KR 동작은 동일.
-    const show = hasLinks || feedSupports(slug, country);
-    return show && c ? { slug, label: c.label } : null;
+    const show = (FEED_TABS.includes(slug) && feedSupports(slug, country)) || hasLinks;
+    if (!show) return null;
+    return { slug, label: INFO_LABELS[slug] ?? c?.label ?? slug };
   }).filter((t): t is { slug: string; label: string } => t !== null);
 
-  // 국가 전환 시 현재 탭이 그 국가에 없으면 첫 유효 탭으로 이동
+  // ── 상단 4탭 가용성: market·broker 항상, info는 하위탭 있을 때, room(검증)은 KR만. ──
+  const topTabs = TOP_TABS.filter((t) => {
+    if (t === 'room') return country === 'KR';
+    if (t === 'info') return infoSubs.length > 0;
+    return true;
+  });
+  const activeTop = topOf(activeTab);
+
+  // 국가 전환 시 현재 탭이 그 국가에 없으면 보정
   useEffect(() => {
-    if (tabs.length && !tabs.some((t) => t.slug === activeTab)) setActiveTab(tabs[0].slug);
+    if (activeTab === 'room' && country !== 'KR') { setActiveTab('market'); return; }
+    if (INFO_ORDER.includes(activeTab) && !infoSubs.some((s) => s.slug === activeTab)) {
+      setActiveTab(infoSubs[0]?.slug ?? 'market');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country, activeTab]);
+
+  const selectTop = (t: TopTab) => {
+    if (t === 'info') {
+      const target = infoSubs.some((s) => s.slug === lastInfoSub) ? lastInfoSub : (infoSubs[0]?.slug ?? 'news');
+      setActiveTab(target);
+    } else {
+      setActiveTab(t);
+    }
+  };
+  const selectSub = (slug: string) => { setActiveTab(slug); setLastInfoSub(slug); };
 
   const handleFavoriteToggle = (id: number, fav: boolean) => {
     setCategories((prev) =>
@@ -184,7 +217,7 @@ export default function ToolboxClient({
 
   const cat = categories.find((c) => c.slug === activeTab);
   const catLinks = cat ? cat.links.filter((l) => l.country === country) : [];
-  const countryLabel = ({ KR: '한국', US: '미국', JP: '일본', CN: '중국' } as Record<Country, string>)[country];
+  const countryLabel = ({ KR: '한국', US: '미국', JP: '일본', CN: '중국', VN: '베트남', GB: '영국' } as Record<Country, string>)[country];
 
   return (
     <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
@@ -204,25 +237,43 @@ export default function ToolboxClient({
         ))}
       </div>
 
-      {/* 카테고리 탭 */}
+      {/* 상단 4탭 — 종목 · 정보 · 증권사 · 검증 */}
       <div className="flex items-stretch gap-1 overflow-x-auto border-b border-unjong-border px-2 py-2 sm:px-3">
-        {tabs.map((t, i) => (
-          <Fragment key={t.slug}>
-            {i > 0 && CLUSTER_START.has(t.slug) ? (
-              <span aria-hidden className="mx-1 my-1 w-px shrink-0 self-stretch bg-unjong-border" />
-            ) : null}
-            <button
-              type="button"
-              onClick={() => setActiveTab(t.slug)}
-              className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors sm:py-1.5 ${
-                activeTab === t.slug ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
-              }`}
-            >
-              {t.label}
-            </button>
-          </Fragment>
+        {topTabs.map((t) => (
+          <button
+            key={t}
+            type="button"
+            onClick={() => selectTop(t)}
+            className={`shrink-0 rounded-lg px-4 py-2 text-[14px] font-semibold transition-colors sm:py-1.5 ${
+              activeTop === t ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            }`}
+          >
+            {TOP_LABELS[t]}
+          </button>
         ))}
       </div>
+
+      {/* "정보" 하위탭 — 피드 먼저, 외부 링크성은 구분선 뒤 */}
+      {activeTop === 'info' && infoSubs.length > 0 ? (
+        <div className="flex items-stretch gap-1 overflow-x-auto border-b border-unjong-border px-2 py-1.5 sm:px-3">
+          {infoSubs.map((s, i) => (
+            <Fragment key={s.slug}>
+              {i > 0 && INFO_EXTERNAL.has(s.slug) && !INFO_EXTERNAL.has(infoSubs[i - 1].slug) ? (
+                <span aria-hidden className="mx-1 my-1 w-px shrink-0 self-stretch bg-unjong-border" />
+              ) : null}
+              <button
+                type="button"
+                onClick={() => selectSub(s.slug)}
+                className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                  activeTab === s.slug ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+                }`}
+              >
+                {s.label}
+              </button>
+            </Fragment>
+          ))}
+        </div>
+      ) : null}
 
       {/* 내용 — 홈 리셋(n) 시 리마운트해 보드 서브필터(주식/ETF…)까지 초기화 */}
       <div className="p-3 sm:p-4" key={`content-${homeResetN}`}>
@@ -261,7 +312,7 @@ export default function ToolboxClient({
             {/* 모바일 전용 서브탭 — 링크 ↔ 모아보기 (데스크탑은 2단이라 숨김) */}
             <div className="mb-3 flex gap-1 lg:hidden">
               <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{FEED_SUB_LABEL[activeTab] ?? '모아보기'}</button>
-              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>링크모음</button>
+              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>바로가기</button>
             </div>
             <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
               <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>
