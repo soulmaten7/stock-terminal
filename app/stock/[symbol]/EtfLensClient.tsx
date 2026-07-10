@@ -28,7 +28,7 @@ const SECTOR_KO: Record<string, string> = {
   // 네이버(KR)
   it: 'IT·기술', financials: '금융', materials: '소재', health_care: '헬스케어',
   consumer_discretionary: '경기소비재', consumer_staples: '필수소비재',
-  communication: '커뮤니케이션', real_estate: '부동산',
+  communication: '커뮤니케이션', real_estate: '부동산', unclassified: '기타', etc: '기타',
 };
 const sectorLabel = (k: string) => SECTOR_KO[(k ?? '').toLowerCase()] ?? k;
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
