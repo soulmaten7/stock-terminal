@@ -689,7 +689,7 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
       <div className="mb-1.5 flex items-center gap-1.5">
         <Sparkles size={13} className="text-unjong-accent" />
         <span className="text-[13px] font-bold text-unjong-accent">최근 뉴스</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">AI · 사실만</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">TR-AI · 사실만</span>
       </div>
       {state === 'loading' || !d
         ? <p className="text-[12px] text-unjong-muted">뉴스 읽는 중…</p>
@@ -720,7 +720,7 @@ function StockBrief({ symbol }: { symbol: string }) {
       <div className="mb-1.5 flex items-center gap-1.5">
         <Sparkles size={14} className="text-unjong-accent" />
         <span className="text-[13px] font-bold text-unjong-accent">이 종목 브리핑</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">AI · 사실만</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">TR-AI · 사실만</span>
       </div>
       {state === 'loading'
         ? <p className="text-[12px] text-unjong-muted">브리핑 만드는 중…</p>

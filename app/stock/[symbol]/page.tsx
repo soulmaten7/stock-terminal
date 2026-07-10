@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const en = info?.en && info.en !== info?.name ? info.en : undefined; // 원어/영문명(한글 오버라이드 시 병기)
 
   const label = hasName ? `${name} (${ticker})` : ticker;
-  const title = `${label} 주가·AI 렌즈·뉴스·공시`;
+  const title = `${label} 주가·TR-AI 렌즈·뉴스·공시`;
   const idPart = hasName ? `(${en ? `${en}·` : ""}${ticker})` : "";
   const description = `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
   const url = `${BASE}/stock/${symbol}`;

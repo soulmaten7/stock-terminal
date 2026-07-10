@@ -57,7 +57,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
     return (
       <div className="rounded-2xl border border-unjong-border bg-white p-4 text-center">
         <TLensLogo size={22} color="#2DD4BF" />
-        <p className="mt-2 text-sm font-semibold text-unjong-primary">종목을 선택하면 AI 렌즈가 읽어드려요</p>
+        <p className="mt-2 text-sm font-semibold text-unjong-primary">종목을 선택하면 TR-AI 렌즈가 읽어드려요</p>
         <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 어떻게 보는지 요약해요.</p>
       </div>
     );
@@ -93,7 +93,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
       <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
         <div className="mb-1.5 flex items-center gap-1">
           <TLensLogo size={12} color="#2DD4BF" />
-          <span className="text-[12px] font-semibold text-unjong-primary">AI 렌즈</span>
+          <span className="text-[12px] font-semibold text-unjong-primary">TR-AI 렌즈</span>
         </div>
         {state === 'loading' ? (
           <p className="text-[12px] text-unjong-muted">렌즈 읽는 중…</p>
@@ -120,7 +120,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
           <div className="mb-1.5 flex items-center gap-1">
             <Sparkles size={12} className="text-unjong-accent" />
             <span className="text-[12px] font-semibold text-unjong-accent">이 종목 브리핑</span>
-            <span className="ml-auto text-[10px] text-unjong-muted">AI · 사실만</span>
+            <span className="ml-auto text-[10px] text-unjong-muted">TR-AI · 사실만</span>
           </div>
           {briefState === 'loading' ? (
             <p className="text-[12px] text-unjong-muted">브리핑 만드는 중…</p>
@@ -130,7 +130,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         </div>
       )}
       <Link href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
-        전체 렌즈·근거 보기 →
+        TR-AI 렌즈·근거 보기 →
       </Link>
     </div>
   );
