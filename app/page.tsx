@@ -4,7 +4,6 @@ import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Trillion — 흩어진 금융정보를 한눈에" };
 
 const CATEGORY_LABELS: Record<string, string> = {
   news: "뉴스",
