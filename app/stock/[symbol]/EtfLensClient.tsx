@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ExternalLink, Layers } from 'lucide-react';
 
 type Holding = { sym: string; name: string; weight: number };
@@ -34,6 +34,7 @@ const sectorLabel = (k: string) => SECTOR_KO[(k ?? '').toLowerCase()] ?? k;
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export default function EtfLensClient({ symbol, initialName }: { symbol: string; initialName?: string }) {
+  const router = useRouter();
   const ticker = symbol.split('.')[0];
   const [data, setData] = useState<EtfData | null>(null);
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
@@ -54,9 +55,11 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
   const leveraged = /레버리지|인버스|\dX/i.test(initialName ?? '');
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-3 py-4 sm:px-4">
-      <Link href="/" className="mb-3 inline-flex items-center gap-1 text-[13px] text-unjong-muted hover:text-unjong-accent">← 목록으로</Link>
+    // 너비·뒤로가기는 종목 상세(StockLensClient)와 동일하게 — max-w-7xl main + max-w-4xl 콘텐츠 + router.back()
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="text-sm text-unjong-muted hover:text-unjong-accent">← 목록으로</button>
 
+      <div className="mt-3 max-w-4xl">
       {/* 헤더 */}
       <div className="flex items-center gap-2">
         <h1 className="text-xl font-bold text-unjong-primary">{initialName || ticker}</h1>
@@ -146,6 +149,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
         </a>
       )}
       <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">상품 정보이며 어디서 거래하든 동일합니다. 사고팔 신호가 아니라 스스로 판단할 재료예요.</p>
+      </div>
     </div>
   );
 }

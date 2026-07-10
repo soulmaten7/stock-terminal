@@ -447,24 +447,24 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                   <Fragment key={rowKey(a)}>
                     {i > 0 && i % AD_EVERY === 0 ? <li><AdSlotRow slot="room" /></li> : null}
                     <li
-                    className={`group grid grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
+                    onClick={() => setSelected(a)}
+                    className={`group grid cursor-pointer grid-cols-[1.75rem_1.5fr_1fr_4.5rem] items-center gap-2 border-b border-b-unjong-border border-l-2 px-2 py-2.5 transition-colors hover:bg-unjong-background ${
                       isSel ? 'border-l-unjong-accent bg-unjong-background' : 'border-l-transparent'
                     }`}
                   >
                     <span className="text-center text-sm font-bold text-unjong-muted">{n}</span>
-                    <button type="button" onClick={() => setSelected(a)} className="flex min-w-0 items-center gap-1.5 text-left">
+                    <span className="flex min-w-0 items-center gap-1.5 text-left">
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{a.company_name}</span>
                       {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
-                    </button>
+                    </span>
                     <div className="flex min-w-0 items-center gap-1 text-left text-xs">
                       {ch ? (
                         <><UserCheck size={12} className="shrink-0 text-unjong-accent" aria-label="운영자 인증" /><span className="truncate text-unjong-primary">{ch}</span></>
                       ) : pub ? (
-                        <a href={pub.url} target="_blank" rel="noopener noreferrer nofollow" onClick={(e) => e.stopPropagation()}
-                           className="flex min-w-0 items-center gap-1 text-unjong-muted hover:text-unjong-accent">
+                        <span className="flex min-w-0 items-center gap-1 text-unjong-muted group-hover:text-unjong-accent">
                           <PlatformIcon p={a.platform} className="shrink-0" />
                           <span className="truncate">{pub.label}</span>
-                        </a>
+                        </span>
                       ) : (
                         <span className="text-unjong-muted">—</span>
                       )}
@@ -472,7 +472,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                     <span className="flex items-center justify-end gap-2">
                       <button
                         type="button"
-                        onClick={() => toggleFav(a)}
+                        onClick={(e) => { e.stopPropagation(); toggleFav(a); }}
                         aria-label={favs.has(a.biz_no) ? '즐겨찾기 해제' : '즐겨찾기'}
                         title="관심(즐겨찾기)"
                         className={`flex shrink-0 items-center gap-0.5 text-xs tabular-nums transition-colors ${favs.has(a.biz_no) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
