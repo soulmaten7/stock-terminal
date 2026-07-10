@@ -1,8 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, ExternalLink, ChevronRight } from 'lucide-react';
-import { liveAffiliates, soldCreative } from '@/lib/ads';
+import { Sparkles } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { TLensLogo } from '@/components/AiLensBadge';
 import { formatPrice } from '@/lib/currency';
@@ -64,7 +63,6 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
     );
   }
   return (
-    <>
     <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-white p-4'}>
       {!compact && (
         <>
@@ -135,45 +133,5 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         전체 렌즈·근거 보기 →
       </Link>
     </div>
-
-    {/* ── 광고 영역 — AI 카드 밖(신뢰 분리). PC=별도 카드 / 모바일=시트 하단 구분선+'광고' 라벨 ── */}
-    {(() => {
-      const affs = liveAffiliates('ko').slice(0, 1);
-      const sold = soldCreative('preview_banner_pc', 'ko');
-      const inner = (
-        <>
-          {affs.map((aff) => (
-            <a key={aff.broker_id} href={aff.href} target="_blank" rel="noopener noreferrer nofollow sponsored"
-               className="flex items-center justify-center gap-1 rounded-lg border border-unjong-border py-2 text-[12px] font-semibold text-unjong-primary hover:border-unjong-accent hover:text-unjong-accent">
-              {aff.label} <ExternalLink size={12} />
-              <span className="ml-1 rounded bg-unjong-background px-1 text-[9px] text-unjong-muted">광고</span>
-            </a>
-          ))}
-          {sold ? (
-            <a href={sold.href} target="_blank" rel="noopener noreferrer nofollow sponsored"
-               className="block rounded-lg border border-unjong-border p-2 text-center text-[12px] text-unjong-primary hover:border-unjong-accent">
-              {sold.label}
-              <span className="ml-1 rounded bg-unjong-background px-1 text-[9px] text-unjong-muted">광고</span>
-            </a>
-          ) : (
-            <Link href="/advertise?slot=preview_banner_pc"
-               className="flex items-center justify-center gap-0.5 rounded-lg border border-dashed border-unjong-border py-2 text-[11px] text-unjong-muted transition-colors hover:text-unjong-accent">
-              광고 문의하기 <ChevronRight size={12} />
-            </Link>
-          )}
-        </>
-      );
-      return compact ? (
-        <div className="mt-4 border-t border-unjong-border pt-3">
-          <p className="mb-1.5 text-[10px] text-unjong-muted">광고</p>
-          {inner}
-        </div>
-      ) : (
-        <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3">
-          {inner}
-        </div>
-      );
-    })()}
-    </>
   );
 }

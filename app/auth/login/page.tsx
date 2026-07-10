@@ -44,7 +44,7 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
             Trillion <span className="text-base text-unjong-muted font-medium">트릴리언</span>
           </h1>
-          <p className="text-sm text-unjong-muted">흩어진 금융정보를 한눈에</p>
+          <p className="text-sm text-unjong-muted">전문가 시각으로, TR-AI가 무료로 분석해 드립니다</p>
         </div>
 
         {/* 로그인 카드 */}

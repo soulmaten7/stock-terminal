@@ -10,7 +10,7 @@ export default function Footer() {
             <p className="text-lg font-bold text-white">
               Trillion <span className="text-sm font-medium text-white/45">트릴리언</span>
             </p>
-            <p className="mt-2 text-sm text-white/70">흩어진 금융정보를 한눈에</p>
+            <p className="mt-2 text-sm text-white/70">전문가 시각으로, TR-AI가 무료로 분석해 드립니다</p>
           </div>
 
           {/* 서비스 */}
