@@ -64,6 +64,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
     );
   }
   return (
+    <>
     <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-white p-4'}>
       {!compact && (
         <>
@@ -133,30 +134,46 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
       <Link href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
         전체 렌즈·근거 보기 →
       </Link>
-      {/* ── 어필리에이트(증권사) — live 제휴만 렌더. 지금 0개라 안 뜸. 배선 보존. ── */}
-      {liveAffiliates('ko').slice(0, 1).map((aff) => (
-        <a key={aff.broker_id} href={aff.href} target="_blank" rel="noopener noreferrer nofollow sponsored"
-           className="mt-2 flex items-center justify-center gap-1 rounded-lg border border-unjong-border py-2 text-[12px] font-semibold text-unjong-primary hover:border-unjong-accent hover:text-unjong-accent">
-          {aff.label} <ExternalLink size={12} />
-          <span className="ml-1 rounded bg-unjong-background px-1 text-[9px] text-unjong-muted">광고</span>
-        </a>
-      ))}
-      {/* ── preview_banner_pc 슬롯 — 팔렸으면 배너, 아니면 광고문의. compact(모바일)에선 숨김. ── */}
-      {!compact && (() => {
-        const sold = soldCreative('preview_banner_pc', 'ko');
-        return sold ? (
-          <a href={sold.href} target="_blank" rel="noopener noreferrer nofollow sponsored"
-             className="mt-2 block rounded-lg border border-unjong-border p-2 text-center text-[12px] text-unjong-primary hover:border-unjong-accent">
-            {sold.label}
-            <span className="ml-1 rounded bg-unjong-background px-1 text-[9px] text-unjong-muted">광고</span>
-          </a>
-        ) : (
-          <Link href="/advertise?slot=preview_banner_pc"
-             className="mt-2 flex items-center justify-center gap-0.5 rounded-lg border border-dashed border-unjong-border py-2 text-[11px] text-unjong-muted transition-colors hover:text-unjong-accent">
-            광고 문의하기 <ChevronRight size={12} />
-          </Link>
-        );
-      })()}
     </div>
+
+    {/* ── 광고 영역 — AI 카드 밖(신뢰 분리). PC=별도 카드 / 모바일=시트 하단 구분선+'광고' 라벨 ── */}
+    {(() => {
+      const affs = liveAffiliates('ko').slice(0, 1);
+      const sold = soldCreative('preview_banner_pc', 'ko');
+      const inner = (
+        <>
+          {affs.map((aff) => (
+            <a key={aff.broker_id} href={aff.href} target="_blank" rel="noopener noreferrer nofollow sponsored"
+               className="flex items-center justify-center gap-1 rounded-lg border border-unjong-border py-2 text-[12px] font-semibold text-unjong-primary hover:border-unjong-accent hover:text-unjong-accent">
+              {aff.label} <ExternalLink size={12} />
+              <span className="ml-1 rounded bg-unjong-background px-1 text-[9px] text-unjong-muted">광고</span>
+            </a>
+          ))}
+          {sold ? (
+            <a href={sold.href} target="_blank" rel="noopener noreferrer nofollow sponsored"
+               className="block rounded-lg border border-unjong-border p-2 text-center text-[12px] text-unjong-primary hover:border-unjong-accent">
+              {sold.label}
+              <span className="ml-1 rounded bg-unjong-background px-1 text-[9px] text-unjong-muted">광고</span>
+            </a>
+          ) : (
+            <Link href="/advertise?slot=preview_banner_pc"
+               className="flex items-center justify-center gap-0.5 rounded-lg border border-dashed border-unjong-border py-2 text-[11px] text-unjong-muted transition-colors hover:text-unjong-accent">
+              광고 문의하기 <ChevronRight size={12} />
+            </Link>
+          )}
+        </>
+      );
+      return compact ? (
+        <div className="mt-4 border-t border-unjong-border pt-3">
+          <p className="mb-1.5 text-[10px] text-unjong-muted">광고</p>
+          {inner}
+        </div>
+      ) : (
+        <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3">
+          {inner}
+        </div>
+      );
+    })()}
+    </>
   );
 }
