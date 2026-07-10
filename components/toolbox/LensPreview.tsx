@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Layers } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { TLensLogo } from '@/components/AiLensBadge';
 import { formatPrice } from '@/lib/currency';
@@ -105,9 +105,9 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
       {etf?.isFund ? (
         <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
           <div className="mb-1.5 flex items-center gap-1">
-            <TLensLogo size={12} color="#2DD4BF" />
-            <span className="text-[12px] font-semibold text-unjong-primary">TR-AI 렌즈 · 구성</span>
-            <span className="ml-auto text-[10px] text-unjong-muted">상품 구성</span>
+            <Layers size={12} className="text-unjong-accent" />
+            <span className="text-[12px] font-semibold text-unjong-primary">상품 구성</span>
+            <span className="ml-auto text-[10px] text-unjong-muted">AI 분석 아님</span>
           </div>
           {etf.category ? <p className="text-[12px] text-unjong-muted">추종·유형 <span className="font-medium text-unjong-primary">{etf.category}</span></p> : null}
           <ul className="mt-1 space-y-1">
@@ -164,7 +164,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         </>
       )}
       <Link href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
-        TR-AI 렌즈·근거 보기 →
+        {etf?.isFund ? '상품 구성 자세히 보기' : 'TR-AI 렌즈·근거 보기'} →
       </Link>
     </div>
   );

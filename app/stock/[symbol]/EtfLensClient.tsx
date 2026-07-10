@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
-import { TLensLogo } from '@/components/AiLensBadge';
+import { ExternalLink, Layers } from 'lucide-react';
 
 type Holding = { sym: string; name: string; weight: number };
 type Sector = { key: string; weight: number };
@@ -65,9 +64,9 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
       {/* 개요 카드 */}
       <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-4">
         <div className="mb-2 flex items-center gap-1.5">
-          <TLensLogo size={14} color="#2DD4BF" />
-          <span className="text-[13px] font-semibold text-unjong-primary">TR-AI 렌즈 · 상품 구성</span>
-          <span className="ml-auto text-[10px] text-unjong-muted">사실만 · 예측 아님</span>
+          <Layers size={14} className="text-unjong-accent" />
+          <span className="text-[13px] font-semibold text-unjong-primary">상품 구성</span>
+          <span className="ml-auto text-[10px] text-unjong-muted">운용사 공시 · AI 분석 아님</span>
         </div>
         <div className="grid grid-cols-3 gap-y-2 text-center">
           <div><p className="text-[11px] text-unjong-muted">운용사</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>

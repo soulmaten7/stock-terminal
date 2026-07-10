@@ -25,7 +25,8 @@ type Comp = {
 
 function krCode(symbol: string): string | null {
   const s = symbol.trim().toUpperCase().replace(/\.(KS|KQ)$/, '');
-  return /^\d{6}$/.test(s) ? s : null;
+  // KRX 단축코드 = 6자리, 첫 글자 숫자 + 영숫자(예: 069500·0193T0 단일종목ETF). 미국 티커(SPY 등)는 문자로 시작 → 제외.
+  return /^\d[0-9A-Z]{5}$/.test(s) ? s : null;
 }
 
 async function fromNaver(symbol: string, code: string): Promise<Comp> {
