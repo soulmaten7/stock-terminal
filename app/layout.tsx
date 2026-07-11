@@ -47,11 +47,13 @@ export const metadata: Metadata = {
     siteName: "Trillion",
     type: "website",
     locale: "ko_KR",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "종목을 보는 눈을, 누구에게나 — Trillion" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "종목을 보는 눈을, 누구에게나 | Trillion",
     description: "모든 시각을 데이터로. 예측도 추천도 없이, 판단은 당신입니다.",
+    images: ["/og.png"],
   },
   verification: {
     google: "mSXxPQfJZWeRw6IB1sWgggF53JJBnpXSH1nhdJROkUs",
