@@ -71,13 +71,24 @@ const OFFSETS = [7, 30, 91, 182, 365];
 
 async function buildKind(kind: Kind, key: string, now: Date) {
   const ep = EP[kind];
-  const base = await snapshot(ep, 0, key, now);
-  if (base.length === 0) return [];
-  // 과거 5기간(1주·1개월·3개월·6개월·1년) 순차 — 동시요청 회피(부분실패 원인 제거).
-  const maps: Map<string, number>[] = [];
-  for (const off of OFFSETS) maps.push(closeMap(await snapshot(ep, off, key, now)));
-  const [mW, mM, mM3, mM6, mY] = maps;
-  return base
+  // base + 과거 5기간을 동시(Promise.all) 조회 — 종목보드(krSnapshot)·라우트와 동일 패턴.
+  // ⚠️ 순차 조회는 Vercel 서버리스에서 KRX 평문 HTTP keep-alive 재사용 탓에 재조회(i=1)가 실패(실측 확인).
+  //    동시요청은 각기 신선한 커넥션이라 안정 → r1w·r3m·r6m 정상 채움.
+  const [baseRows, wRows, mRows, m3Rows, m6Rows, yRows] = await Promise.all([
+    snapshot(ep, 0, key, now),
+    snapshot(ep, OFFSETS[0], key, now),
+    snapshot(ep, OFFSETS[1], key, now),
+    snapshot(ep, OFFSETS[2], key, now),
+    snapshot(ep, OFFSETS[3], key, now),
+    snapshot(ep, OFFSETS[4], key, now),
+  ]);
+  if (baseRows.length === 0) return [];
+  const mW = closeMap(wRows);
+  const mM = closeMap(mRows);
+  const mM3 = closeMap(m3Rows);
+  const mM6 = closeMap(m6Rows);
+  const mY = closeMap(yRows);
+  return baseRows
     .map((r) => {
       const symbol = toShort(String(r.ISU_CD || ""));
       const price = num(r.TDD_CLSPRC);
