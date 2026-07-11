@@ -1,9 +1,33 @@
-<!-- 2026-07-10 -->
+<!-- 2026-07-11 -->
 # Trillion(트릴리언) 브랜드 아이덴티티
 
 > 🔵 **2026-07-10 정체성 확정.** 중심축 = **"개인을 무장시켜 스스로 판단하게"**(무기·직시·자립). 목소리 = **멍거 톤**(건조·직설·인센티브 중심).
-> 이전 "흩어진 금융정보를 한눈에"는 *메커니즘(무엇)*으로 유지되고, 그 위에 *목적·태도(왜)*가 이 문서로 확정됨.
+> 🟢 **2026-07-11 외부 슬로건 확정** = **"종목을 보는 눈을, 누구에게나"** · 서브 "모든 시각을 데이터로 — 판단은 당신" · 각인 멍거 원문(§0). 이전 "흩어진 금융정보를 한눈에"는 폐기(편의 프레임·차별 실패).
 > 맨 아래 **[이력] 구 운종(雲從) V5**는 보존용(구 브랜드).
+
+---
+
+## 0. 슬로건 · 각인 (외부 얼굴 — 2026-07-11 확정)
+
+> ### 종목을 보는 눈을, 누구에게나.
+> **모든 시각을 데이터로 — 판단은 당신입니다.**
+>
+> **각인 (뿌리 격언 · 원문 그대로):**
+> *"The best thing a human being can do is to help another human being know more."*
+> **— Charlie Munger, 『Poor Charlie's Almanack』**
+> *(사람이 할 수 있는 가장 좋은 일은, 다른 사람이 더 많이 알도록 돕는 것이다.)*
+
+**이전 "흩어진 금융정보를 한눈에"는 외부 태그라인에서 폐기** — "한눈에"는 포털이 다 하는 commodity 언어라 차별 실패(편의 프레임). 외부 얼굴은 위 슬로건으로 대체.
+
+### 왜 이 말인가
+- **대상은 '종목'이 아니라 '보는 눈'.** 종목(가격·차트)은 어느 포털이나 주는 commodity. 우리가 주는 건 그걸 **보는 시각·안목 = 앎**(멍거 "더 알게 돕는다"와 정확히 일치).
+- **긍정 후크 + 정직 뼈대.** 슬로건은 카테고리 승리 공식(민주화+임파워)에 올라타 사람을 **오게** 하고, 서브·각인이 "정직하게·스스로"로 **신뢰**를 준다. ("안 속게"는 결과지 미끼가 아니다 → 미끼는 "좋은 정보·제대로 보게".)
+- **백스페이스(남들이 안 하는 말).** 이 판의 유료 플랫폼은 전부 "이기게/성공하게 해줄게"를 판다: Validea·GuruFocus(구루 전략→초과수익) · Morningstar("Empowering Investor Success"·"Nothing in your way") · Seeking Alpha("Power to Investors") · Simply Wall St(everyday 민주화). **우리만 "예측·추천·승리 약속 안 함 — 모든 시각을 정직하게, 판단은 당신."** 한 줄: 남들 "이기게 해줄게", 우리 **"제대로 보게 해줄게 — 판단은 당신."**
+
+### 현인 앵커 (각인 원문 — 톤·근거)
+- **찰리 멍거** — *"The best thing a human being can do is to help another human being know more."* · *"Show me the incentive and I will show you the outcome."* · *"Knowing what you don't know is more useful than being brilliant."*
+- **리처드 파인만** — *"The first principle is that you must not fool yourself — and you are the easiest person to fool."* (안의 이발사 = 내 편향)
+- **워런 버핏** — *"Don't ask the barber whether you need a haircut."* (밖의 이발사 = 파는 사람) · *"Forecasts may tell you a great deal about the forecaster; they tell you nothing about the future."*
 
 ---
 
