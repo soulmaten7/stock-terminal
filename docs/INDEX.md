@@ -64,6 +64,7 @@
 | `docs/PRODUCT_SPEC_V4.md` | [보존] V4 — 2창(한국·미국)·토스카드·Trustpilot 평가 | V4 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V3.md` | [보존] V3 — Stock Terminal 초기 스펙 | V3 히스토리 참고 |
 | `docs/ROADMAP.md` | **[최신]** 마스터 로드맵 — 무엇을/어떤 순서로(Phase 단일 기준) | SESSION_BOOT 다음(순서 확인) |
+| `docs/RELEASE_ROADMAP.md` | **[최신·핵심]** 1·2·3차 출시 로드맵 — 국가셋(KR·US·JP·GB·홍콩·VN)·차수별 범위·광고 활성화 시점 | 출시 계획·차수 결정 시 |
 | `docs/SITE_MAP_V7.md` | SITE MAP V7 — 네이버 증권 구조 복제 spec | IA·메뉴 구조 작업 시 |
 | `docs/TOSS_ANALYSIS_AND_IA.md` | 토스증권 전체 분석 + 새 IA(토스식 개편 spec) | IA 개편 참고 |
 | `docs/NAVER_STOCK_PAGE_ANALYSIS.md` | 네이버 종목 페이지 디테일 분석 + Gap(V6) | 종목 페이지 디테일 보강 시 |
