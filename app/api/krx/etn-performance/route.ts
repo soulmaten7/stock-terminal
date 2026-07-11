@@ -53,7 +53,8 @@ async function snapshot(daysAgo: number, key: string, now: Date): Promise<{ basD
     d.setDate(now.getDate() - daysAgo - i);
     const basDd = ymd(d);
     const rows = await fetchDay(basDd, key);
-    if (rows.length > 0) return { basDd, rows };
+    // KRX ETP 주말·휴장일은 목록만 오고 종가 빈칸 → 유효 종가 있는 거래일만 채택(빈 스냅샷 방지)
+    if (rows.some((r) => num(r.TDD_CLSPRC) > 0)) return { basDd, rows };
   }
   return { basDd: "", rows: [] };
 }

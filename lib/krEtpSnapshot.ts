@@ -51,7 +51,9 @@ async function snapshot(ep: string, daysAgo: number, key: string, now: Date): Pr
     const d = new Date(now);
     d.setDate(now.getDate() - daysAgo - i);
     const rows = await fetchDay(ep, ymd(d), key);
-    if (rows.length > 0) return rows;
+    // ⚠️ KRX ETP는 주말·휴장일에도 '종목 목록'은 주지만 종가(TDD_CLSPRC)가 빈칸 → rows.length만 보면
+    // 빈 스냅샷을 채택(그 기간 수익률 전부 null). 반드시 "유효 종가가 하나라도 있는 날(=거래일)"만 채택.
+    if (rows.some((r) => num(r.TDD_CLSPRC) > 0)) return rows;
   }
   return [];
 }
