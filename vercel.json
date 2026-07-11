@@ -17,6 +17,10 @@
       "schedule": "0 10 * * *"
     },
     {
+      "path": "/api/cron/kr-etp",
+      "schedule": "15 10 * * *"
+    },
+    {
       "path": "/api/cron/jp-perf",
       "schedule": "0 8 * * *"
     },

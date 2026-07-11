@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,8 +77,36 @@ const OFFSETS = { r1w: 7, r1m: 30, r3m: 90, r6m: 180, r1y: 365 };
 let cache: { at: number; data: unknown } | null = null;
 
 export async function GET(req: NextRequest) {
-  const key = (process.env.KRX_API_KEY || "").trim();
   const debug = req.nextUrl.searchParams.get("debug") === "1";
+
+  // 스냅샷 우선(크론 kr-etp 미리계산) — 즉시 서빙·라이브 fetch 불안정 회피. debug면 건너뜀(라이브 진단).
+  if (!debug) {
+    try {
+      const sb = createAdminClient();
+      const { data } = await sb
+        .from("kr_etp_snapshot")
+        .select("symbol,name,price,change_percent,trade_amount,r1w,r1m,r3m,r6m,r1y")
+        .eq("kind", "etf")
+        .order("trade_amount", { ascending: false, nullsFirst: false })
+        .limit(100);
+      if (data && data.length > 0) {
+        const nn = (v: unknown) => (v == null ? null : Number(v));
+        const items = data.map((s) => ({
+          symbol: s.symbol,
+          name: s.name,
+          price: Number(s.price) || 0,
+          changePercent: Number(s.change_percent) || 0,
+          tradeAmount: Number(s.trade_amount) || 0,
+          r1w: nn(s.r1w), r1m: nn(s.r1m), r3m: nn(s.r3m), r6m: nn(s.r6m), r1y: nn(s.r1y),
+        }));
+        return NextResponse.json({ items, source: "kr_etp_snapshot" });
+      }
+    } catch {
+      /* 폴백: 아래 라이브 계산 */
+    }
+  }
+
+  const key = (process.env.KRX_API_KEY || "").trim();
   if (!key) return NextResponse.json({ items: [], error: "no_key" });
 
   if (!debug && cache && Date.now() - cache.at < 30 * 60 * 1000) {
