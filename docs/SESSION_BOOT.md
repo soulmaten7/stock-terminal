@@ -1,11 +1,21 @@
-<!-- 2026-07-10 -->
+<!-- 2026-07-11 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-10 (최신) · STEP 673~690 + 🔴 브랜드 대개편 — 정체성 3기둥(무기·직시·자립) + TR-AI 렌즈 + 탭 3개(종목·정보·검증) + ETF "상품 구성" (HEAD `f21fa07` · STEP 690).**
+> 🟢 **2026-07-11 (최신) · STEP 692~699 — 🐞 미리보기 수익률 단일소스 + 🧪 개발 안전망(vitest·CI) + 🔭 밸류 렌즈 KR 활성화 + ⚡ ETF/ETN 크론 스냅샷 + UI 일관성 감사 (HEAD `5cd234d` · STEP 699).**
+> - **692·693 UI 일관성**: ETF/ETN 상세 너비·뒤로가기 종목 상세와 통일(max-w-7xl/4xl·router.back()) + 검증탭 행 전체 클릭 · 앱 전체 UI 3중 감사(관심종목 행 클릭→상세·로그인 router.back()).
+> - **694 미리보기 수익률 단일 소스화**: 1일전(ranking)·1주~1년(kr-performance)을 브라우저에서 병합하던 걸 ranking 한 응답으로 통합(둘 다 같은 `kr_stock_snapshot`) — 병합 실패로 나머지 기간이 통째 '—' 되던 현상 제거. 저장(크론)은 원래 정상·신규상장주 '—'는 정상.
+> - **695 🧪 개발 안전망 1차**: 수익률 `pct`를 `lib/returns.ts` 순수모듈로 추출·배선 + vitest 유닛테스트(정상·대세상승 비클램프·null) + GitHub Actions CI(`.github/workflows/ci.yml`·매 푸시 tsc→test→lint[비차단]). 이후 로직 변경 시 회귀를 기계가 자동 검증. package.json vitest devDep+test 스크립트.
+> - **696 (=STEP①) 🔭 밸류(가치) 렌즈 한국 활성화**: 야후가 .KS에 PER/PBR을 안 줘 전 종목 "산출 불가"였음 → 재무(순이익·자기자본·주식수)로 PER=시총/순이익·PBR=시총/자기자본 직접 산출(pe/pb null일 때만 폴백·US 무영향). `lib/returns.ts` marketCap·perFrom·pbrFrom · `lib/fscore.ts` FRow.stockholdersEquity · `lib/lensCompute.ts` 배선 + 유닛테스트. (LENS_DEV #29)
+> - **697→698→699 (=STEP②) ⚡ ETF/ETN 성과 크론 스냅샷화**: 매 요청 라이브 fetch(36콜)의 부분실패(r1w/r3m 전 종목 빈칸)·콜드 2.8s 해소. 신규 테이블 `kr_etp_snapshot` + `lib/krEtpSnapshot.ts` + `app/api/cron/kr-etp/route.ts` + etf/etn-performance 스냅샷 우선(빈 값이면 라이브 폴백) + vercel.json 크론(15 10 * * *). **698** 거래일 판정 버그(KRX ETP가 주말·휴장일에 종목 목록은 주되 종가 빈칸 → `rows.some(r=>TDD_CLSPRC>0)`으로 유효 종가 있는 날만 채택). **699** Vercel 크론에서만 r1w·r3m·r6m 재발 = 순차 조회 시 주말→거래일 재조회가 Vercel↔KRX 평문HTTP keep-alive 재사용의 두 번째 호출에서 죽음 → 종목보드 크론과 동일한 `Promise.all` 동시조회로 전환. ✅ 라이브 ETF/ETN 전 기간 채워짐.
+> - **신규/갱신 문서**: `docs/LAUNCH_PLAYBOOK.md`(한국탭 공개 로드맵 + 출시전 검수 체크리스트 · 한국 규제 조사) 신설 · `docs/LENS_DEV_PLAYBOOK.md` #28(🔴실측 데이터 오진 방지 — present-day 수치는 WebSearch 독립검증 먼저·하드코딩 이상치 가드 금지)·#29(밸류 렌즈 KR) · CLAUDE.md 절대규칙에 실측 데이터 오진 방지 1줄.
+> - **🔑 개발 워크플로우 정착**: Cowork=코드+tsc(샌드박스), Claude Code=맥에서 test·build·커밋·배포·라이브확인. 안전망(vitest+CI) 가동. 패키지/네이티브 의존은 Cowork 샌드박스서 설치 금지(맥↔리눅스 arch 핑퐁).
+> - **한국탭 완성도 ~90%**(밸류·ETF/ETN 스냅샷 완료). **▶ 다음 = STEP③**(종목보드 코스피/코스닥 분리 세그먼트 토글[데이터·API 준비됨·`MarketBoard`가 `market=all`만 호출] + 상한/하한 배지[`|changePercent|≥29.5`]) → 그다음 폴리시(렌즈 KR종목명 영문 반환·지수바 TOPIX 빈값·오래된 주석).
+>
+> 🟢 **2026-07-10 · STEP 673~690 + 🔴 브랜드 대개편 — 정체성 3기둥(무기·직시·자립) + TR-AI 렌즈 + 탭 3개(종목·정보·검증) + ETF "상품 구성" (HEAD `f21fa07` · STEP 690).**
 > - **🔴 브랜드 정체성 대개편**(`docs/BRAND_IDENTITY.md` 재작성): 3기둥 = **무기**(Arm·TR-AI 렌즈)·**직시**(See·1차 재료)·**자립**(Compete·판단은 당신). 정신적 뿌리 = 프로메테우스·칸트(Sapere aude)·그레이엄·멍거. 목소리 = 멍거 톤(건조·인센티브·"덜 멍청하게"). 가드레일 = "무장하되 벼린다"(칼=명료함이지 대박 아님). 근간 = "예언·추천 안 함, 불을 건넨다, 성공=당신이 우릴 덜 필요로 하게 됨". 슬로건/OG 타이틀 "전문가 시각으로, TR-AI가 무료로 분석해 드립니다"·설명 "가격은 시장이 붙이고, 가치는 당신이 매깁니다 — 판단은 당신 몫". 옛 운종 태그라인=[이력] 보존.
 > - **682 "AI 렌즈"→"TR-AI 렌즈" 명칭 통일**(엔진 브랜드): 중앙 `AiLensBadge.lensLabel()` 다국어. 미리보기·6보드 힌트·종목 페이지 반영.
 > - **광고 수익화**(`docs/AD_MONETIZATION_PLAYBOOK.md` 신설·`lib/ads.ts`): 슬롯 인벤토리+어필리에이트+요금표+언어권 합법성 원장(KR 채움). 한국=자본시장법상 퍼블리셔 어필리에이트 없음→직접 광고 제휴 경로. 리딩방 광고=중심축서 내림. 진짜 파이=AI구독+증권사 어필리에이트(성과형).

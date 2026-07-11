@@ -1,7 +1,15 @@
 <!-- 2026-07-11 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-10 (최신) — STEP 673~690 + 🔴 브랜드 대개편: 정체성 3기둥(무기·직시·자립) + TR-AI 렌즈 + 탭 3개(종목·정보·검증) + ETF "상품 구성". HEAD `f21fa07` · STEP 690.**
+> 🆕 **2026-07-11 (최신) — STEP 692~699: 🐞 미리보기 수익률 단일소스 + 🧪 개발 안전망(vitest·CI) + 🔭 밸류 렌즈 KR 활성화 + ⚡ ETF/ETN 크론 스냅샷 + UI 일관성 감사. HEAD `5cd234d` · STEP 699.**
+> - **692·693** ETF/ETN 상세 너비·뒤로가기 종목 상세와 통일(max-w-7xl/4xl·router.back())+검증탭 행 클릭 · 앱 전체 UI 일관성 3중 감사(관심종목 행 클릭→상세·로그인 router.back()).
+> - **694** 미리보기 기간수익률 단일 소스화(ranking에 r1w..r1y 포함·kr-performance 병합 제거 → 병합 실패로 나머지 기간 '—' 되던 버그 해소). **695** 🧪 개발 안전망 1차: `lib/returns.ts`(순수 pct 추출)+vitest 유닛+`.github/workflows/ci.yml`(매 푸시 tsc→test→lint). package.json vitest devDep+test 스크립트.
+> - **696 (=STEP①)** 🔭 밸류 렌즈 **한국 활성화** — 야후 .KS PER/PBR 미제공→재무(순이익·자기자본·주식수)로 PER=시총/순이익·PBR=시총/자기자본 직접 산출(pe/pb null일 때만 폴백·US 무영향). `lib/returns.ts` marketCap·perFrom·pbrFrom·`lib/fscore.ts` stockholdersEquity·`lib/lensCompute.ts` 배선. (LENS_DEV #29)
+> - **697→698→699 (=STEP②)** ⚡ ETF/ETN 성과 **크론 스냅샷화**: 신규 `kr_etp_snapshot`+`lib/krEtpSnapshot.ts`+`app/api/cron/kr-etp/route.ts`+스냅샷 우선+vercel.json 크론(15 10 * * *). **698** 거래일 판정 버그(주말 빈 종가→유효 종가 있는 날만 채택). **699** Vercel↔KRX 평문HTTP keep-alive 순차 재조회 실패→`Promise.all` 동시조회. ✅ 라이브 ETF/ETN 전 기간 채워짐.
+> - **신규/갱신 문서**: `docs/LAUNCH_PLAYBOOK.md`(한국탭 공개 로드맵+출시전 검수 체크리스트) 신설·`docs/LENS_DEV_PLAYBOOK.md` #28(🔴실측 데이터 오진 방지 — WebSearch 독립검증 먼저·이상치 가드 금지)·#29(밸류 KR)·CLAUDE.md 절대규칙 1줄. **한국탭 완성도 ~90%.**
+> - **▶ 다음 = STEP③**(종목보드 코스피/코스닥 분리 세그먼트 토글[데이터·API 준비됨·MarketBoard가 market=all만 호출] + 상한/하한 배지[|changePercent|≥29.5]) → 그다음 폴리시(렌즈 KR종목명 영문 반환·지수바 TOPIX 빈값·오래된 주석).
+
+> 🆕 **2026-07-10 — STEP 673~690 + 🔴 브랜드 대개편: 정체성 3기둥(무기·직시·자립) + TR-AI 렌즈 + 탭 3개(종목·정보·검증) + ETF "상품 구성". HEAD `f21fa07` · STEP 690.**
 > - **🔴 브랜드 정체성 대개편**(`docs/BRAND_IDENTITY.md` 재작성): 3기둥 = 무기(Arm·TR-AI 렌즈)·직시(See·1차 재료)·자립(Compete·판단은 당신). 뿌리=프로메테우스·칸트(Sapere aude)·그레이엄·멍거. 목소리=멍거 톤("덜 멍청하게"). 근간="예언·추천 안 함, 불을 건넨다, 성공=당신이 우릴 덜 필요로 하게 됨". 슬로건 타이틀 "전문가 시각으로, TR-AI가 무료로 분석해 드립니다"·설명 "가격은 시장이 붙이고, 가치는 당신이 매깁니다 — 판단은 당신 몫". 옛 운종 태그라인=[이력].
 > - **682** "AI 렌즈"→**"TR-AI 렌즈"** 명칭 통일(중앙 `AiLensBadge.lensLabel()` 다국어). **광고 수익화**(`docs/AD_MONETIZATION_PLAYBOOK.md` 신설·`lib/ads.ts`): 슬롯+어필리에이트+요금표+언어권 합법성 원장(KR=자본시장법상 퍼블리셔 어필리에이트 없음→직접 광고 제휴·진짜 파이=AI구독+증권사 성과형).
 > - **680·685 탭 14→3 재구조**(`ToolboxClient.tsx`): 상단=종목·정보·검증, 나머지 12개(뉴스·공시·리포트·기업재무·거시·ETF·공모주·증권사·차트·거래소·토론커뮤니티·유튜브)="정보" 하위탭·증권사=정보 하위(참조 디렉토리)·검증=상단(KR 게이팅). 근거=catch-all 금지+빅테크식 최소. **677·681** 미리보기 광고 완전 제거→리스트 10개마다 일원화·태그라인 3곳 새 문구. **678·679** OG/SEO(layout 메타·홈 title override 제거)·상하이종합→SSE Composite.

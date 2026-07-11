@@ -2,6 +2,18 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-11 — STEP 692~699 · 🐞 미리보기 수익률 단일소스 + 🧪 개발 안전망(vitest·CI) + 🔭 밸류 렌즈 KR 활성화 + ⚡ ETF/ETN 크론 스냅샷 + UI 일관성 감사 ✅
+
+**HEAD `5cd234d` · STEP 699.** 하루 아크 = 한국탭 완성도 ~90%(밸류·ETF/ETN 스냅샷 완료) + 개발 안전망 가동.
+- **692·693 UI 일관성**: ETF/ETN 상세 너비·뒤로가기 종목 상세와 통일(max-w-7xl/4xl·router.back())+검증탭 행 전체 클릭 · 앱 전체 UI 3중 감사(관심종목 행 클릭→상세·로그인 router.back()).
+- **694 미리보기 수익률 단일 소스화**: 1일전(ranking)·1주~1년(kr-performance) 브라우저 병합 → ranking 한 응답으로 통합(병합 실패로 나머지 기간 통째 '—' 되던 버그 해소·저장 크론은 원래 정상·신규상장주 '—'는 정상).
+- **695 🧪 개발 안전망 1차**: 수익률 `pct`를 `lib/returns.ts` 순수모듈로 추출+vitest 유닛테스트(정상·대세상승 비클램프·null)+`.github/workflows/ci.yml`(매 푸시 tsc→test→lint 비차단). package.json vitest devDep+test 스크립트. 이후 로직 변경 회귀를 기계가 자동 검증.
+- **696(=STEP①) 🔭 밸류(가치) 렌즈 한국 활성화**: 야후가 .KS에 PER/PBR 미제공 → 재무(순이익·자기자본·주식수)로 PER=시총/순이익·PBR=시총/자기자본 직접 산출(pe/pb null일 때만 폴백·US 무영향). `lib/returns.ts` marketCap·perFrom·pbrFrom · `lib/fscore.ts` FRow.stockholdersEquity · `lib/lensCompute.ts` 배선. (LENS_DEV #29)
+- **697→698→699(=STEP②) ⚡ ETF/ETN 성과 크론 스냅샷화**: 신규 `kr_etp_snapshot`+`lib/krEtpSnapshot.ts`+`app/api/cron/kr-etp/route.ts`+etf/etn-performance 스냅샷 우선(빈 값이면 라이브 폴백)+vercel.json 크론(15 10 * * *). **698** 거래일 판정 버그(KRX ETP가 주말·휴장일에 종목 목록만 주고 종가 빈칸→유효 종가 있는 날만 채택). **699** 순차 조회 시 주말→거래일 재조회가 Vercel↔KRX 평문HTTP keep-alive 재사용에서 죽음→종목보드 크론과 동일 `Promise.all` 동시조회로 전환. ✅ 라이브 ETF/ETN 전 기간 채워짐.
+- **문서**: `docs/LAUNCH_PLAYBOOK.md`(한국탭 공개 로드맵+출시전 검수 체크리스트·한국 규제 조사) 신설 · `docs/LENS_DEV_PLAYBOOK.md` #28(🔴실측 데이터 오진 방지 — WebSearch 독립검증 먼저·이상치 가드 금지)·#29(밸류 렌즈 KR) · CLAUDE.md 절대규칙에 실측 데이터 오진 방지 1줄 추가.
+- **🔑 개발 워크플로우 정착**: Cowork=코드+tsc(샌드박스)·Claude Code=맥에서 test·build·커밋·배포·라이브확인. 안전망(vitest+CI) 가동. 패키지/네이티브 의존은 Cowork 샌드박스서 설치 금지(맥↔리눅스 arch 핑퐁).
+- **한국탭 완성도 ~90%.** ▶ **다음 = STEP③**(종목보드 코스피/코스닥 분리 세그먼트 토글[데이터·API 준비됨·MarketBoard가 market=all만 호출] + 상한/하한 배지[|changePercent|≥29.5]) → 그다음 폴리시(렌즈 KR종목명 영문 반환·지수바 TOPIX 빈값·오래된 주석).
+
 ## 2026-07-10 — STEP 673~690 + 🔴 브랜드 대개편 · 정체성 3기둥 + TR-AI 렌즈 + 탭 3개 + ETF "상품 구성" ✅
 
 **HEAD `f21fa07` · STEP 690.** 하루 큰 아크 = 브랜드 정체성 대개편 + 탭 재구조 + ETF 상품 기능.
