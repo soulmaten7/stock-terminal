@@ -1,6 +1,12 @@
 <!-- 2026-07-11 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
+> 🆕 **2026-07-11 (최신·2) — 🔵 브랜드 외부 슬로건 확정 + 🖼️ OG/링크 미리보기(실제 로고) + 📖 문서 인덱스 신설. HEAD `ba3ce68`.**
+> - **🔵 브랜드 외부 슬로건 확정**(`docs/BRAND_IDENTITY.md` §0): **"종목을 보는 눈을, 누구에게나."** · 서브 "모든 시각을 데이터로 — 판단은 당신입니다." · 각인 = 멍거 원문("The best thing a human being can do is to help another human being know more."). 이전 **"흩어진 금융정보를 한눈에"는 폐기**(편의 프레임·차별 실패).
+> - **🖼️ OG/링크 미리보기 완료**: `app/layout.tsx`(title·description·openGraph·twitter+images)·`app/page.tsx`(JSON-LD)·`public/og.png`(로고 마크 박힌 1200×630). 링크 공유 시 새 브랜드로 노출.
+> - **📖 전체 문서 마스터 인덱스 신설**: `docs/INDEX.md`(비-STEP 문서 67개 카테고리별 카탈로그 + "언제 읽나"). CLAUDE.md 참조 테이블 맨 위 연결.
+> - **▶ 다음 P0 = 1·2·3차 출시 로드맵 확정**(각 차수 기능 범위 + 광고 활성화 시점). 기존 **STEP③**(종목보드 코스피/코스닥 세그먼트 토글 + 상한/하한 배지)는 폐기 아님 → 이 로드맵의 **1차 범위 후보**로 재배치.
+>
 > 🆕 **2026-07-11 (최신) — STEP 692~699: 🐞 미리보기 수익률 단일소스 + 🧪 개발 안전망(vitest·CI) + 🔭 밸류 렌즈 KR 활성화 + ⚡ ETF/ETN 크론 스냅샷 + UI 일관성 감사. HEAD `5cd234d` · STEP 699.**
 > - **692·693** ETF/ETN 상세 너비·뒤로가기 종목 상세와 통일(max-w-7xl/4xl·router.back())+검증탭 행 클릭 · 앱 전체 UI 일관성 3중 감사(관심종목 행 클릭→상세·로그인 router.back()).
 > - **694** 미리보기 기간수익률 단일 소스화(ranking에 r1w..r1y 포함·kr-performance 병합 제거 → 병합 실패로 나머지 기간 '—' 되던 버그 해소). **695** 🧪 개발 안전망 1차: `lib/returns.ts`(순수 pct 추출)+vitest 유닛+`.github/workflows/ci.yml`(매 푸시 tsc→test→lint). package.json vitest devDep+test 스크립트.
