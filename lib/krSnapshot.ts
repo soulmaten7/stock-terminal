@@ -2,6 +2,7 @@
 // krx/ranking(현재가·거래대금 등) + kr-performance(1주~1년) 로직을 합쳐 한 번에 저장.
 // 크론(/api/cron/kr-perf)이 호출. 화면 라우트는 이 테이블만 즉시 SELECT.
 import { createAdminClient } from "./supabase/admin";
+import { pct } from "./returns";
 
 const BASE = "http://data-dbg.krx.co.kr/svc/apis/sto";
 const EP = { kospi: `${BASE}/stk_bydd_trd`, kosdaq: `${BASE}/ksq_bydd_trd` } as const;
@@ -54,11 +55,6 @@ function closeMap(rows: KrxRow[]): Map<string, number> {
   }
   return m;
 }
-function pct(now: number, past: number | undefined): number | null {
-  if (!past || !now) return null;
-  return (now / past - 1) * 100;
-}
-
 export async function computeKrSnapshot(): Promise<{ ok: true; computed: number; basDd: string }> {
   const key = (process.env.KRX_API_KEY || "").trim();
   if (!key) throw new Error("no KRX_API_KEY");

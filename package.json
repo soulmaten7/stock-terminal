@@ -6,7 +6,9 @@
     "dev": "next dev --port 3333",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.0",
@@ -35,6 +37,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5",
+    "vitest": "^4.1.10",
     "xlsx": "^0.18.5"
   }
 }
