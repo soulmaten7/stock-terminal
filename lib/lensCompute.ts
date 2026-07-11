@@ -5,6 +5,7 @@ import YahooFinance from "yahoo-finance2";
 import { momentumLens, technicalLens, valuationLens, lowVolLens, qualityLens, assetGrowthLens, type LensRead } from "./lenses";
 import { type Locale } from "./lensCopy";
 import { computeFScore, type FRow } from "./fscore";
+import { marketCap, perFrom, pbrFrom } from "./returns";
 
 // yahooSurvey 안내 로그 억제
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
@@ -65,15 +66,8 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
     return { symbol, resolved, name, price, lenses: [], fscore: null, error: "insufficient_data" };
   }
 
-  const lenses: LensRead[] = [
-    momentumLens(closes, locale),
-    lowVolLens(closes, locale),
-    technicalLens(closes, locale),
-    valuationLens(pe, pb, locale),
-  ];
-
-  // F-Score (연간 재무 — fundamentalsTimeSeries). 실패/미지원 시 null로 안전 처리.
-  let fscore: unknown = null;
+  // 연간 재무(fundamentalsTimeSeries) — F-Score·퀄리티·자산성장 + 밸류(E/P·B/M) 폴백에 공용. 실패 시 rows=[] (안전).
+  let rows: FRow[] = [];
   try {
     const fts = await yf.fundamentalsTimeSeries(resolved, {
       period1: new Date(Date.now() - 6 * 365 * 24 * 60 * 60 * 1000),
@@ -82,7 +76,7 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
       module: "all",
     });
     const raw = (Array.isArray(fts) ? fts : []) as Array<Record<string, unknown>>;
-    const rows: FRow[] = raw
+    rows = raw
       .map((r) => ({
         date: r.date,
         totalRevenue: (r.totalRevenue as number) ?? null,
@@ -95,23 +89,46 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
         longTermDebt: (r.longTermDebt as number) ?? null,
         operatingCashFlow: (r.operatingCashFlow as number) ?? null,
         ordinarySharesNumber: (r.ordinarySharesNumber as number) ?? null,
+        stockholdersEquity: (r.stockholdersEquity as number) ?? (r.commonStockEquity as number) ?? null,
       }))
       .sort((a, b) => {
         const da = a.date instanceof Date ? a.date.getTime() : new Date(String(a.date)).getTime();
         const db = b.date instanceof Date ? b.date.getTime() : new Date(String(b.date)).getTime();
         return da - db;
       });
-    fscore = computeFScore(rows);
-    // 퀄리티(GP/A) — 최신 연도 매출총이익/총자산. 매출총이익 없으면(은행) null → 카드 "—".
-    const lr = rows[rows.length - 1];
-    const gp = lr?.grossProfit ?? (lr?.totalRevenue != null && lr?.costOfRevenue != null ? lr.totalRevenue - lr.costOfRevenue : null);
-    lenses.push(qualityLens(gp, lr?.totalAssets ?? null, locale));
-    // 자산성장(CMA) — 최신 연도 총자산 전년比 증가율. 2년치 필요.
-    const prev = rows[rows.length - 2];
-    const agPct = lr?.totalAssets != null && prev?.totalAssets != null && prev.totalAssets > 0 ? (lr.totalAssets / prev.totalAssets - 1) * 100 : null;
-    lenses.push(assetGrowthLens(agPct, locale));
   } catch {
-    fscore = null;
+    rows = [];
+  }
+  const lr = rows[rows.length - 1];
+  const prev = rows[rows.length - 2];
+
+  // 밸류(E/P·B/M) 폴백 — 야후 trailingPE/priceToBook이 null(한국 .KS 등)이면 재무로 직접 산출.
+  // PER = 시총/순이익(적자면 null), PBR = 시총/자기자본. (§docs/LENS_DEV_PLAYBOOK.md #29)
+  const mc = marketCap(price, lr?.ordinarySharesNumber);
+  if (pe == null) pe = perFrom(mc, lr?.netIncome);
+  if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
+
+  const lenses: LensRead[] = [
+    momentumLens(closes, locale),
+    lowVolLens(closes, locale),
+    technicalLens(closes, locale),
+    valuationLens(pe, pb, locale),
+  ];
+
+  // F-Score + 퀄리티(GP/A) + 자산성장(CMA) — 위에서 받은 rows 재사용.
+  let fscore: unknown = null;
+  if (lr) {
+    try {
+      fscore = computeFScore(rows);
+      // 퀄리티(GP/A) — 최신 연도 매출총이익/총자산. 매출총이익 없으면(은행) null → 카드 "—".
+      const gp = lr.grossProfit ?? (lr.totalRevenue != null && lr.costOfRevenue != null ? lr.totalRevenue - lr.costOfRevenue : null);
+      lenses.push(qualityLens(gp, lr.totalAssets ?? null, locale));
+      // 자산성장(CMA) — 최신 연도 총자산 전년比 증가율. 2년치 필요.
+      const agPct = lr.totalAssets != null && prev?.totalAssets != null && prev.totalAssets > 0 ? (lr.totalAssets / prev.totalAssets - 1) * 100 : null;
+      lenses.push(assetGrowthLens(agPct, locale));
+    } catch {
+      fscore = null;
+    }
   }
 
   return { symbol, resolved, name, price, lenses, fscore };

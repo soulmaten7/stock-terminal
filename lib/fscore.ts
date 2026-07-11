@@ -26,6 +26,7 @@ export type FRow = {
   longTermDebt?: number | null;
   operatingCashFlow?: number | null;
   ordinarySharesNumber?: number | null;
+  stockholdersEquity?: number | null;
 };
 
 function gp(r: FRow): number | null {
