@@ -64,22 +64,17 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
         raw = (j.stocks ?? j.items ?? []) as Record<string, unknown>[];
       } catch { raw = []; }
     }
+    // 1일전과 1주~1년전을 같은 스냅샷 응답에서 함께 받음 — 두 API 병합 제거(병합 실패 시 1일전만 뜨고 나머지 '—' 되던 버그 방지). null은 undefined로(→'—').
+    const num = (v: unknown) => (v == null ? undefined : Number(v));
     const rows: Row[] = raw.map((s) => ({
       symbol: String(s.symbol ?? ''),
       name: String(s.name ?? ''),
       price: Number(s.price ?? 0),
       changePercent: Number(s.changePercent ?? 0),
       amount: Number(s.amount ?? 0),
+      r1w: num(s.r1w), r1m: num(s.r1m), r3m: num(s.r3m), r6m: num(s.r6m), r1y: num(s.r1y),
     }));
-    try {
-      const j = await (await fetch('/api/krx/kr-performance')).json();
-      const map: Record<string, Row> = {};
-      for (const it of (j.items ?? []) as Row[]) if (it.symbol) map[String(it.symbol)] = it;
-      return rows.map((r) => {
-        const p = map[r.symbol];
-        return p ? { ...r, r1w: p.r1w, r1m: p.r1m, r3m: p.r3m, r6m: p.r6m, r1y: p.r1y } : r;
-      });
-    } catch { return rows; }
+    return rows;
   }
   const api = tab === 'etf' ? '/api/krx/etf-performance' : tab === 'etn' ? '/api/krx/etn-performance' : '/api/yahoo/reit-performance';
   try {

@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     const sb = createAdminClient();
     let q = sb
       .from("kr_stock_snapshot")
-      .select("symbol,name,market,price,change_percent,volume,trade_amount,market_cap");
+      .select("symbol,name,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y");
     if (market === "kospi" || market === "kosdaq") q = q.eq("market", market);
     const col =
       sort === "volume" ? "volume" : sort === "cap" ? "market_cap" : sort === "up" || sort === "down" ? "change_percent" : "trade_amount";
@@ -122,6 +122,8 @@ export async function GET(request: NextRequest) {
         volume: Number(s.volume) || 0,
         tradeAmount: Number(s.trade_amount) || 0,
         marketCap: Number(s.market_cap) || 0,
+        // 1주~1년 수익률을 1일전과 같은 응답에 함께 실어 보냄(별도 kr-performance 병합 제거 → 병합실패로 나머지 '—' 되던 버그 방지)
+        r1w: s.r1w, r1m: s.r1m, r3m: s.r3m, r6m: s.r6m, r1y: s.r1y,
       }));
       return NextResponse.json({ stocks, source: "kr_snapshot" });
     }
