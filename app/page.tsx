@@ -51,7 +51,7 @@ const HOME_JSONLD = {
       alternateName: "트릴리언",
       url: SITE_BASE,
       inLanguage: "ko-KR",
-      description: "흩어진 금융정보를 한곳에 모아 한눈에 — 시세·뉴스·공시·거시지표·ETF·공모주, 그리고 리딩방 검증까지.",
+      description: "전문가들이 쓰는 검증된 기법으로 종목을 데이터로 봅니다. 예측도 추천도 없이, 판단은 당신 — 종목을 보는 눈을, 누구에게나.",
       publisher: { "@id": `${SITE_BASE}/#organization` },
     },
   ],
