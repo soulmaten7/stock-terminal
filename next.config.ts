@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -37,4 +38,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Sentry: NEXT_PUBLIC_SENTRY_DSN 이 있을 때만 래핑(소스맵 업로드 등). 없으면 무동작 → 빌드·런타임 정상.
+export default process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(nextConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN, // 소스맵 업로드용(비밀 · Vercel/CI env에만)
+      silent: !process.env.CI,
+      widenClientFileUpload: true,
+    })
+  : nextConfig;
