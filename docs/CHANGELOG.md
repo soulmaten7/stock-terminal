@@ -1,6 +1,15 @@
 <!-- 2026-07-12 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-12 (2) — 🔒 1차 출시 QA 관문 통과 — RLS 4개 테이블 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 (HEAD `4ea75a1`)
+
+- **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 코드+라이브 전수 점검 — 약관·개인정보·면책, robots/sitemap/OG, 모든 사용자 API 인증(401), service-role 키 클라 미노출, env 안전(.gitignore), XSS 안전 = 전부 출시급 통과. **진짜 블로커 1개 발견·마감**.
+- **🔴 RLS 4개 테이블 보안 마감**(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`): `kr_stock_snapshot`(2,771행·KR 보드 핵심)·`brokers`(75)·`jp_stock_perf`(4,256)·`translation_cache`(271)가 RLS off + anon/authenticated에 `DELETE·TRUNCATE·UPDATE`까지 부여돼 **공개 anon 키(클라 번들 내장)만으로 KR 보드 전체 삭제·위조 가능**했음 → RLS on + anon/auth REVOKE(TRUNCATE는 RLS 미적용이라 REVOKE 병행). 읽기/쓰기 경로 9곳(`lib/krSnapshot·jpPerf·stockName`, `app/api/brokers·krx/*·yahoo/jp-list·news/feed`, `app/sitemap`) 전부 service-role(`createAdminClient`)이라 앱 영향 0(코드 검증). 라이브 `apply_migration` 선반영 → 재검증(RLS=true·anon권한 none) → 라이브 `/api/brokers`(20개)·`/api/krx/ranking`(100종목·`source:kr_snapshot`) 정상 서빙 확인. (`kr_etp_snapshot`은 이미 RLS on이었고 이 4개만 누락)
+- **⚖️ 법무 정확화**: 이용약관·개인정보처리방침 소셜로그인 표기 '구글만'으로 정확화 + 개인정보 **§11 권익침해 구제방법**(개인정보분쟁조정위 1833-6972·침해신고센터 118·대검 1301·경찰 182) + 시행일 2026-07-11.
+- **🔵 태그라인 새 슬로건 반영**: 푸터(`Footer.tsx`)·로그인(`auth/login`)·소개(`about`) 3곳 옛 "전문가 시각으로, TR-AI가 무료로 분석해 드립니다" → **"종목을 보는 눈을, 누구에게나."**. 라이브 `/about` 본문·푸터·OG 메타(og:title·og:image=/og.png·설명) 전부 새 브랜드 확인.
+- **✅ 검증**: 커밋 `4ea75a1` 푸시 · CI 최근 3개 전부 초록불(이 커밋 포함) · tsc 0 에러 · 라이브 보드·배포·링크 미리보기 초록.
+- **▶ 다음 = 통신판매업신고 대상 여부 확인**(거래·중개 없는 정보/허브 서비스라 비대상 유력·최종 확인) **+ 선택 하드닝**(모니터링 Sentry/Vercel Analytics·공개 POST rate-limit·DEFINER 뷰 security_invoker=on). **진짜 출시 블로커는 없음.**
+
 ## 2026-07-12 — STEP 700~702 — 🔭 렌즈 "독립 배선" 아키텍처 리팩토링 (1차 뼈대) + 🇰🇷 종목보드 코스피/코스닥 토글·상하한 배지 + ✨ 1차 폴리시(JP/CN/VN)
 
 - **700**: 🔭 렌즈 "독립 배선" 아키텍처 — StockData 번들 + Lens 인터페이스(compute async 허용=기법당 AI 자리) + LENSES 레지스트리 + 오케스트레이터 제네릭화 + percentile meta화. 계산·출력 불변(특성화 테스트 26개 보증 + 라이브 3종목 프로덕션 대조 byte-identical 확인). 설계=docs/LENS_ARCHITECTURE.md. 🐞 리팩토링 중 발견·즉시 수정: 재무 데이터가 아예 없는 엣지케이스에서 퀄리티·자산성장이 (예전엔 생략되던 것과 달리) na로 포함돼 렌즈 개수가 4→6개로 바뀌는 회귀 — `computeSymbolLenses`에서 `lr` 없으면 두 렌즈를 배열에서 필터링해 원래 동작 복원.

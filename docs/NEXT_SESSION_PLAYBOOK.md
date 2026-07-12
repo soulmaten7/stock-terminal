@@ -1,7 +1,9 @@
-<!-- 2026-07-11 -->
+<!-- 2026-07-12 -->
 # Trillion(트릴리언) — 다음 세션 PLAYBOOK
 
 > **이 파일은 무엇인가**: 다음 세션을 처음부터 끝까지 이해하고 진행하기 위한 마스터 인수인계 파일. 다른 어떤 문서를 안 봐도 이 파일만으로 작업 시작 가능.
+>
+> 🟢 **2026-07-12 (최신) 스냅샷 — HEAD `4ea75a1` · 🔒 1차 출시 QA 관문 통과 — RLS 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건.** STEP 700~702(렌즈 독립배선 아키텍처[기법당 AI 교체 자리]·KOSPI/KOSDAQ 세그먼트 토글·상하한 배지·1차 폴리시[JP TOPIX 숨김·CN 홍콩만·VN 공시→뉴스]) 위에 출시 게이트 마감. ① **QA 스윕(LAUNCH_PLAYBOOK §2)**: 법무·robots/sitemap/OG·API 인증(401)·service-role 키 미노출·env·XSS 전부 출시급 통과·블로커 1개 발견. ② **🔴 RLS 4개 테이블 보안 마감**(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`): `kr_stock_snapshot`·`brokers`·`jp_stock_perf`·`translation_cache`가 RLS off + anon에 `DELETE·TRUNCATE·UPDATE` 부여 → 공개 anon 키로 KR 보드 삭제·위조 가능하던 구멍을 RLS on+anon REVOKE로 봉인(읽기 9곳 전부 service-role이라 앱 영향 0·라이브 apply_migration 선반영·재검증·`/api/brokers`·`/api/krx/ranking` 정상 서빙 확인). ③ **⚖️ 법무 정확화**(구글만·개인정보 §11 권익침해 구제·시행일 2026-07-11) · ④ **🔵 태그라인 새 슬로건**(푸터·로그인·소개 "종목을 보는 눈을, 누구에게나."·라이브 `/about`·OG 확인). 커밋 `4ea75a1`·CI 최근 3개 초록·tsc 0. ▶ **다음 P0 = 통신판매업신고 대상 확인**(무거래→비대상 유력) **+ 선택 하드닝**(모니터링 Sentry/Analytics·공개 POST rate-limit·DEFINER 뷰 security_invoker). 진짜 출시 블로커 없음. (아래 스냅샷들은 히스토리.)
 >
 > 🟢 **2026-07-11 (2) 최신 스냅샷 — HEAD `ba3ce68` · 🔵 브랜드 외부 슬로건 확정 + 🖼️ OG/링크 미리보기(실제 로고) + 📖 문서 인덱스 신설.** ① **브랜드 외부 슬로건 확정**(`docs/BRAND_IDENTITY.md` §0·`a2d552a`): **"종목을 보는 눈을, 누구에게나."** · 서브 "모든 시각을 데이터로 — 판단은 당신입니다." · 각인 멍거 원문("The best thing a human being can do is to help another human being know more.") · 경쟁 백스페이스(남들은 "이기게" ↔ 우리는 "제대로 보게, 판단은 당신") · 이전 **"흩어진 금융정보를 한눈에" 폐기**. ② **OG/링크 미리보기 완료**(`336d08c`·`ba3ce68`): `app/layout.tsx` title·description·openGraph·twitter+images · `app/page.tsx` JSON-LD · `public/og.png`(로고 마크 박힌 1200×630). ③ **📖 전체 문서 마스터 인덱스** `docs/INDEX.md` 신설(비-STEP 문서 67개 카테고리별 카탈로그 + "언제 읽나"·CLAUDE.md 참조 테이블 맨 위 연결). ▶ **다음 P0 = 1·2·3차 출시 로드맵 확정**(각 차수 기능 범위 + 광고 활성화 시점) — 기존 **STEP③**(종목보드 코스피/코스닥 세그먼트 토글 + 상한/하한 배지[`|changePercent|≥29.5`])는 폐기 아님, 이 로드맵의 **1차 범위 후보**로 재배치. (아래 스냅샷들은 히스토리.)
 >

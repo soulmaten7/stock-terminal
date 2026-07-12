@@ -1,10 +1,18 @@
-<!-- 2026-07-11 -->
+<!-- 2026-07-12 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
+> 🟢 **2026-07-12 (최신) · 🔒 1차 출시 QA 관문 통과 — RLS 4개 테이블 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 (HEAD `4ea75a1`).**
+> - **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 코드+라이브 전수 점검 — 약관·개인정보·면책·robots/sitemap/OG·API 인증(401)·service-role 키 클라 미노출·env 안전·XSS 안전 = 전부 출시급 통과. **진짜 블로커 1개 발견·마감**.
+> - **🔴 RLS 4개 테이블 보안 마감**(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`): `kr_stock_snapshot`(2,771·KR 보드 핵심)·`brokers`(75)·`jp_stock_perf`(4,256)·`translation_cache`(271)가 RLS off + anon/authenticated에 `DELETE·TRUNCATE·UPDATE`까지 부여돼 **공개 anon 키만으로 KR 보드 전체 삭제·위조 가능**했음 → RLS on + anon/auth REVOKE(TRUNCATE는 RLS 미적용이라 REVOKE 병행). 읽기/쓰기 9곳 전부 service-role(`createAdminClient`)이라 앱 영향 0(코드 검증). 라이브 `apply_migration` 선반영 → 재검증(RLS=true·anon권한 none) → `/api/brokers`·`/api/krx/ranking` 정상 서빙 확인. (`kr_etp_snapshot`은 이미 RLS on·이 4개만 누락)
+> - **⚖️ 법무 정확화**: 이용약관·개인정보 소셜로그인 '구글만' + 개인정보 §11 권익침해 구제방법(분쟁조정위 1833-6972·침해신고센터 118·대검 1301·경찰 182) + 시행일 2026-07-11.
+> - **🔵 태그라인 새 슬로건**: 푸터·로그인·소개 3곳 옛 "전문가 시각으로, TR-AI가…" → **"종목을 보는 눈을, 누구에게나."**. 라이브 `/about` 본문·푸터·OG 메타(og:title·og:image=/og.png·설명) 전부 새 브랜드 확인.
+> - **✅ 검증**: 커밋 `4ea75a1` 푸시 · CI 최근 3개 전부 초록불(이 커밋 포함) · tsc 0 에러 · 라이브 보드·배포·링크 미리보기 초록.
+> - **▶ 다음 P0 = 통신판매업신고 대상 여부 확인**(거래·중개 없는 정보/허브 서비스라 비대상 유력·최종 확인) **+ 선택 하드닝**(모니터링 Sentry/Vercel Analytics·공개 POST rate-limit·DEFINER 뷰 security_invoker=on). **진짜 출시 블로커는 없음.**
+>
 > 🟢 **2026-07-11 (최신·2) · 🔵 브랜드 외부 슬로건 확정 + 🖼️ OG/링크 미리보기(실제 로고) + 📖 문서 인덱스 신설 (HEAD `ba3ce68`).**
 > - **🔵 브랜드 외부 슬로건 확정**(`docs/BRAND_IDENTITY.md` §0·`a2d552a`): 슬로건 **"종목을 보는 눈을, 누구에게나."** · 서브 **"모든 시각을 데이터로 — 판단은 당신입니다."** · 각인 = 멍거 원문("The best thing a human being can do is to help another human being know more."). 경쟁 백스페이스(남들은 "이기게" 판다 ↔ 우리는 "제대로 보게, 판단은 당신"). 이전 **"흩어진 금융정보를 한눈에"는 폐기**(편의 프레임·차별 실패).
 > - **🖼️ OG/링크 미리보기 완료**(`336d08c`·`ba3ce68`): `app/layout.tsx`(title·description·openGraph·twitter+images)·`app/page.tsx`(JSON-LD)·`public/og.png`(로고 마크 박힌 1200×630). 링크 공유 시 새 브랜드로 노출.

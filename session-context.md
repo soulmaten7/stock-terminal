@@ -2,6 +2,16 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-12 (2) — 🔒 1차 출시 QA 관문 통과 — RLS 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 ✅
+
+**HEAD `4ea75a1`.** 하루 아크(STEP 700~702) 위에 얹은 출시 게이트 마감. 렌즈 독립배선(700)·KOSPI/KOSDAQ 토글·상하한 배지(701)·1차 폴리시(702)에 이어 **QA 스윕 → 유일한 블로커(RLS) 봉인 → 커밋·CI 초록·라이브 검증**까지 완료.
+- **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 법무·SEO·API 인증·키 노출·env·XSS 전부 출시급 통과. 블로커 딱 1개 = DB RLS 구멍.
+- **🔴 RLS 4개 테이블 보안 마감**: `kr_stock_snapshot`·`brokers`·`jp_stock_perf`·`translation_cache`가 RLS off + anon에 삭제·TRUNCATE·수정 권한 → 공개 anon 키로 KR 보드 삭제·위조 가능하던 구멍. RLS on + anon REVOKE(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`). 읽기 9곳 전부 service-role이라 앱 영향 0. 라이브 apply_migration 선반영·재검증(RLS=true·anon권한 none)·`/api/brokers`·`/api/krx/ranking` 정상 서빙 확인.
+- **⚖️ 법무**: 약관·개인정보 '구글만' + 개인정보 §11 권익침해 구제방법 + 시행일 2026-07-11.
+- **🔵 태그라인**: 푸터·로그인·소개 3곳 → **"종목을 보는 눈을, 누구에게나."**. 라이브 `/about`·OG 메타 확인.
+- **✅** 커밋 `4ea75a1`·CI 최근 3개 초록·tsc 0·라이브 초록.
+- **▶ 다음 = 통신판매업신고 대상 확인**(무거래→비대상 유력) **+ 선택 하드닝**(모니터링·rate-limit·DEFINER 뷰). 진짜 출시 블로커 없음.
+
 ## 2026-07-11 (2) — 🔵 브랜드 외부 슬로건 확정 + 🖼️ OG/링크 미리보기(실제 로고) + ▶ 다음 P0 = 출시 로드맵 + 📖 문서 인덱스 신설 ✅
 
 **HEAD `ba3ce68`** (STEP 699 코드 + 브랜드·OG 확정 커밋 3개: `a2d552a` 브랜드 §0 · `336d08c` OG 메타 · `ba3ce68` OG 로고).

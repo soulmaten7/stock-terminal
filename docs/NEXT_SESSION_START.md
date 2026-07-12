@@ -1,7 +1,14 @@
 <!-- 2026-07-12 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-11 (최신·2) — 🔵 브랜드 외부 슬로건 확정 + 🖼️ OG/링크 미리보기(실제 로고) + 📖 문서 인덱스 신설. HEAD `ba3ce68`.**
+> 🆕 **2026-07-12 (최신) — 🔒 1차 출시 QA 관문 통과: RLS 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건. HEAD `4ea75a1`.**
+> - **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 코드+라이브 전수 — 법무·robots/sitemap/OG·API 인증(401)·service-role 키 미노출·env·XSS 전부 출시급 통과. **블로커 1개 발견·마감**.
+> - **🔴 RLS 4개 테이블 보안 마감**(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`): `kr_stock_snapshot`·`brokers`·`jp_stock_perf`·`translation_cache`가 RLS off + anon에 `DELETE·TRUNCATE·UPDATE` 부여 → **공개 anon 키로 KR 보드 삭제·위조 가능**하던 구멍을 RLS on + anon REVOKE로 봉인(TRUNCATE는 RLS 미적용→REVOKE 병행). 읽기 9곳 전부 service-role이라 앱 영향 0. 라이브 선반영·재검증(RLS=true·anon권한 none)·`/api/brokers`·`/api/krx/ranking` 정상 서빙 확인.
+> - **⚖️ 법무 정확화**: 약관·개인정보 '구글만' + 개인정보 §11 권익침해 구제방법(분쟁조정위 1833-6972 등) + 시행일 2026-07-11.
+> - **🔵 태그라인 새 슬로건**: 푸터·로그인·소개 3곳 → **"종목을 보는 눈을, 누구에게나."**. 라이브 `/about`·OG 메타 확인. CI 최근 3개 초록·tsc 0.
+> - **▶ 다음 = 통신판매업신고 대상 확인**(무거래→비대상 유력) **+ 선택 하드닝**(모니터링 Sentry/Analytics·공개 POST rate-limit·DEFINER 뷰 security_invoker). **진짜 출시 블로커 없음.**
+>
+> 🆕 **2026-07-11 (2) — 🔵 브랜드 외부 슬로건 확정 + 🖼️ OG/링크 미리보기(실제 로고) + 📖 문서 인덱스 신설. HEAD `ba3ce68`.**
 > - **🔵 브랜드 외부 슬로건 확정**(`docs/BRAND_IDENTITY.md` §0): **"종목을 보는 눈을, 누구에게나."** · 서브 "모든 시각을 데이터로 — 판단은 당신입니다." · 각인 = 멍거 원문("The best thing a human being can do is to help another human being know more."). 이전 **"흩어진 금융정보를 한눈에"는 폐기**(편의 프레임·차별 실패).
 > - **🖼️ OG/링크 미리보기 완료**: `app/layout.tsx`(title·description·openGraph·twitter+images)·`app/page.tsx`(JSON-LD)·`public/og.png`(로고 마크 박힌 1200×630). 링크 공유 시 새 브랜드로 노출.
 > - **📖 전체 문서 마스터 인덱스 신설**: `docs/INDEX.md`(비-STEP 문서 67개 카테고리별 카탈로그 + "언제 읽나"). CLAUDE.md 참조 테이블 맨 위 연결.
