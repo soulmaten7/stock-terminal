@@ -50,17 +50,34 @@ function pctColor(v?: number | null): string {
   if (v == null) return 'text-unjong-muted';
   return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
+// KR 일일 등락 상한 ±30% 근사(±29.5%부터 상/하한 배지). 색은 기존 상승=빨강/하락=파랑 관례 그대로.
+function limitBadge(chg: number): '상한' | '하한' | null {
+  if (chg >= 29.5) return '상한';
+  if (chg <= -29.5) return '하한';
+  return null;
+}
+function LimitBadge({ chg }: { chg: number }) {
+  const b = limitBadge(chg);
+  if (!b) return null;
+  return (
+    <span className={`ml-1 rounded px-1 text-[10px] font-semibold ${b === '상한' ? 'bg-unjong-up/10 text-unjong-up' : 'bg-unjong-down/10 text-unjong-down'}`}>
+      {b}
+    </span>
+  );
+}
 
-async function fetchRows(tab: SubTab): Promise<Row[]> {
+type KrMarket = 'all' | 'kospi' | 'kosdaq';
+
+async function fetchRows(tab: SubTab, market: KrMarket = 'all'): Promise<Row[]> {
   if (tab === 'stock') {
     let raw: Record<string, unknown>[] = [];
     try {
-      const j = await (await fetch('/api/krx/ranking?market=all&sort=amount&limit=2600')).json();
+      const j = await (await fetch('/api/krx/ranking?market=' + market + '&sort=amount&limit=2600')).json();
       raw = (j.stocks ?? []) as Record<string, unknown>[];
     } catch { raw = []; }
     if (raw.length === 0) {
       try {
-        const j = await (await fetch('/api/kis/volume-rank?market=all&sort=amount&limit=100')).json();
+        const j = await (await fetch('/api/kis/volume-rank?market=' + market + '&sort=amount&limit=100')).json();
         raw = (j.stocks ?? j.items ?? []) as Record<string, unknown>[];
       } catch { raw = []; }
     }
@@ -88,8 +105,9 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
 
 export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const [tab, setTab] = useState<SubTab>('stock');
-  const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock') ?? []);
-  const [loading, setLoading] = useState(() => getCache('market:stock') === undefined);
+  const [krMarket, setKrMarket] = useState<KrMarket>('all'); // 코스피/코스닥 세그먼트(주식 탭 전용)
+  const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock:all') ?? []);
+  const [loading, setLoading] = useState(() => getCache('market:stock:all') === undefined);
   const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount'); // 기본 거래대금순
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 기본 내림차순
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d'); // 단일 기간 컬럼 선택값(데스크탑·모바일 공용) — 기본 1일
@@ -171,12 +189,28 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     setPage(0);
     setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
     setSortDir('desc');
-    const ck = 'market:' + tab;
+    const ck = tab === 'stock' ? `market:stock:${krMarket}` : 'market:' + tab;
     const cached = getCache<Row[]>(ck);
     if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
-    fetchRows(tab).then((r) => { if (!cancelled) { setRows(r); setCache(ck, r); setLoading(false); } });
+    fetchRows(tab, krMarket).then((r) => { if (!cancelled) { setRows(r); setCache(ck, r); setLoading(false); } });
     return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
+
+  // 코스피/코스닥 세그먼트 전환 — 정렬·검색·기간은 유지, 종목 세트만 재fetch(캐시 분리). 초기 마운트는 위 tab 이펙트가 이미 처리.
+  const krMarketMounted = useRef(false);
+  useEffect(() => {
+    if (!krMarketMounted.current) { krMarketMounted.current = true; return; }
+    if (tab !== 'stock') return;
+    let cancelled = false;
+    setPage(0);
+    const ck = `market:stock:${krMarket}`;
+    const cached = getCache<Row[]>(ck);
+    if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
+    fetchRows('stock', krMarket).then((r) => { if (!cancelled) { setRows(r); setCache(ck, r); setLoading(false); } });
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [krMarket]);
 
   // 셀 표시용 기간 필드(드롭다운 선택) — 정렬과 별개. 정렬은 sortKey('name'|'price'|기간)로 결정.
   const mobileField = PERIODS.find((p) => p.key === mobilePeriod)?.field ?? PERIODS[0].field;
@@ -253,6 +287,26 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 {s.label}
               </button>
             ))}
+            {tab === 'stock' ? (
+              <div className="ml-1 flex shrink-0 gap-0.5 rounded-lg border border-unjong-border p-0.5">
+                {(
+                  [
+                    { key: 'all', label: '전체' },
+                    { key: 'kospi', label: '코스피' },
+                    { key: 'kosdaq', label: '코스닥' },
+                  ] as { key: KrMarket; label: string }[]
+                ).map((m) => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    onClick={() => setKrMarket(m.key)}
+                    className={`shrink-0 rounded px-2 py-1.5 text-[12px] font-semibold transition-colors sm:py-1 ${krMarket === m.key ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <p className="ml-2 hidden shrink-0 items-center self-center whitespace-nowrap text-[11px] text-unjong-muted lg:flex">
               종목 클릭 시 우측에 <span className="ml-1 font-medium text-unjong-accent">TR-AI 렌즈·브리핑</span>
             </p>
@@ -421,7 +475,10 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'KR') : '—'}</td>
-                    <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(r[mobileField] as number | null | undefined)}`}>{pct(r[mobileField] as number | null | undefined)}</td>
+                    <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(r[mobileField] as number | null | undefined)}`}>
+                      {pct(r[mobileField] as number | null | undefined)}
+                      {mobilePeriod === '1d' ? <LimitBadge chg={r.changePercent} /> : null}
+                    </td>
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button
                         type="button"
@@ -455,6 +512,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
                           <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === mobilePeriod)?.label}</span>
                           {pct(r[mobileField] as number | null | undefined)}
+                          {mobilePeriod === '1d' ? <LimitBadge chg={r.changePercent} /> : null}
                         </span>
                       </div>
                     </div>
