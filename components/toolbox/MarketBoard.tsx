@@ -8,6 +8,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { BrokerAdTr, BrokerAdCard } from './BrokerAdRow';
 import LensPreview from './LensPreview';
+import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
 type Row = {
   symbol: string;
@@ -104,12 +105,12 @@ async function fetchRows(tab: SubTab, market: KrMarket = 'all'): Promise<Row[]> 
 }
 
 export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
-  const [tab, setTab] = useState<SubTab>('stock');
-  const [krMarket, setKrMarket] = useState<KrMarket>('all'); // 코스피/코스닥 세그먼트(주식 탭 전용)
+  const [tab, setTab] = useState<SubTab>(() => (loadBoardView('KR')?.sub as SubTab) ?? 'stock');
+  const [krMarket, setKrMarket] = useState<KrMarket>(() => (loadBoardView('KR')?.market as KrMarket) ?? 'all'); // 코스피/코스닥 세그먼트(주식 탭 전용)
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock:all') ?? []);
   const [loading, setLoading] = useState(() => getCache('market:stock:all') === undefined);
-  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount'); // 기본 거래대금순
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 기본 내림차순
+  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>(() => (loadBoardView('KR')?.sortKey as 'amount' | 'name' | 'price' | PeriodKey) ?? 'amount'); // 기본 거래대금순
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>(() => loadBoardView('KR')?.sortDir ?? 'desc'); // 기본 내림차순
   const [mobilePeriod, setMobilePeriod] = useState<PeriodKey>('1d'); // 단일 기간 컬럼 선택값(데스크탑·모바일 공용) — 기본 1일
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
@@ -143,7 +144,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     dragStartY.current = null;
   }
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(() => loadBoardView('KR')?.page ?? 0);
   const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림(데스크탑)
   const periodRef = useRef<HTMLDivElement>(null);
   const [periodOpenM, setPeriodOpenM] = useState(false); // 기간 커스텀 드롭다운 열림(모바일)
@@ -183,12 +184,18 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     });
   };
 
+  // firstRun: 렌즈 상세 왕복 복원 시 첫 마운트에선 리셋 스킵(복원값 유지) — fetch는 항상 실행.
+  const firstRun = useRef(true);
   useEffect(() => {
     let cancelled = false;
-    setSearch('');
-    setPage(0);
-    setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
-    setSortDir('desc');
+    if (!firstRun.current) {
+      setSearch('');
+      setPage(0);
+      setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
+      setSortDir('desc');
+      setKrMarket('all'); // 하위탭 전환 시 코스피/코스닥 세그먼트도 전체로 리셋
+    }
+    firstRun.current = false;
     const ck = tab === 'stock' ? `market:stock:${krMarket}` : 'market:' + tab;
     const cached = getCache<Row[]>(ck);
     if (cached) { setRows(cached); setLoading(false); } else { setLoading(true); }
@@ -196,6 +203,11 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
     return () => { cancelled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab]);
+
+  // 뷰 상태(하위탭·세그먼트·정렬·페이지) 기억 — 렌즈 상세 왕복 복원용.
+  useEffect(() => {
+    saveBoardView('KR', { sub: tab, sortKey, sortDir, page, market: krMarket });
+  }, [tab, sortKey, sortDir, page, krMarket]);
 
   // 코스피/코스닥 세그먼트 전환 — 정렬·검색·기간은 유지, 종목 세트만 재fetch(캐시 분리). 초기 마운트는 위 tab 이펙트가 이미 처리.
   const krMarketMounted = useRef(false);

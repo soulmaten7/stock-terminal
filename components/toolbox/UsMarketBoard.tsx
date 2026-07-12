@@ -8,6 +8,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import LensPreview from './LensPreview';
 import AdSlotRow from './AdSlotRow';
+import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
 // 주식·ETF 행 모두 r1w..r1y를 가짐 — 주식은 us-list가 us_stock_perf(크론 미리계산) 조인 + r1y(quote),
 // ETF는 us-etf-performance가 한 번에 줌. 두 탭 동일 shape → 전 기간 정렬 가능.
@@ -70,12 +71,12 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
 }
 
 export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
-  const [tab, setTab] = useState<SubTab>('stock');
+  const [tab, setTab] = useState<SubTab>(() => (loadBoardView('US')?.sub as SubTab) ?? 'stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1d'); // 표시 기간 컬럼 선택값(셀 표시·기간 정렬 대상) — 기본 1일
-  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount'); // 정렬 키 — 기본 거래대금순
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc'); // 정렬 방향 — 기본 내림차순
+  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>(() => (loadBoardView('US')?.sortKey as 'amount' | 'name' | 'price' | PeriodKey) ?? 'amount'); // 정렬 키 — 기본 거래대금순
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>(() => loadBoardView('US')?.sortDir ?? 'desc'); // 정렬 방향 — 기본 내림차순
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
 
@@ -108,7 +109,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     dragStartY.current = null;
   }
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(() => loadBoardView('US')?.page ?? 0);
   const [periodOpen, setPeriodOpen] = useState(false); // 기간 커스텀 드롭다운 열림(데스크탑)
   const periodRef = useRef<HTMLDivElement>(null);
   const [periodOpenM, setPeriodOpenM] = useState(false); // 기간 커스텀 드롭다운 열림(모바일)
@@ -126,18 +127,28 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
   // 탭별 데이터 로드 — 주식/ETF 각각 별도 라우트·캐시 키(서버 30분 캐시 + 클라 메모리 캐시 SWR).
   // 탭 전환 시 해당 탭 캐시를 즉시 표시 후 백그라운드 재검증.
+  // firstRun: 렌즈 상세 왕복 복원 시 첫 마운트에선 리셋 스킵(복원값 유지) — fetch는 항상 실행.
+  const firstRun = useRef(true);
   useEffect(() => {
     let cancelled = false;
-    setSearch('');
-    setPage(0);
-    setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
-    setSortDir('desc');
+    if (!firstRun.current) {
+      setSearch('');
+      setPage(0);
+      setSortKey('amount'); // 하위탭 전환 시 거래대금순으로 리셋
+      setSortDir('desc');
+    }
+    firstRun.current = false;
     const key = CACHE_KEYS[tab];
     const cached = getCache<Row[]>(key);
     if (cached) { setRows(cached); setLoading(false); } else { setRows([]); setLoading(true); }
     fetchRows(tab).then((r) => { if (!cancelled) { setRows(r); setCache(key, r); setLoading(false); } });
     return () => { cancelled = true; };
   }, [tab]);
+
+  // 뷰 상태(하위탭·정렬·페이지) 기억 — 렌즈 상세 왕복 복원용.
+  useEffect(() => {
+    saveBoardView('US', { sub: tab, sortKey, sortDir, page });
+  }, [tab, sortKey, sortDir, page]);
 
   // 관심종목 동기화(로그인 시) — KR과 동일하게 symbol 집합 관리.
   useEffect(() => {

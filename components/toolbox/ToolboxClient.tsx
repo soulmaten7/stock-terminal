@@ -19,6 +19,7 @@ import MacroFeed from './MacroFeed';
 import OfferingsFeed from './OfferingsFeed';
 import { useCountryStore, type Country } from '@/stores/countryStore';
 import { useHomeReset } from '@/stores/homeResetStore';
+import { clearBoardViews } from '@/lib/boardMemory';
 
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
@@ -229,7 +230,7 @@ export default function ToolboxClient({
           <button
             key={c.code}
             type="button"
-            onClick={() => setCountry(c.code)}
+            onClick={() => { clearBoardViews(); setCountry(c.code); }}
             className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
               country === c.code ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}

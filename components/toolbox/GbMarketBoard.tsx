@@ -8,6 +8,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import LensPreview from './LensPreview';
 import AdSlotRow from './AdSlotRow';
+import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
 type Row = {
   symbol: string;
@@ -57,8 +58,8 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEY) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEY) === undefined);
   const [period, setPeriod] = useState<PeriodKey>('1d');
-  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>('amount');
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+  const [sortKey, setSortKey] = useState<'amount' | 'name' | 'price' | PeriodKey>(() => (loadBoardView('GB')?.sortKey as 'amount' | 'name' | 'price' | PeriodKey) ?? 'amount');
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>(() => loadBoardView('GB')?.sortDir ?? 'desc');
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   const [sheetDragY, setSheetDragY] = useState(0);
@@ -86,7 +87,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     dragStartY.current = null;
   }
   const [search, setSearch] = useState('');
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(() => loadBoardView('GB')?.page ?? 0);
   const [periodOpen, setPeriodOpen] = useState(false);
   const periodRef = useRef<HTMLDivElement>(null);
   const [periodOpenM, setPeriodOpenM] = useState(false);
@@ -101,14 +102,22 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     return () => document.removeEventListener('mousedown', onDoc);
   }, []);
 
+  // firstRun: 렌즈 상세 왕복 복원 시 첫 마운트에선 리셋 스킵(복원값 유지) — fetch는 항상 실행.
+  const firstRun = useRef(true);
   useEffect(() => {
     let cancelled = false;
-    setSearch(''); setPage(0); setSortKey('amount'); setSortDir('desc');
+    if (!firstRun.current) { setSearch(''); setPage(0); setSortKey('amount'); setSortDir('desc'); }
+    firstRun.current = false;
     const cached = getCache<Row[]>(CACHE_KEY);
     if (cached) { setRows(cached); setLoading(false); } else { setRows([]); setLoading(true); }
     fetchRows().then((r) => { if (!cancelled) { setRows(r); setCache(CACHE_KEY, r); setLoading(false); } });
     return () => { cancelled = true; };
   }, []);
+
+  // 뷰 상태(정렬·페이지) 기억 — 렌즈 상세 왕복 복원용(하위탭 없음).
+  useEffect(() => {
+    saveBoardView('GB', { sortKey, sortDir, page });
+  }, [sortKey, sortDir, page]);
 
   useEffect(() => {
     if (!isLoggedIn) return;
