@@ -549,7 +549,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         </div>
 
         {/* 우측: AI 렌즈 미리보기 패널 — 종목 선택 시 수익률+렌즈 표시, 미선택 시 안내 */}
-        <aside className="hidden w-96 shrink-0 lg:block">
+        <aside className="hidden w-96 shrink-0 lg:block lg:sticky lg:top-11 lg:self-start lg:max-h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
           <LensPreview stock={selectedStock} market="KR" />
         </aside>
       </div>

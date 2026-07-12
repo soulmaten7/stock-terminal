@@ -367,7 +367,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
           )}
         </div>
 
-        <aside className="hidden w-96 shrink-0 lg:block">
+        <aside className="hidden w-96 shrink-0 lg:block lg:sticky lg:top-11 lg:self-start lg:max-h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
           <LensPreview stock={selectedStock} market="GB" />
         </aside>
       </div>
