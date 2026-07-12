@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { computeSymbolLenses } from "@/lib/lensCompute";
 import { pickLocale } from "@/lib/lensCopy";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { LENSES } from "@/lib/lenses/registry";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,12 +25,15 @@ async function enrichPercentiles(symbol: string, data: Awaited<ReturnType<typeof
       momentum_pctl: number | null; quality_pctl: number | null; lowvol_pctl: number | null;
       value_pctl: number | null; assetgrowth_pctl: number | null;
     };
-    const map: Record<string, number | null | undefined> = {
+    // 렌즈 key → RPC 결과 컬럼(방향은 DB 함수 lens_percentiles가 meta.percentile.dir대로 계산해 반환).
+    const col: Record<string, number | null | undefined> = {
       momentum: p.momentum_pctl, quality: p.quality_pctl, lowvol: p.lowvol_pctl,
       valuation: p.value_pctl, assetgrowth: p.assetgrowth_pctl,
     };
+    // "어느 렌즈가 percentile 대상인가"를 하드코딩 대신 레지스트리 meta.percentile로 판단(기술=null → 제외).
+    const eligible = new Set(LENSES.filter((l) => l.meta.percentile != null).map((l) => l.meta.key));
     for (const l of data.lenses) {
-      if (l.key in map) l.percentile = map[l.key] ?? null;
+      if (eligible.has(l.key) && l.key in col) l.percentile = col[l.key] ?? null;
     }
   } catch {
     /* 퍼센타일 실패는 무시 — 방향 라벨만으로도 카드 정상 동작 */

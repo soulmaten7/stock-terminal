@@ -84,6 +84,7 @@
 |------|------|-----------|
 | `docs/LENS_DEV_PLAYBOOK.md` | **[필독]** 기법 렌즈 개발 플레이북 + 문제해결 로그(§0 원칙·#1~#29) | 새 렌즈 착수 전 + 막힐 때 |
 | `docs/LENS_ROADMAP.md` | 기법(렌즈) 로스터 & 로드맵 | 다음 렌즈 선정 시 |
+| `docs/LENS_ARCHITECTURE.md` | **[최신·뼈대]** 렌즈 "독립 배선" 표준 — StockData 번들·Lens 인터페이스·레지스트리·기법당 AI 교체 지점 | 렌즈 구조 변경·새 렌즈·AI 교체 시 |
 | `docs/LENS_STRENGTH_MAP.md` | 기법별 적합 영역(강한 종목·섹터·조건) | 렌즈 가중·선택 근거 |
 | `docs/LENS_DISPLAY_CHARTER.md` | 렌즈 표시 헌장 — 모든 카드 공통 표시 규칙(강제 체크리스트) | 렌즈 카드 생성/수정 시 |
 | `docs/AI_LENS_SPEC.md` | [설계·보류] AI 렌즈 해설 설계 스펙(빌드 여부 결정용) | AI 해설 설계 참고 |
