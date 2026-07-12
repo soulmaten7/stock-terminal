@@ -2,6 +2,15 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-12 (3) — 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry) ✅
+
+**HEAD `09f1174`.** QA 통과 뒤 "선택 하드닝 + 모니터링"을 순서대로 마감.
+- **🛡️ DEFINER 뷰 정리**: 라이브 조사 결과 악용 구멍 아님(복합뷰=쓰기불가·공개데이터). `advisor_directory`=공개 리딩방 디렉토리 서빙 통로라 DEFINER 유지(라이브 1,553행 검증), `stock_snapshot_v`(미사용)만 invoker+권한회수. `supabase/migrations/20260712_harden_definer_views_grants.sql`.
+- **🔴 ai-analysis 제거**: `/api/ai-analysis` POST가 비인증 OpenAI 과금 구멍인데 앱 미사용(레거시) → 삭제. 나머지 공개 POST는 401 보호 확인.
+- **📈 Vercel Analytics + Sentry**: `@vercel/analytics`·`@sentry/nextjs` v10(서버/엣지/클라+instrumentation+전역 에러바운더리·DSN 조건부 래핑). Sentry 라이브 에러 캡처 검증 완료(Chrome으로 Issues 확인).
+- **🐞 교훈**: Vercel `NEXT_PUBLIC_*`는 빌드캐시 재사용 시 미인라인 → '캐시 없이 재배포'로 해결(Sentry 무동작 유일 원인이었음).
+- **▶ 다음 = Vercel Analytics 대시보드 Enable(1클릭)** + (후속) POST rate-limit(Vercel KV)·Sentry 소스맵 토큰.
+
 ## 2026-07-12 (2) — 🔒 1차 출시 QA 관문 통과 — RLS 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 ✅
 
 **HEAD `4ea75a1`.** 하루 아크(STEP 700~702) 위에 얹은 출시 게이트 마감. 렌즈 독립배선(700)·KOSPI/KOSDAQ 토글·상하한 배지(701)·1차 폴리시(702)에 이어 **QA 스윕 → 유일한 블로커(RLS) 봉인 → 커밋·CI 초록·라이브 검증**까지 완료.

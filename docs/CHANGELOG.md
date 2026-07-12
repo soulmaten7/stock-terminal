@@ -1,6 +1,16 @@
 <!-- 2026-07-12 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-12 (3) — 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링 도입(Vercel Analytics·Sentry) (HEAD `09f1174`)
+
+- **🛡️ DEFINER 뷰 정리**(`supabase/migrations/20260712_harden_definer_views_grants.sql`): QA가 플래그한 2개 뷰를 라이브 조사 → **악용 구멍 아님**(둘 다 UNION/LATERAL 복합뷰=업데이트 불가라 anon 쓰기권한은 먹통·노출 데이터는 공개용). `advisor_directory`는 DEFINER **유지**(라우트가 세션 클라로 읽어 로그아웃=anon인데, base 테이블은 RLS on+anon 정책 0 → 이 DEFINER 뷰가 공개 컬럼만 노출하는 필수 통로. security_invoker 켜면 로그아웃 사용자에게 디렉토리 빈 화면). `stock_snapshot_v`(앱 미사용 레거시)만 invoker 전환 + anon/auth 권한 회수 + 두 뷰의 먹통 쓰기권한 회수. 라이브 `/api/advisors` 로그아웃 1,553행 정상 검증. SECURITY DEFINER 함수 8개는 트리거·카운터 RPC라 정상(현행 유지).
+- **🔴 미사용 `/api/ai-analysis` 제거**(`36fe906`): POST가 **인증 없이 매 호출 OpenAI gpt-4o-mini 과금**(무한 비용 구멍)인데 앱 완전 미사용(예전 TRAI 스텁 잔재·import 0건) → route + `lib/ai/analysis.ts` 삭제. 공개 POST 전수 분류: reports·watchlist·rooms/favorite·toolbox/favorite·admin/*·business/* = 401 보호 확인. inquiry·toolbox/click = 저위험 공개(입력 캡)·진짜 rate-limit은 서버리스라 Vercel KV 필요 → 후속.
+- **📈 Vercel Analytics**(`3b3250e`): `@vercel/analytics` + 루트 `<Analytics/>`. ⚠️ **대시보드 Enable 1클릭 남음**(안 켜면 수집 안 됨).
+- **📈 Sentry**(`17bfbf3`·`@sentry/nextjs` v10.65): `sentry.server/edge.config.ts`·`instrumentation-client.ts`·`instrumentation.ts`(onRequestError)·`app/global-error.tsx` + `next.config.ts` 조건부 래핑(DSN 없으면 무동작→빌드 정상). env 4개(NEXT_PUBLIC_SENTRY_DSN·SENTRY_ORG=trillion-nu·SENTRY_PROJECT=javascript-nextjs·SENTRY_AUTH_TOKEN). **라이브 검증 완료** — 테스트 에러가 Sentry Issues에 캡처됨(Claude in Chrome으로 직접 확인).
+- **🐞 교훈 — Vercel `NEXT_PUBLIC_*` 빌드캐시 함정**: env를 나중에 추가하면 Vercel이 이전(값 없던) 빌드의 컴파일 캐시를 재사용해 `NEXT_PUBLIC_*`가 코드에 **안 박힘**(SDK 무동작). 새 커밋·일반 재배포로도 안 고쳐짐 → **Redeploy에서 'Use existing Build Cache' 체크 해제**로 캐시 없는 전체 재빌드해야 인라인됨. (Sentry가 배선·env 다 맞는데도 계속 무동작이던 유일 원인. `__SENTRY__` 부재로 진단→캐시프리 재빌드로 해결.)
+- **🧹 임시 검증 라우트**(`bb7a2a4`→`09f1174` 삭제): Sentry 확인용 `/api/_sentry-test` 추가→검증 후 제거.
+- **▶ 다음 = Vercel Analytics 대시보드 Enable(1클릭)** + (후속) 공개 POST rate-limit(Vercel KV)·Sentry 소스맵 AUTH_TOKEN(선택). **1차 출시 하드닝·모니터링 완료.**
+
 ## 2026-07-12 (2) — 🔒 1차 출시 QA 관문 통과 — RLS 4개 테이블 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 (HEAD `4ea75a1`)
 
 - **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 코드+라이브 전수 점검 — 약관·개인정보·면책, robots/sitemap/OG, 모든 사용자 API 인증(401), service-role 키 클라 미노출, env 안전(.gitignore), XSS 안전 = 전부 출시급 통과. **진짜 블로커 1개 발견·마감**.

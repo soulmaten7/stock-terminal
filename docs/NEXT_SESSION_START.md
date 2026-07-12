@@ -1,7 +1,14 @@
 <!-- 2026-07-12 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-12 (최신) — 🔒 1차 출시 QA 관문 통과: RLS 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건. HEAD `4ea75a1`.**
+> 🆕 **2026-07-12 (최신) — 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry). HEAD `09f1174`.**
+> - **🛡️ DEFINER 뷰 정리**: 라이브 조사=악용 구멍 아님(복합뷰라 쓰기불가·공개데이터). `advisor_directory`=로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 필수 통로라 DEFINER **유지**(security_invoker 켜면 빈 화면·라이브 1,553행 검증), `stock_snapshot_v`(미사용)만 invoker+권한회수. `supabase/migrations/20260712_harden_definer_views_grants.sql`.
+> - **🔴 `/api/ai-analysis` 제거**: POST가 비인증 OpenAI 과금 구멍인데 앱 미사용(레거시 TRAI 스텁) → route+`lib/ai/analysis.ts` 삭제. 나머지 공개 POST=401 보호 확인.
+> - **📈 Vercel Analytics**(`@vercel/analytics`·루트 `<Analytics/>`·⚠️**대시보드 Enable 1클릭 남음**) **+ Sentry**(`@sentry/nextjs` v10·서버/엣지/클라 init+instrumentation(onRequestError)+전역 에러바운더리+next.config 조건부 래핑). **라이브 에러 캡처 검증 완료**(Chrome으로 Issues 확인).
+> - **🐞 교훈 — Vercel 빌드캐시 함정**: `NEXT_PUBLIC_*` env를 늦게 추가하면 캐시 재사용으로 코드에 미인라인(무동작) → **Redeploy에서 'Use existing Build Cache' 해제**로 캐시 없는 재빌드해야 박힘. (Sentry 무동작 유일 원인.)
+> - **▶ 다음 = Vercel Analytics 대시보드 Enable(1클릭)** + (후속) 공개 POST rate-limit(Vercel KV)·Sentry 소스맵 AUTH_TOKEN(선택).
+>
+> 🆕 **2026-07-12 (2) — 🔒 1차 출시 QA 관문 통과: RLS 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건. HEAD `4ea75a1`.**
 > - **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 코드+라이브 전수 — 법무·robots/sitemap/OG·API 인증(401)·service-role 키 미노출·env·XSS 전부 출시급 통과. **블로커 1개 발견·마감**.
 > - **🔴 RLS 4개 테이블 보안 마감**(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`): `kr_stock_snapshot`·`brokers`·`jp_stock_perf`·`translation_cache`가 RLS off + anon에 `DELETE·TRUNCATE·UPDATE` 부여 → **공개 anon 키로 KR 보드 삭제·위조 가능**하던 구멍을 RLS on + anon REVOKE로 봉인(TRUNCATE는 RLS 미적용→REVOKE 병행). 읽기 9곳 전부 service-role이라 앱 영향 0. 라이브 선반영·재검증(RLS=true·anon권한 none)·`/api/brokers`·`/api/krx/ranking` 정상 서빙 확인.
 > - **⚖️ 법무 정확화**: 약관·개인정보 '구글만' + 개인정보 §11 권익침해 구제방법(분쟁조정위 1833-6972 등) + 시행일 2026-07-11.

@@ -5,7 +5,14 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-12 (최신) · 🔒 1차 출시 QA 관문 통과 — RLS 4개 테이블 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 (HEAD `4ea75a1`).**
+> 🟢 **2026-07-12 (최신) · 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry) (HEAD `09f1174`).**
+> - **🛡️ DEFINER 뷰 정리**(`supabase/migrations/20260712_harden_definer_views_grants.sql`): QA 플래그 2개 뷰 라이브 조사 → 악용 구멍 아님(UNION/LATERAL 복합뷰=업데이트 불가·노출은 공개데이터). `advisor_directory`=로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 필수 통로라 DEFINER 유지(security_invoker 켜면 base RLS에 막혀 빈 화면·라이브 1,553행 검증), `stock_snapshot_v`(앱 미사용)만 invoker 전환+anon 권한회수. SECURITY DEFINER 함수 8개는 트리거·카운터 RPC라 정상.
+> - **🔴 `/api/ai-analysis` 제거**: POST가 **인증 없이 매 호출 OpenAI gpt-4o-mini 과금**(무한 비용 구멍)인데 앱 완전 미사용(레거시) → route+`lib/ai/analysis.ts` 삭제. 공개 POST 전수: reports·watchlist·rooms/favorite·admin/*·business/* = 401 보호. inquiry·click = 저위험(입력 캡)·rate-limit은 Vercel KV 필요→후속.
+> - **📈 Vercel Analytics**(`@vercel/analytics`·루트 `<Analytics/>`·⚠️대시보드 Enable 1클릭 남음) **+ Sentry**(`@sentry/nextjs` v10.65·`sentry.*.config`·`instrumentation-client.ts`·`instrumentation.ts`(onRequestError)·`app/global-error.tsx`·`next.config` 조건부 래핑[DSN 없으면 무동작]). env 4개(NEXT_PUBLIC_SENTRY_DSN·SENTRY_ORG=trillion-nu·SENTRY_PROJECT=javascript-nextjs·SENTRY_AUTH_TOKEN). **라이브 에러 캡처 검증 완료**.
+> - **🐞 교훈 — Vercel `NEXT_PUBLIC_*` 빌드캐시 함정**: env 늦게 추가 시 Vercel이 값 없던 컴파일 캐시를 재사용해 미인라인(무동작). 새 커밋·일반 재배포로도 안 고쳐짐 → **'Use existing Build Cache' 해제하고 재배포**해야 인라인. (`__SENTRY__` 부재로 진단→캐시프리 재빌드로 해결.)
+> - **▶ 다음 = Vercel Analytics 대시보드 Enable(1클릭)** + (후속) 공개 POST rate-limit(Vercel KV)·Sentry 소스맵 AUTH_TOKEN(선택). **1차 하드닝·모니터링 완료.**
+>
+> 🟢 **2026-07-12 (2) · 🔒 1차 출시 QA 관문 통과 — RLS 4개 테이블 보안 마감 + ⚖️ 법무 정확화 + 🔵 태그라인 새 슬로건 (HEAD `4ea75a1`).**
 > - **🔒 QA 스윕(LAUNCH_PLAYBOOK §2)**: 코드+라이브 전수 점검 — 약관·개인정보·면책·robots/sitemap/OG·API 인증(401)·service-role 키 클라 미노출·env 안전·XSS 안전 = 전부 출시급 통과. **진짜 블로커 1개 발견·마감**.
 > - **🔴 RLS 4개 테이블 보안 마감**(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`): `kr_stock_snapshot`(2,771·KR 보드 핵심)·`brokers`(75)·`jp_stock_perf`(4,256)·`translation_cache`(271)가 RLS off + anon/authenticated에 `DELETE·TRUNCATE·UPDATE`까지 부여돼 **공개 anon 키만으로 KR 보드 전체 삭제·위조 가능**했음 → RLS on + anon/auth REVOKE(TRUNCATE는 RLS 미적용이라 REVOKE 병행). 읽기/쓰기 9곳 전부 service-role(`createAdminClient`)이라 앱 영향 0(코드 검증). 라이브 `apply_migration` 선반영 → 재검증(RLS=true·anon권한 none) → `/api/brokers`·`/api/krx/ranking` 정상 서빙 확인. (`kr_etp_snapshot`은 이미 RLS on·이 4개만 누락)
 > - **⚖️ 법무 정확화**: 이용약관·개인정보 소셜로그인 '구글만' + 개인정보 §11 권익침해 구제방법(분쟁조정위 1833-6972·침해신고센터 118·대검 1301·경찰 182) + 시행일 2026-07-11.
