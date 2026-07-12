@@ -24,7 +24,7 @@ const ARTICLES: { h: string; body: string[] }[] = [
   {
     h: "제4조 (회원가입 및 계정)",
     body: [
-      "이용자는 구글·카카오 등 소셜 로그인을 통해 회원으로 가입할 수 있습니다.",
+      "이용자는 구글 계정 소셜 로그인을 통해 회원으로 가입할 수 있습니다.",
       "계정 정보의 관리 책임은 이용자에게 있으며, 이를 타인에게 양도·대여할 수 없습니다.",
     ],
   },
@@ -74,7 +74,7 @@ export default function TermsPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <h1 className="mb-1 text-2xl font-bold text-unjong-primary">이용약관</h1>
-      <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-06-20</p>
+      <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-07-11</p>
 
       <div className="space-y-7">
         {ARTICLES.map((a) => (

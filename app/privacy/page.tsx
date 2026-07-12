@@ -4,7 +4,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
   {
     h: "1. 수집하는 개인정보 항목",
     body: [
-      "소셜 로그인(구글·카카오) 시: 이메일 주소, 프로필 정보(닉네임, 프로필 이미지).",
+      "소셜 로그인(구글) 시: 이메일 주소, 프로필 정보(닉네임, 프로필 이미지).",
       "서비스 이용 과정에서 생성: 닉네임, 즐겨찾기 내역, 리딩방 신고·업체 인증 내역, 접속 로그·쿠키.",
       "유료 기능 이용 시(향후): 결제 내역. 현재 유료 결제는 운영하지 않습니다.",
     ],
@@ -67,13 +67,23 @@ const SECTIONS: { h: string; body: string[] }[] = [
     h: "10. 고지의 의무",
     body: ["본 방침은 법령·서비스 변경에 따라 개정될 수 있으며, 변경 시 서비스 내 공지합니다."],
   },
+  {
+    h: "11. 권익침해 구제방법",
+    body: [
+      "이용자는 개인정보 침해로 인한 상담·분쟁 조정을 아래 기관에 신청할 수 있습니다.",
+      "개인정보분쟁조정위원회: 1833-6972 (www.kopico.go.kr)",
+      "개인정보침해신고센터: 118 (privacy.kisa.or.kr)",
+      "대검찰청 사이버수사과: 1301 (www.spo.go.kr)",
+      "경찰청 사이버수사국: 182 (ecrm.police.go.kr)",
+    ],
+  },
 ];
 
 export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
       <h1 className="mb-1 text-2xl font-bold text-unjong-primary">개인정보처리방침</h1>
-      <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-06-20</p>
+      <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-07-11</p>
 
       <p className="mb-8 text-sm leading-relaxed text-unjong-muted">
         트릴리언(이하 &lsquo;서비스&rsquo;)은 이용자의 개인정보를 중요하게 생각하며,
