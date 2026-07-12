@@ -23,7 +23,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Pr
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-bold text-unjong-primary">트릴리언 광고 안내</h1>
-      <p className="mt-2 text-sm leading-relaxed text-unjong-muted">흩어진 금융 정보를 한눈에 찾는 사용자에게, 가장 관련 높은 자리에서 정확히 노출하세요.</p>
+      <p className="mt-2 text-sm leading-relaxed text-unjong-muted">검증된 기법으로 종목을 데이터로 보러 오는 사용자에게, 가장 관련 높은 자리에서 정확히 노출하세요.</p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         <div>
