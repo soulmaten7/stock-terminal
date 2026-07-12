@@ -299,26 +299,6 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 {s.label}
               </button>
             ))}
-            {tab === 'stock' ? (
-              <div className="ml-1 flex shrink-0 gap-0.5 rounded-lg border border-unjong-border p-0.5">
-                {(
-                  [
-                    { key: 'all', label: '전체' },
-                    { key: 'kospi', label: '코스피' },
-                    { key: 'kosdaq', label: '코스닥' },
-                  ] as { key: KrMarket; label: string }[]
-                ).map((m) => (
-                  <button
-                    key={m.key}
-                    type="button"
-                    onClick={() => setKrMarket(m.key)}
-                    className={`shrink-0 rounded px-2 py-1.5 text-[12px] font-semibold transition-colors sm:py-1 ${krMarket === m.key ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <input
@@ -333,6 +313,30 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         </div>
         <div className="hidden w-96 shrink-0 lg:block" />
       </div>
+
+      {/* 주식 하위탭 전용: 코스피/코스닥 세그먼트 — 별도 줄(모바일에서 하위탭과 한 줄에 겹쳐 잘리지 않게) */}
+      {tab === 'stock' ? (
+        <div className="mb-2">
+          <div className="inline-flex gap-0.5 rounded-lg border border-unjong-border p-0.5">
+            {(
+              [
+                { key: 'all', label: '전체' },
+                { key: 'kospi', label: '코스피' },
+                { key: 'kosdaq', label: '코스닥' },
+              ] as { key: KrMarket; label: string }[]
+            ).map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => setKrMarket(m.key)}
+                className={`rounded px-3 py-1.5 text-[12px] font-semibold transition-colors ${krMarket === m.key ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
       <div className="flex gap-4">
