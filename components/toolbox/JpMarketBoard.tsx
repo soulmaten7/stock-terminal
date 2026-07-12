@@ -175,7 +175,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
     const dir = sortDir === 'desc' ? -1 : 1;
     if (sortKey === 'amount') {
-      return [...base].sort((a, b) => (Number(b.amount ?? 0) - Number(a.amount ?? 0)) * dir);
+      return [...base].sort((a, b) => (Number(a.amount ?? 0) - Number(b.amount ?? 0)) * dir);
     }
     if (sortKey === 'name') {
       // 종목명(회사명): 영문 로캘 문자열 비교

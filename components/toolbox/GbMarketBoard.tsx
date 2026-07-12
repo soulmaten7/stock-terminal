@@ -141,7 +141,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     const q = search.trim().toUpperCase();
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
     const dir = sortDir === 'desc' ? -1 : 1;
-    if (sortKey === 'amount') return [...base].sort((a, b) => (Number(b.amount ?? 0) - Number(a.amount ?? 0)) * dir);
+    if (sortKey === 'amount') return [...base].sort((a, b) => (Number(a.amount ?? 0) - Number(b.amount ?? 0)) * dir);
     if (sortKey === 'name') return [...base].sort((a, b) => a.name.localeCompare(b.name, 'en') * dir);
     if (sortKey === 'price') return [...base].sort((a, b) => ((a.price ?? 0) - (b.price ?? 0)) * dir);
     if (!sortPeriodField) return base;

@@ -184,7 +184,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
     const base = q ? rows.filter((r) => r.name.toUpperCase().includes(q) || r.symbol.toUpperCase().includes(q)) : rows;
     const dir = sortDir === 'desc' ? -1 : 1;
     if (sortKey === 'amount') {
-      return [...base].sort((a, b) => (Number(b.amount ?? 0) - Number(a.amount ?? 0)) * dir);
+      return [...base].sort((a, b) => (Number(a.amount ?? 0) - Number(b.amount ?? 0)) * dir);
     }
     if (sortKey === 'name') {
       return [...base].sort((a, b) => a.name.localeCompare(b.name, 'en') * dir);
