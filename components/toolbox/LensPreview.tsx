@@ -135,7 +135,9 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         </div>
         {state === 'loading' ? (
           <p className="text-[12px] text-unjong-muted">렌즈 읽는 중…</p>
-        ) : state === 'done' && lenses?.length ? (
+        ) : state === 'error' ? (
+          <p className="text-[12px] text-unjong-muted">지금은 렌즈를 불러올 수 없어요. 잠시 후 다시 시도해 주세요.</p>
+        ) : lenses?.length ? (
           <ul className="space-y-1">
             {lenses.map((l) => (
               <li key={l.key} className="flex items-center justify-between gap-2 text-[12px]">
@@ -148,9 +150,18 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
                 </span>
               </li>
             ))}
+            {/* 재무 데이터 없는 종목: 재무 기반 렌즈(퀄리티·자산성장)를 숨기지 않고 "재무 데이터 없음"으로 정직하게 표시(왜 못 주는지 명시) */}
+            {([['quality', '퀄리티'], ['assetgrowth', '자산성장']] as [string, string][])
+              .filter(([k]) => !lenses.some((l) => l.key === k))
+              .map(([k, label]) => (
+                <li key={k} className="flex items-center justify-between gap-2 text-[12px]">
+                  <span className="text-unjong-muted">{label}</span>
+                  <span className="shrink-0 text-[11px] text-unjong-muted">재무 데이터 없음</span>
+                </li>
+              ))}
           </ul>
         ) : (
-          <p className="text-[12px] text-unjong-muted">렌즈 정보 준비 중</p>
+          <p className="text-[12px] leading-5 text-unjong-muted">데이터 부족 — 상장·거래 이력이 짧아 렌즈를 산출할 수 없어요.</p>
         )}
       </div>
       {briefState !== 'idle' && briefState !== 'error' && (
