@@ -24,9 +24,8 @@ const INDEX_SYMBOLS = [
   // 🇰🇷 KR
   { symbol: "^KS11", name: "KOSPI", group: "KR" },
   { symbol: "^KQ11", name: "KOSDAQ", group: "KR" },
-  // 🇯🇵 JP
+  // 🇯🇵 JP — TOPIX(^TPX)는 야후가 깨진 값을 줘서 제외(아래 fetchTopix() 별도 처리).
   { symbol: "^N225", name: "Nikkei 225", group: "JP" },
-  { symbol: "^TPX", name: "TOPIX", group: "JP" },
   // 🇨🇳 CN + 🇭🇰 HK
   { symbol: "000001.SS", name: "SSE Composite", group: "CN" },
   { symbol: "000300.SS", name: "CSI 300", group: "CN" },
@@ -54,6 +53,46 @@ const VN_INDICES = [
   { symbol: "VNINDEX", name: "VN-Index" },
   { symbol: "VN30", name: "VN30" },
 ];
+
+// TOPIX — 야후 ^TPX는 quote가 105.18 같은 깨진 값(실제 TOPIX는 ~1000~5000대)에 spark도 빈값.
+// 대체 심볼(^TOPX·998405.T) 순서대로 시도 — 실측: 둘 다 실패(undefined·상장폐지). 정상 범위 값이 나오는 심볼이 없으면
+// 카드를 아예 제외(깨진 값을 그대로 노출하지 않음 — STEP 702 §1 원칙).
+const TOPIX_CANDIDATES = ["^TOPX", "998405.T"];
+async function fetchTopix(): Promise<IndexItem | null> {
+  for (const symbol of TOPIX_CANDIDATES) {
+    try {
+      const q = await yf.quote(symbol, {}, { validateResult: false });
+      const price = Number(q?.regularMarketPrice ?? 0);
+      if (!(price >= 1000 && price <= 5000)) continue; // 정상 범위 아니면 다음 후보
+      let spark: number[] = [];
+      try {
+        const ch = (await yf.chart(
+          symbol,
+          { period1: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), interval: "1d" },
+          { validateResult: false }
+        )) as { quotes?: { close?: number | null }[] };
+        spark = (ch.quotes ?? []).map((c) => c.close).filter((n): n is number => typeof n === "number");
+      } catch {
+        spark = [];
+      }
+      if (spark.length === 0) continue; // 빈 spark면 다음 후보(깨진 카드 방지)
+      const changePct = Number(q?.regularMarketChangePercent ?? 0);
+      const change = Number(q?.regularMarketChange ?? 0);
+      return {
+        name: "TOPIX",
+        value: price.toLocaleString("en-US", { maximumFractionDigits: 2 }),
+        changeText: change.toLocaleString("en-US", { maximumFractionDigits: 2, signDisplay: "always" }),
+        changePct,
+        isUp: changePct >= 0,
+        spark,
+        group: "JP",
+      };
+    } catch {
+      /* 다음 후보 */
+    }
+  }
+  return null; // 전 후보 실패 — 카드 미표시(니케이만 뜸)
+}
 
 async function fetchVnIndex(meta: { symbol: string; name: string }): Promise<IndexItem | null> {
   try {
@@ -90,8 +129,8 @@ export async function GET() {
     return NextResponse.json(_cache.data);
   }
   try {
-    // 야후 지수(quote+chart)와 베트남 지수(VnDirect)를 병렬로
-    const [yahooItems, vnRaw] = await Promise.all([
+    // 야후 지수(quote+chart)·TOPIX 대체 심볼·베트남 지수(VnDirect)를 병렬로
+    const [yahooItems, topix, vnRaw] = await Promise.all([
       Promise.all(
         INDEX_SYMBOLS.map(async (meta): Promise<IndexItem> => {
           const q = await yf.quote(meta.symbol);
@@ -124,16 +163,24 @@ export async function GET() {
           };
         })
       ),
+      fetchTopix(),
       Promise.all(VN_INDICES.map(fetchVnIndex)),
     ]);
 
+    // TOPIX(정상값 나온 경우만)를 니케이 바로 뒤에 삽입
+    const lastJp = yahooItems.map((x) => x.group).lastIndexOf("JP");
+    const withTopix =
+      topix && lastJp >= 0
+        ? [...yahooItems.slice(0, lastJp + 1), topix, ...yahooItems.slice(lastJp + 1)]
+        : yahooItems;
+
     // VN 블록을 마지막 CN(=Hang Seng) 뒤에 삽입 → KR→JP→CN→VN→US→GB→ETC 순서
     const vnItems = vnRaw.filter((x): x is IndexItem => x !== null);
-    const lastCn = yahooItems.map((x) => x.group).lastIndexOf("CN");
+    const lastCn = withTopix.map((x) => x.group).lastIndexOf("CN");
     const merged =
       lastCn >= 0
-        ? [...yahooItems.slice(0, lastCn + 1), ...vnItems, ...yahooItems.slice(lastCn + 1)]
-        : [...yahooItems, ...vnItems];
+        ? [...withTopix.slice(0, lastCn + 1), ...vnItems, ...withTopix.slice(lastCn + 1)]
+        : [...withTopix, ...vnItems];
 
     const payload = { items: merged.filter((x) => x.value !== "0") };
     _cache = { data: payload, at: Date.now() };

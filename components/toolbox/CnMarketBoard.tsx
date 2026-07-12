@@ -26,12 +26,15 @@ type Row = {
 
 // 하위 카테고리 탭 — 중화권 시장 기준(홍콩 | 상해A | 심천A | ETF). 각각 별도 라우트 fetch.
 type SubTab = 'hk' | 'ss' | 'sz' | 'etf';
-const SUBTABS: { key: SubTab; label: string }[] = [
+// 1차엔 홍콩만(본토 A주 시세 파이프라인 미완) — 스위치 OFF로 숨김·배선 보존(§보류 기능 프로토콜). 2차에 true로 켜면 복원.
+const SHOW_CN_ASHARES = false;
+const ALL_SUBTABS: { key: SubTab; label: string }[] = [
   { key: 'hk', label: '홍콩' },
   { key: 'ss', label: '상해A' },
   { key: 'sz', label: '심천A' },
   { key: 'etf', label: 'ETF' },
 ];
+const SUBTABS = SHOW_CN_ASHARES ? ALL_SUBTABS : ALL_SUBTABS.filter((s) => s.key !== 'ss' && s.key !== 'sz');
 // 시장별 통화 — 홍콩·ETF=HKD, 상해·심천 A주=CNY
 const CUR: Record<SubTab, string> = { hk: 'HK', ss: 'CN', sz: 'CN', etf: 'HK' };
 

@@ -23,14 +23,18 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const hasName = !!info?.name;
   const en = info?.en && info.en !== info?.name ? info.en : undefined; // 원어/영문명(한글 오버라이드 시 병기)
 
+  // VN은 공식 공시 소스가 전부 막혀 구글 뉴스로 대체(정직 표기) — "공시" 대신 "뉴스"만.
+  const isVN = /\.VN$/i.test(symbol);
   const label = hasName ? `${name} (${ticker})` : ticker;
-  const title = `${label} 주가·TR-AI 렌즈·뉴스·공시`;
+  const title = isVN ? `${label} 주가·TR-AI 렌즈·뉴스` : `${label} 주가·TR-AI 렌즈·뉴스·공시`;
   const idPart = hasName ? `(${en ? `${en}·` : ""}${ticker})` : "";
-  const description = `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
+  const description = isVN
+    ? `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
+    : `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
   const url = `${BASE}/stock/${symbol}`;
 
   const kw = hasName
-    ? [name, `${name} 주가`, `${name} 전망`, `${name} 뉴스`, `${name} 공시`, ...(en ? [en] : []), ticker, "AI 렌즈", "Trillion"]
+    ? [name, `${name} 주가`, `${name} 전망`, `${name} 뉴스`, ...(isVN ? [] : [`${name} 공시`]), ...(en ? [en] : []), ticker, "AI 렌즈", "Trillion"]
     : [ticker, "주가", "AI 렌즈", "Trillion"];
 
   return {
