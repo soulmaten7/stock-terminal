@@ -246,13 +246,6 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 {s.label}
               </button>
             ))}
-            <p className="ml-2 hidden shrink-0 items-center self-center whitespace-nowrap text-[11px] text-unjong-muted lg:flex">
-              종목 클릭 시 우측에 <span className="ml-1 font-medium text-unjong-accent">TR-AI 렌즈·브리핑</span>
-            </p>
-            <span className="ml-2 hidden shrink-0 items-center gap-1.5 text-[10px] text-unjong-muted lg:flex">
-              <span className="inline-block h-2 w-2 rounded-full bg-unjong-up" />상승
-              <span className="ml-1 inline-block h-2 w-2 rounded-full bg-unjong-down" />하락
-            </span>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <input
