@@ -16,7 +16,7 @@ function pctColor(v?: number | null): string {
 }
 function gradeBadgeClass(tier: string): string {
   if (tier === 'strong') return 'bg-unjong-accent/12 text-unjong-success';
-  if (tier === 'partial') return 'bg-amber-50 text-amber-600';
+  if (tier === 'partial') return 'bg-amber-400/10 text-amber-300';
   return 'bg-unjong-background text-unjong-muted';
 }
 
@@ -145,7 +145,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
                 <span className="text-unjong-primary">{l.name}</span>
                 <span className="flex shrink-0 items-center gap-1.5">
                   {l.verdict?.phrase ? (
-                    <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-accent' : l.verdict.tone === 'warn' ? 'text-amber-600' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
+                    <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-accent' : l.verdict.tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
                   ) : null}
                   <span className={`rounded px-1 py-0.5 text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
                 </span>

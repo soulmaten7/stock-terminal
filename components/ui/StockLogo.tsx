@@ -40,7 +40,7 @@ export function StockLogo({ code, name, size = 28 }: { code: string; name: strin
     );
   }
 
-  // 2) 주요 종목 실로고
+  // 2) 주요 종목 실로고 — 실로고는 흰 배경 전제(투명 PNG·짙은 마크) → 다크에서도 흰 원 유지
   const url = logoUrl(code);
   if (url && !err) {
     return (
@@ -49,16 +49,16 @@ export function StockLogo({ code, name, size = 28 }: { code: string; name: strin
         src={url}
         alt=""
         onError={() => setErr(true)}
-        className="shrink-0 rounded-full border border-unjong-border bg-unjong-surface object-contain"
+        className="shrink-0 rounded-full border border-unjong-border bg-white object-contain"
         style={{ width: size, height: size }}
       />
     );
   }
 
-  // 3) 레터 아바타 폴백
+  // 3) 레터 아바타 폴백 — avatarBg는 파스텔(밝음) → 이니셜은 어두운색 고정(text-unjong-primary는 다크에서 밝아 안 보임)
   return (
     <span
-      className="flex shrink-0 items-center justify-center rounded-full font-bold text-unjong-primary"
+      className="flex shrink-0 items-center justify-center rounded-full font-bold text-unjong-strong"
       style={{ width: size, height: size, background: avatarBg(name), fontSize: Math.round(size * 0.4) }}
     >
       {avatarChar(name)}

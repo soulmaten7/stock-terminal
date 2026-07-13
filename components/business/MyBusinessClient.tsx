@@ -126,16 +126,16 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
   return (
     <div className="rounded-xl border border-unjong-border bg-unjong-surface p-5">
       <div className="mb-3 flex flex-wrap items-center gap-2">
-        <ShieldCheck size={16} className="text-emerald-600" />
+        <ShieldCheck size={16} className="text-emerald-400" />
         <h3 className="font-bold text-unjong-primary">{biz.company_name}</h3>
-        <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-medium text-emerald-600">인증됨</span>
+        <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[11px] font-medium text-emerald-400">인증됨</span>
         {!isOwner ? <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[11px] text-unjong-muted">관리자</span> : null}
         <span className="text-xs text-unjong-muted">{formatBizNo(biz.biz_no)}</span>
       </div>
 
       {/* ── 금감원 검증 사실 (읽기 전용 · 디렉토리에 보이는 그대로) ── */}
       <div className="mb-4 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
-        <div className="mb-2 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
+        <div className="mb-2 inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-400">
           <ShieldCheck size={12} /> 유사투자자문 신고 · 자동 표시
         </div>
         <dl className="space-y-1 text-xs">
@@ -159,7 +159,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
         <textarea value={intro} onChange={(e) => { setIntro(e.target.value); setIntroMsg(''); }} rows={2} maxLength={200} placeholder="업체·리딩방 한 줄 소개" className="flex-1 resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
         <button type="button" onClick={saveIntro} disabled={savingIntro} className="shrink-0 self-start rounded-lg bg-unjong-strong px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{savingIntro ? '저장…' : '저장'}</button>
       </div>
-      {introMsg ? <p className="mb-3 text-[11px] text-emerald-600">{introMsg}</p> : <div className="mb-3" />}
+      {introMsg ? <p className="mb-3 text-[11px] text-emerald-400">{introMsg}</p> : <div className="mb-3" />}
 
       {/* ── 업체 제공 링크 ── */}
       <label className="mb-1 flex flex-wrap items-center gap-1.5 text-xs font-medium text-unjong-muted">
@@ -171,8 +171,8 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
           <li key={l.id} className="flex items-center gap-2 rounded-lg border border-unjong-border px-3 py-2 text-sm">
             <span className="shrink-0 rounded bg-unjong-background px-1.5 py-0.5 text-[11px] font-medium text-unjong-muted">{TYPE_LABEL[l.type] ?? l.type}</span>
             {l.is_paid
-              ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-600">유료</span>
-              : <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600">무료</span>}
+              ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">유료</span>
+              : <span className="shrink-0 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">무료</span>}
             <span className="min-w-0 flex-1 truncate text-unjong-primary">{l.label || l.url}</span>
             <a href={l.url} target="_blank" rel="noopener noreferrer" className="shrink-0 text-unjong-muted hover:text-unjong-accent"><ExternalLink size={14} /></a>
             <button type="button" onClick={() => delLink(l.id)} aria-label="삭제" className="shrink-0 text-unjong-muted hover:text-red-500"><Trash2 size={14} /></button>

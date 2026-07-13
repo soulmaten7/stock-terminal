@@ -76,7 +76,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
             <span className="ml-auto text-[10px] text-unjong-muted">ETN · AI 분석 아님</span>
           </div>
           <p className="text-[13px] leading-6 text-unjong-primary">이 상품은 <b>ETN(상장지수증권)</b>이에요. 발행 증권사가 기초지수 수익률을 약정해 지급하는 <b>전략형 상품</b>으로, ETF와 달리 <b>개별 구성종목(바스켓)이 없어요.</b> 상품명에 발행사·추종 지수·유형(레버리지·인버스)이 담겨 있어요.</p>
-          <p className="mt-3 rounded-lg bg-amber-50 p-2.5 text-[12px] leading-5 text-amber-700">⚠️ ETN은 발행사 신용위험이 있어요.{leveraged ? ' 레버리지·인버스형은 기초지수를 배수·반대로 추종해 장기 보유 시 가치가 깎일 수 있어요(변동성 손실).' : ''}</p>
+          <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-2.5 text-[12px] leading-5 text-amber-300">⚠️ ETN은 발행사 신용위험이 있어요.{leveraged ? ' 레버리지·인버스형은 기초지수를 배수·반대로 추종해 장기 보유 시 가치가 깎일 수 있어요(변동성 손실).' : ''}</p>
         </div>
       ) : (
         <>

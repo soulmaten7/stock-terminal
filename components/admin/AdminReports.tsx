@@ -62,7 +62,7 @@ export default function AdminReports({ initial }: { initial: Report[] }) {
               <td className="whitespace-nowrap px-3 py-2 text-unjong-primary">{r.reason}</td>
               <td className="px-3 py-2 text-unjong-muted">{r.content || '—'}</td>
               <td className="whitespace-nowrap px-3 py-2 text-xs">
-                <span className={r.status === 'confirmed' ? 'font-semibold text-emerald-600' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'font-medium text-amber-600'}>
+                <span className={r.status === 'confirmed' ? 'font-semibold text-emerald-400' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'font-medium text-amber-400'}>
                   {STATUS_LABEL[r.status] ?? r.status}
                 </span>
               </td>
@@ -72,7 +72,7 @@ export default function AdminReports({ initial }: { initial: Report[] }) {
                     type="button"
                     disabled={busy === r.id || r.status === 'confirmed'}
                     onClick={() => setStatus(r.id, 'confirmed')}
-                    className="rounded-md border border-emerald-500/40 px-2 py-1 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-50 disabled:opacity-40"
+                    className="rounded-md border border-emerald-500/40 px-2 py-1 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-400/10 disabled:opacity-40"
                   >
                     확인
                   </button>

@@ -40,7 +40,7 @@ export default function AdminFssLookup() {
       {loading ? (
         <p className="py-4 text-center text-sm text-unjong-muted">조회 중…</p>
       ) : searched && results.length === 0 ? (
-        <p className="py-4 text-center text-sm text-unjong-muted">금감원 신고 목록에 없습니다. <b className="text-amber-600">미신고 — 게재 불가</b></p>
+        <p className="py-4 text-center text-sm text-unjong-muted">금감원 신고 목록에 없습니다. <b className="text-amber-400">미신고 — 게재 불가</b></p>
       ) : results.length > 0 ? (
         <div className="overflow-x-auto rounded-lg border border-unjong-border">
           <table className="w-full text-sm">

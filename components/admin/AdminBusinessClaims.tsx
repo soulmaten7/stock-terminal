@@ -6,7 +6,7 @@ import { formatBizNo, formatPhone } from '@/lib/utils/format';
 type BizClaim = { id: string; biz_no: string; company_name: string; representative: string | null; contact: string | null; nts_valid: string | null; start_dt: string | null; doc_signed: string | null; status: string; created_at: string };
 
 function ntsBadge(v: string | null) {
-  if (v === 'match') return <span className="font-medium text-emerald-600">✓ 일치</span>;
+  if (v === 'match') return <span className="font-medium text-emerald-400">✓ 일치</span>;
   if (v === 'mismatch') return <span className="font-medium text-red-500">✗ 불일치</span>;
   return <span className="text-unjong-muted">— 미확인</span>;
 }
@@ -72,13 +72,13 @@ export default function AdminBusinessClaims({ initial }: { initial: BizClaim[] }
                 {c.doc_signed ? <a href={c.doc_signed} target="_blank" rel="noopener noreferrer" className="text-unjong-accent hover:underline">서류 보기</a> : '—'}
               </td>
               <td className="whitespace-nowrap px-3 py-2 text-xs">
-                <span className={c.status === 'approved' ? 'font-semibold text-emerald-600' : c.status === 'rejected' ? 'text-unjong-muted line-through' : 'font-medium text-amber-600'}>
+                <span className={c.status === 'approved' ? 'font-semibold text-emerald-400' : c.status === 'rejected' ? 'text-unjong-muted line-through' : 'font-medium text-amber-400'}>
                   {STATUS_LABEL[c.status] ?? c.status}
                 </span>
               </td>
               <td className="whitespace-nowrap px-3 py-2">
                 <div className="flex gap-1">
-                  <button type="button" disabled={busy === c.id || c.status === 'approved'} onClick={() => setAction(c.id, 'approve')} className="rounded-md border border-emerald-500/40 px-2 py-1 text-xs font-medium text-emerald-600 transition-colors hover:bg-emerald-50 disabled:opacity-40">승인</button>
+                  <button type="button" disabled={busy === c.id || c.status === 'approved'} onClick={() => setAction(c.id, 'approve')} className="rounded-md border border-emerald-500/40 px-2 py-1 text-xs font-medium text-emerald-400 transition-colors hover:bg-emerald-400/10 disabled:opacity-40">승인</button>
                   <button type="button" disabled={busy === c.id || c.status === 'rejected'} onClick={() => setAction(c.id, 'reject')} className="rounded-md border border-unjong-border px-2 py-1 text-xs font-medium text-unjong-muted transition-colors hover:bg-unjong-background disabled:opacity-40">반려</button>
                 </div>
               </td>

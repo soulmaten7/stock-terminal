@@ -94,7 +94,7 @@ export default function MyPage() {
               <input value={nickname} onChange={(e) => { setNickname(e.target.value); setSaveMsg(null); }} className="flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
               <button type="button" onClick={updateNickname} disabled={saving} className="shrink-0 rounded-lg bg-unjong-strong px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? '저장 중…' : '변경'}</button>
             </div>
-            {saveMsg ? <p className={`mt-1.5 text-xs ${saveMsg.ok ? 'text-emerald-600' : 'text-red-500'}`}>{saveMsg.text}</p> : null}
+            {saveMsg ? <p className={`mt-1.5 text-xs ${saveMsg.ok ? 'text-emerald-400' : 'text-red-500'}`}>{saveMsg.text}</p> : null}
           </div>
           <div>
             <label className="mb-1 block text-sm text-unjong-muted">이메일</label>
@@ -128,7 +128,7 @@ export default function MyPage() {
                     <tr key={r.id} className="border-b border-unjong-border last:border-0">
                       <td className="px-3 py-2 text-unjong-primary">{r.target_name}</td>
                       <td className="px-3 py-2 text-unjong-muted">{r.reason}</td>
-                      <td className="px-3 py-2"><span className={r.status === 'confirmed' ? 'font-medium text-emerald-600' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'text-amber-600'}>{r.status === 'confirmed' ? '확인됨' : r.status === 'dismissed' ? '기각됨' : '대기'}</span></td>
+                      <td className="px-3 py-2"><span className={r.status === 'confirmed' ? 'font-medium text-emerald-400' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'text-amber-400'}>{r.status === 'confirmed' ? '확인됨' : r.status === 'dismissed' ? '기각됨' : '대기'}</span></td>
                       <td className="px-3 py-2 text-unjong-muted">{formatDate(r.created_at)}</td>
                       <td className="px-3 py-2 text-right">{r.status === 'confirmed' ? <span className="text-xs text-unjong-muted">—</span> : <button type="button" onClick={() => withdrawReport(r.id)} title="철회" className="text-unjong-muted hover:text-red-500"><Trash2 size={14} className="inline" /></button>}</td>
                     </tr>

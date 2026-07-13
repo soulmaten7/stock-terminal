@@ -57,7 +57,7 @@ export default function BusinessClaimClient() {
   if (done) {
     return (
       <div className="rounded-xl border border-unjong-border bg-unjong-surface p-6 text-center">
-        <ShieldCheck className="mx-auto mb-2 text-emerald-600" size={28} />
+        <ShieldCheck className="mx-auto mb-2 text-emerald-400" size={28} />
         <p className="text-sm font-semibold text-unjong-primary">인증 신청이 접수되었습니다.</p>
         <p className="mt-1 text-xs leading-relaxed text-unjong-muted">국세청 진위확인 통과 + 서류 제출 완료. 관리자 최종 확인 후 게재됩니다.<br />보통 영업일 기준 1~2일 내 처리됩니다.</p>
       </div>
@@ -94,7 +94,7 @@ export default function BusinessClaimClient() {
               <li key={b.biz_no} className={`overflow-hidden rounded-lg border transition-colors ${isSel ? 'border-unjong-accent bg-unjong-accent/5' : 'border-unjong-border hover:bg-unjong-background'}`}>
                 <button type="button" onClick={() => pick(b)} className="w-full px-4 py-3 text-left">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck size={14} className="shrink-0 text-emerald-600" />
+                    <ShieldCheck size={14} className="shrink-0 text-emerald-400" />
                     <span className="font-semibold text-unjong-primary">{b.company_name}</span>
                     <span className="text-xs text-unjong-muted">{formatBizNo(b.biz_no)}</span>
                   </div>

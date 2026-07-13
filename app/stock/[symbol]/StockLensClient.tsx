@@ -37,24 +37,24 @@ type EventsResp = { symbol: string; events?: MatEvent[] };
 // 판정(reading) 색조 — pos=민트(우호적 읽기)·warn=앰버(주의 읽기)·flat=중립(기본색). '이 기법 시각'일 뿐 예측 아님(상단 전제).
 function verdictColor(tone?: string): string {
   if (tone === 'pos') return 'text-unjong-accent';
-  if (tone === 'warn') return 'text-amber-600';
+  if (tone === 'warn') return 'text-amber-400';
   return 'text-unjong-primary';
 }
 function toneText(tone?: string): string {
-  return tone === 'pos' ? 'text-unjong-accent' : tone === 'warn' ? 'text-amber-600' : 'text-unjong-muted';
+  return tone === 'pos' ? 'text-unjong-accent' : tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted';
 }
 
 // 신뢰도 배지 색 — strong=다크틸(검증·AA)·partial=앰버·ref=회색
 function gradeBadgeClass(tier: string): string {
   if (tier === 'strong') return 'bg-unjong-accent/12 text-unjong-success';
-  if (tier === 'partial') return 'bg-amber-50 text-amber-600';
+  if (tier === 'partial') return 'bg-amber-400/10 text-amber-300';
   return 'bg-unjong-background text-unjong-muted';
 }
 
 // 3구간 스펙트럼 — 퍼센타일이 없을 때(비US·유니버스 밖) 폴백. 켜지는 칸만 색조.
 function Spectrum({ labels, active, tone }: { labels: [string, string, string]; active: number; tone?: string }) {
   const on = tone === 'pos' ? 'border-unjong-accent bg-unjong-accent/10 text-unjong-accent'
-    : tone === 'warn' ? 'border-amber-400 bg-amber-50 text-amber-600'
+    : tone === 'warn' ? 'border-amber-400 bg-amber-400/10 text-amber-300'
     : 'border-unjong-muted bg-unjong-background text-unjong-primary';
   return (
     <div className="mt-2.5 flex gap-1.5">
@@ -75,7 +75,7 @@ const FACTOR_ENDS: Record<string, { lo: string; hi: string }> = {
 };
 function PctGauge({ pctl, tone, lo, hi }: { pctl: number; tone?: string; lo: string; hi: string }) {
   const p = Math.max(0, Math.min(100, Math.round(pctl)));
-  const fill = tone === 'pos' ? 'bg-unjong-accent/25' : tone === 'warn' ? 'bg-amber-100' : 'bg-unjong-border';
+  const fill = tone === 'pos' ? 'bg-unjong-accent/25' : tone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border';
   const mk = tone === 'pos' ? 'bg-unjong-accent' : tone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted';
   return (
     <div className="mt-2.5">
@@ -100,7 +100,7 @@ function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
         <div className="flex h-2.5 overflow-hidden rounded-full">
           <div className="bg-unjong-down/25" style={{ width: '30%' }} />
           <div className="bg-unjong-background" style={{ width: '40%' }} />
-          <div className="bg-amber-200" style={{ width: '30%' }} />
+          <div className="bg-amber-400/45" style={{ width: '30%' }} />
         </div>
         {r != null ? <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${r}%` }} /> : null}
       </div>
@@ -137,7 +137,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
     else if (favN === 0 && unfavN === 0) { lWord = '뚜렷하지 않음'; }
     else { lWord = '엇갈림'; }
   }
-  const pillClass = (t: string) => t === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : t === 'warn' ? 'bg-amber-50 text-amber-600' : 'bg-unjong-background text-unjong-muted';
+  const pillClass = (t: string) => t === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : t === 'warn' ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-background text-unjong-muted';
 
   return (
     <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
@@ -152,7 +152,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
           </div>
           <div className="mt-0.5 text-[11px] text-unjong-muted">기술 · RSI</div>
           <div className="relative mt-2 h-2">
-            <div className="flex h-2 overflow-hidden rounded-full"><div className="bg-unjong-down/25" style={{ width: '30%' }} /><div className="bg-unjong-background" style={{ width: '40%' }} /><div className="bg-amber-200" style={{ width: '30%' }} /></div>
+            <div className="flex h-2 overflow-hidden rounded-full"><div className="bg-unjong-down/25" style={{ width: '30%' }} /><div className="bg-unjong-background" style={{ width: '40%' }} /><div className="bg-amber-400/45" style={{ width: '30%' }} /></div>
             {rsiV != null ? <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${rsiV >= 70 ? 'bg-amber-400' : rsiV <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted'}`} style={{ left: `${rsiV}%` }} /> : null}
           </div>
           <p className={`mt-2 text-[12px] font-medium ${toneText(sTone)}`}>{sWord}{rsiV != null ? <span className="font-normal text-unjong-muted"> · RSI {rsiV}</span> : null}</p>
@@ -166,7 +166,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
           <div className="mt-0.5 text-[11px] text-unjong-muted">모멘텀 · 12-1</div>
           {mom?.percentile != null ? (
             <div className="relative mt-2 h-2 rounded-full bg-unjong-background">
-              <div className={`absolute left-0 top-0 h-2 rounded-full ${mTone === 'pos' ? 'bg-unjong-accent/25' : mTone === 'warn' ? 'bg-amber-100' : 'bg-unjong-border'}`} style={{ width: `${mom.percentile}%` }} />
+              <div className={`absolute left-0 top-0 h-2 rounded-full ${mTone === 'pos' ? 'bg-unjong-accent/25' : mTone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border'}`} style={{ width: `${mom.percentile}%` }} />
               <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mTone === 'pos' ? 'bg-unjong-accent' : mTone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted'}`} style={{ left: `${mom.percentile}%` }} />
             </div>
           ) : <div className="mt-2 h-2 rounded-full bg-unjong-background" />}
@@ -198,7 +198,7 @@ const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjon
 function FlagChip({ flags }: { flags?: Flag[] }) {
   if (!flags?.length) return null;
   const a = flags.some((x) => x.klass === 'A');
-  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-50 text-amber-600' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? '자료 갱신' : '새 소식'}</span>;
+  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? '자료 갱신' : '새 소식'}</span>;
 }
 
 // 렌즈 플래그 박스(펼침) — A(근거 흔듦)/B(새 사실) 분리. 방향 판정 아님.
@@ -209,8 +209,8 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
   return (
     <div className="mb-3 space-y-2">
       {aFlags.length ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50/60 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-600"><AlertTriangle size={11} /> 최근 새 공시가 나왔어요 (이 점수엔 아직 반영 전)</p>
+        <div className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-2.5 py-2">
+          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-300"><AlertTriangle size={11} /> 최근 새 공시가 나왔어요 (이 점수엔 아직 반영 전)</p>
           {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
@@ -244,7 +244,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
-            <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-600">재무 건전성</span>
+            <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[11px] font-medium text-amber-300">재무 건전성</span>
             <span className="text-xs text-unjong-muted">· 부실 위험 체크</span>
             <FlagChip flags={flags} />
           </div>
@@ -285,7 +285,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
                   <div key={g}>
                     <div className="flex items-baseline justify-between">
                       <span className="text-[12px] font-medium text-unjong-primary">{g} <span className="font-normal text-unjong-muted">{sub}</span></span>
-                      <span className="text-[11px] text-unjong-muted"><span className={passed > 0 ? 'font-medium text-unjong-accent' : 'font-medium text-amber-600'}>{passed}</span>/{items.length} 통과</span>
+                      <span className="text-[11px] text-unjong-muted"><span className={passed > 0 ? 'font-medium text-unjong-accent' : 'font-medium text-amber-400'}>{passed}</span>/{items.length} 통과</span>
                     </div>
                     <div className="mt-1 space-y-0.5">
                       {items.map((c) => (
@@ -969,7 +969,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 저마다 어떻게 보는지 보여드려요. <b className="text-unjong-primary">사고팔 신호가 아니라, 스스로 판단할 재료</b>예요.</p>
         <details className="mt-1">
           <summary className={LEARN_CLASS}>▾ 이 화면 읽는 법 · 신뢰도 등급</summary>
-          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-600">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-600">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요.</p>
+          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-400">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-400">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요.</p>
         </details>
       </div>
 

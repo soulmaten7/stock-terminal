@@ -124,7 +124,7 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
       </div>
       <div className="mb-3 flex flex-wrap items-center gap-1.5">
         {isFss ? (
-          <span className="inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600">
+          <span className="inline-flex items-center gap-1 rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-400">
             <ShieldCheck size={12} /> 유사투자자문 신고 · {platformLabel(a.platform)}
           </span>
         ) : (
@@ -197,7 +197,7 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
             {a.biz_links.map((l, i) => (
               <a key={i} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center gap-2 rounded-lg border border-unjong-border px-3 py-2 text-xs transition-colors hover:border-unjong-accent">
                 <span className="shrink-0 rounded bg-unjong-background px-1.5 py-0.5 text-[10px] font-medium text-unjong-muted">{LINK_TYPE_LABEL[l.type] ?? l.type}</span>
-                {l.is_paid ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-600">광고</span> : null}
+                {l.is_paid ? <span className="shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-400">광고</span> : null}
                 <span className="min-w-0 flex-1 truncate text-unjong-primary">{l.label || l.url}</span>
                 <ExternalLink size={12} className="shrink-0 text-unjong-muted" />
               </a>
@@ -397,7 +397,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       </div>
 
       {loginNotice ? (
-        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+        <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs text-amber-300">
           <span>로그인 후 이용할 수 있어요.</span>
           <a href="/auth/login" className="font-semibold underline">로그인</a>
         </div>
@@ -456,7 +456,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                     <span className="text-center text-sm font-bold text-unjong-muted">{n}</span>
                     <span className="flex min-w-0 items-center gap-1.5 text-left">
                       <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{a.company_name}</span>
-                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-600" aria-label="유사투자자문 신고" /> : null}
+                      {a.source === 'fss' ? <ShieldCheck size={13} className="shrink-0 text-emerald-400" aria-label="유사투자자문 신고" /> : null}
                     </span>
                     <div className="flex min-w-0 items-center gap-1 text-left text-xs">
                       {ch ? (
