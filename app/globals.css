@@ -21,16 +21,16 @@
   --color-surface-dark: #0D1117;
   --color-surface-dark-card: #161B22;
   --color-surface-dark-border: #2D3748;
-  /* 트릴리언(雲從) 브랜드 팔레트 */
-  --color-unjong-primary: #0E1116;
-  --color-unjong-strong: #0E1116; /* 어두운 버튼·활성탭 배경 전용 (text-unjong-primary와 역할 분리). 2단계에서 다크 값 별도 지정 */
+  /* 트릴리언(雲從) 브랜드 팔레트 — 다크 플립(STEP 705·2/3단계, 구조색만) */
+  --color-unjong-primary: #E9EAEC;
+  --color-unjong-strong: #2C303A; /* 어두운 버튼·활성탭 배경 전용 (text-unjong-primary와 역할 분리) */
   --color-unjong-accent: #2DD4BF;
   --color-unjong-success: #0E7C7B;
   --color-unjong-danger: #C73E3A;
-  --color-unjong-muted: #6B7280;
-  --color-unjong-surface: #FFFFFF;
-  --color-unjong-background: #F5F5F7;
-  --color-unjong-border: #E5E7EB;
+  --color-unjong-muted: #8A8D93;
+  --color-unjong-surface: #17181C;
+  --color-unjong-background: #0A0A0A;
+  --color-unjong-border: #2A2C31;
   --color-unjong-dark-primary: #E5E7EB;
   --color-unjong-dark-bg: #0A0A0A;
   --color-unjong-dark-surface: #1C1C1E;
@@ -62,13 +62,13 @@ html {
   /* STEP 127: 13px → 16px (브라우저 기본). rem 기반 Tailwind 텍스트·spacing 이
      네이버 페이 증권 수준 크기(text-xs=12px / text-sm=14px / text-base=16px)로 정렬됨. */
   font-size: 16px;
-  /* 라이트 테마 고정 — OS가 다크모드여도 네이티브 컨트롤(select 드롭다운·입력창)을 밝게 렌더 */
-  color-scheme: light;
+  /* 다크 테마 고정(STEP 705) — 네이티브 컨트롤(select 드롭다운·입력창)도 다크로 렌더 */
+  color-scheme: dark;
 }
 
 body {
-  background-color: #FFFFFF;
-  color: #000000;
+  background-color: #0A0A0A;
+  color: #E9EAEC;
   font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
 
@@ -82,9 +82,9 @@ body {
 }
 
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #FFFFFF; }
-::-webkit-scrollbar-thumb { background: #CCCCCC; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #AAAAAA; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #3A3D44; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #4A4E56; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
