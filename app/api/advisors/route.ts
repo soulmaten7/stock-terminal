@@ -8,6 +8,13 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 100;
 const VIEWS = ["fss", "verified", "interest"];
 
+// 상호명 정렬 키 — 선행 (주)·㈜·(브랜드코드) 등 괄호 접두어를 무시하고 실제 상호명 가나다순으로
+function sortName(name: unknown): string {
+  const s = String(name ?? "").trim();
+  const stripped = s.replace(/^(\s*(\([^)]*\)|㈜|주식회사|유한회사|유한책임회사))+/u, "").trim();
+  return stripped || s;
+}
+
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const raw = (sp.get("q") ?? "").trim();
@@ -67,7 +74,7 @@ export async function GET(req: NextRequest) {
       );
     }
     rows.sort((a, b) => {
-      const c = String(a.company_name ?? "").localeCompare(String(b.company_name ?? ""), "ko");
+      const c = sortName(a.company_name).localeCompare(sortName(b.company_name), "ko");
       if (c !== 0) return dir === "desc" ? -c : c;
       return String(a.channel_label ?? "").localeCompare(String(b.channel_label ?? ""), "ko");
     });
@@ -90,26 +97,32 @@ export async function GET(req: NextRequest) {
   // ───────────────────────────────────────────────
   // 금감원 등록업체 / 관심도순 = 업체 단위(기존). 1업체 1행.
   // ───────────────────────────────────────────────
-  let query = supabase
-    .from("advisor_directory")
-    .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, favorite_count, platform, source, intro", { count: "exact" });
-
-  if (q) {
-    query = query.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)
-  }
-  if (view === "interest") {
-    query = query.order("favorite_count", { ascending: dir === "asc" }).order("company_name", { ascending: true });
-  } else {
-    query = query.order("company_name", { ascending: dir !== "desc" });
-  }
-  const from = (page - 1) * PAGE_SIZE;
-  query = query.range(from, from + PAGE_SIZE - 1);
-
-  const { data, count, error } = await query;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
+  // 전체 로드(1000행 배치) → JS 정렬(상호명 접두어 정규화) → 페이지 슬라이스.
+  // (DB '.order(company_name)'는 "(주)·㈜·(BDBC)" 접두어까지 포함해 가나다가 어긋나 보임 → 접두어 무시하고 재정렬)
   type Row = { biz_no: string; [k: string]: unknown };
-  let rows = (data ?? []) as Row[];
+  const allRows: Row[] = [];
+  for (let start = 0; ; start += 1000) {
+    let batchQuery = supabase
+      .from("advisor_directory")
+      .select("biz_no, company_name, info_name, representative, valid_from, valid_to, homepage, phone, address, like_count, report_count, favorite_count, platform, source, intro");
+    if (q) batchQuery = batchQuery.or(`company_name.ilike.%${q}%,representative.ilike.%${q}%,info_name.ilike.%${q}%`); // 검색=전체(리딩방명 포함)
+    const { data, error } = await batchQuery.range(start, start + 999);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    const batch = (data ?? []) as Row[];
+    allRows.push(...batch);
+    if (batch.length < 1000) break;
+  }
+  allRows.sort((a, b) => {
+    if (view === "interest") {
+      const fa = Number(a.favorite_count ?? 0), fb = Number(b.favorite_count ?? 0);
+      if (fa !== fb) return dir === "asc" ? fa - fb : fb - fa; // 관심도순(관심 수)
+    }
+    const c = sortName(a.company_name).localeCompare(sortName(b.company_name), "ko"); // 상호명 가나다(접두어 무시)
+    return view === "interest" ? c : dir === "desc" ? -c : c;
+  });
+  const total = allRows.length;
+  const fromI = (page - 1) * PAGE_SIZE;
+  let rows = allRows.slice(fromI, fromI + PAGE_SIZE);
 
   if (user && rows.length) {
     const ids = rows.map((r) => r.biz_no);
@@ -140,5 +153,5 @@ export async function GET(req: NextRequest) {
     rows = rows.map((r) => ({ ...r, verified_owner: verifiedSet.has(r.biz_no) }));
   }
 
-  return NextResponse.json({ results: rows, total: count ?? 0, page, pageSize: PAGE_SIZE, view, dir, searching: !!q, loggedIn: !!user });
+  return NextResponse.json({ results: rows, total, page, pageSize: PAGE_SIZE, view, dir, searching: !!q, loggedIn: !!user });
 }

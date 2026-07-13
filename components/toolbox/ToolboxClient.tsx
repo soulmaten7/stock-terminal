@@ -42,7 +42,7 @@ const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보' };
 
 // "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부·거래처(증권사·차트·거래소·커뮤니티·유튜브)는 구분선 뒤.
 // 증권사=참조 디렉토리로 강등(트래픽 낮음). 수익은 종목 리스트 인리스트 광고로(설계: docs/AD_MONETIZATION_PLAYBOOK).
-const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'room', 'chart', 'exchange', 'community', 'youtube'];
+const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'room', 'broker', 'chart', 'exchange', 'community', 'youtube'];
 // 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨로 폴백.
 const INFO_LABELS: Record<string, string> = {
   news: '뉴스', disclosure: '공시', research: '리포트', analysis: '기업·재무', macro: '거시', etf: 'ETF', ipo: '공모주',
@@ -175,7 +175,7 @@ export default function ToolboxClient({
   const infoSubs = INFO_ORDER.map((slug) => {
     if (slug === 'broker') return { slug, label: INFO_LABELS.broker }; // 증권사 = 전 국가 참조 디렉토리(항상)
     if (slug === 'youtube') return country === 'KR' ? { slug, label: INFO_LABELS.youtube } : null;
-    if (slug === 'room') return country === 'KR' ? { slug, label: INFO_LABELS.room } : null; // 검증(유사투자자문 조회) = KR 전용
+    if (slug === 'room') return country === 'KR' ? { slug, label: INFO_LABELS.room } : null; // 유사투자자문사 = KR 전용
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
     const show = (FEED_TABS.includes(slug) && feedSupports(slug, country)) || hasLinks;
