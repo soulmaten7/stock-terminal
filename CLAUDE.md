@@ -1,23 +1,26 @@
-<!-- 2026-07-12 -->
+<!-- 2026-07-13 -->
 # Trillion(트릴리언) — Claude Code 지침서
 
-> 🔵 **2026-06-23 리브랜드**: 운종/UNJONG → **Trillion / 트릴리언**(사업자명 원트릴리언, 사업자번호 210-39-33812). 포지셔닝 = **"흩어진 금융정보를 한눈에"**(정보 허브). 디자인 = 미드나잇 `#0E1116` + 민트 `#2DD4BF`. 코드 식별자 `unjong-*`·DB명은 대소문자 달라 **유지**. 리딩방은 미검증 평가(별점·후기·♥) 제거 → 사실(금감원 등록·신고)+관심(누적 즐겨찾기)순. 🟢 **2026-07-10 갱신**: 정체성 = 3기둥(무기 Arm·직시 See·자립 Compete·`docs/BRAND_IDENTITY.md` 재작성)·멍거 목소리(건조·인센티브·"덜 멍청하게")·엔진명 **TR-AI 렌즈**·상단 탭 **3개(종목·정보·검증)**·ETF는 **"상품 구성"** 뷰. 근간 = "예언·추천 안 함, 불을 건넨다". 🟣 **2026-07-11 갱신**: 외부 슬로건 확정 **"종목을 보는 눈을, 누구에게나."**(서브 "모든 시각을 데이터로 — 판단은 당신입니다." · 각인 = 멍거 원문 "The best thing a human being can do is to help another human being know more.") — 포지셔닝 문구 **"흩어진 금융정보를 한눈에"는 폐기**(편의 프레임·차별 실패, `docs/BRAND_IDENTITY.md` §0). OG/링크 미리보기(로고 박힌 `public/og.png` 1200×630·`app/layout.tsx` 메타·`app/page.tsx` JSON-LD) 완료. 개발 안전망(vitest 유닛 + GitHub Actions CI) 가동. 🟠 **2026-07-12 갱신**: 1·2·3차 로드맵 확정(`docs/RELEASE_ROADMAP.md`) + 렌즈 독립배선 아키텍처(STEP 700·기법당 AI 교체 자리) + KOSPI/KOSDAQ 토글·상하한 배지(701) + 1차 폴리시(702: JP TOPIX 숨김·CN 홍콩만·VN 공시→뉴스). **🔒 1차 출시 QA 관문 통과**(`4ea75a1`): RLS 4개 테이블(`kr_stock_snapshot`·`brokers`·`jp_stock_perf`·`translation_cache`) 보안 마감 — 공개 anon 키로 KR 보드 삭제·위조 가능하던 구멍을 RLS on + anon REVOKE로 봉인(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`, 읽기 전부 service-role이라 앱 영향 0·라이브 검증) + 법무 정확화(구글만·개인정보 §11 권익침해 구제) + 태그라인 새 슬로건 반영(푸터·로그인·소개). CI 초록불·라이브(/api/brokers·/api/krx/ranking·/about) 검증 완료. **HEAD `4ea75a1`.** 🟢 **2026-07-12(3) 갱신**: 통신판매업신고 = **현재 비대상**(무거래 정보서비스 확정·`docs/LAUNCH_INFO.md`) + 하드닝·모니터링 마감 — DEFINER 뷰 정리(`stock_snapshot_v` invoker·`advisor_directory`는 로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 통로라 DEFINER 유지·라이브 1,553행 검증·`supabase/migrations/20260712_harden_definer_views_grants.sql`) + **미사용 `/api/ai-analysis` 제거**(비인증 OpenAI 과금 구멍·레거시) + **Vercel Analytics**·**Sentry**(@sentry/nextjs v10·서버/엣지/클라+instrumentation+전역 에러바운더리·라이브 에러 캡처 검증) 배선. 🐞 **Vercel NEXT_PUBLIC 빌드캐시 함정**: env 늦게 추가 시 캐시 재사용으로 `NEXT_PUBLIC_*` 미인라인(무동작) → **'Use existing Build Cache' 끄고 재배포**해야 해결(Sentry 무동작 원인). **HEAD `09f1174`.** 다음 = Vercel Analytics 대시보드 Enable(1클릭) + (후속) 공개 POST(inquiry·click) rate-limit(Vercel KV)·Sentry 소스맵 AUTH_TOKEN(선택). 📖 **전체 문서 인덱스 = `docs/INDEX.md`.** **최신 상태 = `docs/SESSION_BOOT.md`.** 아래 본문의 '운종'·정체성 서술은 이 배너로 갱신됨.
+> 🔵 **2026-06-23 리브랜드**: 운종/UNJONG → **Trillion / 트릴리언**(사업자명 원트릴리언, 사업자번호 210-39-33812). 포지셔닝 = **"흩어진 금융정보를 한눈에"**(정보 허브 · **주: 이 포지셔닝은 07-11 폐기 → 현행 "종목을 보는 눈을, 누구에게나" · §0**). 디자인 = 미드나잇 `#0E1116` + 민트 `#2DD4BF`. 코드 식별자 `unjong-*`·DB명은 대소문자 달라 **유지**. 리딩방은 미검증 평가(별점·후기·♥) 제거 → 사실(금감원 등록·신고)+관심(누적 즐겨찾기)순. 🟢 **2026-07-10 갱신**: 정체성 = 3기둥(무기 Arm·직시 See·자립 Compete·`docs/BRAND_IDENTITY.md` 재작성)·멍거 목소리(건조·인센티브·"덜 멍청하게")·엔진명 **TR-AI 렌즈**·상단 탭 **3개(종목·정보·검증)**·ETF는 **"상품 구성"** 뷰. 근간 = "예언·추천 안 함, 불을 건넨다". 🟣 **2026-07-11 갱신**: 외부 슬로건 확정 **"종목을 보는 눈을, 누구에게나."**(서브 "모든 시각을 데이터로 — 판단은 당신입니다." · 각인 = 멍거 원문 "The best thing a human being can do is to help another human being know more.") — 포지셔닝 문구 **"흩어진 금융정보를 한눈에"는 폐기**(편의 프레임·차별 실패, `docs/BRAND_IDENTITY.md` §0). OG/링크 미리보기(로고 박힌 `public/og.png` 1200×630·`app/layout.tsx` 메타·`app/page.tsx` JSON-LD) 완료. 개발 안전망(vitest 유닛 + GitHub Actions CI) 가동. 🟠 **2026-07-12 갱신**: 1·2·3차 로드맵 확정(`docs/RELEASE_ROADMAP.md`) + 렌즈 독립배선 아키텍처(STEP 700·기법당 AI 교체 자리) + KOSPI/KOSDAQ 토글·상하한 배지(701) + 1차 폴리시(702: JP TOPIX 숨김·CN 홍콩만·VN 공시→뉴스). **🔒 1차 출시 QA 관문 통과**(`4ea75a1`): RLS 4개 테이블(`kr_stock_snapshot`·`brokers`·`jp_stock_perf`·`translation_cache`) 보안 마감 — 공개 anon 키로 KR 보드 삭제·위조 가능하던 구멍을 RLS on + anon REVOKE로 봉인(`supabase/migrations/20260712_enable_rls_public_data_tables.sql`, 읽기 전부 service-role이라 앱 영향 0·라이브 검증) + 법무 정확화(구글만·개인정보 §11 권익침해 구제) + 태그라인 새 슬로건 반영(푸터·로그인·소개). CI 초록불·라이브(/api/brokers·/api/krx/ranking·/about) 검증 완료. **HEAD `4ea75a1`.** 🟢 **2026-07-12(3) 갱신**: 통신판매업신고 = **현재 비대상**(무거래 정보서비스 확정·`docs/LAUNCH_INFO.md`) + 하드닝·모니터링 마감 — DEFINER 뷰 정리(`stock_snapshot_v` invoker·`advisor_directory`는 로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 통로라 DEFINER 유지·라이브 1,553행 검증·`supabase/migrations/20260712_harden_definer_views_grants.sql`) + **미사용 `/api/ai-analysis` 제거**(비인증 OpenAI 과금 구멍·레거시) + **Vercel Analytics**·**Sentry**(@sentry/nextjs v10·서버/엣지/클라+instrumentation+전역 에러바운더리·라이브 에러 캡처 검증) 배선. 🐞 **Vercel NEXT_PUBLIC 빌드캐시 함정**: env 늦게 추가 시 캐시 재사용으로 `NEXT_PUBLIC_*` 미인라인(무동작) → **'Use existing Build Cache' 끄고 재배포**해야 해결(Sentry 무동작 원인). **HEAD `09f1174`.** 다음 = Vercel Analytics 대시보드 Enable(1클릭) + (후속) 공개 POST(inquiry·click) rate-limit(Vercel KV)·Sentry 소스맵 AUTH_TOKEN(선택). 📖 **전체 문서 인덱스 = `docs/INDEX.md`.** **최신 상태 = `docs/SESSION_BOOT.md`.** 아래 본문의 '운종'·정체성 서술은 이 배너로 갱신됨.
 
 @AGENTS.md
 
 ## 프로젝트 개요
-**운종(雲從) · UNJONG** — **투자상품에 속지 않게 돕는 곳** · 정보 + 대화 + 허브 + 신뢰 4박자 플랫폼 (중심축 = 신뢰).
-브랜드명: 운종 (UNJONG, 한자 雲從 코드 표기 X — 영문+한글만).
-**V6 정체성 (2026-06-03 확정)**: 정확한 정보 + 솔직한 토론 + 검증된 신뢰. V5 구조(네이버 레이아웃 + 토스 카드 + Trustpilot 평가)는 계승, 중심축만 "편의(동선의 출발점)" → "신뢰(안 속는 곳)"로 재정렬. 마스터 비전: `docs/PRODUCT_SPEC_V6.md`.
-거래 X — 정보·대화·허브·신뢰 역할만.
+**Trillion(트릴리언)** — **"종목을 보는 눈을, 누구에게나."** 기관이 쓰는 검증된 분석 기법(TR-AI 렌즈)을 개인 손에. 예측·추천은 하지 않고, 1차 재료(시세·뉴스·공시)를 정직하게 **데이터로 보여주고 판단은 사용자**에게 맡긴다. 거래 X(매매·중개·자문 없음 · 통신판매업신고 비대상 = 무거래 정보서비스). 사업자 원트릴리언(210-39-33812). 코드 식별자 `unjong-*`·DB명은 대소문자 이유로 유지(구 이름 잔재).
 
-**수익 모델**:
-- MVP 1.0 — 기본 정보 + 정제된 채팅·토론 (트래픽 확보)
-- **MVP 2.0** — 상품·리딩방 평가 디렉토리 (Trustpilot 금융 버전) — 운종 진짜 차별화 (STEP 128 진입)
-- Tier 1·2·3 인증 광고 시스템 (Sponsored ↔ 평가 명확 분리 — 추후)
+**정체성 3기둥** (권위 = `docs/BRAND_IDENTITY.md`):
+- **무기(Arm)** — AI 렌즈·분석 = 개인 손에 쥐어주는 기관급 명료함.
+- **직시(See)** — 정직한 1차 재료. 데이터 없으면 "데이터 부족"이라 말한다. 비예측.
+- **자립(Compete)** — 추천 안 함. 분석은 우리가, 판단은 당신이.
 
-**최신 비전 (2026-06-03 확정 · V6)**: `docs/PRODUCT_SPEC_V6.md` · 다음 세션 가이드: `docs/NEXT_SESSION_START.md`
-**V4 비전 보존**: `docs/PRODUCT_SPEC_V4.md` · **V3 보존** (히스토리): `docs/PRODUCT_SPEC_V3.md`
+목소리 = **멍거 톤**(건조·직설·인센티브·"덜 멍청하게"). 따뜻한 마케팅 카피 금지. 엔진명 = **TR-AI 렌즈**("AI 렌즈"=기능, "TR-AI"=엔진 브랜드).
+
+**수익 모델** (권위 = `docs/AD_MONETIZATION_PLAYBOOK.md`):
+- 종목 리스트 인리스트 광고(증권사 슬롯) + 콘텐츠 피드 슬롯 — '광고' 라벨 상시.
+- 유사투자자문 조회 디렉토리 — 금감원 등록·신고 **사실** + 누적 즐겨찾기 **관심**순(미검증 평가=별점·후기 제거). 상단 '검증' 탭 → '정보' 하위 **'유사투자자문 조회'**(KR).
+- 원칙: **능력을 팔되 의존을 팔지 않는다** — 리딩방 광고 = 철학적으로 독(`BRAND_IDENTITY` §4).
+
+> ⚠️ **폐기된 구 정체성**: 운종(雲從)·"투자상품에 속지 않게"·"안 속는 곳"·신뢰=중심축·정보/대화/허브/신뢰 4박자·"흩어진 금융정보를 한눈에"·`PRODUCT_SPEC_V6` "마스터 비전". 히스토리는 `docs/PRODUCT_SPEC_V6/V4/V3.md`에 [이력] 보존. **현행 권위 = `docs/BRAND_IDENTITY.md` + `docs/SESSION_BOOT.md`.**
 
 ## 역할 분담 — 핵심 워크플로우
 

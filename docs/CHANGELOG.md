@@ -1,5 +1,20 @@
-<!-- 2026-07-12 -->
+<!-- 2026-07-13 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-13 — 🎯 종목보드 UX 마감 + 🔵 브랜드 정체성 인앱 정합 + 🧭 nav 2탭 축소 + 🧪 인앱 베타 피드백 + 📚 지침 정체성 정리 (HEAD `c0d3b80`)
+
+- **🐞 거래대금 정렬 방향 버그 수정**(`b581950`·6개 보드): `(b-a)*dir`→`(a-b)*dir`. desc에서 오름차순으로 뒤집혀 **거래대금 최저 잡주가 상단에 뜨던** 문제(US/JP/CN/VN/GB) — name·price 정렬과 일치. KR 무영향.
+- **🔬 TR-AI 렌즈 정직 표시**(`a2887b1`): "준비 중" → **이유 명시**("데이터 부족(상장·거래 이력 짧음)" · 네트워크 오류 문구 분리) · 재무 없는 종목의 퀄리티·자산성장을 숨기지 않고 **"재무 데이터 없음"** 행으로 표시. (직시 원칙 — 데이터 없으면 "데이터 부족"이라 말한다.)
+- **📌 STEP 703 종목보드 뷰 복원**(`832d24e`·`lib/boardMemory.ts` + 6개 보드): 렌즈 상세 왕복 시 **하위탭·정렬·페이지 유지**, 국가 전환/새로고침 시엔 초기화.
+- **🖥️ PC 우측 TR-AI 렌즈 패널 sticky 고정**(`2573896`·6개 보드): 티커 밑 고정(self-start+max-h 내부스크롤) — 스크롤 내려 하단 종목 클릭해도 렌즈 보임.
+- **🧹 종목보드 컨트롤 힌트·색범례 제거**(`19aff5c`·6개 보드): "종목 클릭 시 우측에 TR-AI 렌즈·브리핑" 힌트 + 상승/하락 범례 제거(우측 레일 안내 + 퍼센트 부호가 방향 표시라 중복 · 코스피/코스닥 토글 가로넘침 해소).
+- **📱 KR 코스피/코스닥 토글 별도 줄**(`3af1a82`): 세그먼트를 주식 하위탭 아래 별도 줄로 — 모바일 한 줄 오버플로/잘림 해소(주식 탭일 때만 표시).
+- **🧪 인앱 베타 피드백 `/feedback`**(`b39406f`): FeedbackForm + `/api/feedback`(서버 삽입·입력 캡) + supabase `feedback` 테이블(RLS on · anon REVOKE) · 설문 5문항+별점+연락처 · noindex · end-to-end 검증.
+- **🔵 브랜드 정체성 인앱 정합**(`e1550f9`): `/about`·`/advertise` 새 카피(멍거 톤·3기둥·시장중립·주관 단정 제거) + `BRAND_IDENTITY §6` 진원 정합(옛 "전문가 시각으로, TR-AI가 무료로 분석해 드립니다" 태그라인 → [이력·폐기]) + `CLAUDE.md` 프로젝트 개요 재작성.
+- **🧭 nav 상단 2탭 축소**(`c0d3b80`·`components/toolbox/ToolboxClient.tsx`): 상단 '검증' 탭 → **'정보' 하위탭 '유사투자자문 조회'**(KR 전용)로 이동 → 상단 = **종목·정보 2탭**. 하위탭 라우팅·복원·구분선·effect 정합.
+- **📚 지침·문서 정체성 정리(1차)**: 라이브 문서(핸드오프·플레이북·SESSION_BOOT·ROADMAP·RELEASE_ROADMAP·README·AD_MONETIZATION·LOGO_PROMPT·BUSINESS_STRATEGY)의 옛 프레임("속지 않게"·"안 속는 곳"·신뢰=중심축·정보/대화/허브/신뢰 4박자·"흩어진 금융정보를 한눈에"·Trustpilot 핵심차별화)을 현행 3기둥(무기·직시·자립)으로 정리 · `PRODUCT_SPEC_V6/V7`엔 [이력·폐기] 배너(본문 보존). STEP 아카이브·구 V3 보존 문서(SYSTEM_DESIGN·CLAUDE_CODE_INSTRUCTIONS)는 히스토리로 유지. (`BRAND_IDENTITY.md`·`CLAUDE.md`는 이미 정리 완료.)
+- **✅ 상태**: 통신판매업신고 = **비대상**(무거래 정보서비스 · 2026-07-12 확정 재확인) · 모니터링(Sentry v10·Vercel Analytics) = 2026-07-12 마감·유지. CI·라이브 초록.
+- **▶ 다음**: 지침 정체성 정리 잔여분 마무리 검수 · AdvisorDirectory 패널 헤딩 '유사투자자문 조회' 정합 · 공개 POST(inquiry·feedback·click) rate-limit(Vercel KV) · Sentry 소스맵 AUTH_TOKEN(선택) · Vercel Analytics 대시보드 Enable(1클릭) · 1차 출시 = 클로즈드 베타 초대 발송.
 
 ## 2026-07-12 (3) — 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링 도입(Vercel Analytics·Sentry) (HEAD `09f1174`)
 

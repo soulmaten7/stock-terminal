@@ -1,6 +1,15 @@
-<!-- 2026-07-12 -->
+<!-- 2026-07-13 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
+> 🆕 **2026-07-13 (최신) — 🎯 종목보드 UX 마감 + 🔵 브랜드 정체성 인앱 정합 + 🧭 nav 2탭 + 🧪 베타 피드백 + 📚 지침 정체성 정리. HEAD `c0d3b80`.**
+> - **🎯 종목보드 UX**: 🐞 거래대금 정렬 방향 버그(`(b-a)*dir`→`(a-b)*dir`·6보드·거래대금 최저 잡주가 상단 뜨던 US/JP/CN/VN/GB·KR 무영향) · **STEP 703** 뷰 복원(`lib/boardMemory.ts`·렌즈 상세 왕복 시 하위탭·정렬·페이지 유지, 국가전환/새로고침 시 초기화) · PC 우측 TR-AI 렌즈 패널 sticky · 컨트롤 힌트·색범례 제거 · KR 코스피/코스닥 토글 별도 줄(모바일 잘림 해소).
+> - **🔬 TR-AI 렌즈 정직 표시**(`a2887b1`): "준비 중" → 이유 명시("데이터 부족(상장·거래 이력 짧음)"·네트워크 오류 분리) · 재무 없는 종목 "재무 데이터 없음" 행(직시 원칙).
+> - **🔵 브랜드 인앱 정합**(`e1550f9`): `/about`·`/advertise` 멍거 톤·3기둥·시장중립 카피 + `BRAND_IDENTITY §6` 옛 태그라인 [이력·폐기] + `CLAUDE.md` 개요 재작성.
+> - **🧭 nav 2탭**(`c0d3b80`·`ToolboxClient.tsx`): 상단 '검증' → '정보' 하위탭 **'유사투자자문 조회'**(KR 전용) → 상단 = 종목·정보 2탭.
+> - **🧪 인앱 베타 피드백 `/feedback`**(`b39406f`): FeedbackForm + `/api/feedback`(서버 삽입·입력 캡) + supabase `feedback`(RLS on·anon REVOKE) · 설문 5+별점+연락처·noindex·e2e 검증.
+> - **📚 지침 정체성 정리(1차)**: 라이브 문서 옛 프레임("속지 않게"·"안 속는 곳"·신뢰=중심축·4박자·"흩어진 금융정보를 한눈에"·Trustpilot 핵심차별화)→현행 3기둥 · `PRODUCT_SPEC_V6/V7` [이력·폐기] 배너 · 구 V3 보존문서는 히스토리 유지. **통신판매업신고=비대상**(무거래·재확인).
+> - **▶ 다음 = 지침 정체성 정리 잔여분 마무리 검수 · AdvisorDirectory 패널 헤딩 '유사투자자문 조회' 정합 · 공개 POST(inquiry·feedback·click) rate-limit(Vercel KV) · Sentry 소스맵 AUTH_TOKEN(선택) · Vercel Analytics 대시보드 Enable(1클릭) · 1차 출시=클로즈드 베타 초대 발송.**
+>
 > 🆕 **2026-07-12 (최신) — 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry). HEAD `09f1174`.**
 > - **🛡️ DEFINER 뷰 정리**: 라이브 조사=악용 구멍 아님(복합뷰라 쓰기불가·공개데이터). `advisor_directory`=로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 필수 통로라 DEFINER **유지**(security_invoker 켜면 빈 화면·라이브 1,553행 검증), `stock_snapshot_v`(미사용)만 invoker+권한회수. `supabase/migrations/20260712_harden_definer_views_grants.sql`.
 > - **🔴 `/api/ai-analysis` 제거**: POST가 비인증 OpenAI 과금 구멍인데 앱 미사용(레거시 TRAI 스텁) → route+`lib/ai/analysis.ts` 삭제. 나머지 공개 POST=401 보호 확인.

@@ -1,10 +1,20 @@
-<!-- 2026-07-12 -->
+<!-- 2026-07-13 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
+> 🟢 **2026-07-13 (최신) · 🎯 종목보드 UX 마감 + 🔵 브랜드 정체성 인앱 정합 + 🧭 nav 2탭 + 🧪 베타 피드백 + 📚 지침 정체성 정리 (HEAD `c0d3b80`).**
+> - **🎯 종목보드 UX**: 🐞 거래대금 정렬 방향 버그 수정(`(b-a)*dir`→`(a-b)*dir`·6보드 — 거래대금 최저 잡주가 상단에 뜨던 US/JP/CN/VN/GB·KR 무영향) · **STEP 703 뷰 복원**(`lib/boardMemory.ts`+6보드 — 렌즈 상세 왕복 시 하위탭·정렬·페이지 유지, 국가전환/새로고침 시 초기화) · PC 우측 TR-AI 렌즈 패널 **sticky 고정**(티커 밑·self-start+내부스크롤) · 컨트롤 힌트·색범례 제거(우측 레일 안내+퍼센트 부호 방향표시라 중복) · KR 코스피/코스닥 토글 **별도 줄**(주식 하위탭 아래 — 모바일 한 줄 오버플로/잘림 해소).
+> - **🔬 TR-AI 렌즈 정직 표시**: "준비 중" → 이유 명시("데이터 부족(상장·거래 이력 짧음)"·네트워크 오류 분리) · 재무 없는 종목의 퀄리티·자산성장을 숨기지 않고 **"재무 데이터 없음"** 행으로 표시(직시 원칙 — 데이터 없으면 "데이터 부족"이라 말한다).
+> - **🔵 브랜드 정체성 인앱 정합**(`e1550f9`): `/about`·`/advertise` 새 카피(멍거 톤·3기둥·시장중립·주관 단정 제거) + `BRAND_IDENTITY §6` 진원 정합(옛 "전문가 시각으로…" 태그라인 [이력·폐기]) + `CLAUDE.md` 프로젝트 개요 재작성.
+> - **🧭 nav 상단 2탭**(`c0d3b80`·`components/toolbox/ToolboxClient.tsx`): 상단 '검증' 탭 → '정보' 하위탭 **'유사투자자문 조회'**(KR 전용)로 이동 → 상단 = **종목·정보 2탭**. 하위탭 라우팅·복원·구분선·effect 정합.
+> - **🧪 인앱 베타 피드백 `/feedback`**(`b39406f`): FeedbackForm + `/api/feedback`(서버 삽입·입력 캡) + supabase `feedback` 테이블(RLS on·anon REVOKE) · 설문 5문항+별점+연락처·noindex · end-to-end 검증.
+> - **📚 지침·문서 정체성 정리(1차)**: 라이브 문서의 옛 프레임("속지 않게"·"안 속는 곳"·신뢰=중심축·정보·대화·허브·신뢰 4박자·"흩어진 금융정보를 한눈에"·Trustpilot 핵심차별화)을 현행 3기둥(무기·직시·자립)으로 정리 — 핸드오프·플레이북·로드맵·README·수익화 런북 등. `PRODUCT_SPEC_V6/V7`엔 [이력·폐기] 배너(본문 보존). STEP 아카이브·구 V3 보존 문서(SYSTEM_DESIGN·CLAUDE_CODE_INSTRUCTIONS)는 히스토리로 유지.
+> - **✅ 상태**: 통신판매업신고 = **비대상**(무거래 정보서비스·07-12 확정 재확인) · 모니터링(Sentry v10·Vercel Analytics) = 07-12 마감·유지. CI·라이브 초록.
+> - **▶ 다음 = 지침 정체성 정리 잔여분 마무리 검수 · AdvisorDirectory 패널 헤딩을 '유사투자자문 조회'와 정합 · 공개 POST(inquiry·feedback·click) rate-limit(Vercel KV) · Sentry 소스맵 AUTH_TOKEN(선택) · Vercel Analytics 대시보드 Enable(1클릭) · 1차 출시 = 클로즈드 베타 초대 발송.**
+>
 > 🟢 **2026-07-12 (최신) · 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry) (HEAD `09f1174`).**
 > - **🛡️ DEFINER 뷰 정리**(`supabase/migrations/20260712_harden_definer_views_grants.sql`): QA 플래그 2개 뷰 라이브 조사 → 악용 구멍 아님(UNION/LATERAL 복합뷰=업데이트 불가·노출은 공개데이터). `advisor_directory`=로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 필수 통로라 DEFINER 유지(security_invoker 켜면 base RLS에 막혀 빈 화면·라이브 1,553행 검증), `stock_snapshot_v`(앱 미사용)만 invoker 전환+anon 권한회수. SECURITY DEFINER 함수 8개는 트리거·카운터 RPC라 정상.
 > - **🔴 `/api/ai-analysis` 제거**: POST가 **인증 없이 매 호출 OpenAI gpt-4o-mini 과금**(무한 비용 구멍)인데 앱 완전 미사용(레거시) → route+`lib/ai/analysis.ts` 삭제. 공개 POST 전수: reports·watchlist·rooms/favorite·admin/*·business/* = 401 보호. inquiry·click = 저위험(입력 캡)·rate-limit은 Vercel KV 필요→후속.
@@ -325,7 +335,7 @@
 > ⬇️ **(아래 🔵 346~360 배너는 직전 작업.)**
 
 > 🔵 **(직전) 2026-06-23 · STEP 360까지 (HEAD `7e1d7d3`)**
-> **브랜드 = Trillion / 트릴리언**(구 운종/UNJONG · 리브랜드 351). 사업자명 **원트릴리언**, 사업자번호 **210-39-33812**(`docs/LAUNCH_INFO.md`). 포지셔닝 = **"흩어진 금융정보를 한눈에"**(정보 허브). ⚠️ 아래 §1 '운종 정체성'은 이 배너로 갱신됨(브랜드·포지셔닝 우선).
+> **브랜드 = Trillion / 트릴리언**(구 운종/UNJONG · 리브랜드 351). 사업자명 **원트릴리언**, 사업자번호 **210-39-33812**(`docs/LAUNCH_INFO.md`). 포지셔닝(당시) = **"흩어진 금융정보를 한눈에"**(정보 허브). ⚠️ **아래 §1 '운종 정체성' 및 이 배너의 포지셔닝 모두 [이력·폐기]** — 현행 = 파일 최상단 최신 스냅샷 + `docs/BRAND_IDENTITY.md`(3기둥 무기·직시·자립 · "종목을 보는 눈을, 누구에게나").
 > **이번 세션(346~360) 한 것:**
 > - **디자인(352~353)**: **미드나잇 `#0E1116` + 민트 `#2DD4BF`** — 헤더·푸터·지수티커 다크화. 토큰 `--color-accent:#2DD4BF`. 코드 식별자 `unjong-*`·DB명은 대소문자 달라 **유지(안전)**.
 > - **즐겨찾기 일원화(348~350·357)**: 헤더 알림→**즐겨찾기**, `/favorites`(HTML5 드래그 순서)+리딩방 즐겨찾기(`room_favorites`). 357 링크 즐겨찾기(`LinkCard`)도 비로그인 별 노출+클릭시 로그인 유도. 서버 전 동작 `401`+RLS.

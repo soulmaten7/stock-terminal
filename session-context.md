@@ -1,6 +1,18 @@
-<!-- 2026-07-12 -->
+<!-- 2026-07-13 -->
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
+
+## 2026-07-13 — 🎯 종목보드 UX 마감 + 🔵 브랜드 정체성 인앱 정합 + 🧭 nav 2탭 + 🧪 베타 피드백 + 📚 지침 정체성 정리 ✅
+
+**HEAD `c0d3b80`.** 하루 아크 = 종목보드 실사용 UX 마감 + 인앱 브랜드 정합 + nav 축소 + 베타 피드백 채널 + 지침 문서 정체성 1차 정리.
+- **🎯 종목보드 UX**: 🐞 거래대금 정렬 방향 버그(`(b-a)*dir`→`(a-b)*dir`·6보드·거래대금 최저 잡주가 상단 뜨던 US/JP/CN/VN/GB·KR 무영향) · **STEP 703** 뷰 복원(`lib/boardMemory.ts`·렌즈 상세 왕복 시 하위탭·정렬·페이지 유지, 국가전환/새로고침 시 초기화) · PC 우측 TR-AI 렌즈 패널 sticky · 컨트롤 힌트·색범례 제거 · KR 코스피/코스닥 토글 별도 줄(모바일 잘림 해소).
+- **🔬 TR-AI 렌즈 정직 표시**(`a2887b1`): "준비 중"→이유 명시("데이터 부족"·네트워크 오류 분리) · 재무 없는 종목 "재무 데이터 없음" 행(직시 원칙).
+- **🔵 브랜드 인앱 정합**(`e1550f9`): `/about`·`/advertise` 멍거 톤·3기둥·시장중립 카피 + `BRAND_IDENTITY §6` 옛 태그라인 [이력·폐기] + `CLAUDE.md` 개요 재작성.
+- **🧭 nav 2탭**(`c0d3b80`·`ToolboxClient.tsx`): 상단 '검증' → '정보' 하위탭 '유사투자자문 조회'(KR 전용) → 상단 종목·정보 2탭.
+- **🧪 `/feedback`**(`b39406f`): FeedbackForm + `/api/feedback`(서버 삽입·입력 캡) + supabase `feedback`(RLS on·anon REVOKE) · 설문5+별점+연락처·noindex·e2e 검증.
+- **📚 지침 정체성 정리(1차)**: 라이브 문서 옛 프레임("속지 않게"·"안 속는 곳"·신뢰=중심축·4박자·"흩어진 금융정보를 한눈에"·Trustpilot 핵심차별화)→현행 3기둥(핸드오프·플레이북·SESSION_BOOT·ROADMAP·RELEASE_ROADMAP·README·AD_MONETIZATION·LOGO_PROMPT·BUSINESS_STRATEGY) · `PRODUCT_SPEC_V6/V7` [이력·폐기] 배너 · 구 V3 보존문서는 히스토리 유지.
+- **✅** 통신판매업신고 = 비대상(무거래 정보서비스·재확인) · 모니터링(Sentry v10·Vercel Analytics) 07-12 마감·유지.
+- **▶ 다음 = 지침 잔여분 마무리 검수 · AdvisorDirectory 헤딩 '유사투자자문 조회' 정합 · 공개 POST(inquiry·feedback·click) rate-limit(Vercel KV) · Sentry 소스맵 AUTH_TOKEN(선택) · Vercel Analytics Enable(1클릭) · 1차 출시=클로즈드 베타 초대 발송.**
 
 ## 2026-07-12 (3) — 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry) ✅
 

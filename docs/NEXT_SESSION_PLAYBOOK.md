@@ -1,7 +1,9 @@
-<!-- 2026-07-12 -->
+<!-- 2026-07-13 -->
 # Trillion(트릴리언) — 다음 세션 PLAYBOOK
 
 > **이 파일은 무엇인가**: 다음 세션을 처음부터 끝까지 이해하고 진행하기 위한 마스터 인수인계 파일. 다른 어떤 문서를 안 봐도 이 파일만으로 작업 시작 가능.
+>
+> 🟢 **2026-07-13 (최신) 스냅샷 — HEAD `c0d3b80` · 🎯 종목보드 UX 마감 + 🔵 브랜드 정체성 인앱 정합 + 🧭 nav 2탭 + 🧪 베타 피드백 + 📚 지침 정체성 정리.** ① **종목보드 UX**: 🐞 거래대금 정렬 방향 버그(`(b-a)*dir`→`(a-b)*dir`·6보드·거래대금 최저 잡주가 상단 뜨던 US/JP/CN/VN/GB) · **STEP 703** 뷰 복원(`lib/boardMemory.ts`·렌즈 상세 왕복 시 하위탭·정렬·페이지 유지, 국가전환/새로고침 시 초기화) · PC 우측 TR-AI 렌즈 패널 **sticky** 고정 · 컨트롤 힌트·색범례 제거 · KR 코스피/코스닥 토글 **별도 줄**(모바일 잘림 해소). ② **TR-AI 렌즈 정직 표시**: "준비 중"→이유 명시("데이터 부족(상장·거래 이력 짧음)"/네트워크 오류 분리) · 재무 없는 종목은 퀄리티·자산성장을 숨기지 않고 "재무 데이터 없음" 행. ③ **🔵 브랜드 인앱 정합**(`e1550f9`): `/about`·`/advertise` 멍거 톤·3기둥·시장중립 카피 + `BRAND_IDENTITY §6` 옛 태그라인 [이력·폐기] + `CLAUDE.md` 개요 재작성. ④ **🧭 nav 2탭**(`c0d3b80`·`ToolboxClient.tsx`): 상단 '검증'→'정보' 하위탭 **'유사투자자문 조회'**(KR 전용) → 상단=종목·정보 2탭. ⑤ **🧪 `/feedback`**(`b39406f`): FeedbackForm+`/api/feedback`(서버 삽입·입력 캡)+supabase `feedback`(RLS on·anon REVOKE)·설문 5+별점+연락처·noindex·e2e 검증. ⑥ **📚 지침 정체성 정리(1차)**: 라이브 문서 옛 프레임("속지 않게"·"안 속는 곳"·신뢰=중심축·4박자·"흩어진 금융정보를 한눈에"·Trustpilot 핵심차별화)→현행 3기둥(핸드오프·플레이북·로드맵·README·수익화 런북 등), `PRODUCT_SPEC_V6/V7`엔 [이력·폐기] 배너. **통신판매업신고=비대상**(무거래 정보서비스·재확인). ▶ 다음 = 지침 잔여분 마무리 검수 · AdvisorDirectory 패널 헤딩을 '유사투자자문 조회'와 정합 · 공개 POST(inquiry·feedback·click) rate-limit(Vercel KV) · Sentry 소스맵 AUTH_TOKEN(선택) · Vercel Analytics Enable(1클릭) · 1차 출시=클로즈드 베타 초대 발송. (아래 스냅샷들은 히스토리.)
 >
 > 🟢 **2026-07-12 (최신) 스냅샷 — HEAD `09f1174` · 🛡️ 하드닝 마감(DEFINER 뷰·ai-analysis) + 📈 모니터링(Vercel Analytics·Sentry).** ① **DEFINER 뷰 정리**: 라이브 조사=악용 구멍 아님(UNION/LATERAL 복합뷰라 쓰기불가·노출은 공개데이터). `advisor_directory`=로그아웃 방문자에 공개 리딩방 디렉토리 서빙하는 필수 통로라 DEFINER 유지(security_invoker 켜면 빈 화면·라이브 1,553행 검증)·`stock_snapshot_v`(앱 미사용)만 invoker+권한회수(`supabase/migrations/20260712_harden_definer_views_grants.sql`). ② **미사용 `/api/ai-analysis` 제거**(비인증 OpenAI gpt-4o-mini 과금 구멍·레거시 TRAI 스텁·나머지 공개 POST=401 보호). ③ **Vercel Analytics**(`@vercel/analytics`·⚠️대시보드 Enable 1클릭 남음) **+ Sentry**(`@sentry/nextjs` v10·서버/엣지/클라+instrumentation(onRequestError)+전역 에러바운더리+next.config 조건부 래핑·**라이브 에러 캡처 검증 완료**). 🐞 **교훈**: Vercel `NEXT_PUBLIC_*`는 빌드캐시 재사용 시 미인라인→**'Use existing Build Cache' 해제하고 재배포**해야 박힘(Sentry 무동작 유일 원인·`__SENTRY__` 부재로 진단). ▶ 다음 = Vercel Analytics Enable(1클릭)+(후속) 공개 POST rate-limit(Vercel KV)·Sentry 소스맵 AUTH_TOKEN. (아래 스냅샷들은 히스토리.)
 >
@@ -23,7 +25,7 @@
 > **🔑 다음 세션 필독 교훈**: Turbopack이 **API 라우트 변경을 자동 갱신 안 함** → 피드/라우트 수정 후 반드시 **`pkill -f "next dev" && rm -rf .next && npm run dev`** 클린 재시작(`lsof kill`만으론 옛 서버 안 죽음). 코드/키 검증은 **MCP(Chrome)·`?debug=1`**로.
 > **이번 세션(312~345) 큰 줄기**: 312~317 관리자·신고 모더레이션·디자인 통일 / 318~322 마이페이지 정리·🔴로그인 데드락(`AuthProvider` 콜백 동기+setTimeout, 되돌리지 말 것)·법정 페이지 / 323~331 종목·상품 탭 / 332~333 게이트웨이 정리 / 334~345 우측 피드 8종. 신규 라우트 5종(news·dart·macro·dividend·ipo `/feed`), 컴포넌트 8종. env: `.env.local` NAVER 키 추가·ECOS placeholder→실제 키. DB 스키마 변경 0.
 >
-> ⚠️ **아래 본문(§1~)은 V6/STEP271 히스토리** — 정체성(§1·2)·워크플로우·DB 함정(운종 ref `qxkmwlkchyxfzxbonhtj`)은 유효, **페이지·데이터 구조는 무효(현재는 게이트웨이)**. 현재 상태는 `docs/SESSION_BOOT.md` 기준.
+> ⚠️ **아래 본문(§1~)은 V6/STEP271 히스토리 — 전부 [이력] 보존용.** 정체성(§1·2 "안 속는 곳"·4박자·Trustpilot)은 **폐기 → 현행 권위 = `docs/BRAND_IDENTITY.md`**(3기둥 무기·직시·자립 · 멍거 톤 · "종목을 보는 눈을, 누구에게나"). 워크플로우·DB 함정(운종 ref `qxkmwlkchyxfzxbonhtj`)만 유효, **페이지·데이터 구조는 무효(현재는 게이트웨이·상단 종목·정보 2탭)**. 현재 상태는 위 최신 스냅샷·`docs/SESSION_BOOT.md` 기준.
 > 🆕 **V7 재정렬 (2026-06-06)**: 네이버 복제 → **토스증권 오마주**. 홈 = 토스식 시장 대시보드(주요지수 10개·전일대비·느낌태그·코스피/코스닥 수급) + 하단 마퀴 티커 + 전 페이지 풀폭. 분석 `docs/TOSS_ANALYSIS_AND_IA.md`. **✅ STEP 162 KRX 공식 OpenAPI = 완료**(키 발급+이용신청 7종, 국내 100 공식·일별 `KRX_API_KEY`). 다음 = 링크모음 큐레이션·잔재 정리.
 > **빌드 상태**: ✓ exit 0
 > **다음 세션 시작 시 첫 번째로 읽는 파일**: 이 파일 + `session-context.md` (TODO GC)
@@ -32,8 +34,9 @@
 
 ---
 
-## 1. 운종 한 줄 정체성 (V6 — 2026-06-03 확정)
+## 1. 운종 한 줄 정체성 (V6 — 2026-06-03 · [이력·폐기])
 
+> ⚠️ **폐기 — 현행 아님.** 현행 정체성 = `docs/BRAND_IDENTITY.md`(3기둥 무기·직시·자립 · "종목을 보는 눈을, 누구에게나"). 아래 V6 서술은 히스토리.
 > **운종 = "투자상품에 속지 않게 돕는 곳"** — 정확한 정보 + 솔직한 토론 + 검증된 신뢰
 > 구조 = 네이버 페이 증권 레이아웃 + 토스 증권 카드 디자인 + Trustpilot 평가 모델 (V5 계승, 중심축만 편의 → **신뢰**). 마스터 비전 `docs/PRODUCT_SPEC_V6.md`.
 
