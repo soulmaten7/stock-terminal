@@ -67,7 +67,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
   if (!stock) {
     if (compact) return null;
     return (
-      <div className="rounded-2xl border border-unjong-border bg-white p-4 text-center">
+      <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 text-center">
         <TLensLogo size={22} color="#2DD4BF" />
         <p className="mt-2 text-sm font-semibold text-unjong-primary">종목을 선택하면 TR-AI 렌즈가 읽어드려요</p>
         <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">검증된 기법(모멘텀·밸류·퀄리티 등)이 이 종목을 저마다 어떻게 보는지 요약해요. 사고팔 신호가 아니라, 스스로 판단할 재료예요.</p>
@@ -75,7 +75,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
     );
   }
   return (
-    <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-white p-4'}>
+    <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-unjong-surface p-4'}>
       {!compact && (
         <>
           <div className="flex items-center gap-2.5">

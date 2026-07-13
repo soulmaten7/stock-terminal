@@ -73,7 +73,7 @@ export default function BusinessClaimClient() {
           placeholder="업체명 또는 사업자등록번호로 검색"
           className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-20 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
         />
-        <button type="button" onClick={search} disabled={searching} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-unjong-primary px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
+        <button type="button" onClick={search} disabled={searching} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-unjong-strong px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
           {searching ? '검색 중…' : '검색'}
         </button>
       </div>
@@ -115,7 +115,7 @@ export default function BusinessClaimClient() {
                       </label>
                       <input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="담당자 연락처 (전화 또는 이메일)"
                         className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
-                      <button type="button" onClick={() => claim(b)} disabled={claiming} className="w-full rounded-lg bg-unjong-primary py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+                      <button type="button" onClick={() => claim(b)} disabled={claiming} className="w-full rounded-lg bg-unjong-strong py-2.5 text-sm font-semibold text-white disabled:opacity-50">
                         {claiming ? '확인 중…' : '사업자 인증 승인요청'}
                       </button>
                     </div>

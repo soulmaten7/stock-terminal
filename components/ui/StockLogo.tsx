@@ -49,7 +49,7 @@ export function StockLogo({ code, name, size = 28 }: { code: string; name: strin
         src={url}
         alt=""
         onError={() => setErr(true)}
-        className="shrink-0 rounded-full border border-unjong-border bg-white object-contain"
+        className="shrink-0 rounded-full border border-unjong-border bg-unjong-surface object-contain"
         style={{ width: size, height: size }}
       />
     );

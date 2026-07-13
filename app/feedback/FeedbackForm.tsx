@@ -49,7 +49,7 @@ export default function FeedbackForm() {
 
   if (state === "done") {
     return (
-      <div className="rounded-2xl border border-unjong-border bg-white p-8 text-center">
+      <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-8 text-center">
         <div className="flex justify-center"><TLensLogo size={28} color="#2DD4BF" /></div>
         <p className="mt-3 text-lg font-bold text-unjong-primary">고맙습니다 🙏</p>
         <p className="mt-1 text-sm leading-relaxed text-unjong-muted">남겨주신 피드백은 트릴리언을 다듬는 데 그대로 쓰여요. 솔직한 한마디가 제일 큰 도움이 됩니다.</p>
@@ -62,7 +62,7 @@ export default function FeedbackForm() {
   const seg = (active: boolean) => `rounded-lg border px-3 py-2 text-[13px] font-medium transition-colors ${active ? "border-unjong-accent bg-unjong-accent/10 text-unjong-accent" : "border-unjong-border text-unjong-muted hover:bg-unjong-background"}`;
 
   return (
-    <div className="space-y-6 rounded-2xl border border-unjong-border bg-white p-5 sm:p-6">
+    <div className="space-y-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5 sm:p-6">
       <div>
         <label className={label}>1. 첫인상을 한 줄로</label>
         <input className={input} value={firstImpression} onChange={(e) => setFirstImpression(e.target.value)} placeholder="예: 깔끔한데 뭘 하는 곳인지 3초 만에 감이 왔다 / 안 왔다" maxLength={500} />

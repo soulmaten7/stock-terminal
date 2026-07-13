@@ -18,7 +18,7 @@ export function TLensLogo({ size = 14, color = '#2DD4BF' }: { size?: number; col
 
 export function AiLensBadge({ href, lang = 'ko' }: { href?: string; lang?: Lang; arrow?: boolean; pill?: boolean }) {
   const cls =
-    'inline-flex items-center gap-1.5 rounded-lg bg-unjong-primary px-2.5 py-1 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 active:opacity-90';
+    'inline-flex items-center gap-1.5 rounded-lg bg-unjong-strong px-2.5 py-1 text-[12px] font-semibold text-white transition-opacity hover:opacity-90 active:opacity-90';
   const inner = (
     <>
       <TLensLogo size={14} color="#2DD4BF" />

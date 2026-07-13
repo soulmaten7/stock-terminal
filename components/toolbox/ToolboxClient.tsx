@@ -231,7 +231,7 @@ export default function ToolboxClient({
             type="button"
             onClick={() => { clearBoardViews(); setCountry(c.code); }}
             className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-              country === c.code ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+              country === c.code ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >
             {c.label}
@@ -247,7 +247,7 @@ export default function ToolboxClient({
             type="button"
             onClick={() => selectTop(t)}
             className={`shrink-0 rounded-lg px-4 py-2 text-[14px] font-semibold transition-colors sm:py-1.5 ${
-              activeTop === t ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+              activeTop === t ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >
             {TOP_LABELS[t]}
@@ -267,7 +267,7 @@ export default function ToolboxClient({
                 type="button"
                 onClick={() => selectSub(s.slug)}
                 className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
-                  activeTab === s.slug ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+                  activeTab === s.slug ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
                 }`}
               >
                 {s.label}
@@ -313,8 +313,8 @@ export default function ToolboxClient({
           <div>
             {/* 모바일 전용 서브탭 — 링크 ↔ 모아보기 (데스크탑은 2단이라 숨김) */}
             <div className="mb-3 flex gap-1 lg:hidden">
-              <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{FEED_SUB_LABEL[activeTab] ?? '모아보기'}</button>
-              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>바로가기</button>
+              <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{FEED_SUB_LABEL[activeTab] ?? '모아보기'}</button>
+              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>바로가기</button>
             </div>
             <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
               <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>

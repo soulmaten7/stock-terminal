@@ -92,7 +92,7 @@ export default function MyPage() {
             <label className="mb-1 block text-sm text-unjong-muted">닉네임</label>
             <div className="flex gap-2">
               <input value={nickname} onChange={(e) => { setNickname(e.target.value); setSaveMsg(null); }} className="flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
-              <button type="button" onClick={updateNickname} disabled={saving} className="shrink-0 rounded-lg bg-unjong-primary px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? '저장 중…' : '변경'}</button>
+              <button type="button" onClick={updateNickname} disabled={saving} className="shrink-0 rounded-lg bg-unjong-strong px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? '저장 중…' : '변경'}</button>
             </div>
             {saveMsg ? <p className={`mt-1.5 text-xs ${saveMsg.ok ? 'text-emerald-600' : 'text-red-500'}`}>{saveMsg.text}</p> : null}
           </div>

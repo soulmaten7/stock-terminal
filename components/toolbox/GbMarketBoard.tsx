@@ -365,7 +365,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <span key={`e${i}`} className="px-1 text-unjong-muted">…</span>
                 ) : (
                   <button key={n} type="button" onClick={() => setPage((n as number) - 1)}
-                    className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-primary font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>
+                    className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-strong font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>
                     {n}
                   </button>
                 )

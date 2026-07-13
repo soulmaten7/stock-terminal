@@ -23,6 +23,7 @@
   --color-surface-dark-border: #2D3748;
   /* 트릴리언(雲從) 브랜드 팔레트 */
   --color-unjong-primary: #0E1116;
+  --color-unjong-strong: #0E1116; /* 어두운 버튼·활성탭 배경 전용 (text-unjong-primary와 역할 분리). 2단계에서 다크 값 별도 지정 */
   --color-unjong-accent: #2DD4BF;
   --color-unjong-success: #0E7C7B;
   --color-unjong-danger: #C73E3A;

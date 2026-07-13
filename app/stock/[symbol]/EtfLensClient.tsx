@@ -69,7 +69,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
       {isEtn ? (
         /* ETN = 전략형(바스켓 없음) → 상품 정보 + 주의 */
-        <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-5">
+        <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5">
           <div className="mb-2 flex items-center gap-1.5">
             <Layers size={14} className="text-unjong-accent" />
             <span className="text-[13px] font-semibold text-unjong-primary">상품 정보</span>
@@ -81,7 +81,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
       ) : (
         <>
       {/* 개요 카드 */}
-      <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-4">
+      <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-4">
         <div className="mb-2 flex items-center gap-1.5">
           <Layers size={14} className="text-unjong-accent" />
           <span className="text-[13px] font-semibold text-unjong-primary">상품 구성</span>
@@ -97,14 +97,14 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
       {state === 'loading' ? (
         <div className="mt-4 h-40 animate-pulse rounded-2xl bg-unjong-background" />
       ) : !hasHoldings ? (
-        <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-6 text-center">
+        <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-6 text-center">
           <p className="text-sm font-medium text-unjong-primary">구성종목 데이터 준비 중</p>
           <p className="mt-1 text-[12px] text-unjong-muted">이 상품은 아직 구성종목 소스가 연동되지 않았어요(국내 ETF는 KRX 연동 예정).</p>
         </div>
       ) : (
         <>
           {/* 상위 보유종목 */}
-          <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-4">
+          <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-4">
             <p className="mb-2 text-[13px] font-semibold text-unjong-primary">상위 보유종목 <span className="font-normal text-unjong-muted">(상위 {data!.holdings.length})</span></p>
             <ul className="space-y-2">
               {data!.holdings.map((h) => (
@@ -122,14 +122,14 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
           {/* 섹터 비중 */}
           {data!.sectors.length > 0 && (
-            <div className="mt-4 rounded-2xl border border-unjong-border bg-white p-4">
+            <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-4">
               <p className="mb-2 text-[13px] font-semibold text-unjong-primary">섹터 비중</p>
               <ul className="space-y-1.5">
                 {[...data!.sectors].sort((a, b) => b.weight - a.weight).map((s) => (
                   <li key={s.key} className="flex items-center gap-2 text-[12px]">
                     <span className="w-20 shrink-0 truncate text-unjong-muted">{sectorLabel(s.key)}</span>
                     <span className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-unjong-background">
-                      <span className="absolute inset-y-0 left-0 rounded-full bg-unjong-primary/30" style={{ width: `${s.weight * 100}%` }} />
+                      <span className="absolute inset-y-0 left-0 rounded-full bg-unjong-strong/30" style={{ width: `${s.weight * 100}%` }} />
                     </span>
                     <span className="w-12 shrink-0 text-right tabular-nums text-unjong-primary">{pct(s.weight)}</span>
                   </li>

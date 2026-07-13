@@ -175,7 +175,7 @@ function PreviewBody({ a, onReport, isFav, onToggleFav }: { a: Advisor; onReport
             </a>
           ) : null}
           {a.verified_owner ? (
-            <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white">
+            <a href={linkUrl} target="_blank" rel="noopener noreferrer nofollow" className="flex items-center justify-center gap-1 rounded-lg bg-unjong-strong py-2 text-sm font-semibold text-white">
               연결링크 바로가기 <ExternalLink size={13} />
             </a>
           ) : (
@@ -499,7 +499,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 p === '…' ? (
                   <span key={`e${idx}`} className="px-1 text-xs text-unjong-muted">…</span>
                 ) : (
-                  <button key={p} type="button" onClick={() => setPage(p)} className={`h-8 min-w-[2rem] rounded-md px-2 text-sm font-medium transition-colors ${p === page ? 'bg-unjong-primary text-white' : 'border border-unjong-border text-unjong-muted hover:border-unjong-accent'}`}>
+                  <button key={p} type="button" onClick={() => setPage(p)} className={`h-8 min-w-[2rem] rounded-md px-2 text-sm font-medium transition-colors ${p === page ? 'bg-unjong-strong text-white' : 'border border-unjong-border text-unjong-muted hover:border-unjong-accent'}`}>
                     {p}
                   </button>
                 )
@@ -571,7 +571,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
               <div className="py-8 text-center">
                 <p className="text-sm font-medium text-unjong-primary">신고가 접수되었습니다.</p>
                 <p className="mt-1 text-xs text-unjong-muted">확인 후 필요 시 금융감독원에 전달됩니다.</p>
-                <button type="button" onClick={() => setReporting(null)} className="mt-4 rounded-lg bg-unjong-primary px-4 py-2 text-sm font-semibold text-white">닫기</button>
+                <button type="button" onClick={() => setReporting(null)} className="mt-4 rounded-lg bg-unjong-strong px-4 py-2 text-sm font-semibold text-white">닫기</button>
               </div>
             ) : (
               <>
@@ -590,7 +590,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
                 {reportError ? <p className="mb-2 text-xs text-red-500">{reportError}</p> : null}
                 <div className="flex gap-2">
                   <button type="button" onClick={() => setReporting(null)} className="flex-1 rounded-lg border border-unjong-border py-2 text-sm font-medium text-unjong-muted hover:bg-unjong-background">취소</button>
-                  <button type="button" onClick={submitReport} disabled={!reportReason || reportSubmitting} className="flex-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white disabled:opacity-50">{reportSubmitting ? '제출 중…' : '신고하기'}</button>
+                  <button type="button" onClick={submitReport} disabled={!reportReason || reportSubmitting} className="flex-1 rounded-lg bg-unjong-strong py-2 text-sm font-semibold text-white disabled:opacity-50">{reportSubmitting ? '제출 중…' : '신고하기'}</button>
                 </div>
               </>
             )}

@@ -77,7 +77,7 @@ export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' |
           type="button"
           onClick={() => setView('kr')}
           className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-            view === 'kr' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            view === 'kr' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
           🇰🇷 한국
@@ -86,7 +86,7 @@ export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' |
           type="button"
           onClick={() => setView('us')}
           className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-            view === 'us' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            view === 'us' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
           🇺🇸 미국

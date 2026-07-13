@@ -13,7 +13,7 @@ export default function OfferingsFeed() {
           type="button"
           onClick={() => setView('ipo')}
           className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-            view === 'ipo' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            view === 'ipo' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
           공모주
@@ -22,7 +22,7 @@ export default function OfferingsFeed() {
           type="button"
           onClick={() => setView('div')}
           className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
-            view === 'div' ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'
+            view === 'div' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
           배당

@@ -157,7 +157,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
       <label className="mb-1 block text-xs font-medium text-unjong-muted">소개</label>
       <div className="mb-1 flex gap-2">
         <textarea value={intro} onChange={(e) => { setIntro(e.target.value); setIntroMsg(''); }} rows={2} maxLength={200} placeholder="업체·리딩방 한 줄 소개" className="flex-1 resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
-        <button type="button" onClick={saveIntro} disabled={savingIntro} className="shrink-0 self-start rounded-lg bg-unjong-primary px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{savingIntro ? '저장…' : '저장'}</button>
+        <button type="button" onClick={saveIntro} disabled={savingIntro} className="shrink-0 self-start rounded-lg bg-unjong-strong px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{savingIntro ? '저장…' : '저장'}</button>
       </div>
       {introMsg ? <p className="mb-3 text-[11px] text-emerald-600">{introMsg}</p> : <div className="mb-3" />}
 
@@ -193,7 +193,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
             </div>
             {lErr ? <p className="text-xs text-red-500">{lErr}</p> : null}
             <div className="flex gap-2">
-              <button type="button" onClick={addFreeLink} disabled={lBusy} className="flex-1 rounded-lg bg-unjong-primary py-2 text-sm font-semibold text-white disabled:opacity-50">{lBusy ? '등록…' : '무료 채널 등록'}</button>
+              <button type="button" onClick={addFreeLink} disabled={lBusy} className="flex-1 rounded-lg bg-unjong-strong py-2 text-sm font-semibold text-white disabled:opacity-50">{lBusy ? '등록…' : '무료 채널 등록'}</button>
               <button type="button" onClick={() => { setAddOpen(false); setLErr(''); }} className="shrink-0 rounded-lg border border-unjong-border px-3 py-2 text-sm text-unjong-muted">취소</button>
             </div>
           </div>
@@ -225,7 +225,7 @@ function BizCard({ biz, onChange }: { biz: Biz; onChange: () => void }) {
             <div className="space-y-1.5">
               <div className="flex gap-2">
                 <input value={mgrEmail} onChange={(e) => { setMgrEmail(e.target.value); setMgrErr(''); }} placeholder="공유할 사람의 가입 이메일" className="min-w-0 flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
-                <button type="button" onClick={addManager} disabled={mgrBusy} className="shrink-0 rounded-lg bg-unjong-primary px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{mgrBusy ? '추가…' : '공유'}</button>
+                <button type="button" onClick={addManager} disabled={mgrBusy} className="shrink-0 rounded-lg bg-unjong-strong px-3 py-2 text-xs font-semibold text-white disabled:opacity-50">{mgrBusy ? '추가…' : '공유'}</button>
               </div>
               {mgrErr ? <p className="text-xs text-red-500">{mgrErr}</p> : <p className="text-[11px] text-unjong-muted">공유받은 사람도 이 업체의 소개·링크를 관리할 수 있어요(가입 계정 필요).</p>}
             </div>

@@ -35,7 +35,7 @@ export default function AdminFssLookup() {
           placeholder="사업자번호 또는 업체명으로 금감원 신고 조회 (하이픈 무관)"
           className="w-full rounded-lg border border-unjong-border bg-unjong-surface py-2.5 pl-9 pr-20 text-sm text-unjong-primary outline-none focus:border-unjong-accent"
         />
-        <button type="button" onClick={run} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-unjong-primary px-3 py-1.5 text-xs font-semibold text-white">조회</button>
+        <button type="button" onClick={run} className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-unjong-strong px-3 py-1.5 text-xs font-semibold text-white">조회</button>
       </div>
       {loading ? (
         <p className="py-4 text-center text-sm text-unjong-muted">조회 중…</p>

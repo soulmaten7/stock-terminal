@@ -33,7 +33,7 @@ export default function HomeIndexStrip() {
             const showDiv = i > 0 && loop[i - 1].group !== it.group;
             return (
               <Fragment key={i}>
-                {showDiv && <span className="mx-1 h-3 w-px shrink-0 bg-white/15" />}
+                {showDiv && <span className="mx-1 h-3 w-px shrink-0 bg-unjong-surface/15" />}
                 <span className="inline-flex items-center gap-1.5 px-4 text-xs">
                   <span className="text-white/45">{it.name}</span>
                   <span className="font-semibold tabular-nums text-white">{it.value}</span>

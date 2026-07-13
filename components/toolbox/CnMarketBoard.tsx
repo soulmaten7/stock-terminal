@@ -258,7 +258,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 key={s.key}
                 type="button"
                 onClick={() => setTab(s.key)}
-                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-primary text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
                 {s.label}
               </button>
@@ -492,7 +492,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     key={n}
                     type="button"
                     onClick={() => setPage((n as number) - 1)}
-                    className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-primary font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                    className={`h-7 min-w-[1.75rem] rounded px-1 tabular-nums transition-colors ${page === (n as number) - 1 ? 'bg-unjong-strong font-bold text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
                   >
                     {n}
                   </button>

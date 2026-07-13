@@ -140,7 +140,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   const pillClass = (t: string) => t === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : t === 'warn' ? 'bg-amber-50 text-amber-600' : 'bg-unjong-background text-unjong-muted';
 
   return (
-    <div className="rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="mb-2.5 flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">시간축으로 한눈에</span>      </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -229,7 +229,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
   const [open, setOpen] = useState(false);
   if (!f.supported) {
     return (
-      <div className="rounded-2xl border border-unjong-border bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-sm">
         <div className="font-bold text-unjong-primary">Piotroski F-Score</div>
         <div className="mt-0.5 text-xs text-unjong-accent">F-스코어 · 재무 건전성</div>
         <p className="mt-2 text-sm text-unjong-muted">{f.reason || '이 종목은 F-Score를 적용할 수 없어요.'}</p>
@@ -239,7 +239,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
   const band = f.score >= 7 ? '양호' : f.score <= 3 ? '취약' : '중간';
   const GROUPS: Array<[string, string]> = [['수익성', '돈 버는 힘'], ['재무 안정성', '빚·자금'], ['효율성', '장사 효율']];
   return (
-    <div className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
       <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -250,7 +250,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
           </div>
           {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p> : null}
         </div>
-        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
+        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
         </span>
       </button>
@@ -258,7 +258,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
           <FlagBox flags={flags} />
           {/* 이게 뭐예요? — 지금 뭘 하는지만 */}
-          <div className="rounded-xl border border-unjong-border bg-white p-3">
+          <div className="rounded-xl border border-unjong-border bg-unjong-surface p-3">
             <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
             <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{LENS_COPY.ko.fscore.what}</p>
           </div>
@@ -373,7 +373,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
   if (!loaded || !events.length) return null;
   const fmtD = (s: string) => (/^\d{8}$/.test(s) ? `${s.slice(0, 4)}.${s.slice(4, 6)}.${s.slice(6, 8)}` : s);
   return (
-    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
         <span className="text-[11px] text-unjong-muted">DART · 실시간</span>
@@ -443,7 +443,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
   if (!loaded || !events.length) return null;
   const fmtD = (s: string) => { const d = new Date(s); return isNaN(+d) ? s : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`; };
   return (
-    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
         <span className="text-[11px] text-unjong-muted">EDINET · 金融庁</span>
@@ -513,7 +513,7 @@ function GbEventLayer({ symbol }: { symbol: string }) {
   }, [symbol]);
   if (!loaded || !events.length) return null;
   return (
-    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
         <span className="text-[11px] text-unjong-muted">RNS · LSE</span>
@@ -580,7 +580,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
   }, [symbol]);
   if (!loaded || !events.length) return null;
   return (
-    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
         <span className="text-[11px] text-unjong-muted">{events[0]?.source === 'HKEXnews' ? '공시 · HKEX' : '공시 · 巨潮资讯'}</span>
@@ -645,7 +645,7 @@ function VnEventLayer({ symbol }: { symbol: string }) {
   }, [symbol]);
   if (!loaded || !events.length) return null;
   return (
-    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 주요 뉴스·이벤트</span>
         <span className="text-[11px] text-unjong-muted">뉴스 · Google News</span>
@@ -695,7 +695,7 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
         ? <p className="text-[12px] text-unjong-muted">뉴스 읽는 중…</p>
         : (<>
             <p className="text-[13px] leading-relaxed text-unjong-primary">{d.summary}</p>
-            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((t, i) => <span key={i} className="rounded-full border border-unjong-border bg-white px-2 py-0.5 text-[10px] text-unjong-muted">{t}</span>)}</div> : null}
+            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((t, i) => <span key={i} className="rounded-full border border-unjong-border bg-unjong-surface px-2 py-0.5 text-[10px] text-unjong-muted">{t}</span>)}</div> : null}
           </>)}
     </div>
   );
@@ -810,7 +810,7 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
     );
   };
   return (
-    <div className="mt-3 rounded-2xl border border-unjong-border bg-white p-3.5 shadow-sm">
+    <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시·이벤트</span>
         <span className="text-[11px] text-unjong-muted">SEC EDGAR · 실시간</span>
@@ -885,7 +885,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         ? <PctGauge pctl={L.percentile} tone={L.verdict?.tone} lo={FACTOR_ENDS[L.key].lo} hi={FACTOR_ENDS[L.key].hi} />
         : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
     return (
-      <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-white shadow-sm">
+      <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
         <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -901,14 +901,14 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               </div>
             ) : <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p>) : null}
           </div>
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-white text-unjong-muted">
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
           </span>
         </button>
         {isOpen ? (
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
             <FlagBox flags={cardFlags} />
-            <div className="mb-3.5 rounded-xl border border-unjong-border bg-white p-3">
+            <div className="mb-3.5 rounded-xl border border-unjong-border bg-unjong-surface p-3">
               <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
               <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
             </div>
