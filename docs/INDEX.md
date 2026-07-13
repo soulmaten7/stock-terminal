@@ -59,7 +59,7 @@
 
 | 파일 | 용도 | 언제 읽나 |
 |------|------|-----------|
-| `docs/PRODUCT_SPEC_V7.md` | **[최신]** 제품 비전 V7 — "검증된 중립 관문(Gateway)" 재정의 | 제품 방향 판단 시 |
+| `docs/PRODUCT_SPEC_V7.md` | [보존] V7 — "검증된 중립 관문(Gateway)" 재정의 (구 비전 · 정체성 프레임 폐기) | V7 히스토리 · 현행 정체성=BRAND_IDENTITY/SESSION_BOOT |
 | `docs/PRODUCT_SPEC_V6.md` | [보존] V6 — 정체성 5결정(정보+토론+신뢰) | V6 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V4.md` | [보존] V4 — 2창(한국·미국)·토스카드·Trustpilot 평가 | V4 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V3.md` | [보존] V3 — Stock Terminal 초기 스펙 | V3 히스토리 참고 |
@@ -145,7 +145,7 @@
 | `docs/AD_MONETIZATION_PLAYBOOK.md` | **[최신]** 광고·수익화 런북(전 언어권)·슬롯 인벤토리·어필리에이트·합법성 원장 | 광고·수익화 작업 전 |
 | `docs/LAUNCH_PLAYBOOK.md` | **[최신]** 한국탭 완성→공개 로드맵 + 출시 전 검수 체크리스트(규제 조사) | 출시 준비·검수 시 |
 | `docs/BUSINESS_CLAIM_SPEC.md` | 리딩방·업체 클레임/관리 설계(Phase 2 수익화 토대) | 업체 claim 기능 작업 시 |
-| `docs/ROOM_VERIFICATION_SPEC.md` | 리딩방 검증 설계(안 속는 곳·금감원 신고 뱃지) | 리딩방 검증 작업 시 |
+| `docs/ROOM_VERIFICATION_SPEC.md` | 리딩방 검증 설계(금감원 등록·신고 뱃지 · 정체성 프레임=[이력]→BRAND_IDENTITY) | 리딩방 검증 작업 시 |
 
 ---
 
