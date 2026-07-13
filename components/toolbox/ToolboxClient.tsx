@@ -46,7 +46,7 @@ const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf'
 // 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨로 폴백.
 const INFO_LABELS: Record<string, string> = {
   news: '뉴스', disclosure: '공시', research: '리포트', analysis: '기업·재무', macro: '거시', etf: 'ETF', ipo: '공모주',
-  broker: '증권사', room: '유사투자자문 조회', chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
+  broker: '증권사', room: '유사투자자문사', chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
 };
 // 외부·거래처 하위탭 — 구분선 뒤로(곁가지 표시)
 const INFO_EXTERNAL = new Set(['broker', 'room', 'chart', 'exchange', 'community', 'youtube']);

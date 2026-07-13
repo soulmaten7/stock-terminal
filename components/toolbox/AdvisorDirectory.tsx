@@ -351,7 +351,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
 
   return (
     <section className="min-w-0">
-      <h2 className="mb-2 text-base font-bold text-unjong-primary">유사투자자문 조회</h2>
+      <h2 className="mb-2 text-base font-bold text-unjong-primary">유사투자자문사</h2>
       <p className="mb-3 rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-[11px] leading-relaxed text-unjong-muted">
         출처: 금융감독원 '파인'(매일 갱신). <strong className="text-unjong-primary">'신고'는 안전 보증·인증이 아닙니다.</strong> 트릴리언은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.
       </p>
