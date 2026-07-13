@@ -70,7 +70,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
       <div className="rounded-2xl border border-unjong-border bg-white p-4 text-center">
         <TLensLogo size={22} color="#2DD4BF" />
         <p className="mt-2 text-sm font-semibold text-unjong-primary">종목을 선택하면 TR-AI 렌즈가 읽어드려요</p>
-        <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 어떻게 보는지 요약해요.</p>
+        <p className="mt-1 text-[12px] leading-relaxed text-unjong-muted">검증된 기법(모멘텀·밸류·퀄리티 등)이 이 종목을 저마다 어떻게 보는지 요약해요. 사고팔 신호가 아니라, 스스로 판단할 재료예요.</p>
       </div>
     );
   }
@@ -138,6 +138,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
         ) : state === 'error' ? (
           <p className="text-[12px] text-unjong-muted">지금은 렌즈를 불러올 수 없어요. 잠시 후 다시 시도해 주세요.</p>
         ) : lenses?.length ? (
+          <div className="space-y-2">
           <ul className="space-y-1">
             {lenses.map((l) => (
               <li key={l.key} className="flex items-center justify-between gap-2 text-[12px]">
@@ -160,6 +161,8 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
                 </li>
               ))}
           </ul>
+          <p className="text-[11px] leading-snug text-unjong-muted">사고팔 신호가 아니라, 스스로 판단할 재료예요.</p>
+          </div>
         ) : (
           <p className="text-[12px] leading-5 text-unjong-muted">데이터 부족 — 상장·거래 이력이 짧아 렌즈를 산출할 수 없어요.</p>
         )}

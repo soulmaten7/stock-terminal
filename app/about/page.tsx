@@ -27,6 +27,15 @@ export default function AboutPage() {
         ))}
       </div>
 
+      <section className="mt-10">
+        <h2 className="mb-3 text-base font-bold text-unjong-primary">이렇게 봅니다</h2>
+        <ol className="space-y-2.5 text-sm leading-relaxed text-unjong-muted">
+          <li><span className="font-medium text-unjong-primary">1.</span> 종목을 고르면,</li>
+          <li><span className="font-medium text-unjong-primary">2.</span> TR-AI 렌즈가 모멘텀·밸류·퀄리티 등 검증된 기법으로 그 종목을 저마다 어떻게 보는지 나란히 보여줘요.</li>
+          <li><span className="font-medium text-unjong-primary">3.</span> 사고팔 신호는 없어요. 판단은 당신 몫이에요.</li>
+        </ol>
+      </section>
+
       <blockquote className="mt-10 border-l-2 border-unjong-accent pl-4 text-sm italic leading-relaxed text-unjong-muted">
         “사람이 할 수 있는 가장 좋은 일은, 다른 사람이 더 많이 알도록 돕는 것이다.”
         <footer className="mt-1 text-xs not-italic text-unjong-muted/80">— 찰리 멍거</footer>

@@ -18,6 +18,7 @@ const LANGS: { code: 'ko' | 'en'; name: string; flag: string; ready: boolean }[]
 const MENU = [
   { href: '/', label: '주식', ready: true, match: (p: string) => p === '/' },
   { href: '/coin', label: '코인', ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장
+  { href: '/about', label: '소개', ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
 ] as const;
 
 export default function Header() {
@@ -63,8 +64,13 @@ export default function Header() {
             <rect x="69" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
             <rect x="42.5" y="35" width="15" height="43" rx="2.5" fill="#2DD4BF" />
           </svg>
-          <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
-          <span className="hidden text-sm text-white/45 sm:inline">트릴리언</span>
+          <span className="flex flex-col justify-center leading-none">
+            <span className="flex items-baseline gap-2">
+              <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
+              <span className="hidden text-sm text-white/45 sm:inline">트릴리언</span>
+            </span>
+            <span className="mt-1 hidden text-[11px] font-normal leading-none text-white/40 lg:block">종목을 보는 눈을, 누구에게나</span>
+          </span>
         </Link>
 
         {/* 네비 탭 */}
