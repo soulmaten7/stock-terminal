@@ -34,27 +34,27 @@ const COUNTRIES: { code: Country; label: string }[] = [
 ];
 
 // ── 2단 네비 (2026-07-10 재구조) ──────────────────────────────
-// 상단 4탭: 종목 · 정보 · 증권사 · 검증. "정보" 안에 나머지를 하위탭으로 접음.
+// 상단 2탭: 종목 · 정보. 나머지(증권사·유사투자자문 조회 등)는 "정보" 하위탭으로 접음. (검증→'유사투자자문 조회'로 정보 하위 이동)
 // 근거: 빅테크식 최소·직관 네비 + catch-all 금지(네이버·다음·야후 관행) — 자세히는 docs/BRAND_IDENTITY.md.
-const TOP_TABS = ['market', 'info', 'room'] as const;
+const TOP_TABS = ['market', 'info'] as const;
 type TopTab = (typeof TOP_TABS)[number];
-const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보', room: '검증' };
+const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보' };
 
 // "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부·거래처(증권사·차트·거래소·커뮤니티·유튜브)는 구분선 뒤.
 // 증권사=참조 디렉토리로 강등(트래픽 낮음). 수익은 종목 리스트 인리스트 광고로(설계: docs/AD_MONETIZATION_PLAYBOOK).
-const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'chart', 'exchange', 'community', 'youtube'];
+const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'room', 'chart', 'exchange', 'community', 'youtube'];
 // 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨로 폴백.
 const INFO_LABELS: Record<string, string> = {
   news: '뉴스', disclosure: '공시', research: '리포트', analysis: '기업·재무', macro: '거시', etf: 'ETF', ipo: '공모주',
-  broker: '증권사', chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
+  broker: '증권사', room: '유사투자자문 조회', chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
 };
 // 외부·거래처 하위탭 — 구분선 뒤로(곁가지 표시)
-const INFO_EXTERNAL = new Set(['broker', 'chart', 'exchange', 'community', 'youtube']);
+const INFO_EXTERNAL = new Set(['broker', 'room', 'chart', 'exchange', 'community', 'youtube']);
 // 유효 slug 전체(로컬스토리지 복원 검증용)
-const ALL_SLUGS = ['market', 'room', ...INFO_ORDER];
+const ALL_SLUGS = ['market', ...INFO_ORDER];
 
 function topOf(slug: string): TopTab {
-  if (slug === 'market' || slug === 'room') return slug as TopTab;
+  if (slug === 'market') return 'market';
   return 'info';
 }
 
@@ -175,6 +175,7 @@ export default function ToolboxClient({
   const infoSubs = INFO_ORDER.map((slug) => {
     if (slug === 'broker') return { slug, label: INFO_LABELS.broker }; // 증권사 = 전 국가 참조 디렉토리(항상)
     if (slug === 'youtube') return country === 'KR' ? { slug, label: INFO_LABELS.youtube } : null;
+    if (slug === 'room') return country === 'KR' ? { slug, label: INFO_LABELS.room } : null; // 검증(유사투자자문 조회) = KR 전용
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
     const show = (FEED_TABS.includes(slug) && feedSupports(slug, country)) || hasLinks;
@@ -182,9 +183,8 @@ export default function ToolboxClient({
     return { slug, label: INFO_LABELS[slug] ?? c?.label ?? slug };
   }).filter((t): t is { slug: string; label: string } => t !== null);
 
-  // ── 상단 4탭 가용성: market·broker 항상, info는 하위탭 있을 때, room(검증)은 KR만. ──
+  // ── 상단 2탭 가용성: market 항상, info는 하위탭 있을 때. (검증=유사투자자문 조회는 info 하위탭) ──
   const topTabs = TOP_TABS.filter((t) => {
-    if (t === 'room') return country === 'KR';
     if (t === 'info') return infoSubs.length > 0;
     return true;
   });
@@ -192,7 +192,6 @@ export default function ToolboxClient({
 
   // 국가 전환 시 현재 탭이 그 국가에 없으면 보정
   useEffect(() => {
-    if (activeTab === 'room' && country !== 'KR') { setActiveTab('market'); return; }
     if (INFO_ORDER.includes(activeTab) && !infoSubs.some((s) => s.slug === activeTab)) {
       setActiveTab(infoSubs[0]?.slug ?? 'market');
     }
@@ -240,7 +239,7 @@ export default function ToolboxClient({
         ))}
       </div>
 
-      {/* 상단 4탭 — 종목 · 정보 · 증권사 · 검증 */}
+      {/* 상단 2탭 — 종목 · 정보 (검증=유사투자자문 조회는 정보 하위탭) */}
       <div className="flex items-stretch gap-1 overflow-x-auto border-b border-unjong-border px-2 py-2 sm:px-3">
         {topTabs.map((t) => (
           <button
