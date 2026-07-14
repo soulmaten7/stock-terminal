@@ -718,16 +718,17 @@ function VnEventLayer({ symbol }: { symbol: string }) {
 // R3: 종목 최근 뉴스 요약 + 중립 토픽 태그(지연·조건부·헤드라인 없으면 숨김). 뉴스=사실 브리핑, 감성 점수 아님.
 function StockNewsBrief({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 뉴스요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
   const [state, setState] = useState<'loading' | 'done' | 'hide'>('loading');
   useEffect(() => {
     let alive = true;
-    fetch('/api/news-brief?symbol=' + encodeURIComponent(symbol))
+    fetch('/api/news-brief?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setD({ summary: j.summary, tags: j.tags || [] }); setState('done'); } else setState('hide'); })
       .catch(() => { if (alive) setState('hide'); });
     return () => { alive = false; };
-  }, [symbol]);
+  }, [symbol, locale]);
   if (state === 'hide') return null;
   return (
     <div className="mt-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
