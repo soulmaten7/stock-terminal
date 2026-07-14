@@ -2,6 +2,14 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-14 (5) — 🌐 영어 데이터 레이어 i18n (Tier 1+2 결정론) + 브랜드 록업 ✅
+
+**HEAD `3cb73ab`.** #86 감사로 발견 — `/en` 정적 UI는 영어인데 데이터/AI 레이어(렌즈명·판정·grade·브리핑·공시·h1)가 한국어. 원인=(A)클라가 `&lang` 안 보냄[카피는 이미 이중언어] (B)일부 하드코딩.
+- **715**(`a393940`) 렌즈 `&lang` 배선[한방에 이름·판정·스펙트럼 영어]+grade 맵+h1 `info.en`+뱃지 lang · **716**(`36dbed9`) 8-K·F-Score·ETF 이중언어+`/api/events` lang캐시 · **717**(`a9d9ad7`) detail 키 stable화[한국어가 lookup 키라 key/label 분리]+DETAIL_LABELS/headline · **718**(`72d4f32`) note 6개 영어[수치 보존]+short/long 이중언어 · **719**(`3cb73ab`) `/en` 한글 워드마크 "트릴리언" 숨김.
+- **KR byte 동일**: charac 테스트 red-diff + live SHA 대조로 증명(vitest 43/43).
+- **결과**: `/en` **결정론 데이터 100% 영어**. 남은 한국어=LLM 생성물(브리핑·공시요약)=**Tier 3**(설계 `docs/TIER3_LLM_I18N_DESIGN.md`·`*_en` 컬럼·on-demand·720~723). 교훈=`docs/LENS_DEV_PLAYBOOK.md` #30.
+- **▶ 다음 = Tier 3(720 마이그레이션) or US 잔여·OAuth 로케일 쿠키·다크 폴리시 D·클로즈드 베타.**
+
 ## 2026-07-14 (4) — 🐛 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화 ✅
 
 **HEAD `d122cac`.** STEP 711 배포 확인하다 **`[locale]` 페이지 무한 정적 캐시** 버그 발견 → bare URL이 봇에 옛 콘텐츠 서빙(코드는 현재값·라이브만 stale·SEO/규제 리스크).

@@ -1,7 +1,14 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🐛 **2026-07-14 (4·최신) — 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화. HEAD `d122cac`.**
+> 🌐 **2026-07-14 (5·최신) — 영어 데이터 레이어 i18n(Tier 1+2 결정론) + 브랜드 록업. HEAD `3cb73ab`.**
+> - **발견(#86 감사)**: `/en` 정적 UI는 영어인데 데이터/AI 레이어(렌즈명·판정·grade·브리핑·공시·h1)가 한국어. 원인=(A)클라가 `&lang` 안 보냄[카피는 이미 이중언어] (B)일부 하드코딩.
+> - **715**(`a393940`) 렌즈 `&lang` 배선[한방에 이름·판정·스펙트럼 영어]+grade 맵+h1 `info.en`+뱃지 lang · **716**(`36dbed9`) 8-K·F-Score·ETF 이중언어+`/api/events` lang캐시 · **717**(`a9d9ad7`) detail 키 stable화[한국어가 lookup 키라 key/label 분리]+DETAIL_LABELS/headline · **718**(`72d4f32`) note 6개 영어[수치 보존]+short/long 이중언어 · **719**(`3cb73ab`) `/en` 한글 워드마크 "트릴리언" 숨김.
+> - **KR byte 동일**: charac red-diff + live SHA 대조 증명(vitest 43/43).
+> - **결과**: `/en` **결정론 데이터 100% 영어**. 남은 한국어=LLM 생성물(브리핑·공시요약)=**Tier 3**(설계 `docs/TIER3_LLM_I18N_DESIGN.md`·`*_en` 컬럼·on-demand·720~723). 교훈=`LENS_DEV_PLAYBOOK` #30.
+> - **▶ 다음 = Tier 3(720 마이그레이션) or US 잔여·OAuth 로케일 쿠키·다크 폴리시 D·클로즈드 베타.**
+>
+> 🐛 **2026-07-14 (4) — 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화. HEAD `d122cac`.**
 > - **발견(배포 확인 중)**: `[locale]` 페이지가 캐시 지시자 없으면 **무한 정적 캐시**로 굳어 배포해도 안 갈아엎어짐 → bare URL이 봇에 **옛 콘텐츠** 서빙. `/stock/{종목}`=옛 브랜딩·`/about`=개편 이전 정체성("속지 않도록"·"흩어진 금융정보")·`/terms`·`/privacy`=법무 정확화 이전. 코드는 현재값·라이브만 stale(SEO·규제 리스크). 원인=layout 정적렌더 자격(setRequestLocale+generateStaticParams)+페이지 캐시 지시자 누락.
 > - **712**(`2cd926d`) 종목상세 · **713**(`9c4d619`) 정적 8개(about·terms·privacy·toolbox·coin·favorites·feedback·advertise) 전부 `force-dynamic` · **714**(`d122cac`) 클라 3개(mypage·auth/login·admin/login)는 `'use client'`라 page dynamic 무시 → **서버 `layout.tsx` 래퍼**로 강제 동적(로그인 로직 불변).
 > - **🐞 교훈**: `[locale]` 페이지 캐시 지시자 명시(`'use client'`=서버 layout 래퍼) · `npm run build`가 dev `.next` 밟아 500→클린 재시작.

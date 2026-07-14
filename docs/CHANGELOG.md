@@ -1,6 +1,18 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-14 (5) — 🌐 영어 데이터 레이어 i18n (Tier 1+2 결정론) + 브랜드 록업 폴리시 (HEAD `3cb73ab`)
+
+- **📡 발견(#86 감사)**: `/en`에서 정적 UI는 영어인데 **데이터/AI 레이어가 한국어**(렌즈명·판정·grade·브리핑·공시라벨·종목명 h1). 원인 2층: (A) 클라가 `&lang=en` 안 보냄(카피는 이미 이중언어) (B) 일부 하드코딩 한국어. → 결정론(Tier 1+2)은 이번에 전부 영어화, LLM 생성물(Tier 3)은 설계만.
+- **🔧 715 Tier 1**(`a393940`): 렌즈 fetch `&lang=${locale}` 배선(LensPreview·StockLensClient) — 카피 이미 이중언어라 렌즈명·판정·스펙트럼·전망 한방에 영어 + grade 이중언어 맵(`LENS_GRADE`) + h1 영문명(`info.en`) + AiLensBadge lang. **KR byte 동일**(charac 테스트).
+- **🔧 716 Tier 2a**(`36dbed9`): 8-K 공시 라벨 이중언어(`eightK.ts`)+`/api/events` lang·캐시키 + F-Score locale(`fscore.ts` 우량/중립/부실→Strong/Neutral/Weak) + ETF 레버리지 정규식 영어 키워드.
+- **🔧 717 Tier 2b**(`a9d9ad7`): `lenses.ts` detail 키를 stable화(한국어가 `L.detail['200일선대비%']` **lookup 키**라 key/label 분리) + `DETAIL_LABELS`/headline 이중언어. 조회 3곳 동기화·charac red-diff로 무회귀 증명.
+- **🔧 718 Tier 2c**(`72d4f32`): 렌즈 `note` 6개 영어 번역(t값·샤프·STEP번호 등 수치·레퍼런스 보존) + short/long 이중언어(계산 모듈이 언어중립 state 반환). **KR SHA 동일 증명**(live `/api/lens?...&lang=ko` vs git HEAD).
+- **🔧 719 브랜드 록업**(`3cb73ab`): `/en`에서 한글 워드마크 "트릴리언" 숨김(헤더·푸터·로그인·`locale==='ko'` 조건부·ko 병기 유지·SEO alternateName 보존).
+- **✅ 결과**: `/en` **결정론 데이터 100% 영어**. 남은 한국어 = LLM 생성물(브리핑·news-brief·공시 AI요약) = **Tier 3**(설계 완료 `docs/TIER3_LLM_I18N_DESIGN.md`·스키마 A `*_en` 컬럼·on-demand·STEP 720~723). tsc 0·vitest 43/43.
+- **🐞 교훈**: 카피 이미 이중언어면 `&lang` 배선이 최대 레버리지 · 한국어 리터럴이 lookup 키면 key/label 분리(안 하면 gauge 조용히 깨짐) · KR 무회귀는 charac red-diff+SHA로 증명 · `npm run build`가 dev `.next` 밟음→`NEXT_DIST_DIR` 우회. (`docs/LENS_DEV_PLAYBOOK.md` #30.)
+- **▶ 다음** = Tier 3(720 마이그레이션부터) or US 잔여(통화기호·IPO) · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.
+
 ## 2026-07-14 (4) — 🐛 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화 (HEAD `d122cac`)
 
 - **📡 발견(배포 확인 중)**: STEP 711 배포를 web_fetch로 확인하다 **`[locale]` 페이지가 무한 정적 캐시로 굳어 배포해도 안 갈아엎어지는** 버그 발견. bare URL이 봇·방문자에 **옛 콘텐츠** 서빙 — `/stock/{종목}`=옛 브랜딩("AI 렌즈"·폐기 태그라인·미정리명 "Apple Inc. - Common Stock"), `/about`=**개편 이전 정체성**("정확한 정보·검증된 신뢰"·"속지 않도록"·"흩어진 금융정보"), `/terms`·`/privacy`=**법무 정확화(07-12) 이전** 텍스트. 코드는 전부 현재값인데 라이브만 stale = SEO·규제 리스크. 캐시버스터(`?fresh=`)로 확정.

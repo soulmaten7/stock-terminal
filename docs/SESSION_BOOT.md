@@ -5,7 +5,14 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🐛 **2026-07-14 (4·최신) · 캐시 stale 버그 3-STEP 완결 — 모든 [locale] 페이지 신선화 (HEAD `d122cac`).**
+> 🌐 **2026-07-14 (5·최신) · 영어 데이터 레이어 i18n(Tier 1+2 결정론) + 브랜드 록업 (HEAD `3cb73ab`).**
+> - **📡 발견(#86 감사)**: `/en`에서 정적 UI는 영어인데 **데이터/AI 레이어가 한국어**(렌즈명·판정·grade·브리핑·공시라벨·종목명 h1). 원인 2층: (A) 클라가 `&lang=en` 안 보냄(`lensCopy.ts` 카피는 이미 이중언어) (B) 일부 하드코딩. → 결정론(Tier 1+2)은 전부 영어화, LLM 생성물(Tier 3)은 설계만.
+> - **🔧 715**(`a393940`) 렌즈 fetch `&lang` 배선(한 줄로 이름·판정·스펙트럼·전망 영어)+grade 이중언어 맵+h1 `info.en`+AiLensBadge lang · **716**(`36dbed9`) 8-K 라벨·F-Score(우량/중립/부실→Strong/Neutral/Weak)·ETF 레버리지 이중언어+`/api/events` lang·캐시키 · **717**(`a9d9ad7`) `lenses.ts` detail 키 stable화(한국어가 `L.detail['200일선대비%']` **lookup 키**라 key/label 분리)+`DETAIL_LABELS`/headline·조회 3곳 동기화 · **718**(`72d4f32`) 렌즈 `note` 6개 영어(수치·레퍼런스 보존)+short/long 이중언어(계산모듈 언어중립 state) · **719**(`3cb73ab`) `/en` 한글 워드마크 "트릴리언" 숨김(헤더·푸터·로그인·ko 병기 유지).
+> - **🔒 KR byte 동일**: charac 테스트 red-diff + live `/api/lens?...&lang=ko` SHA 대조로 증명(vitest 43/43·note 6개 SHA 동일).
+> - **✅ 결과**: `/en` **결정론 데이터 100% 영어**. 남은 한국어 = LLM 생성물(브리핑·news-brief·공시 AI요약) = **Tier 3**(설계 완료 `docs/TIER3_LLM_I18N_DESIGN.md`·스키마 A `*_en` 컬럼·on-demand·STEP 720~723). 🐞 교훈(`LENS_DEV_PLAYBOOK` #30)=카피 이중언어면 `&lang` 배선이 최대 레버리지·한국어 리터럴이 lookup 키면 key/label 분리(gauge 조용히 깨짐)·KR 무회귀 charac+SHA 증명.
+> - **▶ 다음 = Tier 3(720 마이그레이션부터) or US 잔여(통화기호·IPO) · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.**
+>
+> 🐛 **2026-07-14 (4) · 캐시 stale 버그 3-STEP 완결 — 모든 [locale] 페이지 신선화 (HEAD `d122cac`).**
 > - **📡 발견(STEP 711 배포 확인 중)**: `[locale]` 페이지가 캐시 지시자 없으면 **무한 정적 캐시**로 굳어 배포해도 안 갈아엎어짐 → bare URL이 봇·방문자에 **옛 콘텐츠** 서빙. `/stock/{종목}`=옛 브랜딩("AI 렌즈"·폐기 태그라인·미정리명)·`/about`=**개편 이전 정체성**("정확한 정보·검증된 신뢰"·"속지 않도록"·"흩어진 금융정보")·`/terms`·`/privacy`=**법무 정확화(07-12) 이전**. 코드는 전부 현재값인데 라이브만 stale=SEO·규제 리스크. 캐시버스터(`?fresh=`)로 확정.
 > - **🔬 원인**: `app/[locale]/layout.tsx`의 `setRequestLocale`+`generateStaticParams`가 정적 렌더를 켜는데, 페이지에 `dynamic`/`revalidate` 없으면 on-demand 정적 생성 후 무한 캐시. 홈만 `force-dynamic`이라 신선했던 것.
 > - **🔧 712**(`2cd926d`) 종목상세 `force-dynamic` · **713**(`9c4d619`) 정적 8개(`about`·`terms`·`privacy`·`toolbox`·`coin`·`favorites`·`feedback`·`advertise`) `force-dynamic` · **714**(`d122cac`) 클라 3개(`mypage`·`auth/login`·`admin/login`)는 `'use client'`라 page의 `dynamic`을 Next가 **무시** → 폴더에 **서버 `layout.tsx` 래퍼**(`dynamic="force-dynamic"`+passthrough)로 세그먼트 강제 동적. **로그인 로직 불변**(6줄=죽은 dynamic 삭제만). 3 라우트 `●`→`ƒ`.
