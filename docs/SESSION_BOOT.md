@@ -8,6 +8,7 @@
 > 🔎 **2026-07-14 (3·최신) · US 풀뎁스 P0 — 종목상세 영어 SEO + US 파리티 감사 (HEAD `f647b08`).**
 > - **📋 US vs KR 파리티 감사**(서브에이전트 + DB 실측): US는 이미 KR 동급이거나 **더 깊음** — 배관·종목보드·피드 7탭·**link_hub 139**(KR 138·옛 'US 67 미충전'은 낡은 정보)·brokers 17·지수바 완비. US가 KR보다 깊은 곳=렌즈 백분위 게이지(US 유니버스 전용)·공시 심각도 분류(material/routine)·서학개미 한글명. KR 전용(갭 아님·의도)=코스피/코스닥·상하한·유사투자자문사·유튜브. **유일 실질 갭 = 종목상세 영어 SEO.**
 > - **🔎 STEP 711**(`f647b08`·`app/[locale]/stock/[symbol]/page.tsx` 단일): `generateMetadata`·JSON-LD locale 인지화 → `/en/stock/{symbol}` 영어 title·description·keywords·OG `en_US`·**hreflang(ko·en·x-default)**·영어 breadcrumb(Home/Stocks). ko는 **byte 동일**(SEO 무회귀·curl 대조)·VN 분기(뉴스만) 보존. 인라인 locale 분기(SEO 템플릿이라 메시지 카탈로그 아님). **🔑 Opus 스펙교정**: en 페이지에 `${name}`(서학개미 한글명 오버라이드) 쓰면 한글명 영어SEO라 목적 붕괴 → en 분기는 `info.en`(영문명) 주·한글명 보조(ko 무영향). tsc 0·vitest 34/34.
+> - **📌 결정(표준 규칙·STEP 711에서 확립)**: **영어 로케일 SEO·메타데이터·타이틀은 영문명(`info.en`) 우선, 한글명(`foreign_ko_names` 서학개미 오버라이드)은 보조.** 한글 로케일은 반대(한글명 우선). 근거 = 한글명으로 영어 SEO 하면("애플 forecast") 영어권 검색에 안 잡혀 목적이 붕괴됨. **향후 US 잔여(P1/P2)·새 언어권 EN 페이지·모든 로케일 인지 메타데이터가 이 규칙을 따름.** (STEP 711 원안엔 없던 Opus 판단 → 표준으로 승격.)
 > - **▶ 다음 US(선택) = P1 통화기호`$`(상세 `formatPrice`) · P2 US IPO 구조화 피드·ETN 서브탭 · (보류) 인라인 증권사 광고=수익화.** 그 외 후보 = OAuth 로케일 쿠키 수정 · 다크 폴리시 D · 클로즈드 베타 초대.
 >
 > 🌍 **2026-07-14 (2) · 2차 i18n(다국어) 완성 — next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트 (HEAD `14c1813`).**
