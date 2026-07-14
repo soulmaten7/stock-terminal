@@ -12,6 +12,9 @@ import { routing } from "@/i18n/routing";
 import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
 
 type Params = { params: Promise<{ locale: string; symbol: string }> };
