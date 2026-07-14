@@ -81,7 +81,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
 
 export default function PrivacyPage() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="mb-1 text-2xl font-bold text-unjong-primary">개인정보처리방침</h1>
       <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-07-11</p>
 

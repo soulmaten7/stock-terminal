@@ -1,3 +1,41 @@
+<!-- 2026-07-14 -->
+# STEP 707 — 페이지 폭 시스템 정립 (역할별 폭)
+
+**실행:** `cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet`
+**목표:** "전부 같은 폭"이 아니라 **역할에 맞는 폭**으로 통일. 데이터 화면은 넓게, 읽는 페이지는 좁은 읽기 폭 가운데 정렬. (세계급 정석 — 데이터는 폭 필요, 글은 한 줄 50~75자·CJK 40자가 최적.)
+**전제:** 최신 main (다크 3단계 + 07-14 문서 동기화 이후).
+
+---
+
+## 폭 규칙 (앞으로 이 표가 기준)
+| 역할 | 폭 | 페이지 |
+|------|-----|--------|
+| **데이터·앱 셸** | `max-w-7xl`(1280px) | 홈/보드, 종목 렌즈, 관심종목, 마이페이지, 관리자, 증권사 등록(business) |
+| **랜딩(비주얼 2열)** | `max-w-7xl` | 광고 안내(advertise — info+form 2열) |
+| **읽기·법적** | **`max-w-3xl`(768px) 가운데** | 소개(about), 이용약관(terms), 개인정보(privacy) |
+| **폼** | narrow 가운데 | 피드백(`max-w-2xl`), 로그인(`max-w-md/sm` flex-center) |
+
+### 전수 감사 결과 (3중 검수)
+- **이미 적정(변경 X):** 홈·stock·favorites·mypage·admin·business = 7xl(데이터) · advertise = 7xl(2열 landing) · feedback = 2xl(폼) · auth/login·admin/login = `flex items-center justify-center` + `max-w-md/sm` 카드(폼, 정상) · coin = 7xl 준비중 안내(text-center, 무해).
+- **오분류(고칠 것):** **about·terms·privacy = 현재 `max-w-7xl`** → 읽기 페이지인데 데이터 폭. **→ `max-w-3xl` 가운데로.**
+
+---
+
+## 작업 (3파일)
+
+### 1. `app/terms/page.tsx` — 컨테이너 폭만
+```
+<div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">   →   max-w-3xl
+```
+
+### 2. `app/privacy/page.tsx` — 컨테이너 폭만
+```
+<div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">   →   max-w-3xl
+```
+
+### 3. `app/about/page.tsx` — 읽기 레이아웃으로 (전체 교체)
+3열 그리드는 넓은 폭용이었으니, 좁은 읽기 폭 + **세로 스택**으로. 파일 전체를 아래로 교체:
+```tsx
 export const metadata = { title: "서비스 소개" };
 
 const PILLARS: { t: string; d: string }[] = [
@@ -46,3 +84,13 @@ export default function AboutPage() {
     </div>
   );
 }
+```
+
+### 4. 빌드 + 커밋
+```bash
+npm run build
+git add -A && git commit -m "ui: 페이지 폭을 역할별로 — 읽기 페이지(about·terms·privacy) max-w-7xl→3xl 가운데(읽기 폭·CJK 최적), 데이터/폼 페이지는 유지" && git push
+```
+
+## 검증 (배포 후 Cowork 라이브)
+about/terms/privacy = 좁은 가운데 읽기 폭(모바일은 자동 full), 보드/종목은 넓은 폭 유지 — 역할별로 자연스럽게.
