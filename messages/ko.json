@@ -110,6 +110,154 @@
     "youtubeComingSoon": "미국 주식 유튜브 — 준비 중",
     "roomComingSoon": "미국 — 준비 중"
   },
+  "Feed": {
+    "select": "선택하세요",
+    "ad": "광고",
+    "goto": "바로가기",
+    "adInquiry": "광고 문의하기",
+    "favAdd": "즐겨찾기 추가",
+    "favRemove": "즐겨찾기 해제",
+    "timeAgo": {
+      "now": "방금",
+      "min": "{n}분 전",
+      "hour": "{n}시간 전",
+      "day": "{n}일 전"
+    },
+    "today": "오늘",
+    "yesterday": "어제",
+    "news": {
+      "error": "뉴스를 불러오지 못했습니다.",
+      "title": "최신 뉴스",
+      "source": "출처: {src}. 제목·출처·링크만 제공하며 원문은 각 매체로 연결됩니다.",
+      "srcCn": "Google News (중화권)",
+      "srcJp": "Google News (일본)",
+      "srcGb": "Google News (영국)",
+      "srcUs": "Google News",
+      "srcUsYahoo": "Yahoo Finance (S&P 500)",
+      "srcKr": "네이버 뉴스 검색"
+    },
+    "macro": {
+      "error": "지표를 불러오지 못했습니다.",
+      "title": "주요 경제지표",
+      "kr": "🇰🇷 한국",
+      "us": "🇺🇸 미국",
+      "empty": "데이터 없음",
+      "asOf": "{d} 기준",
+      "source": "출처: 한국은행 ECOS · 미국 FRED. 발표 주기에 따라 갱신됩니다."
+    },
+    "filing": {
+      "error": "공시를 불러오지 못했습니다.",
+      "title": "최신 공시",
+      "sourceSec": "출처: SEC EDGAR (최신 8-K 공시). 클릭 시 SEC 원문으로 연결됩니다.",
+      "sourceDart": "출처: 금융감독원 전자공시시스템(DART). 클릭 시 DART 원문으로 연결됩니다."
+    },
+    "ipo": {
+      "error": "청약일정을 불러오지 못했습니다.",
+      "direct": "38커뮤니케이션에서 직접 보기 →",
+      "title": "공모주 청약일정",
+      "fixed": "확정 {v}원",
+      "band": "희망 {v}",
+      "source": "출처: 38커뮤니케이션. 청약일정은 증권신고서 수리과정에서 변경될 수 있습니다."
+    },
+    "dividend": {
+      "error": "배당 정보를 불러오지 못했습니다.",
+      "title": "고배당 TOP",
+      "perShare": "{code} · 주당 {v}",
+      "exDate": " · 배당락 {d}",
+      "source": "배당수익률 기준 상위. 과거 배당 기록이며 미래 배당을 보장하지 않습니다."
+    },
+    "youtube": {
+      "empty": "유튜브 Top100 — 데이터 준비 중",
+      "soon": "곧 채워집니다",
+      "weekly": "{w} 기준 · 매주 자동 갱신",
+      "tenK": "{v}만"
+    },
+    "offerings": {
+      "ipo": "공모주",
+      "dividend": "배당"
+    },
+    "broker": {
+      "title": "증권사",
+      "subtitle": "거래대금순 · 최근 분기 근사치"
+    }
+  },
+  "Advisor": {
+    "title": "유사투자자문사",
+    "notice": "출처: 금융감독원 '파인'(매일 갱신). <s>'신고'는 안전 보증·인증이 아닙니다.</s> 트릴리언은 안전성·수익성을 보증하지 않고 사실만 제공합니다. 신고 안 된 익명 리딩방은 특히 주의.",
+    "search": "리딩방명·업체명·대표자 전체 검색",
+    "view": {
+      "fss": "금감원 등록업체",
+      "verified": "인증 리딩방",
+      "interest": "관심도순"
+    },
+    "manage": "리딩방 등록·관리",
+    "loginNotice": "로그인 후 이용할 수 있어요.",
+    "login": "로그인",
+    "noSearchResult": "검색 결과가 없습니다. 신고되지 않은 업체일 수 있으니 주의하세요.",
+    "noVerifiedTitle": "아직 인증된 리딩방이 없어요.",
+    "noVerifiedDesc": "본인 리딩방이세요? 금감원 유사투자자문 신고 + 운영자 인증을 마치면 <b>무료로 게재</b>돼요.",
+    "empty": "등록된 곳이 없습니다.",
+    "colCompany": "등록업체명",
+    "colChannel": "채널명",
+    "colInterest": "관심",
+    "fav": "즐겨찾기",
+    "favRemove": "즐겨찾기 해제",
+    "favTitle": "관심(즐겨찾기)",
+    "fssBadge": "유사투자자문 신고",
+    "ownerVerified": "운영자 인증",
+    "prev": "이전",
+    "next": "다음",
+    "previewEmpty": "왼쪽에서 리딩방을 선택하면<br></br>여기에 금감원 정보가 표시됩니다.",
+    "reportCount": "신고 {n}",
+    "fieldRep": "대표",
+    "fieldAddress": "주소",
+    "fieldPeriod": "신고기간",
+    "fieldCompany": "운영 업체",
+    "fieldIntro": "소개",
+    "fssReported": "유사투자자문 신고 · {platform}",
+    "userRegistered": "이용자 등록 · {platform}",
+    "linkGo": "연결링크 바로가기",
+    "platformGo": "{platform} 바로가기",
+    "publicLinkNote": "금감원 신고 시 제출된 공개 링크 · 미인증",
+    "bizProvided": "업체 제공",
+    "bizProvidedBadge": "업체가 직접 등록",
+    "platform": {
+      "telegram": "텔레그램",
+      "kakao": "카카오톡",
+      "naver": "네이버",
+      "etc": "기타"
+    },
+    "pub": {
+      "telegram": "텔레그램",
+      "kakao": "카카오",
+      "youtube": "유튜브",
+      "home": "홈페이지"
+    },
+    "linkType": {
+      "room": "리딩방",
+      "youtube": "유튜브",
+      "site": "사이트"
+    },
+    "reportTitle": "신고하기",
+    "reportClose": "닫기",
+    "reportCancel": "취소",
+    "reportSubmitting": "제출 중…",
+    "reportDone": "신고가 접수되었습니다.",
+    "reportDoneDesc": "확인 후 필요 시 금융감독원에 전달됩니다.",
+    "reportReason": "신고 사유",
+    "reportDetail": "상세 내용 (선택)",
+    "reportPlaceholder": "구체적인 피해 내용·정황을 적어주세요.",
+    "reportGuide": "신고는 접수 후 관리자 검토를 거쳐 공개에 반영됩니다. 허위 신고는 무고가 될 수 있으니 사실에 근거해 작성해주세요.",
+    "submitFail": "제출 실패",
+    "reason": {
+      "falseReturns": "허위·과장 수익률",
+      "refundDenied": "환불 거부",
+      "unregistered": "미등록·사칭 의심",
+      "scam": "리딩방 먹튀(잠적)",
+      "illegal": "불법 추천·미신고 자문",
+      "etc": "기타"
+    }
+  },
   "Board": {
     "subtab": {
       "stock": "주식",

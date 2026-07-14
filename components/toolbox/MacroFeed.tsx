@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { getCache, setCache } from '@/lib/clientCache';
 
 type Indicator = { country: 'KR' | 'US'; label: string; value: string; unit: string; date: string | null; change: number | null };
@@ -19,13 +20,14 @@ function fmtDate(d: string): string {
 }
 
 function Row({ it }: { it: Indicator }) {
+  const t = useTranslations('Feed');
   const up = it.change != null && it.change > 0;
   const down = it.change != null && it.change < 0;
   return (
     <div className="flex items-center justify-between border-b border-unjong-border py-2.5 last:border-0">
       <span className="min-w-0 flex-1 pr-2">
         <span className="block truncate text-[13px] text-unjong-primary">{it.label}</span>
-        {it.date ? <span className="mt-0.5 block text-[10px] text-unjong-muted">{fmtDate(it.date)} 기준</span> : null}
+        {it.date ? <span className="mt-0.5 block text-[10px] text-unjong-muted">{t('macro.asOf', { d: fmtDate(it.date) })}</span> : null}
       </span>
       <span className="shrink-0 text-right">
         <span className="text-sm font-semibold text-unjong-primary">{it.value}</span>
@@ -41,6 +43,7 @@ function Row({ it }: { it: Indicator }) {
 }
 
 export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' | 'us' } = {}) {
+  const t = useTranslations('Feed');
   const cached = getCache<{ kr: Indicator[]; us: Indicator[] }>('macro');
   const [kr, setKr] = useState<Indicator[]>(cached?.kr ?? []);
   const [us, setUs] = useState<Indicator[]>(cached?.us ?? []);
@@ -63,13 +66,13 @@ export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' |
       ))}
     </div>
   );
-  if (kr.length === 0 && us.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">지표를 불러오지 못했습니다.</p>;
+  if (kr.length === 0 && us.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">{t('macro.error')}</p>;
 
   const list = view === 'kr' ? kr : us;
 
   return (
     <div>
-      <p className="mb-2 text-sm font-bold text-unjong-primary">주요 경제지표</p>
+      <p className="mb-2 text-sm font-bold text-unjong-primary">{t('macro.title')}</p>
 
       {/* 한국/미국 토글 */}
       <div className="mb-2 flex gap-1">
@@ -80,7 +83,7 @@ export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' |
             view === 'kr' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
-          🇰🇷 한국
+          {t('macro.kr')}
         </button>
         <button
           type="button"
@@ -89,7 +92,7 @@ export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' |
             view === 'us' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
-          🇺🇸 미국
+          {t('macro.us')}
         </button>
       </div>
 
@@ -98,11 +101,11 @@ export default function MacroFeed({ defaultView = 'kr' }: { defaultView?: 'kr' |
         {list.length > 0 ? (
           list.map((it, i) => <Row key={`${view}${i}`} it={it} />)
         ) : (
-          <p className="py-8 text-center text-sm text-unjong-muted">데이터 없음</p>
+          <p className="py-8 text-center text-sm text-unjong-muted">{t('macro.empty')}</p>
         )}
       </div>
 
-      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">출처: 한국은행 ECOS · 미국 FRED. 발표 주기에 따라 갱신됩니다.</p>
+      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">{t('macro.source')}</p>
     </div>
   );
 }

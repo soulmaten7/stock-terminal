@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { ExternalLink } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 
@@ -10,19 +11,21 @@ type SecItem = {
 };
 
 // SEC <updated> ISO 타임스탬프 → 오늘/어제/MM.DD (DartFeed의 dateLabel과 동일 톤, ISO 입력만 다름)
-function dateLabel(iso: string): string {
+type Translate = ReturnType<typeof useTranslations>;
+function dateLabel(iso: string, t: Translate): string {
   if (!iso) return '';
-  const t = new Date(iso);
-  if (isNaN(t.getTime())) return '';
-  const date = new Date(t.getFullYear(), t.getMonth(), t.getDate());
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  const date = new Date(d.getFullYear(), d.getMonth(), d.getDate());
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const diff = Math.round((today.getTime() - date.getTime()) / 86400000);
-  if (diff <= 0) return '오늘';
-  if (diff === 1) return '어제';
-  return `${String(t.getMonth() + 1).padStart(2, '0')}.${String(t.getDate()).padStart(2, '0')}`;
+  if (diff <= 0) return t('today');
+  if (diff === 1) return t('yesterday');
+  return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export default function SecFeed() {
+  const t = useTranslations('Feed');
   const [items, setItems] = useState<SecItem[]>(() => getCache<SecItem[]>('sec') ?? []);
   const [loading, setLoading] = useState(() => getCache('sec') === undefined);
 
@@ -42,11 +45,11 @@ export default function SecFeed() {
       ))}
     </div>
   );
-  if (items.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">공시를 불러오지 못했습니다.</p>;
+  if (items.length === 0) return <p className="py-10 text-center text-sm text-unjong-muted">{t('filing.error')}</p>;
 
   return (
     <div>
-      <p className="mb-2 text-sm font-bold text-unjong-primary">최신 공시</p>
+      <p className="mb-2 text-sm font-bold text-unjong-primary">{t('filing.title')}</p>
       <ul>
         {items.map((it) => (
           <li key={it.rcpNo}>
@@ -57,14 +60,14 @@ export default function SecFeed() {
                   {it.cls ? <span className="shrink-0 rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{it.cls}</span> : null}
                 </div>
                 <p className="line-clamp-2 text-[13px] text-unjong-primary">{it.title}</p>
-                <p className="mt-0.5 text-xs text-unjong-muted">{it.filer} · {dateLabel(it.date)}</p>
+                <p className="mt-0.5 text-xs text-unjong-muted">{it.filer} · {dateLabel(it.date, t)}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">출처: SEC EDGAR (최신 8-K 공시). 클릭 시 SEC 원문으로 연결됩니다.</p>
+      <p className="mt-3 text-[10px] leading-relaxed text-unjong-muted">{t('filing.sourceSec')}</p>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { ExternalLink } from 'lucide-react';
 
 export type ListRowProps = {
@@ -20,6 +21,7 @@ export type ListRowProps = {
 export default function ListRow({
   href, onClick, rank, iconUrl, iconRound, title, subtitle, meta, stat, trailing, sponsored,
 }: ListRowProps) {
+  const t = useTranslations('Feed');
   const hasMeta = meta !== undefined;
   const cls =
     `group flex cursor-pointer items-center gap-3 border-b border-unjong-border px-2 py-2.5 transition-colors last:border-b-0 hover:bg-unjong-background${
@@ -29,7 +31,7 @@ export default function ListRow({
   const inner = (
     <>
       {sponsored ? (
-        <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">광고</span>
+        <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">{t('ad')}</span>
       ) : rank !== undefined ? (
         <span className={`w-6 shrink-0 text-center text-sm font-bold ${rank <= 3 ? 'text-unjong-accent' : 'text-unjong-muted'}`}>
           {rank}
@@ -60,7 +62,7 @@ export default function ListRow({
         {stat ? <span className="shrink-0 text-xs font-bold text-unjong-accent">{stat}</span> : null}
         {trailing ? <span className="shrink-0">{trailing}</span> : null}
         <span className="flex shrink-0 items-center gap-0.5 whitespace-nowrap text-[11px] text-unjong-muted group-hover:text-unjong-accent">
-          바로가기 <ExternalLink size={12} />
+          {t('goto')} <ExternalLink size={12} />
         </span>
       </span>
     </>

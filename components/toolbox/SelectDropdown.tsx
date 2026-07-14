@@ -1,19 +1,21 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { ChevronDown } from 'lucide-react';
 
 export default function SelectDropdown({
   value,
   onChange,
   options,
-  placeholder = '선택하세요',
+  placeholder,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
 }) {
+  const t = useTranslations('Feed');
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -35,7 +37,7 @@ export default function SelectDropdown({
         className="flex w-full items-center justify-between rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm outline-none focus:border-unjong-accent"
       >
         <span className={selected ? 'text-unjong-primary' : 'text-unjong-muted'}>
-          {selected ? selected.label : placeholder}
+          {selected ? selected.label : (placeholder ?? t('select'))}
         </span>
         <ChevronDown size={16} className={`shrink-0 text-unjong-muted transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>

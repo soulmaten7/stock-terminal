@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Star } from 'lucide-react';
 import ListRow from './ListRow';
@@ -21,6 +22,7 @@ export default function LinkCard({
   isLoggedIn: boolean;
   onFavoriteToggle: (id: number, fav: boolean) => void;
 }) {
+  const t = useTranslations('Feed');
   const router = useRouter();
   const [fav, setFav] = useState(link.isFavorite ?? false);
   const [favLoading, setFavLoading] = useState(false);
@@ -72,7 +74,7 @@ export default function LinkCard({
         <button
           type="button"
           onClick={handleFav}
-          aria-label={fav ? '즐겨찾기 해제' : '즐겨찾기 추가'}
+          aria-label={fav ? t('favRemove') : t('favAdd')}
           className={`transition-colors ${fav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
         >
           <Star size={16} fill={fav ? 'currentColor' : 'none'} />

@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import IpoFeed from './IpoFeed';
 import DividendFeed from './DividendFeed';
 
 export default function OfferingsFeed() {
+  const t = useTranslations('Feed');
   const [view, setView] = useState<'ipo' | 'div'>('ipo');
   return (
     <div>
@@ -16,7 +18,7 @@ export default function OfferingsFeed() {
             view === 'ipo' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
-          공모주
+          {t('offerings.ipo')}
         </button>
         <button
           type="button"
@@ -25,7 +27,7 @@ export default function OfferingsFeed() {
             view === 'div' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
           }`}
         >
-          배당
+          {t('offerings.dividend')}
         </button>
       </div>
       {view === 'ipo' ? <IpoFeed /> : <DividendFeed />}
