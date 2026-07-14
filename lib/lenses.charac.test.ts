@@ -4,6 +4,7 @@
 // 결정론 픽스처(seeded)로 가격계열을 만들어 재현 가능하게 한다.
 import { describe, it, expect } from "vitest";
 import { momentum, technical, valuation, lowVol, quality, assetGrowth } from "./lenses";
+import { DETAIL_LABELS } from "./lensCopy";
 import type { StockData } from "./lenses/types";
 import type { FRow } from "./fscore";
 
@@ -44,11 +45,11 @@ describe("momentumLens — 특성화", () => {
       {
         "about": "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
         "detail": {
-          "12-1모멘텀%": 210.84,
-          "12개월%": 248.41,
-          "1개월%": 13.08,
-          "3개월%": 41.01,
-          "6개월%": 87.31,
+          "mom12_1": 210.84,
+          "ret12m": 248.41,
+          "ret1m": 13.08,
+          "ret3m": 41.01,
+          "ret6m": 87.31,
         },
         "grade": "검증",
         "gradeTier": "strong",
@@ -113,9 +114,9 @@ describe("technicalLens — 특성화", () => {
       {
         "about": "차트의 가격·패턴으로 '지금 과열인지, 추세가 위인지'를 보는 전통적 기술적 분석이에요. RSI는 1978년 와일더가 만든 과열·침체 지표, 이동평균선은 일정 기간의 평균 가격이에요 — 단기 흐름을 빠르게 훑는 참고 도구예요(단독 신호로는 약함).",
         "detail": {
-          "200일선대비%": 61.18,
-          "52주위치%": 100,
-          "RSI(14)": 94.8,
+          "ma200vs": 61.18,
+          "pos52w": 100,
+          "rsi14": 94.8,
         },
         "grade": "참고용",
         "gradeTier": "ref",
@@ -152,9 +153,9 @@ describe("technicalLens — 특성화", () => {
     expect({ key: r.key, grade: r.grade, short: r.short, long: r.long, state: r.state, value: r.value, headline: r.headline, detail: r.detail }).toMatchInlineSnapshot(`
       {
         "detail": {
-          "200일선대비%": -37.21,
-          "52주위치%": 0.36,
-          "RSI(14)": 22.92,
+          "ma200vs": -37.21,
+          "pos52w": 0.36,
+          "rsi14": 22.92,
         },
         "grade": "참고용",
         "headline": "200일선 -37.21%",
@@ -174,8 +175,8 @@ describe("valuationLens — 특성화", () => {
       {
         "about": "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄의 가치투자에서 출발해, 파마·프렌치가 '싼 주식이 장기적으로 낫다'(가치 프리미엄)를 데이터로 정립했어요 — 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
         "detail": {
-          "PBR": 1.2,
-          "PER": 8,
+          "pbr": 1.2,
+          "per": 8,
         },
         "grade": "약한 신호",
         "gradeTier": "partial",
@@ -240,7 +241,7 @@ describe("lowVolLens — 특성화", () => {
       {
         "about": "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
         "detail": {
-          "연변동성%": 8.89,
+          "vol": 8.89,
         },
         "grade": "검증(방어)",
         "gradeTier": "strong",
@@ -292,7 +293,7 @@ describe("qualityLens — 특성화", () => {
       {
         "about": "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
         "detail": {
-          "GP/A%": 50,
+          "gpa": 50,
         },
         "grade": "검증",
         "gradeTier": "strong",
@@ -356,7 +357,7 @@ describe("assetGrowthLens — 특성화", () => {
       {
         "about": "회사가 설비 투자·인수 등으로 자산을 얼마나 공격적으로 늘리는지 보는 지표예요. 2008년 쿠퍼·굴렌·실이 '자산을 빠르게 불린 회사일수록 이후 수익은 오히려 약하다'를 데이터로 밝혔어요(과잉 투자·무리한 확장 경계). 파마·프렌치 5팩터 중 투자 팩터(CMA)이기도 해요 — 자본을 신중히 쓰는 회사를 선호하는 관점이에요.",
         "detail": {
-          "자산성장%": 30,
+          "ag": 30,
         },
         "grade": "약한 신호",
         "gradeTier": "partial",
@@ -399,5 +400,55 @@ describe("assetGrowthLens — 특성화", () => {
         "value": 3,
       }
     `);
+  });
+});
+
+// ── STEP717 i18n — detail 키는 언어중립(stable), 표시 라벨만 언어별. ──
+// 이 블록의 의무: (1) KR 화면이 한 글자도 안 바뀜을 코드로 고정 (2) 라벨 누락으로 en 화면에 원시 키(rsi14)가 새지 않게.
+describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
+  // ko 라벨 = STEP717 이전 lib/lenses.ts의 한국어 detail 키와 바이트 동일. 하나라도 손대면 KR 화면이 바뀐 것.
+  it("ko 라벨 = 이전 한국어 detail 키(바이트 동일)", () => {
+    expect(DETAIL_LABELS.ko).toEqual({
+      mom12_1: "12-1모멘텀%", ret1m: "1개월%", ret3m: "3개월%", ret6m: "6개월%", ret12m: "12개월%",
+      rsi14: "RSI(14)", ma200vs: "200일선대비%", pos52w: "52주위치%",
+      per: "PER", pbr: "PBR",
+      vol: "연변동성%",
+      gpa: "GP/A%",
+      ag: "자산성장%",
+    });
+  });
+
+  // 라벨이 없으면 화면은 fallback으로 stable 키 원문을 그린다("rsi14: 94.8") → 엔진이 내는 키는 전부 양쪽 언어에 있어야.
+  it("엔진이 내는 모든 detail 키가 ko·en 라벨을 갖는다", async () => {
+    const reads = await Promise.all([
+      momentum.compute(sd({ closes: up }), "ko"),
+      technical.compute(sd({ closes: up }), "ko"),
+      valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko"),
+      lowVol.compute(sd({ closes: up }), "ko"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "ko"),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko"),
+    ]);
+    const keys = reads.flatMap((r) => Object.keys(r.detail));
+    expect(keys).toHaveLength(13);
+    for (const k of keys) {
+      expect(DETAIL_LABELS.ko, `ko 라벨 없음: ${k}`).toHaveProperty(k);
+      expect(DETAIL_LABELS.en, `en 라벨 없음: ${k}`).toHaveProperty(k);
+    }
+  });
+
+  it("en 라벨엔 한글 없음", () => {
+    for (const [k, v] of Object.entries(DETAIL_LABELS.en)) {
+      expect(v, `en 라벨에 한글: ${k}=${v}`).not.toMatch(/[가-힣]/);
+    }
+  });
+
+  // headline 접두어(200일선·연변동성·자산성장)의 en 경로. 숫자는 ko 스냅샷과 동일 픽스처라 값이 같아야(로케일이 계산을 안 바꿈).
+  it("en headline = 영어 접두어 + 동일 수치", async () => {
+    const tech = await technical.compute(sd({ closes: up }), "en");
+    const lv = await lowVol.compute(sd({ closes: up }), "en");
+    const ag = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en");
+    expect(tech.headline).toBe("vs MA200 61.18%");
+    expect(lv.headline).toBe("Ann. vol 8.89%");
+    expect(ag.headline).toBe("Asset growth 30%");
   });
 });

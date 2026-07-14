@@ -292,6 +292,42 @@ export const LENS_OUTLOOK: Record<Locale, {
   },
 };
 
+// ── 근거 수치(detail) 라벨 — 키는 언어중립(stable), 표시만 언어별. ──
+// 이전엔 한국어 리터럴이 곧 키였음(en 화면에 한국어 라벨 누출) → 키/라벨 분리.
+// ⚠️ ko 값은 기존 lib/lenses.ts detail 키와 바이트 동일(KR 화면 무회귀 — lenses.charac.test.ts가 고정).
+export type DetailKey =
+  | "mom12_1" | "ret1m" | "ret3m" | "ret6m" | "ret12m"
+  | "rsi14" | "ma200vs" | "pos52w"
+  | "per" | "pbr"
+  | "vol"
+  | "gpa"
+  | "ag";
+
+export const DETAIL_LABELS: Record<Locale, Record<DetailKey, string>> = {
+  ko: {
+    mom12_1: "12-1모멘텀%", ret1m: "1개월%", ret3m: "3개월%", ret6m: "6개월%", ret12m: "12개월%",
+    rsi14: "RSI(14)", ma200vs: "200일선대비%", pos52w: "52주위치%",
+    per: "PER", pbr: "PBR",
+    vol: "연변동성%",
+    gpa: "GP/A%",
+    ag: "자산성장%",
+  },
+  en: {
+    mom12_1: "12-1 Momentum %", ret1m: "1M %", ret3m: "3M %", ret6m: "6M %", ret12m: "12M %",
+    rsi14: "RSI(14)", ma200vs: "vs MA200 %", pos52w: "52W position %",
+    per: "PER", pbr: "PBR",
+    vol: "Ann. volatility %",
+    gpa: "GP/A %",
+    ag: "Asset growth %",
+  },
+};
+
+// 카드 겉면 headline의 언어별 접두어(숫자 앞 단어). 모멘텀 `12-1`·밸류 `PER`·퀄리티 `GP/A`는 언어중립이라 여기 없음.
+export const HEADLINE_PREFIX: Record<Locale, { technical: string; lowvol: string; assetgrowth: string }> = {
+  ko: { technical: "200일선", lowvol: "연변동성", assetgrowth: "자산성장" },
+  en: { technical: "vs MA200", lowvol: "Ann. vol", assetgrowth: "Asset growth" },
+};
+
 // 신뢰도 등급 배지 텍스트 — 렌즈 카드 겉면("얼마나 믿을 만한가"). 색 계열(gradeTier)은 언어 무관이라 별도.
 // ⚠️ ko 값은 기존 lib/lenses.ts 리터럴과 바이트 동일(스냅샷 테스트·KR 화면 무회귀). en은 신뢰도 범례(StockLens.readingGuide)와 문구 일치.
 export type GradeKey = "verified" | "verifiedDefensive" | "reference" | "weakSignal";

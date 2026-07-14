@@ -6,7 +6,7 @@
 import { momentum121FromDaily, momentumLabel } from "./momentum";
 import { realizedVol, volLabel } from "./lowvol";
 import { sma, rsi, rsiState, maTrend } from "./technical";
-import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS, LENS_OUTLOOK, LENS_GRADE, type Locale } from "./lensCopy";
+import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS, LENS_OUTLOOK, LENS_GRADE, HEADLINE_PREFIX, type Locale } from "./lensCopy";
 import type { Lens, StockData, LensRead } from "./lenses/types";
 
 export type { LensRead } from "./lenses/types";
@@ -76,7 +76,7 @@ export const momentum: Lens = {
       about: c.about,
       short: lab(avg([r1, r3])),
       long: momentumLabel(m121),
-      detail: { "12-1모멘텀%": round(m121), "1개월%": round(r1), "3개월%": round(r3), "6개월%": round(r6), "12개월%": round(r12) },
+      detail: { mom12_1: round(m121), ret1m: round(r1), ret3m: round(r3), ret6m: round(r6), ret12m: round(r12) },
       verdict: readOf(locale, "momentum", mState, mState === "up" ? "pos" : mState === "down" ? "warn" : "flat"),
       spectrum: specOf(locale, "momentum", mState === "up" ? 2 : mState === "down" ? 0 : mState === "flat" ? 1 : -1),
       headline: m121 != null ? `12-1 ${round(m121)}%` : null,
@@ -116,13 +116,13 @@ export const technical: Lens = {
       short: shortLab,
       long: longLab,
       detail: {
-        "RSI(14)": round(r),
-        "200일선대비%": last != null && ma200 ? round((last / ma200 - 1) * 100) : null,
-        "52주위치%": round(pos52),
+        rsi14: round(r),
+        ma200vs: last != null && ma200 ? round((last / ma200 - 1) * 100) : null,
+        pos52w: round(pos52),
       },
       verdict: readOf(locale, "technical", tState, tState === "up" ? "pos" : tState === "down" ? "warn" : "flat"),
       spectrum: specOf(locale, "technical", tState === "up" ? 2 : tState === "down" ? 0 : tState === "flat" ? 1 : -1),
-      headline: last != null && ma200 ? `200일선 ${round((last / ma200 - 1) * 100)}%` : null,
+      headline: last != null && ma200 ? `${HEADLINE_PREFIX[locale].technical} ${round((last / ma200 - 1) * 100)}%` : null,
       outlook: outlookOf(locale, "technical", tState),
       value: last != null && ma200 ? round((last / ma200 - 1) * 100) : null,
       state: tState,
@@ -151,7 +151,7 @@ export const valuation: Lens = {
       about: c.about,
       short: null,
       long: peLab,
-      detail: { PER: round(pe), PBR: round(pb) },
+      detail: { per: round(pe), pbr: round(pb) },
       verdict: readOf(locale, "valuation", vState, vState === "cheap" ? "pos" : vState === "rich" ? "warn" : "flat"),
       spectrum: specOf(locale, "valuation", vState === "cheap" ? 0 : vState === "rich" ? 2 : vState === "mid" ? 1 : -1),
       headline: pe != null && pe > 0 ? `PER ${round(pe)}` : null,
@@ -182,10 +182,10 @@ export const lowVol: Lens = {
       about: c.about,
       short: null,
       long: volLabel(vol),
-      detail: { "연변동성%": round(vol) },
+      detail: { vol: round(vol) },
       verdict: readOf(locale, "lowvol", lvState, lvState === "calm" ? "pos" : lvState === "jumpy" ? "warn" : "flat"),
       spectrum: specOf(locale, "lowvol", lvState === "calm" ? 0 : lvState === "jumpy" ? 2 : lvState === "mid" ? 1 : -1),
-      headline: vol != null ? `연변동성 ${round(vol)}%` : null,
+      headline: vol != null ? `${HEADLINE_PREFIX[locale].lowvol} ${round(vol)}%` : null,
       outlook: outlookOf(locale, "lowvol", lvState),
       value: round(vol),
       state: lvState,
@@ -216,7 +216,7 @@ export const quality: Lens = {
       about: c.about,
       short: null,
       long: lab,
-      detail: { "GP/A%": round(gpa) },
+      detail: { gpa: round(gpa) },
       verdict: readOf(locale, "quality", qState, qState === "high" ? "pos" : qState === "low" ? "warn" : "flat"),
       spectrum: specOf(locale, "quality", qState === "high" ? 2 : qState === "low" ? 0 : qState === "mid" ? 1 : -1),
       headline: gpa != null ? `GP/A ${round(gpa)}%` : null,
@@ -250,10 +250,10 @@ export const assetGrowth: Lens = {
       about: c.about,
       short: null,
       long: lab,
-      detail: { "자산성장%": round(assetGrowthPct) },
+      detail: { ag: round(assetGrowthPct) },
       verdict: readOf(locale, "assetgrowth", agState, agState === "conservative" ? "pos" : agState === "aggressive" ? "warn" : "flat"),
       spectrum: specOf(locale, "assetgrowth", agState === "conservative" ? 0 : agState === "aggressive" ? 2 : agState === "mid" ? 1 : -1),
-      headline: assetGrowthPct != null ? `자산성장 ${round(assetGrowthPct)}%` : null,
+      headline: assetGrowthPct != null ? `${HEADLINE_PREFIX[locale].assetgrowth} ${round(assetGrowthPct)}%` : null,
       outlook: outlookOf(locale, "assetgrowth", agState),
       value: round(assetGrowthPct),
       state: agState,

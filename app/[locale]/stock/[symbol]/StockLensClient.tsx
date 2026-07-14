@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
 import { useRouter } from '@/i18n/navigation';
-import { LENS_COPY, pickLocale } from '@/lib/lensCopy';
+import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';
 
@@ -34,6 +34,11 @@ type EventDef = { item: string; label: string; klass: 'A' | 'B' | 'general'; len
 type Flag = { klass: 'A' | 'B'; label: string; date: string };
 type MatEvent = { date: string; items: string[]; defs: EventDef[]; link: string };
 type EventsResp = { symbol: string; events?: MatEvent[] };
+
+// 근거 수치 라벨 — 엔진이 주는 stable 키(rsi14·ma200vs…)를 언어별 표시로. 라벨 없는 키는 키 그대로(새 렌즈가 와도 안 깨짐).
+function detailLabel(locale: Locale, k: string): string {
+  return (DETAIL_LABELS[locale] as Record<string, string>)[k] ?? k;
+}
 
 // 판정(reading) 색조 — pos=민트(우호적 읽기)·warn=앰버(주의 읽기)·flat=중립(기본색). '이 기법 시각'일 뿐 예측 아님(상단 전제).
 function verdictColor(tone?: string): string {
@@ -123,7 +128,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   const mom = find('momentum');
   const longs = lenses.filter((L) => L.horizon === 'long');
 
-  const rsiV = tech?.detail?.['RSI(14)'] != null ? Math.round(tech.detail['RSI(14)'] as number) : null;
+  const rsiV = tech?.detail?.rsi14 != null ? Math.round(tech.detail.rsi14 as number) : null;
   const sWord = rsiV == null ? '—' : rsiV >= 70 ? t('word.overbought') : rsiV <= 30 ? t('word.oversold') : t('word.neutral');
   const sTone = rsiV != null && (rsiV >= 70 || rsiV <= 30) ? 'warn' : 'flat';
 
@@ -925,7 +930,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
     const isOpen = openLens.has(L.key);
     const cardFlags = lensFlags[L.key];
     const viz = L.key === 'technical'
-      ? <RsiZone rsi={L.detail['RSI(14)'] ?? null} maPct={L.detail['200일선대비%'] ?? null} />
+      ? <RsiZone rsi={L.detail.rsi14 ?? null} maPct={L.detail.ma200vs ?? null} />
       : (L.percentile != null && FACTOR_ENDS[L.key])
         ? <PctGauge pctl={L.percentile} tone={L.verdict?.tone} lo={t(FACTOR_ENDS[L.key].lo)} hi={t(FACTOR_ENDS[L.key].hi)} />
         : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
@@ -979,7 +984,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2.5 text-[12px] text-unjong-muted">
               <span className="font-medium text-unjong-primary/70">{t('evidence')}</span>
               {Object.entries(L.detail).map(([k, v]) => (
-                <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
+                <span key={k}>{detailLabel(locale, k)}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
               ))}
             </div>
             {L.note ? (
