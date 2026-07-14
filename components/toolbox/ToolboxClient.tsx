@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useState, useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import LinkCard, { type LinkItem } from './LinkCard';
 import AdSlotRow from './AdSlotRow';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
@@ -24,13 +25,16 @@ import { clearBoardViews } from '@/lib/boardMemory';
 type LinkWithCountry = LinkItem & { country?: string | null };
 type Category = { slug: string; label: string; links: LinkWithCountry[] };
 
-const COUNTRIES: { code: Country; label: string }[] = [
-  { code: 'KR', label: '한국' },
-  { code: 'US', label: '미국' },
-  { code: 'JP', label: '일본' },
-  { code: 'CN', label: '중국' },
-  { code: 'VN', label: '베트남' },
-  { code: 'GB', label: '영국' },
+// 모듈 최상위 상수라 훅을 못 쓴다 → 라벨 자리에 'ko.json 키'를 담고, 렌더 지점에서 t()로 해석.
+type Translate = ReturnType<typeof useTranslations>;
+
+const COUNTRIES: { code: Country; labelKey: string }[] = [
+  { code: 'KR', labelKey: 'country.KR' },
+  { code: 'US', labelKey: 'country.US' },
+  { code: 'JP', labelKey: 'country.JP' },
+  { code: 'CN', labelKey: 'country.CN' },
+  { code: 'VN', labelKey: 'country.VN' },
+  { code: 'GB', labelKey: 'country.GB' },
 ];
 
 // ── 2단 네비 (2026-07-10 재구조) ──────────────────────────────
@@ -38,15 +42,15 @@ const COUNTRIES: { code: Country; label: string }[] = [
 // 근거: 빅테크식 최소·직관 네비 + catch-all 금지(네이버·다음·야후 관행) — 자세히는 docs/BRAND_IDENTITY.md.
 const TOP_TABS = ['market', 'info'] as const;
 type TopTab = (typeof TOP_TABS)[number];
-const TOP_LABELS: Record<TopTab, string> = { market: '종목', info: '정보' };
+const TOP_LABEL_KEYS: Record<TopTab, string> = { market: 'top.market', info: 'top.info' };
 
 // "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부·거래처(증권사·차트·거래소·커뮤니티·유튜브)는 구분선 뒤.
 // 증권사=참조 디렉토리로 강등(트래픽 낮음). 수익은 종목 리스트 인리스트 광고로(설계: docs/AD_MONETIZATION_PLAYBOOK).
 const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'room', 'chart', 'exchange', 'community', 'youtube'];
-// 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨로 폴백.
-const INFO_LABELS: Record<string, string> = {
-  news: '뉴스', disclosure: '공시', research: '리포트', analysis: '기업·재무', macro: '거시', etf: 'ETF', ipo: '공모주',
-  broker: '증권사', room: '유사투자자문사', chart: '차트', exchange: '거래소', community: '토론·커뮤니티', youtube: '유튜브',
+// 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨(DB)로 폴백 — 폴백은 번역 대상 아님.
+const INFO_LABEL_KEYS: Record<string, string> = {
+  news: 'info.news', disclosure: 'info.disclosure', research: 'info.research', analysis: 'info.analysis', macro: 'info.macro', etf: 'info.etf', ipo: 'info.ipo',
+  broker: 'info.broker', room: 'info.room', chart: 'info.chart', exchange: 'info.exchange', community: 'info.community', youtube: 'info.youtube',
 };
 // 외부·거래처 하위탭 — 구분선 뒤로(곁가지 표시)
 const INFO_EXTERNAL = new Set(['broker', 'room', 'chart', 'exchange', 'community', 'youtube']);
@@ -61,9 +65,9 @@ function topOf(slug: string): TopTab {
 // 우측 피드가 붙는 탭 + 탭별 피드 컴포넌트
 const FEED_TABS = ['news', 'disclosure', 'macro', 'analysis', 'research', 'etf', 'ipo'];
 // 모바일 서브탭에서 '모아보기(피드)' 쪽 라벨 (링크 ↔ 피드 분리)
-const FEED_SUB_LABEL: Record<string, string> = {
-  news: '최신 뉴스', disclosure: '최신 공시', macro: '주요 지표',
-  analysis: '실적·재무 뉴스', research: '목표주가 뉴스', etf: 'ETF 뉴스', ipo: '청약 일정',
+const FEED_SUB_LABEL_KEYS: Record<string, string> = {
+  news: 'feedSub.news', disclosure: 'feedSub.disclosure', macro: 'feedSub.macro',
+  analysis: 'feedSub.analysis', research: 'feedSub.research', etf: 'feedSub.etf', ipo: 'feedSub.ipo',
 };
 
 // 피드별 지원 국가 — 단일 'KR' 가드 대체. 점진 확장(뉴스·공시는 후속 STEP에서 US 추가).
@@ -74,54 +78,55 @@ const FEED_COUNTRY_SUPPORT: Record<string, Country[]> = {
 };
 function feedSupports(tab: string, c: Country) { return FEED_COUNTRY_SUPPORT[tab]?.includes(c) ?? false; }
 
-function feedFor(tab: string, country: Country) {
+// query는 검색어(화면에 안 보임) → 번역 대상 아님. title만 t()로.
+function feedFor(tab: string, country: Country, t: Translate) {
   switch (tab) {
     case 'news': return <NewsFeed country={country} />;
     case 'disclosure': return country === 'US' ? <SecFeed /> : <DartFeed />;
     case 'macro': return <MacroFeed defaultView={country === 'US' ? 'us' : 'kr'} />;
     case 'analysis': return country === 'US'
-      ? <NewsFeed country="US" query="US stock company earnings results" title="미국 실적·기업 뉴스" />
+      ? <NewsFeed country="US" query="US stock company earnings results" title={t('feedTitle.analysis.US')} />
       : country === 'JP'
-      ? <NewsFeed country="JP" query="決算 業績 日本株" title="일본 실적·기업 뉴스" />
+      ? <NewsFeed country="JP" query="決算 業績 日本株" title={t('feedTitle.analysis.JP')} />
       : country === 'CN'
-      ? <NewsFeed country="CN" query="業績 財報 港股 A股" title="중화권 실적·기업 뉴스" />
+      ? <NewsFeed country="CN" query="業績 財報 港股 A股" title={t('feedTitle.analysis.CN')} />
       : country === 'VN'
-      ? <NewsFeed country="VN" query="kết quả kinh doanh lợi nhuận doanh nghiệp" title="베트남 실적·기업 뉴스" />
+      ? <NewsFeed country="VN" query="kết quả kinh doanh lợi nhuận doanh nghiệp" title={t('feedTitle.analysis.VN')} />
       : country === 'GB'
-      ? <NewsFeed country="GB" query="UK stock earnings results company" title="영국 실적·기업 뉴스" />
-      : <NewsFeed query="실적 영업이익 잠정" title="실적·재무 뉴스" />;
+      ? <NewsFeed country="GB" query="UK stock earnings results company" title={t('feedTitle.analysis.GB')} />
+      : <NewsFeed query="실적 영업이익 잠정" title={t('feedTitle.analysis.KR')} />;
     case 'research': return country === 'US'
-      ? <NewsFeed country="US" query="stock analyst rating price target upgrade downgrade" title="미국 애널리스트·리포트 뉴스" />
+      ? <NewsFeed country="US" query="stock analyst rating price target upgrade downgrade" title={t('feedTitle.research.US')} />
       : country === 'JP'
-      ? <NewsFeed country="JP" query="アナリスト 目標株価 レーティング" title="일본 애널리스트·리포트 뉴스" />
+      ? <NewsFeed country="JP" query="アナリスト 目標株価 レーティング" title={t('feedTitle.research.JP')} />
       : country === 'CN'
-      ? <NewsFeed country="CN" query="目標價 評級 券商 港股" title="중화권 애널리스트·리포트 뉴스" />
+      ? <NewsFeed country="CN" query="目標價 評級 券商 港股" title={t('feedTitle.research.CN')} />
       : country === 'VN'
-      ? <NewsFeed country="VN" query="khuyến nghị cổ phiếu giá mục tiêu" title="베트남 애널리스트·리포트 뉴스" />
+      ? <NewsFeed country="VN" query="khuyến nghị cổ phiếu giá mục tiêu" title={t('feedTitle.research.VN')} />
       : country === 'GB'
-      ? <NewsFeed country="GB" query="UK stock analyst rating price target" title="영국 애널리스트·리포트 뉴스" />
-      : <NewsFeed query="증권사 리포트 목표주가" title="리포트·목표주가 뉴스" />;
+      ? <NewsFeed country="GB" query="UK stock analyst rating price target" title={t('feedTitle.research.GB')} />
+      : <NewsFeed query="증권사 리포트 목표주가" title={t('feedTitle.research.KR')} />;
     case 'etf': return country === 'US'
-      ? <NewsFeed country="US" query="ETF fund inflows stock market" title="미국 ETF·펀드 뉴스" />
+      ? <NewsFeed country="US" query="ETF fund inflows stock market" title={t('feedTitle.etf.US')} />
       : country === 'JP'
-      ? <NewsFeed country="JP" query="ETF 投資信託 日本" title="일본 ETF·펀드 뉴스" />
+      ? <NewsFeed country="JP" query="ETF 投資信託 日本" title={t('feedTitle.etf.JP')} />
       : country === 'CN'
-      ? <NewsFeed country="CN" query="ETF 基金 港股 A股" title="중화권 ETF·펀드 뉴스" />
+      ? <NewsFeed country="CN" query="ETF 基金 港股 A股" title={t('feedTitle.etf.CN')} />
       : country === 'VN'
-      ? <NewsFeed country="VN" query="ETF quỹ đầu tư chứng khoán" title="베트남 ETF·펀드 뉴스" />
+      ? <NewsFeed country="VN" query="ETF quỹ đầu tư chứng khoán" title={t('feedTitle.etf.VN')} />
       : country === 'GB'
-      ? <NewsFeed country="GB" query="UK ETF fund LSE investment trust" title="영국 ETF·펀드 뉴스" />
-      : <NewsFeed query="ETF 상장 순자산총액" title="ETF·펀드 뉴스" />;
+      ? <NewsFeed country="GB" query="UK ETF fund LSE investment trust" title={t('feedTitle.etf.GB')} />
+      : <NewsFeed query="ETF 상장 순자산총액" title={t('feedTitle.etf.KR')} />;
     case 'ipo': return country === 'US'
-      ? <NewsFeed country="US" query="IPO stock market debut listing" title="미국 IPO·공모 뉴스" />
+      ? <NewsFeed country="US" query="IPO stock market debut listing" title={t('feedTitle.ipo.US')} />
       : country === 'JP'
-      ? <NewsFeed country="JP" query="IPO 新規上場 日本" title="일본 IPO·공모 뉴스" />
+      ? <NewsFeed country="JP" query="IPO 新規上場 日本" title={t('feedTitle.ipo.JP')} />
       : country === 'CN'
-      ? <NewsFeed country="CN" query="新股 IPO 上市 港股" title="중화권 IPO·공모 뉴스" />
+      ? <NewsFeed country="CN" query="新股 IPO 上市 港股" title={t('feedTitle.ipo.CN')} />
       : country === 'VN'
-      ? <NewsFeed country="VN" query="IPO niêm yết cổ phiếu mới" title="베트남 IPO·공모 뉴스" />
+      ? <NewsFeed country="VN" query="IPO niêm yết cổ phiếu mới" title={t('feedTitle.ipo.VN')} />
       : country === 'GB'
-      ? <NewsFeed country="GB" query="UK IPO London Stock Exchange listing" title="영국 IPO·공모 뉴스" />
+      ? <NewsFeed country="GB" query="UK IPO London Stock Exchange listing" title={t('feedTitle.ipo.GB')} />
       : <OfferingsFeed />;
     default: return null;
   }
@@ -146,6 +151,7 @@ export default function ToolboxClient({
   isLoggedIn: boolean;
   youtubeChannels: YtChannel[];
 }) {
+  const t = useTranslations('Toolbox');
   const { country, setCountry } = useCountryStore();
   const [categories, setCategories] = useState(initialCategories);
   const [activeTab, setActiveTab] = useState<string>('market');
@@ -154,10 +160,10 @@ export default function ToolboxClient({
 
   // 새로고침해도 마지막 탭 유지 (국가는 useCountryStore persist가 담당)
   useEffect(() => {
-    const t = localStorage.getItem('unjong_tab');
-    if (t && ALL_SLUGS.includes(t)) {
-      setActiveTab(t);
-      if (INFO_ORDER.includes(t)) setLastInfoSub(t);
+    const saved = localStorage.getItem('unjong_tab');
+    if (saved && ALL_SLUGS.includes(saved)) {
+      setActiveTab(saved);
+      if (INFO_ORDER.includes(saved)) setLastInfoSub(saved);
     }
   }, []);
   useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('feed'); }, [activeTab]);
@@ -173,19 +179,19 @@ export default function ToolboxClient({
 
   // ── 하위탭(정보) 가용성: 국가별. 피드는 지원국가, 링크 카테고리는 링크 존재, 유튜브는 KR. ──
   const infoSubs = INFO_ORDER.map((slug) => {
-    if (slug === 'broker') return { slug, label: INFO_LABELS.broker }; // 증권사 = 전 국가 참조 디렉토리(항상)
-    if (slug === 'youtube') return country === 'KR' ? { slug, label: INFO_LABELS.youtube } : null;
-    if (slug === 'room') return country === 'KR' ? { slug, label: INFO_LABELS.room } : null; // 유사투자자문사 = KR 전용
+    if (slug === 'broker') return { slug, label: t(INFO_LABEL_KEYS.broker) }; // 증권사 = 전 국가 참조 디렉토리(항상)
+    if (slug === 'youtube') return country === 'KR' ? { slug, label: t(INFO_LABEL_KEYS.youtube) } : null;
+    if (slug === 'room') return country === 'KR' ? { slug, label: t(INFO_LABEL_KEYS.room) } : null; // 유사투자자문사 = KR 전용
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
     const show = (FEED_TABS.includes(slug) && feedSupports(slug, country)) || hasLinks;
     if (!show) return null;
-    return { slug, label: INFO_LABELS[slug] ?? c?.label ?? slug };
-  }).filter((t): t is { slug: string; label: string } => t !== null);
+    return { slug, label: INFO_LABEL_KEYS[slug] ? t(INFO_LABEL_KEYS[slug]) : (c?.label ?? slug) };
+  }).filter((s): s is { slug: string; label: string } => s !== null);
 
   // ── 상단 2탭 가용성: market 항상, info는 하위탭 있을 때. (검증=유사투자자문 조회는 info 하위탭) ──
-  const topTabs = TOP_TABS.filter((t) => {
-    if (t === 'info') return infoSubs.length > 0;
+  const topTabs = TOP_TABS.filter((tab) => {
+    if (tab === 'info') return infoSubs.length > 0;
     return true;
   });
   const activeTop = topOf(activeTab);
@@ -198,12 +204,12 @@ export default function ToolboxClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country, activeTab]);
 
-  const selectTop = (t: TopTab) => {
-    if (t === 'info') {
+  const selectTop = (tab: TopTab) => {
+    if (tab === 'info') {
       const target = infoSubs.some((s) => s.slug === lastInfoSub) ? lastInfoSub : (infoSubs[0]?.slug ?? 'news');
       setActiveTab(target);
     } else {
-      setActiveTab(t);
+      setActiveTab(tab);
     }
   };
   const selectSub = (slug: string) => { setActiveTab(slug); setLastInfoSub(slug); };
@@ -219,7 +225,7 @@ export default function ToolboxClient({
 
   const cat = categories.find((c) => c.slug === activeTab);
   const catLinks = cat ? cat.links.filter((l) => l.country === country) : [];
-  const countryLabel = ({ KR: '한국', US: '미국', JP: '일본', CN: '중국', VN: '베트남', GB: '영국' } as Record<Country, string>)[country];
+  const countryLabel = t(`country.${country}`);
 
   return (
     <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
@@ -234,23 +240,23 @@ export default function ToolboxClient({
               country === c.code ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >
-            {c.label}
+            {t(c.labelKey)}
           </button>
         ))}
       </div>
 
       {/* 상단 2탭 — 종목 · 정보 (검증=유사투자자문 조회는 정보 하위탭) */}
       <div className="flex items-stretch gap-1 overflow-x-auto border-b border-unjong-border px-2 py-2 sm:px-3">
-        {topTabs.map((t) => (
+        {topTabs.map((tab) => (
           <button
-            key={t}
+            key={tab}
             type="button"
-            onClick={() => selectTop(t)}
+            onClick={() => selectTop(tab)}
             className={`shrink-0 rounded-lg px-4 py-2 text-[14px] font-semibold transition-colors sm:py-1.5 ${
-              activeTop === t ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
+              activeTop === tab ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >
-            {TOP_LABELS[t]}
+            {t(TOP_LABEL_KEYS[tab])}
           </button>
         ))}
       </div>
@@ -301,20 +307,20 @@ export default function ToolboxClient({
           country === 'KR' ? (
             <YoutubeRanking channels={youtubeChannels} />
           ) : (
-            <Placeholder emoji="🇺🇸" title="미국 주식 유튜브 — 준비 중" />
+            <Placeholder emoji="🇺🇸" title={t('youtubeComingSoon')} />
           )
         ) : activeTab === 'room' ? (
           country === 'KR' ? (
             <AdvisorDirectory isLoggedIn={isLoggedIn} />
           ) : (
-            <Placeholder emoji="🇺🇸" title="미국 — 준비 중" />
+            <Placeholder emoji="🇺🇸" title={t('roomComingSoon')} />
           )
         ) : FEED_TABS.includes(activeTab) && feedSupports(activeTab, country) ? (
           <div>
             {/* 모바일 전용 서브탭 — 링크 ↔ 모아보기 (데스크탑은 2단이라 숨김) */}
             <div className="mb-3 flex gap-1 lg:hidden">
-              <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{FEED_SUB_LABEL[activeTab] ?? '모아보기'}</button>
-              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>바로가기</button>
+              <button type="button" onClick={() => setFeedSub('feed')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'feed' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{t(FEED_SUB_LABEL_KEYS[activeTab] ?? 'feedSub.fallback')}</button>
+              <button type="button" onClick={() => setFeedSub('links')} className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${feedSub === 'links' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}>{t('shortcuts')}</button>
             </div>
             <div className="flex flex-col gap-5 lg:flex-row lg:gap-4">
               <div className={`min-w-0 flex-1 ${feedSub === 'links' ? '' : 'hidden'} lg:block`}>
@@ -330,16 +336,16 @@ export default function ToolboxClient({
                     </Fragment>
                   ))
                 ) : (
-                  <p className="py-10 text-center text-sm text-unjong-muted">큐레이션 링크 준비 중</p>
+                  <p className="py-10 text-center text-sm text-unjong-muted">{t('linksEmpty')}</p>
                 )}
               </div>
               <aside className={`w-full shrink-0 lg:w-96 ${feedSub === 'feed' ? '' : 'hidden'} lg:block`}>
-                {feedFor(activeTab, country)}
+                {feedFor(activeTab, country, t)}
               </aside>
             </div>
           </div>
         ) : catLinks.length === 0 ? (
-          <Placeholder emoji="🗂️" title={`${cat?.label ?? ''} · ${countryLabel} 링크 준비 중`} />
+          <Placeholder emoji="🗂️" title={t('linksComingSoon', { cat: cat?.label ?? '', country: countryLabel })} />
         ) : (
           <div className="flex gap-4">
             <div className="min-w-0 flex-1">
