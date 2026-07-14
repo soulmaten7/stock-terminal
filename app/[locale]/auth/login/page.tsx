@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   const t = useTranslations('Login');
   const [loading, setLoading] = useState(false);

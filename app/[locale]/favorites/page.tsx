@@ -3,6 +3,7 @@ import RoomFavoritesClient from '@/components/favorites/RoomFavoritesClient';
 import WatchlistClient from '@/components/favorites/WatchlistClient';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+export const dynamic = "force-dynamic";
 export const metadata = { title: '즐겨찾기' };
 
 export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {

@@ -8,6 +8,8 @@ import { useTranslations } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
 import { User, Siren, Trash2 } from 'lucide-react';
 
+export const dynamic = "force-dynamic";
+
 type Tab = 'profile' | 'reports';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 export const metadata = { title: "개인정보처리방침" };
 
 const SECTIONS: { h: string; body: string[] }[] = [

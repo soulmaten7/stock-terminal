@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 export const metadata = { title: "이용약관" };
 
 const ARTICLES: { h: string; body: string[] }[] = [

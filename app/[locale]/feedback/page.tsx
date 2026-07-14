@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import FeedbackForm from "./FeedbackForm";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "베타 피드백",
   robots: { index: false, follow: false },
