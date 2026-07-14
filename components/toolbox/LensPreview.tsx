@@ -59,13 +59,13 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
     let alive = true; setBriefState('idle');
     const timer = setTimeout(() => {
       setBriefState('loading');
-      fetch('/api/brief?symbol=' + encodeURIComponent(stock.symbol))
+      fetch('/api/brief?symbol=' + encodeURIComponent(stock.symbol) + '&lang=' + locale)
         .then((r) => r.json())
         .then((j) => { if (!alive) return; if (j.brief) { setBrief(j.brief); setBriefState('done'); } else setBriefState('error'); })
         .catch(() => { if (alive) setBriefState('error'); });
     }, 700);
     return () => { alive = false; clearTimeout(timer); };
-  }, [stock?.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [stock?.symbol, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!stock) {
     if (compact) return null;

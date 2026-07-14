@@ -749,17 +749,18 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
 // R2: 종목 브리핑(지연 로드·하루 1회 캐시). LLM이 결정론 판정+공시 사실로 '핵심 긴장+지켜볼 것'을 1문단 — 예측·판정 아님.
 function StockBrief({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 브리핑도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 브리핑이 온다
   const [brief, setBrief] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
     setState('loading');
-    fetch('/api/brief?symbol=' + encodeURIComponent(symbol))
+    fetch('/api/brief?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.brief) { setBrief(j.brief); setState('done'); } else setState('error'); })
       .catch(() => { if (alive) setState('error'); });
     return () => { alive = false; };
-  }, [symbol]);
+  }, [symbol, locale]);
   if (state === 'error') return null; // 실패 시 조용히 숨김
   return (
     <div className="mb-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
