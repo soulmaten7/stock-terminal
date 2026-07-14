@@ -1,8 +1,9 @@
 import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function Footer() {
   const t = useTranslations('Footer');
+  const locale = useLocale();
   return (
     <footer className="mt-auto border-t border-white/10 bg-[#0E1116]">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -10,7 +11,7 @@ export default function Footer() {
           {/* 브랜드 */}
           <div className="col-span-2 md:col-span-1">
             <p className="text-lg font-bold text-white">
-              Trillion <span className="text-sm font-medium text-white/45">트릴리언</span>
+              Trillion {locale === 'ko' && <span className="text-sm font-medium text-white/45">트릴리언</span>}
             </p>
             <p className="mt-2 text-sm text-white/70">{t('tagline')}</p>
           </div>

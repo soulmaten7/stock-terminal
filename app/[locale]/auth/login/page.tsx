@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const t = useTranslations('Login');
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function LoginPage() {
         {/* 트릴리언 로고 */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
-            Trillion <span className="text-base text-unjong-muted font-medium">{t('brandKo')}</span>
+            Trillion {locale === 'ko' && <span className="text-base text-unjong-muted font-medium">{t('brandKo')}</span>}
           </h1>
           <p className="text-sm text-unjong-muted">{t('tagline')}</p>
         </div>
