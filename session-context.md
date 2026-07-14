@@ -2,6 +2,15 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-14 (4) — 🐛 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화 ✅
+
+**HEAD `d122cac`.** STEP 711 배포 확인하다 **`[locale]` 페이지 무한 정적 캐시** 버그 발견 → bare URL이 봇에 옛 콘텐츠 서빙(코드는 현재값·라이브만 stale·SEO/규제 리스크).
+- **발견**: `/stock/{종목}`=옛 브랜딩·`/about`=개편 이전 정체성("속지 않도록"·"흩어진 금융정보")·`/terms`·`/privacy`=법무 정확화 이전. 원인=layout 정적렌더 자격(setRequestLocale+generateStaticParams)+페이지 캐시 지시자 누락.
+- **712**(`2cd926d`) 종목상세 `force-dynamic` · **713**(`9c4d619`) 정적 8개(about·terms·privacy·toolbox·coin·favorites·feedback·advertise) `force-dynamic` · **714**(`d122cac`) 클라 3개(mypage·auth/login·admin/login)는 `'use client'`라 page dynamic 무시 → **서버 `layout.tsx` 래퍼**로 강제 동적(로그인 로직 불변·6줄 죽은 dynamic 삭제만).
+- **🐞 교훈**: `[locale]` 페이지 캐시 지시자 명시(`'use client'`=서버 layout 래퍼) · `npm run build`가 dev `.next` 밟아 500→클린 재시작.
+- **✅ tsc 0·vitest 34/34·전 라우트 200·/about 새 3기둥·/terms·/privacy 법무 신선. 남은 검증=구글 로그인 왕복(브라우저).**
+- **▶ 다음 = 로그인 왕복 확인 · US 잔여(통화기호·IPO·ETN) · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.**
+
 ## 2026-07-14 (3) — 🔎 US 풀뎁스 P0: 종목상세 영어 SEO + US 파리티 감사 ✅
 
 **HEAD `f647b08`.** "US 풀뎁스" 착수 → 감사 결과 **US는 이미 KR 동급/더 깊음**(레퍼런스 구현). 유일 실질 갭인 종목상세 영어 SEO만 P0로 마감.

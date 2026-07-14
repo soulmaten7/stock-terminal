@@ -1,7 +1,14 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🔎 **2026-07-14 (3·최신) — US 풀뎁스 P0: 종목상세 영어 SEO + US 파리티 감사. HEAD `f647b08`.**
+> 🐛 **2026-07-14 (4·최신) — 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화. HEAD `d122cac`.**
+> - **발견(배포 확인 중)**: `[locale]` 페이지가 캐시 지시자 없으면 **무한 정적 캐시**로 굳어 배포해도 안 갈아엎어짐 → bare URL이 봇에 **옛 콘텐츠** 서빙. `/stock/{종목}`=옛 브랜딩·`/about`=개편 이전 정체성("속지 않도록"·"흩어진 금융정보")·`/terms`·`/privacy`=법무 정확화 이전. 코드는 현재값·라이브만 stale(SEO·규제 리스크). 원인=layout 정적렌더 자격(setRequestLocale+generateStaticParams)+페이지 캐시 지시자 누락.
+> - **712**(`2cd926d`) 종목상세 · **713**(`9c4d619`) 정적 8개(about·terms·privacy·toolbox·coin·favorites·feedback·advertise) 전부 `force-dynamic` · **714**(`d122cac`) 클라 3개(mypage·auth/login·admin/login)는 `'use client'`라 page dynamic 무시 → **서버 `layout.tsx` 래퍼**로 강제 동적(로그인 로직 불변).
+> - **🐞 교훈**: `[locale]` 페이지 캐시 지시자 명시(`'use client'`=서버 layout 래퍼) · `npm run build`가 dev `.next` 밟아 500→클린 재시작.
+> - **✅ tsc 0·vitest 34/34·전 라우트 200·/about 새 3기둥·/terms·/privacy 법무 신선. 남은 검증=구글 로그인 왕복(브라우저).**
+> - **▶ 다음 = 로그인 왕복 확인 · US 잔여(통화기호·IPO·ETN) · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.**
+>
+> 🔎 **2026-07-14 (3) — US 풀뎁스 P0: 종목상세 영어 SEO + US 파리티 감사. HEAD `f647b08`.**
 > - **📋 US 감사(서브에이전트+DB 실측)**: US는 이미 KR 동급/더 깊음 — 배관·보드·피드 7탭·**link_hub 139**(옛 'US 67 미충전'은 낡음)·brokers 17·렌즈 백분위(US 전용)·공시 심각도 분류. KR 전용(갭 아님)=코스피코스닥·상하한·유사투자자문사·유튜브. **유일 실질 갭=종목상세 영어 SEO.**
 > - **🔎 STEP 711**(`f647b08`·`app/[locale]/stock/[symbol]/page.tsx`): `generateMetadata`·JSON-LD locale 인지화 → `/en/stock/{sym}` 영어 title·desc·keywords·OG `en_US`·hreflang(ko·en·x-default)·breadcrumb(Home/Stocks). ko **byte 동일**(무회귀)·VN 뉴스분기 보존. 🔑 Opus 스펙교정: en 분기는 `info.en`(영문명) 주로(한글명 영어SEO 방지·ko 무영향).
 > - **▶ 다음 US(선택) = P1 통화기호`$` · P2 US IPO 구조화·ETN · (보류) 인라인 증권사 광고=수익화.** 그 외 후보=OAuth 로케일 쿠키·다크 폴리시 D·클로즈드 베타.

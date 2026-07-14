@@ -5,7 +5,15 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🔎 **2026-07-14 (3·최신) · US 풀뎁스 P0 — 종목상세 영어 SEO + US 파리티 감사 (HEAD `f647b08`).**
+> 🐛 **2026-07-14 (4·최신) · 캐시 stale 버그 3-STEP 완결 — 모든 [locale] 페이지 신선화 (HEAD `d122cac`).**
+> - **📡 발견(STEP 711 배포 확인 중)**: `[locale]` 페이지가 캐시 지시자 없으면 **무한 정적 캐시**로 굳어 배포해도 안 갈아엎어짐 → bare URL이 봇·방문자에 **옛 콘텐츠** 서빙. `/stock/{종목}`=옛 브랜딩("AI 렌즈"·폐기 태그라인·미정리명)·`/about`=**개편 이전 정체성**("정확한 정보·검증된 신뢰"·"속지 않도록"·"흩어진 금융정보")·`/terms`·`/privacy`=**법무 정확화(07-12) 이전**. 코드는 전부 현재값인데 라이브만 stale=SEO·규제 리스크. 캐시버스터(`?fresh=`)로 확정.
+> - **🔬 원인**: `app/[locale]/layout.tsx`의 `setRequestLocale`+`generateStaticParams`가 정적 렌더를 켜는데, 페이지에 `dynamic`/`revalidate` 없으면 on-demand 정적 생성 후 무한 캐시. 홈만 `force-dynamic`이라 신선했던 것.
+> - **🔧 712**(`2cd926d`) 종목상세 `force-dynamic` · **713**(`9c4d619`) 정적 8개(`about`·`terms`·`privacy`·`toolbox`·`coin`·`favorites`·`feedback`·`advertise`) `force-dynamic` · **714**(`d122cac`) 클라 3개(`mypage`·`auth/login`·`admin/login`)는 `'use client'`라 page의 `dynamic`을 Next가 **무시** → 폴더에 **서버 `layout.tsx` 래퍼**(`dynamic="force-dynamic"`+passthrough)로 세그먼트 강제 동적. **로그인 로직 불변**(6줄=죽은 dynamic 삭제만). 3 라우트 `●`→`ƒ`.
+> - **🐞 교훈**: (1) `[locale]` 하위 페이지는 캐시 지시자 명시 — `'use client'`는 page의 `dynamic` 무시되니 **서버 layout 래퍼**로. (2) `npm run build`가 실행 중 dev의 `.next/`를 밟아 dev 500 → 클린 재시작(`pkill + rm -rf .next && npm run dev`). 빌드 후 dev 500이면 코드 아니라 이 원인부터.
+> - **✅** tsc 0·vitest 34/34·전 라우트 라이브 200·`/about`(새 3기둥)·`/terms`·`/privacy`(법무)·`/en` 신선 확인. **남은 검증 = 구글 로그인 실제 왕복(브라우저·ko·en).**
+> - **▶ 다음 = 구글 로그인 왕복 확인 · US 잔여(선택 통화기호`$`·IPO·ETN) · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.**
+>
+> 🔎 **2026-07-14 (3) · US 풀뎁스 P0 — 종목상세 영어 SEO + US 파리티 감사 (HEAD `f647b08`).**
 > - **📋 US vs KR 파리티 감사**(서브에이전트 + DB 실측): US는 이미 KR 동급이거나 **더 깊음** — 배관·종목보드·피드 7탭·**link_hub 139**(KR 138·옛 'US 67 미충전'은 낡은 정보)·brokers 17·지수바 완비. US가 KR보다 깊은 곳=렌즈 백분위 게이지(US 유니버스 전용)·공시 심각도 분류(material/routine)·서학개미 한글명. KR 전용(갭 아님·의도)=코스피/코스닥·상하한·유사투자자문사·유튜브. **유일 실질 갭 = 종목상세 영어 SEO.**
 > - **🔎 STEP 711**(`f647b08`·`app/[locale]/stock/[symbol]/page.tsx` 단일): `generateMetadata`·JSON-LD locale 인지화 → `/en/stock/{symbol}` 영어 title·description·keywords·OG `en_US`·**hreflang(ko·en·x-default)**·영어 breadcrumb(Home/Stocks). ko는 **byte 동일**(SEO 무회귀·curl 대조)·VN 분기(뉴스만) 보존. 인라인 locale 분기(SEO 템플릿이라 메시지 카탈로그 아님). **🔑 Opus 스펙교정**: en 페이지에 `${name}`(서학개미 한글명 오버라이드) 쓰면 한글명 영어SEO라 목적 붕괴 → en 분기는 `info.en`(영문명) 주·한글명 보조(ko 무영향). tsc 0·vitest 34/34.
 > - **📌 결정(표준 규칙·STEP 711에서 확립)**: **영어 로케일 SEO·메타데이터·타이틀은 영문명(`info.en`) 우선, 한글명(`foreign_ko_names` 서학개미 오버라이드)은 보조.** 한글 로케일은 반대(한글명 우선). 근거 = 한글명으로 영어 SEO 하면("애플 forecast") 영어권 검색에 안 잡혀 목적이 붕괴됨. **향후 US 잔여(P1/P2)·새 언어권 EN 페이지·모든 로케일 인지 메타데이터가 이 규칙을 따름.** (STEP 711 원안엔 없던 Opus 판단 → 표준으로 승격.)

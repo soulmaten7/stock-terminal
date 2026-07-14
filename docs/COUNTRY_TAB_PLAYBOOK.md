@@ -143,7 +143,8 @@
 
 ## 5. Gotcha (US에서 확인된 함정 — 국가 불문 반복)
 
-- 🔑 **Turbopack**: API 라우트·서버 컴포넌트(`page.tsx`·`CATEGORY_LABELS`) 변경은 자동 갱신 안 됨 → **클린 재시작** `pkill -f "next dev"; rm -rf .next && npm run dev`. 클라이언트 컴포넌트는 HMR 즉시.
+- 🔑 **Turbopack**: API 라우트·서버 컴포넌트(`page.tsx`·`CATEGORY_LABELS`) 변경은 자동 갱신 안 됨 → **클린 재시작** `pkill -f "next dev"; rm -rf .next && npm run dev`. 클라이언트 컴포넌트는 HMR 즉시. ⚠️ **`npm run build`를 `npm run dev` 실행 중에 돌리면 dev의 `.next/`를 프로덕션 산출물로 밟아 dev 전 라우트 500** → 클린 재시작으로 복구(코드 문제로 오인 금지).
+- 🗄️ **`[locale]` 페이지 무한 stale 캐시 (2026-07-14 STEP 712~714 교훈)**: `app/[locale]/layout.tsx`가 `setRequestLocale`+`generateStaticParams`로 정적 렌더를 켜므로, 하위 페이지에 `dynamic`/`revalidate` 지시자가 없으면 **on-demand 정적 생성 후 무한 캐시**(배포해도 안 갈아엎어짐 → 봇·방문자에 옛 브랜드/법무 콘텐츠 서빙·라이브만 stale·SEO/규제 리스크). 새 `[locale]` 페이지는 **캐시 지시자 명시**(대개 `export const dynamic = "force-dynamic"`). ⚠️ **`'use client'` 페이지는 page의 `dynamic`을 Next가 무시** → 폴더에 서버 `layout.tsx` 래퍼(`export const dynamic="force-dynamic"`+`return children`)로 세그먼트에 설정. 라이브 검증은 **캐시버스터 없는 bare URL**을 web_fetch(캐시 상태 그대로 봄).
 - 🌐 **Google News/스크래핑 prod IP 차단 가능** → Vercel에서 간혹 빈 피드. 로컬 OK인데 prod 비면 이 케이스(대체 소스 전환). fallback 덕에 안 깨짐.
 - 🧩 **`countryLabel` 삼항** → 국가 3개+면 반드시 `Record`로. 안 그러면 새 국가가 "미국"으로 표시되는 조용한 버그.
 - 🗂 **link_hub는 git에 없음**(MCP 직접) → DB 백업/이전 시 별도 export.

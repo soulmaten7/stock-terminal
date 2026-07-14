@@ -1,6 +1,17 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-14 (4) — 🐛 캐시 stale 버그 3-STEP 완결: 모든 [locale] 페이지 신선화 (HEAD `d122cac`)
+
+- **📡 발견(배포 확인 중)**: STEP 711 배포를 web_fetch로 확인하다 **`[locale]` 페이지가 무한 정적 캐시로 굳어 배포해도 안 갈아엎어지는** 버그 발견. bare URL이 봇·방문자에 **옛 콘텐츠** 서빙 — `/stock/{종목}`=옛 브랜딩("AI 렌즈"·폐기 태그라인·미정리명 "Apple Inc. - Common Stock"), `/about`=**개편 이전 정체성**("정확한 정보·검증된 신뢰"·"속지 않도록"·"흩어진 금융정보"), `/terms`·`/privacy`=**법무 정확화(07-12) 이전** 텍스트. 코드는 전부 현재값인데 라이브만 stale = SEO·규제 리스크. 캐시버스터(`?fresh=`)로 확정.
+- **🔬 원인**: `app/[locale]/layout.tsx`의 `setRequestLocale`+`generateStaticParams`가 정적 렌더를 켜는데, 페이지에 `dynamic`/`revalidate` 지시자가 없으면 on-demand 정적 생성 후 무한 캐시(배포 무효화 안 됨). 홈만 `force-dynamic`이라 신선했던 것.
+- **🔧 712**(`2cd926d`): `app/[locale]/stock/[symbol]/page.tsx` `force-dynamic`. 라이브=애플·TR-AI 렌즈·새 태그라인.
+- **🔧 713**(`9c4d619`): 정적 8개(`about`·`terms`·`privacy`·`toolbox`·`coin`·`favorites`·`feedback`·`advertise`) `force-dynamic`. 라이브=`/about` 새 3기둥·`/terms`·`/privacy` 법무·`/en/about` 영어 기둥.
+- **🔧 714**(`d122cac`): 클라 3개(`mypage`·`auth/login`·`admin/login`)는 `'use client'`라 page의 `dynamic`을 Next가 **무시** → 폴더에 서버 `layout.tsx` 래퍼(`dynamic="force-dynamic"`+passthrough)로 세그먼트 강제 동적. **로그인 로직 1글자 불변**(6줄=죽은 dynamic 삭제만). 3 라우트 `●`→`ƒ`. layout 방식 먹혀 서버/클라 분리 폴백 불필요.
+- **🐞 교훈**: (1) `[locale]` 하위 페이지는 캐시 지시자 명시 — `'use client'`는 page의 `dynamic` 무시되니 **서버 layout 래퍼**로. (2) `npm run build`가 실행 중 `npm run dev`의 `.next/`를 밟아 dev 500 → 클린 재시작(`pkill + rm -rf .next && npm run dev`). 빌드 후 dev 500이면 코드 아니라 이 원인부터.
+- **✅** tsc 0·vitest 34/34·전 라우트 라이브 200·`/about`·`/terms`·`/privacy`·`/en` 신선 확인. **남은 검증 = 구글 로그인 실제 왕복(브라우저·ko·en).**
+- **▶ 다음** = 구글 로그인 왕복 라이브 확인 · US 잔여(선택 통화기호·IPO·ETN) · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.
+
 ## 2026-07-14 (3) — 🔎 US 풀뎁스 P0: 종목상세 영어 SEO + US 파리티 감사 (HEAD `f647b08`)
 
 - **📋 US vs KR 파리티 감사**(서브에이전트 + DB 실측): US는 이미 KR 동급이거나 **더 깊음** — 배관·종목보드(모바일·뷰복원·렌즈미리보기·크론)·피드 7탭·**link_hub 139**(KR 138·옛 "US 67 미충전"은 낡은 정보)·brokers 17·지수바 완비. US가 KR보다 깊은 곳=렌즈 백분위 게이지(US 유니버스 전용)·공시 심각도 분류(material/routine)·서학개미 한글명. KR 전용(갭 아님·의도)=코스피/코스닥·상하한·유사투자자문사·유튜브. **유일한 실질 갭 = 종목상세 영어 SEO.**
