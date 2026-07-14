@@ -108,6 +108,7 @@
 | `docs/NEXT_SESSION_CN_PLAN.md` | [완료] CN 공시층 + R1(A주 cninfo·HK HKEXnews) 결과 | CN 데이터 히스토리 |
 | `docs/NEXT_SESSION_VN_PLAN.md` | [완료·마감] VN 공시층 결과(공식 공시 소스 부재 실측) | VN 데이터 히스토리 |
 | `docs/PARKED_HNX_VCI_ACTIVATION.md` | 🅿️ 보류 기능 — VN HNX(VCI·거주지 IP 필요·배선 완비) | HNX 재활성화 시 |
+| `docs/PARKED_OAUTH_LOCALE_ACTIVATION.md` | 🅿️ 보류 기능 — OAuth 로케일(로그인 후 언어 유지·쿠키 방식·파트4 롤백) | OAuth 로케일 재시도 시 |
 
 ---
 
