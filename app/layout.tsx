@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import AuthProvider from '@/components/auth/AuthProvider';
 import LayoutShell from '@/components/layout/LayoutShell';
 import { Analytics } from '@vercel/analytics/react';
+import { NextIntlClientProvider } from 'next-intl';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -72,15 +73,17 @@ export default function RootLayout({
   return (
     <html lang="ko" className={`${inter.variable} ${playfair.variable} h-full`}>
       <body className="min-h-screen flex flex-col antialiased">
-        <AuthProvider>
-          <div className="w-full max-w-[1984px] mx-auto flex-1 flex flex-col">
-            <Header />
-            <LayoutShell footer={<Footer />}>
-              {children}
-            </LayoutShell>
-          </div>
-        </AuthProvider>
-        <Analytics />
+        <NextIntlClientProvider>
+          <AuthProvider>
+            <div className="w-full max-w-[1984px] mx-auto flex-1 flex flex-col">
+              <Header />
+              <LayoutShell footer={<Footer />}>
+                {children}
+              </LayoutShell>
+            </div>
+          </AuthProvider>
+          <Analytics />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

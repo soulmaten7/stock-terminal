@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin(); // 기본 ./i18n/request.ts 인식
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -39,12 +42,15 @@ const nextConfig: NextConfig = {
 };
 
 // Sentry: NEXT_PUBLIC_SENTRY_DSN 이 있을 때만 래핑(소스맵 업로드 등). 없으면 무동작 → 빌드·런타임 정상.
+// next-intl은 Sentry 조건과 무관하게 항상 적용(안쪽) — DSN 없는 환경에서도 i18n은 살아있어야 함.
+const configWithIntl = withNextIntl(nextConfig);
+
 export default process.env.NEXT_PUBLIC_SENTRY_DSN
-  ? withSentryConfig(nextConfig, {
+  ? withSentryConfig(configWithIntl, {
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN, // 소스맵 업로드용(비밀 · Vercel/CI env에만)
       silent: !process.env.CI,
       widenClientFileUpload: true,
     })
-  : nextConfig;
+  : configWithIntl;
