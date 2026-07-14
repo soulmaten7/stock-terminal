@@ -1,6 +1,18 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-14 (2) — 🌍 2차 i18n(다국어) 완성: next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트 (HEAD `14c1813`)
+
+- **개요**: 2차 목표(다국어) 3단계 완성 — 기반(708) → 문자열 이관(709~709F) → 라우팅·영어·기능(710A~710D). 코드상 i18n 완결. ko는 URL·화면 100% 그대로, `/en`에서 영어 사용 가능, 헤더 스위처로 한↔영 전환.
+- **문자열 이관(709~709F·`ko.json`)**: Chrome(Header·Footer)·Toolbox·렌즈(LensPreview·StockLens·EtfLens)·6개 보드(Board 공유 네임스페이스 dedup)·AdvisorDirectory·피드/행·사용자 대면 페이지(about·advertise·business·coin·favorites·feedback·login·mypage·not-found)를 `messages/ko.json`으로(값 100% 동일·화면 0 변화). 서버 컴포넌트=`getTranslations`(async)·클라=`useTranslations`. **제외**: props·API·데이터·필터/정규식 키·**DB로 가는 값**(신고사유·intent·slot=label만 번역·value는 코드 유지). **의도적 제외**: `admin/*`(운영진 전용)·`terms`/`privacy`(관할법 문서라 번역 대상 아님).
+- **710A [locale] 라우팅 구조**(`70328e8`·ko 단일·`localePrefix:'as-needed'`·화면 0 변화): `i18n/routing.ts`·`navigation.ts`·`request.ts`(requestLocale)·`proxy.ts`(createMiddleware, Supabase 세션 갱신과 합성) + `app/*` 페이지 라우트 `app/[locale]/*`로 이동(api·정적·메타 라우트 제외)·`generateStaticParams`+`setRequestLocale`(정적 렌더 유지). **🐞 함정**: next-intl 공식 matcher의 "점(.)=정적파일" 규칙이 종목코드(7203.T·0700.HK·600519.SS·VIC.VN·SHEL.L·BRK.B)를 정적으로 오인 → 해외 5개국 종목 상세 전부 404날 뻔 → **확장자 화이트리스트로 교체**(proxy.ts 주석 명시).
+- **710B en.json**(`c8a69b5`): 414키 ko와 1:1(누락 0·초과 0)·영어. 브랜드 보이스 잠금(슬로건 "An eye for stocks — for everyone."·3기둥 Institutional-grade analysis/Honest data/Your judgment·멍거 각인 원문·"Insufficient data"). **ICU 아포스트로피 함정**=영어 축약형 배제(do not·it is)로 회피(멍거 건조 톤과 일치). `messages.test.ts` 신설 = 키 패리티·플레이스홀더/태그 보존·양쪽 ICU·아포스트로피·보이스 잠금을 **영구 vitest 회귀 테스트**로. 🐞 `Login.brandKo`=로고 워드마크(트릴리언)라 번역 금지(초기 "Trillion Trillion" 버그 수정).
+- **710C 언어 스위처 + 링크 스왑**(`bacacf7`): 헤더에 잠겨있던(en:ready false) 언어 드롭다운 오픈(라벨 각 언어 표기 하드코딩) + 내부 `Link`·`useRouter`·`usePathname`·`redirect`를 `@/i18n/navigation`으로(로케일 유지). `useSearchParams`·`notFound`·외부/광고/mailto/api 링크 제외. **🐞** 스위처 쿼리 보존에 `useSearchParams` 쓰면 전역 헤더에 Suspense 경계 강제→SSG 페이지(/about·/terms) de-opt → 클릭 시점 `window.location.search` 읽기로 우회(SSG 유지). redirect는 명시적 타입 재export(구조분해 시 never-narrowing 깨짐 방지).
+- **710D 로케일 기능**(`7882614`): ① `homeMarketFor(locale)` 단일 진실원 = en→US·ko→KR 홈 시장 맨 앞·기본(저장 국가 없는 첫 방문만·STEP 703 뷰 복원 무손상) ② 정적 metadata→`generateMetadata`(로케일 title·og:locale ko_KR/en_US) + JSON-LD 로케일화. hreflang은 레이아웃 alternates가 하위 경로 오인식 유발 → 미들웨어 Link 헤더(경로별 자동)+홈만 HTML alternates(canonical+ko/en/x-default) ③ youtube 조회수 로케일 나눗셈(만/억↔K/M·Intl compact).
+- **🅿️ 보류(파트4 롤백 `14c1813`)**: OAuth 로케일 보존 — `/en` 로그인 시 콜백이 `/`(ko)로 떨굼. redirectTo에 `?next=/en` 붙이면 **Supabase 리다이렉트 허용목록이 거부→로그인 자체가 죽음**(구글 동의화면도 안 뜨고 튕김) → 파트4만 롤백(파트1~3 라이브 유지). **쿠키 방식 수정안** = `docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`(redirectTo 불변·쿠키로 로케일 전달).
+- **✅ 검증**: tsc 0·vitest 34/34·빌드 성공·`IntlError`/MISSING 0·양쪽 로케일 전수 클릭(ko `/ko` 프리픽스 유출 0·en 프리픽스 유지·스위처 쿼리 보존).
+- **▶ 다음**: OAuth 로케일 쿠키 수정(PARKED) · 라이브에서 6개국 보드·유사투자자문사·`/en` 클라이언트 뷰 육안 · **US 탭 풀뎁스(2차 본목표)** · 다크 폴리시 D · 클로즈드 베타 초대(`docs/BETA_INVITE.md`).
+
 ## 2026-07-14 — 🌑 다크 테마 3단계 완결 + 🧭 유사투자자문사 정합(라벨·정렬·위치) + 🎓 온보딩(자기설명) + 🖥️ /about 폭 (HEAD `3c2fc8b`)
 
 - **🧭 유사투자자문 조회 UX 정합**: `48e9802` AdvisorDirectory 패널에 **'유사투자자문 조회' 제목** 추가(탭명 정합) + 문서 깊은 히스토리 잔재 [이력·폐기] 배너 마무리(SESSION_KICKOFF·PLAYBOOK·NEXT_SESSION_START·INDEX·ROOM_VERIFICATION·TOSS_ANALYSIS·AI_LENS_SPEC). `e199328` 하위탭·패널 라벨 **'유사투자자문 조회'→'유사투자자문사'**(법적 정확·금감원 등록 업체 목록 성격). `828e97c` 🐞 목록 정렬을 **상호명 접두어((주)·㈜·(브랜드)) 무시 가나다**로(`/api/advisors` 전체로드→JS 정렬→페이지 슬라이스·3뷰 공통) + 하위탭에서 유사투자자문사를 증권사 앞으로. `f66d77f` 하위탭 순서 되돌림 — **증권사→유사투자자문사**(증권사=주류 1차 카테고리 우선·유사투자자문사 인접 유지).

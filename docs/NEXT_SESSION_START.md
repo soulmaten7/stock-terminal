@@ -1,7 +1,17 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🆕 **2026-07-14 (최신) — 🌑 다크 테마 3단계 완결 + 🧭 유사투자자문사 정합 + 🎓 온보딩(자기설명) + 🖥️ /about 폭. HEAD `3c2fc8b`.**
+> 🌍 **2026-07-14 (2·최신) — 2차 i18n(다국어) 완성: next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트. HEAD `14c1813`.**
+> - **문자열 이관(709~709F)**: Chrome·Toolbox·렌즈·6보드(Board dedup)·AdvisorDirectory·피드·사용자페이지 → `messages/ko.json`(값 동일·화면 0). 서버=`getTranslations`·클라=`useTranslations`. 제외=props·API·데이터·DB로 가는 값(label만 번역)·**admin·약관/개인정보(의도적)**.
+> - **710A 라우팅 구조**(`70328e8`·ko 단일·as-needed·화면 0): `routing/navigation/request/proxy`(Supabase 세션과 합성)+`app/[locale]/*` 이동+generateStaticParams. 🐞 matcher 점(.)규칙이 종목코드(7203.T·0700.HK 등) 404 유발 → **확장자 화이트리스트로 교체**.
+> - **710B en.json**(`c8a69b5`·414키 1:1·브랜드 보이스 잠금·영어 축약형 배제로 ICU 아포스트로피 회피·`messages.test.ts` 패리티 영구테스트·`Login.brandKo`=로고라 번역금지).
+> - **710C 스위처+링크스왑**(`bacacf7`): 헤더 언어 드롭다운 오픈 + 내부 Link/useRouter/usePathname/redirect→`@/i18n/navigation`(useSearchParams·외부링크 제외). 🐞 스위처 쿼리보존 useSearchParams는 SSG de-opt → window.location.search 클릭시 읽기로 우회.
+> - **710D 기능**(`7882614`): `homeMarketFor(locale)`(en→US·ko→KR 홈시장 맨앞·첫방문만·703 무손상)·`generateMetadata`/JSON-LD 로케일화(hreflang=미들웨어 Link헤더+홈 HTML alternates)·youtube 조회수 로케일 나눗셈(만/억↔K/M).
+> - **🅿️ 보류(파트4 롤백)**: OAuth 로케일 — `/en` 로그인→콜백이 ko로 떨굼. redirectTo에 `?next=` 붙이면 **Supabase 허용목록 거부→로그인 죽음** → 파트4만 롤백(1~3 라이브). 쿠키 수정안=`docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`.
+> - **✅ tsc 0·vitest 34/34·빌드 성공·IntlError 0·양쪽 전수 클릭.**
+> - **▶ 다음 = OAuth 로케일 쿠키 수정(PARKED) · 라이브 6보드·/en 클라뷰 육안 · US 탭 풀뎁스(2차 본목표) · 다크 폴리시 D · 클로즈드 베타 초대.**
+>
+> 🆕 **2026-07-14 (1) — 🌑 다크 테마 3단계 완결 + 🧭 유사투자자문사 정합 + 🎓 온보딩(자기설명) + 🖥️ /about 폭. HEAD `3c2fc8b`.**
 > - **🧭 유사투자자문사 정합**: `48e9802` AdvisorDirectory 패널 '유사투자자문 조회' 제목 + 문서 [이력·폐기] 배너 마무리 · `e199328` 라벨 '유사투자자문 조회'→**'유사투자자문사'**(금감원 등록업체 목록) · `828e97c` 정렬 상호명 접두어((주)·㈜) 무시 가나다(`/api/advisors` 전체로드→JS정렬→슬라이스) · `f66d77f` 하위탭 증권사→유사투자자문사 순.
 > - **🔍 SEO**(`551d5e1`): 메타 keywords 새 정체성(리딩방검증·신뢰평가허브 제거→종목분석·TR-AI렌즈·검증된투자기법).
 > - **🎓 온보딩 KR(Option A·자기설명)**(`de58fca`): 헤더 태그라인(lg+)+상단 '소개' 링크+LensPreview 문구 또렷("사고팔 신호 아니라 판단할 재료")+/about '이렇게 봅니다' 3스텝. **배너·팝업 없음**. **/about 폭**(`e5c4a97`) 앱 기본(max-w-7xl) 정합.

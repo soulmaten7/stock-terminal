@@ -2,6 +2,18 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-14 (2) — 🌍 2차 i18n(다국어) 완성: next-intl [locale] 라우팅 + 영어(en) + 스위처 + en→US 시장 디폴트 ✅
+
+**HEAD `14c1813`.** 2차 목표(다국어) 3단계 완성 — 기반(708) → 문자열 이관(709~709F) → 라우팅·영어·기능(710A~710D). ko는 URL·화면 그대로, `/en` 영어 사용가능, 헤더 스위처 한↔영.
+- **문자열 이관(709~709F)**: Chrome·Toolbox·렌즈·6보드(Board dedup)·AdvisorDirectory·피드·사용자페이지 → `messages/ko.json`(값 동일·화면 0). 서버=`getTranslations`·클라=`useTranslations`. 제외=props·API·데이터·**DB로 가는 값**(label만 번역)·**admin·약관/개인정보(의도적)**.
+- **710A 라우팅 구조**(`70328e8`·ko 단일·as-needed·화면 0): `routing/navigation/request/proxy`(Supabase 세션과 합성)+`app/[locale]/*` 이동+generateStaticParams. **🐞** matcher 점(.)규칙이 종목코드(7203.T·0700.HK 등) 404 유발 → **확장자 화이트리스트로 교체**.
+- **710B en.json**(`c8a69b5`·414키 1:1·브랜드 보이스 잠금·영어 축약형 배제로 ICU 아포스트로피 회피·`messages.test.ts` 패리티 영구테스트·`Login.brandKo`=로고라 번역금지).
+- **710C 스위처+링크스왑**(`bacacf7`): 헤더 언어 드롭다운 오픈 + 내부 Link/useRouter/usePathname/redirect→`@/i18n/navigation`(useSearchParams·외부링크 제외). **🐞** 스위처 쿼리보존 useSearchParams는 SSG de-opt → window.location.search 클릭시 읽기로 우회.
+- **710D 기능**(`7882614`): `homeMarketFor(locale)`(en→US·ko→KR 홈시장 맨앞·첫방문만·703 무손상)·`generateMetadata`/JSON-LD 로케일화(hreflang=미들웨어 Link헤더+홈 HTML alternates)·youtube 조회수 로케일 나눗셈(만/억↔K/M).
+- **🅿️ 보류(파트4 롤백 `14c1813`)**: OAuth 로케일 — `/en` 로그인→콜백이 ko로 떨굼. redirectTo에 `?next=` 붙이면 **Supabase 허용목록 거부→로그인 죽음** → 파트4만 롤백(1~3 라이브). 쿠키 수정안=`docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`.
+- **✅ tsc 0·vitest 34/34·빌드 성공·IntlError 0·양쪽 전수 클릭.**
+- **▶ 다음 = OAuth 로케일 쿠키 수정(PARKED) · 라이브 6보드·/en 클라뷰 육안 · US 탭 풀뎁스(2차 본목표) · 다크 폴리시 D · 클로즈드 베타 초대.**
+
 ## 2026-07-14 — 🌑 다크 테마 3단계 완결 + 🧭 유사투자자문사 정합 + 🎓 온보딩(자기설명) + 🖥️ /about 폭 ✅
 
 **HEAD `3c2fc8b`.** 하루 아크 = 유사투자자문 조회 UX 정합 + 온보딩(자기설명 중심) + /about 폭 통일 + 라이트→다크 테마 3단계 전환(안 깨지게).

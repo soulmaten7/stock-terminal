@@ -5,7 +5,17 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🟢 **2026-07-14 (최신) · 🌑 다크 테마 3단계 완결 + 🧭 유사투자자문사 정합(라벨·정렬·위치) + 🎓 온보딩(자기설명) + 🖥️ /about 폭 (HEAD `3c2fc8b`).**
+> 🌍 **2026-07-14 (2·최신) · 2차 i18n(다국어) 완성 — next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트 (HEAD `14c1813`).**
+> - **문자열 이관(709~709F)**: Chrome·Toolbox·렌즈·6보드(Board dedup)·AdvisorDirectory·피드·사용자페이지 → `messages/ko.json`(값 동일·화면 0). 서버=`getTranslations`·클라=`useTranslations`. 제외=props·API·데이터·DB로 가는 값(label만 번역)·**admin·약관/개인정보(의도적)**.
+> - **710A 라우팅 구조**(`70328e8`·ko 단일·`as-needed`·화면 0): `routing/navigation/request/proxy`(Supabase 세션과 합성)+`app/[locale]/*` 이동+generateStaticParams+setRequestLocale. **🐞** next-intl matcher 점(.)규칙이 종목코드(7203.T·0700.HK·600519.SS·VIC.VN·SHEL.L·BRK.B)를 정적파일로 오인→해외 5개국 종목상세 전부 404날 뻔 → **확장자 화이트리스트로 교체**(proxy.ts 주석).
+> - **710B en.json**(`c8a69b5`·414키 ko와 1:1·브랜드 보이스 잠금[슬로건·3기둥·멍거 원문·Insufficient data]·영어 축약형 배제로 ICU 아포스트로피 회피·`messages.test.ts`=키패리티/ICU/보이스 영구 vitest·`Login.brandKo`=로고 워드마크라 번역금지).
+> - **710C 스위처+링크스왑**(`bacacf7`): 헤더 언어 드롭다운 오픈(라벨 각 언어 표기) + 내부 Link/useRouter/usePathname/redirect→`@/i18n/navigation`(로케일 유지·`useSearchParams`/notFound/외부·광고·mailto/api 제외). **🐞** 스위처 쿼리보존 useSearchParams는 전역 헤더에 Suspense 강제→SSG(/about·/terms) de-opt → 클릭시 window.location.search 읽기로 우회.
+> - **710D 기능**(`7882614`): `homeMarketFor(locale)`(en→US·ko→KR 홈시장 맨앞·기본·저장국가 없는 첫방문만·STEP 703 무손상)·정적 metadata→`generateMetadata`(로케일 title·og:locale)·JSON-LD 로케일화(hreflang=미들웨어 Link헤더 경로별+홈만 HTML alternates)·youtube 조회수 로케일 나눗셈(만/억↔K/M·Intl compact).
+> - **🅿️ 보류(파트4 롤백 `14c1813`)**: OAuth 로케일 보존 — `/en` 로그인→콜백이 `/`(ko)로 떨굼. redirectTo에 `?next=/en` 붙이면 **Supabase 리다이렉트 허용목록이 거부→로그인 자체가 죽음**(구글 동의화면도 안 뜸) → 파트4만 롤백(1~3 라이브). **쿠키 방식 수정안 = `docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`**(redirectTo 불변).
+> - **✅ 검증**: tsc 0·vitest 34/34·빌드 성공·`IntlError`/MISSING 0·양쪽 로케일 전수 클릭(ko `/ko` 유출 0·en 프리픽스 유지·스위처 쿼리 보존).
+> - **▶ 다음 = OAuth 로케일 쿠키 수정(PARKED) · 라이브에서 6개국 보드·유사투자자문사·`/en` 클라이언트 뷰 육안 · US 탭 풀뎁스(2차 본목표) · 다크 폴리시 D · 클로즈드 베타 초대(`docs/BETA_INVITE.md`).**
+>
+> 🟢 **2026-07-14 (1) · 🌑 다크 테마 3단계 완결 + 🧭 유사투자자문사 정합(라벨·정렬·위치) + 🎓 온보딩(자기설명) + 🖥️ /about 폭 (HEAD `3c2fc8b`).**
 > - **🧭 유사투자자문 조회 UX 정합**: `48e9802` AdvisorDirectory 패널에 **'유사투자자문 조회' 제목** 추가(탭명 정합) + 문서 깊은 히스토리 잔재 [이력·폐기] 배너 마무리(SESSION_KICKOFF·PLAYBOOK·NEXT_SESSION_START·INDEX·ROOM_VERIFICATION·TOSS_ANALYSIS·AI_LENS_SPEC) · `e199328` 라벨 **'유사투자자문 조회'→'유사투자자문사'**(법적 정확·금감원 등록 업체 목록 성격) · `828e97c` 목록 정렬 **상호명 접두어((주)·㈜·(브랜드)) 무시 가나다**(`/api/advisors` 전체로드→JS 정렬→페이지 슬라이스·3뷰 공통) · `f66d77f` 하위탭 순서 **증권사→유사투자자문사**(증권사=주류 1차 카테고리 우선).
 > - **🔍 SEO**(`551d5e1`): 메타 keywords 새 정체성으로 교체(주식커뮤니티·투자상품평가·리딩방검증·신뢰평가허브 제거 → 종목분석·TR-AI렌즈·검증된투자기법·유사투자자문조회).
 > - **🎓 온보딩 KR (Option A·자기설명 중심)**(`de58fca`): 헤더 로고 밑 태그라인(lg+) + 상단 '소개' 링크(→/about) + LensPreview 문구 또렷하게(빈상태+선택상태·**"사고팔 신호 아니라 판단할 재료"**) + /about '이렇게 봅니다' 3스텝. **배너·팝업 없음**(리서치: 과잉 온보딩 회피·자기설명 UI 우선). **/about 폭**(`e5c4a97`): 앱 기본(max-w-7xl)에 맞춤·3기둥 3열 그리드·본문 읽기폭 유지(폭 튐 해소).
