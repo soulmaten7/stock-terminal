@@ -7,16 +7,21 @@
 import type { Metadata } from "next";
 import { resolveStockName, tickerOf } from "@/lib/stockName";
 import { getInstrumentType } from "@/lib/instrumentType";
+import { getPathname } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
 
 const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
 
-type Params = { params: Promise<{ symbol: string }> };
+type Params = { params: Promise<{ locale: string; symbol: string }> };
 
+// SEO 템플릿은 조건부(VN·이름해석·공시유무)라 ICU 메시지로 빼면 지저분해진다 → 서버에서 인라인 분기.
+// (UI 문자열 i18n 규칙과 별개 — ko.json/en.json은 건드리지 않는다.)
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { symbol: raw } = await params;
+  const { locale, symbol: raw } = await params;
   const symbol = decodeURIComponent(raw);
+  const isEn = locale === "en";
   const ticker = tickerOf(symbol);
   const info = await resolveStockName(symbol);
   const name = info?.name || ticker;
@@ -25,50 +30,87 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   // VN은 공식 공시 소스가 전부 막혀 구글 뉴스로 대체(정직 표기) — "공시" 대신 "뉴스"만.
   const isVN = /\.VN$/i.test(symbol);
-  const label = hasName ? `${name} (${ticker})` : ticker;
-  const title = isVN ? `${label} 주가·TR-AI 렌즈·뉴스` : `${label} 주가·TR-AI 렌즈·뉴스·공시`;
-  const idPart = hasName ? `(${en ? `${en}·` : ""}${ticker})` : "";
-  const description = isVN
-    ? `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
-    : `${name}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
-  const url = `${BASE}/stock/${symbol}`;
 
-  const kw = hasName
-    ? [name, `${name} 주가`, `${name} 전망`, `${name} 뉴스`, ...(isVN ? [] : [`${name} 공시`]), ...(en ? [en] : []), ticker, "AI 렌즈", "Trillion"]
-    : [ticker, "주가", "AI 렌즈", "Trillion"];
+  // 영어 페이지는 원어/영문명을 주(主)로 올린다 — ko는 '애플(Apple Inc.·AAPL)', en은 'Apple Inc. (AAPL)'.
+  // (name은 한글 오버라이드라 그대로 쓰면 "애플 forecast" 같은 검색되지 않는 키워드가 나온다.)
+  const main = isEn ? (en ?? name) : name; // 제목·설명의 주 이름
+  const sub = isEn ? (en ? name : undefined) : en; // 괄호/키워드에 병기할 보조 이름
+
+  const label = hasName ? `${main} (${ticker})` : ticker;
+  const title = isEn
+    ? isVN
+      ? `${label} Stock Price · TR-AI Lens · News`
+      : `${label} Stock Price · TR-AI Lens · News · Filings`
+    : isVN
+      ? `${label} 주가·TR-AI 렌즈·뉴스`
+      : `${label} 주가·TR-AI 렌즈·뉴스·공시`;
+  const idPart = hasName ? `(${sub ? `${sub}·` : ""}${ticker})` : "";
+  const description = isEn
+    ? isVN
+      ? `${main}${idPart} stock price with proven-method lenses (momentum, value, quality, F-Score) and the latest news at a glance. Not a buy or sell signal — material for you to judge for yourself.`
+      : `${main}${idPart} stock price with proven-method lenses (momentum, value, quality, F-Score) and the latest news and filings at a glance. Not a buy or sell signal — material for you to judge for yourself.`
+    : isVN
+      ? `${main}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
+      : `${main}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
+
+  // 경로는 routing 설정(as-needed)이 만들게 둔다 — ko는 프리픽스 없음, en은 /en. 직접 조립하면 프리픽스가 틀린다.
+  const href = `/stock/${symbol}`;
+  const path = getPathname({ href, locale });
+  const url = `${BASE}${path}`;
+  const languages = Object.fromEntries(
+    routing.locales.map((l) => [l, getPathname({ href, locale: l })])
+  );
+
+  const kw = isEn
+    ? hasName
+      ? [main, `${main} stock`, `${main} forecast`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "AI Lens", "Trillion"]
+      : [ticker, "stock", "AI Lens", "Trillion"]
+    : hasName
+      ? [main, `${main} 주가`, `${main} 전망`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "AI 렌즈", "Trillion"]
+      : [ticker, "주가", "AI 렌즈", "Trillion"];
 
   return {
     title,
     description,
     keywords: kw,
-    alternates: { canonical: `/stock/${symbol}` },
+    alternates: {
+      canonical: path,
+      languages: {
+        ...languages,
+        "x-default": getPathname({ href, locale: routing.defaultLocale }),
+      },
+    },
     openGraph: {
       title: `${title} | Trillion`,
       description,
       url,
       type: "website",
-      locale: "ko_KR",
+      locale: isEn ? "en_US" : "ko_KR",
     },
     twitter: { card: "summary_large_image", title: `${title} | Trillion`, description },
   };
 }
 
 export default async function StockPage({ params }: Params) {
-  const { symbol: raw } = await params;
+  const { locale, symbol: raw } = await params;
   const symbol = decodeURIComponent(raw);
+  const isEn = locale === "en";
   const ticker = tickerOf(symbol);
   const info = await resolveStockName(symbol);
   const name = info?.name || ticker;
-  const url = `${BASE}/stock/${symbol}`;
+  const url = `${BASE}${getPathname({ href: `/stock/${symbol}`, locale })}`;
+
+  // 빵부스러기 라벨은 제목과 같은 이름을 쓴다(en이면 원어/영문명). Corporation.name은 데이터라 그대로.
+  const crumbName = isEn && info?.en && info.en !== info.name ? info.en : info?.name;
 
   // JSON-LD — 빵부스러기(지원 리치결과) + 회사 엔티티(티커 매칭). 이름 해석된 종목만 Corporation 노드 추가.
   const graph: Record<string, unknown>[] = [
     {
       "@type": "BreadcrumbList",
       itemListElement: [
-        { "@type": "ListItem", position: 1, name: "홈", item: BASE },
-        { "@type": "ListItem", position: 2, name: "주식", item: `${BASE}/` },
-        { "@type": "ListItem", position: 3, name: info?.name ? `${info.name} (${ticker})` : ticker, item: url },
+        { "@type": "ListItem", position: 1, name: isEn ? "Home" : "홈", item: isEn ? `${BASE}/en` : BASE },
+        { "@type": "ListItem", position: 2, name: isEn ? "Stocks" : "주식", item: isEn ? `${BASE}/en/` : `${BASE}/` },
+        { "@type": "ListItem", position: 3, name: crumbName ? `${crumbName} (${ticker})` : ticker, item: url },
       ],
     },
   ];
