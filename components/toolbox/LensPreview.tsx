@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { Sparkles, Layers } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -26,6 +26,7 @@ export type LensRow = { symbol: string; name: string; price?: number | null; cha
 
 export default function LensPreview({ stock, market, compact = false }: { stock: LensRow | null; market: string; compact?: boolean }) {
   const t = useTranslations('LensPreview');
+  const locale = useLocale(); // 렌즈 엔진은 ?lang=으로 언어를 받는다(기본 ko) — 안 보내면 en 화면에도 한국어가 온다
   const [lenses, setLenses] = useState<LensItem[] | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [brief, setBrief] = useState('');
@@ -35,12 +36,12 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
   useEffect(() => {
     if (!stock) { setState('idle'); setLenses(null); return; }
     let alive = true; setState('loading');
-    fetch('/api/lens?symbol=' + encodeURIComponent(stock.symbol))
+    fetch('/api/lens?symbol=' + encodeURIComponent(stock.symbol) + '&lang=' + locale)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; setLenses(j.lenses || []); setState('done'); })
       .catch(() => { if (alive) setState('error'); });
     return () => { alive = false; };
-  }, [stock?.symbol]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [stock?.symbol, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ETF/펀드면 구성 요약(렌즈 대신) — /api/etf-holdings
   useEffect(() => {

@@ -292,6 +292,15 @@ export const LENS_OUTLOOK: Record<Locale, {
   },
 };
 
+// 신뢰도 등급 배지 텍스트 — 렌즈 카드 겉면("얼마나 믿을 만한가"). 색 계열(gradeTier)은 언어 무관이라 별도.
+// ⚠️ ko 값은 기존 lib/lenses.ts 리터럴과 바이트 동일(스냅샷 테스트·KR 화면 무회귀). en은 신뢰도 범례(StockLens.readingGuide)와 문구 일치.
+export type GradeKey = "verified" | "verifiedDefensive" | "reference" | "weakSignal";
+
+export const LENS_GRADE: Record<Locale, Record<GradeKey, string>> = {
+  ko: { verified: "검증", verifiedDefensive: "검증(방어)", reference: "참고용", weakSignal: "약한 신호" },
+  en: { verified: "Verified", verifiedDefensive: "Verified (defensive)", reference: "Reference", weakSignal: "Weak signal" },
+};
+
 export function pickLocale(v: string | null | undefined): Locale {
   return v === "en" ? "en" : "ko";
 }

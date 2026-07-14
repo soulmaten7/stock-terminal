@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
 import { useRouter } from '@/i18n/navigation';
-import { LENS_COPY } from '@/lib/lensCopy';
+import { LENS_COPY, pickLocale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';
 
@@ -240,6 +240,7 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
 
 function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 렌즈 카피는 언어별 맵 — ko 고정하면 en 화면에 한국어가 샌다
   const [open, setOpen] = useState(false);
   if (!f.supported) {
     return (
@@ -267,7 +268,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
             <span className="text-xs text-unjong-muted">{t('fscore.tagline')}</span>
             <FlagChip flags={flags} />
           </div>
-          {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p> : null}
+          {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY[locale].fscore.what}</p> : null}
         </div>
         <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
@@ -279,7 +280,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
           {/* 이게 뭐예요? — 지금 뭘 하는지만 */}
           <div className="rounded-xl border border-unjong-border bg-unjong-surface p-3">
             <p className="text-[12px] font-medium text-unjong-accent">{t('fscore.whatIsIt')}</p>
-            <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{LENS_COPY.ko.fscore.what}</p>
+            <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{LENS_COPY[locale].fscore.what}</p>
           </div>
 
           {/* 판정 — 9칸 트래커 + 점수 */}
@@ -882,6 +883,7 @@ const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon
 
 export default function StockLensClient({ initialName }: { initialName?: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 렌즈 엔진 언어(?lang=) + 배지 — 안 넘기면 en 화면에 한국어 렌즈가 온다
   const params = useParams();
   const router = useRouter();
   const symbol = decodeURIComponent(String(params?.symbol || ''));
@@ -897,11 +899,11 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   useEffect(() => {
     if (!symbol) return;
     setLoading(true);
-    fetch('/api/lens?symbol=' + encodeURIComponent(symbol))
+    fetch('/api/lens?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
       .then((j) => { setData(j); setLoading(false); })
       .catch(() => setLoading(false));
-  }, [symbol]);
+  }, [symbol, locale]);
 
   useEffect(() => {
     if (!symbol) return;
@@ -998,7 +1000,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
 
       <div className="mt-3 max-w-4xl">
         <div className="mb-1.5 flex items-center gap-2">
-          <AiLensBadge pill />
+          <AiLensBadge pill lang={locale} />
           <span className="text-[11px] text-unjong-muted">{t('headerNote')}</span>
         </div>
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">

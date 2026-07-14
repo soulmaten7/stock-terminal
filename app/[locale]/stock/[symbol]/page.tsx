@@ -126,13 +126,16 @@ export default async function StockPage({ params }: Params) {
 
   const kind = await getInstrumentType(symbol); // ETF/펀드면 구성 뷰로 분기(기업재무 렌즈 대신)
 
+  // h1도 제목·빵부스러기와 같은 이름으로(en이면 영문명 — 한글명이 영어 화면에 뜨는 것 방지). crumbName과 같은 규칙.
+  const h1Name = crumbName || undefined;
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {kind === "fund" ? (
-        <EtfLensClient symbol={symbol} initialName={info?.name || undefined} />
+        <EtfLensClient symbol={symbol} initialName={h1Name} />
       ) : (
-        <StockLensClient initialName={info?.name || undefined} />
+        <StockLensClient initialName={h1Name} />
       )}
     </>
   );

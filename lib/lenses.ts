@@ -6,7 +6,7 @@
 import { momentum121FromDaily, momentumLabel } from "./momentum";
 import { realizedVol, volLabel } from "./lowvol";
 import { sma, rsi, rsiState, maTrend } from "./technical";
-import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS, LENS_OUTLOOK, type Locale } from "./lensCopy";
+import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS, LENS_OUTLOOK, LENS_GRADE, type Locale } from "./lensCopy";
 import type { Lens, StockData, LensRead } from "./lenses/types";
 
 export type { LensRead } from "./lenses/types";
@@ -53,7 +53,7 @@ function latestGrossProfit(financials: StockData["financials"]): number | null {
 
 // ── 모멘텀 렌즈 ── 단기=1·3개월 추세 / 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +).
 export const momentum: Lens = {
-  meta: { key: "momentum", nameEn: "Momentum (12-1)", grade: "검증", gradeTier: "strong", horizon: "mid", backtestRef: "STEP559", percentile: { dir: "high" } },
+  meta: { key: "momentum", nameEn: "Momentum (12-1)", grade: LENS_GRADE.ko.verified, gradeTier: "strong", horizon: "mid", backtestRef: "STEP559", percentile: { dir: "high" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const closes = d.closes;
     const c = LENS_COPY[locale].momentum;
@@ -67,7 +67,7 @@ export const momentum: Lens = {
     const mState = m121 == null ? null : m121 > 10 ? "up" : m121 < -10 ? "down" : "flat";
     return {
       key: "momentum",
-      grade: "검증",
+      grade: LENS_GRADE[locale].verified,
       gradeTier: "strong",
       nameEn: "Momentum (12-1)",
       horizon: "mid",
@@ -90,7 +90,7 @@ export const momentum: Lens = {
 
 // ── 기술 렌즈 ── 단기=RSI(과열/침체), 장기=200일선 대비(추세)
 export const technical: Lens = {
-  meta: { key: "technical", nameEn: "Technical (RSI · MA)", grade: "참고용", gradeTier: "ref", horizon: "short", backtestRef: "STEP559", percentile: null },
+  meta: { key: "technical", nameEn: "Technical (RSI · MA)", grade: LENS_GRADE.ko.reference, gradeTier: "ref", horizon: "short", backtestRef: "STEP559", percentile: null },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const closes = d.closes;
     const c = LENS_COPY[locale].technical;
@@ -106,7 +106,7 @@ export const technical: Lens = {
     const tState = last == null || ma200 == null ? null : last > ma200 ? "up" : last < ma200 ? "down" : "flat";
     return {
       key: "technical",
-      grade: "참고용",
+      grade: LENS_GRADE[locale].reference,
       gradeTier: "ref",
       nameEn: "Technical (RSI · MA)",
       horizon: "short",
@@ -134,7 +134,7 @@ export const technical: Lens = {
 // ── 밸류(가치) 렌즈 ── 검증: 투자가능($5+)서 싼(고 E/P·B/M) 종목이 비싼 종목 대비 우위(정설이나 우리 표본선 약함).
 // ⚠️ 라벨은 "저평가/고평가"(가치 판단·verdict) 대신 "낮음/보통/높음"(PER 수준 사실)로 — 절대 임계값의 verdict는 검증 밖(상대·섹터내 비교가 맞음). 중립 표시.
 export const valuation: Lens = {
-  meta: { key: "valuation", nameEn: "Value (E/P · B/M)", grade: "약한 신호", gradeTier: "partial", horizon: "long", backtestRef: "STEP560", percentile: { dir: "low" } },
+  meta: { key: "valuation", nameEn: "Value (E/P · B/M)", grade: LENS_GRADE.ko.weakSignal, gradeTier: "partial", horizon: "long", backtestRef: "STEP560", percentile: { dir: "low" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const pe = d.pe, pb = d.pb;
     const c = LENS_COPY[locale].valuation;
@@ -142,7 +142,7 @@ export const valuation: Lens = {
     const vState = pe == null || pe <= 0 ? "na" : pe < 10 ? "cheap" : pe > 25 ? "rich" : "mid";
     return {
       key: "valuation",
-      grade: "약한 신호",
+      grade: LENS_GRADE[locale].weakSignal,
       gradeTier: "partial",
       nameEn: "Value (E/P · B/M)",
       horizon: "long",
@@ -165,7 +165,7 @@ export const valuation: Lens = {
 
 // ── 저변동성 렌즈 ── 실현변동성(위험). 검증: 투자가능($5+) 유니버스서 저변동군이 위험 낮고 수익 우위.
 export const lowVol: Lens = {
-  meta: { key: "lowvol", nameEn: "Low Volatility (BAB)", grade: "검증(방어)", gradeTier: "strong", horizon: "long", backtestRef: "STEP559", percentile: { dir: "low" } },
+  meta: { key: "lowvol", nameEn: "Low Volatility (BAB)", grade: LENS_GRADE.ko.verifiedDefensive, gradeTier: "strong", horizon: "long", backtestRef: "STEP559", percentile: { dir: "low" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const closes = d.closes;
     const c = LENS_COPY[locale].lowvol;
@@ -173,7 +173,7 @@ export const lowVol: Lens = {
     const lvState = vol == null ? null : vol < 20 ? "calm" : vol > 40 ? "jumpy" : "mid";
     return {
       key: "lowvol",
-      grade: "검증(방어)",
+      grade: LENS_GRADE[locale].verifiedDefensive,
       gradeTier: "strong",
       nameEn: "Low Volatility (BAB)",
       horizon: "long",
@@ -197,7 +197,7 @@ export const lowVol: Lens = {
 // ── 퀄리티(Quality) 렌즈 ── Gross Profitability(GP/A, Novy-Marx). 검증: 고 GP/A가 저 GP/A 대비 우위(FF3 알파 유의).
 // GP/A = 매출총이익/총자산. 라벨은 수준 서술(높음/보통/낮음 · verdict 아님). 은행은 매출총이익 없어 미적용(null).
 export const quality: Lens = {
-  meta: { key: "quality", nameEn: "Quality (GP/A)", grade: "검증", gradeTier: "strong", horizon: "long", backtestRef: "STEP560", percentile: { dir: "high" } },
+  meta: { key: "quality", nameEn: "Quality (GP/A)", grade: LENS_GRADE.ko.verified, gradeTier: "strong", horizon: "long", backtestRef: "STEP560", percentile: { dir: "high" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const grossProfit = latestGrossProfit(d.financials);
     const totalAssets = d.financials[d.financials.length - 1]?.totalAssets ?? null;
@@ -207,7 +207,7 @@ export const quality: Lens = {
     const qState = gpa == null ? "na" : gpa > 40 ? "high" : gpa < 15 ? "low" : "mid";
     return {
       key: "quality",
-      grade: "검증",
+      grade: LENS_GRADE[locale].verified,
       gradeTier: "strong",
       nameEn: "Quality (GP/A)",
       horizon: "long",
@@ -231,7 +231,7 @@ export const quality: Lens = {
 // ── 자산성장(Asset Growth·투자팩터) 렌즈 ── 총자산 전년比 증가율. 표본 약함: 방향·독립성은 진짜(βHML낮음=밸류와 별개)이나 우리 표본 유의 미달.
 // 라벨=확장 강도(공격적/보통/보수적 · verdict 아님). 고성장=역사적으로 이후 수익 약세 경향(과잉투자 경계).
 export const assetGrowth: Lens = {
-  meta: { key: "assetgrowth", nameEn: "Asset Growth (CMA)", grade: "약한 신호", gradeTier: "partial", horizon: "long", backtestRef: "STEP560", percentile: { dir: "low" } },
+  meta: { key: "assetgrowth", nameEn: "Asset Growth (CMA)", grade: LENS_GRADE.ko.weakSignal, gradeTier: "partial", horizon: "long", backtestRef: "STEP560", percentile: { dir: "low" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const lr = d.financials[d.financials.length - 1];
     const prev = d.financials[d.financials.length - 2];
@@ -241,7 +241,7 @@ export const assetGrowth: Lens = {
     const agState = assetGrowthPct == null ? "na" : assetGrowthPct > 20 ? "aggressive" : assetGrowthPct < 5 ? "conservative" : "mid";
     return {
       key: "assetgrowth",
-      grade: "약한 신호",
+      grade: LENS_GRADE[locale].weakSignal,
       gradeTier: "partial",
       nameEn: "Asset Growth (CMA)",
       horizon: "long",
