@@ -13,8 +13,10 @@ export function realizedVol(closes: number[], days = 252): number | null {
   return Math.sqrt(varc) * Math.sqrt(252) * 100;
 }
 
-// 연율 변동성 라벨. 임계값(25/45%)은 첫 버전 — 분포·백테스트로 튜닝 여지.
-export function volLabel(v: number | null): string | null {
+// 연율 변동성 "상태"(언어중립). 표시 라벨은 언어별(lib/lensCopy LEVEL_LABELS.vol).
+// ⚠️ 임계값(25/45%)은 렌즈 카드의 verdict 상태(20/40%)와 일부러 다름 — 기존 동작이라 통일하지 말 것.
+export type VolState = "low" | "high" | "mid";
+export function volState(v: number | null): VolState | null {
   if (v == null) return null;
-  return v < 25 ? "저변동" : v > 45 ? "고변동" : "보통";
+  return v < 25 ? "low" : v > 45 ? "high" : "mid";
 }

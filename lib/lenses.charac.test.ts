@@ -4,7 +4,7 @@
 // 결정론 픽스처(seeded)로 가격계열을 만들어 재현 가능하게 한다.
 import { describe, it, expect } from "vitest";
 import { momentum, technical, valuation, lowVol, quality, assetGrowth } from "./lenses";
-import { DETAIL_LABELS } from "./lensCopy";
+import { DETAIL_LABELS, LENS_COPY, LEVEL_LABELS } from "./lensCopy";
 import type { StockData } from "./lenses/types";
 import type { FRow } from "./fscore";
 
@@ -99,7 +99,7 @@ describe("momentumLens — 특성화", () => {
     expect({ key: r.key, name: r.name, summary: r.summary, long: r.long, state: r.state }).toMatchInlineSnapshot(`
       {
         "key": "momentum",
-        "long": "강세",
+        "long": "Strong",
         "name": "Momentum",
         "state": "up",
         "summary": "Whether a stock that's been climbing keeps climbing — best when trends hold.",
@@ -450,5 +450,98 @@ describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
     expect(tech.headline).toBe("vs MA200 61.18%");
     expect(lv.headline).toBe("Ann. vol 8.89%");
     expect(ag.headline).toBe("Asset growth 30%");
+  });
+});
+
+// ── STEP718 i18n — note(자세히·검증 근거) + short/long 라벨의 이중언어. ──
+// 이 블록의 의무: (1) en 렌즈 출력에 한국어가 한 글자도 안 샌다 (2) en note가 통계·레퍼런스를 원문 그대로 보존한다
+//   (번역이 수치를 흘리면 "검증된 기법"이라는 근거 자체가 무너짐 — 문장은 번역해도 숫자는 못 바꾼다).
+describe("note · short/long — i18n 무회귀", () => {
+  // 전 렌즈 × 전 상태(상승/하락/고변동 · 저PER/고PER · 고GP/A/저GP/A · 공격/보수)를 en으로 돌려 한글 스캔.
+  async function allEnReads() {
+    return Promise.all([
+      momentum.compute(sd({ closes: up }), "en"),
+      momentum.compute(sd({ closes: down }), "en"),
+      technical.compute(sd({ closes: up }), "en"),
+      technical.compute(sd({ closes: down }), "en"),
+      valuation.compute(sd({ pe: 8, pb: 1.2 }), "en"),
+      valuation.compute(sd({ pe: 30, pb: 5 }), "en"),
+      lowVol.compute(sd({ closes: up }), "en"),
+      lowVol.compute(sd({ closes: jumpy }), "en"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "en"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 5 }]) }), "en"),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en"),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "en"),
+    ]);
+  }
+
+  it("en 렌즈 출력의 모든 표시 문자열에 한글 0", async () => {
+    for (const r of await allEnReads()) {
+      const shown = [
+        r.name, r.summary, r.about, r.grade, r.note, r.short, r.long, r.headline, r.outlook,
+        r.verdict?.phrase, r.verdict?.plain, ...(r.spectrum?.labels ?? []),
+      ];
+      for (const s of shown) {
+        if (s == null) continue;
+        expect(s, `en 출력에 한글 누출(${r.key}): ${s}`).not.toMatch(/[가-힣]/);
+      }
+    }
+  });
+
+  it("ko note = STEP718 이전 lib/lenses.ts 인라인 리터럴(전 렌즈 비어있지 않음)", async () => {
+    // 문자열 자체는 위 ko 전체 스냅샷이 바이트로 고정 — 여기선 LENS_COPY 경로가 실제로 물렸는지(빈 note 회귀 방지).
+    const reads = await Promise.all([
+      momentum.compute(sd({ closes: up }), "ko"),
+      technical.compute(sd({ closes: up }), "ko"),
+      valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko"),
+      lowVol.compute(sd({ closes: up }), "ko"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "ko"),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko"),
+    ]);
+    for (const r of reads) {
+      expect(r.note, `ko note 없음: ${r.key}`).toBeTruthy();
+      expect(r.note!.length, `ko note 너무 짧음: ${r.key}`).toBeGreaterThan(100);
+    }
+  });
+
+  // 🔒 번역은 문장만 바꾼다 — 통계량·레퍼런스는 ko·en 양쪽에 "그대로" 있어야 한다.
+  it("en note가 통계·레퍼런스를 원문 그대로 보존", () => {
+    const TOKENS: Record<string, string[]> = {
+      momentum: ["t≈2.5", "0.71", "67%", "FF3", "$5+", "STEP559", "t≈3.6", "150"],
+      technical: ["153", "−8.7%", "t≈−2.0", "66%", "t≈1.6", "t≈2.7", "FF3", "STEP559"],
+      valuation: ["βHML≈0.71", "2010~24", "t≈0.9", "t≈1.5", "+6~9%", "0.72", "HML", "STEP560"],
+      lowvol: ["BAB", "161", "18%", "t≈3.1", "t≈2.6", "t≈1.6", "$5+", "STEP559"],
+      quality: ["t≈2.9", "0.78", "t≈2.5", "t≈3.2", "t≈2.75", "−0.22", "13", "STEP560"],
+      assetgrowth: ["2008", "CMA", "13", "+8%", "βHML≈0.17", "t≈1.6", "t<2", "STEP560"],
+    };
+    for (const [lens, tokens] of Object.entries(TOKENS)) {
+      const ko = LENS_COPY.ko[lens as keyof typeof LENS_COPY.ko] as { note: string };
+      const en = LENS_COPY.en[lens as keyof typeof LENS_COPY.en] as { note: string };
+      for (const tk of tokens) {
+        expect(ko.note, `ko note에 토큰 없음(${lens}): ${tk}`).toContain(tk);
+        expect(en.note, `en note가 수치를 흘림(${lens}): ${tk}`).toContain(tk);
+      }
+    }
+  });
+
+  // short/long 표시 라벨 — ko는 기존 한국어 리터럴과 바이트 동일(KR 화면 무회귀), en은 한글 0.
+  it("LEVEL_LABELS.ko = 기존 한국어 리터럴(바이트 동일)", () => {
+    expect(LEVEL_LABELS.ko).toEqual({
+      trend: { strong: "강세", neutral: "중립", weak: "약세" },
+      rsi: { hot: "과열", cold: "침체", neutral: "중립" },
+      ma: { up: "상승추세", down: "하락추세" },
+      per: { cheap: "낮음", mid: "보통", rich: "높음" },
+      vol: { low: "저변동", mid: "보통", high: "고변동" },
+      gpa: { high: "높음", mid: "보통", low: "낮음" },
+      growth: { aggressive: "공격적", mid: "보통", conservative: "보수적" },
+    });
+  });
+
+  it("LEVEL_LABELS.en엔 한글 없음", () => {
+    for (const [group, map] of Object.entries(LEVEL_LABELS.en)) {
+      for (const [k, v] of Object.entries(map)) {
+        expect(v, `en 라벨에 한글: ${group}.${k}=${v}`).not.toMatch(/[가-힣]/);
+      }
+    }
   });
 });

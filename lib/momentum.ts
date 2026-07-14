@@ -7,10 +7,12 @@ export function momentum121(price12moAgo: number | null, price1moAgo: number | n
   return (price1moAgo / price12moAgo - 1) * 100;
 }
 
-// 12개월 기준 강세/중립/약세 라벨. 임계값(±20%)은 첫 버전 — 백테스트/분포로 튜닝 여지.
-export function momentumLabel(mom: number | null): string | null {
+// 12개월 기준 강세/중립/약세 "상태"(언어중립). 표시 라벨은 언어별(lib/lensCopy LEVEL_LABELS.trend).
+// 임계값(±20%)은 첫 버전 — 백테스트/분포로 튜닝 여지.
+export type MomentumState = "strong" | "weak" | "neutral";
+export function momentumState(mom: number | null): MomentumState | null {
   if (mom == null) return null;
-  return mom > 20 ? "강세" : mom < -20 ? "약세" : "중립";
+  return mom > 20 ? "strong" : mom < -20 ? "weak" : "neutral";
 }
 
 // 일봉 종가 배열에서 12-1 모멘텀 계산(대략 거래일: 12개월≈252, 1개월≈21 전).
