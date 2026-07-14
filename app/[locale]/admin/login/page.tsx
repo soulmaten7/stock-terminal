@@ -5,8 +5,6 @@ import { useRouter, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ShieldCheck } from 'lucide-react';
 
-export const dynamic = "force-dynamic";
-
 export default function AdminLoginPage() {
   const router = useRouter();
   const [phase, setPhase] = useState<'checking' | 'login' | 'denied'>('checking');
