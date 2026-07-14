@@ -5,7 +5,12 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🌍 **2026-07-14 (2·최신) · 2차 i18n(다국어) 완성 — next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트 (HEAD `14c1813`).**
+> 🔎 **2026-07-14 (3·최신) · US 풀뎁스 P0 — 종목상세 영어 SEO + US 파리티 감사 (HEAD `f647b08`).**
+> - **📋 US vs KR 파리티 감사**(서브에이전트 + DB 실측): US는 이미 KR 동급이거나 **더 깊음** — 배관·종목보드·피드 7탭·**link_hub 139**(KR 138·옛 'US 67 미충전'은 낡은 정보)·brokers 17·지수바 완비. US가 KR보다 깊은 곳=렌즈 백분위 게이지(US 유니버스 전용)·공시 심각도 분류(material/routine)·서학개미 한글명. KR 전용(갭 아님·의도)=코스피/코스닥·상하한·유사투자자문사·유튜브. **유일 실질 갭 = 종목상세 영어 SEO.**
+> - **🔎 STEP 711**(`f647b08`·`app/[locale]/stock/[symbol]/page.tsx` 단일): `generateMetadata`·JSON-LD locale 인지화 → `/en/stock/{symbol}` 영어 title·description·keywords·OG `en_US`·**hreflang(ko·en·x-default)**·영어 breadcrumb(Home/Stocks). ko는 **byte 동일**(SEO 무회귀·curl 대조)·VN 분기(뉴스만) 보존. 인라인 locale 분기(SEO 템플릿이라 메시지 카탈로그 아님). **🔑 Opus 스펙교정**: en 페이지에 `${name}`(서학개미 한글명 오버라이드) 쓰면 한글명 영어SEO라 목적 붕괴 → en 분기는 `info.en`(영문명) 주·한글명 보조(ko 무영향). tsc 0·vitest 34/34.
+> - **▶ 다음 US(선택) = P1 통화기호`$`(상세 `formatPrice`) · P2 US IPO 구조화 피드·ETN 서브탭 · (보류) 인라인 증권사 광고=수익화.** 그 외 후보 = OAuth 로케일 쿠키 수정 · 다크 폴리시 D · 클로즈드 베타 초대.
+>
+> 🌍 **2026-07-14 (2) · 2차 i18n(다국어) 완성 — next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트 (HEAD `14c1813`).**
 > - **문자열 이관(709~709F)**: Chrome·Toolbox·렌즈·6보드(Board dedup)·AdvisorDirectory·피드·사용자페이지 → `messages/ko.json`(값 동일·화면 0). 서버=`getTranslations`·클라=`useTranslations`. 제외=props·API·데이터·DB로 가는 값(label만 번역)·**admin·약관/개인정보(의도적)**.
 > - **710A 라우팅 구조**(`70328e8`·ko 단일·`as-needed`·화면 0): `routing/navigation/request/proxy`(Supabase 세션과 합성)+`app/[locale]/*` 이동+generateStaticParams+setRequestLocale. **🐞** next-intl matcher 점(.)규칙이 종목코드(7203.T·0700.HK·600519.SS·VIC.VN·SHEL.L·BRK.B)를 정적파일로 오인→해외 5개국 종목상세 전부 404날 뻔 → **확장자 화이트리스트로 교체**(proxy.ts 주석).
 > - **710B en.json**(`c8a69b5`·414키 ko와 1:1·브랜드 보이스 잠금[슬로건·3기둥·멍거 원문·Insufficient data]·영어 축약형 배제로 ICU 아포스트로피 회피·`messages.test.ts`=키패리티/ICU/보이스 영구 vitest·`Login.brandKo`=로고 워드마크라 번역금지).

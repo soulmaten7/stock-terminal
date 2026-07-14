@@ -1,7 +1,12 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🌍 **2026-07-14 (2·최신) — 2차 i18n(다국어) 완성: next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트. HEAD `14c1813`.**
+> 🔎 **2026-07-14 (3·최신) — US 풀뎁스 P0: 종목상세 영어 SEO + US 파리티 감사. HEAD `f647b08`.**
+> - **📋 US 감사(서브에이전트+DB 실측)**: US는 이미 KR 동급/더 깊음 — 배관·보드·피드 7탭·**link_hub 139**(옛 'US 67 미충전'은 낡음)·brokers 17·렌즈 백분위(US 전용)·공시 심각도 분류. KR 전용(갭 아님)=코스피코스닥·상하한·유사투자자문사·유튜브. **유일 실질 갭=종목상세 영어 SEO.**
+> - **🔎 STEP 711**(`f647b08`·`app/[locale]/stock/[symbol]/page.tsx`): `generateMetadata`·JSON-LD locale 인지화 → `/en/stock/{sym}` 영어 title·desc·keywords·OG `en_US`·hreflang(ko·en·x-default)·breadcrumb(Home/Stocks). ko **byte 동일**(무회귀)·VN 뉴스분기 보존. 🔑 Opus 스펙교정: en 분기는 `info.en`(영문명) 주로(한글명 영어SEO 방지·ko 무영향).
+> - **▶ 다음 US(선택) = P1 통화기호`$` · P2 US IPO 구조화·ETN · (보류) 인라인 증권사 광고=수익화.** 그 외 후보=OAuth 로케일 쿠키·다크 폴리시 D·클로즈드 베타.
+>
+> 🌍 **2026-07-14 (2) — 2차 i18n(다국어) 완성: next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트. HEAD `14c1813`.**
 > - **문자열 이관(709~709F)**: Chrome·Toolbox·렌즈·6보드(Board dedup)·AdvisorDirectory·피드·사용자페이지 → `messages/ko.json`(값 동일·화면 0). 서버=`getTranslations`·클라=`useTranslations`. 제외=props·API·데이터·DB로 가는 값(label만 번역)·**admin·약관/개인정보(의도적)**.
 > - **710A 라우팅 구조**(`70328e8`·ko 단일·as-needed·화면 0): `routing/navigation/request/proxy`(Supabase 세션과 합성)+`app/[locale]/*` 이동+generateStaticParams. 🐞 matcher 점(.)규칙이 종목코드(7203.T·0700.HK 등) 404 유발 → **확장자 화이트리스트로 교체**.
 > - **710B en.json**(`c8a69b5`·414키 1:1·브랜드 보이스 잠금·영어 축약형 배제로 ICU 아포스트로피 회피·`messages.test.ts` 패리티 영구테스트·`Login.brandKo`=로고라 번역금지).

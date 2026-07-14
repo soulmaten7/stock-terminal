@@ -1,6 +1,14 @@
 <!-- 2026-07-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-14 (3) — 🔎 US 풀뎁스 P0: 종목상세 영어 SEO + US 파리티 감사 (HEAD `f647b08`)
+
+- **📋 US vs KR 파리티 감사**(서브에이전트 + DB 실측): US는 이미 KR 동급이거나 **더 깊음** — 배관·종목보드(모바일·뷰복원·렌즈미리보기·크론)·피드 7탭·**link_hub 139**(KR 138·옛 "US 67 미충전"은 낡은 정보)·brokers 17·지수바 완비. US가 KR보다 깊은 곳=렌즈 백분위 게이지(US 유니버스 전용)·공시 심각도 분류(material/routine)·서학개미 한글명. KR 전용(갭 아님·의도)=코스피/코스닥·상하한·유사투자자문사·유튜브. **유일한 실질 갭 = 종목상세 영어 SEO.**
+- **🔎 STEP 711 종목상세 영어 SEO**(`f647b08`·`app/[locale]/stock/[symbol]/page.tsx` 단일 파일): `generateMetadata`·JSON-LD를 locale 인지화 → `/en/stock/{symbol}`이 영어 title(Stock Price · TR-AI Lens · News · Filings)·description·keywords·OG `en_US`·**hreflang(ko·en·x-default)**·영어 breadcrumb(Home/Stocks). ko `/stock/{symbol}`은 **byte 동일**(SEO 무회귀·curl 대조). VN 분기(뉴스만·공시 없음) 양쪽 보존. 인라인 locale 분기(SEO 템플릿이라 메시지 카탈로그 아님).
+- **🔑 Opus 스펙 결함 교정(교훈)**: 스펙이 en 페이지에 `${name}`(서학개미 `foreign_ko_names` 한글명 오버라이드)을 그대로 써서 "애플 forecast" 같은 **한글명 영어 SEO**가 나올 뻔 → **en 분기는 `info.en`(영문명) 주·한글명 보조**로 스왑(Apple Inc. · 애플). ko 출력 무영향. (영어 SEO엔 반드시 영문명 우선.)
+- **⚠️ 잔여 US(선택)**: P1 통화기호(`$`·상세 `<h1>`/가격 `formatPrice`) · P2 US IPO 구조화 피드·ETN 서브탭 · (보류) 인라인 증권사 광고=수익화. `/en/stock/{KR종목}`이 한글명인 건 KR 종목 영문명 DB 공백(데이터·지어내지 않음)·나중 자동 해결.
+- **✅** tsc 0·vitest 34/34·빌드 성공·`IntlError` 0·ko 무회귀 curl 대조·en 신규 라이브 확인.
+
 ## 2026-07-14 (2) — 🌍 2차 i18n(다국어) 완성: next-intl [locale] 라우팅 + 영어(en) + 언어 스위처 + en→US 시장 디폴트 (HEAD `14c1813`)
 
 - **개요**: 2차 목표(다국어) 3단계 완성 — 기반(708) → 문자열 이관(709~709F) → 라우팅·영어·기능(710A~710D). 코드상 i18n 완결. ko는 URL·화면 100% 그대로, `/en`에서 영어 사용 가능, 헤더 스위처로 한↔영 전환.
