@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { LENS_COPY } from '@/lib/lensCopy';
@@ -66,14 +67,16 @@ function Spectrum({ labels, active, tone }: { labels: [string, string, string]; 
 }
 
 // 팩터 퍼센타일 게이지 — 시총 상위 1,000 대비 순위(0~100·오른쪽=우호 방향). 팩터 5종 공통(Stockopedia식).
+// 모듈 상수 → 값=ko.json 키. 렌더 지점(renderCard)에서 t()로 해석.
 const FACTOR_ENDS: Record<string, { lo: string; hi: string }> = {
-  momentum: { lo: '약세', hi: '강세' },
-  quality: { lo: '평범', hi: '알짜' },
-  valuation: { lo: '비쌈', hi: '쌈' },
-  lowvol: { lo: '출렁', hi: '차분' },
-  assetgrowth: { lo: '공격적', hi: '보수적' },
+  momentum: { lo: 'factorEnds.momentumLo', hi: 'factorEnds.momentumHi' },
+  quality: { lo: 'factorEnds.qualityLo', hi: 'factorEnds.qualityHi' },
+  valuation: { lo: 'factorEnds.valuationLo', hi: 'factorEnds.valuationHi' },
+  lowvol: { lo: 'factorEnds.lowvolLo', hi: 'factorEnds.lowvolHi' },
+  assetgrowth: { lo: 'factorEnds.assetgrowthLo', hi: 'factorEnds.assetgrowthHi' },
 };
 function PctGauge({ pctl, tone, lo, hi }: { pctl: number; tone?: string; lo: string; hi: string }) {
+  const t = useTranslations('StockLens');
   const p = Math.max(0, Math.min(100, Math.round(pctl)));
   const fill = tone === 'pos' ? 'bg-unjong-accent/25' : tone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border';
   const mk = tone === 'pos' ? 'bg-unjong-accent' : tone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted';
@@ -84,16 +87,18 @@ function PctGauge({ pctl, tone, lo, hi }: { pctl: number; tone?: string; lo: str
         <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${p}%` }} />
       </div>
       <div className="mt-1 flex justify-between text-[11px] text-unjong-muted"><span>{lo}</span><span>{hi}</span></div>
-      <p className="mt-1 text-[11px] text-unjong-muted">랭크 <span className="tabular-nums text-unjong-primary">{p}</span>/100 · 오른쪽(높을수록) {hi} · 시총 상위 1,000 중</p>
+      <p className="mt-1 text-[11px] text-unjong-muted">{t.rich('gauge.rank', { p, hi, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
     </div>
   );
 }
 
 // 기술(RSI) 존 게이지 — 침체–중립–과열. 높다고 좋은 게 아니라 '과열' 조심 신호(퍼센타일 아님).
 function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
+  const t = useTranslations('StockLens');
   const r = rsi == null ? null : Math.max(0, Math.min(100, Math.round(rsi)));
   const mk = r == null ? 'bg-unjong-muted' : r >= 70 ? 'bg-amber-400' : r <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted';
-  const zone = r == null ? '—' : r >= 70 ? '과매수' : r <= 30 ? '과매도' : '중립';
+  const zone = r == null ? '—' : r >= 70 ? t('word.overbought') : r <= 30 ? t('word.oversold') : t('word.neutral');
+  const ma = maPct != null ? t('rsi.ma', { dir: maPct >= 0 ? t('rsi.above') : t('rsi.below'), pct: `${maPct > 0 ? '+' : ''}${maPct}` }) : '';
   return (
     <div className="mt-2.5">
       <div className="relative h-2.5">
@@ -104,25 +109,26 @@ function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
         </div>
         {r != null ? <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${r}%` }} /> : null}
       </div>
-      <div className="mt-1 flex justify-between text-[11px] text-unjong-muted"><span>침체 30</span><span>중립</span><span>70 과열</span></div>
-      <p className="mt-1 text-[11px] leading-relaxed text-unjong-muted">RSI <span className="tabular-nums text-unjong-primary">{r ?? '—'}</span> · {zone} — 높다고 좋은 게 아니라 &apos;과열&apos; 조심 신호{maPct != null ? ` · 200일선 ${maPct >= 0 ? '위' : '아래'}(${maPct > 0 ? '+' : ''}${maPct}%)` : ''}</p>
+      <div className="mt-1 flex justify-between text-[11px] text-unjong-muted"><span>{t('rsi.low')}</span><span>{t('rsi.mid')}</span><span>{t('rsi.high')}</span></div>
+      <p className="mt-1 text-[11px] leading-relaxed text-unjong-muted">{t.rich('rsi.line', { r: r ?? '—', zone, ma, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
     </div>
   );
 }
 
 // 시간축 스트립 — 단기(RSI)·중기(모멘텀 퍼센타일)·장기(팩터 묶음+개수). 각 칸 자기 축으로 정직하게(하나로 안 뭉침).
 function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreResp | null }) {
+  const t = useTranslations('StockLens');
   const find = (k: string) => lenses.find((L) => L.key === k) || null;
   const tech = find('technical');
   const mom = find('momentum');
   const longs = lenses.filter((L) => L.horizon === 'long');
 
   const rsiV = tech?.detail?.['RSI(14)'] != null ? Math.round(tech.detail['RSI(14)'] as number) : null;
-  const sWord = rsiV == null ? '—' : rsiV >= 70 ? '과매수' : rsiV <= 30 ? '과매도' : '중립';
+  const sWord = rsiV == null ? '—' : rsiV >= 70 ? t('word.overbought') : rsiV <= 30 ? t('word.oversold') : t('word.neutral');
   const sTone = rsiV != null && (rsiV >= 70 || rsiV <= 30) ? 'warn' : 'flat';
 
   const mTone = mom?.verdict?.tone ?? 'flat';
-  const mWord = mTone === 'pos' ? '강세' : mTone === 'warn' ? '약세' : '중립';
+  const mWord = mTone === 'pos' ? t('word.bull') : mTone === 'warn' ? t('word.bear') : t('word.neutral');
 
   const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' }));
   if (fscore?.supported) longPills.push({ label: 'F-Score', tone: fscore.score >= 7 ? 'pos' : fscore.score <= 3 ? 'warn' : 'flat' });
@@ -132,60 +138,65 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   let lWord = '—';
   let lTone: 'pos' | 'warn' | 'flat' = 'flat';
   if (longPills.length) {
-    if (favN >= lStrong) { lWord = '대체로 우호적'; lTone = 'pos'; }
-    else if (unfavN >= lStrong) { lWord = '대체로 비우호적'; lTone = 'warn'; }
-    else if (favN === 0 && unfavN === 0) { lWord = '뚜렷하지 않음'; }
-    else { lWord = '엇갈림'; }
+    if (favN >= lStrong) { lWord = t('word.mostlyFav'); lTone = 'pos'; }
+    else if (unfavN >= lStrong) { lWord = t('word.mostlyUnfav'); lTone = 'warn'; }
+    else if (favN === 0 && unfavN === 0) { lWord = t('word.unclear'); }
+    else { lWord = t('word.mixed'); }
   }
-  const pillClass = (t: string) => t === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : t === 'warn' ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-background text-unjong-muted';
+  const pillClass = (tone: string) => tone === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : tone === 'warn' ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-background text-unjong-muted';
 
   return (
     <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="mb-2.5 flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">시간축으로 한눈에</span>      </div>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('horizon.title')}</span>      </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         {/* 단기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">단기 <span className="text-[11px] font-normal text-unjong-muted">며칠~주</span></span>
-            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[10px] text-unjong-muted">참고</span>
+            <span className="text-sm font-bold text-unjong-primary">{t('horizon.short')} <span className="text-[11px] font-normal text-unjong-muted">{t('horizon.shortSub')}</span></span>
+            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[10px] text-unjong-muted">{t('horizon.refBadge')}</span>
           </div>
-          <div className="mt-0.5 text-[11px] text-unjong-muted">기술 · RSI</div>
+          <div className="mt-0.5 text-[11px] text-unjong-muted">{t('horizon.techRsi')}</div>
           <div className="relative mt-2 h-2">
             <div className="flex h-2 overflow-hidden rounded-full"><div className="bg-unjong-down/25" style={{ width: '30%' }} /><div className="bg-unjong-background" style={{ width: '40%' }} /><div className="bg-amber-400/45" style={{ width: '30%' }} /></div>
             {rsiV != null ? <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${rsiV >= 70 ? 'bg-amber-400' : rsiV <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted'}`} style={{ left: `${rsiV}%` }} /> : null}
           </div>
-          <p className={`mt-2 text-[12px] font-medium ${toneText(sTone)}`}>{sWord}{rsiV != null ? <span className="font-normal text-unjong-muted"> · RSI {rsiV}</span> : null}</p>
+          <p className={`mt-2 text-[12px] font-medium ${toneText(sTone)}`}>{sWord}{rsiV != null ? <span className="font-normal text-unjong-muted">{t('horizon.rsiSuffix', { v: rsiV })}</span> : null}</p>
         </div>
         {/* 중기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">중기 <span className="text-[11px] font-normal text-unjong-muted">수개월</span></span>
+            <span className="text-sm font-bold text-unjong-primary">{t('horizon.mid')} <span className="text-[11px] font-normal text-unjong-muted">{t('horizon.midSub')}</span></span>
             <span className={`rounded px-1.5 py-0.5 text-[10px] ${mom ? gradeBadgeClass(mom.gradeTier) : 'bg-unjong-background text-unjong-muted'}`}>{mom?.grade ?? '—'}</span>
           </div>
-          <div className="mt-0.5 text-[11px] text-unjong-muted">모멘텀 · 12-1</div>
+          <div className="mt-0.5 text-[11px] text-unjong-muted">{t('horizon.momentum')}</div>
           {mom?.percentile != null ? (
             <div className="relative mt-2 h-2 rounded-full bg-unjong-background">
               <div className={`absolute left-0 top-0 h-2 rounded-full ${mTone === 'pos' ? 'bg-unjong-accent/25' : mTone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border'}`} style={{ width: `${mom.percentile}%` }} />
               <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mTone === 'pos' ? 'bg-unjong-accent' : mTone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted'}`} style={{ left: `${mom.percentile}%` }} />
             </div>
           ) : <div className="mt-2 h-2 rounded-full bg-unjong-background" />}
-          <p className={`mt-2 text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted"> · 상위 {100 - mom.percentile}%</span> : null}</p>
+          <p className={`mt-2 text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{t('horizon.topPct', { v: 100 - mom.percentile })}</span> : null}</p>
         </div>
         {/* 장기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">장기 <span className="text-[11px] font-normal text-unjong-muted">분기~년</span></span>
-            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[10px] text-unjong-muted">재무·팩터</span>
+            <span className="text-sm font-bold text-unjong-primary">{t('horizon.long')} <span className="text-[11px] font-normal text-unjong-muted">{t('horizon.longSub')}</span></span>
+            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[10px] text-unjong-muted">{t('horizon.factorBadge')}</span>
           </div>
           <div className="mt-2 flex flex-wrap gap-1">
             {longPills.length ? longPills.map((p, i) => <span key={i} className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${pillClass(p.tone)}`}>{p.label}</span>) : <span className="text-[11px] text-unjong-muted">—</span>}
           </div>
-          {longPills.length ? <p className={`mt-2 text-[12px] font-medium ${toneText(lTone)}`}>{lWord} <span className="font-normal text-unjong-muted">· {longPills.length}개 중 {favN}개 우호</span></p> : null}
+          {longPills.length ? <p className={`mt-2 text-[12px] font-medium ${toneText(lTone)}`}>{lWord} <span className="font-normal text-unjong-muted">{t('horizon.favCount', { total: longPills.length, fav: favN })}</span></p> : null}
         </div>
       </div>
       <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[12px] leading-relaxed text-unjong-muted">
-        단기 <b className={toneText(sTone)}>{sWord}</b> · 중기 <b className={toneText(mTone)}>{mWord}</b> · 장기 <b className={toneText(lTone)}>{lWord}</b> — 시간축마다 결이 달라요.
+        {t.rich('horizon.summary', {
+          short: sWord, mid: mWord, long: lWord,
+          s: (c) => <b className={toneText(sTone)}>{c}</b>,
+          m: (c) => <b className={toneText(mTone)}>{c}</b>,
+          l: (c) => <b className={toneText(lTone)}>{c}</b>,
+        })}
       </div>
     </div>
   );
@@ -196,13 +207,15 @@ const LEARN_CLASS = 'cursor-pointer list-none text-[11px] font-medium text-unjon
 
 // 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 자료 갱신 우선, 아니면 📌 새 소식.
 function FlagChip({ flags }: { flags?: Flag[] }) {
+  const t = useTranslations('StockLens');
   if (!flags?.length) return null;
   const a = flags.some((x) => x.klass === 'A');
-  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? '자료 갱신' : '새 소식'}</span>;
+  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[10px] font-medium ${a ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? t('flag.update') : t('flag.news')}</span>;
 }
 
 // 렌즈 플래그 박스(펼침) — A(근거 흔듦)/B(새 사실) 분리. 방향 판정 아님.
 function FlagBox({ flags }: { flags?: Flag[] }) {
+  const t = useTranslations('StockLens');
   if (!flags?.length) return null;
   const aFlags = flags.filter((x) => x.klass === 'A');
   const bFlags = flags.filter((x) => x.klass === 'B');
@@ -210,42 +223,48 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
     <div className="mb-3 space-y-2">
       {aFlags.length ? (
         <div className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-300"><AlertTriangle size={11} /> 최근 새 공시가 나왔어요 (이 점수엔 아직 반영 전)</p>
+          <p className="flex items-center gap-1 text-[11px] font-medium text-amber-300"><AlertTriangle size={11} /> {t('flag.aTitle')}</p>
           {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
       {bFlags.length ? (
         <div className="rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[11px] font-medium text-unjong-accent"><Info size={11} /> 이 점수엔 아직 안 들어간 최근 소식이에요</p>
+          <p className="flex items-center gap-1 text-[11px] font-medium text-unjong-accent"><Info size={11} /> {t('flag.bTitle')}</p>
           {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
-      <p className="text-[10px] text-unjong-muted">원문은 위 &apos;최근 공시&apos;에서 볼 수 있어요.</p>
+      <p className="text-[10px] text-unjong-muted">{t('flag.source')}</p>
     </div>
   );
 }
 
 function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
+  const t = useTranslations('StockLens');
   const [open, setOpen] = useState(false);
   if (!f.supported) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-sm">
         <div className="font-bold text-unjong-primary">Piotroski F-Score</div>
-        <div className="mt-0.5 text-xs text-unjong-accent">F-스코어 · 재무 건전성</div>
-        <p className="mt-2 text-sm text-unjong-muted">{f.reason || '이 종목은 F-Score를 적용할 수 없어요.'}</p>
+        <div className="mt-0.5 text-xs text-unjong-accent">{t('fscore.subtitle')}</div>
+        <p className="mt-2 text-sm text-unjong-muted">{f.reason || t('fscore.unsupported')}</p>
       </div>
     );
   }
-  const band = f.score >= 7 ? '양호' : f.score <= 3 ? '취약' : '중간';
-  const GROUPS: Array<[string, string]> = [['수익성', '돈 버는 힘'], ['재무 안정성', '빚·자금'], ['효율성', '장사 효율']];
+  const band = f.score >= 7 ? t('fscore.bandGood') : f.score <= 3 ? t('fscore.bandWeak') : t('fscore.bandMid');
+  // key = API의 c.group 값(데이터 매칭용·번역 금지) / label·sub = 표시용
+  const GROUPS: Array<{ key: string; label: string; sub: string }> = [
+    { key: '수익성', label: t('fscore.groupProfitability'), sub: t('fscore.groupProfitabilitySub') },
+    { key: '재무 안정성', label: t('fscore.groupStability'), sub: t('fscore.groupStabilitySub') },
+    { key: '효율성', label: t('fscore.groupEfficiency'), sub: t('fscore.groupEfficiencySub') },
+  ];
   return (
     <div className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
       <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
-            <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[11px] font-medium text-amber-300">재무 건전성</span>
-            <span className="text-xs text-unjong-muted">· 부실 위험 체크</span>
+            <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
+            <span className="text-xs text-unjong-muted">{t('fscore.tagline')}</span>
             <FlagChip flags={flags} />
           </div>
           {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY.ko.fscore.what}</p> : null}
@@ -259,7 +278,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
           <FlagBox flags={flags} />
           {/* 이게 뭐예요? — 지금 뭘 하는지만 */}
           <div className="rounded-xl border border-unjong-border bg-unjong-surface p-3">
-            <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
+            <p className="text-[12px] font-medium text-unjong-accent">{t('fscore.whatIsIt')}</p>
             <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{LENS_COPY.ko.fscore.what}</p>
           </div>
 
@@ -272,20 +291,29 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
             </div>
             <span className="whitespace-nowrap text-base font-bold text-unjong-primary">{f.score}<span className="text-xs font-normal text-unjong-muted"> / {f.max}</span></span>
           </div>
-          <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary">9개 중 {f.score}개 양호 — 점수가 높을수록 재무가 튼튼해요. <span className="text-unjong-muted">지금은 {band} 구간이에요.{f.asOf ? ` (${f.asOf} 기준)` : ''}</span></p>
+          <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary">{t.rich('fscore.scoreLine', {
+            score: f.score,
+            band,
+            asOf: f.asOf ? t('fscore.asOf', { d: f.asOf }) : '',
+            m: (c) => <span className="text-unjong-muted">{c}</span>,
+          })}</p>
 
           {/* 자세히 — 9항목 3그룹 */}
           <details className="mt-3.5 border-t border-unjong-border pt-3">
-            <summary className={SUMMARY_CLASS}>▾ 9개 항목 — 세 갈래로 보기</summary>
+            <summary className={SUMMARY_CLASS}>{t('fscore.detailsItems')}</summary>
             <div className="mt-2.5 space-y-3">
-              {GROUPS.map(([g, sub]) => {
-                const items = f.criteria.filter((c) => c.group === g);
+              {GROUPS.map((g) => {
+                const items = f.criteria.filter((c) => c.group === g.key);
                 const passed = items.filter((c) => c.pass).length;
                 return (
-                  <div key={g}>
+                  <div key={g.key}>
                     <div className="flex items-baseline justify-between">
-                      <span className="text-[12px] font-medium text-unjong-primary">{g} <span className="font-normal text-unjong-muted">{sub}</span></span>
-                      <span className="text-[11px] text-unjong-muted"><span className={passed > 0 ? 'font-medium text-unjong-accent' : 'font-medium text-amber-400'}>{passed}</span>/{items.length} 통과</span>
+                      <span className="text-[12px] font-medium text-unjong-primary">{g.label} <span className="font-normal text-unjong-muted">{g.sub}</span></span>
+                      <span className="text-[11px] text-unjong-muted">{t.rich('fscore.passed', {
+                        passed,
+                        total: items.length,
+                        n: (c) => <span className={passed > 0 ? 'font-medium text-unjong-accent' : 'font-medium text-amber-400'}>{c}</span>,
+                      })}</span>
                     </div>
                     <div className="mt-1 space-y-0.5">
                       {items.map((c) => (
@@ -304,15 +332,15 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
 
           {/* 자세히 — 점수 기준·유래·왜 건전성 */}
           <details className="mt-2.5">
-            <summary className={SUMMARY_CLASS}>▾ 점수 기준 · 유래 · 왜 &apos;재무 건전성&apos;인지</summary>
+            <summary className={SUMMARY_CLASS}>{t('fscore.detailsBasis')}</summary>
             <div className="mt-2 space-y-2 border-l-2 border-unjong-border pl-2.5">
               <div>
-                <p className="text-[11.5px] font-medium text-unjong-primary">점수 읽는 법</p>
-                <p className="text-[12px] leading-relaxed text-unjong-muted">실무에선 보통 <span className="text-unjong-primary">7점↑ 양호 · 4~6 중간 · 0~3 취약</span>으로 봐요. 피오트로스키가 만든 9개 신호를 더한 값이에요(높을수록 튼튼).</p>
+                <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.howToRead')}</p>
+                <p className="text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.howToReadBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
               </div>
               <div>
-                <p className="text-[11.5px] font-medium text-unjong-primary">왜 &apos;재무 건전성&apos;이에요?</p>
-                <p className="text-[12px] leading-relaxed text-unjong-muted">회계학자 피오트로스키가 2000년, 저평가 가치주 중 <span className="text-unjong-primary">진짜 부실한 곳을 걸러내려</span> 만든 지표예요. 다만 우리 넓은 표본·12년 백테스트에선 점수와 이후 수익률에 유효한 관계가 없었어요(t≈0.7). 그래서 &apos;수익 예측&apos;이 아니라 <span className="text-unjong-primary">재무 건전성 해석</span>으로만 써요 — 그게 이 렌즈 등급이 &apos;재무 건전성&apos;인 이유예요.</p>
+                <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.whyFinHealth')}</p>
+                <p className="text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.whyFinHealthBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
               </div>
             </div>
           </details>
@@ -330,6 +358,7 @@ function sevDot(sev: string): string {
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
 // R1-KR: DART 공시 원문 AI 요약(지연·전역 캐시). US AiFilingSummary의 KR 짝.
 function KrFilingSummary({ rcept, symbol, nm }: { rcept: string; symbol: string; nm: string }) {
+  const t = useTranslations('StockLens');
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -347,11 +376,11 @@ function KrFilingSummary({ rcept, symbol, nm }: { rcept: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+        <span className="text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        ? <p className="text-[11px] text-unjong-muted">{t('ai.reading')}</p>
         : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
@@ -361,6 +390,7 @@ function KrFilingSummary({ rcept, symbol, nm }: { rcept: string; symbol: string;
 type KrEvent = { date: string; report_nm: string; rcept_no: string; url: string };
 function KrEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<KrEvent[]>([]);
+  const t = useTranslations('StockLens');
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let alive = true;
@@ -375,10 +405,10 @@ function KrEventLayer({ symbol }: { symbol: string }) {
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
-        <span className="text-[11px] text-unjong-muted">DART · 실시간</span>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
+        <span className="text-[11px] text-unjong-muted">{t('events.srcDart')}</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e, i) => (
           <li key={i}>
@@ -394,7 +424,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 DART 원문으로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{t('events.goDart')}</p>
     </div>
   );
 }
@@ -404,6 +434,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
 type JpEvent = { doc_id: string; title: string; date: string; reason: string | null; material: boolean; type_code: string | null };
 // R1-JP: EDINET 원문(CSV) AI 한국어 요약(지연·전역 캐시). KR KrFilingSummary의 JP 짝.
 function JpFilingSummary({ docid, symbol, nm }: { docid: string; symbol: string; nm: string }) {
+  const t = useTranslations('StockLens');
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -420,17 +451,18 @@ function JpFilingSummary({ docid, symbol, nm }: { docid: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+        <span className="text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        ? <p className="text-[11px] text-unjong-muted">{t('ai.reading')}</p>
         : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
 function JpEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<JpEvent[]>([]);
+  const t = useTranslations('StockLens');
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let alive = true;
@@ -445,17 +477,17 @@ function JpEventLayer({ symbol }: { symbol: string }) {
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
-        <span className="text-[11px] text-unjong-muted">EDINET · 金融庁</span>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
+        <span className="text-[11px] text-unjong-muted">{t('events.srcEdinet')}</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e, i) => (
           <li key={i}>
             <a href={`/api/jp-events/doc?docid=${encodeURIComponent(e.doc_id)}`} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">중대</span>}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
                 {e.reason && <p className="mt-0.5 truncate text-[11px] text-unjong-muted">{e.reason}</p>}
                 <p className="mt-0.5 text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
               </div>
@@ -465,7 +497,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 EDINET 원문(PDF)으로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{t('events.goEdinet')}</p>
     </div>
   );
 }
@@ -475,6 +507,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
 type GbEvent = { id: string; title: string; date: string; time: string; source: string; url: string; material: boolean };
 // R1-GB: RNS 공시(Investegate 상세) 원문 AI 한국어 요약(지연·전역 캐시). KR/JP FilingSummary의 GB 짝.
 function GbFilingSummary({ url, symbol, nm }: { url: string; symbol: string; nm: string }) {
+  const t = useTranslations('StockLens');
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -491,17 +524,18 @@ function GbFilingSummary({ url, symbol, nm }: { url: string; symbol: string; nm:
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+        <span className="text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        ? <p className="text-[11px] text-unjong-muted">{t('ai.reading')}</p>
         : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
 function GbEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<GbEvent[]>([]);
+  const t = useTranslations('StockLens');
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let alive = true;
@@ -515,17 +549,17 @@ function GbEventLayer({ symbol }: { symbol: string }) {
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
-        <span className="text-[11px] text-unjong-muted">RNS · LSE</span>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
+        <span className="text-[11px] text-unjong-muted">{t('events.srcRns')}</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">중대</span>}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
                 <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
@@ -534,13 +568,14 @@ function GbEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 원문(Investegate·RNS)으로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{t('events.goRns')}</p>
     </div>
   );
 }
 
 type CnEvent = { id: string; title: string; date: string; source: string; url: string; pdf: string; material: boolean };
 function CnFilingSummary({ pdf, symbol, nm, id }: { pdf: string; symbol: string; nm: string; id: string }) {
+  const t = useTranslations('StockLens');
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -558,17 +593,18 @@ function CnFilingSummary({ pdf, symbol, nm, id }: { pdf: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+        <span className="text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        ? <p className="text-[11px] text-unjong-muted">{t('ai.reading')}</p>
         : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
 function CnEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<CnEvent[]>([]);
+  const t = useTranslations('StockLens');
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let alive = true;
@@ -582,17 +618,17 @@ function CnEventLayer({ symbol }: { symbol: string }) {
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시</span>
-        <span className="text-[11px] text-unjong-muted">{events[0]?.source === 'HKEXnews' ? '공시 · HKEX' : '공시 · 巨潮资讯'}</span>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
+        <span className="text-[11px] text-unjong-muted">{events[0]?.source === 'HKEXnews' ? t('events.srcHkex') : t('events.srcCninfo')}</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">중대</span>}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
                 <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
@@ -601,12 +637,13 @@ function CnEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{events[0]?.source === 'HKEXnews' ? '클릭하면 원문(HKEXnews 공시)으로 가요.' : '클릭하면 원문(巨潮资讯网 공시)으로 가요.'}</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{events[0]?.source === 'HKEXnews' ? t('events.goHkex') : t('events.goCninfo')}</p>
     </div>
   );
 }
 type VnEvent = { id: string; title: string; date: string; source: string; url: string; material: boolean };
 function VnFilingSummary({ url, symbol, nm, id }: { url: string; symbol: string; nm: string; id: string }) {
+  const t = useTranslations('StockLens');
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -623,17 +660,18 @@ function VnFilingSummary({ url, symbol, nm, id }: { url: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+        <span className="text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        ? <p className="text-[11px] text-unjong-muted">{t('ai.reading')}</p>
         : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
 function VnEventLayer({ symbol }: { symbol: string }) {
   const [events, setEvents] = useState<VnEvent[]>([]);
+  const t = useTranslations('StockLens');
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let alive = true;
@@ -647,17 +685,17 @@ function VnEventLayer({ symbol }: { symbol: string }) {
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 주요 뉴스·이벤트</span>
-        <span className="text-[11px] text-unjong-muted">뉴스 · Google News</span>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentNews')}</span>
+        <span className="text-[11px] text-unjong-muted">{t('events.srcGnews')}</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 뉴스·이벤트예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflectedNews', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">주요</span>}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[10px] font-semibold text-unjong-accent">{t('events.major')}</span>}</p>
                 <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
@@ -666,13 +704,14 @@ function VnEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 원문 뉴스로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{t('events.goNews')}</p>
     </div>
   );
 }
 
 // R3: 종목 최근 뉴스 요약 + 중립 토픽 태그(지연·조건부·헤드라인 없으면 숨김). 뉴스=사실 브리핑, 감성 점수 아님.
 function StockNewsBrief({ symbol }: { symbol: string }) {
+  const t = useTranslations('StockLens');
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
   const [state, setState] = useState<'loading' | 'done' | 'hide'>('loading');
   useEffect(() => {
@@ -688,14 +727,14 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
       <div className="mb-1.5 flex items-center gap-1.5">
         <Sparkles size={13} className="text-unjong-accent" />
-        <span className="text-[13px] font-bold text-unjong-accent">최근 뉴스</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">TR-AI · 사실만</span>
+        <span className="text-[13px] font-bold text-unjong-accent">{t('newsBrief.title')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('newsBrief.badge')}</span>
       </div>
       {state === 'loading' || !d
-        ? <p className="text-[12px] text-unjong-muted">뉴스 읽는 중…</p>
+        ? <p className="text-[12px] text-unjong-muted">{t('newsBrief.loading')}</p>
         : (<>
             <p className="text-[13px] leading-relaxed text-unjong-primary">{d.summary}</p>
-            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((t, i) => <span key={i} className="rounded-full border border-unjong-border bg-unjong-surface px-2 py-0.5 text-[10px] text-unjong-muted">{t}</span>)}</div> : null}
+            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((tag, i) => <span key={i} className="rounded-full border border-unjong-border bg-unjong-surface px-2 py-0.5 text-[10px] text-unjong-muted">{tag}</span>)}</div> : null}
           </>)}
     </div>
   );
@@ -703,6 +742,7 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
 
 // R2: 종목 브리핑(지연 로드·하루 1회 캐시). LLM이 결정론 판정+공시 사실로 '핵심 긴장+지켜볼 것'을 1문단 — 예측·판정 아님.
 function StockBrief({ symbol }: { symbol: string }) {
+  const t = useTranslations('StockLens');
   const [brief, setBrief] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -719,13 +759,13 @@ function StockBrief({ symbol }: { symbol: string }) {
     <div className="mb-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
       <div className="mb-1.5 flex items-center gap-1.5">
         <Sparkles size={14} className="text-unjong-accent" />
-        <span className="text-[13px] font-bold text-unjong-accent">이 종목 브리핑</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">TR-AI · 사실만</span>
+        <span className="text-[13px] font-bold text-unjong-accent">{t('brief.title')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('brief.badge')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] text-unjong-muted">브리핑 만드는 중…</p>
+        ? <p className="text-[12px] text-unjong-muted">{t('brief.loading')}</p>
         : <p className="text-[13px] leading-relaxed text-unjong-primary">{brief}</p>}
-      {state === 'done' ? <p className="mt-1.5 text-[10px] leading-relaxed text-unjong-muted">검증된 기법 판정 + 공시 사실 기반 · 방향 판단은 하지 않아요</p> : null}
+      {state === 'done' ? <p className="mt-1.5 text-[10px] leading-relaxed text-unjong-muted">{t('brief.footer')}</p> : null}
     </div>
   );
 }
@@ -748,6 +788,7 @@ function accFromLink(link: string): string {
 
 // R1: 공시 원문 AI 요약(지연 로드·전역 캐시). LLM은 원문을 읽어 '사실'만 — 예측·판정 아님.
 function AiFilingSummary({ symbol, link, items }: { symbol: string; link: string; items: string[] }) {
+  const t = useTranslations('StockLens');
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
@@ -765,17 +806,18 @@ function AiFilingSummary({ symbol, link, items }: { symbol: string; link: string
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[10px] font-medium text-unjong-accent">AI 요약</span>
-        <span className="ml-auto text-[10px] text-unjong-muted">원문 기반</span>
+        <span className="text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[11px] text-unjong-muted">원문 읽는 중…</p>
+        ? <p className="text-[11px] text-unjong-muted">{t('ai.reading')}</p>
         : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
 
 function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) {
+  const t = useTranslations('StockLens');
   const [showRoutine, setShowRoutine] = useState(false);
   if (!events.length) return null;
   const sevRank = (e: MatEvent) => e.defs.reduce((m, d) => Math.max(m, d.severity === 'serious' ? 2 : d.severity === 'watch' ? 1 : 0), 0);
@@ -783,14 +825,14 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
   const routine = events.filter((e) => sevRank(e) === 0); // 루틴(info)=묶어 접힘
   const groups: { label: string; count: number }[] = [];
   for (const e of routine) {
-    const l = e.defs[0]?.label ?? '기타';
+    const l = e.defs[0]?.label ?? t('events.etcLabel');
     const g = groups.find((x) => x.label === l);
     if (g) g.count += 1; else groups.push({ label: l, count: 1 });
   }
   const row = (e: MatEvent, i: number, withAi = false) => {
     const d = e.defs[0];
     if (!d) return null;
-    const why = d.klass === 'A' ? '이 종목 재무 렌즈 근거를 흔들 수 있어요' : d.klass === 'B' ? '렌즈엔 아직 없는 새 사실' : '참고 사실';
+    const why = d.klass === 'A' ? t('events.whyA') : d.klass === 'B' ? t('events.whyB') : t('events.whyGeneral');
     return (
       <li key={i}>
         <a href={e.link} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
@@ -798,7 +840,7 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <span className="text-[13px] font-medium text-unjong-primary">{d.label}</span>
-              {e.defs.length > 1 ? <span className="text-[11px] text-unjong-muted">외 {e.defs.length - 1}건</span> : null}
+              {e.defs.length > 1 ? <span className="text-[11px] text-unjong-muted">{t('events.andMore', { n: e.defs.length - 1 })}</span> : null}
               <span className="rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{e.defs.map((x) => x.item).join('·')}</span>
             </div>
             <p className="mt-0.5 text-[11px] text-unjong-muted">{e.date} · {why}</p>
@@ -812,33 +854,34 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
   return (
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">최근 중대 공시·이벤트</span>
-        <span className="text-[11px] text-unjong-muted">SEC EDGAR · 실시간</span>
+        <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilingsUs')}</span>
+        <span className="text-[11px] text-unjong-muted">{t('events.srcSec')}</span>
       </div>
-      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted"><b className="text-unjong-primary">렌즈 점수엔 아직 안 반영</b>된 최신 공시예요.</p>
+      <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       {material.length ? (
         <ul className="mt-2.5 space-y-1.5">{material.map((e, i) => row(e, i, true))}</ul>
       ) : (
-        <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[12px] text-unjong-muted">최근 <b className="text-unjong-primary">중대한 사건은 없어요</b> — 정기 공시만 있어요.</p>
+        <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[12px] text-unjong-muted">{t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       )}
       {routine.length ? (
         <div className="mt-2">
           <button type="button" onClick={() => setShowRoutine((v) => !v)} className="flex w-full items-center gap-1 text-left text-[11px] text-unjong-muted hover:text-unjong-accent">
             <span className={`inline-block transition-transform ${showRoutine ? 'rotate-90' : ''}`}>▸</span>
-            <span>정기 공시 {routine.length}건 <span className="text-unjong-muted/80">· {groups.map((g) => `${g.label} ${g.count}`).join(' · ')}</span></span>
+            <span>{t('events.routine', { n: routine.length })} <span className="text-unjong-muted/80">· {groups.map((g) => `${g.label} ${g.count}`).join(' · ')}</span></span>
           </button>
           {showRoutine ? <ul className="mt-1.5 space-y-1.5">{routine.map((e, i) => row(e, i))}</ul> : null}
         </div>
       ) : null}
-      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">클릭하면 SEC 원문으로 가요.</p>
+      <p className="mt-2 text-[10px] leading-relaxed text-unjong-muted">{t('events.goSec')}</p>
     </div>
   );
 }
 
-const H_TITLE: Record<string, string> = { short: '단기', mid: '중기', long: '장기' };
-const H_SUB: Record<string, string> = { short: '며칠~주', mid: '수개월', long: '분기~년' };
+const H_TITLE: Record<string, string> = { short: 'horizon.short', mid: 'horizon.mid', long: 'horizon.long' };
+const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon.midSub', long: 'horizon.longSub' };
 
 export default function StockLensClient({ initialName }: { initialName?: string }) {
+  const t = useTranslations('StockLens');
   const params = useParams();
   const router = useRouter();
   const symbol = decodeURIComponent(String(params?.symbol || ''));
@@ -882,7 +925,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
     const viz = L.key === 'technical'
       ? <RsiZone rsi={L.detail['RSI(14)'] ?? null} maPct={L.detail['200일선대비%'] ?? null} />
       : (L.percentile != null && FACTOR_ENDS[L.key])
-        ? <PctGauge pctl={L.percentile} tone={L.verdict?.tone} lo={FACTOR_ENDS[L.key].lo} hi={FACTOR_ENDS[L.key].hi} />
+        ? <PctGauge pctl={L.percentile} tone={L.verdict?.tone} lo={t(FACTOR_ENDS[L.key].lo)} hi={t(FACTOR_ENDS[L.key].hi)} />
         : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
     return (
       <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
@@ -909,7 +952,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
             <FlagBox flags={cardFlags} />
             <div className="mb-3.5 rounded-xl border border-unjong-border bg-unjong-surface p-3">
-              <p className="text-[12px] font-medium text-unjong-accent">이게 뭐예요?</p>
+              <p className="text-[12px] font-medium text-unjong-accent">{t('whatIsIt')}</p>
               <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
             </div>
             {L.verdict ? (
@@ -921,25 +964,25 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             {viz}
             {L.outlook ? (
               <div className="mt-2.5">
-                <p className="text-[11px] font-medium text-unjong-muted">이 기법 방향</p>
+                <p className="text-[11px] font-medium text-unjong-muted">{t('lensDirection')}</p>
                 <p className="mt-0.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
               </div>
             ) : (L.verdict ? <p className="mt-2.5 text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
             {L.about ? (
               <details className="mt-2.5">
-                <summary className={LEARN_CLASS}>▾ {L.name} 알아보기</summary>
+                <summary className={LEARN_CLASS}>{t('learnMore', { name: L.name })}</summary>
                 <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
               </details>
             ) : null}
             <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2.5 text-[12px] text-unjong-muted">
-              <span className="font-medium text-unjong-primary/70">근거 수치</span>
+              <span className="font-medium text-unjong-primary/70">{t('evidence')}</span>
               {Object.entries(L.detail).map(([k, v]) => (
                 <span key={k}>{k}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
               ))}
             </div>
             {L.note ? (
               <details className="mt-2.5">
-                <summary className={SUMMARY_CLASS}>▾ 자세히 · 검증 근거·한계</summary>
+                <summary className={SUMMARY_CLASS}>{t('detailsNote')}</summary>
                 <p className="mt-2 text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
               </details>
             ) : null}
@@ -951,25 +994,31 @@ export default function StockLensClient({ initialName }: { initialName?: string 
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="text-sm text-unjong-muted hover:text-unjong-accent">← 뒤로</button>
+      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="text-sm text-unjong-muted hover:text-unjong-accent">{t('back')}</button>
 
       <div className="mt-3 max-w-4xl">
         <div className="mb-1.5 flex items-center gap-2">
           <AiLensBadge pill />
-          <span className="text-[11px] text-unjong-muted">검증된 기법으로 이 종목을 읽는 여러 관점</span>
+          <span className="text-[11px] text-unjong-muted">{t('headerNote')}</span>
         </div>
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
           <h1 className="text-xl font-bold text-unjong-primary">{initialName || data?.name || ticker}</h1>
           <span className="text-sm text-unjong-muted">{ticker}</span>
         </div>
         {data?.price != null ? (
-          <p className="text-sm text-unjong-muted">현재가 {data.price.toLocaleString()}</p>
+          <p className="text-sm text-unjong-muted">{t('currentPrice')} {data.price.toLocaleString()}</p>
         ) : null}
 
-        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">검증된 기법들이 이 종목을 저마다 어떻게 보는지 보여드려요. <b className="text-unjong-primary">사고팔 신호가 아니라, 스스로 판단할 재료</b>예요.</p>
+        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">{t.rich('intro', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
         <details className="mt-1">
-          <summary className={LEARN_CLASS}>▾ 이 화면 읽는 법 · 신뢰도 등급</summary>
-          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">카드마다 <b className="text-unjong-primary">신뢰도 등급</b>이 붙어요 — <span className="text-unjong-accent">검증</span>은 수익 신호까지 확인된 것, <span className="text-amber-400">약한 신호</span>는 유명하지만 우리 데이터론 약한 것, <span className="text-unjong-muted">참고용</span>은 상태만, <span className="text-amber-400">재무 건전성</span>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요.</p>
+          <summary className={LEARN_CLASS}>{t('readingGuideSummary')}</summary>
+          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{t.rich('readingGuide', {
+            b: (c) => <b className="text-unjong-primary">{c}</b>,
+            v: (c) => <span className="text-unjong-accent">{c}</span>,
+            w: (c) => <span className="text-amber-400">{c}</span>,
+            r: (c) => <span className="text-unjong-muted">{c}</span>,
+            f: (c) => <span className="text-amber-400">{c}</span>,
+          })}</p>
         </details>
       </div>
 
@@ -978,7 +1027,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {[0, 1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-xl bg-unjong-background" />)}
         </div>
       ) : lenses.length === 0 && !data?.fscore ? (
-        <p className="mt-6 text-center text-sm text-unjong-muted">데이터를 불러오지 못했어요. (일부 종목은 아직 지원되지 않을 수 있어요)</p>
+        <p className="mt-6 text-center text-sm text-unjong-muted">{t('loadError')}</p>
       ) : (
         <div className="mt-4 max-w-4xl">
           <StockBrief symbol={symbol} />
@@ -992,8 +1041,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             return (
               <section key={h}>
                 <div className="mb-2 mt-5 flex items-baseline gap-2">
-                  <h2 className="text-sm font-bold text-unjong-primary">{H_TITLE[h]}</h2>
-                  <span className="text-[11px] text-unjong-muted">{H_SUB[h]}</span>
+                  <h2 className="text-sm font-bold text-unjong-primary">{t(H_TITLE[h])}</h2>
+                  <span className="text-[11px] text-unjong-muted">{t(H_SUB[h])}</span>
                 </div>
                 <div className="space-y-4">
                   {group.map(renderCard)}
