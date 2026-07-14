@@ -1,8 +1,10 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const metadata = { title: "코인 — 트릴리언 (준비 중)" };
 
-export default async function CoinPage() {
+export default async function CoinPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale); // 정적 렌더 유지
   const t = await getTranslations('Common');
   return (
     <div className="mx-auto max-w-7xl px-4 py-20 text-center sm:px-6">

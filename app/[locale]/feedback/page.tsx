@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import FeedbackForm from "./FeedbackForm";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "베타 피드백",
   robots: { index: false, follow: false },
 };
 
-export default async function FeedbackPage() {
+export default async function FeedbackPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale); // 정적 렌더 유지
   const t = await getTranslations('Feedback');
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">

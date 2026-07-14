@@ -1,11 +1,13 @@
 import FavoritesClient from '@/components/favorites/FavoritesClient';
 import RoomFavoritesClient from '@/components/favorites/RoomFavoritesClient';
 import WatchlistClient from '@/components/favorites/WatchlistClient';
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const metadata = { title: '즐겨찾기' };
 
-export default async function FavoritesPage() {
+export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale); // 정적 렌더 유지
   const t = await getTranslations('Favorites');
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">

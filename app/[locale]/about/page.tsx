@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const metadata = { title: "서비스 소개" };
 
@@ -9,7 +9,9 @@ const PILLARS: { t: string; d: string }[] = [
   { t: "pillar.ownT", d: "pillar.ownD" },
 ];
 
-export default async function AboutPage() {
+export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale); // 정적 렌더 유지
   const t = await getTranslations('About');
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
