@@ -908,12 +908,12 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   useEffect(() => {
     if (!symbol) return;
     let cancelled = false;
-    fetch('/api/events?symbol=' + encodeURIComponent(symbol))
+    fetch('/api/events?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale) // 공시 라벨도 언어별 — 안 넘기면 en 화면에 한국어 라벨
       .then((r) => r.json())
       .then((j: EventsResp) => { if (!cancelled) setEvents(j.events ?? []); })
       .catch(() => { if (!cancelled) setEvents([]); });
     return () => { cancelled = true; };
-  }, [symbol]);
+  }, [symbol, locale]);
 
   const [openLens, setOpenLens] = useState<Set<string>>(new Set());
   const lenses = data?.lenses ?? [];

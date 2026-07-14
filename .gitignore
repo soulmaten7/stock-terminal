@@ -51,3 +51,4 @@ tmp/
 scripts/_*.ts
 data/_*.json
 *handoff.zip
+.next-verify/

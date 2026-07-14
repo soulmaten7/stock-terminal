@@ -129,7 +129,7 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
   const lr = d.financials[d.financials.length - 1];
   if (lr) {
     try {
-      fscore = computeFScore(d.financials);
+      fscore = computeFScore(d.financials, locale);
     } catch {
       fscore = null;
     }

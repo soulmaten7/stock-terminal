@@ -59,7 +59,8 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
   const hasHoldings = (data?.holdings?.length ?? 0) > 0;
   const maxW = hasHoldings ? Math.max(...data!.holdings.map((h) => h.weight)) : 1;
   const isEtn = data?.fundType === 'etn';
-  const leveraged = /레버리지|인버스|\dX/i.test(initialName ?? '');
+  // 영문명(en 로케일)에도 걸리게 — 한국어 키워드만 보던 시절엔 /en에서 경고가 꺼졌다. 'bear'는 종목명에 흔해 오탐이라 제외.
+  const leveraged = /레버리지|인버스|leverage|inverse|\b\d+x\b/i.test(initialName ?? '');
 
   return (
     // 너비·뒤로가기는 종목 상세(StockLensClient)와 동일하게 — max-w-7xl main + max-w-4xl 콘텐츠 + router.back()

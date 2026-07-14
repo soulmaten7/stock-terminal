@@ -5,6 +5,9 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin(); // 기본 ./i18n/request.ts 인식
 
 const nextConfig: NextConfig = {
+  // 검증 빌드가 실행 중인 dev 서버의 .next를 덮어쓰면 전 라우트 500 → NEXT_DIST_DIR=.next-verify npm run build 로 격리.
+  // 미설정(Vercel 포함)이면 기본 .next 그대로.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   experimental: {
     scrollRestoration: false,
   },
