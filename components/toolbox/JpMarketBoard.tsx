@@ -1,6 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
+import { useTranslations } from 'next-intl';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
 import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
@@ -28,20 +29,20 @@ type Row = {
 // 하위 카테고리 탭 — 미국 시장 기준(주식 | ETF). 둘 다 라이브(각각 별도 라우트 fetch).
 type SubTab = 'stock' | 'etf' | 'reit';
 const SUBTABS: { key: SubTab; label: string }[] = [
-  { key: 'stock', label: '종목' },
-  { key: 'etf', label: 'ETF' },
-  { key: 'reit', label: '리츠' },
+  { key: 'stock', label: 'subtab.stockJp' },
+  { key: 'etf', label: 'subtab.etf' },
+  { key: 'reit', label: 'subtab.reit' },
 ];
 
 // 기간 드롭다운: 현재가 다음 단일 컬럼을 선택 기간으로 표시(1일부터). 모든 기간이 행에 직접 있음(주식=us-list 조인, ETF=etf-performance).
 type PeriodKey = '1d' | '1w' | '1m' | '3m' | '6m' | '1y';
 const PERIODS: { key: PeriodKey; label: string; field: keyof Row }[] = [
-  { key: '1d', label: '1일전', field: 'changePercent' },
-  { key: '1w', label: '1주일전', field: 'r1w' },
-  { key: '1m', label: '1개월전', field: 'r1m' },
-  { key: '3m', label: '3개월전', field: 'r3m' },
-  { key: '6m', label: '6개월전', field: 'r6m' },
-  { key: '1y', label: '1년전', field: 'r1y' },
+  { key: '1d', label: 'period.1d', field: 'changePercent' },
+  { key: '1w', label: 'period.1w', field: 'r1w' },
+  { key: '1m', label: 'period.1m', field: 'r1m' },
+  { key: '3m', label: 'period.3m', field: 'r3m' },
+  { key: '6m', label: 'period.6m', field: 'r6m' },
+  { key: '1y', label: 'period.1y', field: 'r1y' },
 ];
 
 function pct(v?: number | null): string {
@@ -71,6 +72,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
 }
 
 export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
+  const t = useTranslations('Board');
   const [tab, setTab] = useState<SubTab>(() => (loadBoardView('JP')?.sub as SubTab) ?? 'stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
@@ -254,7 +256,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 onClick={() => setTab(s.key)}
                 className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
-                {s.label}
+                {t(s.label)}
               </button>
             ))}
           </div>
@@ -263,10 +265,10 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               type="search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-              placeholder="티커·종목명 검색"
+              placeholder={t('search')}
               className="w-32 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent sm:w-48"
             />
-            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">초기화</button>}
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">{t('reset')}</button>}
           </div>
         </div>
         <div className="hidden w-96 shrink-0 lg:block" />
@@ -282,7 +284,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               ))}
             </div>
           ) : sorted.length === 0 ? (
-            <p className="py-10 text-center text-sm text-unjong-muted">{search ? `"${search}" 검색 결과 없음` : '데이터가 없습니다. 잠시 후 다시 시도해 주세요.'}</p>
+            <p className="py-10 text-center text-sm text-unjong-muted">{search ? t('noResult', { q: search }) : t('noData')}</p>
           ) : (
             <>
             <div className="mb-1.5 flex items-center gap-3 border-b border-unjong-border pb-2 text-xs sm:hidden">
@@ -291,14 +293,14 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 onClick={() => clickHeader('name')}
                 className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
-                종목명{sortArrow('name')}
+                {t('colName')}{sortArrow('name')}
               </button>
               <button
                 type="button"
                 onClick={() => clickHeader('price')}
                 className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
-                현재가{sortArrow('price')}
+                {t('colPrice')}{sortArrow('price')}
               </button>
               <div className="flex-1" />
               <span className="inline-flex items-center gap-1">
@@ -310,7 +312,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     aria-expanded={periodOpenM}
                     className={`flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs outline-none hover:border-unjong-accent ${sortKey === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                   >
-                    {PERIODS.find((p) => p.key === period)?.label ?? '기간'}
+                    {t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
                   </button>
                   {periodOpenM ? (
@@ -324,13 +326,13 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                           onClick={() => { setPeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpenM(false); }}
                           className={`block w-full px-2 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                         >
-                          {p.label}
+                          {t(p.label)}
                         </button>
                       ))}
                     </div>
                   ) : null}
                 </div>
-                <button type="button" onClick={() => clickHeader(period)} aria-label="선택 기간 정렬 방향" className="shrink-0 text-unjong-muted">
+                <button type="button" onClick={() => clickHeader(period)} aria-label={t('sortPeriodDirection')} className="shrink-0 text-unjong-muted">
                   {sortArrow(period)}
                 </button>
               </span>
@@ -343,22 +345,22 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <button
                       type="button"
                       onClick={() => clickHeader('name')}
-                      aria-label={sortKey === 'name' ? `종목명 ${sortDir === 'desc' ? '내림차순' : '오름차순'}` : '종목명순 정렬'}
-                      title="종목명순 정렬(클릭 시 오름/내림 전환)"
+                      aria-label={sortKey === 'name' ? t('sortNameActive', { dir: sortDir === 'desc' ? t('dirDesc') : t('dirAsc') }) : t('sortNameDefault')}
+                      title={t('sortNameTitle')}
                       className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-accent' : ''}`}
                     >
-                      종목명{sortArrow('name')}
+                      {t('colName')}{sortArrow('name')}
                     </button>
                   </th>
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
                     <button
                       type="button"
                       onClick={() => clickHeader('price')}
-                      aria-label={sortKey === 'price' ? `현재가 ${sortDir === 'desc' ? '내림차순' : '오름차순'}` : '현재가순 정렬'}
-                      title="현재가순 정렬(클릭 시 오름/내림 전환)"
+                      aria-label={sortKey === 'price' ? t('sortPriceActive', { dir: sortDir === 'desc' ? t('dirDesc') : t('dirAsc') }) : t('sortPriceDefault')}
+                      title={t('sortPriceTitle')}
                       className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-accent' : ''}`}
                     >
-                      현재가{sortArrow('price')}
+                      {t('colPrice')}{sortArrow('price')}
                     </button>
                   </th>
                   {/* 기간 드롭다운(1일부터) — 선택 기간으로 전 종목 자동 정렬 + 옆 토글로 오름/내림. KR 미러 */}
@@ -372,7 +374,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                           aria-expanded={periodOpen}
                           className="flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
                         >
-                          {PERIODS.find((p) => p.key === period)?.label ?? '기간'}
+                          {t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}
                           <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {periodOpen ? (
@@ -386,7 +388,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                                 onClick={() => { setPeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpen(false); }}
                                 className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                               >
-                                {p.label}
+                                {t(p.label)}
                               </button>
                             ))}
                           </div>
@@ -395,8 +397,8 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <button
                         type="button"
                         onClick={() => clickHeader(period)}
-                        aria-label={sortKey === period ? `선택 기간 ${sortDir === 'desc' ? '오름차순' : '내림차순'}으로 정렬` : '선택 기간으로 정렬'}
-                        title="선택 기간순 정렬(클릭 시 오름/내림 전환)"
+                        aria-label={sortKey === period ? t('sortPeriodActive', { dir: sortDir === 'desc' ? t('dirAsc') : t('dirDesc') }) : t('sortPeriodDefault')}
+                        title={t('sortPeriodTitle')}
                         className="shrink-0 transition-colors hover:text-unjong-primary"
                       >
                         {sortArrow(period)}
@@ -426,7 +428,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
-                        aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
+                        aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
                         className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
                       >
                         <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
@@ -452,7 +454,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'JP') : '—'}</span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
-                          <span className="mr-1 text-[10px] font-normal text-unjong-muted">{PERIODS.find((p) => p.key === period)?.label}</span>
+                          <span className="mr-1 text-[10px] font-normal text-unjong-muted">{t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}</span>
                           {periodCell(r) === undefined ? '…' : pct(periodCell(r))}
                         </span>
                       </div>
@@ -460,7 +462,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <button
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
-                      aria-label={watchSet.has(r.symbol) ? '관심종목 해제' : '관심종목 추가'}
+                      aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
                       className={`shrink-0 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}
                     >
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
@@ -493,7 +495,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 )
               )}
               <button type="button" disabled={page >= totalPages - 1} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} className="rounded px-2 py-1 text-unjong-muted hover:bg-unjong-background disabled:opacity-30">→</button>
-              <span className="ml-2 text-unjong-muted">총 {sorted.length.toLocaleString()} 종목</span>
+              <span className="ml-2 text-unjong-muted">{t('total', { n: sorted.length.toLocaleString() })}</span>
             </div>
           )}
         </div>
@@ -534,12 +536,12 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               <div className="mb-4 rounded-xl border border-unjong-border bg-unjong-background p-3">
                 <div className="grid grid-cols-3 gap-x-2 gap-y-2.5">
                   {([
-                    ['1일전', selectedStock.changePercent],
-                    ['1주일전', selectedStock.r1w],
-                    ['1개월전', selectedStock.r1m],
-                    ['3개월전', selectedStock.r3m],
-                    ['6개월전', selectedStock.r6m],
-                    ['1년전', selectedStock.r1y],
+                    [t('period.1d'), selectedStock.changePercent],
+                    [t('period.1w'), selectedStock.r1w],
+                    [t('period.1m'), selectedStock.r1m],
+                    [t('period.3m'), selectedStock.r3m],
+                    [t('period.6m'), selectedStock.r6m],
+                    [t('period.1y'), selectedStock.r1y],
                   ] as [string, number | null | undefined][]).map(([label, v]) => (
                     <div key={label} className="flex flex-col">
                       <span className="text-[11px] text-unjong-muted">{label}</span>

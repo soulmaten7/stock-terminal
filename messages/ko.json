@@ -110,6 +110,58 @@
     "youtubeComingSoon": "미국 주식 유튜브 — 준비 중",
     "roomComingSoon": "미국 — 준비 중"
   },
+  "Board": {
+    "subtab": {
+      "stock": "주식",
+      "stockJp": "종목",
+      "etf": "ETF",
+      "etn": "ETN",
+      "reit": "리츠",
+      "hk": "홍콩",
+      "ss": "상해A",
+      "sz": "심천A"
+    },
+    "period": {
+      "1d": "1일전",
+      "1w": "1주일전",
+      "1m": "1개월전",
+      "3m": "3개월전",
+      "6m": "6개월전",
+      "1y": "1년전"
+    },
+    "krMarket": {
+      "all": "전체",
+      "kospi": "코스피",
+      "kosdaq": "코스닥"
+    },
+    "limit": {
+      "upper": "상한",
+      "lower": "하한"
+    },
+    "search": "티커·종목명 검색",
+    "searchKr": "종목명·코드 검색",
+    "reset": "초기화",
+    "noResult": "\"{q}\" 검색 결과 없음",
+    "noData": "데이터가 없습니다. 잠시 후 다시 시도해 주세요.",
+    "colName": "종목명",
+    "colPrice": "현재가",
+    "periodFallback": "기간",
+    "dirDesc": "내림차순",
+    "dirAsc": "오름차순",
+    "sortNameActive": "종목명 {dir}",
+    "sortNameDefault": "종목명순 정렬",
+    "sortNameTitle": "종목명순 정렬(클릭 시 오름/내림 전환)",
+    "sortPriceActive": "현재가 {dir}",
+    "sortPriceDefault": "현재가순 정렬",
+    "sortPriceTitle": "현재가순 정렬(클릭 시 오름/내림 전환)",
+    "sortPeriodActive": "선택 기간 {dir}으로 정렬",
+    "sortPeriodDefault": "선택 기간으로 정렬",
+    "sortPeriodTitle": "선택 기간순 정렬(클릭 시 오름/내림 전환)",
+    "sortPeriodDirection": "선택 기간 정렬 방향",
+    "watchAdd": "관심종목 추가",
+    "watchRemove": "관심종목 해제",
+    "total": "총 {n} 종목"
+  },
   "LensPreview": {
     "emptyTitle": "종목을 선택하면 TR-AI 렌즈가 읽어드려요",
     "emptyDesc": "검증된 기법(모멘텀·밸류·퀄리티 등)이 이 종목을 저마다 어떻게 보는지 요약해요. 사고팔 신호가 아니라, 스스로 판단할 재료예요.",
