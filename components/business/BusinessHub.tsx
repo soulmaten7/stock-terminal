@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Store, ShieldCheck } from 'lucide-react';
 import MyBusinessClient from './MyBusinessClient';
 import BusinessClaimClient from './BusinessClaimClient';
@@ -8,6 +9,7 @@ import BusinessClaimClient from './BusinessClaimClient';
 type Tab = 'claim' | 'manage';
 
 export default function BusinessHub() {
+  const t = useTranslations('Business');
   const [tab, setTab] = useState<Tab>('claim');
 
   // 스마트 기본 탭: 인증된 업체 있으면 '관리'로
@@ -21,8 +23,8 @@ export default function BusinessHub() {
   }, []);
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'claim', label: '업체 인증', icon: <ShieldCheck size={16} /> },
-    { key: 'manage', label: '내 업체 관리', icon: <Store size={16} /> },
+    { key: 'claim', label: t('tabClaim'), icon: <ShieldCheck size={16} /> },
+    { key: 'manage', label: t('tabManage'), icon: <Store size={16} /> },
   ];
 
   return (

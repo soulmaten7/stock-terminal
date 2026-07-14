@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
+  const t = useTranslations('Login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -39,23 +41,23 @@ export default function LoginPage() {
           className="inline-flex items-center gap-1 text-sm text-unjong-muted hover:text-unjong-primary mb-6"
         >
           <ArrowLeft size={14} />
-          돌아가기
+          {t('back')}
         </button>
 
         {/* 트릴리언 로고 */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
-            Trillion <span className="text-base text-unjong-muted font-medium">트릴리언</span>
+            Trillion <span className="text-base text-unjong-muted font-medium">{t('brandKo')}</span>
           </h1>
-          <p className="text-sm text-unjong-muted">종목을 보는 눈을, 누구에게나.</p>
+          <p className="text-sm text-unjong-muted">{t('tagline')}</p>
         </div>
 
         {/* 로그인 카드 */}
         <div className="bg-unjong-surface rounded-lg border border-unjong-border p-8 space-y-6">
           <div className="text-center">
-            <h2 className="text-lg font-semibold text-unjong-primary mb-1">로그인</h2>
+            <h2 className="text-lg font-semibold text-unjong-primary mb-1">{t('heading')}</h2>
             <p className="text-sm text-unjong-muted">
-              로그인하면 닉네임과 관심종목이 모든 기기에서 동기화됩니다
+              {t('desc')}
             </p>
           </div>
 
@@ -71,7 +73,7 @@ export default function LoginPage() {
               <path fill="#FBBC05" d="M3.964 10.706A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.706V4.962H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.038l3.007-2.332z" />
               <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.962L3.964 7.294C4.672 5.167 6.656 3.58 9 3.58z" />
             </svg>
-            {loading ? "이동 중..." : "Google로 시작하기"}
+            {loading ? t('loading') : t('google')}
           </button>
 
           {error && (
@@ -82,18 +84,20 @@ export default function LoginPage() {
 
           <div className="border-t border-unjong-border pt-4 text-center space-y-1">
             <p className="text-xs text-unjong-muted">
-              로그인 없이도 관심종목을 사용할 수 있습니다
+              {t('note1')}
             </p>
             <p className="text-xs text-unjong-muted">
-              단 닉네임·관심종목이 이 브라우저에만 저장됩니다
+              {t('note2')}
             </p>
           </div>
         </div>
 
         {/* 약관 */}
         <p className="text-xs text-unjong-muted text-center mt-6 leading-relaxed">
-          로그인 시 트릴리언의 <Link href="/terms" className="underline">이용약관</Link> 및{" "}
-          <Link href="/privacy" className="underline">개인정보처리방침</Link> 에 동의한 것으로 간주됩니다
+          {t.rich('terms', {
+            terms: (c) => <Link href="/terms" className="underline">{c}</Link>,
+            privacy: (c) => <Link href="/privacy" className="underline">{c}</Link>,
+          })}
         </p>
       </div>
     </div>

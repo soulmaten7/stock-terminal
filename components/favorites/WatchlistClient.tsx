@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 
 type WatchItem = { symbol: string; name_ko: string | null; market: string; country: string };
 
 export default function WatchlistClient() {
+  const t = useTranslations('Favorites');
+  const tb = useTranslations('Board'); // '관심종목 해제' 재사용(dedup)
   const [items, setItems] = useState<WatchItem[]>([]);
   const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -29,19 +32,19 @@ export default function WatchlistClient() {
     }).catch(() => {});
   };
 
-  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>;
+  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">{t('loading')}</p>;
   if (!auth) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
-        <p className="text-sm text-unjong-muted">로그인하면 관심종목을 모아볼 수 있어요.</p>
-        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">로그인 →</Link>
+        <p className="text-sm text-unjong-muted">{t('loginForWatchlist')}</p>
+        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('loginLink')}</Link>
       </div>
     );
   }
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
-        <p className="text-sm leading-relaxed text-unjong-muted">관심종목이 없어요.<br />종목·상품 탭에서 ⭐를 눌러 추가하세요.</p>
+        <p className="text-sm leading-relaxed text-unjong-muted">{t.rich('emptyWatchlist', { br: () => <br /> })}</p>
       </div>
     );
   }
@@ -56,7 +59,7 @@ export default function WatchlistClient() {
             <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{f.name_ko ?? f.symbol}</span>
             <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
           </Link>
-          <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label="관심종목 해제" className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
+          <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label={tb('watchRemove')} className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
             <X size={15} />
           </button>
         </li>

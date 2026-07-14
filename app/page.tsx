@@ -1,21 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
 import ToolboxClient from "@/components/toolbox/ToolboxClient";
 import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
+import { getTranslations } from "next-intl/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const CATEGORY_LABELS: Record<string, string> = {
-  news: "뉴스",
-  chart: "차트·시세",
-  analysis: "기업·재무",
-  disclosure: "공시·신용",
-  research: "리포트",
-  etf: "ETF·펀드",
-  ipo: "공모주·배당",
-  macro: "거시경제",
-  community: "커뮤니티",
-  exchange: "거래소·기관",
+// 값=ko.json 키. 이 label은 ToolboxClient의 '링크 준비 중' 안내에 렌더됨.
+const CATEGORY_KEYS: Record<string, string> = {
+  news: "category.news",
+  chart: "category.chart",
+  analysis: "category.analysis",
+  disclosure: "category.disclosure",
+  research: "category.research",
+  etf: "category.etf",
+  ipo: "category.ipo",
+  macro: "category.macro",
+  community: "category.community",
+  exchange: "category.exchange",
 };
 const CATEGORY_ORDER = ["news", "chart", "analysis", "disclosure", "research", "etf", "ipo", "macro", "community", "exchange"];
 
@@ -58,6 +60,7 @@ const HOME_JSONLD = {
 };
 
 export default async function HomePage() {
+  const t = await getTranslations('Home');
   const supabase = await createClient();
 
   const { data: links } = await supabase
@@ -98,7 +101,7 @@ export default async function HomePage() {
       const ib = CATEGORY_ORDER.indexOf(b);
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     })
-    .map((slug) => ({ slug, label: CATEGORY_LABELS[slug] ?? slug, links: grouped[slug]! }));
+    .map((slug) => ({ slug, label: CATEGORY_KEYS[slug] ? t(CATEGORY_KEYS[slug]) : slug, links: grouped[slug]! }));
 
   return (
     <>

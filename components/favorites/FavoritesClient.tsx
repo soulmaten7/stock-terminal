@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { GripVertical, X, ExternalLink } from 'lucide-react';
 
 type Fav = { id: number; name: string; url: string; category: string };
@@ -9,6 +10,8 @@ type Fav = { id: number; name: string; url: string; category: string };
 function host(u: string) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return ''; } }
 
 export default function FavoritesClient() {
+  const t = useTranslations('Favorites');
+  const tf = useTranslations('Feed'); // '즐겨찾기 해제' 재사용(dedup)
   const [items, setItems] = useState<Fav[]>([]);
   const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -51,20 +54,20 @@ export default function FavoritesClient() {
     }).catch(() => {});
   };
 
-  if (loading) return <p className="py-16 text-center text-sm text-unjong-muted">불러오는 중…</p>;
+  if (loading) return <p className="py-16 text-center text-sm text-unjong-muted">{t('loading')}</p>;
   if (!auth) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-16 text-center">
-        <p className="text-sm text-unjong-muted">로그인하면 즐겨찾기를 모아볼 수 있어요.</p>
-        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">로그인 →</Link>
+        <p className="text-sm text-unjong-muted">{t('loginForLinks')}</p>
+        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('loginLink')}</Link>
       </div>
     );
   }
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-16 text-center">
-        <p className="text-sm leading-relaxed text-unjong-muted">아직 즐겨찾기가 없어요.<br />카테고리 목록에서 ⭐를 눌러 추가하세요.</p>
-        <Link href="/" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">카테고리 보러가기 →</Link>
+        <p className="text-sm leading-relaxed text-unjong-muted">{t.rich('emptyLinks', { br: () => <br /> })}</p>
+        <Link href="/" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('goCategories')}</Link>
       </div>
     );
   }
@@ -91,7 +94,7 @@ export default function FavoritesClient() {
             <span className="hidden shrink-0 text-xs text-unjong-muted sm:inline">{host(f.url)}</span>
             <ExternalLink size={11} className="shrink-0 text-unjong-border" />
           </a>
-          <button type="button" onClick={() => remove(f.id)} aria-label="즐겨찾기 해제" className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
+          <button type="button" onClick={() => remove(f.id)} aria-label={tf('favRemove')} className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
             <X size={16} />
           </button>
         </li>

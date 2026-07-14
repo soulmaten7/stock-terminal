@@ -1,19 +1,22 @@
 "use client";
 import { useState } from "react";
 import { TLensLogo } from "@/components/AiLensBadge";
+import { useTranslations } from "next-intl";
 
+// key = /api/feedback 로 전송되는 값(번역 금지). label = 표시용 ko.json 키.
 const UNDERSTOOD = [
-  { key: "clear", label: "명확히 이해됐다" },
-  { key: "vague", label: "대충 알겠다" },
-  { key: "unclear", label: "잘 모르겠다" },
+  { key: "clear", label: "understood.clear" },
+  { key: "vague", label: "understood.vague" },
+  { key: "unclear", label: "understood.unclear" },
 ] as const;
 const INTENT = [
-  { key: "yes", label: "응, 또 올 듯" },
-  { key: "maybe", label: "글쎄" },
-  { key: "no", label: "아니" },
+  { key: "yes", label: "intent.yes" },
+  { key: "maybe", label: "intent.maybe" },
+  { key: "no", label: "intent.no" },
 ] as const;
 
 export default function FeedbackForm() {
+  const t = useTranslations('Feedback');
   const [firstImpression, setFirstImpression] = useState("");
   const [understood, setUnderstood] = useState("");
   const [mostUseful, setMostUseful] = useState("");
@@ -42,17 +45,17 @@ export default function FeedbackForm() {
         }),
       });
       const j = await res.json().catch(() => ({}));
-      if (!res.ok) { setErr(j.error || "전송에 실패했어요"); setState("error"); return; }
+      if (!res.ok) { setErr(j.error || t("errSend")); setState("error"); return; }
       setState("done");
-    } catch { setErr("네트워크 오류가 났어요"); setState("error"); }
+    } catch { setErr(t("errNetwork")); setState("error"); }
   };
 
   if (state === "done") {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-8 text-center">
         <div className="flex justify-center"><TLensLogo size={28} color="#2DD4BF" /></div>
-        <p className="mt-3 text-lg font-bold text-unjong-primary">고맙습니다 🙏</p>
-        <p className="mt-1 text-sm leading-relaxed text-unjong-muted">남겨주신 피드백은 트릴리언을 다듬는 데 그대로 쓰여요. 솔직한 한마디가 제일 큰 도움이 됩니다.</p>
+        <p className="mt-3 text-lg font-bold text-unjong-primary">{t('doneTitle')}</p>
+        <p className="mt-1 text-sm leading-relaxed text-unjong-muted">{t('doneDesc')}</p>
       </div>
     );
   }
@@ -64,56 +67,56 @@ export default function FeedbackForm() {
   return (
     <div className="space-y-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5 sm:p-6">
       <div>
-        <label className={label}>1. 첫인상을 한 줄로</label>
-        <input className={input} value={firstImpression} onChange={(e) => setFirstImpression(e.target.value)} placeholder="예: 깔끔한데 뭘 하는 곳인지 3초 만에 감이 왔다 / 안 왔다" maxLength={500} />
+        <label className={label}>{t('q1')}</label>
+        <input className={input} value={firstImpression} onChange={(e) => setFirstImpression(e.target.value)} placeholder={t('q1ph')} maxLength={500} />
       </div>
 
       <div>
-        <label className={label}>2. ‘TR-AI 렌즈’가 뭔지 이해됐나요?</label>
+        <label className={label}>{t('q2')}</label>
         <div className="mt-2 flex flex-wrap gap-2">
           {UNDERSTOOD.map((u) => (
-            <button key={u.key} type="button" onClick={() => setUnderstood(u.key)} className={seg(understood === u.key)}>{u.label}</button>
+            <button key={u.key} type="button" onClick={() => setUnderstood(u.key)} className={seg(understood === u.key)}>{t(u.label)}</button>
           ))}
         </div>
       </div>
 
       <div>
-        <label className={label}>3. 제일 쓸모있던 것 / 아쉬웠던 것</label>
-        <textarea className={`${input} min-h-[80px] resize-y`} value={mostUseful} onChange={(e) => setMostUseful(e.target.value)} placeholder="좋았던 점·별로였던 점 아무거나" maxLength={1500} />
+        <label className={label}>{t('q3')}</label>
+        <textarea className={`${input} min-h-[80px] resize-y`} value={mostUseful} onChange={(e) => setMostUseful(e.target.value)} placeholder={t('q3ph')} maxLength={1500} />
       </div>
 
       <div>
-        <label className={label}>4. 버그·어색한 곳 <span className="text-unjong-accent">(제일 중요!)</span></label>
-        <textarea className={`${input} min-h-[80px] resize-y`} value={bugs} onChange={(e) => setBugs(e.target.value)} placeholder="안 되는 것, 이상한 것, 헷갈리는 것 — 사소해도 다 좋아요" maxLength={2000} />
+        <label className={label}>{t('q4')}<span className="text-unjong-accent">{t('q4em')}</span></label>
+        <textarea className={`${input} min-h-[80px] resize-y`} value={bugs} onChange={(e) => setBugs(e.target.value)} placeholder={t('q4ph')} maxLength={2000} />
       </div>
 
       <div>
-        <label className={label}>5. 다시 올 것 같나요?</label>
+        <label className={label}>{t('q5')}</label>
         <div className="mt-2 flex flex-wrap gap-2">
           {INTENT.map((i) => (
-            <button key={i.key} type="button" onClick={() => setIntent(i.key)} className={seg(intent === i.key)}>{i.label}</button>
+            <button key={i.key} type="button" onClick={() => setIntent(i.key)} className={seg(intent === i.key)}>{t(i.label)}</button>
           ))}
         </div>
       </div>
 
       <div>
-        <label className={label}>전체 별점 <span className="font-normal text-unjong-muted">(선택)</span></label>
+        <label className={label}>{t('rating')}<span className="font-normal text-unjong-muted">{t('ratingOpt')}</span></label>
         <div className="mt-2 flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
-            <button key={n} type="button" onClick={() => setRating(n === rating ? 0 : n)} aria-label={`${n}점`} className={`text-2xl leading-none transition-colors ${n <= rating ? "text-unjong-accent" : "text-unjong-border hover:text-unjong-muted"}`}>★</button>
+            <button key={n} type="button" onClick={() => setRating(n === rating ? 0 : n)} aria-label={t('ratingAria', { n })} className={`text-2xl leading-none transition-colors ${n <= rating ? "text-unjong-accent" : "text-unjong-border hover:text-unjong-muted"}`}>★</button>
           ))}
         </div>
       </div>
 
       <div>
-        <label className={label}>연락처·닉네임 <span className="font-normal text-unjong-muted">(선택 — 후속 질문용)</span></label>
-        <input className={input} value={contact} onChange={(e) => setContact(e.target.value)} placeholder="이메일·카톡·닉네임 아무거나" maxLength={120} />
+        <label className={label}>{t('contact')}<span className="font-normal text-unjong-muted">{t('contactOpt')}</span></label>
+        <input className={input} value={contact} onChange={(e) => setContact(e.target.value)} placeholder={t('contactPh')} maxLength={120} />
       </div>
 
       {err && <p className="text-sm text-unjong-danger">❌ {err}</p>}
 
       <button type="button" onClick={submit} disabled={state === "sending"} className="w-full rounded-lg bg-unjong-accent py-3 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50">
-        {state === "sending" ? "보내는 중…" : "피드백 보내기"}
+        {state === "sending" ? t('sending') : t('submit')}
       </button>
     </div>
   );

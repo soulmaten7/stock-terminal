@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { GripVertical, X, ExternalLink, Globe } from 'lucide-react';
 
 type RoomFav = { biz_no: string; name: string; homepage: string | null; platform: string };
@@ -16,6 +17,8 @@ function iconOf(p: string, homepage: string | null): string | null {
 }
 
 export default function RoomFavoritesClient() {
+  const t = useTranslations('Favorites');
+  const tf = useTranslations('Feed'); // '즐겨찾기 해제' 재사용(dedup)
   const [items, setItems] = useState<RoomFav[]>([]);
   const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -50,17 +53,17 @@ export default function RoomFavoritesClient() {
     }).catch(() => {});
   };
 
-  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">불러오는 중…</p>;
+  if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">{t('loading')}</p>;
   if (!auth) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
-        <p className="text-sm text-unjong-muted">로그인하면 리딩방을 모아볼 수 있어요.</p>
-        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">로그인 →</Link>
+        <p className="text-sm text-unjong-muted">{t('loginForRooms')}</p>
+        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('loginLink')}</Link>
       </div>
     );
   }
   if (items.length === 0) {
-    return <p className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center text-sm text-unjong-muted">리딩방·검증에서 ⭐를 누르면 여기 모여요.</p>;
+    return <p className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center text-sm text-unjong-muted">{t('emptyRooms')}</p>;
   }
 
   return (
@@ -92,7 +95,7 @@ export default function RoomFavoritesClient() {
             ) : (
               <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary">{f.name}</span>
             )}
-            <button type="button" onClick={() => remove(f.biz_no)} aria-label="즐겨찾기 해제" className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
+            <button type="button" onClick={() => remove(f.biz_no)} aria-label={tf('favRemove')} className="shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
               <X size={16} />
             </button>
           </li>
