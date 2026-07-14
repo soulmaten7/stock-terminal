@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { ShieldCheck } from 'lucide-react';
 
@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
             {loading ? '이동 중…' : '관리자 Google 로그인'}
           </button>
         )}
-        <a href="/" className="mt-4 inline-block text-xs text-unjong-muted hover:text-unjong-primary">← 홈으로</a>
+        <Link href="/" className="mt-4 inline-block text-xs text-unjong-muted hover:text-unjong-primary">← 홈으로</Link>
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 import { User, Star, LogOut } from 'lucide-react';
 import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
@@ -11,13 +10,15 @@ import { createClient } from '@/lib/supabase/client';
 import { useHomeReset } from '@/stores/homeResetStore';
 
 // 헤더 = 언어 선택(시장 선택 아님 — 시장은 페이지의 한국/미국 토글이 담당).
-const LANGS: { code: 'ko' | 'en'; name: string; flag: string; ready: boolean }[] = [
-  { code: 'ko', name: '한국어', flag: '🇰🇷', ready: true },
-  { code: 'en', name: 'English', flag: '🇺🇸', ready: false }, // 영어 번역 준비 중(i18n)
+// 언어명은 t()로 감싸지 않는다 — 언어는 항상 자기 언어로 표기한다(한국어는 언제나 '한국어').
+const LANGS: { code: 'ko' | 'en'; name: string; flag: string }[] = [
+  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', flag: '🇺🇸' },
 ];
 
 export default function Header() {
   const t = useTranslations('Header');
+  const locale = useLocale();
   const MENU = [
     { href: '/', label: t('stocks'), ready: true, match: (p: string) => p === '/' },
     { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장
@@ -32,8 +33,18 @@ export default function Header() {
   const langRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const coinRef = useRef<HTMLDivElement>(null);
-  const currentLang = LANGS[0]; // 현재 한국어(번역 추가 전까지 고정 표시)
+  const currentLang = LANGS.find((l) => l.code === locale) ?? LANGS[0];
   const resetHome = useHomeReset((s) => s.reset);
+
+  // 언어 전환 = 지금 보는 페이지 그대로 로케일만 교체.
+  // pathname은 로케일이 벗겨진 경로(/en/about → /about)라 그대로 넘기면 되고,
+  // 쿼리는 렌더가 아닌 클릭 시점에 읽는다(useSearchParams를 쓰면 Suspense 경계가 강제돼 정적 렌더가 깨진다).
+  const switchLocale = (next: 'ko' | 'en') => {
+    setLangOpen(false);
+    if (next === locale) return;
+    const query = Object.fromEntries(new URLSearchParams(window.location.search));
+    router.replace({ pathname, query }, { locale: next });
+  };
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -133,17 +144,15 @@ export default function Header() {
                   <button
                     key={l.code}
                     type="button"
-                    onClick={() => setLangOpen(false)}
-                    disabled={!l.ready}
-                    className={`flex w-full items-center gap-2 px-4 py-3 text-sm ${
-                      l.ready
-                        ? `hover:bg-unjong-background ${l.code === currentLang.code ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`
-                        : 'cursor-not-allowed text-unjong-muted'
+                    onClick={() => switchLocale(l.code)}
+                    lang={l.code}
+                    aria-current={l.code === currentLang.code ? 'true' : undefined}
+                    className={`flex w-full items-center gap-2 px-4 py-3 text-sm hover:bg-unjong-background ${
+                      l.code === currentLang.code ? 'font-bold text-unjong-accent' : 'text-unjong-primary'
                     }`}
                   >
                     <span>{l.name}</span>
                     <span className="text-base">{l.flag}</span>
-                    {!l.ready && <span className="ml-auto text-[11px] text-unjong-muted">{t('notReady')}</span>}
                   </button>
                 ))}
               </div>

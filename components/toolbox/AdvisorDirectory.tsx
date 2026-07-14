@@ -4,7 +4,7 @@ import { Fragment, useEffect, useRef, useState, type TouchEvent as ReactTouchEve
 import { useTranslations } from 'next-intl';
 import { getCache, setCache } from '@/lib/clientCache';
 import { ExternalLink, Search, Siren, X, ChevronLeft, ChevronRight, ShieldCheck, Star, ArrowUp, ArrowDown, UserCheck, Send, PlayCircle, Globe, MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, Link } from '@/i18n/navigation';
 import SelectDropdown from './SelectDropdown';
 import AdSlotRow from './AdSlotRow';
 
@@ -413,7 +413,7 @@ export default function AdvisorDirectory({ isLoggedIn }: { isLoggedIn: boolean }
       {loginNotice ? (
         <div className="mb-2 flex items-center justify-between rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 text-xs text-amber-300">
           <span>{t('loginNotice')}</span>
-          <a href="/auth/login" className="font-semibold underline">{t('login')}</a>
+          <Link href="/auth/login" className="font-semibold underline">{t('login')}</Link>
         </div>
       ) : null}
 

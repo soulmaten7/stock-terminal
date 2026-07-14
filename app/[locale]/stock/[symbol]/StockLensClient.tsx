@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
+import { useRouter } from '@/i18n/navigation';
 import { LENS_COPY } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';

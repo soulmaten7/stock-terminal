@@ -1,4 +1,5 @@
-import { redirect } from 'next/navigation';
+import { redirect } from '@/i18n/navigation';
+import { getLocale } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import AdminReports from '@/components/admin/AdminReports';
@@ -16,9 +17,10 @@ type BizClaim = { id: string; biz_no: string; company_name: string; representati
 type AdInquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
 
 export default async function AdminPage() {
+  const locale = await getLocale();
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/auth/login');
+  if (!user) redirect({ href: '/auth/login', locale });
 
   const { data: me } = await supabase.from('users').select('role').eq('id', user.id).single();
   if (me?.role !== 'admin') {
