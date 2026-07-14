@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, Link } from "@/i18n/navigation";
+import { useRouter, Link, getPathname } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const t = useTranslations('Login');
+  const locale = useLocale();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -17,10 +18,14 @@ export default function LoginPage() {
     setError(null);
     try {
       const supabase = createClient();
+      // 로그인 후 복귀 경로 = 지금 보던 언어의 홈. getPathname이 routing(as-needed)대로 뽑는다: ko → '/' · en → '/en'.
+      // 콜백 라우트(/auth/callback)는 구글·Supabase에 등록된 고정 URL이라 경로를 절대 바꾸지 않는다.
+      // 로케일은 오직 next(앱 내부 상대경로) 쿼리로만 실어 보낸다 — admin 로그인이 이미 쓰는 방식(?next=/admin).
+      const next = getPathname({ href: '/', locale });
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
       if (error) throw error;

@@ -1,7 +1,7 @@
 'use client';
 
-import { Fragment, useState, useEffect, useRef } from 'react';
-import { useTranslations } from 'next-intl';
+import { Fragment, useState, useEffect, useRef, useMemo } from 'react';
+import { useTranslations, useLocale } from 'next-intl';
 import LinkCard, { type LinkItem } from './LinkCard';
 import AdSlotRow from './AdSlotRow';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
@@ -18,7 +18,7 @@ import DartFeed from './DartFeed';
 import SecFeed from './SecFeed';
 import MacroFeed from './MacroFeed';
 import OfferingsFeed from './OfferingsFeed';
-import { useCountryStore, type Country } from '@/stores/countryStore';
+import { useCountryStore, homeMarketFor, COUNTRY_STORAGE_KEY, type Country } from '@/stores/countryStore';
 import { useHomeReset } from '@/stores/homeResetStore';
 import { clearBoardViews } from '@/lib/boardMemory';
 
@@ -152,6 +152,8 @@ export default function ToolboxClient({
   youtubeChannels: YtChannel[];
 }) {
   const t = useTranslations('Toolbox');
+  const locale = useLocale();
+  const homeCountry = homeMarketFor(locale); // ko → KR · en → US
   const { country, setCountry } = useCountryStore();
   const [categories, setCategories] = useState(initialCategories);
   const [activeTab, setActiveTab] = useState<string>('market');
@@ -167,6 +169,30 @@ export default function ToolboxClient({
     }
   }, []);
   useEffect(() => { localStorage.setItem('unjong_tab', activeTab); setFeedSub('feed'); }, [activeTab]);
+
+  // 국가탭 순서 — 로케일의 홈 시장을 맨 앞으로. 나머지는 기존 상대순서 유지(en: US·KR·JP·CN·VN·GB).
+  const countryTabs = useMemo(
+    () => [
+      ...COUNTRIES.filter((c) => c.code === homeCountry),
+      ...COUNTRIES.filter((c) => c.code !== homeCountry),
+    ],
+    [homeCountry]
+  );
+
+  // 로케일 기본 국가 — "저장된 선택이 아직 없는 첫 방문"에만 홈 시장으로 맞춘다.
+  // 사용자가 한 번이라도 국가를 고르면 persist에 남고, 그 선택이 항상 이긴다(로케일이 덮지 않음).
+  // 이미 그 국가면 아무것도 하지 않는다 → STEP 703 보드 뷰 복원(종목 상세 왕복)이 그대로 산다.
+  const localeDefaultDone = useRef(false);
+  useEffect(() => {
+    if (localeDefaultDone.current) return;
+    localeDefaultDone.current = true;
+    let stored: string | null = null;
+    try { stored = localStorage.getItem(COUNTRY_STORAGE_KEY); } catch { /* 비가용 무시 */ }
+    if (stored) return; // 사용자의 과거 선택 존중
+    if (useCountryStore.getState().country === homeCountry) return; // 바꿀 게 없음(=보드 뷰 보존)
+    clearBoardViews();
+    setCountry(homeCountry);
+  }, [homeCountry, setCountry]);
 
   // 헤더 로고/'주식' 클릭 → 홈 리셋. 국가는 store가 KR로, 여기선 탭=종목·서브=모아보기로.
   const homeResetN = useHomeReset((s) => s.n);
@@ -231,7 +257,7 @@ export default function ToolboxClient({
     <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
       {/* 국가 토글 */}
       <div className="flex items-center gap-1 border-b border-unjong-border p-3">
-        {COUNTRIES.map((c) => (
+        {countryTabs.map((c) => (
           <button
             key={c.code}
             type="button"

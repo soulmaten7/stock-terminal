@@ -1,4 +1,14 @@
 {
+  "Meta": {
+    "title": "Trillion — An eye for stocks, for everyone",
+    "description": "See a stock as data, through the proven lenses professionals use. No forecasts, no recommendations — the judgment is yours. Prices, news, filings, ETFs and IPOs in one place.",
+    "keywords": "Trillion,stock analysis,US stocks,Korean stocks,free stock analysis,AI stock analysis,TR-AI Lens,proven investing methods,momentum value quality,stock research,TR-AI",
+    "ogTitle": "An eye for stocks — for everyone.",
+    "ogDescription": "Every lens, as data — the judgment is yours.",
+    "ogImageAlt": "An eye for stocks, for everyone — Trillion",
+    "twitterTitle": "An eye for stocks, for everyone | Trillion",
+    "jsonLdDescription": "See a stock as data, through the proven lenses professionals use. No forecasts, no recommendations, the judgment is yours — an eye for stocks, for everyone."
+  },
   "Common": {
     "appName": "Trillion",
     "notFoundTitle": "Page not found",
@@ -410,8 +420,7 @@
     "youtube": {
       "empty": "YouTube Top 100 — data coming soon",
       "soon": "Coming soon",
-      "weekly": "As of {w} · refreshed automatically each week",
-      "tenK": "{v}×10K"
+      "weekly": "As of {w} · refreshed automatically each week"
     },
     "offerings": {
       "ipo": "IPO",

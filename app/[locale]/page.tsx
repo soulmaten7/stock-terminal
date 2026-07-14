@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import ToolboxClient from "@/components/toolbox/ToolboxClient";
 import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
 import { getTranslations } from "next-intl/server";
+import { getPathname } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,8 +37,11 @@ type LinkRow = {
 
 // 홈 구조화 데이터 — 구글이 '이 사이트=Trillion(트릴리언) 금융 정보 허브'라고 이해하도록.
 // Organization(발행처) + WebSite(사이트). 종목 검색 결과 페이지가 없어 SearchAction은 넣지 않음(가짜 마크업 금지).
+// name/alternateName은 브랜드 고유명사라 로케일 불변 — 로케일마다 달라지는 건 description·inLanguage.
 const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
-const HOME_JSONLD = {
+const JSONLD_LANG: Record<string, string> = { ko: "ko-KR", en: "en-US" };
+
+const homeJsonLd = (locale: string, description: string) => ({
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -52,15 +58,41 @@ const HOME_JSONLD = {
       name: "Trillion",
       alternateName: "트릴리언",
       url: SITE_BASE,
-      inLanguage: "ko-KR",
-      description: "전문가들이 쓰는 검증된 기법으로 종목을 데이터로 봅니다. 예측도 추천도 없이, 판단은 당신 — 종목을 보는 눈을, 누구에게나.",
+      inLanguage: JSONLD_LANG[locale] ?? JSONLD_LANG.ko,
+      description,
       publisher: { "@id": `${SITE_BASE}/#organization` },
     },
   ],
-};
+});
 
-export default async function HomePage() {
+// 홈 hreflang — 경로가 '/'로 확정이라 여기서 HTML alternates를 정확히 박을 수 있다.
+// (레이아웃에 두면 하위 페이지가 '/'를 물려받아 틀린다 — layout.tsx 주석 참고)
+// 값은 getPathname이 routing 설정(as-needed)대로 뽑는다: ko → '/' · en → '/en'.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const languages = Object.fromEntries(
+    routing.locales.map((l) => [l, getPathname({ href: '/', locale: l })])
+  );
+
+  return {
+    alternates: {
+      canonical: getPathname({ href: '/', locale }),
+      languages: {
+        ...languages,
+        'x-default': getPathname({ href: '/', locale: routing.defaultLocale }),
+      },
+    },
+  };
+}
+
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const t = await getTranslations('Home');
+  const tMeta = await getTranslations({ locale, namespace: 'Meta' });
   const supabase = await createClient();
 
   const { data: links } = await supabase
@@ -105,7 +137,10 @@ export default async function HomePage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(HOME_JSONLD) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
+      />
       <HomeIndexStrip />
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
         <ToolboxClient initialCategories={categories} isLoggedIn={!!user} youtubeChannels={youtubeChannels} />

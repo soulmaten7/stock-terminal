@@ -8,6 +8,7 @@ import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
 import { useHomeReset } from '@/stores/homeResetStore';
+import { homeMarketFor } from '@/stores/countryStore';
 
 // 헤더 = 언어 선택(시장 선택 아님 — 시장은 페이지의 한국/미국 토글이 담당).
 // 언어명은 t()로 감싸지 않는다 — 언어는 항상 자기 언어로 표기한다(한국어는 언제나 '한국어').
@@ -34,7 +35,10 @@ export default function Header() {
   const profileRef = useRef<HTMLDivElement>(null);
   const coinRef = useRef<HTMLDivElement>(null);
   const currentLang = LANGS.find((l) => l.code === locale) ?? LANGS[0];
-  const resetHome = useHomeReset((s) => s.reset);
+  const reset = useHomeReset((s) => s.reset);
+  // 홈 리셋 = 그 언어권의 홈 시장으로(ko→KR · en→US). 스토어는 로케일을 모르니 여기서 넘긴다.
+  // onClick에 reset을 그대로 넘기면 MouseEvent가 인자로 들어가므로 반드시 감싼다.
+  const resetHome = () => reset(homeMarketFor(locale));
 
   // 언어 전환 = 지금 보는 페이지 그대로 로케일만 교체.
   // pathname은 로케일이 벗겨진 경로(/en/about → /about)라 그대로 넘기면 되고,
@@ -69,7 +73,7 @@ export default function Header() {
     <header className="border-b border-white/10 bg-[#0E1116]">
       <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
         {/* 로고 */}
-        <Link href="/" onClick={resetHome} className="flex shrink-0 items-center gap-2 hover:opacity-80">
+        <Link href="/" onClick={() => resetHome()} className="flex shrink-0 items-center gap-2 hover:opacity-80">
           <svg width="22" height="22" viewBox="0 0 100 100" className="shrink-0" aria-hidden="true">
             <rect x="16" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
             <rect x="42.5" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
