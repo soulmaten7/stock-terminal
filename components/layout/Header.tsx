@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { User, Star, LogOut } from 'lucide-react';
 import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
@@ -15,13 +16,13 @@ const LANGS: { code: 'ko' | 'en'; name: string; flag: string; ready: boolean }[]
   { code: 'en', name: 'English', flag: '🇺🇸', ready: false }, // 영어 번역 준비 중(i18n)
 ];
 
-const MENU = [
-  { href: '/', label: '주식', ready: true, match: (p: string) => p === '/' },
-  { href: '/coin', label: '코인', ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장
-  { href: '/about', label: '소개', ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
-] as const;
-
 export default function Header() {
+  const t = useTranslations('Header');
+  const MENU = [
+    { href: '/', label: t('stocks'), ready: true, match: (p: string) => p === '/' },
+    { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장
+    { href: '/about', label: t('about'), ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
+  ] as const;
   const router = useRouter();
   const pathname = usePathname() ?? '/';
   const { user } = useAuthStore();
@@ -69,12 +70,12 @@ export default function Header() {
               <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
               <span className="hidden text-sm text-white/45 sm:inline">트릴리언</span>
             </span>
-            <span className="mt-1 hidden text-[11px] font-normal leading-none text-white/40 lg:block">종목을 보는 눈을, 누구에게나</span>
+            <span className="mt-1 hidden text-[11px] font-normal leading-none text-white/40 lg:block">{t('tagline')}</span>
           </span>
         </Link>
 
         {/* 네비 탭 */}
-        <nav className="flex shrink-0 items-center" aria-label="메인 네비">
+        <nav className="flex shrink-0 items-center" aria-label={t('mainNav')}>
           {MENU.map((m) => {
             const isActive = m.match(pathname);
             // 준비 중 탭(코인 등): 클릭 시 팝오버
@@ -92,7 +93,7 @@ export default function Header() {
                   </button>
                   {coinOpen && (
                     <div className="absolute left-1/2 top-full z-50 mt-1 -translate-x-1/2 whitespace-nowrap rounded-md border border-unjong-border bg-unjong-surface px-3 py-1.5 text-xs font-medium text-unjong-primary shadow-lg">
-                      준비 중이에요
+                      {t('comingSoon')}
                     </div>
                   )}
                 </div>
@@ -122,7 +123,7 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-3">
           {/* 언어 선택 (시장 선택 아님 — 시장은 페이지의 한국/미국 토글) */}
           <div ref={langRef} className="relative">
-            <button type="button" onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1.5 p-1 text-sm text-white/80 transition-opacity hover:opacity-70" aria-label="언어 선택" title="언어 선택">
+            <button type="button" onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1.5 p-1 text-sm text-white/80 transition-opacity hover:opacity-70" aria-label={t('language')} title={t('language')}>
               <span className="hidden font-medium sm:inline">{currentLang.name}</span>
               <span className="text-base">{currentLang.flag}</span>
             </button>
@@ -142,7 +143,7 @@ export default function Header() {
                   >
                     <span>{l.name}</span>
                     <span className="text-base">{l.flag}</span>
-                    {!l.ready && <span className="ml-auto text-[11px] text-unjong-muted">준비 중</span>}
+                    {!l.ready && <span className="ml-auto text-[11px] text-unjong-muted">{t('notReady')}</span>}
                   </button>
                 ))}
               </div>
@@ -150,17 +151,17 @@ export default function Header() {
           </div>
 
           {/* 즐겨찾기 */}
-          <Link href="/favorites" className="p-1 text-white/70 transition-colors hover:text-[#2DD4BF]" aria-label="즐겨찾기" title="즐겨찾기">
+          <Link href="/favorites" className="p-1 text-white/70 transition-colors hover:text-[#2DD4BF]" aria-label={t('favorites')} title={t('favorites')}>
             <Star size={18} />
           </Link>
 
           {!user ? (
-            <Link href="/auth/login" className="p-1 text-white/70 transition-colors hover:text-white" title="로그인">
+            <Link href="/auth/login" className="p-1 text-white/70 transition-colors hover:text-white" title={t('login')}>
               <User size={18} />
             </Link>
           ) : (
             <div ref={profileRef} className="relative">
-              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2DD4BF] text-xs font-bold text-[#0E1116] transition-opacity hover:opacity-90" aria-label="프로필 메뉴" title={user.nickname || user.email || ''}>
+              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2DD4BF] text-xs font-bold text-[#0E1116] transition-opacity hover:opacity-90" aria-label={t('profileMenu')} title={user.nickname || user.email || ''}>
                 {(user.nickname || user.email || 'U').charAt(0).toUpperCase()}
               </button>
               {profileOpen && (
@@ -169,11 +170,11 @@ export default function Header() {
                     <p className="text-sm font-bold text-unjong-primary">{user.nickname}</p>
                     <p className="text-sm text-unjong-muted">{user.email}</p>
                   </div>
-                  <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>마이페이지</Link>
-                  <Link href="/advertise" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>광고 문의</Link>
+                  <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>{t('mypage')}</Link>
+                  <Link href="/advertise" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>{t('adInquiry')}</Link>
                   <div className="border-t border-unjong-border" />
                   <button onClick={handleLogout} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-bold text-unjong-danger hover:bg-unjong-background">
-                    <LogOut className="h-4 w-4" /> 로그아웃
+                    <LogOut className="h-4 w-4" /> {t('logout')}
                   </button>
                 </div>
               )}
