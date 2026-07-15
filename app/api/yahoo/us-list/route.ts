@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import symbols from "@/data/us_symbols.json";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { titleCaseUsName } from "@/lib/stockName";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,7 +9,7 @@ export const maxDuration = 60;
 
 type Sym = { sym: string; name: string; type: string };
 const ALL_SYMS = (symbols as Sym[]).filter((s) => s.type === "stock");
-const NAME_MAP = new Map(ALL_SYMS.map((s) => [s.sym, s.name]));
+const NAME_MAP = new Map(ALL_SYMS.map((s) => [s.sym, titleCaseUsName(s.name)]));
 
 type Item = {
   symbol: string;
