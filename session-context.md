@@ -2,6 +2,15 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-15 (2) — 🏁 i18n 100% 완결: OAuth 로케일 쿠키(710E) + US 폴리시(725·726) ✅
+
+**HEAD `6bccc45`.** i18n 마지막 항목(로그인 왕복 로케일)까지 마감 → **i18n 100% = 정적 UI(710B) + 결정론 데이터(715~719) + LLM 산출물(720~724) + 로그인 왕복(710E) 전부 로케일 정합.**
+- **710E OAuth 로케일 쿠키**(`6bccc45`): `/en` 로그인이 한국어 `/`로 떨어지던 gap 제거 → 로케일을 **쿠키(`post_login_locale`·SameSite=Lax)로 왕복**. **redirectTo/Supabase 허용목록 byte 불손상**(710D 로그인 사망 회피 절대원칙). 신규 `lib/authRedirect.ts`(`safeNextPath` 가드·`localizePath` 프리픽스)+유닛테스트, 콜백이 쿠키 읽어 프리픽스+소비 삭제, 로그인 2곳 쿠키 세팅.
+- **✅ 라이브 실측 성공**: 실제 구글 로그인(`soulmaten7@gmail.com`·JWT 발급 3분 내)이 `/en`→`/en` 복귀·세션 활성. 격리 테스트로 쿠키가 `NEXT_LOCALE=ko`인데도 `/en` 구동 증명. tsc 0·vitest 49/49.
+- **725**(`3cef637`) 종목상세 현재가 `formatPrice` 통화기호(6개국·보드 일관) · **726**(`713084c`) US 종목명 올대문자→스마트 title-case(약어·camelcase 보존·mixed-case 무영향).
+- **교훈**: next-intl `NEXT_LOCALE`도 로케일 독립 구동(둘 다 Lax·실사용 일치)—`post_login_locale`은 콜백 자체 리다이렉트를 옳게 만들어 더 견고. 상세=`docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`(활성화 완료).
+- **▶ 다음(선택) = 다크 폴리시 D·클로즈드 베타 초대·빈 뉴스 명시 UX.**
+
 ## 2026-07-15 — 🎉 Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어 ✅
 
 **HEAD `5c0c348`.** `/en`의 마지막 한국어(LLM 생성물=브리핑·news-brief·공시요약)를 영어화. 설계 `docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand). **결과: `/en`=로고 빼고 한국어 0**(정적 UI+결정론+LLM 전부 영어).

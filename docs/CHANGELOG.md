@@ -1,6 +1,19 @@
 <!-- 2026-07-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-15 (2) — 🎉 US 폴리시(725·726) + OAuth 로케일 쿠키(710E) → i18n 100% 완결 (HEAD `6bccc45`)
+
+- **개요**: i18n 마지막 항목(로그인 왕복 로케일)까지 마감 → **i18n 100% = 정적 UI + 결정론 데이터 + LLM 산출물 + 로그인 왕복 전부 로케일 정합.** 그 앞에 US 표시 폴리시 2건.
+- **725 종목상세 통화기호**(`3cef637`): `StockLensClient.tsx` 현재가를 `formatPrice(price, countryOf(symbol))`로 → 6개국 통화기호 부착(US `$937.00`·KR `285,000원`·JP `¥`·GB `p`·VN `₫`·CN/HK `¥`/`HK$`). 보드와 일관. %·수익률은 무영향.
+- **726 US 종목명 title-case**(`713084c`): `lib/stockName.ts`에 `titleCaseUsName()` — SEC 올대문자(`MICRON TECHNOLOGY INC`)→`Micron Technology Inc`. `/[a-z]/` 가드로 **mixed-case는 무변경**, `KEEP`(IBM·3M·AT&T…)·`CAMEL`(JPMorgan·eBay·iShares…)·`SUFFIX`(Inc·Corp…) 보존. `cleanUsName` 말미 호출.
+- **710E OAuth 로케일 쿠키**(`6bccc45`): `/en` 로그인이 한국어 `/`로 떨어지던 gap 제거. **쿠키(`post_login_locale`·SameSite=Lax)로 로케일 왕복** — `redirectTo`/Supabase 허용목록 **byte 불손상**(710D 로그인 사망 회피 절대원칙).
+  - 신규 `lib/authRedirect.ts` 순수 헬퍼: `safeNextPath`(오픈 리다이렉트 가드 — 내부 절대경로만, `//`·외부 URL 차단) + `localizePath`(as-needed 프리픽스, en→`/en`, ko→그대로). + `lib/authRedirect.test.ts` 유닛테스트(가드·프리픽스 분기 커버, vitest 49/49).
+  - `app/auth/callback/route.ts`: 요청 헤더에서 `post_login_locale` 읽어 `loc` 결정 → `redirect()` 헬퍼가 모든 복귀에 `localizePath` 적용 + 소비한 쿠키 삭제(`maxAge:0`). user insert 로직 불변.
+  - 로그인 2곳(`auth/login`·`admin/login`): `signInWithOAuth` 직전 쿠키 세팅(admin은 `useLocale` import 추가). `redirectTo` 2개 문자열 byte 동일.
+- **✅ 검증**: tsc 0·vitest 49/49·빌드·4개 로그인 페이지 200·`redirectTo` byte 동일 grep 재확인. **라이브 실측 성공** — 실제 구글 로그인(`soulmaten7@gmail.com`, JWT 발급 3분 내)이 `/en`→`/en`(영어) 복귀·세션 활성. 브라우저 격리 테스트로 `post_login_locale=en`이 `NEXT_LOCALE=ko`인데도 `/en` 구동함을 증명(쿠키가 독립 구동인자).
+- **🐞 교훈**: next-intl `NEXT_LOCALE` 쿠키도 로케일을 독립 구동(둘 다 Lax·실사용에서 일치) → 실제 왕복은 둘이 보강. `post_login_locale`은 콜백 **자체 리다이렉트**를 옳게 만들어 미들웨어 재프리픽스에 비의존(더 견고). 쿠키 삭제는 `redirect()`에서 무조건 실행(값이 빈 문자열로 비워짐·max-age=0). 상세=`docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`(활성화 완료 기록).
+- **▶ 다음(선택)**: 다크 폴리시 D(죽은 shadow 클래스 정리) · 클로즈드 베타 초대 · 빈 뉴스 명시 UX.
+
 ## 2026-07-15 — 🎉 Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어 (HEAD `5c0c348`)
 
 - **개요**: `/en`의 마지막 한국어였던 **LLM 생성물**(브리핑 R2·news-brief R3·공시요약 R1)을 영어화. 설계=`docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand·per-locale). **결과: `/en` = 로고 워드마크(의도적) 외 한국어 0** — 정적 UI + 결정론 데이터 + LLM 생성물 전부 영어. US 영어 시장 제품 완성.

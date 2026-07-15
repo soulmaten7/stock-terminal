@@ -1,8 +1,13 @@
-<!-- 2026-07-14 -->
-# 🅿️ PARKED — OAuth 로케일 보존 (로그인 후 언어 유지) 활성화 런북
+<!-- 2026-07-15 -->
+# ✅ ACTIVATED — OAuth 로케일 보존 (로그인 후 언어 유지) — 완료(STEP 710E)
 
-> **상태:** 보류(parked). i18n 3/3(710D)에서 시도했으나 **파트4만 롤백**(`14c1813`). 파트1~3(en→US 디폴트·metadata·youtube)은 라이브. 로그인은 **정상 작동**(단, `/en`에서 로그인하면 한국어 `/`로 복귀하는 사소한 gap만 남음).
-> **다음 세션에서 이 파일대로 재시도.**
+> **상태:** ✅ **활성화 완료(STEP 710E · `6bccc45` · 2026-07-15).** 쿠키 방식으로 구현·**라이브 실측 성공** — 실제 구글 로그인(`soulmaten7@gmail.com`·JWT 발급 3분 내)이 `/en`에서 `/en`(영어)로 복귀·세션 활성 확인. **redirectTo/Supabase 허용목록 byte 불손상.** → **i18n 100% 완결.**
+>
+> **구현 요약**: 신규 `lib/authRedirect.ts`(`safeNextPath` 오픈리다이렉트 가드 + `localizePath` as-needed 프리픽스) + 유닛테스트(vitest 49/49) · `app/auth/callback/route.ts`가 요청 헤더에서 `post_login_locale` 읽어 모든 복귀 경로에 로케일 프리픽스 + 소비 후 쿠키 삭제 · 로그인 2곳(`app/[locale]/auth/login`·`admin/login`)이 `signInWithOAuth` 직전 `document.cookie = "post_login_locale=<locale>; path=/; max-age=600; samesite=lax; [secure]"` 세팅.
+>
+> **검증/교훈**: 브라우저 격리 테스트로 `post_login_locale=en`이 `NEXT_LOCALE=ko`인데도 `/en` 구동함을 증명(쿠키가 독립 구동인자). 다만 next-intl `NEXT_LOCALE` 쿠키도 로케일을 독립 구동(둘 다 Lax·실사용에서 일치)해 실제 왕복은 둘이 보강 — `post_login_locale`은 콜백 **자체 리다이렉트**를 옳게 만들어 미들웨어 재프리픽스에 비의존(더 견고). 소비 후 쿠키는 값이 빈 문자열로 비워지고 max-age=0으로 곧 사라짐(무해).
+>
+> 아래는 착수 전 런북 원문(설계 근거 보존).
 
 ---
 

@@ -1,7 +1,15 @@
 <!-- 2026-07-15 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🎉 **2026-07-15 (최신) — Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어. HEAD `5c0c348`.**
+> 🏁 **2026-07-15 (최신·3) — i18n 100% 완결: OAuth 로케일 쿠키(710E) + US 폴리시(725·726). HEAD `6bccc45`.**
+> - **710E OAuth 로케일 쿠키**(`6bccc45`): `/en` 로그인이 한국어 `/`로 떨어지던 마지막 gap 제거 → 로케일을 **쿠키(`post_login_locale`·SameSite=Lax)로 왕복**. **redirectTo/Supabase 허용목록 byte 불손상**(710D 로그인 사망 회피 절대원칙). 신규 `lib/authRedirect.ts`(`safeNextPath`=오픈리다이렉트 가드·`localizePath`=as-needed 프리픽스)+유닛테스트, 콜백이 쿠키 읽어 프리픽스+소비 삭제, 로그인 2곳 쿠키 세팅.
+> - **✅ 라이브 실측 성공**: 실제 구글 로그인(`soulmaten7@gmail.com`·JWT 발급 3분 내)이 `/en`→`/en`(영어) 복귀·세션 활성. 격리 테스트로 쿠키가 `NEXT_LOCALE=ko`인데도 `/en` 구동 증명. tsc 0·vitest 49/49.
+> - **🏁 i18n 100%**: 정적 UI(710B) + 결정론 데이터(715~719) + LLM 산출물(720~724) + **로그인 왕복(710E)** 전부 로케일 정합. `/en`=로고 외 한국어 0.
+> - **725**(`3cef637`) 종목상세 통화기호 · **726**(`713084c`) US 종목명 title-case(약어·camelcase 보존).
+> - **🐞 교훈**: next-intl `NEXT_LOCALE`도 로케일 독립 구동(둘 다 Lax·실사용 일치)—`post_login_locale`은 콜백 자체 리다이렉트를 옳게 만들어 더 견고. 상세=`docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`(활성화 완료).
+> - **▶ 다음(선택) = 다크 폴리시 D(죽은 shadow 정리) · 클로즈드 베타 초대 · 빈 뉴스 명시 UX.**
+>
+> 🎉 **2026-07-15 (2) — Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어. HEAD `5c0c348`.**
 > - `/en`의 마지막 한국어(LLM 생성물=브리핑 R2·news-brief R3·공시요약 R1)를 영어화. 설계 `docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand). **결과=`/en` 로고 빼고 한국어 0**(정적 UI+결정론+LLM 전부 영어·US 영어 시장 제품 완성).
 > - **720**(`2645cf9`) `*_en` 컬럼 마이그(MCP) · **721**(`e34fee3`) brief R2[🐞 `brief_ko` NOT NULL→en-first INSERT가 조용한 LLM 누수 될 뻔·DROP NOT NULL+에러로깅] · **722**(`60d5d8b`) news R3[+`tags_en`·한국어 강제 후처리 ko 게이팅] · **723**(`9329993`) 공시 R1 US · **724**(`5c0c348`) 공시 R1 5개국(723 복제·CN/VN 후처리 게이팅).
 > - **컬럼 분리(`*_en`)로 캐시 충돌 원천 차단·on-demand(영어 트래픽만 과금)·KR byte 동일**(라이브 삼성 공시 ko/en 독립 증명·vitest 43/43). 교훈 `LENS_DEV_PLAYBOOK` #31.

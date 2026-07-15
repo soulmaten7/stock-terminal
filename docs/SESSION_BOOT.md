@@ -5,7 +5,15 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🎉 **2026-07-15 (최신) · Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어 (HEAD `5c0c348`).**
+> 🏁 **2026-07-15 (최신·3) · i18n 100% 완결 — OAuth 로케일 쿠키(710E) + US 폴리시(725·726) (HEAD `6bccc45`).**
+> - **710E OAuth 로케일 쿠키**(`6bccc45`): `/en` 로그인이 한국어 `/`로 떨어지던 **마지막 gap 제거** → 로케일을 **쿠키(`post_login_locale`·SameSite=Lax)로 왕복**. **redirectTo/Supabase 허용목록 byte 불손상**(710D 로그인 사망 회피 절대원칙). 신규 `lib/authRedirect.ts`(`safeNextPath`=오픈리다이렉트 가드·`localizePath`=as-needed 프리픽스)+유닛테스트(vitest 49/49), 콜백이 쿠키 읽어 프리픽스+소비 삭제, 로그인 2곳(`auth/login`·`admin/login`)에서 쿠키 세팅.
+> - **✅ 라이브 실측 성공**: 실제 구글 로그인(`soulmaten7@gmail.com`·JWT 발급 3분 내)이 `/en`→`/en`(영어) 복귀·세션 활성. 브라우저 격리 테스트로 `post_login_locale=en`이 `NEXT_LOCALE=ko`인데도 `/en` 구동 증명(쿠키가 독립 구동인자).
+> - **🏁 i18n 100%**: 정적 UI(710B `en.json`) + 결정론 데이터(715~719) + LLM 산출물(720~724) + **로그인 왕복(710E)** 전부 로케일 정합. `/en` = 로고 워드마크(의도적) 외 한국어 0.
+> - **725**(`3cef637`) 종목상세 현재가 `formatPrice` 통화기호(6개국·보드 일관) · **726**(`713084c`) US 종목명 올대문자→스마트 title-case(약어 IBM·3M·camelcase JPMorgan·eBay 보존·`/[a-z]/` 가드로 mixed-case 무영향).
+> - **🐞 교훈**: next-intl `NEXT_LOCALE` 쿠키도 로케일 독립 구동(둘 다 Lax·실사용 일치) → 실제 왕복은 둘이 보강. `post_login_locale`은 콜백 **자체 리다이렉트**를 옳게 만들어 미들웨어 재프리픽스 비의존·더 견고. 상세=`docs/PARKED_OAUTH_LOCALE_ACTIVATION.md`(활성화 완료 기록).
+> - **▶ 다음(선택) = 다크 폴리시 D(죽은 shadow 클래스 정리) · 클로즈드 베타 초대 · 빈 뉴스 명시 UX.**
+>
+> 🎉 **2026-07-15 (2) · Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어 (HEAD `5c0c348`).**
 > - `/en`의 마지막 한국어였던 **LLM 생성물**(브리핑 R2·news-brief R3·공시요약 R1)을 영어화. 설계 `docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand·per-locale). **결과: `/en` = 로고 워드마크(의도적) 외 한국어 0** — 정적 UI + 결정론 데이터 + LLM 생성물 전부 영어. **US 영어 시장 제품 완성.**
 > - **720**(`2645cf9`) `stock_briefings.brief_en`·`news_briefs.summary_en`/`tags_en`·`filing_summaries.summary_en` 컬럼 마이그(MCP 라이브) · **721**(`e34fee3`) `/api/brief` R2[프롬프트+lang+`brief_en` on-demand+lens facts 로케일·🐞 `brief_ko` NOT NULL→en-first INSERT 23502→**조용한 유료 LLM 누수** 될 뻔→DROP NOT NULL+upsert 에러 로깅] · **722**(`60d5d8b`) `/api/news-brief` R3[+`tags_en`·한국어 강제 후처리(재번역·통화치환) `ko` 게이팅·옛연도 필터는 양쪽] · **723**(`9329993`) `/api/events/summary` R1 US[`summary_en`·accession 전역 캐시] · **724**(`5c0c348`) `kr/jp/cn/gb/vn-events/summary` R1[723 패턴 복제·CN/VN 후처리 게이팅·통화 원문 유지].
 > - **🔒 공통**: 캐시 **컬럼 분리**(`*_en`/`*_ko`)로 언어 교차 오염 원천 차단 · **on-demand**(영어 트래픽만 과금·전량 재생성 아님) · **KR byte 동일**(ko 경로·프롬프트·후처리 불변·라이브 삼성전자 공시 ko/en 컬럼 독립 실측). tsc 0·vitest 43/43. 교훈 `LENS_DEV_PLAYBOOK` #31.
