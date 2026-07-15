@@ -6,7 +6,18 @@ import { useParams } from 'next/navigation'; // useParams는 로케일 무관 �
 import { useRouter } from '@/i18n/navigation';
 import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
+import { formatPrice } from '@/lib/currency';
 import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';
+
+// 현재가 통화기호용 국가 코드(보드의 formatPrice 키와 동일 — KR/US/JP/HK/CN/VN/GB).
+// 기존 isCN은 HK를 합쳐놔 formatPrice엔 못 씀(HK≠CN 통화) → 별도 도출.
+const countryOf = (s: string) =>
+  /^\d{6}(\.(KS|KQ))?$/i.test(s) ? 'KR'
+  : /\.T$/i.test(s) ? 'JP'
+  : /\.HK$/i.test(s) ? 'HK'
+  : /\.(SS|SZ)$/i.test(s) ? 'CN'
+  : /\.VN$/i.test(s) ? 'VN'
+  : /\.L$/i.test(s) ? 'GB' : 'US';
 
 type LensRead = {
   key: string;
@@ -1021,7 +1032,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <span className="text-sm text-unjong-muted">{ticker}</span>
         </div>
         {data?.price != null ? (
-          <p className="text-sm text-unjong-muted">{t('currentPrice')} {data.price.toLocaleString()}</p>
+          <p className="text-sm text-unjong-muted">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
         ) : null}
 
         <p className="mt-3 text-xs leading-relaxed text-unjong-muted">{t.rich('intro', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
