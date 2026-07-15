@@ -37,10 +37,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "bad url" }, { status: 400 });
   }
   const acc = "VN" + id;
+  const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
+  const col = locale === "en" ? "summary_en" : "summary_ko";
 
   const sb = createAdminClient();
-  const { data: hit } = await sb.from("filing_summaries").select("summary_ko").eq("accession", acc).maybeSingle();
-  if (hit?.summary_ko) return NextResponse.json({ summary: hit.summary_ko, cached: true });
+  const { data: hit } = await sb.from("filing_summaries").select(col).eq("accession", acc).maybeSingle();
+  const cachedText = (hit as Record<string, string> | null)?.[col];
+  if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
 
   // 구글뉴스 링크 → 최종 기사(리다이렉트 따라감)
   let text = "";
@@ -68,17 +71,30 @@ export async function GET(req: NextRequest) {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "당신은 베트남 증시 기사(베트남어)를 한국 개인투자자에게 사실만 전달하는 애널리스트입니다. 기사에 실제로 쓰인 내용만 2~3문장 한국어로 요약합니다. 규칙: (1) 예측·전망·투자 추천(사라/팔아라·목표가) 절대 금지 (2) 기사에 없는 내용 추가 금지 (3) \"무슨 일이 일어났는지\" 사실만(금액·비율·일정 등) (4) 숫자·통화(동 ₫)는 원문 그대로 (5) 반드시 한국어로, 해요체·군더더기 없이. 영어·베트남어로 답하지 마세요.",
-        },
-        {
-          role: "user",
-          content: `베트남 증시 기사(${nm || "제목없음"}) 원문(베트남어)입니다. 무슨 일이 일어났는지 한국어로 2~3문장 사실 요약:\n\n${text}`,
-        },
-      ],
+      messages:
+        locale === "en"
+          ? [
+              {
+                role: "system",
+                content:
+                  'You are an analyst conveying Vietnamese company news to individual investors — facts only. Summarize only what is actually written in the article, in 2-3 sentences. Rules: (1) No forecasts, outlook, or investment recommendations (buy/sell, target price, "opportunity") — absolutely forbidden. (2) Do not add anything not in the article. (3) Only "what happened" — facts (amounts, ratios, schedules). (4) Keep numbers and currency (Vietnamese dong ₫) exactly as in the source (do not convert). (5) Plain professional English, no filler.',
+              },
+              {
+                role: "user",
+                content: `This is the text of a Vietnamese company-news article (${nm || "untitled"}). In 2-3 English sentences, summarize the facts of what happened:\n\n${text}`,
+              },
+            ]
+          : [
+              {
+                role: "system",
+                content:
+                  "당신은 베트남 증시 기사(베트남어)를 한국 개인투자자에게 사실만 전달하는 애널리스트입니다. 기사에 실제로 쓰인 내용만 2~3문장 한국어로 요약합니다. 규칙: (1) 예측·전망·투자 추천(사라/팔아라·목표가) 절대 금지 (2) 기사에 없는 내용 추가 금지 (3) \"무슨 일이 일어났는지\" 사실만(금액·비율·일정 등) (4) 숫자·통화(동 ₫)는 원문 그대로 (5) 반드시 한국어로, 해요체·군더더기 없이. 영어·베트남어로 답하지 마세요.",
+              },
+              {
+                role: "user",
+                content: `베트남 증시 기사(${nm || "제목없음"}) 원문(베트남어)입니다. 무슨 일이 일어났는지 한국어로 2~3문장 사실 요약:\n\n${text}`,
+              },
+            ],
       max_tokens: 320,
       temperature: 0.2,
     }),
@@ -89,8 +105,8 @@ export async function GET(req: NextRequest) {
   let summary = (j.choices?.[0]?.message?.content || "").trim();
   if (!summary) return NextResponse.json({ error: "llm empty" }, { status: 502 });
 
-  // 후처리1: 한국어 아니면 번역(R3 방식 — 베트남어/영어 출력 방어)
-  if (!/[가-힣]/.test(summary)) {
+  // 후처리1: 한국어 아니면 번역(R3 방식 — 베트남어/영어 출력 방어) — ko 게이팅(en은 영어 그대로 둔다)
+  if (locale === "ko" && !/[가-힣]/.test(summary)) {
     try {
       const tr = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -108,11 +124,11 @@ export async function GET(req: NextRequest) {
       if (tr.ok) { const t = (((await tr.json()).choices?.[0]?.message?.content) || "").trim(); if (/[가-힣]/.test(t)) summary = t; }
     } catch { /* 유지 */ }
   }
-  // 후처리2: 통화 교정 — 베트남 동(숫자 뒤 '원'→'동'). '원가·원인' 등 일반어(앞이 숫자 아님)는 안 건드림.
-  summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, "$1동");
+  // 후처리2: 통화 교정 — 베트남 동(숫자 뒤 '원'→'동'). '원가·원인' 등 일반어(앞이 숫자 아님)는 안 건드림. ko만(en은 원문 통화 그대로).
+  if (locale === "ko") summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, "$1동");
 
   await sb.from("filing_summaries").upsert(
-    { accession: acc, symbol, summary_ko: summary, model: "gpt-4o-mini" },
+    { accession: acc, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },
   );
   return NextResponse.json({ summary, cached: false });

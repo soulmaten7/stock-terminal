@@ -365,12 +365,13 @@ function sevDot(sev: string): string {
 // R1-KR: DART 공시 원문 AI 요약(지연·전역 캐시). US AiFilingSummary의 KR 짝.
 function KrFilingSummary({ rcept, symbol, nm }: { rcept: string; symbol: string; nm: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
     if (!/^\d{14}$/.test(rcept)) { setState('error'); return; }
-    const q = new URLSearchParams({ rcept, symbol, nm }).toString();
+    const q = new URLSearchParams({ rcept, symbol, nm, lang: locale }).toString();
     fetch('/api/kr-events/summary?' + q)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
@@ -441,11 +442,12 @@ type JpEvent = { doc_id: string; title: string; date: string; reason: string | n
 // R1-JP: EDINET 원문(CSV) AI 한국어 요약(지연·전역 캐시). KR KrFilingSummary의 JP 짝.
 function JpFilingSummary({ docid, symbol, nm }: { docid: string; symbol: string; nm: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
-    const q = new URLSearchParams({ docid, symbol, nm }).toString();
+    const q = new URLSearchParams({ docid, symbol, nm, lang: locale }).toString();
     fetch('/api/jp-events/summary?' + q)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
@@ -514,11 +516,12 @@ type GbEvent = { id: string; title: string; date: string; time: string; source: 
 // R1-GB: RNS 공시(Investegate 상세) 원문 AI 한국어 요약(지연·전역 캐시). KR/JP FilingSummary의 GB 짝.
 function GbFilingSummary({ url, symbol, nm }: { url: string; symbol: string; nm: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
-    const q = new URLSearchParams({ url, symbol, nm }).toString();
+    const q = new URLSearchParams({ url, symbol, nm, lang: locale }).toString();
     fetch('/api/gb-events/summary?' + q)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
@@ -582,12 +585,13 @@ function GbEventLayer({ symbol }: { symbol: string }) {
 type CnEvent = { id: string; title: string; date: string; source: string; url: string; pdf: string; material: boolean };
 function CnFilingSummary({ pdf, symbol, nm, id }: { pdf: string; symbol: string; nm: string; id: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
     if (!pdf) { setState('error'); return; }
-    const q = new URLSearchParams({ pdf, symbol, nm, id }).toString();
+    const q = new URLSearchParams({ pdf, symbol, nm, id, lang: locale }).toString();
     fetch('/api/cn-events/summary?' + q)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
@@ -650,11 +654,12 @@ function CnEventLayer({ symbol }: { symbol: string }) {
 type VnEvent = { id: string; title: string; date: string; source: string; url: string; material: boolean };
 function VnFilingSummary({ url, symbol, nm, id }: { url: string; symbol: string; nm: string; id: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
-    const q = new URLSearchParams({ url, symbol, nm, id }).toString();
+    const q = new URLSearchParams({ url, symbol, nm, id, lang: locale }).toString();
     fetch('/api/vn-events/summary?' + q)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })

@@ -48,12 +48,15 @@ export async function GET(req: NextRequest) {
   const docid = (req.nextUrl.searchParams.get("docid") || "").trim();
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const nm = req.nextUrl.searchParams.get("nm") || "";
+  const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
+  const col = locale === "en" ? "summary_en" : "summary_ko";
   if (!/^[A-Za-z0-9]+$/.test(docid)) return NextResponse.json({ error: "bad docid" }, { status: 400 });
 
   const sb = createAdminClient();
   const { data: hit } = await sb
-    .from("filing_summaries").select("summary_ko").eq("accession", docid).maybeSingle();
-  if (hit?.summary_ko) return NextResponse.json({ summary: hit.summary_ko, cached: true });
+    .from("filing_summaries").select(col).eq("accession", docid).maybeSingle();
+  const cachedText = (hit as Record<string, string> | null)?.[col];
+  if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
 
   const key = (process.env.EDINET_API_KEY || "").trim();
   if (!key) return NextResponse.json({ error: "no EDINET key" }, { status: 500 });
@@ -78,17 +81,30 @@ export async function GET(req: NextRequest) {
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "당신은 일본 EDINET 공시(일본어)를 한국 개인투자자에게 사실만 전달하는 애널리스트입니다. 원문에 실제로 쓰인 내용만 2~3문장 한국어로 요약합니다. 규칙: (1) 예측·전망·투자 추천(사라/팔아라·목표가) 절대 금지 (2) 원문에 없는 내용 추가 금지 (3) \"무슨 일이 일어났는지\" 사실만(금액·비율·일정 등) (4) 숫자는 원문 그대로 (5) 일본 고유명사는 자연스러운 한국어로 (6) 해요체·군더더기 없이.",
-        },
-        {
-          role: "user",
-          content: `EDINET 공시(${nm || "제목없음"}) 원문(일본어)입니다. 무슨 일이 일어났는지 한국어로 2~3문장 사실 요약:\n\n${text}`,
-        },
-      ],
+      messages:
+        locale === "en"
+          ? [
+              {
+                role: "system",
+                content:
+                  'You are an analyst conveying Japanese EDINET disclosures to individual investors — facts only. Summarize only what is actually written in the filing, in 2-3 sentences. Rules: (1) No forecasts, outlook, or investment recommendations (buy/sell, target price, "opportunity") — absolutely forbidden. (2) Do not add anything not in the filing. (3) Only "what happened" — facts (amounts, ratios, schedules). (4) Keep numbers and currency (Japanese yen ¥) exactly as in the source (do not convert). (5) Plain professional English, no filler.',
+              },
+              {
+                role: "user",
+                content: `This is the text of a Japanese EDINET disclosure (${nm || "untitled"}). In 2-3 English sentences, summarize the facts of what happened:\n\n${text}`,
+              },
+            ]
+          : [
+              {
+                role: "system",
+                content:
+                  "당신은 일본 EDINET 공시(일본어)를 한국 개인투자자에게 사실만 전달하는 애널리스트입니다. 원문에 실제로 쓰인 내용만 2~3문장 한국어로 요약합니다. 규칙: (1) 예측·전망·투자 추천(사라/팔아라·목표가) 절대 금지 (2) 원문에 없는 내용 추가 금지 (3) \"무슨 일이 일어났는지\" 사실만(금액·비율·일정 등) (4) 숫자는 원문 그대로 (5) 일본 고유명사는 자연스러운 한국어로 (6) 해요체·군더더기 없이.",
+              },
+              {
+                role: "user",
+                content: `EDINET 공시(${nm || "제목없음"}) 원문(일본어)입니다. 무슨 일이 일어났는지 한국어로 2~3문장 사실 요약:\n\n${text}`,
+              },
+            ],
       max_tokens: 320,
       temperature: 0.2,
     }),
@@ -100,7 +116,7 @@ export async function GET(req: NextRequest) {
   if (!summary) return NextResponse.json({ error: "llm empty" }, { status: 502 });
 
   await sb.from("filing_summaries").upsert(
-    { accession: docid, symbol, summary_ko: summary, model: "gpt-4o-mini" },
+    { accession: docid, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },
   );
   return NextResponse.json({ summary, cached: false });
