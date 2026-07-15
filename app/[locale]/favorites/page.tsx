@@ -4,7 +4,10 @@ import WatchlistClient from '@/components/favorites/WatchlistClient';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: '즐겨찾기' };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return { title: locale === "en" ? "Favorites" : "즐겨찾기" };
+}
 
 export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

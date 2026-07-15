@@ -4,7 +4,10 @@ import { getTranslations } from "next-intl/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "광고 안내·문의" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return { title: locale === "en" ? "Advertising · Inquiries" : "광고 안내·문의" };
+}
 
 // 모듈 상수 → 값=ko.json 키. 렌더에서 t()로 해석.
 const SLOTS = [

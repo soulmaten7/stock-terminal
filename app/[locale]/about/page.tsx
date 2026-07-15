@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "서비스 소개" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return { title: locale === "en" ? "About" : "서비스 소개" };
+}
 
 // 모듈 상수 → 값=ko.json 키(709B 방식). 렌더에서 t()로 해석.
 const PILLARS: { t: string; d: string }[] = [

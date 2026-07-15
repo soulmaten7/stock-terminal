@@ -5,7 +5,10 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const metadata = { title: "리딩방 등록·관리 — 트릴리언" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return { title: locale === "en" ? "Advisory registration · management" : "리딩방 등록·관리 — 트릴리언" };
+}
 
 export default async function BusinessPage() {
   const t = await getTranslations('Business');

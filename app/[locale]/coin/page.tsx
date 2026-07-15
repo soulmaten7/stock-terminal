@@ -1,7 +1,10 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "코인 — 트릴리언 (준비 중)" };
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  return { title: locale === "en" ? "Coin (coming soon)" : "코인 — 트릴리언 (준비 중)" };
+}
 
 export default async function CoinPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
