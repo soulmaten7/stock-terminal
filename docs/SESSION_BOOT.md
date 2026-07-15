@@ -1,11 +1,17 @@
-<!-- 2026-07-14 -->
+<!-- 2026-07-15 -->
 # Trillion(트릴리언) — 새 세션 부트(BOOT) 파일 🚀
 
 > ⭐ **새 세션은 `docs/NEW_SESSION_HANDOFF.md`(단일 자급형 핸드오프)를 먼저 읽으세요** — 정체성·현재상태·아키텍처·워크플로우·DB·다음 작업이 한 파일에 정리됨. 이 BOOT 파일은 누적 히스토리(상세 보강용).
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🌐 **2026-07-14 (5·최신) · 영어 데이터 레이어 i18n(Tier 1+2 결정론) + 브랜드 록업 (HEAD `3cb73ab`).**
+> 🎉 **2026-07-15 (최신) · Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어 (HEAD `5c0c348`).**
+> - `/en`의 마지막 한국어였던 **LLM 생성물**(브리핑 R2·news-brief R3·공시요약 R1)을 영어화. 설계 `docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand·per-locale). **결과: `/en` = 로고 워드마크(의도적) 외 한국어 0** — 정적 UI + 결정론 데이터 + LLM 생성물 전부 영어. **US 영어 시장 제품 완성.**
+> - **720**(`2645cf9`) `stock_briefings.brief_en`·`news_briefs.summary_en`/`tags_en`·`filing_summaries.summary_en` 컬럼 마이그(MCP 라이브) · **721**(`e34fee3`) `/api/brief` R2[프롬프트+lang+`brief_en` on-demand+lens facts 로케일·🐞 `brief_ko` NOT NULL→en-first INSERT 23502→**조용한 유료 LLM 누수** 될 뻔→DROP NOT NULL+upsert 에러 로깅] · **722**(`60d5d8b`) `/api/news-brief` R3[+`tags_en`·한국어 강제 후처리(재번역·통화치환) `ko` 게이팅·옛연도 필터는 양쪽] · **723**(`9329993`) `/api/events/summary` R1 US[`summary_en`·accession 전역 캐시] · **724**(`5c0c348`) `kr/jp/cn/gb/vn-events/summary` R1[723 패턴 복제·CN/VN 후처리 게이팅·통화 원문 유지].
+> - **🔒 공통**: 캐시 **컬럼 분리**(`*_en`/`*_ko`)로 언어 교차 오염 원천 차단 · **on-demand**(영어 트래픽만 과금·전량 재생성 아님) · **KR byte 동일**(ko 경로·프롬프트·후처리 불변·라이브 삼성전자 공시 ko/en 컬럼 독립 실측). tsc 0·vitest 43/43. 교훈 `LENS_DEV_PLAYBOOK` #31.
+> - **▶ 다음(선택) = US 통화기호 title-case · 빈 뉴스 명시상태 UX · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.**
+>
+> 🌐 **2026-07-14 (5) · 영어 데이터 레이어 i18n(Tier 1+2 결정론) + 브랜드 록업 (HEAD `3cb73ab`).**
 > - **📡 발견(#86 감사)**: `/en`에서 정적 UI는 영어인데 **데이터/AI 레이어가 한국어**(렌즈명·판정·grade·브리핑·공시라벨·종목명 h1). 원인 2층: (A) 클라가 `&lang=en` 안 보냄(`lensCopy.ts` 카피는 이미 이중언어) (B) 일부 하드코딩. → 결정론(Tier 1+2)은 전부 영어화, LLM 생성물(Tier 3)은 설계만.
 > - **🔧 715**(`a393940`) 렌즈 fetch `&lang` 배선(한 줄로 이름·판정·스펙트럼·전망 영어)+grade 이중언어 맵+h1 `info.en`+AiLensBadge lang · **716**(`36dbed9`) 8-K 라벨·F-Score(우량/중립/부실→Strong/Neutral/Weak)·ETF 레버리지 이중언어+`/api/events` lang·캐시키 · **717**(`a9d9ad7`) `lenses.ts` detail 키 stable화(한국어가 `L.detail['200일선대비%']` **lookup 키**라 key/label 분리)+`DETAIL_LABELS`/headline·조회 3곳 동기화 · **718**(`72d4f32`) 렌즈 `note` 6개 영어(수치·레퍼런스 보존)+short/long 이중언어(계산모듈 언어중립 state) · **719**(`3cb73ab`) `/en` 한글 워드마크 "트릴리언" 숨김(헤더·푸터·로그인·ko 병기 유지).
 > - **🔒 KR byte 동일**: charac 테스트 red-diff + live `/api/lens?...&lang=ko` SHA 대조로 증명(vitest 43/43·note 6개 SHA 동일).

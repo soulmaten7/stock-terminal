@@ -1,7 +1,13 @@
-<!-- 2026-07-14 -->
+<!-- 2026-07-15 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🌐 **2026-07-14 (5·최신) — 영어 데이터 레이어 i18n(Tier 1+2 결정론) + 브랜드 록업. HEAD `3cb73ab`.**
+> 🎉 **2026-07-15 (최신) — Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어. HEAD `5c0c348`.**
+> - `/en`의 마지막 한국어(LLM 생성물=브리핑 R2·news-brief R3·공시요약 R1)를 영어화. 설계 `docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand). **결과=`/en` 로고 빼고 한국어 0**(정적 UI+결정론+LLM 전부 영어·US 영어 시장 제품 완성).
+> - **720**(`2645cf9`) `*_en` 컬럼 마이그(MCP) · **721**(`e34fee3`) brief R2[🐞 `brief_ko` NOT NULL→en-first INSERT가 조용한 LLM 누수 될 뻔·DROP NOT NULL+에러로깅] · **722**(`60d5d8b`) news R3[+`tags_en`·한국어 강제 후처리 ko 게이팅] · **723**(`9329993`) 공시 R1 US · **724**(`5c0c348`) 공시 R1 5개국(723 복제·CN/VN 후처리 게이팅).
+> - **컬럼 분리(`*_en`)로 캐시 충돌 원천 차단·on-demand(영어 트래픽만 과금)·KR byte 동일**(라이브 삼성 공시 ko/en 독립 증명·vitest 43/43). 교훈 `LENS_DEV_PLAYBOOK` #31.
+> - **▶ 다음(선택) = US 통화기호·빈뉴스 명시 UX·OAuth 로케일 쿠키·다크 폴리시 D·클로즈드 베타.**
+>
+> 🌐 **2026-07-14 (5) — 영어 데이터 레이어 i18n(Tier 1+2 결정론) + 브랜드 록업. HEAD `3cb73ab`.**
 > - **발견(#86 감사)**: `/en` 정적 UI는 영어인데 데이터/AI 레이어(렌즈명·판정·grade·브리핑·공시·h1)가 한국어. 원인=(A)클라가 `&lang` 안 보냄[카피는 이미 이중언어] (B)일부 하드코딩.
 > - **715**(`a393940`) 렌즈 `&lang` 배선[한방에 이름·판정·스펙트럼 영어]+grade 맵+h1 `info.en`+뱃지 lang · **716**(`36dbed9`) 8-K·F-Score·ETF 이중언어+`/api/events` lang캐시 · **717**(`a9d9ad7`) detail 키 stable화[한국어가 lookup 키라 key/label 분리]+DETAIL_LABELS/headline · **718**(`72d4f32`) note 6개 영어[수치 보존]+short/long 이중언어 · **719**(`3cb73ab`) `/en` 한글 워드마크 "트릴리언" 숨김.
 > - **KR byte 동일**: charac red-diff + live SHA 대조 증명(vitest 43/43).

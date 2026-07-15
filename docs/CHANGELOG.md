@@ -1,5 +1,18 @@
-<!-- 2026-07-14 -->
+<!-- 2026-07-15 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-15 — 🎉 Tier 3: LLM 생성물 영어화 완결 → /en 100% 영어 (HEAD `5c0c348`)
+
+- **개요**: `/en`의 마지막 한국어였던 **LLM 생성물**(브리핑 R2·news-brief R3·공시요약 R1)을 영어화. 설계=`docs/TIER3_LLM_I18N_DESIGN.md`(스키마 A `*_en` 컬럼·on-demand·per-locale). **결과: `/en` = 로고 워드마크(의도적) 외 한국어 0** — 정적 UI + 결정론 데이터 + LLM 생성물 전부 영어. US 영어 시장 제품 완성.
+- **720 마이그레이션**(MCP 라이브·기록 `2645cf9`): `stock_briefings.brief_en`·`news_briefs.summary_en`·`filing_summaries.summary_en` 컬럼 추가(nullable·기존 `*_ko` 무손상).
+- **721 브리핑 R2**(`e34fee3`): `/api/brief` 영어(프롬프트+`?lang`+`brief_en` on-demand+`computeSymbolLenses(locale)` facts). **🐞 blocker**: `brief_ko` NOT NULL이라 en-first INSERT가 23502 위반→**조용히 실패 시 매 조회 LLM 재과금 누수** → `brief_ko` DROP NOT NULL + upsert 에러 `console.error`.
+- **722 news-brief R3**(`60d5d8b`): `/api/news-brief` 영어(+`tags_en` 추가[720 누락]+`summary_ko`/`tags` nullable). **한국어 강제 후처리 ko 게이팅**: 후처리1(비한국어→한국어 재번역)·후처리3(원→엔/위안/동/파운드)를 `locale==='ko'`로 감쌈. 후처리2(옛연도 필터)는 언어중립이라 양쪽 유지.
+- **723 공시요약 R1 US**(`9329993`): `/api/events/summary` 영어(`summary_en`·accession 전역 캐시·`summary_ko` DROP NOT NULL).
+- **724 공시요약 R1 5개국**(`5c0c348`): `kr/jp/cn/gb/vn-events/summary` 723 패턴 복제(영어 프롬프트[소스=DART·EDINET·cninfo/HKEX·RNS·VN뉴스]·CN/VN 후처리 ko 게이팅·통화 원문 유지).
+- **🔒 공통 안전**: 캐시 **컬럼 분리**(`*_en`/`*_ko`)로 언어 교차 오염 원천 차단 · **on-demand**(영어 트래픽만 과금·전량 재생성 아님) · **KR byte 동일**(ko 경로·프롬프트·후처리 불변·라이브 삼성전자 공시 ko/en 컬럼 독립 실측 증명).
+- **✅ 검증**: 각 STEP tsc 0·vitest 43/43·빌드·양쪽 실측·가드레일(예측·목표가·투자의견 없음). ⚠️ JP EDINET 키 미설정은 소스 fetch 이슈(로케일 무관·i18n 회귀 아님).
+- **🐞 교훈**(`LENS_DEV_PLAYBOOK` #31): additive `*_en` 컬럼만으론 로케일 독립 안 됨 — `*_ko`가 NOT NULL이면 en-first INSERT가 실패 경로 + swallowed upsert 에러 = **조용한 유료 LLM 누수**(visible crash 아님). → `*_ko` DROP NOT NULL + upsert 에러 로깅 필수.
+- **▶ 다음(선택)**: US 통화기호 title-case · 빈 뉴스 명시상태 UX · OAuth 로케일 쿠키 · 다크 폴리시 D · 클로즈드 베타.
 
 ## 2026-07-14 (5) — 🌐 영어 데이터 레이어 i18n (Tier 1+2 결정론) + 브랜드 록업 폴리시 (HEAD `3cb73ab`)
 
