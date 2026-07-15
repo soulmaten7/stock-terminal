@@ -410,6 +410,13 @@
       "band": "희망 {v}",
       "source": "출처: 38커뮤니케이션. 청약일정은 증권신고서 수리과정에서 변경될 수 있습니다."
     },
+    "usIpo": {
+      "upcoming": "상장 예정",
+      "priced": "최근 상장",
+      "source": "출처: Nasdaq IPO 캘린더 · 예정일·공모가는 변동될 수 있음",
+      "empty": "표시할 US IPO가 없습니다",
+      "direct": "Nasdaq에서 직접 보기"
+    },
     "dividend": {
       "error": "배당 정보를 불러오지 못했습니다.",
       "title": "고배당 TOP",

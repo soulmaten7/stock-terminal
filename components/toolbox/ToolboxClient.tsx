@@ -18,6 +18,7 @@ import DartFeed from './DartFeed';
 import SecFeed from './SecFeed';
 import MacroFeed from './MacroFeed';
 import OfferingsFeed from './OfferingsFeed';
+import UsIpoFeed from './UsIpoFeed';
 import { useCountryStore, homeMarketFor, COUNTRY_STORAGE_KEY, type Country } from '@/stores/countryStore';
 import { useHomeReset } from '@/stores/homeResetStore';
 import { clearBoardViews } from '@/lib/boardMemory';
@@ -118,7 +119,7 @@ function feedFor(tab: string, country: Country, t: Translate) {
       ? <NewsFeed country="GB" query="UK ETF fund LSE investment trust" title={t('feedTitle.etf.GB')} />
       : <NewsFeed query="ETF 상장 순자산총액" title={t('feedTitle.etf.KR')} />;
     case 'ipo': return country === 'US'
-      ? <NewsFeed country="US" query="IPO stock market debut listing" title={t('feedTitle.ipo.US')} />
+      ? <UsIpoFeed />
       : country === 'JP'
       ? <NewsFeed country="JP" query="IPO 新規上場 日本" title={t('feedTitle.ipo.JP')} />
       : country === 'CN'

@@ -410,6 +410,13 @@
       "band": "Indicative {v}",
       "source": "Source: 38 Communications. Subscription schedules may change while the securities registration statement is under review."
     },
+    "usIpo": {
+      "upcoming": "Upcoming",
+      "priced": "Recently priced",
+      "source": "Source: Nasdaq IPO calendar · dates and prices may change",
+      "empty": "No US IPOs to show",
+      "direct": "View on Nasdaq"
+    },
     "dividend": {
       "error": "Could not load dividend information.",
       "title": "Top dividend yields",
