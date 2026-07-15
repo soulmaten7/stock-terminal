@@ -5,7 +5,15 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🏁 **2026-07-15 (최신·3) · i18n 100% 완결 — OAuth 로케일 쿠키(710E) + US 폴리시(725·726) (HEAD `6bccc45`).**
+> 🇺🇸 **2026-07-15 (최신·4) · 라이브 QA + 727 메타타이틀 + 다크 폴리시 D + US 구조화 IPO 피드 (HEAD `9d977f0`).**
+> - **🔎 라이브 QA 스윕**(브라우저 8페이지): i18n 100% 후 전수 육안 → 거의 클린, 유일 발견 = 정적 페이지 6종 `/en` 메타 타이틀 한글 잔재.
+> - **727 메타타이틀**(`d15dbed`): `about`·`advertise`·`feedback`·`favorites`·`business`·`coin` → `generateMetadata` 로케일화(en 영어·ko byte 동일·711 패턴·robots 보존·terms/privacy/admin 제외). 라이브 검증. → **i18n 잔재 0.**
+> - **다크 폴리시 D**(`1f661e3`): 미사용 `.shadow-soft`/`.shadow-soft-hover` 죽은 CSS 제거(전 .tsx 미사용·다크 불가시). **폴리시 백로그 소진**(i18n·다크·통화·title-case·메타).
+> - **🇺🇸 729 US 구조화 IPO 피드**(`9d977f0`): US IPO 탭 뉴스검색→구조화 캘린더(KR IpoFeed 동급). Nasdaq 공개 API(무키·헤더로 403 회피·STEP 728 프로브 검증)→`/api/ipo/us-feed`(이번+지난달·예정+최근상장)+`UsIpoFeed`(2섹션 카드·priced→내부 종목상세)+Toolbox 배선(JP/CN/VN/GB 뉴스·KR OfferingsFeed 불변)+i18n(ko 상장예정/최근상장·en Upcoming/Recently priced 패리티). **✅ 라이브 실측**=Vercel API 200·실데이터 30건(MetaOptics/MOT·Csquare/CSQR)·403 없음·/en·/ko 양쪽 렌더. **US 시장 KR급 IPO 뎁스.**
+> - **🐞 교훈**: `export const metadata` 정적 export도 i18n 시 generateMetadata로 · Nasdaq IPO 공개 API(무키·헤더·`data.{upcoming,priced,filed}`·다음달 0건→이번+지난달 병합·Vercel 403 없음).
+> - **▶ 다음(선택) = US 배당 캘린더(Nasdaq calendar/dividends→US OfferingsFeed=KR 완전 동급) · ETN 서브탭 · 클로즈드 베타 준비.**
+>
+> 🏁 **2026-07-15 (3) · i18n 100% 완결 — OAuth 로케일 쿠키(710E) + US 폴리시(725·726) (HEAD `6bccc45`).**
 > - **710E OAuth 로케일 쿠키**(`6bccc45`): `/en` 로그인이 한국어 `/`로 떨어지던 **마지막 gap 제거** → 로케일을 **쿠키(`post_login_locale`·SameSite=Lax)로 왕복**. **redirectTo/Supabase 허용목록 byte 불손상**(710D 로그인 사망 회피 절대원칙). 신규 `lib/authRedirect.ts`(`safeNextPath`=오픈리다이렉트 가드·`localizePath`=as-needed 프리픽스)+유닛테스트(vitest 49/49), 콜백이 쿠키 읽어 프리픽스+소비 삭제, 로그인 2곳(`auth/login`·`admin/login`)에서 쿠키 세팅.
 > - **✅ 라이브 실측 성공**: 실제 구글 로그인(`soulmaten7@gmail.com`·JWT 발급 3분 내)이 `/en`→`/en`(영어) 복귀·세션 활성. 브라우저 격리 테스트로 `post_login_locale=en`이 `NEXT_LOCALE=ko`인데도 `/en` 구동 증명(쿠키가 독립 구동인자).
 > - **🏁 i18n 100%**: 정적 UI(710B `en.json`) + 결정론 데이터(715~719) + LLM 산출물(720~724) + **로그인 왕복(710E)** 전부 로케일 정합. `/en` = 로고 워드마크(의도적) 외 한국어 0.

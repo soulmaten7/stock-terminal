@@ -1,6 +1,18 @@
 <!-- 2026-07-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-15 (3) — 🔎 라이브 QA 스윕 + 727 메타타이틀 + 다크 폴리시 D + 🇺🇸 729 US 구조화 IPO 피드 (HEAD `9d977f0`)
+
+- **개요**: i18n 100% 직후 라이브 QA 스윕(브라우저 8페이지 전수) → i18n 잔재 마지막 하나(정적 페이지 메타 타이틀) 발견·수정 → 폴리시 백로그 소진 → **US 시장 뎁스(P2) 실질 전진 = US 구조화 IPO 피드**. 전부 라이브 실측 검증.
+- **🔎 라이브 QA 스윕**: `/en`·`/ko` 홈·종목상세(6개국)·about/terms/privacy·로그인 전수 육안. 거의 클린(홈 "음"=로그인 사용자 닉네임 아바타=정상·KR byte 동일·통화·title-case OK). **유일 발견 = 정적 페이지 6종의 `/en` 브라우저 탭/SEO 타이틀이 한글**(본문은 영어인데 `export const metadata={title:"한글"}` 정적 하드코딩이 로케일 안 따라감).
+- **727 메타 타이틀 로케일화**(`d15dbed`): `about`·`advertise`·`feedback`·`favorites`·`business`·`coin` → `export const metadata` 삭제하고 `generateMetadata`(로케일 분기·711 패턴). **en 영어**(About·Favorites·Advertising · Inquiries·Beta feedback·Coin (coming soon)·Advisory registration · management)·**ko byte 동일**·feedback `robots:noindex` 보존. `terms`·`privacy`(법률)·`admin`(관리자) 의도적 한글 유지. **라이브 검증** — 6개 `/en` 타이틀 영어 전환·`/ko` 불변·terms/privacy 한글 유지 확인. → **i18n 잔재 0**.
+- **다크 폴리시 D**(`1f661e3`): 미사용 `.shadow-soft`/`.shadow-soft-hover` 죽은 CSS 제거(전 `.tsx` 미사용·다크 배경서 `rgba(0,0,0,0.04)` 불가시). 하드코딩 라이트 색 3곳(StockLogo·구글 버튼 2)은 의도적(브랜드 정석)이라 불변. **폴리시 백로그(i18n·다크·통화·title-case·메타) 전부 소진.**
+- **729 US 구조화 IPO 피드**(`9d977f0`): US IPO 탭이 **뉴스검색 → 구조화 캘린더**(KR `IpoFeed` 동급). STEP 728 프로브로 **Nasdaq 공개 API 검증**(무키·헤더로 403 회피)→ **신규** `/api/ipo/us-feed`(이번+지난달 병합·upcoming 예정 + priced 최근상장·정규화·6h 캐시) + `UsIpoFeed.tsx`(2섹션 카드: 회사명·티커·거래소·공모가·날짜·딜규모·priced→내부 종목상세 TR-AI 렌즈) + Toolbox US 분기만 교체(JP/CN/VN/GB 뉴스·KR OfferingsFeed **불변**) + i18n(ko "상장 예정"/"최근 상장"·en "Upcoming"/"Recently priced" 패리티).
+  - **✅ 라이브 실측**: Vercel `/api/ipo/us-feed` **HTTP 200·실데이터 30건**(예정 6·상장 24·MetaOptics/MOT·Csquare/CSQR·Standard Nuclear/STDN·EWAVU)·**Vercel 403 없음**. `/en` "Upcoming"/"Recently priced" + `/ko` "상장 예정"/"최근 상장" 양쪽 구조화 카드 렌더·회사명 영어·한글/US 교차누출 0. **US 시장 KR급 IPO 뎁스 획득.**
+- **✅ 검증 공통**: 각 STEP tsc 0·`NEXT_DIST_DIR=.next-verify` 빌드·vitest(727=49/49·729=49/49 messages.test.ts ko/en 패리티 포함)·라이브 브라우저 실측.
+- **🐞 교훈**: (1) i18n 로케일화 시 `export const metadata` 정적 export도 `generateMetadata`로 전환 필요(710D/711이 홈·종목만 커버). (2) Nasdaq IPO 공개 API = 무키·헤더(UA/Origin/Referer) 필수·`data.{upcoming,priced,filed}` 구조·다음달 쿼리 0건(예정은 몇 주 앞만)→이번+지난달 병합. Vercel 서버리스(US IP)서 403 안 남. `LOCALE_SOURCE_PLAYBOOK` 등록 후보.
+- **▶ 다음(선택)**: US 배당 캘린더(Nasdaq `calendar/dividends`→US OfferingsFeed=KR 완전 동급) · ETN 서브탭 · 클로즈드 베타 준비.
+
 ## 2026-07-15 (2) — 🎉 US 폴리시(725·726) + OAuth 로케일 쿠키(710E) → i18n 100% 완결 (HEAD `6bccc45`)
 
 - **개요**: i18n 마지막 항목(로그인 왕복 로케일)까지 마감 → **i18n 100% = 정적 UI + 결정론 데이터 + LLM 산출물 + 로그인 왕복 전부 로케일 정합.** 그 앞에 US 표시 폴리시 2건.
