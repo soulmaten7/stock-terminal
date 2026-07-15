@@ -417,6 +417,15 @@
       "empty": "표시할 US IPO가 없습니다",
       "direct": "Nasdaq에서 직접 보기"
     },
+    "usDiv": {
+      "title": "배당락 예정",
+      "ex": "배당락 {d}",
+      "amount": "주당 {v}",
+      "pay": "지급 {d}",
+      "source": "출처: Nasdaq 배당 캘린더 · 앞 14일 배당락 예정",
+      "empty": "표시할 배당 예정이 없습니다",
+      "direct": "Nasdaq에서 직접 보기"
+    },
     "dividend": {
       "error": "배당 정보를 불러오지 못했습니다.",
       "title": "고배당 TOP",

@@ -417,6 +417,15 @@
       "empty": "No US IPOs to show",
       "direct": "View on Nasdaq"
     },
+    "usDiv": {
+      "title": "Upcoming ex-dividend",
+      "ex": "Ex {d}",
+      "amount": "{v}/share",
+      "pay": "Pay {d}",
+      "source": "Source: Nasdaq dividend calendar · ex-dates in the next 14 days",
+      "empty": "No upcoming dividends to show",
+      "direct": "View on Nasdaq"
+    },
     "dividend": {
       "error": "Could not load dividend information.",
       "title": "Top dividend yields",
