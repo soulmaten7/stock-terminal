@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useLocale } from 'next-intl';
 import { ShieldCheck } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
+  const locale = useLocale();
   const [phase, setPhase] = useState<'checking' | 'login' | 'denied'>('checking');
   const [loading, setLoading] = useState(false);
 
@@ -23,6 +25,8 @@ export default function AdminLoginPage() {
 
   const login = async () => {
     setLoading(true);
+    // OAuth 왕복에 로케일 실어보내기(쿠키). redirectTo·next는 불변.
+    document.cookie = `post_login_locale=${locale}; path=/; max-age=600; samesite=lax${window.location.protocol === "https:" ? "; secure" : ""}`;
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: 'google',

@@ -17,6 +17,8 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
+      // OAuth 왕복에 로케일 실어보내기(쿠키). redirectTo는 불변 — Supabase 허용목록 안 건드림.
+      document.cookie = `post_login_locale=${locale}; path=/; max-age=600; samesite=lax${window.location.protocol === "https:" ? "; secure" : ""}`;
       const supabase = createClient();
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
