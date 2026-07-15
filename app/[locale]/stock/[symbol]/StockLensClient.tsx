@@ -797,12 +797,13 @@ function accFromLink(link: string): string {
 // R1: 공시 원문 AI 요약(지연 로드·전역 캐시). LLM은 원문을 읽어 '사실'만 — 예측·판정 아님.
 function AiFilingSummary({ symbol, link, items }: { symbol: string; link: string; items: string[] }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [text, setText] = useState('');
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
     if (!accFromLink(link)) { setState('error'); return; }
-    const q = new URLSearchParams({ symbol, link, items: items.join(',') }).toString();
+    const q = new URLSearchParams({ symbol, link, items: items.join(','), lang: locale }).toString();
     fetch('/api/events/summary?' + q)
       .then((r) => r.json())
       .then((j) => { if (!alive) return; if (j.summary) { setText(j.summary); setState('done'); } else setState('error'); })
