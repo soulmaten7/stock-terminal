@@ -31,6 +31,7 @@ type LinkRow = {
   site_name: string;
   site_url: string;
   description: string | null;
+  description_en: string | null;
   logo_url: string | null;
   display_order: number | null;
 };
@@ -97,7 +98,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const { data: links } = await supabase
     .from("link_hub")
-    .select("id, country, category, site_name, site_url, description, logo_url, display_order")
+    .select("id, country, category, site_name, site_url, description, description_en, logo_url, display_order")
     .eq("is_active", true)
     .order("display_order", { ascending: true });
 
@@ -124,7 +125,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const rows = (links ?? []) as LinkRow[];
   const grouped: Record<string, (LinkRow & { isFavorite: boolean })[]> = {};
   for (const link of rows) {
-    (grouped[link.category] ??= []).push({ ...link, isFavorite: favSet.has(link.id) });
+    (grouped[link.category] ??= []).push({
+      ...link,
+      description: locale === "en" ? (link.description_en ?? link.description) : link.description,
+      isFavorite: favSet.has(link.id),
+    });
   }
 
   const categories = Object.keys(grouped)
