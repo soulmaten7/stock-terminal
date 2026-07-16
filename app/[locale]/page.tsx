@@ -29,6 +29,7 @@ type LinkRow = {
   country: string | null;
   category: string;
   site_name: string;
+  site_name_en: string | null;
   site_url: string;
   description: string | null;
   description_en: string | null;
@@ -98,7 +99,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   const { data: links } = await supabase
     .from("link_hub")
-    .select("id, country, category, site_name, site_url, description, description_en, logo_url, display_order")
+    .select("id, country, category, site_name, site_name_en, site_url, description, description_en, logo_url, display_order")
     .eq("is_active", true)
     .order("display_order", { ascending: true });
 
@@ -127,6 +128,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   for (const link of rows) {
     (grouped[link.category] ??= []).push({
       ...link,
+      site_name: locale === "en" ? (link.site_name_en ?? link.site_name) : link.site_name,
       description: locale === "en" ? (link.description_en ?? link.description) : link.description,
       isFavorite: favSet.has(link.id),
     });
