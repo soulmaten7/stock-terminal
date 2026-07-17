@@ -2,6 +2,18 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-17 (4) — 🌐 ②b-2 관심목록 즉시화 + ①-KR 종목명 영어화 완결 ✅
+
+**HEAD `7bd48e5`.**
+- **②b-2 관심목록 즉시화**(`95d4d9f`): `/api/watchlist/quotes`에 `lens_scores` 선계산 톤(강점/주의/보통·state→tone 결정론) 배치 포함 → `WatchlistClient` 로드 즉시 렌더("읽는 중…" 없이)·선계산 밖만 실시간 `/api/lens` 폴백. ②b 완결.
+- **①-KR 종목명 영어화**(`147bc39`): `kr_stock_snapshot.name_en`(MCP 컬럼)←야후 `longName`(신규 `scripts/enrich_kr_names.ts`) + `krx/ranking`·`MarketBoard`·`lib/stockName.ts`·`watchlist/quotes`·`WatchlistClient`가 `/en` 영문명 선택(한글 폴백). 종목상세는 기존 `resolveStockName` 자동.
+- **🐞 페이지네이션 버그(Claude Code)**: 초기 `select`가 PostgREST 1000행 캡→~1772종목(SK하이닉스 포함) 조용히 누락→`.range()` 루프로 전 2772 커버(`aebda56`). `name_en` **2766/2772**(6=야후 미제공 소형주).
+- **렌즈 미리보기 공유카드**(`7bd48e5`): `LensPreview`·`BoardTopLensCard` 종목명도 `locale==='en'?nameEn:name`(한글 폴백). ④ 미리보기가 /en서 한글 뜨던 것 수정.
+- **✅ 라이브 실측**: `/en` KR 보드·리스트·미리보기·상세 전부 영문명(SK hynix·Samsung Electronics·Hyundai Motor·Kia·NAVER)·`/ko` 한글 유지.
+- **🅿️ name_en 자동화(미착수)**: 별도 크론 불필요 — 매일 `computeKrSnapshot`/`kr-perf`에 "name_en null만 야후 채움" 증분 1스텝→새 종목 자동. 백필=이번 수동/정상운영=증분. 크론 필요성 재검토 요청→대화 후 확정.
+- **🧭 운영모델 자문(POTAL 멀티에이전트 조직)**: 결론=프리베타엔 16-Division 과설계. 멀티에이전트=독립 병렬 리서치만 이득(Anthropic)·코딩은 단일 스레드(Cognition)·CC 서브에이전트 2~4개. 처방=단일 스레드 유지+시스템맵+읽기전용 서브에이전트 2~4개+일일 헬스체크. 미확정·대화 계속.
+- **▶ 다음**: ①-JP/CN/VN 종목명 · name_en 자동화 방식 확정 · (선택) 운영모델 경량 적용.
+
 ## 2026-07-17 (3) — 🔬 렌즈 주인공화: ④ 종목헤더·보드 자동미리보기 + ②b-1 KR 렌즈 선계산 ✅
 
 **HEAD `fe02a41`.**

@@ -1,7 +1,17 @@
 <!-- 2026-07-17 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🔬 **2026-07-17 (최신·3) — 렌즈 주인공화: ④ 종목헤더·보드 자동미리보기 + ②b-1 KR 렌즈 선계산. HEAD `fe02a41`.**
+> 🌐 **2026-07-17 (최신·4) — ②b-2 관심목록 즉시화 + ①-KR 종목명 영어화 완결. HEAD `7bd48e5`.**
+> - **②b-2 관심목록 즉시화**(`95d4d9f`): `/api/watchlist/quotes`에 `lens_scores` 선계산 톤 배치 포함 → `WatchlistClient` 로드 즉시("읽는 중…" 없이)·선계산 밖만 실시간 `/api/lens` 폴백. **②b 완결.**
+> - **①-KR 종목명 영어화**(`147bc39`): `kr_stock_snapshot.name_en`(Cowork MCP 컬럼) ← 야후 `longName`(신규 `scripts/enrich_kr_names.ts`) + `krx/ranking`·`MarketBoard`·`lib/stockName.ts`·`watchlist/quotes`·`WatchlistClient`가 `/en` 영문명 선택(한글 폴백). 종목상세는 기존 `resolveStockName` 자동.
+> - **🐞 페이지네이션 버그(Claude Code가 잡음)**: 초기 `select("symbol,market")`가 PostgREST 1000행 캡→2772 중 ~1772종목(SK하이닉스 포함) 조용히 누락 → `.range()` 루프로 전 유니버스 커버(`aebda56`). `name_en` **2766/2772**(6=야후 미제공 소형주·정직한 결측).
+> - **렌즈 미리보기 공유카드**(`7bd48e5`): `LensPreview`(데스크톱 우측)·`BoardTopLensCard`(모바일 인라인)가 종목명을 로케일 무관 렌더하던 것 → `displayName=locale==='en'?(nameEn??name):name`. ④ 미리보기가 /en서 한글 뜨던 것 수정.
+> - **✅ 라이브 실측**: `/en` KR 보드 리스트+우측 미리보기+종목상세 전부 영문명(SK hynix Inc.·Samsung Electronics Co., Ltd.·Hyundai Motor Company·Kia Corporation·NAVER Corporation)·`/ko` 한글 유지.
+> - **🅿️ name_en 자동화(미착수·방식 재논의)**: 별도 크론 불필요 — 매일 `computeKrSnapshot`/`kr-perf` upsert가 `name_en` 미포함(기존값 보존)·새 종목만 null → "name_en IS NULL만 야후 채움" 증분 1스텝을 일일 흐름에 추가 시 새 상장 자동. 백필=이번 수동/정상운영=증분. 사용자 크론 필요성 재검토 요청.
+> - **🧭 운영모델 자문(POTAL식 멀티에이전트 조직)**: 결론(3중 검색·검증)=트릴리언(프리베타)엔 **16-Division/59-에이전트 과설계**. 근거: 멀티에이전트=독립 병렬 리서치만 이득(Anthropic·토큰~15배)·코딩은 단일 스레드(Cognition "Don't Build Multi-Agents")·CC 서브에이전트 2~4개 좁게. **처방**=단일 스레드 개발 유지 + 시스템맵 1장 + 읽기전용 서브에이전트 2~4개(로케일 감사·소스 프로브·검증) + 일일 헬스체크(3층). POTAL "59 에이전트"도 실제론 크론+태스크2+복붙 프롬프트+단일 개발 루프. **미확정·대화 계속.**
+> - **▶ 다음 = ①-JP/CN/VN 종목명 영어화(JP 자체 리스트·CN title-case·VN 야후) · name_en 자동화 방식 확정 · (선택) 운영모델 경량 적용.**
+>
+> 🔬 **2026-07-17 (3) — 렌즈 주인공화: ④ 종목헤더·보드 자동미리보기 + ②b-1 KR 렌즈 선계산. HEAD `fe02a41`.**
 > - **④A 종목 페이지 렌즈 헤더**(`dcb1bf6`): 상단에 점7+강점/주의/보통+"판단은 당신" 노트(`LensSummary` 재사용·상세 카드 위·ETF 제외). 라이브 삼성전자 강점2·주의2·보통3.
 > - **④B 보드 자동 미리보기**(클릭 전에도 맨 위 종목 렌즈): 744(`be7407d`·KR) `LensPreview` example 라벨 + `BoardTopLensCard`(모바일 인라인·팝업 아님) + aside `selectedStock ?? sorted[0]`(**표시만 폴백**·상태 불변·URL 복원과 안 싸움) · 745(`9998c7b`) US·JP·CN·VN·GB 미러(CN `.cur` 보존). 라이브 SK하이닉스·Micron + "거래 상위 예시".
 > - **②b-1 KR 렌즈 선계산**(`fe02a41`+RPC 마이그 라이브): `computeLensScoresFor(universe,market)` 파라미터화(US 보존) + KR 유니버스(`kr_stock_snapshot` 거래대금 상위·admin) + `/api/cron/kr-lens-scores`(`30 10 * * *`) + 로컬 러너 + 백분위 RPC 시장필터(`041_...sql` 아카이브). **KR 489행**·MCP 검증(삼성전자 강점2·주의2·보통3=live 일치·백분위 시장격리·US 무오염·KR도 백분위 획득).

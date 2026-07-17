@@ -1,6 +1,18 @@
 <!-- 2026-07-17 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-17 (4) — 🌐 ②b-2 관심목록 즉시화 + ①-KR 종목명 영어화 완결 (HEAD `7bd48e5`)
+
+- **개요**: 관심목록 렌즈 요약을 선계산으로 즉시화(②b 완결) + `/en`에서 한글로 남던 KR 종목명을 야후 공식 영문명으로(①-KR·라이브 실측) + 운영모델(멀티에이전트 조직) 자문.
+- **②b-2 관심목록 즉시화**(`95d4d9f`): `/api/watchlist/quotes`가 관심 심볼의 `lens_scores` 선계산 상태를 배치로 읽어 톤(강점/주의/보통·state→tone 결정론·라이브 로직과 1:1)으로 각 항목에 포함 → `WatchlistClient`가 로드 즉시 렌더(스켈레톤 없이)·선계산 밖만 실시간 `/api/lens` 폴백(동시성4). ②b(KR 렌즈 선계산) 완결.
+- **①-KR 종목명 영어화**(`147bc39`): `kr_stock_snapshot.name_en` 컬럼(Cowork MCP `alter table … add column`) + 신규 `scripts/enrich_kr_names.ts`(야후 배치 quote 100/콜→`longName||shortName`→`name_en` UPDATE·동시성8) + `krx/ranking`(nameEn 반환)·`MarketBoard`(useLocale·3곳 `isEn?nameEn:name`)·`lib/stockName.ts`(KR en 반환)·`watchlist/quotes`+`WatchlistClient`(name_en 선택) 배선. 종목상세는 기존 `resolveStockName`으로 자동.
+- **🐞 페이지네이션 버그(Claude Code 발견·수정)**: 초기 스크립트 `select("symbol, market")`가 PostgREST 기본 1000행 상한에 걸려 2772종목 중 ~1772(SK하이닉스 포함) **조용히 누락** → `.range(from, from+999)` 페이지네이션 루프로 전 유니버스 처리(`aebda56`). 재실행 후 `name_en` **2766/2772**(나머지 6 = 야후 미제공 소형주 = 정직한 결측).
+- **렌즈 미리보기 공유카드**(`7bd48e5`): ④에서 주인공화한 `LensPreview`(데스크톱 우측 레일)·`BoardTopLensCard`(모바일 인라인)가 종목명을 로케일 무관하게 렌더하던 것 → `displayName = locale==='en'?(nameEn??name):name`(한글 폴백). 두 컴포넌트 모두 `useLocale` 기존 보유·KR 보드는 이미 `nameEn` 실린 row 전달.
+- **✅ 라이브 실측**: `/en` KR 보드 리스트+우측 렌즈 미리보기 카드+종목상세 h1 전부 영문명(SK hynix Inc.·Samsung Electronics Co., Ltd.·SK Square·Hyundai Motor Company·Kia Corporation·NAVER Corporation)·`/ko` 한글 유지. 종목상세 메타 타이틀도 영어. 광고 슬롯 증권사명은 광고주 콘텐츠(별개).
+- **🅿️ name_en 자동화(미착수)**: 별도 크론 불필요 — 매일 `computeKrSnapshot`(`/api/cron/kr-perf`) upsert payload에 `name_en`이 없어 기존값 보존·새 종목만 null → "name_en IS NULL 종목만 야후에서 채움" 증분 스텝을 일일 흐름에 추가하면 새 상장 자동 커버. 백필=이번 수동 실행 / 정상운영=증분. 사용자 크론 필요성 재검토 요청 → 방식 확정은 대화 후.
+- **🧭 운영모델 자문(POTAL 멀티에이전트 조직 적용 여부)**: 3중 검색·검증 결론 = 트릴리언(프리베타)엔 16-Division/59-에이전트는 **과설계**. 멀티에이전트는 독립 병렬 리서치에만 이득(Anthropic·토큰~15배)·코딩은 단일 스레드가 정석(Cognition)·CC 서브에이전트는 2~4개 좁게. 처방 = 단일 스레드 개발 유지 + 시스템맵 1장 + 읽기전용 서브에이전트 2~4개(로케일 감사·소스 프로브·검증) + 일일 헬스체크(3층). 계획 미확정·대화 계속.
+- **▶ 다음**: ①-JP/CN/VN 종목명 영어화 · name_en 자동화 방식 확정 · (선택) 운영모델 경량 적용.
+
 ## 2026-07-17 (3) — 🔬 렌즈를 주인공으로: ④ 종목헤더·보드 자동미리보기 + ②b-1 KR 렌즈 선계산 (HEAD `fe02a41`)
 
 - **개요**: "렌즈로 보는 경험을 직관의 주인공으로" — ④(종목 페이지 압축 렌즈 헤더 + 보드 상단 자동 미리보기·6개국) 완결 + ②b-1(KR 렌즈 선계산 크론) 착수. 전부 라이브/MCP 실측.
