@@ -22,7 +22,7 @@ function gradeBadgeClass(tier: string): string {
 }
 
 type LensItem = { key: string; name: string; grade: string; gradeTier: string; verdict?: { phrase: string; tone: string } | null };
-export type LensRow = { symbol: string; name: string; price?: number | null; changePercent?: number | null; r1w?: number | null; r1m?: number | null; r3m?: number | null; r6m?: number | null; r1y?: number | null };
+export type LensRow = { symbol: string; name: string; nameEn?: string | null; price?: number | null; changePercent?: number | null; r1w?: number | null; r1m?: number | null; r3m?: number | null; r6m?: number | null; r1y?: number | null };
 
 export default function LensPreview({ stock, market, compact = false, example = false }: { stock: LensRow | null; market: string; compact?: boolean; example?: boolean }) {
   const t = useTranslations('LensPreview');
@@ -77,15 +77,16 @@ export default function LensPreview({ stock, market, compact = false, example = 
       </div>
     );
   }
+  const displayName = locale === 'en' ? (stock.nameEn ?? stock.name) : stock.name;
   return (
     <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-unjong-surface p-4'}>
       {example && stock ? <p className="mb-2 text-[11px] text-unjong-muted">{t('exampleLabel')}</p> : null}
       {!compact && (
         <>
           <div className="flex items-center gap-2.5">
-            <StockLogo code={stock.symbol} name={stock.name} size={32} />
+            <StockLogo code={stock.symbol} name={displayName} size={32} />
             <div className="min-w-0">
-              <p className="truncate font-semibold text-unjong-primary">{stock.name}</p>
+              <p className="truncate font-semibold text-unjong-primary">{displayName}</p>
               <p className="text-[12px] tabular-nums text-unjong-muted">{stock.price ? formatPrice(stock.price, market) : '—'}</p>
             </div>
           </div>

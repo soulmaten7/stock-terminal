@@ -9,7 +9,7 @@ import { formatPrice } from '@/lib/currency';
 
 type Tone = 'pos' | 'warn' | 'flat';
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
-type TopStock = { symbol: string; name: string; price?: number | null; changePercent?: number | null };
+type TopStock = { symbol: string; name: string; nameEn?: string | null; price?: number | null; changePercent?: number | null };
 
 // 톤 점 색 — components/favorites/WatchlistClient.tsx TONE_DOT과 동일(강점=민트·주의=앰버·보통=중립).
 const TONE_DOT: Record<Tone, string> = {
@@ -58,6 +58,7 @@ export default function BoardTopLensCard({ stock, market }: { stock: TopStock | 
   }, [stock?.symbol, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!stock) return null;
+  const displayName = locale === 'en' ? (stock.nameEn ?? stock.name) : stock.name;
 
   const pos = lens?.tones.filter((x) => x === 'pos').length ?? 0;
   const warn = lens?.tones.filter((x) => x === 'warn').length ?? 0;
@@ -69,8 +70,8 @@ export default function BoardTopLensCard({ stock, market }: { stock: TopStock | 
     <Link href={`/stock/${stock.symbol}`} className="block rounded-2xl border border-unjong-border bg-unjong-surface p-3">
       <p className="mb-2 text-[11px] text-unjong-muted">{t('topExample')}</p>
       <div className="flex items-center gap-2">
-        <StockLogo code={stock.symbol} name={stock.name} size={22} />
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary">{stock.name}</span>
+        <StockLogo code={stock.symbol} name={displayName} size={22} />
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary">{displayName}</span>
         <span className="shrink-0 font-mono text-xs text-unjong-muted">{stock.symbol}</span>
         <span className="shrink-0 text-right">
           <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{stock.price != null ? formatPrice(stock.price, market) : '—'}</span>
