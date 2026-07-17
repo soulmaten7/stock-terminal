@@ -175,7 +175,10 @@ async function translateTitles(items: NewsItem[], target: string): Promise<NewsI
 }
 
 export async function GET(req: Request) {
-  const market = (new URL(req.url).searchParams.get("market") || new URL(req.url).searchParams.get("country") || "").trim().toUpperCase();
+  const sp = new URL(req.url).searchParams;
+  const market = (sp.get("market") || sp.get("country") || "").trim().toUpperCase();
+  const target = sp.get("lang") === "en" ? "en" : "ko"; // 로케일별 번역 타깃(기본 ko)
+  const ck = (k: string) => target + ":" + k;            // 인메모리 cache 키에 target 포함(ko/en 충돌 방지)
 
   // ── US 분기 ──
   if (market === "US") {
@@ -183,12 +186,13 @@ export async function GET(req: Request) {
 
     // US 토픽 피드(기업·재무·리포트·ETF·공모주) — Google News RSS(키리스)
     if (q) {
-      const key = "US:" + q;
+      const key = ck("US:" + q);
       const hit = cache.get(key);
       if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
       try {
         const items = await googleNews(q, "en-US", "US", "US:en");
-        const data = { items: await translateTitles(items, "ko") };
+        // US=영어 소스: en이면 그대로, ko면 한국어 번역(현행)
+        const data = { items: target === "en" ? items : await translateTitles(items, "ko") };
         cache.set(key, { at: Date.now(), data });
         return NextResponse.json(data);
       } catch (e) {
@@ -197,7 +201,8 @@ export async function GET(req: Request) {
     }
 
     // US 메인 뉴스 — Yahoo ^GSPC RSS(키리스) + 대표기사 og:image(상위 3건)
-    const hit = cache.get("US");
+    const usKey = ck("US");
+    const hit = cache.get(usKey);
     if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
     try {
       const parsed = await usNews();
@@ -211,8 +216,8 @@ export async function GET(req: Request) {
       let fi = parsed.findIndex((it) => it.image);
       if (fi < 0) fi = 0;
       const items = [parsed[fi], ...parsed.filter((_, i) => i !== fi)];
-      const data = { items: await translateTitles(items, "ko") };
-      cache.set("US", { at: Date.now(), data });
+      const data = { items: target === "en" ? items : await translateTitles(items, "ko") };
+      cache.set(usKey, { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
       return NextResponse.json({ items: [], error: String(e) });
@@ -222,12 +227,12 @@ export async function GET(req: Request) {
   // ── JP 분기(Google News, 일본어) ──
   if (market === "JP") {
     const q = (new URL(req.url).searchParams.get("q") || "").trim();
-    const key = "JP:" + q;
+    const key = ck("JP:" + q);
     const hit = cache.get(key);
     if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
     try {
       const items = await googleNews(q || "日経平均 株式市場 日本株", "ja", "JP", "JP:ja");
-      const data = { items: await translateTitles(items, "ko") };
+      const data = { items: await translateTitles(items, target) };
       cache.set(key, { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
@@ -238,12 +243,12 @@ export async function GET(req: Request) {
   // ── CN 분기(Google News, 중화권·번체) — JP와 동일 패턴 + 한국어 번역 ──
   if (market === "CN") {
     const q = (new URL(req.url).searchParams.get("q") || "").trim();
-    const key = "CN:" + q;
+    const key = ck("CN:" + q);
     const hit = cache.get(key);
     if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
     try {
       const items = await googleNews(q || "港股 恒生指數 A股 中國股市", "zh-HK", "HK", "HK:zh-Hant");
-      const data = { items: await translateTitles(items, "ko") };
+      const data = { items: await translateTitles(items, target) };
       cache.set(key, { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
@@ -254,12 +259,12 @@ export async function GET(req: Request) {
   // ── VN 분기(Google News, 베트남어) — CN과 동일 패턴 + 한국어 번역 ──
   if (market === "VN") {
     const q = (new URL(req.url).searchParams.get("q") || "").trim();
-    const key = "VN:" + q;
+    const key = ck("VN:" + q);
     const hit = cache.get(key);
     if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
     try {
       const items = await googleNews(q || "chứng khoán Việt Nam VN-Index", "vi", "VN", "VN:vi");
-      const data = { items: await translateTitles(items, "ko") };
+      const data = { items: await translateTitles(items, target) };
       cache.set(key, { at: Date.now(), data });
       return NextResponse.json(data);
     } catch (e) {
@@ -270,7 +275,7 @@ export async function GET(req: Request) {
   // ── GB 분기(Google News, 영국·영어) — 번역 불필요 ──
   if (market === "GB") {
     const q = (new URL(req.url).searchParams.get("q") || "").trim();
-    const key = "GB:" + q;
+    const key = ck("GB:" + q);
     const hit = cache.get(key);
     if (hit && Date.now() - hit.at < 15 * 60 * 1000) return NextResponse.json(hit.data);
     try {
@@ -288,9 +293,9 @@ export async function GET(req: Request) {
   const secret = (process.env.NAVER_CLIENT_SECRET || "").trim();
   if (!id || !secret) return NextResponse.json({ items: [], error: "no_key" });
 
-  const q = (new URL(req.url).searchParams.get("q") || "증시").trim();
+  const q = (sp.get("q") || "증시").trim();
 
-  const hit = cache.get(q);
+  const hit = cache.get(ck(q));
   if (hit && Date.now() - hit.at < 15 * 60 * 1000) {
     return NextResponse.json(hit.data);
   }
@@ -340,8 +345,9 @@ export async function GET(req: Request) {
       title: it.title, link: it.link, source: it.source, pubDate: it.pubDate, image: it.image,
     }));
 
-    const data = { items };
-    cache.set(q, { at: Date.now(), data });
+    // KR=한국어 소스: en이면 영어 번역, ko면 그대로(현행)
+    const data = { items: target === "en" ? await translateTitles(items, "en") : items };
+    cache.set(ck(q), { at: Date.now(), data });
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ items: [], error: String(e) });

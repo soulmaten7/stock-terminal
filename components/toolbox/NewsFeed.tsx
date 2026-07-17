@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ExternalLink } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 
@@ -21,13 +21,14 @@ function timeAgo(pub: string, t: Translate): string {
 
 export default function NewsFeed({ query, title, country = 'KR' }: { query?: string; title?: string; country?: 'KR' | 'US' | 'JP' | 'CN' | 'VN' | 'GB' }) {
   const t = useTranslations('Feed');
+  const locale = useLocale();
   // US는 Yahoo ^GSPC RSS(키리스, query 무시). KR은 네이버 검색(query 사용).
   const isUs = country === 'US';
   const isJp = country === 'JP';
   const isCn = country === 'CN';
   const isVn = country === 'VN';
   const isGb = country === 'GB';
-  const url = isGb
+  const urlBase = isGb
     ? '/api/news/feed?market=GB' + (query ? '&q=' + encodeURIComponent(query) : '')
     : isVn
     ? '/api/news/feed?market=VN' + (query ? '&q=' + encodeURIComponent(query) : '')
@@ -38,7 +39,8 @@ export default function NewsFeed({ query, title, country = 'KR' }: { query?: str
     : isUs
     ? '/api/news/feed?market=US' + (query ? '&q=' + encodeURIComponent(query) : '')
     : '/api/news/feed' + (query ? '?q=' + encodeURIComponent(query) : '');
-  const cacheKey = 'news:' + country + ':' + (query ?? '');
+  const url = urlBase + (urlBase.includes("?") ? "&" : "?") + "lang=" + locale;
+  const cacheKey = 'news:' + country + ':' + locale + ':' + (query ?? '');
   const [items, setItems] = useState<NewsItem[]>(() => getCache<NewsItem[]>(cacheKey) ?? []);
   const [loading, setLoading] = useState(() => getCache(cacheKey) === undefined);
 
