@@ -112,7 +112,12 @@
 |---|---|---|---|
 | KR | 38.co.kr(공모주 정보·스크래핑) | ✅ `/api/ipo/feed` — 청약일·공모가·주관사 | 공식 종합 무료 API 부재 시 상업 애그리게이터+스크래핑 |
 | US | **Nasdaq 공개 API** `api.nasdaq.com/api/ipo/calendar?date=YYYY-MM` | ✅ `/api/ipo/us-feed`(STEP 728 프로브·729 구현) — `data.{upcoming,priced,filed}`·회사명·티커·거래소·공모가·일정·딜규모 | **무키·헤더(UA/Origin/Referer) 필수**(없으면 403). **다음달 쿼리 0건**(예정 IPO는 몇 주 앞만)→**이번+지난달 병합**으로 항상 풍부. **Vercel 서버리스(US IP) 403 안 남**(로컬=Vercel 동일). |
-| JP/CN/VN/GB | (미구현) IPO 탭=뉴스검색 | 후속 | 각국 거래소/규제기관 IPO 캘린더 공개 API 탐색 |
+| US 배당 | **Nasdaq 공개 API** `api.nasdaq.com/api/calendar/dividends?date=YYYY-MM-DD` | ✅ `/api/dividends/us-feed`(STEP 730 프로브·731) — **일(day) 단위**·`data.calendar.rows[]`·회사명·티커·배당락일·지급일·배당금. 앞 14일 병합(동시성 4)→`UsOfferingsFeed`(IPO+배당 토글·KR 동급) | IPO는 월 단위인데 **배당은 일 단위**(월 쿼리 빈응답) — 같은 Nasdaq이라도 캘린더별 파라미터 상이. 커버드콜 ETN 배당률 큰 값도 정상(가드 금지). Vercel 403 없음 |
+| US ETN | 후보 티커 + **Yahoo `quote`(실명·live 필터)** + `chart`(수익률) | ✅ `/api/yahoo/us-etn-performance`(732) — 니치·상당수 상폐라 하드코딩 대신 Yahoo가 실명 제공·죽은 티커 자동 제외(18 live) | **니치/불확실 유니버스는 소스에 실명·생존 위임**(REIT=안정적 하드코딩 OK·ETN=Yahoo 판정). 극단 파생값(VXX r1y −53.8%) 가드 금지 (LENS_DEV_PLAYBOOK #34) |
+| JP/CN/VN/GB | (미구현) IPO 탭=뉴스검색 | 후속 | 각국 거래소/규제기관 IPO·배당 캘린더 공개 API 탐색 |
+
+> **📰 뉴스 피드 번역 인프라(2026-07-15)**: `/api/news/feed`는 **키리스 무료 구글번역**(`translate.googleapis.com/translate_a/single`·무과금)+`translation_cache(target_lang,src_text,translated)` 캐시로 헤드라인 번역. STEP 736에서 **`lang` 파라미터**로 로케일별화(en=KR/JP/CN/VN→영어·US/GB 그대로·ko 현행 100% 보존). **교훈: 번역 비용을 LLM(OpenAI)으로 가정 말 것 — 이미 무료 인프라가 배선돼 있었음**(코드 확인이 정답·LENS_DEV_PLAYBOOK #33).
+> **🌐 link_hub i18n(2026-07-15)**: 큐레이션 링크 설명/사이트명은 `description_en`·`site_name_en` 컬럼(MCP)+1회 번역(734/735). `/en` 렌더가 `locale==='en'?*_en:*`(ko 폴백). **교훈: i18n은 레이어 — UI/데이터/LLM 넘어 큐레이션 편집데이터·제3자 피드까지 각각 스코프**(LENS_DEV_PLAYBOOK #32).
 
 (상세 구현·필드·검증 = `docs/STEP_728_US_IPO_SOURCE_PROBE.md`·`docs/STEP_729_US_IPO_FEED.md` / CHANGELOG 2026-07-15(3).)
 
