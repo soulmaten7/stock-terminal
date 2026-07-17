@@ -147,16 +147,18 @@ export default function WatchlistClient() {
         <li key={`${f.symbol}:${f.market}`} className="group flex items-start gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background">
           {/* 행(로고·이름·티커·가격·렌즈요약) 전체 클릭 → 종목 상세. 해제(X)만 분리. */}
           <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-            <div className="flex min-w-0 items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2 sm:flex-1">
               <StockLogo code={f.symbol} name={f.name_ko ?? f.symbol} size={22} />
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent sm:flex-initial">{f.name_ko ?? f.symbol}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{f.name_ko ?? f.symbol}</span>
               <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
               <span className="ml-auto shrink-0 text-right sm:ml-0">
                 <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
                 <span className={`block text-[11px] font-medium tabular-nums ${pctColor(f.changePercent)}`}>{pctText(f.changePercent)}</span>
               </span>
             </div>
-            <LensSummary lens={lensMap[f.symbol]} t={t} />
+            <div className="shrink-0 sm:flex sm:w-64 sm:justify-end">
+              <LensSummary lens={lensMap[f.symbol]} t={t} />
+            </div>
           </Link>
           <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label={tb('watchRemove')} className="mt-1 shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
             <X size={15} />
