@@ -173,7 +173,9 @@
     "emptyLinks": "No favorites yet.<br></br>Tap ⭐ in a category list to add one.",
     "goCategories": "Browse categories →",
     "emptyRooms": "Tap ⭐ under Advisory rooms · verification and they gather here.",
-    "emptyWatchlist": "Your watchlist is empty.<br></br>Tap ⭐ in the Stocks · products tab to add one."
+    "emptyWatchlist": "Your watchlist is empty.<br></br>Tap ⭐ in the Stocks · products tab to add one.",
+    "lensLoading": "Reading lenses…",
+    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral"
   },
   "Business": {
     "title": "Advisory room registration · management",

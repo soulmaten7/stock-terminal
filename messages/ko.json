@@ -173,7 +173,9 @@
     "emptyLinks": "아직 즐겨찾기가 없어요.<br></br>카테고리 목록에서 ⭐를 눌러 추가하세요.",
     "goCategories": "카테고리 보러가기 →",
     "emptyRooms": "리딩방·검증에서 ⭐를 누르면 여기 모여요.",
-    "emptyWatchlist": "관심종목이 없어요.<br></br>종목·상품 탭에서 ⭐를 눌러 추가하세요."
+    "emptyWatchlist": "관심종목이 없어요.<br></br>종목·상품 탭에서 ⭐를 눌러 추가하세요.",
+    "lensLoading": "렌즈 읽는 중…",
+    "lensSummary": "강점 {pos} · 주의 {warn} · 보통 {flat}"
   },
   "Business": {
     "title": "리딩방 등록·관리",
