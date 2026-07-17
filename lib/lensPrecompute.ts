@@ -58,25 +58,21 @@ function fscoreOf(fscore: unknown) {
   return { value, state };
 }
 
-// topN 시총 상위 종목의 7팩터 계산 → lens_scores upsert. concurrency는 펀더멘털 무게 고려 보수적(기본 6).
+// 코어: 주어진 유니버스·시장으로 계산→upsert (market 파라미터). concurrency는 펀더멘털 무게 고려 보수적(기본 6).
 // ⚠️ 100행마다 즉시 저장(flush) — 오래 걸리는 실행이 중간에 끊겨도 진행분은 DB에 남게(부분 내구성).
-export async function computeLensScores(topN = 1000, concurrency = 6): Promise<{ ok: true; computed: number; universe: number; at: string }> {
-  const universe = await topByMarketCap(topN);
+export async function computeLensScoresFor(universe: string[], market: string, concurrency = 6): Promise<{ ok: true; computed: number; universe: number; at: string }> {
   const at = new Date().toISOString();
-  const sb = createAdminClient(); // RLS 우회(쓰기)
+  const sb = createAdminClient(); // RLS 우회(쓰기·kr_stock_snapshot 읽기)
   let done = 0, saved = 0;
   let buffer: Record<string, unknown>[] = [];
-
   async function flush() {
     if (!buffer.length) return;
-    const batch = buffer;
-    buffer = [];
+    const batch = buffer; buffer = [];
     const { error } = await sb.from("lens_scores").upsert(batch, { onConflict: "symbol" });
     if (error) throw error;
     saved += batch.length;
     console.log(`  ...저장 누계 ${saved}`);
   }
-
   await mapLimit(universe, concurrency, async (sym): Promise<void> => {
     try {
       const r = await computeSymbolLenses(sym);
@@ -85,7 +81,7 @@ export async function computeLensScores(topN = 1000, concurrency = 6): Promise<{
       const q = pick(r.lenses, "quality"), ag = pick(r.lenses, "assetgrowth"), t = pick(r.lenses, "technical");
       const fs = fscoreOf(r.fscore);
       buffer.push({
-        symbol: sym, market: "US", name: r.name, price: r.price,
+        symbol: sym, market, name: r.name, price: r.price,
         momentum_value: m.value, momentum_state: m.state,
         lowvol_value: lv.value, lowvol_state: lv.state,
         valuation_value: v.value, valuation_state: v.state,
@@ -97,12 +93,23 @@ export async function computeLensScores(topN = 1000, concurrency = 6): Promise<{
       });
       if (buffer.length >= 100) await flush();
     } catch {
-      /* 종목별 실패는 스킵 */
+      /* 종목별 실패 스킵 */
     } finally {
       if (++done % 50 === 0) console.log(`  ...진행 ${done}/${universe.length}`);
     }
   });
-
-  await flush(); // 남은 것 저장
+  await flush();
   return { ok: true, computed: saved, universe: universe.length, at };
+}
+
+// US(기존 API 보존) — 시총 상위 N
+export async function computeLensScores(topN = 1000, concurrency = 6) {
+  return computeLensScoresFor(await topByMarketCap(topN), "US", concurrency);
+}
+
+// KR 유니버스 — kr_stock_snapshot 거래대금 상위 N (admin 클라·6자리 코드)
+export async function topKrByTradeAmount(topN: number): Promise<string[]> {
+  const sb = createAdminClient();
+  const { data } = await sb.from("kr_stock_snapshot").select("symbol").order("trade_amount", { ascending: false }).limit(topN);
+  return ((data ?? []) as { symbol: string }[]).map((r) => r.symbol);
 }
