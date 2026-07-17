@@ -24,7 +24,7 @@ function gradeBadgeClass(tier: string): string {
 type LensItem = { key: string; name: string; grade: string; gradeTier: string; verdict?: { phrase: string; tone: string } | null };
 export type LensRow = { symbol: string; name: string; price?: number | null; changePercent?: number | null; r1w?: number | null; r1m?: number | null; r3m?: number | null; r6m?: number | null; r1y?: number | null };
 
-export default function LensPreview({ stock, market, compact = false }: { stock: LensRow | null; market: string; compact?: boolean }) {
+export default function LensPreview({ stock, market, compact = false, example = false }: { stock: LensRow | null; market: string; compact?: boolean; example?: boolean }) {
   const t = useTranslations('LensPreview');
   const locale = useLocale(); // 렌즈 엔진은 ?lang=으로 언어를 받는다(기본 ko) — 안 보내면 en 화면에도 한국어가 온다
   const [lenses, setLenses] = useState<LensItem[] | null>(null);
@@ -79,6 +79,7 @@ export default function LensPreview({ stock, market, compact = false }: { stock:
   }
   return (
     <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-unjong-surface p-4'}>
+      {example && stock ? <p className="mb-2 text-[11px] text-unjong-muted">{t('exampleLabel')}</p> : null}
       {!compact && (
         <>
           <div className="flex items-center gap-2.5">

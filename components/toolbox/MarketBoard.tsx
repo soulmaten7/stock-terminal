@@ -9,6 +9,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { BrokerAdTr, BrokerAdCard } from './BrokerAdRow';
 import LensPreview from './LensPreview';
+import BoardTopLensCard from './BoardTopLensCard';
 import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
 type Row = {
@@ -342,6 +343,12 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         </div>
       ) : null}
 
+      {!loading && sorted.length > 0 ? (
+        <div className="mb-3 lg:hidden">
+          <BoardTopLensCard stock={sorted[0] ?? null} market="KR" />
+        </div>
+      ) : null}
+
       {/* 좌: 종목 표 / 우: 증권사 순위 (기존 미리보기 자리) */}
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
@@ -570,7 +577,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
 
         {/* 우측: AI 렌즈 미리보기 패널 — 종목 선택 시 수익률+렌즈 표시, 미선택 시 안내 */}
         <aside className="hidden w-96 shrink-0 lg:block lg:sticky lg:top-11 lg:self-start lg:max-h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
-          <LensPreview stock={selectedStock} market="KR" />
+          <LensPreview stock={selectedStock ?? sorted[0] ?? null} market="KR" example={!selectedStock} />
         </aside>
       </div>
 

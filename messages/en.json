@@ -593,9 +593,12 @@
     "sortPeriodDirection": "Sort direction for the selected period",
     "watchAdd": "Add to watchlist",
     "watchRemove": "Remove from watchlist",
-    "total": "{n} stocks"
+    "total": "{n} stocks",
+    "topExample": "Top by volume · example",
+    "viewLens": "View lenses"
   },
   "LensPreview": {
+    "exampleLabel": "Top by volume · example",
     "emptyTitle": "Select a stock and the TR-AI Lens reads it for you",
     "emptyDesc": "It summarizes how proven methods — momentum, value, quality, and more — each see this stock. Not a buy or sell signal — material for you to judge for yourself.",
     "period": {
