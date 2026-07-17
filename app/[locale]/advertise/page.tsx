@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AdInquiryForm from "@/components/advertise/AdInquiryForm";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getLocale } from "next-intl/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,8 +20,13 @@ const RULES = ["rule1", "rule2", "rule3", "rule4"];
 
 export default async function AdvertisePage({ searchParams }: { searchParams: Promise<{ slot?: string }> }) {
   const t = await getTranslations('Advertise');
+  const locale = await getLocale();
+  const hasRoom = locale !== "en"; // 리딩방(유사투자자문)은 한국어권만 — en엔 없음
+  const slots = hasRoom ? SLOTS : SLOTS.filter((s) => s.key !== "room");
+  const rules = hasRoom ? RULES : RULES.filter((r) => r !== "rule2"); // rule2 = 유사투자자문 규칙
+  const validSlots = hasRoom ? ["broker", "room", "feed", "other"] : ["broker", "feed", "other"];
   const sp = await searchParams;
-  const slot = ["broker", "room", "feed", "other"].includes(sp.slot ?? "") ? (sp.slot as string) : "other";
+  const slot = validSlots.includes(sp.slot ?? "") ? (sp.slot as string) : "other";
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-bold text-unjong-primary">{t('title')}</h1>
@@ -31,7 +36,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Pr
         <div>
           <h2 className="mb-3 text-sm font-bold text-unjong-primary">{t('slotsHeading')}</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {SLOTS.map((s) => (
+            {slots.map((s) => (
               <div key={s.key} className="rounded-xl border border-unjong-border bg-unjong-surface p-4">
                 <p className="text-sm font-bold text-unjong-primary">{t(s.title)}</p>
                 <p className="mt-0.5 text-[11px] font-medium text-unjong-accent">{t(s.where)}</p>
@@ -42,7 +47,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Pr
 
           <h2 className="mb-3 mt-6 text-sm font-bold text-unjong-primary">{t('rulesHeading')}</h2>
           <ul className="space-y-2 rounded-xl border border-unjong-border bg-unjong-background p-4">
-            {RULES.map((r, i) => (
+            {rules.map((r, i) => (
               <li key={i} className="flex gap-2 text-xs leading-relaxed text-unjong-primary">
                 <span className="shrink-0 text-unjong-accent">•</span><span>{t(r)}</span>
               </li>

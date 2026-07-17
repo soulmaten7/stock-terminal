@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import SelectDropdown from '@/components/toolbox/SelectDropdown';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 const SLOT_OPTIONS = [
   // value = 서버로 전송되는 값(번역 금지) · label = 표시용 ko.json 키
@@ -23,6 +23,8 @@ function Field({ label, value, onChange, placeholder, type = 'text' }: { label: 
 
 export default function AdInquiryForm({ defaultSlot = 'other' }: { defaultSlot?: string }) {
   const t = useTranslations('Advertise');
+  const locale = useLocale();
+  const slotOptions = locale === 'en' ? SLOT_OPTIONS.filter((o) => o.value !== 'room') : SLOT_OPTIONS;
   const [slot, setSlot] = useState(defaultSlot);
   const [company, setCompany] = useState('');
   const [contactName, setContactName] = useState('');
@@ -66,7 +68,7 @@ export default function AdInquiryForm({ defaultSlot = 'other' }: { defaultSlot?:
     <form onSubmit={submit} className="space-y-3 rounded-xl border border-unjong-border bg-unjong-surface p-5">
       <div>
         <label className="mb-1 block text-xs font-medium text-unjong-muted">{t('fieldSlot')}</label>
-        <SelectDropdown value={slot} onChange={setSlot} options={SLOT_OPTIONS.map((o) => ({ value: o.value, label: t(o.label) }))} />
+        <SelectDropdown value={slot} onChange={setSlot} options={slotOptions.map((o) => ({ value: o.value, label: t(o.label) }))} />
       </div>
       <Field label={t('fieldCompany')} value={company} onChange={setCompany} placeholder={t('phCompany')} />
       <Field label={t('fieldContact')} value={contactName} onChange={setContactName} placeholder={t('phContact')} />
