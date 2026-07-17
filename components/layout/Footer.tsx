@@ -49,12 +49,14 @@ export default function Footer() {
       {/* Disclaimer */}
       <div className="border-t border-white/10 bg-[#15191F]">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-          <p className="mb-3 text-sm leading-relaxed text-white/80">
+          <p className={`text-sm leading-relaxed text-white/80 ${locale === 'en' ? 'mb-6' : 'mb-3'}`}>
             {t('disclaimer1')}
           </p>
-          <p className="mb-6 text-sm leading-relaxed text-white/80">
-            {t('disclaimer2')}
-          </p>
+          {locale !== 'en' && (
+            <p className="mb-6 text-sm leading-relaxed text-white/80">
+              {t('disclaimer2')}
+            </p>
+          )}
           <div className="text-sm text-white/60">
             <p>{t('businessInfo')}</p>
           </div>
