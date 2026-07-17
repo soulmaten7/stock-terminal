@@ -21,7 +21,8 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
       </div>
 
       <section className="mb-7">
-        <h2 className="mb-2 text-sm font-bold text-unjong-primary">{t('watchlist')}</h2>
+        <h2 className="text-base font-bold text-unjong-primary">{t('watchlist')}</h2>
+        <p className="mb-2 text-xs text-unjong-muted">{t('watchlistHero')}</p>
         <WatchlistClient />
       </section>
 
@@ -30,10 +31,12 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
         <FavoritesClient />
       </section>
 
-      <section>
-        <h2 className="mb-2 text-sm font-bold text-unjong-primary">{t('rooms')}</h2>
-        <RoomFavoritesClient />
-      </section>
+      {locale !== 'en' && (
+        <section>
+          <h2 className="mb-2 text-sm font-bold text-unjong-primary">{t('rooms')}</h2>
+          <RoomFavoritesClient />
+        </section>
+      )}
     </main>
   );
 }

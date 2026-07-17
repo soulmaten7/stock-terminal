@@ -175,7 +175,8 @@
     "emptyRooms": "Tap ⭐ under Advisory rooms · verification and they gather here.",
     "emptyWatchlist": "Your watchlist is empty.<br></br>Tap ⭐ in the Stocks · products tab to add one.",
     "lensLoading": "Reading lenses…",
-    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral"
+    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral",
+    "watchlistHero": "Your starred stocks, seen through the lenses."
   },
   "Business": {
     "title": "Advisory room registration · management",
