@@ -1,6 +1,18 @@
 <!-- 2026-07-17 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-17 (3) — 🔬 렌즈를 주인공으로: ④ 종목헤더·보드 자동미리보기 + ②b-1 KR 렌즈 선계산 (HEAD `fe02a41`)
+
+- **개요**: "렌즈로 보는 경험을 직관의 주인공으로" — ④(종목 페이지 압축 렌즈 헤더 + 보드 상단 자동 미리보기·6개국) 완결 + ②b-1(KR 렌즈 선계산 크론) 착수. 전부 라이브/MCP 실측.
+- **④A 종목 페이지 렌즈 헤더**(`dcb1bf6`): `StockLensClient` 상단(이름·현재가 아래)에 압축 렌즈 요약(점7 + 강점/주의/보통·기존 `LensSummary` 패턴·`data.lenses`/`fscore` 재사용) + "종합 매수·매도 점수 없음·판단은 당신" 노트. 밑 상세 카드 불변·ETF 제외. 라이브(삼성전자 강점2·주의2·보통3).
+- **④B 보드 상단 자동 미리보기**: 클릭 전에도 맨 위(거래 상위) 종목 렌즈 자동 표시.
+  - **744**(`be7407d`·KR): `LensPreview` `example` 라벨 + 신규 `BoardTopLensCard`(모바일 인라인 카드·팝업 아님) + MarketBoard 배선(데스크톱 aside `selectedStock ?? sorted[0]`·**상태 안 바꾸고 표시만 폴백**·URL 복원과 안 싸움). 라이브(SK하이닉스 + "거래 상위 예시").
+  - **745**(`9998c7b`·미러): US·JP·CN·VN·GB 5개 보드 동일 적용(CN `.cur` 통화 보존). 라이브 US=Micron 확인. → 6개국 자동 미리보기 일관.
+- **②b-1 KR 렌즈 선계산**(`fe02a41` + RPC 마이그 라이브): `computeLensScores`→`computeLensScoresFor(universe, market)` 파라미터화(US 경로 보존) + KR 유니버스(`kr_stock_snapshot` 거래대금 상위·admin 클라·6자리 코드) + `/api/cron/kr-lens-scores`(Vercel cron `30 10 * * *`·kr-perf 뒤) + 로컬 러너(`scripts/precompute_lens_kr.ts`) + **백분위 RPC 시장 필터**(Cowork MCP 라이브·`041_lens_percentiles_market_filter.sql` 아카이브). **KR 489행 저장**(유니버스 500). **MCP 검증**: 삼성전자 states→강점2·주의2·보통3(live 정확 일치)·KR 백분위 정상(momentum 95)·US AAPL 백분위 무오염(시장 격리 작동)·보너스 KR도 백분위 획득(전엔 null).
+- **🔑 발견**: `lens_scores.name`의 KR 값이 **영어**("SamsungElec"·야후) → **①(비미국 종목명 영어화)에 야후 영문명(`longName`) 활용 가능** 확인.
+- **✅ 검증**: 각 STEP tsc 0·vitest 49/49·라이브(④ 6개국)·MCP(②b-1). ②b-1은 선계산 데이터만 — 관심목록 즉시화는 ②b-2.
+- **▶ 다음**: **②b-2**(관심목록/보드가 `lens_scores` 상태를 배치로 읽어 "읽는 중…" 없이 즉시화·`/api/watchlist/quotes`에 톤 포함·없으면 실시간 폴백) → **①**(비미국 종목명 영어화·야후 `longName`+저장+배선).
+
 ## 2026-07-17 (2) — 🔎 베타 준비도 평가 + ⭐ 관심목록 렌즈 개편(②a) + /en 종목명 갭 발견 (HEAD `44fa289`)
 
 - **개요**: (1) 경쟁 플랫폼 최신 조사로 "한국어 기준 베타 준비도" 객관 평가, (2) 관심목록을 "내 종목을 렌즈로 보는 목록"으로 재개편(739~742·라이브 실측), (3) 그 과정에 `/en` 비미국 종목명이 한글로 남는 갭 발견.
