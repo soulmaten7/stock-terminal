@@ -15,8 +15,14 @@ async function mapLimit<T>(arr: T[], limit: number, fn: (x: T) => Promise<void>)
 
 (async () => {
   const sb = createAdminClient();
-  const { data } = await sb.from("kr_stock_snapshot").select("symbol, market");
-  const list = (data ?? []) as { symbol: string; market: string }[];
+  // PostgREST 기본 반환 상한(1000) 회피 — range로 페이지네이션해 전 종목(2000+)을 다 가져온다.
+  const list: { symbol: string; market: string }[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data } = await sb.from("kr_stock_snapshot").select("symbol, market").range(from, from + 999);
+    if (!data || data.length === 0) break;
+    list.push(...(data as { symbol: string; market: string }[]));
+    if (data.length < 1000) break;
+  }
   const ysym = (r: { symbol: string; market: string }) => r.symbol + (r.market === "kosdaq" ? ".KQ" : ".KS");
   const codeByY = new Map(list.map((r) => [ysym(r), r.symbol]));
   const yss = [...codeByY.keys()];
