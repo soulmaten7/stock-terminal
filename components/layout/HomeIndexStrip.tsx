@@ -9,17 +9,23 @@ export default function HomeIndexStrip() {
 
   useEffect(() => {
     let cancelled = false;
+    let retry: ReturnType<typeof setTimeout> | undefined;
     const load = async () => {
       try {
         const j = await (await fetch("/api/yahoo/indices")).json();
-        if (!cancelled) setItems(j.items || []);
+        if (cancelled) return;
+        if (j.items && j.items.length > 0) {
+          setItems(j.items); // 데이터 있을 때만 갱신 (빈 응답으로 덮어쓰지 않음)
+        } else if (!retry) {
+          retry = setTimeout(() => { retry = undefined; load(); }, 5000); // 빈 응답: 기존 유지 + 5초 뒤 재시도
+        }
       } catch {
-        /* 무시 */
+        if (!cancelled && !retry) retry = setTimeout(() => { retry = undefined; load(); }, 5000);
       }
     };
     load();
     const t = setInterval(load, 60000);
-    return () => { cancelled = true; clearInterval(t); };
+    return () => { cancelled = true; clearInterval(t); if (retry) clearTimeout(retry); };
   }, []);
 
   if (items.length === 0) return null;
