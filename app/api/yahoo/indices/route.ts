@@ -9,6 +9,7 @@ const yf = new YahooFinance();
 // 30초 서버 캐시 — 그리드 + 하단 티커가 같은 데이터 공유, Yahoo 호출 절감
 let _cache: { data: unknown; at: number } | null = null;
 const _TTL = 30_000;
+let _lastGood: { items: IndexItem[] } | null = null; // 직전 정상값 — 빈/실패 응답 시 fallback
 
 type IndexItem = {
   name: string;
@@ -130,42 +131,48 @@ export async function GET() {
   }
   try {
     // 야후 지수(quote+chart)·TOPIX 대체 심볼·베트남 지수(VnDirect)를 병렬로
-    const [yahooItems, topix, vnRaw] = await Promise.all([
+    const [yahooItemsRaw, topix, vnRaw] = await Promise.all([
       Promise.all(
-        INDEX_SYMBOLS.map(async (meta): Promise<IndexItem> => {
-          const q = await yf.quote(meta.symbol);
-          const price = Number(q.regularMarketPrice ?? 0);
-          const changePct = Number(q.regularMarketChangePercent ?? 0);
-          const change = Number(q.regularMarketChange ?? 0);
-
-          // 스파크라인: 최근 약 30일 일봉 종가 배열 (실패해도 카드는 그대로 표시)
-          let spark: number[] = [];
+        INDEX_SYMBOLS.map(async (meta): Promise<IndexItem | null> => {
           try {
-            const ch = await yf.chart(meta.symbol, {
-              period1: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-              interval: "1d",
-            });
-            spark = ch.quotes
-              .map((c) => c.close)
-              .filter((n): n is number => typeof n === "number");
-          } catch {
-            spark = [];
-          }
+            const q = await yf.quote(meta.symbol);
+            const price = Number(q.regularMarketPrice ?? 0);
+            if (!price) return null; // 값 없으면 이 심볼만 건너뜀(전체 죽이지 않음)
+            const changePct = Number(q.regularMarketChangePercent ?? 0);
+            const change = Number(q.regularMarketChange ?? 0);
 
-          return {
-            name: meta.name,
-            value: price.toLocaleString("en-US", { maximumFractionDigits: 2 }),
-            changeText: change.toLocaleString("en-US", { maximumFractionDigits: 2, signDisplay: "always" }),
-            changePct,
-            isUp: changePct >= 0,
-            spark,
-            group: meta.group,
-          };
+            // 스파크라인: 최근 약 30일 일봉 종가 배열 (실패해도 카드는 그대로 표시)
+            let spark: number[] = [];
+            try {
+              const ch = await yf.chart(meta.symbol, {
+                period1: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+                interval: "1d",
+              });
+              spark = ch.quotes
+                .map((c) => c.close)
+                .filter((n): n is number => typeof n === "number");
+            } catch {
+              spark = [];
+            }
+
+            return {
+              name: meta.name,
+              value: price.toLocaleString("en-US", { maximumFractionDigits: 2 }),
+              changeText: change.toLocaleString("en-US", { maximumFractionDigits: 2, signDisplay: "always" }),
+              changePct,
+              isUp: changePct >= 0,
+              spark,
+              group: meta.group,
+            };
+          } catch {
+            return null; // 이 심볼만 야후 실패 → 제외, 나머지는 정상
+          }
         })
       ),
       fetchTopix(),
       Promise.all(VN_INDICES.map(fetchVnIndex)),
     ]);
+    const yahooItems = yahooItemsRaw.filter((x): x is IndexItem => x !== null);
 
     // TOPIX(정상값 나온 경우만)를 니케이 바로 뒤에 삽입
     const lastJp = yahooItems.map((x) => x.group).lastIndexOf("JP");
@@ -182,10 +189,18 @@ export async function GET() {
         ? [...withTopix.slice(0, lastCn + 1), ...vnItems, ...withTopix.slice(lastCn + 1)]
         : [...withTopix, ...vnItems];
 
-    const payload = { items: merged.filter((x) => x.value !== "0") };
-    _cache = { data: payload, at: Date.now() };
-    return NextResponse.json(payload);
+    const items = merged.filter((x) => x.value !== "0");
+    if (items.length > 0) {
+      const payload = { items };
+      _cache = { data: payload, at: Date.now() };
+      _lastGood = payload; // 정상값 저장
+      return NextResponse.json(payload);
+    }
+    // 결과가 비면 직전 정상값으로 (빈 응답 노출 방지)
+    return NextResponse.json(_lastGood ?? { items: [] });
   } catch (e) {
+    // 전체 실패 시에도 직전 정상값 유지 (있으면)
+    if (_lastGood) return NextResponse.json(_lastGood);
     return NextResponse.json(
       { items: [], error: e instanceof Error ? e.message : String(e) },
       { status: 200 }
