@@ -808,6 +808,7 @@
     "back": "← Back",
     "headerNote": "Several views that read this stock through proven methods",
     "currentPrice": "Price",
+    "lensHeaderNote": "No overall buy or sell score — you decide",
     "intro": "We show how proven methods each read this stock. <b>Not a buy or sell signal — material for you to judge for yourself.</b>",
     "readingGuideSummary": "▾ How to read this screen · confidence grades",
     "readingGuide": "Every card carries a <b>confidence grade</b> — <v>Verified</v> means the return signal itself was confirmed, <w>Weak signal</w> means it is famous but weak in our data, <r>Reference</r> shows state only, and <f>Financial health</f> is financial strength, not a return signal. Tap a lens to unfold why it reads that way.",

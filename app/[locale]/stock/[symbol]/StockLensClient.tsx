@@ -905,8 +905,16 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
 const H_TITLE: Record<string, string> = { short: 'horizon.short', mid: 'horizon.mid', long: 'horizon.long' };
 const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon.midSub', long: 'horizon.longSub' };
 
+// 헤더 압축 렌즈 요약 점 색 — components/favorites/WatchlistClient.tsx TONE_DOT과 동일(강점=민트·주의=앰버·보통=중립).
+const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
+  pos: 'bg-unjong-accent',
+  warn: 'bg-amber-400',
+  flat: 'bg-unjong-muted',
+};
+
 export default function StockLensClient({ initialName }: { initialName?: string }) {
   const t = useTranslations('StockLens');
+  const tf = useTranslations('Favorites'); // 헤더 요약 카운트·로딩 라벨 재사용(신규 키 없이 패리티 무리스크)
   const locale = pickLocale(useLocale()); // 렌즈 엔진 언어(?lang=) + 배지 — 안 넘기면 en 화면에 한국어 렌즈가 온다
   const params = useParams();
   const router = useRouter();
@@ -942,6 +950,20 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const [openLens, setOpenLens] = useState<Set<string>>(new Set());
   const lenses = data?.lenses ?? [];
   const lensFlags = buildLensFlags(events);
+
+  // 헤더 압축 렌즈 요약(30초 글랜스) — WatchlistClient tone 추출과 동일 로직(pos/warn/flat + fscore).
+  const headerTones: ('pos' | 'warn' | 'flat')[] = [];
+  for (const l of lenses) {
+    const tone = l.verdict?.tone;
+    if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
+  }
+  if (data?.fscore?.supported) {
+    const score = data.fscore.score ?? 0;
+    headerTones.push(score >= 7 ? 'pos' : score <= 3 ? 'warn' : 'flat');
+  }
+  const headerPos = headerTones.filter((x) => x === 'pos').length;
+  const headerWarn = headerTones.filter((x) => x === 'warn').length;
+  const headerFlat = headerTones.filter((x) => x === 'flat').length;
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ|VN|L)$/, '');
   const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
@@ -1033,6 +1055,29 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         </div>
         {data?.price != null ? (
           <p className="text-sm text-unjong-muted">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
+        ) : null}
+
+        {loading || !data ? (
+          <div className="mt-2 flex items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <span key={i} className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-border" />
+              ))}
+            </div>
+            <span className="text-[11px] text-unjong-muted">{tf('lensLoading')}</span>
+          </div>
+        ) : headerTones.length > 0 ? (
+          <div className="mt-2">
+            <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-1">
+                {headerTones.map((tone, i) => (
+                  <span key={i} className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[tone]}`} />
+                ))}
+              </div>
+              <span className="text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</span>
+            </div>
+            <p className="mt-1 text-[11px] text-unjong-muted">{t('lensHeaderNote')}</p>
+          </div>
         ) : null}
 
         <p className="mt-3 text-xs leading-relaxed text-unjong-muted">{t.rich('intro', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
