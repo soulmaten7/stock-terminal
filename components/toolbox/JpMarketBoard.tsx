@@ -8,6 +8,7 @@ import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import LensPreview from './LensPreview';
+import BoardTopLensCard from './BoardTopLensCard';
 import AdSlotRow from './AdSlotRow';
 import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
@@ -274,6 +275,12 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
         <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
+      {!loading && sorted.length > 0 ? (
+        <div className="mb-3 lg:hidden">
+          <BoardTopLensCard stock={sorted[0] ?? null} market="JP" />
+        </div>
+      ) : null}
+
       {/* 좌: 종목 표 / 우: 증권사 리스트 — KR 미러(flex gap-4) */}
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
@@ -502,7 +509,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
         {/* 우측: AI 렌즈 미리보기 패널 */}
         <aside className="hidden w-96 shrink-0 lg:block lg:sticky lg:top-11 lg:self-start lg:max-h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
-          <LensPreview stock={selectedStock} market="JP" />
+          <LensPreview stock={selectedStock ?? sorted[0] ?? null} market="JP" example={!selectedStock} />
         </aside>
       </div>
 

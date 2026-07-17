@@ -8,6 +8,7 @@ import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import LensPreview from './LensPreview';
+import BoardTopLensCard from './BoardTopLensCard';
 import AdSlotRow from './AdSlotRow';
 import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
@@ -213,6 +214,12 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
         <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
+      {!loading && sorted.length > 0 ? (
+        <div className="mb-3 lg:hidden">
+          <BoardTopLensCard stock={sorted[0] ?? null} market="VN" />
+        </div>
+      ) : null}
+
       <div className="flex gap-4">
         <div className="min-w-0 flex-1 overflow-x-auto">
           {loading ? (
@@ -383,7 +390,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
         </div>
 
         <aside className="hidden w-96 shrink-0 lg:block lg:sticky lg:top-11 lg:self-start lg:max-h-[calc(100vh-3.5rem)] lg:overflow-y-auto">
-          <LensPreview stock={selectedStock} market="VN" />
+          <LensPreview stock={selectedStock ?? sorted[0] ?? null} market="VN" example={!selectedStock} />
         </aside>
       </div>
 
