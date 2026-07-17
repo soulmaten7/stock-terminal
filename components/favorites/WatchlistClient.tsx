@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 
-type WatchItem = { symbol: string; name_ko: string | null; market: string; country: string; price: number | null; changePercent: number | null };
+type WatchItem = { symbol: string; name_ko: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
 type Tone = 'pos' | 'warn' | 'flat';
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
 
@@ -75,17 +75,27 @@ export default function WatchlistClient() {
     let cancelled = false;
     fetch('/api/watchlist/quotes')
       .then((r) => r.json())
-      .then((j) => { if (!cancelled) { setItems(j.watchlist ?? []); setAuth(j.auth !== false); setLoading(false); } })
+      .then((j) => {
+        if (cancelled) return;
+        const list: WatchItem[] = j.watchlist ?? [];
+        setItems(list);
+        setAuth(j.auth !== false);
+        setLoading(false);
+        // 선계산(lens_scores) 톤이 있는 항목은 즉시 렌더 — 스켈레톤·fetch 없이 바로 채움
+        const seed: Record<string, LensState> = {};
+        for (const it of list) if (it.tones != null) seed[it.symbol] = { state: 'done', tones: it.tones };
+        setLensMap(seed);
+      })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
 
-  // 행별 지연 렌즈 요약 — 동시성 4개 제한 큐. 관심목록이 처음 채워질 때 한 번만 시작.
+  // 행별 지연 렌즈 요약 — 선계산(lens_scores) 밖 종목만 동시성 4개 제한 큐로 실시간 폴백. 관심목록이 처음 채워질 때 한 번만 시작.
   useEffect(() => {
     if (items.length === 0 || lensStarted.current) return;
     lensStarted.current = true;
     let cancelled = false;
-    const queue = [...items];
+    const queue = items.filter((x) => x.tones == null); // 선계산 없는 것만(top-N 밖·비KR/US)
     const CONCURRENCY = 4;
 
     async function worker() {

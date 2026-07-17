@@ -18,6 +18,26 @@ const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: b
   GB: { table: "gb_stock_perf", changeCol: "r1d" },
 };
 
+type Tone = "pos" | "warn" | "flat";
+// state→tone (라이브 로직과 동일 · na/null/그 외는 제외)
+function tonesFromStates(r: Record<string, string | null>): Tone[] {
+  const out: Tone[] = [];
+  const map = (s: string | null, pos: string, warn: string, mid: string) => {
+    if (s === pos) out.push("pos");
+    else if (s === warn) out.push("warn");
+    else if (s === mid) out.push("flat");
+    // 그 외(na/null) → 제외
+  };
+  map(r.momentum_state, "up", "down", "flat");
+  map(r.technical_state, "up", "down", "flat");
+  map(r.valuation_state, "cheap", "rich", "mid");
+  map(r.lowvol_state, "calm", "jumpy", "mid");
+  map(r.quality_state, "high", "low", "mid");
+  map(r.assetgrowth_state, "conservative", "aggressive", "mid");
+  map(r.fscore_state, "strong", "weak", "mid");
+  return out;
+}
+
 async function fetchQuotes(sb: ReturnType<typeof createAdminClient>, country: string, symbols: string[]): Promise<Map<string, Quote[]>> {
   const cfg = SNAPSHOT[country];
   const out = new Map<string, Quote[]>();
@@ -73,6 +93,17 @@ export async function GET() {
     })
   );
 
+  // 전 심볼(국가 무관) lens_scores 상태 배치 읽기 — public-read
+  const allSymbols = watchRows.map((r) => r.symbol);
+  const { data: lensRows } = await admin
+    .from("lens_scores")
+    .select("symbol, momentum_state, technical_state, valuation_state, lowvol_state, quality_state, assetgrowth_state, fscore_state")
+    .in("symbol", allSymbols);
+  const tonesBySym = new Map<string, Tone[]>();
+  for (const lr of (lensRows ?? []) as Record<string, string | null>[]) {
+    tonesBySym.set(lr.symbol as string, tonesFromStates(lr));
+  }
+
   const watchlist = watchRows.map((w) => {
     const country = (w.country || "").toUpperCase();
     const candidates = quoteMaps.get(country)?.get(w.symbol) ?? [];
@@ -84,6 +115,7 @@ export async function GET() {
       country: w.country,
       price: match?.price ?? null,
       changePercent: match?.changePercent ?? null,
+      tones: tonesBySym.get(w.symbol) ?? null,
     };
   });
 
