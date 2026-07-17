@@ -35,7 +35,7 @@ export default function HomeIndexStrip() {
               <Fragment key={i}>
                 {showDiv && <span className="mx-1 h-3 w-px shrink-0 bg-unjong-surface/15" />}
                 <span className="inline-flex items-center gap-1.5 px-4 text-xs">
-                  <span className="text-white/45">{it.name}</span>
+                  <span className="text-white/65">{it.name}</span>
                   <span className="font-semibold tabular-nums text-white">{it.value}</span>
                   <span className={`tabular-nums ${it.isUp ? "text-unjong-up" : "text-unjong-down"}`}>
                     {it.changeText ? `${it.changeText} ` : ""}({it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%)

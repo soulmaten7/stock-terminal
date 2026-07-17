@@ -83,9 +83,9 @@ export default function Header() {
           <span className="flex flex-col justify-center leading-none">
             <span className="flex items-baseline gap-2">
               <span className="text-lg font-bold tracking-wide text-white">Trillion</span>
-              {locale === 'ko' && <span className="hidden text-sm text-white/45 sm:inline">트릴리언</span>}
+              {locale === 'ko' && <span className="hidden text-sm text-white/65 sm:inline">트릴리언</span>}
             </span>
-            <span className="mt-1 hidden text-[11px] font-normal leading-none text-white/40 lg:block">{t('tagline')}</span>
+            <span className="mt-1 hidden text-[11px] font-normal leading-none text-white/65 lg:block">{t('tagline')}</span>
           </span>
         </Link>
 
@@ -123,7 +123,7 @@ export default function Header() {
                 className={
                   isActive
                     ? 'px-3 py-2 text-sm font-bold text-white'
-                    : 'px-3 py-2 text-sm font-medium text-white/55 transition-colors hover:text-white'
+                    : 'px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white'
                 }
               >
                 {m.label}
