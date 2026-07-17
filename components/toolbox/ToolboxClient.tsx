@@ -255,7 +255,7 @@ export default function ToolboxClient({
   const countryLabel = t(`country.${country}`);
 
   return (
-    <div className="min-w-0 rounded-2xl border border-unjong-border bg-unjong-surface">
+    <div className="min-w-0 border-y border-unjong-border bg-unjong-surface sm:rounded-2xl sm:border">
       {/* 국가 토글 */}
       <div className="flex items-center gap-1 border-b border-unjong-border p-3">
         {countryTabs.map((c) => (
