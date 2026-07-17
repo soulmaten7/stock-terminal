@@ -1,6 +1,23 @@
 <!-- 2026-07-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-15 (4) — 🇺🇸 US 뎁스 완결(배당·ETN) + /about 개선 + 🌐 /en 완전 영어화(link_hub·뉴스) (HEAD `3ecadaa`)
+
+- **개요**: US 시장을 KR급 뎁스로 완성(배당·ETN) + /about을 유료 플랫폼 표준으로 개선 + 사용자 지적으로 발견한 `/en` 한글 잔재(link_hub·뉴스)를 전부 영어화. 전 STEP 라이브 실측.
+- **🇺🇸 US 뎁스 완결**:
+  - **731 US 배당**(`d2ff68d`): `/api/dividends/us-feed`(Nasdaq `calendar/dividends`·일 단위 앞 14일 병합·동시성 4) + `UsDividendFeed` + `UsOfferingsFeed`(IPO+배당 토글·KR OfferingsFeed 완전 동급) + Toolbox 배선. 배당종목→내부 종목상세. 라이브 실측(Vercel 200·40건·"Upcoming ex-dividend"/en·"배당락 예정"/ko).
+  - **732 US ETN**(`33f24d2`): US 보드에 ETN 서브탭(주식/ETF/REITs/**ETN**). `/api/yahoo/us-etn-performance`(REIT 패턴·후보 유니버스·**Yahoo quote로 실명+live 필터**·chart 기간수익률). 라이브 18 live ETN(FNGU·VXX r1y −53.8%·BULZ +104.7% 등 극단값 정직 노출·가드 없음). → **US = 주식·ETF·REITs·ETN + IPO·배당 = KR급 뎁스.**
+- **✍️ /about 개선**(`b0fee55`): 얇던 소개(슬로건+3기둥+3스텝) → 표준 골격(문제 → 3기둥 → **TR-AI 렌즈 방법 투명화** → 비추천 헤드라인 → 커버리지 → 사용법). 최대 신설 = **렌즈 7개(모멘텀·저변동성·밸류·퀄리티·자산성장·기술·F-스코어)를 학술 계보와 함께 여는 섹션**(그레이엄·파마-프렌치·노비-마르크스 2013·피오트로스키 2000·와일더 1978 — `lensCopy.ts` 실제 값 기반·과장 0). 경쟁사 8곳(Stockopedia·Danelfin·Morningstar 등) About 조사 근거. ko/en 패리티·멍거 톤·라이브 검증(8섹션 양쪽).
+- **🌐 /en 완전 영어화(link_hub + 뉴스)** — 사용자가 IPO 탭 한글 지적 → 감사(#86)가 렌즈/데이터 중심이라 놓친 편집·제3자 데이터 발견:
+  - **734 link_hub 설명**(`971e237`): `description` 단일 한글 컬럼(490행) → `description_en` 컬럼(MCP 마이그) + 1회 번역 스크립트(gpt-4o-mini) + 렌더 `locale==='en'?description_en:description`(ko 폴백).
+  - **735 link_hub 사이트명**(`868c8a5`): `site_name`에 한글 ~139행(기관 고유명·"Investing.com 배당캘린더"류) → `site_name_en`(MCP 마이그) + 이름 전용 번역(기관 공식 영문명 FSS·KRX·DART·증권사 정식명) + 렌더 선택.
+  - **736 뉴스 피드**(`3ecadaa`): `/api/news/feed`가 **무조건 한국어 번역**이라 `/en`에서 US/JP/CN/VN 뉴스가 거꾸로 한글이던 것 → **`lang` 파라미터**로 로케일별(en=KR/JP/CN/VN→영어·US/GB 그대로·ko 현행 보존)·인메모리 cache 키 target 분리·NewsFeed `&lang`. **기존 무료 키리스 구글번역+`translation_cache` 재사용 → 추가 비용 ≈ 0.**
+  - **✅ 결과**: `/en` = 로고 워드마크 외 한국어 0(정적 UI+결정론+LLM+메타+link_hub 설명/사이트명+뉴스 헤드라인 전부 영어·라이브 KR 시장 뉴스 탭 한글 163→0 확인).
+- **마이그(MCP 라이브)**: `link_hub.description_en`·`link_hub.site_name_en`(기록 마이그 파일 커밋).
+- **✅ 검증**: 각 STEP tsc 0·빌드·vitest 49/49(패리티 포함)·라이브 브라우저 실측(both locales).
+- **🐞 교훈**: i18n은 "레이어"다 — UI·결정론·LLM 넘어 **큐레이션 데이터(link_hub)·제3자 피드(뉴스)**도 각각 스코프. 뉴스는 이미 무조건-ko 번역이라 lang 파라미터화만으로 해결(무료 구글번역이라 비용 0 — OpenAI 가정은 오판이었음, 코드 확인이 정답).
+- **▶ 다음(선택)**: 클로즈드 베타 초대 · GB 뉴스 ko 번역(소소) · site_name 번역 품질 스팟수정.
+
 ## 2026-07-15 (3) — 🔎 라이브 QA 스윕 + 727 메타타이틀 + 다크 폴리시 D + 🇺🇸 729 US 구조화 IPO 피드 (HEAD `9d977f0`)
 
 - **개요**: i18n 100% 직후 라이브 QA 스윕(브라우저 8페이지 전수) → i18n 잔재 마지막 하나(정적 페이지 메타 타이틀) 발견·수정 → 폴리시 백로그 소진 → **US 시장 뎁스(P2) 실질 전진 = US 구조화 IPO 피드**. 전부 라이브 실측 검증.

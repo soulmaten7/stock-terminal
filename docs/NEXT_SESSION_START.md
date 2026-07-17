@@ -1,7 +1,14 @@
 <!-- 2026-07-15 -->
 # Trillion(트릴리언) — 다음 세션 시작 가이드
 
-> 🇺🇸 **2026-07-15 (최신·4) — 라이브 QA + 727 메타타이틀 + 다크 D + US 구조화 IPO 피드. HEAD `9d977f0`.**
+> 🌐 **2026-07-15 (최신·5) — US 뎁스 완결(배당·ETN) + /about 개선 + /en 완전 영어화. HEAD `3ecadaa`.**
+> - **US 뎁스**: 731(`d2ff68d`) US 배당→UsOfferingsFeed(IPO+배당 토글·KR 동급) · 732(`33f24d2`) US ETN 서브탭(주식/ETF/REITs/ETN·Yahoo 실명+live·18 live·극단값 정직). → US=KR급.
+> - **/about 개선**(`b0fee55`): 표준 골격(문제·3기둥·**렌즈 방법 투명화**[7렌즈+계보 그레이엄/파마-프렌치/노비-마르크스/피오트로스키/와일더]·비추천 헤드라인·커버리지)·경쟁사 8곳 근거·ko/en 패리티·멍거 톤·라이브 검증.
+> - **🌐 /en 완전 영어화**(사용자 지적): 734(`971e237`) link_hub `description_en`(490) · 735(`868c8a5`) `site_name_en`(139·기관 공식명) · 736(`3ecadaa`) 뉴스 `lang` 파라미터(en=KR/JP/CN/VN→영어·무료 구글번역+translation_cache 재사용·비용≈0·ko 현행 보존). → `/en`=로고 외 한국어 0.
+> - **🐞 교훈**: i18n 레이어 — 큐레이션 데이터(link_hub)·제3자 피드(뉴스)도 스코프. 뉴스는 무조건-ko라 lang화만으로 해결(무료·비용0·OpenAI 가정 오판→코드확인이 정답).
+> - **▶ 다음(선택) = 클로즈드 베타 초대 · GB 뉴스 ko 번역 · site_name 품질 스팟수정.**
+>
+> 🇺🇸 **2026-07-15 (4) — 라이브 QA + 727 메타타이틀 + 다크 D + US 구조화 IPO 피드. HEAD `9d977f0`.**
 > - **🔎 라이브 QA 스윕**(8페이지): i18n 100% 후 전수 육안 → 거의 클린, 유일 발견=정적 페이지 6종 `/en` 메타 타이틀 한글.
 > - **727**(`d15dbed`): about·advertise·feedback·favorites·business·coin 메타타이틀 `generateMetadata` 로케일화(en 영어·ko byte 동일·711 패턴·robots 보존·terms/privacy/admin 제외). → **i18n 잔재 0**.
 > - **다크 D**(`1f661e3`): 미사용 `.shadow-soft`/`.shadow-soft-hover` 죽은 CSS 제거. 폴리시 백로그 소진.

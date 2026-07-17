@@ -2,6 +2,16 @@
 <!-- Last GC: 2026-07-05 (STEP 539~577·HEAD be86401. 렌즈 7기법 카드 = 표시 헌장 골격 통일(이름 크게·이게 뭐예요 박스·접힘 메뉴·근거수치 노출). F-Score=부실 위험 체크(9칸 트래커·9항목 3그룹·전문용어+쉬운풀이). 스크리닝 토대(공용엔진 lensCompute→lens_scores 1000행→매일 20:00 크론) 완성이나 스크리너 UI는 안 만듦(종목 페이지=본체·스크리너=픽에 가까워 중립 충돌). 표시 헌장 docs/LENS_DISPLAY_CHARTER.md 신설. 🔴 제품 정체성 = "AI가 답 주는 앱" 아니라 "정직한 재료로 사용자가 판단". TRAI 종합 스텁 제거·④ 재정의(뉴스=투명 사실 렌즈 FinBERT+8-K·결론은 사용자·맨 마지막 층). 유료 레퍼런스 리서치=GuruFocus·Stockopedia·Danelfin·TipRanks. 대기: #18 5개지역 매매처 / #30 [앱]외부링크. 다음=6카드 문구 다듬기+기법별 유료 레퍼런스 대조 → 조합전략(③) → 뉴스 렌즈(④). 미리계산=대기) -->
 # Trillion(트릴리언) — 프로젝트 맥락
 
+## 2026-07-15 (4) — 🇺🇸 US 뎁스 완결(배당·ETN) + ✍️ /about 개선 + 🌐 /en 완전 영어화 ✅
+
+**HEAD `3ecadaa`.** US를 KR급 뎁스로 완성 + /about 표준화 + 사용자 지적 `/en` 한글 잔재(link_hub·뉴스) 전부 영어화. 전 STEP 라이브 실측.
+- **US 뎁스**: 731(`d2ff68d`) US 배당→UsOfferingsFeed(IPO+배당 토글·KR 동급) · 732(`33f24d2`) US ETN 서브탭(주식/ETF/REITs/ETN·Yahoo 실명+live·18 live). → US=KR급(IPO·배당·ETF·REITs·ETN).
+- **/about 개선**(`b0fee55`): 표준 골격(문제·3기둥·**렌즈 방법 투명화**[7렌즈+계보]·비추천 헤드라인·커버리지·사용법)·경쟁사 8곳 근거·lensCopy 정합·ko/en 패리티·라이브 검증.
+- **/en 완전 영어화**: 734(`971e237`) link_hub description_en(490) · 735(`868c8a5`) site_name_en(139·기관 공식명) · 736(`3ecadaa`) 뉴스 lang 파라미터(en=KR/JP/CN/VN→영어·무료 구글번역+translation_cache·비용0·ko 보존). → `/en`=로고 외 한국어 0.
+- **마이그(MCP)**: link_hub description_en·site_name_en.
+- **교훈**: i18n은 레이어 — 큐레이션 데이터·제3자 피드까지 스코프. 뉴스는 무조건-ko라 lang화만으로 해결(무료·비용0).
+- **▶ 다음(선택) = 클로즈드 베타 초대·GB 뉴스 ko 번역·site_name 품질 스팟수정.**
+
 ## 2026-07-15 (3) — 🔎 라이브 QA + 727 메타타이틀 + 다크 D + 🇺🇸 729 US 구조화 IPO 피드 ✅
 
 **HEAD `9d977f0`.** i18n 100% 후 라이브 QA 스윕 → 잔재 마지막(메타타이틀) 수정 → 폴리시 소진 → US 뎁스(P2) 실질 전진(US IPO 피드). 전부 라이브 실측.

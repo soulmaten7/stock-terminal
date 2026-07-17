@@ -5,7 +5,15 @@
 
 > 🗺️ **마스터 로드맵 = `docs/ROADMAP.md`** (무엇을/어떤 순서로의 단일 기준). **현재 Phase 2(한국 수익화 토대) 진행 중** — 광고·채널 수익 인프라 **무료 티어 + 관리자/운영자 동선 완성**, **결제 PG·본인인증(Phase 2 후반)만 남음**. 새 세션은 이 BOOT 다음으로 **ROADMAP §3(광고·게재 정책 + 결제·빌링 레일)** 을 본다.
 
-> 🇺🇸 **2026-07-15 (최신·4) · 라이브 QA + 727 메타타이틀 + 다크 폴리시 D + US 구조화 IPO 피드 (HEAD `9d977f0`).**
+> 🌐 **2026-07-15 (최신·5) · US 뎁스 완결(배당·ETN) + /about 개선 + /en 완전 영어화(link_hub·뉴스) (HEAD `3ecadaa`).**
+> - **US 뎁스 완결**: **731**(`d2ff68d`) US 배당→`UsOfferingsFeed`(IPO+배당 토글·KR 완전 동급·Nasdaq calendar/dividends 일단위 14일) · **732**(`33f24d2`) US ETN 보드 서브탭(주식/ETF/REITs/ETN·Yahoo quote 실명+live 필터·18 live·VXX 등 극단값 정직). → US = KR급(IPO·배당·ETF·REITs·ETN).
+> - **/about 개선**(`b0fee55`): 얇던 소개 → 표준 골격(문제·3기둥·**TR-AI 렌즈 방법 투명화**[7렌즈+계보 그레이엄/파마-프렌치/노비-마르크스/피오트로스키/와일더]·비추천 헤드라인·커버리지·사용법). 경쟁사 8곳 조사 근거·`lensCopy.ts` 정합·ko/en 패리티·멍거 톤·라이브 검증.
+> - **🌐 /en 완전 영어화**(사용자 지적): **734**(`971e237`) link_hub `description_en`(490건) · **735**(`868c8a5`) link_hub `site_name_en`(139건·기관 공식 영문명) · **736**(`3ecadaa`) 뉴스 피드 `lang` 파라미터(en=KR/JP/CN/VN→영어·무료 구글번역+translation_cache 재사용·비용≈0·ko 현행 보존). → **`/en`=로고 외 한국어 0**(정적+데이터+LLM+메타+link_hub+뉴스 헤드라인 전부 영어·라이브 KR뉴스 163→0 확인).
+> - **마이그(MCP)**: `link_hub.description_en`·`site_name_en`.
+> - **🐞 교훈**: i18n은 레이어 — 큐레이션 데이터(link_hub)·제3자 피드(뉴스)도 스코프. 뉴스는 무조건-ko 번역이라 lang 파라미터화만으로 해결(무료라 비용0·OpenAI 가정은 오판).
+> - **▶ 다음(선택) = 클로즈드 베타 초대 · GB 뉴스 ko 번역(소소) · site_name 번역 품질 스팟수정.**
+>
+> 🇺🇸 **2026-07-15 (4) · 라이브 QA + 727 메타타이틀 + 다크 폴리시 D + US 구조화 IPO 피드 (HEAD `9d977f0`).**
 > - **🔎 라이브 QA 스윕**(브라우저 8페이지): i18n 100% 후 전수 육안 → 거의 클린, 유일 발견 = 정적 페이지 6종 `/en` 메타 타이틀 한글 잔재.
 > - **727 메타타이틀**(`d15dbed`): `about`·`advertise`·`feedback`·`favorites`·`business`·`coin` → `generateMetadata` 로케일화(en 영어·ko byte 동일·711 패턴·robots 보존·terms/privacy/admin 제외). 라이브 검증. → **i18n 잔재 0.**
 > - **다크 폴리시 D**(`1f661e3`): 미사용 `.shadow-soft`/`.shadow-soft-hover` 죽은 CSS 제거(전 .tsx 미사용·다크 불가시). **폴리시 백로그 소진**(i18n·다크·통화·title-case·메타).
