@@ -22,7 +22,7 @@ export default function Header() {
   const locale = useLocale();
   const MENU = [
     { href: '/', label: t('stocks'), ready: true, match: (p: string) => p === '/' },
-    { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장
+    // { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장 (베타 전 숨김·데이터 없어 노출 시 전문성↓. 복구=이 줄 주석만 해제)
     { href: '/about', label: t('about'), ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
   ] as const;
   const router = useRouter();
