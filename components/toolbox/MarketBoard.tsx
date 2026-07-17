@@ -1,7 +1,7 @@
 'use client';
 
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
 import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
@@ -15,6 +15,7 @@ import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 type Row = {
   symbol: string;
   name: string;
+  nameEn?: string | null;
   price: number;
   changePercent: number; // 1일
   r1w?: number | null;
@@ -91,6 +92,7 @@ async function fetchRows(tab: SubTab, market: KrMarket = 'all'): Promise<Row[]> 
     const rows: Row[] = raw.map((s) => ({
       symbol: String(s.symbol ?? ''),
       name: String(s.name ?? ''),
+      nameEn: (s.nameEn as string | null) ?? null,
       price: Number(s.price ?? 0),
       changePercent: Number(s.changePercent ?? 0),
       amount: Number(s.amount ?? 0),
@@ -110,6 +112,8 @@ async function fetchRows(tab: SubTab, market: KrMarket = 'all'): Promise<Row[]> 
 
 export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const t = useTranslations('Board');
+  const locale = useLocale();
+  const isEn = locale === 'en'; // en 화면은 KR 종목명도 영문(야후 name_en)로 — 한글 폴백
   const [tab, setTab] = useState<SubTab>(() => (loadBoardView('KR')?.sub as SubTab) ?? 'stock');
   const [krMarket, setKrMarket] = useState<KrMarket>(() => (loadBoardView('KR')?.market as KrMarket) ?? 'all'); // 코스피/코스닥 세그먼트(주식 탭 전용)
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>('market:stock:all') ?? []);
@@ -491,7 +495,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <td className="py-2.5 pl-0.5 pr-2 sm:px-2">
                       <div className="flex min-w-0 items-center gap-2.5">
                         <StockLogo code={r.symbol} name={r.name} size={32} />
-                        <span title={r.name} className="truncate font-medium text-unjong-primary">{r.name}</span>
+                        <span title={r.name} className="truncate font-medium text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</span>
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'KR') : '—'}</td>
@@ -526,7 +530,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <span className="w-5 shrink-0 text-center text-xs tabular-nums text-unjong-muted">{page * PAGE_SIZE + i + 1}</span>
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] font-bold leading-tight text-unjong-primary">{r.name}</p>
+                      <p className="truncate text-[15px] font-bold leading-tight text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</p>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
@@ -603,7 +607,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               <div className="mb-3 flex items-center gap-3">
                 <StockLogo code={selectedStock.symbol} name={selectedStock.name} size={32} />
                 <div className="min-w-0 flex-1">
-                  <p className="font-bold leading-snug text-unjong-primary">{selectedStock.name}</p>
+                  <p className="font-bold leading-snug text-unjong-primary">{isEn ? (selectedStock.nameEn ?? selectedStock.name) : selectedStock.name}</p>
                   <p className="font-mono text-xs text-unjong-muted">
                     {selectedStock.symbol} · {selectedStock.price ? selectedStock.price.toLocaleString() : '—'}
                     <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>

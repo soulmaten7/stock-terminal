@@ -6,11 +6,11 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 type WatchRow = { symbol: string; name_ko: string; market: string; country: string };
-type Quote = { symbol: string; price: number | null; changePercent: number | null; market: string | null };
+type Quote = { symbol: string; price: number | null; changePercent: number | null; market: string | null; nameEn: string | null };
 
 // country(대문자) → 선계산 스냅샷 테이블. KR만 change_percent, 나머지는 r1d(전일대비%).
-const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: boolean }> = {
-  KR: { table: "kr_stock_snapshot", changeCol: "change_percent", hasMarket: true },
+const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: boolean; hasNameEn?: boolean }> = {
+  KR: { table: "kr_stock_snapshot", changeCol: "change_percent", hasMarket: true, hasNameEn: true },
   US: { table: "us_stock_perf", changeCol: "r1d" },
   JP: { table: "jp_stock_perf", changeCol: "r1d" },
   CN: { table: "cn_stock_perf", changeCol: "r1d" },
@@ -43,7 +43,11 @@ async function fetchQuotes(sb: ReturnType<typeof createAdminClient>, country: st
   const out = new Map<string, Quote[]>();
   if (!cfg || symbols.length === 0) return out;
 
-  const cols = cfg.hasMarket ? `symbol,price,${cfg.changeCol},market` : `symbol,price,${cfg.changeCol}`;
+  const cols = [
+    "symbol", "price", cfg.changeCol,
+    cfg.hasMarket ? "market" : null,
+    cfg.hasNameEn ? "name_en" : null,
+  ].filter(Boolean).join(",");
   const { data } = await sb.from(cfg.table).select(cols).in("symbol", symbols);
   for (const r of (data ?? []) as unknown as Record<string, unknown>[]) {
     const symbol = String(r.symbol);
@@ -52,6 +56,7 @@ async function fetchQuotes(sb: ReturnType<typeof createAdminClient>, country: st
       price: r.price == null ? null : Number(r.price),
       changePercent: r[cfg.changeCol] == null ? null : Number(r[cfg.changeCol]),
       market: cfg.hasMarket ? (r.market == null ? null : String(r.market)) : null,
+      nameEn: cfg.hasNameEn ? (r.name_en == null ? null : String(r.name_en)) : null,
     };
     const list = out.get(symbol) ?? [];
     list.push(q);
@@ -115,6 +120,7 @@ export async function GET() {
       country: w.country,
       price: match?.price ?? null,
       changePercent: match?.changePercent ?? null,
+      name_en: match?.nameEn ?? null,
       tones: tonesBySym.get(w.symbol) ?? null,
     };
   });

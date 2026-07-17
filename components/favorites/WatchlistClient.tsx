@@ -7,7 +7,7 @@ import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 
-type WatchItem = { symbol: string; name_ko: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
+type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
 type Tone = 'pos' | 'warn' | 'flat';
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
 
@@ -159,7 +159,7 @@ export default function WatchlistClient() {
           <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <div className="flex min-w-0 items-center gap-2 sm:flex-1">
               <StockLogo code={f.symbol} name={f.name_ko ?? f.symbol} size={22} />
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{f.name_ko ?? f.symbol}</span>
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{(locale === 'en' ? (f.name_en ?? f.name_ko) : f.name_ko) ?? f.symbol}</span>
               <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
               <span className="ml-auto shrink-0 text-right sm:ml-0">
                 <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>

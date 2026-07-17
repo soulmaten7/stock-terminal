@@ -77,8 +77,8 @@ export async function resolveStockName(symbol: string): Promise<StockNameInfo | 
     const code = symbol.replace(/\.(KS|KQ)$/i, "");
     try {
       const sb = createAdminClient();
-      const { data } = await sb.from("kr_stock_snapshot").select("name").eq("symbol", code).maybeSingle();
-      if (data?.name) return { name: String(data.name).trim(), country: "KR" };
+      const { data } = await sb.from("kr_stock_snapshot").select("name, name_en").eq("symbol", code).maybeSingle();
+      if (data?.name) return { name: String(data.name).trim(), en: data.name_en ? String(data.name_en).trim() : undefined, country: "KR" };
     } catch {
       /* 조회 실패 시 폴백(null) */
     }

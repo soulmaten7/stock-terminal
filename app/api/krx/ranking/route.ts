@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
     const sb = createAdminClient();
     let q = sb
       .from("kr_stock_snapshot")
-      .select("symbol,name,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y");
+      .select("symbol,name,name_en,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y");
     if (market === "kospi" || market === "kosdaq") q = q.eq("market", market);
     const col =
       sort === "volume" ? "volume" : sort === "cap" ? "market_cap" : sort === "up" || sort === "down" ? "change_percent" : "trade_amount";
@@ -117,6 +117,7 @@ export async function GET(request: NextRequest) {
         rank: i + 1,
         symbol: s.symbol,
         name: s.name,
+        nameEn: s.name_en ?? null,
         price: Number(s.price) || 0,
         changePercent: Number(s.change_percent) || 0,
         volume: Number(s.volume) || 0,
