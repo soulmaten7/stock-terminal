@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만.** (CLAUDE.md 문서 규칙)
 
 ## HEAD / 배포
-- 코드 HEAD **`e254c53`**(STEP 747 · /en 매매처 배선+meta 한글 제거) · origin/main 동기화 · 트리 클린 · **배포 ✓ onetrillion.app**(라이브 실측).
+- 코드 HEAD **`8628c38`**(STEP 748 · 로고 클릭 국가 유지) · origin/main 동기화 · 트리 클린 · **배포 ✓ onetrillion.app**(라이브 실측).
 
 ## 정체성 (권위 = `docs/BRAND_IDENTITY.md`)
 - 사업자 **원트릴리언** · 대표 장은태 · 210-39-33812 · contact@onetrillion.app.
