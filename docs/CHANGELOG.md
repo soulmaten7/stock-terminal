@@ -1,6 +1,13 @@
 <!-- 2026-07-18 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-18 (2) — ✅ STEP 746: name_en 정상운영화(KR) (HEAD `76030d2`)
+
+- **개요**: 백필 완료 상태(2766/2772)에서 남은 정상운영 — **매일 `kr-perf` 크론이 `name_en IS NULL`인 종목만 야후 `longName||shortName`으로 증분 채움** → 신규 상장이 다음날 자동으로 영문명 획득. 별도 크론 없음(기존 흐름 1스텝).
+- **구현**(`76030d2` · `lib/krSnapshot.ts` 1파일): `enrichMissingNameEn()` 신설(`.is("name_en", null)` 조회 + UPDATE에도 null 이중 가드 = 기존값 절대 불변 · 배치 quote 100 · 청크 실패 스킵) + `computeKrSnapshot` upsert 후 비차단 호출(야후 장애가 스냅샷 성공을 막지 않음 · 응답에 `nameEnFilled` 포함).
+- **✅ 검증**: tsc 0 · vitest 49/49 · 빌드 성공 · 단독 실행 `filled: 0`(기대값 — 남은 null 6 = 야후 미제공 소형주 = 정직한 결측) · **MCP 실측**: total 2772·with_en 2766·null 6 무변 + 기존값 무변(삼성전자·SK하이닉스·NAVER).
+- **▶ 다음**: ①-JP/CN/VN 종목명 브릿지(나라별 소스: JP 자체 리스트·CN title-case·VN 야후 — 착수 전 PLAYBOOK 재독) → 유니버스 프레시니스 잡.
+
 ## 2026-07-18 — 🧭 전략 확정: Phase 1 한국 베타 / Phase 2 로케일 글로벌화 (장은태 ↔ Cowork)
 
 - **결정**: (1) **Phase 1 = 한국 기준 제품**(제품/UX 완성 목표 = 한국 사용자 기준) → 베타 게이트 = **KR(네이티브) + US(영어명·한국어 AI로 한국인 소비 가능)**. JP/CN는 종목명 브릿지+피드백 후, VN/GB 파킹. (2) **Phase 2 = 로케일 확장 글로벌화**(US=미국인 네이티브 에디션 등). (3) **가드: 데이터 = 네이티브-소스 + 소비자-로케일 브릿지 분리** → Phase 1이 Korean-only로 굳지 않고 Phase 2가 재사용(재작업 아님).
