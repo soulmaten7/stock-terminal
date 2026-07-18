@@ -3,6 +3,9 @@
 // 크론(/api/cron/kr-perf)이 호출. 화면 라우트는 이 테이블만 즉시 SELECT.
 import { createAdminClient } from "./supabase/admin";
 import { pct } from "./returns";
+import YahooFinance from "yahoo-finance2";
+
+const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
 const BASE = "http://data-dbg.krx.co.kr/svc/apis/sto";
 const EP = { kospi: `${BASE}/stk_bydd_trd`, kosdaq: `${BASE}/ksq_bydd_trd` } as const;
@@ -55,7 +58,7 @@ function closeMap(rows: KrxRow[]): Map<string, number> {
   }
   return m;
 }
-export async function computeKrSnapshot(): Promise<{ ok: true; computed: number; basDd: string }> {
+export async function computeKrSnapshot(): Promise<{ ok: true; computed: number; basDd: string; nameEnFilled: number }> {
   const key = (process.env.KRX_API_KEY || "").trim();
   if (!key) throw new Error("no KRX_API_KEY");
 
@@ -110,5 +113,59 @@ export async function computeKrSnapshot(): Promise<{ ok: true; computed: number;
     const { error } = await sb.from("kr_stock_snapshot").upsert(payload.slice(i, i + 500), { onConflict: "symbol" });
     if (error) throw error;
   }
-  return { ok: true, computed: payload.length, basDd: base.basDd };
+  // 증분 name_en — 실패해도 스냅샷 성공을 막지 않는다(비차단).
+  let nameEnFilled = 0;
+  try {
+    nameEnFilled = await enrichMissingNameEn(sb);
+  } catch {
+    /* 야후 장애 시 스킵 — 다음날 재시도 */
+  }
+  return { ok: true, computed: payload.length, basDd: base.basDd, nameEnFilled };
+}
+
+// name_en IS NULL인 종목만 야후 longName/shortName으로 채움 (증분 · 기존값 절대 불변).
+// 매일 kr-perf 크론이 스냅샷 upsert 후 호출 — 신규 상장이 다음날 자동으로 영문명 획득.
+// 백필은 scripts/enrich_kr_names.ts로 완료(2766/2772) — 이 함수는 정상운영(신규분)만 담당.
+export async function enrichMissingNameEn(
+  sb: ReturnType<typeof createAdminClient>
+): Promise<number> {
+  const { data } = await sb
+    .from("kr_stock_snapshot")
+    .select("symbol, market")
+    .is("name_en", null)
+    .range(0, 999); // 증분 대상은 보통 한 자릿수 — 1000이면 충분(전종목 백필 아님)
+  const list = (data ?? []) as { symbol: string; market: string }[];
+  if (list.length === 0) return 0;
+
+  const ysym = (r: { symbol: string; market: string }) =>
+    r.symbol + (r.market === "kosdaq" ? ".KQ" : ".KS");
+  const codeByY = new Map(list.map((r) => [ysym(r), r.symbol]));
+  const yss = [...codeByY.keys()];
+
+  let saved = 0;
+  for (let i = 0; i < yss.length; i += 100) {
+    const grp = yss.slice(i, i + 100);
+    try {
+      const qs = (await yf.quote(grp)) as Array<{
+        symbol?: string;
+        longName?: string;
+        shortName?: string;
+      }>;
+      for (const q of Array.isArray(qs) ? qs : []) {
+        const code = codeByY.get(q.symbol ?? "");
+        const en = (q.longName || q.shortName || "").trim();
+        if (!code || !en) continue;
+        // .is("name_en", null) 이중 가드 — 기존값은 어떤 경우에도 안 덮는다.
+        const { error } = await sb
+          .from("kr_stock_snapshot")
+          .update({ name_en: en })
+          .eq("symbol", code)
+          .is("name_en", null);
+        if (!error) saved++;
+      }
+    } catch {
+      /* 청크 실패 스킵 — 다음날 크론이 자연 재시도 */
+    }
+  }
+  return saved;
 }
