@@ -7,13 +7,13 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 # CHANGELOG.md 날짜 검증
 if [ -f "docs/CHANGELOG.md" ]; then
-  DATE=$(head -2 docs/CHANGELOG.md | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
+  DATE=$(head -2 docs/CHANGELOG.md | grep -Eo '[0-9]{4}-[0-9]{2}-[0-9]{2}' | head -1)
   [ "$DATE" != "$TODAY" ] && echo "❌ CHANGELOG.md: $DATE (오늘: $TODAY)" || echo "✅ CHANGELOG.md OK"
 fi
 
 # docs/STATE.md 날짜 검증
 if [ -f "docs/STATE.md" ]; then
-  DATE=$(head -2 docs/STATE.md | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
+  DATE=$(head -2 docs/STATE.md | grep -Eo '[0-9]{4}-[0-9]{2}-[0-9]{2}' | head -1)
   [ "$DATE" != "$TODAY" ] && echo "❌ docs/STATE.md: $DATE (오늘: $TODAY)" || echo "✅ docs/STATE.md OK"
 fi
 
