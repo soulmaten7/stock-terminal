@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import symbols from "@/data/gb_symbols.json";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { tonesFor, type LensScoreRow } from "@/lib/lensTones";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,6 +22,7 @@ type Item = {
   r6m: number | null;
   r1y: number | null;
   amount: number;
+  lens?: { pos: number; warn: number; flat: number } | null;
 };
 
 type PerfRecord = {
@@ -36,6 +38,27 @@ type PerfRecord = {
 };
 
 let cache: { at: number; data: { items: Item[] } } | null = null;
+
+// STEP 757: 응답 심볼의 렌즈 톤 배치 조회 — 추가 쿼리 1회. 선계산 없으면 null(호출부가 '—'/무표시 처리).
+async function fetchLensMap(sb: ReturnType<typeof createAdminClient>, market: string, symbols: string[]): Promise<Map<string, { pos: number; warn: number; flat: number }>> {
+  const out = new Map<string, { pos: number; warn: number; flat: number }>();
+  // .in()에 심볼 수천 개를 한 번에 넣으면 URL이 너무 길어져 400(Bad Request)로 조용히 실패(data=null) →
+  // 1000개씩 청크로 나눠 호출(실측: 1500 ok·2000+ 실패). STEP 757 발견·수정.
+  for (let i = 0; i < symbols.length; i += 1000) {
+    const chunk = symbols.slice(i, i + 1000);
+    if (chunk.length === 0) continue;
+    const { data } = await sb
+      .from("lens_scores")
+      .select("symbol, momentum_state, technical_state, valuation_state, lowvol_state, quality_state, assetgrowth_state, fscore_state")
+      .eq("market", market)
+      .in("symbol", chunk);
+    for (const r of (data ?? []) as (LensScoreRow & { symbol: string })[]) {
+      const tones = tonesFor(r);
+      if (tones) out.set(r.symbol, tones);
+    }
+  }
+  return out;
+}
 
 export async function GET() {
   if (cache && Date.now() - cache.at < 15 * 60 * 1000) {
@@ -69,7 +92,9 @@ export async function GET() {
     if (data.length < 1000) break;
   }
 
-  const items = rows.sort((a, b) => b.amount - a.amount);
+  const sorted = rows.sort((a, b) => b.amount - a.amount);
+  const lensMap = await fetchLensMap(sb, "GB", sorted.map((r) => r.symbol));
+  const items = sorted.map((r) => ({ ...r, lens: lensMap.get(r.symbol) ?? null }));
   const data = { items };
   cache = { at: Date.now(), data };
   return NextResponse.json(data);

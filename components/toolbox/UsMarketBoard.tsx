@@ -3,14 +3,32 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
-import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import LensPreview from './LensPreview';
-import BoardTopLensCard from './BoardTopLensCard';
 import AdSlotRow from './AdSlotRow';
 import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
+
+type LensCount = { pos: number; warn: number; flat: number };
+// 톤 점 색 — components/favorites/WatchlistClient.tsx TONE_DOT과 동일(강점=민트·주의=앰버·보통=중립).
+const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
+  pos: 'bg-unjong-accent',
+  warn: 'bg-amber-400',
+  flat: 'bg-unjong-muted',
+};
+function LensDots({ lens, size = 7 }: { lens: LensCount | null | undefined; size?: number }) {
+  if (!lens) return null; // 호출부가 필요 시 '—' 표시(모바일 인라인은 아무것도 안 보임)
+  const dim = { height: size, width: size };
+  return (
+    <span className="flex shrink-0 items-center gap-0.5">
+      {Array.from({ length: lens.pos }).map((_, i) => <span key={`p${i}`} style={dim} className={`shrink-0 rounded-full ${TONE_DOT.pos}`} />)}
+      {Array.from({ length: lens.warn }).map((_, i) => <span key={`w${i}`} style={dim} className={`shrink-0 rounded-full ${TONE_DOT.warn}`} />)}
+      {Array.from({ length: lens.flat }).map((_, i) => <span key={`f${i}`} style={dim} className={`shrink-0 rounded-full ${TONE_DOT.flat}`} />)}
+    </span>
+  );
+}
 
 // 주식·ETF 행 모두 r1w..r1y를 가짐 — 주식은 us-list가 us_stock_perf(크론 미리계산) 조인 + r1y(quote),
 // ETF는 us-etf-performance가 한 번에 줌. 두 탭 동일 shape → 전 기간 정렬 가능.
@@ -25,6 +43,7 @@ type Row = {
   r6m?: number | null;
   r1y?: number | null;
   amount?: number; // 거래대금(USD) — 정렬 전용(표시 X)
+  lens?: LensCount | null; // 선계산 톤 요약(STEP 757) — null=선계산 밖
 };
 
 // 하위 카테고리 탭 — 미국 시장 기준(주식 | ETF). 둘 다 라이브(각각 별도 라우트 fetch).
@@ -70,6 +89,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
     return ((j.items ?? []) as Row[]).map((r) => ({
       symbol: r.symbol, name: r.name, price: r.price, changePercent: r.changePercent,
       r1w: r.r1w, r1m: r.r1m, r3m: r.r3m, r6m: r.r6m, r1y: r.r1y, amount: r.amount,
+      lens: r.lens ?? null,
     }));
   } catch { return []; }
 }
@@ -279,7 +299,16 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
 
       {!loading && sorted.length > 0 ? (
         <div className="mb-3 lg:hidden">
-          <BoardTopLensCard stock={sorted[0] ?? null} market="US" />
+          <div className="flex items-center gap-1.5">
+            <Hand size={13} className="shrink-0 text-unjong-accent" />
+            <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
+          </div>
+          <div className="mt-1 flex items-center gap-2 text-[11px] text-unjong-muted">
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
+            <span>· {t('lensHintNote')}</span>
+          </div>
         </div>
       ) : null}
 
@@ -361,6 +390,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       {t('colName')}{sortArrow('name')}
                     </button>
                   </th>
+                  <th className="w-[92px] whitespace-nowrap px-2 py-2.5 text-left font-medium sm:px-3">{t('lensCol')}</th>
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
                     <button
                       type="button"
@@ -431,6 +461,9 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                         </span>
                       </div>
                     </td>
+                    <td className="whitespace-nowrap px-2 py-2.5 sm:px-3">
+                      {r.lens ? <LensDots lens={r.lens} /> : <span className="text-[12px] text-unjong-muted">—</span>}
+                    </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'US') : '—'}</td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
@@ -459,7 +492,10 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <span className="w-5 shrink-0 text-center text-xs tabular-nums text-unjong-muted">{page * PAGE_SIZE + i + 1}</span>
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
+                      <div className="flex items-center gap-1">
+                        <p className="min-w-0 flex-1 truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
+                        {r.lens ? <LensDots lens={r.lens} size={6} /> : null}
+                      </div>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'US') : '—'}</span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>

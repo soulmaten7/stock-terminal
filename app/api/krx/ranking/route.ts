@@ -100,15 +100,20 @@ async function loadMapped(market: string, key: string): Promise<{ rows: Mapped[]
 // 응답으로 나가는 종목들의 렌즈 톤 배치 조회 — 무거운 계산 없음(추가 쿼리 1회). 선계산 밖이면 null(호출부가 '—' 처리).
 async function fetchLensMap(sb: ReturnType<typeof createAdminClient>, symbols: string[]): Promise<Map<string, { pos: number; warn: number; flat: number }>> {
   const out = new Map<string, { pos: number; warn: number; flat: number }>();
-  if (symbols.length === 0) return out;
-  const { data } = await sb
-    .from("lens_scores")
-    .select("symbol, momentum_state, technical_state, valuation_state, lowvol_state, quality_state, assetgrowth_state, fscore_state")
-    .eq("market", "KR")
-    .in("symbol", symbols);
-  for (const r of (data ?? []) as (LensScoreRow & { symbol: string })[]) {
-    const tones = tonesFor(r);
-    if (tones) out.set(r.symbol, tones);
+  // .in()에 심볼 수천 개를 한 번에 넣으면 URL이 너무 길어져 400(Bad Request)로 조용히 실패(data=null) →
+  // 1000개씩 청크로 나눠 호출(실측: 1500 ok·2000+ 실패). STEP 757 발견·수정(limit이 큰 요청에서 재현).
+  for (let i = 0; i < symbols.length; i += 1000) {
+    const chunk = symbols.slice(i, i + 1000);
+    if (chunk.length === 0) continue;
+    const { data } = await sb
+      .from("lens_scores")
+      .select("symbol, momentum_state, technical_state, valuation_state, lowvol_state, quality_state, assetgrowth_state, fscore_state")
+      .eq("market", "KR")
+      .in("symbol", chunk);
+    for (const r of (data ?? []) as (LensScoreRow & { symbol: string })[]) {
+      const tones = tonesFor(r);
+      if (tones) out.set(r.symbol, tones);
+    }
   }
   return out;
 }
