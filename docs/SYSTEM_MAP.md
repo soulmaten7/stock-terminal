@@ -21,7 +21,7 @@
 | 국가 | 유니버스 소스 | 자동/시드 | 가격 파이프라인 | 크론(UTC) | 종목명 |
 |------|--------------|-----------|-----------------|-----------|--------|
 | 🇰🇷 KR | **KRX 전종목 일일피드**(`stk_bydd_trd`·`ksq_bydd_trd`) | **자동**(신규상장 다음날 편입) | `lib/krSnapshot.ts`(전시장 1콜) → `kr_stock_snapshot`(2,772) | `kr-perf` 10:00 · `kr-etp` 10:15 · `kr-lens-scores` 10:30 | 한글(KRX) **+ `name_en`**(야후 백필 2766/2772 · **자동채움 ✅** `kr-perf` 크론이 null만 증분·STEP 746) |
-| 🇺🇸 US | `data/us_symbols.json`(6,936) | **시드**(정적) | `lib/usPerf.ts`(종목별 야후) → `us_stock_perf` | `us-perf` 22:00 · `lens-scores` 20:00(US 렌즈) | 영어(원본·SEC 실명·title-case) |
+| 🇺🇸 US | `data/us_symbols.json`(주식 5,964+ETF 815) | **월간 자동 재생성**(Nasdaq Trader 심볼 디렉토리 → GitHub Action `refresh-us-symbols` 매월 1일 자동 커밋·STEP 754/754b·주식만 재생성·ETF 큐레이션 보존) | `lib/usPerf.ts`(종목별 야후) → `us_stock_perf` | `us-perf` 22:00 · `lens-scores` 20:00(US 렌즈) | 영어(원본·SEC 실명·title-case) |
 | 🇯🇵 JP | `data/jp_symbols.json`(4,268) | **시드** | `lib/jpPerf.ts` → `jp_stock_perf` | `jp-perf` 08:00 · `jp-disclosures` 16:00 | 일본어(`jp_names`) · **영문명 미완** |
 | 🇨🇳 CN | `data/cn_symbols.json`(7,098) | **시드** | `lib/cnPerf.ts` → `cn_stock_perf` — HK=야후 · **A주=텐센트 ifzq kline 1차**(东方财富는 폴백 — Vercel IP 소프트차단·07-18) · 전체+신선도역순+예산 260s·콜별 5s 타임아웃(STEP 750b~752) | `cn-perf` 08:00 | 중국어(`cn_names`) · **영문명 미완**(시드 name은 영문·title-case만 필요 — §6c) |
 | 🇻🇳 VN | `data/vn_symbols.json`(403 · HOSE+HNX) | **시드** | `lib/vnPerf.ts`(야후) → `vn_stock_perf` | `vn-perf` 08:00 | 베트남어(`vn_names`) · **영문명 미완** |
