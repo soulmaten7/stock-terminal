@@ -34,6 +34,16 @@ async function mapLimit<T, R>(arr: T[], limit: number, fn: (x: T) => Promise<R>)
   return out;
 }
 
+// 외부 콜 공통 타임아웃 — 예산 가드(budgetLeft)는 '새 작업 픽'만 막고
+// 진행 중인 await는 못 끊는다 → hang 콜 하나가 레인을 잠가 300초 하드리밋행.
+// 모든 외부 콜은 개별 타임아웃 필수(STEP 750b).
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error("timeout")), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+  });
+}
+
 // A주(.SS/.SZ) 일봉 종가+거래대금 — 東方財富(Eastmoney) 무료 kline. Yahoo가 A주 과거시세(chart)를 400으로 차단해 대체.
 // secid: 1.=상해(.SS) / 0.=심천(.SZ). klt=101 일봉, fqt=1 전복권.
 // fields2=f51(날짜),f53(종가),f57(거래대금·원 단위).
@@ -91,7 +101,7 @@ export async function computeCnPerf(): Promise<{ ok: true; computed: number; att
 
       if (sym.endsWith(".HK")) {
         // 홍콩·ETF → Yahoo chart (정상 동작)
-        const ch = await yf.chart(sym, { period1, interval: "1d" });
+        const ch = await withTimeout(yf.chart(sym, { period1, interval: "1d" }), 5000);
         const bars = (ch.quotes ?? []) as Array<{ close: number | null; volume: number | null }>;
         closes = bars
           .map((b) => b.close)
