@@ -1,6 +1,14 @@
 <!-- 2026-07-18 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-18 — 🧭 전략 확정: Phase 1 한국 베타 / Phase 2 로케일 글로벌화 (장은태 ↔ Cowork)
+
+- **결정**: (1) **Phase 1 = 한국 기준 제품**(제품/UX 완성 목표 = 한국 사용자 기준) → 베타 게이트 = **KR(네이티브) + US(영어명·한국어 AI로 한국인 소비 가능)**. JP/CN는 종목명 브릿지+피드백 후, VN/GB 파킹. (2) **Phase 2 = 로케일 확장 글로벌화**(US=미국인 네이티브 에디션 등). (3) **가드: 데이터 = 네이티브-소스 + 소비자-로케일 브릿지 분리** → Phase 1이 Korean-only로 굳지 않고 Phase 2가 재사용(재작업 아님).
+- **핵심 발견**: 이 방향은 **새것이 아니라 이미 `ROADMAP.md` §2 #5·#6·§2-1에 확정돼 있던 것**(06-27/07-06). 실행이 벗어나 6탭을 얕게 깐 게 문제였고, 로드맵이 놓친 한 가지 = **비영어 탭 종목명을 한국인이 읽을 브릿지**(JP=`極洋` DB 실측). → §2-1에 07-18 정밀화로 못박음.
+- **근거(3중 검색)**: 시장 concentration(좁게 깊게)>diversification · premature internationalization=상위 킬러(홈 PMF 먼저·서두른 팀보다 ~20배 느림) · Investing.com은 네이티브 깊이를 현지 사무실(도쿄·선전·서울)로 확보(1인은 불가→AI+공개소스+번역이 레버리지).
+- **문서**: `ROADMAP.md` §2-1 정밀화 + 헤더 07-18 + 옛 `SESSION_BOOT` 참조를 `STATE`/`SYSTEM_MAP`으로 수정 · `STATE.md` "다음"에 전략 리드 추가.
+- **▶ 다음(Phase 1)**: name_en 정상운영화 · ①-JP/CN/VN **이름 브릿지**(영어+한글) · US 유니버스 프레시니스 · 클로즈드 베타 발송.
+
 ## 2026-07-17 (5) — 🗂️ 문서 통합: 현재상태 정본 단일화 (STATE · SYSTEM_MAP · CHANGELOG)
 
 - **개요**: "현재 상태·다음 할 일" 기록 문서가 6개(SESSION_BOOT 139KB · NEXT_SESSION_START 107KB · NEXT_SESSION_PLAYBOOK 61KB · NEW_SESSION_HANDOFF 60KB · SESSION_KICKOFF · session-context)나 겹쳐 append형 평행 히스토리가 됨 → 최신 HEAD가 문서마다 3:3으로 갈리고 "먼저 읽으세요"를 4개가 서로 주장 = 잘못된 인수인계. 읽기전용 서브에이전트 전수 대조 + git/라이브 실측으로 확정 후 통합.
