@@ -26,6 +26,7 @@ export type LensRow = { symbol: string; name: string; nameEn?: string | null; pr
 
 export default function LensPreview({ stock, market, compact = false, example = false }: { stock: LensRow | null; market: string; compact?: boolean; example?: boolean }) {
   const t = useTranslations('LensPreview');
+  const tb = useTranslations('Board'); // 범례 라벨(강점/주의/보통) 재사용 — 보드 행 도트와 동일 용어(STEP 756b)
   const locale = useLocale(); // 렌즈 엔진은 ?lang=으로 언어를 받는다(기본 ko) — 안 보내면 en 화면에도 한국어가 온다
   const [lenses, setLenses] = useState<LensItem[] | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
@@ -134,9 +135,16 @@ export default function LensPreview({ stock, market, compact = false, example = 
       ) : (
         <>
       <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
-        <div className="mb-1.5 flex items-center gap-1">
-          <TLensLogo size={12} color="#2DD4BF" />
-          <span className="text-[12px] font-semibold text-unjong-primary">{t('lensTitle')}</span>
+        <div className="mb-1.5 flex items-center justify-between gap-1">
+          <span className="flex items-center gap-1">
+            <TLensLogo size={12} color="#2DD4BF" />
+            <span className="text-[12px] font-semibold text-unjong-primary">{t('lensTitle')}</span>
+          </span>
+          <span className="flex items-center gap-2 text-[11px] text-unjong-muted">
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{tb('legendPos')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{tb('legendWarn')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{tb('legendFlat')}</span>
+          </span>
         </div>
         {state === 'loading' ? (
           <p className="text-[12px] text-unjong-muted">{t('lensLoading')}</p>

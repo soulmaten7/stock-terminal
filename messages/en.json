@@ -599,8 +599,9 @@
     "lensHint": "Tap a stock to open its TR-AI Lens",
     "lensHintNote": "Not a buy or sell signal",
     "lensCol": "TR-AI Lens",
-    "lensCount": "{pos} strong · {warn} caution · {flat} neutral",
-    "lensCountShort": "{pos} strong · {warn} caution"
+    "legendPos": "Strong",
+    "legendWarn": "Caution",
+    "legendFlat": "Neutral"
   },
   "LensPreview": {
     "exampleLabel": "Top by volume · example",

@@ -19,7 +19,7 @@ const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
   flat: 'bg-unjong-muted',
 };
 function LensDots({ lens, size = 7 }: { lens: LensCount | null | undefined; size?: number }) {
-  if (!lens) return <span className="text-[12px] text-unjong-muted">—</span>;
+  if (!lens) return null; // 호출부가 필요 시 '—' 표시(모바일 인라인은 아무것도 안 보임)
   const dim = { height: size, width: size };
   return (
     <span className="flex shrink-0 items-center gap-0.5">
@@ -368,11 +368,17 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
       ) : null}
 
       {!loading && sorted.length > 0 ? (
-        <div className="mb-3 flex items-center gap-1.5 lg:hidden">
-          <Hand size={13} className="shrink-0 text-unjong-accent" />
-          <p className="text-[13px] text-unjong-primary">
-            {t('lensHint')} <span className="text-[11px] text-unjong-muted">· {t('lensHintNote')}</span>
-          </p>
+        <div className="mb-3 lg:hidden">
+          <div className="flex items-center gap-1.5">
+            <Hand size={13} className="shrink-0 text-unjong-accent" />
+            <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
+          </div>
+          <div className="mt-1 flex items-center gap-2 text-[11px] text-unjong-muted">
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
+            <span>· {t('lensHintNote')}</span>
+          </div>
         </div>
       ) : null}
 
@@ -454,7 +460,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       {t('colName')}{sortArrow('name')}
                     </button>
                   </th>
-                  <th className="w-[150px] whitespace-nowrap px-3 py-2.5 text-left font-medium sm:px-4">{t('lensCol')}</th>
+                  <th className="w-[92px] whitespace-nowrap px-2 py-2.5 text-left font-medium sm:px-3">{t('lensCol')}</th>
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
                     <button
                       type="button"
@@ -522,11 +528,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                         <span title={r.name} className="truncate font-medium text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</span>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2.5 sm:px-4">
-                      <div className="flex items-center gap-1.5">
-                        <LensDots lens={r.lens} />
-                        {r.lens ? <span className="text-[12px] text-unjong-muted">{t('lensCount', { pos: r.lens.pos, warn: r.lens.warn, flat: r.lens.flat })}</span> : null}
-                      </div>
+                    <td className="whitespace-nowrap px-2 py-2.5 sm:px-3">
+                      {r.lens ? <LensDots lens={r.lens} /> : <span className="text-[12px] text-unjong-muted">—</span>}
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'KR') : '—'}</td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(r[mobileField] as number | null | undefined)}`}>
@@ -560,10 +563,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <span className="w-5 shrink-0 text-center text-xs tabular-nums text-unjong-muted">{page * PAGE_SIZE + i + 1}</span>
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[15px] font-bold leading-tight text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</p>
-                      <div className="mt-0.5 flex items-center gap-1.5">
-                        <LensDots lens={r.lens} size={6} />
-                        {r.lens ? <span className="text-[12px] text-unjong-muted">{t('lensCountShort', { pos: r.lens.pos, warn: r.lens.warn })}</span> : null}
+                      <div className="flex items-center gap-1">
+                        <p className="min-w-0 flex-1 truncate text-[15px] font-bold leading-tight text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</p>
+                        {r.lens ? <LensDots lens={r.lens} size={6} /> : null}
                       </div>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
