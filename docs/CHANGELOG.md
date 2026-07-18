@@ -1,6 +1,16 @@
 <!-- 2026-07-18 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-18 (3) — 🔎 US 3중 검수 + 전략 순서 재확정 + STEP 747 /en 픽스 2건 (HEAD `e254c53`)
+
+- **경위**: JP/CN/VN 종목명 브릿지 착수(플레이북 재독·DB 실측·소스 프로브까지 진행) 중 사용자 문제 제기 — "한 언어권-한 탭-깊이" 원칙 대비 순서 점검 + "US조차 완벽한가" 3중 검수 요구. → 검수 결과로 **순서 재확정(장은태)**: **작은 픽스 → 클로즈드 베타 → US 검수 갭 처리 → 그 다음 JP/CN 브릿지**(VN/GB 파킹 — 기존 STATE의 "JP/CN/VN 브릿지"에서 VN 제외로 정합).
+- **🔎 US 3중 검수(Pass1 문서대조·Pass2 라이브/코드 실측·Pass3 미국인 시선)**: US 탭(한국인용)=베타 게이트 충족(뎁스 진짜 깊음) / **`/en` 미국인 에디션=미완**(로드맵이 Phase 2로 유보한 것과 정합). 실측 발견: ⑴ 🔴 `<BrokerRanking />` region 미배선 → **/en에서 한국 증권사 노출**(§4-3 "스위처 생기면 배선"이 누락된 채 방치) ⑵ 🟡 `/en` 종목상세 meta description/keywords에 한글 병기("(애플·AAPL)") ⑶ 🟠 bare `/en` 1회 stale HTML 관찰(옛 release — 도구 캐시 가능성·미확정·브라우저 재확인 대기) ⑷ US `brokers.note` 10건이 한글 큐레이션.
+- **STEP 747**(`e254c53` · 3파일): ① `ToolboxClient` `<BrokerRanking region={locale==='en'?'US':'KR'}/>` ② `BrokerRanking` 초기 정적 KR 폴백을 KR 로케일 전용으로(en에서 한국 증권사 번쩍임 방지) ③ 종목상세 `generateMetadata` `sub = isEn ? undefined : en`(en 한글 병기 제거·ko byte 동일). tsc 0·vitest 49/49·빌드 ✓.
+- **DB(MCP·즉시 라이브)**: US `brokers.note` 10건 한글→영어(Charles Schwab "Merged with TD Ameritrade" 등).
+- **✅ 라이브 실측(배포 후)**: `/en/stock/AAPL` meta 한글 0("Apple Inc.(AAPL)…") · ko meta 현행 유지("애플(Apple Inc.·AAPL)…") · `/api/brokers?region=US` 17곳 전부 US·영어 note.
+- **JP/CN/VN 프로브 보존**: 결과는 `LOCALE_SOURCE_PLAYBOOK §6c` 신설에 기록(JP=JPX `data_e.xls` 4,438행 실측 · CN=시드 이미 영문→title-case만 · VN=야후 longName · 한글 오버라이드 JP10/CN8/VN0) — 구현은 순서상 뒤(파킹·버려진 것 없음).
+- **▶ 다음**: 클로즈드 베타 발송(`BETA_INVITE.md`) → US 잔여 갭(stale 관찰 확인·지원시간 시간대 표기).
+
 ## 2026-07-18 (2) — ✅ STEP 746: name_en 정상운영화(KR) (HEAD `76030d2`)
 
 - **개요**: 백필 완료 상태(2766/2772)에서 남은 정상운영 — **매일 `kr-perf` 크론이 `name_en IS NULL`인 종목만 야후 `longName||shortName`으로 증분 채움** → 신규 상장이 다음날 자동으로 영문명 획득. 별도 크론 없음(기존 흐름 1스텝).
