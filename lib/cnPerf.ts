@@ -104,21 +104,28 @@ async function tencentBars(sym: string): Promise<{ closes: number[]; lastAmount:
 
 type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
 
-export async function computeCnPerf(): Promise<{ ok: true; computed: number; attempted: number; slice: string; at: string }> {
+export async function computeCnPerf(): Promise<{ ok: true; computed: number; attempted: number; at: string }> {
   // 약 280 달력일 룩백 — 6개월(126 거래일) + 비거래일 버퍼 충분
   const LOOKBACK_DAYS = 400; // 252거래일(1년) 확보용 — 400 캘린더일 ≈ 276 거래일
   const period1 = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
 
-  // ── STEP 750: 하루 1방(7,098·300초 초과 상습) → 3시간 8분할 슬라이스 ──
-  // 파티션 = 실행 시각 기반 결정론(상태 저장 없음). 크론이 늦게 떠도(Vercel 지연) 가장 가까운 슬롯으로 스냅.
-  // 하루 8회 × ~890종목 = 전 유니버스 일일 커버. 부분 실패는 그 슬라이스만 다음날 재시도.
-  const SLOTS = 8; // vercel.json: 0,3,6,9,12,15,18,21시(UTC)
-  const slot = Math.round(new Date().getUTCHours() / 3) % SLOTS;
-  const target = ALL_SYMS.filter((_, i) => i % SLOTS === slot);
+  const sb = createAdminClient(); // RLS 우회(쓰기) — 아래 신선도 정렬 읽기에도 사용
+
+  // ── STEP 752: 전체 유니버스 + 신선도 역순(오래된 것 먼저) ──
+  // Hobby 플랜 = 크론 일 1회 한도(*/3이 배포 거부 원인이었음 · 07-18). 하루 1회 전체를 돌리되,
+  // 예산에 잘리면 '가장 오래된 것부터' 처리했으므로 다음날 이어받아 자연 회전한다.
+  const seen = new Map<string, number>();
+  for (let from = 0; ; from += 1000) {
+    const { data } = await sb.from("cn_stock_perf").select("symbol, updated_at").range(from, from + 999);
+    if (!data || data.length === 0) break;
+    for (const r of data as { symbol: string; updated_at: string }[]) seen.set(r.symbol, new Date(r.updated_at).getTime());
+    if (data.length < 1000) break;
+  }
+  const target = [...ALL_SYMS].sort((a, b) => (seen.get(a) ?? 0) - (seen.get(b) ?? 0)); // 미수록(0)=최우선
 
   // 시간 예산 — 소스가 hang이어도 함수 전체가 죽지 않게. 예산 소진 시 새 심볼을 집지 않고 걷은 것만 저장.
   const startedAt = Date.now();
-  const TIME_BUDGET_MS = 220_000; // maxDuration 300초 대비 upsert 여유
+  const TIME_BUDGET_MS = 260_000; // maxDuration 300초 대비 upsert 여유
   const budgetLeft = () => Date.now() - startedAt < TIME_BUDGET_MS;
 
   const results = await mapLimit(target, 12, async (sym): Promise<PerfRow | null> => {
@@ -175,11 +182,10 @@ export async function computeCnPerf(): Promise<{ ok: true; computed: number; att
   const at = new Date().toISOString();
   const payload = rows.map((r) => ({ ...r, updated_at: at }));
 
-  const sb = createAdminClient(); // RLS 우회(쓰기)
   for (let i = 0; i < payload.length; i += 500) {
     const { error } = await sb.from("cn_stock_perf").upsert(payload.slice(i, i + 500), { onConflict: "symbol" });
     if (error) throw error;
   }
 
-  return { ok: true, computed: payload.length, attempted: target.length, slice: `${slot + 1}/${SLOTS}`, at };
+  return { ok: true, computed: payload.length, attempted: target.length, at };
 }
