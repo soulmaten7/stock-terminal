@@ -1,6 +1,15 @@
 <!-- 2026-07-17 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-17 (5) — 🗂️ 문서 통합: 현재상태 정본 단일화 (STATE · SYSTEM_MAP · CHANGELOG)
+
+- **개요**: "현재 상태·다음 할 일" 기록 문서가 6개(SESSION_BOOT 139KB · NEXT_SESSION_START 107KB · NEXT_SESSION_PLAYBOOK 61KB · NEW_SESSION_HANDOFF 60KB · SESSION_KICKOFF · session-context)나 겹쳐 append형 평행 히스토리가 됨 → 최신 HEAD가 문서마다 3:3으로 갈리고 "먼저 읽으세요"를 4개가 서로 주장 = 잘못된 인수인계. 읽기전용 서브에이전트 전수 대조 + git/라이브 실측으로 확정 후 통합.
+- **⚠️ 위험 발견**: 옛 Supabase ref `qxkmwlkchyxfzxbonhtj`(OT-Marketing)가 문서 13개 + `.env.local`의 `DATABASE_URL`(앱 미사용) + `supabase/.temp/linked-project.json`(CLI 링크)에 잔존. 앱 런타임은 `ccbwxcszdoyjxvckedfp`(Trillion·정답) 확인. → SYSTEM_MAP §2에 footgun 명시(**CLI `db push` 금지·재링크 필요**).
+- **해결 (3번 검증-실행)**: `docs/STATE.md` 신설(현재상태 단일 정본·**덮어쓰기**·32줄) + `docs/SYSTEM_MAP.md` 신설(스택·6개국 파이프라인 표[KR 자동 vs 시드]·크론 12·테이블 62·API·env·다크 토큰·함정 — **라이브 실측 기반**) + `CHANGELOG.md`=유일 이력. `CLAUDE.md` 문서규칙·세션종료체크리스트·하네스·세션루틴·참조표를 단일 정본 규칙으로 교체("현재상태=STATE · 이력=CHANGELOG · 아키텍처=SYSTEM_MAP · **현재상태용 새 파일 신설 금지**").
+- **Pass 검증**: Pass0 라이브 그라운드트루스(vercel.json 크론 12·62 테이블·시드 수·env·다크 토큰) → Pass1 초안 → Pass2 라이브 수치 교정(`fss_advisors` 1,804→1,847 · `link_hub` KR 138→140 · lens US→1,028) + 옛 ref 누출 0 확인 → Pass3 정합성(정본 상호참조·훅 영향·날짜 일치).
+- **아카이브(Claude Code)**: 6개 핸드오프 → `docs/_archive/` · `.claude/hooks/stop-reminder.sh`를 STATE/CHANGELOG 검증으로 교체 · INDEX 갱신.
+- **▶ 다음**: ①-JP/CN/VN 종목명 · name_en 자동화 · (선택) 일일 헬스체크·읽기전용 서브에이전트.
+
 ## 2026-07-17 (4) — 🌐 ②b-2 관심목록 즉시화 + ①-KR 종목명 영어화 완결 (HEAD `7bd48e5`)
 
 - **개요**: 관심목록 렌즈 요약을 선계산으로 즉시화(②b 완결) + `/en`에서 한글로 남던 KR 종목명을 야후 공식 영문명으로(①-KR·라이브 실측) + 운영모델(멀티에이전트 조직) 자문.

@@ -11,22 +11,10 @@ if [ -f "docs/CHANGELOG.md" ]; then
   [ "$DATE" != "$TODAY" ] && echo "❌ CHANGELOG.md: $DATE (오늘: $TODAY)" || echo "✅ CHANGELOG.md OK"
 fi
 
-# session-context.md 날짜 검증
-if [ -f "session-context.md" ]; then
-  DATE=$(head -2 session-context.md | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
-  [ "$DATE" != "$TODAY" ] && echo "❌ session-context.md: $DATE (오늘: $TODAY)" || echo "✅ session-context.md OK"
-fi
-
-# NEXT_SESSION_START.md 날짜 검증
-if [ -f "docs/NEXT_SESSION_START.md" ]; then
-  DATE=$(head -2 docs/NEXT_SESSION_START.md | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
-  [ "$DATE" != "$TODAY" ] && echo "❌ NEXT_SESSION_START.md: $DATE (오늘: $TODAY)" || echo "✅ NEXT_SESSION_START.md OK"
-fi
-
-# CLAUDE.md 날짜 검증
-if [ -f "CLAUDE.md" ]; then
-  DATE=$(head -2 CLAUDE.md | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
-  [ "$DATE" != "$TODAY" ] && echo "❌ CLAUDE.md: $DATE (오늘: $TODAY)" || echo "✅ CLAUDE.md OK"
+# docs/STATE.md 날짜 검증
+if [ -f "docs/STATE.md" ]; then
+  DATE=$(head -2 docs/STATE.md | grep -oP '\d{4}-\d{2}-\d{2}' | head -1)
+  [ "$DATE" != "$TODAY" ] && echo "❌ docs/STATE.md: $DATE (오늘: $TODAY)" || echo "✅ docs/STATE.md OK"
 fi
 
 # git 상태 검증

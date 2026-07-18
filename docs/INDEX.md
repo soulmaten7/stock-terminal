@@ -10,10 +10,10 @@
 ---
 
 ## 세션 시작 시 읽는 순서 (요약)
-1. **`docs/SESSION_BOOT.md`** — 새 세션 최우선(정체성·현재 상태·다음 후보 누적 배너)
-2. **`docs/NEW_SESSION_HANDOFF.md`** — 단일 자급형 핸드오프(한 파일로 업무 가능)
+1. **`docs/STATE.md`** — 현재 상태 단일 정본(HEAD·현재 상태·다음 할 일 · 덮어쓰기 · 세션 시작 최우선)
+2. **`docs/SYSTEM_MAP.md`** — 아키텍처·6개국 파이프라인·크론·테이블·함정(필요할 때)
 3. **`docs/ROADMAP.md`** — 무엇을/어떤 순서로(Phase 단일 기준)
-4. 목적별 심화 문서 → 이 INDEX에서 카테고리로 검색
+4. 목적별 심화 문서(PLAYBOOK류) → 이 INDEX에서 카테고리로 검색
 
 ---
 
@@ -24,21 +24,26 @@
 | `CLAUDE.md` | Claude Code 지침서 — 역할분담·절대규칙·워크플로우·참조 테이블·세션 루틴 | 매 세션(규칙·워크플로우 확인) |
 | `AGENTS.md` | Next.js(이 버전) 주의 — 학습지식과 다른 breaking change 경고 | 코드 작성 전 |
 | `README.md` | 프로젝트 소개(구 운종 브랜드 서술 — 리브랜드 반영 필요) | 외부 소개용 |
-| `session-context.md` | 프로젝트 맥락 — 세션별 완료 블록·TODO·핵심 수치 | 매 세션(맥락·TODO GC) |
+| `session-context.md` | [폐기] 구 프로젝트 맥락 — `docs/_archive/`로 통합·폐기(현행 = `docs/STATE.md`) | 히스토리 참고만 |
 | `CLAUDE_CODE_INSTRUCTIONS.md` | 개발 명령서 [보존·V3 명세] — 전체 기능·DB 스키마·페이지 상세 | DB/기능 명세 참조 |
 
 ---
 
 ## ① 세션·핸드오프 (현재 상태·다음 작업)
 
+> **2026-07-17 통합**: 겹치던 핸드오프 문서 6개(SESSION_BOOT·NEW_SESSION_HANDOFF·NEXT_SESSION_PLAYBOOK·NEXT_SESSION_START·SESSION_KICKOFF·session-context)를 `docs/STATE.md`(현재 상태)+`docs/SYSTEM_MAP.md`(아키텍처) 2개로 단일화. 옛 파일은 **다시 만들지 말 것** — `docs/_archive/`에 히스토리로만 보존.
+
 | 파일 | 용도 | 언제 읽나 |
 |------|------|-----------|
-| `docs/SESSION_BOOT.md` | **[최우선]** 새 세션 부트 — 정체성·현재 상태·워크플로우·다음 후보(누적 배너) | 세션 시작 첫 파일 |
-| `docs/NEW_SESSION_HANDOFF.md` | 단일 자급형 핸드오프 — 이 파일 하나로 새 세션 업무 가능 | 세션 시작(BOOT 다음) |
-| `docs/NEXT_SESSION_PLAYBOOK.md` | 다음 세션 마스터 인수인계 — 디자인 시스템·컴포넌트 매핑·STEP 이력 스냅샷 | 심화 인수인계 필요 시 |
-| `docs/NEXT_SESSION_START.md` | 다음 세션 시작 가이드 — 최신 상태 요약 + 다음 할 일(4대 문서) | 오늘 할 일 확인 |
-| `docs/SESSION_KICKOFF.md` | 즉시 시작 파일(PLAYBOOK 단축본) — 현재 커밋·정체성·페이지 표 | 빠른 시작 |
-| `docs/CHANGELOG.md` | 변경 이력 — 세션별/STEP별 변경사항(4대 문서) | 무엇이 바뀌었나 추적 |
+| `docs/STATE.md` | **[최우선·단일 정본]** 현재 상태 — HEAD·현재 상태·다음 할 일(세션마다 덮어쓰기) | 세션 시작 첫 파일 |
+| `docs/SYSTEM_MAP.md` | 아키텍처·6개국 파이프라인·크론·테이블·env·함정(라이브 실측) | STATE 다음(구조 확인) |
+| `docs/CHANGELOG.md` | 변경 이력 — 세션별/STEP별 변경사항(유일한 이력) | 무엇이 바뀌었나 추적 |
+| `docs/_archive/SESSION_BOOT.md` | [폐기] 구 새 세션 부트 — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
+| `docs/_archive/NEW_SESSION_HANDOFF.md` | [폐기] 구 단일 자급형 핸드오프 — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
+| `docs/_archive/NEXT_SESSION_PLAYBOOK.md` | [폐기] 구 마스터 인수인계(디자인·컴포넌트 매핑) — `docs/SYSTEM_MAP.md`로 통합·폐기 | 히스토리 참고만 |
+| `docs/_archive/NEXT_SESSION_START.md` | [폐기] 구 다음 세션 시작 가이드 — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
+| `docs/_archive/SESSION_KICKOFF.md` | [폐기] 구 즉시 시작 파일 — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
+| `docs/_archive/session-context.md` | [폐기] 구 프로젝트 맥락(TODO·핵심 수치) — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
 | `docs/SESSION_25_CLOSE_COMMAND.md` | 세션 #25 종료 명령서 [아카이브] — 3중 검증 절차 예시 | 종료 절차 참고 |
 
 ---
@@ -59,11 +64,11 @@
 
 | 파일 | 용도 | 언제 읽나 |
 |------|------|-----------|
-| `docs/PRODUCT_SPEC_V7.md` | [보존] V7 — "검증된 중립 관문(Gateway)" 재정의 (구 비전 · 정체성 프레임 폐기) | V7 히스토리 · 현행 정체성=BRAND_IDENTITY/SESSION_BOOT |
+| `docs/PRODUCT_SPEC_V7.md` | [보존] V7 — "검증된 중립 관문(Gateway)" 재정의 (구 비전 · 정체성 프레임 폐기) | V7 히스토리 · 현행 정체성=BRAND_IDENTITY/STATE |
 | `docs/PRODUCT_SPEC_V6.md` | [보존] V6 — 정체성 5결정(정보+토론+신뢰) | V6 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V4.md` | [보존] V4 — 2창(한국·미국)·토스카드·Trustpilot 평가 | V4 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V3.md` | [보존] V3 — Stock Terminal 초기 스펙 | V3 히스토리 참고 |
-| `docs/ROADMAP.md` | **[최신]** 마스터 로드맵 — 무엇을/어떤 순서로(Phase 단일 기준) | SESSION_BOOT 다음(순서 확인) |
+| `docs/ROADMAP.md` | **[최신]** 마스터 로드맵 — 무엇을/어떤 순서로(Phase 단일 기준) | STATE 다음(순서 확인) |
 | `docs/RELEASE_ROADMAP.md` | **[최신·핵심]** 1·2·3차 출시 로드맵 — 국가셋(KR·US·JP·GB·홍콩·VN)·차수별 범위·광고 활성화 시점 | 출시 계획·차수 결정 시 |
 | `docs/SITE_MAP_V7.md` | SITE MAP V7 — 네이버 증권 구조 복제 spec | IA·메뉴 구조 작업 시 |
 | `docs/TOSS_ANALYSIS_AND_IA.md` | 토스증권 전체 분석 + 새 IA(토스식 개편 spec) | IA 개편 참고 |
