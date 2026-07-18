@@ -8,7 +8,6 @@ import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
 import { useHomeReset } from '@/stores/homeResetStore';
-import { homeMarketFor } from '@/stores/countryStore';
 
 // 헤더 = 언어 선택(시장 선택 아님 — 시장은 페이지의 한국/미국 토글이 담당).
 // 언어명은 t()로 감싸지 않는다 — 언어는 항상 자기 언어로 표기한다(한국어는 언제나 '한국어').
@@ -36,9 +35,9 @@ export default function Header() {
   const coinRef = useRef<HTMLDivElement>(null);
   const currentLang = LANGS.find((l) => l.code === locale) ?? LANGS[0];
   const reset = useHomeReset((s) => s.reset);
-  // 홈 리셋 = 그 언어권의 홈 시장으로(ko→KR · en→US). 스토어는 로케일을 모르니 여기서 넘긴다.
+  // 홈 리셋 = 뷰(탭·서브)만 홈으로. 국가 선택은 유지(STEP 748). 로케일 홈 URL 복귀는 Link href="/"가 담당.
   // onClick에 reset을 그대로 넘기면 MouseEvent가 인자로 들어가므로 반드시 감싼다.
-  const resetHome = () => reset(homeMarketFor(locale));
+  const resetHome = () => reset();
 
   // 언어 전환 = 지금 보는 페이지 그대로 로케일만 교체.
   // pathname은 로케일이 벗겨진 경로(/en/about → /about)라 그대로 넘기면 되고,

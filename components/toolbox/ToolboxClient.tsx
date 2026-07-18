@@ -195,7 +195,7 @@ export default function ToolboxClient({
     setCountry(homeCountry);
   }, [homeCountry, setCountry]);
 
-  // 헤더 로고/'주식' 클릭 → 홈 리셋. 국가는 store가 KR로, 여기선 탭=종목·서브=모아보기로.
+  // 헤더 로고/'주식' 클릭 → 홈 뷰 리셋(탭=종목·서브=모아보기). 국가는 유지(STEP 748) — persist 선택이 이긴다.
   const homeResetN = useHomeReset((s) => s.n);
   const homeMounted = useRef(false);
   useEffect(() => {
