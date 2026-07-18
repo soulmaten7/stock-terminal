@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { tonesFor, type LensScoreRow } from "@/lib/lensTones";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -96,6 +97,22 @@ async function loadMapped(market: string, key: string): Promise<{ rows: Mapped[]
   return { rows, basDd: usedDate };
 }
 
+// 응답으로 나가는 종목들의 렌즈 톤 배치 조회 — 무거운 계산 없음(추가 쿼리 1회). 선계산 밖이면 null(호출부가 '—' 처리).
+async function fetchLensMap(sb: ReturnType<typeof createAdminClient>, symbols: string[]): Promise<Map<string, { pos: number; warn: number; flat: number }>> {
+  const out = new Map<string, { pos: number; warn: number; flat: number }>();
+  if (symbols.length === 0) return out;
+  const { data } = await sb
+    .from("lens_scores")
+    .select("symbol, momentum_state, technical_state, valuation_state, lowvol_state, quality_state, assetgrowth_state, fscore_state")
+    .eq("market", "KR")
+    .in("symbol", symbols);
+  for (const r of (data ?? []) as (LensScoreRow & { symbol: string })[]) {
+    const tones = tonesFor(r);
+    if (tones) out.set(r.symbol, tones);
+  }
+  return out;
+}
+
 export async function GET(request: NextRequest) {
   const market = request.nextUrl.searchParams.get("market") || "all";
   const sort = request.nextUrl.searchParams.get("sort") || "amount";
@@ -113,6 +130,7 @@ export async function GET(request: NextRequest) {
     const asc = sort === "down";
     const { data, error } = await q.order(col, { ascending: asc, nullsFirst: false }).limit(limit);
     if (!error && data && data.length > 0) {
+      const lensMap = await fetchLensMap(sb, data.map((s) => s.symbol));
       const stocks = data.map((s, i) => ({
         rank: i + 1,
         symbol: s.symbol,
@@ -125,6 +143,7 @@ export async function GET(request: NextRequest) {
         marketCap: Number(s.market_cap) || 0,
         // 1주~1년 수익률을 1일전과 같은 응답에 함께 실어 보냄(별도 kr-performance 병합 제거 → 병합실패로 나머지 '—' 되던 버그 방지)
         r1w: s.r1w, r1m: s.r1m, r3m: s.r3m, r6m: s.r6m, r1y: s.r1y,
+        lens: lensMap.get(s.symbol) ?? null,
       }));
       return NextResponse.json({ stocks, source: "kr_snapshot" });
     }
@@ -147,10 +166,9 @@ export async function GET(request: NextRequest) {
       up: (a, b) => b.changePercent - a.changePercent,
       down: (a, b) => a.changePercent - b.changePercent,
     };
-    const stocks = [...mapped]
-      .sort(sorters[sort] || sorters.amount)
-      .slice(0, limit)
-      .map((s, i) => ({ rank: i + 1, ...s }));
+    const sliced = [...mapped].sort(sorters[sort] || sorters.amount).slice(0, limit);
+    const lensMap = await fetchLensMap(createAdminClient(), sliced.map((s) => s.symbol));
+    const stocks = sliced.map((s, i) => ({ rank: i + 1, ...s, lens: lensMap.get(s.symbol) ?? null }));
 
     return NextResponse.json({ stocks, source: "krx", basDd });
   } catch (e) {

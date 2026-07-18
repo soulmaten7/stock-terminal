@@ -3,14 +3,32 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
-import { Star, ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
+import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { BrokerAdTr, BrokerAdCard } from './BrokerAdRow';
 import LensPreview from './LensPreview';
-import BoardTopLensCard from './BoardTopLensCard';
 import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
+
+type LensCount = { pos: number; warn: number; flat: number };
+// 톤 점 색 — components/favorites/WatchlistClient.tsx TONE_DOT과 동일(강점=민트·주의=앰버·보통=중립).
+const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
+  pos: 'bg-unjong-accent',
+  warn: 'bg-amber-400',
+  flat: 'bg-unjong-muted',
+};
+function LensDots({ lens, size = 7 }: { lens: LensCount | null | undefined; size?: number }) {
+  if (!lens) return <span className="text-[12px] text-unjong-muted">—</span>;
+  const dim = { height: size, width: size };
+  return (
+    <span className="flex shrink-0 items-center gap-0.5">
+      {Array.from({ length: lens.pos }).map((_, i) => <span key={`p${i}`} style={dim} className={`shrink-0 rounded-full ${TONE_DOT.pos}`} />)}
+      {Array.from({ length: lens.warn }).map((_, i) => <span key={`w${i}`} style={dim} className={`shrink-0 rounded-full ${TONE_DOT.warn}`} />)}
+      {Array.from({ length: lens.flat }).map((_, i) => <span key={`f${i}`} style={dim} className={`shrink-0 rounded-full ${TONE_DOT.flat}`} />)}
+    </span>
+  );
+}
 
 type Row = {
   symbol: string;
@@ -24,6 +42,7 @@ type Row = {
   r6m?: number | null;
   r1y?: number | null;
   amount?: number; // 거래대금(KRW) — 정렬 전용(표시 X)
+  lens?: LensCount | null; // 선계산 톤 요약(KR only·STEP 756) — null=선계산 밖
 };
 
 type SubTab = 'stock' | 'etf' | 'etn' | 'reit';
@@ -96,6 +115,7 @@ async function fetchRows(tab: SubTab, market: KrMarket = 'all'): Promise<Row[]> 
       price: Number(s.price ?? 0),
       changePercent: Number(s.changePercent ?? 0),
       amount: Number(s.amount ?? 0),
+      lens: (s.lens as LensCount | null) ?? null,
       r1w: num(s.r1w), r1m: num(s.r1m), r3m: num(s.r3m), r6m: num(s.r6m), r1y: num(s.r1y),
     }));
     return rows;
@@ -348,8 +368,11 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
       ) : null}
 
       {!loading && sorted.length > 0 ? (
-        <div className="mb-3 lg:hidden">
-          <BoardTopLensCard stock={sorted[0] ?? null} market="KR" />
+        <div className="mb-3 flex items-center gap-1.5 lg:hidden">
+          <Hand size={13} className="shrink-0 text-unjong-accent" />
+          <p className="text-[13px] text-unjong-primary">
+            {t('lensHint')} <span className="text-[11px] text-unjong-muted">· {t('lensHintNote')}</span>
+          </p>
         </div>
       ) : null}
 
@@ -431,6 +454,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       {t('colName')}{sortArrow('name')}
                     </button>
                   </th>
+                  <th className="w-[150px] whitespace-nowrap px-3 py-2.5 text-left font-medium sm:px-4">{t('lensCol')}</th>
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
                     <button
                       type="button"
@@ -498,6 +522,12 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                         <span title={r.name} className="truncate font-medium text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</span>
                       </div>
                     </td>
+                    <td className="whitespace-nowrap px-3 py-2.5 sm:px-4">
+                      <div className="flex items-center gap-1.5">
+                        <LensDots lens={r.lens} />
+                        {r.lens ? <span className="text-[12px] text-unjong-muted">{t('lensCount', { pos: r.lens.pos, warn: r.lens.warn, flat: r.lens.flat })}</span> : null}
+                      </div>
+                    </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'KR') : '—'}</td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(r[mobileField] as number | null | undefined)}`}>
                       {pct(r[mobileField] as number | null | undefined)}
@@ -514,7 +544,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       </button>
                     </td>
                   </tr>
-                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? <BrokerAdTr colSpan={5} /> : null}
+                  {(i + 1) % 10 === 0 && i + 1 < paginated.length ? <BrokerAdTr colSpan={6} /> : null}
                   </Fragment>
                 ))}
               </tbody>
@@ -531,6 +561,10 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-[15px] font-bold leading-tight text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</p>
+                      <div className="mt-0.5 flex items-center gap-1.5">
+                        <LensDots lens={r.lens} size={6} />
+                        {r.lens ? <span className="text-[12px] text-unjong-muted">{t('lensCountShort', { pos: r.lens.pos, warn: r.lens.warn })}</span> : null}
+                      </div>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
                         <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
                         <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>

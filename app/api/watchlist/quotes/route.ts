@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { tonesFromStates, type Tone } from "@/lib/lensTones";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,26 +18,6 @@ const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: b
   VN: { table: "vn_stock_perf", changeCol: "r1d" },
   GB: { table: "gb_stock_perf", changeCol: "r1d" },
 };
-
-type Tone = "pos" | "warn" | "flat";
-// state→tone (라이브 로직과 동일 · na/null/그 외는 제외)
-function tonesFromStates(r: Record<string, string | null>): Tone[] {
-  const out: Tone[] = [];
-  const map = (s: string | null, pos: string, warn: string, mid: string) => {
-    if (s === pos) out.push("pos");
-    else if (s === warn) out.push("warn");
-    else if (s === mid) out.push("flat");
-    // 그 외(na/null) → 제외
-  };
-  map(r.momentum_state, "up", "down", "flat");
-  map(r.technical_state, "up", "down", "flat");
-  map(r.valuation_state, "cheap", "rich", "mid");
-  map(r.lowvol_state, "calm", "jumpy", "mid");
-  map(r.quality_state, "high", "low", "mid");
-  map(r.assetgrowth_state, "conservative", "aggressive", "mid");
-  map(r.fscore_state, "strong", "weak", "mid");
-  return out;
-}
 
 async function fetchQuotes(sb: ReturnType<typeof createAdminClient>, country: string, symbols: string[]): Promise<Map<string, Quote[]>> {
   const cfg = SNAPSHOT[country];

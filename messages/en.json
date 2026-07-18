@@ -595,7 +595,12 @@
     "watchRemove": "Remove from watchlist",
     "total": "{n} stocks",
     "topExample": "Top by volume · example",
-    "viewLens": "View lenses"
+    "viewLens": "View lenses",
+    "lensHint": "Tap a stock to open its TR-AI Lens",
+    "lensHintNote": "Not a buy or sell signal",
+    "lensCol": "TR-AI Lens",
+    "lensCount": "{pos} strong · {warn} caution · {flat} neutral",
+    "lensCountShort": "{pos} strong · {warn} caution"
   },
   "LensPreview": {
     "exampleLabel": "Top by volume · example",

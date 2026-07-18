@@ -595,7 +595,12 @@
     "watchRemove": "관심종목 해제",
     "total": "총 {n} 종목",
     "topExample": "거래 상위 예시",
-    "viewLens": "렌즈로 보기"
+    "viewLens": "렌즈로 보기",
+    "lensHint": "종목을 누르면 TR-AI 렌즈가 보입니다",
+    "lensHintNote": "사고팔 신호 아님",
+    "lensCol": "TR-AI 렌즈",
+    "lensCount": "강점 {pos} · 주의 {warn} · 보통 {flat}",
+    "lensCountShort": "강점 {pos} · 주의 {warn}"
   },
   "LensPreview": {
     "exampleLabel": "거래 상위 예시",
