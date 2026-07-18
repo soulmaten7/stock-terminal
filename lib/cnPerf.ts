@@ -73,6 +73,35 @@ async function eastmoneyBars(secid: string): Promise<{ closes: number[]; lastAmo
   }
 }
 
+// A주 일봉 1차 소스 — 텐센트(web.ifzq.gtimg.cn) fqkline (STEP 751).
+// 东方財富(push2his)가 Vercel IP를 소프트차단(07-18 실측: A주 ~90% 실패·hang)해 교체. 东方財富는 폴백으로 유지.
+// 응답: data[<sh|sz+code>].qfqday(수정주가·우선) 또는 .day = [[date, open, close, high, low, volume(手)], ...]
+// amount는 텐센트 kline에 成交额이 없어 근사(종가 × volume(手) × 100주) — HK 경로(price×volume)와 같은 급의 근사.
+async function tencentBars(sym: string): Promise<{ closes: number[]; lastAmount: number | null }> {
+  try {
+    const code = sym.replace(/\.(SS|SZ)$/, "");
+    const t = (sym.endsWith(".SS") ? "sh" : "sz") + code;
+    const url = `https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=${t},day,,,320,qfq`; // 320행 ≈ 252거래일(r1y)+버퍼
+    const res = await fetch(url, {
+      headers: { "User-Agent": "Mozilla/5.0" },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return { closes: [], lastAmount: null };
+    const j = (await res.json()) as { data?: Record<string, { qfqday?: string[][]; day?: string[][] }> };
+    const rows = j.data?.[t]?.qfqday ?? j.data?.[t]?.day ?? [];
+    const closes = rows.map((r) => parseFloat(r[2])).filter((c) => isFinite(c) && c > 0);
+    const last = rows[rows.length - 1];
+    const lastClose = closes[closes.length - 1];
+    const vol = last ? parseFloat(last[5]) : NaN; // 단위 = 手(100주)
+    return {
+      closes,
+      lastAmount: isFinite(vol) && vol > 0 && lastClose ? lastClose * vol * 100 : null,
+    };
+  } catch {
+    return { closes: [], lastAmount: null };
+  }
+}
+
 type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
 
 export async function computeCnPerf(): Promise<{ ok: true; computed: number; attempted: number; slice: string; at: string }> {
@@ -108,10 +137,13 @@ export async function computeCnPerf(): Promise<{ ok: true; computed: number; att
           .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
         lastVol = bars[bars.length - 1]?.volume ?? null;
       } else {
-        // 상해(.SS)·심천(.SZ) A주 → 東方財富 kline (Yahoo 차단 대체)
-        const code = sym.replace(/\.(SS|SZ)$/, "");
-        const secid = (sym.endsWith(".SS") ? "1." : "0.") + code;
-        const res = await eastmoneyBars(secid);
+        // 상해(.SS)·심천(.SZ) A주 → 1차 텐센트 ifzq(STEP 751), 부실 시 東方財富 폴백
+        let res = await tencentBars(sym);
+        if (res.closes.length < 6) {
+          const code = sym.replace(/\.(SS|SZ)$/, "");
+          const secid = (sym.endsWith(".SS") ? "1." : "0.") + code;
+          res = await eastmoneyBars(secid);
+        }
         closes = res.closes;
         eastAmt = res.lastAmount;
       }
