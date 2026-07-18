@@ -23,15 +23,16 @@
 | 🇰🇷 KR | **KRX 전종목 일일피드**(`stk_bydd_trd`·`ksq_bydd_trd`) | **자동**(신규상장 다음날 편입) | `lib/krSnapshot.ts`(전시장 1콜) → `kr_stock_snapshot`(2,772) | `kr-perf` 10:00 · `kr-etp` 10:15 · `kr-lens-scores` 10:30 | 한글(KRX) **+ `name_en`**(야후 백필 2766/2772 · **자동채움 ✅** `kr-perf` 크론이 null만 증분·STEP 746) |
 | 🇺🇸 US | `data/us_symbols.json`(6,936) | **시드**(정적) | `lib/usPerf.ts`(종목별 야후) → `us_stock_perf` | `us-perf` 22:00 · `lens-scores` 20:00(US 렌즈) | 영어(원본·SEC 실명·title-case) |
 | 🇯🇵 JP | `data/jp_symbols.json`(4,268) | **시드** | `lib/jpPerf.ts` → `jp_stock_perf` | `jp-perf` 08:00 · `jp-disclosures` 16:00 | 일본어(`jp_names`) · **영문명 미완** |
-| 🇨🇳 CN | `data/cn_symbols.json`(7,098) | **시드** | `lib/cnPerf.ts` → `cn_stock_perf` | `cn-perf` 08:00 | 중국어(`cn_names`) · **영문명 미완** |
+| 🇨🇳 CN | `data/cn_symbols.json`(7,098) | **시드** | `lib/cnPerf.ts` → `cn_stock_perf` — HK=야후 · **A주=텐센트 ifzq kline 1차**(东方财富는 폴백 — Vercel IP 소프트차단·07-18) · 전체+신선도역순+예산 260s·콜별 5s 타임아웃(STEP 750b~752) | `cn-perf` 08:00 | 중국어(`cn_names`) · **영문명 미완**(시드 name은 영문·title-case만 필요 — §6c) |
 | 🇻🇳 VN | `data/vn_symbols.json`(403 · HOSE+HNX) | **시드** | `lib/vnPerf.ts`(야후) → `vn_stock_perf` | `vn-perf` 08:00 | 베트남어(`vn_names`) · **영문명 미완** |
 | 🇬🇧 GB | `data/gb_symbols.json`(349 · FTSE350) | **시드** | `lib/gbPerf.ts` → `gb_stock_perf` | `gb-perf` 08:00 | 영어(원본) |
 
 - ⚠️ **프레시니스 격차(2026-07-17 확정)**: **KR만 유니버스 자동.** 나머지 5개국은 시드 정적 = 신규 상장이 리스트 재생성 전엔 누락(KRX 같은 무료 전종목 엔드포인트가 그 나라엔 없어서 큐레이트 리스트+종목별 조회로 감). 해법 = 재사용 "프레시니스 잡"(명단·영문명 주기 갱신 · 무료 심볼 디렉토리 소스). US는 IPO 탭이 신규 IPO를 별도 노출(부분 보완).
 - **렌즈 선계산**: `lens_scores`(US ~1,028 + KR ~489) — `kr-lens-scores`/`lens-scores` 크론. 밖의 종목은 live `/api/lens`(야후 계산·결정론·무료).
 
-## 4. 크론 (vercel.json · 전체 12개)
-`fss-advisors` 19:00(유사투자자문 신고 갱신) · `youtube-refresh` 월요일(주간) · `us-perf` 22:00 · `kr-perf` 10:00 · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `jp-perf`·`cn-perf`·`vn-perf`·`gb-perf` 08:00 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00. (VN HNX 실시간 크론은 클라우드 IP 차단으로 보류 · `PARKED_HNX_VCI_ACTIVATION.md`.)
+## 4. 크론 (vercel.json · 전체 13개)
+`fss-advisors` 19:00(유사투자자문 신고 갱신) · `youtube-refresh` 월요일(주간) · `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `jp-perf`·`cn-perf`·`vn-perf`·`gb-perf` 08:00 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00 · **`health` 12:00(신선도 감시·stale→Sentry·STEP 749)**. (VN HNX 실시간 크론은 클라우드 IP 차단으로 보류 · `PARKED_HNX_VCI_ACTIVATION.md`.)
+- ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증 — 4커밋 미반영·webhook 정상인데 신규 배포 0). 스케줄 설계 전 플랜 제약 확인.
 
 ## 5. DB 테이블 (62개 · 그룹)
 - **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot` · `stock_prices` · `stocks`
@@ -79,6 +80,8 @@
 - **PostgREST 기본 1000행 캡** → 전종목 처리 시 `.range(from, from+999)` 페이지네이션(안 하면 조용히 누락 · name_en 버그 원인).
 - **클라 빈 응답 무비판 반영 금지** — 데이터 있을 때만 갱신 + 재시도.
 - **Supabase CLI가 옛 프로젝트에 링크됨**(§2) → CLI DB 명령 금지.
+- **시간 예산 가드는 '새 작업 픽'만 막는다** — 진행 중 await는 못 끊음 → hang 콜 하나가 레인을 잠가 하드리밋행. **모든 외부 콜에 개별 타임아웃 필수**(AbortSignal/withTimeout · STEP 750b).
+- **크론이 죽어도 화면은 안 깨진다**(스냅샷 서빙) → 조용히 낡음. 감시 = `health` 크론(§4) + 배포 반영 확인은 라이브 sentry-release 대조(캐시버스터).
 
 ## 11. 참조 (상세 문서)
 - 국가탭 표준틀·DoD = `COUNTRY_TAB_PLAYBOOK.md` · 렌즈 개발·교훈 로그 = `LENS_DEV_PLAYBOOK.md` · 데이터소스 런북 = `LOCALE_SOURCE_PLAYBOOK.md` · 수익화 = `AD_MONETIZATION_PLAYBOOK.md` · 로드맵 = `ROADMAP.md` · 브랜드 = `BRAND_IDENTITY.md` · 문서 카탈로그 = `INDEX.md`.

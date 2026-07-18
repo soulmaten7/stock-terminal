@@ -66,6 +66,8 @@
 - **G4. JS 렌더·토큰.** 표/행이 정적 HTML에 없고 JS로 렌더되거나(예: Vietstock 공시행), 반위조 토큰이 JS 주입(예: Vietstock `__RequestVerificationToken`)이면 서버 fetch로 못 얻음. → 네트워크 캡처(Chrome MCP `read_network_requests`) 또는 대체.
 - **G5. 인코딩/디코딩.** 링크가 서버측에서 디코딩 불가한 경우(예: Google News `/rss/articles/CBMi…` = JS 전용 디코딩·서버 fetch 400) → 원문 URL 확보 불가 → 폴백/스킵.
 - **G6. 경로 추측 금지.** 죽은/이동된 엔드포인트를 추측으로 때우지 말 것(전례: TCBS `tcanalysis/v1/ticker/...` 404). 네트워크 캡처·라이브러리 소스로만 확보.
+- **G8. 시간 예산 가드는 '새 작업 픽'만 막는다 (2026-07-18).** 진행 중 await는 못 끊음 → 타임아웃 없는 콜(예: `yf.chart`) 하나가 동시성 레인을 잠가 함수가 하드리밋까지 감. **파이프라인의 모든 외부 콜에 개별 타임아웃**(AbortSignal/Promise.race) 필수. (cn-perf 9일 장애의 한 축.)
+- **G9. vercel.json 크론 스케줄 = 플랜 제약 검증 먼저 (2026-07-18).** Hobby = 일 1회 한도. 위반 스케줄이 들어가면 **그 커밋 이후 모든 배포가 조용히 거부**됨(webhook 정상·에러 표시 약함) → "코드 고쳤는데 안 바뀜"의 정체가 배포 미반영일 수 있음. **배포 반영 확인 = 라이브 sentry-release 대조**(캐시버스터 붙여서).
 
 ## 5. 관심 신호(relevance) — 첫 실제 인스턴스: KR "서학개미"
 
@@ -165,6 +167,7 @@ relevance(locale, market):
 | 8 | 스캔 PDF R1 | 텍스트 추출 0 | 스캔이면 숨김·OCR은 과설계 |
 | 9 | LLM 요약 언어 드리프트 | 영어/현지어 출력 | 결정론 번역 폴백(한글 비율 체크) |
 | 10 | 야후 `.VN`로 HNX 시세 | "No data found"(야후 .VN=HOSE 전용) | VN HNX/UPCOM은 야후 미커버 → VCI 등 현지 소스 |
+| 12 | 东方财富 push2his **kline**(CN A주 일봉) | **Vercel IP 소프트차단(hang)** — 샌드박스/거주지에선 정상, Vercel에서 A주 ~90% 실패 → cn-perf 9일 타임아웃(2026-07-18) | #7의 확장: 东方财富는 quote뿐 아니라 kline도 차단. **CN A주 = 텐센트 `web.ifzq.gtimg.cn/appstock/app/fqkline/get`**(무키·UTF-8 JSON·`qfqday`=[date,open,close,high,low,volume(手)]·Vercel 실측 3,868/3,868 성공·STEP 751)로. 成交额 없음→종가×vol×100 근사 |
 | 11 | VCI(Vietcap) — VN HNX 시세 | **클라우드 IP 지속요청 시 소프트차단**: Vercel=`[]`, **GitHub Actions(Azure)도 일회 프로브는 통과하나 배치 반복 시 `[]`**. 로컬 맥(거주지 IP)만 안정. | ⭐ **G7 교훈(정정)**: VCI류는 **클라우드 IP 전체를 지속요청에서 소프트차단** → GitHub Actions로 못 우회. **거주지 IP 필요** = 로컬 맥 크론(uptime 불안정) 또는 **VN/아시아 VPS·거주지 프록시**(소액 비용·유지보수). ⚠️ **"일회 프로브 통과 ≠ 지속 사용 통과"** — 배치 부하로 재검증할 것. 소형 시장이면 그 인프라 세우기 전엔 커버되는 소스(Yahoo HOSE)로 물러설 것(VN=HOSE 403 확정). 前례 东方財富(CN)은 텐센트 우회 성공(소스마다 다름). |
 
 ## 9. 새 언어권 온보딩 체크리스트 (이 순서대로)
