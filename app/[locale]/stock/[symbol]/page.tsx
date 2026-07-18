@@ -37,7 +37,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   // 영어 페이지는 원어/영문명을 주(主)로 올린다 — ko는 '애플(Apple Inc.·AAPL)', en은 'Apple Inc. (AAPL)'.
   // (name은 한글 오버라이드라 그대로 쓰면 "애플 forecast" 같은 검색되지 않는 키워드가 나온다.)
   const main = isEn ? (en ?? name) : name; // 제목·설명의 주 이름
-  const sub = isEn ? (en ? name : undefined) : en; // 괄호/키워드에 병기할 보조 이름
+  // en은 보조 이름 병기 안 함 — 한글 오버라이드명(애플·삼성전자)이 en_US meta description/keywords에 새는 것 방지(STEP 747).
+  const sub = isEn ? undefined : en;
 
   const label = hasName ? `${main} (${ticker})` : ticker;
   const title = isEn

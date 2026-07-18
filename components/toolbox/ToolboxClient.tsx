@@ -328,7 +328,7 @@ export default function ToolboxClient({
           )
         ) : activeTab === 'broker' ? (
           <div className="w-full">
-            <BrokerRanking />
+            <BrokerRanking region={locale === 'en' ? 'US' : 'KR'} />
           </div>
         ) : activeTab === 'youtube' ? (
           country === 'KR' ? (
