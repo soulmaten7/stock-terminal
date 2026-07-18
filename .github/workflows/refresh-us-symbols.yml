@@ -1,0 +1,28 @@
+# US 유니버스 월간 재생성(STEP 754) — 변경 있으면 자동 커밋 → Vercel 자동배포.
+name: refresh-us-symbols
+on:
+  schedule:
+    - cron: "0 2 1 * *" # 매월 1일 02:00 UTC
+  workflow_dispatch: {}
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npx tsx scripts/refresh_us_symbols.ts
+      - name: commit if changed
+        run: |
+          if ! git diff --quiet data/us_symbols.json; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/us_symbols.json
+            git commit -m "chore: monthly US universe refresh (nasdaqtrader symbol directory)"
+            git push
+          else
+            echo "no changes"
+          fi
