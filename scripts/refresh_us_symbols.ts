@@ -8,7 +8,12 @@ const OUT = path.join(process.cwd(), "data", "us_symbols.json");
 type Row = { sym: string; name: string; type: string };
 
 // 파생·비보통주 제외(보통주/클래스주/ADR만 유니버스에)
-const EXCLUDE_NAME = /(warrant|right(s)?\b|unit(s)?\b|preferred|depositary shs|notes? due|when[- ]issued)/i;
+const EXCLUDE_NAME = /(warrant|right(s)?\b|preferred|depositary shs|notes? due)/i;
+// SPAC "Units" vs MLP "Common Units" 실측(STEP 754b 정밀화): Nasdaq 디렉토리 표기가 실제로는
+// "Units, each consisting…" 풀네임이 아니라 그냥 "- Units"/"- Unit"인 경우가 대부분이라 "each" 요건은 대부분 안 걸림.
+// 실제 안전한 구분자는 티커 접미 — SPAC 유닛 티커는 관행상 항상 "U"로 끝나고(예: AACBU) MLP 공통지분(BSM·ET·MPLX 등)은
+// 안 끝남. 전수 대조(363건 "unit" 포함 이름 중 292건이 U접미=SPAC·71건이 비U접미=MLP/트러스트) 확인 후 반영.
+const UNIT_WORD = /\bunit(s)?\b/i;
 
 async function fetchTxt(url: string): Promise<string[]> {
   const res = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" }, signal: AbortSignal.timeout(20000) });
@@ -27,9 +32,12 @@ function parseStocks(lines: string[], cols: { sym: number; name: number; etf: nu
     if ((f[cols.test] ?? "").trim() === "Y") continue;         // 테스트 종목 제외
     if ((f[cols.etf] ?? "").trim() === "Y") continue;          // ETF 제외(기존 etf 목록 보존 정책)
     if (/[$^=~]/.test(rawSym)) continue;                        // 우선주·특수 심볼 제외
-    if (EXCLUDE_NAME.test(name)) continue;                      // 워런트·라이트·유닛 등 제외
+    // 일시 표기 제거(STEP 754b) — "…When-Issued" 같은 임시 디렉토리 표기를 이름에서 제거(CEG 등 정상 대형주 오탐 방지)
+    const cleanName = name.replace(/\s*[-–]?\s*(Common Stock\s*)?When[- ]Issued\s*$/i, "").trim() || name;
+    if (EXCLUDE_NAME.test(cleanName)) continue;                 // 워런트·라이트·우선주 등 제외
+    if (UNIT_WORD.test(cleanName) && /U$/i.test(rawSym)) continue; // SPAC 유닛만(티커 U접미) 제외 · MLP Common Units는 보존
     const sym = rawSym.replace(/\./g, "-").toUpperCase();       // 야후 표기(BRK.B → BRK-B)
-    out.push({ sym, name, type: "stock" });
+    out.push({ sym, name: cleanName, type: "stock" });
   }
   return out;
 }
