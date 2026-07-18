@@ -21,13 +21,14 @@
 | 국가 | 유니버스 소스 | 자동/시드 | 가격 파이프라인 | 크론(UTC) | 종목명 |
 |------|--------------|-----------|-----------------|-----------|--------|
 | 🇰🇷 KR | **KRX 전종목 일일피드**(`stk_bydd_trd`·`ksq_bydd_trd`) | **자동**(신규상장 다음날 편입) | `lib/krSnapshot.ts`(전시장 1콜) → `kr_stock_snapshot`(2,772) | `kr-perf` 10:00 · `kr-etp` 10:15 · `kr-lens-scores` 10:30 | 한글(KRX) **+ `name_en`**(야후 백필 2766/2772 · **자동채움 ✅** `kr-perf` 크론이 null만 증분·STEP 746) |
-| 🇺🇸 US | `data/us_symbols.json`(주식 5,964+ETF 815) | **월간 자동 재생성**(Nasdaq Trader 심볼 디렉토리 → GitHub Action `refresh-us-symbols` 매월 1일 자동 커밋·STEP 754/754b·주식만 재생성·ETF 큐레이션 보존) | `lib/usPerf.ts`(종목별 야후) → `us_stock_perf` | `us-perf` 22:00 · `lens-scores` 20:00(US 렌즈) | 영어(원본·SEC 실명·title-case) |
+| 🇺🇸 US | `data/us_symbols.json`(주식 5,964+ETF 815) | **매일 자동 재생성**(Nasdaq Trader 심볼 디렉토리 → GitHub Action `refresh-us-symbols` 매일 09:00 UTC 자동 커밋 → 22:00 us-perf가 시세 채움 = **신규 상장 익일 편입·KR 동급**·STEP 754/754b/755·주식만·ETF 큐레이션 보존) | `lib/usPerf.ts`(종목별 야후·**하드닝**: 콜별 5s 타임아웃+신선도역순+예산 260s·755) → `us_stock_perf` | `us-perf` 22:00 · `lens-scores` 20:00(US 렌즈) | 영어(원본·SEC 실명·title-case) |
 | 🇯🇵 JP | `data/jp_symbols.json`(4,268) | **시드** | `lib/jpPerf.ts` → `jp_stock_perf` | `jp-perf` 08:00 · `jp-disclosures` 16:00 | 일본어(`jp_names`) · **영문명 미완** |
 | 🇨🇳 CN | `data/cn_symbols.json`(7,098) | **시드** | `lib/cnPerf.ts` → `cn_stock_perf` — HK=야후 · **A주=텐센트 ifzq kline 1차**(东方财富는 폴백 — Vercel IP 소프트차단·07-18) · 전체+신선도역순+예산 260s·콜별 5s 타임아웃(STEP 750b~752) | `cn-perf` 08:00 | 중국어(`cn_names`) · **영문명 미완**(시드 name은 영문·title-case만 필요 — §6c) |
 | 🇻🇳 VN | `data/vn_symbols.json`(403 · HOSE+HNX) | **시드** | `lib/vnPerf.ts`(야후) → `vn_stock_perf` | `vn-perf` 08:00 | 베트남어(`vn_names`) · **영문명 미완** |
 | 🇬🇧 GB | `data/gb_symbols.json`(349 · FTSE350) | **시드** | `lib/gbPerf.ts` → `gb_stock_perf` | `gb-perf` 08:00 | 영어(원본) |
 
-- ⚠️ **프레시니스 격차(2026-07-17 확정)**: **KR만 유니버스 자동.** 나머지 5개국은 시드 정적 = 신규 상장이 리스트 재생성 전엔 누락(KRX 같은 무료 전종목 엔드포인트가 그 나라엔 없어서 큐레이트 리스트+종목별 조회로 감). 해법 = 재사용 "프레시니스 잡"(명단·영문명 주기 갱신 · 무료 심볼 디렉토리 소스). US는 IPO 탭이 신규 IPO를 별도 노출(부분 보완).
+- ⚠️ **프레시니스 격차(07-18 갱신)**: **KR·US = 유니버스 자동**(KR=KRX 일일피드·US=심볼 디렉토리 일일 Action). **JP·CN·VN·GB 시드는 정적** = 신규 상장 미편입 — US 패턴(스크립트+Action) 재사용으로 후속.
+- 🛡️ **Perf 하드닝(750b~755 · 6개국 전부)**: 외부 콜별 5s 타임아웃(`withTimeout`) + 신선도 역순(오래된 것 먼저) + 시간 예산 260s — hang 소스가 하루를 통째 날리지 못하고, 부분 실패는 다음날 자연 만회. (KR은 KRX 전시장 1콜 구조라 해당 없음.)
 - **렌즈 선계산**: `lens_scores`(US ~1,028 + KR ~489) — `kr-lens-scores`/`lens-scores` 크론. 밖의 종목은 live `/api/lens`(야후 계산·결정론·무료).
 
 ## 4. 크론 (vercel.json · 전체 13개)
