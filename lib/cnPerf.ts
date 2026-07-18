@@ -44,7 +44,7 @@ async function eastmoneyBars(secid: string): Promise<{ closes: number[]; lastAmo
       `&fields1=f1&fields2=f51,f53,f57&klt=101&fqt=1&end=20500101&lmt=420`;  // 400일 캘린더 ≈ 276거래일 커버
     const res = await fetch(url, {
       headers: { "User-Agent": "Mozilla/5.0", Referer: "https://quote.eastmoney.com/" },
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(5000), // STEP 750: hang 소스가 예산을 태우는 속도 축소
     });
     if (!res.ok) return { closes: [], lastAmount: null };
     const j = (await res.json()) as { data?: { klines?: string[] } };
@@ -65,12 +65,25 @@ async function eastmoneyBars(secid: string): Promise<{ closes: number[]; lastAmo
 
 type PerfRow = { symbol: string; r1d: number | null; r1w: number | null; r1m: number | null; r3m: number | null; r6m: number | null; price: number | null; amount: number | null; r1y: number | null };
 
-export async function computeCnPerf(): Promise<{ ok: true; computed: number; at: string }> {
+export async function computeCnPerf(): Promise<{ ok: true; computed: number; attempted: number; slice: string; at: string }> {
   // 약 280 달력일 룩백 — 6개월(126 거래일) + 비거래일 버퍼 충분
   const LOOKBACK_DAYS = 400; // 252거래일(1년) 확보용 — 400 캘린더일 ≈ 276 거래일
   const period1 = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
 
-  const results = await mapLimit(ALL_SYMS, 12, async (sym): Promise<PerfRow | null> => {
+  // ── STEP 750: 하루 1방(7,098·300초 초과 상습) → 3시간 8분할 슬라이스 ──
+  // 파티션 = 실행 시각 기반 결정론(상태 저장 없음). 크론이 늦게 떠도(Vercel 지연) 가장 가까운 슬롯으로 스냅.
+  // 하루 8회 × ~890종목 = 전 유니버스 일일 커버. 부분 실패는 그 슬라이스만 다음날 재시도.
+  const SLOTS = 8; // vercel.json: 0,3,6,9,12,15,18,21시(UTC)
+  const slot = Math.round(new Date().getUTCHours() / 3) % SLOTS;
+  const target = ALL_SYMS.filter((_, i) => i % SLOTS === slot);
+
+  // 시간 예산 — 소스가 hang이어도 함수 전체가 죽지 않게. 예산 소진 시 새 심볼을 집지 않고 걷은 것만 저장.
+  const startedAt = Date.now();
+  const TIME_BUDGET_MS = 220_000; // maxDuration 300초 대비 upsert 여유
+  const budgetLeft = () => Date.now() - startedAt < TIME_BUDGET_MS;
+
+  const results = await mapLimit(target, 12, async (sym): Promise<PerfRow | null> => {
+    if (!budgetLeft()) return null; // 예산 소진 — 스킵(다음 슬롯/다음날 재시도)
     try {
       let closes: number[];
       let lastVol: number | null = null;
@@ -126,5 +139,5 @@ export async function computeCnPerf(): Promise<{ ok: true; computed: number; at:
     if (error) throw error;
   }
 
-  return { ok: true, computed: payload.length, at };
+  return { ok: true, computed: payload.length, attempted: target.length, slice: `${slot + 1}/${SLOTS}`, at };
 }
