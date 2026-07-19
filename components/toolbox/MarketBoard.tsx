@@ -418,7 +418,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         </div>
       ) : null}
 
-      {/* 렌즈 힌트 — 첫 방문에만(localStorage) 노출, 닫기 가능. 재방문은 정렬줄 우측 상시 범례로 대체(−1층·STEP 763) */}
+      {/* 렌즈 힌트 — 첫 방문에만(localStorage) 노출, 닫기 가능. 재방문은 완전히 숨김(상세 페이지엔 텍스트 라벨 존재·STEP 763b) */}
       {!loading && sorted.length > 0 && !hintSeen ? (
         <div className="mb-3 lg:hidden">
           <div className="flex items-center justify-between gap-2">
@@ -430,7 +430,14 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               <X size={14} />
             </button>
           </div>
-          <p className="mt-1 text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
+          <div className="mt-1 flex items-center justify-between gap-2">
+            <p className="text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
+            <span className="flex shrink-0 items-center gap-1.5 text-[12px] text-unjong-muted">
+              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
+              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
+            </span>
+          </div>
         </div>
       ) : null}
 
@@ -447,8 +454,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? t('noResult', { q: search }) : t('noData')}</p>
           ) : (
             <>
-            <div className="mb-1.5 flex items-center gap-2 border-b border-unjong-border pb-2 text-xs sm:hidden">
-              {/* 코스피/코스닥 세그먼트 — 모바일은 별도 줄 대신 정렬줄 드롭다운으로 통합(−1층·STEP 763) */}
+            <div className="mb-1.5 flex items-center gap-2 border-b border-unjong-border pb-2 sm:hidden">
+              {/* 코스피/코스닥 세그먼트 — 모바일은 별도 줄 대신 정렬줄 드롭다운으로 통합(−1층·STEP 763). 44px·13px(STEP 763b) */}
               {tab === 'stock' ? (
                 <div ref={marketRefM} className="relative shrink-0">
                   <button
@@ -456,7 +463,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     onClick={() => setMarketOpenM((o) => !o)}
                     aria-haspopup="listbox"
                     aria-expanded={marketOpenM}
-                    className="flex items-center gap-0.5 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
+                    className="inline-flex min-h-11 items-center gap-0.5 rounded border border-unjong-border bg-unjong-surface px-2 text-[13px] font-medium text-unjong-primary outline-none hover:border-unjong-accent"
                   >
                     {t(`krMarket.${krMarket}`)}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${marketOpenM ? 'rotate-180' : ''}`} />
@@ -479,27 +486,14 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   ) : null}
                 </div>
               ) : null}
-              <button
-                type="button"
-                onClick={() => clickHeader('name')}
-                className={`inline-flex shrink-0 items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
-              >
-                {t('colName')}{sortArrow('name')}
-              </button>
+              {/* 종목명 정렬 진입점은 모바일에서 제거(검색으로 대체·데스크톱 테이블 헤더는 유지·STEP 763b) */}
               <button
                 type="button"
                 onClick={() => clickHeader('price')}
-                className={`inline-flex shrink-0 items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[13px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
                 {t('colPrice')}{sortArrow('price')}
               </button>
-              <div className="flex-1" />
-              {/* 렌즈 톤 범례 — 재방문 시 상시 노출(힌트 줄 대체·STEP 763) */}
-              <span className="hidden shrink-0 items-center gap-1.5 text-[12px] text-unjong-muted min-[360px]:flex">
-                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
-                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
-                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
-              </span>
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button
@@ -507,7 +501,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     onClick={() => setPeriodOpenM((o) => !o)}
                     aria-haspopup="listbox"
                     aria-expanded={periodOpenM}
-                    className={`flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs outline-none hover:border-unjong-accent ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 text-[13px] outline-none hover:border-unjong-accent ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                   >
                     {t(PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
@@ -529,7 +523,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     </div>
                   ) : null}
                 </div>
-                <button type="button" onClick={() => clickHeader(mobilePeriod)} aria-label={t('sortPeriodDirection')} className="shrink-0 text-unjong-muted">
+                <button type="button" onClick={() => clickHeader(mobilePeriod)} aria-label={t('sortPeriodDirection')} className="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-unjong-muted">
                   {sortArrow(mobilePeriod)}
                 </button>
               </span>

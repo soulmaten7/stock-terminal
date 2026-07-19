@@ -71,7 +71,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
       {/* 헤더 */}
       <div className="flex items-center gap-2">
         <h1 className="text-xl font-bold text-unjong-primary">{initialName || ticker}</h1>
-        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
+        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[12px] sm:text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
       </div>
       <p className="mt-0.5 text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
 
@@ -81,7 +81,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
           <div className="mb-2 flex items-center gap-1.5">
             <Layers size={14} className="text-unjong-accent" />
             <span className="text-[13px] font-semibold text-unjong-primary">{t('etnTitle')}</span>
-            <span className="ml-auto text-[10px] text-unjong-muted">{t('etnBadge')}</span>
+            <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('etnBadge')}</span>
           </div>
           <p className="text-[13px] leading-6 text-unjong-primary">{t.rich('etnBody', { b: (c) => <b>{c}</b> })}</p>
           <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-2.5 text-[12px] leading-5 text-amber-300">{t('etnWarn')}{leveraged ? t('etnWarnLeveraged') : ''}</p>
@@ -93,12 +93,12 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
         <div className="mb-2 flex items-center gap-1.5">
           <Layers size={14} className="text-unjong-accent" />
           <span className="text-[13px] font-semibold text-unjong-primary">{t('compositionTitle')}</span>
-          <span className="ml-auto text-[10px] text-unjong-muted">{t('compositionBadge')}</span>
+          <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('compositionBadge')}</span>
         </div>
         <div className="grid grid-cols-3 gap-y-2 text-center">
-          <div><p className="text-[11px] text-unjong-muted">{t('family')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
-          <div><p className="text-[11px] text-unjong-muted">{t('category')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
-          <div><p className="text-[11px] text-unjong-muted">{t('expense')}</p><p className="text-sm font-semibold text-unjong-primary">{data?.expenseRatio != null ? pct(data.expenseRatio) : '—'}</p></div>
+          <div><p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('family')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
+          <div><p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('category')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
+          <div><p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('expense')}</p><p className="text-sm font-semibold text-unjong-primary">{data?.expenseRatio != null ? pct(data.expenseRatio) : '—'}</p></div>
         </div>
       </div>
 
@@ -152,11 +152,11 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
       {/* 출처 */}
       {data?.sourceUrl && (
-        <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex items-center gap-1 text-[11px] text-unjong-muted hover:text-unjong-accent">
+        <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent">
           {t('sourcePrefix')} {data.source} <ExternalLink size={11} />
         </a>
       )}
-      <p className="mt-3 text-[11px] leading-relaxed text-unjong-muted">{t('disclaimer')}</p>
+      <p className="mt-3 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t('disclaimer')}</p>
       </div>
     </div>
   );

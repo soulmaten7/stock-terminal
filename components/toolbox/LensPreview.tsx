@@ -83,7 +83,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
   const displayName = locale === 'en' ? (stock.nameEn ?? stock.name) : stock.name;
   return (
     <div className={compact ? '' : 'rounded-2xl border border-unjong-border bg-unjong-surface p-4'}>
-      {example && stock ? <p className="mb-2 text-[11px] text-unjong-muted">{t('exampleLabel')}</p> : null}
+      {example && stock ? <p className="mb-2 text-[12px] sm:text-[11px] text-unjong-muted">{t('exampleLabel')}</p> : null}
       {!compact && (
         <>
           <div className="flex items-center gap-2.5">
@@ -103,7 +103,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
               [t('period.y1'), stock.r1y],
             ] as [string, number | null | undefined][]).map(([l, v]) => (
               <div key={l} className="flex flex-col">
-                <span className="whitespace-nowrap text-[11px] text-unjong-muted">{l}</span>
+                <span className="whitespace-nowrap text-[12px] sm:text-[11px] text-unjong-muted">{l}</span>
                 <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
               </div>
             ))}
@@ -115,7 +115,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
           <div className="mb-1.5 flex items-center gap-1">
             <Layers size={12} className="text-unjong-accent" />
             <span className="text-[12px] font-semibold text-unjong-primary">{etf.fundType === 'etn' ? t('productInfo') : t('productComposition')}</span>
-            <span className="ml-auto text-[10px] text-unjong-muted">{t('notAi')}</span>
+            <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('notAi')}</span>
           </div>
           {etf.fundType === 'etn' ? (
             <p className="text-[12px] leading-5 text-unjong-muted">{t('etnDesc')}</p>
@@ -130,7 +130,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
                   </li>
                 ))}
               </ul>
-              {etf.expenseRatio != null ? <p className="mt-1 text-[11px] text-unjong-muted">{t('expenseRatio', { v: (etf.expenseRatio * 100).toFixed(2) })}</p> : null}
+              {etf.expenseRatio != null ? <p className="mt-1 text-[12px] sm:text-[11px] text-unjong-muted">{t('expenseRatio', { v: (etf.expenseRatio * 100).toFixed(2) })}</p> : null}
             </>
           )}
         </div>
@@ -142,7 +142,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
             <TLensLogo size={12} color="#2DD4BF" />
             <span className="text-[12px] font-semibold text-unjong-primary">{t('lensTitle')}</span>
           </span>
-          <span className="flex items-center gap-2 text-[11px] text-unjong-muted">
+          <span className="flex items-center gap-2 text-[12px] sm:text-[11px] text-unjong-muted">
             <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{tb('legendPos')}</span>
             <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{tb('legendWarn')}</span>
             <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{tb('legendFlat')}</span>
@@ -156,13 +156,13 @@ export default function LensPreview({ stock, market, compact = false, example = 
           <div className="space-y-2">
           <ul className="space-y-1">
             {lenses.map((l) => (
-              <li key={l.key} className="flex items-center justify-between gap-2 text-[12px]">
+              <li key={l.key} className="flex items-center justify-between gap-2 text-[15px] sm:text-[12px]">
                 <span className="text-unjong-primary">{l.name}</span>
                 <span className="flex shrink-0 items-center gap-1.5">
                   {l.verdict?.phrase ? (
                     <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-accent' : l.verdict.tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
                   ) : null}
-                  <span className={`rounded px-1 py-0.5 text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
+                  <span className={`rounded px-1 py-0.5 text-[12px] sm:text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
                 </span>
               </li>
             ))}
@@ -170,13 +170,13 @@ export default function LensPreview({ stock, market, compact = false, example = 
             {([['quality', t('noFin.quality')], ['assetgrowth', t('noFin.assetgrowth')]] as [string, string][])
               .filter(([k]) => !lenses.some((l) => l.key === k))
               .map(([k, label]) => (
-                <li key={k} className="flex items-center justify-between gap-2 text-[12px]">
+                <li key={k} className="flex items-center justify-between gap-2 text-[15px] sm:text-[12px]">
                   <span className="text-unjong-muted">{label}</span>
-                  <span className="shrink-0 text-[11px] text-unjong-muted">{t('noFin.label')}</span>
+                  <span className="shrink-0 text-[12px] sm:text-[11px] text-unjong-muted">{t('noFin.label')}</span>
                 </li>
               ))}
           </ul>
-          <p className="text-[11px] leading-snug text-unjong-muted">{t('material')}</p>
+          <p className="text-[12px] sm:text-[11px] leading-snug text-unjong-muted">{t('material')}</p>
           </div>
         ) : (
           <p className="text-[12px] leading-5 text-unjong-muted">{t('insufficient')}</p>
@@ -187,12 +187,12 @@ export default function LensPreview({ stock, market, compact = false, example = 
           <div className="mb-1.5 flex items-center gap-1">
             <Sparkles size={12} className="text-unjong-accent" />
             <span className="text-[12px] font-semibold text-unjong-accent">{t('briefTitle')}</span>
-            <span className="ml-auto text-[10px] text-unjong-muted">{t('briefBadge')}</span>
+            <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('briefBadge')}</span>
           </div>
           {briefState === 'loading' ? (
             <p className="text-[12px] text-unjong-muted">{t('briefLoading')}</p>
           ) : (
-            <p className="text-[13px] leading-6 text-unjong-primary">{brief}</p>
+            <p className="text-[15px] leading-6 sm:text-[13px] text-unjong-primary">{brief}</p>
           )}
         </div>
       )}
