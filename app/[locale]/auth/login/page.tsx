@@ -5,6 +5,14 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
 import { ArrowLeft } from "lucide-react";
+import { safeNextPath } from "@/lib/authRedirect";
+
+type Tab = "login" | "signup";
+
+function getNext(): string {
+  if (typeof window === "undefined") return "/";
+  return safeNextPath(new URLSearchParams(window.location.search).get("next"));
+}
 
 export default function LoginPage() {
   const t = useTranslations('Login');
@@ -12,6 +20,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const [tab, setTab] = useState<Tab>("login");
+  const [showForgot, setShowForgot] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [info, setInfo] = useState<string | null>(null);
 
   const handleGoogleLogin = async () => {
     setLoading(true);
@@ -32,6 +47,88 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setInfo(null);
+    if (!email.trim() || !password) { setError(t('errRequired')); return; }
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      if (error) throw error;
+      router.push(getNext());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setInfo(null);
+    if (!nickname.trim() || !email.trim() || !password) { setError(t('errRequired')); return; }
+    if (password.length < 8) { setError(t('errPasswordShort')); return; }
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      // ⚠️ handle_new_user 트리거(마이그레이션 016)가 raw_user_meta_data의 'name' 키를 닉네임으로 읽음
+      // (OAuth 콜백과 동일 트리거 공유) — 여기서도 반드시 'name' 키로 실어야 트리거가 닉네임을 반영한다.
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { data: { name: nickname.trim() } },
+      });
+      if (error) {
+        if (/already registered|already exists/i.test(error.message)) {
+          setError(t('errEmailExists'));
+        } else {
+          setError(error.message);
+        }
+        return;
+      }
+      // 이메일 확인 OFF라도, 이미 가입된 이메일이면 Supabase가 에러 없이
+      // identities: []로만 응답하는 경우가 있음(이넘메레이션 방지) — 동일 안내로 처리.
+      if (data.user && data.user.identities && data.user.identities.length === 0) {
+        setError(t('errEmailExists'));
+        return;
+      }
+      // Supabase 프로젝트의 "Confirm email" 설정이 아직 켜져 있으면(§0 대시보드 작업 전)
+      // signUp이 세션 없이 반환된다 — 그 상태로 이동시키면 로그아웃처럼 보이므로 안내만.
+      if (!data.session) {
+        setInfo(t('signupNeedsConfirm'));
+        return;
+      }
+      router.push(getNext());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    setError(null);
+    setInfo(null);
+    if (!email.trim()) { setError(t('errRequired')); return; }
+    setLoading(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth/reset`,
+      });
+      if (error) throw error;
+      setInfo(t('resetSent'));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputClass = "w-full rounded-md border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-unjong-background p-4">
@@ -78,9 +175,111 @@ export default function LoginPage() {
             {loading ? t('loading') : t('google')}
           </button>
 
+          <div className="flex items-center gap-3">
+            <div className="h-px flex-1 bg-unjong-border" />
+            <span className="text-xs text-unjong-muted">{t('or')}</span>
+            <div className="h-px flex-1 bg-unjong-border" />
+          </div>
+
+          {/* 탭: 로그인 / 회원가입 */}
+          <div className="flex gap-1 rounded-md border border-unjong-border p-1">
+            <button
+              type="button"
+              onClick={() => { setTab('login'); setShowForgot(false); setError(null); setInfo(null); }}
+              className={`flex-1 rounded px-3 py-1.5 text-sm font-semibold transition-colors ${tab === 'login' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+            >
+              {t('tabLogin')}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setTab('signup'); setShowForgot(false); setError(null); setInfo(null); }}
+              className={`flex-1 rounded px-3 py-1.5 text-sm font-semibold transition-colors ${tab === 'signup' ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+            >
+              {t('tabSignup')}
+            </button>
+          </div>
+
+          {tab === 'login' ? (
+            showForgot ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-xs text-unjong-muted">{t('fieldEmail')}</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={loading}
+                  className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {loading ? t('sendingResetEmail') : t('sendResetEmail')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowForgot(false); setError(null); setInfo(null); }}
+                  className="w-full text-center text-xs text-unjong-muted hover:text-unjong-accent"
+                >
+                  {t('forgotBack')}
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleEmailLogin} className="space-y-3">
+                <div>
+                  <label className="mb-1 block text-xs text-unjong-muted">{t('fieldEmail')}</label>
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} autoComplete="email" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs text-unjong-muted">{t('fieldPassword')}</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} autoComplete="current-password" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setShowForgot(true); setError(null); setInfo(null); }}
+                  className="text-xs text-unjong-muted hover:text-unjong-accent"
+                >
+                  {t('forgotPassword')}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                >
+                  {loading ? t('loginSubmitting') : t('loginSubmit')}
+                </button>
+              </form>
+            )
+          ) : (
+            <form onSubmit={handleSignup} className="space-y-3">
+              <div>
+                <label className="mb-1 block text-xs text-unjong-muted">{t('fieldNickname')}</label>
+                <input type="text" value={nickname} onChange={(e) => setNickname(e.target.value)} className={inputClass} autoComplete="nickname" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-unjong-muted">{t('fieldEmail')}</label>
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} autoComplete="email" />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs text-unjong-muted">{t('fieldPassword')} <span className="text-unjong-muted">({t('fieldPasswordHint')})</span></label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={inputClass} autoComplete="new-password" minLength={8} />
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+              >
+                {loading ? t('signupSubmitting') : t('signupSubmit')}
+              </button>
+            </form>
+          )}
+
           {error && (
             <p className="text-sm text-unjong-danger text-center">
               ❌ {error}
+            </p>
+          )}
+          {info && (
+            <p className="text-sm text-unjong-accent text-center">
+              {info}
             </p>
           )}
 
