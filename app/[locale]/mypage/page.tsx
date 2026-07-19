@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslations } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
-import { User, Siren, Trash2 } from 'lucide-react';
+import { User, ShieldCheck, Activity as ActivityIcon, Siren, Trash2, Star, AlertTriangle } from 'lucide-react';
 
-type Tab = 'profile' | 'reports';
+type Tab = 'profile' | 'account' | 'activity';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
@@ -20,6 +20,20 @@ export default function MyPage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [myReports, setMyReports] = useState<MyReport[]>([]);
+  const [watchlistCount, setWatchlistCount] = useState<number | null>(null);
+  const [providers, setProviders] = useState<string[]>([]);
+
+  // 비밀번호 변경(계정·보안 탭 — 이메일 로그인 계정만)
+  const [newPassword, setNewPassword] = useState('');
+  const [newPassword2, setNewPassword2] = useState('');
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  // 회원 탈퇴(위험 구역)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteInput, setDeleteInput] = useState('');
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) { router.push('/auth/login'); return; }
@@ -34,6 +48,16 @@ export default function MyPage() {
     try {
       const rep = await fetch('/api/reports').then((r) => r.json()).catch(() => ({}));
       setMyReports(rep.reports ?? []);
+    } catch { /* ignore */ }
+    try {
+      const wl = await fetch('/api/watchlist').then((r) => r.json()).catch(() => ({}));
+      setWatchlistCount(Array.isArray(wl.watchlist) ? wl.watchlist.length : 0);
+    } catch { /* ignore */ }
+    try {
+      const supabase = createClient();
+      const { data } = await supabase.auth.getUser();
+      const p = (data.user?.app_metadata?.providers as string[] | undefined) ?? [];
+      setProviders(p);
     } catch { /* ignore */ }
   };
 
@@ -52,6 +76,25 @@ export default function MyPage() {
     setSaving(false);
   };
 
+  const changePassword = async () => {
+    setPwMsg(null);
+    if (newPassword.length < 8) { setPwMsg({ ok: false, text: t('errPasswordShort') }); return; }
+    if (newPassword !== newPassword2) { setPwMsg({ ok: false, text: t('errPasswordMismatch') }); return; }
+    setPwSaving(true);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      setPwMsg({ ok: true, text: t('pwChangeOk') });
+      setNewPassword('');
+      setNewPassword2('');
+    } catch {
+      setPwMsg({ ok: false, text: t('pwChangeFail') });
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
   const withdrawReport = async (id: number) => {
     const res = await fetch('/api/reports', {
       method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }),
@@ -60,14 +103,34 @@ export default function MyPage() {
     else { const j = await res.json().catch(() => ({})); alert(j.error ?? t('withdrawFail')); }
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteInput.trim() !== t('withdrawConfirmWord')) return;
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      if (!res.ok) throw new Error('delete_failed');
+      const supabase = createClient();
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch {
+      setDeleteError(t('deleteAccountFail'));
+      setDeleting(false);
+    }
+  };
+
   if (isLoading || !user) {
     return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-unjong-accent border-t-transparent" /></div>;
   }
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
     { key: 'profile', label: t('tabProfile'), icon: <User size={16} /> },
-    { key: 'reports', label: t('tabReports'), icon: <Siren size={16} /> },
+    { key: 'account', label: t('tabAccount'), icon: <ShieldCheck size={16} /> },
+    { key: 'activity', label: t('tabActivity'), icon: <ActivityIcon size={16} /> },
   ];
+
+  const initial = (user.nickname || user.email || 'U').charAt(0).toUpperCase();
+  const canChangePassword = providers.includes('email');
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -90,6 +153,9 @@ export default function MyPage() {
 
       {activeTab === 'profile' && (
         <div className="max-w-xl space-y-4 rounded-xl border border-unjong-border bg-unjong-surface p-6">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#2DD4BF] text-2xl font-bold text-[#0E1116]">
+            {initial}
+          </div>
           <div>
             <label className="mb-1 block text-sm text-unjong-muted">{t('nickname')}</label>
             <div className="flex gap-2">
@@ -98,47 +164,137 @@ export default function MyPage() {
             </div>
             {saveMsg ? <p className={`mt-1.5 text-xs ${saveMsg.ok ? 'text-emerald-400' : 'text-red-500'}`}>{saveMsg.text}</p> : null}
           </div>
-          <div>
-            <label className="mb-1 block text-sm text-unjong-muted">{t('email')}</label>
-            <input value={user.email ?? ''} disabled className="w-full rounded-lg border border-unjong-border bg-unjong-background px-3 py-2.5 text-sm text-unjong-muted" />
+        </div>
+      )}
+
+      {activeTab === 'account' && (
+        <div className="max-w-xl space-y-6">
+          <div className="space-y-4 rounded-xl border border-unjong-border bg-unjong-surface p-6">
+            <div>
+              <label className="mb-1 block text-sm text-unjong-muted">{t('email')}</label>
+              <input value={user.email ?? ''} disabled className="w-full rounded-lg border border-unjong-border bg-unjong-background px-3 py-2.5 text-sm text-unjong-muted" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm text-unjong-muted">{t('joined')}</label>
+              <p className="text-sm text-unjong-primary">{formatDate(user.created_at)}</p>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm text-unjong-muted">{t('accountLoginMethod')}</label>
+              <div className="flex flex-wrap gap-1.5">
+                {providers.includes('google') && (
+                  <span className="rounded-full bg-unjong-background px-2.5 py-1 text-xs font-medium text-unjong-primary">{t('providerGoogle')}</span>
+                )}
+                {providers.includes('email') && (
+                  <span className="rounded-full bg-unjong-background px-2.5 py-1 text-xs font-medium text-unjong-primary">{t('providerEmail')}</span>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t border-unjong-border pt-4">
+              <p className="mb-2 text-sm font-semibold text-unjong-primary">{t('pwSectionTitle')}</p>
+              {canChangePassword ? (
+                <div className="space-y-2.5">
+                  <div>
+                    <label className="mb-1 block text-xs text-unjong-muted">{t('fieldNewPassword')} <span className="text-unjong-muted">({t('pwHint')})</span></label>
+                    <input type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setPwMsg(null); }} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" autoComplete="new-password" minLength={8} />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs text-unjong-muted">{t('fieldNewPasswordConfirm')}</label>
+                    <input type="password" value={newPassword2} onChange={(e) => { setNewPassword2(e.target.value); setPwMsg(null); }} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" autoComplete="new-password" minLength={8} />
+                  </div>
+                  <button type="button" onClick={changePassword} disabled={pwSaving} className="rounded-lg bg-unjong-strong px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
+                    {pwSaving ? t('pwChanging') : t('pwChangeSubmit')}
+                  </button>
+                  {pwMsg ? <p className={`text-xs ${pwMsg.ok ? 'text-emerald-400' : 'text-red-500'}`}>{pwMsg.text}</p> : null}
+                </div>
+              ) : (
+                <p className="text-sm text-unjong-muted">{t('googleOnlyNote')}</p>
+              )}
+            </div>
           </div>
-          <div>
-            <label className="mb-1 block text-sm text-unjong-muted">{t('joined')}</label>
-            <p className="text-sm text-unjong-primary">{formatDate(user.created_at)}</p>
+
+          {/* 위험 구역 */}
+          <div className="space-y-3 rounded-xl border border-red-500/30 bg-red-500/5 p-6">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-red-500"><AlertTriangle size={15} />{t('dangerZoneTitle')}</p>
+            {!showDeleteConfirm ? (
+              <button type="button" onClick={() => setShowDeleteConfirm(true)} className="rounded-lg border border-red-500/40 px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-500/10">
+                {t('withdrawTitle')}
+              </button>
+            ) : (
+              <div className="space-y-2.5">
+                <p className="text-xs leading-relaxed text-unjong-muted">{t('withdrawWarning')}</p>
+                <label className="block text-xs text-unjong-muted">{t('withdrawConfirmLabel', { word: t('withdrawConfirmWord') })}</label>
+                <input
+                  value={deleteInput}
+                  onChange={(e) => setDeleteInput(e.target.value)}
+                  placeholder={t('withdrawConfirmWord')}
+                  className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-red-500"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDeleteAccount}
+                    disabled={deleting || deleteInput.trim() !== t('withdrawConfirmWord')}
+                    className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
+                  >
+                    {deleting ? t('withdrawSubmitting') : t('withdrawSubmit')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowDeleteConfirm(false); setDeleteInput(''); setDeleteError(null); }}
+                    className="rounded-lg border border-unjong-border px-4 py-2 text-sm text-unjong-muted hover:text-unjong-primary"
+                  >
+                    {t('withdrawCancel')}
+                  </button>
+                </div>
+                {deleteError ? <p className="text-xs text-red-500">{deleteError}</p> : null}
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      {activeTab === 'reports' && (
-        <div className="rounded-xl border border-unjong-border bg-unjong-surface p-2">
-          {myReports.length === 0 ? (
-            <p className="p-5 text-center text-sm text-unjong-muted">{t('noReports')}</p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[480px] text-sm">
-                <thead>
-                  <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                    <th className="px-3 py-2 text-left font-medium">{t('colTarget')}</th>
-                    <th className="px-3 py-2 text-left font-medium">{t('colReason')}</th>
-                    <th className="px-3 py-2 text-left font-medium">{t('colStatus')}</th>
-                    <th className="px-3 py-2 text-left font-medium">{t('colDate')}</th>
-                    <th className="px-3 py-2 text-right font-medium">{t('colWithdraw')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {myReports.map((r) => (
-                    <tr key={r.id} className="border-b border-unjong-border last:border-0">
-                      <td className="px-3 py-2 text-unjong-primary">{r.target_name}</td>
-                      <td className="px-3 py-2 text-unjong-muted">{r.reason}</td>
-                      <td className="px-3 py-2"><span className={r.status === 'confirmed' ? 'font-medium text-emerald-400' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'text-amber-400'}>{r.status === 'confirmed' ? t('statusConfirmed') : r.status === 'dismissed' ? t('statusDismissed') : t('statusPending')}</span></td>
-                      <td className="px-3 py-2 text-unjong-muted">{formatDate(r.created_at)}</td>
-                      <td className="px-3 py-2 text-right">{r.status === 'confirmed' ? <span className="text-xs text-unjong-muted">—</span> : <button type="button" onClick={() => withdrawReport(r.id)} title={t('withdraw')} className="text-unjong-muted hover:text-red-500"><Trash2 size={14} className="inline" /></button>}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {activeTab === 'activity' && (
+        <div className="max-w-xl space-y-6">
+          <div className="rounded-xl border border-unjong-border bg-unjong-surface p-6">
+            <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-unjong-primary"><Star size={15} />{t('watchlistTitle')}</p>
+            <p className="mb-2 text-sm text-unjong-muted">{t('watchlistCount', { n: watchlistCount ?? 0 })}</p>
+            <Link href="/favorites" className="text-sm font-semibold text-unjong-accent">{t('watchlistViewLink')}</Link>
+          </div>
+
+          <div>
+            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-unjong-primary"><Siren size={15} />{t('tabReports')}</p>
+            <div className="rounded-xl border border-unjong-border bg-unjong-surface p-2">
+              {myReports.length === 0 ? (
+                <p className="p-5 text-center text-sm text-unjong-muted">{t('noReports')}</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[480px] text-sm">
+                    <thead>
+                      <tr className="border-b border-unjong-border text-xs text-unjong-muted">
+                        <th className="px-3 py-2 text-left font-medium">{t('colTarget')}</th>
+                        <th className="px-3 py-2 text-left font-medium">{t('colReason')}</th>
+                        <th className="px-3 py-2 text-left font-medium">{t('colStatus')}</th>
+                        <th className="px-3 py-2 text-left font-medium">{t('colDate')}</th>
+                        <th className="px-3 py-2 text-right font-medium">{t('colWithdraw')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {myReports.map((r) => (
+                        <tr key={r.id} className="border-b border-unjong-border last:border-0">
+                          <td className="px-3 py-2 text-unjong-primary">{r.target_name}</td>
+                          <td className="px-3 py-2 text-unjong-muted">{r.reason}</td>
+                          <td className="px-3 py-2"><span className={r.status === 'confirmed' ? 'font-medium text-emerald-400' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'text-amber-400'}>{r.status === 'confirmed' ? t('statusConfirmed') : r.status === 'dismissed' ? t('statusDismissed') : t('statusPending')}</span></td>
+                          <td className="px-3 py-2 text-unjong-muted">{formatDate(r.created_at)}</td>
+                          <td className="px-3 py-2 text-right">{r.status === 'confirmed' ? <span className="text-xs text-unjong-muted">—</span> : <button type="button" onClick={() => withdrawReport(r.id)} title={t('withdraw')} className="text-unjong-muted hover:text-red-500"><Trash2 size={14} className="inline" /></button>}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>
