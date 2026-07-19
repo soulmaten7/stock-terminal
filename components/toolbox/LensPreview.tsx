@@ -156,14 +156,14 @@ export default function LensPreview({ stock, market, compact = false, example = 
           <div className="space-y-2">
           <ul className="space-y-1">
             {lenses.map((l) => (
-              <li key={l.key} className="flex items-center justify-between gap-2 text-[15px] sm:text-[12px]">
-                <span className="text-unjong-primary">{l.name}</span>
-                <span className="flex shrink-0 items-center gap-1.5">
+              <li key={l.key} className="grid grid-cols-[auto_1fr_auto] items-baseline gap-x-2 text-[15px] sm:text-[12px]">
+                <span className="min-w-0 truncate text-unjong-primary">{l.name}</span>
+                <span className="min-w-0 truncate">
                   {l.verdict?.phrase ? (
                     <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-accent' : l.verdict.tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
                   ) : null}
-                  <span className={`rounded px-1 py-0.5 text-[12px] sm:text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
                 </span>
+                <span className={`justify-self-end whitespace-nowrap rounded px-1 py-0.5 text-[12px] sm:text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
               </li>
             ))}
             {/* 재무 데이터 없는 종목: 재무 기반 렌즈(퀄리티·자산성장)를 숨기지 않고 "재무 데이터 없음"으로 정직하게 표시(왜 못 주는지 명시) */}

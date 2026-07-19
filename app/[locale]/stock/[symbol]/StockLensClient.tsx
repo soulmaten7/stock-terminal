@@ -979,24 +979,31 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
     return (
       <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
-        <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
+        {/* 3열 그리드(이름·판정·배지) — 판정 텍스트 좌측 가장자리가 카드마다 같은 지점에서 시작해 세로 스캔 라인을 만든다(STEP 763c). 색·문구·배지 스타일은 불변, 위치만. */}
+        <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-x-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
-              <span className={`rounded px-1.5 py-0.5 text-[12px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
               <span className="text-xs text-unjong-muted">· {L.name}</span>
               <FlagChip flags={cardFlags} />
             </div>
-            {!isOpen ? (L.verdict ? (
-              <div className="mt-1.5 flex items-baseline gap-x-2">
+          </div>
+          <div className="min-w-0">
+            {!isOpen && L.verdict ? (
+              <span className="flex flex-wrap items-baseline gap-x-2">
                 <span className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
                 {L.headline ? <span className="text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
-              </div>
-            ) : <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{L.summary}</p>) : null}
+              </span>
+            ) : !isOpen ? (
+              <span className="text-[13px] leading-relaxed text-unjong-muted">{L.summary}</span>
+            ) : null}
           </div>
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-          </span>
+          <div className="flex shrink-0 items-center gap-2 justify-self-end">
+            <span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[12px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
+            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+            </span>
+          </div>
         </button>
         {isOpen && !user ? (
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">

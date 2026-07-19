@@ -139,20 +139,10 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const periodRefM = useRef<HTMLDivElement>(null);
   const [searchOpen, setSearchOpen] = useState(false); // 검색 아이콘→펼침(모바일 전용·STEP 763)
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [hintSeen, setHintSeen] = useState(true); // 렌즈 힌트 재방문 숨김(localStorage·STEP 763)
 
   useEffect(() => {
     if (searchOpen) searchInputRef.current?.focus();
   }, [searchOpen]);
-
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem('lens_hint_seen')) {
-        setHintSeen(false);
-        localStorage.setItem('lens_hint_seen', '1');
-      }
-    } catch { /* localStorage 불가 환경 무시 */ }
-  }, []);
 
   // 기간 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러) — KR 미러
   useEffect(() => {
@@ -291,7 +281,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 key={s.key}
                 type="button"
                 onClick={() => setTab(s.key)}
-                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:min-h-0 sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl px-3 py-2 text-[14px] font-medium transition-colors sm:min-h-0 sm:rounded-lg sm:py-1.5 sm:text-[13px] sm:font-semibold ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
                 {t(s.label)}
               </button>
@@ -323,7 +313,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t('search')}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-unjong-border text-unjong-muted"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-unjong-muted"
               >
                 <Search size={18} />
               </button>
@@ -343,16 +333,11 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
         <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
-      {!loading && sorted.length > 0 && !hintSeen ? (
+      {!loading && sorted.length > 0 ? (
         <div className="mb-3 lg:hidden">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5">
-              <Hand size={13} className="shrink-0 text-unjong-accent" />
-              <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
-            </div>
-            <button type="button" onClick={() => setHintSeen(true)} aria-label={t('close')} className="shrink-0 p-1 text-unjong-muted">
-              <X size={14} />
-            </button>
+          <div className="flex items-center gap-1.5">
+            <Hand size={13} className="shrink-0 text-unjong-accent" />
+            <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
           </div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <p className="text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
@@ -378,7 +363,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? t('noResult', { q: search }) : t('noData')}</p>
           ) : (
             <>
-            <div className="mb-1.5 flex items-center gap-2 border-b border-unjong-border pb-2 sm:hidden">
+            <div className="mb-1.5 flex items-center justify-between gap-2 border-b border-unjong-border pb-2 sm:hidden">
               {/* 종목명 정렬 진입점은 모바일에서 제거(검색으로 대체·데스크톱 테이블 헤더는 유지·STEP 763b) */}
               <button
                 type="button"
@@ -387,6 +372,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               >
                 {t('colPrice')}{sortArrow('price')}
               </button>
+              {/* 기간 드롭다운 — 카드 우측 "1일전 -x.xx%" 열 바로 위(헤더=데이터 열 정렬·STEP 763c) */}
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button
@@ -394,13 +380,13 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     onClick={() => setPeriodOpenM((o) => !o)}
                     aria-haspopup="listbox"
                     aria-expanded={periodOpenM}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 text-[13px] outline-none hover:border-unjong-accent ${sortKey === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] outline-none hover:bg-unjong-background ${sortKey === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                   >
                     {t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
                   </button>
                   {periodOpenM ? (
-                    <div role="listbox" className="absolute right-0 top-full z-50 mt-1 w-[4.75rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                    <div role="listbox" className="absolute right-0 top-full z-50 mt-0.5 min-w-full overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
                       {PERIODS.map((p) => (
                         <button
                           key={p.key}
@@ -408,7 +394,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                           role="option"
                           aria-selected={p.key === period}
                           onClick={() => { setPeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpenM(false); }}
-                          className={`block w-full px-2 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                          className={`flex min-h-11 w-full items-center justify-end whitespace-nowrap px-3 text-right text-[15px] transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                         >
                           {t(p.label)}
                         </button>
@@ -463,7 +449,7 @@ export default function JpMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                           <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {periodOpen ? (
-                          <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                          <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-0.5 overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
                             {PERIODS.map((p) => (
                               <button
                                 key={p.key}

@@ -182,20 +182,10 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const marketRefM = useRef<HTMLDivElement>(null);
   const [searchOpen, setSearchOpen] = useState(false); // 검색 아이콘→펼침(모바일 전용·STEP 763)
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [hintSeen, setHintSeen] = useState(true); // 렌즈 힌트 재방문 숨김(localStorage·STEP 763) — 기본 true(숨김), 마운트 시 미방문이면 false
 
   useEffect(() => {
     if (searchOpen) searchInputRef.current?.focus();
   }, [searchOpen]);
-
-  useEffect(() => {
-    try {
-      if (!localStorage.getItem('lens_hint_seen')) {
-        setHintSeen(false);
-        localStorage.setItem('lens_hint_seen', '1'); // 표시 즉시 저장 — 재방문 시 다시 안 뜸(스펙)
-      }
-    } catch { /* localStorage 불가 환경(사파리 프라이빗 등) 무시 — 매번 노출돼도 치명적이지 않음 */ }
-  }, []);
 
   // 기간·세그먼트 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러)
   useEffect(() => {
@@ -342,7 +332,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 key={s.key}
                 type="button"
                 onClick={() => setTab(s.key)}
-                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:min-h-0 sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl px-3 py-2 text-[14px] font-medium transition-colors sm:min-h-0 sm:rounded-lg sm:py-1.5 sm:text-[13px] sm:font-semibold ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
                 {t(s.label)}
               </button>
@@ -374,7 +364,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t('searchKr')}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-unjong-border text-unjong-muted"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-unjong-muted"
               >
                 <Search size={18} />
               </button>
@@ -418,17 +408,12 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         </div>
       ) : null}
 
-      {/* 렌즈 힌트 — 첫 방문에만(localStorage) 노출, 닫기 가능. 재방문은 완전히 숨김(상세 페이지엔 텍스트 라벨 존재·STEP 763b) */}
-      {!loading && sorted.length > 0 && !hintSeen ? (
+      {/* 렌즈 힌트 — 상시 표시(1회성 최적화 폐기·STEP 763c). 스크롤로 지나가는 콘텐츠로 취급. */}
+      {!loading && sorted.length > 0 ? (
         <div className="mb-3 lg:hidden">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5">
-              <Hand size={13} className="shrink-0 text-unjong-accent" />
-              <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
-            </div>
-            <button type="button" onClick={() => setHintSeen(true)} aria-label={t('close')} className="shrink-0 p-1 text-unjong-muted">
-              <X size={14} />
-            </button>
+          <div className="flex items-center gap-1.5">
+            <Hand size={13} className="shrink-0 text-unjong-accent" />
+            <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
           </div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <p className="text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
@@ -454,46 +439,49 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? t('noResult', { q: search }) : t('noData')}</p>
           ) : (
             <>
-            <div className="mb-1.5 flex items-center gap-2 border-b border-unjong-border pb-2 sm:hidden">
-              {/* 코스피/코스닥 세그먼트 — 모바일은 별도 줄 대신 정렬줄 드롭다운으로 통합(−1층·STEP 763). 44px·13px(STEP 763b) */}
-              {tab === 'stock' ? (
-                <div ref={marketRefM} className="relative shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setMarketOpenM((o) => !o)}
-                    aria-haspopup="listbox"
-                    aria-expanded={marketOpenM}
-                    className="inline-flex min-h-11 items-center gap-0.5 rounded border border-unjong-border bg-unjong-surface px-2 text-[13px] font-medium text-unjong-primary outline-none hover:border-unjong-accent"
-                  >
-                    {t(`krMarket.${krMarket}`)}
-                    <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${marketOpenM ? 'rotate-180' : ''}`} />
-                  </button>
-                  {marketOpenM ? (
-                    <div role="listbox" className="absolute left-0 top-full z-50 mt-1 w-[5rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
-                      {(['all', 'kospi', 'kosdaq'] as KrMarket[]).map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          role="option"
-                          aria-selected={m === krMarket}
-                          onClick={() => { setKrMarket(m); setMarketOpenM(false); }}
-                          className={`block w-full px-2 py-1.5 text-left text-xs transition-colors hover:bg-unjong-background ${m === krMarket ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
-                        >
-                          {t(`krMarket.${m}`)}
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
-              {/* 종목명 정렬 진입점은 모바일에서 제거(검색으로 대체·데스크톱 테이블 헤더는 유지·STEP 763b) */}
-              <button
-                type="button"
-                onClick={() => clickHeader('price')}
-                className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[13px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
-              >
-                {t('colPrice')}{sortArrow('price')}
-              </button>
+            <div className="mb-1.5 flex items-center justify-between gap-2 border-b border-unjong-border pb-2 sm:hidden">
+              <div className="flex items-center gap-2">
+                {/* 코스피/코스닥 세그먼트 — 모바일은 별도 줄 대신 정렬줄 드롭다운으로 통합(−1층·STEP 763). 44px·13px(STEP 763b) */}
+                {tab === 'stock' ? (
+                  <div ref={marketRefM} className="relative shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setMarketOpenM((o) => !o)}
+                      aria-haspopup="listbox"
+                      aria-expanded={marketOpenM}
+                      className="inline-flex min-h-11 items-center gap-0.5 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium text-unjong-primary outline-none hover:bg-unjong-background"
+                    >
+                      {t(`krMarket.${krMarket}`)}
+                      <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${marketOpenM ? 'rotate-180' : ''}`} />
+                    </button>
+                    {marketOpenM ? (
+                      <div role="listbox" className="absolute left-0 top-full z-50 mt-0.5 min-w-full overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                        {(['all', 'kospi', 'kosdaq'] as KrMarket[]).map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            role="option"
+                            aria-selected={m === krMarket}
+                            onClick={() => { setKrMarket(m); setMarketOpenM(false); }}
+                            className={`flex min-h-11 w-full items-center whitespace-nowrap px-3 text-left text-[15px] transition-colors hover:bg-unjong-background ${m === krMarket ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                          >
+                            {t(`krMarket.${m}`)}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+                {/* 종목명 정렬 진입점은 모바일에서 제거(검색으로 대체·데스크톱 테이블 헤더는 유지·STEP 763b) */}
+                <button
+                  type="button"
+                  onClick={() => clickHeader('price')}
+                  className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[13px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                >
+                  {t('colPrice')}{sortArrow('price')}
+                </button>
+              </div>
+              {/* 기간 드롭다운 — 카드 우측 "1일전 -x.xx%" 열 바로 위(헤더=데이터 열 정렬·STEP 763c) */}
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button
@@ -501,13 +489,13 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     onClick={() => setPeriodOpenM((o) => !o)}
                     aria-haspopup="listbox"
                     aria-expanded={periodOpenM}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 text-[13px] outline-none hover:border-unjong-accent ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] outline-none hover:bg-unjong-background ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                   >
                     {t(PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
                   </button>
                   {periodOpenM ? (
-                    <div role="listbox" className="absolute right-0 top-full z-50 mt-1 w-[4.75rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                    <div role="listbox" className="absolute right-0 top-full z-50 mt-0.5 min-w-full overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
                       {PERIODS.map((p) => (
                         <button
                           key={p.key}
@@ -515,7 +503,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                           role="option"
                           aria-selected={p.key === mobilePeriod}
                           onClick={() => { setMobilePeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpenM(false); }}
-                          className={`block w-full px-2 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                          className={`flex min-h-11 w-full items-center justify-end whitespace-nowrap px-3 text-right text-[15px] transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                         >
                           {t(p.label)}
                         </button>
@@ -570,7 +558,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                           <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
                         </button>
                         {periodOpen ? (
-                          <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                          <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-0.5 overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
                             {DROPDOWN_PERIODS.map((p) => (
                               <button
                                 key={p.key}
