@@ -6,6 +6,7 @@ import { Sparkles, Layers } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { TLensLogo } from '@/components/AiLensBadge';
 import { formatPrice } from '@/lib/currency';
+import { useAuthStore } from '@/stores/authStore';
 
 function pct(v?: number | null): string {
   if (v == null) return '—';
@@ -28,6 +29,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
   const t = useTranslations('LensPreview');
   const tb = useTranslations('Board'); // 범례 라벨(강점/주의/보통) 재사용 — 보드 행 도트와 동일 용어(STEP 756b)
   const locale = useLocale(); // 렌즈 엔진은 ?lang=으로 언어를 받는다(기본 ko) — 안 보내면 en 화면에도 한국어가 온다
+  const { user } = useAuthStore(); // 비로그인 시 "근거 보기" CTA가 로그인으로(STEP 760) — 라벨은 그대로, 눌러야 이유를 앎
   const [lenses, setLenses] = useState<LensItem[] | null>(null);
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [brief, setBrief] = useState('');
@@ -196,7 +198,10 @@ export default function LensPreview({ stock, market, compact = false, example = 
       )}
         </>
       )}
-      <Link href={`/stock/${stock.symbol}`} className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15">
+      <Link
+        href={user ? `/stock/${stock.symbol}` : `/auth/login?next=${encodeURIComponent('/stock/' + stock.symbol)}`}
+        className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15"
+      >
         {etf?.isFund ? (etf.fundType === 'etn' ? t('ctaEtn') : t('ctaEtf')) : t('ctaLens')} →
       </Link>
     </div>

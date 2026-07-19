@@ -854,6 +854,9 @@
     "lensDirection": "Direction of this method",
     "learnMore": "▾ Learn about {name}",
     "evidence": "Supporting numbers",
-    "detailsNote": "▾ Details · evidence and limits"
+    "detailsNote": "▾ Details · evidence and limits",
+    "gateTitle": "Sign in to see the supporting detail",
+    "gateBody": "See exactly why each lens reads that way, with the numbers, free.",
+    "gateCta": "Sign up or log in, free →"
   }
 }

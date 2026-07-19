@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, Link } from '@/i18n/navigation';
 import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice } from '@/lib/currency';
-import { AlertTriangle, Info, ExternalLink, Sparkles } from 'lucide-react';
+import { useAuthStore } from '@/stores/authStore';
+import { AlertTriangle, Info, ExternalLink, Sparkles, Lock } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드(보드의 formatPrice 키와 동일 — KR/US/JP/HK/CN/VN/GB).
 // 기존 isCN은 HK를 합쳐놔 formatPrice엔 못 씀(HK≠CN 통화) → 별도 도출.
@@ -927,6 +928,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
+  const { user } = useAuthStore(); // 렌즈 카드 펼침(근거 상세) 로그인 게이트(STEP 760) — 접힘 상태는 비로그인에도 그대로
 
   useEffect(() => {
     if (!symbol) return;
@@ -996,7 +998,21 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
           </span>
         </button>
-        {isOpen ? (
+        {isOpen && !user ? (
+          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
+            <div className="flex flex-col items-center gap-2 rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center">
+              <Lock size={18} className="text-unjong-muted" />
+              <p className="text-sm font-semibold text-unjong-primary">{t('gateTitle')}</p>
+              <p className="text-[13px] leading-relaxed text-unjong-muted">{t('gateBody')}</p>
+              <Link
+                href={`/auth/login?next=${encodeURIComponent('/stock/' + symbol)}`}
+                className="mt-1 rounded-lg bg-unjong-accent px-4 py-2 text-[13px] font-semibold text-unjong-strong hover:bg-unjong-accent/90"
+              >
+                {t('gateCta')}
+              </Link>
+            </div>
+          </div>
+        ) : isOpen ? (
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
             <FlagBox flags={cardFlags} />
             <div className="mb-3.5 rounded-xl border border-unjong-border bg-unjong-surface p-3">

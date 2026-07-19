@@ -854,6 +854,9 @@
     "lensDirection": "이 기법 방향",
     "learnMore": "▾ {name} 알아보기",
     "evidence": "근거 수치",
-    "detailsNote": "▾ 자세히 · 검증 근거·한계"
+    "detailsNote": "▾ 자세히 · 검증 근거·한계",
+    "gateTitle": "근거 상세는 로그인하면 볼 수 있어요",
+    "gateBody": "각 렌즈가 왜 그렇게 읽는지, 수치와 함께 무료로 열립니다.",
+    "gateCta": "무료 가입·로그인 →"
   }
 }
