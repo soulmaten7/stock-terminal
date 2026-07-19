@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
-import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand } from 'lucide-react';
+import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand, Search, X } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
@@ -139,6 +139,22 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const periodRef = useRef<HTMLDivElement>(null);
   const [periodOpenM, setPeriodOpenM] = useState(false); // 기간 커스텀 드롭다운 열림(모바일)
   const periodRefM = useRef<HTMLDivElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false); // 검색 아이콘→펼침(모바일 전용·STEP 763)
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [hintSeen, setHintSeen] = useState(true); // 렌즈 힌트 재방문 숨김(localStorage·STEP 763)
+
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('lens_hint_seen')) {
+        setHintSeen(false);
+        localStorage.setItem('lens_hint_seen', '1');
+      }
+    } catch { /* localStorage 불가 환경 무시 */ }
+  }, []);
 
   // 기간 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러) — KR 미러
   useEffect(() => {
@@ -277,19 +293,51 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 key={s.key}
                 type="button"
                 onClick={() => setTab(s.key)}
-                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:min-h-0 sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
                 {t(s.label)}
               </button>
             ))}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          {/* 검색 — 모바일: 44px 아이콘→탭하면 펼침 / 데스크톱: 상시 입력창(불변)·STEP 763 */}
+          <div className="flex shrink-0 items-center sm:hidden">
+            {searchOpen ? (
+              <div className="flex items-center gap-1">
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  placeholder={t('search')}
+                  className="w-36 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+                />
+                <button
+                  type="button"
+                  onClick={() => { setSearchOpen(false); setSearch(''); setPage(0); }}
+                  aria-label={t('close')}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label={t('search')}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-unjong-border text-unjong-muted"
+              >
+                <Search size={18} />
+              </button>
+            )}
+          </div>
+          <div className="hidden shrink-0 items-center gap-2 sm:flex">
             <input
               type="search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               placeholder={t('search')}
-              className="w-32 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent sm:w-48"
+              className="w-48 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
             />
             {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">{t('reset')}</button>}
           </div>
@@ -297,18 +345,18 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
         <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
-      {!loading && sorted.length > 0 ? (
+      {!loading && sorted.length > 0 && !hintSeen ? (
         <div className="mb-3 lg:hidden">
-          <div className="flex items-center gap-1.5">
-            <Hand size={13} className="shrink-0 text-unjong-accent" />
-            <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <Hand size={13} className="shrink-0 text-unjong-accent" />
+              <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
+            </div>
+            <button type="button" onClick={() => setHintSeen(true)} aria-label={t('close')} className="shrink-0 p-1 text-unjong-muted">
+              <X size={14} />
+            </button>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-[11px] text-unjong-muted">
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
-            <span>· {t('lensHintNote')}</span>
-          </div>
+          <p className="mt-1 text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
         </div>
       ) : null}
 
@@ -325,22 +373,28 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? t('noResult', { q: search }) : t('noData')}</p>
           ) : (
             <>
-            <div className="mb-1.5 flex items-center gap-3 border-b border-unjong-border pb-2 text-xs sm:hidden">
+            <div className="mb-1.5 flex items-center gap-2 border-b border-unjong-border pb-2 text-xs sm:hidden">
               <button
                 type="button"
                 onClick={() => clickHeader('name')}
-                className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                className={`inline-flex shrink-0 items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
                 {t('colName')}{sortArrow('name')}
               </button>
               <button
                 type="button"
                 onClick={() => clickHeader('price')}
-                className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                className={`inline-flex shrink-0 items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
                 {t('colPrice')}{sortArrow('price')}
               </button>
               <div className="flex-1" />
+              {/* 렌즈 톤 범례 — 재방문 시 상시 노출(힌트 줄 대체·STEP 763) */}
+              <span className="hidden shrink-0 items-center gap-1.5 text-[12px] text-unjong-muted min-[360px]:flex">
+                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
+                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
+              </span>
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button
@@ -493,13 +547,13 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1">
-                        <p className="min-w-0 flex-1 truncate text-[15px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
+                        <p className="min-w-0 flex-1 truncate text-[16px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
                         {r.lens ? <LensDots lens={r.lens} size={6} /> : null}
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-2">
-                        <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'US') : '—'}</span>
-                        <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
-                          <span className="mr-1 text-[10px] font-normal text-unjong-muted">{t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}</span>
+                        <span className="text-[14px] tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'US') : '—'}</span>
+                        <span className={`shrink-0 text-[14px] tabular-nums font-semibold ${pctColor(periodCell(r))}`}>
+                          <span className="mr-1 text-[12px] font-normal text-unjong-muted">{t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}</span>
                           {periodCell(r) === undefined ? '…' : pct(periodCell(r))}
                         </span>
                       </div>
@@ -508,7 +562,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                       aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
-                      className={`shrink-0 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}
+                      className={`shrink-0 p-3 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}
                     >
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>
@@ -589,7 +643,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     [t('period.1y'), selectedStock.r1y],
                   ] as [string, number | null | undefined][]).map(([label, v]) => (
                     <div key={label} className="flex flex-col">
-                      <span className="text-[11px] text-unjong-muted">{label}</span>
+                      <span className="text-[12px] text-unjong-muted">{label}</span>
                       <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
                     </div>
                   ))}

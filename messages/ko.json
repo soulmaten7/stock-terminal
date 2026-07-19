@@ -663,7 +663,8 @@
     "lensCol": "TR-AI 렌즈",
     "legendPos": "강점",
     "legendWarn": "주의",
-    "legendFlat": "보통"
+    "legendFlat": "보통",
+    "close": "닫기"
   },
   "LensPreview": {
     "exampleLabel": "거래 상위 예시",

@@ -263,7 +263,7 @@ export default function ToolboxClient({
             key={c.code}
             type="button"
             onClick={() => { clearBoardViews(); setCountry(c.code); }}
-            className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors ${
+            className={`inline-flex min-h-11 items-center justify-center rounded-lg px-3 py-1.5 text-sm font-semibold transition-colors sm:min-h-0 ${
               country === c.code ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >
@@ -279,7 +279,7 @@ export default function ToolboxClient({
             key={tab}
             type="button"
             onClick={() => selectTop(tab)}
-            className={`shrink-0 rounded-lg px-4 py-2 text-[14px] font-semibold transition-colors sm:py-1.5 ${
+            className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-4 py-2 text-[14px] font-semibold transition-colors sm:min-h-0 sm:py-1.5 ${
               activeTop === tab ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >
@@ -299,7 +299,7 @@ export default function ToolboxClient({
               <button
                 type="button"
                 onClick={() => selectSub(s.slug)}
-                className={`shrink-0 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors sm:min-h-0 ${
                   activeTab === s.slug ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
                 }`}
               >

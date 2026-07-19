@@ -3,7 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
-import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand } from 'lucide-react';
+import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand, Search, X } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
@@ -85,7 +85,7 @@ function LimitBadge({ chg }: { chg: number }) {
   const b = limitBadge(chg);
   if (!b) return null;
   return (
-    <span className={`ml-1 rounded px-1 text-[10px] font-semibold ${b === 'upper' ? 'bg-unjong-up/10 text-unjong-up' : 'bg-unjong-down/10 text-unjong-down'}`}>
+    <span className={`ml-1 rounded px-1 text-[12px] font-semibold sm:text-[10px] ${b === 'upper' ? 'bg-unjong-up/10 text-unjong-up' : 'bg-unjong-down/10 text-unjong-down'}`}>
       {t(`limit.${b}`)}
     </span>
   );
@@ -178,12 +178,31 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   const periodRef = useRef<HTMLDivElement>(null);
   const [periodOpenM, setPeriodOpenM] = useState(false); // 기간 커스텀 드롭다운 열림(모바일)
   const periodRefM = useRef<HTMLDivElement>(null);
+  const [marketOpenM, setMarketOpenM] = useState(false); // 코스피/코스닥 세그먼트 드롭다운(모바일 정렬줄 통합·STEP 763)
+  const marketRefM = useRef<HTMLDivElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false); // 검색 아이콘→펼침(모바일 전용·STEP 763)
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [hintSeen, setHintSeen] = useState(true); // 렌즈 힌트 재방문 숨김(localStorage·STEP 763) — 기본 true(숨김), 마운트 시 미방문이면 false
 
-  // 기간 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러)
+  useEffect(() => {
+    if (searchOpen) searchInputRef.current?.focus();
+  }, [searchOpen]);
+
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem('lens_hint_seen')) {
+        setHintSeen(false);
+        localStorage.setItem('lens_hint_seen', '1'); // 표시 즉시 저장 — 재방문 시 다시 안 뜸(스펙)
+      }
+    } catch { /* localStorage 불가 환경(사파리 프라이빗 등) 무시 — 매번 노출돼도 치명적이지 않음 */ }
+  }, []);
+
+  // 기간·세그먼트 드롭다운 바깥 클릭 시 닫기 (SelectDropdown 패턴 미러)
   useEffect(() => {
     function onDoc(e: MouseEvent) {
       if (periodRef.current && !periodRef.current.contains(e.target as Node)) setPeriodOpen(false);
       if (periodRefM.current && !periodRefM.current.contains(e.target as Node)) setPeriodOpenM(false);
+      if (marketRefM.current && !marketRefM.current.contains(e.target as Node)) setMarketOpenM(false);
     }
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
@@ -323,19 +342,51 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 key={s.key}
                 type="button"
                 onClick={() => setTab(s.key)}
-                className={`shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors sm:min-h-0 sm:py-1.5 ${tab === s.key ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
                 {t(s.label)}
               </button>
             ))}
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          {/* 검색 — 모바일: 44px 아이콘→탭하면 펼침(자동 포커스·X로 닫기) / 데스크톱: 상시 입력창(불변)·STEP 763 */}
+          <div className="flex shrink-0 items-center sm:hidden">
+            {searchOpen ? (
+              <div className="flex items-center gap-1">
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(0); }}
+                  placeholder={t('searchKr')}
+                  className="w-36 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+                />
+                <button
+                  type="button"
+                  onClick={() => { setSearchOpen(false); setSearch(''); setPage(0); }}
+                  aria-label={t('close')}
+                  className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label={t('searchKr')}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-unjong-border text-unjong-muted"
+              >
+                <Search size={18} />
+              </button>
+            )}
+          </div>
+          <div className="hidden shrink-0 items-center gap-2 sm:flex">
             <input
               type="search"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               placeholder={t('searchKr')}
-              className="w-32 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent sm:w-48"
+              className="w-48 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
             />
             {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">{t('reset')}</button>}
           </div>
@@ -343,9 +394,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         <div className="hidden w-96 shrink-0 lg:block" />
       </div>
 
-      {/* 주식 하위탭 전용: 코스피/코스닥 세그먼트 — 별도 줄(모바일에서 하위탭과 한 줄에 겹쳐 잘리지 않게) */}
+      {/* 주식 하위탭 전용: 코스피/코스닥 세그먼트 — 데스크톱은 칩 줄 유지, 모바일은 아래 정렬줄 드롭다운으로 통합(−1층·STEP 763) */}
       {tab === 'stock' ? (
-        <div className="mb-2">
+        <div className="mb-2 hidden sm:block">
           <div className="inline-flex gap-0.5 rounded-lg border border-unjong-border p-0.5">
             {(
               [
@@ -367,18 +418,19 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
         </div>
       ) : null}
 
-      {!loading && sorted.length > 0 ? (
+      {/* 렌즈 힌트 — 첫 방문에만(localStorage) 노출, 닫기 가능. 재방문은 정렬줄 우측 상시 범례로 대체(−1층·STEP 763) */}
+      {!loading && sorted.length > 0 && !hintSeen ? (
         <div className="mb-3 lg:hidden">
-          <div className="flex items-center gap-1.5">
-            <Hand size={13} className="shrink-0 text-unjong-accent" />
-            <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5">
+              <Hand size={13} className="shrink-0 text-unjong-accent" />
+              <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
+            </div>
+            <button type="button" onClick={() => setHintSeen(true)} aria-label={t('close')} className="shrink-0 p-1 text-unjong-muted">
+              <X size={14} />
+            </button>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-[11px] text-unjong-muted">
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
-            <span>· {t('lensHintNote')}</span>
-          </div>
+          <p className="mt-1 text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
         </div>
       ) : null}
 
@@ -395,22 +447,59 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
             <p className="py-10 text-center text-sm text-unjong-muted">{search ? t('noResult', { q: search }) : t('noData')}</p>
           ) : (
             <>
-            <div className="mb-1.5 flex items-center gap-3 border-b border-unjong-border pb-2 text-xs sm:hidden">
+            <div className="mb-1.5 flex items-center gap-2 border-b border-unjong-border pb-2 text-xs sm:hidden">
+              {/* 코스피/코스닥 세그먼트 — 모바일은 별도 줄 대신 정렬줄 드롭다운으로 통합(−1층·STEP 763) */}
+              {tab === 'stock' ? (
+                <div ref={marketRefM} className="relative shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setMarketOpenM((o) => !o)}
+                    aria-haspopup="listbox"
+                    aria-expanded={marketOpenM}
+                    className="flex items-center gap-0.5 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
+                  >
+                    {t(`krMarket.${krMarket}`)}
+                    <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${marketOpenM ? 'rotate-180' : ''}`} />
+                  </button>
+                  {marketOpenM ? (
+                    <div role="listbox" className="absolute left-0 top-full z-50 mt-1 w-[5rem] overflow-hidden rounded-lg border border-unjong-border bg-unjong-surface py-1 text-left shadow-lg">
+                      {(['all', 'kospi', 'kosdaq'] as KrMarket[]).map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          role="option"
+                          aria-selected={m === krMarket}
+                          onClick={() => { setKrMarket(m); setMarketOpenM(false); }}
+                          className={`block w-full px-2 py-1.5 text-left text-xs transition-colors hover:bg-unjong-background ${m === krMarket ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                        >
+                          {t(`krMarket.${m}`)}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
               <button
                 type="button"
                 onClick={() => clickHeader('name')}
-                className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                className={`inline-flex shrink-0 items-center gap-0.5 transition-colors ${sortKey === 'name' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
                 {t('colName')}{sortArrow('name')}
               </button>
               <button
                 type="button"
                 onClick={() => clickHeader('price')}
-                className={`inline-flex items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                className={`inline-flex shrink-0 items-center gap-0.5 transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
               >
                 {t('colPrice')}{sortArrow('price')}
               </button>
               <div className="flex-1" />
+              {/* 렌즈 톤 범례 — 재방문 시 상시 노출(힌트 줄 대체·STEP 763) */}
+              <span className="hidden shrink-0 items-center gap-1.5 text-[12px] text-unjong-muted min-[360px]:flex">
+                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
+                <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
+              </span>
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button
@@ -564,13 +653,13 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     <StockLogo code={r.symbol} name={r.name} size={34} />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1">
-                        <p className="min-w-0 flex-1 truncate text-[15px] font-bold leading-tight text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</p>
+                        <p className="min-w-0 flex-1 truncate text-[16px] font-bold leading-tight text-unjong-primary">{isEn ? (r.nameEn ?? r.name) : r.name}</p>
                         {r.lens ? <LensDots lens={r.lens} size={6} /> : null}
                       </div>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
-                        <span className="text-xs tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
-                        <span className={`shrink-0 text-[13px] tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
-                          <span className="mr-1 text-[10px] font-normal text-unjong-muted">{t(PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}</span>
+                        <span className="text-[14px] tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'KR') : '—'}</span>
+                        <span className={`shrink-0 text-[14px] tabular-nums font-semibold ${pctColor(r[mobileField] as number | null | undefined)}`}>
+                          <span className="mr-1 text-[12px] font-normal text-unjong-muted">{t(PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}</span>
                           {pct(r[mobileField] as number | null | undefined)}
                           {mobilePeriod === '1d' ? <LimitBadge chg={r.changePercent} /> : null}
                         </span>
@@ -580,7 +669,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                       aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
-                      className={`shrink-0 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}
+                      className={`shrink-0 p-3 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}
                     >
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>
@@ -661,7 +750,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     [t('period.1y'), selectedStock.r1y],
                   ] as [string, number | null | undefined][]).map(([label, v]) => (
                     <div key={label} className="flex flex-col">
-                      <span className="text-[11px] text-unjong-muted">{label}</span>
+                      <span className="text-[12px] text-unjong-muted">{label}</span>
                       <span className={`text-sm font-semibold tabular-nums ${pctColor(v)}`}>{pct(v)}</span>
                     </div>
                   ))}

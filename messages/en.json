@@ -663,7 +663,8 @@
     "lensCol": "TR-AI Lens",
     "legendPos": "Strong",
     "legendWarn": "Caution",
-    "legendFlat": "Neutral"
+    "legendFlat": "Neutral",
+    "close": "Close"
   },
   "LensPreview": {
     "exampleLabel": "Top by volume · example",
