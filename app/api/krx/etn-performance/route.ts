@@ -85,13 +85,21 @@ export async function GET(req: NextRequest) {
   if (!debug) {
     try {
       const sb = createAdminClient();
-      const { data } = await sb
-        .from("kr_etp_snapshot")
-        .select("symbol,name,price,change_percent,trade_amount,r1w,r1m,r3m,r6m,r1y")
-        .eq("kind", "etn")
-        .order("trade_amount", { ascending: false, nullsFirst: false })
-        .limit(100);
-      if (data && data.length > 0) {
+      // PostgREST 기본 1000행 캡 우회 — 전체 ETN 유니버스(~386개)를 .range() 페이지네이션으로 전부 로드(STEP 759)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data: any[] = [];
+      for (let from = 0; ; from += 1000) {
+        const { data: page } = await sb
+          .from("kr_etp_snapshot")
+          .select("symbol,name,price,change_percent,trade_amount,r1w,r1m,r3m,r6m,r1y")
+          .eq("kind", "etn")
+          .order("trade_amount", { ascending: false, nullsFirst: false })
+          .range(from, from + 999);
+        if (!page || page.length === 0) break;
+        data.push(...page);
+        if (page.length < 1000) break;
+      }
+      if (data.length > 0) {
         const nn = (v: unknown) => (v == null ? null : Number(v));
         const items = data.map((s) => ({
           symbol: s.symbol,
@@ -162,8 +170,7 @@ export async function GET(req: NextRequest) {
       };
     })
     .filter((x) => x.symbol && x.price > 0)
-    .sort((a, b) => b.tradeAmount - a.tradeAmount)
-    .slice(0, 100);
+    .sort((a, b) => b.tradeAmount - a.tradeAmount);
 
   const data = { items };
   // 1주일·1년 스냅샷이 비어 있으면(일시적 실패) 캐시하지 않음 → 다음 요청에 재계산

@@ -126,15 +126,25 @@ export async function GET(request: NextRequest) {
   // ── 스냅샷 우선(크론 미리계산) — 즉시 서빙, 딜레이 없음 ──
   try {
     const sb = createAdminClient();
-    let q = sb
-      .from("kr_stock_snapshot")
-      .select("symbol,name,name_en,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y");
-    if (market === "kospi" || market === "kosdaq") q = q.eq("market", market);
     const col =
       sort === "volume" ? "volume" : sort === "cap" ? "market_cap" : sort === "up" || sort === "down" ? "change_percent" : "trade_amount";
     const asc = sort === "down";
-    const { data, error } = await q.order(col, { ascending: asc, nullsFirst: false }).limit(limit);
-    if (!error && data && data.length > 0) {
+    // PostgREST 기본 1000행 캡을 .range() 페이지네이션으로 우회(STEP 759) — limit이 1000 이하면 1페이지로 끝남(기존과 동일).
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any[] = [];
+    for (let from = 0; from < limit; from += 1000) {
+      const to = Math.min(from + 999, limit - 1);
+      let q = sb
+        .from("kr_stock_snapshot")
+        .select("symbol,name,name_en,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y");
+      if (market === "kospi" || market === "kosdaq") q = q.eq("market", market);
+      const { data: page, error } = await q.order(col, { ascending: asc, nullsFirst: false }).range(from, to);
+      if (error) throw error;
+      if (!page || page.length === 0) break;
+      data.push(...page);
+      if (page.length < to - from + 1) break; // 마지막 페이지
+    }
+    if (data.length > 0) {
       const lensMap = await fetchLensMap(sb, data.map((s) => s.symbol));
       const stocks = data.map((s, i) => ({
         rank: i + 1,
