@@ -279,7 +279,7 @@ export default function ToolboxClient({
             key={tab}
             type="button"
             onClick={() => selectTop(tab)}
-            className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl px-4 py-2 text-[14px] font-medium transition-colors sm:min-h-0 sm:rounded-lg sm:py-1.5 sm:font-semibold ${
+            className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl px-3 py-2 text-[14px] font-medium transition-colors sm:min-h-0 sm:rounded-lg sm:py-1.5 sm:font-semibold ${
               activeTop === tab ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
             }`}
           >

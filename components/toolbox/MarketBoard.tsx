@@ -364,7 +364,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t('searchKr')}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-unjong-muted"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-unjong-muted hover:bg-unjong-background"
               >
                 <Search size={18} />
               </button>
@@ -476,7 +476,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 <button
                   type="button"
                   onClick={() => clickHeader('price')}
-                  className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[13px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                  className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-2 text-[14px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
                 >
                   {t('colPrice')}{sortArrow('price')}
                 </button>
@@ -489,7 +489,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     onClick={() => setPeriodOpenM((o) => !o)}
                     aria-haspopup="listbox"
                     aria-expanded={periodOpenM}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] outline-none hover:bg-unjong-background ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium outline-none hover:bg-unjong-background ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
                   >
                     {t(PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />

@@ -252,7 +252,7 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                 type="button"
                 onClick={() => setSearchOpen(true)}
                 aria-label={t('search')}
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-unjong-muted"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-unjong-muted hover:bg-unjong-background"
               >
                 <Search size={18} />
               </button>
@@ -303,14 +303,14 @@ export default function VnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             <>
             <div className="mb-1.5 flex items-center justify-between gap-2 border-b border-unjong-border pb-2 sm:hidden">
               {/* 종목명 정렬 진입점은 모바일에서 제거(검색으로 대체·데스크톱 테이블 헤더는 유지·STEP 763b) */}
-              <button type="button" onClick={() => clickHeader('price')} className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-1 text-[13px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}>
+              <button type="button" onClick={() => clickHeader('price')} className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-2 text-[14px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}>
                 {t('colPrice')}{sortArrow('price')}
               </button>
               {/* 기간 드롭다운 — 카드 우측 "1일전 -x.xx%" 열 바로 위(헤더=데이터 열 정렬·STEP 763c) */}
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button type="button" onClick={() => setPeriodOpenM((o) => !o)} aria-haspopup="listbox" aria-expanded={periodOpenM}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] outline-none hover:bg-unjong-background ${sortKey === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium outline-none hover:bg-unjong-background ${sortKey === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
                     {t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
                   </button>
