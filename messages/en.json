@@ -338,6 +338,7 @@
     "stocks": "Stocks",
     "coin": "Coin",
     "about": "About",
+    "today": "Today",
     "comingSoon": "Coming soon",
     "language": "Select language",
     "notReady": "Coming soon",
@@ -893,5 +894,25 @@
     "gateTitle": "Sign in to see the supporting detail",
     "gateBody": "See exactly why each lens reads that way, with the numbers, free.",
     "gateCta": "Sign up or log in, free →"
+  },
+  "Today": {
+    "title": "Today",
+    "subtitle": "Morning briefing — lens changes from yesterday to today",
+    "marketLine": "{index} {pct} yesterday",
+    "changesCount": "{n} lens state changes",
+    "asOfDay": "As of {day}",
+    "watchlistChangesTitle": "My watchlist — lens changes",
+    "viewAllWatchlist": "All watchlist →",
+    "onboardingTitle": "Save stocks to your watchlist and we will surface their changes here every morning",
+    "onboardingCta": "Go explore and save stocks →",
+    "overnightUsTitle": "Overnight in the US",
+    "marketChangesTitle": "Market changes today",
+    "viewMoreChanges": "See {n} more changes →",
+    "noChangesToday": "No lens state changes today",
+    "lensChangeLine": "{lensName} {from} → {to}",
+    "railMarketTitle": "Markets",
+    "railWatchlistTitle": "My watchlist",
+    "railWatchlistLogin": "Log in to see your watchlist",
+    "railViewAll": "All →"
   }
 }

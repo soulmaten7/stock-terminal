@@ -23,6 +23,7 @@ export default function Header() {
     { href: '/', label: t('stocks'), ready: true, match: (p: string) => p === '/' },
     // { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장 (베타 전 숨김·데이터 없어 노출 시 전문성↓. 복구=이 줄 주석만 해제)
     { href: '/about', label: t('about'), ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
+    { href: '/today', label: t('today'), ready: true, match: (p: string) => p === '/today' }, // 오늘(모닝 다이제스트) 임시 진입점 — 내비 재편은 STEP 766
   ] as const;
   const router = useRouter();
   const pathname = usePathname() ?? '/';

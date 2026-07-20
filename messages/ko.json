@@ -338,6 +338,7 @@
     "stocks": "주식",
     "coin": "코인",
     "about": "소개",
+    "today": "오늘",
     "comingSoon": "준비 중이에요",
     "language": "언어 선택",
     "notReady": "준비 중",
@@ -893,5 +894,25 @@
     "gateTitle": "근거 상세는 로그인하면 볼 수 있어요",
     "gateBody": "각 렌즈가 왜 그렇게 읽는지, 수치와 함께 무료로 열립니다.",
     "gateCta": "무료 가입·로그인 →"
+  },
+  "Today": {
+    "title": "오늘",
+    "subtitle": "아침 브리핑 · 어제→오늘 렌즈 변화",
+    "marketLine": "어제 {index} {pct}",
+    "changesCount": "렌즈 상태 변화 {n}건",
+    "asOfDay": "{day} 기준",
+    "watchlistChangesTitle": "내 관심종목 · 렌즈 변화",
+    "viewAllWatchlist": "관심종목 전체 →",
+    "onboardingTitle": "관심종목을 담아두면 아침마다 변화를 여기서 알려드려요",
+    "onboardingCta": "탐색에서 담으러 가기 →",
+    "overnightUsTitle": "간밤 미국",
+    "marketChangesTitle": "오늘 시장 변화",
+    "viewMoreChanges": "변화 {n}건 더 보기 →",
+    "noChangesToday": "오늘은 렌즈 상태 변화가 없어요",
+    "lensChangeLine": "{lensName} {from} → {to}",
+    "railMarketTitle": "시장",
+    "railWatchlistTitle": "내 관심종목",
+    "railWatchlistLogin": "로그인하면 관심종목을 볼 수 있어요",
+    "railViewAll": "전체 →"
   }
 }

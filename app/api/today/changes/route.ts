@@ -87,6 +87,11 @@ export async function GET(req: NextRequest) {
   const { data, error } = await q.limit(watchSymbols ? 2000 : limit);
   if (error) return NextResponse.json({ date, items: [], error: error.message }, { status: 500 });
 
+  // 전체 건수(limit 절단 전) — "N건 더 보기" 같은 표시가 실제로 잘린 만큼만 말하도록(근거 없는 숫자 금지).
+  let countQ = sb.from("lens_state_changes").select("id", { count: "exact", head: true }).eq("market", market).eq("change_date", date);
+  if (watchSymbols) countQ = countQ.in("symbol", [...watchSymbols]);
+  const { count } = await countQ;
+
   const items = ((data ?? []) as ChangeRow[]).slice(0, limit).map((r) => ({
     symbol: r.symbol,
     name: r.name,
@@ -98,7 +103,7 @@ export async function GET(req: NextRequest) {
     tradeAmount: r.trade_amount,
   }));
 
-  const result = { date, items };
+  const result = { date, count: count ?? items.length, items };
   cache.set(cacheKey, { at: Date.now(), data: result });
   return NextResponse.json(result);
 }
