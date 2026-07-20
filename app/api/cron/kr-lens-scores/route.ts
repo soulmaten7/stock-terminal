@@ -12,8 +12,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   try {
-    const universe = await topKrByTradeAmount(1000);
-    const r = await computeLensScoresFor(universe, "KR");
+    const { symbols: universe, tradeAmountOf } = await topKrByTradeAmount(1000);
+    const r = await computeLensScoresFor(universe, "KR", { tradeAmountOf });
     return NextResponse.json(r);
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });

@@ -10,8 +10,8 @@ const N = Number(process.argv[2] ?? 500);
 
 (async () => {
   console.log(`KR 렌즈 선계산 상위 ${N}종목…`);
-  const universe = await topKrByTradeAmount(N);
-  const r = await computeLensScoresFor(universe, "KR");
+  const { symbols: universe, tradeAmountOf } = await topKrByTradeAmount(N);
+  const r = await computeLensScoresFor(universe, "KR", { tradeAmountOf });
   console.log(r);
   process.exit(0);
 })();

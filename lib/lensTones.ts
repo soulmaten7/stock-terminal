@@ -3,22 +3,35 @@
 export type Tone = "pos" | "warn" | "flat";
 export type LensScoreRow = Record<string, string | null | undefined>;
 
+// 렌즈 키(lenses.ts stable key) → [pos상태, warn상태, mid상태] 3튜플 — 팩터별 state→tone 단일 정본.
+const STATE_SPEC: Record<string, [string, string, string]> = {
+  momentum: ["up", "down", "flat"],
+  technical: ["up", "down", "flat"],
+  valuation: ["cheap", "rich", "mid"],
+  lowvol: ["calm", "jumpy", "mid"],
+  quality: ["high", "low", "mid"],
+  assetgrowth: ["conservative", "aggressive", "mid"],
+  fscore: ["strong", "weak", "mid"],
+};
+
+// 렌즈 키 하나의 state→tone (na/null/미지원 키 → null). lens_state_changes diff 등 단건 비교 소비자용(STEP 764).
+export function toneForKey(key: string, state: string | null | undefined): Tone | null {
+  const spec = STATE_SPEC[key];
+  if (!spec || !state) return null;
+  const [pos, warn, mid] = spec;
+  if (state === pos) return "pos";
+  if (state === warn) return "warn";
+  if (state === mid) return "flat";
+  return null;
+}
+
 // state→tone 개별 목록(순서 보존) — 관심목록처럼 전체 리스트가 필요한 소비자용.
 export function tonesFromStates(r: LensScoreRow): Tone[] {
   const out: Tone[] = [];
-  const map = (s: string | null | undefined, pos: string, warn: string, mid: string) => {
-    if (s === pos) out.push("pos");
-    else if (s === warn) out.push("warn");
-    else if (s === mid) out.push("flat");
-    // 그 외(na/null) → 제외
-  };
-  map(r.momentum_state, "up", "down", "flat");
-  map(r.technical_state, "up", "down", "flat");
-  map(r.valuation_state, "cheap", "rich", "mid");
-  map(r.lowvol_state, "calm", "jumpy", "mid");
-  map(r.quality_state, "high", "low", "mid");
-  map(r.assetgrowth_state, "conservative", "aggressive", "mid");
-  map(r.fscore_state, "strong", "weak", "mid");
+  for (const key of Object.keys(STATE_SPEC)) {
+    const tone = toneForKey(key, r[`${key}_state`]);
+    if (tone) out.push(tone);
+  }
   return out;
 }
 
