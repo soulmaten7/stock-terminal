@@ -896,8 +896,6 @@
     "gateCta": "Sign up or log in, free →"
   },
   "Today": {
-    "title": "Today",
-    "subtitle": "Morning briefing — lens changes from yesterday to today",
     "marketLine": "{index} {pct} yesterday",
     "changesCount": "{n} lens state changes",
     "asOfDay": "As of {day}",
@@ -909,6 +907,7 @@
     "marketChangesTitle": "Market changes today",
     "viewMoreChanges": "See {n} more changes →",
     "noChangesToday": "No lens state changes today",
+    "noWatchlistChangesToday": "No lens state changes in your watchlist today",
     "lensChangeLine": "{lensName} {from} → {to}",
     "railMarketTitle": "Markets",
     "railWatchlistTitle": "My watchlist",

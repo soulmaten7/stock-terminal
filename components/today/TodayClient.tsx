@@ -8,7 +8,10 @@ import { homeMarketFor, type Country } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
 import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
-import { formatPrice } from '@/lib/currency';
+import { cleanUsName } from '@/lib/usNameFormat';
+import foreignKoRaw from '@/data/foreign_ko_names.json';
+
+const FOREIGN_KO = foreignKoRaw as Record<string, string>;
 
 // 렌즈 키(lensCopy.ts STATE_SPEC과 동일) — 임의 string 인덱싱 대신 이 목록으로 좁힌다.
 type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | 'assetgrowth' | 'fscore';
@@ -102,11 +105,11 @@ function LensChangeRow({
     <Link href={`/stock/${item.symbol}`} className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
       <StockLogo code={item.symbol} name={displayName} size={30} />
       <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-1.5">
-          <span className="truncate text-sm font-semibold text-unjong-primary">{displayName}</span>
+        <p className="line-clamp-1 text-sm font-semibold text-unjong-primary">{displayName}</p>
+        <p className="flex items-center gap-1.5 truncate text-[12px] text-unjong-muted">
           <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
-        </div>
-        <p className="truncate text-[12px] text-unjong-muted">{line}</p>
+          {line}
+        </p>
       </div>
       <span className={`shrink-0 text-sm font-semibold tabular-nums ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
     </Link>
@@ -192,14 +195,20 @@ export default function TodayClient() {
   const railNames = homeMarket === 'KR' ? krListForRail : usListForRail;
   const railIndices = railNames.map((n) => indices.find((i) => i.name === n)).filter((x): x is IndexItem => !!x);
 
+  // US 종목명: 한글 오버라이드(ko만) → cleanUsName 축약 → 그래도 없으면 원본(STEP 765b). KR은 현행 그대로.
   function nameFor(item: ChangeItem, market: Country): string {
     if (market === 'KR') {
       const info = krBoardMap.get(item.symbol);
       if (loc === 'en') return info?.nameEn ?? item.name ?? item.symbol;
       return info?.name ?? item.name ?? item.symbol;
     }
+    if (loc === 'ko') {
+      const ko = FOREIGN_KO[item.symbol.toUpperCase()];
+      if (ko) return ko;
+    }
     const info = usBoardMap.get(item.symbol);
-    return info?.name ?? item.name ?? item.symbol;
+    const raw = info?.name ?? item.name ?? item.symbol;
+    return cleanUsName(raw);
   }
   function changePctFor(item: ChangeItem, market: Country): number | null {
     const map = market === 'KR' ? krBoardMap : usBoardMap;
@@ -207,15 +216,13 @@ export default function TodayClient() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:flex lg:items-start lg:gap-8">
-      <main className="min-w-0 flex-1 lg:max-w-2xl">
-        {/* 1) 헤더 */}
+    <div className="mx-auto max-w-[1040px] px-4 py-6 sm:px-6 lg:flex lg:items-start lg:gap-8">
+      <main className="min-w-0 flex-1 lg:max-w-[680px]">
+        {/* 1) 헤더 — 날짜가 주인공(목업대로·STEP 765b), "오늘" H1·부제 제거(페이지 <title>은 유지) */}
         <div className="mb-6">
-          <p className="text-sm text-unjong-muted">{formattedDate}</p>
-          <h1 className="mt-1 text-2xl font-bold text-unjong-primary">{t('title')}</h1>
-          <p className="mt-1 text-sm text-unjong-muted">{t('subtitle')}</p>
+          <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{formattedDate}</h1>
           {homeIndex ? (
-            <p className="mt-3 text-sm font-medium text-unjong-primary">
+            <p className="mt-2 text-sm font-medium text-unjong-primary">
               {t('marketLine', { index: homeIndex.name, pct: pct(homeIndex.changePct) })}
               {homeChanges?.count != null ? <span className="text-unjong-muted"> · {t('changesCount', { n: homeChanges.count })}</span> : null}
             </p>
@@ -236,7 +243,7 @@ export default function TodayClient() {
                 <AsOfBadge date={watchlistChangesDate} loc={loc} />
               </div>
               {watchlistChanges.length === 0 ? (
-                <p className="py-4 text-sm text-unjong-muted">{t('noChangesToday')}</p>
+                <p className="py-4 text-sm text-unjong-muted">{t('noWatchlistChangesToday')}</p>
               ) : (
                 <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
                   {watchlistChanges.slice(0, 4).map((item, i) => {

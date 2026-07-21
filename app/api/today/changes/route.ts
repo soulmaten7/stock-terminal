@@ -25,6 +25,7 @@ async function latestDate(sb: ReturnType<typeof createAdminClient>, market: stri
     .from("lens_state_changes")
     .select("change_date")
     .eq("market", market)
+    .not("from_tone", "is", null) // 노이즈(산출불가→값 생김) 가드(STEP 765b) — 노이즈만 있는 날은 최신으로 안 침
     .order("change_date", { ascending: false })
     .limit(1);
   return (data?.[0] as { change_date: string } | undefined)?.change_date ?? null;
@@ -60,7 +61,8 @@ export async function GET(req: NextRequest) {
       .from("lens_state_changes")
       .select("id", { count: "exact", head: true })
       .eq("market", market)
-      .eq("change_date", date);
+      .eq("change_date", date)
+      .not("from_tone", "is", null); // 노이즈(산출불가→값 생김) 가드(STEP 765b) — 없는 날로 취급
     if (!count) date = await latestDate(sb, market);
   } else {
     date = await latestDate(sb, market);
@@ -80,6 +82,7 @@ export async function GET(req: NextRequest) {
     .select("symbol,name,lens_key,from_state,to_state,from_tone,to_tone,trade_amount")
     .eq("market", market)
     .eq("change_date", date)
+    .not("from_tone", "is", null) // 노이즈(산출불가→값 생김) 가드 — 기존 노이즈 행 방어(STEP 765b)
     .order("trade_amount", { ascending: false, nullsFirst: false });
   if (watchSymbols) q = q.in("symbol", [...watchSymbols]);
 
@@ -88,7 +91,7 @@ export async function GET(req: NextRequest) {
   if (error) return NextResponse.json({ date, items: [], error: error.message }, { status: 500 });
 
   // 전체 건수(limit 절단 전) — "N건 더 보기" 같은 표시가 실제로 잘린 만큼만 말하도록(근거 없는 숫자 금지).
-  let countQ = sb.from("lens_state_changes").select("id", { count: "exact", head: true }).eq("market", market).eq("change_date", date);
+  let countQ = sb.from("lens_state_changes").select("id", { count: "exact", head: true }).eq("market", market).eq("change_date", date).not("from_tone", "is", null);
   if (watchSymbols) countQ = countQ.in("symbol", [...watchSymbols]);
   const { count } = await countQ;
 

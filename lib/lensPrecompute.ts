@@ -158,6 +158,7 @@ export async function computeLensScoresFor(
           if (toTone == null) continue; // to_tone NOT NULL 제약
           const fromState = (prev[`${key}_state`] as string | null) ?? null;
           const fromTone = toneForKey(key, fromState);
+          if (fromTone == null) continue; // 산출 불가(na)→값 생김은 "변화"가 아니라 노이즈(STEP 765b)
           if (fromTone === toTone) continue;
           changeBuffer.push({
             change_date: changeDate, market, symbol: sym, name: r.name, lens_key: key,

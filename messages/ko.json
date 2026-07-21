@@ -896,8 +896,6 @@
     "gateCta": "무료 가입·로그인 →"
   },
   "Today": {
-    "title": "오늘",
-    "subtitle": "아침 브리핑 · 어제→오늘 렌즈 변화",
     "marketLine": "어제 {index} {pct}",
     "changesCount": "렌즈 상태 변화 {n}건",
     "asOfDay": "{day} 기준",
@@ -909,6 +907,7 @@
     "marketChangesTitle": "오늘 시장 변화",
     "viewMoreChanges": "변화 {n}건 더 보기 →",
     "noChangesToday": "오늘은 렌즈 상태 변화가 없어요",
+    "noWatchlistChangesToday": "오늘은 관심종목 렌즈 상태 변화가 없어요",
     "lensChangeLine": "{lensName} {from} → {to}",
     "railMarketTitle": "시장",
     "railWatchlistTitle": "내 관심종목",
