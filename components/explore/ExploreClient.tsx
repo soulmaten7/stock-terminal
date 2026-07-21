@@ -186,10 +186,17 @@ export default function ExploreClient() {
   const searchParams = useSearchParams();
   const listParam = searchParams.get('list');
   const activeList: ListKey | null = listParam === 'changes' || listParam === 'pos' || listParam === 'amount' ? listParam : null;
+  const marketParam = searchParams.get('market');
+  const marketFromQuery: Country | null = marketParam === 'KR' || marketParam === 'US' ? marketParam : null;
   const { user } = useAuthStore();
 
-  const [market, setMarket] = useState<Country>(homeMarketFor(localeRaw) === 'US' ? 'US' : 'KR');
+  // 국가 토글 초기값 — 쿼리(?market=)가 있으면 우선(오늘 홈 "더 보기" 진입 등·STEP 772 §1), 없으면 localStorage → 로케일 기본.
+  const [market, setMarket] = useState<Country>(marketFromQuery ?? (homeMarketFor(localeRaw) === 'US' ? 'US' : 'KR'));
   useEffect(() => {
+    if (marketFromQuery) {
+      try { localStorage.setItem(STORAGE_KEY, marketFromQuery); } catch { /* 무시 */ }
+      return;
+    }
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved === 'KR' || saved === 'US') setMarket(saved);

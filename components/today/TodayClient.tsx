@@ -93,6 +93,12 @@ function BasisLabel() {
   return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{t('priceChangeBasis')}</span>;
 }
 
+// 간밤 미국·오늘 시장 변화 전용 — 거래대금 정렬 목록이라 선정 기준까지 명시(STEP 772 §2, 관심종목 섹션은 정렬 기준이 없어 BasisLabel 그대로).
+function SelectionBasisLabel() {
+  const t = useTranslations('Today');
+  return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{t('selectionBasisLabel')}</span>;
+}
+
 function LensChangeRow({
   item, loc, changePercent, displayName, market,
 }: {
@@ -248,7 +254,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
               <h2 className="text-base font-bold text-unjong-primary">{t('overnightUsTitle')}</h2>
               <AsOfBadge date={usChanges?.date ?? null} loc={loc} />
             </div>
-            <BasisLabel />
+            <SelectionBasisLabel />
           </div>
           {(usChanges?.items.length ?? 0) === 0 ? (
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
@@ -259,6 +265,9 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
               ))}
             </div>
           )}
+          {usChanges && usChanges.count != null && usChanges.count > 0 ? (
+            <Link href="/explore?list=changes&market=US" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreUsChanges', { n: usChanges.count })}</Link>
+          ) : null}
         </section>
 
         {/* 4) 오늘 시장 변화(KR·en이면 US 우선) */}
@@ -268,7 +277,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
               <h2 className="text-base font-bold text-unjong-primary">{t('marketChangesTitle')}</h2>
               <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
             </div>
-            <BasisLabel />
+            <SelectionBasisLabel />
           </div>
           {(homeChanges?.items.length ?? 0) === 0 ? (
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
@@ -279,8 +288,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
               ))}
             </div>
           )}
-          {homeChanges && homeChanges.count != null && homeChanges.count > 5 ? (
-            <Link href="/explore?list=changes" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
+          {homeChanges && homeChanges.count != null && homeChanges.count > 0 ? (
+            <Link href={`/explore?list=changes&market=${homeMarket}`} className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreChanges', { n: homeChanges.count })}</Link>
           ) : null}
         </section>
 
