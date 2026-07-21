@@ -5,10 +5,10 @@ import { useTranslations } from 'next-intl';
 import { Sun, Search, Star, User } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 
-// 하단 탭 4개(목업 확정·STEP 766) — 오늘·탐색·관심·마이. 새 아이콘 팩 없이 lucide-react 기존 세트 재사용.
+// 하단 탭 4개(목업 확정·STEP 766, 필드 대전환 STEP 767b로 오늘=루트·탐색=/explore 갱신) — 오늘·탐색·관심·마이. 새 아이콘 팩 없이 lucide-react 기존 세트 재사용.
 const TABS = [
-  { key: 'today', href: '/today', Icon: Sun, match: (p: string) => p === '/today' },
-  { key: 'explore', href: '/', Icon: Search, match: (p: string) => p === '/' || p.startsWith('/stock/') },
+  { key: 'today', href: '/', Icon: Sun, match: (p: string) => p === '/' },
+  { key: 'explore', href: '/explore', Icon: Search, match: (p: string) => p === '/explore' || p.startsWith('/stock/') },
   { key: 'watchlist', href: '/favorites', Icon: Star, match: (p: string) => p === '/favorites' },
   { key: 'my', href: '/mypage', Icon: User, match: (p: string) => p === '/mypage' },
 ] as const;

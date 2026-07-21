@@ -20,7 +20,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-bold text-white">{t('serviceHeading')}</h4>
             <ul className="space-y-2">
-              <li><Link href="/" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('stocksProducts')}</Link></li>
+              <li><Link href="/explore" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('stocksProducts')}</Link></li>
               <li><Link href="/about" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('aboutService')}</Link></li>
             </ul>
           </div>

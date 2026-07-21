@@ -1,5 +1,3 @@
-import FavoritesClient from '@/components/favorites/FavoritesClient';
-import RoomFavoritesClient from '@/components/favorites/RoomFavoritesClient';
 import WatchlistClient from '@/components/favorites/WatchlistClient';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -9,6 +7,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: locale === "en" ? "Favorites" : "즐겨찾기" };
 }
 
+// 관심 = 종목만(STEP 767b 필드 대전환) — 링크·리딩방 즐겨찾기 섹션은 정보탭/검증 파킹과 함께 렌더 제거.
+// FavoritesClient·RoomFavoritesClient 컴포넌트 코드는 보존(docs/PARKED_FIELD_SURFACES.md 복원 절차 참고).
 export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale); // 정적 렌더 유지
@@ -20,23 +20,11 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
         <p className="mt-1 text-sm text-unjong-muted">{t('desc')}</p>
       </div>
 
-      <section className="mb-7">
+      <section>
         <h2 className="text-base font-bold text-unjong-primary">{t('watchlist')}</h2>
         <p className="mb-2 text-xs text-unjong-muted">{t('watchlistHero')}</p>
         <WatchlistClient />
       </section>
-
-      <section className="mb-7">
-        <h2 className="mb-2 text-sm font-bold text-unjong-primary">{t('links')}</h2>
-        <FavoritesClient />
-      </section>
-
-      {locale !== 'en' && (
-        <section>
-          <h2 className="mb-2 text-sm font-bold text-unjong-primary">{t('rooms')}</h2>
-          <RoomFavoritesClient />
-        </section>
-      )}
     </main>
   );
 }

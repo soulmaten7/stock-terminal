@@ -7,7 +7,6 @@ import { User, Star, LogOut } from 'lucide-react';
 import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
-import { useHomeReset } from '@/stores/homeResetStore';
 
 // 헤더 = 언어 선택(시장 선택 아님 — 시장은 페이지의 한국/미국 토글이 담당).
 // 언어명은 t()로 감싸지 않는다 — 언어는 항상 자기 언어로 표기한다(한국어는 언제나 '한국어').
@@ -19,10 +18,10 @@ const LANGS: { code: 'ko' | 'en'; name: string; flag: string }[] = [
 export default function Header() {
   const t = useTranslations('Header');
   const locale = useLocale();
-  // PC 메뉴 순서·라벨(STEP 766) — 오늘·탐색·소개. 관심은 우측 별 아이콘이 담당(메뉴 중복 금지). 모바일은 하단 탭바가 전담(nav 자체를 sm:flex로 숨김).
+  // PC 메뉴 순서·라벨(필드 대전환 STEP 767b) — 오늘(루트)·탐색·소개. 관심은 우측 별 아이콘이 담당(메뉴 중복 금지). 모바일은 하단 탭바가 전담(nav 자체를 sm:flex로 숨김).
   const MENU = [
-    { href: '/today', label: t('today'), ready: true, match: (p: string) => p === '/today' },
-    { href: '/', label: t('explore'), ready: true, match: (p: string) => p === '/' },
+    { href: '/', label: t('today'), ready: true, match: (p: string) => p === '/' },
+    { href: '/explore', label: t('explore'), ready: true, match: (p: string) => p === '/explore' },
     // { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장 (베타 전 숨김·데이터 없어 노출 시 전문성↓. 복구=이 줄 주석만 해제)
     { href: '/about', label: t('about'), ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
   ] as const;
@@ -36,10 +35,6 @@ export default function Header() {
   const profileRef = useRef<HTMLDivElement>(null);
   const coinRef = useRef<HTMLDivElement>(null);
   const currentLang = LANGS.find((l) => l.code === locale) ?? LANGS[0];
-  const reset = useHomeReset((s) => s.reset);
-  // 홈 리셋 = 뷰(탭·서브)만 홈으로. 국가 선택은 유지(STEP 748). 로케일 홈 URL 복귀는 Link href="/"가 담당.
-  // onClick에 reset을 그대로 넘기면 MouseEvent가 인자로 들어가므로 반드시 감싼다.
-  const resetHome = () => reset();
 
   // 언어 전환 = 지금 보는 페이지 그대로 로케일만 교체.
   // pathname은 로케일이 벗겨진 경로(/en/about → /about)라 그대로 넘기면 되고,
@@ -74,7 +69,7 @@ export default function Header() {
     <header className="border-b border-white/10 bg-[#0E1116]">
       <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
         {/* 로고 */}
-        <Link href="/" onClick={() => resetHome()} className="flex shrink-0 items-center gap-2 hover:opacity-80">
+        <Link href="/" className="flex shrink-0 items-center gap-2 hover:opacity-80">
           <svg viewBox="0 0 100 100" className="h-6 w-6 shrink-0 lg:h-8 lg:w-8" aria-hidden="true">
             <rect x="16" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
             <rect x="42.5" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
@@ -119,7 +114,6 @@ export default function Header() {
               <Link
                 key={m.label}
                 href={m.href}
-                onClick={() => { if (m.href === '/') resetHome(); }}
                 aria-current={isActive ? 'page' : undefined}
                 className={
                   isActive

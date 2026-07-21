@@ -234,7 +234,7 @@ export default function TodayClient() {
           {!user || !hasWatchlist ? (
             <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center">
               <p className="text-sm font-medium text-unjong-primary">{t('onboardingTitle')}</p>
-              <Link href="/" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('onboardingCta')}</Link>
+              <Link href="/explore" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('onboardingCta')}</Link>
             </div>
           ) : (
             <>
@@ -293,7 +293,7 @@ export default function TodayClient() {
             </div>
           )}
           {homeChanges && homeChanges.count != null && homeChanges.count > 5 ? (
-            <Link href="/" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
+            <Link href="/explore?list=changes" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
           ) : null}
         </section>
 

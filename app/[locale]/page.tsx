@@ -1,41 +1,12 @@
 import type { Metadata } from "next";
-import { createClient } from "@/lib/supabase/server";
-import ToolboxClient from "@/components/toolbox/ToolboxClient";
+import TodayClient from "@/components/today/TodayClient";
 import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
-import { getTranslations } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-// 값=ko.json 키. 이 label은 ToolboxClient의 '링크 준비 중' 안내에 렌더됨.
-const CATEGORY_KEYS: Record<string, string> = {
-  news: "category.news",
-  chart: "category.chart",
-  analysis: "category.analysis",
-  disclosure: "category.disclosure",
-  research: "category.research",
-  etf: "category.etf",
-  ipo: "category.ipo",
-  macro: "category.macro",
-  community: "category.community",
-  exchange: "category.exchange",
-};
-const CATEGORY_ORDER = ["news", "chart", "analysis", "disclosure", "research", "etf", "ipo", "macro", "community", "exchange"];
-
-type LinkRow = {
-  id: number;
-  country: string | null;
-  category: string;
-  site_name: string;
-  site_name_en: string | null;
-  site_url: string;
-  description: string | null;
-  description_en: string | null;
-  logo_url: string | null;
-  display_order: number | null;
-};
 
 // 홈 구조화 데이터 — 구글이 '이 사이트=Trillion(트릴리언) 금융 정보 허브'라고 이해하도록.
 // Organization(발행처) + WebSite(사이트). 종목 검색 결과 페이지가 없어 SearchAction은 넣지 않음(가짜 마크업 금지).
@@ -91,56 +62,11 @@ export async function generateMetadata({
   };
 }
 
+// 필드 대전환(STEP 767b) — 루트 = 오늘 콘텐츠(구 보드 대체). 메타(위 alternates)·OG(레이아웃 상속)는 SEO 연속성 위해 유지.
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations('Home');
+  setRequestLocale(locale);
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
-  const supabase = await createClient();
-
-  const { data: links } = await supabase
-    .from("link_hub")
-    .select("id, country, category, site_name, site_name_en, site_url, description, description_en, logo_url, display_order")
-    .eq("is_active", true)
-    .order("display_order", { ascending: true });
-
-  const { data: ytRows } = await supabase
-    .from("youtube_channels")
-    .select("rank, title, thumbnail_url, subscriber_count, channel_url, week_label, description")
-    .eq("country", "KR")
-    .order("rank", { ascending: true });
-  const youtubeChannels = ytRows ?? [];
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  let favSet = new Set<number>();
-  if (user) {
-    const { data: favs } = await supabase
-      .from("link_hub_favorites")
-      .select("link_id")
-      .eq("user_id", user.id);
-    favSet = new Set((favs ?? []).map((f: { link_id: number }) => f.link_id));
-  }
-
-  const rows = (links ?? []) as LinkRow[];
-  const grouped: Record<string, (LinkRow & { isFavorite: boolean })[]> = {};
-  for (const link of rows) {
-    (grouped[link.category] ??= []).push({
-      ...link,
-      site_name: locale === "en" ? (link.site_name_en ?? link.site_name) : link.site_name,
-      description: locale === "en" ? (link.description_en ?? link.description) : link.description,
-      isFavorite: favSet.has(link.id),
-    });
-  }
-
-  const categories = Object.keys(grouped)
-    .sort((a, b) => {
-      const ia = CATEGORY_ORDER.indexOf(a);
-      const ib = CATEGORY_ORDER.indexOf(b);
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-    })
-    .map((slug) => ({ slug, label: CATEGORY_KEYS[slug] ? t(CATEGORY_KEYS[slug]) : slug, links: grouped[slug]! }));
 
   return (
     <>
@@ -149,9 +75,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <div className="mx-auto max-w-7xl px-0 pt-0 pb-4 sm:px-6 sm:py-6">
-        <ToolboxClient initialCategories={categories} isLoggedIn={!!user} youtubeChannels={youtubeChannels} />
-      </div>
+      <TodayClient />
     </>
   );
 }

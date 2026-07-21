@@ -79,7 +79,7 @@
       "brokerWhere": "Stocks · products tab · every 10 rows of the stock table or brokerage list",
       "brokerDesc": "Show account openings and events to users looking for stock information.",
       "roomTitle": "Advisory room slot",
-      "roomWhere": "Advisory rooms · verification tab · top or middle of the list",
+      "roomWhere": "On hold — paused during a field restructuring (planned to resume later)",
       "roomDesc": "Only firms that have filed as an investment advisory business and completed operator verification can appear at the top.",
       "feedTitle": "Content feed slot",
       "feedWhere": "Top or middle of information lists — news, filings, reports, YouTube, and more",
@@ -195,7 +195,7 @@
   },
   "Favorites": {
     "title": "⭐ Favorites",
-    "desc": "See your starred stocks through the lenses, and keep your links in one place.",
+    "desc": "See your starred stocks through the lenses.",
     "watchlist": "Watchlist",
     "links": "Links",
     "rooms": "Advisory rooms · verification",
@@ -207,7 +207,7 @@
     "emptyLinks": "No favorites yet.<br></br>Tap ⭐ in a category list to add one.",
     "goCategories": "Browse categories →",
     "emptyRooms": "Tap ⭐ under Advisory rooms · verification and they gather here.",
-    "emptyWatchlist": "Your watchlist is empty.<br></br>Tap ⭐ in the Stocks · products tab to add one.",
+    "emptyWatchlist": "Your watchlist is empty.<br></br>Tap ⭐ in Explore to add one.",
     "lensLoading": "Reading lenses…",
     "lensSummary": "{pos} strong · {warn} caution · {flat} neutral",
     "watchlistHero": "Your starred stocks, seen through the lenses."
