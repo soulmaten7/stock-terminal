@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만.** (CLAUDE.md 문서 규칙)
 
 ## HEAD / 배포
-- 코드 HEAD **`bcede03`**(STEP 767b · 🔥 TR-AI 전면화 완결) · origin/main 동기화 · 트리 클린 · **배포 ✓ onetrillion.app** · CI 그린. ⚠️ **Vercel = Hobby: 크론 일 1회 한도(위반 시 배포 거부) · 하루 100 배포.**
+- 코드 HEAD **`abbec48`**(STEP 771 · 폴리시 3라운드 완료 — 768~771: 헤더/티커 정리·기준 라벨·풀블리드·단일 탭 행·상세 별·**홈 즉시 페인트**) · origin/main 동기화 · 트리 클린 · **배포 ✓ onetrillion.app** · CI 그린. ⚠️ **Vercel = Hobby: 크론 일 1회 한도(위반 시 배포 거부) · 하루 100 배포.**
 
 ## 정체성 (권위 = `docs/BRAND_IDENTITY.md`)
 - 사업자 **원트릴리언** · 대표 장은태 · 210-39-33812 · contact@onetrillion.app.
