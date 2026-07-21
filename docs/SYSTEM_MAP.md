@@ -65,8 +65,12 @@
 ## 9. 폴더
 `app/`(라우트·API) · `components/` · `lib/`(파이프라인·유틸·API) · `stores/`(Zustand) · `i18n/`·`messages/`(next-intl) · `data/`(시드 심볼·로고 도메인) · `supabase/`(마이그레이션) · `scripts/`(백테스트·enrich·시드) · `public/` · `types/` · `docs/` · `research/`.
 
-**핵심 파일 맵**:
-- 홈/게이트웨이: `app/page.tsx`(`CATEGORY_LABELS`·`force-dynamic`) · `components/toolbox/ToolboxClient.tsx`(`TAB_ORDER`·국가가드·피드맵)
+**핵심 파일 맵** (🔥 07-21 필드 5면 전환 — CHANGELOG 07-21):
+- **오늘(홈 `/`)**: `components/today/`(TodayClient — 렌즈 변화 다이제스트) · 원료 = `lens_state_changes`(일일 diff·`lensPrecompute`가 기록) + `/api/today/changes`
+- **탐색(`/explore`)**: `components/explore/`(검색+렌즈 목록 3종) · `/api/search`(6개국 인메모리 인덱스) · `/api/explore/lens-top`
+- **내비**: `components/layout/MobileTabBar.tsx`(모바일 하단 4탭) · Header(PC: 오늘·탐색·소개)
+- 🅿️ **파킹(렌더 경로 없음·코드/크론/데이터 보존)**: 구 6개국 터미널 보드·정보 탭·유튜브·검증(유사투자자문) — 목록·복원 절차 = `docs/PARKED_FIELD_SURFACES.md`
+- (구) 홈/게이트웨이: `components/toolbox/ToolboxClient.tsx` — 파킹됨(피드·링크 UI 포함)
 - 종목보드: `components/toolbox/{MarketBoard,UsMarketBoard,JpMarketBoard,CnMarketBoard,VnMarketBoard,GbMarketBoard}.tsx` + 공유 `LensPreview.tsx`·`BoardTopLensCard.tsx`
 - 종목상세: `app/[locale]/stock/[symbol]/page.tsx` → `StockLensClient.tsx`(+`EtfLensClient.tsx`) · 이름 `lib/stockName.ts`
 - 렌즈 엔진: `lib/lensCompute.ts`·`lib/lenses.ts`·`lib/lensCopy.ts`(이중언어) · 선계산 `lib/lensPrecompute.ts`
