@@ -335,7 +335,7 @@
   "Header": {
     "tagline": "An eye for stocks — for everyone",
     "mainNav": "Main navigation",
-    "stocks": "Stocks",
+    "explore": "Explore",
     "coin": "Coin",
     "about": "About",
     "today": "Today",
@@ -913,5 +913,11 @@
     "railWatchlistTitle": "My watchlist",
     "railWatchlistLogin": "Log in to see your watchlist",
     "railViewAll": "All →"
+  },
+  "Nav": {
+    "today": "Today",
+    "explore": "Explore",
+    "watchlist": "Watchlist",
+    "my": "My"
   }
 }

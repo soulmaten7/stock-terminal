@@ -19,11 +19,12 @@ const LANGS: { code: 'ko' | 'en'; name: string; flag: string }[] = [
 export default function Header() {
   const t = useTranslations('Header');
   const locale = useLocale();
+  // PC 메뉴 순서·라벨(STEP 766) — 오늘·탐색·소개. 관심은 우측 별 아이콘이 담당(메뉴 중복 금지). 모바일은 하단 탭바가 전담(nav 자체를 sm:flex로 숨김).
   const MENU = [
-    { href: '/', label: t('stocks'), ready: true, match: (p: string) => p === '/' },
+    { href: '/today', label: t('today'), ready: true, match: (p: string) => p === '/today' },
+    { href: '/', label: t('explore'), ready: true, match: (p: string) => p === '/' },
     // { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장 (베타 전 숨김·데이터 없어 노출 시 전문성↓. 복구=이 줄 주석만 해제)
     { href: '/about', label: t('about'), ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
-    { href: '/today', label: t('today'), ready: true, match: (p: string) => p === '/today' }, // 오늘(모닝 다이제스트) 임시 진입점 — 내비 재편은 STEP 766
   ] as const;
   const router = useRouter();
   const pathname = usePathname() ?? '/';
@@ -90,7 +91,7 @@ export default function Header() {
         </Link>
 
         {/* 네비 탭 */}
-        <nav className="flex shrink-0 items-center" aria-label={t('mainNav')}>
+        <nav className="hidden shrink-0 items-center sm:flex" aria-label={t('mainNav')}>
           {MENU.map((m) => {
             const isActive = m.match(pathname);
             // 준비 중 탭(코인 등): 클릭 시 팝오버

@@ -335,7 +335,7 @@
   "Header": {
     "tagline": "종목을 보는 눈을, 누구에게나",
     "mainNav": "메인 네비",
-    "stocks": "주식",
+    "explore": "탐색",
     "coin": "코인",
     "about": "소개",
     "today": "오늘",
@@ -913,5 +913,11 @@
     "railWatchlistTitle": "내 관심종목",
     "railWatchlistLogin": "로그인하면 관심종목을 볼 수 있어요",
     "railViewAll": "전체 →"
+  },
+  "Nav": {
+    "today": "오늘",
+    "explore": "탐색",
+    "watchlist": "관심",
+    "my": "마이"
   }
 }
