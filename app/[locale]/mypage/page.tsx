@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
+import { clearCache } from '@/lib/clientCache';
 import { useTranslations } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
-import { User, ShieldCheck, Activity as ActivityIcon, Siren, Trash2, Star, AlertTriangle } from 'lucide-react';
+import { User, ShieldCheck, Activity as ActivityIcon, Siren, Trash2, Star, AlertTriangle, LogOut } from 'lucide-react';
 
 type Tab = 'profile' | 'account' | 'activity';
 type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
   const t = useTranslations('MyPage');
+  const tHeader = useTranslations('Header'); // '로그아웃' 재사용(dedup)
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
   const [activeTab, setActiveTab] = useState<Tab>('profile');
@@ -101,6 +103,14 @@ export default function MyPage() {
     });
     if (res.ok) setMyReports((prev) => prev.filter((r) => r.id !== id));
     else { const j = await res.json().catch(() => ({})); alert(j.error ?? t('withdrawFail')); }
+  };
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    useAuthStore.getState().setUser(null);
+    clearCache();
+    router.push('/');
   };
 
   const handleDeleteAccount = async () => {
@@ -211,6 +221,13 @@ export default function MyPage() {
                 <p className="text-sm text-unjong-muted">{t('googleOnlyNote')}</p>
               )}
             </div>
+          </div>
+
+          {/* 로그아웃 — 모바일은 헤더 아이콘이 숨겨져(STEP 768) 여기가 유일한 로그아웃 경로 */}
+          <div className="rounded-xl border border-unjong-border bg-unjong-surface p-6">
+            <button type="button" onClick={handleLogout} className="flex items-center gap-2 rounded-lg border border-unjong-border px-4 py-2 text-sm font-semibold text-unjong-primary hover:bg-unjong-background">
+              <LogOut size={15} /> {tHeader('logout')}
+            </button>
           </div>
 
           {/* 위험 구역 */}

@@ -158,36 +158,39 @@ export default function Header() {
             )}
           </div>
 
-          {/* 즐겨찾기 */}
-          <Link href="/favorites" className="p-1 text-white/70 transition-colors hover:text-[#2DD4BF]" aria-label={t('favorites')} title={t('favorites')}>
+          {/* 즐겨찾기 — PC 전용(모바일은 하단 탭바 '관심'이 담당·STEP 768) */}
+          <Link href="/favorites" className="hidden p-1 text-white/70 transition-colors hover:text-[#2DD4BF] sm:block" aria-label={t('favorites')} title={t('favorites')}>
             <Star size={18} />
           </Link>
 
-          {!user ? (
-            <Link href="/auth/login" className="p-1 text-white/70 transition-colors hover:text-white" title={t('login')}>
-              <User size={18} />
-            </Link>
-          ) : (
-            <div ref={profileRef} className="relative">
-              <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2DD4BF] text-xs font-bold text-[#0E1116] transition-opacity hover:opacity-90" aria-label={t('profileMenu')} title={user.nickname || user.email || ''}>
-                {(user.nickname || user.email || 'U').charAt(0).toUpperCase()}
-              </button>
-              {profileOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
-                  <div className="border-b border-unjong-border px-4 py-3">
-                    <p className="text-sm font-bold text-unjong-primary">{user.nickname}</p>
-                    <p className="text-sm text-unjong-muted">{user.email}</p>
+          {/* 로그인/프로필 — PC 전용(모바일은 하단 탭바 '마이'가 담당·STEP 768) */}
+          <div className="hidden sm:block">
+            {!user ? (
+              <Link href="/auth/login" className="p-1 text-white/70 transition-colors hover:text-white" title={t('login')}>
+                <User size={18} />
+              </Link>
+            ) : (
+              <div ref={profileRef} className="relative">
+                <button type="button" onClick={() => setProfileOpen(!profileOpen)} className="flex h-7 w-7 items-center justify-center rounded-full bg-[#2DD4BF] text-xs font-bold text-[#0E1116] transition-opacity hover:opacity-90" aria-label={t('profileMenu')} title={user.nickname || user.email || ''}>
+                  {(user.nickname || user.email || 'U').charAt(0).toUpperCase()}
+                </button>
+                {profileOpen && (
+                  <div className="absolute right-0 top-full z-50 mt-2 w-48 overflow-hidden border border-unjong-border bg-unjong-surface shadow-lg">
+                    <div className="border-b border-unjong-border px-4 py-3">
+                      <p className="text-sm font-bold text-unjong-primary">{user.nickname}</p>
+                      <p className="text-sm text-unjong-muted">{user.email}</p>
+                    </div>
+                    <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>{t('mypage')}</Link>
+                    <Link href="/advertise" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>{t('adInquiry')}</Link>
+                    <div className="border-t border-unjong-border" />
+                    <button onClick={handleLogout} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-bold text-unjong-danger hover:bg-unjong-background">
+                      <LogOut className="h-4 w-4" /> {t('logout')}
+                    </button>
                   </div>
-                  <Link href="/mypage" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>{t('mypage')}</Link>
-                  <Link href="/advertise" className="block px-4 py-2.5 text-sm text-unjong-primary hover:bg-unjong-background" onClick={() => setProfileOpen(false)}>{t('adInquiry')}</Link>
-                  <div className="border-t border-unjong-border" />
-                  <button onClick={handleLogout} className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-bold text-unjong-danger hover:bg-unjong-background">
-                    <LogOut className="h-4 w-4" /> {t('logout')}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>
