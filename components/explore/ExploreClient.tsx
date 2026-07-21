@@ -10,6 +10,7 @@ import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCop
 import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
+import { pickKrName } from '@/lib/krNameFormat';
 import { Star, Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
@@ -21,7 +22,7 @@ type LensTopItem = { symbol: string; name: string; tones: Tones; price: number |
 type ChangeItem = {
   symbol: string; name: string | null; lensKey: string;
   fromState: string | null; toState: string; fromTone: Tone | null; toTone: Tone; tradeAmount: number | null;
-  price: number | null; changePercent: number | null;
+  price: number | null; changePercent: number | null; nameKo?: string | null; nameEn?: string | null;
 };
 type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
 type BoardRow = { symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null };
@@ -44,6 +45,10 @@ function stateLabel(loc: Locale, key: string, state: string | null): string {
   if (!state) return '—';
   const readings = (LENS_READINGS[loc] as unknown as Record<string, Record<string, { phrase: string }>>)[key];
   return readings?.[state]?.phrase ?? state;
+}
+// 행 폭이 좁아 괄호 보조어까지 못 담을 때(예 "하락 추세 (200일선 아래)") 메인 상태만 — 원문은 상세에서(STEP 770 §4).
+function compactPhrase(s: string): string {
+  return s.replace(/\s*\([^)]*\)\s*$/, '');
 }
 function todayUtcDate(): string {
   return new Date().toISOString().slice(0, 10);
@@ -84,6 +89,12 @@ function AsOfBadge({ date, loc }: { date: string | null; loc: Locale }) {
   return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
+// 섹션 헤더 우측 기준 라벨 — 행마다 붙던 "어제" 프리픽스를 섹션당 한 번으로(STEP 770 §1).
+function BasisLabel() {
+  const tCommon = useTranslations('Common');
+  return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{tCommon('priceChangeBasis')}</span>;
+}
+
 function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boolean; onToggle: (symbol: string) => void }) {
   const t = useTranslations('Board');
   return (
@@ -99,14 +110,10 @@ function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boo
 }
 
 function PriceCell({ price, changePercent, market }: { price: number | null; changePercent: number | null; market: Country }) {
-  const tCommon = useTranslations('Common');
   return (
     <div className="flex shrink-0 flex-col items-end gap-0.5">
       <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{price != null ? formatPrice(price, market) : '—'}</span>
-      <span className="flex items-center gap-1 text-[13px] tabular-nums sm:text-[11px]">
-        <span className="text-unjong-muted">{tCommon('yesterdayShort')}</span>
-        <span className={pctColor(changePercent)}>{pct(changePercent)}</span>
-      </span>
+      <span className={`text-[13px] tabular-nums sm:text-[11px] ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
     </div>
   );
 }
@@ -141,8 +148,13 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
 }) {
   const t = useTranslations('Today');
   const key = item.lensKey as LensKey;
-  const line = t('lensChangeLine', { lensName: lensName(loc, key), from: stateLabel(loc, key, item.fromState), to: stateLabel(loc, key, item.toState) });
-  const name = item.name ?? item.symbol;
+  const line = t('lensChangeLine', {
+    lensName: lensName(loc, key),
+    from: compactPhrase(stateLabel(loc, key, item.fromState)),
+    to: compactPhrase(stateLabel(loc, key, item.toState)),
+  });
+  // KR 심볼명 = 공용 util(pickKrName·STEP 770 §3, 오늘·탐색 동일 함수) — item.nameKo/nameEn 없으면(US) 원본 폴백.
+  const name = pickKrName(loc, item.nameKo, item.nameEn, item.name ?? item.symbol);
   return (
     <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
       <Link href={`/stock/${item.symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -283,7 +295,7 @@ export default function ExploreClient() {
 
   function Skeleton() {
     return (
-      <div className="space-y-2 py-2">
+      <div className="space-y-2 px-4 py-2 sm:px-0">
         {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-11 animate-pulse rounded bg-unjong-background" />)}
       </div>
     );
@@ -294,16 +306,19 @@ export default function ExploreClient() {
     const titleKey = activeList === 'changes' ? 'changesTitle' : activeList === 'pos' ? 'posTitle' : 'amountTitle';
     const asOfDate = activeList === 'changes' ? changes?.date ?? null : null;
     return (
-      <div className="mx-auto max-w-[680px] px-4 py-6 sm:px-6">
-        <button type="button" onClick={() => router.back()} className="mb-4 inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent">
+      <div className="mx-auto max-w-[680px] py-6 sm:px-6">
+        <button type="button" onClick={() => router.back()} className="mb-4 ml-4 inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent sm:ml-0">
           <ArrowLeft size={20} />
           {tLogin('back')}
         </button>
-        <div className="mb-3 flex items-center">
-          <h1 className="text-lg font-bold text-unjong-primary">{t(titleKey)}</h1>
-          <AsOfBadge date={asOfDate} loc={loc} />
+        <div className="mb-3 flex items-center justify-between px-4 sm:px-0">
+          <div className="flex items-center">
+            <h1 className="text-lg font-bold text-unjong-primary">{t(titleKey)}</h1>
+            <AsOfBadge date={asOfDate} loc={loc} />
+          </div>
+          <BasisLabel />
         </div>
-        <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+        <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
           {activeList === 'changes' ? (
             changes === null ? <Skeleton /> : changes.items.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               changes.items.map((item, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />)
@@ -312,7 +327,7 @@ export default function ExploreClient() {
               posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           ) : (
             amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={loc === 'en' ? (r.nameEn ?? r.name) : r.name} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={pickKrName(loc, r.name, r.nameEn, r.name)} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           )}
         </div>
       </div>
@@ -321,9 +336,9 @@ export default function ExploreClient() {
 
   // ── 메인 뷰 ──
   return (
-    <div className="mx-auto max-w-[680px] px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-[680px] py-6 sm:px-6">
       {/* 검색 — 주인공 */}
-      <div ref={searchBoxRef} className="relative mb-6">
+      <div ref={searchBoxRef} className="relative mb-6 px-4 sm:px-0">
         <div className="relative">
           <SearchIcon size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-unjong-muted" />
           <input
@@ -370,28 +385,31 @@ export default function ExploreClient() {
       </div>
 
       {/* 국가 토글 */}
-      <div className="mb-6 flex gap-1">
+      <div className="mb-6 flex gap-1 px-4 sm:px-0">
         <button type="button" onClick={() => selectMarket('KR')} className={chipClass(market === 'KR')}>{t('countryKr')}</button>
         <button type="button" onClick={() => selectMarket('US')} className={chipClass(market === 'US')}>{t('countryUs')}</button>
       </div>
 
       {/* 목록 1: 오늘 상태가 바뀐 종목 */}
       <section className="mb-7">
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
           <div className="flex items-center">
             <h2 className="text-base font-bold text-unjong-primary">{t('changesTitle')}</h2>
             <AsOfBadge date={changes?.date ?? null} loc={loc} />
           </div>
-          {changes && changes.count != null && changes.count > 0 ? (
-            <Link href="/explore?list=changes" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreCount', { n: changes.count })}</Link>
-          ) : null}
+          <div className="flex flex-col items-end gap-0.5">
+            {changes && changes.count != null && changes.count > 0 ? (
+              <Link href="/explore?list=changes" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreCount', { n: changes.count })}</Link>
+            ) : null}
+            <BasisLabel />
+          </div>
         </div>
         {listsFailed.changes ? null : changes === null ? (
           <Skeleton />
         ) : changes.items.length === 0 ? (
-          <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p>
+          <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
         ) : (
-          <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+          <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {changes.items.slice(0, 5).map((item, i) => (
               <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />
             ))}
@@ -401,16 +419,19 @@ export default function ExploreClient() {
 
       {/* 목록 2: 강점이 많은 종목 */}
       <section className="mb-7">
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
           <h2 className="text-base font-bold text-unjong-primary">{t('posTitle')}</h2>
-          {posTop && posTop.length > 0 ? <Link href="/explore?list=pos" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
+          <div className="flex flex-col items-end gap-0.5">
+            {posTop && posTop.length > 0 ? <Link href="/explore?list=pos" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
+            <BasisLabel />
+          </div>
         </div>
         {listsFailed.pos ? null : posTop === null ? (
           <Skeleton />
         ) : posTop.length === 0 ? (
-          <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p>
+          <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
         ) : (
-          <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+          <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {posTop.slice(0, 5).map((r) => (
               <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
@@ -420,24 +441,27 @@ export default function ExploreClient() {
 
       {/* 목록 3: 오늘 거래가 많았던 종목 */}
       <section className="mb-7">
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
           <h2 className="text-base font-bold text-unjong-primary">{t('amountTitle')}</h2>
-          {amountTop && amountTop.length > 0 ? <Link href="/explore?list=amount" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
+          <div className="flex flex-col items-end gap-0.5">
+            {amountTop && amountTop.length > 0 ? <Link href="/explore?list=amount" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
+            <BasisLabel />
+          </div>
         </div>
         {listsFailed.amount ? null : amountTop === null ? (
           <Skeleton />
         ) : amountTop.length === 0 ? (
-          <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p>
+          <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
         ) : (
-          <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+          <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {amountTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={loc === 'en' ? (r.nameEn ?? r.name) : r.name} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={pickKrName(loc, r.name, r.nameEn, r.name)} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}
       </section>
 
-      <p className="text-[13px] leading-relaxed text-unjong-muted sm:text-xs">{tMaterial('material')}</p>
+      <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>
     </div>
   );
 }

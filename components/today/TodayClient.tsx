@@ -10,6 +10,7 @@ import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { cleanUsName } from '@/lib/usNameFormat';
 import { formatPrice } from '@/lib/currency';
+import { pickKrName } from '@/lib/krNameFormat';
 import foreignKoRaw from '@/data/foreign_ko_names.json';
 
 const FOREIGN_KO = foreignKoRaw as Record<string, string>;
@@ -27,6 +28,8 @@ type ChangeItem = {
   toTone: Tone;
   tradeAmount: number | null;
   price: number | null;
+  nameKo?: string | null;
+  nameEn?: string | null;
 };
 type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
 type IndexItem = { name: string; value: string; changeText: string; changePct: number; isUp: boolean; group: string };
@@ -53,6 +56,10 @@ function stateLabel(loc: Locale, key: string, state: string | null): string {
   if (!state) return '—';
   const readings = (LENS_READINGS[loc] as unknown as Record<string, Record<string, { phrase: string }>>)[key];
   return readings?.[state]?.phrase ?? state;
+}
+// 행 폭이 좁아 괄호 보조어까지 못 담을 때(예 "하락 추세 (200일선 아래)") 메인 상태만 — 원문은 상세에서(STEP 770 §4).
+function compactPhrase(s: string): string {
+  return s.replace(/\s*\([^)]*\)\s*$/, '');
 }
 
 async function fetchJson<T>(url: string): Promise<T | null> {
@@ -95,15 +102,24 @@ function AsOfBadge({ date, loc }: { date: string | null; loc: Locale }) {
   return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
+// 섹션 헤더 우측 기준 라벨 — 행마다 붙던 "어제" 프리픽스를 섹션당 한 번으로(STEP 770 §1).
+function BasisLabel() {
+  const t = useTranslations('Common');
+  return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{t('priceChangeBasis')}</span>;
+}
+
 function LensChangeRow({
   item, loc, changePercent, displayName, market,
 }: {
   item: ChangeItem; loc: Locale; changePercent: number | null; displayName: string; market: string;
 }) {
   const t = useTranslations('Today');
-  const tCommon = useTranslations('Common');
   const key = item.lensKey as LensKey;
-  const line = t('lensChangeLine', { lensName: lensName(loc, key), from: stateLabel(loc, key, item.fromState), to: stateLabel(loc, key, item.toState) });
+  const line = t('lensChangeLine', {
+    lensName: lensName(loc, key),
+    from: compactPhrase(stateLabel(loc, key, item.fromState)),
+    to: compactPhrase(stateLabel(loc, key, item.toState)),
+  });
   return (
     <Link href={`/stock/${item.symbol}`} className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
       <StockLogo code={item.symbol} name={displayName} size={30} />
@@ -116,10 +132,7 @@ function LensChangeRow({
       </div>
       <div className="flex shrink-0 flex-col items-end gap-0.5">
         <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{item.price != null ? formatPrice(item.price, market) : '—'}</span>
-        <span className="flex items-center gap-1 text-[13px] tabular-nums sm:text-[11px]">
-          <span className="text-unjong-muted">{tCommon('yesterdayShort')}</span>
-          <span className={pctColor(changePercent)}>{pct(changePercent)}</span>
-        </span>
+        <span className={`text-[13px] tabular-nums sm:text-[11px] ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
       </div>
     </Link>
   );
@@ -204,12 +217,11 @@ export default function TodayClient() {
   const railNames = homeMarket === 'KR' ? krListForRail : usListForRail;
   const railIndices = railNames.map((n) => indices.find((i) => i.name === n)).filter((x): x is IndexItem => !!x);
 
-  // US 종목명: 한글 오버라이드(ko만) → cleanUsName 축약 → 그래도 없으면 원본(STEP 765b). KR은 현행 그대로.
+  // 종목명: KR=공용 util(pickKrName·STEP 770 §3, 오늘·탐색 동일 함수) / US=한글 오버라이드(ko만) → cleanUsName 축약(STEP 765b).
   function nameFor(item: ChangeItem, market: Country): string {
     if (market === 'KR') {
       const info = krBoardMap.get(item.symbol);
-      if (loc === 'en') return info?.nameEn ?? item.name ?? item.symbol;
-      return info?.name ?? item.name ?? item.symbol;
+      return pickKrName(loc, info?.name, info?.nameEn, item.name ?? item.symbol);
     }
     if (loc === 'ko') {
       const ko = FOREIGN_KO[item.symbol.toUpperCase()];
@@ -225,10 +237,10 @@ export default function TodayClient() {
   }
 
   return (
-    <div className="mx-auto max-w-[1040px] px-4 py-6 sm:px-6 lg:flex lg:items-start lg:gap-8">
+    <div className="mx-auto max-w-[1040px] py-6 sm:px-6 lg:flex lg:items-start lg:gap-8">
       <main className="min-w-0 flex-1 lg:max-w-[680px]">
         {/* 1) 헤더 — 날짜가 주인공(목업대로·STEP 765b), "오늘" H1·부제 제거(페이지 <title>은 유지) */}
-        <div className="mb-6">
+        <div className="mb-6 px-4 sm:px-0">
           <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{formattedDate}</h1>
           {homeIndex ? (
             <p className="mt-2 text-[15px] font-medium text-unjong-primary sm:text-sm">
@@ -241,20 +253,23 @@ export default function TodayClient() {
         {/* 2) 내 관심종목 · 렌즈 변화 */}
         <section className="mb-7">
           {!user || !hasWatchlist ? (
-            <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center">
+            <div className="mx-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center sm:mx-0">
               <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('onboardingTitle')}</p>
               <Link href="/explore" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('onboardingCta')}</Link>
             </div>
           ) : (
             <>
-              <div className="mb-2 flex items-center">
-                <h2 className="text-base font-bold text-unjong-primary">{t('watchlistChangesTitle')}</h2>
-                <AsOfBadge date={watchlistChangesDate} loc={loc} />
+              <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+                <div className="flex items-center">
+                  <h2 className="text-base font-bold text-unjong-primary">{t('watchlistChangesTitle')}</h2>
+                  <AsOfBadge date={watchlistChangesDate} loc={loc} />
+                </div>
+                <BasisLabel />
               </div>
               {watchlistChanges.length === 0 ? (
-                <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noWatchlistChangesToday')}</p>
+                <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noWatchlistChangesToday')}</p>
               ) : (
-                <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+                <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
                   {watchlistChanges.slice(0, 4).map((item, i) => {
                     const q = quoteMap.get(item.symbol);
                     const displayName = q ? (loc === 'en' ? (q.name_en ?? q.name_ko) : q.name_ko) : (item.name ?? item.symbol);
@@ -264,21 +279,24 @@ export default function TodayClient() {
                   })}
                 </div>
               )}
-              <Link href="/favorites" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('viewAllWatchlist')}</Link>
+              <Link href="/favorites" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewAllWatchlist')}</Link>
             </>
           )}
         </section>
 
         {/* 3) 간밤 미국 */}
         <section className="mb-7">
-          <div className="mb-2 flex items-center">
-            <h2 className="text-base font-bold text-unjong-primary">{t('overnightUsTitle')}</h2>
-            <AsOfBadge date={usChanges?.date ?? null} loc={loc} />
+          <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+            <div className="flex items-center">
+              <h2 className="text-base font-bold text-unjong-primary">{t('overnightUsTitle')}</h2>
+              <AsOfBadge date={usChanges?.date ?? null} loc={loc} />
+            </div>
+            <BasisLabel />
           </div>
           {(usChanges?.items.length ?? 0) === 0 ? (
-            <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noChangesToday')}</p>
+            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
           ) : (
-            <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+            <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
               {(usChanges?.items ?? []).slice(0, 5).map((item, i) => (
                 <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, 'US')} displayName={nameFor(item, 'US')} market="US" />
               ))}
@@ -288,26 +306,29 @@ export default function TodayClient() {
 
         {/* 4) 오늘 시장 변화(KR·en이면 US 우선) */}
         <section className="mb-7">
-          <div className="mb-2 flex items-center">
-            <h2 className="text-base font-bold text-unjong-primary">{t('marketChangesTitle')}</h2>
-            <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
+          <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+            <div className="flex items-center">
+              <h2 className="text-base font-bold text-unjong-primary">{t('marketChangesTitle')}</h2>
+              <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
+            </div>
+            <BasisLabel />
           </div>
           {(homeChanges?.items.length ?? 0) === 0 ? (
-            <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noChangesToday')}</p>
+            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
           ) : (
-            <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
+            <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
               {(homeChanges?.items ?? []).slice(0, 5).map((item, i) => (
                 <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, homeMarket)} displayName={nameFor(item, homeMarket)} market={homeMarket} />
               ))}
             </div>
           )}
           {homeChanges && homeChanges.count != null && homeChanges.count > 5 ? (
-            <Link href="/explore?list=changes" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
+            <Link href="/explore?list=changes" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
           ) : null}
         </section>
 
         {/* 5) 각주 */}
-        <p className="text-[13px] leading-relaxed text-unjong-muted sm:text-xs">{tMaterial('material')}</p>
+        <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>
       </main>
 
       {/* PC 우측 레일 */}

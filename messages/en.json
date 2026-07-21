@@ -16,7 +16,7 @@
     "goHome": "Go home",
     "coinTitle": "Coin — coming soon",
     "coinDesc": "We will ship it in the same structure once Korean stocks are complete.",
-    "yesterdayShort": "1d"
+    "priceChangeBasis": "Price · 1d change"
   },
   "Home": {
     "category": {

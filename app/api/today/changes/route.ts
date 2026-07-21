@@ -20,23 +20,24 @@ type ChangeRow = {
 const cache = new Map<string, { at: number; data: unknown }>();
 const TTL = 5 * 60 * 1000;
 
-type Snap = { price: number | null; changePercent: number | null };
+type Snap = { price: number | null; changePercent: number | null; nameKo: string | null; nameEn: string | null };
 
-// 현재가+어제 등락률 조인(STEP 769) — 스냅샷/us_perf 1000청크 규칙(기존 프로젝트 관례) 재사용.
+// 현재가+어제 등락률+KR 종목명(한글/영문) 조인(STEP 769·770) — 스냅샷/us_perf 1000청크 규칙(기존 프로젝트 관례) 재사용.
+// name/name_en은 KR만(kr_stock_snapshot에 있음) — lens_state_changes.name은 야후 영문 약칭이라 화면 표시에 직접 못 씀(STEP 770 §3).
 async function snapMap(sb: ReturnType<typeof createAdminClient>, market: string, symbols: string[]): Promise<Map<string, Snap>> {
   const map = new Map<string, Snap>();
   for (let i = 0; i < symbols.length; i += 1000) {
     const chunk = symbols.slice(i, i + 1000);
     if (chunk.length === 0) continue;
     if (market === "KR") {
-      const { data } = await sb.from("kr_stock_snapshot").select("symbol,price,change_percent").in("symbol", chunk);
-      for (const r of (data ?? []) as { symbol: string; price: number | null; change_percent: number | null }[]) {
-        map.set(r.symbol, { price: r.price, changePercent: r.change_percent });
+      const { data } = await sb.from("kr_stock_snapshot").select("symbol,price,change_percent,name,name_en").in("symbol", chunk);
+      for (const r of (data ?? []) as { symbol: string; price: number | null; change_percent: number | null; name: string | null; name_en: string | null }[]) {
+        map.set(r.symbol, { price: r.price, changePercent: r.change_percent, nameKo: r.name, nameEn: r.name_en });
       }
     } else {
       const { data } = await sb.from("us_stock_perf").select("symbol,price,r1d").in("symbol", chunk);
       for (const r of (data ?? []) as { symbol: string; price: number | null; r1d: number | null }[]) {
-        map.set(r.symbol, { price: r.price, changePercent: r.r1d });
+        map.set(r.symbol, { price: r.price, changePercent: r.r1d, nameKo: null, nameEn: null });
       }
     }
   }
@@ -133,6 +134,8 @@ export async function GET(req: NextRequest) {
       tradeAmount: r.trade_amount,
       price: snap?.price ?? null,
       changePercent: snap?.changePercent ?? null,
+      nameKo: snap?.nameKo ?? null,
+      nameEn: snap?.nameEn ?? null,
     };
   });
 
