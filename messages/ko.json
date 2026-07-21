@@ -15,7 +15,8 @@
     "notFoundDesc": "주소가 바뀌었거나 삭제된 페이지일 수 있어요.<br></br>홈에서 다시 찾아보세요.",
     "goHome": "홈으로",
     "coinTitle": "코인 — 준비 중",
-    "coinDesc": "한국 주식 먼저 완성한 뒤 같은 구조로 제공해요."
+    "coinDesc": "한국 주식 먼저 완성한 뒤 같은 구조로 제공해요.",
+    "yesterdayShort": "어제"
   },
   "Home": {
     "category": {
@@ -726,7 +727,7 @@
       "unclassified": "기타",
       "etc": "기타"
     },
-    "back": "← 목록으로",
+    "back": "목록으로",
     "badgeEtn": "ETN · 상품 정보",
     "badgeEtf": "ETF · 구성",
     "etnTitle": "상품 정보",
@@ -878,7 +879,7 @@
       "loading": "브리핑 만드는 중…",
       "footer": "검증된 기법 판정 + 공시 사실 기반 · 방향 판단은 하지 않아요"
     },
-    "back": "← 뒤로",
+    "back": "뒤로",
     "headerNote": "검증된 기법으로 이 종목을 읽는 여러 관점",
     "currentPrice": "현재가",
     "lensHeaderNote": "종합 매수·매도 점수는 없습니다 · 판단은 당신",

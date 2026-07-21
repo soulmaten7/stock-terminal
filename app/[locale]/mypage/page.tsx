@@ -7,10 +7,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { clearCache } from '@/lib/clientCache';
 import { useTranslations } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
-import { User, ShieldCheck, Activity as ActivityIcon, Siren, Trash2, Star, AlertTriangle, LogOut } from 'lucide-react';
+import { User, ShieldCheck, Activity as ActivityIcon, Star, AlertTriangle, LogOut } from 'lucide-react';
 
 type Tab = 'profile' | 'account' | 'activity';
-type MyReport = { id: number; target_name: string; reason: string; status: string; created_at: string };
 
 export default function MyPage() {
   const t = useTranslations('MyPage');
@@ -21,7 +20,6 @@ export default function MyPage() {
   const [nickname, setNickname] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const [myReports, setMyReports] = useState<MyReport[]>([]);
   const [watchlistCount, setWatchlistCount] = useState<number | null>(null);
   const [providers, setProviders] = useState<string[]>([]);
 
@@ -47,10 +45,6 @@ export default function MyPage() {
   }, [user, isLoading]);
 
   const loadData = async () => {
-    try {
-      const rep = await fetch('/api/reports').then((r) => r.json()).catch(() => ({}));
-      setMyReports(rep.reports ?? []);
-    } catch { /* ignore */ }
     try {
       const wl = await fetch('/api/watchlist').then((r) => r.json()).catch(() => ({}));
       setWatchlistCount(Array.isArray(wl.watchlist) ? wl.watchlist.length : 0);
@@ -95,14 +89,6 @@ export default function MyPage() {
     } finally {
       setPwSaving(false);
     }
-  };
-
-  const withdrawReport = async (id: number) => {
-    const res = await fetch('/api/reports', {
-      method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }),
-    });
-    if (res.ok) setMyReports((prev) => prev.filter((r) => r.id !== id));
-    else { const j = await res.json().catch(() => ({})); alert(j.error ?? t('withdrawFail')); }
   };
 
   const handleLogout = async () => {
@@ -277,40 +263,6 @@ export default function MyPage() {
             <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-unjong-primary"><Star size={15} />{t('watchlistTitle')}</p>
             <p className="mb-2 text-sm text-unjong-muted">{t('watchlistCount', { n: watchlistCount ?? 0 })}</p>
             <Link href="/favorites" className="text-sm font-semibold text-unjong-accent">{t('watchlistViewLink')}</Link>
-          </div>
-
-          <div>
-            <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-unjong-primary"><Siren size={15} />{t('tabReports')}</p>
-            <div className="rounded-xl border border-unjong-border bg-unjong-surface p-2">
-              {myReports.length === 0 ? (
-                <p className="p-5 text-center text-sm text-unjong-muted">{t('noReports')}</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[480px] text-sm">
-                    <thead>
-                      <tr className="border-b border-unjong-border text-xs text-unjong-muted">
-                        <th className="px-3 py-2 text-left font-medium">{t('colTarget')}</th>
-                        <th className="px-3 py-2 text-left font-medium">{t('colReason')}</th>
-                        <th className="px-3 py-2 text-left font-medium">{t('colStatus')}</th>
-                        <th className="px-3 py-2 text-left font-medium">{t('colDate')}</th>
-                        <th className="px-3 py-2 text-right font-medium">{t('colWithdraw')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {myReports.map((r) => (
-                        <tr key={r.id} className="border-b border-unjong-border last:border-0">
-                          <td className="px-3 py-2 text-unjong-primary">{r.target_name}</td>
-                          <td className="px-3 py-2 text-unjong-muted">{r.reason}</td>
-                          <td className="px-3 py-2"><span className={r.status === 'confirmed' ? 'font-medium text-emerald-400' : r.status === 'dismissed' ? 'text-unjong-muted line-through' : 'text-amber-400'}>{r.status === 'confirmed' ? t('statusConfirmed') : r.status === 'dismissed' ? t('statusDismissed') : t('statusPending')}</span></td>
-                          <td className="px-3 py-2 text-unjong-muted">{formatDate(r.created_at)}</td>
-                          <td className="px-3 py-2 text-right">{r.status === 'confirmed' ? <span className="text-xs text-unjong-muted">—</span> : <button type="button" onClick={() => withdrawReport(r.id)} title={t('withdraw')} className="text-unjong-muted hover:text-red-500"><Trash2 size={14} className="inline" /></button>}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       )}

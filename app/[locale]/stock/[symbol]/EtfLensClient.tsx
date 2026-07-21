@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { ExternalLink, Layers } from 'lucide-react';
+import { ExternalLink, Layers, ArrowLeft } from 'lucide-react';
 
 type Holding = { sym: string; name: string; weight: number };
 type Sector = { key: string; weight: number };
@@ -65,15 +65,18 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
   return (
     // 너비·뒤로가기는 종목 상세(StockLensClient)와 동일하게 — max-w-7xl main + max-w-4xl 콘텐츠 + router.back()
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="text-sm text-unjong-muted hover:text-unjong-accent">{t('back')}</button>
+      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent">
+        <ArrowLeft size={20} />
+        {t('back')}
+      </button>
 
       <div className="mt-3 max-w-4xl">
       {/* 헤더 */}
       <div className="flex items-center gap-2">
         <h1 className="text-xl font-bold text-unjong-primary">{initialName || ticker}</h1>
-        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[12px] sm:text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
+        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
 
       {isEtn ? (
         /* ETN = 전략형(바스켓 없음) → 상품 정보 + 주의 */
@@ -81,10 +84,10 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
           <div className="mb-2 flex items-center gap-1.5">
             <Layers size={14} className="text-unjong-accent" />
             <span className="text-[13px] font-semibold text-unjong-primary">{t('etnTitle')}</span>
-            <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('etnBadge')}</span>
+            <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('etnBadge')}</span>
           </div>
           <p className="text-[13px] leading-6 text-unjong-primary">{t.rich('etnBody', { b: (c) => <b>{c}</b> })}</p>
-          <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-2.5 text-[12px] leading-5 text-amber-300">{t('etnWarn')}{leveraged ? t('etnWarnLeveraged') : ''}</p>
+          <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/10 p-2.5 text-[13px] sm:text-[12px] leading-5 text-amber-300">{t('etnWarn')}{leveraged ? t('etnWarnLeveraged') : ''}</p>
         </div>
       ) : (
         <>
@@ -93,12 +96,12 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
         <div className="mb-2 flex items-center gap-1.5">
           <Layers size={14} className="text-unjong-accent" />
           <span className="text-[13px] font-semibold text-unjong-primary">{t('compositionTitle')}</span>
-          <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('compositionBadge')}</span>
+          <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('compositionBadge')}</span>
         </div>
         <div className="grid grid-cols-3 gap-y-2 text-center">
-          <div><p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('family')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
-          <div><p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('category')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
-          <div><p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('expense')}</p><p className="text-sm font-semibold text-unjong-primary">{data?.expenseRatio != null ? pct(data.expenseRatio) : '—'}</p></div>
+          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('family')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
+          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('category')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
+          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('expense')}</p><p className="text-sm font-semibold text-unjong-primary">{data?.expenseRatio != null ? pct(data.expenseRatio) : '—'}</p></div>
         </div>
       </div>
 
@@ -107,7 +110,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
       ) : !hasHoldings ? (
         <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-6 text-center">
           <p className="text-sm font-medium text-unjong-primary">{t('emptyTitle')}</p>
-          <p className="mt-1 text-[12px] text-unjong-muted">{t('emptyDesc')}</p>
+          <p className="mt-1 text-[13px] sm:text-[12px] text-unjong-muted">{t('emptyDesc')}</p>
         </div>
       ) : (
         <>
@@ -134,7 +137,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
               <p className="mb-2 text-[13px] font-semibold text-unjong-primary">{t('sectorsTitle')}</p>
               <ul className="space-y-1.5">
                 {[...data!.sectors].sort((a, b) => b.weight - a.weight).map((s) => (
-                  <li key={s.key} className="flex items-center gap-2 text-[12px]">
+                  <li key={s.key} className="flex items-center gap-2 text-[13px] sm:text-[12px]">
                     <span className="w-20 shrink-0 truncate text-unjong-muted">{sectorLabel(s.key, t)}</span>
                     <span className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-unjong-background">
                       <span className="absolute inset-y-0 left-0 rounded-full bg-unjong-strong/30" style={{ width: `${s.weight * 100}%` }} />
@@ -152,11 +155,11 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
       {/* 출처 */}
       {data?.sourceUrl && (
-        <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex items-center gap-1 text-[12px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent">
+        <a href={data.sourceUrl} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex items-center gap-1 text-[13px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent">
           {t('sourcePrefix')} {data.source} <ExternalLink size={11} />
         </a>
       )}
-      <p className="mt-3 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t('disclaimer')}</p>
+      <p className="mt-3 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t('disclaimer')}</p>
       </div>
     </div>
   );

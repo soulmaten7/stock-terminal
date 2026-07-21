@@ -9,7 +9,8 @@ import { homeMarketFor } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
 import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
-import { Star, Search as SearchIcon, X } from 'lucide-react';
+import { formatPrice } from '@/lib/currency';
+import { Star, Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
 type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | 'assetgrowth' | 'fscore';
@@ -20,6 +21,7 @@ type LensTopItem = { symbol: string; name: string; tones: Tones; price: number |
 type ChangeItem = {
   symbol: string; name: string | null; lensKey: string;
   fromState: string | null; toState: string; fromTone: Tone | null; toTone: Tone; tradeAmount: number | null;
+  price: number | null; changePercent: number | null;
 };
 type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
 type BoardRow = { symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null };
@@ -79,7 +81,7 @@ function chipClass(active: boolean): string {
 function AsOfBadge({ date, loc }: { date: string | null; loc: Locale }) {
   const t = useTranslations('Today');
   if (!date || date === todayUtcDate()) return null;
-  return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[11px] font-medium text-unjong-muted">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
+  return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
 function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boolean; onToggle: (symbol: string) => void }) {
@@ -96,8 +98,21 @@ function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boo
   );
 }
 
-function DotsRow({ symbol, name, tones, price, changePercent, watched, onToggleWatch }: {
-  symbol: string; name: string; tones: Tones | null | undefined; price: number | null; changePercent: number | null;
+function PriceCell({ price, changePercent, market }: { price: number | null; changePercent: number | null; market: Country }) {
+  const tCommon = useTranslations('Common');
+  return (
+    <div className="flex shrink-0 flex-col items-end gap-0.5">
+      <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{price != null ? formatPrice(price, market) : '—'}</span>
+      <span className="flex items-center gap-1 text-[13px] tabular-nums sm:text-[11px]">
+        <span className="text-unjong-muted">{tCommon('yesterdayShort')}</span>
+        <span className={pctColor(changePercent)}>{pct(changePercent)}</span>
+      </span>
+    </div>
+  );
+}
+
+function DotsRow({ symbol, name, tones, price, changePercent, market, watched, onToggleWatch }: {
+  symbol: string; name: string; tones: Tones | null | undefined; price: number | null; changePercent: number | null; market: Country;
   watched: boolean; onToggleWatch: (symbol: string, name: string) => void;
 }) {
   return (
@@ -105,7 +120,7 @@ function DotsRow({ symbol, name, tones, price, changePercent, watched, onToggleW
       <Link href={`/stock/${symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
         <StockLogo code={symbol} name={name} size={30} />
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-1 text-sm font-semibold text-unjong-primary">{name}</p>
+          <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{name}</p>
           {tones ? (
             <span className="flex items-center gap-0.5">
               {Array.from({ length: tones.pos }).map((_, i) => <span key={`p${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.pos}`} />)}
@@ -115,14 +130,14 @@ function DotsRow({ symbol, name, tones, price, changePercent, watched, onToggleW
           ) : null}
         </div>
       </Link>
-      <span className={`shrink-0 text-sm font-semibold tabular-nums ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
+      <PriceCell price={price} changePercent={changePercent} market={market} />
       <WatchStar symbol={symbol} watched={watched} onToggle={() => onToggleWatch(symbol, name)} />
     </div>
   );
 }
 
-function ChangeRow({ item, loc, watched, onToggleWatch }: {
-  item: ChangeItem; loc: Locale; watched: boolean; onToggleWatch: (symbol: string, name: string) => void;
+function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
+  item: ChangeItem; loc: Locale; market: Country; watched: boolean; onToggleWatch: (symbol: string, name: string) => void;
 }) {
   const t = useTranslations('Today');
   const key = item.lensKey as LensKey;
@@ -133,13 +148,14 @@ function ChangeRow({ item, loc, watched, onToggleWatch }: {
       <Link href={`/stock/${item.symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
         <StockLogo code={item.symbol} name={name} size={30} />
         <div className="min-w-0 flex-1">
-          <p className="line-clamp-1 text-sm font-semibold text-unjong-primary">{name}</p>
-          <p className="flex items-center gap-1.5 truncate text-[12px] text-unjong-muted">
+          <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{name}</p>
+          <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
             <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
             {line}
           </p>
         </div>
       </Link>
+      <PriceCell price={item.price} changePercent={item.changePercent} market={market} />
       <WatchStar symbol={item.symbol} watched={watched} onToggle={() => onToggleWatch(item.symbol, name)} />
     </div>
   );
@@ -279,21 +295,24 @@ export default function ExploreClient() {
     const asOfDate = activeList === 'changes' ? changes?.date ?? null : null;
     return (
       <div className="mx-auto max-w-[680px] px-4 py-6 sm:px-6">
-        <button type="button" onClick={() => router.back()} className="mb-4 text-sm text-unjong-muted hover:text-unjong-accent">← {tLogin('back')}</button>
+        <button type="button" onClick={() => router.back()} className="mb-4 inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent">
+          <ArrowLeft size={20} />
+          {tLogin('back')}
+        </button>
         <div className="mb-3 flex items-center">
           <h1 className="text-lg font-bold text-unjong-primary">{t(titleKey)}</h1>
           <AsOfBadge date={asOfDate} loc={loc} />
         </div>
         <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
           {activeList === 'changes' ? (
-            changes === null ? <Skeleton /> : changes.items.length === 0 ? <p className="py-6 text-center text-sm text-unjong-muted">{t('noItems')}</p> :
-              changes.items.map((item, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />)
+            changes === null ? <Skeleton /> : changes.items.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+              changes.items.map((item, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />)
           ) : activeList === 'pos' ? (
-            posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-sm text-unjong-muted">{t('noItems')}</p> :
-              posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+            posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+              posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           ) : (
-            amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-sm text-unjong-muted">{t('noItems')}</p> :
-              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={loc === 'en' ? (r.nameEn ?? r.name) : r.name} tones={r.lens} price={r.price} changePercent={r.changePercent} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+            amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={loc === 'en' ? (r.nameEn ?? r.name) : r.name} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           )}
         </div>
       </div>
@@ -328,7 +347,7 @@ export default function ExploreClient() {
             {searchLoading ? (
               <Skeleton />
             ) : results.length === 0 ? (
-              <p className="py-6 text-center text-sm text-unjong-muted">{t('noSearchResults')}</p>
+              <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noSearchResults')}</p>
             ) : (
               results.map((r, i) => (
                 <button
@@ -340,9 +359,9 @@ export default function ExploreClient() {
                   className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-left transition-colors hover:bg-unjong-background ${i === activeIdx ? 'bg-unjong-background' : ''}`}
                 >
                   <StockLogo code={r.symbol} name={r.name} size={28} />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium text-unjong-primary">{r.name}</span>
-                  <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{r.country}</span>
-                  <span className="shrink-0 rounded bg-unjong-background px-1.5 py-0.5 text-[10px] font-medium text-unjong-muted">{r.type.toUpperCase()}</span>
+                  <span className="min-w-0 flex-1 truncate text-[17px] font-medium text-unjong-primary sm:text-sm">{r.name}</span>
+                  <span className="shrink-0 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{r.country}</span>
+                  <span className="shrink-0 rounded bg-unjong-background px-1.5 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[10px]">{r.type.toUpperCase()}</span>
                 </button>
               ))
             )}
@@ -364,17 +383,17 @@ export default function ExploreClient() {
             <AsOfBadge date={changes?.date ?? null} loc={loc} />
           </div>
           {changes && changes.count != null && changes.count > 0 ? (
-            <Link href="/explore?list=changes" className="shrink-0 text-sm font-semibold text-unjong-accent">{t('moreCount', { n: changes.count })}</Link>
+            <Link href="/explore?list=changes" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreCount', { n: changes.count })}</Link>
           ) : null}
         </div>
         {listsFailed.changes ? null : changes === null ? (
           <Skeleton />
         ) : changes.items.length === 0 ? (
-          <p className="py-4 text-sm text-unjong-muted">{t('noItems')}</p>
+          <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p>
         ) : (
           <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
             {changes.items.slice(0, 5).map((item, i) => (
-              <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />
+              <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}
@@ -384,16 +403,16 @@ export default function ExploreClient() {
       <section className="mb-7">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-base font-bold text-unjong-primary">{t('posTitle')}</h2>
-          {posTop && posTop.length > 0 ? <Link href="/explore?list=pos" className="shrink-0 text-sm font-semibold text-unjong-accent">{t('moreLink')}</Link> : null}
+          {posTop && posTop.length > 0 ? <Link href="/explore?list=pos" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
         </div>
         {listsFailed.pos ? null : posTop === null ? (
           <Skeleton />
         ) : posTop.length === 0 ? (
-          <p className="py-4 text-sm text-unjong-muted">{t('noItems')}</p>
+          <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p>
         ) : (
           <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
             {posTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}
@@ -403,22 +422,22 @@ export default function ExploreClient() {
       <section className="mb-7">
         <div className="mb-2 flex items-center justify-between">
           <h2 className="text-base font-bold text-unjong-primary">{t('amountTitle')}</h2>
-          {amountTop && amountTop.length > 0 ? <Link href="/explore?list=amount" className="shrink-0 text-sm font-semibold text-unjong-accent">{t('moreLink')}</Link> : null}
+          {amountTop && amountTop.length > 0 ? <Link href="/explore?list=amount" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
         </div>
         {listsFailed.amount ? null : amountTop === null ? (
           <Skeleton />
         ) : amountTop.length === 0 ? (
-          <p className="py-4 text-sm text-unjong-muted">{t('noItems')}</p>
+          <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p>
         ) : (
           <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
             {amountTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={loc === 'en' ? (r.nameEn ?? r.name) : r.name} tones={r.lens} price={r.price} changePercent={r.changePercent} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={loc === 'en' ? (r.nameEn ?? r.name) : r.name} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}
       </section>
 
-      <p className="text-xs leading-relaxed text-unjong-muted">{tMaterial('material')}</p>
+      <p className="text-[13px] leading-relaxed text-unjong-muted sm:text-xs">{tMaterial('material')}</p>
     </div>
   );
 }

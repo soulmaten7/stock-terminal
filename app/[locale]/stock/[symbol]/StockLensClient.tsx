@@ -8,7 +8,7 @@ import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCop
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice } from '@/lib/currency';
 import { useAuthStore } from '@/stores/authStore';
-import { AlertTriangle, Info, ExternalLink, Sparkles, Lock } from 'lucide-react';
+import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드(보드의 formatPrice 키와 동일 — KR/US/JP/HK/CN/VN/GB).
 // 기존 isCN은 HK를 합쳐놔 formatPrice엔 못 씀(HK≠CN 통화) → 별도 도출.
@@ -77,7 +77,7 @@ function Spectrum({ labels, active, tone }: { labels: [string, string, string]; 
   return (
     <div className="mt-2.5 flex gap-1.5">
       {labels.map((l, i) => (
-        <span key={i} className={`flex-1 rounded-md border py-1 text-center text-[12px] ${i === active ? `font-medium ${on}` : 'border-unjong-border text-unjong-muted'}`}>{l}</span>
+        <span key={i} className={`flex-1 rounded-md border py-1 text-center text-[13px] sm:text-[12px] ${i === active ? `font-medium ${on}` : 'border-unjong-border text-unjong-muted'}`}>{l}</span>
       ))}
     </div>
   );
@@ -103,8 +103,8 @@ function PctGauge({ pctl, tone, lo, hi }: { pctl: number; tone?: string; lo: str
         <div className={`absolute left-0 top-0 h-2 rounded-full ${fill}`} style={{ width: `${p}%` }} />
         <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${p}%` }} />
       </div>
-      <div className="mt-1 flex justify-between text-[12px] sm:text-[11px] text-unjong-muted"><span>{lo}</span><span>{hi}</span></div>
-      <p className="mt-1 text-[12px] sm:text-[11px] text-unjong-muted">{t.rich('gauge.rank', { p, hi, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
+      <div className="mt-1 flex justify-between text-[13px] sm:text-[11px] text-unjong-muted"><span>{lo}</span><span>{hi}</span></div>
+      <p className="mt-1 text-[13px] sm:text-[11px] text-unjong-muted">{t.rich('gauge.rank', { p, hi, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
     </div>
   );
 }
@@ -126,8 +126,8 @@ function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
         </div>
         {r != null ? <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${r}%` }} /> : null}
       </div>
-      <div className="mt-1 flex justify-between text-[12px] sm:text-[11px] text-unjong-muted"><span>{t('rsi.low')}</span><span>{t('rsi.mid')}</span><span>{t('rsi.high')}</span></div>
-      <p className="mt-1 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('rsi.line', { r: r ?? '—', zone, ma, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
+      <div className="mt-1 flex justify-between text-[13px] sm:text-[11px] text-unjong-muted"><span>{t('rsi.low')}</span><span>{t('rsi.mid')}</span><span>{t('rsi.high')}</span></div>
+      <p className="mt-1 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('rsi.line', { r: r ?? '—', zone, ma, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
     </div>
   );
 }
@@ -170,44 +170,44 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
         {/* 단기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">{t('horizon.short')} <span className="text-[12px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.shortSub')}</span></span>
-            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[12px] sm:text-[10px] text-unjong-muted">{t('horizon.refBadge')}</span>
+            <span className="text-sm font-bold text-unjong-primary">{t('horizon.short')} <span className="text-[13px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.shortSub')}</span></span>
+            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{t('horizon.refBadge')}</span>
           </div>
-          <div className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{t('horizon.techRsi')}</div>
+          <div className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('horizon.techRsi')}</div>
           <div className="relative mt-2 h-2">
             <div className="flex h-2 overflow-hidden rounded-full"><div className="bg-unjong-down/25" style={{ width: '30%' }} /><div className="bg-unjong-background" style={{ width: '40%' }} /><div className="bg-amber-400/45" style={{ width: '30%' }} /></div>
             {rsiV != null ? <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${rsiV >= 70 ? 'bg-amber-400' : rsiV <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted'}`} style={{ left: `${rsiV}%` }} /> : null}
           </div>
-          <p className={`mt-2 text-[12px] font-medium ${toneText(sTone)}`}>{sWord}{rsiV != null ? <span className="font-normal text-unjong-muted">{t('horizon.rsiSuffix', { v: rsiV })}</span> : null}</p>
+          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(sTone)}`}>{sWord}{rsiV != null ? <span className="font-normal text-unjong-muted">{t('horizon.rsiSuffix', { v: rsiV })}</span> : null}</p>
         </div>
         {/* 중기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">{t('horizon.mid')} <span className="text-[12px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.midSub')}</span></span>
-            <span className={`rounded px-1.5 py-0.5 text-[12px] sm:text-[10px] ${mom ? gradeBadgeClass(mom.gradeTier) : 'bg-unjong-background text-unjong-muted'}`}>{mom?.grade ?? '—'}</span>
+            <span className="text-sm font-bold text-unjong-primary">{t('horizon.mid')} <span className="text-[13px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.midSub')}</span></span>
+            <span className={`rounded px-1.5 py-0.5 text-[13px] sm:text-[10px] ${mom ? gradeBadgeClass(mom.gradeTier) : 'bg-unjong-background text-unjong-muted'}`}>{mom?.grade ?? '—'}</span>
           </div>
-          <div className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{t('horizon.momentum')}</div>
+          <div className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('horizon.momentum')}</div>
           {mom?.percentile != null ? (
             <div className="relative mt-2 h-2 rounded-full bg-unjong-background">
               <div className={`absolute left-0 top-0 h-2 rounded-full ${mTone === 'pos' ? 'bg-unjong-accent/25' : mTone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border'}`} style={{ width: `${mom.percentile}%` }} />
               <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mTone === 'pos' ? 'bg-unjong-accent' : mTone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted'}`} style={{ left: `${mom.percentile}%` }} />
             </div>
           ) : <div className="mt-2 h-2 rounded-full bg-unjong-background" />}
-          <p className={`mt-2 text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{t('horizon.topPct', { v: 100 - mom.percentile })}</span> : null}</p>
+          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{t('horizon.topPct', { v: 100 - mom.percentile })}</span> : null}</p>
         </div>
         {/* 장기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
           <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">{t('horizon.long')} <span className="text-[12px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.longSub')}</span></span>
-            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[12px] sm:text-[10px] text-unjong-muted">{t('horizon.factorBadge')}</span>
+            <span className="text-sm font-bold text-unjong-primary">{t('horizon.long')} <span className="text-[13px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.longSub')}</span></span>
+            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{t('horizon.factorBadge')}</span>
           </div>
           <div className="mt-2 flex flex-wrap gap-1">
-            {longPills.length ? longPills.map((p, i) => <span key={i} className={`rounded-full px-1.5 py-0.5 text-[12px] sm:text-[10px] font-medium ${pillClass(p.tone)}`}>{p.label}</span>) : <span className="text-[12px] sm:text-[11px] text-unjong-muted">—</span>}
+            {longPills.length ? longPills.map((p, i) => <span key={i} className={`rounded-full px-1.5 py-0.5 text-[13px] sm:text-[10px] font-medium ${pillClass(p.tone)}`}>{p.label}</span>) : <span className="text-[13px] sm:text-[11px] text-unjong-muted">—</span>}
           </div>
-          {longPills.length ? <p className={`mt-2 text-[12px] font-medium ${toneText(lTone)}`}>{lWord} <span className="font-normal text-unjong-muted">{t('horizon.favCount', { total: longPills.length, fav: favN })}</span></p> : null}
+          {longPills.length ? <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(lTone)}`}>{lWord} <span className="font-normal text-unjong-muted">{t('horizon.favCount', { total: longPills.length, fav: favN })}</span></p> : null}
         </div>
       </div>
-      <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[12px] leading-relaxed text-unjong-muted">
+      <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">
         {t.rich('horizon.summary', {
           short: sWord, mid: mWord, long: lWord,
           s: (c) => <b className={toneText(sTone)}>{c}</b>,
@@ -219,15 +219,15 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   );
 }
 
-const SUMMARY_CLASS = 'cursor-pointer list-none text-[12px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
-const LEARN_CLASS = 'cursor-pointer list-none text-[12px] sm:text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
+const SUMMARY_CLASS = 'cursor-pointer list-none text-[13px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
+const LEARN_CLASS = 'cursor-pointer list-none text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
 // 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 자료 갱신 우선, 아니면 📌 새 소식.
 function FlagChip({ flags }: { flags?: Flag[] }) {
   const t = useTranslations('StockLens');
   if (!flags?.length) return null;
   const a = flags.some((x) => x.klass === 'A');
-  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[12px] sm:text-[10px] font-medium ${a ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? t('flag.update') : t('flag.news')}</span>;
+  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[13px] sm:text-[10px] font-medium ${a ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? t('flag.update') : t('flag.news')}</span>;
 }
 
 // 렌즈 플래그 박스(펼침) — A(근거 흔듦)/B(새 사실) 분리. 방향 판정 아님.
@@ -240,17 +240,17 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
     <div className="mb-3 space-y-2">
       {aFlags.length ? (
         <div className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[12px] sm:text-[11px] font-medium text-amber-300"><AlertTriangle size={11} /> {t('flag.aTitle')}</p>
-          {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
+          <p className="flex items-center gap-1 text-[13px] sm:text-[11px] font-medium text-amber-300"><AlertTriangle size={11} /> {t('flag.aTitle')}</p>
+          {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
       {bFlags.length ? (
         <div className="rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[12px] sm:text-[11px] font-medium text-unjong-accent"><Info size={11} /> {t('flag.bTitle')}</p>
-          {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
+          <p className="flex items-center gap-1 text-[13px] sm:text-[11px] font-medium text-unjong-accent"><Info size={11} /> {t('flag.bTitle')}</p>
+          {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
         </div>
       ) : null}
-      <p className="text-[12px] sm:text-[10px] text-unjong-muted">{t('flag.source')}</p>
+      <p className="text-[13px] sm:text-[10px] text-unjong-muted">{t('flag.source')}</p>
     </div>
   );
 }
@@ -263,7 +263,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-sm">
         <div className="font-bold text-unjong-primary">Piotroski F-Score</div>
-        <div className="mt-0.5 text-xs text-unjong-accent">{t('fscore.subtitle')}</div>
+        <div className="mt-0.5 text-[13px] sm:text-xs text-unjong-accent">{t('fscore.subtitle')}</div>
         <p className="mt-2 text-sm text-unjong-muted">{f.reason || t('fscore.unsupported')}</p>
       </div>
     );
@@ -281,8 +281,8 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
-            <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[12px] sm:text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
-            <span className="text-xs text-unjong-muted">{t('fscore.tagline')}</span>
+            <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
+            <span className="text-[13px] sm:text-xs text-unjong-muted">{t('fscore.tagline')}</span>
             <FlagChip flags={flags} />
           </div>
           {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY[locale].fscore.what}</p> : null}
@@ -296,7 +296,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
           <FlagBox flags={flags} />
           {/* 이게 뭐예요? — 지금 뭘 하는지만 */}
           <div className="rounded-xl border border-unjong-border bg-unjong-surface p-3">
-            <p className="text-[12px] font-medium text-unjong-accent">{t('fscore.whatIsIt')}</p>
+            <p className="text-[13px] sm:text-[12px] font-medium text-unjong-accent">{t('fscore.whatIsIt')}</p>
             <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{LENS_COPY[locale].fscore.what}</p>
           </div>
 
@@ -307,7 +307,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
                 <span key={i} className={`h-3 flex-1 rounded-sm ${i < f.score ? 'bg-unjong-accent' : 'border border-unjong-border bg-unjong-background'}`} />
               ))}
             </div>
-            <span className="whitespace-nowrap text-base font-bold text-unjong-primary">{f.score}<span className="text-xs font-normal text-unjong-muted"> / {f.max}</span></span>
+            <span className="whitespace-nowrap text-base font-bold text-unjong-primary">{f.score}<span className="text-[13px] sm:text-xs font-normal text-unjong-muted"> / {f.max}</span></span>
           </div>
           <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary">{t.rich('fscore.scoreLine', {
             score: f.score,
@@ -326,8 +326,8 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
                 return (
                   <div key={g.key}>
                     <div className="flex items-baseline justify-between">
-                      <span className="text-[12px] font-medium text-unjong-primary">{g.label} <span className="font-normal text-unjong-muted">{g.sub}</span></span>
-                      <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t.rich('fscore.passed', {
+                      <span className="text-[13px] sm:text-[12px] font-medium text-unjong-primary">{g.label} <span className="font-normal text-unjong-muted">{g.sub}</span></span>
+                      <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t.rich('fscore.passed', {
                         passed,
                         total: items.length,
                         n: (c) => <span className={passed > 0 ? 'font-medium text-unjong-accent' : 'font-medium text-amber-400'}>{c}</span>,
@@ -335,7 +335,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
                     </div>
                     <div className="mt-1 space-y-0.5">
                       {items.map((c) => (
-                        <div key={c.key} className="flex items-baseline gap-1.5 text-[12px]">
+                        <div key={c.key} className="flex items-baseline gap-1.5 text-[13px] sm:text-[12px]">
                           <span className={c.pass ? 'text-unjong-up' : 'text-unjong-muted'}>{c.pass ? '✓' : '✗'}</span>
                           <span className="text-unjong-primary">{c.label} <span className="text-unjong-muted">({c.plain})</span></span>
                           <span className="ml-auto whitespace-nowrap tabular-nums text-unjong-muted">{c.note}</span>
@@ -354,11 +354,11 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
             <div className="mt-2 space-y-2 border-l-2 border-unjong-border pl-2.5">
               <div>
                 <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.howToRead')}</p>
-                <p className="text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.howToReadBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
+                <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.howToReadBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
               </div>
               <div>
                 <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.whyFinHealth')}</p>
-                <p className="text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.whyFinHealthBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
+                <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.whyFinHealthBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
               </div>
             </div>
           </details>
@@ -395,12 +395,12 @@ function KrFilingSummary({ rcept, symbol, nm }: { rcept: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[12px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
+        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
+        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
@@ -425,9 +425,9 @@ function KrEventLayer({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
-        <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('events.srcDart')}</span>
+        <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('events.srcDart')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e, i) => (
           <li key={i}>
@@ -435,7 +435,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
               <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-unjong-accent" />
               <div className="min-w-0 flex-1">
                 <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.report_nm}</p>
-                <p className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
+                <p className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
@@ -443,7 +443,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goDart')}</p>
+      <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goDart')}</p>
     </div>
   );
 }
@@ -471,12 +471,12 @@ function JpFilingSummary({ docid, symbol, nm }: { docid: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[12px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
+        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
+        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
@@ -498,18 +498,18 @@ function JpEventLayer({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
-        <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('events.srcEdinet')}</span>
+        <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('events.srcEdinet')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e, i) => (
           <li key={i}>
             <a href={`/api/jp-events/doc?docid=${encodeURIComponent(e.doc_id)}`} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[12px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
-                {e.reason && <p className="mt-0.5 truncate text-[12px] sm:text-[11px] text-unjong-muted">{e.reason}</p>}
-                <p className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[13px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
+                {e.reason && <p className="mt-0.5 truncate text-[13px] sm:text-[11px] text-unjong-muted">{e.reason}</p>}
+                <p className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{fmtD(e.date)}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
@@ -517,7 +517,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goEdinet')}</p>
+      <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goEdinet')}</p>
     </div>
   );
 }
@@ -545,12 +545,12 @@ function GbFilingSummary({ url, symbol, nm }: { url: string; symbol: string; nm:
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[12px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
+        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
+        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
@@ -571,17 +571,17 @@ function GbEventLayer({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
-        <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('events.srcRns')}</span>
+        <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('events.srcRns')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[12px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
-                <p className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{e.date}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[13px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
+                <p className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
@@ -589,7 +589,7 @@ function GbEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goRns')}</p>
+      <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goRns')}</p>
     </div>
   );
 }
@@ -615,12 +615,12 @@ function CnFilingSummary({ pdf, symbol, nm, id }: { pdf: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[12px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
+        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
+        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
@@ -641,17 +641,17 @@ function CnEventLayer({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilings')}</span>
-        <span className="text-[12px] sm:text-[11px] text-unjong-muted">{events[0]?.source === 'HKEXnews' ? t('events.srcHkex') : t('events.srcCninfo')}</span>
+        <span className="text-[13px] sm:text-[11px] text-unjong-muted">{events[0]?.source === 'HKEXnews' ? t('events.srcHkex') : t('events.srcCninfo')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[12px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
-                <p className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{e.date}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[13px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.material')}</span>}</p>
+                <p className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
@@ -659,7 +659,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{events[0]?.source === 'HKEXnews' ? t('events.goHkex') : t('events.goCninfo')}</p>
+      <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{events[0]?.source === 'HKEXnews' ? t('events.goHkex') : t('events.goCninfo')}</p>
     </div>
   );
 }
@@ -683,12 +683,12 @@ function VnFilingSummary({ url, symbol, nm, id }: { url: string; symbol: string;
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[12px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
+        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
+        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
@@ -709,17 +709,17 @@ function VnEventLayer({ symbol }: { symbol: string }) {
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentNews')}</span>
-        <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('events.srcGnews')}</span>
+        <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('events.srcGnews')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflectedNews', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflectedNews', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       <ul className="mt-2.5 space-y-1.5">
         {events.map((e) => (
           <li key={e.id}>
             <a href={e.url} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 rounded-lg border border-unjong-border px-2.5 py-2 transition-colors hover:bg-unjong-background/40">
               <span className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${e.material ? 'bg-unjong-accent' : 'bg-unjong-muted/40'}`} />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[12px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.major')}</span>}</p>
-                <p className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{e.date}</p>
+                <p className="text-[13px] font-medium leading-snug text-unjong-primary">{e.title}{e.material && <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[13px] sm:text-[10px] font-semibold text-unjong-accent">{t('events.major')}</span>}</p>
+                <p className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{e.date}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
             </a>
@@ -727,7 +727,7 @@ function VnEventLayer({ symbol }: { symbol: string }) {
           </li>
         ))}
       </ul>
-      <p className="mt-2 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goNews')}</p>
+      <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goNews')}</p>
     </div>
   );
 }
@@ -752,13 +752,13 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
       <div className="mb-1.5 flex items-center gap-1.5">
         <Sparkles size={13} className="text-unjong-accent" />
         <span className="text-[13px] font-bold text-unjong-accent">{t('newsBrief.title')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('newsBrief.badge')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('newsBrief.badge')}</span>
       </div>
       {state === 'loading' || !d
-        ? <p className="text-[12px] text-unjong-muted">{t('newsBrief.loading')}</p>
+        ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('newsBrief.loading')}</p>
         : (<>
             <p className="text-[15px] leading-relaxed sm:text-[13px] text-unjong-primary">{d.summary}</p>
-            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((tag, i) => <span key={i} className="rounded-full border border-unjong-border bg-unjong-surface px-2 py-0.5 text-[12px] sm:text-[10px] text-unjong-muted">{tag}</span>)}</div> : null}
+            {d.tags.length ? <div className="mt-2 flex flex-wrap gap-1.5">{d.tags.map((tag, i) => <span key={i} className="rounded-full border border-unjong-border bg-unjong-surface px-2 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{tag}</span>)}</div> : null}
           </>)}
     </div>
   );
@@ -785,12 +785,12 @@ function StockBrief({ symbol }: { symbol: string }) {
       <div className="mb-1.5 flex items-center gap-1.5">
         <Sparkles size={14} className="text-unjong-accent" />
         <span className="text-[13px] font-bold text-unjong-accent">{t('brief.title')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('brief.badge')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('brief.badge')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] text-unjong-muted">{t('brief.loading')}</p>
+        ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('brief.loading')}</p>
         : <p className="text-[15px] leading-relaxed sm:text-[13px] text-unjong-primary">{brief}</p>}
-      {state === 'done' ? <p className="mt-1.5 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('brief.footer')}</p> : null}
+      {state === 'done' ? <p className="mt-1.5 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('brief.footer')}</p> : null}
     </div>
   );
 }
@@ -832,12 +832,12 @@ function AiFilingSummary({ symbol, link, items }: { symbol: string; link: string
     <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
       <div className="mb-1 flex items-center gap-1">
         <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[12px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
+        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
+        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
       </div>
       {state === 'loading'
-        ? <p className="text-[12px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
+        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
+        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{text}</p>}
     </div>
   );
 }
@@ -866,10 +866,10 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <span className="text-[13px] font-medium text-unjong-primary">{d.label}</span>
-              {e.defs.length > 1 ? <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('events.andMore', { n: e.defs.length - 1 })}</span> : null}
-              <span className="rounded bg-unjong-background px-1 py-0.5 text-[12px] sm:text-[10px] text-unjong-muted">{e.defs.map((x) => x.item).join('·')}</span>
+              {e.defs.length > 1 ? <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('events.andMore', { n: e.defs.length - 1 })}</span> : null}
+              <span className="rounded bg-unjong-background px-1 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{e.defs.map((x) => x.item).join('·')}</span>
             </div>
-            <p className="mt-0.5 text-[12px] sm:text-[11px] text-unjong-muted">{e.date} · {why}</p>
+            <p className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{e.date} · {why}</p>
           </div>
           <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
         </a>
@@ -881,24 +881,24 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
     <div className="mt-3 rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
       <div className="flex items-baseline justify-between">
         <span className="text-[13px] font-bold text-unjong-primary">{t('events.recentFilingsUs')}</span>
-        <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('events.srcSec')}</span>
+        <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('events.srcSec')}</span>
       </div>
-      <p className="mt-0.5 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       {material.length ? (
         <ul className="mt-2.5 space-y-1.5">{material.map((e, i) => row(e, i, true))}</ul>
       ) : (
-        <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[12px] text-unjong-muted">{t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+        <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[13px] sm:text-[12px] text-unjong-muted">{t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       )}
       {routine.length ? (
         <div className="mt-2">
-          <button type="button" onClick={() => setShowRoutine((v) => !v)} className="flex w-full items-center gap-1 text-left text-[12px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent">
+          <button type="button" onClick={() => setShowRoutine((v) => !v)} className="flex w-full items-center gap-1 text-left text-[13px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent">
             <span className={`inline-block transition-transform ${showRoutine ? 'rotate-90' : ''}`}>▸</span>
             <span>{t('events.routine', { n: routine.length })} <span className="text-unjong-muted/80">· {groups.map((g) => `${g.label} ${g.count}`).join(' · ')}</span></span>
           </button>
           {showRoutine ? <ul className="mt-1.5 space-y-1.5">{routine.map((e, i) => row(e, i))}</ul> : null}
         </div>
       ) : null}
-      <p className="mt-2 text-[12px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goSec')}</p>
+      <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('events.goSec')}</p>
     </div>
   );
 }
@@ -984,7 +984,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
-              <span className="text-xs text-unjong-muted">· {L.name}</span>
+              <span className="text-[13px] sm:text-xs text-unjong-muted">· {L.name}</span>
               <FlagChip flags={cardFlags} />
             </div>
           </div>
@@ -992,14 +992,14 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             {!isOpen && L.verdict ? (
               <span className="flex flex-wrap items-baseline gap-x-2">
                 <span className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
-                {L.headline ? <span className="text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
+                {L.headline ? <span className="text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
               </span>
             ) : !isOpen ? (
               <span className="text-[13px] leading-relaxed text-unjong-muted">{L.summary}</span>
             ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-2 justify-self-end">
-            <span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[12px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
+            <span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
             <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
             </span>
@@ -1023,26 +1023,26 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
             <FlagBox flags={cardFlags} />
             <div className="mb-3.5 rounded-xl border border-unjong-border bg-unjong-surface p-3">
-              <p className="text-[12px] font-medium text-unjong-accent">{t('whatIsIt')}</p>
+              <p className="text-[13px] sm:text-[12px] font-medium text-unjong-accent">{t('whatIsIt')}</p>
               <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
             </div>
             {L.verdict ? (
               <div className="flex items-baseline justify-between gap-2">
                 <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
-                {L.headline ? <span className="whitespace-nowrap text-[12px] text-unjong-muted">{L.headline}</span> : null}
+                {L.headline ? <span className="whitespace-nowrap text-[13px] sm:text-[12px] text-unjong-muted">{L.headline}</span> : null}
               </div>
             ) : null}
             {viz}
             {L.outlook ? (
               <div className="mt-2.5">
-                <p className="text-[12px] sm:text-[11px] font-medium text-unjong-muted">{t('lensDirection')}</p>
-                <p className="mt-0.5 text-[14px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
+                <p className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{t('lensDirection')}</p>
+                <p className="mt-0.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
               </div>
-            ) : (L.verdict ? <p className="mt-2.5 text-[14px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
+            ) : (L.verdict ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
             {L.about ? (
               <details className="mt-2.5">
                 <summary className={LEARN_CLASS}>{t('learnMore', { name: L.name })}</summary>
-                <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{L.about}</p>
+                <p className="mt-1.5 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{L.about}</p>
               </details>
             ) : null}
             <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2.5 text-[14px] sm:text-[12px] text-unjong-muted">
@@ -1054,7 +1054,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             {L.note ? (
               <details className="mt-2.5">
                 <summary className={SUMMARY_CLASS}>{t('detailsNote')}</summary>
-                <p className="mt-2 text-[12px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
+                <p className="mt-2 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
               </details>
             ) : null}
           </div>
@@ -1065,19 +1065,22 @@ export default function StockLensClient({ initialName }: { initialName?: string 
 
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="text-sm text-unjong-muted hover:text-unjong-accent">{t('back')}</button>
+      <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent">
+        <ArrowLeft size={20} />
+        {t('back')}
+      </button>
 
       <div className="mt-3 max-w-4xl">
         <div className="mb-1.5 flex items-center gap-2">
           <AiLensBadge pill lang={locale} />
-          <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t('headerNote')}</span>
+          <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('headerNote')}</span>
         </div>
         <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
           <h1 className="text-xl font-bold text-unjong-primary">{initialName || data?.name || ticker}</h1>
           <span className="text-sm text-unjong-muted">{ticker}</span>
         </div>
         {data?.price != null ? (
-          <p className="text-sm text-unjong-muted">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
+          <p className="text-[15px] text-unjong-muted sm:text-sm">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
         ) : null}
 
         {loading || !data ? (
@@ -1087,7 +1090,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 <span key={i} className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-border" />
               ))}
             </div>
-            <span className="text-[12px] sm:text-[11px] text-unjong-muted">{tf('lensLoading')}</span>
+            <span className="text-[13px] sm:text-[11px] text-unjong-muted">{tf('lensLoading')}</span>
           </div>
         ) : headerTones.length > 0 ? (
           <div className="mt-2">
@@ -1097,16 +1100,16 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                   <span key={i} className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[tone]}`} />
                 ))}
               </div>
-              <span className="text-[12px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</span>
+              <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</span>
             </div>
-            <p className="mt-1 text-[12px] sm:text-[11px] text-unjong-muted">{t('lensHeaderNote')}</p>
+            <p className="mt-1 text-[13px] sm:text-[11px] text-unjong-muted">{t('lensHeaderNote')}</p>
           </div>
         ) : null}
 
-        <p className="mt-3 text-xs leading-relaxed text-unjong-muted">{t.rich('intro', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
+        <p className="mt-3 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{t.rich('intro', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
         <details className="mt-1">
           <summary className={LEARN_CLASS}>{t('readingGuideSummary')}</summary>
-          <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{t.rich('readingGuide', {
+          <p className="mt-1.5 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{t.rich('readingGuide', {
             b: (c) => <b className="text-unjong-primary">{c}</b>,
             v: (c) => <span className="text-unjong-accent">{c}</span>,
             w: (c) => <span className="text-amber-400">{c}</span>,
@@ -1136,7 +1139,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               <section key={h}>
                 <div className="mb-2 mt-5 flex items-baseline gap-2">
                   <h2 className="text-sm font-bold text-unjong-primary">{t(H_TITLE[h])}</h2>
-                  <span className="text-[12px] sm:text-[11px] text-unjong-muted">{t(H_SUB[h])}</span>
+                  <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t(H_SUB[h])}</span>
                 </div>
                 <div className="space-y-4">
                   {group.map(renderCard)}

@@ -9,6 +9,7 @@ import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCop
 import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { cleanUsName } from '@/lib/usNameFormat';
+import { formatPrice } from '@/lib/currency';
 import foreignKoRaw from '@/data/foreign_ko_names.json';
 
 const FOREIGN_KO = foreignKoRaw as Record<string, string>;
@@ -25,6 +26,7 @@ type ChangeItem = {
   fromTone: Tone | null;
   toTone: Tone;
   tradeAmount: number | null;
+  price: number | null;
 };
 type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
 type IndexItem = { name: string; value: string; changeText: string; changePct: number; isUp: boolean; group: string };
@@ -90,28 +92,35 @@ function weekdayOf(dateStr: string, loc: Locale): string {
 function AsOfBadge({ date, loc }: { date: string | null; loc: Locale }) {
   const t = useTranslations('Today');
   if (!date || date === todayUtcDate()) return null;
-  return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[11px] font-medium text-unjong-muted">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
+  return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
 function LensChangeRow({
-  item, loc, changePercent, displayName,
+  item, loc, changePercent, displayName, market,
 }: {
-  item: ChangeItem; loc: Locale; changePercent: number | null; displayName: string;
+  item: ChangeItem; loc: Locale; changePercent: number | null; displayName: string; market: string;
 }) {
   const t = useTranslations('Today');
+  const tCommon = useTranslations('Common');
   const key = item.lensKey as LensKey;
   const line = t('lensChangeLine', { lensName: lensName(loc, key), from: stateLabel(loc, key, item.fromState), to: stateLabel(loc, key, item.toState) });
   return (
     <Link href={`/stock/${item.symbol}`} className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
       <StockLogo code={item.symbol} name={displayName} size={30} />
       <div className="min-w-0 flex-1">
-        <p className="line-clamp-1 text-sm font-semibold text-unjong-primary">{displayName}</p>
-        <p className="flex items-center gap-1.5 truncate text-[12px] text-unjong-muted">
+        <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{displayName}</p>
+        <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
           <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
           {line}
         </p>
       </div>
-      <span className={`shrink-0 text-sm font-semibold tabular-nums ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
+      <div className="flex shrink-0 flex-col items-end gap-0.5">
+        <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{item.price != null ? formatPrice(item.price, market) : '—'}</span>
+        <span className="flex items-center gap-1 text-[13px] tabular-nums sm:text-[11px]">
+          <span className="text-unjong-muted">{tCommon('yesterdayShort')}</span>
+          <span className={pctColor(changePercent)}>{pct(changePercent)}</span>
+        </span>
+      </div>
     </Link>
   );
 }
@@ -222,7 +231,7 @@ export default function TodayClient() {
         <div className="mb-6">
           <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{formattedDate}</h1>
           {homeIndex ? (
-            <p className="mt-2 text-sm font-medium text-unjong-primary">
+            <p className="mt-2 text-[15px] font-medium text-unjong-primary sm:text-sm">
               {t('marketLine', { index: homeIndex.name, pct: pct(homeIndex.changePct) })}
               {homeChanges?.count != null ? <span className="text-unjong-muted"> · {t('changesCount', { n: homeChanges.count })}</span> : null}
             </p>
@@ -233,8 +242,8 @@ export default function TodayClient() {
         <section className="mb-7">
           {!user || !hasWatchlist ? (
             <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center">
-              <p className="text-sm font-medium text-unjong-primary">{t('onboardingTitle')}</p>
-              <Link href="/explore" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('onboardingCta')}</Link>
+              <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('onboardingTitle')}</p>
+              <Link href="/explore" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('onboardingCta')}</Link>
             </div>
           ) : (
             <>
@@ -243,19 +252,19 @@ export default function TodayClient() {
                 <AsOfBadge date={watchlistChangesDate} loc={loc} />
               </div>
               {watchlistChanges.length === 0 ? (
-                <p className="py-4 text-sm text-unjong-muted">{t('noWatchlistChangesToday')}</p>
+                <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noWatchlistChangesToday')}</p>
               ) : (
                 <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
                   {watchlistChanges.slice(0, 4).map((item, i) => {
                     const q = quoteMap.get(item.symbol);
                     const displayName = q ? (loc === 'en' ? (q.name_en ?? q.name_ko) : q.name_ko) : (item.name ?? item.symbol);
                     return (
-                      <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} />
+                      <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} />
                     );
                   })}
                 </div>
               )}
-              <Link href="/favorites" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('viewAllWatchlist')}</Link>
+              <Link href="/favorites" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('viewAllWatchlist')}</Link>
             </>
           )}
         </section>
@@ -267,11 +276,11 @@ export default function TodayClient() {
             <AsOfBadge date={usChanges?.date ?? null} loc={loc} />
           </div>
           {(usChanges?.items.length ?? 0) === 0 ? (
-            <p className="py-4 text-sm text-unjong-muted">{t('noChangesToday')}</p>
+            <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noChangesToday')}</p>
           ) : (
             <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
               {(usChanges?.items ?? []).slice(0, 5).map((item, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, 'US')} displayName={nameFor(item, 'US')} />
+                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, 'US')} displayName={nameFor(item, 'US')} market="US" />
               ))}
             </div>
           )}
@@ -284,21 +293,21 @@ export default function TodayClient() {
             <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
           </div>
           {(homeChanges?.items.length ?? 0) === 0 ? (
-            <p className="py-4 text-sm text-unjong-muted">{t('noChangesToday')}</p>
+            <p className="py-4 text-[15px] text-unjong-muted sm:text-sm">{t('noChangesToday')}</p>
           ) : (
             <div className="rounded-2xl border border-unjong-border bg-unjong-surface px-4">
               {(homeChanges?.items ?? []).slice(0, 5).map((item, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, homeMarket)} displayName={nameFor(item, homeMarket)} />
+                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, homeMarket)} displayName={nameFor(item, homeMarket)} market={homeMarket} />
               ))}
             </div>
           )}
           {homeChanges && homeChanges.count != null && homeChanges.count > 5 ? (
-            <Link href="/explore?list=changes" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
+            <Link href="/explore?list=changes" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('viewMoreChanges', { n: homeChanges.count - 5 })}</Link>
           ) : null}
         </section>
 
         {/* 5) 각주 */}
-        <p className="text-xs leading-relaxed text-unjong-muted">{tMaterial('material')}</p>
+        <p className="text-[13px] leading-relaxed text-unjong-muted sm:text-xs">{tMaterial('material')}</p>
       </main>
 
       {/* PC 우측 레일 */}

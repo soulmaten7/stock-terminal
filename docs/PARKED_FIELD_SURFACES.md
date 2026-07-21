@@ -20,6 +20,7 @@
 | 검증(유사투자자문 조회) | ToolboxClient 내부 `info` 하위탭 `<AdvisorDirectory>` | `components/toolbox/AdvisorDirectory.tsx` | `fss_advisors` 테이블·`/api/advisors`·`/api/cron/fss-advisors`·`/api/business/*`(클레임) |
 | 즐겨찾기(리딩방) | `favorites/page.tsx`의 `<RoomFavoritesClient>` 호출(`locale !== 'en'` 분기) | `components/favorites/RoomFavoritesClient.tsx` | `/api/rooms/favorite`·`room_favorites` 테이블 |
 | 홈 리셋 스토어 | `Header.tsx`의 `useHomeReset` 호출(보드 전용 뷰 리셋 — 탐색/오늘엔 해당 개념 없음) | `stores/homeResetStore.ts`(파일 그대로) | — |
+| 마이페이지 '내 신고' 목록 (STEP 769) | `app/[locale]/mypage/page.tsx`의 activity 탭 인라인 JSX(별도 컴포넌트 파일 아님 — STEP 769 이전 커밋 `90ccc4a`의 해당 파일에서 원문 확인 가능) | 없음(인라인 코드였음 — 복원 시 `90ccc4a` 버전의 activity 탭 블록·`myReports` state·`withdrawReport` 핸들러·`Siren`/`Trash2` import를 그대로 재삽입) | `/api/reports` 라우트 무변(GET/DELETE 전부 보존) · 회원탈퇴(`/api/account/delete`)의 reports 삭제 로직도 무변 · i18n 키(`MyPage.tabReports`·`noReports`·`colTarget`·`colReason`·`colStatus`·`colDate`·`colWithdraw`·`withdraw`·`status*`·`withdrawFail`)는 사용처 없이도 보존(재사용 위해 삭제 안 함) |
 
 - `/toolbox` 라우트는 이미 STEP 이전부터 `/`로 리다이렉트(`app/[locale]/toolbox/page.tsx`) — 대상만 "구 보드"→"오늘"로 자연 전환, 코드 변경 없음.
 - `app/[locale]/today/page.tsx`는 신설 `/`로 리다이렉트(오늘 콘텐츠가 루트로 이동·기존 `/today` 링크 보호).
@@ -29,7 +30,8 @@
 2. **즐겨찾기(링크·리딩방) 복원**: `app/[locale]/favorites/page.tsx`에 `<FavoritesClient />`·`{locale !== 'en' && <RoomFavoritesClient />}` 섹션을 STEP 767b 이전 버전대로 재삽입.
 3. **헤더 로고/메뉴 리셋 복원**: 보드가 다시 홈이 되면 `Header.tsx`에 `useHomeReset` 재도입(로고·메뉴 클릭 시 `reset()` 호출) — 지금은 오늘/탐색엔 "뷰 리셋" 개념이 없어 제거된 상태.
 4. **광고 카피 원복**: `messages/{ko,en}.json`의 `Advertise.slot.roomWhere`를 원래 위치 문구("리딩방·검증 탭 · 리스트 상단/중간" 등)로 되돌림.
-5. 그 외 컴포넌트·API·크론·DB는 전부 무변 상태라 추가 작업 불필요.
+5. **마이페이지 '내 신고' 복원**(STEP 769): `git show 90ccc4a:app/[locale]/mypage/page.tsx`로 파킹 전 원문을 뽑아 activity 탭의 신고 목록 블록·관련 state/핸들러·아이콘 import를 되돌림. 리딩방(검증) 표면이 함께 복원될 때 같이 복원하는 게 자연스러움(신고 대상=주로 리딩방).
+6. 그 외 컴포넌트·API·크론·DB는 전부 무변 상태라 추가 작업 불필요.
 
 ## 4. 비용·노력
 - 렌더 호출부 재배선만 필요(컴포넌트·API·DB 스키마 변경 없음) — 반나절 이내 예상.

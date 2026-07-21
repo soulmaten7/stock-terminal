@@ -20,6 +20,29 @@ type ChangeRow = {
 const cache = new Map<string, { at: number; data: unknown }>();
 const TTL = 5 * 60 * 1000;
 
+type Snap = { price: number | null; changePercent: number | null };
+
+// 현재가+어제 등락률 조인(STEP 769) — 스냅샷/us_perf 1000청크 규칙(기존 프로젝트 관례) 재사용.
+async function snapMap(sb: ReturnType<typeof createAdminClient>, market: string, symbols: string[]): Promise<Map<string, Snap>> {
+  const map = new Map<string, Snap>();
+  for (let i = 0; i < symbols.length; i += 1000) {
+    const chunk = symbols.slice(i, i + 1000);
+    if (chunk.length === 0) continue;
+    if (market === "KR") {
+      const { data } = await sb.from("kr_stock_snapshot").select("symbol,price,change_percent").in("symbol", chunk);
+      for (const r of (data ?? []) as { symbol: string; price: number | null; change_percent: number | null }[]) {
+        map.set(r.symbol, { price: r.price, changePercent: r.change_percent });
+      }
+    } else {
+      const { data } = await sb.from("us_stock_perf").select("symbol,price,r1d").in("symbol", chunk);
+      for (const r of (data ?? []) as { symbol: string; price: number | null; r1d: number | null }[]) {
+        map.set(r.symbol, { price: r.price, changePercent: r.r1d });
+      }
+    }
+  }
+  return map;
+}
+
 async function latestDate(sb: ReturnType<typeof createAdminClient>, market: string): Promise<string | null> {
   const { data } = await sb
     .from("lens_state_changes")
@@ -95,16 +118,23 @@ export async function GET(req: NextRequest) {
   if (watchSymbols) countQ = countQ.in("symbol", [...watchSymbols]);
   const { count } = await countQ;
 
-  const items = ((data ?? []) as ChangeRow[]).slice(0, limit).map((r) => ({
-    symbol: r.symbol,
-    name: r.name,
-    lensKey: r.lens_key,
-    fromState: r.from_state,
-    toState: r.to_state,
-    fromTone: r.from_tone,
-    toTone: r.to_tone,
-    tradeAmount: r.trade_amount,
-  }));
+  const rows = ((data ?? []) as ChangeRow[]).slice(0, limit);
+  const snaps = await snapMap(sb, market, rows.map((r) => r.symbol));
+  const items = rows.map((r) => {
+    const snap = snaps.get(r.symbol);
+    return {
+      symbol: r.symbol,
+      name: r.name,
+      lensKey: r.lens_key,
+      fromState: r.from_state,
+      toState: r.to_state,
+      fromTone: r.from_tone,
+      toTone: r.to_tone,
+      tradeAmount: r.trade_amount,
+      price: snap?.price ?? null,
+      changePercent: snap?.changePercent ?? null,
+    };
+  });
 
   const result = { date, count: count ?? items.length, items };
   cache.set(cacheKey, { at: Date.now(), data: result });

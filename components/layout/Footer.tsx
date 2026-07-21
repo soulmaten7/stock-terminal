@@ -11,7 +11,7 @@ export default function Footer() {
           {/* 브랜드 */}
           <div className="col-span-2 md:col-span-1">
             <p className="text-lg font-bold text-white">
-              Trillion {locale === 'ko' && <span className="text-sm font-medium text-white/45">트릴리언</span>}
+              Trillion {locale === 'ko' && <span className="text-sm font-medium text-white/65">트릴리언</span>}
             </p>
             <p className="mt-2 text-sm text-white/70">{t('tagline')}</p>
           </div>
@@ -62,7 +62,7 @@ export default function Footer() {
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-4 text-center text-sm text-white/70">
             <span>&copy; 2026 Trillion. All rights reserved.</span>
-            <Link href="/admin/login" className="text-white/40 transition-colors hover:text-white/70">{t('admin')}</Link>
+            <Link href="/admin/login" className="text-white/65 transition-colors hover:text-white/80">{t('admin')}</Link>
           </div>
         </div>
       </div>

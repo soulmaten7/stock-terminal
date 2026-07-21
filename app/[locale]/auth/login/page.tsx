@@ -183,9 +183,9 @@ export default function LoginPage() {
         <button
           type="button"
           onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }}
-          className="inline-flex items-center gap-1 text-sm text-unjong-muted hover:text-unjong-primary mb-6"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-primary mb-6"
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={20} />
           {t('back')}
         </button>
 

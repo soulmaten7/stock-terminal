@@ -15,7 +15,8 @@
     "notFoundDesc": "The address may have changed, or the page may have been removed.<br></br>Try finding it again from the home page.",
     "goHome": "Go home",
     "coinTitle": "Coin — coming soon",
-    "coinDesc": "We will ship it in the same structure once Korean stocks are complete."
+    "coinDesc": "We will ship it in the same structure once Korean stocks are complete.",
+    "yesterdayShort": "1d"
   },
   "Home": {
     "category": {
@@ -726,7 +727,7 @@
       "unclassified": "Other",
       "etc": "Other"
     },
-    "back": "← Back to the list",
+    "back": "Back to the list",
     "badgeEtn": "ETN · product info",
     "badgeEtf": "ETF · holdings",
     "etnTitle": "Product info",
@@ -878,7 +879,7 @@
       "loading": "Writing the briefing…",
       "footer": "Based on proven-method verdicts and disclosed facts · we do not judge direction"
     },
-    "back": "← Back",
+    "back": "Back",
     "headerNote": "Several views that read this stock through proven methods",
     "currentPrice": "Price",
     "lensHeaderNote": "No overall buy or sell score — you decide",
