@@ -8,7 +8,7 @@ import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCop
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice } from '@/lib/currency';
 import { useAuthStore } from '@/stores/authStore';
-import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft, Star } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드(보드의 formatPrice 키와 동일 — KR/US/JP/HK/CN/VN/GB).
 // 기존 isCN은 HK를 합쳐놔 formatPrice엔 못 씀(HK≠CN 통화) → 별도 도출.
@@ -913,6 +913,49 @@ const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
   flat: 'bg-unjong-muted',
 };
 
+// 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — 모바일 리스트 별 제거의 대체 진입점. market 관례=KR만 'KRX', 그 외는 country와 동일(보드 컴포넌트들과 동일 규칙).
+function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
+  const tb = useTranslations('Board'); // '관심종목 추가/해제' 재사용(dedup)
+  const { user } = useAuthStore();
+  const [watched, setWatched] = useState<boolean | null>(null); // null=조회 전
+  const [pop, setPop] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setWatched(false); return; }
+    let alive = true;
+    fetch('/api/watchlist').then((r) => r.json()).then((j) => {
+      if (!alive) return;
+      const set = new Set(((j.watchlist ?? []) as { symbol: string }[]).map((w) => w.symbol));
+      setWatched(set.has(symbol));
+    }).catch(() => { if (alive) setWatched(false); });
+    return () => { alive = false; };
+  }, [user, symbol]);
+
+  function toggle() {
+    if (!user) { window.location.href = '/auth/login'; return; }
+    const next = !watched;
+    setWatched(next);
+    setPop(true);
+    setTimeout(() => setPop(false), 200);
+    const market = country === 'KR' ? 'KRX' : country;
+    fetch('/api/watchlist', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol, name_ko: name, market, country, add: next }),
+    }).catch(() => setWatched(!next));
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={watched ? tb('watchRemove') : tb('watchAdd')}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-200 ${pop ? 'scale-125' : 'scale-100'} ${watched ? 'text-unjong-accent' : 'text-unjong-muted'}`}
+    >
+      <Star size={24} fill={watched ? 'currentColor' : 'none'} />
+    </button>
+  );
+}
+
 export default function StockLensClient({ initialName }: { initialName?: string }) {
   const t = useTranslations('StockLens');
   const tf = useTranslations('Favorites'); // 헤더 요약 카운트·로딩 라벨 재사용(신규 키 없이 패리티 무리스크)
@@ -1075,13 +1118,18 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <AiLensBadge pill lang={locale} />
           <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('headerNote')}</span>
         </div>
-        <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
-          <h1 className="text-xl font-bold text-unjong-primary">{initialName || data?.name || ticker}</h1>
-          <span className="text-sm text-unjong-muted">{ticker}</span>
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
+              <h1 className="text-xl font-bold text-unjong-primary">{initialName || data?.name || ticker}</h1>
+              <span className="text-sm text-unjong-muted">{ticker}</span>
+            </div>
+            {data?.price != null ? (
+              <p className="text-[15px] text-unjong-muted sm:text-sm">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
+            ) : null}
+          </div>
+          <WatchStarToggle symbol={symbol} name={initialName || data?.name || ticker} country={countryOf(symbol)} />
         </div>
-        {data?.price != null ? (
-          <p className="text-[15px] text-unjong-muted sm:text-sm">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
-        ) : null}
 
         {loading || !data ? (
           <div className="mt-2 flex items-center gap-2">

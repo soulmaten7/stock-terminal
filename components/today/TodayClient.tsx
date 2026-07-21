@@ -28,8 +28,9 @@ type ChangeItem = {
   toTone: Tone;
   tradeAmount: number | null;
   price: number | null;
-  nameKo?: string | null;
-  nameEn?: string | null;
+  changePercent: number | null;
+  nameKo: string | null;
+  nameEn: string | null;
 };
 type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
 type IndexItem = { name: string; value: string; changeText: string; changePct: number; isUp: boolean; group: string };
@@ -37,7 +38,6 @@ type WatchlistQuote = {
   symbol: string; name_ko: string; name_en: string | null; market: string; country: string;
   price: number | null; changePercent: number | null; tones: Tone[] | null;
 };
-type BoardInfo = { changePercent: number | null; name: string; nameEn?: string | null };
 
 const TONE_DOT: Record<Tone, string> = { pos: 'bg-unjong-accent', warn: 'bg-amber-400', flat: 'bg-unjong-muted' };
 
@@ -70,21 +70,6 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   } catch {
     return null;
   }
-}
-
-async function fetchKrBoardMap(): Promise<Map<string, BoardInfo>> {
-  const j = await fetchJson<{ stocks?: { symbol: string; name: string; nameEn?: string | null; changePercent?: number }[] }>(
-    '/api/krx/ranking?market=all&sort=amount&limit=2600'
-  );
-  const m = new Map<string, BoardInfo>();
-  for (const s of j?.stocks ?? []) m.set(s.symbol, { changePercent: s.changePercent ?? null, name: s.name, nameEn: s.nameEn ?? null });
-  return m;
-}
-async function fetchUsBoardMap(): Promise<Map<string, BoardInfo>> {
-  const j = await fetchJson<{ items?: { symbol: string; name: string; changePercent?: number }[] }>('/api/yahoo/us-list');
-  const m = new Map<string, BoardInfo>();
-  for (const it of j?.items ?? []) m.set(it.symbol, { changePercent: it.changePercent ?? null, name: it.name });
-  return m;
 }
 
 // 어제 UTC date(change_date와 동일 규칙) — 응답 date가 이보다 과거면 폴백 배지("금요일 기준") 노출.
@@ -138,7 +123,9 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient() {
+export default function TodayClient({ initialKrChanges, initialUsChanges, initialIndices }: {
+  initialKrChanges: ChangesResp; initialUsChanges: ChangesResp; initialIndices: IndexItem[];
+}) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
   const t = useTranslations('Today');
@@ -146,43 +133,19 @@ export default function TodayClient() {
   const { user, isLoading: authLoading } = useAuthStore();
   const homeMarket = homeMarketFor(localeRaw); // 'KR' | 'US'
 
-  const [loading, setLoading] = useState(true);
-  const [indices, setIndices] = useState<IndexItem[]>([]);
+  // 시장 전체(지수·간밤 미국·오늘 시장 변화) = 서버 프리페치(STEP 771 §3) — 클라 fetch 없이 첫 HTML에 바로 포함.
+  const indices = initialIndices;
+  const usChanges = initialUsChanges;
+  const homeChanges = homeMarket === 'KR' ? initialKrChanges : initialUsChanges;
+
   const [watchlistQuotes, setWatchlistQuotes] = useState<WatchlistQuote[] | null>(null); // null=미조회, []=조회했지만 0
   const [watchlistChanges, setWatchlistChanges] = useState<ChangeItem[]>([]);
   const [watchlistChangesDate, setWatchlistChangesDate] = useState<string | null>(null);
-  const [usChanges, setUsChanges] = useState<ChangesResp | null>(null);
-  const [homeChanges, setHomeChanges] = useState<ChangesResp | null>(null);
-  const [krBoardMap, setKrBoardMap] = useState<Map<string, BoardInfo>>(new Map());
-  const [usBoardMap, setUsBoardMap] = useState<Map<string, BoardInfo>>(new Map());
 
-  useEffect(() => {
-    let alive = true;
-    async function run() {
-      const needKr = homeMarket === 'KR';
-      const [idx, us, home, usMap, krMap] = await Promise.all([
-        fetchJson<{ items: IndexItem[] }>('/api/yahoo/indices'),
-        fetchJson<ChangesResp>('/api/today/changes?market=US&limit=5'),
-        needKr ? fetchJson<ChangesResp>('/api/today/changes?market=KR&limit=5') : Promise.resolve(null),
-        fetchUsBoardMap(),
-        needKr ? fetchKrBoardMap() : Promise.resolve(new Map<string, BoardInfo>()),
-      ]);
-      if (!alive) return;
-      setIndices(idx?.items ?? []);
-      setUsChanges(us);
-      setHomeChanges(needKr ? home : us);
-      setUsBoardMap(usMap);
-      setKrBoardMap(krMap);
-    }
-    run();
-    return () => { alive = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [homeMarket]);
-
-  // 로그인·관심목록 의존 데이터 — 세션 확정 후에만.
+  // 로그인·관심목록 의존 데이터만 클라 fetch(세션 필요 — 서버 프리페치 불가).
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { setWatchlistQuotes([]); setWatchlistChanges([]); setLoading(false); return; }
+    if (!user) { setWatchlistQuotes([]); setWatchlistChanges([]); return; }
     let alive = true;
     async function run() {
       const [quotes, wlKr, wlUs] = await Promise.all([
@@ -195,15 +158,10 @@ export default function TodayClient() {
       const merged = [...(wlKr?.items ?? []), ...(wlUs?.items ?? [])].sort((a, b) => (b.tradeAmount ?? 0) - (a.tradeAmount ?? 0));
       setWatchlistChanges(merged);
       setWatchlistChangesDate(wlKr?.date ?? wlUs?.date ?? null);
-      setLoading(false);
     }
     run();
     return () => { alive = false; };
   }, [user, authLoading]);
-
-  if (loading || authLoading) {
-    return <div className="flex min-h-[50vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-unjong-accent border-t-transparent" /></div>;
-  }
 
   const homeIndexName = homeMarket === 'KR' ? 'KOSPI' : 'S&P 500';
   const homeIndex = indices.find((i) => i.name === homeIndexName);
@@ -211,29 +169,24 @@ export default function TodayClient() {
 
   const quoteMap = new Map((watchlistQuotes ?? []).map((q) => [q.symbol, q]));
   const hasWatchlist = (watchlistQuotes?.length ?? 0) > 0;
+  const watchlistLoading = authLoading || (!!user && watchlistQuotes === null);
 
   const usListForRail = ['S&P 500', 'NASDAQ', 'Dow Jones', 'VIX'];
   const krListForRail = ['KOSPI', 'KOSDAQ', 'USD/KRW', 'VIX'];
   const railNames = homeMarket === 'KR' ? krListForRail : usListForRail;
   const railIndices = railNames.map((n) => indices.find((i) => i.name === n)).filter((x): x is IndexItem => !!x);
 
-  // 종목명: KR=공용 util(pickKrName·STEP 770 §3, 오늘·탐색 동일 함수) / US=한글 오버라이드(ko만) → cleanUsName 축약(STEP 765b).
+  // 종목명: KR=공용 util(pickKrName·STEP 770 §3, 오늘·탐색 동일 함수, API가 이미 조인해 준 nameKo/nameEn 사용)
+  // US=한글 오버라이드(ko만) → cleanUsName 축약(STEP 765b). 등락률도 API가 이미 조인해 줌(STEP 769) — 별도 보드 조회 불필요.
   function nameFor(item: ChangeItem, market: Country): string {
     if (market === 'KR') {
-      const info = krBoardMap.get(item.symbol);
-      return pickKrName(loc, info?.name, info?.nameEn, item.name ?? item.symbol);
+      return pickKrName(loc, item.nameKo, item.nameEn, item.name ?? item.symbol);
     }
     if (loc === 'ko') {
       const ko = FOREIGN_KO[item.symbol.toUpperCase()];
       if (ko) return ko;
     }
-    const info = usBoardMap.get(item.symbol);
-    const raw = info?.name ?? item.name ?? item.symbol;
-    return cleanUsName(raw);
-  }
-  function changePctFor(item: ChangeItem, market: Country): number | null {
-    const map = market === 'KR' ? krBoardMap : usBoardMap;
-    return map.get(item.symbol)?.changePercent ?? null;
+    return cleanUsName(item.name ?? item.symbol);
   }
 
   return (
@@ -250,9 +203,13 @@ export default function TodayClient() {
           ) : null}
         </div>
 
-        {/* 2) 내 관심종목 · 렌즈 변화 */}
+        {/* 2) 내 관심종목 · 렌즈 변화 — 세션 필요라 유일하게 클라 로딩 상태를 가짐 */}
         <section className="mb-7">
-          {!user || !hasWatchlist ? (
+          {watchlistLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-14 animate-pulse rounded-xl bg-unjong-background" />)}
+            </div>
+          ) : !user || !hasWatchlist ? (
             <div className="mx-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center sm:mx-0">
               <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('onboardingTitle')}</p>
               <Link href="/explore" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('onboardingCta')}</Link>
@@ -298,7 +255,7 @@ export default function TodayClient() {
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
               {(usChanges?.items ?? []).slice(0, 5).map((item, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, 'US')} displayName={nameFor(item, 'US')} market="US" />
+                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, 'US')} market="US" />
               ))}
             </div>
           )}
@@ -318,7 +275,7 @@ export default function TodayClient() {
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
               {(homeChanges?.items ?? []).slice(0, 5).map((item, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={changePctFor(item, homeMarket)} displayName={nameFor(item, homeMarket)} market={homeMarket} />
+                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, homeMarket)} market={homeMarket} />
               ))}
             </div>
           )}

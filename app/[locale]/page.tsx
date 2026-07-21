@@ -4,6 +4,8 @@ import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { getTodayChanges } from "@/lib/todayChanges";
+import { getIndices } from "@/lib/indices";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -63,10 +65,18 @@ export async function generateMetadata({
 }
 
 // 필드 대전환(STEP 767b) — 루트 = 오늘 콘텐츠(구 보드 대체). 메타(위 alternates)·OG(레이아웃 상속)는 SEO 연속성 위해 유지.
+// 서버 프리페치(STEP 771 §3) — KR/US 변화 + 지수를 여기서 병렬 조회해 첫 HTML에 포함(스피너 없이 즉시 페인트).
+// 관심(watchlist) 섹션만 세션이 필요해 클라 fetch 유지.
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
+
+  const [krChanges, usChanges, indices] = await Promise.all([
+    getTodayChanges({ market: "KR", limit: 5 }),
+    getTodayChanges({ market: "US", limit: 5 }),
+    getIndices(),
+  ]);
 
   return (
     <>
@@ -75,7 +85,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <TodayClient />
+      <TodayClient initialKrChanges={krChanges} initialUsChanges={usChanges} initialIndices={indices.items} />
     </>
   );
 }

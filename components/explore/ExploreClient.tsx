@@ -102,7 +102,7 @@ function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boo
       type="button"
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(symbol); }}
       aria-label={watched ? t('watchRemove') : t('watchAdd')}
-      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-colors ${watched ? 'text-unjong-accent' : 'text-unjong-border'}`}
+      className={`hidden h-11 w-11 shrink-0 items-center justify-center transition-colors sm:flex ${watched ? 'text-unjong-accent' : 'text-unjong-border'}`}
     >
       <Star size={18} fill={watched ? 'currentColor' : 'none'} />
     </button>
@@ -136,8 +136,8 @@ function DotsRow({ symbol, name, tones, price, changePercent, market, watched, o
             </span>
           ) : null}
         </div>
+        <PriceCell price={price} changePercent={changePercent} market={market} />
       </Link>
-      <PriceCell price={price} changePercent={changePercent} market={market} />
       <WatchStar symbol={symbol} watched={watched} onToggle={() => onToggleWatch(symbol, name)} />
     </div>
   );
@@ -166,8 +166,8 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
             {line}
           </p>
         </div>
+        <PriceCell price={item.price} changePercent={item.changePercent} market={market} />
       </Link>
-      <PriceCell price={item.price} changePercent={item.changePercent} market={market} />
       <WatchStar symbol={item.symbol} watched={watched} onToggle={() => onToggleWatch(item.symbol, name)} />
     </div>
   );

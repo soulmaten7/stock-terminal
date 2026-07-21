@@ -3,7 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
-import { ExternalLink, Layers, ArrowLeft } from 'lucide-react';
+import { useAuthStore } from '@/stores/authStore';
+import { ExternalLink, Layers, ArrowLeft, Star } from 'lucide-react';
+
+// 현재가 통화기호용 국가 코드 — StockLensClient.tsx와 동일 규칙(중복은 기존 두 파일 관례).
+const countryOf = (s: string) =>
+  /^\d{6}(\.(KS|KQ))?$/i.test(s) ? 'KR'
+  : /\.T$/i.test(s) ? 'JP'
+  : /\.HK$/i.test(s) ? 'HK'
+  : /\.(SS|SZ)$/i.test(s) ? 'CN'
+  : /\.VN$/i.test(s) ? 'VN'
+  : /\.L$/i.test(s) ? 'GB' : 'US';
 
 type Holding = { sym: string; name: string; weight: number };
 type Sector = { key: string; weight: number };
@@ -39,6 +49,49 @@ const sectorLabel = (k: string, t: Translate) => {
 };
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
+// 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — StockLensClient.tsx와 동일 구현(중복은 기존 두 파일 관례).
+function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
+  const tb = useTranslations('Board'); // '관심종목 추가/해제' 재사용(dedup)
+  const { user } = useAuthStore();
+  const [watched, setWatched] = useState<boolean | null>(null); // null=조회 전
+  const [pop, setPop] = useState(false);
+
+  useEffect(() => {
+    if (!user) { setWatched(false); return; }
+    let alive = true;
+    fetch('/api/watchlist').then((r) => r.json()).then((j) => {
+      if (!alive) return;
+      const set = new Set(((j.watchlist ?? []) as { symbol: string }[]).map((w) => w.symbol));
+      setWatched(set.has(symbol));
+    }).catch(() => { if (alive) setWatched(false); });
+    return () => { alive = false; };
+  }, [user, symbol]);
+
+  function toggle() {
+    if (!user) { window.location.href = '/auth/login'; return; }
+    const next = !watched;
+    setWatched(next);
+    setPop(true);
+    setTimeout(() => setPop(false), 200);
+    const market = country === 'KR' ? 'KRX' : country;
+    fetch('/api/watchlist', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol, name_ko: name, market, country, add: next }),
+    }).catch(() => setWatched(!next));
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      aria-label={watched ? tb('watchRemove') : tb('watchAdd')}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-200 ${pop ? 'scale-125' : 'scale-100'} ${watched ? 'text-unjong-accent' : 'text-unjong-muted'}`}
+    >
+      <Star size={24} fill={watched ? 'currentColor' : 'none'} />
+    </button>
+  );
+}
+
 export default function EtfLensClient({ symbol, initialName }: { symbol: string; initialName?: string }) {
   const t = useTranslations('EtfLens');
   const router = useRouter();
@@ -72,11 +125,16 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
       <div className="mt-3 max-w-4xl">
       {/* 헤더 */}
-      <div className="flex items-center gap-2">
-        <h1 className="text-xl font-bold text-unjong-primary">{initialName || ticker}</h1>
-        <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-unjong-primary">{initialName || ticker}</h1>
+            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
+          </div>
+          <p className="mt-0.5 text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
+        </div>
+        <WatchStarToggle symbol={symbol} name={initialName || ticker} country={countryOf(symbol)} />
       </div>
-      <p className="mt-0.5 text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
 
       {isEtn ? (
         /* ETN = 전략형(바스켓 없음) → 상품 정보 + 주의 */
