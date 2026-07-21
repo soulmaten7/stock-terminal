@@ -919,5 +919,17 @@
     "explore": "Explore",
     "watchlist": "Watchlist",
     "my": "My"
+  },
+  "Explore": {
+    "searchPlaceholder": "Search by name or ticker",
+    "noSearchResults": "No results",
+    "countryKr": "Korea",
+    "countryUs": "United States",
+    "changesTitle": "Lens state changed today",
+    "posTitle": "Stocks with the most strengths",
+    "amountTitle": "Most traded today",
+    "moreCount": "{n} →",
+    "moreLink": "See more →",
+    "noItems": "No stocks to show"
   }
 }

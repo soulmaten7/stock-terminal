@@ -919,5 +919,17 @@
     "explore": "탐색",
     "watchlist": "관심",
     "my": "마이"
+  },
+  "Explore": {
+    "searchPlaceholder": "종목명·티커로 검색",
+    "noSearchResults": "검색 결과가 없어요",
+    "countryKr": "한국",
+    "countryUs": "미국",
+    "changesTitle": "오늘 상태가 바뀐 종목",
+    "posTitle": "강점이 많은 종목",
+    "amountTitle": "오늘 거래가 많았던 종목",
+    "moreCount": "{n}건 →",
+    "moreLink": "더 보기 →",
+    "noItems": "표시할 종목이 없어요"
   }
 }
