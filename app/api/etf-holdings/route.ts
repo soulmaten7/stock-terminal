@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import YahooFinance from 'yahoo-finance2';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // ETF/ETN 상품 정보. 설계: docs/ETF_LENS_PLAN.md
 // KR = 네이버 m.stock. ETF=etfAnalysis(구성). ETN=바스켓 없음(전략노트)→integration으로 판별해 '상품 정보'만.
@@ -23,7 +24,22 @@ type Comp = {
   sectors: { key: string; weight: number }[];
   source: string;
   sourceUrl?: string;
+  price?: number | null; // 헤더 메타줄(STEP 774 §2) — KR=kr_etp_snapshot 조회, US=아래 quoteSummary 'price' 모듈(추가 호출 없음)
+  changePercent?: number | null;
+  tradeAmount?: number | null;
 };
+
+// KR ETF/ETN 현재가·등락·거래대금 — kr_etp_snapshot(krx/etf-performance와 동일 테이블). 없으면 정직 결측(null).
+async function fetchKrEtpSnap(code: string): Promise<{ price: number | null; changePercent: number | null; tradeAmount: number | null }> {
+  try {
+    const sb = createAdminClient();
+    const { data } = await sb.from('kr_etp_snapshot').select('price,change_percent,trade_amount').eq('symbol', code).maybeSingle();
+    const r = data as { price: number | null; change_percent: number | null; trade_amount: number | null } | null;
+    return { price: r?.price ?? null, changePercent: r?.change_percent ?? null, tradeAmount: r?.trade_amount ?? null };
+  } catch {
+    return { price: null, changePercent: null, tradeAmount: null };
+  }
+}
 
 function krCode(symbol: string): string | null {
   const s = symbol.trim().toUpperCase().replace(/\.(KS|KQ)$/, '');
@@ -40,7 +56,8 @@ async function naverStockEndType(code: string): Promise<string> {
 }
 
 async function fromNaver(symbol: string, code: string): Promise<Comp> {
-  const base: Comp = { isFund: false, fundType: 'stock', symbol, family: null, category: null, expenseRatio: null, holdings: [], sectors: [], source: '네이버 금융', sourceUrl: `https://finance.naver.com/item/main.naver?code=${code}` };
+  const snap = await fetchKrEtpSnap(code);
+  const base: Comp = { isFund: false, fundType: 'stock', symbol, family: null, category: null, expenseRatio: null, holdings: [], sectors: [], source: '네이버 금융', sourceUrl: `https://finance.naver.com/item/main.naver?code=${code}`, ...snap };
   // 1) ETF는 etfAnalysis에 구성이 있음(단일종목ETF 포함). 먼저 시도.
   //    ⚠️ ETN·일반종목은 이 엔드포인트가 404+빈바디 → r.json() 예외. 자체 try/catch로 감싸 "구성 없음"으로 넘겨 2단계(ETN 판별)로.
   let j: {
@@ -66,11 +83,15 @@ async function fromNaver(symbol: string, code: string): Promise<Comp> {
 }
 
 async function fromYahoo(symbol: string): Promise<Comp> {
-  const r = await yf.quoteSummary(symbol, { modules: ['topHoldings', 'fundProfile'] });
+  // 'price' 모듈 추가(STEP 774 §2) — 이미 하는 quoteSummary 호출에 얹음(추가 왕복 없음). 거래대금=가격×거래량(STEP 764와 동일 유도 방식).
+  const r = await yf.quoteSummary(symbol, { modules: ['topHoldings', 'fundProfile', 'price'] });
   const th = r.topHoldings as { holdings?: { symbol?: string; holdingName?: string; holdingPercent?: number }[]; sectorWeightings?: Record<string, number>[] } | undefined;
   const fp = r.fundProfile as { family?: string; categoryName?: string; feesExpensesInvestment?: { annualReportExpenseRatio?: number } } | undefined;
+  const pr = r.price as { regularMarketPrice?: number; regularMarketChangePercent?: number; regularMarketVolume?: number } | undefined;
   const holdings = (th?.holdings ?? []).map((h) => ({ sym: h.symbol ?? '', name: h.holdingName ?? h.symbol ?? '', weight: h.holdingPercent ?? 0 })).filter((h) => h.name);
   const sectors = (th?.sectorWeightings ?? []).map((s) => { const k = Object.keys(s)[0]; return { key: k, weight: Number(s[k] ?? 0) }; }).filter((s) => s.weight > 0);
+  const price = pr?.regularMarketPrice ?? null;
+  const volume = pr?.regularMarketVolume ?? null;
   return {
     isFund: holdings.length > 0,
     fundType: 'etf',
@@ -82,6 +103,9 @@ async function fromYahoo(symbol: string): Promise<Comp> {
     sectors,
     source: 'Yahoo Finance',
     sourceUrl: `https://finance.yahoo.com/quote/${encodeURIComponent(symbol)}/holdings`,
+    price,
+    changePercent: pr?.regularMarketChangePercent ?? null,
+    tradeAmount: price != null && volume != null ? price * volume : null,
   };
 }
 

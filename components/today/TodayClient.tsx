@@ -274,7 +274,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
         <section className="mb-7">
           <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
             <div className="flex items-center">
-              <h2 className="text-base font-bold text-unjong-primary">{t('marketChangesTitle')}</h2>
+              <h2 className="text-base font-bold text-unjong-primary">{t(homeMarket === 'KR' ? 'marketChangesTitleKr' : 'marketChangesTitleUs')}</h2>
               <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
             </div>
             <SelectionBasisLabel />

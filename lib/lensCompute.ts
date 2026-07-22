@@ -8,6 +8,7 @@ import { computeFScore, type FRow } from "./fscore";
 import { marketCap, perFrom, pbrFrom } from "./returns";
 import { LENSES } from "./lenses/registry";
 import type { StockData, LensRead } from "./lenses/types";
+import { createAdminClient } from "./supabase/admin"; // 순수 supabase-js 래퍼 — next/server 무의존(프레임워크 무관 유지)
 
 // yahooSurvey 안내 로그 억제
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
@@ -17,10 +18,28 @@ export type SymbolLenses = {
   resolved: string;
   name: string;
   price: number | null;
+  changePercent: number | null; // 상세 헤더 메타줄(STEP 774 §2) — 이미 fetch하는 야후 quote에서 추출(추가 조회 없음)
+  tradeAmount: number | null; // 상세 헤더 거래대금(STEP 774 §2) — KR/US만(kr_stock_snapshot·us_stock_perf), 그 외 시장은 정직 결측(null)
   lenses: LensRead[];
   fscore: unknown; // computeFScore 결과(별도 형태) 또는 null
   error?: string;
 };
+
+// 거래대금 — KR(6자리 코드)=kr_stock_snapshot.trade_amount · 그 외(US 등)=us_stock_perf.amount.
+// JP/CN/VN/GB는 두 테이블 어디에도 없어 자연스럽게 null(항목 생략 — 정직 결측).
+async function fetchTradeAmount(symbol: string): Promise<number | null> {
+  try {
+    const sb = createAdminClient();
+    if (/^\d{6}$/.test(symbol)) {
+      const { data } = await sb.from("kr_stock_snapshot").select("trade_amount").eq("symbol", symbol).maybeSingle();
+      return (data as { trade_amount: number | null } | null)?.trade_amount ?? null;
+    }
+    const { data } = await sb.from("us_stock_perf").select("amount").eq("symbol", symbol).maybeSingle();
+    return (data as { amount: number | null } | null)?.amount ?? null;
+  } catch {
+    return null;
+  }
+}
 
 // 종목의 야후 표시명(shortName·없으면 longName). R3 일본 뉴스 검색어용(일본 상호가 오면 그대로 사용).
 export async function fetchYahooName(symbol: string): Promise<string | null> {
@@ -34,7 +53,7 @@ export async function fetchYahooName(symbol: string): Promise<string | null> {
 
 // 심볼 1개 → 표준 데이터 번들(StockData). 한 번 fetch → 모든 렌즈에 주입(docs/LENS_ARCHITECTURE.md §1).
 // 야후 3콜(chart 400일 · quote · fundamentalsTimeSeries 6년). 부분 실패해도 가능한 렌즈는 계산(안전).
-export async function buildStockData(symbol: string, _locale: Locale = "ko"): Promise<StockData> {
+export async function buildStockData(symbol: string, _locale: Locale = "ko"): Promise<StockData & { changePercent: number | null }> {
   const period1 = new Date(Date.now() - 400 * 24 * 60 * 60 * 1000);
   // KR 보드 6자리 코드(예: 005930) → 야후 심볼 해석(.KS 우선, 실패 시 .KQ). 그 외(NVDA·7203.T·0700.HK)는 그대로.
   const candidates = /^\d{6}$/.test(symbol) ? [symbol + ".KS", symbol + ".KQ"] : [symbol];
@@ -53,20 +72,21 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
   }
 
   // 현재가·PER·PBR·이름(밸류에이션 렌즈용) — 해석된 심볼로 조회
-  let pe: number | null = null, pb: number | null = null, name = symbol, price: number | null = null;
+  let pe: number | null = null, pb: number | null = null, name = symbol, price: number | null = null, changePercent: number | null = null;
   try {
     const q = await yf.quote(resolved);
     pe = (q as { trailingPE?: number }).trailingPE ?? null;
     pb = (q as { priceToBook?: number }).priceToBook ?? null;
     name = (q as { shortName?: string }).shortName || (q as { longName?: string }).longName || name;
     price = (q as { regularMarketPrice?: number }).regularMarketPrice ?? null;
+    changePercent = (q as { regularMarketChangePercent?: number }).regularMarketChangePercent ?? null;
   } catch {
     /* quote 실패해도 가격기반 렌즈는 계산 */
   }
 
   // 데이터 부족(가격계열<30) → 재무 fetch·밸류 폴백 생략(현 동작 보존), 빈 재무 번들 반환.
   if (closes.length < 30) {
-    return { symbol, resolved, name, price, closes, pe, pb, financials: [] };
+    return { symbol, resolved, name, price, changePercent, closes, pe, pb, financials: [] };
   }
 
   // 연간 재무(fundamentalsTimeSeries) — F-Score·퀄리티·자산성장 + 밸류(E/P·B/M) 폴백에 공용. 실패 시 rows=[] (안전).
@@ -110,16 +130,16 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
   if (pe == null) pe = perFrom(mc, lr?.netIncome);
   if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
 
-  return { symbol, resolved, name, price, closes, pe, pb, financials: rows };
+  return { symbol, resolved, name, price, changePercent, closes, pe, pb, financials: rows };
 }
 
 // 심볼 1개 → 7팩터(모멘텀·저변동·기술·밸류·퀄리티·자산성장) + F-Score.
 // 제네릭 오케스트레이터: LENSES 레지스트리를 순회해 계산(수동 배선 제거·async 대응).
 export async function computeSymbolLenses(symbol: string, locale: Locale = "ko"): Promise<SymbolLenses> {
-  const d = await buildStockData(symbol, locale);
+  const [d, tradeAmount] = await Promise.all([buildStockData(symbol, locale), fetchTradeAmount(symbol)]);
 
   if (d.closes.length < 30) {
-    return { symbol, resolved: d.resolved, name: d.name, price: d.price, lenses: [], fscore: null, error: "insufficient_data" };
+    return { symbol, resolved: d.resolved, name: d.name, price: d.price, changePercent: d.changePercent, tradeAmount, lenses: [], fscore: null, error: "insufficient_data" };
   }
 
   const allLenses = await Promise.all(LENSES.map((l) => l.compute(d, locale)));
@@ -138,5 +158,5 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
   // 재무 행 없으면 퀄리티·자산성장은 배열에서 제외(리팩토링 전 동작 보존 — 예전엔 if(lr)일 때만 push했음).
   const lenses = lr ? allLenses : allLenses.filter((l) => l.key !== "quality" && l.key !== "assetgrowth");
 
-  return { symbol, resolved: d.resolved, name: d.name, price: d.price, lenses, fscore };
+  return { symbol, resolved: d.resolved, name: d.name, price: d.price, changePercent: d.changePercent, tradeAmount, lenses, fscore };
 }

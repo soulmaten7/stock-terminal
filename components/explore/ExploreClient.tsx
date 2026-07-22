@@ -320,7 +320,7 @@ export default function ExploreClient() {
         </button>
         <div className="mb-3 flex items-center justify-between px-4 sm:px-0">
           <div className="flex items-center">
-            <h1 className="text-lg font-bold text-unjong-primary">{t(titleKey)}</h1>
+            <h1 className="text-lg font-bold text-unjong-primary">{t(market === 'KR' ? 'countryKr' : 'countryUs')} · {t(titleKey)}</h1>
             <AsOfBadge date={asOfDate} loc={loc} />
           </div>
           <BasisLabel />

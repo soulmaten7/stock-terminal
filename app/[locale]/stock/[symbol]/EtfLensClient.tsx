@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
+import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { ExternalLink, Layers, ArrowLeft, Star } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드 — StockLensClient.tsx와 동일 규칙(중복은 기존 두 파일 관례).
@@ -28,6 +29,9 @@ type EtfData = {
   sectors: Sector[];
   source?: string;
   sourceUrl?: string;
+  price?: number | null;
+  changePercent?: number | null;
+  tradeAmount?: number | null;
 };
 
 // 모듈 상수라 훅을 못 쓴다 → 값=ko.json 키. 매핑에 없는 섹터는 원문 키 그대로(번역 대상 아님).
@@ -94,6 +98,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
 
 export default function EtfLensClient({ symbol, initialName }: { symbol: string; initialName?: string }) {
   const t = useTranslations('EtfLens');
+  const tStock = useTranslations('StockLens'); // 'tradeAmount' 재사용(dedup·StockLensClient과 동일 라벨·STEP 774 §2)
   const router = useRouter();
   const ticker = symbol.split('.')[0];
   const [data, setData] = useState<EtfData | null>(null);
@@ -132,6 +137,15 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
             <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-unjong-muted">{isEtn ? t('badgeEtn') : t('badgeEtf')}</span>
           </div>
           <p className="mt-0.5 text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
+          {data?.price != null ? (
+            <p className="mt-0.5 text-[15px] text-unjong-muted sm:text-sm">
+              {formatPrice(data.price, countryOf(symbol))}
+              {data.changePercent != null ? (
+                <span className={data.changePercent >= 0 ? 'text-unjong-up' : 'text-unjong-down'}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
+              ) : null}
+              {data.tradeAmount != null ? <span> · {tStock('tradeAmount')} {formatTradeValue(data.tradeAmount, countryOf(symbol))}</span> : null}
+            </p>
+          ) : null}
         </div>
         <WatchStarToggle symbol={symbol} name={initialName || ticker} country={countryOf(symbol)} />
       </div>

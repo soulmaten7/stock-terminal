@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation'; // useParams는 로케일 무관 �
 import { useRouter, Link } from '@/i18n/navigation';
 import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { useAuthStore } from '@/stores/authStore';
 import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft, Star } from 'lucide-react';
 
@@ -41,7 +41,7 @@ type LensRead = {
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
-type LensResp = { symbol: string; name?: string; price?: number | null; lenses?: LensRead[]; fscore?: FScoreResp | null; error?: string };
+type LensResp = { symbol: string; name?: string; price?: number | null; changePercent?: number | null; tradeAmount?: number | null; lenses?: LensRead[]; fscore?: FScoreResp | null; error?: string };
 type EventDef = { item: string; label: string; klass: 'A' | 'B' | 'general'; lenses: string[]; severity: 'info' | 'watch' | 'serious'; flagLens: boolean };
 type Flag = { klass: 'A' | 'B'; label: string; date: string };
 type MatEvent = { date: string; items: string[]; defs: EventDef[]; link: string };
@@ -1125,7 +1125,13 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               <span className="text-sm text-unjong-muted">{ticker}</span>
             </div>
             {data?.price != null ? (
-              <p className="text-[15px] text-unjong-muted sm:text-sm">{t('currentPrice')} {formatPrice(data.price, countryOf(symbol))}</p>
+              <p className="text-[15px] text-unjong-muted sm:text-sm">
+                {formatPrice(data.price, countryOf(symbol))}
+                {data.changePercent != null ? (
+                  <span className={data.changePercent >= 0 ? 'text-unjong-up' : 'text-unjong-down'}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
+                ) : null}
+                {data.tradeAmount != null ? <span> · {t('tradeAmount')} {formatTradeValue(data.tradeAmount, countryOf(symbol))}</span> : null}
+              </p>
             ) : null}
           </div>
           <WatchStarToggle symbol={symbol} name={initialName || data?.name || ticker} country={countryOf(symbol)} />
