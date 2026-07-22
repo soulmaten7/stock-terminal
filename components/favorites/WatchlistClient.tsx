@@ -6,7 +6,8 @@ import { useLocale, useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import { TONE_DOT_CLASS as TONE_DOT, type Tone } from '@/lib/lensTones';
+import { TONE_DOT_CLASS as TONE_DOT, changeColorClass, type Tone } from '@/lib/lensTones';
+import { pickLocale } from '@/lib/lensCopy';
 
 type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
@@ -15,11 +16,6 @@ function pctText(v: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
 }
-function pctColor(v: number | null): string {
-  if (v == null) return 'text-unjong-muted';
-  return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
-}
-
 function LensSummary({ lens, t }: { lens: LensState | undefined; t: ReturnType<typeof useTranslations> }) {
   // 아직 시작 전(레이스) 또는 로딩 중: 회색 점 7개 스켈레톤
   if (!lens || lens.state === 'loading') {
@@ -58,7 +54,7 @@ function LensSummary({ lens, t }: { lens: LensState | undefined; t: ReturnType<t
 export default function WatchlistClient() {
   const t = useTranslations('Favorites');
   const tb = useTranslations('Board'); // '관심종목 해제' 재사용(dedup)
-  const locale = useLocale();
+  const locale = pickLocale(useLocale()); // 등락색 로케일 분기(STEP 777 §2)에 타입 필요 — 값은 무변(ko/en 그대로)
   const [items, setItems] = useState<WatchItem[]>([]);
   const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -148,7 +144,7 @@ export default function WatchlistClient() {
   return (
     <ul className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface">
       {items.map((f) => (
-        <li key={`${f.symbol}:${f.market}`} className="group flex items-start gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background">
+        <li key={`${f.symbol}:${f.market}`} className="group flex items-start gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background active:bg-unjong-background">
           {/* 행(로고·이름·티커·가격·렌즈요약) 전체 클릭 → 종목 상세. 해제(X)만 분리. */}
           <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <div className="flex min-w-0 items-center gap-2 sm:flex-1">
@@ -157,7 +153,7 @@ export default function WatchlistClient() {
               <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
               <span className="ml-auto shrink-0 text-right sm:ml-0">
                 <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
-                <span className={`block text-[11px] font-medium tabular-nums ${pctColor(f.changePercent)}`}>{pctText(f.changePercent)}</span>
+                <span className={`block text-[11px] font-medium tabular-nums ${changeColorClass(f.changePercent, locale)}`}>{pctText(f.changePercent)}</span>
               </span>
             </div>
             <div className="shrink-0 sm:flex sm:w-64 sm:justify-end">

@@ -7,7 +7,7 @@ import { useRouter, Link } from '@/i18n/navigation';
 import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
-import { TONE_DOT_CLASS as TONE_DOT } from '@/lib/lensTones';
+import { TONE_DOT_CLASS as TONE_DOT, changeColorClass } from '@/lib/lensTones';
 import { useAuthStore } from '@/stores/authStore';
 import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft, Star } from 'lucide-react';
 
@@ -1120,10 +1120,10 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               <span className="text-sm text-unjong-muted">{ticker}</span>
             </div>
             {data?.price != null ? (
-              <p className="text-[15px] text-unjong-muted sm:text-sm">
+              <p className="text-[15px] tabular-nums text-unjong-muted sm:text-sm">
                 {formatPrice(data.price, countryOf(symbol))}
                 {data.changePercent != null ? (
-                  <span className={data.changePercent >= 0 ? 'text-unjong-up' : 'text-unjong-down'}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
+                  <span className={changeColorClass(data.changePercent, locale)}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
                 ) : null}
                 {data.tradeAmount != null ? <span> · {t('tradeAmount')} {formatTradeValue(data.tradeAmount, countryOf(symbol))}</span> : null}
               </p>

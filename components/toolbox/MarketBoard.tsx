@@ -712,7 +712,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   <p className="font-bold leading-snug text-unjong-primary">{isEn ? (selectedStock.nameEn ?? selectedStock.name) : selectedStock.name}</p>
                   <p className="font-mono text-xs text-unjong-muted">
                     {selectedStock.symbol} · {selectedStock.price ? selectedStock.price.toLocaleString() : '—'}
-                    <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
+                    <span className={`ml-1 font-sans font-semibold tabular-nums ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
                   </p>
                 </div>
               </div>

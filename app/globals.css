@@ -46,6 +46,11 @@
   --color-toss-gray-100: #F2F4F6;
   --color-toss-gray-700: #4E5968;
   --color-toss-gray-900: #191F28;
+  /* 등락색 로케일 분기(STEP 777 §2) — en 전용 토큰(서구 관례: 상승 초록/하락 빨강). ko는 위 unjong-up/down(빨강/파랑) 그대로.
+     ⚠️ 이 빌드의 Tailwind v4 @theme inline은 유틸에 var()가 아니라 값을 그대로 굳혀 넣는다(실측 확인) —
+     html[lang] CSS 오버라이드로는 안 먹혀서 lib/lensTones.ts의 changeColorClass()가 로케일별로 이 토큰들을 골라 쓴다. */
+  --color-market-gain-en: #34D399;
+  --color-market-loss-en: #F87171;
 }
 
 * { box-sizing: border-box; }

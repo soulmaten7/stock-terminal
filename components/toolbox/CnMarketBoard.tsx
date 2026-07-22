@@ -607,7 +607,7 @@ export default function CnMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <p className="font-bold leading-snug text-unjong-primary">{selectedStock.name}</p>
                   <p className="font-mono text-xs text-unjong-muted">
                     {selectedStock.symbol.replace(/\.(HK|SS|SZ)$/, '')} · {selectedStock.price ? formatPrice(selectedStock.price, selectedStock.cur || curCode) : '—'}
-                    <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
+                    <span className={`ml-1 font-sans font-semibold tabular-nums ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
                   </p>
                 </div>
               </div>

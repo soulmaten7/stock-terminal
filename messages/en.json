@@ -914,7 +914,7 @@
     "viewMoreUsChanges": "See {n} more US changes →",
     "noChangesToday": "No lens state changes today",
     "noWatchlistChangesToday": "No lens state changes in your watchlist today",
-    "lensChangeLine": "{lensName} {from} → {to}",
+    "lensChangeLine": "{lensName} {from} → <b>{to}</b>",
     "railMarketTitle": "Markets",
     "railWatchlistTitle": "My watchlist",
     "railWatchlistLogin": "Log in to see your watchlist",
@@ -928,6 +928,8 @@
   },
   "Explore": {
     "searchPlaceholder": "Search by name or ticker",
+    "recentSearches": "Recent searches",
+    "removeRecent": "Remove recent search",
     "noSearchResults": "No results",
     "countryKr": "Korea",
     "countryUs": "United States",

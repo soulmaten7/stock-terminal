@@ -7,7 +7,7 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
-import { TONE_DOT_CLASS as TONE_DOT, type Tone } from '@/lib/lensTones';
+import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
@@ -30,14 +30,11 @@ type ChangesResp = { date: string | null; count?: number; counts?: ToneCounts; i
 type BoardRow = { symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null };
 
 const STORAGE_KEY = 'explore_market';
+const RECENTS_KEY = 'explore_recent_searches';
 
 function pct(v?: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
-}
-function pctColor(v?: number | null): string {
-  if (v == null) return 'text-unjong-muted';
-  return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
 function lensName(loc: Locale, key: string): string {
   return (LENS_COPY[loc] as unknown as Record<string, { name: string }>)[key]?.name ?? key;
@@ -80,7 +77,7 @@ async function fetchAmountTop(market: Country, limit: number): Promise<BoardRow[
 // 칩 스펙(STEP 763 통일 규격) 재사용 — 모바일 44px·rounded-xl·활성=strong, 데스크톱은 sm: 분기로 기존 느낌 보존.
 function chipClass(active: boolean): string {
   return `inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-1.5 text-sm font-medium transition-colors sm:min-h-0 sm:rounded-lg sm:font-semibold ${
-    active ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background'
+    active ? 'bg-unjong-strong text-white' : 'text-unjong-muted hover:bg-unjong-background active:bg-unjong-background'
   }`;
 }
 
@@ -130,21 +127,21 @@ function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boo
   );
 }
 
-function PriceCell({ price, changePercent, market }: { price: number | null; changePercent: number | null; market: Country }) {
+function PriceCell({ price, changePercent, market, loc }: { price: number | null; changePercent: number | null; market: Country; loc: Locale }) {
   return (
     <div className="flex shrink-0 flex-col items-end gap-0.5">
       <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{price != null ? formatPrice(price, market) : '—'}</span>
-      <span className={`text-[13px] tabular-nums sm:text-[11px] ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
+      <span className={`text-[13px] tabular-nums sm:text-[11px] ${changeColorClass(changePercent, loc)}`}>{pct(changePercent)}</span>
     </div>
   );
 }
 
-function DotsRow({ symbol, name, tones, price, changePercent, market, watched, onToggleWatch }: {
-  symbol: string; name: string; tones: Tones | null | undefined; price: number | null; changePercent: number | null; market: Country;
+function DotsRow({ symbol, name, tones, price, changePercent, market, loc, watched, onToggleWatch }: {
+  symbol: string; name: string; tones: Tones | null | undefined; price: number | null; changePercent: number | null; market: Country; loc: Locale;
   watched: boolean; onToggleWatch: (symbol: string, name: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
+    <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60 active:bg-unjong-background">
       <Link href={`/stock/${symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
         <StockLogo code={symbol} name={name} size={30} />
         <div className="min-w-0 flex-1">
@@ -157,7 +154,7 @@ function DotsRow({ symbol, name, tones, price, changePercent, market, watched, o
             </span>
           ) : null}
         </div>
-        <PriceCell price={price} changePercent={changePercent} market={market} />
+        <PriceCell price={price} changePercent={changePercent} market={market} loc={loc} />
       </Link>
       <WatchStar symbol={symbol} watched={watched} onToggle={() => onToggleWatch(symbol, name)} />
     </div>
@@ -170,15 +167,17 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch, extra = 0 }: {
   const t = useTranslations('Today');
   const tCommon = useTranslations('Common');
   const key = item.lensKey as LensKey;
-  const line = t('lensChangeLine', {
+  // 도착 상태(B)만 톤 색(STEP 777 §4) — A는 muted 그대로, 776 단일 토큰(TONE_TEXT_CLASS) 재사용.
+  const line = t.rich('lensChangeLine', {
     lensName: lensName(loc, key),
     from: compactPhrase(stateLabel(loc, key, item.fromState)),
     to: compactPhrase(stateLabel(loc, key, item.toState)),
+    b: (chunks) => <span className={TONE_TEXT_CLASS[item.toTone]}>{chunks}</span>,
   });
   // 종목명 — 공용 util(resolveDisplayName·STEP 775 §3, 오늘·탐색·서버 API 전부 동일 함수).
   const name = resolveDisplayName({ loc, market, symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: 'list' });
   return (
-    <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
+    <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60 active:bg-unjong-background">
       <Link href={`/stock/${item.symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
         <StockLogo code={item.symbol} name={name} size={30} />
         <div className="min-w-0 flex-1">
@@ -189,7 +188,7 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch, extra = 0 }: {
             {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
           </p>
         </div>
-        <PriceCell price={item.price} changePercent={item.changePercent} market={market} />
+        <PriceCell price={item.price} changePercent={item.changePercent} market={market} loc={loc} />
       </Link>
       <WatchStar symbol={item.symbol} watched={watched} onToggle={() => onToggleWatch(item.symbol, name)} />
     </div>
@@ -241,6 +240,29 @@ export default function ExploreClient() {
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // 최근 검색(STEP 777 §6) — 서버 저장 없이 로컬 전용, 선택한 종목 최대 3개(최신 우선·중복 제거).
+  const [recents, setRecents] = useState<SearchItem[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENTS_KEY);
+      if (raw) setRecents(JSON.parse(raw));
+    } catch { /* localStorage 불가 환경 무시 */ }
+  }, []);
+  function saveRecent(item: SearchItem) {
+    setRecents((prev) => {
+      const next = [item, ...prev.filter((r) => r.symbol !== item.symbol)].slice(0, 3);
+      try { localStorage.setItem(RECENTS_KEY, JSON.stringify(next)); } catch { /* 무시 */ }
+      return next;
+    });
+  }
+  function removeRecent(symbol: string) {
+    setRecents((prev) => {
+      const next = prev.filter((r) => r.symbol !== symbol);
+      try { localStorage.setItem(RECENTS_KEY, JSON.stringify(next)); } catch { /* 무시 */ }
+      return next;
+    });
+  }
+
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     const q = query.trim();
@@ -265,6 +287,7 @@ export default function ExploreClient() {
   }, []);
 
   function goToResult(item: SearchItem) {
+    saveRecent(item);
     setSearchOpen(false);
     setQuery('');
     router.push(`/stock/${item.symbol}`);
@@ -373,10 +396,10 @@ export default function ExploreClient() {
               filteredGroupedChanges.map(({ item, extra }, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} extra={extra} />)
           ) : activeList === 'pos' ? (
             posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           ) : (
             amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           )}
         </div>
       </div>
@@ -395,7 +418,7 @@ export default function ExploreClient() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onFocus={() => { if (results.length > 0) setSearchOpen(true); }}
+            onFocus={() => { if (query.trim() ? results.length > 0 : recents.length > 0) setSearchOpen(true); }}
             onKeyDown={onSearchKeyDown}
             placeholder={t('searchPlaceholder')}
             className="h-[52px] w-full rounded-2xl border border-unjong-border bg-unjong-surface pl-11 pr-11 text-[15px] text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
@@ -408,7 +431,25 @@ export default function ExploreClient() {
         </div>
         {searchOpen ? (
           <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1.5 max-h-[70vh] overflow-y-auto rounded-2xl border border-unjong-border bg-unjong-surface py-1.5 shadow-lg">
-            {searchLoading ? (
+            {!query.trim() ? (
+              recents.length === 0 ? null : (
+                <>
+                  <p className="px-4 pb-1 pt-2 text-[11px] font-medium text-unjong-muted">{t('recentSearches')}</p>
+                  {recents.map((r) => (
+                    <div key={`${r.symbol}-${r.country}`} className="flex w-full items-center gap-2.5 px-4 py-2.5 hover:bg-unjong-background active:bg-unjong-background">
+                      <button type="button" onClick={() => goToResult(r)} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
+                        <StockLogo code={r.symbol} name={r.name} size={28} />
+                        <span className="min-w-0 flex-1 truncate text-[17px] font-medium text-unjong-primary sm:text-sm">{r.name}</span>
+                        <span className="shrink-0 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{r.country}</span>
+                      </button>
+                      <button type="button" onClick={() => removeRecent(r.symbol)} aria-label={t('removeRecent')} className="shrink-0 p-1.5 text-unjong-muted hover:text-unjong-primary active:bg-unjong-background">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )
+            ) : searchLoading ? (
               <Skeleton />
             ) : results.length === 0 ? (
               <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noSearchResults')}</p>
@@ -420,7 +461,7 @@ export default function ExploreClient() {
                   role="option"
                   aria-selected={i === activeIdx}
                   onClick={() => goToResult(r)}
-                  className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-left transition-colors hover:bg-unjong-background ${i === activeIdx ? 'bg-unjong-background' : ''}`}
+                  className={`flex w-full items-center gap-2.5 px-4 py-2.5 text-left transition-colors hover:bg-unjong-background active:bg-unjong-background ${i === activeIdx ? 'bg-unjong-background' : ''}`}
                 >
                   <StockLogo code={r.symbol} name={r.name} size={28} />
                   <span className="min-w-0 flex-1 truncate text-[17px] font-medium text-unjong-primary sm:text-sm">{r.name}</span>
@@ -482,7 +523,7 @@ export default function ExploreClient() {
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {posTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}
@@ -504,7 +545,7 @@ export default function ExploreClient() {
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {amountTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}

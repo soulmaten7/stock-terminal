@@ -10,6 +10,21 @@ export const TONE_DOT_CLASS: Record<Tone, string> = {
   flat: "bg-unjong-muted",
 };
 
+// 톤 텍스트 색 Tailwind 클래스 — 위 도트와 같은 색을 글자에(STEP 777 §4, 전환 문구 도착 상태 강조용).
+export const TONE_TEXT_CLASS: Record<Tone, string> = {
+  pos: "text-unjong-accent",
+  warn: "text-amber-400",
+  flat: "text-unjong-muted",
+};
+
+// 등락 색 로케일 분기(STEP 777 §2) — ko=상승 빨강/하락 파랑(한국 관례) · en=상승 초록/하락 빨강(서구 관례, 안 뒤집으면 정반대로 읽힘).
+// 단일 소스 — 오늘·탐색·상세·지수 티커·관심·보드 전 사용처가 이 함수 하나만(파일별 pctColor 재구현 금지).
+export function changeColorClass(value: number | null | undefined, locale: "ko" | "en"): string {
+  if (value == null) return "text-unjong-muted";
+  if (locale === "en") return value >= 0 ? "text-market-gain-en" : "text-market-loss-en";
+  return value >= 0 ? "text-unjong-up" : "text-unjong-down";
+}
+
 // 렌즈 키(lenses.ts stable key) → [pos상태, warn상태, mid상태] 3튜플 — 팩터별 state→tone 단일 정본.
 const STATE_SPEC: Record<string, [string, string, string]> = {
   momentum: ["up", "down", "flat"],

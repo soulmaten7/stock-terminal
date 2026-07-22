@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
+import { changeColorClass } from '@/lib/lensTones';
+import { pickLocale } from '@/lib/lensCopy';
 import { ExternalLink, Layers, ArrowLeft, Star } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드 — StockLensClient.tsx와 동일 규칙(중복은 기존 두 파일 관례).
@@ -99,6 +101,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
 export default function EtfLensClient({ symbol, initialName }: { symbol: string; initialName?: string }) {
   const t = useTranslations('EtfLens');
   const tStock = useTranslations('StockLens'); // 'tradeAmount' 재사용(dedup·StockLensClient과 동일 라벨·STEP 774 §2)
+  const locale = pickLocale(useLocale()); // 등락색 로케일 분기(STEP 777 §2)에 필요
   const router = useRouter();
   const ticker = symbol.split('.')[0];
   const [data, setData] = useState<EtfData | null>(null);
@@ -138,10 +141,10 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
           </div>
           <p className="mt-0.5 text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{ticker}</p>
           {data?.price != null ? (
-            <p className="mt-0.5 text-[15px] text-unjong-muted sm:text-sm">
+            <p className="mt-0.5 text-[15px] tabular-nums text-unjong-muted sm:text-sm">
               {formatPrice(data.price, countryOf(symbol))}
               {data.changePercent != null ? (
-                <span className={data.changePercent >= 0 ? 'text-unjong-up' : 'text-unjong-down'}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
+                <span className={changeColorClass(data.changePercent, locale)}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
               ) : null}
               {data.tradeAmount != null ? <span> · {tStock('tradeAmount')} {formatTradeValue(data.tradeAmount, countryOf(symbol))}</span> : null}
             </p>

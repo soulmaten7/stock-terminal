@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import '../globals.css';
 import Header from '@/components/layout/Header';
@@ -26,6 +26,11 @@ const playfair = Playfair_Display({
 
 // OG 표준 로케일 코드(og:locale은 언어코드가 아니라 language_TERRITORY).
 export const OG_LOCALE: Record<string, string> = { ko: 'ko_KR', en: 'en_US' };
+
+// PWA 테마색(STEP 777 §3) — 로케일 무관 고정값이라 static viewport(generateViewport 아님, next 문서 권장).
+export const viewport: Viewport = {
+  themeColor: '#0A0A0A',
+};
 
 // 로케일별 메타. locale을 명시적으로 넘겨야 정적 렌더 자격이 유지된다(next-intl 문서).
 // hreflang(alternate)은 여기 두지 않는다 — 레이아웃은 자기 pathname을 모르므로 여기에 넣으면

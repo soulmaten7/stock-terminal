@@ -603,7 +603,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <p className="font-bold leading-snug text-unjong-primary">{selectedStock.symbol}</p>
                   <p className="font-mono text-xs text-unjong-muted">
                     {selectedStock.name} · {selectedStock.price ? formatPrice(selectedStock.price, 'US') : '—'}
-                    <span className={`ml-1 font-sans font-semibold ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
+                    <span className={`ml-1 font-sans font-semibold tabular-nums ${pctColor(selectedStock.changePercent)}`}>{pct(selectedStock.changePercent)}</span>
                   </p>
                 </div>
               </div>

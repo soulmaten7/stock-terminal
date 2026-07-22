@@ -6,7 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor, type Country } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
-import { TONE_DOT_CLASS as TONE_DOT, type Tone } from '@/lib/lensTones';
+import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
@@ -40,10 +40,6 @@ type WatchlistQuote = {
 function pct(v?: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
-}
-function pctColor(v?: number | null): string {
-  if (v == null) return 'text-unjong-muted';
-  return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
 function lensName(loc: Locale, key: string): string {
   return (LENS_COPY[loc] as unknown as Record<string, { name: string }>)[key]?.name ?? key;
@@ -103,13 +99,15 @@ function LensChangeRow({
   const t = useTranslations('Today');
   const tCommon = useTranslations('Common');
   const key = item.lensKey as LensKey;
-  const line = t('lensChangeLine', {
+  // 도착 상태(B)만 톤 색(STEP 777 §4) — A는 muted 그대로, 776 단일 토큰(TONE_TEXT_CLASS) 재사용.
+  const line = t.rich('lensChangeLine', {
     lensName: lensName(loc, key),
     from: compactPhrase(stateLabel(loc, key, item.fromState)),
     to: compactPhrase(stateLabel(loc, key, item.toState)),
+    b: (chunks) => <span className={TONE_TEXT_CLASS[item.toTone]}>{chunks}</span>,
   });
   return (
-    <Link href={`/stock/${item.symbol}`} className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
+    <Link href={`/stock/${item.symbol}`} className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60 active:bg-unjong-background">
       <StockLogo code={item.symbol} name={displayName} size={30} />
       <div className="min-w-0 flex-1">
         <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{displayName}</p>
@@ -121,7 +119,7 @@ function LensChangeRow({
       </div>
       <div className="flex shrink-0 flex-col items-end gap-0.5">
         <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{item.price != null ? formatPrice(item.price, market) : '—'}</span>
-        <span className={`text-[13px] tabular-nums sm:text-[11px] ${pctColor(changePercent)}`}>{pct(changePercent)}</span>
+        <span className={`text-[13px] tabular-nums sm:text-[11px] ${changeColorClass(changePercent, loc)}`}>{pct(changePercent)}</span>
       </div>
     </Link>
   );
@@ -296,7 +294,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             {railIndices.map((idx) => (
               <div key={idx.name} className="rounded-lg bg-unjong-background p-2.5">
                 <p className="truncate text-[12px] text-unjong-muted">{idx.name}</p>
-                <p className={`text-sm font-semibold tabular-nums ${pctColor(idx.changePct)}`}>{pct(idx.changePct)}</p>
+                <p className={`text-sm font-semibold tabular-nums ${changeColorClass(idx.changePct, loc)}`}>{pct(idx.changePct)}</p>
               </div>
             ))}
           </div>
@@ -314,7 +312,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
                 <Link key={q.symbol} href={`/stock/${q.symbol}`} className="flex items-center gap-2 border-b border-unjong-border py-2 last:border-0 hover:bg-unjong-background/60">
                   <StockLogo code={q.symbol} name={q.name_ko} size={24} />
                   <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{loc === 'en' ? (q.name_en ?? q.name_ko) : q.name_ko}</span>
-                  <span className={`shrink-0 text-[13px] font-semibold tabular-nums ${pctColor(q.changePercent)}`}>{pct(q.changePercent)}</span>
+                  <span className={`shrink-0 text-[13px] font-semibold tabular-nums ${changeColorClass(q.changePercent, loc)}`}>{pct(q.changePercent)}</span>
                 </Link>
               ))}
               <Link href="/favorites" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('railViewAll')}</Link>

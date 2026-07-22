@@ -1,10 +1,14 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
+import { useLocale } from "next-intl";
+import { pickLocale } from "@/lib/lensCopy";
+import { changeColorClass } from "@/lib/lensTones";
 
 type Item = { name: string; value: string; changeText?: string; changePct: number; isUp: boolean; group: string };
 
 export default function HomeIndexStrip() {
+  const loc = pickLocale(useLocale()); // 등락색 로케일 분기(STEP 777 §2)
   const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
@@ -43,7 +47,7 @@ export default function HomeIndexStrip() {
                 <span className="inline-flex items-center gap-1.5 px-4 text-xs">
                   <span className="text-white/65">{it.name}</span>
                   <span className="font-semibold tabular-nums text-white">{it.value}</span>
-                  <span className={`tabular-nums ${it.isUp ? "text-unjong-up" : "text-unjong-down"}`}>
+                  <span className={`tabular-nums ${changeColorClass(it.changePct, loc)}`}>
                     {it.changeText ? `${it.changeText} ` : ""}({it.isUp ? "+" : ""}{it.changePct.toFixed(2)}%)
                   </span>
                 </span>

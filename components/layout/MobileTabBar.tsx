@@ -28,7 +28,7 @@ export default function MobileTabBar() {
             <Link
               key={tab.key}
               href={href}
-              className={`flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 py-1.5 ${active ? 'text-[#2DD4BF]' : 'text-white/70'}`}
+              className={`flex min-h-12 flex-1 flex-col items-center justify-center gap-0.5 py-1.5 active:bg-white/5 ${active ? 'text-[#2DD4BF]' : 'text-white/70'}`}
               aria-current={active ? 'page' : undefined}
             >
               <tab.Icon size={22} />
