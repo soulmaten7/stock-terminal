@@ -942,6 +942,8 @@
     "noItems": "표시할 종목이 없어요",
     "filterAll": "전체",
     "filterToPos": "강점 전환",
-    "filterToWarn": "주의 전환"
+    "filterToWarn": "주의 전환",
+    "strengthCount": "강점 {n}",
+    "tradeAmountLabel": "거래대금 {v}"
   }
 }

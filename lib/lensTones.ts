@@ -57,6 +57,15 @@ export function tonesFromStates(r: LensScoreRow): Tone[] {
   return out;
 }
 
+// 표시 순서(STATE_SPEC 삽입 순서 = 렌즈 카드·리스트 표시 순서 단일 정본)상 첫 pos 렌즈(키+상태) — 랭킹 근거 대표 라벨용(STEP 779).
+export function firstPosLens(r: LensScoreRow): { key: string; state: string } | null {
+  for (const key of Object.keys(STATE_SPEC)) {
+    const state = r[`${key}_state`];
+    if (toneForKey(key, state) === "pos") return { key, state: state as string };
+  }
+  return null;
+}
+
 // state→카운트 집계 — 보드 행 도트처럼 가벼운 {pos,warn,flat}만 필요한 소비자용.
 // 집계할 렌즈가 하나도 없으면(전부 na/null) null — "선계산 밖" 표시(호출부가 '—' 처리).
 export function tonesFor(r: LensScoreRow): { pos: number; warn: number; flat: number } | null {

@@ -1,7 +1,7 @@
 // 렌즈 정렬 목록 — /explore "강점이 많은 종목" 등의 원료(STEP 767a). lens_scores 선계산 + 시세 배치 조인.
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { tonesFor, type LensScoreRow } from "@/lib/lensTones";
+import { tonesFor, firstPosLens, type LensScoreRow } from "@/lib/lensTones";
 import { resolveDisplayName } from "@/lib/displayName";
 
 export const runtime = "nodejs";
@@ -65,7 +65,12 @@ export async function GET(req: NextRequest) {
       nameKo: snap?.nameKo ?? null, nameEn: snap?.nameEn ?? null, rawName: row.name,
       context: 'list',
     });
-    return { symbol: row.symbol, name, tones, price: snap?.price ?? null, changePercent: snap?.changePercent ?? null };
+    // 랭킹 근거 대표 라벨용(STEP 779 §1) — 표시 순서상 첫 pos 렌즈. pos 0개면 null(호출부가 "강점 0"만 표시).
+    const top = firstPosLens(row);
+    return {
+      symbol: row.symbol, name, tones, price: snap?.price ?? null, changePercent: snap?.changePercent ?? null,
+      topLensKey: top?.key ?? null, topLensState: top?.state ?? null,
+    };
   });
 
   return NextResponse.json({ items });

@@ -6,10 +6,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
-import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
+import { LENS_COPY, LENS_READINGS, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
-import { formatPrice } from '@/lib/currency';
+import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
 import { Star, Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
@@ -19,7 +19,10 @@ type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | '
 type Tones = { pos: number; warn: number; flat: number };
 
 type SearchItem = { symbol: string; name: string; country: string; type: 'stock' | 'etf' };
-type LensTopItem = { symbol: string; name: string; tones: Tones; price: number | null; changePercent: number | null };
+type LensTopItem = {
+  symbol: string; name: string; tones: Tones; price: number | null; changePercent: number | null;
+  topLensKey?: string | null; topLensState?: string | null;
+};
 type ChangeItem = {
   symbol: string; name: string | null; lensKey: string;
   fromState: string | null; toState: string; fromTone: Tone | null; toTone: Tone; tradeAmount: number | null;
@@ -27,7 +30,14 @@ type ChangeItem = {
 };
 type ToneCounts = { total: number; pos: number; warn: number };
 type ChangesResp = { date: string | null; count?: number; counts?: ToneCounts; items: ChangeItem[] };
-type BoardRow = { symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null };
+// tradeAmount(KR·krx/ranking)·amount(US·yahoo/us-list) — 소스별 필드명이 달라 rowTradeAmount()로 흡수.
+type BoardRow = {
+  symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null;
+  tradeAmount?: number | null; amount?: number | null;
+};
+function rowTradeAmount(r: BoardRow): number | null {
+  return r.tradeAmount ?? r.amount ?? null;
+}
 
 const STORAGE_KEY = 'explore_market';
 const RECENTS_KEY = 'explore_recent_searches';
@@ -136,9 +146,10 @@ function PriceCell({ price, changePercent, market, loc }: { price: number | null
   );
 }
 
-function DotsRow({ symbol, name, tones, price, changePercent, market, loc, watched, onToggleWatch }: {
+// 랭킹 근거 둘째 줄(STEP 779) — 그 리스트가 왜 이 순서인지(강점 수+대표 라벨 / 거래대금). 도트 뒤에 붙이되 넘치면 말줄임.
+function DotsRow({ symbol, name, tones, price, changePercent, market, loc, watched, onToggleWatch, rankingBasis }: {
   symbol: string; name: string; tones: Tones | null | undefined; price: number | null; changePercent: number | null; market: Country; loc: Locale;
-  watched: boolean; onToggleWatch: (symbol: string, name: string) => void;
+  watched: boolean; onToggleWatch: (symbol: string, name: string) => void; rankingBasis?: React.ReactNode;
 }) {
   return (
     <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60 active:bg-unjong-background">
@@ -147,17 +158,37 @@ function DotsRow({ symbol, name, tones, price, changePercent, market, loc, watch
         <div className="min-w-0 flex-1">
           <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{name}</p>
           {tones ? (
-            <span className="flex items-center gap-0.5">
-              {Array.from({ length: tones.pos }).map((_, i) => <span key={`p${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.pos}`} />)}
-              {Array.from({ length: tones.warn }).map((_, i) => <span key={`w${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.warn}`} />)}
-              {Array.from({ length: tones.flat }).map((_, i) => <span key={`f${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.flat}`} />)}
-            </span>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <span className="flex shrink-0 items-center gap-0.5">
+                {Array.from({ length: tones.pos }).map((_, i) => <span key={`p${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.pos}`} />)}
+                {Array.from({ length: tones.warn }).map((_, i) => <span key={`w${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.warn}`} />)}
+                {Array.from({ length: tones.flat }).map((_, i) => <span key={`f${i}`} className={`h-[6px] w-[6px] shrink-0 rounded-full ${TONE_DOT.flat}`} />)}
+              </span>
+              {rankingBasis ? <span className="min-w-0 truncate text-[13px] text-unjong-muted sm:text-[11px]">{rankingBasis}</span> : null}
+            </div>
           ) : null}
         </div>
         <PriceCell price={price} changePercent={changePercent} market={market} loc={loc} />
       </Link>
       <WatchStar symbol={symbol} watched={watched} onToggle={() => onToggleWatch(symbol, name)} />
     </div>
+  );
+}
+
+// "강점이 많은 종목" 둘째 줄 — 강점 N(muted) · 대표 강점 라벨(pos 톤=민트). pos 0개면 라벨 생략(강점 0만).
+function PosRankingBasis({ tones, topLensKey, topLensState, loc, t }: {
+  tones: Tones; topLensKey?: string | null; topLensState?: string | null; loc: Locale; t: ReturnType<typeof useTranslations>;
+}) {
+  return (
+    <>
+      <span>{t('strengthCount', { n: tones.pos })}</span>
+      {topLensKey ? (
+        <>
+          {' · '}
+          <span className={TONE_TEXT_CLASS.pos}>{lensDisplayName(loc, topLensKey)} {compactPhrase(lensStateLabel(loc, topLensKey, topLensState ?? null))}</span>
+        </>
+      ) : null}
+    </>
   );
 }
 
@@ -396,10 +427,13 @@ export default function ExploreClient() {
               filteredGroupedChanges.map(({ item, extra }, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} extra={extra} />)
           ) : activeList === 'pos' ? (
             posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={<PosRankingBasis tones={r.tones} topLensKey={r.topLensKey} topLensState={r.topLensState} loc={loc} t={t} />} />)
           ) : (
             amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              amountTop.map((r) => {
+                const amt = rowTradeAmount(r);
+                return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null} />;
+              })
           )}
         </div>
       </div>
@@ -523,7 +557,7 @@ export default function ExploreClient() {
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {posTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={<PosRankingBasis tones={r.tones} topLensKey={r.topLensKey} topLensState={r.topLensState} loc={loc} t={t} />} />
             ))}
           </div>
         )}
@@ -544,9 +578,10 @@ export default function ExploreClient() {
           <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-            {amountTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
-            ))}
+            {amountTop.slice(0, 5).map((r) => {
+              const amt = rowTradeAmount(r);
+              return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null} />;
+            })}
           </div>
         )}
       </section>

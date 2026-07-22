@@ -942,6 +942,8 @@
     "noItems": "No stocks to show",
     "filterAll": "All",
     "filterToPos": "To strength",
-    "filterToWarn": "To caution"
+    "filterToWarn": "To caution",
+    "strengthCount": "Strengths {n}",
+    "tradeAmountLabel": "Value traded {v}"
   }
 }
