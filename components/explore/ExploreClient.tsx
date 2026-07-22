@@ -7,10 +7,11 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
-import type { Tone } from '@/lib/lensTones';
+import { TONE_DOT_CLASS as TONE_DOT, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
+import { groupBySymbol } from '@/lib/groupChanges';
 import { Star, Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
@@ -29,7 +30,6 @@ type ChangesResp = { date: string | null; count?: number; counts?: ToneCounts; i
 type BoardRow = { symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null };
 
 const STORAGE_KEY = 'explore_market';
-const TONE_DOT: Record<Tone, string> = { pos: 'bg-unjong-accent', warn: 'bg-amber-400', flat: 'bg-unjong-muted' };
 
 function pct(v?: number | null): string {
   if (v == null) return '—';
@@ -102,6 +102,20 @@ function SelectionBasisLabel() {
   return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{tToday('selectionBasisLabel')}</span>;
 }
 
+// 도트 목록(강점이 많은 종목·오늘 거래가 많았던 종목) 전용 — 도트가 뭘 뜻하는지 범례로 명시(STEP 776 §2). 기존 렌즈 용어(Board.legend*) 재사용.
+function DotLegendBasisLabel() {
+  const tb = useTranslations('Board');
+  const tCommon = useTranslations('Common');
+  return (
+    <span className="flex shrink-0 items-center gap-1.5 text-[11px] font-medium text-unjong-muted">
+      <span className="flex items-center gap-1"><span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT.pos}`} />{tb('legendPos')}</span>
+      <span className="flex items-center gap-1"><span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT.warn}`} />{tb('legendWarn')}</span>
+      <span className="flex items-center gap-1"><span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT.flat}`} />{tb('legendFlat')}</span>
+      <span>· {tCommon('priceChangeBasis')}</span>
+    </span>
+  );
+}
+
 function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boolean; onToggle: (symbol: string) => void }) {
   const t = useTranslations('Board');
   return (
@@ -150,10 +164,11 @@ function DotsRow({ symbol, name, tones, price, changePercent, market, watched, o
   );
 }
 
-function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
-  item: ChangeItem; loc: Locale; market: Country; watched: boolean; onToggleWatch: (symbol: string, name: string) => void;
+function ChangeRow({ item, loc, market, watched, onToggleWatch, extra = 0 }: {
+  item: ChangeItem; loc: Locale; market: Country; watched: boolean; onToggleWatch: (symbol: string, name: string) => void; extra?: number;
 }) {
   const t = useTranslations('Today');
+  const tCommon = useTranslations('Common');
   const key = item.lensKey as LensKey;
   const line = t('lensChangeLine', {
     lensName: lensName(loc, key),
@@ -161,7 +176,7 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
     to: compactPhrase(stateLabel(loc, key, item.toState)),
   });
   // 종목명 — 공용 util(resolveDisplayName·STEP 775 §3, 오늘·탐색·서버 API 전부 동일 함수).
-  const name = resolveDisplayName({ loc, market, symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name });
+  const name = resolveDisplayName({ loc, market, symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: 'list' });
   return (
     <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
       <Link href={`/stock/${item.symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -171,6 +186,7 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
           <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
             <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
             {line}
+            {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
           </p>
         </div>
         <PriceCell price={item.price} changePercent={item.changePercent} market={market} />
@@ -321,6 +337,8 @@ export default function ExploreClient() {
   if (activeList) {
     const titleKey = activeList === 'changes' ? 'changesTitle' : activeList === 'pos' ? 'posTitle' : 'amountTitle';
     const asOfDate = activeList === 'changes' ? changes?.date ?? null : null;
+    // 톤 필터 적용 후 종목당 그룹핑(STEP 776 §3 — 필터 먼저, 그다음 묶기).
+    const filteredGroupedChanges = changes ? groupBySymbol(changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter)) : [];
     return (
       <div className="mx-auto max-w-[680px] py-6 sm:px-6">
         <button type="button" onClick={() => router.back()} className="mb-4 ml-4 inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent sm:ml-0">
@@ -332,7 +350,7 @@ export default function ExploreClient() {
             <h1 className="text-lg font-bold text-unjong-primary">{t(market === 'KR' ? 'countryKr' : 'countryUs')} · {t(titleKey)}</h1>
             <AsOfBadge date={asOfDate} loc={loc} />
           </div>
-          {activeList === 'changes' ? <SelectionBasisLabel /> : <BasisLabel />}
+          {activeList === 'changes' ? <SelectionBasisLabel /> : <DotLegendBasisLabel />}
         </div>
         {activeList === 'changes' ? (
           <div className="mb-3 flex gap-1.5 px-4 sm:px-0">
@@ -351,14 +369,14 @@ export default function ExploreClient() {
         ) : null}
         <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
           {activeList === 'changes' ? (
-            changes === null ? <Skeleton /> : changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter).length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter).map((item, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />)
+            changes === null ? <Skeleton /> : filteredGroupedChanges.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+              filteredGroupedChanges.map(({ item, extra }, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} extra={extra} />)
           ) : activeList === 'pos' ? (
             posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           ) : (
             amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           )}
         </div>
       </div>
@@ -441,8 +459,8 @@ export default function ExploreClient() {
           <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-            {changes.items.slice(0, 5).map((item, i) => (
-              <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />
+            {groupBySymbol(changes.items).slice(0, 5).map(({ item, extra }, i) => (
+              <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} extra={extra} />
             ))}
           </div>
         )}
@@ -454,7 +472,7 @@ export default function ExploreClient() {
           <h2 className="text-base font-bold text-unjong-primary">{t('posTitle')}</h2>
           <div className="flex flex-col items-end gap-0.5">
             {posTop && posTop.length > 0 ? <Link href="/explore?list=pos" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
-            <BasisLabel />
+            <DotLegendBasisLabel />
           </div>
         </div>
         {listsFailed.pos ? null : posTop === null ? (
@@ -476,7 +494,7 @@ export default function ExploreClient() {
           <h2 className="text-base font-bold text-unjong-primary">{t('amountTitle')}</h2>
           <div className="flex flex-col items-end gap-0.5">
             {amountTop && amountTop.length > 0 ? <Link href="/explore?list=amount" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
-            <BasisLabel />
+            <DotLegendBasisLabel />
           </div>
         </div>
         {listsFailed.amount ? null : amountTop === null ? (
@@ -486,7 +504,7 @@ export default function ExploreClient() {
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {amountTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}

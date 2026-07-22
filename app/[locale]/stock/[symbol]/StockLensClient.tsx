@@ -7,6 +7,7 @@ import { useRouter, Link } from '@/i18n/navigation';
 import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
+import { TONE_DOT_CLASS as TONE_DOT } from '@/lib/lensTones';
 import { useAuthStore } from '@/stores/authStore';
 import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft, Star } from 'lucide-react';
 
@@ -906,12 +907,6 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
 const H_TITLE: Record<string, string> = { short: 'horizon.short', mid: 'horizon.mid', long: 'horizon.long' };
 const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon.midSub', long: 'horizon.longSub' };
 
-// 헤더 압축 렌즈 요약 점 색 — components/favorites/WatchlistClient.tsx TONE_DOT과 동일(강점=민트·주의=앰버·보통=중립).
-const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
-  pos: 'bg-unjong-accent',
-  warn: 'bg-amber-400',
-  flat: 'bg-unjong-muted',
-};
 
 // 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — 모바일 리스트 별 제거의 대체 진입점. market 관례=KR만 'KRX', 그 외는 country와 동일(보드 컴포넌트들과 동일 규칙).
 function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {

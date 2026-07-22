@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cleanUsName } from "@/lib/usNameFormat";
+import { resolveDisplayName } from "@/lib/displayName";
 import usSymbols from "@/data/us_symbols.json";
 import jpSymbols from "@/data/jp_symbols.json";
 import cnSymbols from "@/data/cn_symbols.json";
@@ -89,9 +90,12 @@ export async function GET(req: NextRequest) {
     return SIZE_PRIORITY[a.country] - SIZE_PRIORITY[b.country];
   });
 
+  // US는 표시명 항상 영문(STEP 776 §1) — nameKo(FK 한글 별칭)는 위 매칭에만 쓰고, 여기서는 절대 안 씀(리스트 내 한글/영문 혼재 방지).
   const items = matched.slice(0, 8).map((e) => ({
     symbol: e.symbol,
-    name: lang === "en" ? e.nameEn : e.nameKo,
+    name: e.country === "US"
+      ? resolveDisplayName({ loc: lang, market: "US", symbol: e.symbol, rawName: e.nameEn, context: "list" })
+      : (lang === "en" ? e.nameEn : e.nameKo),
     country: e.country,
     type: e.type,
   }));

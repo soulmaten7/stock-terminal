@@ -3,6 +3,13 @@
 export type Tone = "pos" | "warn" | "flat";
 export type LensScoreRow = Record<string, string | null | undefined>;
 
+// 톤 도트 Tailwind 클래스(강점=민트·주의=앰버·보통=중립) — 단일 소스(STEP 776 §4). 전 사용처가 이 상수만 쓰고 파일별 재선언 금지.
+export const TONE_DOT_CLASS: Record<Tone, string> = {
+  pos: "bg-unjong-accent",
+  warn: "bg-amber-400",
+  flat: "bg-unjong-muted",
+};
+
 // 렌즈 키(lenses.ts stable key) → [pos상태, warn상태, mid상태] 3튜플 — 팩터별 state→tone 단일 정본.
 const STATE_SPEC: Record<string, [string, string, string]> = {
   momentum: ["up", "down", "flat"],

@@ -6,16 +6,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
+import { TONE_DOT_CLASS as TONE_DOT, type Tone } from '@/lib/lensTones';
 
 type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
-type Tone = 'pos' | 'warn' | 'flat';
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
-
-const TONE_DOT: Record<Tone, string> = {
-  pos: 'bg-unjong-accent',
-  warn: 'bg-amber-400',
-  flat: 'bg-unjong-muted',
-};
 
 function pctText(v: number | null): string {
   if (v == null) return '—';

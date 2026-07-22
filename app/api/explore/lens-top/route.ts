@@ -63,6 +63,7 @@ export async function GET(req: NextRequest) {
     const name = resolveDisplayName({
       loc: lang, market, symbol: row.symbol,
       nameKo: snap?.nameKo ?? null, nameEn: snap?.nameEn ?? null, rawName: row.name,
+      context: 'list',
     });
     return { symbol: row.symbol, name, tones, price: snap?.price ?? null, changePercent: snap?.changePercent ?? null };
   });

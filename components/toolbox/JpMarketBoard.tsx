@@ -7,17 +7,12 @@ import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand, Search, X } from 'luci
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
+import { TONE_DOT_CLASS as TONE_DOT } from '@/lib/lensTones';
 import LensPreview from './LensPreview';
 import AdSlotRow from './AdSlotRow';
 import { saveBoardView, loadBoardView } from '@/lib/boardMemory';
 
 type LensCount = { pos: number; warn: number; flat: number };
-// 톤 점 색 — components/favorites/WatchlistClient.tsx TONE_DOT과 동일(강점=민트·주의=앰버·보통=중립).
-const TONE_DOT: Record<'pos' | 'warn' | 'flat', string> = {
-  pos: 'bg-unjong-accent',
-  warn: 'bg-amber-400',
-  flat: 'bg-unjong-muted',
-};
 function LensDots({ lens, size = 7 }: { lens: LensCount | null | undefined; size?: number }) {
   if (!lens) return null; // 호출부가 필요 시 '—' 표시(모바일 인라인은 아무것도 안 보임)
   const dim = { height: size, width: size };

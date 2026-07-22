@@ -6,10 +6,11 @@ import { Link } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor, type Country } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
-import type { Tone } from '@/lib/lensTones';
+import { TONE_DOT_CLASS as TONE_DOT, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
+import { groupBySymbol } from '@/lib/groupChanges';
 
 // 렌즈 키(lensCopy.ts STATE_SPEC과 동일) — 임의 string 인덱싱 대신 이 목록으로 좁힌다.
 type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | 'assetgrowth' | 'fscore';
@@ -35,7 +36,6 @@ type WatchlistQuote = {
   price: number | null; changePercent: number | null; tones: Tone[] | null;
 };
 
-const TONE_DOT: Record<Tone, string> = { pos: 'bg-unjong-accent', warn: 'bg-amber-400', flat: 'bg-unjong-muted' };
 
 function pct(v?: number | null): string {
   if (v == null) return '—';
@@ -96,11 +96,12 @@ function SelectionBasisLabel() {
 }
 
 function LensChangeRow({
-  item, loc, changePercent, displayName, market,
+  item, loc, changePercent, displayName, market, extra = 0,
 }: {
-  item: ChangeItem; loc: Locale; changePercent: number | null; displayName: string; market: string;
+  item: ChangeItem; loc: Locale; changePercent: number | null; displayName: string; market: string; extra?: number;
 }) {
   const t = useTranslations('Today');
+  const tCommon = useTranslations('Common');
   const key = item.lensKey as LensKey;
   const line = t('lensChangeLine', {
     lensName: lensName(loc, key),
@@ -115,6 +116,7 @@ function LensChangeRow({
         <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
           <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
           {line}
+          {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-0.5">
@@ -181,7 +183,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   // 종목명 — 공용 util(resolveDisplayName·STEP 775 §3, 오늘·탐색·서버 API 전부 동일 함수. 중복 구현 금지).
   // market은 Country(6개국) 폭이지만 resolveDisplayName은 KR/그 외(US 취급)만 구분 — 나머지 시장은 현재 이 섹션에 안 옴.
   function nameFor(item: ChangeItem, market: Country): string {
-    return resolveDisplayName({ loc, market: market === 'KR' ? 'KR' : 'US', symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name });
+    return resolveDisplayName({ loc, market: market === 'KR' ? 'KR' : 'US', symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: 'list' });
   }
 
   return (
@@ -222,11 +224,11 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
                 <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noWatchlistChangesToday')}</p>
               ) : (
                 <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-                  {watchlistChanges.slice(0, 4).map((item, i) => {
+                  {groupBySymbol(watchlistChanges).slice(0, 4).map(({ item, extra }, i) => {
                     const q = quoteMap.get(item.symbol);
                     const displayName = q ? (loc === 'en' ? (q.name_en ?? q.name_ko) : q.name_ko) : (item.name ?? item.symbol);
                     return (
-                      <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} />
+                      <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} extra={extra} />
                     );
                   })}
                 </div>
@@ -249,8 +251,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-              {(usChanges?.items ?? []).slice(0, 5).map((item, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, 'US')} market="US" />
+              {groupBySymbol(usChanges?.items ?? []).slice(0, 5).map(({ item, extra }, i) => (
+                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, 'US')} market="US" extra={extra} />
               ))}
             </div>
           )}
@@ -272,8 +274,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-              {(homeChanges?.items ?? []).slice(0, 5).map((item, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, homeMarket)} market={homeMarket} />
+              {groupBySymbol(homeChanges?.items ?? []).slice(0, 5).map(({ item, extra }, i) => (
+                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, homeMarket)} market={homeMarket} extra={extra} />
               ))}
             </div>
           )}
