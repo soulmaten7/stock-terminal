@@ -6,6 +6,7 @@ import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getTodayChanges } from "@/lib/todayChanges";
 import { getIndices } from "@/lib/indices";
+import { getLatestDailyBrief } from "@/lib/dailyBrief";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -72,11 +73,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
 
-  const [krChanges, usChanges, indices] = await Promise.all([
+  const [krChanges, usChanges, indices, dailyBrief] = await Promise.all([
     getTodayChanges({ market: "KR", limit: 5 }),
     getTodayChanges({ market: "US", limit: 5 }),
     getIndices(),
+    getLatestDailyBrief(locale === "en" ? "US" : "KR"),
   ]);
+  const briefText = locale === "en" ? dailyBrief?.text_en ?? null : dailyBrief?.text_ko ?? null;
 
   return (
     <>
@@ -85,7 +88,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <TodayClient initialKrChanges={krChanges} initialUsChanges={usChanges} initialIndices={indices.items} />
+      <TodayClient initialKrChanges={krChanges} initialUsChanges={usChanges} initialIndices={indices.items} dailyBrief={briefText} />
     </>
   );
 }

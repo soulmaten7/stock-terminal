@@ -386,3 +386,13 @@ export const LENS_GRADE: Record<Locale, Record<GradeKey, string>> = {
 export function pickLocale(v: string | null | undefined): Locale {
   return v === "en" ? "en" : "ko";
 }
+
+// 렌즈 이름/상태 문구 공용 조회 — TodayClient·ExploreClient 로컬 lensName/stateLabel과 동일 로직(STEP 778: 신규 daily-brief 라우트용, 기존 2곳은 그대로 둠).
+export function lensDisplayName(loc: Locale, key: string): string {
+  return (LENS_COPY[loc] as unknown as Record<string, { name: string }>)[key]?.name ?? key;
+}
+export function lensStateLabel(loc: Locale, key: string, state: string | null): string {
+  if (!state) return "—";
+  const readings = (LENS_READINGS[loc] as unknown as Record<string, Record<string, { phrase: string }>>)[key];
+  return readings?.[state]?.phrase ?? state;
+}

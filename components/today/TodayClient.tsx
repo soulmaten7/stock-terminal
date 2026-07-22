@@ -125,8 +125,8 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient({ initialKrChanges, initialUsChanges, initialIndices }: {
-  initialKrChanges: ChangesResp; initialUsChanges: ChangesResp; initialIndices: IndexItem[];
+export default function TodayClient({ initialKrChanges, initialUsChanges, initialIndices, dailyBrief }: {
+  initialKrChanges: ChangesResp; initialUsChanges: ChangesResp; initialIndices: IndexItem[]; dailyBrief: string | null;
 }) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
@@ -197,6 +197,17 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             </p>
           ) : null}
         </div>
+
+        {/* 1.5) 한 입 브리핑 — 하루 1회 배치 생성 리드 문단(STEP 778). 없으면 섹션 생략(지어내지 않음). */}
+        {dailyBrief ? (
+          <div className="mb-7 px-4 sm:px-0">
+            <div className="mb-1.5 flex items-center gap-2">
+              <span className="text-[12px] font-semibold text-unjong-muted">{t('briefSectionLabel')}</span>
+              <span className="text-[12px] text-unjong-muted">{tMaterial('briefBadge')}</span>
+            </div>
+            <p className="text-[15px] leading-7 text-unjong-primary">{dailyBrief}</p>
+          </div>
+        ) : null}
 
         {/* 2) 내 관심종목 · 렌즈 변화 — 세션 필요라 유일하게 클라 로딩 상태를 가짐 */}
         <section className="mb-7">

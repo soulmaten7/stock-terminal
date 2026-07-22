@@ -22,6 +22,7 @@ const CHECKS: Check[] = [
   { name: "렌즈 KR(kr-lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "KR"], thresholdH: 25 },
   { name: "렌즈 US(lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "US"], thresholdH: 25 },
   { name: "유사투자자문(fss-advisors)", table: "fss_advisors", column: "fetched_at", thresholdH: 25 },
+  { name: "한 입 브리핑(daily-brief)", table: "daily_brief", column: "created_at", thresholdH: 25 },
 ];
 
 export async function GET(req: Request) {

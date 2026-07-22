@@ -901,6 +901,7 @@
   "Today": {
     "marketLine": "{index} {pct} yesterday",
     "changesCount": "{n} lens state changes",
+    "briefSectionLabel": "One-bite briefing",
     "asOfDay": "As of {day}",
     "watchlistChangesTitle": "My watchlist — lens changes",
     "viewAllWatchlist": "All watchlist →",

@@ -901,6 +901,7 @@
   "Today": {
     "marketLine": "어제 {index} {pct}",
     "changesCount": "렌즈 상태 변화 {n}건",
+    "briefSectionLabel": "한 입 브리핑",
     "asOfDay": "{day} 기준",
     "watchlistChangesTitle": "내 관심종목 · 렌즈 변화",
     "viewAllWatchlist": "관심종목 전체 →",
