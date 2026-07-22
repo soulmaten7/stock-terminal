@@ -132,6 +132,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   const loc = pickLocale(localeRaw);
   const t = useTranslations('Today');
   const tMaterial = useTranslations('LensPreview');
+  const tExplore = useTranslations('Explore'); // "상태가 바뀐 종목" 개념명 정본(탐색 섹션 키) 재사용 — 오늘·탐색·풀리스트 3곳 한 이름(STEP 780).
   const { user, isLoading: authLoading } = useAuthStore();
   const homeMarket = homeMarketFor(localeRaw); // 'KR' | 'US'
 
@@ -274,7 +275,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
         <section className="mb-7">
           <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
             <div className="flex items-center">
-              <h2 className="text-base font-bold text-unjong-primary">{t(homeMarket === 'KR' ? 'marketChangesTitleKr' : 'marketChangesTitleUs')}</h2>
+              <h2 className="text-base font-bold text-unjong-primary">{tExplore(homeMarket === 'KR' ? 'countryKr' : 'countryUs')} · {tExplore('changesTitle')}</h2>
               <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
             </div>
             <SelectionBasisLabel />
