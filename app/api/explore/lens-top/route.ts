@@ -2,13 +2,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { tonesFor, type LensScoreRow } from "@/lib/lensTones";
-import { cleanUsName } from "@/lib/usNameFormat";
-import foreignKoRaw from "@/data/foreign_ko_names.json";
+import { resolveDisplayName } from "@/lib/displayName";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const FOREIGN_KO = foreignKoRaw as Record<string, string>;
 
 type LensRow = LensScoreRow & { symbol: string; name: string | null };
 type Tones = { pos: number; warn: number; flat: number };
@@ -63,13 +60,10 @@ export async function GET(req: NextRequest) {
   });
 
   const items = withSnap.slice(0, limit).map(({ row, tones, snap }) => {
-    let name: string;
-    if (market === "KR") {
-      name = lang === "en" ? (snap?.nameEn ?? row.name ?? row.symbol) : (snap?.nameKo ?? row.name ?? row.symbol);
-    } else {
-      const ko = FOREIGN_KO[row.symbol.toUpperCase()];
-      name = lang === "ko" && ko ? ko : cleanUsName(row.name ?? row.symbol);
-    }
+    const name = resolveDisplayName({
+      loc: lang, market, symbol: row.symbol,
+      nameKo: snap?.nameKo ?? null, nameEn: snap?.nameEn ?? null, rawName: row.name,
+    });
     return { symbol: row.symbol, name, tones, price: snap?.price ?? null, changePercent: snap?.changePercent ?? null };
   });
 

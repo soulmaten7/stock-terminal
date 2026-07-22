@@ -935,6 +935,9 @@
     "amountTitle": "오늘 거래가 많았던 종목",
     "moreCount": "{n}건 →",
     "moreLink": "더 보기 →",
-    "noItems": "표시할 종목이 없어요"
+    "noItems": "표시할 종목이 없어요",
+    "filterAll": "전체",
+    "filterToPos": "강점 전환",
+    "filterToWarn": "주의 전환"
   }
 }

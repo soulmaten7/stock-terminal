@@ -10,7 +10,7 @@ import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCop
 import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import { pickKrName } from '@/lib/krNameFormat';
+import { resolveDisplayName } from '@/lib/displayName';
 import { Star, Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
@@ -24,7 +24,8 @@ type ChangeItem = {
   fromState: string | null; toState: string; fromTone: Tone | null; toTone: Tone; tradeAmount: number | null;
   price: number | null; changePercent: number | null; nameKo?: string | null; nameEn?: string | null;
 };
-type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
+type ToneCounts = { total: number; pos: number; warn: number };
+type ChangesResp = { date: string | null; count?: number; counts?: ToneCounts; items: ChangeItem[] };
 type BoardRow = { symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null };
 
 const STORAGE_KEY = 'explore_market';
@@ -95,6 +96,12 @@ function BasisLabel() {
   return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{tCommon('priceChangeBasis')}</span>;
 }
 
+// 변화 풀리스트 전용 — 거래대금 정렬 목록이라 선정 기준까지 명시(STEP 775 §1, 오늘 화면 772 라벨과 동일 키 재사용).
+function SelectionBasisLabel() {
+  const tToday = useTranslations('Today');
+  return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{tToday('selectionBasisLabel')}</span>;
+}
+
 function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boolean; onToggle: (symbol: string) => void }) {
   const t = useTranslations('Board');
   return (
@@ -153,8 +160,8 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch }: {
     from: compactPhrase(stateLabel(loc, key, item.fromState)),
     to: compactPhrase(stateLabel(loc, key, item.toState)),
   });
-  // KR 심볼명 = 공용 util(pickKrName·STEP 770 §3, 오늘·탐색 동일 함수) — item.nameKo/nameEn 없으면(US) 원본 폴백.
-  const name = pickKrName(loc, item.nameKo, item.nameEn, item.name ?? item.symbol);
+  // 종목명 — 공용 util(resolveDisplayName·STEP 775 §3, 오늘·탐색·서버 API 전부 동일 함수).
+  const name = resolveDisplayName({ loc, market, symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name });
   return (
     <div className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60">
       <Link href={`/stock/${item.symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -259,6 +266,8 @@ export default function ExploreClient() {
   const [posTop, setPosTop] = useState<LensTopItem[] | null>(null);
   const [amountTop, setAmountTop] = useState<BoardRow[] | null>(null);
   const [listsFailed, setListsFailed] = useState<{ changes: boolean; pos: boolean; amount: boolean }>({ changes: false, pos: false, amount: false });
+  // 톤 필터 칩(변화 풀리스트 전용·STEP 775 §2) — 정렬 토글 아님, to_tone 기준 필터만. 건수는 서버 집계(counts) 재사용.
+  const [toneFilter, setToneFilter] = useState<'all' | 'pos' | 'warn'>('all');
 
   useEffect(() => {
     const limit = activeList ? 50 : 5;
@@ -323,18 +332,33 @@ export default function ExploreClient() {
             <h1 className="text-lg font-bold text-unjong-primary">{t(market === 'KR' ? 'countryKr' : 'countryUs')} · {t(titleKey)}</h1>
             <AsOfBadge date={asOfDate} loc={loc} />
           </div>
-          <BasisLabel />
+          {activeList === 'changes' ? <SelectionBasisLabel /> : <BasisLabel />}
         </div>
+        {activeList === 'changes' ? (
+          <div className="mb-3 flex gap-1.5 px-4 sm:px-0">
+            <button type="button" onClick={() => setToneFilter('all')} className={chipClass(toneFilter === 'all')}>
+              {t('filterAll')} {changes?.counts?.total ?? 0}
+            </button>
+            <button type="button" onClick={() => setToneFilter('pos')} className={chipClass(toneFilter === 'pos')}>
+              <span className="mr-1.5 inline-block h-[7px] w-[7px] rounded-full bg-unjong-accent" />
+              {t('filterToPos')} {changes?.counts?.pos ?? 0}
+            </button>
+            <button type="button" onClick={() => setToneFilter('warn')} className={chipClass(toneFilter === 'warn')}>
+              <span className="mr-1.5 inline-block h-[7px] w-[7px] rounded-full bg-amber-400" />
+              {t('filterToWarn')} {changes?.counts?.warn ?? 0}
+            </button>
+          </div>
+        ) : null}
         <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
           {activeList === 'changes' ? (
-            changes === null ? <Skeleton /> : changes.items.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              changes.items.map((item, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />)
+            changes === null ? <Skeleton /> : changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter).length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+              changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter).map((item, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} />)
           ) : activeList === 'pos' ? (
             posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           ) : (
             amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={pickKrName(loc, r.name, r.nameEn, r.name)} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
+              amountTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />)
           )}
         </div>
       </div>
@@ -462,7 +486,7 @@ export default function ExploreClient() {
         ) : (
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {amountTop.slice(0, 5).map((r) => (
-              <DotsRow key={r.symbol} symbol={r.symbol} name={pickKrName(loc, r.name, r.nameEn, r.name)} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
+              <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} />
             ))}
           </div>
         )}

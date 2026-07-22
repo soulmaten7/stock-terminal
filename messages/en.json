@@ -935,6 +935,9 @@
     "amountTitle": "Most traded today",
     "moreCount": "{n} →",
     "moreLink": "See more →",
-    "noItems": "No stocks to show"
+    "noItems": "No stocks to show",
+    "filterAll": "All",
+    "filterToPos": "To strength",
+    "filterToWarn": "To caution"
   }
 }

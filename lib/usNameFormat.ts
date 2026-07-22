@@ -26,7 +26,7 @@ export function cleanUsName(n: string): string {
     .replace(/\s*[-–]?\s*Common Stock\s*$/i, "")
     .replace(/\s*[-–]?\s*Common Shares\s*$/i, "")
     .replace(/\s*[-–]?\s*Ordinary Shares\s*$/i, "")
-    .replace(/[,\s]+$/, "")
+    .replace(/[,\-–·\s]+$/, "") // 꼬리 잔여물(대시·쉼표·가운뎃점 등) 제거(STEP 775 §3 — 예: "... Inc. -" → "... Inc.")
     .trim();
   return titleCaseUsName(c || n);
 }

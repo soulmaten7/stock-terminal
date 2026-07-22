@@ -17,7 +17,8 @@ export type ChangeItemData = {
   nameKo: string | null;
   nameEn: string | null;
 };
-export type ChangesResult = { date: string | null; count: number; items: ChangeItemData[] };
+export type ToneCounts = { total: number; pos: number; warn: number };
+export type ChangesResult = { date: string | null; count: number; counts: ToneCounts; items: ChangeItemData[] };
 
 type ChangeRow = {
   symbol: string;
@@ -75,9 +76,10 @@ export async function getTodayChanges(params: {
 }): Promise<ChangesResult> {
   const { market, limit, watchSymbols = null } = params;
   const sb = createAdminClient();
+  const zeroCounts: ToneCounts = { total: 0, pos: 0, warn: 0 };
 
   if (watchSymbols && watchSymbols.size === 0) {
-    return { date: await latestDate(sb, market), count: 0, items: [] };
+    return { date: await latestDate(sb, market), count: 0, counts: zeroCounts, items: [] };
   }
 
   // 요청 날짜에 행이 없으면(주말·휴장) 최신 change_date로 폴백 — 응답의 date로 실제 반영된 날짜를 명시.
@@ -93,7 +95,7 @@ export async function getTodayChanges(params: {
   } else {
     date = await latestDate(sb, market);
   }
-  if (!date) return { date: null, count: 0, items: [] };
+  if (!date) return { date: null, count: 0, counts: zeroCounts, items: [] };
 
   const cacheKey = `${market}:${date}:${limit}:${watchSymbols ? [...watchSymbols].sort().join(",") : "all"}`;
   const hit = cache.get(cacheKey);
@@ -110,12 +112,19 @@ export async function getTodayChanges(params: {
 
   // watchlist 필터 시 유니크 심볼 수가 적어 넉넉히 가져와 정렬 후 자름(정확한 limit 적용).
   const { data, error } = await q.limit(watchSymbols ? 2000 : limit);
-  if (error) return { date, count: 0, items: [] };
+  if (error) return { date, count: 0, counts: zeroCounts, items: [] };
 
-  // 전체 건수(limit 절단 전) — "N건 더 보기" 같은 표시가 실제로 잘린 만큼만 말하도록(근거 없는 숫자 금지).
-  let countQ = sb.from("lens_state_changes").select("id", { count: "exact", head: true }).eq("market", market).eq("change_date", date).not("from_tone", "is", null);
-  if (watchSymbols) countQ = countQ.in("symbol", [...watchSymbols]);
-  const { count } = await countQ;
+  // 전체 건수(limit 절단 전, 톤별 포함) — "N건 더 보기"·톤 필터 칩 건수가 실제 전체 모수를 말하도록(근거 없는 숫자 금지 — STEP 775 §2).
+  function countQuery(toTone?: "pos" | "warn") {
+    let query = sb.from("lens_state_changes").select("id", { count: "exact", head: true }).eq("market", market).eq("change_date", date).not("from_tone", "is", null);
+    if (watchSymbols) query = query.in("symbol", [...watchSymbols]);
+    if (toTone) query = query.eq("to_tone", toTone);
+    return query;
+  }
+  const [{ count }, { count: posCount }, { count: warnCount }] = await Promise.all([
+    countQuery(), countQuery("pos"), countQuery("warn"),
+  ]);
+  const counts: ToneCounts = { total: count ?? 0, pos: posCount ?? 0, warn: warnCount ?? 0 };
 
   const rows = ((data ?? []) as ChangeRow[]).slice(0, limit);
   const snaps = await snapMap(sb, market, rows.map((r) => r.symbol));
@@ -137,7 +146,7 @@ export async function getTodayChanges(params: {
     };
   });
 
-  const result: ChangesResult = { date, count: count ?? items.length, items };
+  const result: ChangesResult = { date, count: count ?? items.length, counts, items };
   cache.set(cacheKey, { at: Date.now(), data: result });
   return result;
 }

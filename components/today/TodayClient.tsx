@@ -8,12 +8,8 @@ import { homeMarketFor, type Country } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
 import type { Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
-import { cleanUsName } from '@/lib/usNameFormat';
 import { formatPrice } from '@/lib/currency';
-import { pickKrName } from '@/lib/krNameFormat';
-import foreignKoRaw from '@/data/foreign_ko_names.json';
-
-const FOREIGN_KO = foreignKoRaw as Record<string, string>;
+import { resolveDisplayName } from '@/lib/displayName';
 
 // 렌즈 키(lensCopy.ts STATE_SPEC과 동일) — 임의 string 인덱싱 대신 이 목록으로 좁힌다.
 type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | 'assetgrowth' | 'fscore';
@@ -182,17 +178,10 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   const railNames = homeMarket === 'KR' ? krListForRail : usListForRail;
   const railIndices = railNames.map((n) => indices.find((i) => i.name === n)).filter((x): x is IndexItem => !!x);
 
-  // 종목명: KR=공용 util(pickKrName·STEP 770 §3, 오늘·탐색 동일 함수, API가 이미 조인해 준 nameKo/nameEn 사용)
-  // US=한글 오버라이드(ko만) → cleanUsName 축약(STEP 765b). 등락률도 API가 이미 조인해 줌(STEP 769) — 별도 보드 조회 불필요.
+  // 종목명 — 공용 util(resolveDisplayName·STEP 775 §3, 오늘·탐색·서버 API 전부 동일 함수. 중복 구현 금지).
+  // market은 Country(6개국) 폭이지만 resolveDisplayName은 KR/그 외(US 취급)만 구분 — 나머지 시장은 현재 이 섹션에 안 옴.
   function nameFor(item: ChangeItem, market: Country): string {
-    if (market === 'KR') {
-      return pickKrName(loc, item.nameKo, item.nameEn, item.name ?? item.symbol);
-    }
-    if (loc === 'ko') {
-      const ko = FOREIGN_KO[item.symbol.toUpperCase()];
-      if (ko) return ko;
-    }
-    return cleanUsName(item.name ?? item.symbol);
+    return resolveDisplayName({ loc, market: market === 'KR' ? 'KR' : 'US', symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name });
   }
 
   return (
