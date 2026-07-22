@@ -12,7 +12,8 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
-import { Star, Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
+import { WatchStar } from '@/components/common/WatchStar';
+import { Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
 type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | 'assetgrowth' | 'fscore';
@@ -120,20 +121,6 @@ function DotLegendBasisLabel() {
       <span className="flex items-center gap-1"><span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT.flat}`} />{tb('legendFlat')}</span>
       <span>· {tCommon('priceChangeBasis')}</span>
     </span>
-  );
-}
-
-function WatchStar({ symbol, watched, onToggle }: { symbol: string; watched: boolean; onToggle: (symbol: string) => void }) {
-  const t = useTranslations('Board');
-  return (
-    <button
-      type="button"
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(symbol); }}
-      aria-label={watched ? t('watchRemove') : t('watchAdd')}
-      className={`hidden h-11 w-11 shrink-0 items-center justify-center transition-colors sm:flex ${watched ? 'text-unjong-accent' : 'text-unjong-border'}`}
-    >
-      <Star size={18} fill={watched ? 'currentColor' : 'none'} />
-    </button>
   );
 }
 

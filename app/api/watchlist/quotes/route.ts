@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { tonesFromStates, type Tone } from "@/lib/lensTones";
+import usSymbolsData from "@/data/us_symbols.json";
+import { titleCaseUsName } from "@/lib/usNameFormat";
+
+// US 원어명 맵(us-list 라우트와 동일 소스·패턴) — us_stock_perf엔 name 컬럼이 없어 번들 JSON에서(STEP 781 §1).
+type UsSym = { sym: string; name: string; type: string };
+const US_NAME_MAP = new Map(
+  (usSymbolsData as UsSym[]).filter((s) => s.type === "stock").map((s) => [s.sym, titleCaseUsName(s.name)])
+);
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -94,6 +102,8 @@ export async function GET() {
     const country = (w.country || "").toUpperCase();
     const candidates = quoteMaps.get(country)?.get(w.symbol) ?? [];
     const match = candidates.length > 1 ? candidates.find((c) => c.market === w.market) ?? candidates[0] : candidates[0];
+    // 리스트 표시용 원어명(776 §1 통일 대상) — KR은 kr_stock_snapshot 조인(match.nameEn), US는 번들 맵. JP/CN/VN/GB는 이번 STEP 스코프 밖(null → 클라가 기존 name_ko로 폴백).
+    const nameEn = match?.nameEn ?? (country === "US" ? US_NAME_MAP.get(w.symbol) ?? null : null);
     return {
       symbol: w.symbol,
       name_ko: w.name_ko,
@@ -101,7 +111,7 @@ export async function GET() {
       country: w.country,
       price: match?.price ?? null,
       changePercent: match?.changePercent ?? null,
-      name_en: match?.nameEn ?? null,
+      name_en: nameEn,
       tones: tonesBySym.get(w.symbol) ?? null,
     };
   });

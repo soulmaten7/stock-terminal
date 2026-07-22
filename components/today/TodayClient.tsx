@@ -9,8 +9,15 @@ import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCop
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import { resolveDisplayName } from '@/lib/displayName';
+import { resolveDisplayName, resolveWatchlistName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
+import { WatchStar } from '@/components/common/WatchStar';
+
+// PC 전용 hover 별(STEP 781 §2) — 탐색 WatchStar 기본값(sm:flex) 위에 평소 투명·행 hover/포커스 시만 표시 추가.
+const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-accent';
+function hoverStarClass(watched: boolean): string {
+  return `${HOVER_STAR_CLASS} ${watched ? 'text-unjong-accent' : 'text-unjong-border'}`;
+}
 
 // 렌즈 키(lensCopy.ts STATE_SPEC과 동일) — 임의 string 인덱싱 대신 이 목록으로 좁힌다.
 type LensKey = 'momentum' | 'technical' | 'valuation' | 'lowvol' | 'quality' | 'assetgrowth' | 'fscore';
@@ -92,9 +99,10 @@ function SelectionBasisLabel() {
 }
 
 function LensChangeRow({
-  item, loc, changePercent, displayName, market, extra = 0,
+  item, loc, changePercent, displayName, market, extra = 0, watched, onToggleWatch,
 }: {
   item: ChangeItem; loc: Locale; changePercent: number | null; displayName: string; market: string; extra?: number;
+  watched: boolean; onToggleWatch: () => void;
 }) {
   const t = useTranslations('Today');
   const tCommon = useTranslations('Common');
@@ -107,21 +115,24 @@ function LensChangeRow({
     b: (chunks) => <span className={TONE_TEXT_CLASS[item.toTone]}>{chunks}</span>,
   });
   return (
-    <Link href={`/stock/${item.symbol}`} className="flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60 active:bg-unjong-background">
-      <StockLogo code={item.symbol} name={displayName} size={30} />
-      <div className="min-w-0 flex-1">
-        <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{displayName}</p>
-        <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
-          <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
-          {line}
-          {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
-        </p>
-      </div>
-      <div className="flex shrink-0 flex-col items-end gap-0.5">
-        <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{item.price != null ? formatPrice(item.price, market) : '—'}</span>
-        <span className={`text-[13px] tabular-nums sm:text-[11px] ${changeColorClass(changePercent, loc)}`}>{pct(changePercent)}</span>
-      </div>
-    </Link>
+    <div className="group flex items-center gap-2.5 border-b border-unjong-border py-2.5 last:border-0 hover:bg-unjong-background/60 active:bg-unjong-background">
+      <Link href={`/stock/${item.symbol}`} className="flex min-w-0 flex-1 items-center gap-2.5">
+        <StockLogo code={item.symbol} name={displayName} size={30} />
+        <div className="min-w-0 flex-1">
+          <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{displayName}</p>
+          <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
+            <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
+            {line}
+            {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-0.5">
+          <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{item.price != null ? formatPrice(item.price, market) : '—'}</span>
+          <span className={`text-[13px] tabular-nums sm:text-[11px] ${changeColorClass(changePercent, loc)}`}>{pct(changePercent)}</span>
+        </div>
+      </Link>
+      <WatchStar symbol={item.symbol} watched={watched} onToggle={onToggleWatch} className={hoverStarClass(watched)} />
+    </div>
   );
 }
 
@@ -173,6 +184,23 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   const quoteMap = new Map((watchlistQuotes ?? []).map((q) => [q.symbol, q]));
   const hasWatchlist = (watchlistQuotes?.length ?? 0) > 0;
   const watchlistLoading = authLoading || (!!user && watchlistQuotes === null);
+
+  // PC hover 별(STEP 781 §2) — 관심 여부 초기값은 이미 가진 watchlistQuotes 재사용(새 조회 없음), 토글은 탐색과 동일 엔드포인트.
+  const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    setWatchSet(new Set((watchlistQuotes ?? []).map((q) => q.symbol)));
+  }, [watchlistQuotes]);
+  function toggleWatch(symbol: string, name: string, market: string, country: string) {
+    if (!user) { window.location.href = '/auth/login'; return; }
+    const add = !watchSet.has(symbol);
+    setWatchSet((prev) => { const n = new Set(prev); add ? n.add(symbol) : n.delete(symbol); return n; });
+    fetch('/api/watchlist', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ symbol, name_ko: name, market, country, add }),
+    }).then((res) => { if (!res.ok) throw new Error('watchlist'); }).catch(() => {
+      setWatchSet((prev) => { const n = new Set(prev); add ? n.delete(symbol) : n.add(symbol); return n; });
+    });
+  }
 
   const usListForRail = ['S&P 500', 'NASDAQ', 'Dow Jones', 'VIX'];
   const krListForRail = ['KOSPI', 'KOSDAQ', 'USD/KRW', 'VIX'];
@@ -236,9 +264,13 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
                 <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
                   {groupBySymbol(watchlistChanges).slice(0, 4).map(({ item, extra }, i) => {
                     const q = quoteMap.get(item.symbol);
-                    const displayName = q ? (loc === 'en' ? (q.name_en ?? q.name_ko) : q.name_ko) : (item.name ?? item.symbol);
+                    const displayName = q ? resolveWatchlistName(loc, q) : (item.name ?? item.symbol);
                     return (
-                      <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} extra={extra} />
+                      <LensChangeRow
+                        key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} extra={extra}
+                        watched={watchSet.has(item.symbol)}
+                        onToggleWatch={() => toggleWatch(item.symbol, displayName, q?.market ?? (q?.country === 'KR' ? 'KRX' : 'US'), q?.country ?? 'US')}
+                      />
                     );
                   })}
                 </div>
@@ -262,7 +294,11 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
               {groupBySymbol(usChanges?.items ?? []).slice(0, 5).map(({ item, extra }, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, 'US')} market="US" extra={extra} />
+                <LensChangeRow
+                  key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, 'US')} market="US" extra={extra}
+                  watched={watchSet.has(item.symbol)}
+                  onToggleWatch={() => toggleWatch(item.symbol, nameFor(item, 'US'), 'US', 'US')}
+                />
               ))}
             </div>
           )}
@@ -285,7 +321,11 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
               {groupBySymbol(homeChanges?.items ?? []).slice(0, 5).map(({ item, extra }, i) => (
-                <LensChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, homeMarket)} market={homeMarket} extra={extra} />
+                <LensChangeRow
+                  key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, homeMarket)} market={homeMarket} extra={extra}
+                  watched={watchSet.has(item.symbol)}
+                  onToggleWatch={() => toggleWatch(item.symbol, nameFor(item, homeMarket), homeMarket === 'KR' ? 'KRX' : 'US', homeMarket)}
+                />
               ))}
             </div>
           )}
@@ -321,11 +361,14 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           ) : (
             <>
               {(watchlistQuotes ?? []).slice(0, 6).map((q) => (
-                <Link key={q.symbol} href={`/stock/${q.symbol}`} className="flex items-center gap-2 border-b border-unjong-border py-2 last:border-0 hover:bg-unjong-background/60">
-                  <StockLogo code={q.symbol} name={q.name_ko} size={24} />
-                  <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{loc === 'en' ? (q.name_en ?? q.name_ko) : q.name_ko}</span>
-                  <span className={`shrink-0 text-[13px] font-semibold tabular-nums ${changeColorClass(q.changePercent, loc)}`}>{pct(q.changePercent)}</span>
-                </Link>
+                <div key={q.symbol} className="group flex items-center gap-2 border-b border-unjong-border py-2 last:border-0 hover:bg-unjong-background/60">
+                  <Link href={`/stock/${q.symbol}`} className="flex min-w-0 flex-1 items-center gap-2">
+                    <StockLogo code={q.symbol} name={resolveWatchlistName(loc, q)} size={24} />
+                    <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{resolveWatchlistName(loc, q)}</span>
+                    <span className={`shrink-0 text-[13px] font-semibold tabular-nums ${changeColorClass(q.changePercent, loc)}`}>{pct(q.changePercent)}</span>
+                  </Link>
+                  <WatchStar symbol={q.symbol} watched={watchSet.has(q.symbol)} onToggle={() => toggleWatch(q.symbol, resolveWatchlistName(loc, q), q.market, q.country)} className={hoverStarClass(watchSet.has(q.symbol))} />
+                </div>
               ))}
               <Link href="/favorites" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('railViewAll')}</Link>
             </>

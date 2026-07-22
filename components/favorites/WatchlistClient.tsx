@@ -8,6 +8,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { TONE_DOT_CLASS as TONE_DOT, changeColorClass, type Tone } from '@/lib/lensTones';
 import { pickLocale } from '@/lib/lensCopy';
+import { resolveWatchlistName } from '@/lib/displayName';
 
 type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
@@ -148,8 +149,8 @@ export default function WatchlistClient() {
           {/* 행(로고·이름·티커·가격·렌즈요약) 전체 클릭 → 종목 상세. 해제(X)만 분리. */}
           <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             <div className="flex min-w-0 items-center gap-2 sm:flex-1">
-              <StockLogo code={f.symbol} name={f.name_ko ?? f.symbol} size={22} />
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{(locale === 'en' ? (f.name_en ?? f.name_ko) : f.name_ko) ?? f.symbol}</span>
+              <StockLogo code={f.symbol} name={resolveWatchlistName(locale, f)} size={22} />
+              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{resolveWatchlistName(locale, f)}</span>
               <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
               <span className="ml-auto shrink-0 text-right sm:ml-0">
                 <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
