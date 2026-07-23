@@ -135,6 +135,7 @@ export const technical: Lens = {
       value: last != null && ma200 ? round((last / ma200 - 1) * 100) : null,
       state: tState,
       note: c.note,
+      cutoffs: { lo: 30, hi: 70 }, // RSI 침체/과열 컷(위 rsiState와 동일 상수) — 3단 계산 서사용(STEP 783)
     };
   },
 };
@@ -166,6 +167,7 @@ export const valuation: Lens = {
       value: round(pe),
       state: vState,
       note: c.note,
+      cutoffs: { lo: 10, hi: 25 }, // PER 저평가/고평가 컷(위 vState와 동일 상수) — 3단 계산 서사용(STEP 783)
     };
   },
 };
@@ -197,6 +199,7 @@ export const lowVol: Lens = {
       value: round(vol),
       state: lvState,
       note: c.note,
+      cutoffs: { lo: 20, hi: 40 }, // 연변동성 차분/출렁 컷(위 lvState와 동일 상수) — 3단 계산 서사용(STEP 783)
     };
   },
 };
@@ -230,6 +233,7 @@ export const quality: Lens = {
       value: round(gpa),
       state: qState,
       note: c.note,
+      cutoffs: { lo: 15, hi: 40 }, // GP/A 낮음/높음 컷(위 qState와 동일 상수) — 3단 계산 서사용(STEP 783)
     };
   },
 };
@@ -263,6 +267,7 @@ export const assetGrowth: Lens = {
       value: round(assetGrowthPct),
       state: agState,
       note: c.note,
+      cutoffs: { lo: 5, hi: 20 }, // 자산성장 보수적/공격적 컷(위 agState와 동일 상수) — 3단 계산 서사용(STEP 783)
     };
   },
 };

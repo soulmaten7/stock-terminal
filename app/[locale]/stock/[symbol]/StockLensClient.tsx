@@ -40,6 +40,7 @@ type LensRead = {
   outlook?: string | null;
   percentile?: number | null;
   cutoffs?: { lo: number; hi: number } | null;
+  state?: string | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
@@ -134,29 +135,85 @@ function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
   );
 }
 
-// 렌즈 계산 3단 공개 파일럿(STEP 782, 모멘텀 한정) — "왜 이 판정인가" 펼치면 2단(근거 수치)+3단(계산 서사) 순.
-// 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail.mom12_1·percentile·cutoffs 재사용(새 계산 없음).
-// 핵심 값(mom12_1) 결측이면 트리거 자체를 안 띄움(정직 결측 — 서사 생략).
-function MomentumNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
+// 렌즈 계산 3단 공개(STEP 782 모멘텀 파일럿 → STEP 783 6렌즈 확산) — "왜 이 판정인가" 펼치면 2단(근거 수치)+3단(계산 서사) 순.
+// 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail/percentile/cutoffs 재사용(새 계산 없음). 렌즈마다 판정 입력값이 달라 key로 분기.
+// 핵심 값 결측이면 트리거 자체를 안 띄움(정직 결측 — 서사 생략). F-Score는 별도(FScoreCard 내부 — 9항목 중복 노출 금지·과적재 방지).
+function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
   const t = useTranslations('StockLens');
   const tMaterial = useTranslations('LensPreview');
-  const mom = L.detail.mom12_1;
-  if (mom == null) return null;
-  const topPct = L.percentile != null ? 100 - L.percentile : null;
   const verdict = L.verdict?.phrase ?? null;
+  const topPct = L.percentile != null ? 100 - L.percentile : null;
+  const pctRow = <p className="text-unjong-primary">{t('narrativePercentileLabel')}: <span className="tabular-nums font-medium">{topPct != null ? t('narrativePercentile', { v: topPct }) : '—'}</span></p>;
+
+  let valueRows: React.ReactNode;
+  let narrative: React.ReactNode;
+
+  if (L.key === 'momentum') {
+    const mom = L.detail.mom12_1;
+    if (mom == null) return null;
+    valueRows = <>
+      <p className="text-unjong-primary">{detailLabel(loc, 'mom12_1')}: <span className="tabular-nums font-medium">{mom}%</span></p>
+      {pctRow}
+      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffMomentum', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+    </>;
+    narrative = <>{t('narrativeMethodMomentum')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
+  } else if (L.key === 'lowvol') {
+    const vol = L.detail.vol;
+    if (vol == null) return null;
+    valueRows = <>
+      <p className="text-unjong-primary">{detailLabel(loc, 'vol')}: <span className="tabular-nums font-medium">{vol}%</span></p>
+      {pctRow}
+      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffLowvol', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+    </>;
+    narrative = <>{t('narrativeMethodLowvol')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
+  } else if (L.key === 'valuation') {
+    const per = L.detail.per;
+    if (L.state === 'na' || per == null) return null;
+    valueRows = <>
+      <p className="text-unjong-primary">{detailLabel(loc, 'per')}: <span className="tabular-nums font-medium">{per}</span></p>
+      {pctRow}
+      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffValuation', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+    </>;
+    narrative = <>{t('narrativeMethodValuation')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
+  } else if (L.key === 'quality') {
+    const gpa = L.detail.gpa;
+    if (L.state === 'na' || gpa == null) return null;
+    valueRows = <>
+      <p className="text-unjong-primary">{detailLabel(loc, 'gpa')}: <span className="tabular-nums font-medium">{gpa}%</span></p>
+      {pctRow}
+      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffQuality', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+    </>;
+    narrative = <>{t('narrativeMethodQuality')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
+  } else if (L.key === 'assetgrowth') {
+    const ag = L.detail.ag;
+    if (L.state === 'na' || ag == null) return null;
+    valueRows = <>
+      <p className="text-unjong-primary">{detailLabel(loc, 'ag')}: <span className="tabular-nums font-medium">{ag}%</span></p>
+      {pctRow}
+      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffAssetgrowth', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+    </>;
+    narrative = <>{t('narrativeMethodAssetgrowth')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
+  } else if (L.key === 'technical') {
+    // 기술은 percentile 미지원(meta.percentile:null) — 장기축(200일선 대비) verdict 기준으로 서사, RSI는 참고 수치만.
+    if (!verdict) return null;
+    const maPct = L.detail.ma200vs;
+    const rsi14 = L.detail.rsi14;
+    valueRows = <>
+      {maPct != null ? <p className="text-unjong-primary">{detailLabel(loc, 'ma200vs')}: <span className="tabular-nums font-medium">{maPct}%</span></p> : null}
+      {rsi14 != null ? <p className="text-unjong-primary">{detailLabel(loc, 'rsi14')}: <span className="tabular-nums font-medium">{rsi14}</span></p> : null}
+      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffTechnical', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+    </>;
+    narrative = <>{t('narrativeMethodTechnical')}{' '}{maPct != null ? t('narrativeStockTechnical', { pct: maPct, verdict }) : null}</>;
+  } else {
+    return null;
+  }
+
   return (
     <details className="mt-2.5 border-t border-unjong-border pt-2.5">
       <summary className={SUMMARY_CLASS}>{t('narrativeTrigger')}</summary>
       <div className="mt-2 space-y-2">
-        <div className="space-y-1 text-[13px] sm:text-[12px]">
-          <p className="text-unjong-primary">{detailLabel(loc, 'mom12_1')}: <span className="tabular-nums font-medium">{mom}%</span></p>
-          <p className="text-unjong-primary">{t('narrativePercentileLabel')}: <span className="tabular-nums font-medium">{topPct != null ? t('narrativePercentile', { v: topPct }) : '—'}</span></p>
-          {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoff', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-        </div>
-        <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary/90">
-          {t('narrativeMethodMomentum')}{' '}
-          {verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}
-        </p>
+        <div className="space-y-1 text-[13px] sm:text-[12px]">{valueRows}</div>
+        <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary/90">{narrative}</p>
         <p className="text-[13px] sm:text-[12px] text-unjong-muted">{tMaterial('material')}</p>
       </div>
     </details>
@@ -288,6 +345,7 @@ function FlagBox({ flags }: { flags?: Flag[] }) {
 
 function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
   const t = useTranslations('StockLens');
+  const tMaterial = useTranslations('LensPreview');
   const locale = pickLocale(useLocale()); // 렌즈 카피는 언어별 맵 — ko 고정하면 en 화면에 한국어가 샌다
   const [open, setOpen] = useState(false);
   if (!f.supported) {
@@ -391,6 +449,17 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
                 <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.whyFinHealth')}</p>
                 <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.whyFinHealthBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
               </div>
+            </div>
+          </details>
+
+          {/* 렌즈 계산 3단 공개(STEP 783) — 9항목은 위에 이미 있으니 중복 노출 없이 서사만(과적재 금지). */}
+          <details className="mt-2.5 border-t border-unjong-border pt-2.5">
+            <summary className={SUMMARY_CLASS}>{t('narrativeTrigger')}</summary>
+            <div className="mt-2 space-y-2">
+              <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary/90">
+                {t('narrativeMethodFscore')}{' '}{t('narrativeStockFscore', { score: f.score, max: f.max, band })}
+              </p>
+              <p className="text-[13px] sm:text-[12px] text-unjong-muted">{tMaterial('material')}</p>
             </div>
           </details>
         </div>
@@ -1125,7 +1194,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 <p className="mt-2 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
               </details>
             ) : null}
-            {L.key === 'momentum' ? <MomentumNarrative L={L} loc={locale} /> : null}
+            <LensNarrative L={L} loc={locale} />
           </div>
         ) : null}
       </div>

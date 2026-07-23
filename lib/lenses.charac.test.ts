@@ -117,6 +117,10 @@ describe("technicalLens — 특성화", () => {
     expect(await technical.compute(sd({ closes: up }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "차트의 가격·패턴으로 '지금 과열인지, 추세가 위인지'를 보는 전통적 기술적 분석이에요. RSI는 1978년 와일더가 만든 과열·침체 지표, 이동평균선은 일정 기간의 평균 가격이에요 — 단기 흐름을 빠르게 훑는 참고 도구예요(단독 신호로는 약함).",
+        "cutoffs": {
+          "hi": 70,
+          "lo": 30,
+        },
         "detail": {
           "ma200vs": 61.18,
           "pos52w": 100,
@@ -178,6 +182,10 @@ describe("valuationLens — 특성화", () => {
     expect(await valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄의 가치투자에서 출발해, 파마·프렌치가 '싼 주식이 장기적으로 낫다'(가치 프리미엄)를 데이터로 정립했어요 — 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
+        "cutoffs": {
+          "hi": 25,
+          "lo": 10,
+        },
         "detail": {
           "pbr": 1.2,
           "per": 8,
@@ -244,6 +252,10 @@ describe("lowVolLens — 특성화", () => {
     expect(await lowVol.compute(sd({ closes: up }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
+        "cutoffs": {
+          "hi": 40,
+          "lo": 20,
+        },
         "detail": {
           "vol": 8.89,
         },
@@ -296,6 +308,10 @@ describe("qualityLens — 특성화", () => {
     expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
+        "cutoffs": {
+          "hi": 40,
+          "lo": 15,
+        },
         "detail": {
           "gpa": 50,
         },
@@ -360,6 +376,10 @@ describe("assetGrowthLens — 특성화", () => {
     expect(await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "회사가 설비 투자·인수 등으로 자산을 얼마나 공격적으로 늘리는지 보는 지표예요. 2008년 쿠퍼·굴렌·실이 '자산을 빠르게 불린 회사일수록 이후 수익은 오히려 약하다'를 데이터로 밝혔어요(과잉 투자·무리한 확장 경계). 파마·프렌치 5팩터 중 투자 팩터(CMA)이기도 해요 — 자본을 신중히 쓰는 회사를 선호하는 관점이에요.",
+        "cutoffs": {
+          "hi": 20,
+          "lo": 5,
+        },
         "detail": {
           "ag": 30,
         },
