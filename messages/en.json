@@ -311,6 +311,8 @@
     "providerGoogle": "Google",
     "providerEmail": "Email",
     "googleOnlyNote": "You are signed in with your Google account.",
+    "emailBriefTitle": "Morning brief email",
+    "emailBriefDesc": "We send a daily one-bite market brief and status changes for your watchlist, every morning — turn it off anytime.",
     "pwSectionTitle": "Change password",
     "fieldNewPassword": "New password",
     "fieldNewPasswordConfirm": "Confirm new password",

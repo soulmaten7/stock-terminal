@@ -5,15 +5,16 @@ import { useRouter, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { clearCache } from '@/lib/clientCache';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
-import { User, ShieldCheck, Activity as ActivityIcon, Star, AlertTriangle, LogOut } from 'lucide-react';
+import { User, ShieldCheck, Activity as ActivityIcon, Star, AlertTriangle, LogOut, Mail } from 'lucide-react';
 
 type Tab = 'profile' | 'account' | 'activity';
 
 export default function MyPage() {
   const t = useTranslations('MyPage');
   const tHeader = useTranslations('Header'); // '로그아웃' 재사용(dedup)
+  const locale = useLocale(); // 이메일 opt-in ON 시점 로케일 저장용(STEP 784)
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
   const [activeTab, setActiveTab] = useState<Tab>('profile');
@@ -22,6 +23,11 @@ export default function MyPage() {
   const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [watchlistCount, setWatchlistCount] = useState<number | null>(null);
   const [providers, setProviders] = useState<string[]>([]);
+
+  // 이메일 모닝 브리핑 opt-in(STEP 784) — 기본 OFF, 언제든 끌 수 있음.
+  const [emailBrief, setEmailBrief] = useState(false);
+  const [emailBriefLoaded, setEmailBriefLoaded] = useState(false);
+  const [emailBriefSaving, setEmailBriefSaving] = useState(false);
 
   // 비밀번호 변경(계정·보안 탭 — 이메일 로그인 계정만)
   const [newPassword, setNewPassword] = useState('');
@@ -55,6 +61,26 @@ export default function MyPage() {
       const p = (data.user?.app_metadata?.providers as string[] | undefined) ?? [];
       setProviders(p);
     } catch { /* ignore */ }
+    try {
+      const supabase = createClient();
+      const { data } = await supabase.from('email_subscriptions').select('daily_brief').eq('user_id', user!.id).maybeSingle();
+      setEmailBrief(data?.daily_brief ?? false);
+    } catch { /* ignore — 기본 OFF로 둔다 */ }
+    setEmailBriefLoaded(true);
+  };
+
+  // ON=현재 로케일로 upsert(닉네임 변경과 동일하게 RLS 경로로 직접) · OFF=daily_brief만 false.
+  const toggleEmailBrief = async () => {
+    if (!user) return;
+    setEmailBriefSaving(true);
+    const next = !emailBrief;
+    const supabase = createClient();
+    const { error } = await supabase.from('email_subscriptions').upsert(
+      { user_id: user.id, daily_brief: next, locale, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    );
+    if (!error) setEmailBrief(next);
+    setEmailBriefSaving(false);
   };
 
   const updateNickname = async () => {
@@ -183,6 +209,25 @@ export default function MyPage() {
                 {providers.includes('email') && (
                   <span className="rounded-full bg-unjong-background px-2.5 py-1 text-xs font-medium text-unjong-primary">{t('providerEmail')}</span>
                 )}
+              </div>
+            </div>
+
+            <div className="border-t border-unjong-border pt-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-1.5 text-sm font-semibold text-unjong-primary"><Mail size={14} />{t('emailBriefTitle')}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-unjong-muted">{t('emailBriefDesc')}</p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={emailBrief}
+                  disabled={!emailBriefLoaded || emailBriefSaving}
+                  onClick={toggleEmailBrief}
+                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50 ${emailBrief ? 'bg-unjong-accent' : 'bg-unjong-border'}`}
+                >
+                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${emailBrief ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                </button>
               </div>
             </div>
 
