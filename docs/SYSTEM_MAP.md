@@ -1,8 +1,8 @@
-<!-- 2026-07-18 -->
+<!-- 2026-07-23 -->
 # 🗺️ Trillion(트릴리언) — SYSTEM MAP (아키텍처·파이프라인 지도)
 
 > **아키텍처가 바뀔 때만 수정**(세션마다 아님). 현재상태=`STATE.md` · 이력=`CHANGELOG.md`.
-> 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-17 실측)
+> 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-23 갱신 — daily-brief·email-brief 크론 + daily_brief·email_subscriptions 테이블 반영)
 
 ## 1. 스택
 - **Next.js 16 App Router**(Turbopack · dev 포트 3333) · **Tailwind v4**(`@theme` in `app/globals.css`) · **Zustand**(`countryStore`·`authStore`) · **next-intl**(`[locale]` · ko 무프리픽스 · en=`/en` · `as-needed`).
@@ -31,27 +31,28 @@
 - 🛡️ **Perf 하드닝(750b~755 · 6개국 전부)**: 외부 콜별 5s 타임아웃(`withTimeout`) + 신선도 역순(오래된 것 먼저) + 시간 예산 260s — hang 소스가 하루를 통째 날리지 못하고, 부분 실패는 다음날 자연 만회. (KR은 KRX 전시장 1콜 구조라 해당 없음.)
 - **렌즈 선계산**: `lens_scores`(US ~1,028 + KR ~489) — `kr-lens-scores`/`lens-scores` 크론. 밖의 종목은 live `/api/lens`(야후 계산·결정론·무료).
 
-## 4. 크론 (vercel.json · 전체 13개)
-`fss-advisors` 19:00(유사투자자문 신고 갱신) · `youtube-refresh` 월요일(주간) · `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `jp-perf`·`cn-perf`·`vn-perf`·`gb-perf` 08:00 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00 · **`health` 12:00(신선도 감시·stale→Sentry·STEP 749)**. (VN HNX 실시간 크론은 클라우드 IP 차단으로 보류 · `PARKED_HNX_VCI_ACTIVATION.md`.)
-- ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증 — 4커밋 미반영·webhook 정상인데 신규 배포 0). 스케줄 설계 전 플랜 제약 확인.
+## 4. 크론 (vercel.json · 전체 15개)
+`fss-advisors` 19:00(유사투자자문 신고 갱신) · `youtube-refresh` 월요일(주간) · `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `jp-perf`·`cn-perf`·`vn-perf`·`gb-perf` 08:00 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00 · **`health` 12:00(신선도 감시·stale→Sentry·STEP 749)** · **`daily-brief` 21:00(한 입 브리핑 LLM 생성·KR/US 각 로케일 1회·STEP 778)** · **`email-brief` 22:15(daily-brief 뒤 — 이메일 모닝 브리핑 opt-in 발송·Resend batch·STEP 784)**. (VN HNX 실시간 크론은 클라우드 IP 차단으로 보류 · `PARKED_HNX_VCI_ACTIVATION.md`.)
+- ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증 — 4커밋 미반영·webhook 정상인데 신규 배포 0). 스케줄 설계 전 플랜 제약 확인. 15개째(email-brief) 추가 후 Vercel REST API(`GET /v10/projects/{id}`의 `crons.definitions`)로 전수 등록 직접 확인(07-23) — 카운트 제한이 아니라 **빈도**(daily-only) 제약임을 재확인.
 
-## 5. DB 테이블 (62개 · 그룹)
+## 5. DB 테이블 (64개 · 그룹)
 - **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot` · `stock_prices` · `stocks`
 - **렌즈/재무**: `lens_scores` · `quant_factors` · `financials` · `dividends` · `short_credit` · `supply_demand` · `insider_trades`
 - **종목명**: `cn_names` · `gb_names` · `jp_names` · `vn_names` (KR·US는 스냅샷/시드에 내장)
-- **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · `ai_view_cache` · `ai_analysis`
+- **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · `ai_view_cache` · `ai_analysis` · **`daily_brief`**(한 입 브리핑 — market별 PK·text_ko/text_en·source_facts jsonb·STEP 778)
 - **공시/뉴스**: `disclosures` · `jp_disclosures` · `news` · `dart_corp_codes` · `macro_indicators`
 - **링크/큐레이션**: `link_hub`(KR 140·US 139) · `link_hub_clicks` · `link_hub_favorites` · `link_previews`
 - **유사투자자문/리딩방**: `fss_advisors`(1,847) · `leading_rooms` · `leading_room_votes` · `room_*`(favorites·likes·reports·reviews·submissions)
 - **광고/업체**: `ad_inquiries` · `business_*`(claims·links·listing·members) · `brokers` · `products` · `banned_words`
-- **유저/UGC**: `users` · `watchlist` · `feedback` · `youtube_channels` · `discussions`·`discussion_*` · `platform_discussions`·`platform_discussion_*`
+- **유저/UGC**: `users` · `watchlist` · `feedback` · `youtube_channels` · `discussions`·`discussion_*` · `platform_discussions`·`platform_discussion_*` · **`email_subscriptions`**(이메일 모닝 브리핑 opt-in — user_id PK·daily_brief bool·locale·unsub_token·RLS 본인행만·STEP 784)
 - ⚠️ **git에 없는 테이블 주의**: `link_hub`·`fss_advisors` 등 일부는 MCP 직접 insert라 마이그레이션/git에 없음 → **DB 백업/이전 시 별도 export 필수.**
 
 ## 6. API 라우트 (`app/api/`)
-- **크론**: `cron/{fss-advisors,youtube-refresh,us-perf,kr-perf,kr-etp,kr-lens-scores,jp-perf,cn-perf,vn-perf,gb-perf,lens-scores,jp-disclosures}`
+- **크론**: `cron/{fss-advisors,youtube-refresh,us-perf,kr-perf,kr-etp,kr-lens-scores,jp-perf,cn-perf,vn-perf,gb-perf,lens-scores,jp-disclosures,health,daily-brief,email-brief}`
 - **보드/시세**: `krx/ranking` · `yahoo/{us,jp,cn,vn,gb}-list` · `yahoo/indices`(지수바·심볼별 try/catch 격리) · `yahoo/us-etn-performance` · `krx/kr-performance` · `watchlist/quotes`
 - **렌즈/AI**: `lens` · `brief`(R2) · `news-brief`(R3) · `events/summary`·`{kr,jp,cn,gb,vn}-events/summary`(R1) · `etf-holdings`
 - **피드/기타**: `news/feed`(lang 파라미터) · `ipo/us-feed` · `brokers` · `advisors` · `link-preview` · `feedback` · `watchlist` · `business/manage` · `rooms/favorite` · `toolbox/favorite`
+- **이메일 모닝 브리핑(STEP 784)**: `email/unsub`(GET=본문 링크 클릭·POST=메일 클라 원클릭 RFC 8058 — 로그인 불필요·`unsub_token` 검증)
 
 ## 7. env 변수 (이름만 · 값은 `.env.local`/Vercel)
 - **Supabase**: `NEXT_PUBLIC_SUPABASE_URL` · `NEXT_PUBLIC_SUPABASE_ANON_KEY` · `SUPABASE_URL` · `SUPABASE_SERVICE_ROLE_KEY` · `CRON_SECRET`
@@ -74,6 +75,9 @@
 - 종목보드: `components/toolbox/{MarketBoard,UsMarketBoard,JpMarketBoard,CnMarketBoard,VnMarketBoard,GbMarketBoard}.tsx` + 공유 `LensPreview.tsx`·`BoardTopLensCard.tsx`
 - 종목상세: `app/[locale]/stock/[symbol]/page.tsx` → `StockLensClient.tsx`(+`EtfLensClient.tsx`) · 이름 `lib/stockName.ts`
 - 렌즈 엔진: `lib/lensCompute.ts`·`lib/lenses.ts`·`lib/lensCopy.ts`(이중언어) · 선계산 `lib/lensPrecompute.ts`
+- **렌즈 계산 3단 공개(STEP 782/783)**: `StockLensClient.tsx`의 `LensNarrative`(7렌즈 공용 아코디언 — 렌즈 key로 분기) · `LensRead.cutoffs`(옵셔널·렌즈별 판정 컷 노출)
+- **한 입 브리핑(STEP 778)**: `lib/dailyBrief.ts`(순수함수 — 금지어 가드·언어 검증·결정론 폴백 템플릿) · `app/api/cron/daily-brief/route.ts`
+- **이메일 모닝 브리핑(STEP 784)**: `app/api/cron/email-brief/route.ts`(daily_brief+관심종목 전환 재조립·Resend batch) · `app/api/email/unsub/route.ts` · 마이페이지 opt-in 토글(`app/[locale]/mypage/page.tsx`)
 - 파이프라인: `lib/{krSnapshot,usPerf,jpPerf,cnPerf,vnPerf,gbPerf,krEtpSnapshot}.ts`
 - 관심목록/기타: `components/favorites/WatchlistClient.tsx` · 유사투자자문 `components/toolbox/AdvisorDirectory.tsx` · 헤더 `components/layout/Header.tsx`
 - i18n: `i18n/{routing,navigation,request}.ts` · `messages/{ko,en}.json` · `lib/authRedirect.ts`(OAuth 로케일 쿠키)
