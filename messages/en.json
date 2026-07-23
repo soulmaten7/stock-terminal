@@ -894,6 +894,13 @@
     "learnMore": "▾ Learn about {name}",
     "evidence": "Supporting numbers",
     "detailsNote": "▾ Details · evidence and limits",
+    "narrativeTrigger": "▾ Why this verdict",
+    "narrativePercentileLabel": "Percentile in market",
+    "narrativePercentile": "top {v}%",
+    "narrativeCutoff": "Cutoff: above {hi}% is classified up, below {lo}% is classified down.",
+    "narrativeMethodMomentum": "12-1 momentum ranks the market by the trailing 12-month return, excluding the most recent month. Jegadeesh and Titman first showed this in the data in 1993.",
+    "narrativeStock": "This stock ranks in the top {pct}%, read as “{verdict}.”",
+    "narrativeStockNoPctl": "This stock currently reads as “{verdict}.”",
     "gateTitle": "Sign in to see the supporting detail",
     "gateBody": "See exactly why each lens reads that way, with the numbers, free.",
     "gateCta": "Sign up or log in, free →"

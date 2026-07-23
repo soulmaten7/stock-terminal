@@ -91,6 +91,7 @@ export const momentum: Lens = {
       value: round(m121),
       state: mState,
       note: c.note,
+      cutoffs: { lo: -10, hi: 10 }, // 판정 컷(위 mState 분기와 동일 상수) — 3단 계산 서사 노출용(STEP 782)
     };
   },
 };

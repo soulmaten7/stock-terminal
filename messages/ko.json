@@ -894,6 +894,13 @@
     "learnMore": "▾ {name} 알아보기",
     "evidence": "근거 수치",
     "detailsNote": "▾ 자세히 · 검증 근거·한계",
+    "narrativeTrigger": "▾ 왜 이 판정인가",
+    "narrativePercentileLabel": "시장 내 백분위",
+    "narrativePercentile": "상위 {v}%",
+    "narrativeCutoff": "판정 기준: 12-1 수익률이 {hi}%보다 크면 상승, {lo}%보다 작으면 하락으로 판정해요.",
+    "narrativeMethodMomentum": "12-1 모멘텀은 최근 1개월을 제외한 12개월 수익률로 시장 전체를 줄 세웁니다. 1993년 제가디시·티트만이 데이터로 처음 밝혔어요.",
+    "narrativeStock": "이 종목은 상위 {pct}%로 “{verdict}”에 해당합니다.",
+    "narrativeStockNoPctl": "이 종목은 현재 “{verdict}”입니다.",
     "gateTitle": "근거 상세는 로그인하면 볼 수 있어요",
     "gateBody": "각 렌즈가 왜 그렇게 읽는지, 수치와 함께 무료로 열립니다.",
     "gateCta": "무료 가입·로그인 →"

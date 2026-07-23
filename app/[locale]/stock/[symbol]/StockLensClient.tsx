@@ -39,6 +39,7 @@ type LensRead = {
   headline?: string | null;
   outlook?: string | null;
   percentile?: number | null;
+  cutoffs?: { lo: number; hi: number } | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
@@ -130,6 +131,35 @@ function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
       <div className="mt-1 flex justify-between text-[13px] sm:text-[11px] text-unjong-muted"><span>{t('rsi.low')}</span><span>{t('rsi.mid')}</span><span>{t('rsi.high')}</span></div>
       <p className="mt-1 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('rsi.line', { r: r ?? '—', zone, ma, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
     </div>
+  );
+}
+
+// 렌즈 계산 3단 공개 파일럿(STEP 782, 모멘텀 한정) — "왜 이 판정인가" 펼치면 2단(근거 수치)+3단(계산 서사) 순.
+// 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail.mom12_1·percentile·cutoffs 재사용(새 계산 없음).
+// 핵심 값(mom12_1) 결측이면 트리거 자체를 안 띄움(정직 결측 — 서사 생략).
+function MomentumNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
+  const t = useTranslations('StockLens');
+  const tMaterial = useTranslations('LensPreview');
+  const mom = L.detail.mom12_1;
+  if (mom == null) return null;
+  const topPct = L.percentile != null ? 100 - L.percentile : null;
+  const verdict = L.verdict?.phrase ?? null;
+  return (
+    <details className="mt-2.5 border-t border-unjong-border pt-2.5">
+      <summary className={SUMMARY_CLASS}>{t('narrativeTrigger')}</summary>
+      <div className="mt-2 space-y-2">
+        <div className="space-y-1 text-[13px] sm:text-[12px]">
+          <p className="text-unjong-primary">{detailLabel(loc, 'mom12_1')}: <span className="tabular-nums font-medium">{mom}%</span></p>
+          <p className="text-unjong-primary">{t('narrativePercentileLabel')}: <span className="tabular-nums font-medium">{topPct != null ? t('narrativePercentile', { v: topPct }) : '—'}</span></p>
+          {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoff', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
+        </div>
+        <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary/90">
+          {t('narrativeMethodMomentum')}{' '}
+          {verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}
+        </p>
+        <p className="text-[13px] sm:text-[12px] text-unjong-muted">{tMaterial('material')}</p>
+      </div>
+    </details>
   );
 }
 
@@ -1095,6 +1125,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 <p className="mt-2 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
               </details>
             ) : null}
+            {L.key === 'momentum' ? <MomentumNarrative L={L} loc={locale} /> : null}
           </div>
         ) : null}
       </div>

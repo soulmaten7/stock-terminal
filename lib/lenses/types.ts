@@ -24,6 +24,7 @@ export type LensRead = {
   value?: number | null;      // 스크리닝용 언어중립 대표 숫자
   state?: string | null;      // 스크리닝용 언어중립 상태키
   percentile?: number | null; // 팩터 상대순위(0~100·높을수록 우호 방향). /api/lens가 주입. 없으면 null.
+  cutoffs?: { lo: number; hi: number } | null; // 판정 컷(원값 기준 상태 분기 임계치) — 3단 계산 서사용(STEP 782). 미지원 렌즈는 undefined(응답에 안 실림, byte 불변).
 };
 
 // ── 표준 데이터 번들 ── 한 번 fetch → 모든 렌즈에 주입(docs/LENS_ARCHITECTURE.md §1).

@@ -44,6 +44,10 @@ describe("momentumLens — 특성화", () => {
     expect(await momentum.compute(sd({ closes: up }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
+        "cutoffs": {
+          "hi": 10,
+          "lo": -10,
+        },
         "detail": {
           "mom12_1": 210.84,
           "ret12m": 248.41,
