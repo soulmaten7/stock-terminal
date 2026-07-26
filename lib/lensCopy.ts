@@ -5,8 +5,9 @@
 
 export type Locale = "ko" | "en";
 // question = 카드 제목용 초보자 질문형(STEP 787) — name·nameEn(학술 앵커)은 6곳 소비처(문장·pill·프롬프트)가 있어 rename 대신 이 필드를 신설.
-type LensText = { name: string; question: string; what: string; about: string; note: string };
-type FscoreText = { name: string; subtitle: string; question: string; what: string; na: string; about: string };
+// shortLabel = 종합 카드의 강점/주의 나열용 짧은 쉬운 라벨(STEP 788) — question(질문형·긴 문장)과도, name(학술 앵커)과도 다른 세 번째 용도.
+type LensText = { name: string; question: string; shortLabel: string; what: string; about: string; note: string };
+type FscoreText = { name: string; subtitle: string; question: string; shortLabel: string; what: string; na: string; about: string };
 
 export const LENS_COPY: Record<Locale, {
   momentum: LensText; lowvol: LensText; valuation: LensText; quality: LensText; assetgrowth: LensText; technical: LensText; fscore: FscoreText;
@@ -15,6 +16,7 @@ export const LENS_COPY: Record<Locale, {
     momentum: {
       name: "모멘텀",
       question: "최근 오름세가 강한가?",
+      shortLabel: "오름세",
       what: "요즘 강하게 오른 종목이 계속 갈지 보는 방법 — 오르는 흐름이 이어지는 장에 잘 맞아요.",
       about: "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
       note: "12-1 모멘텀(Jegadeesh-Titman): 롱숏(고−저 3분위·150개월) 백테스트에서 방향성이 통계적으로 유의(t≈2.5·샤프 0.71·양(+)의 달 67%), 거래비용 차감·시장/규모/가치(FF3) 조정 후에도 유지 — '추세 지속' 방향은 견고. 단 수익 '수준'은 생존편향·동일가중으로 부풀려져 실전 기대치 아님(방향이 맞다는 뜻이지 수익 보장 아님). 주가 $5+ 투자가능 종목 한정 — 페니스탁 포함 시 역전. · 3중 교차검증(초·중·후반 3구간·STEP559): 3구간 모두 +방향(전체 t≈3.6), 성장주 강세기(fold2)만 약화되나 부호 유지 = 시기 무관 단단.",
@@ -22,6 +24,7 @@ export const LENS_COPY: Record<Locale, {
     lowvol: {
       name: "저변동성",
       question: "가격이 많이 출렁이나?",
+      shortLabel: "가격 출렁임",
       what: "덜 출렁이는 안정적인 종목인지 보는 방법 — 하락장에서 방어적으로 유용해요.",
       about: "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
       note: "저변동성(BAB): 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 3구간서 음수·부호 뒤집힘 = '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어(BAB 알파·낮은 위험)임.",
@@ -29,6 +32,7 @@ export const LENS_COPY: Record<Locale, {
     valuation: {
       name: "밸류(가치)",
       question: "버는 것에 비해 싼가?",
+      shortLabel: "가격 대비 가치",
       what: "버는 돈·가진 자산에 비해 주가가 싼지 보는 방법 — 길게 보는 투자에 잘 맞아요.",
       about: "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄의 가치투자에서 출발해, 파마·프렌치가 '싼 주식이 장기적으로 낫다'(가치 프리미엄)를 데이터로 정립했어요 — 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
       note: "밸류(가치)는 학계 정설 팩터(Fama-French HML) — 우리 백테스트도 이를 재현(βHML≈0.71). 단 우리 표본(2010~24) 월별 롱숏에선 통계적으로 약함(E/P t≈0.9·B/M t≈1.5, 유의 미달) — 최근 ~15년 가치주 부진(성장주 우위)과 일치. 방향은 +(연 +6~9%)·연1회 리밸런스라 비용 낮으나 '지금 시기 유효'라 단정 못 함. PER·PBR은 단일종목 절대값이라 같은 업종 내 상대비교로(섹터·성장성 무시 오독). 예측·보장 아님. · 3중 교차검증(코호트 3분할·STEP560): fold2(2016~20 성장주 강세기) 방향 역전 = 표본 약함 + 시기 의존(가치주 부진기엔 안 됨). βHML0.72로 학계 HML은 재확인.",
@@ -36,6 +40,7 @@ export const LENS_COPY: Record<Locale, {
     quality: {
       name: "퀄리티",
       question: "돈을 잘 버는 회사인가?",
+      shortLabel: "돈 버는 힘",
       what: "회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.",
       about: "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
       note: "퀄리티(Gross Profitability, Novy-Marx): 매출총이익/총자산. 백테스트(투자가능 $5+·13코호트) 고−저 롱숏 t≈2.9·샤프 0.78·FF3 알파 t≈2.5(시장/규모/가치 넘는 독립 프리미엄)·회전율 낮아 비용 강건 → 검증. 단 수익 '수준'은 생존편향·동일가중으로 과대(방향·유의만 신뢰). ROE는 별도 검증서 유의 미달(대형주 편중)이라 제외. 은행은 매출총이익 구조상 미적용. · 3중 교차검증(코호트 3분할·STEP560): 3/3 구간 +방향·전체 t≈3.2·FF3 알파 t≈2.75(βHML−0.22 독립) = 검증 재확인, 7렌즈 중 가장 단단.",
@@ -43,6 +48,7 @@ export const LENS_COPY: Record<Locale, {
     assetgrowth: {
       name: "자산성장",
       question: "몸집을 무리하게 불리지 않았나?",
+      shortLabel: "몸집 관리",
       what: "회사가 자산(몸집)을 얼마나 빠르게 불리는지 보는 방법 — 너무 공격적으로 키우면 이후 성과가 약한 편이에요.",
       about: "회사가 설비 투자·인수 등으로 자산을 얼마나 공격적으로 늘리는지 보는 지표예요. 2008년 쿠퍼·굴렌·실이 '자산을 빠르게 불린 회사일수록 이후 수익은 오히려 약하다'를 데이터로 밝혔어요(과잉 투자·무리한 확장 경계). 파마·프렌치 5팩터 중 투자 팩터(CMA)이기도 해요 — 자본을 신중히 쓰는 회사를 선호하는 관점이에요.",
       note: "자산성장(Asset Growth·투자팩터 — Cooper-Gulen-Schill 2008 / Fama-French 5팩터 CMA): 총자산 전년比 증가율. 백테스트(투자가능 $5+·13코호트) 저−고(보수−공격) 롱숏 방향은 +(연 ~+8%)이고 시장·규모·가치(FF3)와 독립적(βHML≈0.17 — 밸류의 재포장이 아닌 별개의 '자본 규율' 축)이나, 우리 표본선 통계적으로 유의 미달(t≈1.6). → '자산을 공격적으로 키운 회사가 이후 수익이 약한 편'이라는 방향은 학계 정설(과잉투자 경계)이나 우리 데이터론 확신 못 함(표본 약함). 자본 규율의 참고 축으로 보세요. 예측·보장 아님. 은행 등은 자산 성격이 달라 해석 주의. · 3중 교차검증(코호트 3분할·STEP560): 3구간 방향 3/3 일관(단 각 구간 t<2) — 표본약함이나 방향은 시기 무관 일관(밸류보다 견고).",
@@ -50,6 +56,7 @@ export const LENS_COPY: Record<Locale, {
     technical: {
       name: "기술",
       question: "지금 흐름이 위인가, 아래인가?",
+      shortLabel: "단기 흐름",
       what: "차트로 지금 과열인지·흐름이 위인지 보는 방법 — 현재 상태를 빠르게 훑는 참고용이에요.",
       about: "차트의 가격·패턴으로 '지금 과열인지, 추세가 위인지'를 보는 전통적 기술적 분석이에요. RSI는 1978년 와일더가 만든 과열·침체 지표, 이동평균선은 일정 기간의 평균 가격이에요 — 단기 흐름을 빠르게 훑는 참고 도구예요(단독 신호로는 약함).",
       note: "기술 신뢰도 재검(월별 롱숏·153개월): RSI 침체매수(저RSI−고RSI)는 오히려 손실(연 −8.7%·CAPM 알파 t≈−2.0로 유의하게 음)이고 회전율 66%로 비용 최악 → 평균회귀 완전 기각(과열=모멘텀이 이김). 200일선 위−아래는 방향 +지만 통계 약함(t≈1.6)이고 모멘텀 팩터에 흡수 = 독립 신호 아님(모멘텀의 약한 사촌). → RSI·52주위치·이동평균은 '지금 상태' 표시일 뿐 매매신호 아님, 추세는 모멘텀 렌즈로. 참고용. · 3중 교차검증(STEP559): 200일선 추세 성분은 3구간 견고(t≈2.7)하나 FF3는 모멘텀을 통제하지 못함 — 이 견고함은 모멘텀과 겹치는 신호일 뿐(독립 아님). 이미 모멘텀으로 검증된 방향이라 여기선 참고용 유지.",
@@ -57,6 +64,7 @@ export const LENS_COPY: Record<Locale, {
     fscore: {
       name: "F-스코어", subtitle: "재무 건전성",
       question: "재무가 튼튼한가?",
+      shortLabel: "재무 건전성",
       what: "재무가 튼튼한지 9가지로 점수 매겨요 — 돈 잘 버는지, 빚 감당되는지, 작년보다 나아졌는지.",
       na: "이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.",
       about: "회계학자 피오트로스키가 2000년 만든, 기업 재무 건강을 9개 항목으로 점수 매기는 체크리스트예요(수익성·부채·효율의 전년 대비 개선). 원래 값싼 가치주 중 '진짜 부실한 곳'을 걸러내려 만들었어요 — 그래서 수익 예측이 아니라 재무 건전성 판단에 씁니다.",
@@ -66,6 +74,7 @@ export const LENS_COPY: Record<Locale, {
     momentum: {
       name: "Momentum",
       question: "Is the recent uptrend strong?",
+      shortLabel: "Uptrend",
       what: "Whether a stock that's been climbing keeps climbing — best when trends hold.",
       about: "The idea that stocks which have been rising tend to keep rising for a while — a kind of market inertia. Jegadeesh and Titman first showed it in the data in 1993, often explained by investors reacting slowly to good news. It's the basis of trend-following: ride the recent winners.",
       note: "12-1 Momentum (Jegadeesh-Titman): in our long-short backtest (top−bottom tercile, 150 months) the direction is statistically significant (t≈2.5, Sharpe 0.71, 67% positive months) and it survives transaction costs and adjustment for market/size/value (FF3) — the 'trends persist' direction is robust. But the return 'level' is inflated by survivorship bias and equal weighting, so it is not a realistic expectation (the direction holds; returns are not guaranteed). Limited to investable stocks priced $5+ — including penny stocks reverses the result. · Triple cross-validation (early/middle/late thirds, STEP559): all three folds point the same way (overall t≈3.6); only the growth-led stretch (fold2) weakens, but the sign holds = solid regardless of period.",
@@ -73,6 +82,7 @@ export const LENS_COPY: Record<Locale, {
     lowvol: {
       name: "Low Volatility",
       question: "Does the price swing a lot?",
+      shortLabel: "Price swings",
       what: "How steady (rather than jumpy) a stock is — handy for playing defense in down markets.",
       about: "The finding that calmer, steadier stocks tend to do better per unit of risk than wild, jumpy ones (the low-volatility anomaly). One story: people chase big-swing names hoping for a jackpot and bid them up, while boring quality names get left cheap. Used for defense and risk management.",
       note: "Low Volatility (BAB): in our backtest (investable, $5+, 161 months) the low-volatility group carries dramatically less risk — roughly 18% of the high-volatility group's (defensive) — and its risk-adjusted alpha is significant (CAPM t≈3.1, FF3 t≈2.6; negative market beta = defensive). Low turnover makes it robust to transaction costs → it holds up as a risk-management and defense lens. But the plain claim that 'low volatility also earns more' is statistically weak (long-short t≈1.6) and the level is overstated by bias → no claim of higher returns; risk-adjusted performance is the point. Not a guarantee. · Triple cross-validation (STEP559): the plain low−high return long-short is negative and flips sign across the three folds = confirmation that 'low volatility earns more' does not hold. This lens rests on risk-adjusted defense (BAB alpha, low risk), not on raw returns.",
@@ -80,6 +90,7 @@ export const LENS_COPY: Record<Locale, {
     valuation: {
       name: "Value",
       question: "Is it cheap for what it earns?",
+      shortLabel: "Value",
       what: "Whether the price looks cheap next to a company's earnings and assets — suited to the long game.",
       about: "Buying stocks priced cheap relative to a company's earnings and net assets. It traces back to Benjamin Graham's value investing, and Fama and French established in the data that cheap stocks tend to win over the long run (the value premium). The premise: the market oversells unpopular stocks.",
       note: "Value is an established academic factor (Fama-French HML) — our backtest reproduces it (βHML≈0.71). But in our sample (2010~24) the monthly long-short is statistically weak (E/P t≈0.9, B/M t≈1.5 — short of significance), consistent with value's slump over the past ~15 years (growth has led). The direction is positive (+6~9% a year) and rebalancing once a year keeps costs low, but we cannot claim it 'works in the current period'. PER and PBR are absolute figures for a single stock, so compare within the same industry (ignoring sector and growth invites misreading). Not a prediction or a guarantee. · Triple cross-validation (3 cohort folds, STEP560): fold2 (2016~20, the growth-led stretch) reverses direction = weak sample plus period dependence (it does not work while value is out of favor). βHML 0.72 reconfirms the academic HML.",
@@ -87,6 +98,7 @@ export const LENS_COPY: Record<Locale, {
     quality: {
       name: "Quality",
       question: "Does it earn well?",
+      shortLabel: "Profitability",
       what: "How efficiently a company turns its assets into profit — good for finding sturdy, high-quality names.",
       about: "Gauges company quality by gross profits divided by assets ('gross profitability'). Novy-Marx showed in 2013 that quality matters as much as cheapness — companies that reliably squeeze profit from their assets tend to do better over the long run.",
       note: "Quality (Gross Profitability, Novy-Marx): gross profit / total assets. In our backtest (investable, $5+, 13 cohorts) the high−low long-short shows t≈2.9, Sharpe 0.78 and FF3 alpha t≈2.5 (an independent premium beyond market/size/value), and low turnover makes it robust to costs → verified. But the return 'level' is overstated by survivorship bias and equal weighting (trust the direction and the significance only). ROE fell short of significance in a separate test (skewed toward large caps), so it is excluded. Banks do not apply — gross profit does not work the same way for them. · Triple cross-validation (3 cohort folds, STEP560): 3/3 folds point the same way, overall t≈3.2, FF3 alpha t≈2.75 (βHML−0.22, independent) = verification reconfirmed; the sturdiest of the 7 lenses.",
@@ -94,6 +106,7 @@ export const LENS_COPY: Record<Locale, {
     assetgrowth: {
       name: "Asset Growth",
       question: "Did it expand too fast?",
+      shortLabel: "Asset discipline",
       what: "How fast a company is expanding its asset base — growing too aggressively has historically meant weaker returns afterward.",
       about: "Tracks how aggressively a company grows its assets through capex, acquisitions, and the like. Cooper, Gulen, and Schill showed in 2008 that firms expanding fastest tended to underperform later — a caution against overinvestment and empire-building. It's the investment factor (CMA) in the Fama-French five-factor model, favoring companies that spend capital with discipline.",
       note: "Asset Growth (the investment factor — Cooper-Gulen-Schill 2008 / CMA in the Fama-French 5-factor model): year-over-year growth in total assets. In our backtest (investable, $5+, 13 cohorts) the low−high (conservative−aggressive) long-short points positive (~+8% a year) and is independent of market/size/value (FF3) (βHML≈0.17 — a separate axis of 'capital discipline', not value repackaged), but it falls short of statistical significance in our sample (t≈1.6). → The direction — 'companies that expand assets aggressively tend to earn less afterward' — is academic consensus (a caution against overinvestment), but our data cannot confirm it (weak sample). Treat it as a reference axis for capital discipline. Not a prediction or a guarantee. Banks and the like hold assets of a different nature, so interpret with care. · Triple cross-validation (3 cohort folds, STEP560): the direction is consistent in 3/3 folds (though t<2 within each) — a weak sample, but the direction holds regardless of period (sturdier than value).",
@@ -101,6 +114,7 @@ export const LENS_COPY: Record<Locale, {
     technical: {
       name: "Technical",
       question: "Is the current trend up or down?",
+      shortLabel: "Short-term trend",
       what: "Reads the chart for overheating and which way the trend leans — a quick gut-check, for reference only.",
       about: "Traditional technical analysis — reading price and chart patterns to gauge whether a stock is overheated or which way the trend leans. RSI (Welles Wilder, 1978) flags overbought/oversold; a moving average is just the average price over a period. A quick scan of short-term momentum (weak on its own).",
       note: "Re-examining technical reliability (monthly long-short, 153 months): buying oversold RSI (low RSI − high RSI) actually loses money (−8.7% a year; CAPM alpha t≈−2.0, significantly negative) and its 66% turnover makes the cost drag the worst of the lot → mean reversion is rejected outright (on overheating, momentum wins). Above−below the 200-day line does point the right way, but it is statistically weak (t≈1.6) and is absorbed by the momentum factor = not an independent signal (a weak cousin of momentum). → RSI, 52-week position and moving averages only show 'where things stand now'; they are not trade signals. For trend, use the momentum lens. Reference only. · Triple cross-validation (STEP559): the 200-day trend component is robust across the three folds (t≈2.7), but FF3 does not control for momentum — that robustness is merely a signal overlapping momentum (not independent). The direction is already verified by momentum, so this stays reference-only.",
@@ -108,6 +122,7 @@ export const LENS_COPY: Record<Locale, {
     fscore: {
       name: "F-Score", subtitle: "financial health",
       question: "Are the financials solid?",
+      shortLabel: "Financial health",
       what: "Scores a company's financial health across 9 checks — a filter to weed out weak balance sheets (not a return forecast).",
       na: "Can't be scored here — banks and insurers are built differently, so these checks don't apply.",
       about: "A checklist created by accounting professor Piotroski in 2000 that scores financial health on 9 points (year-over-year gains in profitability, debt, and efficiency). It was built to weed out the genuinely weak names among cheap value stocks — so it judges financial health, not future returns.",
@@ -414,4 +429,8 @@ export function lensStateLabel(loc: Locale, key: string, state: string | null): 
 // 카드 제목용 초보자 질문형(STEP 787) — name과 별개 필드라 6곳 소비처(문장·pill·프롬프트) 무영향.
 export function lensQuestion(loc: Locale, key: string): string {
   return (LENS_COPY[loc] as unknown as Record<string, { question: string }>)[key]?.question ?? key;
+}
+// 종합 카드의 강점/주의 나열용 짧은 라벨(STEP 788) — question(문장형)보다 짧아 목록에 여러 개 나열해도 안 길어짐.
+export function lensShortLabel(loc: Locale, key: string): string {
+  return (LENS_COPY[loc] as unknown as Record<string, { shortLabel: string }>)[key]?.shortLabel ?? key;
 }

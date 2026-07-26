@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
 import { useRouter, Link } from '@/i18n/navigation';
-import { LENS_COPY, DETAIL_LABELS, pickLocale, lensQuestion, type Locale } from '@/lib/lensCopy';
+import { LENS_COPY, DETAIL_LABELS, pickLocale, lensQuestion, lensShortLabel, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { TONE_DOT_CLASS as TONE_DOT, changeColorClass } from '@/lib/lensTones';
@@ -1053,6 +1053,48 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const headerPos = headerTones.filter((x) => x === 'pos').length;
   const headerWarn = headerTones.filter((x) => x === 'warn').length;
   const headerFlat = headerTones.filter((x) => x === 'flat').length;
+
+  // "7가지 방법을 종합하면" 닫는 카드 재료(STEP 788) — 전부 이미 계산된 verdict.tone 재사용(새 계산 없음).
+  // 카운트는 위 headerPos/Warn/Flat을 그대로 재사용해 상단 헤더와 100% 동일 보장(별도 계산 안 함).
+  const closingPosLabels: string[] = [];
+  const closingWarnLabels: string[] = [];
+  const byHorizon: Record<'short' | 'mid' | 'long', ('pos' | 'warn' | 'flat')[]> = { short: [], mid: [], long: [] };
+  for (const l of lenses) {
+    const tone = l.verdict?.tone;
+    if (tone === 'pos') closingPosLabels.push(lensShortLabel(locale, l.key));
+    else if (tone === 'warn') closingWarnLabels.push(lensShortLabel(locale, l.key));
+    if (tone) byHorizon[l.horizon].push(tone);
+  }
+  if (data?.fscore?.supported) {
+    const fsScore = data.fscore.score ?? 0;
+    const fsTone = fsScore >= 7 ? 'pos' : fsScore <= 3 ? 'warn' : 'flat';
+    if (fsTone === 'pos') closingPosLabels.push(lensShortLabel(locale, 'fscore'));
+    else if (fsTone === 'warn') closingWarnLabels.push(lensShortLabel(locale, 'fscore'));
+    byHorizon.long.push(fsTone);
+  }
+  function axisMajority(tones: ('pos' | 'warn' | 'flat')[]): 'pos' | 'warn' | 'flat' | null {
+    if (!tones.length) return null;
+    const pos = tones.filter((x) => x === 'pos').length;
+    const warn = tones.filter((x) => x === 'warn').length;
+    const flat = tones.length - pos - warn;
+    if (pos > warn && pos > flat) return 'pos';
+    if (warn > pos && warn > flat) return 'warn';
+    return 'flat';
+  }
+  const shortAxisTone = axisMajority(byHorizon.short);
+  const midAxisTone = axisMajority(byHorizon.mid);
+  const longAxisTone = axisMajority(byHorizon.long);
+  const closingAxes = [shortAxisTone, midAxisTone, longAxisTone].filter((x): x is 'pos' | 'warn' | 'flat' => x != null);
+  // 분기 4개 + 혼재 폴백(총 5개, "4~6개 이내" 준수) — 데이터 자체가 없으면(closingAxes 0) 문장 생략(정직 결측).
+  let closingSentenceKey: string | null = null;
+  if (closingAxes.length > 0) {
+    if (closingAxes.every((x) => x === 'pos')) closingSentenceKey = 'closingAllPos';
+    else if (closingAxes.every((x) => x === 'warn')) closingSentenceKey = 'closingAllWarn';
+    else if (longAxisTone === 'pos' && (shortAxisTone === 'warn' || midAxisTone === 'warn')) closingSentenceKey = 'closingLongPosShortWarn';
+    else if (longAxisTone === 'warn' && (shortAxisTone === 'pos' || midAxisTone === 'pos')) closingSentenceKey = 'closingLongWarnShortPos';
+    else closingSentenceKey = 'closingMixed';
+  }
+
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ|VN|L)$/, '');
   const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
@@ -1217,6 +1259,13 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
           {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : isCN ? <CnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
           <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
+          {/* 파트 구분 헤더(STEP 788) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님. */}
+          {lenses.length || data?.fscore ? (
+            <div className="mb-1 mt-6 border-t border-unjong-border pt-5">
+              <h2 className="text-base font-bold text-unjong-primary">{t('partHeaderTitle')}</h2>
+              <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('partHeaderSub')}</p>
+            </div>
+          ) : null}
           {(['short', 'mid', 'long'] as const).map((h) => {
             const group = lenses.filter((L) => L.horizon === h);
             const showFs = h === 'long' && !!(data && data.fscore);
@@ -1234,6 +1283,19 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               </section>
             );
           })}
+          {/* 닫는 카드 "7가지 방법을 종합하면"(STEP 788) — 전부 이미 계산된 값 재조립(LLM 금지). 상단 헤더와 카운트 동일. */}
+          {lenses.length || data?.fscore ? (
+            <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
+              <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle')}</h2>
+              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</p>
+              <div className="mt-2.5 space-y-1 text-[13px] sm:text-[12px]">
+                {closingPosLabels.length ? <p className="text-unjong-accent">{t('closingPosLine', { list: closingPosLabels.join(', ') })}</p> : null}
+                {closingWarnLabels.length ? <p className="text-amber-400">{t('closingWarnLine', { list: closingWarnLabels.join(', ') })}</p> : null}
+              </div>
+              {closingSentenceKey ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{t(closingSentenceKey)}</p> : null}
+              <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('closingFooter')}</p>
+            </div>
+          ) : null}
         </div>
       )}
 
