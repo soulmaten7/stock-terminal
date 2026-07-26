@@ -386,7 +386,7 @@ export default function ExploreClient() {
           <ArrowLeft size={20} />
           {tLogin('back')}
         </button>
-        <div className="mb-3 flex items-center justify-between px-4 sm:px-0">
+        <div className="mb-3 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <div className="flex items-center">
             <h1 className="text-lg font-bold text-unjong-primary">{t(market === 'KR' ? 'countryKr' : 'countryUs')} · {t(titleKey)}</h1>
             <AsOfBadge date={asOfDate} loc={loc} />
@@ -503,12 +503,12 @@ export default function ExploreClient() {
 
       {/* 목록 1: 오늘 상태가 바뀐 종목 */}
       <section className="mb-7">
-        <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+        <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <div className="flex items-center">
             <h2 className="text-base font-bold text-unjong-primary">{t('changesTitle')}</h2>
             <AsOfBadge date={changes?.date ?? null} loc={loc} />
           </div>
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex flex-col items-start gap-0.5 sm:items-end">
             {changes && changes.count != null && changes.count > 0 ? (
               <Link href="/explore?list=changes" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreCount', { n: changes.count })}</Link>
             ) : null}
@@ -530,9 +530,9 @@ export default function ExploreClient() {
 
       {/* 목록 2: 강점이 많은 종목 */}
       <section className="mb-7">
-        <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+        <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <h2 className="text-base font-bold text-unjong-primary">{t('posTitle')}</h2>
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex flex-col items-start gap-0.5 sm:items-end">
             {posTop && posTop.length > 0 ? <Link href="/explore?list=pos" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
             <DotLegendBasisLabel />
           </div>
@@ -552,9 +552,9 @@ export default function ExploreClient() {
 
       {/* 목록 3: 오늘 거래가 많았던 종목 */}
       <section className="mb-7">
-        <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+        <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <h2 className="text-base font-bold text-unjong-primary">{t('amountTitle')}</h2>
-          <div className="flex flex-col items-end gap-0.5">
+          <div className="flex flex-col items-start gap-0.5 sm:items-end">
             {amountTop && amountTop.length > 0 ? <Link href="/explore?list=amount" className="shrink-0 text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('moreLink')}</Link> : null}
             <DotLegendBasisLabel />
           </div>

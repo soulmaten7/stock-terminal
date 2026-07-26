@@ -251,7 +251,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             </div>
           ) : (
             <>
-              <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+              <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
                 <div className="flex items-center">
                   <h2 className="text-base font-bold text-unjong-primary">{t('watchlistChangesTitle')}</h2>
                   <AsOfBadge date={watchlistChangesDate} loc={loc} />
@@ -282,7 +282,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
 
         {/* 3) 간밤 미국 */}
         <section className="mb-7">
-          <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+          <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
             <div className="flex items-center">
               <h2 className="text-base font-bold text-unjong-primary">{t('overnightUsTitle')}</h2>
               <AsOfBadge date={usChanges?.date ?? null} loc={loc} />
@@ -309,7 +309,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
 
         {/* 4) 오늘 시장 변화(KR·en이면 US 우선) */}
         <section className="mb-7">
-          <div className="mb-2 flex items-center justify-between px-4 sm:px-0">
+          <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
             <div className="flex items-center">
               <h2 className="text-base font-bold text-unjong-primary">{tExplore(homeMarket === 'KR' ? 'countryKr' : 'countryUs')} · {tExplore('changesTitle')}</h2>
               <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
