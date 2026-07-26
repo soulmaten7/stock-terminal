@@ -272,7 +272,6 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
 }
 
 const SUMMARY_CLASS = 'cursor-pointer list-none text-[13px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
-const LEARN_CLASS = 'cursor-pointer list-none text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:opacity-80 [&::-webkit-details-marker]:hidden';
 
 // 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 자료 갱신 우선, 아니면 📌 새 소식.
 function FlagChip({ flags }: { flags?: Flag[] }) {
@@ -846,7 +845,6 @@ function StockBrief({ symbol }: { symbol: string }) {
       {state === 'loading'
         ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('brief.loading')}</p>
         : <p className="text-[15px] leading-relaxed sm:text-[13px] text-unjong-primary">{brief}</p>}
-      {state === 'done' ? <p className="mt-1.5 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{t('brief.footer')}</p> : null}
     </div>
   );
 }
@@ -1191,7 +1189,6 @@ export default function StockLensClient({ initialName }: { initialName?: string 
       <div className="mt-3 max-w-4xl">
         <div className="mb-1.5 flex items-center gap-2">
           <AiLensBadge pill lang={locale} />
-          <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t('headerNote')}</span>
         </div>
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -1231,13 +1228,14 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               </div>
               <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</span>
             </div>
-            <p className="mt-1 text-[13px] sm:text-[11px] text-unjong-muted">{t('lensHeaderNote')}</p>
           </div>
         ) : null}
 
-        <p className="mt-3 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{t.rich('intro', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
-        <details className="mt-1">
-          <summary className={LEARN_CLASS}>{t('readingGuideSummary')}</summary>
+        {/* 상단 안내 4→1 통합(STEP 790) — "판단은 당신" 역할은 이 한 줄이 전담(788 닫는 카드 푸터에도 별도 1회 있어 페이지 상·하단 각 1회). */}
+        <details className="mt-3">
+          <summary className="cursor-pointer list-none text-[13px] sm:text-xs leading-relaxed text-unjong-muted [&::-webkit-details-marker]:hidden">
+            {t('intro')} <span className="font-medium text-unjong-accent">{t('readingGuideSummary')}</span>
+          </summary>
           <p className="mt-1.5 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{t.rich('readingGuide', {
             b: (c) => <b className="text-unjong-primary">{c}</b>,
             v: (c) => <span className="text-unjong-accent">{c}</span>,

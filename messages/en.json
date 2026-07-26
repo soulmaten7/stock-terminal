@@ -876,16 +876,13 @@
     "brief": {
       "title": "Briefing",
       "badge": "TR-AI · facts only",
-      "loading": "Writing the briefing…",
-      "footer": "Based on proven-method verdicts and disclosed facts · we do not judge direction"
+      "loading": "Writing the briefing…"
     },
     "back": "Back",
-    "headerNote": "Several views that read this stock through proven methods",
     "currentPrice": "Price",
     "tradeAmount": "Value traded",
-    "lensHeaderNote": "No overall buy or sell score — you decide",
-    "intro": "We show how proven methods each read this stock. <b>Not a buy or sell signal — material for you to judge for yourself.</b>",
-    "readingGuideSummary": "▾ How to read this screen · confidence grades",
+    "intro": "Not a buy or sell signal — material for you to judge for yourself.",
+    "readingGuideSummary": "How to read ▾",
     "readingGuide": "Every card carries a <b>confidence grade</b> — <v>Verified</v> means the return signal itself was confirmed, <w>Weak signal</w> means it is famous but weak in our data, <r>Reference</r> shows state only, and <f>Financial health</f> is financial strength, not a return signal. Tap a lens to unfold why it reads that way.",
     "loadError": "Could not load the data. (Some stocks may not be supported yet.)",
     "lensDirection": "Direction of this method",

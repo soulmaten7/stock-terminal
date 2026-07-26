@@ -1,7 +1,6 @@
 // 전 종목 검색(6개국) — /explore 검색창의 원료(STEP 767a). 서버 인메모리 인덱스(lib/stockName.ts와 동일 소스).
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { cleanUsName } from "@/lib/usNameFormat";
 import { resolveDisplayName } from "@/lib/displayName";
 import usSymbols from "@/data/us_symbols.json";
 import jpSymbols from "@/data/jp_symbols.json";
@@ -24,7 +23,11 @@ const SIZE_PRIORITY: Record<Country, number> = { KR: 0, US: 0, JP: 1, CN: 1, VN:
 function buildForeign(country: Country, arr: SymRow[]): IndexEntry[] {
   return arr.map((r) => {
     const ko = FOREIGN_KO[r.sym.toUpperCase()];
-    const en = country === "US" ? cleanUsName(r.name) : r.name;
+    // US도 여기서는 원본 그대로 보관(정리 안 함) — 매칭엔 원본으로도 충분하고, 최종 표시는 아래서 resolveDisplayName이
+    // cleanUsName을 유일하게 1회 적용한다. 여기서 먼저 정리해두면 resolveDisplayName이 "이미 정리된 짧은 이름"을
+    // 다시 cleanUsName에 넣게 돼 title-case 판정이 재실행 — "RELX PLC"처럼 이미 옳은 대문자 약어가 "Relx PLC"로
+    // 잘못 재캐이싱되는 멱등성 버그(cleanUsName 중복 호출·STEP 790)로 이어진다.
+    const en = r.name;
     return { symbol: r.sym, nameKo: ko ?? en, nameEn: en, country, type: r.type === "etf" ? "etf" : "stock" };
   });
 }
