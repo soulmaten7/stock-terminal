@@ -1116,13 +1116,21 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
     return (
       <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
-        {/* 3열 그리드(이름·판정·배지) — 판정 텍스트 좌측 가장자리가 카드마다 같은 지점에서 시작해 세로 스캔 라인을 만든다(STEP 763c). 색·문구·배지 스타일은 불변, 위치만. */}
-        <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-x-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-              <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
-              <span className="text-[13px] sm:text-xs text-unjong-muted">· {L.name}</span>
-              <FlagChip flags={cardFlags} />
+        {/* 모바일=세로 2행(1행 이름+배지/화살표 · 2행 판정문구 전폭) · sm+=3열 그리드(이름·판정·배지, STEP 763c 스캔라인 유지·byte 동일·STEP 786). 색·문구·배지 스타일은 불변, 위치만. */}
+        <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full flex-col gap-1.5 p-4 text-left transition-colors hover:bg-unjong-background/40 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-x-3 sm:gap-y-0">
+          <div className="flex items-center justify-between gap-3 sm:contents">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
+                <span className="text-[13px] sm:text-xs text-unjong-muted">· {L.name}</span>
+                <FlagChip flags={cardFlags} />
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-2 sm:order-last sm:justify-self-end">
+              <span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
+              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+              </span>
             </div>
           </div>
           <div className="min-w-0">
@@ -1134,12 +1142,6 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             ) : !isOpen ? (
               <span className="text-[13px] leading-relaxed text-unjong-muted">{L.summary}</span>
             ) : null}
-          </div>
-          <div className="flex shrink-0 items-center gap-2 justify-self-end">
-            <span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
-            <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-            </span>
           </div>
         </button>
         {isOpen && !user ? (
