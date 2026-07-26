@@ -812,10 +812,8 @@
       "source": "원문은 위 '최근 공시'에서 볼 수 있어요."
     },
     "fscore": {
-      "subtitle": "F-스코어 · 재무 건전성",
       "unsupported": "이 종목은 F-Score를 적용할 수 없어요.",
       "badge": "재무 건전성",
-      "tagline": "· 부실 위험 체크",
       "bandGood": "양호",
       "bandWeak": "취약",
       "bandMid": "중간",

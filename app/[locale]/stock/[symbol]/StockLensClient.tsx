@@ -149,11 +149,17 @@ const NARRATIVE_CUTOFF_KEY: Record<string, string> = {
 // 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail/percentile/cutoffs 재사용(새 계산 없음).
 // 핵심 값 결측/미지원(state na 또는 null)이면 통째로 생략(정직 결측). 근거 줄은 L.detail 전량을 한 줄로 압축(772/783의 중복 목록·이중 %기호 표기를 여기서 정리).
 // F-Score는 별도(FScoreCard 내부 — 9항목 중복 노출 금지·과적재 방지).
+// 서사 렌더 가능 여부(STEP 789 §2) — LensNarrative 내부 게이트와 renderCard의 verdict.plain 안전망이 같은 조건을 공유해야
+// "서사도 없고 안전망도 없어 본문이 비는" 케이스가 안 생긴다(예: na 상태는 outlook은 non-null이라도 서사는 없음).
+function hasLensNarrative(L: LensRead): boolean {
+  return !!NARRATIVE_METHOD_KEY[L.key] && !!L.state && L.state !== 'na';
+}
+
 function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
   const t = useTranslations('StockLens');
   const tMaterial = useTranslations('LensPreview');
+  if (!hasLensNarrative(L)) return null;
   const methodKey = NARRATIVE_METHOD_KEY[L.key];
-  if (!methodKey || !L.state || L.state === 'na') return null;
   const verdict = L.verdict?.phrase ?? null;
   const topPct = L.percentile != null ? 100 - L.percentile : null;
 
@@ -310,8 +316,7 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-sm">
         <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, 'fscore')}</p>
-        <p className="mt-0.5 text-[11px] text-unjong-muted">Piotroski F-Score</p>
-        <div className="mt-1.5 text-[13px] sm:text-xs text-unjong-accent">{t('fscore.subtitle')}</div>
+        <p className="mt-0.5 text-[11px] text-unjong-muted">{LENS_COPY[locale].fscore.name} · Piotroski F-Score</p>
         <p className="mt-2 text-sm text-unjong-muted">{f.reason || t('fscore.unsupported')}</p>
       </div>
     );
@@ -329,15 +334,16 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
         <div className="min-w-0">
           <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, 'fscore')}</p>
           <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-            <span className="text-[11px] text-unjong-muted">Piotroski F-Score</span>
-            <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
-            <span className="text-[13px] sm:text-xs text-unjong-muted">{t('fscore.tagline')}</span>
+            <span className="text-[11px] text-unjong-muted">{LENS_COPY[locale].fscore.name} · Piotroski F-Score</span>
             <FlagChip flags={flags} />
           </div>
         </div>
-        <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          <span className="whitespace-nowrap rounded bg-amber-400/10 px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
+          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+          </span>
+        </div>
       </button>
       {open ? (
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
@@ -1149,30 +1155,25 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             </div>
           </div>
         ) : isOpen ? (
-          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-4">
-            {/* PC 좌측 리캡(질문·학술명·등급) — lg+ 전용, 모바일·태블릿은 위 헤더가 이미 같은 정보를 보여줘 숨김(렌더 변화 0). */}
-            <div className="hidden lg:block">
-              <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, L.key)}</p>
-              <p className="mt-0.5 text-[11px] text-unjong-muted">{L.name} · {L.nameEn}</p>
-              <span className={`mt-2 inline-block whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
-            </div>
-            <div className="min-w-0">
-              <FlagBox flags={cardFlags} />
-              {L.verdict ? (
-                <div className="flex items-baseline justify-between gap-2">
-                  <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
-                  {L.headline ? <span className="whitespace-nowrap text-[13px] sm:text-[12px] text-unjong-muted">{L.headline}</span> : null}
-                </div>
-              ) : null}
-              {viz}
-              {L.outlook ? (
-                <div className="mt-2.5">
-                  <p className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{t('lensDirection')}</p>
-                  <p className="mt-0.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
-                </div>
-              ) : (L.verdict ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
-              <LensNarrative L={L} loc={locale} />
-              {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
+          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
+            <FlagBox flags={cardFlags} />
+            {/* PC(lg+) 2단: 좌=결과(판정+게이지) · 우=설명(서사+근거+한계). 헤더가 이미 질문·학술명·등급을 보여줘 여기선 반복 안 함(STEP 789 §1 — 중복 제거). */}
+            <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-4">
+              <div className="min-w-0">
+                {L.verdict ? (
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
+                    {L.headline ? <span className="whitespace-nowrap text-[13px] sm:text-[12px] text-unjong-muted">{L.headline}</span> : null}
+                  </div>
+                ) : null}
+                {viz}
+              </div>
+              <div className="mt-3.5 min-w-0 lg:mt-0">
+                {/* "이 기법 방향"(outlook) 라벨·블록 제거(서사에 흡수·STEP 789 §2) — 서사가 안 뜨는 렌즈만(na 포함) verdict.plain 안전망으로 대체. */}
+                {!hasLensNarrative(L) && L.verdict ? <p className="text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
+                <LensNarrative L={L} loc={locale} />
+                {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
+              </div>
             </div>
           </div>
         ) : null}

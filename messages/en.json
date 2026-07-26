@@ -812,10 +812,8 @@
       "source": "You can read the original under Recent filings above."
     },
     "fscore": {
-      "subtitle": "F-Score · financial health",
       "unsupported": "The F-Score cannot be applied to this stock.",
       "badge": "Financial health",
-      "tagline": "· distress check",
       "bandGood": "Good",
       "bandWeak": "Weak",
       "bandMid": "Middling",
