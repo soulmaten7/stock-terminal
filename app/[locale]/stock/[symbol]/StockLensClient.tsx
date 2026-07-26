@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
 import { useRouter, Link } from '@/i18n/navigation';
-import { LENS_COPY, DETAIL_LABELS, pickLocale, type Locale } from '@/lib/lensCopy';
+import { LENS_COPY, DETAIL_LABELS, pickLocale, lensQuestion, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { TONE_DOT_CLASS as TONE_DOT, changeColorClass } from '@/lib/lensTones';
@@ -135,88 +135,46 @@ function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
   );
 }
 
-// 렌즈 계산 3단 공개(STEP 782 모멘텀 파일럿 → STEP 783 6렌즈 확산) — "왜 이 판정인가" 펼치면 2단(근거 수치)+3단(계산 서사) 순.
-// 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail/percentile/cutoffs 재사용(새 계산 없음). 렌즈마다 판정 입력값이 달라 key로 분기.
-// 핵심 값 결측이면 트리거 자체를 안 띄움(정직 결측 — 서사 생략). F-Score는 별도(FScoreCard 내부 — 9항목 중복 노출 금지·과적재 방지).
+// 렌즈 이름/컷 문구 i18n 키 조회표(STEP 782/783) — 렌즈키→키 매핑만 다르고 로직은 공용(STEP 787에서 일반화·중복 제거).
+const NARRATIVE_METHOD_KEY: Record<string, string> = {
+  momentum: 'narrativeMethodMomentum', lowvol: 'narrativeMethodLowvol', valuation: 'narrativeMethodValuation',
+  quality: 'narrativeMethodQuality', assetgrowth: 'narrativeMethodAssetgrowth', technical: 'narrativeMethodTechnical',
+};
+const NARRATIVE_CUTOFF_KEY: Record<string, string> = {
+  momentum: 'narrativeCutoffMomentum', lowvol: 'narrativeCutoffLowvol', valuation: 'narrativeCutoffValuation',
+  quality: 'narrativeCutoffQuality', assetgrowth: 'narrativeCutoffAssetgrowth', technical: 'narrativeCutoffTechnical',
+};
+
+// 렌즈 계산 서사(STEP 782/783 파일럿·확산 → STEP 787 상시 노출로 전환) — 접힘 제거, 카드 본문에 그대로.
+// 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail/percentile/cutoffs 재사용(새 계산 없음).
+// 핵심 값 결측/미지원(state na 또는 null)이면 통째로 생략(정직 결측). 근거 줄은 L.detail 전량을 한 줄로 압축(772/783의 중복 목록·이중 %기호 표기를 여기서 정리).
+// F-Score는 별도(FScoreCard 내부 — 9항목 중복 노출 금지·과적재 방지).
 function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
   const t = useTranslations('StockLens');
   const tMaterial = useTranslations('LensPreview');
+  const methodKey = NARRATIVE_METHOD_KEY[L.key];
+  if (!methodKey || !L.state || L.state === 'na') return null;
   const verdict = L.verdict?.phrase ?? null;
   const topPct = L.percentile != null ? 100 - L.percentile : null;
-  const pctRow = <p className="text-unjong-primary">{t('narrativePercentileLabel')}: <span className="tabular-nums font-medium">{topPct != null ? t('narrativePercentile', { v: topPct }) : '—'}</span></p>;
 
-  let valueRows: React.ReactNode;
-  let narrative: React.ReactNode;
+  const stockLine = L.key === 'technical'
+    ? (L.detail.ma200vs != null && verdict ? t('narrativeStockTechnical', { pct: L.detail.ma200vs, verdict }) : null)
+    : (verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null);
 
-  if (L.key === 'momentum') {
-    const mom = L.detail.mom12_1;
-    if (mom == null) return null;
-    valueRows = <>
-      <p className="text-unjong-primary">{detailLabel(loc, 'mom12_1')}: <span className="tabular-nums font-medium">{mom}%</span></p>
-      {pctRow}
-      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffMomentum', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-    </>;
-    narrative = <>{t('narrativeMethodMomentum')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
-  } else if (L.key === 'lowvol') {
-    const vol = L.detail.vol;
-    if (vol == null) return null;
-    valueRows = <>
-      <p className="text-unjong-primary">{detailLabel(loc, 'vol')}: <span className="tabular-nums font-medium">{vol}%</span></p>
-      {pctRow}
-      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffLowvol', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-    </>;
-    narrative = <>{t('narrativeMethodLowvol')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
-  } else if (L.key === 'valuation') {
-    const per = L.detail.per;
-    if (L.state === 'na' || per == null) return null;
-    valueRows = <>
-      <p className="text-unjong-primary">{detailLabel(loc, 'per')}: <span className="tabular-nums font-medium">{per}</span></p>
-      {pctRow}
-      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffValuation', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-    </>;
-    narrative = <>{t('narrativeMethodValuation')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
-  } else if (L.key === 'quality') {
-    const gpa = L.detail.gpa;
-    if (L.state === 'na' || gpa == null) return null;
-    valueRows = <>
-      <p className="text-unjong-primary">{detailLabel(loc, 'gpa')}: <span className="tabular-nums font-medium">{gpa}%</span></p>
-      {pctRow}
-      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffQuality', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-    </>;
-    narrative = <>{t('narrativeMethodQuality')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
-  } else if (L.key === 'assetgrowth') {
-    const ag = L.detail.ag;
-    if (L.state === 'na' || ag == null) return null;
-    valueRows = <>
-      <p className="text-unjong-primary">{detailLabel(loc, 'ag')}: <span className="tabular-nums font-medium">{ag}%</span></p>
-      {pctRow}
-      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffAssetgrowth', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-    </>;
-    narrative = <>{t('narrativeMethodAssetgrowth')}{' '}{verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null}</>;
-  } else if (L.key === 'technical') {
-    // 기술은 percentile 미지원(meta.percentile:null) — 장기축(200일선 대비) verdict 기준으로 서사, RSI는 참고 수치만.
-    if (!verdict) return null;
-    const maPct = L.detail.ma200vs;
-    const rsi14 = L.detail.rsi14;
-    valueRows = <>
-      {maPct != null ? <p className="text-unjong-primary">{detailLabel(loc, 'ma200vs')}: <span className="tabular-nums font-medium">{maPct}%</span></p> : null}
-      {rsi14 != null ? <p className="text-unjong-primary">{detailLabel(loc, 'rsi14')}: <span className="tabular-nums font-medium">{rsi14}</span></p> : null}
-      {L.cutoffs ? <p className="text-unjong-muted">{t('narrativeCutoffTechnical', { hi: L.cutoffs.hi, lo: L.cutoffs.lo })}</p> : null}
-    </>;
-    narrative = <>{t('narrativeMethodTechnical')}{' '}{maPct != null ? t('narrativeStockTechnical', { pct: maPct, verdict }) : null}</>;
-  } else {
-    return null;
-  }
+  // 근거 줄 — detail 전 항목(라벨에 %가 이미 포함돼 있어 값 뒤에 별도 % 안 붙임: "12-1모멘텀%: 458.2") + 백분위 + 판정 컷, 한 줄로.
+  const evidenceParts = Object.entries(L.detail)
+    .filter((entry): entry is [string, number] => entry[1] != null)
+    .map(([k, v]) => `${detailLabel(loc, k)}: ${v}`);
+  if (topPct != null) evidenceParts.push(`${t('narrativePercentileLabel')}: ${t('narrativePercentile', { v: topPct })}`);
+  const cutoffKey = NARRATIVE_CUTOFF_KEY[L.key];
+  if (L.cutoffs && cutoffKey) evidenceParts.push(t(cutoffKey, { hi: L.cutoffs.hi, lo: L.cutoffs.lo }));
 
   return (
-    <details className="mt-2.5 border-t border-unjong-border pt-2.5">
-      <summary className={SUMMARY_CLASS}>{t('narrativeTrigger')}</summary>
-      <div className="mt-2 space-y-2">
-        <div className="space-y-1 text-[13px] sm:text-[12px]">{valueRows}</div>
-        <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary/90">{narrative}</p>
-        <p className="text-[13px] sm:text-[12px] text-unjong-muted">{tMaterial('material')}</p>
-      </div>
-    </details>
+    <div className="mt-2.5 space-y-1.5">
+      <p className="text-[14px] leading-7 text-unjong-primary/90">{t(methodKey)}{stockLine ? ` ${stockLine}` : ''}</p>
+      <p className="text-[11px] leading-relaxed text-unjong-muted">{evidenceParts.join(' · ')}</p>
+      <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
+    </div>
   );
 }
 
@@ -351,8 +309,9 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
   if (!f.supported) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-sm">
-        <div className="font-bold text-unjong-primary">Piotroski F-Score</div>
-        <div className="mt-0.5 text-[13px] sm:text-xs text-unjong-accent">{t('fscore.subtitle')}</div>
+        <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, 'fscore')}</p>
+        <p className="mt-0.5 text-[11px] text-unjong-muted">Piotroski F-Score</p>
+        <div className="mt-1.5 text-[13px] sm:text-xs text-unjong-accent">{t('fscore.subtitle')}</div>
         <p className="mt-2 text-sm text-unjong-muted">{f.reason || t('fscore.unsupported')}</p>
       </div>
     );
@@ -368,13 +327,13 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
     <div className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
       <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
         <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-lg font-bold text-unjong-primary">Piotroski F-Score</span>
+          <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, 'fscore')}</p>
+          <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+            <span className="text-[11px] text-unjong-muted">Piotroski F-Score</span>
             <span className="rounded bg-amber-400/10 px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
             <span className="text-[13px] sm:text-xs text-unjong-muted">{t('fscore.tagline')}</span>
             <FlagChip flags={flags} />
           </div>
-          {!open ? <p className="mt-1.5 text-[13px] leading-relaxed text-unjong-muted">{LENS_COPY[locale].fscore.what}</p> : null}
         </div>
         <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
@@ -383,12 +342,6 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
       {open ? (
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
           <FlagBox flags={flags} />
-          {/* 이게 뭐예요? — 지금 뭘 하는지만 */}
-          <div className="rounded-xl border border-unjong-border bg-unjong-surface p-3">
-            <p className="text-[13px] sm:text-[12px] font-medium text-unjong-accent">{t('fscore.whatIsIt')}</p>
-            <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{LENS_COPY[locale].fscore.what}</p>
-          </div>
-
           {/* 판정 — 9칸 트래커 + 점수 */}
           <div className="mt-3.5 flex items-center justify-between gap-3">
             <div className="flex flex-1 gap-[3px]" style={{ maxWidth: 240 }}>
@@ -452,16 +405,13 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
             </div>
           </details>
 
-          {/* 렌즈 계산 3단 공개(STEP 783) — 9항목은 위에 이미 있으니 중복 노출 없이 서사만(과적재 금지). */}
-          <details className="mt-2.5 border-t border-unjong-border pt-2.5">
-            <summary className={SUMMARY_CLASS}>{t('narrativeTrigger')}</summary>
-            <div className="mt-2 space-y-2">
-              <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary/90">
-                {t('narrativeMethodFscore')}{' '}{t('narrativeStockFscore', { score: f.score, max: f.max, band })}
-              </p>
-              <p className="text-[13px] sm:text-[12px] text-unjong-muted">{tMaterial('material')}</p>
-            </div>
-          </details>
+          {/* 렌즈 계산 서사(STEP 787 — 상시 노출, 접힘 제거). 9항목은 위에 이미 있으니 중복 노출 없이 서사만(과적재 금지). */}
+          <div className="mt-2.5 space-y-1.5 border-t border-unjong-border pt-2.5">
+            <p className="text-[14px] leading-7 text-unjong-primary/90">
+              {t('narrativeMethodFscore')}{' '}{t('narrativeStockFscore', { score: f.score, max: f.max, band })}
+            </p>
+            <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
+          </div>
         </div>
       ) : null}
     </div>
@@ -1116,13 +1066,13 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
     return (
       <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
-        {/* 모바일=세로 2행(1행 이름+배지/화살표 · 2행 판정문구 전폭) · sm+=3열 그리드(이름·판정·배지, STEP 763c 스캔라인 유지·byte 동일·STEP 786). 색·문구·배지 스타일은 불변, 위치만. */}
+        {/* 초보 우선 헤더(STEP 787) — 질문형 제목 주연·학술명은 작은 앵커 줄로. 모바일=세로 2행·sm+=3열 그리드(786 구조 유지). */}
         <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full flex-col gap-1.5 p-4 text-left transition-colors hover:bg-unjong-background/40 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-x-3 sm:gap-y-0">
           <div className="flex items-center justify-between gap-3 sm:contents">
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span className="text-lg font-bold text-unjong-primary">{L.nameEn}</span>
-                <span className="text-[13px] sm:text-xs text-unjong-muted">· {L.name}</span>
+              <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, L.key)}</p>
+              <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span className="text-[11px] text-unjong-muted">{L.name} · {L.nameEn}</span>
                 <FlagChip flags={cardFlags} />
               </div>
             </div>
@@ -1139,8 +1089,6 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 <span className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
                 {L.headline ? <span className="text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
               </span>
-            ) : !isOpen ? (
-              <span className="text-[13px] leading-relaxed text-unjong-muted">{L.summary}</span>
             ) : null}
           </div>
         </button>
@@ -1159,44 +1107,31 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             </div>
           </div>
         ) : isOpen ? (
-          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
-            <FlagBox flags={cardFlags} />
-            <div className="mb-3.5 rounded-xl border border-unjong-border bg-unjong-surface p-3">
-              <p className="text-[13px] sm:text-[12px] font-medium text-unjong-accent">{t('whatIsIt')}</p>
-              <p className="mt-1 text-sm leading-relaxed text-unjong-primary">{L.summary}</p>
+          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-4">
+            {/* PC 좌측 리캡(질문·학술명·등급) — lg+ 전용, 모바일·태블릿은 위 헤더가 이미 같은 정보를 보여줘 숨김(렌더 변화 0). */}
+            <div className="hidden lg:block">
+              <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, L.key)}</p>
+              <p className="mt-0.5 text-[11px] text-unjong-muted">{L.name} · {L.nameEn}</p>
+              <span className={`mt-2 inline-block whitespace-nowrap rounded px-1.5 py-0.5 text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
             </div>
-            {L.verdict ? (
-              <div className="flex items-baseline justify-between gap-2">
-                <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
-                {L.headline ? <span className="whitespace-nowrap text-[13px] sm:text-[12px] text-unjong-muted">{L.headline}</span> : null}
-              </div>
-            ) : null}
-            {viz}
-            {L.outlook ? (
-              <div className="mt-2.5">
-                <p className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{t('lensDirection')}</p>
-                <p className="mt-0.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
-              </div>
-            ) : (L.verdict ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
-            {L.about ? (
-              <details className="mt-2.5">
-                <summary className={LEARN_CLASS}>{t('learnMore', { name: L.name })}</summary>
-                <p className="mt-1.5 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{L.about}</p>
-              </details>
-            ) : null}
-            <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-unjong-border pt-2.5 text-[14px] sm:text-[12px] text-unjong-muted">
-              <span className="font-medium text-unjong-primary/70">{t('evidence')}</span>
-              {Object.entries(L.detail).map(([k, v]) => (
-                <span key={k}>{detailLabel(locale, k)}: <span className="tabular-nums text-unjong-primary">{v ?? '—'}</span></span>
-              ))}
+            <div className="min-w-0">
+              <FlagBox flags={cardFlags} />
+              {L.verdict ? (
+                <div className="flex items-baseline justify-between gap-2">
+                  <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
+                  {L.headline ? <span className="whitespace-nowrap text-[13px] sm:text-[12px] text-unjong-muted">{L.headline}</span> : null}
+                </div>
+              ) : null}
+              {viz}
+              {L.outlook ? (
+                <div className="mt-2.5">
+                  <p className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{t('lensDirection')}</p>
+                  <p className="mt-0.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.outlook}</p>
+                </div>
+              ) : (L.verdict ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null)}
+              <LensNarrative L={L} loc={locale} />
+              {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
             </div>
-            {L.note ? (
-              <details className="mt-2.5">
-                <summary className={SUMMARY_CLASS}>{t('detailsNote')}</summary>
-                <p className="mt-2 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p>
-              </details>
-            ) : null}
-            <LensNarrative L={L} loc={locale} />
           </div>
         ) : null}
       </div>
