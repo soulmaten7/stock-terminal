@@ -2,7 +2,7 @@
 # 🗺️ Trillion(트릴리언) — SYSTEM MAP (아키텍처·파이프라인 지도)
 
 > **아키텍처가 바뀔 때만 수정**(세션마다 아님). 현재상태=`STATE.md` · 이력=`CHANGELOG.md`.
-> 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-23 갱신 — daily-brief·email-brief 크론 + daily_brief·email_subscriptions 테이블 반영)
+> 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-27 갱신 — 793~798: 크론 15→9·PageShell 공용 셸·rateLimit LLM 게이트·공시 API 3상태 계약·cron_heartbeats 반영)
 
 ## 1. 스택
 - **Next.js 16 App Router**(Turbopack · dev 포트 3333) · **Tailwind v4**(`@theme` in `app/globals.css`) · **Zustand**(`countryStore`·`authStore`) · **next-intl**(`[locale]` · ko 무프리픽스 · en=`/en` · `as-needed`).
@@ -31,9 +31,11 @@
 - 🛡️ **Perf 하드닝(750b~755 · 6개국 전부)**: 외부 콜별 5s 타임아웃(`withTimeout`) + 신선도 역순(오래된 것 먼저) + 시간 예산 260s — hang 소스가 하루를 통째 날리지 못하고, 부분 실패는 다음날 자연 만회. (KR은 KRX 전시장 1콜 구조라 해당 없음.)
 - **렌즈 선계산**: `lens_scores`(US ~1,028 + KR ~489) — `kr-lens-scores`/`lens-scores` 크론. 밖의 종목은 live `/api/lens`(야후 계산·결정론·무료).
 
-## 4. 크론 (vercel.json · 전체 15개)
-`fss-advisors` 19:00(유사투자자문 신고 갱신) · `youtube-refresh` 월요일(주간) · `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `jp-perf`·`cn-perf`·`vn-perf`·`gb-perf` 08:00 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00 · **`health` 12:00(신선도 감시·stale→Sentry·STEP 749)** · **`daily-brief` 21:00(한 입 브리핑 LLM 생성·KR/US 각 로케일 1회·STEP 778)** · **`email-brief` 22:15(daily-brief 뒤 — 이메일 모닝 브리핑 opt-in 발송·Resend batch·STEP 784)**. (VN HNX 실시간 크론은 클라우드 IP 차단으로 보류 · `PARKED_HNX_VCI_ACTIVATION.md`.)
-- ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증 — 4커밋 미반영·webhook 정상인데 신규 배포 0). 스케줄 설계 전 플랜 제약 확인. 15개째(email-brief) 추가 후 Vercel REST API(`GET /v10/projects/{id}`의 `crons.definitions`)로 전수 등록 직접 확인(07-23) — 카운트 제한이 아니라 **빈도**(daily-only) 제약임을 재확인.
+## 4. 크론 (vercel.json · 가동 9개 — 794 §5에서 파킹 전용 6개 중지)
+**가동(9)**: `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00(+CRON_SECRET·`days`≤7·하트비트) · **`health` 12:00(신선도+하트비트 감시·stale→Sentry·STEP 749)** · **`daily-brief` 21:00(한 입 브리핑 LLM·KR/US 각 로케일 1회·STEP 778)** · **`email-brief` 22:15(daily-brief 뒤·opt-in 발송·Resend batch·하트비트·STEP 784)**.
+- **중지(6 · 스케줄만 vercel.json에서 제거 · 라우트/컴포넌트/테이블/데이터 전부 보존)**: `jp/cn/vn/gb-perf`·`fss-advisors`·`youtube-refresh` — 이들이 대던 표면(구 6개국 보드·유튜브·유사투자자문)이 `ToolboxClient` 렌더 0개(=`toolbox/page.tsx`는 `redirect('/')`)라 아무 화면에도 안 뜨는 테이블을 매일 갱신하던 낭비. **복원 = vercel.json 재등록**(`docs/PARKED_FIELD_SURFACES.md` §6). ⚠️ `kr-etp`는 종목상세 KR ETF/ETN 헤더가 `/api/etf-holdings`→`kr_etp_snapshot`으로 **라이브로 읽어 유지**. health 체크도 중지 6개 항목 제거(오탐 방지)·kr-etp 유지.
+- **인증(전 크론 공통)**: `if (!process.env.CRON_SECRET || auth !== \`Bearer ${CRON_SECRET}\`) return 401` — env 미설정 시 `Bearer undefined`로 통과하던 버그 봉인(STEP 793).
+- ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증). 빈도(daily-only) 제약이지 카운트 제약 아님(07-23 REST API 전수 확인).
 
 ## 5. DB 테이블 (64개 · 그룹)
 - **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot` · `stock_prices` · `stocks`
@@ -48,9 +50,10 @@
 - ⚠️ **git에 없는 테이블 주의**: `link_hub`·`fss_advisors` 등 일부는 MCP 직접 insert라 마이그레이션/git에 없음 → **DB 백업/이전 시 별도 export 필수.**
 
 ## 6. API 라우트 (`app/api/`)
-- **크론**: `cron/{fss-advisors,youtube-refresh,us-perf,kr-perf,kr-etp,kr-lens-scores,jp-perf,cn-perf,vn-perf,gb-perf,lens-scores,jp-disclosures,health,daily-brief,email-brief}`
+- **크론(가동 9)**: `cron/{us-perf,kr-perf,kr-etp,kr-lens-scores,lens-scores,jp-disclosures,health,daily-brief,email-brief}` (라우트 파일은 15개 전부 존재 — 6개는 스케줄만 중지·§4).
 - **보드/시세**: `krx/ranking` · `yahoo/{us,jp,cn,vn,gb}-list` · `yahoo/indices`(지수바·심볼별 try/catch 격리) · `yahoo/us-etn-performance` · `krx/kr-performance` · `watchlist/quotes`
-- **렌즈/AI**: `lens` · `brief`(R2) · `news-brief`(R3) · `events/summary`·`{kr,jp,cn,gb,vn}-events/summary`(R1) · `etf-holdings`
+- **렌즈/AI(무인증 LLM — 캐시 미스 게이트)**: `lens` · `brief`(R2) · `news-brief`(R3) · `events/summary`·`{kr,jp,cn,gb,vn}-events/summary`(R1) · `etf-holdings`. **⚠️ 요약/브리핑 8종은 캐시 미스(=새 유료 LLM) 직전 `blockLLM(req)`(`lib/rateLimit.ts`) 통과 필요** — 봇-UA 차단 + IP 레이트리밋(12/분·100/시간·Vercel `x-real-ip` 키·차단 카운터 5분 Sentry·IP 미로깅). 캐시 히트는 게이트 없이 누구나. 요약 캐시 키 = **검증된 본문 URL의 sha1**(`lib/summaryCacheKey.ts` — CN/VN/GB 공용·포이즈닝 방지).
+- **공시 리스트 3상태 계약(6개국 · STEP 797)**: `{kr,jp,cn,gb,vn}-events`·`events`가 **`{events:[…]}`(ok·0건 포함) / `{events:[],error:'fetch_failed'}`(상류 장애·캐시 안 함) / `{events:[],error:'unsupported'}`(심볼 미매핑)** 셋을 구분 반환. 클라 5층+`FilingsCard`: ok+0건 → "없어요" 카드 / fetch_failed·unsupported → 섹션 숨김(거짓 "없음" 금지).
 - **피드/기타**: `news/feed`(lang 파라미터) · `ipo/us-feed` · `brokers` · `advisors` · `link-preview` · `feedback` · `watchlist` · `business/manage` · `rooms/favorite` · `toolbox/favorite`
 - **이메일 모닝 브리핑(STEP 784)**: `email/unsub`(GET=본문 링크 클릭·POST=메일 클라 원클릭 RFC 8058 — 로그인 불필요·`unsub_token` 검증)
 
@@ -70,6 +73,8 @@
 - **오늘(홈 `/`)**: `components/today/`(TodayClient — 렌즈 변화 다이제스트) · 원료 = `lens_state_changes`(일일 diff·`lensPrecompute`가 기록) + `/api/today/changes`
 - **탐색(`/explore`)**: `components/explore/`(검색+렌즈 목록 3종) · `/api/search`(6개국 인메모리 인덱스) · `/api/explore/lens-top`
 - **내비**: `components/layout/MobileTabBar.tsx`(모바일 하단 4탭) · Header(PC: 오늘·탐색·소개)
+- **PC 공용 셸(STEP 796)**: `components/layout/PageShell.tsx` — 5면(오늘·탐색·관심·마이 + about) 공통(본문 680 + 레일 320 opt·`max-w-[1040px]`·1280px 좌측 144 정합). `mobilePadded`로 px-4 모바일 보존(관심·마이). 종목상세/ETF/advertise는 셸 대신 바깥 `max-w-[1040px]`로 좌측만 맞춤(내부 폭 유지). 탐색은 셸 안에서 본문 680 고정(640~1023 회귀 차단·798). ⚠️ **PageShell 자체는 오늘 기준이라 함부로 바꾸면 5면 다 깨짐.**
+- **가드/보안 유틸**: `lib/rateLimit.ts`(무인증 LLM 게이트·봇+IP 레이트리밋) · `lib/summaryCacheKey.ts`(요약 캐시 키=sha1(url)·포이즈닝 방지) · `lib/lensCompute.ts`(per-lens try/catch 격리·`flushLensFailures` Sentry 집계) · 크론 하트비트 `cron_heartbeats`(email-brief·jp-disclosures 실행기록→health 감시).
 - 🅿️ **파킹(렌더 경로 없음·코드/크론/데이터 보존)**: 구 6개국 터미널 보드·정보 탭·유튜브·검증(유사투자자문) — 목록·복원 절차 = `docs/PARKED_FIELD_SURFACES.md`
 - (구) 홈/게이트웨이: `components/toolbox/ToolboxClient.tsx` — 파킹됨(피드·링크 UI 포함)
 - 종목보드: `components/toolbox/{MarketBoard,UsMarketBoard,JpMarketBoard,CnMarketBoard,VnMarketBoard,GbMarketBoard}.tsx` + 공유 `LensPreview.tsx`·`BoardTopLensCard.tsx`
