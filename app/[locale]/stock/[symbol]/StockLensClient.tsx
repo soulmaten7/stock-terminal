@@ -1099,6 +1099,18 @@ export default function StockLensClient({ initialName }: { initialName?: string 
     else closingSentenceKey = 'closingMixed';
   }
 
+  // 파트 헤더 목록 줄(STEP 791) — "7가지가 뭔지" 명시. 실제 렌더 순서(호라이즌 그룹 short→mid→long, 그룹 내부는
+  // lenses 원본 순서 유지 + long 그룹 끝에 fscore) 그대로 도출 — 하드코딩 배열 금지. fscore는 headerTones와
+  // 동일하게 supported일 때만 포함(미지원 종목은 개수·목록에서 자연히 빠짐 = "7가지" 하드코딩 회피 요구사항 충족).
+  const partHeaderLabels: string[] = [];
+  (['short', 'mid', 'long'] as const).forEach((h) => {
+    for (const l of lenses) {
+      if (l.horizon === h) partHeaderLabels.push(lensShortLabel(locale, l.key));
+    }
+    if (h === 'long' && data?.fscore?.supported) partHeaderLabels.push(lensShortLabel(locale, 'fscore'));
+  });
+  const partHeaderCount = partHeaderLabels.length;
+
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ|VN|L)$/, '');
   const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
@@ -1258,11 +1270,15 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
           {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : isCN ? <CnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
           <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
-          {/* 파트 구분 헤더(STEP 788) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님. */}
+          {/* 파트 구분 헤더(STEP 788) + 7개 목록 노출(STEP 791) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님. */}
           {lenses.length || data?.fscore ? (
             <div className="mb-1 mt-6 border-t border-unjong-border pt-5">
-              <h2 className="text-base font-bold text-unjong-primary">{t('partHeaderTitle')}</h2>
-              <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('partHeaderSub')}</p>
+              <h2 className="text-base font-bold text-unjong-primary">{t('partHeaderTitle', { n: partHeaderCount })}</h2>
+              <p className="mt-1 text-[13px] sm:text-[11px] leading-relaxed text-unjong-primary/90">{partHeaderLabels.join(' · ')}</p>
+              <p className="mt-1 text-[13px] sm:text-[11px] text-unjong-muted">{t.rich('partHeaderSub', {
+                n: partHeaderCount,
+                a: (chunks) => <Link href="/about" className="text-unjong-accent hover:underline">{chunks}</Link>,
+              })}</p>
             </div>
           ) : null}
           {(['short', 'mid', 'long'] as const).map((h) => {
