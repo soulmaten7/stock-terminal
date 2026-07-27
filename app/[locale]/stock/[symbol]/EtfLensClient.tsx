@@ -175,9 +175,10 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
           <span className="text-[13px] font-semibold text-unjong-primary">{t('compositionTitle')}</span>
           <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('compositionBadge')}</span>
         </div>
-        <div className="grid grid-cols-3 gap-y-2 text-center">
-          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('family')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
-          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('category')}</p><p className="truncate text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
+        {/* 796으로 컨테이너가 1040으로 좁아져 3열 truncate가 운용사·카테고리 긴 값을 잘랐음 → line-clamp-2로 읽히게(STEP 798 §6). */}
+        <div className="grid grid-cols-3 gap-x-2 gap-y-2 text-center">
+          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('family')}</p><p className="line-clamp-2 text-sm font-semibold text-unjong-primary">{data?.family ?? '—'}</p></div>
+          <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('category')}</p><p className="line-clamp-2 text-sm font-semibold text-unjong-primary">{data?.category ?? '—'}</p></div>
           <div><p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('expense')}</p><p className="text-sm font-semibold text-unjong-primary">{data?.expenseRatio != null ? pct(data.expenseRatio) : '—'}</p></div>
         </div>
       </div>

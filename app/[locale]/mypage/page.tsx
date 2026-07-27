@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, Link } from '@/i18n/navigation';
+import { useRouter, usePathname, Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { clearCache } from '@/lib/clientCache';
+import { PageShell } from '@/components/layout/PageShell';
 import { useTranslations, useLocale } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
 import { User, ShieldCheck, Activity as ActivityIcon, Star, AlertTriangle, LogOut, Mail } from 'lucide-react';
@@ -16,6 +17,7 @@ export default function MyPage() {
   const tHeader = useTranslations('Header'); // '로그아웃' 재사용(dedup)
   const locale = useLocale(); // 이메일 opt-in ON 시점 로케일 저장용(STEP 784)
   const router = useRouter();
+  const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 마이로 복귀(next)
   const { user, isLoading } = useAuthStore();
   const [activeTab, setActiveTab] = useState<Tab>('profile');
   const [nickname, setNickname] = useState('');
@@ -42,7 +44,7 @@ export default function MyPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !user) { router.push('/auth/login'); return; }
+    if (!isLoading && !user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
     if (user) {
       setNickname(user.nickname ?? '');
       loadData();
@@ -154,8 +156,9 @@ export default function MyPage() {
   const initial = (user.nickname || user.email || 'U').charAt(0).toUpperCase();
   const canChangePassword = providers.includes('email');
 
+  // STEP 798 §2: 5면 셸 정합(마이만 max-w-7xl로 튀던 것 → 오늘·관심과 같은 좌측 144·본문 680). 모바일 px-4 유지.
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+    <PageShell mobilePadded>
       <h1 className="mb-6 text-2xl font-bold text-unjong-primary">{t('title')}</h1>
 
       <div className="mb-6 flex gap-1 overflow-x-auto border-b border-unjong-border">
@@ -311,6 +314,6 @@ export default function MyPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

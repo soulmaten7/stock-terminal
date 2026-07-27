@@ -1127,14 +1127,15 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   }
 
   // 파트 헤더 목록 줄(STEP 791) — "7가지가 뭔지" 명시. 실제 렌더 순서(호라이즌 그룹 short→mid→long, 그룹 내부는
-  // lenses 원본 순서 유지 + long 그룹 끝에 fscore) 그대로 도출 — 하드코딩 배열 금지. fscore는 headerTones와
-  // 동일하게 supported일 때만 포함(미지원 종목은 개수·목록에서 자연히 빠짐 = "7가지" 하드코딩 회피 요구사항 충족).
+  // 카운트 = 실제 렌더되는 카드 수와 같은 소스에서 도출(STEP 798 §4). F-Score 카드는 supported가 아니어도
+  // "데이터 부족" 카드로 렌더되므로(아래 showFs = !!(data&&data.fscore)), 라벨/개수도 그 조건과 동일하게 센다.
+  // (예전엔 supported일 때만 세서 "6가지인데 카드 7장"·극단적으로 "0가지" 불일치가 났음.)
   const partHeaderLabels: string[] = [];
   (['short', 'mid', 'long'] as const).forEach((h) => {
     for (const l of lenses) {
       if (l.horizon === h) partHeaderLabels.push(lensShortLabel(locale, l.key));
     }
-    if (h === 'long' && data?.fscore?.supported) partHeaderLabels.push(lensShortLabel(locale, 'fscore'));
+    if (h === 'long' && data?.fscore) partHeaderLabels.push(lensShortLabel(locale, 'fscore'));
   });
   const partHeaderCount = partHeaderLabels.length;
 
@@ -1297,8 +1298,9 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
           {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : isCN ? <CnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
           <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
-          {/* 파트 구분 헤더(STEP 788) + 7개 목록 노출(STEP 791) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님. */}
-          {lenses.length || data?.fscore ? (
+          {/* 파트 구분 헤더(STEP 788) + 목록 노출(STEP 791) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님.
+              카운트 0이면(카드 0장) 헤더 자체를 안 그림(결측 문법·STEP 798 §4). */}
+          {partHeaderCount > 0 ? (
             <div className="mb-1 mt-6 border-t border-unjong-border pt-5">
               <h2 className="text-base font-bold text-unjong-primary">{t('partHeaderTitle', { n: partHeaderCount })}</h2>
               <p className="mt-1 text-[13px] sm:text-[11px] leading-relaxed text-unjong-primary/90">{partHeaderLabels.join(' · ')}</p>
@@ -1325,8 +1327,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               </section>
             );
           })}
-          {/* 닫는 카드 "7가지 방법을 종합하면"(STEP 788) — 전부 이미 계산된 값 재조립(LLM 금지). 상단 헤더와 카운트 동일. */}
-          {lenses.length || data?.fscore ? (
+          {/* 닫는 카드 "{n}가지 방법을 종합하면"(STEP 788) — 전부 이미 계산된 값 재조립(LLM 금지). 상단 헤더와 카운트 동일. */}
+          {partHeaderCount > 0 ? (
             <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
               <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle', { n: partHeaderCount })}</h2>
               <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</p>

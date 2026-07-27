@@ -17,16 +17,12 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
   // STEP 796: 오늘·탐색과 같은 셸(본문 680·좌측 144). 모바일은 px-4 현행 유지(mobilePadded).
   return (
     <PageShell mobilePadded>
-      <div className="mb-5">
+      {/* STEP 798 §5: 제목 1개·설명 1문장 — 예전 h1/h2가 "관심종목"으로 글자까지 중복·desc/hero가 같은 뜻 두 줄이었음. */}
+      <div className="mb-4">
         <h1 className="text-xl font-bold text-unjong-primary">{t('title')}</h1>
         <p className="mt-1 text-sm text-unjong-muted">{t('desc')}</p>
       </div>
-
-      <section>
-        <h2 className="text-base font-bold text-unjong-primary">{t('watchlist')}</h2>
-        <p className="mb-2 text-xs text-unjong-muted">{t('watchlistHero')}</p>
-        <WatchlistClient />
-      </section>
+      <WatchlistClient />
     </PageShell>
   );
 }

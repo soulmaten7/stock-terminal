@@ -387,6 +387,8 @@ export default function ExploreClient() {
     const filteredGroupedChanges = changes ? groupBySymbol(changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter)) : [];
     return (
       <PageShell>
+        {/* 탐색 본문은 전 구간 680 고정 — PageShell main은 lg에서만 680이라 640~1023구간이 넓어지던 회귀 차단(STEP 798 §1). */}
+        <div className="max-w-[680px]">
         <button type="button" onClick={() => router.back()} className="mb-4 ml-4 inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent sm:ml-0">
           <ArrowLeft size={20} />
           {tLogin('back')}
@@ -428,6 +430,7 @@ export default function ExploreClient() {
               })
           )}
         </div>
+        </div>
     </PageShell>
     );
   }
@@ -435,6 +438,8 @@ export default function ExploreClient() {
   // ── 메인 뷰 ──
   return (
     <PageShell>
+      {/* 탐색 본문 전 구간 680 고정(STEP 798 §1). */}
+      <div className="max-w-[680px]">
       {/* 5면 중 유일하게 h1이 없어 추가(STEP 796 §4) — 밀도 결정(763) 존중해 sr-only. 풀리스트 뷰는 이미 h1 있음. */}
       <h1 className="sr-only">{t('pageTitle')}</h1>
       {/* 검색 — 주인공 */}
@@ -581,6 +586,7 @@ export default function ExploreClient() {
       </section>
 
       <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>
+      </div>
     </PageShell>
   );
 }

@@ -117,6 +117,8 @@ export default function LoginPage() {
       // OAuth 로그인과 동일하게 로케일을 쿠키로 실어보냄 — 확인 메일 링크도 /auth/callback으로 복귀하므로
       // 콜백이 이 쿠키를 읽어 로케일 프리픽스를 복원한다(710D 전례 재사용).
       document.cookie = `post_login_locale=${locale}; path=/; max-age=600; samesite=lax${window.location.protocol === "https:" ? "; secure" : ""}`;
+      // 이메일 확인 링크도 /auth/callback으로 돌아오므로 복귀 경로를 함께 심어 통일(STEP 798 §3).
+      document.cookie = `post_login_next=${encodeURIComponent(getNext())}; path=/; max-age=600; samesite=lax${window.location.protocol === "https:" ? "; secure" : ""}`;
       const supabase = createClient();
       // ⚠️ handle_new_user 트리거(마이그레이션 016)가 raw_user_meta_data의 'name' 키를 닉네임으로 읽음
       // (OAuth 콜백과 동일 트리거 공유) — 여기서도 반드시 'name' 키로 실어야 트리거가 닉네임을 반영한다.

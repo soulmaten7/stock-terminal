@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -54,6 +54,7 @@ function LensSummary({ lens, t }: { lens: LensState | undefined; t: ReturnType<t
 
 export default function WatchlistClient() {
   const t = useTranslations('Favorites');
+  const pathname = usePathname(); // 로그인 후 관심 화면으로 복귀(next)
   const tb = useTranslations('Board'); // '관심종목 해제' 재사용(dedup)
   const locale = pickLocale(useLocale()); // 등락색 로케일 분기(STEP 777 §2)에 타입 필요 — 값은 무변(ko/en 그대로)
   const [items, setItems] = useState<WatchItem[]>([]);
@@ -130,7 +131,7 @@ export default function WatchlistClient() {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
         <p className="text-sm text-unjong-muted">{t('loginForWatchlist')}</p>
-        <Link href="/auth/login" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('loginLink')}</Link>
+        <Link href={`/auth/login?next=${encodeURIComponent(pathname)}`} className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('loginLink')}</Link>
       </div>
     );
   }

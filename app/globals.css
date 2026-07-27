@@ -69,32 +69,10 @@ body {
   font-family: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 }
 
-.font-display {
-  font-family: var(--font-playfair), 'Georgia', 'Times New Roman', serif;
-}
-
-.font-mono-price {
-  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
-  font-variant-numeric: tabular-nums;
-}
-
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #0A0A0A; }
 ::-webkit-scrollbar-thumb { background: #3A3D44; border-radius: 0; }
 ::-webkit-scrollbar-thumb:hover { background: #4A4E56; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.animate-fadeIn { animation: fadeIn 0.25s ease-out both; }
-
-.unjong-card-highlight {
-  outline: 3px solid var(--color-unjong-accent, #D4AF37);
-  outline-offset: 4px;
-  border-radius: 0.5rem;
-  transition: outline-color 0.3s;
-}
 
 /* 하단 마퀴 티커 — 항목 2배 복제 + -50% 이동으로 끊김 없는 루프 */
 @keyframes ticker {

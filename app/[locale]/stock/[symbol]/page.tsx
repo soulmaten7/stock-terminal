@@ -77,6 +77,8 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     title,
     description,
     keywords: kw,
+    // 이름 미해석 심볼(대개 존재하지 않는 티커) — 색인 방지(STEP 798 §9). 완전한 404 전환은 후속.
+    robots: hasName ? undefined : { index: false },
     alternates: {
       canonical: path,
       languages: {

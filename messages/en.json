@@ -77,17 +77,6 @@
     "slotsPreparing": "Ad placements are being prepared. Leave a partnership or advertising inquiry below and we will reach out first when they open.",
     "rulesHeading": "Advertising principles",
     "inquiryHeading": "Advertising inquiries",
-    "slot": {
-      "brokerTitle": "Brokerage slot",
-      "brokerWhere": "Stocks · products tab · every 10 rows of the stock table or brokerage list",
-      "brokerDesc": "Show account openings and events to users looking for stock information.",
-      "roomTitle": "Advisory room slot",
-      "roomWhere": "On hold — paused during a field restructuring (planned to resume later)",
-      "roomDesc": "Only firms that have filed as an investment advisory business and completed operator verification can appear at the top.",
-      "feedTitle": "Content feed slot",
-      "feedWhere": "Top or middle of information lists — news, filings, reports, YouTube, and more",
-      "feedDesc": "Introduce your brand and content naturally to users who are browsing information."
-    },
     "rule1": "Advertising is placement (ranking) only. It does not guarantee facts, safety, or returns.",
     "rule2": "Only firms that have filed as an investment advisory business and completed operator verification may buy advertising.",
     "rule3": "Every advertisement always carries an “Ad” label.",
@@ -199,7 +188,6 @@
   "Favorites": {
     "title": "Watchlist",
     "desc": "See your starred stocks through the lenses.",
-    "watchlist": "Watchlist",
     "links": "Links",
     "rooms": "Advisory rooms · verification",
     "loading": "Loading…",
@@ -212,8 +200,7 @@
     "emptyRooms": "Tap ⭐ under Advisory rooms · verification and they gather here.",
     "emptyWatchlist": "Your watchlist is empty.<br></br>Open a stock and tap ⭐ to add it.",
     "lensLoading": "Reading lenses…",
-    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral",
-    "watchlistHero": "Your starred stocks, seen through the lenses."
+    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral"
   },
   "Business": {
     "title": "Advisory room registration · management",
@@ -341,12 +328,10 @@
     "tagline": "An eye for stocks — for everyone",
     "mainNav": "Main navigation",
     "explore": "Explore",
-    "coin": "Coin",
     "about": "About",
     "today": "Today",
     "comingSoon": "Coming soon",
     "language": "Select language",
-    "notReady": "Coming soon",
     "profileMenu": "Profile menu",
     "favorites": "Watchlist",
     "login": "Sign in",
@@ -885,13 +870,11 @@
       "loading": "Writing the briefing…"
     },
     "back": "Back",
-    "currentPrice": "Price",
     "tradeAmount": "Value traded",
     "intro": "Not a buy or sell signal — material for you to judge for yourself.",
     "readingGuideSummary": "How to read ▾",
     "readingGuide": "Every card carries a <b>confidence grade</b> — <v>Verified</v> means the return signal itself was confirmed, <w>Weak signal</w> means it is famous but weak in our data, <r>Reference</r> shows state only, and <f>Financial health</f> is financial strength, not a return signal. Tap a lens to unfold why it reads that way.",
     "loadError": "Could not load the data. (Some stocks may not be supported yet.)",
-    "lensDirection": "Direction of this method",
     "partHeaderTitle": "{n} methods, one at a time",
     "partHeaderSub": "{n} proven methods, each reading this stock its own way — <a>see how they work →</a>",
     "closingTitle": "Putting the {n} methods together",
