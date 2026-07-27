@@ -1,6 +1,14 @@
 <!-- 2026-07-27 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-27 (2) — 📋 렌즈 파트 헤더 7개 목록 + 🗂️ 공시 카드 정리 6개국 (STEP 791~792 · HEAD `db97127`)
+
+- **파트 헤더에 "7가지가 뭔지" 명시(791 · `aa6ce04`)**: 788에서 만든 "7가지 방법으로 따로 보기" 헤더가 정작 그 7가지가 뭔지 화면에 안 보여줘 카드를 하나씩 열어야만 알 수 있던 문제 — 제목 옆(아래)에 실제 렌더 순서 그대로 도출한 라벨 목록(`오름세 · 단기 흐름 · ...`, `lensShortLabel` 재사용) + `/about`으로 가는 링크가 걸린 부제 신설. 개수(`{n}가지`)는 하드코딩 대신 실제 렌더된 카드 수 기준(호라이즌 short→mid→long 그룹 + fscore는 `supported`일 때만 포함) — VNQ(ETF, 재무렌즈 없음)=4개, JPM/KB금융(은행, F-Score 미지원)=6개, 일반 종목=7개로 라이브 분기 확인.
+- **공시 카드 정리 6개국(792 · `db97127`)**: 종목상세 "최근 중대 공시"가 모든 공시 AI 요약을 마운트 즉시 한꺼번에 호출·펼쳐 텍스트 벽이 되던 문제(공시 6건=페이지 로드 시 LLM 호출 6회) — ① **AI 요약 온디맨드**: 펼침 토글(44px)을 누를 때 최초 1회만 fetch, 재펼침 시 재호출 없음(`useOnDemandSummaries` — `fetchedRef` 가드) ② **기본 5건+더보기**: 그룹핑 완료 후 캡 적용(그룹을 캡 경계에서 쪼개면 "건수 보존" 원칙이 깨지므로 그룹 먼저, 캡은 그 다음) ③ **제목 공백 트림**: DART `report_nm` 꼬리 공백 패딩 등 표시 단계에서 `.trim()`+연속공백 정규화(원본 데이터 불변) ④ **동일날짜·동일제목 그룹핑**: `rcept_no`가 달라 실제로는 다른 공시인데 화면에 중복처럼 보이던 것을 한 행+"N건" 배지로 묶되(`groupByKey`) 펼치면 각 건의 요약을 건별로 모두 fetch·건별 원문 링크 유지(임의 dedupe 아님 — 건수 그대로 보존). KR(`KrEventLayer`)·JP·GB·CN·VN 5개국은 공용 `FilingsCard`/`FilingRow`로 완전 추출, US(`EventLayer`)는 severity·다중 `defs` 분류 구조가 근본적으로 달라 `UsMaterialRow`로 별도 유지하되 핵심 유틸(`trimTitle`/`groupByKey`/`useOnDemandSummaries`/`SummaryBox`)은 공유.
+- **✅ 검증**: tsc 0·vitest 66/66·build 성공·CI 그린. 호출횟수 실측(194370 기준 시뮬레이션 — dev 서버 실제 API 호출) = 펼치기 전 0회 → 2건 그룹 최초 펼침 2회 → 접었다 재펼침 +0회, 정확히 요구된 0→N→0 패턴 확인. 6개국 그룹핑·캡 라이브 확인(KR 194370=4그룹·중복 없는 000660=5+더보기1로 대조 검증, JP/GB/CN/VN 실측).
+- **⚠️ 알려진 이슈(발견·미해결)**: JP 공시 요약이 로컬에서 `no EDINET key`로 500 — 파라미터 구성은 기존과 동일해 이번 변경과 무관, 로컬 환경변수 누락으로 추정(라이브 재확인 필요). VN 공시 요약이 특정 기사에서 `no extractable text`로 502 — 원문 텍스트 추출 실패(데이터 소스 쪽 사전 이슈). 둘 다 `state==='error'`로 조용히 숨김 처리되어 화면 깨짐은 없음.
+- **▶ 다음**: 장은태 폰 최종 확인(누적 STEP 785~792) → 클로즈드 베타 발송.
+
 ## 2026-07-27 — 🧹 US 종목명 ADR·중복 토큰 정리 + 상단 안내 4→1 통합 (STEP 790 · HEAD `886d425`)
 
 - **US 종목명 ADR/주식종류 수식어 절단(`lib/usNameFormat.ts`)**: RELX가 "RELX PLC PLC American Depositary Shares (Each representing One Ordinary Share)"처럼 3줄을 차지하던 문제 — `SHARE_CLASS_TRIGGERS`(American Depositary/Depository Shares·Each representing…·Class A/B/C Common Stock·Ordinary Shares·Represent(ing|s)…·New York Registry Shares·Series [A-Z] Preferred) 신설, 가장 이른 매칭 지점부터 문자열 끝까지(괄호 설명 포함) 절단. 절단 후 2자 미만이면 절단 취소(이름 증발 방지). **연속(인접) 중복 법인형 토큰**만 축약(`dedupeAdjacentTokens` — "PLC PLC"→"PLC", 비인접 반복은 보존). 전체 유니버스(`data/us_symbols.json` 5,960종목) 실측 감사 = **487건 변경, 전수 육안 검수 결과 나쁜 절단 0건**(STEP 754b 원칙 준수). 유닛테스트 12건 추가(RELX·Class A 보존·빈 결과 방지·기존 IBM/3M/eBay/JPMorgan 회귀 없음).
