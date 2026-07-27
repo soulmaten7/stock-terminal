@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
-import { useRouter, Link } from '@/i18n/navigation';
+import { useRouter, usePathname, Link } from '@/i18n/navigation';
 import { LENS_COPY, DETAIL_LABELS, pickLocale, lensQuestion, lensShortLabel, type Locale } from '@/lib/lensCopy';
 import { AiLensBadge } from '@/components/AiLensBadge';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
@@ -545,12 +545,13 @@ function FilingRow({ group, materialLabel }: { group: { rep: NormalizedFiling; e
 }
 
 // 5개국(KR/JP/GB/CN/VN) 공용 공시 카드 — 기본 5건+더보기, 동일날짜·제목 그룹핑, 요약 온디맨드.
-function FilingsCard({ titleLabel, srcLabel, noticeNode, footerText, items, materialLabel }: {
-  titleLabel: string; srcLabel: string; noticeNode: ReactNode; footerText: string; items: NormalizedFiling[]; materialLabel?: string;
+function FilingsCard({ titleLabel, srcLabel, noticeNode, footerText, items, materialLabel, emptyNode }: {
+  titleLabel: string; srcLabel: string; noticeNode: ReactNode; footerText: string; items: NormalizedFiling[]; materialLabel?: string; emptyNode?: ReactNode;
 }) {
   const t = useTranslations('StockLens');
   const [expanded, setExpanded] = useState(false);
-  if (!items.length) return null;
+  // 빈 상태 안내(emptyNode)가 있으면 0건이어도 "공시 없음" 카드를 띄운다(정직한 결측·STEP 795 §5). 없으면 기존처럼 숨김(로딩 실패 등).
+  if (!items.length && !emptyNode) return null;
   const groups = groupByKey(items, (it) => it.date + '|' + trimTitle(it.title));
   const visible = expanded ? groups : groups.slice(0, 5);
   const remaining = groups.length - 5;
@@ -561,14 +562,20 @@ function FilingsCard({ titleLabel, srcLabel, noticeNode, footerText, items, mate
         <span className="text-[13px] sm:text-[11px] text-unjong-muted">{srcLabel}</span>
       </div>
       <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{noticeNode}</p>
-      <ul className="mt-2.5 space-y-1.5">
-        {visible.map((g) => <FilingRow key={g.rep.key} group={g} materialLabel={materialLabel} />)}
-      </ul>
-      {!expanded && remaining > 0 ? (
-        <button type="button" onClick={() => setExpanded(true)} className="mt-2 text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">
-          {t('events.showMore', { n: remaining })}
-        </button>
-      ) : null}
+      {items.length ? (
+        <>
+          <ul className="mt-2.5 space-y-1.5">
+            {visible.map((g) => <FilingRow key={g.rep.key} group={g} materialLabel={materialLabel} />)}
+          </ul>
+          {!expanded && remaining > 0 ? (
+            <button type="button" onClick={() => setExpanded(true)} className="mt-2 text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">
+              {t('events.showMore', { n: remaining })}
+            </button>
+          ) : null}
+        </>
+      ) : (
+        <p className="mt-2.5 rounded-lg border border-unjong-border bg-unjong-background/40 px-2.5 py-2 text-[13px] sm:text-[12px] text-unjong-muted">{emptyNode}</p>
+      )}
       <p className="mt-2 text-[13px] sm:text-[10px] leading-relaxed text-unjong-muted">{footerText}</p>
     </div>
   );
@@ -581,15 +588,16 @@ function KrEventLayer({ symbol }: { symbol: string }) {
   const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<KrEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch('/api/kr-events?symbol=' + encodeURIComponent(symbol))
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
-      .catch(() => { if (alive) setLoaded(true); });
+      .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
-  if (!loaded || !events.length) return null;
+  if (!loaded || error) return null;
   const fmtD = (s: string) => (/^\d{8}$/.test(s) ? `${s.slice(0, 4)}.${s.slice(4, 6)}.${s.slice(6, 8)}` : s);
   const items: NormalizedFiling[] = events.map((e, i) => ({
     key: e.rcept_no || String(i),
@@ -606,6 +614,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
       noticeNode={t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}
       footerText={t('events.goDart')}
       items={items}
+      emptyNode={t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}
     />
   );
 }
@@ -618,15 +627,16 @@ function JpEventLayer({ symbol }: { symbol: string }) {
   const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<JpEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch('/api/jp-events?symbol=' + encodeURIComponent(symbol))
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
-      .catch(() => { if (alive) setLoaded(true); });
+      .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
-  if (!loaded || !events.length) return null;
+  if (!loaded || error) return null;
   const fmtD = (s: string) => { const d = new Date(s); return isNaN(+d) ? s : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`; };
   const items: NormalizedFiling[] = events.map((e) => ({
     key: e.doc_id,
@@ -646,6 +656,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
       footerText={t('events.goEdinet')}
       items={items}
       materialLabel={t('events.material')}
+      emptyNode={t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}
     />
   );
 }
@@ -658,15 +669,16 @@ function GbEventLayer({ symbol }: { symbol: string }) {
   const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<GbEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch('/api/gb-events?symbol=' + encodeURIComponent(symbol))
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
-      .catch(() => { if (alive) setLoaded(true); });
+      .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
-  if (!loaded || !events.length) return null;
+  if (!loaded || error) return null;
   const items: NormalizedFiling[] = events.map((e) => ({
     key: e.id,
     title: e.title,
@@ -684,6 +696,7 @@ function GbEventLayer({ symbol }: { symbol: string }) {
       footerText={t('events.goRns')}
       items={items}
       materialLabel={t('events.material')}
+      emptyNode={t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}
     />
   );
 }
@@ -694,15 +707,16 @@ function CnEventLayer({ symbol }: { symbol: string }) {
   const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<CnEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch('/api/cn-events?symbol=' + encodeURIComponent(symbol))
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
-      .catch(() => { if (alive) setLoaded(true); });
+      .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
-  if (!loaded || !events.length) return null;
+  if (!loaded || error) return null;
   const items: NormalizedFiling[] = events.map((e) => ({
     key: e.id,
     title: e.title,
@@ -722,6 +736,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
       footerText={footerText}
       items={items}
       materialLabel={t('events.material')}
+      emptyNode={t.rich('events.noMaterial', { b: (c) => <b className="text-unjong-primary">{c}</b> })}
     />
   );
 }
@@ -731,15 +746,16 @@ function VnEventLayer({ symbol }: { symbol: string }) {
   const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<VnEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   useEffect(() => {
     let alive = true;
     fetch('/api/vn-events?symbol=' + encodeURIComponent(symbol))
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
-      .catch(() => { if (alive) setLoaded(true); });
+      .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
-  if (!loaded || !events.length) return null;
+  if (!loaded || error) return null;
   const items: NormalizedFiling[] = events.map((e) => ({
     key: e.id,
     title: e.title,
@@ -757,6 +773,7 @@ function VnEventLayer({ symbol }: { symbol: string }) {
       footerText={t('events.goNews')}
       items={items}
       materialLabel={t('events.major')}
+      emptyNode={t.rich('events.noRecentNews', { b: (c) => <b className="text-unjong-primary">{c}</b> })}
     />
   );
 }
@@ -968,6 +985,8 @@ const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon
 function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
   const tb = useTranslations('Board'); // '관심종목 추가/해제' 재사용(dedup)
   const { user } = useAuthStore();
+  const router = useRouter();
+  const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 이 종목으로 복귀(next)
   const [watched, setWatched] = useState<boolean | null>(null); // null=조회 전
   const [pop, setPop] = useState(false);
 
@@ -983,7 +1002,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
   }, [user, symbol]);
 
   function toggle() {
-    if (!user) { window.location.href = '/auth/login'; return; }
+    if (!user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
     const next = !watched;
     setWatched(next);
     setPop(true);
@@ -1304,7 +1323,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {/* 닫는 카드 "7가지 방법을 종합하면"(STEP 788) — 전부 이미 계산된 값 재조립(LLM 금지). 상단 헤더와 카운트 동일. */}
           {lenses.length || data?.fscore ? (
             <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
-              <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle')}</h2>
+              <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle', { n: partHeaderCount })}</h2>
               <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</p>
               <div className="mt-2.5 space-y-1 text-[13px] sm:text-[12px]">
                 {closingPosLabels.length ? <p className="text-unjong-accent">{t('closingPosLine', { list: closingPosLabels.join(', ') })}</p> : null}

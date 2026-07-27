@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  return { title: locale === "en" ? "Favorites" : "즐겨찾기" };
+  return { title: locale === "en" ? "Watchlist" : "관심종목" };
 }
 
 // 관심 = 종목만(STEP 767b 필드 대전환) — 링크·리딩방 즐겨찾기 섹션은 정보탭/검증 파킹과 함께 렌더 제거.

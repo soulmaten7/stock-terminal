@@ -161,7 +161,8 @@ export default function WatchlistClient() {
               <LensSummary lens={lensMap[f.symbol]} t={t} />
             </div>
           </Link>
-          <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label={tb('watchRemove')} className="mt-1 shrink-0 text-unjong-border transition-colors hover:text-unjong-danger">
+          {/* 히트영역 44px(STEP 795 §7) — 아이콘은 15px 유지, 패딩으로 확대. -my-1.5로 행 높이 영향 최소화. */}
+          <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label={tb('watchRemove')} className="-my-1.5 -mr-1.5 flex h-11 w-11 shrink-0 items-center justify-center text-unjong-border transition-colors hover:text-unjong-danger">
             <X size={15} />
           </button>
         </li>

@@ -31,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 공개 페이지 (admin·mypage·auth는 robots에서 제외됨)
   const staticRoutes: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
     { path: "", priority: 1.0, freq: "daily" },
-    { path: "/coin", priority: 0.6, freq: "weekly" },
+    { path: "/explore", priority: 0.8, freq: "daily" }, // 현행 5면(탐색) — /coin(숨김) 대체(STEP 795 §12)
     { path: "/about", priority: 0.5, freq: "monthly" },
     { path: "/advertise", priority: 0.4, freq: "monthly" },
     { path: "/business", priority: 0.4, freq: "monthly" },

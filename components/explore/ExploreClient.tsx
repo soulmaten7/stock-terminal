@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation'; // 페이지가 force-dynamic이라 정적 렌더 상실 우려 없음(710C의 SSG 회피 사유 미해당)
 import { useLocale, useTranslations } from 'next-intl';
-import { Link, useRouter } from '@/i18n/navigation';
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
@@ -200,10 +200,13 @@ function ChangeRow({ item, loc, market, watched, onToggleWatch, extra = 0 }: {
         <StockLogo code={item.symbol} name={name} size={30} />
         <div className="min-w-0 flex-1">
           <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{name}</p>
-          <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
-            <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
-            {line}
-            {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
+          {/* 모바일 2줄 허용 — 도착 상태가 잘리지 않게(STEP 795 §7). 데스크톱은 1줄 밀도 유지. */}
+          <p className="flex items-start gap-1.5 text-[15px] text-unjong-muted sm:text-[12px]">
+            <span className={`mt-[6px] h-[7px] w-[7px] shrink-0 rounded-full sm:mt-[5px] ${TONE_DOT[item.toTone]}`} />
+            <span className="line-clamp-2 sm:line-clamp-1">
+              {line}
+              {extra > 0 ? <span className="text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
+            </span>
           </p>
         </div>
         <PriceCell price={item.price} changePercent={item.changePercent} market={market} loc={loc} />
@@ -223,6 +226,7 @@ export default function ExploreClient() {
   const tMaterial = useTranslations('LensPreview');
   const tLogin = useTranslations('Login');
   const router = useRouter();
+  const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 복귀(next)용
   const searchParams = useSearchParams();
   const listParam = searchParams.get('list');
   const activeList: ListKey | null = listParam === 'changes' || listParam === 'pos' || listParam === 'amount' ? listParam : null;
@@ -355,7 +359,7 @@ export default function ExploreClient() {
     });
   }, [user]);
   function toggleWatch(symbol: string, name: string) {
-    if (!user) { window.location.href = '/auth/login'; return; }
+    if (!user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
     const add = !watchSet.has(symbol);
     setWatchSet((prev) => { const n = new Set(prev); add ? n.add(symbol) : n.delete(symbol); return n; });
     fetch('/api/watchlist', {
@@ -463,7 +467,7 @@ export default function ExploreClient() {
                         <span className="min-w-0 flex-1 truncate text-[17px] font-medium text-unjong-primary sm:text-sm">{r.name}</span>
                         <span className="shrink-0 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{r.country}</span>
                       </button>
-                      <button type="button" onClick={() => removeRecent(r.symbol)} aria-label={t('removeRecent')} className="shrink-0 p-1.5 text-unjong-muted hover:text-unjong-primary active:bg-unjong-background">
+                      <button type="button" onClick={() => removeRecent(r.symbol)} aria-label={t('removeRecent')} className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted hover:text-unjong-primary active:bg-unjong-background">
                         <X size={14} />
                       </button>
                     </div>

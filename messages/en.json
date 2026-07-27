@@ -73,7 +73,8 @@
   "Advertise": {
     "title": "Advertising with Trillion",
     "lead": "Reach users who come to see stocks as data through proven methods, in the place that is most relevant to them.",
-    "slotsHeading": "Available placements",
+    "slotsHeading": "Ad placements",
+    "slotsPreparing": "Ad placements are being prepared. Leave a partnership or advertising inquiry below and we will reach out first when they open.",
     "rulesHeading": "Advertising principles",
     "inquiryHeading": "Advertising inquiries",
     "slot": {
@@ -196,7 +197,7 @@
     "submit": "Send feedback"
   },
   "Favorites": {
-    "title": "⭐ Favorites",
+    "title": "Watchlist",
     "desc": "See your starred stocks through the lenses.",
     "watchlist": "Watchlist",
     "links": "Links",
@@ -209,7 +210,7 @@
     "emptyLinks": "No favorites yet.<br></br>Tap ⭐ in a category list to add one.",
     "goCategories": "Browse categories →",
     "emptyRooms": "Tap ⭐ under Advisory rooms · verification and they gather here.",
-    "emptyWatchlist": "Your watchlist is empty.<br></br>Tap ⭐ in Explore to add one.",
+    "emptyWatchlist": "Your watchlist is empty.<br></br>Open a stock and tap ⭐ to add it.",
     "lensLoading": "Reading lenses…",
     "lensSummary": "{pos} strong · {warn} caution · {flat} neutral",
     "watchlistHero": "Your starred stocks, seen through the lenses."
@@ -347,7 +348,7 @@
     "language": "Select language",
     "notReady": "Coming soon",
     "profileMenu": "Profile menu",
-    "favorites": "Favorites",
+    "favorites": "Watchlist",
     "login": "Sign in",
     "mypage": "My page",
     "adInquiry": "Advertising inquiry",
@@ -356,7 +357,7 @@
   "Footer": {
     "tagline": "An eye for stocks — for everyone.",
     "serviceHeading": "Service",
-    "stocksProducts": "Stocks · products",
+    "stocksProducts": "Explore",
     "aboutService": "About Trillion",
     "legalHeading": "Terms · policies",
     "terms": "Terms of Service",
@@ -730,7 +731,7 @@
       "unclassified": "Other",
       "etc": "Other"
     },
-    "back": "Back to the list",
+    "back": "Back",
     "badgeEtn": "ETN · product info",
     "badgeEtf": "ETF · holdings",
     "etnTitle": "Product info",
@@ -866,6 +867,7 @@
       "etcLabel": "Other",
       "andMore": "and {n} more",
       "noMaterial": "<b>No material events recently</b> — only routine filings.",
+      "noRecentNews": "<b>No recent related news</b>.",
       "routine": "{n} routine filings",
       "showMore": "See {n} more →",
       "groupCount": "{n} filings",
@@ -892,7 +894,7 @@
     "lensDirection": "Direction of this method",
     "partHeaderTitle": "{n} methods, one at a time",
     "partHeaderSub": "{n} proven methods, each reading this stock its own way — <a>see how they work →</a>",
-    "closingTitle": "Putting the seven methods together",
+    "closingTitle": "Putting the {n} methods together",
     "closingPosLine": "Strengths · {list}",
     "closingWarnLine": "Cautions · {list}",
     "closingAllPos": "Whether short- or long-term, the methods read mostly positive.",
@@ -932,7 +934,7 @@
     "watchlistChangesTitle": "My watchlist — lens changes",
     "viewAllWatchlist": "All watchlist →",
     "onboardingTitle": "Save stocks to your watchlist and we will surface their changes here every morning",
-    "onboardingCta": "Go explore and save stocks →",
+    "onboardingCta": "Go search a stock →",
     "overnightUsTitle": "Overnight in the US",
     "selectionBasisLabel": "By value traded · Price · 1d change",
     "viewMoreChanges": "See {n} more changes →",

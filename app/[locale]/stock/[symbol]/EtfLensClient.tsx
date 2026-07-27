@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { useRouter } from '@/i18n/navigation';
+import { useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { changeColorClass } from '@/lib/lensTones';
@@ -59,6 +59,8 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
   const tb = useTranslations('Board'); // '관심종목 추가/해제' 재사용(dedup)
   const { user } = useAuthStore();
+  const router = useRouter();
+  const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 이 종목으로 복귀(next)
   const [watched, setWatched] = useState<boolean | null>(null); // null=조회 전
   const [pop, setPop] = useState(false);
 
@@ -74,7 +76,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
   }, [user, symbol]);
 
   function toggle() {
-    if (!user) { window.location.href = '/auth/login'; return; }
+    if (!user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
     const next = !watched;
     setWatched(next);
     setPop(true);

@@ -9,20 +9,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: locale === "en" ? "Advertising · Inquiries" : "광고 안내·문의" };
 }
 
-// 모듈 상수 → 값=ko.json 키. 렌더에서 t()로 해석.
-const SLOTS = [
-  { key: "broker", title: "slot.brokerTitle", where: "slot.brokerWhere", desc: "slot.brokerDesc" },
-  { key: "room", title: "slot.roomTitle", where: "slot.roomWhere", desc: "slot.roomDesc" },
-  { key: "feed", title: "slot.feedTitle", where: "slot.feedWhere", desc: "slot.feedDesc" },
-];
-
 const RULES = ["rule1", "rule2", "rule3", "rule4"];
 
 export default async function AdvertisePage({ searchParams }: { searchParams: Promise<{ slot?: string }> }) {
   const t = await getTranslations('Advertise');
   const locale = await getLocale();
   const hasRoom = locale !== "en"; // 리딩방(유사투자자문)은 한국어권만 — en엔 없음
-  const slots = hasRoom ? SLOTS : SLOTS.filter((s) => s.key !== "room");
   const rules = hasRoom ? RULES : RULES.filter((r) => r !== "rule2"); // rule2 = 유사투자자문 규칙
   const validSlots = hasRoom ? ["broker", "room", "feed", "other"] : ["broker", "feed", "other"];
   const sp = await searchParams;
@@ -34,15 +26,11 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Pr
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         <div>
+          {/* STEP 795 §11: 구 광고 상품(종목 리스트·정보 피드·리딩방 슬롯)은 현행 5면에 없는 파킹 지면이라
+              "판매 중" 카드를 내리고 "지면 준비 중 — 문의는 받습니다"로 축소(신뢰 리스크 제거). 문의 폼은 유지. */}
           <h2 className="mb-3 text-sm font-bold text-unjong-primary">{t('slotsHeading')}</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {slots.map((s) => (
-              <div key={s.key} className="rounded-xl border border-unjong-border bg-unjong-surface p-4">
-                <p className="text-sm font-bold text-unjong-primary">{t(s.title)}</p>
-                <p className="mt-0.5 text-[11px] font-medium text-unjong-accent">{t(s.where)}</p>
-                <p className="mt-1.5 text-xs leading-relaxed text-unjong-muted">{t(s.desc)}</p>
-              </div>
-            ))}
+          <div className="rounded-xl border border-unjong-border bg-unjong-surface p-4">
+            <p className="text-sm leading-relaxed text-unjong-muted">{t('slotsPreparing')}</p>
           </div>
 
           <h2 className="mb-3 mt-6 text-sm font-bold text-unjong-primary">{t('rulesHeading')}</h2>

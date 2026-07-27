@@ -133,7 +133,7 @@ export default function Header() {
         <div className="flex shrink-0 items-center gap-3">
           {/* 언어 선택 (시장 선택 아님 — 시장은 페이지의 한국/미국 토글) */}
           <div ref={langRef} className="relative">
-            <button type="button" onClick={() => setLangOpen(!langOpen)} className="flex items-center gap-1.5 p-1 text-sm text-white/80 transition-opacity hover:opacity-70" aria-label={t('language')} title={t('language')}>
+            <button type="button" onClick={() => setLangOpen(!langOpen)} className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-1 text-sm text-white/80 transition-opacity hover:opacity-70" aria-label={t('language')} title={t('language')}>
               <span className="hidden font-medium sm:inline">{currentLang.name}</span>
               <span className="text-base">{currentLang.flag}</span>
             </button>

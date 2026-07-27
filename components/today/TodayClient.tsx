@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor, type Country } from '@/stores/countryStore';
 import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
@@ -120,10 +120,13 @@ function LensChangeRow({
         <StockLogo code={item.symbol} name={displayName} size={30} />
         <div className="min-w-0 flex-1">
           <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{displayName}</p>
-          <p className="flex items-center gap-1.5 truncate text-[15px] text-unjong-muted sm:text-[12px]">
-            <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[item.toTone]}`} />
-            {line}
-            {extra > 0 ? <span className="shrink-0 text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
+          {/* 모바일 2줄 허용 — 도착 상태가 잘리지 않게(STEP 795 §7). 데스크톱은 1줄 밀도 유지. 도트는 shrink-0 형제로 분리. */}
+          <p className="flex items-start gap-1.5 text-[15px] text-unjong-muted sm:text-[12px]">
+            <span className={`mt-[6px] h-[7px] w-[7px] shrink-0 rounded-full sm:mt-[5px] ${TONE_DOT[item.toTone]}`} />
+            <span className="line-clamp-2 sm:line-clamp-1">
+              {line}
+              {extra > 0 ? <span className="text-unjong-muted">{tCommon('andNMore', { n: extra })}</span> : null}
+            </span>
           </p>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-0.5">
@@ -146,6 +149,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   const tExplore = useTranslations('Explore'); // "상태가 바뀐 종목" 개념명 정본(탐색 섹션 키) 재사용 — 오늘·탐색·풀리스트 3곳 한 이름(STEP 780).
   const { user, isLoading: authLoading } = useAuthStore();
   const homeMarket = homeMarketFor(localeRaw); // 'KR' | 'US'
+  const router = useRouter();
+  const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 복귀(next)용
 
   // 시장 전체(지수·간밤 미국·오늘 시장 변화) = 서버 프리페치(STEP 771 §3) — 클라 fetch 없이 첫 HTML에 바로 포함.
   const indices = initialIndices;
@@ -191,7 +196,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
     setWatchSet(new Set((watchlistQuotes ?? []).map((q) => q.symbol)));
   }, [watchlistQuotes]);
   function toggleWatch(symbol: string, name: string, market: string, country: string) {
-    if (!user) { window.location.href = '/auth/login'; return; }
+    if (!user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
     const add = !watchSet.has(symbol);
     setWatchSet((prev) => { const n = new Set(prev); add ? n.add(symbol) : n.delete(symbol); return n; });
     fetch('/api/watchlist', {
@@ -280,7 +285,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           )}
         </section>
 
-        {/* 3) 간밤 미국 */}
+        {/* 3) 간밤 미국 — en(homeMarket=US)에선 아래 "미국 · 상태 변화" 섹션과 같은 5행이라 완전 중복 → ko만 렌더(STEP 795 §1). */}
+        {homeMarket === 'KR' ? (
         <section className="mb-7">
           <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
             <div className="flex items-center">
@@ -306,6 +312,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             <Link href="/explore?list=changes&market=US" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreUsChanges', { n: usChanges.count })}</Link>
           ) : null}
         </section>
+        ) : null}
 
         {/* 4) 오늘 시장 변화(KR·en이면 US 우선) */}
         <section className="mb-7">

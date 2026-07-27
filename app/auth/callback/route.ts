@@ -6,18 +6,20 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const errParam = searchParams.get("error");
-  const next = safeNextPath(searchParams.get("next")); // 오픈 리다이렉트 가드(내부 절대경로만)
 
-  // 로그인 시작 시 심어둔 로케일 쿠키(없으면 ko). redirectTo는 불변 — 로케일은 쿠키로만 왕복.
-  const localeCookie = request.headers
-    .get("cookie")
-    ?.match(/(?:^|;\s*)post_login_locale=([^;]+)/)?.[1];
+  // 로그인 시작 시 심어둔 쿠키(없으면 ko·홈). redirectTo·Supabase 허용목록은 불변 — 로케일·복귀경로 둘 다 쿠키로만 왕복.
+  const cookieHeader = request.headers.get("cookie") || "";
+  const localeCookie = cookieHeader.match(/(?:^|;\s*)post_login_locale=([^;]+)/)?.[1];
+  const nextCookie = cookieHeader.match(/(?:^|;\s*)post_login_next=([^;]+)/)?.[1];
   const loc: "ko" | "en" = localeCookie === "en" ? "en" : "ko";
+  // next는 쿠키 우선(구글 OAuth는 redirectTo에 next를 못 실음). 없으면 쿼리(이메일 확인 링크 등). 오픈 리다이렉트 가드.
+  const next = safeNextPath(nextCookie ? decodeURIComponent(nextCookie) : searchParams.get("next"));
 
   // 모든 복귀 경로에 로케일 프리픽스 + 소비한 쿠키 삭제
   const redirect = (path: string) => {
     const res = NextResponse.redirect(`${origin}${localizePath(path, loc)}`);
     res.cookies.set("post_login_locale", "", { maxAge: 0, path: "/" });
+    res.cookies.set("post_login_next", "", { maxAge: 0, path: "/" });
     return res;
   };
 
