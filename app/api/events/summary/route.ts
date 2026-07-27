@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchFilingText } from '@/lib/eightKSummary';
+import { blockLLM } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -8,7 +9,9 @@ export const maxDuration = 30;
 // R1: 특정 8-K(accession)의 한국어 '사실' 요약. 전역 캐시(filing_summaries) — 공시당 1회 생성·전원 공유.
 // 지연 생성(유저가 볼 때 호출) → 첫 요청만 LLM, 이후 캐시. LLM = 원문을 읽어 사실만(예측·판정 금지).
 // link는 반드시 SEC Archives URL만(클라이언트 입력 SSRF 방지).
-const SEC_ARCHIVE = /^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/(\d+)\/([^/]+)\/(.+)$/;
+// doc·acc는 경로 구분자 없는 파일명만 허용 — `(.+)`였을 때 `../`로 다른 공시 본문을 읽으면서
+// 캐시 키(accession)는 원래 값으로 남는 캐시 포이즈닝/경로순회가 가능했음(STEP 793).
+const SEC_ARCHIVE = /^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/(\d+)\/([A-Za-z0-9._-]+)\/([A-Za-z0-9._-]+)$/;
 
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').toUpperCase();
@@ -17,7 +20,8 @@ export async function GET(req: NextRequest) {
   const locale = req.nextUrl.searchParams.get('lang') === 'en' ? 'en' : 'ko';
   const col = locale === 'en' ? 'summary_en' : 'summary_ko';
   const m = link.match(SEC_ARCHIVE);
-  if (!symbol || !m) {
+  // symbol 형식 엄격 검증(저장 전) + SEC 링크 검증. acc/doc에 `..` 포함이면 거부(경로순회 방어).
+  if (!/^[A-Z0-9.\-]{1,15}$/.test(symbol) || !m || m[2].includes('..') || m[3].includes('..')) {
     return NextResponse.json({ error: 'symbol and valid SEC Archives link required' }, { status: 400 });
   }
   const [, cik, acc, doc] = m;
@@ -29,6 +33,9 @@ export async function GET(req: NextRequest) {
     .from('filing_summaries').select(col).eq('accession', acc).maybeSingle();
   const cachedText = (hit as Record<string, string> | null)?.[col];
   if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
+
+  // 캐시 미스 = 새 유료 LLM 생성. 봇·레이트리밋 차단(과금 남용 방어·STEP 793). 캐시 히트는 위에서 이미 반환됨.
+  if (blockLLM(req)) return NextResponse.json({ summary: '' }, { status: 429 });
 
   // 2) 원문 텍스트(본문 + 필요 시 EX-99.x)
   const text = await fetchFilingText(Number(cik), acc, doc);

@@ -4,9 +4,17 @@ const DART_BASE_URL = 'https://opendart.fss.or.kr/api';
 
 const IMPORTANT_KEYWORDS = ['유상증자', '무상증자', '합병', '분할', '실적', '매출', '영업이익', '배당', '자사주', '최대주주변경', '상장폐지', '감사보고서'];
 
+// 우리 DART 키로 임의 OpenDART 엔드포인트를 부르는 무인증 오픈 프록시였음(일 20,000건 쿼터) →
+// 실제 사용 중인 엔드포인트만 화이트리스트로 허용(STEP 793). 미허용 endpoint는 400.
+const ALLOWED_ENDPOINTS = new Set(['list', 'fnlttSinglAcntAll']);
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const endpoint = searchParams.get('endpoint');
+
+  if (endpoint && !ALLOWED_ENDPOINTS.has(endpoint)) {
+    return NextResponse.json({ error: 'endpoint not allowed' }, { status: 400 });
+  }
 
   const apiKey = process.env.DART_API_KEY;
   if (!apiKey || apiKey === 'your_dart_api_key') {

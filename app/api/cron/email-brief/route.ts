@@ -90,7 +90,7 @@ function renderHtml(params: { loc: Locale; briefText: string; moverLines: MoverL
 
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const apiKey = process.env.RESEND_API_KEY;

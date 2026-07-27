@@ -9,9 +9,14 @@ export const maxDuration = 60;
 // EDINET은 회사 필터가 없어 날짜별로 긁어야 함 → 상장사(secCode)만 저장.
 // 크론 = days=3(빈틈 보정), 초기 백필 = ?days=45.
 export async function GET(req: NextRequest) {
+  // CRON_SECRET 인증(15개 크론 중 유일 누락이었음·STEP 793). env 미설정 시도 거부(Bearer undefined 통과 방지).
+  const auth = req.headers.get("authorization");
+  if (!process.env.CRON_SECRET || auth !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
   const key = (process.env.EDINET_API_KEY || "").trim();
   if (!key) return NextResponse.json({ error: "no EDINET_API_KEY" }, { status: 500 });
-  const days = Math.min(Math.max(Number(req.nextUrl.searchParams.get("days") || 3), 1), 90);
+  const days = Math.min(Math.max(Number(req.nextUrl.searchParams.get("days") || 3), 1), 7);
 
   const rows: Record<string, unknown>[] = [];
   const today = new Date();

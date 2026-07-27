@@ -5,6 +5,7 @@ import { fetchDartMaterial } from '@/lib/dartEvents';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { marketDate } from '@/lib/marketDate';
 import { pickLocale, type Locale } from '@/lib/lensCopy';
+import { blockLLM } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -34,7 +35,8 @@ const BRIEF_SYSTEM_EN =
 
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').trim().toUpperCase();
-  if (!symbol) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
+  // 식별자(symbol) 형식 엄격 검증 — 알려진 종목 형식만(과금 유발 입력 게이트·STEP 793).
+  if (!/^[A-Z0-9.\-]{1,15}$/.test(symbol)) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
 
   const locale = pickLocale(req.nextUrl.searchParams.get('lang')); // 기본 ko · ?lang=en
   const col = locale === 'en' ? 'brief_en' : 'brief_ko'; // 로케일별 캐시 컬럼(서로 독립)
@@ -46,6 +48,9 @@ export async function GET(req: NextRequest) {
     .from('stock_briefings').select(col).eq('symbol', symbol).eq('as_of', today).maybeSingle();
   const cached = (hit as Record<string, string | null> | null)?.[col];
   if (cached) return NextResponse.json({ brief: cached, cached: true });
+
+  // 캐시 미스 = 새 유료 LLM 생성. 봇·레이트리밋 차단(과금 남용 방어·STEP 793). 캐시 히트는 위에서 이미 반환됨.
+  if (blockLLM(req)) return NextResponse.json({ brief: '' }, { status: 429 });
 
   // 2) 결정론 상태 서버 재계산(브리핑은 우리가 계산한 사실에만 근거)
   const data = await computeSymbolLenses(symbol, locale);

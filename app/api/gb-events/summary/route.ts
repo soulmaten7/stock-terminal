@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { blockLLM } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -40,6 +41,9 @@ export async function GET(req: NextRequest) {
   const { data: hit } = await sb.from("filing_summaries").select(col).eq("accession", acc).maybeSingle();
   const cachedText = (hit as Record<string, string> | null)?.[col];
   if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
+
+  // 캐시 미스 = 새 유료 LLM 생성. 봇·레이트리밋 차단(과금 남용 방어·STEP 793). 캐시 히트는 위에서 이미 반환됨.
+  if (blockLLM(req)) return NextResponse.json({ summary: "" }, { status: 429 });
 
   let text = "";
   try {

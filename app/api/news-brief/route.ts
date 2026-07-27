@@ -10,6 +10,7 @@ import { KR_SEARCH_ALIAS } from '@/lib/krName';
 import { getVnName } from '@/lib/vnName';
 import { getGbName } from '@/lib/gbName';
 import { pickLocale } from '@/lib/lensCopy';
+import { blockLLM } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -46,7 +47,8 @@ const SYSTEM_EN =
 
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').trim().toUpperCase();
-  if (!symbol) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
+  // 식별자(symbol) 형식 엄격 검증 — 알려진 종목 형식만(과금 유발 입력 게이트·STEP 793).
+  if (!/^[A-Z0-9.\-]{1,15}$/.test(symbol)) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
 
   const locale = pickLocale(req.nextUrl.searchParams.get('lang')); // 기본 ko · ?lang=en
   const en = locale === 'en';
@@ -60,6 +62,9 @@ export async function GET(req: NextRequest) {
   const row = hit as Record<string, unknown> | null;
   const cachedSummary = row?.[sumCol] as string | null | undefined;
   if (cachedSummary) return NextResponse.json({ summary: cachedSummary, tags: (row?.[tagCol] as string[] | null) || [], cached: true });
+
+  // 캐시 미스 = 새 유료 LLM 생성. 봇·레이트리밋 차단(과금 남용 방어·STEP 793). 캐시 히트는 위에서 이미 반환됨.
+  if (blockLLM(req)) return NextResponse.json({ summary: null, tags: [] }, { status: 429 });
 
   // 국가별 뉴스 소스: KR=한글명·ko, JP=일본명·ja, 그 외=영어 (US 코드 그대로·소스만 교체)
   const code6 = symbol.replace(/\.(KS|KQ)$/i, '');

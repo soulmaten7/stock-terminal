@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createHash } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { blockLLM } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -31,12 +33,13 @@ export async function GET(req: NextRequest) {
   const url = (req.nextUrl.searchParams.get("url") || "").trim();
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const nm = req.nextUrl.searchParams.get("nm") || "";
-  const id = (req.nextUrl.searchParams.get("id") || "").trim();
   // SSRF 방지 — 구글뉴스 링크만 허용(리다이렉트는 공개 언론사로만 감).
-  if (!/^https:\/\/news\.google\.com\//i.test(url) || !id) {
+  if (!/^https:\/\/news\.google\.com\//i.test(url)) {
     return NextResponse.json({ error: "bad url" }, { status: 400 });
   }
-  const acc = "VN" + id;
+  // 캐시 키를 본문(구글뉴스) URL에서 파생(해시) — 예전엔 클라 id가 url과 독립이라 임의 기사를 임의 id로
+  // 저장하는 캐시 포이즈닝이 가능했음. 이제 키가 소스 URL에만 묶임(STEP 793·GB 라우트 원칙과 동일).
+  const acc = "VN" + createHash("sha1").update(url).digest("hex").slice(0, 24);
   const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
   const col = locale === "en" ? "summary_en" : "summary_ko";
 
@@ -44,6 +47,9 @@ export async function GET(req: NextRequest) {
   const { data: hit } = await sb.from("filing_summaries").select(col).eq("accession", acc).maybeSingle();
   const cachedText = (hit as Record<string, string> | null)?.[col];
   if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
+
+  // 캐시 미스 = 새 유료 LLM 생성. 봇·레이트리밋 차단(과금 남용 방어·STEP 793). 캐시 히트는 위에서 이미 반환됨.
+  if (blockLLM(req)) return NextResponse.json({ summary: "" }, { status: 429 });
 
   // 구글뉴스 링크 → 최종 기사(리다이렉트 따라감)
   let text = "";
