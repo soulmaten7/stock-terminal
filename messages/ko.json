@@ -866,7 +866,11 @@
       "etcLabel": "기타",
       "andMore": "외 {n}건",
       "noMaterial": "최근 <b>중대한 사건은 없어요</b> — 정기 공시만 있어요.",
-      "routine": "정기 공시 {n}건"
+      "routine": "정기 공시 {n}건",
+      "showMore": "{n}건 더 보기 →",
+      "groupCount": "{n}건",
+      "original": "원문 {n} →",
+      "expandAria": "AI 요약 펼치기"
     },
     "newsBrief": {
       "title": "최근 뉴스",

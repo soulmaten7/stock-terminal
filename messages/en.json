@@ -866,7 +866,11 @@
       "etcLabel": "Other",
       "andMore": "and {n} more",
       "noMaterial": "<b>No material events recently</b> — only routine filings.",
-      "routine": "{n} routine filings"
+      "routine": "{n} routine filings",
+      "showMore": "See {n} more →",
+      "groupCount": "{n} filings",
+      "original": "Source {n} →",
+      "expandAria": "Expand AI summary"
     },
     "newsBrief": {
       "title": "Recent news",
