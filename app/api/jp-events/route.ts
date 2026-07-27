@@ -23,7 +23,8 @@ const cache = new Map<string, { at: number; data: unknown }>();
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const sec = secCodeOf(symbol);
-  if (!sec) return NextResponse.json({ symbol, events: [] });
+  // STEP 797 §1: 심볼 매핑 없음 = unsupported.
+  if (!sec) return NextResponse.json({ symbol, events: [], error: "unsupported" });
 
   const hit = cache.get(sec);
   if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
@@ -36,8 +37,11 @@ export async function GET(req: NextRequest) {
     .order("submit_datetime", { ascending: false })
     .limit(40);
 
+  // DB 실패 — "공시 없음"이라 단언하지 않고 숨김. 캐시하지 않음.
+  if (error) return NextResponse.json({ symbol, sec_code: sec, events: [], error: "fetch_failed" });
+
   let events: unknown[] = [];
-  if (!error && data) {
+  if (data) {
     events = (data as Record<string, string | null>[])
       .filter((r) => r.current_report_reason != null || (r.doc_type_code != null && KEEP.has(r.doc_type_code)))
       .slice(0, 8)

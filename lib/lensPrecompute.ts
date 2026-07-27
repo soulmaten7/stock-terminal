@@ -5,7 +5,7 @@
 import * as Sentry from "@sentry/nextjs";
 import YahooFinance from "yahoo-finance2";
 import { createAdminClient } from "./supabase/admin";
-import { computeSymbolLenses } from "./lensCompute";
+import { computeSymbolLenses, flushLensFailures } from "./lensCompute";
 import { toneForKey } from "./lensTones";
 import type { LensRead } from "./lenses";
 import symbols from "../data/us_symbols.json";
@@ -178,6 +178,7 @@ export async function computeLensScoresFor(
   });
   await flush();
   await flushChanges();
+  flushLensFailures(`batch ${market}`); // 렌즈별 실패를 1건으로 요약 보고(폭주 억제·STEP 797 §4)
   return { ok: true, computed: saved, universe: universe.length, at };
 }
 

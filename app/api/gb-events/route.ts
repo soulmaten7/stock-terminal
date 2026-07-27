@@ -27,12 +27,14 @@ const cache = new Map<string, { at: number; data: unknown }>();
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const tidm = tidmOf(symbol);
-  if (!tidm) return NextResponse.json({ symbol, events: [] });
+  // STEP 797 §1: 심볼 매핑 없음 = unsupported(못 가져옴과 별개). 클라가 숨김.
+  if (!tidm) return NextResponse.json({ symbol, events: [], error: "unsupported" });
 
   const hit = cache.get(tidm);
   if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
 
   let html = "";
+  let failed = false;
   try {
     const res = await fetch(`https://www.investegate.co.uk/company/${encodeURIComponent(tidm)}`, {
       headers: { "User-Agent": "Mozilla/5.0 (compatible; TrillionBot/1.0; +https://onetrillion.app)", Accept: "text/html" },
@@ -40,9 +42,12 @@ export async function GET(req: NextRequest) {
       signal: AbortSignal.timeout(15000),
     });
     if (res.ok) html = await res.text();
+    else failed = true;
   } catch {
-    /* graceful — 못 가져오면 빈 층(숨김) */
+    failed = true;
   }
+  // 상류 실패 — "사건 없음"이라 단언하지 않고 숨김. 캐시하지 않음(재시도).
+  if (failed) return NextResponse.json({ symbol, tidm, events: [], error: "fetch_failed" });
 
   const events: { id: string; title: string; date: string; time: string; source: string; url: string; material: boolean }[] = [];
   const rowRe =

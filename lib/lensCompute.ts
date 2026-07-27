@@ -14,6 +14,20 @@ import { createAdminClient } from "./supabase/admin"; // 순수 supabase-js 래�
 // yahooSurvey 안내 로그 억제
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
 
+// 렌즈 실패 Sentry 폭주 억제(STEP 797 §4) — per-lens×심볼 캡처는 배치(수천 종목)에서 크론 1회에 수만 건 발생.
+// 렌즈키별 '첫 실패 1건'만 예시로 캡처하고, 나머지는 집계만. 배치는 끝에서 flushLensFailures로 1건 요약.
+const lensFailCaptured = new Set<string>();
+const lensFailCounts = new Map<string, number>();
+
+// 배치 종료 시 호출 — 렌즈키별 실패 건수를 1건으로 요약 보고 후 리셋(다음 실행 컨텍스트 대비).
+export function flushLensFailures(context: string): void {
+  if (lensFailCounts.size === 0) return;
+  const summary = [...lensFailCounts.entries()].map(([k, n]) => `${k}=${n}`).join(" · ");
+  Sentry.captureMessage(`[lens_compute] ${context}: per-lens failures — ${summary}`, "warning");
+  lensFailCounts.clear();
+  lensFailCaptured.clear();
+}
+
 export type SymbolLenses = {
   symbol: string;
   resolved: string;
@@ -150,7 +164,13 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
       try {
         return await l.compute(d, locale);
       } catch (e) {
-        Sentry.captureException(e, { tags: { pipeline: "lens_compute", lens: l.meta.key }, extra: { symbol } });
+        // 렌즈키별 첫 1건만 캡처(예시)·이후는 집계만 — 배치 폭주 방지(STEP 797 §4).
+        const k = l.meta.key;
+        lensFailCounts.set(k, (lensFailCounts.get(k) ?? 0) + 1);
+        if (!lensFailCaptured.has(k)) {
+          lensFailCaptured.add(k);
+          Sentry.captureException(e, { tags: { pipeline: "lens_compute", lens: k }, extra: { symbol } });
+        }
         return null;
       }
     }),

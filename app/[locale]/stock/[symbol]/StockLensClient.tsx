@@ -561,9 +561,10 @@ function FilingsCard({ titleLabel, srcLabel, noticeNode, footerText, items, mate
         <span className="text-[13px] font-bold text-unjong-primary">{titleLabel}</span>
         <span className="text-[13px] sm:text-[11px] text-unjong-muted">{srcLabel}</span>
       </div>
-      <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{noticeNode}</p>
       {items.length ? (
         <>
+          {/* noticeNode("아직 렌즈에 안 반영된 최신 공시")는 공시가 있다는 전제 — 0건일 땐 출력 금지(STEP 797 §1). */}
+          <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{noticeNode}</p>
           <ul className="mt-2.5 space-y-1.5">
             {visible.map((g) => <FilingRow key={g.rep.key} group={g} materialLabel={materialLabel} />)}
           </ul>
@@ -593,7 +594,7 @@ function KrEventLayer({ symbol }: { symbol: string }) {
     let alive = true;
     fetch('/api/kr-events?symbol=' + encodeURIComponent(symbol))
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .then((j) => { if (!alive) return; if (j.error) { setError(true); setLoaded(true); return; } setEvents(j.events || []); setLoaded(true); }) // error(fetch_failed·unsupported)면 숨김(STEP 797)
       .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
@@ -632,7 +633,7 @@ function JpEventLayer({ symbol }: { symbol: string }) {
     let alive = true;
     fetch('/api/jp-events?symbol=' + encodeURIComponent(symbol))
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .then((j) => { if (!alive) return; if (j.error) { setError(true); setLoaded(true); return; } setEvents(j.events || []); setLoaded(true); }) // error(fetch_failed·unsupported)면 숨김(STEP 797)
       .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
@@ -674,7 +675,7 @@ function GbEventLayer({ symbol }: { symbol: string }) {
     let alive = true;
     fetch('/api/gb-events?symbol=' + encodeURIComponent(symbol))
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .then((j) => { if (!alive) return; if (j.error) { setError(true); setLoaded(true); return; } setEvents(j.events || []); setLoaded(true); }) // error(fetch_failed·unsupported)면 숨김(STEP 797)
       .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
@@ -712,7 +713,7 @@ function CnEventLayer({ symbol }: { symbol: string }) {
     let alive = true;
     fetch('/api/cn-events?symbol=' + encodeURIComponent(symbol))
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .then((j) => { if (!alive) return; if (j.error) { setError(true); setLoaded(true); return; } setEvents(j.events || []); setLoaded(true); }) // error(fetch_failed·unsupported)면 숨김(STEP 797)
       .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
@@ -751,7 +752,7 @@ function VnEventLayer({ symbol }: { symbol: string }) {
     let alive = true;
     fetch('/api/vn-events?symbol=' + encodeURIComponent(symbol))
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((j) => { if (!alive) return; setEvents(j.events || []); setLoaded(true); })
+      .then((j) => { if (!alive) return; if (j.error) { setError(true); setLoaded(true); return; } setEvents(j.events || []); setLoaded(true); }) // error(fetch_failed·unsupported)면 숨김(STEP 797)
       .catch(() => { if (alive) { setError(true); setLoaded(true); } });
     return () => { alive = false; };
   }, [symbol]);
@@ -815,17 +816,19 @@ function StockBrief({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
   const locale = pickLocale(useLocale()); // 브리핑도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 브리핑이 온다
   const [brief, setBrief] = useState('');
-  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  // STEP 797 §5: 실패를 무음 처리하지 않는다(공시는 "없어요"라 말하는데 브리핑만 사라지는 정책 불일치 제거).
+  // nodata=데이터 자체 없음(생성 전·비대상)→숨김 / error=실패→결측 1줄(loadError 재사용).
+  const [state, setState] = useState<'loading' | 'done' | 'error' | 'nodata'>('loading');
   useEffect(() => {
     let alive = true;
     setState('loading');
     fetch('/api/brief?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
-      .then((j) => { if (!alive) return; if (j.brief) { setBrief(j.brief); setState('done'); } else setState('error'); })
+      .then((j) => { if (!alive) return; if (j.brief) { setBrief(j.brief); setState('done'); } else if (j.error === 'no_data') setState('nodata'); else setState('error'); })
       .catch(() => { if (alive) setState('error'); });
     return () => { alive = false; };
   }, [symbol, locale]);
-  if (state === 'error') return null; // 실패 시 조용히 숨김
+  if (state === 'nodata') return null; // 데이터 자체가 없음(생성 전·비대상) — 숨김
   return (
     <div className="mb-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
       <div className="mb-1.5 flex items-center gap-1.5">
@@ -835,6 +838,8 @@ function StockBrief({ symbol }: { symbol: string }) {
       </div>
       {state === 'loading'
         ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('brief.loading')}</p>
+        : state === 'error'
+        ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('loadError')}</p>
         : <p className="text-[15px] leading-relaxed sm:text-[13px] text-unjong-primary">{brief}</p>}
     </div>
   );

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { blockLLM } from "@/lib/rateLimit";
+import { urlCacheKey } from "@/lib/summaryCacheKey";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -29,12 +30,18 @@ export async function GET(req: NextRequest) {
   const url = (req.nextUrl.searchParams.get("url") || "").trim();
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const nm = req.nextUrl.searchParams.get("nm") || "";
-  // SSRF 방지 — Investegate 공시 상세 URL만 허용.
-  if (!/^https:\/\/www\.investegate\.co\.uk\/announcement\/[a-z]+\/[^?#"']+\/\d+$/i.test(url)) {
+  // SSRF·포이즈닝 방지(STEP 797 §2) — Investegate 공시 상세 URL만 허용. 중간 세그먼트를 경로구분자 없는 토큰으로
+  // 제한(예전 [^?#"']+는 `/`·`..` 통과 → `.../a/../../../company/BP./9123456`로 임의 페이지를 임의 id로 저장 가능).
+  // 중간은 여러 세그먼트(rns/bp/slug/id) 허용하되 경로구분자만 있는 토큰으로 제한 + `..` 명시 거부(traversal 차단).
+  // 캐시 키가 sha1(url)이라 id 위조로는 포이즈닝 불가 — `..` 차단이 다른 investegate 페이지 본문 접근을 막는다.
+  if (
+    url.includes("..") ||
+    !/^https:\/\/www\.investegate\.co\.uk\/announcement\/[a-z]+\/[A-Za-z0-9._/-]+\/\d+$/i.test(url)
+  ) {
     return NextResponse.json({ error: "bad url" }, { status: 400 });
   }
-  const id = (url.match(/\/(\d+)$/) || [])[1] || "";
-  const acc = "GB" + id;
+  // 캐시 키를 본문 URL 해시로 파생(CN/VN과 동일 규칙·공용 헬퍼).
+  const acc = urlCacheKey("GB", url);
   const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
   const col = locale === "en" ? "summary_en" : "summary_ko";
 

@@ -32,7 +32,7 @@ async function getOrgId(code: string): Promise<string> {
   const r = await fetch("http://www.cninfo.com.cn/new/information/topSearch/query", {
     method: "POST", headers: H, body: `keyWord=${code}&maxNum=10`, cache: "no-store", signal: AbortSignal.timeout(10000),
   });
-  if (!r.ok) return "";
+  if (!r.ok) throw new Error("upstream fetch failed"); // STEP 797: 상류 실패는 삼키지 않고 던짐(호출부가 fetch_failed 판정)
   const arr = await r.json();
   const hit = (Array.isArray(arr) ? arr : []).find((x: Record<string, string>) => x.code === code) || arr[0];
   const orgId = hit?.orgId || "";
@@ -52,7 +52,7 @@ async function hkStockId(code5: string): Promise<string> {
     `https://www1.hkexnews.hk/search/prefix.do?callback=c&lang=EN&type=A&name=${code5}&market=SEHK`,
     { headers: { "User-Agent": H["User-Agent"] }, cache: "no-store", signal: AbortSignal.timeout(10000) },
   );
-  if (!r.ok) return "";
+  if (!r.ok) throw new Error("upstream fetch failed"); // STEP 797: 상류 실패는 삼키지 않고 던짐(호출부가 fetch_failed 판정)
   const txt = await r.text(); // JSONP: callback({"stockInfo":[{stockId, code, name}]})
   const json = txt.replace(/^[^(]*\(/, "").replace(/\)\s*;?\s*$/, "");
   const j = JSON.parse(json);
@@ -78,7 +78,7 @@ async function fetchHK(code5: string): Promise<{ id: string; title: string; date
     cache: "no-store",
     signal: AbortSignal.timeout(12000),
   });
-  if (!r.ok) return [];
+  if (!r.ok) throw new Error("hk list fetch failed");
   const j = await r.json();
   const rows: Record<string, string>[] =
     typeof j.result === "string" ? JSON.parse(j.result) : (j.result || []);
@@ -112,7 +112,12 @@ export async function GET(req: NextRequest) {
     const hit = listCache.get("HK" + hc);
     if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
     let events: { id: string; title: string; date: string; source: string; url: string; pdf: string; material: boolean }[] = [];
-    try { events = await fetchHK(hc); } catch { /* graceful */ }
+    try {
+      events = await fetchHK(hc);
+    } catch {
+      // 상류 실패 — "공시 없음"이라 단언하지 않고 숨김. 캐시하지 않음(STEP 797 §1).
+      return NextResponse.json({ symbol, code: hc, events: [], error: "fetch_failed" });
+    }
     const out = { symbol, code: hc, events };
     listCache.set("HK" + hc, { at: Date.now(), data: out });
     return NextResponse.json(out);
@@ -120,20 +125,26 @@ export async function GET(req: NextRequest) {
 
   // A주
   const p = parse(symbol);
-  if (!p) return NextResponse.json({ symbol, events: [] });
+  // 심볼 매핑 없음(HK도 A주도 아님) = unsupported.
+  if (!p) return NextResponse.json({ symbol, events: [], error: "unsupported" });
 
   const hit = listCache.get(p.code);
   if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
 
   const events: { id: string; title: string; date: string; source: string; url: string; pdf: string; material: boolean }[] = [];
+  let failed = false;
   try {
     const orgId = await getOrgId(p.code);
-    if (orgId) {
+    if (!orgId) {
+      // topSearch는 됐으나 orgId 매핑 실패 — 실제 공시 유무를 알 수 없으므로 숨김(0건이라 단언 금지).
+      failed = true;
+    } else {
       const body = `stock=${p.code},${orgId}&tabName=fulltext&pageSize=20&pageNum=1&column=${p.column}&isHLtitle=true`;
       const res = await fetch("http://www.cninfo.com.cn/new/hisAnnouncement/query", {
         method: "POST", headers: H, body, cache: "no-store", signal: AbortSignal.timeout(12000),
       });
-      if (res.ok) {
+      if (!res.ok) failed = true;
+      else {
         const j = await res.json();
         const anns = j.announcements || [];
         const seen = new Set<string>();
@@ -154,8 +165,10 @@ export async function GET(req: NextRequest) {
       }
     }
   } catch {
-    /* graceful — 못 가져오면 빈 층(숨김) */
+    failed = true;
   }
+  // 상류 실패 — 숨김(지어내지 않음). 캐시하지 않음.
+  if (failed) return NextResponse.json({ symbol, code: p.code, events: [], error: "fetch_failed" });
 
   const out = { symbol, code: p.code, events };
   listCache.set(p.code, { at: Date.now(), data: out });

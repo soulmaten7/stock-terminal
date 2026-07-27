@@ -26,7 +26,8 @@ const cache = new Map<string, { at: number; data: unknown }>();
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
   const ticker = tickerOf(symbol);
-  if (!ticker) return NextResponse.json({ symbol, events: [] });
+  // STEP 797 §1: 심볼 매핑 없음 = unsupported.
+  if (!ticker) return NextResponse.json({ symbol, events: [], error: "unsupported" });
 
   const hit = cache.get(ticker);
   if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
@@ -40,6 +41,7 @@ export async function GET(req: NextRequest) {
     material: boolean;
   }[] = [];
 
+  let failed = false;
   try {
     const query = `${ticker} kết quả kinh doanh OR cổ tức OR báo cáo tài chính OR đại hội cổ đông OR phát hành OR sáp nhập`;
     const rssUrl =
@@ -58,7 +60,8 @@ export async function GET(req: NextRequest) {
       signal: AbortSignal.timeout(12000),
     });
 
-    if (res.ok) {
+    if (!res.ok) failed = true;
+    else {
       const xml = await res.text();
       const blocks = xml.match(/<item\b[\s\S]*?<\/item>/g) ?? [];
       const seen = new Set<string>();
@@ -94,8 +97,10 @@ export async function GET(req: NextRequest) {
       }
     }
   } catch {
-    /* graceful — 못 가져오면 빈 층(숨김) */
+    failed = true;
   }
+  // 상류 실패 — 숨김(지어내지 않음). 캐시하지 않음.
+  if (failed) return NextResponse.json({ symbol, ticker, events: [], error: "fetch_failed" });
 
   const out = { symbol, ticker, events };
   cache.set(ticker, { at: Date.now(), data: out });
