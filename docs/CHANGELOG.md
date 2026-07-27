@@ -1,5 +1,14 @@
-<!-- 2026-07-26 -->
+<!-- 2026-07-27 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-27 — 🧹 US 종목명 ADR·중복 토큰 정리 + 상단 안내 4→1 통합 (STEP 790 · HEAD `886d425`)
+
+- **US 종목명 ADR/주식종류 수식어 절단(`lib/usNameFormat.ts`)**: RELX가 "RELX PLC PLC American Depositary Shares (Each representing One Ordinary Share)"처럼 3줄을 차지하던 문제 — `SHARE_CLASS_TRIGGERS`(American Depositary/Depository Shares·Each representing…·Class A/B/C Common Stock·Ordinary Shares·Represent(ing|s)…·New York Registry Shares·Series [A-Z] Preferred) 신설, 가장 이른 매칭 지점부터 문자열 끝까지(괄호 설명 포함) 절단. 절단 후 2자 미만이면 절단 취소(이름 증발 방지). **연속(인접) 중복 법인형 토큰**만 축약(`dedupeAdjacentTokens` — "PLC PLC"→"PLC", 비인접 반복은 보존). 전체 유니버스(`data/us_symbols.json` 5,960종목) 실측 감사 = **487건 변경, 전수 육안 검수 결과 나쁜 절단 0건**(STEP 754b 원칙 준수). 유닛테스트 12건 추가(RELX·Class A 보존·빈 결과 방지·기존 IBM/3M/eBay/JPMorgan 회귀 없음).
+- **🐛 `cleanUsName` 비멱등 버그 발견·수정(`app/api/search/route.ts`)**: 검색 API가 US 종목명에 `cleanUsName()`을 **두 번** 태워(`buildForeign()`에서 1차, `resolveDisplayName()`에서 2차) RELX가 "Relx PLC"로 잘못 재캐이싱되던 실제 버그 — 짧아진 결과를 다시 넣으면 `titleCaseUsName`의 올대문자 판정이 재실행돼 이미 옳던 대문자 약어가 소문자로 깨짐. `buildForeign()`이 원본 raw 이름을 그대로 보관하도록 수정, `resolveDisplayName()` 1회만 정리 경로로 확정 + `cleanUsName` 함수 자체에 비멱등 경고 주석 추가. 전 코드베이스 `cleanUsName(` 호출부 grep으로 재발 지점 없음 확인.
+- **상단 안내 4→1 통합(`StockLensClient.tsx`)**: 종목상세 첫 화면에 "판단은 당신" 계열 문구가 4번 중복 노출되던 것을 정리 — 배지 서브타이틀(`headerNote`)·"종합 매수·매도 점수는 없습니다"(`lensHeaderNote`)·브리핑 카드 하단 "방향 판단은 하지 않아요"(`brief.footer`) 3개 제거, 남은 것 = 상단 한 줄("사고팔 신호가 아니라, 스스로 판단할 재료입니다.") + 그 줄 끝의 "읽는 법 ▾" 트리거(기존 "이 화면 읽는 법" 펼침 내용 흡수, 내용 자체는 불변). "판단은 당신" 역할은 상단 이 한 줄 + STEP 788 닫는 카드 하단("사실만 정리했습니다 · 판단은 당신")로 상·하단 각 1회씩만 잔존 — 페이지에서 완전히 사라지지는 않음. 사용되지 않게 된 i18n 키 ko/en 양쪽 동일 제거(패리티 유지).
+- **✅ 검증**: tsc 0·vitest 66/66·`npm run build`(NEXT_DIST_DIR 격리)·CI 그린. 라이브 실측 — `/api/search?q=RELX` ko/en 둘 다 "RELX PLC"(1줄), Apple/JPMorgan 등 일반 이름 불변, `/en` 헤더 "Not a buy or sell signal — material for you to judge for yourself." 정상 렌더, 옛 3문구 grep 0건.
+- **판단 노트(2건, 투명 공개)**: ① Turbopack 캐시 오탐 배제 위해 dev 서버 재시작(다운타임 ~1초, 즉시 재기동 확인) ② STEP 문서엔 없었지만 위 `cleanUsName` 비멱등 버그를 찾아 고치지 않으면 STEP의 RELX 예시 자체가 라이브에서 틀리게 나왔을 것 — 스코프 밖 파일(`app/api/search/route.ts`) 수정을 disclose.
+- **▶ 다음**: 장은태 폰 최종 확인(누적 STEP 785~790) → 클로즈드 베타 발송.
 
 ## 2026-07-26 — 📱 모바일 헤더 회귀 수정 + 🎓 렌즈 카드 초보 우선 재설계(질문형·서사 상시노출·닫는 카드) (STEP 785~789 · HEAD `4b77d2e`)
 
