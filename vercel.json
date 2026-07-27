@@ -1,14 +1,6 @@
 {
   "crons": [
     {
-      "path": "/api/cron/fss-advisors",
-      "schedule": "0 19 * * *"
-    },
-    {
-      "path": "/api/cron/youtube-refresh",
-      "schedule": "0 0 * * 1"
-    },
-    {
       "path": "/api/cron/us-perf",
       "schedule": "0 22 * * *"
     },
@@ -23,22 +15,6 @@
     {
       "path": "/api/cron/kr-lens-scores",
       "schedule": "30 10 * * *"
-    },
-    {
-      "path": "/api/cron/jp-perf",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/cn-perf",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/vn-perf",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/gb-perf",
-      "schedule": "0 8 * * *"
     },
     {
       "path": "/api/cron/lens-scores",

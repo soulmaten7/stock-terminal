@@ -12,16 +12,13 @@ export const dynamic = "force-dynamic";
 type Check = { name: string; table: string; column: string; eq?: [string, string]; thresholdH: number };
 // thresholdH 25 = 일일 크론 기준: 정상 나이(체크 시각 12:00 UTC) 최대 ~17h, 1회 누락 시 26h+ → 확실히 검출.
 const CHECKS: Check[] = [
+  // STEP 794 §5: 파킹 전용 크론 6개 스케줄 중지(jp/cn/vn/gb-perf·fss-advisors·youtube-refresh) →
+  // 그 테이블들은 이제 stale로 굳으므로 감시 항목에서도 제거(오탐 방지). kr-etp는 종목상세가 라이브로 읽어 유지.
   { name: "KR 시세(kr-perf)", table: "kr_stock_snapshot", column: "updated_at", thresholdH: 25 },
   { name: "KR ETP(kr-etp)", table: "kr_etp_snapshot", column: "updated_at", thresholdH: 25 },
   { name: "US 시세(us-perf)", table: "us_stock_perf", column: "updated_at", thresholdH: 25 },
-  { name: "JP 시세(jp-perf)", table: "jp_stock_perf", column: "updated_at", thresholdH: 25 },
-  { name: "CN 시세(cn-perf)", table: "cn_stock_perf", column: "updated_at", thresholdH: 25 },
-  { name: "VN 시세(vn-perf)", table: "vn_stock_perf", column: "updated_at", thresholdH: 25 },
-  { name: "GB 시세(gb-perf)", table: "gb_stock_perf", column: "updated_at", thresholdH: 25 },
   { name: "렌즈 KR(kr-lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "KR"], thresholdH: 25 },
   { name: "렌즈 US(lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "US"], thresholdH: 25 },
-  { name: "유사투자자문(fss-advisors)", table: "fss_advisors", column: "fetched_at", thresholdH: 25 },
   { name: "한 입 브리핑(daily-brief)", table: "daily_brief", column: "created_at", thresholdH: 25 },
   // email-brief·jp-disclosures는 결과 테이블 나이로는 실행 여부를 못 잡음(구독자 0·조용한 주말이면 산출물 미갱신).
   // → cron_heartbeats에 매 실행 기록한 last_run_at 나이로 감시(STEP 794 §4).
