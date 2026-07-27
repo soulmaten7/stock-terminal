@@ -1214,7 +1214,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   };
 
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <main className="mx-auto max-w-[1040px] px-4 py-6 sm:px-6">
       <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent">
         <ArrowLeft size={20} />
         {t('back')}

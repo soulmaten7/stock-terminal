@@ -13,6 +13,7 @@ import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { resolveDisplayName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
 import { WatchStar } from '@/components/common/WatchStar';
+import { PageShell } from '@/components/layout/PageShell';
 import { Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
@@ -385,7 +386,7 @@ export default function ExploreClient() {
     // 톤 필터 적용 후 종목당 그룹핑(STEP 776 §3 — 필터 먼저, 그다음 묶기).
     const filteredGroupedChanges = changes ? groupBySymbol(changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter)) : [];
     return (
-      <div className="mx-auto max-w-[680px] py-6 sm:px-6">
+      <PageShell>
         <button type="button" onClick={() => router.back()} className="mb-4 ml-4 inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent sm:ml-0">
           <ArrowLeft size={20} />
           {tLogin('back')}
@@ -427,13 +428,15 @@ export default function ExploreClient() {
               })
           )}
         </div>
-      </div>
+    </PageShell>
     );
   }
 
   // ── 메인 뷰 ──
   return (
-    <div className="mx-auto max-w-[680px] py-6 sm:px-6">
+    <PageShell>
+      {/* 5면 중 유일하게 h1이 없어 추가(STEP 796 §4) — 밀도 결정(763) 존중해 sr-only. 풀리스트 뷰는 이미 h1 있음. */}
+      <h1 className="sr-only">{t('pageTitle')}</h1>
       {/* 검색 — 주인공 */}
       <div ref={searchBoxRef} className="relative mb-6 px-4 sm:px-0">
         <div className="relative">
@@ -578,6 +581,6 @@ export default function ExploreClient() {
       </section>
 
       <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>
-    </div>
+    </PageShell>
   );
 }

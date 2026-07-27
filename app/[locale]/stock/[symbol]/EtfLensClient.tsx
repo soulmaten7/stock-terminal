@@ -127,7 +127,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
   return (
     // 너비·뒤로가기는 종목 상세(StockLensClient)와 동일하게 — max-w-7xl main + max-w-4xl 콘텐츠 + router.back()
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-[1040px] px-4 py-6 sm:px-6">
       <button type="button" onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) router.back(); else router.push('/'); }} className="inline-flex min-h-11 items-center gap-1.5 text-sm text-unjong-muted hover:text-unjong-accent">
         <ArrowLeft size={20} />
         {t('back')}

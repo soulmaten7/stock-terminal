@@ -12,6 +12,7 @@ import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName, resolveWatchlistName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
 import { WatchStar } from '@/components/common/WatchStar';
+import { PageShell } from '@/components/layout/PageShell';
 
 // PC 전용 hover 별(STEP 781 §2) — 탐색 WatchStar 기본값(sm:flex) 위에 평소 투명·행 hover/포커스 시만 표시 추가.
 const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-accent';
@@ -218,9 +219,48 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
     return resolveDisplayName({ loc, market: market === 'KR' ? 'KR' : 'US', symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: 'list' });
   }
 
+  // PC 우측 레일(레일 콘텐츠) — PageShell의 rail 슬롯으로 전달. 레일이 <aside>를 그림.
+  const railNode = (
+    <>
+      <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+        <p className="mb-2 text-sm font-bold text-unjong-primary">{t('railMarketTitle')}</p>
+        <div className="grid grid-cols-2 gap-2">
+          {railIndices.map((idx) => (
+            <div key={idx.name} className="rounded-lg bg-unjong-background p-2.5">
+              <p className="truncate text-[12px] text-unjong-muted">{idx.name}</p>
+              <p className={`text-sm font-semibold tabular-nums ${changeColorClass(idx.changePct, loc)}`}>{pct(idx.changePct)}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+        <p className="mb-2 text-sm font-bold text-unjong-primary">{t('railWatchlistTitle')}</p>
+        {!user ? (
+          <Link href="/auth/login" className="text-sm font-semibold text-unjong-accent">{t('railWatchlistLogin')}</Link>
+        ) : !hasWatchlist ? (
+          <p className="text-sm text-unjong-muted">{t('onboardingTitle')}</p>
+        ) : (
+          <>
+            {(watchlistQuotes ?? []).slice(0, 6).map((q) => (
+              <div key={q.symbol} className="group flex items-center gap-2 border-b border-unjong-border py-2 last:border-0 hover:bg-unjong-background/60">
+                <Link href={`/stock/${q.symbol}`} className="flex min-w-0 flex-1 items-center gap-2">
+                  <StockLogo code={q.symbol} name={resolveWatchlistName(loc, q)} size={24} />
+                  <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{resolveWatchlistName(loc, q)}</span>
+                  <span className={`shrink-0 text-[13px] font-semibold tabular-nums ${changeColorClass(q.changePercent, loc)}`}>{pct(q.changePercent)}</span>
+                </Link>
+                <WatchStar symbol={q.symbol} watched={watchSet.has(q.symbol)} onToggle={() => toggleWatch(q.symbol, resolveWatchlistName(loc, q), q.market, q.country)} className={hoverStarClass(watchSet.has(q.symbol))} />
+              </div>
+            ))}
+            <Link href="/favorites" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('railViewAll')}</Link>
+          </>
+        )}
+      </div>
+    </>
+  );
+
   return (
-    <div className="mx-auto max-w-[1040px] py-6 sm:px-6 lg:flex lg:items-start lg:gap-8">
-      <main className="min-w-0 flex-1 lg:max-w-[680px]">
+    <PageShell rail={railNode}>
         {/* 1) 헤더 — 날짜가 주인공(목업대로·STEP 765b), "오늘" H1·부제 제거(페이지 <title>은 유지) */}
         <div className="mb-6 px-4 sm:px-0">
           <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{formattedDate}</h1>
@@ -343,45 +383,6 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
 
         {/* 5) 각주 */}
         <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>
-      </main>
-
-      {/* PC 우측 레일 */}
-      <aside className="mt-8 hidden lg:mt-0 lg:block lg:w-80 lg:shrink-0">
-        <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
-          <p className="mb-2 text-sm font-bold text-unjong-primary">{t('railMarketTitle')}</p>
-          <div className="grid grid-cols-2 gap-2">
-            {railIndices.map((idx) => (
-              <div key={idx.name} className="rounded-lg bg-unjong-background p-2.5">
-                <p className="truncate text-[12px] text-unjong-muted">{idx.name}</p>
-                <p className={`text-sm font-semibold tabular-nums ${changeColorClass(idx.changePct, loc)}`}>{pct(idx.changePct)}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-4">
-          <p className="mb-2 text-sm font-bold text-unjong-primary">{t('railWatchlistTitle')}</p>
-          {!user ? (
-            <Link href="/auth/login" className="text-sm font-semibold text-unjong-accent">{t('railWatchlistLogin')}</Link>
-          ) : !hasWatchlist ? (
-            <p className="text-sm text-unjong-muted">{t('onboardingTitle')}</p>
-          ) : (
-            <>
-              {(watchlistQuotes ?? []).slice(0, 6).map((q) => (
-                <div key={q.symbol} className="group flex items-center gap-2 border-b border-unjong-border py-2 last:border-0 hover:bg-unjong-background/60">
-                  <Link href={`/stock/${q.symbol}`} className="flex min-w-0 flex-1 items-center gap-2">
-                    <StockLogo code={q.symbol} name={resolveWatchlistName(loc, q)} size={24} />
-                    <span className="min-w-0 flex-1 truncate text-sm text-unjong-primary">{resolveWatchlistName(loc, q)}</span>
-                    <span className={`shrink-0 text-[13px] font-semibold tabular-nums ${changeColorClass(q.changePercent, loc)}`}>{pct(q.changePercent)}</span>
-                  </Link>
-                  <WatchStar symbol={q.symbol} watched={watchSet.has(q.symbol)} onToggle={() => toggleWatch(q.symbol, resolveWatchlistName(loc, q), q.market, q.country)} className={hoverStarClass(watchSet.has(q.symbol))} />
-                </div>
-              ))}
-              <Link href="/favorites" className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('railViewAll')}</Link>
-            </>
-          )}
-        </div>
-      </aside>
-    </div>
+    </PageShell>
   );
 }

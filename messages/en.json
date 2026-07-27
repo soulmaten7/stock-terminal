@@ -954,6 +954,7 @@
     "my": "My"
   },
   "Explore": {
+    "pageTitle": "Explore",
     "searchPlaceholder": "Search by name or ticker",
     "recentSearches": "Recent searches",
     "removeRecent": "Remove recent search",

@@ -20,7 +20,7 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Pr
   const sp = await searchParams;
   const slot = validSlots.includes(sp.slot ?? "") ? (sp.slot as string) : "other";
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-[1040px] px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-bold text-unjong-primary">{t('title')}</h1>
       <p className="mt-2 text-sm leading-relaxed text-unjong-muted">{t('lead')}</p>
 

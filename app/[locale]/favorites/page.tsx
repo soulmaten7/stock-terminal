@@ -1,4 +1,5 @@
 import WatchlistClient from '@/components/favorites/WatchlistClient';
+import { PageShell } from '@/components/layout/PageShell';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 export const dynamic = "force-dynamic";
@@ -13,8 +14,9 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
   const { locale } = await params;
   setRequestLocale(locale); // 정적 렌더 유지
   const t = await getTranslations('Favorites');
+  // STEP 796: 오늘·탐색과 같은 셸(본문 680·좌측 144). 모바일은 px-4 현행 유지(mobilePadded).
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+    <PageShell mobilePadded>
       <div className="mb-5">
         <h1 className="text-xl font-bold text-unjong-primary">{t('title')}</h1>
         <p className="mt-1 text-sm text-unjong-muted">{t('desc')}</p>
@@ -25,6 +27,6 @@ export default async function FavoritesPage({ params }: { params: Promise<{ loca
         <p className="mb-2 text-xs text-unjong-muted">{t('watchlistHero')}</p>
         <WatchlistClient />
       </section>
-    </main>
+    </PageShell>
   );
 }

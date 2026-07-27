@@ -24,8 +24,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
     return i < 0 ? [s, ""] : [s.slice(0, i), s.slice(i + 3)];
   };
 
+  // STEP 796 §3: 좌측 선을 셸(1040)과 맞추되 읽기 폭은 유지 — 바깥 1040(좌측 144)·안쪽 리딩 컬럼(lg 680).
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+    <div className="mx-auto max-w-[1040px] px-4 py-12 sm:px-6">
+      <div className="max-w-3xl lg:max-w-[680px]">
       {/* 히어로 */}
       <h1 className="mb-2 text-2xl font-bold text-unjong-primary">{t('title')}</h1>
       <p className="text-base font-semibold text-unjong-accent">{t('slogan')}</p>
@@ -93,6 +95,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         <footer className="mt-1 text-xs not-italic text-unjong-muted/80">{t('quoteAuthor')}</footer>
       </blockquote>
       <p className="mt-10 text-xs leading-relaxed text-unjong-muted">{t('disclaimer')}</p>
+      </div>
     </div>
   );
 }
