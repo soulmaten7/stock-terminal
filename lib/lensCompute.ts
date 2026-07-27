@@ -2,6 +2,7 @@
 // /api/lens 라우트와 배치 프리컴퓨트(스크리닝 토대)가 *같은 함수*를 공유 → 카드 = 배치 계산 일치(엔진 = 검증 일치).
 // ⚠️ 프레임워크 무관(next/server import 금지) → tsx 스크립트/크론 어디서든 그대로 호출 가능.
 // 구조: buildStockData(데이터 조달·조립) + 제네릭 오케스트레이터(LENSES 레지스트리 순회). (docs/LENS_ARCHITECTURE.md §5)
+import * as Sentry from "@sentry/nextjs"; // 프레임워크 무관 유지 — precompute tsx 체인(lensPrecompute)이 이미 import하므로 안전
 import YahooFinance from "yahoo-finance2";
 import { type Locale } from "./lensCopy";
 import { computeFScore, type FRow } from "./fscore";
@@ -142,7 +143,19 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
     return { symbol, resolved: d.resolved, name: d.name, price: d.price, changePercent: d.changePercent, tradeAmount, lenses: [], fscore: null, error: "insufficient_data" };
   }
 
-  const allLenses = await Promise.all(LENSES.map((l) => l.compute(d, locale)));
+  // 렌즈별 격리 — 하나가 throw해도 나머지는 산출(F-Score 격리와 동일 방침). 실패 렌즈만 제외하고
+  // 화면은 나머지 카드를 정상 표시한다. 실패는 Sentry로 캡처(어느 렌즈·어느 심볼인지).
+  const settled = await Promise.all(
+    LENSES.map(async (l) => {
+      try {
+        return await l.compute(d, locale);
+      } catch (e) {
+        Sentry.captureException(e, { tags: { pipeline: "lens_compute", lens: l.meta.key }, extra: { symbol } });
+        return null;
+      }
+    }),
+  );
+  const allLenses = settled.filter((l): l is LensRead => l !== null);
 
   // F-Score = 독립 모듈. 현 동작 보존: 재무 행 없으면 null(§docs/LENS_ARCHITECTURE.md §6 "현 UI 유지").
   let fscore: unknown = null;

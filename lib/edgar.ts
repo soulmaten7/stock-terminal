@@ -47,9 +47,15 @@ const CONCEPTS: Record<string, string[]> = {
 let _cikMap: Record<string, string> | null = null;
 async function cikFor(ticker: string): Promise<string | null> {
   if (!_cikMap) {
-    const tj = (await (await fetch("https://www.sec.gov/files/company_tickers.json", { headers: UA })).json()) as Record<string, { cik_str: number; ticker: string }>;
-    _cikMap = {};
-    for (const k in tj) _cikMap[String(tj[k].ticker).toUpperCase()] = String(tj[k].cik_str).padStart(10, "0");
+    // 사용자 대면 핫패스(/api/lens·/api/brief, maxDuration 30) — 무타임아웃이면 SEC 지연이 곧 화면 실패.
+    try {
+      const tj = (await (await fetch("https://www.sec.gov/files/company_tickers.json", { headers: UA, signal: AbortSignal.timeout(8000) })).json()) as Record<string, { cik_str: number; ticker: string }>;
+      const map: Record<string, string> = {};
+      for (const k in tj) map[String(tj[k].ticker).toUpperCase()] = String(tj[k].cik_str).padStart(10, "0");
+      _cikMap = map; // 성공 시에만 캐시(부분 실패로 빈 맵이 굳는 것 방지)
+    } catch {
+      return null; // 타임아웃·실패 → 폴백(null), 캐시하지 않음(다음 호출 재시도)
+    }
   }
   return _cikMap[ticker.toUpperCase()] ?? null;
 }
@@ -88,7 +94,7 @@ export async function edgarRows(ticker: string): Promise<EdgarRow[]> {
   if (!cik) return [];
   let cf: { facts?: Record<string, Record<string, { units?: Record<string, FactEntry[]> }>> };
   try {
-    cf = (await (await fetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`, { headers: UA })).json()) as typeof cf;
+    cf = (await (await fetch(`https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`, { headers: UA, signal: AbortSignal.timeout(8000) })).json()) as typeof cf;
   } catch {
     return [];
   }

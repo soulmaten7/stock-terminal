@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { computeLensScoresFor, topKrByTradeAmount } from "@/lib/lensPrecompute";
 
 // KR 렌즈 선계산 크론 — 매일 거래대금 상위 1000 KR 종목 7팩터 → lens_scores(market=KR).
@@ -16,6 +17,7 @@ export async function GET(req: Request) {
     const r = await computeLensScoresFor(universe, "KR", { tradeAmountOf });
     return NextResponse.json(r);
   } catch (e) {
+    Sentry.captureException(e, { tags: { pipeline: "kr_lens_scores" } });
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

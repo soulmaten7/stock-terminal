@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { blockLLM } from "@/lib/rateLimit";
+import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -133,9 +134,14 @@ export async function GET(req: NextRequest) {
   // 후처리2: 통화 교정 — 베트남 동(숫자 뒤 '원'→'동'). '원가·원인' 등 일반어(앞이 숫자 아님)는 안 건드림. ko만(en은 원문 통화 그대로).
   if (locale === "ko") summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, "$1동");
 
-  await sb.from("filing_summaries").upsert(
+  // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
+  const { error: upErr } = await sb.from("filing_summaries").upsert(
     { accession: acc, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },
   );
+  if (upErr) {
+    console.error("[vn-events/summary] filing_summaries upsert failed", { accession: acc, error: upErr.message });
+    Sentry.captureMessage(`[vn-events/summary] filing_summaries upsert failed: ${upErr.message}`, "error");
+  }
   return NextResponse.json({ summary, cached: false });
 }

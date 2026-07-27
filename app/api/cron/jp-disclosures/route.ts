@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchEdinetDocsForDate } from "@/lib/edinet";
 
@@ -17,6 +18,9 @@ export async function GET(req: NextRequest) {
   const key = (process.env.EDINET_API_KEY || "").trim();
   if (!key) return NextResponse.json({ error: "no EDINET_API_KEY" }, { status: 500 });
   const days = Math.min(Math.max(Number(req.nextUrl.searchParams.get("days") || 3), 1), 7);
+
+  // 하트비트: 이 크론이 실제로 실행됐음을 기록(헬스체크가 나이 감시 — 조용한 주말이어도 실행 여부 검출·STEP 794). best-effort.
+  try { await createAdminClient().from("cron_heartbeats").upsert({ job: "jp-disclosures", last_run_at: new Date().toISOString(), ok: true }); } catch { /* 하트비트 실패는 비치명 */ }
 
   const rows: Record<string, unknown>[] = [];
   const today = new Date();
@@ -51,7 +55,10 @@ export async function GET(req: NextRequest) {
   for (let i = 0; i < uniq.length; i += 500) {
     const chunk = uniq.slice(i, i + 500);
     const { error } = await sb.from("jp_disclosures").upsert(chunk, { onConflict: "doc_id" });
-    if (error) return NextResponse.json({ error: error.message, upserted }, { status: 500 });
+    if (error) {
+      Sentry.captureMessage(`[jp-disclosures] upsert failed: ${error.message}`, "error");
+      return NextResponse.json({ error: error.message, upserted }, { status: 500 });
+    }
     upserted += chunk.length;
   }
   return NextResponse.json({ ok: true, upserted, days });

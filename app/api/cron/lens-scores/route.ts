@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { computeLensScores } from "@/lib/lensPrecompute";
 
 // 렌즈 점수 배치 프리컴퓨트 크론 — 매일 시총 상위 N 종목 7팩터 재계산 → lens_scores.
@@ -16,6 +17,7 @@ export async function GET(req: Request) {
     const r = await computeLensScores(1000);
     return NextResponse.json(r);
   } catch (e) {
+    Sentry.captureException(e, { tags: { pipeline: "lens_scores" } });
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

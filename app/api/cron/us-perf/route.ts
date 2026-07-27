@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { computeUsPerf } from "@/lib/usPerf";
 
 export const maxDuration = 300; // ~6,121종목 chart 계산 여유(동시 12 → ~3분)
@@ -13,6 +14,7 @@ export async function GET(req: Request) {
     const r = await computeUsPerf();
     return NextResponse.json(r);
   } catch (e) {
+    Sentry.captureException(e, { tags: { pipeline: "us_perf" } });
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

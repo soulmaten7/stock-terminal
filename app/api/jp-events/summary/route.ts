@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { unzipSync } from "fflate";
 import { blockLLM } from "@/lib/rateLimit";
+import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
 export const maxDuration = 45;
@@ -119,9 +120,14 @@ export async function GET(req: NextRequest) {
   const summary = (j.choices?.[0]?.message?.content || "").trim();
   if (!summary) return NextResponse.json({ error: "llm empty" }, { status: 502 });
 
-  await sb.from("filing_summaries").upsert(
+  // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
+  const { error: upErr } = await sb.from("filing_summaries").upsert(
     { accession: docid, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },
   );
+  if (upErr) {
+    console.error("[jp-events/summary] filing_summaries upsert failed", { accession: docid, error: upErr.message });
+    Sentry.captureMessage(`[jp-events/summary] filing_summaries upsert failed: ${upErr.message}`, "error");
+  }
   return NextResponse.json({ summary, cached: false });
 }

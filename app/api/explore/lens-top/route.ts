@@ -20,12 +20,20 @@ export async function GET(req: NextRequest) {
   const lang = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
 
   const sb = createAdminClient();
-  const { data } = await sb
-    .from("lens_scores")
-    .select("symbol,name,momentum_state,technical_state,valuation_state,lowvol_state,quality_state,assetgrowth_state,fscore_state")
-    .eq("market", market);
+  // 1000행 캡 방어(STEP 794 §7) — lens_scores 유니버스가 1000을 넘으면 랭킹이 조용히 잘림 → .range() 루프로 전량 로드.
+  const data: LensRow[] = [];
+  for (let from = 0; from < 30000; from += 1000) {
+    const { data: page } = await sb
+      .from("lens_scores")
+      .select("symbol,name,momentum_state,technical_state,valuation_state,lowvol_state,quality_state,assetgrowth_state,fscore_state")
+      .eq("market", market)
+      .range(from, from + 999);
+    if (!page || page.length === 0) break;
+    data.push(...(page as LensRow[]));
+    if (page.length < 1000) break;
+  }
 
-  const withTones = ((data ?? []) as LensRow[])
+  const withTones = data
     .map((r) => ({ row: r, tones: tonesFor(r) }))
     .filter((x): x is { row: LensRow; tones: Tones } => !!x.tones);
   withTones.sort((a, b) => b.tones[sortKey] - a.tones[sortKey]);

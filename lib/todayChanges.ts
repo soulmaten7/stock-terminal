@@ -1,5 +1,6 @@
 // 어제→오늘 렌즈 상태 변화 조회 — /api/today/changes와 서버 프리페치(app/[locale]/page.tsx) 공용(STEP 771 §3).
 // 내부 HTTP 왕복 없이 양쪽이 이 함수를 직접 호출 — DB 접근·캐시는 여기 하나.
+import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Tone } from "@/lib/lensTones";
 
@@ -112,7 +113,11 @@ export async function getTodayChanges(params: {
 
   // watchlist 필터 시 유니크 심볼 수가 적어 넉넉히 가져와 정렬 후 자름(정확한 limit 적용).
   const { data, error } = await q.limit(watchSymbols ? 2000 : limit);
-  if (error) return { date, count: 0, counts: zeroCounts, items: [] };
+  if (error) {
+    // DB 에러로 빈 결과 반환 시 오늘 화면이 통째로 비고 daily-brief·email-brief 입력도 부실 → Sentry로 검출(화면은 빈 상태 유지).
+    Sentry.captureMessage(`[todayChanges] query failed (${market}/${date}): ${error.message}`, "error");
+    return { date, count: 0, counts: zeroCounts, items: [] };
+  }
 
   // 전체 건수(limit 절단 전, 톤별 포함) — "N건 더 보기"·톤 필터 칩 건수가 실제 전체 모수를 말하도록(근거 없는 숫자 금지 — STEP 775 §2).
   function countQuery(toTone?: "pos" | "warn") {

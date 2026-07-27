@@ -100,6 +100,9 @@ export async function GET(req: Request) {
   }
   const sb = createAdminClient();
 
+  // 하트비트: 이 크론이 실제로 실행됐음을 기록(헬스체크가 나이 감시 — 조용한 미실행 검출·STEP 794). best-effort.
+  try { await sb.from("cron_heartbeats").upsert({ job: "email-brief", last_run_at: new Date().toISOString(), ok: true }); } catch { /* 하트비트 실패는 비치명 */ }
+
   // 1) 오늘자 daily_brief(KR·US) — 신선하지 않으면(예: 상류 크론 실패) 그 로케일은 지어내지 않고 스킵.
   const [krBrief, usBrief] = await Promise.all([getLatestDailyBrief("KR"), getLatestDailyBrief("US")]);
   const briefFor: Record<Locale, string | null> = {
@@ -127,17 +130,30 @@ export async function GET(req: Request) {
     getTodayChanges({ market: "US", limit: 2000 }),
   ]);
 
-  const { data: wlRows } = await sb.from("watchlist").select("user_id,symbol,country").in("user_id", subs.map((s) => s.user_id));
+  // 구독자 1000명 초과 시 .in()이 조용한 400(URL 초과) → 전원 "변화 없음" 메일. 1000청크로 방어(STEP 794 §8).
+  const userIds = subs.map((s) => s.user_id);
+  const wlRows: { user_id: string; symbol: string; country: string }[] = [];
+  for (let i = 0; i < userIds.length; i += 1000) {
+    const { data } = await sb.from("watchlist").select("user_id,symbol,country").in("user_id", userIds.slice(i, i + 1000));
+    if (data) wlRows.push(...(data as { user_id: string; symbol: string; country: string }[]));
+  }
   const wlByUser = new Map<string, { kr: Set<string>; us: Set<string> }>();
-  for (const w of (wlRows ?? []) as { user_id: string; symbol: string; country: string }[]) {
+  for (const w of wlRows) {
     const entry = wlByUser.get(w.user_id) ?? { kr: new Set<string>(), us: new Set<string>() };
     if (w.country === "KR") entry.kr.add(w.symbol);
     else if (w.country === "US") entry.us.add(w.symbol);
     wlByUser.set(w.user_id, entry);
   }
 
-  // 4) 사용자별 이메일(auth) 조회 + 조립
-  const admin = createAdminClient();
+  // 4) 사용자별 이메일 배치 조회 + 조립
+  // 직렬 auth.admin.getUserById(구독자당 1회)는 수백 명에서 60s 타임아웃 → public.users.email 배치 조회(1000청크)로 교체(STEP 794 §8).
+  const emailByUser = new Map<string, string>();
+  for (let i = 0; i < userIds.length; i += 1000) {
+    const { data } = await sb.from("users").select("id,email").in("id", userIds.slice(i, i + 1000));
+    for (const u of (data ?? []) as { id: string; email: string | null }[]) {
+      if (u.email) emailByUser.set(u.id, u.email);
+    }
+  }
   const emails: { from: string; to: string; subject: string; html: string; headers: Record<string, string> }[] = [];
   const now = new Date();
 
@@ -146,8 +162,7 @@ export async function GET(req: Request) {
     const briefText = briefFor[loc];
     if (!briefText) continue; // 이 로케일 브리핑이 신선하지 않음 — 지어내지 않고 스킵(사용자별)
 
-    const { data: u } = await admin.auth.admin.getUserById(s.user_id);
-    const to = u?.user?.email;
+    const to = emailByUser.get(s.user_id);
     if (!to) continue;
 
     const wl = wlByUser.get(s.user_id);
