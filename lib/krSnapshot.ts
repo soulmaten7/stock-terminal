@@ -38,14 +38,23 @@ async function fetchOne(url: string, basDd: string, key: string): Promise<KrxRow
     return [];
   }
 }
-// target 이하 가장 가까운 거래일의 시장별 원본 행
+// YYYYMMDD → Date (로컬). 유효하지 않으면 null.
+function parseYmd(s: string): Date | null {
+  if (!/^\d{8}$/.test(s)) return null;
+  const y = +s.slice(0, 4), m = +s.slice(4, 6), d = +s.slice(6, 8);
+  const dt = new Date(y, m - 1, d);
+  return Number.isFinite(dt.getTime()) ? dt : null;
+}
+// target 이하 가장 가까운 거래일의 시장별 원본 행.
+// STEP 803 §7: 자매 파일 krEtpSnapshot과 동일하게 '유효 종가(TDD_CLSPRC>0)가 하나라도 있는 날'만 거래일로 채택.
+//   KRX가 휴장일에 목록만(종가 0) 반환하면 그 날을 잘못 채택해 기간 수익률이 전부 null이 되던 문제 방지.
 async function rawForDate(target: Date, key: string): Promise<{ kospi: KrxRow[]; kosdaq: KrxRow[]; basDd: string }> {
   for (let i = 0; i < 12; i++) {
     const d = new Date(target);
     d.setDate(target.getDate() - i);
     const basDd = ymd(d);
     const [a, b] = await Promise.all([fetchOne(EP.kospi, basDd, key), fetchOne(EP.kosdaq, basDd, key)]);
-    if (a.length + b.length > 0) return { kospi: a, kosdaq: b, basDd };
+    if ([...a, ...b].some((r) => num(r.TDD_CLSPRC) > 0)) return { kospi: a, kosdaq: b, basDd };
   }
   return { kospi: [], kosdaq: [], basDd: "" };
 }
@@ -68,12 +77,15 @@ export async function computeKrSnapshot(): Promise<{ ok: true; computed: number;
   const base = await rawForDate(today, key);
   if (base.kospi.length + base.kosdaq.length === 0) throw new Error("krx empty");
 
+  // STEP 803 §7: 기간 역산 기준은 today가 아니라 실제 최신 거래일(base.basDd).
+  //   크론이 밀려 today가 실제 거래일보다 앞서면 1주/1개월/…이 어긋나므로 base 기준으로 정렬.
+  const baseDate = parseYmd(base.basDd) ?? today;
   const [d1w, d1m, d3m, d6m, d1y] = await Promise.all([
-    rawForDate(new Date(today.getTime() - 7 * day), key),
-    rawForDate(new Date(today.getTime() - 30 * day), key),
-    rawForDate(new Date(today.getTime() - 91 * day), key),
-    rawForDate(new Date(today.getTime() - 182 * day), key),
-    rawForDate(new Date(today.getTime() - 365 * day), key),
+    rawForDate(new Date(baseDate.getTime() - 7 * day), key),
+    rawForDate(new Date(baseDate.getTime() - 30 * day), key),
+    rawForDate(new Date(baseDate.getTime() - 91 * day), key),
+    rawForDate(new Date(baseDate.getTime() - 182 * day), key),
+    rawForDate(new Date(baseDate.getTime() - 365 * day), key),
   ]);
   const m1w = closeMap([...d1w.kospi, ...d1w.kosdaq]);
   const m1m = closeMap([...d1m.kospi, ...d1m.kosdaq]);

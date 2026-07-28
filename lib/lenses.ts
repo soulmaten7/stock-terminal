@@ -56,6 +56,20 @@ function latestGrossProfit(financials: StockData["financials"]): number | null {
   return lr.grossProfit ?? (lr.totalRevenue != null && lr.costOfRevenue != null ? lr.totalRevenue - lr.costOfRevenue : null);
 }
 
+// STEP 803 §5: 두 재무 행(T·P)이 인접 회계연도(연도 차 1)인지 — Δ항목(GP/A 기초자산·자산성장 전년比)이 '전년 대비'로 성립하는지 검증.
+// 야후는 결측 연도를 건너뛰므로 2024·2021만 오면 3년 성장률이 '전년比'로 오표시됨 → 연도 차 ≠ 1이면 계산 불가(na)로 정직 처리.
+// 두 행의 날짜를 모두 알 수 있을 때만 판정(모르면 관대하게 통과 — 없는 사실 단정 금지).
+function yearOfRow(r: { date?: unknown } | undefined): number | null {
+  const d = r?.date;
+  const s = d instanceof Date ? d.toISOString().slice(0, 4) : typeof d === "string" ? d.slice(0, 4) : null;
+  const n = s ? parseInt(s, 10) : NaN;
+  return Number.isFinite(n) ? n : null;
+}
+function nonConsecutive(a: { date?: unknown } | undefined, b: { date?: unknown } | undefined): boolean {
+  const ya = yearOfRow(a), yb = yearOfRow(b);
+  return ya != null && yb != null && Math.abs(ya - yb) !== 1;
+}
+
 
 // ── 모멘텀 렌즈 ── 단기=1·3개월 추세 / 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +).
 export const momentum: Lens = {
@@ -215,7 +229,9 @@ export const quality: Lens = {
     const grossProfit = latestGrossProfit(d.financials);
     const priorAssets = d.financials[d.financials.length - 2]?.totalAssets ?? null;
     const c = LENS_COPY[locale].quality;
-    const gpa = grossProfit != null && priorAssets != null && priorAssets > 0 ? (grossProfit / priorAssets) * 100 : null;
+    // GP/A는 최신 매출총이익 ÷ 기초(전기말) 총자산 → 두 행이 인접 연도여야 '기초자산'이 성립. 연도 건너뜀이면 계산 불가(STEP 803 §5).
+    const gap = nonConsecutive(d.financials[d.financials.length - 1], d.financials[d.financials.length - 2]);
+    const gpa = !gap && grossProfit != null && priorAssets != null && priorAssets > 0 ? (grossProfit / priorAssets) * 100 : null;
     const qState = gpa == null ? "na" : gpa > 40 ? "high" : gpa < 15 ? "low" : "mid";
     return {
       key: "quality",
@@ -248,7 +264,9 @@ export const assetGrowth: Lens = {
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const lr = d.financials[d.financials.length - 1];
     const prev = d.financials[d.financials.length - 2];
-    const assetGrowthPct = lr?.totalAssets != null && prev?.totalAssets != null && prev.totalAssets > 0 ? (lr.totalAssets / prev.totalAssets - 1) * 100 : null;
+    // 자산성장은 '전년比' 증가율 → 두 행이 인접 연도가 아니면(결측 연도) 계산 불가(STEP 803 §5).
+    const gap = nonConsecutive(lr, prev);
+    const assetGrowthPct = !gap && lr?.totalAssets != null && prev?.totalAssets != null && prev.totalAssets > 0 ? (lr.totalAssets / prev.totalAssets - 1) * 100 : null;
     const c = LENS_COPY[locale].assetgrowth;
     const agState = assetGrowthPct == null ? "na" : assetGrowthPct > 20 ? "aggressive" : assetGrowthPct < 5 ? "conservative" : "mid";
     return {

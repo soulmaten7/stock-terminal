@@ -2,16 +2,18 @@ import { describe, it, expect } from "vitest";
 import { computeFScore, type FRow } from "./fscore";
 
 // STEP 801 — 값 검증(스냅샷 아님·기존 특성화 스냅샷 대체). 3개 회계연도(PP·P·T) 오름차순.
-// ROA·자산회전율 분모 = 기초(전기말) 총자산(Piotroski 2000 원전). ⚠️ 은행·보험 '처리 방식'은 STEP 803에서 정정 예정 —
-// 여기선 현재 동작(미지원)만 고정(값 회귀 방지)하고 로직은 손대지 않는다.
+// ROA·자산회전율 분모 = 기초(전기말) 총자산(Piotroski 2000 원전).
+// STEP 803: 필수 필드 결측 시 사유를 '데이터 부족'으로 정직 표기(은행 단정 금지) + 회계연도 연속성·분할 조정 검증.
 function rows(over: { pp?: Partial<FRow>; p?: Partial<FRow>; t?: Partial<FRow> } = {}): FRow[] {
-  const PP: FRow = { totalAssets: 1000, ...over.pp }; // P의 기초 자산 = PP 기말
+  const PP: FRow = { date: "2021-12-31", totalAssets: 1000, ...over.pp }; // P의 기초 자산 = PP 기말
   const P: FRow = {
+    date: "2022-12-31",
     netIncome: 50, operatingCashFlow: 60, ordinarySharesNumber: 100,
     currentAssets: 200, currentLiabilities: 100, longTermDebt: 100,
     totalAssets: 1000, totalRevenue: 500, grossProfit: 200, ...over.p,
   };
   const T: FRow = {
+    date: "2023-12-31",
     netIncome: 80, operatingCashFlow: 90, ordinarySharesNumber: 100,
     currentAssets: 250, currentLiabilities: 90, longTermDebt: 80,
     totalAssets: 1100, totalRevenue: 600, grossProfit: 280, ...over.t,
@@ -36,12 +38,31 @@ describe("computeFScore — 지원 조건", () => {
   it("정상 3년 → 지원", () => {
     expect(computeFScore(rows()).supported).toBe(true);
   });
-  it("은행형(매출총이익·매출 없음·3년): 현재 미지원 — STEP 803에서 재검", () => {
-    const bank = rows({
+  it("필수 필드 결측(매출총이익·매출 없음): 미지원 + 사유는 '데이터 부족'(은행 단정 금지·STEP 803 §1)", () => {
+    const missing = rows({
       p: { grossProfit: null, costOfRevenue: null, totalRevenue: null },
       t: { grossProfit: null, costOfRevenue: null, totalRevenue: null },
     });
-    expect(computeFScore(bank).supported).toBe(false); // 은행 처리 자체는 손대지 않음(803)
+    const f = computeFScore(missing);
+    expect(f.supported).toBe(false);
+    expect(f.reason).not.toContain("은행");
+    expect(f.reason).not.toContain("보험");
+    expect(f.reason).toContain("데이터");
+    // en 로케일도 은행 단정이 없어야 함
+    expect(computeFScore(missing, "en").reason).not.toMatch(/bank|insurer/i);
+  });
+  it("회계연도 비연속(2021·2022·2024 — 2023 결측): 미지원 + 사유는 연속성 안내(STEP 803 §5)", () => {
+    const gap = rows({ t: { date: "2024-12-31" } }); // PP 2021·P 2022·T 2024 → P→T 2년
+    const f = computeFScore(gap);
+    expect(f.supported).toBe(false);
+    expect(f.reason).not.toContain("은행");
+  });
+  it("액면분할(주식수 정수배 급증): no_dilute 오탐 없음 + 근거에 조정 표기(STEP 803 §4)", () => {
+    // T 주식수 = P의 4배(4:1 분할) → 원값 비교면 '신주발행=실패'로 오탐. 분할 감지 시 통과 + 표기.
+    const split = rows({ t: { ordinarySharesNumber: 400 } });
+    const c = computeFScore(split).criteria.find((x) => x.key === "no_dilute");
+    expect(c?.pass).toBe(true);
+    expect(c?.note).toMatch(/조정/);
   });
 });
 
@@ -66,7 +87,8 @@ describe("computeFScore — 개별 항목 경계(하나씩 뒤집기)", () => {
     expect(k.has("accrual")).toBe(false);
   });
   it("no_dilute: 주식수 증가 → 실패 (기본은 통과)", () => {
-    expect(passKeys(rows({ t: { ordinarySharesNumber: 200 } })).has("no_dilute")).toBe(false);
+    // 130 = 1.3배(정수배 아님) → 진짜 희석으로 판정 실패. (정수배 급증은 분할로 별도 처리·STEP 803 §4)
+    expect(passKeys(rows({ t: { ordinarySharesNumber: 130 } })).has("no_dilute")).toBe(false);
     expect(passKeys(rows()).has("no_dilute")).toBe(true);
   });
   it("margin_up: 매출총이익률 하락 → 실패", () => {

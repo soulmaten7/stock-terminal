@@ -66,7 +66,7 @@ export const LENS_COPY: Record<Locale, {
       question: "재무가 튼튼한가?",
       shortLabel: "재무 건전성",
       what: "재무가 튼튼한지 9가지로 점수 매겨요 — 돈 잘 버는지, 빚 감당되는지, 작년보다 나아졌는지.",
-      na: "이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.",
+      na: "재무 데이터가 부족해 점수를 낼 수 없어요.",
       about: "회계학자 피오트로스키가 2000년 만든, 기업 재무 건강을 9개 항목으로 점수 매기는 체크리스트예요(수익성·부채·효율의 전년 대비 개선). 원래 값싼 가치주 중 '진짜 부실한 곳'을 걸러내려 만들었어요 — 그래서 수익 예측이 아니라 재무 건전성 판단에 씁니다.",
     },
   },
@@ -124,7 +124,7 @@ export const LENS_COPY: Record<Locale, {
       question: "Are the financials solid?",
       shortLabel: "Financial health",
       what: "Scores a company's financial health across 9 checks — a filter to weed out weak balance sheets (not a return forecast).",
-      na: "Can't be scored here — banks and insurers are built differently, so these checks don't apply.",
+      na: "Not enough financial data to score this one.",
       about: "A checklist created by accounting professor Piotroski in 2000 that scores financial health on 9 points (year-over-year gains in profitability, debt, and efficiency). It was built to weed out the genuinely weak names among cheap value stocks — so it judges financial health, not future returns.",
     },
   },
@@ -159,7 +159,7 @@ export const LENS_READINGS: Record<Locale, {
       high: { phrase: "높은 수익성", plain: "자산 대비 이익을 꾸준히 잘 내는 회사예요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요." },
       mid: { phrase: "보통 수익성", plain: "자산 대비 수익성이 특별히 높지도 낮지도 않은 편이에요." },
       low: { phrase: "낮은 수익성", plain: "자산 대비 벌어들이는 이익이 적은 편이에요." },
-      na: { phrase: "산출 불가", plain: "은행 등은 매출총이익 구조가 달라 이 기법을 적용하지 않아요." },
+      na: { phrase: "산출 불가", plain: "매출총이익 데이터가 없어 이 기법으론 판단하기 어려워요." },
     },
     assetgrowth: {
       aggressive: { phrase: "공격적 확장", plain: "자산을 빠르게 불리는 회사예요. 역사적으로 이렇게 급히 몸집을 키운 회사는 이후 성과가 약한 편이라, 참고해서 볼 신호예요." },
@@ -176,7 +176,7 @@ export const LENS_READINGS: Record<Locale, {
       strong: { phrase: "재무 건전", plain: "재무 건전성이 좋은 편이에요 — 9개 중 대부분 통과. 부실할 가능성은 낮아요(단, 오를지 예측은 아니에요)." },
       mid: { phrase: "재무 보통", plain: "재무 건전성은 중간이에요 — 아주 튼튼하지도, 부실하지도 않아요. 부실 회사를 거를 때 보는 참고용이지 오를지 예측은 아니에요." },
       weak: { phrase: "재무 취약", plain: "재무가 약한 편이에요 — 통과 항목이 적어요. 부실 위험을 참고하는 신호예요(예측은 아님)." },
-      na: { phrase: "산출 불가", plain: "은행·보험은 재무 구조가 달라 이 점수를 적용하지 않아요." },
+      na: { phrase: "산출 불가", plain: "재무 데이터가 부족해 이 점수를 낼 수 없어요." },
     },
   },
   en: {
@@ -200,7 +200,7 @@ export const LENS_READINGS: Record<Locale, {
       high: { phrase: "A sturdy earner", plain: "It reliably turns assets into profit — a high-quality profile worth watching." },
       mid: { phrase: "Average profitability", plain: "Profitability versus assets is neither especially high nor low." },
       low: { phrase: "Low profitability", plain: "It earns relatively little from its assets." },
-      na: { phrase: "Can't be scored", plain: "Banks and the like are built differently, so this lens doesn't apply." },
+      na: { phrase: "Can't be scored", plain: "No gross-profit data, so this lens can't judge it." },
     },
     assetgrowth: {
       aggressive: { phrase: "Expanding aggressively", plain: "It's growing assets fast. Historically, companies that bulk up this quickly have tended to lag afterward — a signal to watch." },
@@ -217,7 +217,7 @@ export const LENS_READINGS: Record<Locale, {
       strong: { phrase: "Financially sturdy", plain: "It passes many of the 9 checks — solid financial health (not a return forecast)." },
       mid: { phrase: "Middling financials", plain: "It passes about half of the 9 checks." },
       weak: { phrase: "Watch for weakness", plain: "It passes few checks — financials may be weak, so look carefully." },
-      na: { phrase: "Can't be scored", plain: "Banks and insurers are built differently, so this score doesn't apply." },
+      na: { phrase: "Can't be scored", plain: "Not enough financial data to score this." },
     },
   },
 };
@@ -272,7 +272,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       high: "장기 유리한 편 — 알짜 우량주는 역사적으로 장기 우위 (검증된 경향).",
       mid: "장기: 중립 — 수익성이 특별히 높지도 낮지도 않아요.",
       low: "장기 불리한 편 — 수익성 낮은 회사는 역사적으로 장기 열위 (검증된 경향).",
-      na: "판단 불가 — 은행 등은 이 기법 미적용.",
+      na: "판단 불가 — 데이터 부족.",
     },
     assetgrowth: {
       aggressive: "길게 보면 불리한 편 — 몸집을 공격적으로 키운 회사는 이후 성과가 약했어요 (다만 근거는 아직 약해요).",
@@ -289,7 +289,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       strong: "건전성: 좋은 편 — 부실 가능성 낮아요 (수익 방향 예측은 아님).",
       mid: "건전성: 중간 — 부실 회피 참고용이지 수익 방향은 아니에요.",
       weak: "건전성: 약한 편 — 부실 위험 참고 신호예요 (수익 방향 아님).",
-      na: "점수 불가 — 은행·보험 미적용.",
+      na: "점수 불가 — 데이터 부족.",
     },
   },
   en: {
@@ -313,7 +313,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       high: "Long term: leans favorable — high-quality names have historically won long-term (validated).",
       mid: "Long term: neutral — profitability is middling.",
       low: "Long term: leans unfavorable — low-profitability names have historically lagged (validated).",
-      na: "Can't judge — doesn't apply to banks etc.",
+      na: "Can't judge — not enough data.",
     },
     assetgrowth: {
       aggressive: "Long term: leans unfavorable — aggressive expanders have historically lagged afterward (weak in our sample).",
@@ -330,7 +330,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       strong: "Health: good — low distress odds (not a return forecast).",
       mid: "Health: medium — a distress-avoidance check, not a return call.",
       weak: "Health: weak — a distress-risk flag (not a return call).",
-      na: "Can't score — doesn't apply to banks/insurers.",
+      na: "Can't score — not enough data.",
     },
   },
 };

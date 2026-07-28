@@ -225,8 +225,12 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
 // KR 유니버스 — kr_stock_snapshot 거래대금 상위 N (admin 클라·6자리 코드). trade_amount도 같이 반환(추가 조회 없음).
 export async function topKrByTradeAmount(topN: number): Promise<{ symbols: string[]; tradeAmountOf: Map<string, number> }> {
   const sb = createAdminClient();
-  const { data } = await sb.from("kr_stock_snapshot").select("symbol,trade_amount").order("trade_amount", { ascending: false }).limit(topN);
-  const rows = (data ?? []) as { symbol: string; trade_amount: number | null }[];
+  // STEP 803 §3: 우선주(끝자리 ≠ 0)는 밸류 렌즈가 계산 불가 → 백분위 오염 방지 위해 선계산 유니버스에서 제외.
+  //   제외분만큼 topN이 줄지 않도록 여유 있게 당겨(topN+200) 필터 후 topN으로 컷.
+  const isPreferred = (s: string) => /^\d{6}$/.test(s) && !s.endsWith("0");
+  const { data } = await sb.from("kr_stock_snapshot").select("symbol,trade_amount").order("trade_amount", { ascending: false }).limit(topN + 200);
+  const all = (data ?? []) as { symbol: string; trade_amount: number | null }[];
+  const rows = all.filter((row) => !isPreferred(row.symbol)).slice(0, topN);
   const tradeAmountOf = new Map<string, number>();
   for (const row of rows) if (row.trade_amount != null) tradeAmountOf.set(row.symbol, row.trade_amount);
   return { symbols: rows.map((row) => row.symbol), tradeAmountOf };

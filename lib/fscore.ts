@@ -20,13 +20,15 @@ export type FScore = {
 // group 키(수익성/재무 안정성/효율성)는 표시가 아니라 UI가 항목을 묶는 '매칭 키'라 언어 무관하게 고정(표시는 t()).
 type CText = { label: string; plain: string };
 const FS_TEXT: Record<Locale, {
-  needThree: string; bank: string; good: string; mid: string; weak: string;
+  needThree: string; dataMissing: string; gap: string; splitNote: string; good: string; mid: string; weak: string;
   cash: string; net: string;
   crit: Record<string, CText>;
 }> = {
   ko: {
     needThree: "재무 데이터 3개 회계연도가 부족해요 (ROA·회전율은 기초 자산이 필요해서요)",
-    bank: "이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.",
+    dataMissing: "재무 데이터가 부족해 점수를 낼 수 없어요.",
+    gap: "회계연도가 연속되지 않아 점수를 낼 수 없어요 (중간에 빠진 해가 있어요).",
+    splitNote: "액면분할 조정",
     good: "우량", mid: "중립", weak: "부실",
     cash: "현금", net: "순익",
     crit: {
@@ -43,7 +45,9 @@ const FS_TEXT: Record<Locale, {
   },
   en: {
     needThree: "Not enough data — this needs three fiscal years (ROA and turnover use beginning assets).",
-    bank: "Can't score this one — it's a bank or insurer, and their financials are built differently.",
+    dataMissing: "Not enough financial data to score this one.",
+    gap: "Can't score — the fiscal years aren't consecutive (a year is missing).",
+    splitNote: "split-adjusted",
     good: "Strong", mid: "Neutral", weak: "Weak",
     cash: "Cash", net: "Net income",
     crit: {
@@ -108,7 +112,8 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
   const P = rows[rows.length - 2];
   const PP = rows[rows.length - 3]; // T·P의 기초 자산 = P·PP의 기말 자산
 
-  // 필수 필드 — 분모는 양수까지 요구. 하나라도 없으면(예: 은행) F-Score 미적용.
+  // 필수 필드 — 분모는 양수까지 요구. 하나라도 없으면(데이터 결측) F-Score 계산 불가.
+  // ⚠️ 결측 원인을 은행·보험으로 단정하지 않는다(직시 원칙): 실제로는 단순 데이터 누락일 수 있음(STEP 803).
   const ok = (r: FRow) =>
     r.netIncome != null &&
     r.operatingCashFlow != null &&
@@ -123,12 +128,24 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
   if (!ok(T) || !ok(P) || (PP?.totalAssets ?? 0) <= 0) {
     return {
       supported: false,
-      reason: X.bank,
+      reason: X.dataMissing,
       score: 0,
       max: 9,
       grade: "-",
       criteria: [],
     };
+  }
+
+  // STEP 803 §5: 회계연도 연속성 — T·P·PP가 인접 연도(간격 1년)여야 ΔROA·Δ회전율이 '전년 대비'로 성립.
+  //   중간에 빠진 해가 있으면(예: 2021·2019·2018 — 2020 결측) 증분 비교가 왜곡되므로 계산 불가로 정직히 반환.
+  const yr = (r: FRow): number | null => {
+    const s = fmtDate(r.date);
+    const n = s ? parseInt(s.slice(0, 4), 10) : NaN;
+    return Number.isFinite(n) ? n : null;
+  };
+  const yT = yr(T), yP = yr(P), yPP = yr(PP);
+  if (yT != null && yP != null && yPP != null && (yT - yP !== 1 || yP - yPP !== 1)) {
+    return { supported: false, reason: X.gap, score: 0, max: 9, grade: "-", criteria: [] };
   }
 
   const begT = P.totalAssets as number;  // T의 기초(전기말) 총자산 = P 기말
@@ -142,6 +159,17 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
   const gm = (r: FRow) => (gp(r) as number) / (r.totalRevenue as number);
   const pct = (v: number) => (v * 100).toFixed(1) + "%";
 
+  // STEP 803 §4: 액면분할/병합은 '신주발행(자금조달 희석)'이 아니다 — 주식수가 정수배로 급변할 뿐 경제적 희석 없음.
+  //   T/P 주식수 비율이 정수배(≥2, 순분할)나 그 역수(≤1/2, 병합)에 근접하면 분할로 보고 no_dilute를 통과 처리(원전 취지 = 자금조달 희석 여부).
+  const shT = T.ordinarySharesNumber as number, shP = P.ordinarySharesNumber as number;
+  const ratio = shP > 0 ? shT / shP : 1;
+  const nearInt = (x: number) => Math.abs(x - Math.round(x)) <= 0.01 * Math.max(1, Math.round(x));
+  const isSplit = shP > 0 && ((ratio >= 1.5 && nearInt(ratio)) || (ratio <= 1 / 1.5 && nearInt(1 / ratio)));
+  const dilutePass = isSplit || shT <= shP * 1.001;
+  const diluteNote = isSplit
+    ? `${big(shP)} → ${big(shT)} (${X.splitNote})`
+    : `${big(shP)} → ${big(shT)}`;
+
   // 3그룹(수익성 4·재무 안정성 3·효율성 2) — GuruFocus·Stockopedia 표준 그룹핑. label=전문용어 / plain=쉬운 풀이(카드 괄호).
   const c: FCriterion[] = [
     { key: "roa_pos", group: "수익성", ...X.crit.roa_pos, pass: roaT > 0, note: `ROA ${pct(roaT)}` },
@@ -150,7 +178,7 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
     { key: "accrual", group: "수익성", ...X.crit.accrual, pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `${X.cash} ${big(T.operatingCashFlow)} · ${X.net} ${big(T.netIncome)}` },
     { key: "lever_dn", group: "재무 안정성", ...X.crit.lever_dn, pass: lev(T) < lev(P), note: `${pct(lev(P))} → ${pct(lev(T))}` },
     { key: "liq_up", group: "재무 안정성", ...X.crit.liq_up, pass: cr(T) > cr(P), note: `${cr(P).toFixed(2)} → ${cr(T).toFixed(2)}` },
-    { key: "no_dilute", group: "재무 안정성", ...X.crit.no_dilute, pass: (T.ordinarySharesNumber as number) <= (P.ordinarySharesNumber as number) * 1.001, note: `${big(P.ordinarySharesNumber)} → ${big(T.ordinarySharesNumber)}` },
+    { key: "no_dilute", group: "재무 안정성", ...X.crit.no_dilute, pass: dilutePass, note: diluteNote },
     { key: "margin_up", group: "효율성", ...X.crit.margin_up, pass: gm(T) > gm(P), note: `${pct(gm(P))} → ${pct(gm(T))}` },
     { key: "turn_up", group: "효율성", ...X.crit.turn_up, pass: atT > atP, note: `${atP.toFixed(2)} → ${atT.toFixed(2)}` },
   ];

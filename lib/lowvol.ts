@@ -2,12 +2,14 @@
 // 실현변동성 = 최근 N거래일 일간수익률 표준편차 × √252 (연율화, %). 가격만 필요.
 // 백테스트(scripts/backtest_lowvol)와 렌즈가 공유 → 구현·검증 일치.
 
+// STEP 803 §6: 최소 표본 = 수익률 120개(≈6개월). 미달이면 표준오차가 커 252일 종목들과 한 줄로 백분위 비교할 수 없다 → null(계산 불가·백분위 제외).
+const MIN_RETS = 120;
 export function realizedVol(closes: number[], days = 252): number | null {
-  if (closes.length < 30) return null;
+  if (closes.length < MIN_RETS + 1) return null;
   const seg = closes.slice(-(days + 1));
   const rets: number[] = [];
   for (let i = 1; i < seg.length; i++) if (seg[i - 1] > 0) rets.push(seg[i] / seg[i - 1] - 1);
-  if (rets.length < 20) return null;
+  if (rets.length < MIN_RETS) return null;
   const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
   const varc = rets.reduce((a, b) => a + (b - mean) * (b - mean), 0) / (rets.length - 1);
   return Math.sqrt(varc) * Math.sqrt(252) * 100;

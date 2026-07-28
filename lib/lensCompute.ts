@@ -95,6 +95,7 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
 
   // 현재가·PER·PBR·이름(밸류에이션 렌즈용) — 해석된 심볼로 조회
   let pe: number | null = null, pb: number | null = null, name = symbol, price: number | null = null, changePercent: number | null = null;
+  let marketCapQuote: number | null = null; // 야후가 주는 실시간 시총(최신 주식수 반영) — 재무 주식수보다 우선(STEP 803 §2)
   try {
     const q = await yf.quote(resolved);
     pe = (q as { trailingPE?: number }).trailingPE ?? null;
@@ -102,9 +103,15 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
     name = (q as { shortName?: string }).shortName || (q as { longName?: string }).longName || name;
     price = (q as { regularMarketPrice?: number }).regularMarketPrice ?? null;
     changePercent = (q as { regularMarketChangePercent?: number }).regularMarketChangePercent ?? null;
+    const mcq = (q as { marketCap?: number }).marketCap;
+    marketCapQuote = typeof mcq === "number" && isFinite(mcq) && mcq > 0 ? mcq : null;
   } catch {
     /* quote 실패해도 가격기반 렌즈는 계산 */
   }
+
+  // STEP 803 §3: KR 우선주(예: 005935) — '우선주 가격 × 보통주 주식수 ÷ 모회사 순이익'은 잘못된 PER/PBR을 낳는다.
+  //   6자리 코드 중 보통주(끝자리 0)가 아니면 우선주로 보고 밸류 렌즈를 계산 불가(정직 결측)로 둔다(가장 안전한 기본값).
+  const isKrPreferred = /^\d{6}$/.test(symbol) && !symbol.endsWith("0");
 
   // 데이터 부족(가격계열<30) → 재무 fetch·밸류 폴백 생략(현 동작 보존), 빈 재무 번들 반환.
   if (closes.length < 30) {
@@ -148,9 +155,15 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
 
   // 밸류(E/P·B/M) 폴백 — 야후 trailingPE/priceToBook이 null(한국 .KS 등)이면 재무로 직접 산출.
   // PER = 시총/순이익(적자면 null), PBR = 시총/자기자본. (STEP696 · §docs/LENS_DEV_PLAYBOOK.md #29)
-  const mc = marketCap(price, lr?.ordinarySharesNumber);
-  if (pe == null) pe = perFrom(mc, lr?.netIncome);
-  if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
+  // 시총은 야후 quote.marketCap(최신 주식수) 우선 — 없을 때만 직전 회계연도 주식수로 폴백(최대 15개월 묵음·STEP 803 §2).
+  const mc = marketCapQuote ?? marketCap(price, lr?.ordinarySharesNumber);
+  if (isKrPreferred) {
+    // 우선주는 보통주 기준 PER/PBR이 왜곡 → 폴백 산출을 하지 않는다(야후가 직접 준 값이 있으면 그대로 신뢰).
+    // (야후 trailingPE/priceToBook은 해당 종목 자체 기준이라 유효할 수 있어 덮어쓰지 않음)
+  } else {
+    if (pe == null) pe = perFrom(mc, lr?.netIncome);
+    if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
+  }
 
   return { symbol, resolved, name, price, changePercent, closes, adjCloses, pe, pb, financials: rows };
 }
