@@ -16,13 +16,13 @@ type Item = {
   symbol: string;
   name: string;
   price: number;
-  changePercent: number;
+  changePercent: number | null; // null=결측(화면 '—'). 0으로 날조 금지(STEP 804 §1)
   r1w: number | null;
   r1m: number | null;
   r3m: number | null;
   r6m: number | null;
   r1y: number | null;
-  amount: number;
+  amount: number | null; // null=결측. 정렬은 null을 뒤로.
   lens?: { pos: number; warn: number; flat: number } | null;
 };
 
@@ -76,24 +76,24 @@ export async function GET() {
     if (!data || data.length === 0) break;
     for (const p of data as PerfRecord[]) {
       const price = p.price ?? 0;
-      if (!(price > 0)) continue;
+      if (!(price > 0)) continue; // 현재가 없으면 행 자체를 제외(0으로 표시하지 않음·정직)
       rows.push({
         symbol: p.symbol,
         name: NAME_MAP.get(p.symbol) || p.symbol,
         price,
-        changePercent: p.r1d ?? 0,
+        changePercent: p.r1d, // 결측이면 null → 화면 '—' (보합 0%로 날조 금지)
         r1w: p.r1w,
         r1m: p.r1m,
         r3m: p.r3m,
         r6m: p.r6m,
         r1y: p.r1y,
-        amount: p.amount ?? 0,
+        amount: p.amount, // 결측이면 null
       });
     }
     if (data.length < 1000) break;
   }
 
-  const sorted = rows.sort((a, b) => b.amount - a.amount);
+  const sorted = rows.sort((a, b) => (b.amount ?? -Infinity) - (a.amount ?? -Infinity)); // 거래대금 결측은 뒤로
   const lensMap = await fetchLensMap(sb, "US", sorted.map((r) => r.symbol));
   const items = sorted.map((r) => ({ ...r, lens: lensMap.get(r.symbol) ?? null }));
   const data = { items };

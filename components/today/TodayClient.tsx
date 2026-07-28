@@ -11,6 +11,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName, resolveWatchlistName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
+import { marketToday } from '@/lib/marketDate';
 import { WatchStar } from '@/components/common/WatchStar';
 import { PageShell } from '@/components/layout/PageShell';
 
@@ -72,18 +73,16 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   }
 }
 
-// 어제 UTC date(change_date와 동일 규칙) — 응답 date가 이보다 과거면 폴백 배지("금요일 기준") 노출.
-function todayUtcDate(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 function weekdayOf(dateStr: string, loc: Locale): string {
   const d = new Date(dateStr + 'T00:00:00Z');
   return new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { weekday: 'long', timeZone: 'UTC' }).format(d);
 }
 
-function AsOfBadge({ date, loc }: { date: string | null; loc: Locale }) {
+// 데이터 기준일이 그 시장의 로컬 '오늘'과 다르면 배지 노출("금요일 기준").
+// UTC 대신 marketToday로 비교 — KST 새벽(UTC 하루 뒤처짐)에 어제 데이터가 '오늘'로 오판돼 배지가 숨던 버그 수정(STEP 804 §3).
+function AsOfBadge({ date, loc, market = 'KR' }: { date: string | null; loc: Locale; market?: string }) {
   const t = useTranslations('Today');
-  if (!date || date === todayUtcDate()) return null;
+  if (!date || date === marketToday(market)) return null;
   return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
@@ -159,14 +158,17 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   const homeChanges = homeMarket === 'KR' ? initialKrChanges : initialUsChanges;
 
   const [watchlistQuotes, setWatchlistQuotes] = useState<WatchlistQuote[] | null>(null); // null=미조회, []=조회했지만 0
+  const [watchlistError, setWatchlistError] = useState(false); // 조회 실패 — 온보딩(없음)과 구분(STEP 804 §4)
+  const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거
   const [watchlistChanges, setWatchlistChanges] = useState<ChangeItem[]>([]);
   const [watchlistChangesDate, setWatchlistChangesDate] = useState<string | null>(null);
 
   // 로그인·관심목록 의존 데이터만 클라 fetch(세션 필요 — 서버 프리페치 불가).
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { setWatchlistQuotes([]); setWatchlistChanges([]); return; }
+    if (!user) { setWatchlistQuotes([]); setWatchlistChanges([]); setWatchlistError(false); return; }
     let alive = true;
+    setWatchlistError(false);
     async function run() {
       const [quotes, wlKr, wlUs] = await Promise.all([
         fetchJson<{ auth: boolean; watchlist: WatchlistQuote[] }>('/api/watchlist/quotes'),
@@ -174,14 +176,16 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
         fetchJson<ChangesResp>('/api/today/changes?market=US&watchlist=true&limit=20'),
       ]);
       if (!alive) return;
-      setWatchlistQuotes(quotes?.watchlist ?? []);
+      // quotes 조회 실패(null)를 '없음(빈 목록)'으로 흡수하지 않는다 — 온보딩 카드가 등록 사용자에게 뜨던 버그(STEP 804 §4).
+      if (quotes === null) { setWatchlistError(true); return; }
+      setWatchlistQuotes(quotes.watchlist ?? []);
       const merged = [...(wlKr?.items ?? []), ...(wlUs?.items ?? [])].sort((a, b) => (b.tradeAmount ?? 0) - (a.tradeAmount ?? 0));
       setWatchlistChanges(merged);
       setWatchlistChangesDate(wlKr?.date ?? wlUs?.date ?? null);
     }
     run();
     return () => { alive = false; };
-  }, [user, authLoading]);
+  }, [user, authLoading, reloadKey]);
 
   const homeIndexName = homeMarket === 'KR' ? 'KOSPI' : 'S&P 500';
   const homeIndex = indices.find((i) => i.name === homeIndexName);
@@ -189,7 +193,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
 
   const quoteMap = new Map((watchlistQuotes ?? []).map((q) => [q.symbol, q]));
   const hasWatchlist = (watchlistQuotes?.length ?? 0) > 0;
-  const watchlistLoading = authLoading || (!!user && watchlistQuotes === null);
+  const watchlistLoading = authLoading || (!!user && watchlistQuotes === null && !watchlistError); // 에러면 로딩이 아니라 에러 표시(STEP 804 §4)
 
   // PC hover 별(STEP 781 §2) — 관심 여부 초기값은 이미 가진 watchlistQuotes 재사용(새 조회 없음), 토글은 탐색과 동일 엔드포인트.
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
@@ -238,6 +242,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
         <p className="mb-2 text-sm font-bold text-unjong-primary">{t('railWatchlistTitle')}</p>
         {!user ? (
           <Link href="/auth/login" className="text-sm font-semibold text-unjong-accent">{t('railWatchlistLogin')}</Link>
+        ) : watchlistError ? (
+          <button type="button" onClick={() => setReloadKey((k) => k + 1)} className="text-sm font-semibold text-unjong-accent">{t('watchlistLoadError')} · {t('retry')}</button>
         ) : !hasWatchlist ? (
           <p className="text-sm text-unjong-muted">{t('onboardingTitle')}</p>
         ) : (
@@ -289,6 +295,12 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             <div className="space-y-2">
               {Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-14 animate-pulse rounded-xl bg-unjong-background" />)}
             </div>
+          ) : user && watchlistError ? (
+            /* 조회 실패를 온보딩(없음)으로 위장하지 않는다(STEP 804 §4) */
+            <div className="mx-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center sm:mx-0">
+              <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('watchlistLoadError')}</p>
+              <button type="button" onClick={() => setReloadKey((k) => k + 1)} className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('retry')}</button>
+            </div>
           ) : !user || !hasWatchlist ? (
             <div className="mx-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center sm:mx-0">
               <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('onboardingTitle')}</p>
@@ -299,7 +311,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
               <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
                 <div className="flex items-center">
                   <h2 className="text-base font-bold text-unjong-primary">{t('watchlistChangesTitle')}</h2>
-                  <AsOfBadge date={watchlistChangesDate} loc={loc} />
+                  <AsOfBadge date={watchlistChangesDate} loc={loc} market={homeMarket} />
                 </div>
                 <BasisLabel />
               </div>
@@ -331,7 +343,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
             <div className="flex items-center">
               <h2 className="text-base font-bold text-unjong-primary">{t('overnightUsTitle')}</h2>
-              <AsOfBadge date={usChanges?.date ?? null} loc={loc} />
+              <AsOfBadge date={usChanges?.date ?? null} loc={loc} market="US" />
             </div>
             <SelectionBasisLabel />
           </div>
@@ -359,7 +371,7 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
             <div className="flex items-center">
               <h2 className="text-base font-bold text-unjong-primary">{tExplore(homeMarket === 'KR' ? 'countryKr' : 'countryUs')} · {tExplore('changesTitle')}</h2>
-              <AsOfBadge date={homeChanges?.date ?? null} loc={loc} />
+              <AsOfBadge date={homeChanges?.date ?? null} loc={loc} market={homeMarket} />
             </div>
             <SelectionBasisLabel />
           </div>

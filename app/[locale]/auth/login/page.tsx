@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useTranslations, useLocale } from "next-intl";
 import { ArrowLeft, Mail } from "lucide-react";
 import { safeNextPath } from "@/lib/authRedirect";
+import { useAuthStore } from "@/stores/authStore";
 
 type Tab = "login" | "signup";
 
@@ -20,6 +21,12 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  // 이미 로그인한 사용자가 로그인 페이지에 오면 next(또는 홈)로 되돌린다(STEP 804 §6) — 하이드레이션 완료 후에만 판단.
+  const { user, isLoading: authLoading } = useAuthStore();
+  useEffect(() => {
+    if (!authLoading && user) router.replace(getNext());
+  }, [authLoading, user, router]);
 
   const [tab, setTab] = useState<Tab>("login");
   const [showForgot, setShowForgot] = useState(false);

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
+import { marketToday } from '@/lib/marketDate';
 import { LENS_COPY, LENS_READINGS, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -60,9 +61,6 @@ function stateLabel(loc: Locale, key: string, state: string | null): string {
 function compactPhrase(s: string): string {
   return s.replace(/\s*\([^)]*\)\s*$/, '');
 }
-function todayUtcDate(): string {
-  return new Date().toISOString().slice(0, 10);
-}
 function weekdayOf(dateStr: string, loc: Locale): string {
   const d = new Date(dateStr + 'T00:00:00Z');
   return new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { weekday: 'long', timeZone: 'UTC' }).format(d);
@@ -77,13 +75,15 @@ async function fetchJson<T>(url: string): Promise<T | null> {
     return null;
   }
 }
-async function fetchAmountTop(market: Country, limit: number): Promise<BoardRow[]> {
+// 실패(null)와 빈 결과([])를 구분해 반환 — 호출부가 '실패'와 '없음'을 다르게 표시(STEP 804 §4).
+// asOf = 데이터 기준일(KR 스냅샷 bas_dd) — 화면이 AsOfBadge로 데이터 나이 표시(STEP 804 §2).
+async function fetchAmountTop(market: Country, limit: number): Promise<{ rows: BoardRow[]; asOf: string | null } | null> {
   if (market === 'KR') {
-    const j = await fetchJson<{ stocks?: BoardRow[] }>(`/api/krx/ranking?market=all&sort=amount&limit=${limit}`);
-    return (j?.stocks ?? []).slice(0, limit);
+    const j = await fetchJson<{ stocks?: BoardRow[]; asOf?: string | null }>(`/api/krx/ranking?market=all&sort=amount&limit=${limit}`);
+    return j === null ? null : { rows: (j.stocks ?? []).slice(0, limit), asOf: j.asOf ?? null };
   }
   const j = await fetchJson<{ items?: BoardRow[] }>('/api/yahoo/us-list');
-  return (j?.items ?? []).slice(0, limit);
+  return j === null ? null : { rows: (j.items ?? []).slice(0, limit), asOf: null };
 }
 
 // 칩 스펙(STEP 763 통일 규격) 재사용 — 모바일 44px·rounded-xl·활성=strong, 데스크톱은 sm: 분기로 기존 느낌 보존.
@@ -93,9 +93,10 @@ function chipClass(active: boolean): string {
   }`;
 }
 
-function AsOfBadge({ date, loc }: { date: string | null; loc: Locale }) {
+// UTC 대신 marketToday로 비교 — KST 새벽 UTC 지연으로 배지가 숨던 버그 수정(STEP 804 §3).
+function AsOfBadge({ date, loc, market = 'KR' }: { date: string | null; loc: Locale; market?: string }) {
   const t = useTranslations('Today');
-  if (!date || date === todayUtcDate()) return null;
+  if (!date || date === marketToday(market)) return null;
   return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
@@ -251,6 +252,10 @@ export default function ExploreClient() {
   function selectMarket(m: Country) {
     setMarket(m);
     try { localStorage.setItem(STORAGE_KEY, m); } catch { /* 무시 */ }
+    // URL을 단일 소스로 갱신(STEP 804 §7) — 새로고침·공유 링크에서 시장이 유지되도록. 나머지 쿼리(list 등)는 보존.
+    const params = new URLSearchParams(searchParams?.toString() ?? '');
+    params.set('market', m);
+    router.replace(`${pathname}?${params.toString()}`);
   }
 
   // 검색
@@ -328,6 +333,8 @@ export default function ExploreClient() {
   const [posTop, setPosTop] = useState<LensTopItem[] | null>(null);
   const [amountTop, setAmountTop] = useState<BoardRow[] | null>(null);
   const [listsFailed, setListsFailed] = useState<{ changes: boolean; pos: boolean; amount: boolean }>({ changes: false, pos: false, amount: false });
+  const [amountAsOf, setAmountAsOf] = useState<string | null>(null); // 거래대금 목록 데이터 기준일(STEP 804 §2)
+  const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거(STEP 804 §4)
   // 톤 필터 칩(변화 풀리스트 전용·STEP 775 §2) — 정렬 토글 아님, to_tone 기준 필터만. 건수는 서버 집계(counts) 재사용.
   const [toneFilter, setToneFilter] = useState<'all' | 'pos' | 'warn'>('all');
 
@@ -336,6 +343,7 @@ export default function ExploreClient() {
     let alive = true;
     async function run() {
       setChanges(null); setPosTop(null); setAmountTop(null);
+      setListsFailed({ changes: false, pos: false, amount: false });
       const [ch, pos, amt] = await Promise.all([
         fetchJson<ChangesResp>(`/api/today/changes?market=${market}&limit=${limit}`),
         fetchJson<{ items: LensTopItem[] }>(`/api/explore/lens-top?market=${market}&sort=pos&limit=${limit}&lang=${lang}`),
@@ -344,12 +352,14 @@ export default function ExploreClient() {
       if (!alive) return;
       setChanges(ch);
       setPosTop(pos?.items ?? null);
-      setAmountTop(amt);
-      setListsFailed({ changes: !ch, pos: !pos, amount: amt.length === 0 });
+      setAmountTop(amt === null ? null : amt.rows);
+      setAmountAsOf(amt?.asOf ?? null);
+      // 실패(null)만 failed로 — 빈 결과([])는 '없음'이지 실패가 아님(STEP 804 §4).
+      setListsFailed({ changes: ch === null, pos: pos === null, amount: amt === null });
     }
     run();
     return () => { alive = false; };
-  }, [market, activeList, lang]);
+  }, [market, activeList, lang, reloadKey]);
 
   // 관심목록(별 토글)
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
@@ -379,10 +389,20 @@ export default function ExploreClient() {
     );
   }
 
+  // 실패를 '없음'·빈 공백으로 위장하지 않는다(STEP 804 §4) — 명시적 오류 + 재시도.
+  function LoadFailed() {
+    return (
+      <div className="py-6 text-center">
+        <p className="text-[15px] text-unjong-muted sm:text-sm">{t('loadError')}</p>
+        <button type="button" onClick={() => setReloadKey((k) => k + 1)} className="mt-1.5 inline-block text-[13px] font-semibold text-unjong-accent">{t('retry')}</button>
+      </div>
+    );
+  }
+
   // ── 풀 리스트 뷰 ──
   if (activeList) {
     const titleKey = activeList === 'changes' ? 'changesTitle' : activeList === 'pos' ? 'posTitle' : 'amountTitle';
-    const asOfDate = activeList === 'changes' ? changes?.date ?? null : null;
+    const asOfDate = activeList === 'changes' ? changes?.date ?? null : activeList === 'amount' ? amountAsOf : null;
     // 톤 필터 적용 후 종목당 그룹핑(STEP 776 §3 — 필터 먼저, 그다음 묶기).
     const filteredGroupedChanges = changes ? groupBySymbol(changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter)) : [];
     return (
@@ -396,7 +416,7 @@ export default function ExploreClient() {
         <div className="mb-3 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <div className="flex items-center">
             <h1 className="text-lg font-bold text-unjong-primary">{t(market === 'KR' ? 'countryKr' : 'countryUs')} · {t(titleKey)}</h1>
-            <AsOfBadge date={asOfDate} loc={loc} />
+            <AsOfBadge date={asOfDate} loc={loc} market={market} />
           </div>
           {activeList === 'changes' ? <SelectionBasisLabel /> : <DotLegendBasisLabel />}
         </div>
@@ -415,15 +435,19 @@ export default function ExploreClient() {
             </button>
           </div>
         ) : null}
+        {/* 칩=전체 집계(예 137) vs 목록=상위 50건+종목묶기(예 12행) 불일치 명시(STEP 804 §8) */}
+        {activeList === 'changes' && changes && (changes.counts?.total ?? 0) > changes.items.length ? (
+          <p className="mb-2 px-4 text-[12px] text-unjong-muted sm:px-0">{t('toneCountNote', { shown: changes.items.length })}</p>
+        ) : null}
         <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
           {activeList === 'changes' ? (
-            changes === null ? <Skeleton /> : filteredGroupedChanges.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+            listsFailed.changes ? <LoadFailed /> : changes === null ? <Skeleton /> : filteredGroupedChanges.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               filteredGroupedChanges.map(({ item, extra }, i) => <ChangeRow key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} market={market} watched={watchSet.has(item.symbol)} onToggleWatch={toggleWatch} extra={extra} />)
           ) : activeList === 'pos' ? (
-            posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+            listsFailed.pos ? <LoadFailed /> : posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={<PosRankingBasis tones={r.tones} topLensKey={r.topLensKey} topLensState={r.topLensState} loc={loc} t={t} />} />)
           ) : (
-            amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+            listsFailed.amount ? <LoadFailed /> : amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               amountTop.map((r) => {
                 const amt = rowTradeAmount(r);
                 return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null} />;
@@ -518,7 +542,7 @@ export default function ExploreClient() {
         <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <div className="flex items-center">
             <h2 className="text-base font-bold text-unjong-primary">{t('changesTitle')}</h2>
-            <AsOfBadge date={changes?.date ?? null} loc={loc} />
+            <AsOfBadge date={changes?.date ?? null} loc={loc} market={market} />
           </div>
           <div className="flex flex-col items-start gap-0.5 sm:items-end">
             {changes && changes.count != null && changes.count > 0 ? (
@@ -527,7 +551,7 @@ export default function ExploreClient() {
             <BasisLabel />
           </div>
         </div>
-        {listsFailed.changes ? null : changes === null ? (
+        {listsFailed.changes ? <LoadFailed /> : changes === null ? (
           <Skeleton />
         ) : changes.items.length === 0 ? (
           <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
@@ -549,7 +573,7 @@ export default function ExploreClient() {
             <DotLegendBasisLabel />
           </div>
         </div>
-        {listsFailed.pos ? null : posTop === null ? (
+        {listsFailed.pos ? <LoadFailed /> : posTop === null ? (
           <Skeleton />
         ) : posTop.length === 0 ? (
           <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>
@@ -571,7 +595,7 @@ export default function ExploreClient() {
             <DotLegendBasisLabel />
           </div>
         </div>
-        {listsFailed.amount ? null : amountTop === null ? (
+        {listsFailed.amount ? <LoadFailed /> : amountTop === null ? (
           <Skeleton />
         ) : amountTop.length === 0 ? (
           <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noItems')}</p>

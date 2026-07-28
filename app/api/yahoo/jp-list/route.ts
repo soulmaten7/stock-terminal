@@ -15,13 +15,13 @@ type Item = {
   symbol: string;
   name: string;
   price: number;
-  changePercent: number;
+  changePercent: number | null;
   r1w: number | null;
   r1m: number | null;
   r3m: number | null;
   r6m: number | null;
   r1y: number | null;
-  amount: number;
+  amount: number | null;
   lens?: { pos: number; warn: number; flat: number } | null;
 };
 
@@ -85,19 +85,19 @@ export async function GET(req: Request) {
         symbol: p.symbol,
         name: NAME_MAP.get(p.symbol) || p.symbol,
         price,
-        changePercent: p.r1d ?? 0,
+        changePercent: p.r1d,
         r1w: p.r1w,
         r1m: p.r1m,
         r3m: p.r3m,
         r6m: p.r6m,
         r1y: p.r1y,
-        amount: p.amount ?? 0,
+        amount: p.amount,
       });
     }
     if (data.length < 1000) break;
   }
 
-  const sorted = rows.sort((a, b) => b.amount - a.amount);
+  const sorted = rows.sort((a, b) => (b.amount ?? -Infinity) - (a.amount ?? -Infinity));
   const lensMap = await fetchLensMap(sb, "JP", sorted.map((r) => r.symbol));
   const items = sorted.map((r) => ({ ...r, lens: lensMap.get(r.symbol) ?? null }));
   const data = { items };

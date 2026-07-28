@@ -30,6 +30,8 @@ export default function MyPage() {
   const [emailBrief, setEmailBrief] = useState(false);
   const [emailBriefLoaded, setEmailBriefLoaded] = useState(false);
   const [emailBriefSaving, setEmailBriefSaving] = useState(false);
+  const [emailBriefLoadError, setEmailBriefLoadError] = useState(false); // 조회 실패 — OFF로 위장 금지(STEP 804 §5)
+  const [emailBriefMsg, setEmailBriefMsg] = useState<string | null>(null); // 토글 실패 안내
 
   // 비밀번호 변경(계정·보안 탭 — 이메일 로그인 계정만)
   const [newPassword, setNewPassword] = useState('');
@@ -65,23 +67,27 @@ export default function MyPage() {
     } catch { /* ignore */ }
     try {
       const supabase = createClient();
-      const { data } = await supabase.from('email_subscriptions').select('daily_brief').eq('user_id', user!.id).maybeSingle();
+      const { data, error } = await supabase.from('email_subscriptions').select('daily_brief').eq('user_id', user!.id).maybeSingle();
+      if (error) throw error;
       setEmailBrief(data?.daily_brief ?? false);
-    } catch { /* ignore — 기본 OFF로 둔다 */ }
+      setEmailBriefLoadError(false);
+    } catch { setEmailBriefLoadError(true); /* 조회 실패를 '구독 안 함(OFF)'으로 위장하지 않는다(STEP 804 §5) */ }
     setEmailBriefLoaded(true);
   };
 
   // ON=현재 로케일로 upsert(닉네임 변경과 동일하게 RLS 경로로 직접) · OFF=daily_brief만 false.
   const toggleEmailBrief = async () => {
-    if (!user) return;
+    if (!user || emailBriefSaving) return; // 연타 방지(STEP 804 §5)
     setEmailBriefSaving(true);
+    setEmailBriefMsg(null);
     const next = !emailBrief;
     const supabase = createClient();
     const { error } = await supabase.from('email_subscriptions').upsert(
       { user_id: user.id, daily_brief: next, locale, updated_at: new Date().toISOString() },
       { onConflict: 'user_id' }
     );
-    if (!error) setEmailBrief(next);
+    if (!error) { setEmailBrief(next); setEmailBriefLoadError(false); }
+    else setEmailBriefMsg(t('saveFail')); // 실패 안내(기존엔 조용히 실패)
     setEmailBriefSaving(false);
   };
 
@@ -232,6 +238,8 @@ export default function MyPage() {
                   <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${emailBrief ? 'translate-x-5' : 'translate-x-0.5'}`} />
                 </button>
               </div>
+              {emailBriefLoadError && <p className="mt-2 text-xs text-unjong-danger">{t('emailBriefLoadError')}</p>}
+              {emailBriefMsg && <p className="mt-2 text-xs text-unjong-danger">{emailBriefMsg}</p>}
             </div>
 
             <div className="border-t border-unjong-border pt-4">

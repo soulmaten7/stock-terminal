@@ -149,7 +149,7 @@ export async function GET() {
           symbol: e.sym,
           name: e.name,
           price: lastClose,
-          changePercent: ret(closes, 1) ?? 0,
+          changePercent: ret(closes, 1), // 결측이면 null(0 날조 금지·STEP 804 §1)
           r1w: ret(closes, 5),
           r1m: ret(closes, 21),
           r3m: ret(closes, 63),

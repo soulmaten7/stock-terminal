@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { getCache, setCache } from '@/lib/clientCache';
 
-type DivItem = { code: string; name: string; yield: number; exDate: string; dividend: string };
+type DivItem = { code: string; name: string; yield: number | null; exDate: string; dividend: string };
 
 export default function DividendFeed() {
   const t = useTranslations('Feed');
@@ -39,7 +39,7 @@ export default function DividendFeed() {
               <p className="truncate text-[13px] font-semibold text-unjong-primary">{it.name}</p>
               <p className="text-[11px] text-unjong-muted">{t('dividend.perShare', { code: it.code, v: it.dividend })}{it.exDate !== '—' ? t('dividend.exDate', { d: it.exDate }) : ''}</p>
             </div>
-            <span className="shrink-0 text-sm font-bold text-red-500">{it.yield.toFixed(2)}%</span>
+            <span className="shrink-0 text-sm font-bold text-red-500">{it.yield != null ? `${it.yield.toFixed(2)}%` : '—'}</span>
           </div>
         ))}
       </div>

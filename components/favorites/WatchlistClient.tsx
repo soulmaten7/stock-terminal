@@ -62,22 +62,27 @@ export default function WatchlistClient() {
   const [items, setItems] = useState<WatchItem[]>([]);
   const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false); // 조회 실패 — '없음'과 구분(STEP 804 §4)
+  const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거
+  const [actionError, setActionError] = useState<string | null>(null); // 해제 실패 알림(STEP 804 §5)
   const [lensMap, setLensMap] = useState<Record<string, LensState>>({});
   const lensStarted = useRef(false);
+  const removing = useRef<Set<string>>(new Set()); // 해제 연타 방지(in-flight 가드)
 
   // user 변화 구독(STEP 800 §4) — 로그아웃(다른 탭 포함·AuthProvider가 onAuthStateChange로 store 갱신) 시 즉시 초기화.
   // 예전엔 deps []로 1회만 로드 → 로그아웃 후에도 이전 사용자 관심목록이 그대로 남던 개인정보 노출(TodayClient·ExploreClient엔 이미 있는 가드).
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      setItems([]); setLensMap({}); setAuth(false); setLoading(false); lensStarted.current = false;
+      setItems([]); setLensMap({}); setAuth(false); setLoading(false); setLoadError(false); lensStarted.current = false;
       return;
     }
     let cancelled = false;
     setLoading(true);
+    setLoadError(false);
     lensStarted.current = false; // 사용자 바뀌면 렌즈 큐 재시작 허용
     fetch('/api/watchlist/quotes')
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error('quotes'); return r.json(); }) // HTTP 오류도 실패로(빈목록으로 위장 금지·STEP 804 §4)
       .then((j) => {
         if (cancelled) return;
         const list: WatchItem[] = j.watchlist ?? [];
@@ -89,9 +94,9 @@ export default function WatchlistClient() {
         for (const it of list) if (it.tones != null) seed[it.symbol] = { state: 'done', tones: it.tones };
         setLensMap(seed);
       })
-      .catch(() => { if (!cancelled) setLoading(false); });
+      .catch(() => { if (!cancelled) { setLoadError(true); setLoading(false); } }); // 실패는 '없음'이 아니라 에러로 표시
     return () => { cancelled = true; };
-  }, [user, authLoading]);
+  }, [user, authLoading, reloadKey]);
 
   // 행별 지연 렌즈 요약 — 선계산(lens_scores) 밖 종목만 동시성 4개 제한 큐로 실시간 폴백. 관심목록이 처음 채워질 때 한 번만 시작.
   useEffect(() => {
@@ -130,14 +135,30 @@ export default function WatchlistClient() {
   }, [items, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const remove = (symbol: string, market: string) => {
+    const key = `${symbol}:${market}`;
+    if (removing.current.has(key)) return; // 연타 방지
+    removing.current.add(key);
+    const snapshot = items; // 롤백용
+    setActionError(null);
     setItems((prev) => prev.filter((x) => !(x.symbol === symbol && x.market === market)));
     fetch('/api/watchlist', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ symbol, market, add: false }),
-    }).catch(() => {});
+    })
+      .then((res) => { if (!res.ok) throw new Error('remove'); }) // res.ok 검사 — 실패면 롤백(STEP 804 §5)
+      .catch(() => { setItems(snapshot); setActionError(t('removeFailed')); })
+      .finally(() => { removing.current.delete(key); });
   };
 
   if (loading) return <p className="py-10 text-center text-sm text-unjong-muted">{t('loading')}</p>;
+  if (loadError) {
+    return (
+      <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
+        <p className="text-sm text-unjong-muted">{t('loadError')}</p>
+        <button type="button" onClick={() => setReloadKey((k) => k + 1)} className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('retry')}</button>
+      </div>
+    );
+  }
   if (!auth) {
     return (
       <div className="rounded-2xl border border-unjong-border bg-unjong-surface py-10 text-center">
@@ -155,6 +176,8 @@ export default function WatchlistClient() {
   }
 
   return (
+    <>
+    {actionError && <p className="mb-2 rounded-lg bg-unjong-danger/10 px-3 py-2 text-center text-[13px] text-unjong-danger">{actionError}</p>}
     <ul className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface">
       {items.map((f) => (
         <li key={`${f.symbol}:${f.market}`} className="group flex items-start gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background active:bg-unjong-background">
@@ -186,5 +209,6 @@ export default function WatchlistClient() {
         </li>
       ))}
     </ul>
+    </>
   );
 }

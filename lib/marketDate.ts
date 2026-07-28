@@ -20,3 +20,15 @@ export function marketDate(symbol: string, at: Date = new Date()): string {
     day: '2-digit',
   }).format(at);
 }
+
+// 시장 코드(KR/US/JP/CN/GB/VN…) → 그 시장 타임존.
+const TZ_BY_MARKET: Record<string, string> = {
+  KR: 'Asia/Seoul', US: 'America/New_York', JP: 'Asia/Tokyo',
+  CN: 'Asia/Shanghai', HK: 'Asia/Hong_Kong', GB: 'Europe/London', VN: 'Asia/Ho_Chi_Minh',
+};
+// 시장 로컬 '오늘' YYYY-MM-DD — AsOfBadge가 UTC 대신 이걸로 비교해야 KST 새벽(UTC가 하루 뒤처짐)에
+// 어제 데이터가 '오늘'로 오판돼 배지가 숨는 버그를 막는다(STEP 804 §3).
+export function marketToday(market: string, at: Date = new Date()): string {
+  const tz = TZ_BY_MARKET[(market || '').toUpperCase()] ?? 'America/New_York';
+  return new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at);
+}

@@ -35,7 +35,7 @@ export async function GET() {
         return {
           sym: (stock?.symbol ?? "").trim(),
           name: stock?.name_ko ?? "—",
-          y: Number(d.dividend_yield ?? 0),
+          y: d.dividend_yield != null ? Number(d.dividend_yield) : null, // 결측이면 null(0% 날조 금지·STEP 804 §1)
           ex: d.ex_dividend_date,
           dps: d.dividend_per_share,
         };

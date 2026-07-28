@@ -16,14 +16,15 @@ const TABS = [
 export default function MobileTabBar() {
   const t = useTranslations('Nav');
   const pathname = usePathname() ?? '/';
-  const { user } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#0E1116] pb-[env(safe-area-inset-bottom)] sm:hidden">
       <div className="flex items-stretch">
         {TABS.map((tab) => {
           const active = tab.match(pathname);
-          const href = tab.key === 'my' && !user ? '/auth/login' : tab.href;
+          // 하이드레이션 중(authLoading)엔 로그인으로 고정하지 않는다 — 로그인 사용자가 튕기던 버그(STEP 804 §6).
+          const href = tab.key === 'my' && !authLoading && !user ? '/auth/login' : tab.href;
           return (
             <Link
               key={tab.key}

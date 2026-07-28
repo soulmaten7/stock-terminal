@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
@@ -58,11 +58,12 @@ const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 // 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — StockLensClient.tsx와 동일 구현(중복은 기존 두 파일 관례).
 function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
   const tb = useTranslations('Board'); // '관심종목 추가/해제' 재사용(dedup)
-  const { user } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 이 종목으로 복귀(next)
   const [watched, setWatched] = useState<boolean | null>(null); // null=조회 전
   const [pop, setPop] = useState(false);
+  const inFlight = useRef(false); // 연타 방지(STEP 804 §5)
 
   useEffect(() => {
     if (!user) { setWatched(false); return; }
@@ -76,7 +77,10 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
   }, [user, symbol]);
 
   function toggle() {
+    if (authLoading) return; // 하이드레이션 중 판단 보류(STEP 804 §6)
     if (!user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
+    if (inFlight.current) return; // 연타 방지
+    inFlight.current = true;
     const next = !watched;
     setWatched(next);
     setPop(true);
@@ -85,7 +89,10 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
     fetch('/api/watchlist', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ symbol, name_ko: name, market, country, add: next }),
-    }).catch(() => setWatched(!next));
+    })
+      .then((r) => { if (!r.ok) setWatched(!next); }) // res.ok 미검사=거짓 성공 → 롤백(STEP 804 §5)
+      .catch(() => setWatched(!next))
+      .finally(() => { inFlight.current = false; });
   }
 
   return (
@@ -108,16 +115,17 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
   const ticker = symbol.split('.')[0];
   const [data, setData] = useState<EtfData | null>(null);
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading');
+  const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거(STEP 804 §4)
 
   useEffect(() => {
     let alive = true;
     setState('loading');
     fetch('/api/etf-holdings?symbol=' + encodeURIComponent(symbol))
-      .then((r) => r.json())
+      .then((r) => { if (!r.ok) throw new Error('etf'); return r.json(); }) // HTTP 오류도 실패로(없음으로 위장 금지·STEP 804 §4)
       .then((j) => { if (alive) { setData(j); setState('done'); } })
       .catch(() => { if (alive) setState('error'); });
     return () => { alive = false; };
-  }, [symbol]);
+  }, [symbol, reloadKey]);
 
   const hasHoldings = (data?.holdings?.length ?? 0) > 0;
   const maxW = hasHoldings ? Math.max(...data!.holdings.map((h) => h.weight)) : 1;
@@ -185,6 +193,12 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
 
       {state === 'loading' ? (
         <div className="mt-4 h-40 animate-pulse rounded-2xl bg-unjong-background" />
+      ) : state === 'error' ? (
+        /* 실패를 '구성 정보 없음'으로 위장하지 않는다(STEP 804 §4) — 명시적 오류 + 재시도 */
+        <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-6 text-center">
+          <p className="text-sm font-medium text-unjong-primary">{t('loadError')}</p>
+          <button type="button" onClick={() => setReloadKey((k) => k + 1)} className="mt-2 inline-block text-sm font-semibold text-unjong-accent">{t('retry')}</button>
+        </div>
       ) : !hasHoldings ? (
         <div className="mt-4 rounded-2xl border border-unjong-border bg-unjong-surface p-6 text-center">
           <p className="text-sm font-medium text-unjong-primary">{t('emptyTitle')}</p>

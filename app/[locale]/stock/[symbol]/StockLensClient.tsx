@@ -989,11 +989,12 @@ const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon
 // 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — 모바일 리스트 별 제거의 대체 진입점. market 관례=KR만 'KRX', 그 외는 country와 동일(보드 컴포넌트들과 동일 규칙).
 function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
   const tb = useTranslations('Board'); // '관심종목 추가/해제' 재사용(dedup)
-  const { user } = useAuthStore();
+  const { user, isLoading: authLoading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 이 종목으로 복귀(next)
   const [watched, setWatched] = useState<boolean | null>(null); // null=조회 전
   const [pop, setPop] = useState(false);
+  const inFlight = useRef(false); // 연타 방지(STEP 804 §5)
 
   useEffect(() => {
     if (!user) { setWatched(false); return; }
@@ -1007,7 +1008,10 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
   }, [user, symbol]);
 
   function toggle() {
+    if (authLoading) return; // 하이드레이션 중엔 판단 보류(로그인 사용자가 로그인 페이지로 튕기지 않게·STEP 804 §6)
     if (!user) { router.push(`/auth/login?next=${encodeURIComponent(pathname)}`); return; }
+    if (inFlight.current) return; // 연타 방지
+    inFlight.current = true;
     const next = !watched;
     setWatched(next);
     setPop(true);
@@ -1017,7 +1021,8 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ symbol, name_ko: name, market, country, add: next }),
     }).then((r) => { if (!r.ok) setWatched(!next); }) // 400(비대상 시장 거부 등) 응답은 throw하지 않아 res.ok로 별도 확인 필요(STEP 799)
-      .catch(() => setWatched(!next));
+      .catch(() => setWatched(!next))
+      .finally(() => { inFlight.current = false; });
   }
 
   return (
@@ -1047,7 +1052,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const [data, setData] = useState<LensResp | null>(null);
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
-  const { user } = useAuthStore(); // 렌즈 카드 펼침(근거 상세) 로그인 게이트(STEP 760) — 접힘 상태는 비로그인에도 그대로
+  const { user, isLoading: authLoading } = useAuthStore(); // 렌즈 카드 펼침(근거 상세) 로그인 게이트(STEP 760) — 접힘 상태는 비로그인에도 그대로
 
   useEffect(() => {
     if (!symbol) return;
@@ -1190,7 +1195,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             ) : null}
           </div>
         </button>
-        {isOpen && !user ? (
+        {isOpen && !authLoading && !user ? ( // 하이드레이션 중 게이트 번쩍 방지(STEP 804 §6)
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
             <div className="flex flex-col items-center gap-2 rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center">
               <Lock size={18} className="text-unjong-muted" />

@@ -60,7 +60,7 @@ export async function GET() {
         symbol: sym,
         name: `${name} (${sym})`,
         price,
-        changePercent: (q.regularMarketChangePercent as number) ?? ret(closes, 1) ?? 0,
+        changePercent: (q.regularMarketChangePercent as number) ?? ret(closes, 1), // 결측이면 null(STEP 804 §1)
         r1w: ret(closes, 5),
         r1m: ret(closes, 21),
         r3m: ret(closes, 63),

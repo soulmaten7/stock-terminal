@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
       const to = Math.min(from + 999, limit - 1);
       let q = sb
         .from("kr_stock_snapshot")
-        .select("symbol,name,name_en,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y");
+        .select("symbol,name,name_en,market,price,change_percent,volume,trade_amount,market_cap,r1w,r1m,r3m,r6m,r1y,bas_dd");
       if (market === "kospi" || market === "kosdaq") q = q.eq("market", market);
       const { data: page, error } = await q.order(col, { ascending: asc, nullsFirst: false }).range(from, to);
       if (error) throw error;
@@ -160,7 +160,10 @@ export async function GET(request: NextRequest) {
         r1w: s.r1w, r1m: s.r1m, r3m: s.r3m, r6m: s.r6m, r1y: s.r1y,
         lens: lensMap.get(s.symbol) ?? null,
       }));
-      return NextResponse.json({ stocks, source: "kr_snapshot" });
+      // 데이터 기준일(bas_dd=YYYYMMDD → YYYY-MM-DD) — 화면이 AsOfBadge로 데이터 나이 표시(STEP 804 §2). 크론 멈추면 옛 값이 현재값처럼 보이던 것 방지.
+      const rawDd = (data[0]?.bas_dd as string | null) ?? null;
+      const asOf = rawDd && /^\d{8}$/.test(rawDd) ? `${rawDd.slice(0, 4)}-${rawDd.slice(4, 6)}-${rawDd.slice(6, 8)}` : null;
+      return NextResponse.json({ stocks, source: "kr_snapshot", asOf });
     }
   } catch {
     /* 스냅샷 실패 → 아래 라이브 fallback */
