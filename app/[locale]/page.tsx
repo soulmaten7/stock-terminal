@@ -80,6 +80,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     getLatestDailyBrief(locale === "en" ? "US" : "KR"),
   ]);
   const briefText = locale === "en" ? dailyBrief?.text_en ?? null : dailyBrief?.text_ko ?? null;
+  const briefDate = dailyBrief?.brief_date ?? null; // STEP 809 §7: 브리핑 기준일(크론 며칠 실패 시 옛 브리핑을 날짜 없이 붙이던 것 방지)
 
   return (
     <>
@@ -88,7 +89,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <TodayClient initialKrChanges={krChanges} initialUsChanges={usChanges} initialIndices={indices.items} dailyBrief={briefText} />
+      <TodayClient initialKrChanges={krChanges} initialUsChanges={usChanges} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} />
     </>
   );
 }

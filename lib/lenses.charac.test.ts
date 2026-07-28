@@ -232,6 +232,7 @@ describe("valuationLens — 특성화", () => {
         "state": "cheap",
         "summary": "버는 돈·가진 자산에 비해 주가가 싼지 보는 방법 — 길게 보는 투자에 잘 맞아요.",
         "value": 8,
+        "valueBasis": null,
         "verdict": {
           "phrase": "싼 편(시장 대비)",
           "plain": "이익 대비 주가가 시장에서 싼 편이에요. 길게 보는 가치 관점에서 눈여겨보는 특징이에요.",

@@ -16,14 +16,16 @@ export async function GET(req: NextRequest) {
   const hit = cache.get(symbol);
   if (hit && Date.now() - hit.at < 10 * 60 * 1000) return NextResponse.json(hit.data);
 
-  let events;
-  try {
-    events = await fetchDartMaterial(symbol);
-  } catch {
-    // 상류 실패 — 지어내지 않는다. 캐시하지 않음(다음 조회 재시도).
-    return NextResponse.json({ symbol, events: [], error: 'fetch_failed' });
+  // STEP 809 §4: fetchDartMaterial이 실패를 구분 반환 → 3상태가 실제로 작동.
+  //   fetch_failed(상류 장애)=캐시 안 함(재시도) · unsupported(비상장·미매핑)=캐시 OK · ok(0건 포함)=캐시 OK.
+  const r = await fetchDartMaterial(symbol);
+  if (!r.ok) {
+    if (r.reason === 'fetch_failed') return NextResponse.json({ symbol, events: [], error: 'fetch_failed' });
+    const data = { symbol, events: [], error: 'unsupported' };
+    cache.set(symbol, { at: Date.now(), data });
+    return NextResponse.json(data);
   }
-  const data = { symbol, events };
+  const data = { symbol, events: r.events };
   cache.set(symbol, { at: Date.now(), data });
   return NextResponse.json(data);
 }

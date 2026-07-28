@@ -32,7 +32,7 @@ type ChangeItem = {
   price: number | null; changePercent: number | null; nameKo?: string | null; nameEn?: string | null;
 };
 type ToneCounts = { total: number; pos: number; warn: number };
-type ChangesResp = { date: string | null; count?: number; counts?: ToneCounts; items: ChangeItem[] };
+type ChangesResp = { date: string | null; count?: number; counts?: ToneCounts; items: ChangeItem[]; failed?: boolean };
 // tradeAmount(KR·krx/ranking)·amount(US·yahoo/us-list) — 소스별 필드명이 달라 rowTradeAmount()로 흡수.
 type BoardRow = {
   symbol: string; name: string; nameEn?: string | null; price: number; changePercent: number; lens?: Tones | null;
@@ -355,7 +355,8 @@ export default function ExploreClient() {
       setAmountTop(amt === null ? null : amt.rows);
       setAmountAsOf(amt?.asOf ?? null);
       // 실패(null)만 failed로 — 빈 결과([])는 '없음'이지 실패가 아님(STEP 804 §4).
-      setListsFailed({ changes: ch === null, pos: pos === null, amount: amt === null });
+      // STEP 809 §6: API가 200+failed:true(DB 오류)로 와도 실패로 취급(빈 목록으로 위장 금지).
+      setListsFailed({ changes: ch === null || !!ch?.failed, pos: pos === null, amount: amt === null });
     }
     run();
     return () => { alive = false; };

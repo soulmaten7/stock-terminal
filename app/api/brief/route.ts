@@ -77,7 +77,8 @@ export async function GET(req: NextRequest) {
   let evFacts: string;
   if (/^\d{6}$/.test(code6)) {
     // DART report_nm은 한국어 원문(공시 제목 = 소스 언어) — 번역 대상 아님.
-    const dartEv = await fetchDartMaterial(symbol, 5).catch(() => []);
+    const dr = await fetchDartMaterial(symbol, 5).catch(() => ({ ok: false as const, reason: 'fetch_failed' as const }));
+    const dartEv = dr.ok ? dr.events : []; // 실패면 브리핑 근거에서 결측 취급(지어내지 않음)
     evFacts = dartEv.length ? dartEv.map((e) => `- ${e.date} ${e.report_nm}`).join('\n') : noEv;
   } else {
     // 8-K def는 label(ko)·en을 둘 다 들고 옴(716) — 로케일에 맞는 쪽만 고른다.

@@ -1,4 +1,12 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { ACTIVE_MARKETS } from '@/lib/activeMarkets';
+
+// 🔴 STEP 809 §5: 커버리지 문구는 ACTIVE_MARKETS에서 파생(하드코딩 금지) — 799에서 KR·US로 좁혔는데 "6개 시장" 거짓이던 것 정정.
+const MARKET_NAME: Record<string, { ko: string; en: string }> = {
+  KR: { ko: '한국', en: 'Korea' }, US: { ko: '미국', en: 'United States' },
+  JP: { ko: '일본', en: 'Japan' }, CN: { ko: '중국', en: 'China' },
+  VN: { ko: '베트남', en: 'Vietnam' }, GB: { ko: '영국', en: 'United Kingdom' },
+};
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -76,7 +84,10 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       {/* §5 커버리지 */}
       <section className="mt-12">
         <h2 className="mb-2 text-base font-bold text-unjong-primary">{t('coverageTitle')}</h2>
-        <p className="text-sm leading-relaxed text-unjong-muted">{t('coverageBody')}</p>
+        <p className="text-sm leading-relaxed text-unjong-muted">{t('coverageBody', {
+          markets: ACTIVE_MARKETS.map((m) => MARKET_NAME[m]?.[locale === 'en' ? 'en' : 'ko'] ?? m).join(' · '),
+          count: ACTIVE_MARKETS.length,
+        })}</p>
       </section>
 
       {/* §6 사용법 */}

@@ -107,9 +107,11 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
   // 현재가·PER·PBR·이름(밸류에이션 렌즈용) — 해석된 심볼로 조회
   let pe: number | null = null, pb: number | null = null, name = symbol, price: number | null = null, changePercent: number | null = null;
   let marketCapQuote: number | null = null; // 야후가 주는 실시간 시총(최신 주식수 반영) — 재무 주식수보다 우선(STEP 803 §2)
+  let peBasis: "ttm" | "annual" | null = null; // 🔴 STEP 809 §1: PER을 무엇으로 냈는지(야후 trailingPE=TTM 1순위 / 연간 폴백). 화면 문구가 이 값 따라 분기.
   try {
     const q = await yf.quote(resolved);
     pe = (q as { trailingPE?: number }).trailingPE ?? null;
+    if (pe != null) peBasis = "ttm"; // 야후 trailingPE = 최근 4분기(TTM)
     pb = (q as { priceToBook?: number }).priceToBook ?? null;
     name = (q as { shortName?: string }).shortName || (q as { longName?: string }).longName || name;
     price = (q as { regularMarketPrice?: number }).regularMarketPrice ?? null;
@@ -126,7 +128,7 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
 
   // 데이터 부족(가격계열<30) → 재무 fetch·밸류 폴백 생략(현 동작 보존), 빈 재무 번들 반환.
   if (closes.length < 30) {
-    return { symbol, resolved, name, price, changePercent, closes, adjCloses, adjUsed: adjComplete, pe, pb, financials: [] };
+    return { symbol, resolved, name, price, changePercent, closes, adjCloses, adjUsed: adjComplete, pe, pb, peBasis, financials: [] };
   }
 
   // 연간 재무(fundamentalsTimeSeries) — F-Score·퀄리티·자산성장 + 밸류(E/P·B/M) 폴백에 공용. 실패 시 rows=[] (안전).
@@ -172,11 +174,11 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
     // 우선주는 보통주 기준 PER/PBR이 왜곡 → 폴백 산출을 하지 않는다(야후가 직접 준 값이 있으면 그대로 신뢰).
     // (야후 trailingPE/priceToBook은 해당 종목 자체 기준이라 유효할 수 있어 덮어쓰지 않음)
   } else {
-    if (pe == null) pe = perFrom(mc, lr?.netIncome);
+    if (pe == null) { pe = perFrom(mc, lr?.netIncome); if (pe != null) peBasis = "annual"; } // 폴백 = 직전 연간 순이익(E/P)
     if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
   }
 
-  return { symbol, resolved, name, price, changePercent, closes, adjCloses, adjUsed: adjComplete, pe, pb, financials: rows };
+  return { symbol, resolved, name, price, changePercent, closes, adjCloses, adjUsed: adjComplete, pe, pb, peBasis, financials: rows };
 }
 
 // 심볼 1개 → 7팩터(모멘텀·저변동·기술·밸류·퀄리티·자산성장) + F-Score.
@@ -235,8 +237,9 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko",
     }
   }
 
-  // 재무 행 없으면 퀄리티·자산성장은 배열에서 제외(리팩토링 전 동작 보존 — 예전엔 if(lr)일 때만 push했음).
-  const lenses = lr ? allLenses : allLenses.filter((l) => l.key !== "quality" && l.key !== "assetgrowth");
+  // 🔴 STEP 809 §6: 재무 없어도 퀄리티·자산성장을 배열에서 제거하지 않는다(예전엔 조용히 사라져 "N개는 계산 못 함"에 안 잡히고 "5가지 방법으로"가 됐음).
+  //   재무 없으면 두 렌즈는 state='na'(gpa/ag=null)로 이미 산출 → na 카드("산출 불가")로 표시 + naNote 카운트에 정직히 포함.
+  const lenses = allLenses;
 
   return { symbol, resolved: d.resolved, name: d.name, price: d.price, changePercent: d.changePercent, tradeAmount, lenses, fscore };
 }

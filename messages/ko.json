@@ -63,7 +63,7 @@
     "noRecTitle": "예측도, 추천도 하지 않습니다",
     "noRecBody": "“이 종목 사라”는 신호는 여기 없습니다. 렌즈는 확신이 아니라 근거를, 결론이 아니라 재료를 드립니다. 검증된 시각 여럿을 나란히 놓아드릴 뿐, 사고팔 결정은 온전히 당신 몫입니다. 좋은 도구는 대신 판단해 주지 않습니다. 더 나은 판단을 도울 뿐입니다.",
     "coverageTitle": "어디까지 보나",
-    "coverageBody": "한국 · 미국 · 일본 · 중국 · 베트남 · 영국 — 6개 시장. 각 시장의 시세·뉴스·공시 같은 1차 재료를 공개된 출처에서 받아 그대로 보여줍니다. 우리가 값을 지어내지 않습니다. 받은 그대로가 이상해 보여도, 우리 짐작으로 지우지 않습니다.",
+    "coverageBody": "{markets} — {count}개 시장. 각 시장의 시세·뉴스·공시 같은 1차 재료를 공개된 출처에서 받아 그대로 보여줍니다. 우리가 값을 지어내지 않습니다. 받은 그대로가 이상해 보여도, 우리 짐작으로 지우지 않습니다.",
     "howTitle": "이렇게 씁니다",
     "step1": "종목을 고르고, 렌즈를 봅니다. 한 종목이 모멘텀·밸류·퀄리티·재무건전성 등 여러 렌즈에서 각각 어떻게 읽히는지 한눈에.",
     "step2": "엇갈림을 읽습니다. 렌즈끼리 다르게 말할 때가 가장 중요한 신호입니다 — 싸지만 부실한가, 비싸지만 튼튼한가.",
@@ -760,7 +760,7 @@
       "assetgrowthHi": "보수적"
     },
     "gauge": {
-      "rank": "랭크 <v>{p}</v>/100 · 오른쪽(높을수록) {hi} · 시총 상위 1,000 중"
+      "rank": "랭크 <v>{p}</v>/100 · 오른쪽(높을수록) {hi}"
     },
     "rsi": {
       "low": "침체 30",
@@ -777,6 +777,8 @@
       "neutral": "중립",
       "bull": "강세",
       "bear": "약세",
+      "topRank": "상위권",
+      "bottomRank": "하위권",
       "mostlyFav": "대체로 우호적",
       "mostlyUnfav": "대체로 비우호적",
       "unclear": "뚜렷하지 않음",
@@ -797,7 +799,8 @@
       "rsiSuffix": " · RSI {v}",
       "topPct": " · 상위 {v}%",
       "favCount": "· {total}개 중 {fav}개 우호",
-      "summary": "단기 <s>{short}</s> · 중기 <m>{mid}</m> · 장기 <l>{long}</l> — 시간축마다 결이 달라요."
+      "summary": "단기 <s>{short}</s> · 중기 <m>{mid}</m> · 장기 <l>{long}</l> — 시간축마다 결이 달라요.",
+      "summarySame": "단기 <s>{short}</s> · 중기 <m>{mid}</m> · 장기 <l>{long}</l> — 시간축이 비슷하게 정렬돼요."
     },
     "flag": {
       "update": "자료 갱신",
@@ -860,7 +863,7 @@
       "whyGeneral": "참고 사실",
       "etcLabel": "기타",
       "andMore": "외 {n}건",
-      "noMaterial": "최근 <b>중대한 사건은 없어요</b> — 정기 공시만 있어요.",
+      "noMaterial": "최근 <b>중대한 공시가 없어요</b>.",
       "noRecentNews": "최근 <b>관련 뉴스가 없어요</b>.",
       "routine": "정기 공시 {n}건",
       "showMore": "{n}건 더 보기 →",
@@ -880,6 +883,7 @@
     },
     "back": "뒤로",
     "tradeAmount": "거래대금",
+    "tradeAmountBasis": "(전 거래일)",
     "intro": "사고팔 신호가 아니라, 스스로 판단할 재료예요.",
     "readingGuideSummary": "읽는 법 ▾",
     "readingGuide": "카드마다 <b>신뢰도 등급</b>이 붙어요 — <v>검증</v>은 수익 신호까지 확인된 것, <w>약한 신호</w>는 유명하지만 우리 데이터론 약한 것, <r>참고용</r>은 상태만, <f>재무 건전성</f>은 재무 체력(수익 신호 아님)이에요. 렌즈를 누르면 왜 그렇게 봤는지까지 펼쳐져요.",
@@ -896,12 +900,14 @@
     "closingMixed": "기법마다 평가가 갈려요.",
     "closingInsufficient": "계산된 렌즈가 적어 종합 판단은 미뤄요.",
     "naNote": "{n}개는 데이터가 없어 계산하지 못했어요.",
+    "insufficient": "데이터가 부족해 이 방법으론 계산하지 못했어요 (상장·거래 이력이 짧아서요).",
     "pendingNote": "{n}개는 판정 기준을 준비 중이에요.",
     "closingFooter": "사실만 정리했어요 · 판단은 당신",
     "narrativePercentileLabel": "거래대금 상위권 내 백분위",
     "narrativePercentileLabelUs": "시총 상위권 내 백분위",
     "narrativeCutSource": "{market} 분포 하위/상위 30% 기준 · N={n} · {date}",
-    "narrativePerBasis": "PER은 직전 연간 실적 기준(사이트마다 최근 4분기 TTM을 써서 값이 다를 수 있어요)",
+    "narrativePerBasisTtm": "PER은 최근 4분기 실적(TTM) 기준이에요(야후 제공값).",
+    "narrativePerBasisAnnual": "PER은 직전 연간 실적 기준이에요(사이트마다 TTM을 써서 값이 다를 수 있어요).",
     "narrativeScopeVerified": "검증(백테스트)은 미국 유니버스 기준이에요 — 이 시장 자체 검증 데이터는 아직 없어요. 판정 컷만 이 시장 분포로 맞췄어요.",
     "narrativeScopeVerifiedUs": "백테스트가 미국 유니버스($5+·13코호트) 기준이라 이 시장에 대한 검증 범위예요. 판정 컷은 시총 상위권 분포로 맞췄어요(백테스트 표본과 완전히 같은 집단은 아니에요).",
     "narrativeScopeFixed": "이 값(RSI·F-스코어)은 학술·업계 표준 고정값이에요(분포로 바꾸지 않아요).",
@@ -943,6 +949,7 @@
     "viewMoreChanges": "변화 {n}건 더 보기 →",
     "viewMoreUsChanges": "미국 변화 {n}건 더 보기 →",
     "noChangesToday": "오늘은 렌즈 상태 변화가 없어요",
+    "changesLoadError": "변화를 불러오지 못했어요.",
     "noWatchlistChangesToday": "오늘은 관심종목 렌즈 상태 변화가 없어요",
     "lensChangeLine": "{lensName} {from} → <b>{to}</b>",
     "railMarketTitle": "시장",

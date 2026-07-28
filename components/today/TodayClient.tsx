@@ -38,7 +38,7 @@ type ChangeItem = {
   nameKo: string | null;
   nameEn: string | null;
 };
-type ChangesResp = { date: string | null; count?: number; items: ChangeItem[] };
+type ChangesResp = { date: string | null; count?: number; items: ChangeItem[]; failed?: boolean };
 type IndexItem = { name: string; value: string; changeText: string; changePct: number; isUp: boolean; group: string };
 type WatchlistQuote = {
   symbol: string; name_ko: string; name_en: string | null; market: string; country: string;
@@ -139,8 +139,8 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient({ initialKrChanges, initialUsChanges, initialIndices, dailyBrief }: {
-  initialKrChanges: ChangesResp; initialUsChanges: ChangesResp; initialIndices: IndexItem[]; dailyBrief: string | null;
+export default function TodayClient({ initialKrChanges, initialUsChanges, initialIndices, dailyBrief, dailyBriefDate = null }: {
+  initialKrChanges: ChangesResp; initialUsChanges: ChangesResp; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null;
 }) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
@@ -284,6 +284,8 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             <div className="mb-1.5 flex items-center gap-2">
               <span className="text-[12px] font-semibold text-unjong-muted">{t('briefSectionLabel')}</span>
               <span className="text-[12px] text-unjong-muted">{tMaterial('briefBadge')}</span>
+              {/* STEP 809 §7: 브리핑이 오늘자가 아니면 기준일 배지(크론 실패 시 옛 브리핑을 날짜 없이 붙이던 것 방지) */}
+              <AsOfBadge date={dailyBriefDate} loc={loc} market={homeMarket} />
             </div>
             <p className="text-[15px] leading-7 text-unjong-primary">{dailyBrief}</p>
           </div>
@@ -347,7 +349,9 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             </div>
             <SelectionBasisLabel />
           </div>
-          {(usChanges?.items.length ?? 0) === 0 ? (
+          {usChanges?.failed ? (
+            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('changesLoadError')}</p>
+          ) : (usChanges?.items.length ?? 0) === 0 ? (
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
@@ -375,7 +379,9 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
             </div>
             <SelectionBasisLabel />
           </div>
-          {(homeChanges?.items.length ?? 0) === 0 ? (
+          {homeChanges?.failed ? (
+            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('changesLoadError')}</p>
+          ) : (homeChanges?.items.length ?? 0) === 0 ? (
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">

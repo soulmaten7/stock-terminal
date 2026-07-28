@@ -41,6 +41,7 @@ type LensRead = {
   percentile?: number | null;
   cutoffs?: { lo: number; hi: number } | null;
   cutSource?: { market: string; n: number; asOf: string | null } | null; // 컷 출처(STEP 805 §6)
+  valueBasis?: 'ttm' | 'annual' | null; // PER 기준(STEP 809 §1)
   state?: string | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
@@ -87,7 +88,7 @@ function Spectrum({ labels, active, tone }: { labels: [string, string, string]; 
   );
 }
 
-// 팩터 퍼센타일 게이지 — 시총 상위 1,000 대비 순위(0~100·오른쪽=우호 방향). 팩터 5종 공통(Stockopedia식).
+// 팩터 퍼센타일 게이지 — 시장 유니버스 대비 순위(0~100·오른쪽=우호 방향). 모집단 표현은 근거줄(시장별 라벨)이 단일 정본(STEP 809 §2). 팩터 5종 공통(Stockopedia식).
 // 모듈 상수 → 값=ko.json 키. 렌더 지점(renderCard)에서 t()로 해석.
 const FACTOR_ENDS: Record<string, { lo: string; hi: string }> = {
   momentum: { lo: 'factorEnds.momentumLo', hi: 'factorEnds.momentumHi' },
@@ -184,8 +185,10 @@ function LensNarrative({ L, loc, market }: { L: LensRead; loc: Locale; market: s
     <div className="mt-2.5 space-y-1.5">
       <p className="text-[14px] leading-7 text-unjong-primary/90">{t(methodKey)}{stockLine ? ` ${stockLine}` : ''}</p>
       <p className="text-[11px] leading-relaxed text-unjong-muted">{evidenceParts.join(' · ')}</p>
-      {/* STEP 805 §5: PER 산출 기준(외부 TTM과 다름) */}
-      {L.key === 'valuation' && L.detail.per != null ? <p className="text-[11px] text-unjong-muted">{t('narrativePerBasis')}</p> : null}
+      {/* STEP 809 §1: PER 산출 기준 — 실제 사용값(TTM=야후 trailingPE / 연간=재무 폴백)에 맞게 문구 분기(거짓 단정 제거) */}
+      {L.key === 'valuation' && L.detail.per != null && L.valueBasis ? (
+        <p className="text-[11px] text-unjong-muted">{t(L.valueBasis === 'ttm' ? 'narrativePerBasisTtm' : 'narrativePerBasisAnnual')}</p>
+      ) : null}
       {/* STEP 805 §4·807 §6: 검증 범위 — US는 백테스트 유니버스 '자신'이라 자체검증됨 / 비US(KR 등)는 "이 시장 자체검증 없음" / RSI·F-스코어는 고정 표준값 */}
       {L.cutSource ? <p className="text-[11px] text-unjong-muted">{t(market === 'US' ? 'narrativeScopeVerifiedUs' : 'narrativeScopeVerified')}</p> : null}
       {L.key === 'technical' ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeFixed')}</p> : null}
@@ -209,7 +212,8 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   const sTone = rsiV != null && (rsiV >= 70 || rsiV <= 30) ? 'warn' : 'flat';
 
   const mTone = scored(mom) ? (mom?.verdict?.tone ?? 'flat') : 'flat'; // pending/na 모멘텀은 중기 축을 '중립'으로 세지 않음
-  const mWord = !scored(mom) ? '—' : mTone === 'pos' ? t('word.bull') : mTone === 'warn' ? t('word.bear') : t('word.neutral');
+  // STEP 809 §3: 중기 축=모멘텀(분포 순위·상대)이라 "강세/약세"(절대) 금지 → "상위권/하위권/중간권"으로 카드 verdict와 정합.
+  const mWord = !scored(mom) ? '—' : mTone === 'pos' ? t('word.topRank') : mTone === 'warn' ? t('word.bottomRank') : t('word.neutral');
 
   const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' })); // longs는 이미 scored 필터됨
   if (fscore?.supported) longPills.push({ label: 'F-Score', tone: fscore.score >= 7 ? 'pos' : fscore.score <= 3 ? 'warn' : 'flat' });
@@ -272,7 +276,8 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
         </div>
       </div>
       <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">
-        {t.rich('horizon.summary', {
+        {/* STEP 809 §3: 세 축 톤이 실제로 갈릴 때만 "결이 달라요" — 동일하면 "비슷하게 정렬" (무조건 '달라요' 거짓 제거). */}
+        {t.rich(new Set([sTone, mTone, lTone]).size > 1 ? 'horizon.summary' : 'horizon.summarySame', {
           short: sWord, mid: mWord, long: lWord,
           s: (c) => <b className={toneText(sTone)}>{c}</b>,
           m: (c) => <b className={toneText(mTone)}>{c}</b>,
@@ -796,13 +801,20 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
   const locale = pickLocale(useLocale()); // 뉴스요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
-  const [state, setState] = useState<'loading' | 'done' | 'hide'>('loading');
+  // STEP 809 §6: 실패(429·502·500)를 조용히 숨기지 않는다 — 진짜 '뉴스 없음'(200+summary:null)만 숨기고 실패는 결측 1줄(StockBrief와 동일).
+  const [state, setState] = useState<'loading' | 'done' | 'hide' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
+    setState('loading');
     fetch('/api/news-brief?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
-      .then((r) => r.json())
-      .then((j) => { if (!alive) return; if (j.summary) { setD({ summary: j.summary, tags: j.tags || [] }); setState('done'); } else setState('hide'); })
-      .catch(() => { if (alive) setState('hide'); });
+      .then(async (r) => {
+        const j = await r.json().catch(() => ({} as Record<string, unknown>));
+        if (!alive) return;
+        if (r.ok && j.summary) { setD({ summary: j.summary as string, tags: (j.tags as string[]) || [] }); setState('done'); }
+        else if (r.ok && !j.error) setState('hide'); // 진짜 뉴스 없음(200·summary null·error 없음) → 숨김
+        else setState('error'); // 429(레이트리밋)·502(LLM)·500(키) 등 → 실패 표시
+      })
+      .catch(() => { if (alive) setState('error'); });
     return () => { alive = false; };
   }, [symbol, locale]);
   if (state === 'hide') return null;
@@ -813,7 +825,9 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
         <span className="text-[13px] font-bold text-unjong-accent">{t('newsBrief.title')}</span>
         <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('newsBrief.badge')}</span>
       </div>
-      {state === 'loading' || !d
+      {state === 'error'
+        ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('loadError')}</p>
+        : state === 'loading' || !d
         ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('newsBrief.loading')}</p>
         : (<>
             <p className="text-[15px] leading-relaxed sm:text-[13px] text-unjong-primary">{d.summary}</p>
@@ -1099,7 +1113,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   let naCount = 0;
   let pendingCount = 0; // STEP 806 §2: 컷 없음(기준 준비 중)은 판정한 게 아니라 집계 제외 + 별도 표기
   for (const l of lenses) {
-    if (l.state === 'na') { naCount++; continue; } // 카드엔 "산출 불가"로 여전히 표시 · 집계에서만 제외
+    // STEP 809 §6: 가격계열 부족(모멘텀 252봉·저변동 120봉 미만)이면 state=null(값도 null) — na와 함께 '결측'으로 세고(집계 제외) 카드에 명시 표시.
+    if (l.state === 'na' || l.state == null) { naCount++; continue; } // 카드엔 "산출 불가"로 여전히 표시 · 집계에서만 제외
     if (l.state === 'pending') { pendingCount++; continue; } // '기준 준비 중'을 '보통'으로 세지 않음(자기모순 방지)
     const tone = l.verdict?.tone;
     if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
@@ -1240,6 +1255,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               <div className="mt-3.5 min-w-0 lg:mt-0">
                 {/* "이 기법 방향"(outlook) 라벨·블록 제거(서사에 흡수·STEP 789 §2) — 서사가 안 뜨는 렌즈만(na 포함) verdict.plain 안전망으로 대체. */}
                 {!hasLensNarrative(L) && L.verdict ? <p className="text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
+                {/* STEP 809 §6: verdict·서사 둘 다 없는 결측(가격계열 부족 등) — 빈 카드 대신 명시적 결측 문구 */}
+                {!hasLensNarrative(L) && !L.verdict ? <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t('insufficient')}</p> : null}
                 <LensNarrative L={L} loc={locale} market={countryOf(symbol)} />
                 {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
               </div>
@@ -1273,7 +1290,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 {data.changePercent != null ? (
                   <span className={changeColorClass(data.changePercent, locale)}> {data.changePercent >= 0 ? '+' : ''}{data.changePercent.toFixed(2)}%</span>
                 ) : null}
-                {data.tradeAmount != null ? <span> · {t('tradeAmount')} {formatTradeValue(data.tradeAmount, countryOf(symbol))}</span> : null}
+                {/* STEP 809 §7: 거래대금=전 거래일 스냅샷 / 등락률=실시간 → 시점 다름을 표기(한 줄에 시점 혼재 정직화) */}
+                {data.tradeAmount != null ? <span> · {t('tradeAmount')} {formatTradeValue(data.tradeAmount, countryOf(symbol))} <span className="text-[11px]">{t('tradeAmountBasis')}</span></span> : null}
               </p>
             ) : null}
           </div>

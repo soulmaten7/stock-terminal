@@ -63,7 +63,7 @@
     "noRecTitle": "We do not predict, and we do not recommend",
     "noRecBody": "There is no \"buy this stock\" signal here. A lens hands you evidence, not certainty; material, not a conclusion. We set several proven viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
     "coverageTitle": "How far we look",
-    "coverageBody": "Korea · United States · Japan · China · Vietnam · United Kingdom — six markets. For each, we take first-hand material — prices, news, filings — from public sources and show it as it is. We do not invent values. And when the data looks odd, we do not erase it on a hunch.",
+    "coverageBody": "{markets} — {count} markets. For each, we take first-hand material — prices, news, filings — from public sources and show it as it is. We do not invent values. And when the data looks odd, we do not erase it on a hunch.",
     "howTitle": "How to use it",
     "step1": "Pick a stock, read the lenses. See at a glance how one stock reads through momentum, value, quality, financial health, and more — each on its own.",
     "step2": "Read the disagreement. When the lenses disagree is the most important signal — cheap but weak, or pricey but sturdy?",
@@ -760,7 +760,7 @@
       "assetgrowthHi": "Conservative"
     },
     "gauge": {
-      "rank": "Rank <v>{p}</v>/100 · right side (higher) {hi} · among the top 1,000 by market cap"
+      "rank": "Rank <v>{p}</v>/100 · right side (higher) {hi}"
     },
     "rsi": {
       "low": "Oversold 30",
@@ -777,6 +777,8 @@
       "neutral": "Neutral",
       "bull": "Strong",
       "bear": "Weak",
+      "topRank": "Top-tier",
+      "bottomRank": "Bottom-tier",
       "mostlyFav": "Mostly favorable",
       "mostlyUnfav": "Mostly unfavorable",
       "unclear": "Not clear",
@@ -797,7 +799,8 @@
       "rsiSuffix": " · RSI {v}",
       "topPct": " · top {v}%",
       "favCount": "· {fav} of {total} favorable",
-      "summary": "Short term <s>{short}</s> · mid term <m>{mid}</m> · long term <l>{long}</l> — the grain differs by time horizon."
+      "summary": "Short term <s>{short}</s> · mid term <m>{mid}</m> · long term <l>{long}</l> — the grain differs by time horizon.",
+      "summarySame": "Short term <s>{short}</s> · mid term <m>{mid}</m> · long term <l>{long}</l> — the horizons line up similarly."
     },
     "flag": {
       "update": "Data update",
@@ -860,7 +863,7 @@
       "whyGeneral": "Reference fact",
       "etcLabel": "Other",
       "andMore": "and {n} more",
-      "noMaterial": "<b>No material events recently</b> — only routine filings.",
+      "noMaterial": "<b>No material filings recently</b>.",
       "noRecentNews": "<b>No recent related news</b>.",
       "routine": "{n} routine filings",
       "showMore": "See {n} more →",
@@ -880,6 +883,7 @@
     },
     "back": "Back",
     "tradeAmount": "Value traded",
+    "tradeAmountBasis": "(prior session)",
     "intro": "Not a buy or sell signal — material for you to judge for yourself.",
     "readingGuideSummary": "How to read ▾",
     "readingGuide": "Every card carries a <b>confidence grade</b> — <v>Verified</v> means the return signal itself was confirmed, <w>Weak signal</w> means it is famous but weak in our data, <r>Reference</r> shows state only, and <f>Financial health</f> is financial strength, not a return signal. Tap a lens to unfold why it reads that way.",
@@ -896,12 +900,14 @@
     "closingMixed": "The methods disagree with each other.",
     "closingInsufficient": "Too few lenses were computed to judge overall.",
     "naNote": "{n} had no data to compute.",
+    "insufficient": "Not enough data to compute this method (a short listing or trading history).",
     "pendingNote": "{n} are still calibrating a baseline.",
     "closingFooter": "Just the facts, summarized — the judgment is yours.",
     "narrativePercentileLabel": "Percentile among top-turnover names",
     "narrativePercentileLabelUs": "Percentile among top-market-cap names",
     "narrativeCutSource": "{market} distribution, bottom/top 30% · N={n} · {date}",
-    "narrativePerBasis": "PER is based on last fiscal year (other sites often use trailing 12 months, so values can differ)",
+    "narrativePerBasisTtm": "PER is based on the trailing 12 months (TTM), as provided by Yahoo.",
+    "narrativePerBasisAnnual": "PER is based on the last fiscal year (other sites often use TTM, so values can differ).",
     "narrativeScopeVerified": "The backtest is on a US universe — there is no self-validation data for this market yet. Only the verdict cuts are fit to the distribution of this market.",
     "narrativeScopeVerifiedUs": "The backtest is on a US universe ($5+, 13 cohorts), so it covers this market. The verdict cuts are fit to the top-market-cap distribution (not exactly the same set as the backtest sample).",
     "narrativeScopeFixed": "This value (RSI, F-Score) uses standard fixed thresholds, not distribution-derived.",
@@ -943,6 +949,7 @@
     "viewMoreChanges": "See {n} more changes →",
     "viewMoreUsChanges": "See {n} more US changes →",
     "noChangesToday": "No lens state changes today",
+    "changesLoadError": "Could not load changes.",
     "noWatchlistChangesToday": "No lens state changes in your watchlist today",
     "lensChangeLine": "{lensName} {from} → <b>{to}</b>",
     "railMarketTitle": "Markets",

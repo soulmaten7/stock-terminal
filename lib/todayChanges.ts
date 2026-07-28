@@ -19,7 +19,7 @@ export type ChangeItemData = {
   nameEn: string | null;
 };
 export type ToneCounts = { total: number; pos: number; warn: number };
-export type ChangesResult = { date: string | null; count: number; counts: ToneCounts; items: ChangeItemData[] };
+export type ChangesResult = { date: string | null; count: number; counts: ToneCounts; items: ChangeItemData[]; failed?: boolean };
 
 type ChangeRow = {
   symbol: string;
@@ -116,7 +116,8 @@ export async function getTodayChanges(params: {
   if (error) {
     // DB 에러로 빈 결과 반환 시 오늘 화면이 통째로 비고 daily-brief·email-brief 입력도 부실 → Sentry로 검출(화면은 빈 상태 유지).
     Sentry.captureMessage(`[todayChanges] query failed (${market}/${date}): ${error.message}`, "error");
-    return { date, count: 0, counts: zeroCounts, items: [] };
+    // 🔴 STEP 809 §6: DB 오류를 '변화 없음(0)'으로 단정하지 않는다 — failed로 구분해 화면이 "불러오지 못함" 표시(캐시 안 함).
+    return { date, count: 0, counts: zeroCounts, items: [], failed: true };
   }
 
   // 전체 건수(limit 절단 전, 톤별 포함) — "N건 더 보기"·톤 필터 칩 건수가 실제 전체 모수를 말하도록(근거 없는 숫자 금지 — STEP 775 §2).

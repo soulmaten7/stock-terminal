@@ -214,6 +214,7 @@ export const valuation: Lens = {
       note: c.note,
       cutoffs: cut ? { lo: cut.lo, hi: cut.hi } : null,
       cutSource: cutSourceOf(cut, marketOf(d.symbol)),
+      valueBasis: d.peBasis ?? null, // PER 기준(TTM/연간) — 화면 문구 분기(STEP 809 §1)
     };
   },
 };
