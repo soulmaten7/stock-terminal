@@ -1094,8 +1094,10 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   // → "판단할 근거 없음"이 "중립으로 판단됨"으로 오독. 집계(헤더·닫는카드·시간축)에선 na를 세지 않고 개수만 따로 표기.
   const headerTones: ('pos' | 'warn' | 'flat')[] = [];
   let naCount = 0;
+  let pendingCount = 0; // STEP 806 §2: 컷 없음(기준 준비 중)은 판정한 게 아니라 집계 제외 + 별도 표기
   for (const l of lenses) {
     if (l.state === 'na') { naCount++; continue; } // 카드엔 "산출 불가"로 여전히 표시 · 집계에서만 제외
+    if (l.state === 'pending') { pendingCount++; continue; } // '기준 준비 중'을 '보통'으로 세지 않음(자기모순 방지)
     const tone = l.verdict?.tone;
     if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
   }
@@ -1113,7 +1115,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const closingWarnLabels: string[] = [];
   const byHorizon: Record<'short' | 'mid' | 'long', ('pos' | 'warn' | 'flat')[]> = { short: [], mid: [], long: [] };
   for (const l of lenses) {
-    if (l.state === 'na') continue; // 결측 제외(STEP 802 §4)
+    if (l.state === 'na' || l.state === 'pending') continue; // 결측·기준 준비 중 제외(STEP 802 §4·806 §2)
     const tone = l.verdict?.tone;
     if (tone === 'pos') closingPosLabels.push(lensShortLabel(locale, l.key));
     else if (tone === 'warn') closingWarnLabels.push(lensShortLabel(locale, l.key));
@@ -1292,7 +1294,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                   <span key={i} className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[tone]}`} />
                 ))}
               </div>
-              <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}</span>
+              <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}{pendingCount > 0 ? ` · ${t('pendingNote', { n: pendingCount })}` : ''}</span>
             </div>
           </div>
         ) : null}
@@ -1357,7 +1359,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {partHeaderCount > 0 ? (
             <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
               <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle', { n: partHeaderCount })}</h2>
-              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}</p>
+              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}{pendingCount > 0 ? ` · ${t('pendingNote', { n: pendingCount })}` : ''}</p>
               <div className="mt-2.5 space-y-1 text-[13px] sm:text-[12px]">
                 {closingPosLabels.length ? <p className="text-unjong-accent">{t('closingPosLine', { list: closingPosLabels.join(', ') })}</p> : null}
                 {closingWarnLabels.length ? <p className="text-amber-400">{t('closingWarnLine', { list: closingWarnLabels.join(', ') })}</p> : null}

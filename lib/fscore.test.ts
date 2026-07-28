@@ -57,12 +57,16 @@ describe("computeFScore — 지원 조건", () => {
     expect(f.supported).toBe(false);
     expect(f.reason).not.toContain("은행");
   });
-  it("액면분할(주식수 정수배 급증): no_dilute 오탐 없음 + 근거에 조정 표기(STEP 803 §4)", () => {
-    // T 주식수 = P의 4배(4:1 분할) → 원값 비교면 '신주발행=실패'로 오탐. 분할 감지 시 통과 + 표기.
-    const split = rows({ t: { ordinarySharesNumber: 400 } });
-    const c = computeFScore(split).criteria.find((x) => x.key === "no_dilute");
-    expect(c?.pass).toBe(true);
-    expect(c?.note).toMatch(/조정/);
+  it("주식수 정수배 급변(분할·유상증자 구분 불가): no_dilute 판정 불가로 제외·max 8(STEP 806 §7)", () => {
+    // T 주식수 = P의 4배 → 4:1 분할일 수도, 100% 유상증자일 수도. 회사행위 데이터 없이 구분 불가 → 이 항목 제외(false-pass·false-fail 회피).
+    const split = computeFScore(rows({ t: { ordinarySharesNumber: 400 } }));
+    expect(split.criteria.find((x) => x.key === "no_dilute")).toBeUndefined();
+    expect(split.max).toBe(8);
+  });
+  it("정상 주식수(급변 없음): no_dilute 정상 채점·max 9", () => {
+    const f = computeFScore(rows());
+    expect(f.criteria.find((x) => x.key === "no_dilute")).toBeDefined();
+    expect(f.max).toBe(9);
   });
 });
 

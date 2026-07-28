@@ -23,7 +23,7 @@ const CHECKS: Check[] = [
   // email-brief·jp-disclosures는 결과 테이블 나이로는 실행 여부를 못 잡음(구독자 0·조용한 주말이면 산출물 미갱신).
   // → cron_heartbeats에 매 실행 기록한 last_run_at 나이로 감시(STEP 794 §4).
   { name: "이메일 브리핑(email-brief)", table: "cron_heartbeats", column: "last_run_at", eq: ["job", "email-brief"], thresholdH: 25 },
-  { name: "JP 공시(jp-disclosures)", table: "cron_heartbeats", column: "last_run_at", eq: ["job", "jp-disclosures"], thresholdH: 25 },
+  // jp-disclosures 크론은 STEP 806 §6에서 스케줄 제거(소비처 0) → 감시 항목에서도 제거(오탐 방지). 라우트·데이터는 보존.
 ];
 
 export async function GET(req: Request) {

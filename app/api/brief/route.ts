@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { marketDate } from '@/lib/marketDate';
 import { pickLocale, type Locale } from '@/lib/lensCopy';
 import { blockLLM } from '@/lib/rateLimit';
+import { isActiveSymbol } from '@/lib/activeMarkets';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -37,6 +38,8 @@ export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').trim().toUpperCase();
   // 식별자(symbol) 형식 엄격 검증 — 알려진 종목 형식만(과금 유발 입력 게이트·STEP 793).
   if (!/^[A-Z0-9.\-]{1,15}$/.test(symbol)) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
+  // 🔴 STEP 806 §6: 활성 시장(KR·US)만 — 파킹 시장(7203.T 등)은 LLM 생성까지 진행 금지(blockLLM은 레이트리밋일 뿐 시장 게이트 아님).
+  if (!isActiveSymbol(symbol)) return NextResponse.json({ error: 'inactive_market' }, { status: 400 });
 
   const locale = pickLocale(req.nextUrl.searchParams.get('lang')); // 기본 ko · ?lang=en
   const col = locale === 'en' ? 'brief_en' : 'brief_ko'; // 로케일별 캐시 컬럼(서로 독립)

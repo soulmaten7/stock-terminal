@@ -43,8 +43,10 @@ export default function Header() {
     setLangOpen(false);
     if (next === locale) return;
     // 명시 선택을 1년 쿠키로 직접 심는다(STEP 800 §1 · routing.ts localeCookie:false라 next-intl은 안 심음).
-    // 이 쿠키만 선택을 바꾼다 — URL 방문(/en 링크)으론 안 바뀜 → 미들웨어가 이 값으로 로케일 지속.
-    document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; samesite=lax${location.protocol === 'https:' ? '; secure' : ''}`;
+    // STEP 806 §5: 새 키 locale_choice 사용(레거시 NEXT_LOCALE은 미들웨어가 삭제·en으로 굳은 잔류 쿠키 무력화). 명시 선택만 로케일을 바꾼다.
+    const cookieTail = `path=/; max-age=31536000; samesite=lax${location.protocol === 'https:' ? '; secure' : ''}`;
+    document.cookie = `locale_choice=${next}; ${cookieTail}`;
+    document.cookie = `NEXT_LOCALE=; path=/; max-age=0`; // 레거시 즉시 제거(혼선 방지)
     const query = Object.fromEntries(new URLSearchParams(window.location.search));
     router.replace({ pathname, query }, { locale: next });
   };

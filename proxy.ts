@@ -27,16 +27,24 @@ function skipsI18n(pathname: string): boolean {
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // ── 버그1(STEP 800 §1): 명시 선택 로케일 지속 ──
-  // 프리픽스 없는(=ko로 해석될) 페이지 요청인데 명시 선택(NEXT_LOCALE 쿠키 — switchLocale에서만 심음)이 en이면 /en으로.
-  // 이 쿠키는 URL 방문으론 안 바뀌므로(routing.ts localeCookie:false), 지인의 /en 링크가 지속 선택을 뒤집지 못한다.
+  // ── STEP 806 §5: 레거시 NEXT_LOCALE 쿠키 마이그레이션 ──
+  // 800 이전엔 next-intl이 URL 방문마다 NEXT_LOCALE을 덮어썼다 → /en을 한 번 밟은 한국 사용자는 쿠키가 en으로 굳어
+  //   프리픽스 없는 경로가 영구 /en으로 리다이렉트됐다. 새 키(locale_choice·명시 선택만 심음)로 갈아타고 레거시는 읽지 않고 삭제한다.
+  const hasLegacy = request.cookies.has('NEXT_LOCALE');
+  const clearLegacy = (res: NextResponse) => {
+    if (hasLegacy) res.cookies.set('NEXT_LOCALE', '', { maxAge: 0, path: '/' });
+    return res;
+  };
+
+  // 명시 선택(locale_choice — Header.switchLocale에서만 심음)이 en이면 프리픽스 없는 요청을 /en으로.
+  // URL 방문으론 안 바뀌므로(routing.ts localeCookie:false) 지인의 /en 링크가 지속 선택을 뒤집지 못한다. 레거시 NEXT_LOCALE은 무시.
   if (!skipsI18n(pathname)) {
-    const chosen = request.cookies.get('NEXT_LOCALE')?.value;
+    const chosen = request.cookies.get('locale_choice')?.value;
     const hasEnPrefix = pathname === '/en' || pathname.startsWith('/en/');
     if (chosen === 'en' && !hasEnPrefix) {
       const url = request.nextUrl.clone();
       url.pathname = pathname === '/' ? '/en' : `/en${pathname}`;
-      return NextResponse.redirect(url);
+      return clearLegacy(NextResponse.redirect(url));
     }
   }
 
@@ -72,7 +80,7 @@ export async function proxy(request: NextRequest) {
   // 갱신된 세션 쿠키를 최종 응답에 반영
   refreshed.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
 
-  return response;
+  return clearLegacy(response); // 레거시 NEXT_LOCALE 있으면 삭제(§5)
 }
 
 export const config = {

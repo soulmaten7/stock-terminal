@@ -20,7 +20,7 @@ export type FScore = {
 // group 키(수익성/재무 안정성/효율성)는 표시가 아니라 UI가 항목을 묶는 '매칭 키'라 언어 무관하게 고정(표시는 t()).
 type CText = { label: string; plain: string };
 const FS_TEXT: Record<Locale, {
-  needThree: string; dataMissing: string; gap: string; splitNote: string; good: string; mid: string; weak: string;
+  needThree: string; dataMissing: string; gap: string; good: string; mid: string; weak: string;
   cash: string; net: string;
   crit: Record<string, CText>;
 }> = {
@@ -28,7 +28,6 @@ const FS_TEXT: Record<Locale, {
     needThree: "재무 데이터 3개 회계연도가 부족해요 (ROA·회전율은 기초 자산이 필요해서요)",
     dataMissing: "재무 데이터가 부족해 점수를 낼 수 없어요.",
     gap: "회계연도가 연속되지 않아 점수를 낼 수 없어요 (중간에 빠진 해가 있어요).",
-    splitNote: "액면분할 조정",
     good: "우량", mid: "중립", weak: "부실",
     cash: "현금", net: "순익",
     crit: {
@@ -47,7 +46,6 @@ const FS_TEXT: Record<Locale, {
     needThree: "Not enough data — this needs three fiscal years (ROA and turnover use beginning assets).",
     dataMissing: "Not enough financial data to score this one.",
     gap: "Can't score — the fiscal years aren't consecutive (a year is missing).",
-    splitNote: "split-adjusted",
     good: "Strong", mid: "Neutral", weak: "Weak",
     cash: "Cash", net: "Net income",
     crit: {
@@ -159,16 +157,13 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
   const gm = (r: FRow) => (gp(r) as number) / (r.totalRevenue as number);
   const pct = (v: number) => (v * 100).toFixed(1) + "%";
 
-  // STEP 803 §4: 액면분할/병합은 '신주발행(자금조달 희석)'이 아니다 — 주식수가 정수배로 급변할 뿐 경제적 희석 없음.
-  //   T/P 주식수 비율이 정수배(≥2, 순분할)나 그 역수(≤1/2, 병합)에 근접하면 분할로 보고 no_dilute를 통과 처리(원전 취지 = 자금조달 희석 여부).
+  // 주식수 정수배 급변 감지 — 액면분할/병합일 수도, 100% 유상증자(실제 희석)일 수도 있다.
+  //   STEP 803 §4는 분할로 보고 통과 처리했으나, STEP 806 §7: 비율이 정확히 정수배면 분할·증자를 구분할 수 없다 →
+  //   회사행위 데이터가 없으므로 no_dilute를 **판정 불가로 제외**(false-pass[증자를 분할로]·false-fail[분할을 증자로] 둘 다 회피). max가 8로 줄어든다.
   const shT = T.ordinarySharesNumber as number, shP = P.ordinarySharesNumber as number;
   const ratio = shP > 0 ? shT / shP : 1;
   const nearInt = (x: number) => Math.abs(x - Math.round(x)) <= 0.01 * Math.max(1, Math.round(x));
-  const isSplit = shP > 0 && ((ratio >= 1.5 && nearInt(ratio)) || (ratio <= 1 / 1.5 && nearInt(1 / ratio)));
-  const dilutePass = isSplit || shT <= shP * 1.001;
-  const diluteNote = isSplit
-    ? `${big(shP)} → ${big(shT)} (${X.splitNote})`
-    : `${big(shP)} → ${big(shT)}`;
+  const ambiguousSplit = shP > 0 && ((ratio >= 1.5 && nearInt(ratio)) || (ratio <= 1 / 1.5 && nearInt(1 / ratio)));
 
   // 3그룹(수익성 4·재무 안정성 3·효율성 2) — GuruFocus·Stockopedia 표준 그룹핑. label=전문용어 / plain=쉬운 풀이(카드 괄호).
   const c: FCriterion[] = [
@@ -178,12 +173,15 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
     { key: "accrual", group: "수익성", ...X.crit.accrual, pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `${X.cash} ${big(T.operatingCashFlow)} · ${X.net} ${big(T.netIncome)}` },
     { key: "lever_dn", group: "재무 안정성", ...X.crit.lever_dn, pass: lev(T) < lev(P), note: `${pct(lev(P))} → ${pct(lev(T))}` },
     { key: "liq_up", group: "재무 안정성", ...X.crit.liq_up, pass: cr(T) > cr(P), note: `${cr(P).toFixed(2)} → ${cr(T).toFixed(2)}` },
-    { key: "no_dilute", group: "재무 안정성", ...X.crit.no_dilute, pass: dilutePass, note: diluteNote },
+    // no_dilute: 정수배 급변(분할·증자 구분 불가)이면 제외. 아니면 신주발행 여부로 판정.
+    ...(ambiguousSplit ? [] : [{ key: "no_dilute", group: "재무 안정성", ...X.crit.no_dilute, pass: shT <= shP * 1.001, note: `${big(shP)} → ${big(shT)}` }]),
     { key: "margin_up", group: "효율성", ...X.crit.margin_up, pass: gm(T) > gm(P), note: `${pct(gm(P))} → ${pct(gm(T))}` },
     { key: "turn_up", group: "효율성", ...X.crit.turn_up, pass: atT > atP, note: `${atP.toFixed(2)} → ${atT.toFixed(2)}` },
   ];
 
   const score = c.filter((x) => x.pass).length;
-  const grade = score >= 7 ? X.good : score <= 3 ? X.weak : X.mid;
-  return { supported: true, score, max: 9, grade, criteria: c, asOf: fmtDate(T.date) };
+  const max = c.length; // 정수배 급변 시 no_dilute 제외로 8
+  // 등급 컷은 max에 비례(max 9→우량 7·max 8→우량 6) — 부실은 절대 3 유지(원전 하단 취지).
+  const grade = score >= max - 2 ? X.good : score <= 3 ? X.weak : X.mid;
+  return { supported: true, score, max, grade, criteria: c, asOf: fmtDate(T.date) };
 }

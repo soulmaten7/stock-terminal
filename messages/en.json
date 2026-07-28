@@ -896,6 +896,7 @@
     "closingMixed": "The methods disagree with each other.",
     "closingInsufficient": "Too few lenses were computed to judge overall.",
     "naNote": "{n} had no data to compute.",
+    "pendingNote": "{n} are still calibrating a baseline.",
     "closingFooter": "Just the facts, summarized — the judgment is yours.",
     "narrativePercentileLabel": "Percentile among top-turnover names",
     "narrativeCutSource": "{market} distribution, bottom/top 30% · N={n} · {date}",

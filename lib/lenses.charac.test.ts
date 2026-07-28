@@ -79,7 +79,7 @@ describe("momentumLens — 특성화", () => {
         "name": "모멘텀",
         "nameEn": "Momentum (12-1)",
         "note": "12-1 모멘텀(Jegadeesh-Titman): 롱숏(고−저 3분위·150개월) 백테스트에서 방향성이 통계적으로 유의(t≈2.5·샤프 0.71·양(+)의 달 67%), 거래비용 차감·시장/규모/가치(FF3) 조정 후에도 유지 — '추세 지속' 방향은 견고. 단 수익 '수준'은 생존편향·동일가중으로 부풀려져 실전 기대치 아님(방향이 맞다는 뜻이지 수익 보장 아님). 주가 $5+ 투자가능 종목 한정 — 페니스탁 포함 시 역전. · 3중 교차검증(초·중·후반 3구간·STEP559): 3구간 모두 +방향(전체 t≈3.6), 성장주 강세기(fold2)만 약화되나 부호 유지 = 시기 무관 단단.",
-        "outlook": "단기~중기 유리한 편 — 강한 추세는 역사적으로 한동안 이어지는 편이에요 (검증된 경향·보장은 아님).",
+        "outlook": "단기~중기 유리한 편 — 모멘텀 상위권 종목이 역사적으로 한동안 상대 우위였던 경향 (검증된 경향·보장은 아님).",
         "short": "강세",
         "spectrum": {
           "active": 2,
@@ -93,8 +93,8 @@ describe("momentumLens — 특성화", () => {
         "summary": "요즘 강하게 오른 종목이 계속 갈지 보는 방법 — 오르는 흐름이 이어지는 장에 잘 맞아요.",
         "value": 210.84,
         "verdict": {
-          "phrase": "강한 상승 추세",
-          "plain": "최근 꾸준히 오르고 있어요. 이 기법은 오르던 흐름이 한동안 더 이어진다고 봐요.",
+          "phrase": "모멘텀 상위권",
+          "plain": "12-1 모멘텀이 시장에서 상위권이에요. 이 기법은 상대적으로 앞선 종목을 눈여겨봐요 (절대 수치는 위 숫자 참고).",
           "tone": "pos",
         },
       }
@@ -233,8 +233,8 @@ describe("valuationLens — 특성화", () => {
         "summary": "버는 돈·가진 자산에 비해 주가가 싼지 보는 방법 — 길게 보는 투자에 잘 맞아요.",
         "value": 8,
         "verdict": {
-          "phrase": "이익 대비 싼 편",
-          "plain": "버는 돈에 비해 주가가 낮은 '가치주' 성격이에요. 길게 보는 투자에서 눈여겨보는 특징이에요.",
+          "phrase": "싼 편(시장 대비)",
+          "plain": "이익 대비 주가가 시장에서 싼 편이에요. 길게 보는 가치 관점에서 눈여겨보는 특징이에요.",
           "tone": "pos",
         },
       }
@@ -307,8 +307,8 @@ describe("lowVolLens — 특성화", () => {
         "summary": "덜 출렁이는 안정적인 종목인지 보는 방법 — 하락장에서 방어적으로 유용해요.",
         "value": 8.89,
         "verdict": {
-          "phrase": "낮은 변동성",
-          "plain": "가격이 크게 출렁이지 않는 편이에요. 하락장에서 방어적으로 버티기 좋은 성격이에요.",
+          "phrase": "변동 낮은 편(시장 대비)",
+          "plain": "가격 변동이 시장에서 적은 편이에요. 하락장에서 방어적으로 버티는 성격이에요 (수익 방향 아님).",
           "tone": "pos",
         },
       }
@@ -368,8 +368,8 @@ describe("qualityLens — 특성화", () => {
         "summary": "회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.",
         "value": 50,
         "verdict": {
-          "phrase": "높은 수익성",
-          "plain": "자산 대비 이익을 꾸준히 잘 내는 회사예요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요.",
+          "phrase": "수익성 상위권",
+          "plain": "자산 대비 수익성이 시장 상위권이에요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요.",
           "tone": "pos",
         },
       }
@@ -441,8 +441,8 @@ describe("assetGrowthLens — 특성화", () => {
         "summary": "회사가 자산(몸집)을 얼마나 빠르게 불리는지 보는 방법 — 너무 공격적으로 키우면 이후 성과가 약한 편이에요.",
         "value": 30,
         "verdict": {
-          "phrase": "공격적 확장",
-          "plain": "자산을 빠르게 불리는 회사예요. 역사적으로 이렇게 급히 몸집을 키운 회사는 이후 성과가 약한 편이라, 참고해서 볼 신호예요.",
+          "phrase": "확장 공격적(시장 대비)",
+          "plain": "자산 확장이 시장에서 공격적인 편이에요. 역사적으로 급히 몸집을 키운 회사는 이후 성과가 약한 편이라 참고해서 볼 신호예요.",
           "tone": "warn",
         },
       }
@@ -602,5 +602,34 @@ describe("note · short/long — i18n 무회귀", () => {
         expect(v, `en 라벨에 한글: ${group}.${k}=${v}`).not.toMatch(/[가-힣]/);
       }
     }
+  });
+});
+
+// STEP 806 §2 — 컷 미주입(pending) 경로: 분포 렌즈는 state='pending'·verdict는 "기준 준비 중"·값은 유지.
+// 이 경로가 없어 805의 pending 집계 누수 버그를 특성화가 못 잡았음.
+describe("pending 경로 (컷 미주입) — STEP 806", () => {
+  const upSeries = makeSeries(300, 100, 0.004, 0.01, 42);
+  it("momentum: 컷 없으면 state=pending·verdict.tone=flat·value 유지", async () => {
+    const r = await momentum.compute(sd({ closes: upSeries }), "ko"); // cuts 미주입
+    expect(r.state).toBe("pending");
+    expect(r.verdict?.phrase).toBe("기준 준비 중");
+    expect(r.verdict?.tone).toBe("flat");
+    expect(r.value).not.toBeNull(); // 값은 그대로 노출
+    expect(r.cutoffs).toBeNull();
+    expect(r.cutSource).toBeNull();
+  });
+  it("lowvol·valuation·quality·assetgrowth도 컷 없으면 pending", async () => {
+    const lv = await lowVol.compute(sd({ closes: upSeries }), "ko");
+    expect(lv.state).toBe("pending");
+    const v = await valuation.compute(sd({ pe: 12, pb: 1 }), "ko");
+    expect(v.state).toBe("pending");
+    const q = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko");
+    expect(q.state).toBe("pending");
+    const ag = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko");
+    expect(ag.state).toBe("pending");
+  });
+  it("technical(고정 표준값)은 컷 없어도 pending 아님", async () => {
+    const t = await technical.compute(sd({ closes: upSeries }), "ko");
+    expect(t.state).not.toBe("pending"); // RSI·MA는 분포 컷 미사용
   });
 });

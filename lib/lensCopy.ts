@@ -140,31 +140,35 @@ export const LENS_READINGS: Record<Locale, {
 }> = {
   ko: {
     momentum: {
-      up: { phrase: "강한 상승 추세", plain: "최근 꾸준히 오르고 있어요. 이 기법은 오르던 흐름이 한동안 더 이어진다고 봐요." },
-      flat: { phrase: "뚜렷한 추세 없음", plain: "최근 오르내림이 섞여 방향이 뚜렷하지 않아요. 이 기법 시각에선 지금 신호가 약해요." },
-      down: { phrase: "하락 추세", plain: "최근 흐름이 약해지고 있어요. 이 기법은 약한 흐름도 한동안 이어지기 쉽다고 봐요." },
+      // 상대(횡단면 순위) 표현 — 컷이 시장 분포라 절대 방향 단정 금지(STEP 806 §1). 절대 수치는 headline 참고.
+      up: { phrase: "모멘텀 상위권", plain: "12-1 모멘텀이 시장에서 상위권이에요. 이 기법은 상대적으로 앞선 종목을 눈여겨봐요 (절대 수치는 위 숫자 참고)." },
+      upNeg: { phrase: "내렸지만 상위권", plain: "최근엔 내렸지만 하락 폭이 시장에서 작은 편이라 모멘텀은 상위권이에요 (절대 수치는 위 숫자 참고)." },
+      flat: { phrase: "모멘텀 중간권", plain: "12-1 모멘텀이 시장 중간권이에요. 이 기법 시각에선 두드러진 신호가 없어요." },
+      down: { phrase: "모멘텀 하위권", plain: "12-1 모멘텀이 시장에서 하위권이에요. 이 기법은 상대적으로 뒤처진 흐름으로 봐요." },
+      downPos: { phrase: "올랐지만 하위권", plain: "최근엔 올랐지만 상승 폭이 시장에서 작은 편이라 모멘텀은 하위권이에요 (절대 수치는 위 숫자 참고)." },
     },
     lowvol: {
-      calm: { phrase: "낮은 변동성", plain: "가격이 크게 출렁이지 않는 편이에요. 하락장에서 방어적으로 버티기 좋은 성격이에요." },
-      mid: { phrase: "보통 변동성", plain: "가격 변동이 특별히 크지도 작지도 않은 편이에요." },
-      jumpy: { phrase: "높은 변동성", plain: "가격이 크게 요동치는 편이에요. 변동을 감당할 수 있을 때 어울려요." },
+      calm: { phrase: "변동 낮은 편(시장 대비)", plain: "가격 변동이 시장에서 적은 편이에요. 하락장에서 방어적으로 버티는 성격이에요 (수익 방향 아님)." },
+      calmHigh: { phrase: "시장 대비 낮지만 절대론 큼", plain: "시장에선 변동이 적은 편이지만 절대 수준은 낮지 않아요 (위 숫자 참고). 하락장 방어 관점이에요." },
+      mid: { phrase: "변동 중간권", plain: "가격 변동이 시장 중간권이에요." },
+      jumpy: { phrase: "변동 높은 편(시장 대비)", plain: "가격 변동이 시장에서 큰 편이에요. 변동을 감당할 수 있을 때 어울려요 (수익 방향 아님)." },
     },
     valuation: {
-      cheap: { phrase: "이익 대비 싼 편", plain: "버는 돈에 비해 주가가 낮은 '가치주' 성격이에요. 길게 보는 투자에서 눈여겨보는 특징이에요." },
-      mid: { phrase: "이익 대비 보통", plain: "이익 대비 주가가 특별히 싸지도 비싸지도 않은 편이에요." },
-      rich: { phrase: "이익 대비 비싼 편", plain: "버는 돈에 비해 주가가 높은 편이에요. 성장 기대가 미리 반영됐을 수 있어요." },
+      cheap: { phrase: "싼 편(시장 대비)", plain: "이익 대비 주가가 시장에서 싼 편이에요. 길게 보는 가치 관점에서 눈여겨보는 특징이에요." },
+      mid: { phrase: "밸류 중간권", plain: "이익 대비 주가가 시장 중간권이에요." },
+      rich: { phrase: "비싼 편(시장 대비)", plain: "이익 대비 주가가 시장에서 비싼 편이에요. 성장 기대가 미리 반영됐을 수 있어요." },
       na: { phrase: "산출 불가", plain: "이익 정보가 없어 이 기법으론 판단하기 어려워요." },
     },
     quality: {
-      high: { phrase: "높은 수익성", plain: "자산 대비 이익을 꾸준히 잘 내는 회사예요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요." },
-      mid: { phrase: "보통 수익성", plain: "자산 대비 수익성이 특별히 높지도 낮지도 않은 편이에요." },
-      low: { phrase: "낮은 수익성", plain: "자산 대비 벌어들이는 이익이 적은 편이에요." },
+      high: { phrase: "수익성 상위권", plain: "자산 대비 수익성이 시장 상위권이에요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요." },
+      mid: { phrase: "수익성 중간권", plain: "자산 대비 수익성이 시장 중간권이에요." },
+      low: { phrase: "수익성 하위권", plain: "자산 대비 수익성이 시장에서 낮은 편이에요." },
       na: { phrase: "산출 불가", plain: "매출총이익 데이터가 없어 이 기법으론 판단하기 어려워요." },
     },
     assetgrowth: {
-      aggressive: { phrase: "공격적 확장", plain: "자산을 빠르게 불리는 회사예요. 역사적으로 이렇게 급히 몸집을 키운 회사는 이후 성과가 약한 편이라, 참고해서 볼 신호예요." },
-      mid: { phrase: "보통 확장", plain: "자산을 늘리는 속도가 과하지도 정체도 아닌 편이에요." },
-      conservative: { phrase: "보수적 운영", plain: "자산을 무리해서 늘리지 않는 편이에요. 역사적으로 자본을 아껴 쓰는 회사가 이후 성과가 나은 편이었어요." },
+      aggressive: { phrase: "확장 공격적(시장 대비)", plain: "자산 확장이 시장에서 공격적인 편이에요. 역사적으로 급히 몸집을 키운 회사는 이후 성과가 약한 편이라 참고해서 볼 신호예요." },
+      mid: { phrase: "확장 중간권", plain: "자산 확장 속도가 시장 중간권이에요." },
+      conservative: { phrase: "확장 보수적(시장 대비)", plain: "자산 확장이 시장에서 보수적인 편이에요. 역사적으로 자본을 아껴 쓰는 회사가 이후 성과가 나은 편이었어요." },
       na: { phrase: "산출 불가", plain: "재무 정보가 부족해 이 기법으론 판단하기 어려워요." },
     },
     technical: {
@@ -181,31 +185,35 @@ export const LENS_READINGS: Record<Locale, {
   },
   en: {
     momentum: {
-      up: { phrase: "Climbing strongly", plain: "It's been rising steadily. This lens expects an existing uptrend to persist for a while." },
-      flat: { phrase: "No clear direction", plain: "Recent moves are mixed, with no clear trend. The signal is weak here right now." },
-      down: { phrase: "Losing steam", plain: "The trend has been weakening. This lens expects a weak trend to tend to persist too." },
+      // Relative (cross-sectional rank) — cuts are market distribution, so no absolute-direction claims (STEP 806 §1). See headline for the raw number.
+      up: { phrase: "Top-tier momentum", plain: "Its 12-1 momentum ranks near the top of the market. This lens favors relatively leading names (see the number above for the raw figure)." },
+      upNeg: { phrase: "Down, yet top-ranked", plain: "It has slipped lately, but its decline is milder than most, so momentum still ranks high (see the number above)." },
+      flat: { phrase: "Mid-pack momentum", plain: "Its 12-1 momentum sits mid-market. No standout signal from this lens right now." },
+      down: { phrase: "Bottom-tier momentum", plain: "Its 12-1 momentum ranks near the bottom of the market. This lens reads it as relatively lagging." },
+      downPos: { phrase: "Up, yet bottom-ranked", plain: "It has risen lately, but its gain is smaller than most, so momentum ranks low (see the number above)." },
     },
     lowvol: {
-      calm: { phrase: "Calm and steady", plain: "The price doesn't swing much — a defensive profile that tends to hold up in down markets." },
-      mid: { phrase: "Average swings", plain: "Volatility is neither especially high nor low." },
-      jumpy: { phrase: "Swings a lot", plain: "The price moves sharply. Suits you when you can stomach the swings." },
+      calm: { phrase: "Low swings (vs. market)", plain: "Its price moves less than most in the market — a defensive profile in down markets (not a return call)." },
+      calmHigh: { phrase: "Low vs. market, high in absolute", plain: "It swings less than most in the market, but the absolute level is not low (see the number above). A defensive-in-down-markets view." },
+      mid: { phrase: "Mid-pack volatility", plain: "Its price movement sits mid-market." },
+      jumpy: { phrase: "High swings (vs. market)", plain: "Its price moves more than most in the market. Suits you when you can stomach the swings (not a return call)." },
     },
     valuation: {
-      cheap: { phrase: "Cheap vs. earnings", plain: "The price is low relative to what it earns — a value profile worth watching in the long game." },
-      mid: { phrase: "Fairly priced", plain: "The price isn't especially cheap or expensive versus earnings." },
-      rich: { phrase: "Pricey vs. earnings", plain: "The price is high relative to earnings — growth expectations may be priced in." },
+      cheap: { phrase: "Cheap (vs. market)", plain: "Relative to earnings, its price is on the cheaper side of the market — a value profile worth watching in the long game." },
+      mid: { phrase: "Mid-pack valuation", plain: "Relative to earnings, its price sits mid-market." },
+      rich: { phrase: "Pricey (vs. market)", plain: "Relative to earnings, its price is on the pricier side of the market — growth expectations may be priced in." },
       na: { phrase: "Can't be scored", plain: "No earnings data, so this lens can't judge it." },
     },
     quality: {
-      high: { phrase: "A sturdy earner", plain: "It reliably turns assets into profit — a high-quality profile worth watching." },
-      mid: { phrase: "Average profitability", plain: "Profitability versus assets is neither especially high nor low." },
-      low: { phrase: "Low profitability", plain: "It earns relatively little from its assets." },
+      high: { phrase: "Top-tier profitability", plain: "Its profitability versus assets ranks near the top of the market — a high-quality profile worth watching." },
+      mid: { phrase: "Mid-pack profitability", plain: "Its profitability versus assets sits mid-market." },
+      low: { phrase: "Bottom-tier profitability", plain: "Its profitability versus assets is on the low side of the market." },
       na: { phrase: "Can't be scored", plain: "No gross-profit data, so this lens can't judge it." },
     },
     assetgrowth: {
-      aggressive: { phrase: "Expanding aggressively", plain: "It's growing assets fast. Historically, companies that bulk up this quickly have tended to lag afterward — a signal to watch." },
-      mid: { phrase: "Growing at a normal pace", plain: "It's growing assets at neither an excessive nor a stalled pace." },
-      conservative: { phrase: "Runs conservatively", plain: "It doesn't overextend its assets. Historically, disciplined spenders have tended to fare better afterward." },
+      aggressive: { phrase: "Aggressive expansion (vs. market)", plain: "Its asset expansion is among the more aggressive in the market. Historically, fast bulkers have tended to lag afterward — a signal to watch." },
+      mid: { phrase: "Mid-pack expansion", plain: "Its asset expansion pace sits mid-market." },
+      conservative: { phrase: "Conservative expansion (vs. market)", plain: "Its asset expansion is among the more conservative in the market. Historically, disciplined spenders have tended to fare better afterward." },
       na: { phrase: "Can't be scored", plain: "Not enough financial data for this lens to judge." },
     },
     technical: {
@@ -253,9 +261,9 @@ export const LENS_OUTLOOK: Record<Locale, {
 }> = {
   ko: {
     momentum: {
-      up: "단기~중기 유리한 편 — 강한 추세는 역사적으로 한동안 이어지는 편이에요 (검증된 경향·보장은 아님).",
-      flat: "지금은 뚜렷한 방향 없음 — 추세가 약해 이 기법 신호가 약해요.",
-      down: "단기~중기 불리한 편 — 약한 흐름도 한동안 이어지기 쉬운 편이에요 (검증된 경향·보장 아님).",
+      up: "단기~중기 유리한 편 — 모멘텀 상위권 종목이 역사적으로 한동안 상대 우위였던 경향 (검증된 경향·보장은 아님).",
+      flat: "지금은 뚜렷한 방향 없음 — 모멘텀이 중간권이라 이 기법 신호가 약해요.",
+      down: "단기~중기 불리한 편 — 모멘텀 하위권 흐름은 한동안 이어지기 쉬운 편이에요 (검증된 경향·보장 아님).",
     },
     lowvol: {
       calm: "위험: 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
@@ -294,9 +302,9 @@ export const LENS_OUTLOOK: Record<Locale, {
   },
   en: {
     momentum: {
-      up: "Short-to-mid term: leans favorable — strong trends have historically tended to persist (validated tendency, not a guarantee).",
-      flat: "No clear direction now — the trend is weak, so this lens' signal is faint.",
-      down: "Short-to-mid term: leans unfavorable — weak trends have tended to persist too (validated, not a guarantee).",
+      up: "Short-to-mid term: leans favorable — top-ranked momentum names have historically held a relative edge for a while (validated tendency, not a guarantee).",
+      flat: "No clear direction now — momentum is mid-pack, so this lens' signal is faint.",
+      down: "Short-to-mid term: leans unfavorable — bottom-ranked momentum has tended to persist too (validated, not a guarantee).",
     },
     lowvol: {
       calm: "Risk: low (defensive) — a risk view, not a return call.",

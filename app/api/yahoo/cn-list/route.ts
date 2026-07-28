@@ -105,7 +105,7 @@ export async function GET(req: Request) {
     if (data.length < 1000) break;
   }
 
-  const sorted = rows.sort((a, b) => (b.amount ?? -Infinity) - (a.amount ?? -Infinity));
+  const sorted = rows.sort((a, b) => ((b.amount ?? -Infinity) - (a.amount ?? -Infinity)) || 0);
   const lensMap = await fetchLensMap(sb, "CN", sorted.map((r) => r.symbol));
   const items = sorted.map((r) => ({ ...r, lens: lensMap.get(r.symbol) ?? null }));
   const data = { items };

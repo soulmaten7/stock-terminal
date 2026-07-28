@@ -3,6 +3,7 @@ import { computeSymbolLenses } from "@/lib/lensCompute";
 import { pickLocale } from "@/lib/lensCopy";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { LENSES } from "@/lib/lenses/registry";
+import { isActiveSymbol } from "@/lib/activeMarkets";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -44,6 +45,8 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const symbol = (url.searchParams.get("symbol") || "").trim();
   if (!symbol) return NextResponse.json({ error: "no_symbol" }, { status: 400 });
+  // 🔴 STEP 806 §6: 활성 시장(KR·US)만 — 파킹 시장 심볼은 온디맨드 계산 차단(brief와 정합).
+  if (!isActiveSymbol(symbol)) return NextResponse.json({ error: "inactive_market" }, { status: 400 });
   const locale = pickLocale(url.searchParams.get("lang")); // 기본 ko · ?lang=en
   const cacheKey = `${symbol}:${locale}`;
 
@@ -53,7 +56,9 @@ export async function GET(req: Request) {
   try {
     const data = await computeSymbolLenses(symbol, locale);
     await enrichPercentiles(symbol, data); // US 유니버스 대비 퍼센타일 주입(비US는 null)
-    cache.set(cacheKey, { at: Date.now(), data });
+    // STEP 806 §7: pending(컷 준비 중)이 하나라도 있으면 캐시하지 않음 — 크론 직후 컷 생기면 즉시 정상 판정 반영.
+    const hasPending = Array.isArray(data.lenses) && data.lenses.some((l) => l.state === "pending");
+    if (!hasPending) cache.set(cacheKey, { at: Date.now(), data });
     return NextResponse.json(data);
   } catch (e) {
     return NextResponse.json({ symbol, error: String(e) }, { status: 200 });

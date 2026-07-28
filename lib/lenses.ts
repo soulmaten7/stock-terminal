@@ -106,6 +106,10 @@ export const momentum: Lens = {
     const cut = cuts?.momentum;
     const mState = verdictState("momentum", m121, cuts);
     const isPending = mState === "pending";
+    // STEP 806 §1 절대 sanity 가드: 상위권(up)인데 12-1<0이면 "상승" 문구 금지(upNeg), 하위권(down)인데 12-1>0이면 downPos.
+    const readKey = mState === "up" ? (m121 != null && m121 < 0 ? "upNeg" : "up")
+      : mState === "down" ? (m121 != null && m121 > 0 ? "downPos" : "down")
+      : mState;
     // 장기 라벨(trend)도 같은 컷 상태에서 파생 — up→강세·flat→중립·down→약세(momentumState 별도 임계값 미사용).
     const trendState = mState === "up" ? "strong" : mState === "down" ? "weak" : mState === "flat" ? "neutral" : null;
     return {
@@ -120,7 +124,7 @@ export const momentum: Lens = {
       short: labelOf(locale, "trend", shortState(avg([r1, r3]))),
       long: labelOf(locale, "trend", trendState),
       detail: { mom12_1: round(m121), ret1m: round(r1), ret3m: round(r3), ret6m: round(r6), ret12m: round(r12) },
-      verdict: isPending ? pendingRead(locale) : readOf(locale, "momentum", mState, mState === "up" ? "pos" : mState === "down" ? "warn" : "flat"),
+      verdict: isPending ? pendingRead(locale) : readOf(locale, "momentum", readKey, mState === "up" ? "pos" : mState === "down" ? "warn" : "flat"),
       spectrum: specOf(locale, "momentum", mState === "up" ? 2 : mState === "down" ? 0 : mState === "flat" ? 1 : -1),
       headline: m121 != null ? `12-1 ${round(m121)}%` : null,
       outlook: isPending ? null : outlookOf(locale, "momentum", mState),
@@ -225,6 +229,8 @@ export const lowVol: Lens = {
     const cut = cuts?.lowvol;
     const lvState = verdictState("lowvol", vol, cuts);
     const isPending = lvState === "pending";
+    // STEP 806 §1: 시장 대비 차분(calm)이라도 절대 변동성이 높으면(>40% 연율) 그 사실 병기(calmHigh).
+    const readKey = lvState === "calm" && vol != null && vol > 40 ? "calmHigh" : lvState;
     // 장기 라벨(vol)도 같은 컷 상태에서 파생 — calm→낮음·mid→중간·jumpy→높음(volState 별도 임계값 미사용).
     const volLab = lvState === "calm" ? "low" : lvState === "jumpy" ? "high" : lvState === "mid" ? "mid" : null;
     return {
@@ -239,7 +245,7 @@ export const lowVol: Lens = {
       short: null,
       long: labelOf(locale, "vol", volLab),
       detail: { vol: round(vol) },
-      verdict: isPending ? pendingRead(locale) : readOf(locale, "lowvol", lvState, lvState === "calm" ? "pos" : lvState === "jumpy" ? "warn" : "flat"),
+      verdict: isPending ? pendingRead(locale) : readOf(locale, "lowvol", readKey, lvState === "calm" ? "pos" : lvState === "jumpy" ? "warn" : "flat"),
       spectrum: specOf(locale, "lowvol", lvState === "calm" ? 0 : lvState === "jumpy" ? 2 : lvState === "mid" ? 1 : -1),
       headline: vol != null ? `${HEADLINE_PREFIX[locale].lowvol} ${round(vol)}%` : null,
       outlook: isPending ? null : outlookOf(locale, "lowvol", lvState),
