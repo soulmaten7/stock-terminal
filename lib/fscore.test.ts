@@ -76,7 +76,7 @@ describe("computeFScore — 9항목 전부 통과 세트(비금융 정상)", () 
   it("설계상 9점·우량(ko 기본)", () => {
     const f = computeFScore(rows());
     expect(f.score).toBe(9);
-    expect(f.grade).toBe("우량");
+    expect(f.grade).toBe("양호");
     expect(f.criteria.length).toBe(9);
   });
 });

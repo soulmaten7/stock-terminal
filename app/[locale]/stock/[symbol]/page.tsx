@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       ? [main, `${main} stock`, `${main} forecast`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "AI Lens", "Trillion"]
       : [ticker, "stock", "AI Lens", "Trillion"]
     : hasName
-      ? [main, `${main} 주가`, `${main} 전망`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "AI 렌즈", "Trillion"]
+      ? [main, `${main} 주가`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "AI 렌즈", "Trillion"]
       : [ticker, "주가", "AI 렌즈", "Trillion"];
 
   return {

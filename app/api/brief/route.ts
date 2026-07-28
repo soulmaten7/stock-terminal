@@ -7,6 +7,7 @@ import { marketDate } from '@/lib/marketDate';
 import { pickLocale, type Locale } from '@/lib/lensCopy';
 import { blockLLM } from '@/lib/rateLimit';
 import { isActiveSymbol } from '@/lib/activeMarkets';
+import { containsBannedWords, passesLanguageGuard } from '@/lib/dailyBrief';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -20,7 +21,7 @@ const H: Record<Locale, Record<string, string>> = {
 };
 
 const BRIEF_SYSTEM =
-  '당신은 한국 개인투자자에게 종목을 브리핑하는 애널리스트입니다. 주어진 "검증된 기법 판정"과 "최근 공시 사실"만 근거로 3~4문장 한국어 브리핑을 씁니다.\n' +
+  '당신은 한국 개인투자자에게 종목을 브리핑하는 애널리스트입니다. 주어진 "기법 판정"과 "최근 공시 사실"만 근거로 3~4문장 한국어 브리핑을 씁니다.\n' +
   '규칙(반드시): (1) 예측·전망·투자 추천 절대 금지 — "오른다/내린다·사라/팔아라·목표가·기회·지금이 타이밍" 등 금지. ' +
   '(2) 핵심은 ⓐ 시간축·기법 간 "긴장(엇갈림)"을 짚고 ⓑ "지켜볼 것"(관찰 가능한 촉매·사실)을 가리키는 것. ' +
   '(3) 주어진 facts에 없는 내용·숫자 추가 금지. "최근 중대 공시"는 이미 접수된 과거 사실이니 "예정"이라 쓰지 말 것. (4) 방향 판단은 하지 않는 태도 유지(문구를 매번 붙이진 말 것). (5) 해요체·군더더기 없이·한 문단.\n' +
@@ -28,7 +29,7 @@ const BRIEF_SYSTEM =
 
 // 영어 브리핑 — ko와 동일한 가드레일(예측·추천 금지 / 긴장 + 지켜볼 것 / facts 밖 내용 금지).
 const BRIEF_SYSTEM_EN =
-  'You are an analyst briefing a stock to individual investors. Write a 3-4 sentence English briefing based ONLY on the given "proven-method verdicts" and "recent filing facts."\n' +
+  'You are an analyst briefing a stock to individual investors. Write a 3-4 sentence English briefing based ONLY on the given "method readings" and "recent filing facts."\n' +
   'Rules (must): (1) No forecasts, outlook, or investment recommendations — never say "will rise/fall, buy/sell, target price, opportunity, now is the time," etc. ' +
   '(2) The core is ⓐ pointing out the tension (divergence) across time horizons and methods, and ⓑ pointing to what to watch (observable catalysts/facts). ' +
   '(3) Do not add content or numbers not in the facts. "Recent material filings" are already-received past facts, so do not call them upcoming or expected. (4) Keep a stance of not judging direction (do not attach a disclaimer every time). (5) Plain professional English, no filler, one paragraph.\n' +
@@ -93,8 +94,8 @@ export async function GET(req: NextRequest) {
       : noEv;
   }
   const facts = en
-    ? `Stock: ${symbol}${data.name ? ` (${data.name})` : ''}\n\n[Proven-method verdicts]\n${lensFacts}\n${fs}\n\n[Recent material filings]\n${evFacts}`
-    : `종목: ${symbol}${data.name ? ` (${data.name})` : ''}\n\n[검증된 기법 판정]\n${lensFacts}\n${fs}\n\n[최근 중대 공시]\n${evFacts}`;
+    ? `Stock: ${symbol}${data.name ? ` (${data.name})` : ''}\n\n[Method readings]\n${lensFacts}\n${fs}\n\n[Recent material filings]\n${evFacts}`
+    : `종목: ${symbol}${data.name ? ` (${data.name})` : ''}\n\n[기법 판정]\n${lensFacts}\n${fs}\n\n[최근 중대 공시]\n${evFacts}`;
 
   // 3) LLM 브리핑
   const apiKey = process.env.OPENAI_API_KEY;
@@ -120,8 +121,20 @@ export async function GET(req: NextRequest) {
   });
   if (!res.ok) return NextResponse.json({ error: `llm ${res.status}` }, { status: 502 });
   const j = await res.json();
-  const brief = (j.choices?.[0]?.message?.content || '').trim();
+  let brief = (j.choices?.[0]?.message?.content || '').trim();
   if (!brief) return NextResponse.json({ error: 'llm_empty' }, { status: 502 });
+
+  // 🔴 STEP 810 §6: daily-brief와 동일한 후처리 가드 — 금지어(예측·추천)·언어 위반 검출 시 LLM 산출 폐기하고 결정론 폴백.
+  //   프롬프트만 믿지 않고 산출물을 실제로 검사한다(daily-brief 3중 가드와 정합).
+  if (containsBannedWords(brief, locale) || !passesLanguageGuard(brief, locale)) {
+    const parts = lenses
+      .filter((l) => l.verdict?.phrase && l.state !== 'na' && l.state !== 'pending')
+      .map((l) => `${l.name} ${l.verdict!.phrase}`);
+    if (fsc?.supported) parts.push(en ? `F-Score ${fsc.score}/${fsc.max}` : `F-스코어 ${fsc.score}/${fsc.max}`);
+    brief = en
+      ? `${data.name || symbol}: ${parts.join(' · ')}. These are per-method readings, not a forecast or recommendation.`
+      : `${data.name || symbol}: ${parts.join(' · ')}. 기법별 계산 결과예요 — 예측·추천이 아니에요.`;
+  }
 
   // 해당 로케일 컬럼만 payload에 담는다 → Supabase upsert는 준 키만 UPDATE하므로 반대 로케일 캐시 무손상.
   const { error: upErr } = await sb.from('stock_briefings').upsert(

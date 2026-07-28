@@ -421,6 +421,8 @@ export default function ExploreClient() {
           </div>
           {activeList === 'changes' ? <SelectionBasisLabel /> : <DotLegendBasisLabel />}
         </div>
+        {/* STEP 810 §3: pos 개수 정렬은 우리 조합이고 저변동·기술은 수익 신호 아님 — 정직 명시 */}
+        {activeList === 'pos' ? <p className="mb-3 px-4 text-[12px] leading-relaxed text-unjong-muted sm:px-0">{t('posSubNote')}</p> : null}
         {activeList === 'changes' ? (
           <div className="mb-3 flex gap-1.5 px-4 sm:px-0">
             <button type="button" onClick={() => setToneFilter('all')} className={chipClass(toneFilter === 'all')}>
@@ -565,7 +567,7 @@ export default function ExploreClient() {
         )}
       </section>
 
-      {/* 목록 2: 강점이 많은 종목 */}
+      {/* 목록 2: 여러 기법에서 상위권인 종목(우리 조합·추천 아님·STEP 810 §3) */}
       <section className="mb-7">
         <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
           <h2 className="text-base font-bold text-unjong-primary">{t('posTitle')}</h2>
@@ -574,6 +576,7 @@ export default function ExploreClient() {
             <DotLegendBasisLabel />
           </div>
         </div>
+        <p className="mb-2 px-4 text-[12px] leading-relaxed text-unjong-muted sm:px-0">{t('posSubNote')}</p>
         {listsFailed.pos ? <LoadFailed /> : posTop === null ? (
           <Skeleton />
         ) : posTop.length === 0 ? (

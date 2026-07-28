@@ -197,6 +197,24 @@ function LensNarrative({ L, loc, market }: { L: LensRead; loc: Locale; market: s
   );
 }
 
+// 🔴 STEP 810 §1: "이 기법이 검증한 것" 블록 — 검증 범위·알려진 한계·적용 조건(원전 기반 정적 카피). 로그인 게이트 밖(무료).
+function ScopeBlock({ lensKey, loc }: { lensKey: string; loc: Locale }) {
+  const t = useTranslations('StockLens');
+  const copy = (LENS_COPY[loc] as Record<string, { scope?: { verified: string; failure: string; when: string } }>)[lensKey];
+  const scope = copy?.scope;
+  if (!scope) return null;
+  return (
+    <div className="border-t border-unjong-border bg-unjong-background/40 px-4 py-3.5">
+      <p className="mb-2 text-[12px] font-bold text-unjong-primary">{t('scopeTitle')}</p>
+      <dl className="space-y-2 text-[13px] sm:text-[12px] leading-relaxed">
+        <div><dt className="font-semibold text-unjong-primary">{t('scopeVerified')}</dt><dd className="text-unjong-muted">{scope.verified}</dd></div>
+        <div><dt className="font-semibold text-unjong-primary">{t('scopeFailure')}</dt><dd className="text-unjong-muted">{scope.failure}</dd></div>
+        <div><dt className="font-semibold text-unjong-primary">{t('scopeWhen')}</dt><dd className="text-unjong-muted">{scope.when}</dd></div>
+      </dl>
+    </div>
+  );
+}
+
 // 시간축 스트립 — 단기(RSI)·중기(모멘텀 퍼센타일)·장기(팩터 묶음+개수). 각 칸 자기 축으로 정직하게(하나로 안 뭉침).
 function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreResp | null }) {
   const t = useTranslations('StockLens');
@@ -1132,20 +1150,19 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const closingPosLabels: string[] = [];
   const closingWarnLabels: string[] = [];
   const byHorizon: Record<'short' | 'mid' | 'long', ('pos' | 'warn' | 'flat')[]> = { short: [], mid: [], long: [] };
+  // 🔴 STEP 810 §3·§4: 저변동(위험 축)·기술(참고용)은 '수익 우호'가 아니라 종합 verdict·강점 나열에서 제외(범주 오류·저변동 강점 승격 방지).
+  //   개별 카드엔 그대로 표시되고, 여기 '종합' 판정에만 수익 관련 렌즈를 넣는다.
+  const RETURN_LENS = new Set(['momentum', 'valuation', 'quality', 'assetgrowth']);
   for (const l of lenses) {
     if (l.state === 'na' || l.state === 'pending') continue; // 결측·기준 준비 중 제외(STEP 802 §4·806 §2)
+    if (!RETURN_LENS.has(l.key)) continue; // 저변동·기술 제외(수익 신호 아님)
     const tone = l.verdict?.tone;
     if (tone === 'pos') closingPosLabels.push(lensShortLabel(locale, l.key));
     else if (tone === 'warn') closingWarnLabels.push(lensShortLabel(locale, l.key));
     if (tone) byHorizon[l.horizon].push(tone);
   }
-  if (data?.fscore?.supported) {
-    const fsScore = data.fscore.score ?? 0;
-    const fsTone = fsScore >= 7 ? 'pos' : fsScore <= 3 ? 'warn' : 'flat';
-    if (fsTone === 'pos') closingPosLabels.push(lensShortLabel(locale, 'fscore'));
-    else if (fsTone === 'warn') closingWarnLabels.push(lensShortLabel(locale, 'fscore'));
-    byHorizon.long.push(fsTone);
-  }
+  // F-Score(재무 건전성)는 '수익 우호' 축이 아니라 종합 verdict에서 제외(§4 범주 오류 방지) — 개별 카드·헤더 카운트엔 그대로.
+  const returnEvidence = byHorizon.short.length + byHorizon.mid.length + byHorizon.long.length; // 종합 판정을 뒷받침한 수익 렌즈 수(§4)
   function axisMajority(tones: ('pos' | 'warn' | 'flat')[]): 'pos' | 'warn' | 'flat' | null {
     if (!tones.length) return null;
     const pos = tones.filter((x) => x === 'pos').length;
@@ -1161,9 +1178,10 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const closingAxes = [shortAxisTone, midAxisTone, longAxisTone].filter((x): x is 'pos' | 'warn' | 'flat' => x != null);
   // 분기 4개 + 혼재 폴백(총 5개) — 데이터 자체가 없으면(closingAxes 0) 문장 생략(정직 결측).
   // STEP 802 §4: 계산된 렌즈(na 제외)가 3개 미만이면 종합 판단을 내리지 않고 "근거 부족"으로(근거 1개로 '대체로 유리' 방지).
+  // 🔴 STEP 810 §4: 종합 문장은 '수익 렌즈' 근거가 3개 이상일 때만 — 1~2개면 "근거 적어 종합 안 함"(기술 1개로 '짧게 보든' 방지).
   let closingSentenceKey: string | null = null;
-  if (headerTones.length < 3) {
-    closingSentenceKey = headerTones.length > 0 ? 'closingInsufficient' : null;
+  if (returnEvidence < 3) {
+    closingSentenceKey = returnEvidence > 0 ? 'closingInsufficient' : null;
   } else if (closingAxes.length > 0) {
     if (closingAxes.every((x) => x === 'pos')) closingSentenceKey = 'closingAllPos';
     else if (closingAxes.every((x) => x === 'warn')) closingSentenceKey = 'closingAllWarn';
@@ -1224,6 +1242,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
             ) : null}
           </div>
         </button>
+        {/* 🔴 STEP 810 §1: "이 기법이 검증한 것"(검증 범위·한계·조건) — 로그인 게이트 밖(무료). 가장 강한 주장의 단서를 무료로 공개. */}
+        {isOpen ? <ScopeBlock lensKey={L.key} loc={locale} /> : null}
         {isOpen && !authLoading && !user ? ( // 하이드레이션 중 게이트 번쩍 방지(STEP 804 §6)
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
             <div className="flex flex-col items-center gap-2 rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center">
@@ -1386,6 +1406,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 {closingWarnLabels.length ? <p className="text-amber-400">{t('closingWarnLine', { list: closingWarnLabels.join(', ') })}</p> : null}
               </div>
               {closingSentenceKey ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{t(closingSentenceKey)}</p> : null}
+              {/* STEP 810 §4: 종합 문장이 몇 개 수익 렌즈에 근거했는지 명시(축 혼합·범주 오류 방지) */}
+              {closingSentenceKey && closingSentenceKey !== 'closingInsufficient' ? <p className="mt-1 text-[12px] sm:text-[11px] text-unjong-muted">{t('closingEvidence', { n: returnEvidence })}</p> : null}
               <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('closingFooter')}</p>
             </div>
           ) : null}

@@ -29,7 +29,7 @@ const FS_TEXT: Record<Locale, {
     dataMissing: "재무 데이터가 부족해 점수를 낼 수 없어요.",
     gap: "회계연도가 연속되지 않아 점수를 낼 수 없어요 (중간에 빠진 해가 있어요).",
     splitNote: "액면분할 조정",
-    good: "우량", mid: "중립", weak: "부실",
+    good: "양호", mid: "보통", weak: "취약",
     cash: "현금", net: "순익",
     crit: {
       roa_pos: { label: "ROA 양수", plain: "돈을 벌어요·흑자" },
@@ -48,7 +48,7 @@ const FS_TEXT: Record<Locale, {
     dataMissing: "Not enough financial data to score this one.",
     gap: "Can't score — the fiscal years aren't consecutive (a year is missing).",
     splitNote: "split-adjusted",
-    good: "Strong", mid: "Neutral", weak: "Weak",
+    good: "Strong", mid: "Fair", weak: "Weak",
     cash: "Cash", net: "Net income",
     crit: {
       roa_pos: { label: "Positive ROA", plain: "It makes money — profitable" },
