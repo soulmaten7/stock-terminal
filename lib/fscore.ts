@@ -1,7 +1,7 @@
 // 피오트로스키 F-Score (9점) — 첫 "제대로 정의된" 결정론 렌즈.
 // 원칙: 예측 아님. 재무 9개 규칙을 정확히 계산해 통과/실패를 투명 공개.
-// 입력: fundamentalsTimeSeries(annual) 연도 오름차순 행. 최신(T)·전기(P) 2년으로 Δ 판정.
-// ROA는 단순화(NI/기말총자산) — 원논문(기초자산) 대비 편의버전, 신호 취지 동일. 항상 근거수치 노출.
+// 입력: fundamentalsTimeSeries(annual) 연도 오름차순 행. 최신(T)·전기(P)·전전기(PP) 3년으로 Δ 판정.
+// ROA·자산회전율 분모 = 기초(전기말) 총자산(Piotroski 2000 원전·STEP 801). 3년 없으면 계산 불가. 항상 근거수치 노출.
 
 import type { Locale } from "./lensCopy";
 
@@ -20,12 +20,12 @@ export type FScore = {
 // group 키(수익성/재무 안정성/효율성)는 표시가 아니라 UI가 항목을 묶는 '매칭 키'라 언어 무관하게 고정(표시는 t()).
 type CText = { label: string; plain: string };
 const FS_TEXT: Record<Locale, {
-  needTwo: string; bank: string; good: string; mid: string; weak: string;
+  needThree: string; bank: string; good: string; mid: string; weak: string;
   cash: string; net: string;
   crit: Record<string, CText>;
 }> = {
   ko: {
-    needTwo: "재무 데이터 2년치가 부족해요",
+    needThree: "재무 데이터 3개 회계연도가 부족해요 (ROA·회전율은 기초 자산이 필요해서요)",
     bank: "이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.",
     good: "우량", mid: "중립", weak: "부실",
     cash: "현금", net: "순익",
@@ -42,7 +42,7 @@ const FS_TEXT: Record<Locale, {
     },
   },
   en: {
-    needTwo: "Not enough data — this needs two years of financials.",
+    needThree: "Not enough data — this needs three fiscal years (ROA and turnover use beginning assets).",
     bank: "Can't score this one — it's a bank or insurer, and their financials are built differently.",
     good: "Strong", mid: "Neutral", weak: "Weak",
     cash: "Cash", net: "Net income",
@@ -99,11 +99,14 @@ function fmtDate(d: unknown): string | undefined {
 export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
   const X = FS_TEXT[locale] ?? FS_TEXT.ko;
   const rows = (rowsAsc || []).filter(Boolean);
-  if (rows.length < 2) {
-    return { supported: false, reason: X.needTwo, score: 0, max: 9, grade: "-", criteria: [] };
+  // Piotroski 원전: ROA·자산회전율의 분모 = **기초(전기말) 총자산**. ΔROA·Δ회전율을 같은 기준으로 일관되게 내려면
+  // T·P 두 해의 기초 자산(= P·PP의 기말 자산)이 필요 → 3개 회계연도 요구(없으면 계산 불가·기말 대체 금지·STEP 801).
+  if (rows.length < 3) {
+    return { supported: false, reason: X.needThree, score: 0, max: 9, grade: "-", criteria: [] };
   }
   const T = rows[rows.length - 1];
   const P = rows[rows.length - 2];
+  const PP = rows[rows.length - 3]; // T·P의 기초 자산 = P·PP의 기말 자산
 
   // 필수 필드 — 분모는 양수까지 요구. 하나라도 없으면(예: 은행) F-Score 미적용.
   const ok = (r: FRow) =>
@@ -116,7 +119,8 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
     (r.totalAssets ?? 0) > 0 &&
     (r.totalRevenue ?? 0) > 0 &&
     (r.currentLiabilities ?? 0) > 0;
-  if (!ok(T) || !ok(P)) {
+  // T·P 유효 + PP 기말 총자산 양수(P의 기초 분모) — 셋 다 있어야 기초-자산 ROA/회전율 산출 가능.
+  if (!ok(T) || !ok(P) || (PP?.totalAssets ?? 0) <= 0) {
     return {
       supported: false,
       reason: X.bank,
@@ -127,24 +131,28 @@ export function computeFScore(rowsAsc: FRow[], locale: Locale = "ko"): FScore {
     };
   }
 
-  const roa = (r: FRow) => (r.netIncome as number) / (r.totalAssets as number);
+  const begT = P.totalAssets as number;  // T의 기초(전기말) 총자산 = P 기말
+  const begP = PP.totalAssets as number; // P의 기초(전전기말) 총자산 = PP 기말
+  const roaT = (T.netIncome as number) / begT;      // ROA_t = 순이익 / 기초자산(원전)
+  const roaP = (P.netIncome as number) / begP;
+  const atT = (T.totalRevenue as number) / begT;    // 자산회전율 = 매출 / 기초자산(원전)
+  const atP = (P.totalRevenue as number) / begP;
   const cr = (r: FRow) => (r.currentAssets as number) / (r.currentLiabilities as number);
-  const lev = (r: FRow) => (r.longTermDebt as number) / (r.totalAssets as number);
+  const lev = (r: FRow) => (r.longTermDebt as number) / (r.totalAssets as number); // ΔLEVER는 비교라 기말 자산 유지(원전은 평균이나 pass/fail 취지 동일)
   const gm = (r: FRow) => (gp(r) as number) / (r.totalRevenue as number);
-  const at = (r: FRow) => (r.totalRevenue as number) / (r.totalAssets as number);
   const pct = (v: number) => (v * 100).toFixed(1) + "%";
 
   // 3그룹(수익성 4·재무 안정성 3·효율성 2) — GuruFocus·Stockopedia 표준 그룹핑. label=전문용어 / plain=쉬운 풀이(카드 괄호).
   const c: FCriterion[] = [
-    { key: "roa_pos", group: "수익성", ...X.crit.roa_pos, pass: roa(T) > 0, note: `ROA ${pct(roa(T))}` },
+    { key: "roa_pos", group: "수익성", ...X.crit.roa_pos, pass: roaT > 0, note: `ROA ${pct(roaT)}` },
     { key: "cfo_pos", group: "수익성", ...X.crit.cfo_pos, pass: (T.operatingCashFlow as number) > 0, note: `CFO ${big(T.operatingCashFlow)}` },
-    { key: "roa_up", group: "수익성", ...X.crit.roa_up, pass: roa(T) > roa(P), note: `${pct(roa(P))} → ${pct(roa(T))}` },
+    { key: "roa_up", group: "수익성", ...X.crit.roa_up, pass: roaT > roaP, note: `${pct(roaP)} → ${pct(roaT)}` },
     { key: "accrual", group: "수익성", ...X.crit.accrual, pass: (T.operatingCashFlow as number) > (T.netIncome as number), note: `${X.cash} ${big(T.operatingCashFlow)} · ${X.net} ${big(T.netIncome)}` },
     { key: "lever_dn", group: "재무 안정성", ...X.crit.lever_dn, pass: lev(T) < lev(P), note: `${pct(lev(P))} → ${pct(lev(T))}` },
     { key: "liq_up", group: "재무 안정성", ...X.crit.liq_up, pass: cr(T) > cr(P), note: `${cr(P).toFixed(2)} → ${cr(T).toFixed(2)}` },
     { key: "no_dilute", group: "재무 안정성", ...X.crit.no_dilute, pass: (T.ordinarySharesNumber as number) <= (P.ordinarySharesNumber as number) * 1.001, note: `${big(P.ordinarySharesNumber)} → ${big(T.ordinarySharesNumber)}` },
     { key: "margin_up", group: "효율성", ...X.crit.margin_up, pass: gm(T) > gm(P), note: `${pct(gm(P))} → ${pct(gm(T))}` },
-    { key: "turn_up", group: "효율성", ...X.crit.turn_up, pass: at(T) > at(P), note: `${at(P).toFixed(2)} → ${at(T).toFixed(2)}` },
+    { key: "turn_up", group: "효율성", ...X.crit.turn_up, pass: atT > atP, note: `${atP.toFixed(2)} → ${atT.toFixed(2)}` },
   ];
 
   const score = c.filter((x) => x.pass).length;

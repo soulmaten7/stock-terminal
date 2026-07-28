@@ -74,13 +74,20 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
   const candidates = /^\d{6}$/.test(symbol) ? [symbol + ".KS", symbol + ".KQ"] : [symbol];
   let resolved = symbol;
   let closes: number[] = [];
+  let adjCloses: number[] = []; // 배당 조정 종가(모멘텀·수익률용·STEP 801) — raw closes와 정렬·길이 동일
   for (const cand of candidates) {
     try {
       const ch = await yf.chart(cand, { period1, interval: "1d" });
-      const cs = (ch.quotes ?? [])
-        .map((q) => q.close)
-        .filter((c): c is number => typeof c === "number" && isFinite(c) && c > 0);
-      if (cs.length >= 30) { resolved = cand; closes = cs; break; }
+      const raws: number[] = [], adjs: number[] = [];
+      for (const q of ch.quotes ?? []) {
+        const c = q.close;
+        if (typeof c === "number" && isFinite(c) && c > 0) {
+          raws.push(c);
+          const a = (q as { adjclose?: number | null }).adjclose;
+          adjs.push(typeof a === "number" && isFinite(a) && a > 0 ? a : c); // adjclose 없으면 raw 폴백(정직)
+        }
+      }
+      if (raws.length >= 30) { resolved = cand; closes = raws; adjCloses = adjs; break; }
     } catch {
       /* 다음 후보 시도 */
     }
@@ -101,7 +108,7 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
 
   // 데이터 부족(가격계열<30) → 재무 fetch·밸류 폴백 생략(현 동작 보존), 빈 재무 번들 반환.
   if (closes.length < 30) {
-    return { symbol, resolved, name, price, changePercent, closes, pe, pb, financials: [] };
+    return { symbol, resolved, name, price, changePercent, closes, adjCloses, pe, pb, financials: [] };
   }
 
   // 연간 재무(fundamentalsTimeSeries) — F-Score·퀄리티·자산성장 + 밸류(E/P·B/M) 폴백에 공용. 실패 시 rows=[] (안전).
@@ -145,7 +152,7 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
   if (pe == null) pe = perFrom(mc, lr?.netIncome);
   if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
 
-  return { symbol, resolved, name, price, changePercent, closes, pe, pb, financials: rows };
+  return { symbol, resolved, name, price, changePercent, closes, adjCloses, pe, pb, financials: rows };
 }
 
 // 심볼 1개 → 7팩터(모멘텀·저변동·기술·밸류·퀄리티·자산성장) + F-Score.

@@ -895,7 +895,7 @@
     "narrativeMethodMomentum": "12-1 모멘텀은 최근 1개월을 제외한 12개월 수익률로 시장 전체를 줄 세워요. 1993년 제가디시·티트만이 데이터로 처음 밝혔어요.",
     "narrativeStock": "이 종목은 상위 {pct}%로 “{verdict}”에 해당해요.",
     "narrativeStockNoPctl": "이 종목은 현재 “{verdict}”예요.",
-    "narrativeMethodLowvol": "저변동성 렌즈는 최근 1년 일별 수익률의 연환산 변동성으로 안정성을 봐요. 변동성 낮은 주식이 위험 대비 성과가 낫다는 저변동성 이례현상(BAB)에 기반해요.",
+    "narrativeMethodLowvol": "저변동성 렌즈는 최근 1년 일별 수익률의 연환산 변동성으로 안정성을 봐요. 변동성 낮은 주식이 위험 대비 성과가 낫다는 저변동성 이례현상에 기반해요(베이커·브래들리·워글러 2011).",
     "narrativeCutoffLowvol": "판정 기준: 연변동성이 {lo}%보다 작으면 차분, {hi}%보다 크면 출렁임으로 판정해요.",
     "narrativeMethodValuation": "밸류 렌즈는 이익 대비 주가(PER)로 비싼지 싼지를 봐요. 벤저민 그레이엄의 가치투자에서 출발해 파마·프렌치가 데이터로 가치 프리미엄을 정립했어요.",
     "narrativeCutoffValuation": "판정 기준: PER이 {lo}보다 작으면 낮음, {hi}보다 크면 높음으로 판정해요.",

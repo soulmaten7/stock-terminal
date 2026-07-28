@@ -124,7 +124,7 @@ describe("technicalLens — 특성화", () => {
         "detail": {
           "ma200vs": 61.18,
           "pos52w": 100,
-          "rsi14": 94.8,
+          "rsi14": 92.73,
         },
         "grade": "참고용",
         "gradeTier": "ref",
@@ -163,7 +163,7 @@ describe("technicalLens — 특성화", () => {
         "detail": {
           "ma200vs": -37.21,
           "pos52w": 0.36,
-          "rsi14": 22.92,
+          "rsi14": 20.38,
         },
         "grade": "참고용",
         "headline": "200일선 -37.21%",
@@ -266,8 +266,8 @@ describe("lowVolLens — 특성화", () => {
         "key": "lowvol",
         "long": "저변동",
         "name": "저변동성",
-        "nameEn": "Low Volatility (BAB)",
-        "note": "저변동성(BAB): 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 3구간서 음수·부호 뒤집힘 = '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어(BAB 알파·낮은 위험)임.",
+        "nameEn": "Low Volatility",
+        "note": "저변동성: 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 3구간서 음수·부호 뒤집힘 = '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어(위험조정 알파·낮은 위험)임.",
         "outlook": "위험: 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
         "short": null,
         "spectrum": {
@@ -305,7 +305,7 @@ describe("lowVolLens — 특성화", () => {
 
 describe("qualityLens — 특성화", () => {
   it("고GP/A(ko): 전체 LensRead 고정", async () => {
-    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "ko")).toMatchInlineSnapshot(`
+    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko")).toMatchInlineSnapshot(`
       {
         "about": "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
         "cutoffs": {
@@ -346,7 +346,7 @@ describe("qualityLens — 특성화", () => {
     `);
   });
   it("저GP/A(ko): low 상태", async () => {
-    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 5 }]) }), "ko");
+    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "ko");
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": "GP/A 5%",
@@ -449,7 +449,7 @@ describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
       technical.compute(sd({ closes: up }), "ko"),
       valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko"),
       lowVol.compute(sd({ closes: up }), "ko"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "ko"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko"),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko"),
     ]);
     const keys = reads.flatMap((r) => Object.keys(r.detail));
@@ -492,8 +492,8 @@ describe("note · short/long — i18n 무회귀", () => {
       valuation.compute(sd({ pe: 30, pb: 5 }), "en"),
       lowVol.compute(sd({ closes: up }), "en"),
       lowVol.compute(sd({ closes: jumpy }), "en"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "en"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 5 }]) }), "en"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "en"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "en"),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en"),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "en"),
     ]);
@@ -519,7 +519,7 @@ describe("note · short/long — i18n 무회귀", () => {
       technical.compute(sd({ closes: up }), "ko"),
       valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko"),
       lowVol.compute(sd({ closes: up }), "ko"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100, grossProfit: 50 }]) }), "ko"),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko"),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko"),
     ]);
     for (const r of reads) {
@@ -534,7 +534,7 @@ describe("note · short/long — i18n 무회귀", () => {
       momentum: ["t≈2.5", "0.71", "67%", "FF3", "$5+", "STEP559", "t≈3.6", "150"],
       technical: ["153", "−8.7%", "t≈−2.0", "66%", "t≈1.6", "t≈2.7", "FF3", "STEP559"],
       valuation: ["βHML≈0.71", "2010~24", "t≈0.9", "t≈1.5", "+6~9%", "0.72", "HML", "STEP560"],
-      lowvol: ["BAB", "161", "18%", "t≈3.1", "t≈2.6", "t≈1.6", "$5+", "STEP559"],
+      lowvol: ["161", "18%", "t≈3.1", "t≈2.6", "t≈1.6", "$5+", "STEP559"],
       quality: ["t≈2.9", "0.78", "t≈2.5", "t≈3.2", "t≈2.75", "−0.22", "13", "STEP560"],
       assetgrowth: ["2008", "CMA", "13", "+8%", "βHML≈0.17", "t≈1.6", "t<2", "STEP560"],
     };

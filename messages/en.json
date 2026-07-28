@@ -895,7 +895,7 @@
     "narrativeMethodMomentum": "12-1 momentum ranks the market by the trailing 12-month return, excluding the most recent month. Jegadeesh and Titman first showed this in the data in 1993.",
     "narrativeStock": "This stock ranks in the top {pct}%, read as “{verdict}.”",
     "narrativeStockNoPctl": "This stock currently reads as “{verdict}.”",
-    "narrativeMethodLowvol": "The low-volatility lens measures stability via the trailing one-year annualized volatility of daily returns. It rests on the low-volatility anomaly (BAB) — calmer stocks tending to do better per unit of risk.",
+    "narrativeMethodLowvol": "The low-volatility lens measures stability via the trailing one-year annualized volatility of daily returns. It rests on the low-volatility anomaly (Baker-Bradley-Wurgler 2011) — calmer stocks tending to do better per unit of risk.",
     "narrativeCutoffLowvol": "Cutoff: below {lo}% annualized volatility is classified calm, above {hi}% is classified jumpy.",
     "narrativeMethodValuation": "The value lens checks whether the price looks cheap or expensive next to earnings (PER). It traces to value investing as practiced by Benjamin Graham, with Fama and French establishing the value premium in the data.",
     "narrativeCutoffValuation": "Cutoff: PER below {lo} is classified low, above {hi} is classified high.",

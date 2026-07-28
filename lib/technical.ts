@@ -8,15 +8,27 @@ export function sma(closes: number[], n: number): number | null {
   return s / n;
 }
 
-// RSI(14) — Wilder 단순화(최근 period 평균).
+// RSI(14) — Wilder 재귀 평활(α = 1/period). STEP 801: 예전엔 최근 period 단순평균(=Cutler's RSI·별개 지표)이라
+// 라벨("와일더가 만든 RSI")·증권사 HTS·TradingView 값과 어긋났음. 이제 원전(Wilder 1978) 정의로 교정.
+//   1) 첫 period 변화량을 단순평균으로 시드 → 2) 이후 봉마다 avg = (avg*(period-1) + current) / period 로 평활.
+// ⚠️ 전체 종가 계열을 써야 정확(마지막 period만 보면 안 됨) — 시드 후 처음부터 끝까지 평활.
 export function rsi(closes: number[], period = 14): number | null {
   if (closes.length < period + 1) return null;
+  // 1) 시드: 첫 period 변화량(closes[1..period])의 단순평균
   let gain = 0, loss = 0;
-  for (let i = closes.length - period; i < closes.length; i++) {
+  for (let i = 1; i <= period; i++) {
     const d = closes[i] - closes[i - 1];
     if (d >= 0) gain += d; else loss -= d;
   }
-  const avgG = gain / period, avgL = loss / period;
+  let avgG = gain / period, avgL = loss / period;
+  // 2) 이후 봉: 와일더 재귀 평활
+  for (let i = period + 1; i < closes.length; i++) {
+    const d = closes[i] - closes[i - 1];
+    const g = d > 0 ? d : 0;
+    const l = d < 0 ? -d : 0;
+    avgG = (avgG * (period - 1) + g) / period;
+    avgL = (avgL * (period - 1) + l) / period;
+  }
   if (avgL === 0) return 100;
   const rs = avgG / avgL;
   return 100 - 100 / (1 + rs);

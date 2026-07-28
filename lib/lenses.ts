@@ -61,7 +61,9 @@ function latestGrossProfit(financials: StockData["financials"]): number | null {
 export const momentum: Lens = {
   meta: { key: "momentum", nameEn: "Momentum (12-1)", grade: LENS_GRADE.ko.verified, gradeTier: "strong", horizon: "mid", backtestRef: "STEP559", percentile: { dir: "high" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
-    const closes = d.closes;
+    // 모멘텀·수익률 = 배당 조정 종가(총수익률 = Jegadeesh-Titman 학술 표준·STEP 801). 없으면 raw 폴백.
+    // 기술(RSI·200일선)은 '가격 지표'라 차트와 어긋나지 않게 raw 종가 유지 — 조정은 여기(모멘텀)만.
+    const closes = d.adjCloses ?? d.closes;
     const c = LENS_COPY[locale].momentum;
     const r1 = ret(closes, 21), r3 = ret(closes, 63), r6 = ret(closes, 126), r12 = ret(closes, 252);
     const m121 = momentum121FromDaily(closes);
@@ -174,7 +176,7 @@ export const valuation: Lens = {
 
 // ── 저변동성 렌즈 ── 실현변동성(위험). 검증: 투자가능($5+) 유니버스서 저변동군이 위험 낮고 수익 우위.
 export const lowVol: Lens = {
-  meta: { key: "lowvol", nameEn: "Low Volatility (BAB)", grade: LENS_GRADE.ko.verifiedDefensive, gradeTier: "strong", horizon: "long", backtestRef: "STEP559", percentile: { dir: "low" } },
+  meta: { key: "lowvol", nameEn: "Low Volatility", grade: LENS_GRADE.ko.verifiedDefensive, gradeTier: "strong", horizon: "long", backtestRef: "STEP559", percentile: { dir: "low" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
     const closes = d.closes;
     const c = LENS_COPY[locale].lowvol;
@@ -184,7 +186,7 @@ export const lowVol: Lens = {
       key: "lowvol",
       grade: LENS_GRADE[locale].verifiedDefensive,
       gradeTier: "strong",
-      nameEn: "Low Volatility (BAB)",
+      nameEn: "Low Volatility",
       horizon: "long",
       name: c.name,
       summary: c.what,
@@ -209,10 +211,11 @@ export const lowVol: Lens = {
 export const quality: Lens = {
   meta: { key: "quality", nameEn: "Quality (GP/A)", grade: LENS_GRADE.ko.verified, gradeTier: "strong", horizon: "long", backtestRef: "STEP560", percentile: { dir: "high" } },
   compute(d: StockData, locale: Locale = "ko"): LensRead {
+    // GP/A = 최신연도 매출총이익 ÷ **기초(전기말) 총자산**(Novy-Marx 2013 원전·STEP 801). 전기 자산 없으면 산출 불가(null) — 기말로 대체 금지.
     const grossProfit = latestGrossProfit(d.financials);
-    const totalAssets = d.financials[d.financials.length - 1]?.totalAssets ?? null;
+    const priorAssets = d.financials[d.financials.length - 2]?.totalAssets ?? null;
     const c = LENS_COPY[locale].quality;
-    const gpa = grossProfit != null && totalAssets != null && totalAssets > 0 ? (grossProfit / totalAssets) * 100 : null;
+    const gpa = grossProfit != null && priorAssets != null && priorAssets > 0 ? (grossProfit / priorAssets) * 100 : null;
     const qState = gpa == null ? "na" : gpa > 40 ? "high" : gpa < 15 ? "low" : "mid";
     return {
       key: "quality",

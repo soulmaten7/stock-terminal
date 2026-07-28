@@ -1,158 +1,95 @@
-// 특성화 테스트 — computeFScore의 현재 출력을 고정(동작 불변 보증). 로직은 STEP696(stockholdersEquity 필드) 외 불변.
 import { describe, it, expect } from "vitest";
 import { computeFScore, type FRow } from "./fscore";
 
-// 2년치 재무 픽스처(오름차순) — 필수 필드 충족 → supported. T가 P보다 개선된 형태로 구성.
-const rowsAsc: FRow[] = [
-  {
-    date: "2023-12-31",
-    totalRevenue: 1000,
-    grossProfit: 400,
-    costOfRevenue: 600,
-    netIncome: 80,
-    totalAssets: 2000,
-    currentAssets: 500,
-    currentLiabilities: 300,
-    longTermDebt: 600,
-    operatingCashFlow: 120,
-    ordinarySharesNumber: 1000,
-    stockholdersEquity: 900,
-  },
-  {
-    date: "2024-12-31",
-    totalRevenue: 1200,
-    grossProfit: 540,
-    costOfRevenue: 660,
-    netIncome: 140,
-    totalAssets: 2100,
-    currentAssets: 650,
-    currentLiabilities: 300,
-    longTermDebt: 500,
-    operatingCashFlow: 200,
-    ordinarySharesNumber: 1000,
-    stockholdersEquity: 1000,
-  },
-];
+// STEP 801 — 값 검증(스냅샷 아님·기존 특성화 스냅샷 대체). 3개 회계연도(PP·P·T) 오름차순.
+// ROA·자산회전율 분모 = 기초(전기말) 총자산(Piotroski 2000 원전). ⚠️ 은행·보험 '처리 방식'은 STEP 803에서 정정 예정 —
+// 여기선 현재 동작(미지원)만 고정(값 회귀 방지)하고 로직은 손대지 않는다.
+function rows(over: { pp?: Partial<FRow>; p?: Partial<FRow>; t?: Partial<FRow> } = {}): FRow[] {
+  const PP: FRow = { totalAssets: 1000, ...over.pp }; // P의 기초 자산 = PP 기말
+  const P: FRow = {
+    netIncome: 50, operatingCashFlow: 60, ordinarySharesNumber: 100,
+    currentAssets: 200, currentLiabilities: 100, longTermDebt: 100,
+    totalAssets: 1000, totalRevenue: 500, grossProfit: 200, ...over.p,
+  };
+  const T: FRow = {
+    netIncome: 80, operatingCashFlow: 90, ordinarySharesNumber: 100,
+    currentAssets: 250, currentLiabilities: 90, longTermDebt: 80,
+    totalAssets: 1100, totalRevenue: 600, grossProfit: 280, ...over.t,
+  };
+  return [PP, P, T];
+}
+function passKeys(r: FRow[]): Set<string> {
+  return new Set(computeFScore(r).criteria.filter((c) => c.pass).map((c) => c.key));
+}
 
-describe("computeFScore — 특성화", () => {
-  it("정상 2년치: 전체 FScore 결과 고정", () => {
-    expect(computeFScore(rowsAsc)).toMatchInlineSnapshot(`
-      {
-        "asOf": "2024-12-31",
-        "criteria": [
-          {
-            "group": "수익성",
-            "key": "roa_pos",
-            "label": "ROA 양수",
-            "note": "ROA 6.7%",
-            "pass": true,
-            "plain": "돈을 벌어요·흑자",
-          },
-          {
-            "group": "수익성",
-            "key": "cfo_pos",
-            "label": "영업현금흐름 양수",
-            "note": "CFO 200",
-            "pass": true,
-            "plain": "팔아서 진짜 현금이 들어와요",
-          },
-          {
-            "group": "수익성",
-            "key": "roa_up",
-            "label": "ROA 개선",
-            "note": "4.0% → 6.7%",
-            "pass": true,
-            "plain": "작년보다 더 잘 벌어요",
-          },
-          {
-            "group": "수익성",
-            "key": "accrual",
-            "label": "이익의 질",
-            "note": "현금 200 · 순익 140",
-            "pass": true,
-            "plain": "번 돈이 진짜 통장에 들어와요",
-          },
-          {
-            "group": "재무 안정성",
-            "key": "lever_dn",
-            "label": "장기부채비율 하락",
-            "note": "30.0% → 23.8%",
-            "pass": true,
-            "plain": "빚 부담이 줄었어요",
-          },
-          {
-            "group": "재무 안정성",
-            "key": "liq_up",
-            "label": "유동비율 개선",
-            "note": "1.67 → 2.17",
-            "pass": true,
-            "plain": "급할 때 갚을 돈이 늘었어요",
-          },
-          {
-            "group": "재무 안정성",
-            "key": "no_dilute",
-            "label": "신주발행 없음",
-            "note": "1000 → 1000",
-            "pass": true,
-            "plain": "주식을 새로 안 찍어냈어요",
-          },
-          {
-            "group": "효율성",
-            "key": "margin_up",
-            "label": "매출총이익률 개선",
-            "note": "40.0% → 45.0%",
-            "pass": true,
-            "plain": "팔면 남는 게 많아졌어요",
-          },
-          {
-            "group": "효율성",
-            "key": "turn_up",
-            "label": "자산회전율 개선",
-            "note": "0.50 → 0.57",
-            "pass": true,
-            "plain": "가진 걸로 더 많이 팔아요",
-          },
-        ],
-        "grade": "우량",
-        "max": 9,
-        "score": 9,
-        "supported": true,
-      }
-    `);
+describe("computeFScore — 지원 조건", () => {
+  it("3년 미만 → 미지원(reason=3년 안내)", () => {
+    const two = rows().slice(1); // P·T만(2년)
+    const f = computeFScore(two);
+    expect(f.supported).toBe(false);
+    expect(f.reason).toContain("3");
+    expect(f.score).toBe(0);
   });
-
-  it("1년치 미만: 미지원(2년 부족)", () => {
-    expect(computeFScore([rowsAsc[1]])).toMatchInlineSnapshot(`
-      {
-        "criteria": [],
-        "grade": "-",
-        "max": 9,
-        "reason": "재무 데이터 2년치가 부족해요",
-        "score": 0,
-        "supported": false,
-      }
-    `);
+  it("기초 총자산(PP 기말) 없으면 미지원", () => {
+    expect(computeFScore(rows({ pp: { totalAssets: 0 } })).supported).toBe(false);
   });
-
-  it("은행형(매출총이익 없음): 미지원", () => {
-    const bank: FRow[] = [
-      { ...rowsAsc[0], grossProfit: null, costOfRevenue: null, totalRevenue: null },
-      { ...rowsAsc[1], grossProfit: null, costOfRevenue: null, totalRevenue: null },
-    ];
-    expect(computeFScore(bank)).toMatchInlineSnapshot(`
-      {
-        "criteria": [],
-        "grade": "-",
-        "max": 9,
-        "reason": "이 종목은 은행·보험이라 점수를 낼 수 없어요 — 그런 회사는 재무 구조가 보통 기업과 달라서요.",
-        "score": 0,
-        "supported": false,
-      }
-    `);
+  it("정상 3년 → 지원", () => {
+    expect(computeFScore(rows()).supported).toBe(true);
   });
+  it("은행형(매출총이익·매출 없음·3년): 현재 미지원 — STEP 803에서 재검", () => {
+    const bank = rows({
+      p: { grossProfit: null, costOfRevenue: null, totalRevenue: null },
+      t: { grossProfit: null, costOfRevenue: null, totalRevenue: null },
+    });
+    expect(computeFScore(bank).supported).toBe(false); // 은행 처리 자체는 손대지 않음(803)
+  });
+});
 
-  it("stockholdersEquity 필드 존재 확인(STEP696): supported 결과에 반영", () => {
-    const r = computeFScore(rowsAsc);
-    expect(r.supported).toBe(true);
+describe("computeFScore — 9항목 전부 통과 세트(비금융 정상)", () => {
+  it("설계상 9점·우량(ko 기본)", () => {
+    const f = computeFScore(rows());
+    expect(f.score).toBe(9);
+    expect(f.grade).toBe("우량");
+    expect(f.criteria.length).toBe(9);
+  });
+});
+
+describe("computeFScore — 개별 항목 경계(하나씩 뒤집기)", () => {
+  it("roa_pos: 순이익 음수 → roa_pos·roa_up 실패", () => {
+    const k = passKeys(rows({ t: { netIncome: -10 } }));
+    expect(k.has("roa_pos")).toBe(false);
+    expect(k.has("roa_up")).toBe(false);
+  });
+  it("cfo_pos: 영업현금 음수 → cfo_pos·accrual 실패", () => {
+    const k = passKeys(rows({ t: { operatingCashFlow: -5 } }));
+    expect(k.has("cfo_pos")).toBe(false);
+    expect(k.has("accrual")).toBe(false);
+  });
+  it("no_dilute: 주식수 증가 → 실패 (기본은 통과)", () => {
+    expect(passKeys(rows({ t: { ordinarySharesNumber: 200 } })).has("no_dilute")).toBe(false);
+    expect(passKeys(rows()).has("no_dilute")).toBe(true);
+  });
+  it("margin_up: 매출총이익률 하락 → 실패", () => {
+    expect(passKeys(rows({ t: { grossProfit: 100 } })).has("margin_up")).toBe(false);
+  });
+  it("lever_dn: 장기부채비율 상승 → 실패", () => {
+    expect(passKeys(rows({ t: { longTermDebt: 300 } })).has("lever_dn")).toBe(false);
+  });
+  it("liq_up: 유동비율 하락 → 실패", () => {
+    expect(passKeys(rows({ t: { currentLiabilities: 500 } })).has("liq_up")).toBe(false);
+  });
+});
+
+describe("computeFScore — 기초(전기말) 총자산이 실제로 분모인지 검증", () => {
+  it("ROA_P·회전율_P의 분모는 P 기말이 아니라 PP(기초) 자산", () => {
+    // 기본 PP=1000: roaP=50/1000=0.05 < roaT=80/1000=0.08 → roa_up 통과 · atP=0.5 < atT=0.6 → turn_up 통과
+    const base = passKeys(rows());
+    expect(base.has("roa_up")).toBe(true);
+    expect(base.has("turn_up")).toBe(true);
+    // PP=400으로 낮추면 roaP=50/400=0.125 > roaT 0.08 → roa_up 실패 · atP=1.25 > 0.6 → turn_up 실패.
+    // (분모가 P 자신의 기말=1000이었다면 PP 변조에도 불변이어야 함 → 바뀐다 = PP(기초)가 실제로 쓰인다는 증거)
+    const beg = passKeys(rows({ pp: { totalAssets: 400 } }));
+    expect(beg.has("roa_up")).toBe(false);
+    expect(beg.has("turn_up")).toBe(false);
   });
 });

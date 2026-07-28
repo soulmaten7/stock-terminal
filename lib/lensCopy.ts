@@ -27,7 +27,7 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "가격 출렁임",
       what: "덜 출렁이는 안정적인 종목인지 보는 방법 — 하락장에서 방어적으로 유용해요.",
       about: "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
-      note: "저변동성(BAB): 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 3구간서 음수·부호 뒤집힘 = '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어(BAB 알파·낮은 위험)임.",
+      note: "저변동성: 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 3구간서 음수·부호 뒤집힘 = '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어(위험조정 알파·낮은 위험)임.",
     },
     valuation: {
       name: "밸류(가치)",
@@ -85,7 +85,7 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "Price swings",
       what: "How steady (rather than jumpy) a stock is — handy for playing defense in down markets.",
       about: "The finding that calmer, steadier stocks tend to do better per unit of risk than wild, jumpy ones (the low-volatility anomaly). One story: people chase big-swing names hoping for a jackpot and bid them up, while boring quality names get left cheap. Used for defense and risk management.",
-      note: "Low Volatility (BAB): in our backtest (investable, $5+, 161 months) the low-volatility group carries dramatically less risk — roughly 18% of the high-volatility group's (defensive) — and its risk-adjusted alpha is significant (CAPM t≈3.1, FF3 t≈2.6; negative market beta = defensive). Low turnover makes it robust to transaction costs → it holds up as a risk-management and defense lens. But the plain claim that 'low volatility also earns more' is statistically weak (long-short t≈1.6) and the level is overstated by bias → no claim of higher returns; risk-adjusted performance is the point. Not a guarantee. · Triple cross-validation (STEP559): the plain low−high return long-short is negative and flips sign across the three folds = confirmation that 'low volatility earns more' does not hold. This lens rests on risk-adjusted defense (BAB alpha, low risk), not on raw returns.",
+      note: "Low Volatility: in our backtest (investable, $5+, 161 months) the low-volatility group carries dramatically less risk — roughly 18% of the high-volatility group's (defensive) — and its risk-adjusted alpha is significant (CAPM t≈3.1, FF3 t≈2.6; negative market beta = defensive). Low turnover makes it robust to transaction costs → it holds up as a risk-management and defense lens. But the plain claim that 'low volatility also earns more' is statistically weak (long-short t≈1.6) and the level is overstated by bias → no claim of higher returns; risk-adjusted performance is the point. Not a guarantee. · Triple cross-validation (STEP559): the plain low−high return long-short is negative and flips sign across the three folds = confirmation that 'low volatility earns more' does not hold. This lens rests on risk-adjusted defense (risk-adjusted alpha, low risk), not on raw returns.",
     },
     valuation: {
       name: "Value",
