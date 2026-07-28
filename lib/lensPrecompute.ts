@@ -7,6 +7,7 @@ import YahooFinance from "yahoo-finance2";
 import { createAdminClient } from "./supabase/admin";
 import { computeSymbolLenses, flushLensFailures } from "./lensCompute";
 import { toneForKey } from "./lensTones";
+import { loadCuts, stateFromCut, CUT_LENSES, type CutMap } from "./lensCuts";
 import type { LensRead } from "./lenses";
 import symbols from "../data/us_symbols.json";
 
@@ -90,6 +91,46 @@ async function fetchExistingStates(
   return out;
 }
 
+// STEP 805 pass2 — 저장된 값 컬럼을 새 컷으로 다시 상태 매핑(야후 재조회 없음·DB 내 갱신).
+//   분포 유도 5렌즈만 대상(technical·fscore는 고정 표준값이라 불변). 값 null이면 상태 미변(na 유지).
+async function remapStatesFromCuts(
+  sb: ReturnType<typeof createAdminClient>,
+  market: string,
+  cuts: CutMap,
+  at: string
+): Promise<void> {
+  const selectCols = `symbol,${CUT_LENSES.map((k) => `${k}_value`).join(",")},${CUT_LENSES.map((k) => `${k}_state`).join(",")}`;
+  const rows: Record<string, unknown>[] = [];
+  for (let from = 0; from < 60000; from += 1000) {
+    const { data } = await sb
+      .from("lens_scores")
+      .select(selectCols as "symbol") // 동적 컬럼 문자열 — PostgREST 타입파서 우회(런타임 정상)
+      .eq("market", market)
+      .gte("updated_at", at) // 이번 실행에서 갱신된 행만(신선도 삭제 전)
+      .range(from, from + 999);
+    if (!data || data.length === 0) break;
+    rows.push(...(data as unknown as Record<string, unknown>[]));
+    if (data.length < 1000) break;
+  }
+  const updates: Record<string, unknown>[] = [];
+  for (const row of rows) {
+    const patch: Record<string, unknown> = { symbol: row.symbol, market, updated_at: at };
+    let changed = false;
+    for (const key of CUT_LENSES) {
+      const value = row[`${key}_value`] as number | null;
+      if (value == null) continue; // 값 없으면 상태 유지(na)
+      const next = stateFromCut(key, value, cuts[key]);
+      if (next != null && next !== row[`${key}_state`]) { patch[`${key}_state`] = next; changed = true; }
+    }
+    if (changed) updates.push(patch);
+  }
+  for (let i = 0; i < updates.length; i += 500) {
+    const { error } = await sb.from("lens_scores").upsert(updates.slice(i, i + 500), { onConflict: "symbol" });
+    if (error) throw error;
+  }
+  console.log(`  ...pass2 상태 재매핑 ${updates.length}/${rows.length}행 (${market})`);
+}
+
 // 코어: 주어진 유니버스·시장으로 계산→upsert (market 파라미터). concurrency는 펀더멘털 무게 고려 보수적(기본 6).
 // ⚠️ 100행마다 즉시 저장(flush) — 오래 걸리는 실행이 중간에 끊겨도 진행분은 DB에 남게(부분 내구성).
 // tradeAmountOf: 유니버스 조회 시 이미 확보한 거래대금(추가 조회 없음) — lens_state_changes 정렬용(STEP 764).
@@ -103,6 +144,8 @@ export async function computeLensScoresFor(
   const at = new Date().toISOString();
   const changeDate = at.slice(0, 10); // 크론 실행일(UTC date) — KR/US 통일, 표시 로케일화는 읽기 쪽(스펙)
   const sb = createAdminClient(); // RLS 우회(쓰기·kr_stock_snapshot 읽기)
+  // STEP 805 2-pass: pass1은 '직전' 컷으로 상태 산출(순환 의존 회피), 실행 끝에 새 분포로 컷 재유도 후 pass2에서 상태 재매핑.
+  const prevCuts = await loadCuts(market);
   const existing = await fetchExistingStates(sb, market, universe); // upsert 전 스냅샷 — 어제 상태
   let done = 0, saved = 0;
   let buffer: Record<string, unknown>[] = [];
@@ -131,7 +174,7 @@ export async function computeLensScoresFor(
   }
   await mapLimit(universe, concurrency, async (sym): Promise<void> => {
     try {
-      const r = await computeSymbolLenses(sym);
+      const r = await computeSymbolLenses(sym, "ko", prevCuts); // pass1 = 직전 컷으로 판정(끝에서 pass2 재매핑)
       if (!r.lenses.length) return;
       const m = pick(r.lenses, "momentum"), lv = pick(r.lenses, "lowvol"), v = pick(r.lenses, "valuation");
       const q = pick(r.lenses, "quality"), ag = pick(r.lenses, "assetgrowth"), t = pick(r.lenses, "technical");
@@ -201,9 +244,24 @@ export async function computeLensScoresFor(
     const sorted = [...vals].sort((a, b) => a - b);
     cutRows.push({ market, lens_key: lensKey, lo: pctile(sorted, 0.3), hi: pctile(sorted, 0.7), n: sorted.length, as_of: at, method: "p30/p70" });
   }
+  let newCuts: CutMap = prevCuts;
   if (cutRows.length) {
     const { error } = await sb.from("lens_cuts").upsert(cutRows, { onConflict: "market,lens_key" });
     if (error) Sentry.captureException(error, { tags: { pipeline: "lens_cuts", market } });
+    else {
+      newCuts = {};
+      for (const r of cutRows as { lens_key: string; lo: number; hi: number; n: number; as_of: string }[]) {
+        newCuts[r.lens_key] = { lo: r.lo, hi: r.hi, n: r.n, asOf: r.as_of };
+      }
+    }
+  }
+
+  // STEP 805 pass2 — 방금 유도한 새 컷으로 상태 재매핑(값 재계산 없이 DB 저장분만·순환 의존 해소·부트스트랩 정정).
+  //   pass1이 직전 컷(또는 없음→pending)으로 찍은 상태를, 이 실행 분포에서 나온 컷으로 다시 매핑해 라이브/선계산 판정 일치.
+  try {
+    await remapStatesFromCuts(sb, market, newCuts, at);
+  } catch (e) {
+    Sentry.captureException(e, { tags: { pipeline: "lens_states_remap", market } });
   }
 
   // 신선도(STEP 802 §5) — 이번 실행에서 갱신 안 된(유니버스 이탈) 행 삭제 → 백분위·랭킹·lens-top에서 옛 값 제거.

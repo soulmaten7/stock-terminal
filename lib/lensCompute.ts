@@ -10,6 +10,7 @@ import { marketCap, perFrom, pbrFrom } from "./returns";
 import { LENSES } from "./lenses/registry";
 import type { StockData, LensRead } from "./lenses/types";
 import { createAdminClient } from "./supabase/admin"; // 순수 supabase-js 래퍼 — next/server 무의존(프레임워크 무관 유지)
+import { loadCuts, marketOf, type CutMap } from "./lensCuts"; // 분포 유도 판정 컷(STEP 805)
 
 // yahooSurvey 안내 로그 억제
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
@@ -170,7 +171,10 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
 
 // 심볼 1개 → 7팩터(모멘텀·저변동·기술·밸류·퀄리티·자산성장) + F-Score.
 // 제네릭 오케스트레이터: LENSES 레지스트리를 순회해 계산(수동 배선 제거·async 대응).
-export async function computeSymbolLenses(symbol: string, locale: Locale = "ko"): Promise<SymbolLenses> {
+export async function computeSymbolLenses(symbol: string, locale: Locale = "ko", cuts?: CutMap): Promise<SymbolLenses> {
+  // 분포 유도 판정 컷(STEP 805) — 배치는 시장별 1회 로드분을 주입, 온디맨드(/api/lens)는 여기서 자동 로드.
+  // 컷 없으면 분포 유도 렌즈는 'pending'(기준 준비 중) — 임의 상수 폴백 금지.
+  const cutMap = cuts ?? (await loadCuts(marketOf(symbol)).catch(() => ({} as CutMap)));
   const [d, tradeAmount] = await Promise.all([buildStockData(symbol, locale), fetchTradeAmount(symbol)]);
 
   if (d.closes.length < 30) {
@@ -182,7 +186,7 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko")
   const settled = await Promise.all(
     LENSES.map(async (l) => {
       try {
-        return await l.compute(d, locale);
+        return await l.compute(d, locale, cutMap);
       } catch (e) {
         // 렌즈키별 첫 1건만 캡처(예시)·이후는 집계만 — 배치 폭주 방지(STEP 797 §4).
         const k = l.meta.key;

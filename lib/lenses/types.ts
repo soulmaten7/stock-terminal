@@ -2,6 +2,7 @@
 // 원칙: 모든 렌즈가 같은 StockData를 입력받고 같은 LensRead를 출력 → 레지스트리 플러그인·기법당 AI 교체점.
 import type { Locale } from "../lensCopy";
 import type { FRow } from "../fscore";
+import type { CutMap } from "../lensCuts";
 
 // ── 렌즈 출력(균일) ── 이전 lib/lenses.ts에서 이전. 화면·배치·백테스트가 공유하는 표준 출력.
 export type LensRead = {
@@ -25,6 +26,7 @@ export type LensRead = {
   state?: string | null;      // 스크리닝용 언어중립 상태키
   percentile?: number | null; // 팩터 상대순위(0~100·높을수록 우호 방향). /api/lens가 주입. 없으면 null.
   cutoffs?: { lo: number; hi: number } | null; // 판정 컷(원값 기준 상태 분기 임계치) — 3단 계산 서사용(STEP 782). 미지원 렌즈는 undefined(응답에 안 실림, byte 불변).
+  cutSource?: { market: string; n: number; asOf: string | null } | null; // 컷 출처(분포 유도 시장·표본·기준일·STEP 805 §6). 고정컷(RSI·F-Score)·pending은 없음.
 };
 
 // ── 표준 데이터 번들 ── 한 번 fetch → 모든 렌즈에 주입(docs/LENS_ARCHITECTURE.md §1).
@@ -54,5 +56,6 @@ export interface LensMeta {
 // ── 균일 인터페이스 ── compute가 Promise 허용 = 기법당 AI 교체점(docs/LENS_ARCHITECTURE.md §2).
 export interface Lens {
   meta: LensMeta;
-  compute(data: StockData, locale: Locale): LensRead | Promise<LensRead>;
+  // cuts = 분포 유도 판정 컷(lens_cuts·시장별). 없으면 분포 유도 렌즈는 state='pending'(기준 준비 중·STEP 805).
+  compute(data: StockData, locale: Locale, cuts?: CutMap): LensRead | Promise<LensRead>;
 }

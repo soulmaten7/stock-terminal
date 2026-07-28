@@ -35,15 +35,30 @@ function makeSeries(n: number, start: number, drift: number, noiseAmp: number, s
   return out;
 }
 
+// STEP 805: compute가 분포 유도 컷을 주입받는다. 특성화는 '기존 상수와 동일한 컷'을 넣어
+// 판정 매핑이 기존 상태를 재현하는지 고정(이중컷 통일로 momentum·lowvol '장기 라벨'만 의도적으로 바뀜).
+const CUTS = {
+  momentum: { lo: -10, hi: 10, n: 100, asOf: "2026-01-01" },
+  lowvol: { lo: 20, hi: 40, n: 100, asOf: "2026-01-01" },
+  valuation: { lo: 10, hi: 25, n: 100, asOf: "2026-01-01" },
+  quality: { lo: 15, hi: 40, n: 100, asOf: "2026-01-01" },
+  assetgrowth: { lo: 5, hi: 20, n: 100, asOf: "2026-01-01" },
+};
+
 const up = makeSeries(300, 100, 0.004, 0.01, 42); // 상승추세 · 완만한 변동
 const down = makeSeries(300, 300, -0.004, 0.01, 7); // 하락추세
 const jumpy = makeSeries(300, 100, 0.0, 0.05, 99); // 고변동
 
 describe("momentumLens — 특성화", () => {
   it("상승계열(ko): 전체 LensRead 고정", async () => {
-    expect(await momentum.compute(sd({ closes: up }), "ko")).toMatchInlineSnapshot(`
+    expect(await momentum.compute(sd({ closes: up }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
+        "cutSource": {
+          "asOf": "2026-01-01",
+          "market": "US",
+          "n": 100,
+        },
         "cutoffs": {
           "hi": 10,
           "lo": -10,
@@ -86,7 +101,7 @@ describe("momentumLens — 특성화", () => {
     `);
   });
   it("하락계열(ko): 방향 필드 고정", async () => {
-    const r = await momentum.compute(sd({ closes: down }), "ko");
+    const r = await momentum.compute(sd({ closes: down }), "ko", CUTS);
     expect({ key: r.key, grade: r.grade, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "grade": "검증",
@@ -99,7 +114,7 @@ describe("momentumLens — 특성화", () => {
     `);
   });
   it("상승계열(en): 카피 경로 고정", async () => {
-    const r = await momentum.compute(sd({ closes: up }), "en");
+    const r = await momentum.compute(sd({ closes: up }), "en", CUTS);
     expect({ key: r.key, name: r.name, summary: r.summary, long: r.long, state: r.state }).toMatchInlineSnapshot(`
       {
         "key": "momentum",
@@ -114,7 +129,7 @@ describe("momentumLens — 특성화", () => {
 
 describe("technicalLens — 특성화", () => {
   it("상승계열(ko): 전체 LensRead 고정", async () => {
-    expect(await technical.compute(sd({ closes: up }), "ko")).toMatchInlineSnapshot(`
+    expect(await technical.compute(sd({ closes: up }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "차트의 가격·패턴으로 '지금 과열인지, 추세가 위인지'를 보는 전통적 기술적 분석이에요. RSI는 1978년 와일더가 만든 과열·침체 지표, 이동평균선은 일정 기간의 평균 가격이에요 — 단기 흐름을 빠르게 훑는 참고 도구예요(단독 신호로는 약함).",
         "cutoffs": {
@@ -157,7 +172,7 @@ describe("technicalLens — 특성화", () => {
     `);
   });
   it("하락계열(ko): 방향 필드 고정", async () => {
-    const r = await technical.compute(sd({ closes: down }), "ko");
+    const r = await technical.compute(sd({ closes: down }), "ko", CUTS);
     expect({ key: r.key, grade: r.grade, short: r.short, long: r.long, state: r.state, value: r.value, headline: r.headline, detail: r.detail }).toMatchInlineSnapshot(`
       {
         "detail": {
@@ -179,9 +194,14 @@ describe("technicalLens — 특성화", () => {
 
 describe("valuationLens — 특성화", () => {
   it("저PER(ko): 전체 LensRead 고정", async () => {
-    expect(await valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko")).toMatchInlineSnapshot(`
+    expect(await valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄의 가치투자에서 출발해, 파마·프렌치가 '싼 주식이 장기적으로 낫다'(가치 프리미엄)를 데이터로 정립했어요 — 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
+        "cutSource": {
+          "asOf": "2026-01-01",
+          "market": "US",
+          "n": 100,
+        },
         "cutoffs": {
           "hi": 25,
           "lo": 10,
@@ -221,7 +241,7 @@ describe("valuationLens — 특성화", () => {
     `);
   });
   it("고PER(ko): rich 상태", async () => {
-    const r = await valuation.compute(sd({ pe: 30, pb: 5 }), "ko");
+    const r = await valuation.compute(sd({ pe: 30, pb: 5 }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": "PER 30",
@@ -233,7 +253,7 @@ describe("valuationLens — 특성화", () => {
     `);
   });
   it("PER 없음(ko): na 상태", async () => {
-    const r = await valuation.compute(sd({ pe: null, pb: null }), "ko");
+    const r = await valuation.compute(sd({ pe: null, pb: null }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline, spectrum: r.spectrum }).toMatchInlineSnapshot(`
       {
         "headline": null,
@@ -249,9 +269,14 @@ describe("valuationLens — 특성화", () => {
 
 describe("lowVolLens — 특성화", () => {
   it("완만계열(ko): 전체 LensRead 고정", async () => {
-    expect(await lowVol.compute(sd({ closes: up }), "ko")).toMatchInlineSnapshot(`
+    expect(await lowVol.compute(sd({ closes: up }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
+        "cutSource": {
+          "asOf": "2026-01-01",
+          "market": "US",
+          "n": 100,
+        },
         "cutoffs": {
           "hi": 40,
           "lo": 20,
@@ -290,12 +315,12 @@ describe("lowVolLens — 특성화", () => {
     `);
   });
   it("고변동계열(ko): jumpy 상태", async () => {
-    const r = await lowVol.compute(sd({ closes: jumpy }), "ko");
+    const r = await lowVol.compute(sd({ closes: jumpy }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": "연변동성 44.75%",
         "key": "lowvol",
-        "long": "보통",
+        "long": "고변동",
         "state": "jumpy",
         "value": 44.75,
       }
@@ -305,9 +330,14 @@ describe("lowVolLens — 특성화", () => {
 
 describe("qualityLens — 특성화", () => {
   it("고GP/A(ko): 전체 LensRead 고정", async () => {
-    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko")).toMatchInlineSnapshot(`
+    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
+        "cutSource": {
+          "asOf": "2026-01-01",
+          "market": "US",
+          "n": 100,
+        },
         "cutoffs": {
           "hi": 40,
           "lo": 15,
@@ -346,7 +376,7 @@ describe("qualityLens — 특성화", () => {
     `);
   });
   it("저GP/A(ko): low 상태", async () => {
-    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "ko");
+    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": "GP/A 5%",
@@ -358,7 +388,7 @@ describe("qualityLens — 특성화", () => {
     `);
   });
   it("매출총이익 없음(ko): na 상태(은행)", async () => {
-    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }]) }), "ko");
+    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }]) }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": null,
@@ -373,9 +403,14 @@ describe("qualityLens — 특성화", () => {
 
 describe("assetGrowthLens — 특성화", () => {
   it("공격적 성장(ko): 전체 LensRead 고정", async () => {
-    expect(await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko")).toMatchInlineSnapshot(`
+    expect(await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "회사가 설비 투자·인수 등으로 자산을 얼마나 공격적으로 늘리는지 보는 지표예요. 2008년 쿠퍼·굴렌·실이 '자산을 빠르게 불린 회사일수록 이후 수익은 오히려 약하다'를 데이터로 밝혔어요(과잉 투자·무리한 확장 경계). 파마·프렌치 5팩터 중 투자 팩터(CMA)이기도 해요 — 자본을 신중히 쓰는 회사를 선호하는 관점이에요.",
+        "cutSource": {
+          "asOf": "2026-01-01",
+          "market": "US",
+          "n": 100,
+        },
         "cutoffs": {
           "hi": 20,
           "lo": 5,
@@ -414,7 +449,7 @@ describe("assetGrowthLens — 특성화", () => {
     `);
   });
   it("보수적(ko): conservative 상태", async () => {
-    const r = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "ko");
+    const r = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": "자산성장 3%",
@@ -445,12 +480,12 @@ describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
   // 라벨이 없으면 화면은 fallback으로 stable 키 원문을 그린다("rsi14: 94.8") → 엔진이 내는 키는 전부 양쪽 언어에 있어야.
   it("엔진이 내는 모든 detail 키가 ko·en 라벨을 갖는다", async () => {
     const reads = await Promise.all([
-      momentum.compute(sd({ closes: up }), "ko"),
-      technical.compute(sd({ closes: up }), "ko"),
-      valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko"),
-      lowVol.compute(sd({ closes: up }), "ko"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko"),
-      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko"),
+      momentum.compute(sd({ closes: up }), "ko", CUTS),
+      technical.compute(sd({ closes: up }), "ko", CUTS),
+      valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko", CUTS),
+      lowVol.compute(sd({ closes: up }), "ko", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko", CUTS),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko", CUTS),
     ]);
     const keys = reads.flatMap((r) => Object.keys(r.detail));
     expect(keys).toHaveLength(13);
@@ -468,9 +503,9 @@ describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
 
   // headline 접두어(200일선·연변동성·자산성장)의 en 경로. 숫자는 ko 스냅샷과 동일 픽스처라 값이 같아야(로케일이 계산을 안 바꿈).
   it("en headline = 영어 접두어 + 동일 수치", async () => {
-    const tech = await technical.compute(sd({ closes: up }), "en");
-    const lv = await lowVol.compute(sd({ closes: up }), "en");
-    const ag = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en");
+    const tech = await technical.compute(sd({ closes: up }), "en", CUTS);
+    const lv = await lowVol.compute(sd({ closes: up }), "en", CUTS);
+    const ag = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en", CUTS);
     expect(tech.headline).toBe("vs MA200 61.18%");
     expect(lv.headline).toBe("Ann. vol 8.89%");
     expect(ag.headline).toBe("Asset growth 30%");
@@ -484,18 +519,18 @@ describe("note · short/long — i18n 무회귀", () => {
   // 전 렌즈 × 전 상태(상승/하락/고변동 · 저PER/고PER · 고GP/A/저GP/A · 공격/보수)를 en으로 돌려 한글 스캔.
   async function allEnReads() {
     return Promise.all([
-      momentum.compute(sd({ closes: up }), "en"),
-      momentum.compute(sd({ closes: down }), "en"),
-      technical.compute(sd({ closes: up }), "en"),
-      technical.compute(sd({ closes: down }), "en"),
-      valuation.compute(sd({ pe: 8, pb: 1.2 }), "en"),
-      valuation.compute(sd({ pe: 30, pb: 5 }), "en"),
-      lowVol.compute(sd({ closes: up }), "en"),
-      lowVol.compute(sd({ closes: jumpy }), "en"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "en"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "en"),
-      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en"),
-      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "en"),
+      momentum.compute(sd({ closes: up }), "en", CUTS),
+      momentum.compute(sd({ closes: down }), "en", CUTS),
+      technical.compute(sd({ closes: up }), "en", CUTS),
+      technical.compute(sd({ closes: down }), "en", CUTS),
+      valuation.compute(sd({ pe: 8, pb: 1.2 }), "en", CUTS),
+      valuation.compute(sd({ pe: 30, pb: 5 }), "en", CUTS),
+      lowVol.compute(sd({ closes: up }), "en", CUTS),
+      lowVol.compute(sd({ closes: jumpy }), "en", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "en", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "en", CUTS),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en", CUTS),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "en", CUTS),
     ]);
   }
 
@@ -515,12 +550,12 @@ describe("note · short/long — i18n 무회귀", () => {
   it("ko note = STEP718 이전 lib/lenses.ts 인라인 리터럴(전 렌즈 비어있지 않음)", async () => {
     // 문자열 자체는 위 ko 전체 스냅샷이 바이트로 고정 — 여기선 LENS_COPY 경로가 실제로 물렸는지(빈 note 회귀 방지).
     const reads = await Promise.all([
-      momentum.compute(sd({ closes: up }), "ko"),
-      technical.compute(sd({ closes: up }), "ko"),
-      valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko"),
-      lowVol.compute(sd({ closes: up }), "ko"),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko"),
-      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko"),
+      momentum.compute(sd({ closes: up }), "ko", CUTS),
+      technical.compute(sd({ closes: up }), "ko", CUTS),
+      valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko", CUTS),
+      lowVol.compute(sd({ closes: up }), "ko", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko", CUTS),
+      assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko", CUTS),
     ]);
     for (const r of reads) {
       expect(r.note, `ko note 없음: ${r.key}`).toBeTruthy();

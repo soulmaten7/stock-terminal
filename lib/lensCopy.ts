@@ -404,6 +404,23 @@ export const HEADLINE_PREFIX: Record<Locale, { technical: string; lowvol: string
   en: { technical: "vs MA200", lowvol: "Ann. vol", assetgrowth: "Asset growth" },
 };
 
+// STEP 805 기타 문구 — 분포 컷 미존재(기준 준비 중)·PER 기준 명시.
+export const LENS_MISC: Record<Locale, {
+  pendingPhrase: string; pendingPlain: string;
+  perBasis: string; // PER 산출 기준(외부 TTM과 다름·STEP 805 §5)
+}> = {
+  ko: {
+    pendingPhrase: "기준 준비 중",
+    pendingPlain: "이 시장의 판정 기준(분포)을 아직 모으는 중이에요 — 값은 위에 그대로 있어요.",
+    perBasis: "연간 실적 기준",
+  },
+  en: {
+    pendingPhrase: "Calibrating",
+    pendingPlain: "We are still gathering this market's baseline distribution — the number above stands on its own.",
+    perBasis: "based on last fiscal year",
+  },
+};
+
 // 신뢰도 등급 배지 텍스트 — 렌즈 카드 겉면("얼마나 믿을 만한가"). 색 계열(gradeTier)은 언어 무관이라 별도.
 // ⚠️ ko 값은 기존 lib/lenses.ts 리터럴과 바이트 동일(스냅샷 테스트·KR 화면 무회귀). en은 신뢰도 범례(StockLens.readingGuide)와 문구 일치.
 export type GradeKey = "verified" | "verifiedDefensive" | "reference" | "weakSignal";

@@ -40,6 +40,7 @@ type LensRead = {
   outlook?: string | null;
   percentile?: number | null;
   cutoffs?: { lo: number; hi: number } | null;
+  cutSource?: { market: string; n: number; asOf: string | null } | null; // 컷 출처(STEP 805 §6)
   state?: string | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
@@ -173,12 +174,20 @@ function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
     .map(([k, v]) => `${detailLabel(loc, k)}: ${v}`);
   if (topPct != null) evidenceParts.push(`${t('narrativePercentileLabel')}: ${t('narrativePercentile', { v: topPct })}`);
   const cutoffKey = NARRATIVE_CUTOFF_KEY[L.key];
-  if (L.cutoffs && cutoffKey) evidenceParts.push(t(cutoffKey, { hi: L.cutoffs.hi, lo: L.cutoffs.lo }));
+  const r1 = (v: number) => Math.round(v * 10) / 10; // 컷 표시 반올림(분포 컷은 소수라)
+  if (L.cutoffs && cutoffKey) evidenceParts.push(t(cutoffKey, { hi: r1(L.cutoffs.hi), lo: r1(L.cutoffs.lo) }));
+  // STEP 805 §6: 실제 사용한 컷 출처(시장 분포·표본·기준일).
+  if (L.cutSource) evidenceParts.push(t('narrativeCutSource', { market: L.cutSource.market, n: L.cutSource.n, date: L.cutSource.asOf ?? '—' }));
 
   return (
     <div className="mt-2.5 space-y-1.5">
       <p className="text-[14px] leading-7 text-unjong-primary/90">{t(methodKey)}{stockLine ? ` ${stockLine}` : ''}</p>
       <p className="text-[11px] leading-relaxed text-unjong-muted">{evidenceParts.join(' · ')}</p>
+      {/* STEP 805 §5: PER 산출 기준(외부 TTM과 다름) */}
+      {L.key === 'valuation' && L.detail.per != null ? <p className="text-[11px] text-unjong-muted">{t('narrativePerBasis')}</p> : null}
+      {/* STEP 805 §4: 검증 범위 — 분포 컷 쓰는 렌즈는 백테스트=미국 유니버스·이 시장 자체검증 없음 명시 / RSI·F-스코어는 고정 표준값 */}
+      {L.cutSource ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeVerified')}</p> : null}
+      {L.key === 'technical' ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeFixed')}</p> : null}
       <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
     </div>
   );
