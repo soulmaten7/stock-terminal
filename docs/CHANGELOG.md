@@ -1,5 +1,19 @@
-<!-- 2026-07-27 -->
+<!-- 2026-07-28 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-28 — 🔬 렌즈 판정 엔진 정합: 표면 축소 → 기반 버그 → 분포 유도 컷 (STEP 799~806 · HEAD `cdba316`)
+
+베타 전 재감사 → "판정이 왜 그런가"를 뿌리부터 바로잡음. 표면을 KR+US로 좁히고(799), 기반 버그를 막고(800), 렌즈 기법 정의·입력·표시·판정 컷을 순차 정합. tsc 0·vitest 101/101·build·라이브/DB 실측 전부 통과.
+
+- **799 KR+US 표면 축소**: "한 시장 완성 후 다음"(ROADMAP §2-1) 원칙 → JP·CN(HK)·VN·GB를 검색·관심등록·종목상세 진입·사이트맵에서 차단(파킹 — 데이터·크론·라우트 보존). 단일 제어점 `lib/activeMarkets.ts`(`ACTIVE_MARKETS`·`isActiveSymbol`·`marketOfSymbol`). 복원 = `PARKED_FIELD_SURFACES.md §7`.
+- **800 기반 버그 4종**: OAuth 로케일 쿠키가 next-intl `syncCookie`에 덮여 잘못 리다이렉트 → `localeCookie:false`+명시선택 쿠키 + proxy에서 supabase `getUser`를 i18n 응답 '전에'(만료 임박 401 방지) + StockLensClient 렌즈 fetch race(`alive` 가드) + WatchlistClient user 구독(로그아웃 잔류 개인정보 제거).
+- **801 렌즈 기법 정의 정합**: Wilder RSI(StockCharts 레퍼런스 정확 일치)·12-1 모멘텀은 배당 조정 종가(총수익률·Jegadeesh-Titman)·GP/A·자산성장·F-Score 분모를 **기초(전기말) 총자산**(Novy-Marx/Piotroski 원전)·F-Score 3년 요구. 특성화 테스트를 값 검증으로 대체.
+- **802 판정 컷 토대**: `lens_cuts` 테이블(market·lens_key·lo/hi·n·as_of) 신설, 크론이 유니버스 값 분포의 p30/p70을 산출·저장. 순환 의존(값→컷→상태) 때문에 **소비는 805로 분리**(토대만).
+- **803 KR 입력 정확성 7종**: ① F-Score 필드 결측을 "은행·보험"으로 단정하던 §직시 위반 → "데이터 부족"(dataMissing/gap) ② 시총을 15개월 묵은 주식수 대신 야후 `quote.marketCap` 우선 ③ 우선주(끝자리≠0) 밸류 계산 불가+유니버스 제외(90종목) ④ 액면분할 정수배 급증을 `no_dilute` 오탐→처리(806서 판정불가로 보수화) ⑤ 회계연도 비연속 계산불가 ⑥ 저변동 최소 수익률 120개 ⑦ `krSnapshot` `TDD_CLSPRC>0` 거래일 가드+기간역산 `bas_dd` 기준. PER 독립 대조(삼성 33.8·하이닉스 26.5·현대차 10.3 자릿수 정상).
+- **804 표시 정직성 8파트**: 결측 0 날조 제거(`?? 0`→null·화면 "—") · 데이터 나이 서빙(`bas_dd`) · **AsOfBadge KST 새벽 버그**(UTC→시장 로컬 `marketToday`, 한국 아침 배지 숨던 것) · 실패↔없음 구분(Watchlist·Today·Explore·EtfLens에 LoadFailed) · 토글 롤백(`res.ok`+연타 가드·이메일 토글 OFF 위장 제거) · 하이드레이션 가드(`!authLoading && !user`·로그인 페이지 가드) · 시장 URL 동기화 · 톤 칩 카운트 불일치 명시.
+- **805 분포 유도 컷 소비 + 2-pass 크론**: 5개 렌즈 verdict를 코드 상수 대신 `lens_cuts`로 판정(`lib/lensCuts.ts`·`stateFromCut` dir 반영·`loadCuts`·`compute(d,locale,cuts)`). 컷 없으면 `pending`("기준 준비 중"·임의 폴백 금지). **순환 해소=크론 2-pass**(pass1 값+직전컷 상태 → 분포서 컷 재유도 → pass2 저장값 상태 재매핑, 야후 재조회 0). 이중컷(momentum verdict ±10/label ±20·lowvol 20-40/25-45) 단일 컷 통일. 부트스트랩=기존 저장 값 분포서 SQL 즉시 산출. **실측 KR 저변동 "주의" 89.3%→30.0%**(momentum 46→30·quality 55.5→30·valuation 31.4→30.1). 근거줄에 컷 출처·PER 기준·검증 범위 표기.
+- **806 상대 컷 문구 정합 + 베타차단 7건 (`cdba316`)**: ① 🔴 **상대 컷 ↔ 절대 문구 충돌(거짓 진술)** — p30/p70은 항상 30%를 up/cheap/calm으로 만드는데 verdict가 절대("오르고 있어요")라 하락장서 12-1=−25% 상위30% 종목이 "강한 상승 추세"로 뜸 → 5렌즈 verdict를 상대 표현으로 재작성 + 절대 sanity 가드(momentum<0→"내렸지만 상위권"·저변동 절대>40%→"시장 대비 낮지만 절대론 큼")+outlook 상대화(실측: 하락장 시뮬 12-1=−0.79·up→"내렸지만 상위권"). ② pending이 tone='flat'으로 "보통"에 새던 것 → na처럼 집계 제외+`pendingCount`+미주입 경로 특성화 테스트 신설. ③ 프루닝 대량삭제 위험 → `saved/universe≥0.8`일 때만+미달 Sentry 경고. ④ loadCuts error 삼킴 → Sentry+10분 TTL 캐시+캐시없는 오류는 throw(일시오류 UI, pending과 구분). ⑤ 레거시 `NEXT_LOCALE=en` 잔류 → `locale_choice` 새 키 마이그(proxy가 새 키만 읽고 레거시 삭제). ⑥ `/api/brief`·`/api/lens`에 `isActiveSymbol` 게이트(파킹 심볼 400·LLM 0)+`jp-disclosures` 크론 제거. ⑦ 저비용: remap `.order()`+error·`lens_state_changes` diff를 pass2 이후·`/api/lens` pending 무캐시·us-list 정렬 NaN 가드·F-Score 정수배 급변은 no_dilute 판정불가로 제외(max 8). 교훈 = `LENS_DEV_PLAYBOOK` #40·#41.
+- **▶ 다음**: US 확장 검증(최우선) → 클로즈드 베타 발송(STATE ▶다음).
 
 ## 2026-07-27 (3) — 🔒 베타 전 3중 검수 마감 (STEP 793~798 · HEAD `474cac0`)
 

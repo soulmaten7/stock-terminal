@@ -1,11 +1,12 @@
-<!-- 2026-07-23 -->
+<!-- 2026-07-28 -->
 # 🗺️ Trillion(트릴리언) — SYSTEM MAP (아키텍처·파이프라인 지도)
 
 > **아키텍처가 바뀔 때만 수정**(세션마다 아님). 현재상태=`STATE.md` · 이력=`CHANGELOG.md`.
-> 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-27 갱신 — 793~798: 크론 15→9·PageShell 공용 셸·rateLimit LLM 게이트·공시 API 3상태 계약·cron_heartbeats 반영)
+> 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-28 갱신 — 799~806: 활성시장 KR+US 게이트·`lens_cuts` 분포 유도 컷·2-pass 크론·`locale_choice` 쿠키·크론 9→8[jp-disclosures 중지] 반영. 이전 793~798: PageShell·rateLimit·공시 3상태·cron_heartbeats.)
 
 ## 1. 스택
-- **Next.js 16 App Router**(Turbopack · dev 포트 3333) · **Tailwind v4**(`@theme` in `app/globals.css`) · **Zustand**(`countryStore`·`authStore`) · **next-intl**(`[locale]` · ko 무프리픽스 · en=`/en` · `as-needed`).
+- **Next.js 16 App Router**(Turbopack · dev 포트 3333) · **Tailwind v4**(`@theme` in `app/globals.css`) · **Zustand**(`countryStore`·`authStore`) · **next-intl**(`[locale]` · ko 무프리픽스 · en=`/en` · `as-needed` · `localeCookie:false`).
+  - **로케일 지속 = `locale_choice` 쿠키**(STEP 806 §5 · 명시 선택[Header.switchLocale]만 심음·URL 방문으론 안 바뀜). proxy가 이 키만 읽어 프리픽스 없는 요청을 `/en`으로. **레거시 `NEXT_LOCALE`은 읽지 않고 삭제**(800 이전 next-intl이 URL마다 덮어써 en으로 굳던 잔류 쿠키 무력화). OAuth 왕복용 `post_login_locale`(795·10분)은 별개.
 - **Supabase** `@supabase/ssr` — server/browser client + admin client(SERVICE_ROLE · RLS 우회). 마이그레이션 = Cowork가 MCP로 적용, Claude Code가 `.sql` 아카이브.
 - **Vercel** 배포 · 크론(§4) · Analytics · Sentry(@sentry/nextjs v10).
 
@@ -29,17 +30,19 @@
 
 - ⚠️ **프레시니스 격차(07-18 갱신)**: **KR·US = 유니버스 자동**(KR=KRX 일일피드·US=심볼 디렉토리 일일 Action). **JP·CN·VN·GB 시드는 정적** = 신규 상장 미편입 — US 패턴(스크립트+Action) 재사용으로 후속.
 - 🛡️ **Perf 하드닝(750b~755 · 6개국 전부)**: 외부 콜별 5s 타임아웃(`withTimeout`) + 신선도 역순(오래된 것 먼저) + 시간 예산 260s — hang 소스가 하루를 통째 날리지 못하고, 부분 실패는 다음날 자연 만회. (KR은 KRX 전시장 1콜 구조라 해당 없음.)
-- **렌즈 선계산**: `lens_scores`(US ~1,028 + KR ~489) — `kr-lens-scores`/`lens-scores` 크론. 밖의 종목은 live `/api/lens`(야후 계산·결정론·무료).
+- **🎯 활성 시장 게이트(STEP 799·806)**: `lib/activeMarkets.ts` — `ACTIVE_MARKETS=["KR","US"]` 단일 배열 + `isActiveSymbol(sym)`/`marketOfSymbol(sym)`. 검색 인덱스·관심등록·종목상세 페이지·사이트맵 + **`/api/lens`·`/api/brief`**(806 §6)가 전부 이걸 공유 → JP/CN/VN/GB 심볼은 온디맨드 계산·LLM 차단(400). 새 시장 개방 = 배열 한 줄. 복원 절차 `PARKED_FIELD_SURFACES.md §7`.
+- **렌즈 선계산 + 분포 유도 판정 컷(STEP 802·805·806)**: `lens_scores`(US ~1,255 + KR ~1,242 · 값 컬럼 `*_value`/상태 `*_state`) — `kr-lens-scores`/`lens-scores` 크론. 밖의 종목은 live `/api/lens`(야후 계산·결정론·무료). **판정 컷 = `lens_cuts` 테이블**(시장별 값 분포 p30/p70). 5개 렌즈(모멘텀·저변동·밸류·퀄리티·자산성장)가 `lib/lensCuts.ts`(`loadCuts`·10분 TTL 캐시·`stateFromCut` dir 반영)로 이 컷을 읽어 verdict 산출 — **컷 없으면 state='pending'**(임의 상수 폴백 금지). RSI 30/70·F-Score 3/7만 고정 표준값. 라이브(`computeSymbolLenses` 자동 로드)=선계산(크론 주입) 동일 컷 → 판정 일치.
+  - **⚙️ 크론 2-pass(순환 의존 해소·`lib/lensPrecompute.ts`)**: 컷은 분포에서, 분포는 값에서, 판정은 컷에서 나오는 순환을 끊음 — **pass1**: 전 유니버스 값 계산 + '직전' 컷으로 상태·저장(cutValues 수집) → 분포 p30/p70로 **컷 재유도·`lens_cuts` upsert** → **pass2**(`pass2RemapAndDiff`): 저장 값에 새 컷 적용해 상태 재매핑(야후 재조회 0·DB 내 갱신) + 최종 상태로 `lens_state_changes` diff. 프루닝(유니버스 이탈 삭제)은 **저장 성공률 ≥80%일 때만**(부분 실행 대량삭제 방지·806 §3). 부트스트랩 = 기존 저장 값 분포서 SQL 즉시 산출.
 
-## 4. 크론 (vercel.json · 가동 9개 — 794 §5에서 파킹 전용 6개 중지)
-**가동(9)**: `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30 · `lens-scores` 20:00(US 렌즈) · `jp-disclosures` 16:00(+CRON_SECRET·`days`≤7·하트비트) · **`health` 12:00(신선도+하트비트 감시·stale→Sentry·STEP 749)** · **`daily-brief` 21:00(한 입 브리핑 LLM·KR/US 각 로케일 1회·STEP 778)** · **`email-brief` 22:15(daily-brief 뒤·opt-in 발송·Resend batch·하트비트·STEP 784)**.
-- **중지(6 · 스케줄만 vercel.json에서 제거 · 라우트/컴포넌트/테이블/데이터 전부 보존)**: `jp/cn/vn/gb-perf`·`fss-advisors`·`youtube-refresh` — 이들이 대던 표면(구 6개국 보드·유튜브·유사투자자문)이 `ToolboxClient` 렌더 0개(=`toolbox/page.tsx`는 `redirect('/')`)라 아무 화면에도 안 뜨는 테이블을 매일 갱신하던 낭비. **복원 = vercel.json 재등록**(`docs/PARKED_FIELD_SURFACES.md` §6). ⚠️ `kr-etp`는 종목상세 KR ETF/ETN 헤더가 `/api/etf-holdings`→`kr_etp_snapshot`으로 **라이브로 읽어 유지**. health 체크도 중지 6개 항목 제거(오탐 방지)·kr-etp 유지.
+## 4. 크론 (vercel.json · 가동 8개 — 794 §5 파킹 6개 + 806 §6 jp-disclosures 중지)
+**가동(8)**: `us-perf` 22:00 · `kr-perf` 10:00(+name_en null 증분·STEP 746) · `kr-etp` 10:15 · `kr-lens-scores` 10:30(2-pass·§3) · `lens-scores` 20:00(US 렌즈·2-pass) · **`health` 12:00(신선도+하트비트 감시·stale→Sentry·STEP 749)** · **`daily-brief` 21:00(한 입 브리핑 LLM·KR/US 각 로케일 1회·STEP 778)** · **`email-brief` 22:15(daily-brief 뒤·opt-in 발송·Resend batch·하트비트·STEP 784)**.
+- **중지(7 · 스케줄만 vercel.json에서 제거 · 라우트/컴포넌트/테이블/데이터 전부 보존)**: `jp/cn/vn/gb-perf`·`fss-advisors`·`youtube-refresh`(794 §5 · `ToolboxClient` 렌더 0개) + **`jp-disclosures`(806 §6 · 소비처 0)**. **복원 = vercel.json 재등록**(`docs/PARKED_FIELD_SURFACES.md` §6). ⚠️ `kr-etp`는 종목상세 KR ETF/ETN 헤더가 `/api/etf-holdings`→`kr_etp_snapshot`으로 **라이브로 읽어 유지**. health 체크도 중지 항목 제거(오탐 방지·jp-disclosures 하트비트 감시 포함)·kr-etp 유지.
 - **인증(전 크론 공통)**: `if (!process.env.CRON_SECRET || auth !== \`Bearer ${CRON_SECRET}\`) return 401` — env 미설정 시 `Bearer undefined`로 통과하던 버그 봉인(STEP 793).
 - ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증). 빈도(daily-only) 제약이지 카운트 제약 아님(07-23 REST API 전수 확인).
 
 ## 5. DB 테이블 (64개 · 그룹)
 - **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot` · `stock_prices` · `stocks`
-- **렌즈/재무**: `lens_scores` · `quant_factors` · `financials` · `dividends` · `short_credit` · `supply_demand` · `insider_trades`
+- **렌즈/재무**: `lens_scores`(값 `*_value`+상태 `*_state`) · **`lens_cuts`**(판정 컷 · PK `market,lens_key` · `lo`/`hi`=p30/p70·`n`·`as_of`·`method` — 크론 2-pass가 upsert·STEP 802/805) · `lens_state_changes`(오늘/탐색 변화 피드 · pass2 최종 상태로 diff) · `quant_factors` · `financials` · `dividends` · `short_credit` · `supply_demand` · `insider_trades`
 - **종목명**: `cn_names` · `gb_names` · `jp_names` · `vn_names` (KR·US는 스냅샷/시드에 내장)
 - **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · `ai_view_cache` · `ai_analysis` · **`daily_brief`**(한 입 브리핑 — market별 PK·text_ko/text_en·source_facts jsonb·STEP 778)
 - **공시/뉴스**: `disclosures` · `jp_disclosures` · `news` · `dart_corp_codes` · `macro_indicators`
@@ -50,9 +53,9 @@
 - ⚠️ **git에 없는 테이블 주의**: `link_hub`·`fss_advisors` 등 일부는 MCP 직접 insert라 마이그레이션/git에 없음 → **DB 백업/이전 시 별도 export 필수.**
 
 ## 6. API 라우트 (`app/api/`)
-- **크론(가동 9)**: `cron/{us-perf,kr-perf,kr-etp,kr-lens-scores,lens-scores,jp-disclosures,health,daily-brief,email-brief}` (라우트 파일은 15개 전부 존재 — 6개는 스케줄만 중지·§4).
+- **크론(가동 8)**: `cron/{us-perf,kr-perf,kr-etp,kr-lens-scores,lens-scores,health,daily-brief,email-brief}` (라우트 파일은 15개 전부 존재 — 7개는 스케줄만 중지·§4·jp-disclosures 포함).
 - **보드/시세**: `krx/ranking` · `yahoo/{us,jp,cn,vn,gb}-list` · `yahoo/indices`(지수바·심볼별 try/catch 격리) · `yahoo/us-etn-performance` · `krx/kr-performance` · `watchlist/quotes`
-- **렌즈/AI(무인증 LLM — 캐시 미스 게이트)**: `lens` · `brief`(R2) · `news-brief`(R3) · `events/summary`·`{kr,jp,cn,gb,vn}-events/summary`(R1) · `etf-holdings`. **⚠️ 요약/브리핑 8종은 캐시 미스(=새 유료 LLM) 직전 `blockLLM(req)`(`lib/rateLimit.ts`) 통과 필요** — 봇-UA 차단 + IP 레이트리밋(12/분·100/시간·Vercel `x-real-ip` 키·차단 카운터 5분 Sentry·IP 미로깅). 캐시 히트는 게이트 없이 누구나. 요약 캐시 키 = **검증된 본문 URL의 sha1**(`lib/summaryCacheKey.ts` — CN/VN/GB 공용·포이즈닝 방지).
+- **렌즈/AI(무인증 LLM — 캐시 미스 게이트)**: `lens` · `brief`(R2) · `news-brief`(R3) · `events/summary`·`{kr,jp,cn,gb,vn}-events/summary`(R1) · `etf-holdings`. **⚠️ `lens`·`brief`는 `isActiveSymbol` 게이트**(파킹 시장 심볼 400·806 §6) + `lens`는 `pending`(컷 준비 중) 응답 무캐시. **⚠️ 요약/브리핑 8종은 캐시 미스(=새 유료 LLM) 직전 `blockLLM(req)`(`lib/rateLimit.ts`) 통과 필요** — 봇-UA 차단 + IP 레이트리밋(12/분·100/시간·Vercel `x-real-ip` 키·차단 카운터 5분 Sentry·IP 미로깅). 캐시 히트는 게이트 없이 누구나. 요약 캐시 키 = **검증된 본문 URL의 sha1**(`lib/summaryCacheKey.ts` — CN/VN/GB 공용·포이즈닝 방지).
 - **공시 리스트 3상태 계약(6개국 · STEP 797)**: `{kr,jp,cn,gb,vn}-events`·`events`가 **`{events:[…]}`(ok·0건 포함) / `{events:[],error:'fetch_failed'}`(상류 장애·캐시 안 함) / `{events:[],error:'unsupported'}`(심볼 미매핑)** 셋을 구분 반환. 클라 5층+`FilingsCard`: ok+0건 → "없어요" 카드 / fetch_failed·unsupported → 섹션 숨김(거짓 "없음" 금지).
 - **피드/기타**: `news/feed`(lang 파라미터) · `ipo/us-feed` · `brokers` · `advisors` · `link-preview` · `feedback` · `watchlist` · `business/manage` · `rooms/favorite` · `toolbox/favorite`
 - **이메일 모닝 브리핑(STEP 784)**: `email/unsub`(GET=본문 링크 클릭·POST=메일 클라 원클릭 RFC 8058 — 로그인 불필요·`unsub_token` 검증)
