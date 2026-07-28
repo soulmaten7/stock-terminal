@@ -156,7 +156,7 @@ function hasLensNarrative(L: LensRead): boolean {
   return !!NARRATIVE_METHOD_KEY[L.key] && !!L.state && L.state !== 'na';
 }
 
-function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
+function LensNarrative({ L, loc, market }: { L: LensRead; loc: Locale; market: string }) {
   const t = useTranslations('StockLens');
   const tMaterial = useTranslations('LensPreview');
   if (!hasLensNarrative(L)) return null;
@@ -172,7 +172,8 @@ function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
   const evidenceParts = Object.entries(L.detail)
     .filter((entry): entry is [string, number] => entry[1] != null)
     .map(([k, v]) => `${detailLabel(loc, k)}: ${v}`);
-  if (topPct != null) evidenceParts.push(`${t('narrativePercentileLabel')}: ${t('narrativePercentile', { v: topPct })}`);
+  // §4(STEP 807): 백분위 모집단 라벨 = 시장별(US=시총 상위 ~1000 / KR=거래대금 상위). 시장에 맞게.
+  if (topPct != null) evidenceParts.push(`${t(market === 'US' ? 'narrativePercentileLabelUs' : 'narrativePercentileLabel')}: ${t('narrativePercentile', { v: topPct })}`);
   const cutoffKey = NARRATIVE_CUTOFF_KEY[L.key];
   const r1 = (v: number) => Math.round(v * 10) / 10; // 컷 표시 반올림(분포 컷은 소수라)
   if (L.cutoffs && cutoffKey) evidenceParts.push(t(cutoffKey, { hi: r1(L.cutoffs.hi), lo: r1(L.cutoffs.lo) }));
@@ -185,8 +186,8 @@ function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
       <p className="text-[11px] leading-relaxed text-unjong-muted">{evidenceParts.join(' · ')}</p>
       {/* STEP 805 §5: PER 산출 기준(외부 TTM과 다름) */}
       {L.key === 'valuation' && L.detail.per != null ? <p className="text-[11px] text-unjong-muted">{t('narrativePerBasis')}</p> : null}
-      {/* STEP 805 §4: 검증 범위 — 분포 컷 쓰는 렌즈는 백테스트=미국 유니버스·이 시장 자체검증 없음 명시 / RSI·F-스코어는 고정 표준값 */}
-      {L.cutSource ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeVerified')}</p> : null}
+      {/* STEP 805 §4·807 §6: 검증 범위 — US는 백테스트 유니버스 '자신'이라 자체검증됨 / 비US(KR 등)는 "이 시장 자체검증 없음" / RSI·F-스코어는 고정 표준값 */}
+      {L.cutSource ? <p className="text-[11px] text-unjong-muted">{t(market === 'US' ? 'narrativeScopeVerifiedUs' : 'narrativeScopeVerified')}</p> : null}
       {L.key === 'technical' ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeFixed')}</p> : null}
       <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
     </div>
@@ -1237,7 +1238,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
               <div className="mt-3.5 min-w-0 lg:mt-0">
                 {/* "이 기법 방향"(outlook) 라벨·블록 제거(서사에 흡수·STEP 789 §2) — 서사가 안 뜨는 렌즈만(na 포함) verdict.plain 안전망으로 대체. */}
                 {!hasLensNarrative(L) && L.verdict ? <p className="text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
-                <LensNarrative L={L} loc={locale} />
+                <LensNarrative L={L} loc={locale} market={countryOf(symbol)} />
                 {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
               </div>
             </div>
