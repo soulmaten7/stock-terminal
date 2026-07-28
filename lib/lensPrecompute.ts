@@ -107,6 +107,9 @@ export async function computeLensScoresFor(
   let done = 0, saved = 0;
   let buffer: Record<string, unknown>[] = [];
   let changeBuffer: Record<string, unknown>[] = [];
+  // 판정 컷 유도용 값 수집(STEP 802 §1) — 유니버스 전체 값의 분포에서 하위30%/상위30% 컷을 산출·저장.
+  // RSI(technical)·F-Score는 학술·업계 표준 고정값이라 제외.
+  const cutValues: Record<string, number[]> = { momentum: [], lowvol: [], valuation: [], quality: [], assetgrowth: [] };
   async function flush() {
     if (!buffer.length) return;
     const batch = buffer; buffer = [];
@@ -133,6 +136,12 @@ export async function computeLensScoresFor(
       const m = pick(r.lenses, "momentum"), lv = pick(r.lenses, "lowvol"), v = pick(r.lenses, "valuation");
       const q = pick(r.lenses, "quality"), ag = pick(r.lenses, "assetgrowth"), t = pick(r.lenses, "technical");
       const fs = fscoreOf(r.fscore);
+      // 컷 유도용 값 수집(값이 있는 종목만) — 분포 기반 컷 산출용.
+      if (m.value != null) cutValues.momentum.push(m.value);
+      if (lv.value != null) cutValues.lowvol.push(lv.value);
+      if (v.value != null) cutValues.valuation.push(v.value);
+      if (q.value != null) cutValues.quality.push(q.value);
+      if (ag.value != null) cutValues.assetgrowth.push(ag.value);
       buffer.push({
         symbol: sym, market, name: r.name, price: r.price,
         momentum_value: m.value, momentum_state: m.state,
@@ -179,6 +188,31 @@ export async function computeLensScoresFor(
   await flush();
   await flushChanges();
   flushLensFailures(`batch ${market}`); // 렌즈별 실패를 1건으로 요약 보고(폭주 억제·STEP 797 §4)
+
+  // 판정 컷 유도·저장(STEP 802 §1) — 유니버스 값 분포의 하위30%/상위30%(p30/p70). 표본 충분할 때만.
+  const pctile = (sorted: number[], p: number): number => {
+    const idx = (sorted.length - 1) * p;
+    const loI = Math.floor(idx), hiI = Math.ceil(idx);
+    return sorted[loI] + (sorted[hiI] - sorted[loI]) * (idx - loI);
+  };
+  const cutRows: Record<string, unknown>[] = [];
+  for (const [lensKey, vals] of Object.entries(cutValues)) {
+    if (vals.length < 30) continue; // 표본 부족 → 컷 유도 스킵(다음 실행 재시도)
+    const sorted = [...vals].sort((a, b) => a - b);
+    cutRows.push({ market, lens_key: lensKey, lo: pctile(sorted, 0.3), hi: pctile(sorted, 0.7), n: sorted.length, as_of: at, method: "p30/p70" });
+  }
+  if (cutRows.length) {
+    const { error } = await sb.from("lens_cuts").upsert(cutRows, { onConflict: "market,lens_key" });
+    if (error) Sentry.captureException(error, { tags: { pipeline: "lens_cuts", market } });
+  }
+
+  // 신선도(STEP 802 §5) — 이번 실행에서 갱신 안 된(유니버스 이탈) 행 삭제 → 백분위·랭킹·lens-top에서 옛 값 제거.
+  try {
+    await sb.from("lens_scores").delete().eq("market", market).lt("updated_at", at);
+  } catch (e) {
+    Sentry.captureException(e, { tags: { pipeline: "lens_scores_prune", market } });
+  }
+
   return { ok: true, computed: saved, universe: universe.length, at };
 }
 

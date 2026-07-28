@@ -51,6 +51,18 @@ export async function GET(req: Request) {
     }
   }
 
+  // STEP 802 §5: lens_scores 행 수 하한 감시 — MAX(updated_at)만 보면 부분실패(소수 행만 갱신)나 과도 삭제를 못 잡음.
+  //   신선도 정리(유니버스 이탈 삭제) 도입 후 특히 중요. 시장별 최소 행 수 미달이면 stale.
+  for (const { market, floor } of [{ market: "KR", floor: 300 }, { market: "US", floor: 700 }]) {
+    try {
+      const { count } = await sb.from("lens_scores").select("symbol", { count: "exact", head: true }).eq("market", market);
+      const n = count ?? 0;
+      results.push({ name: `렌즈 행수 ${market}(lens_scores)`, latest: `${n} rows`, ageH: null, thresholdH: 0, status: n < floor ? "stale" : "ok" });
+    } catch (e) {
+      results.push({ name: `렌즈 행수 ${market}(lens_scores)`, latest: null, ageH: null, thresholdH: 0, status: "stale", error: String(e) });
+    }
+  }
+
   const stale = results.filter((r) => r.status === "stale");
   if (stale.length > 0) {
     // 기존 Sentry 배선 재사용 — 이슈 생성 → 이메일 알림. 메시지에 어떤 파이프라인이 몇 시간 밀렸는지 포함.

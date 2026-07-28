@@ -33,9 +33,12 @@ export async function GET(req: NextRequest) {
     if (page.length < 1000) break;
   }
 
+  // STEP 802 §4: 결측(na) 많은 종목은 계산된 렌즈가 적어 pos 개수가 구조적으로 낮음 → 최소 계산 렌즈 수 조건으로
+  // 랭킹 대상 제한(pos+warn+flat ≥ 4). <4면 "강점 N개"가 너무 얕아 순위가 의미 없음(ETF는 렌즈 4개라 포함).
+  const MIN_COMPUTED = 4;
   const withTones = data
     .map((r) => ({ row: r, tones: tonesFor(r) }))
-    .filter((x): x is { row: LensRow; tones: Tones } => !!x.tones);
+    .filter((x): x is { row: LensRow; tones: Tones } => !!x.tones && x.tones.pos + x.tones.warn + x.tones.flat >= MIN_COMPUTED);
   withTones.sort((a, b) => b.tones[sortKey] - a.tones[sortKey]);
 
   // 동률(거래대금) 타이브레이크용으로 여유 있게 후보를 잡은 뒤 시세 조인 후 재정렬.

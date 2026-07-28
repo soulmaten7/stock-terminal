@@ -161,7 +161,7 @@ function LensNarrative({ L, loc }: { L: LensRead; loc: Locale }) {
   if (!hasLensNarrative(L)) return null;
   const methodKey = NARRATIVE_METHOD_KEY[L.key];
   const verdict = L.verdict?.phrase ?? null;
-  const topPct = L.percentile != null ? 100 - L.percentile : null;
+  const topPct = L.percentile != null ? Math.max(1, 100 - L.percentile) : null; // 최상위(percentile 100)가 "상위 0%"로 나오지 않게 최소 1%(STEP 802 §5)
 
   const stockLine = L.key === 'technical'
     ? (L.detail.ma200vs != null && verdict ? t('narrativeStockTechnical', { pct: L.detail.ma200vs, verdict }) : null)
@@ -245,7 +245,7 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
               <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mTone === 'pos' ? 'bg-unjong-accent' : mTone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted'}`} style={{ left: `${mom.percentile}%` }} />
             </div>
           ) : <div className="mt-2 h-2 rounded-full bg-unjong-background" />}
-          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{t('horizon.topPct', { v: 100 - mom.percentile })}</span> : null}</p>
+          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{t('horizon.topPct', { v: Math.max(1, 100 - mom.percentile) })}</span> : null}</p>
         </div>
         {/* 장기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
@@ -1076,8 +1076,12 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const lensFlags = buildLensFlags(events);
 
   // 헤더 압축 렌즈 요약(30초 글랜스) — WatchlistClient tone 추출과 동일 로직(pos/warn/flat + fscore).
+  // STEP 802 §4: 결측(state==='na', 예: 은행 GP/A·적자 PER)은 verdict tone이 'flat'이라 예전엔 "보통 1표"로 섞였음
+  // → "판단할 근거 없음"이 "중립으로 판단됨"으로 오독. 집계(헤더·닫는카드·시간축)에선 na를 세지 않고 개수만 따로 표기.
   const headerTones: ('pos' | 'warn' | 'flat')[] = [];
+  let naCount = 0;
   for (const l of lenses) {
+    if (l.state === 'na') { naCount++; continue; } // 카드엔 "산출 불가"로 여전히 표시 · 집계에서만 제외
     const tone = l.verdict?.tone;
     if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
   }
@@ -1095,6 +1099,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const closingWarnLabels: string[] = [];
   const byHorizon: Record<'short' | 'mid' | 'long', ('pos' | 'warn' | 'flat')[]> = { short: [], mid: [], long: [] };
   for (const l of lenses) {
+    if (l.state === 'na') continue; // 결측 제외(STEP 802 §4)
     const tone = l.verdict?.tone;
     if (tone === 'pos') closingPosLabels.push(lensShortLabel(locale, l.key));
     else if (tone === 'warn') closingWarnLabels.push(lensShortLabel(locale, l.key));
@@ -1120,9 +1125,12 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const midAxisTone = axisMajority(byHorizon.mid);
   const longAxisTone = axisMajority(byHorizon.long);
   const closingAxes = [shortAxisTone, midAxisTone, longAxisTone].filter((x): x is 'pos' | 'warn' | 'flat' => x != null);
-  // 분기 4개 + 혼재 폴백(총 5개, "4~6개 이내" 준수) — 데이터 자체가 없으면(closingAxes 0) 문장 생략(정직 결측).
+  // 분기 4개 + 혼재 폴백(총 5개) — 데이터 자체가 없으면(closingAxes 0) 문장 생략(정직 결측).
+  // STEP 802 §4: 계산된 렌즈(na 제외)가 3개 미만이면 종합 판단을 내리지 않고 "근거 부족"으로(근거 1개로 '대체로 유리' 방지).
   let closingSentenceKey: string | null = null;
-  if (closingAxes.length > 0) {
+  if (headerTones.length < 3) {
+    closingSentenceKey = headerTones.length > 0 ? 'closingInsufficient' : null;
+  } else if (closingAxes.length > 0) {
     if (closingAxes.every((x) => x === 'pos')) closingSentenceKey = 'closingAllPos';
     else if (closingAxes.every((x) => x === 'warn')) closingSentenceKey = 'closingAllWarn';
     else if (longAxisTone === 'pos' && (shortAxisTone === 'warn' || midAxisTone === 'warn')) closingSentenceKey = 'closingLongPosShortWarn';
@@ -1270,7 +1278,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                   <span key={i} className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[tone]}`} />
                 ))}
               </div>
-              <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</span>
+              <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}</span>
             </div>
           </div>
         ) : null}
@@ -1335,7 +1343,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {partHeaderCount > 0 ? (
             <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
               <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle', { n: partHeaderCount })}</h2>
-              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}</p>
+              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}</p>
               <div className="mt-2.5 space-y-1 text-[13px] sm:text-[12px]">
                 {closingPosLabels.length ? <p className="text-unjong-accent">{t('closingPosLine', { list: closingPosLabels.join(', ') })}</p> : null}
                 {closingWarnLabels.length ? <p className="text-amber-400">{t('closingWarnLine', { list: closingWarnLabels.join(', ') })}</p> : null}
