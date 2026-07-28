@@ -10,7 +10,13 @@ export function setCache(key: string, value: unknown): void {
   store.set(key, value);
 }
 
-// 로그아웃 시 호출 — 메모리 캐시 비워 다음 사용자가 신선한 데이터 받게.
+// 로그아웃 시 호출 — 메모리 캐시 + 개인 흔적 localStorage를 비워 다음 사용자가 남은 데이터를 못 보게(STEP 800 §4).
 export function clearCache(): void {
   store.clear();
+  try {
+    // 최근 검색 = 개인 흔적(공용 PC 노출) — 제거. 시장 토글(explore_market)·언어(NEXT_LOCALE)는 취향이라 유지.
+    localStorage.removeItem('explore_recent_searches');
+  } catch {
+    /* localStorage 불가 환경 무시 */
+  }
 }

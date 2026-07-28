@@ -9,6 +9,7 @@ import { formatPrice } from '@/lib/currency';
 import { TONE_DOT_CLASS as TONE_DOT, changeColorClass, type Tone } from '@/lib/lensTones';
 import { pickLocale } from '@/lib/lensCopy';
 import { resolveWatchlistName } from '@/lib/displayName';
+import { useAuthStore } from '@/stores/authStore';
 
 type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null; unsupportedMarket?: boolean };
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
@@ -57,14 +58,24 @@ export default function WatchlistClient() {
   const pathname = usePathname(); // 로그인 후 관심 화면으로 복귀(next)
   const tb = useTranslations('Board'); // '관심종목 해제' 재사용(dedup)
   const locale = pickLocale(useLocale()); // 등락색 로케일 분기(STEP 777 §2)에 타입 필요 — 값은 무변(ko/en 그대로)
+  const { user, isLoading: authLoading } = useAuthStore();
   const [items, setItems] = useState<WatchItem[]>([]);
   const [auth, setAuth] = useState(true);
   const [loading, setLoading] = useState(true);
   const [lensMap, setLensMap] = useState<Record<string, LensState>>({});
   const lensStarted = useRef(false);
 
+  // user 변화 구독(STEP 800 §4) — 로그아웃(다른 탭 포함·AuthProvider가 onAuthStateChange로 store 갱신) 시 즉시 초기화.
+  // 예전엔 deps []로 1회만 로드 → 로그아웃 후에도 이전 사용자 관심목록이 그대로 남던 개인정보 노출(TodayClient·ExploreClient엔 이미 있는 가드).
   useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      setItems([]); setLensMap({}); setAuth(false); setLoading(false); lensStarted.current = false;
+      return;
+    }
     let cancelled = false;
+    setLoading(true);
+    lensStarted.current = false; // 사용자 바뀌면 렌즈 큐 재시작 허용
     fetch('/api/watchlist/quotes')
       .then((r) => r.json())
       .then((j) => {
@@ -80,7 +91,7 @@ export default function WatchlistClient() {
       })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, []);
+  }, [user, authLoading]);
 
   // 행별 지연 렌즈 요약 — 선계산(lens_scores) 밖 종목만 동시성 4개 제한 큐로 실시간 폴백. 관심목록이 처음 채워질 때 한 번만 시작.
   useEffect(() => {

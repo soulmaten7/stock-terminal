@@ -1051,11 +1051,14 @@ export default function StockLensClient({ initialName }: { initialName?: string 
 
   useEffect(() => {
     if (!symbol) return;
+    let alive = true;
     setLoading(true);
+    setData(null); // 심볼·로케일 변경 시 옛 데이터 즉시 비움 — 실패해도 이전 종목 렌즈가 새 종목 화면에 남지 않게(STEP 800 §3)
     fetch('/api/lens?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
-      .then((j) => { setData(j); setLoading(false); })
-      .catch(() => setLoading(false));
+      .then((j) => { if (alive) { setData(j); setLoading(false); } }) // 이전 요청 응답 무시(레이스)
+      .catch(() => { if (alive) setLoading(false); }); // 실패 = loading 끝 + data null → 기존 loadError 경로
+    return () => { alive = false; };
   }, [symbol, locale]);
 
   useEffect(() => {
