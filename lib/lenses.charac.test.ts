@@ -75,7 +75,7 @@ describe("momentumLens — 특성화", () => {
         "headline": "12-1 210.84%",
         "horizon": "mid",
         "key": "momentum",
-        "long": "강세",
+        "long": "상위권",
         "name": "모멘텀",
         "nameEn": "Momentum (12-1)",
         "note": "12-1 모멘텀(Jegadeesh-Titman): 롱숏(고−저 3분위·150개월) 백테스트에서 방향성이 통계적으로 유의(t≈2.5·샤프 0.71·양(+)의 달 67%), 거래비용 차감·시장/규모/가치(FF3) 조정 후에도 유지 — '추세 지속' 방향은 견고. 단 수익 '수준'은 생존편향·동일가중으로 부풀려져 실전 기대치 아님(방향이 맞다는 뜻이지 수익 보장 아님). 주가 $5+ 투자가능 종목 한정 — 페니스탁 포함 시 역전. · 3중 교차검증(초·중·후반 3구간·STEP559): 3구간 모두 +방향(전체 t≈3.6), 성장주 강세기(fold2)만 약화되나 부호 유지 = 시기 무관 단단.",
@@ -84,9 +84,9 @@ describe("momentumLens — 특성화", () => {
         "spectrum": {
           "active": 2,
           "labels": [
-            "약세",
-            "중립",
-            "강세",
+            "하위권",
+            "중간",
+            "상위권",
           ],
         },
         "state": "up",
@@ -107,7 +107,7 @@ describe("momentumLens — 특성화", () => {
         "grade": "검증",
         "headline": "12-1 -65.06%",
         "key": "momentum",
-        "long": "약세",
+        "long": "하위권",
         "state": "down",
         "value": -65.06,
       }
@@ -118,7 +118,7 @@ describe("momentumLens — 특성화", () => {
     expect({ key: r.key, name: r.name, summary: r.summary, long: r.long, state: r.state }).toMatchInlineSnapshot(`
       {
         "key": "momentum",
-        "long": "Strong",
+        "long": "Top-tier",
         "name": "Momentum",
         "state": "up",
         "summary": "Whether a stock that's been climbing keeps climbing — best when trends hold.",
@@ -225,7 +225,7 @@ describe("valuationLens — 특성화", () => {
           "active": 0,
           "labels": [
             "싼 편",
-            "보통",
+            "중간",
             "비싼 편",
           ],
         },
@@ -293,14 +293,14 @@ describe("lowVolLens — 특성화", () => {
         "name": "저변동성",
         "nameEn": "Low Volatility",
         "note": "저변동성: 백테스트(투자가능 $5+·161개월)에서 저변동군 위험이 고변동군의 ~18%로 극적으로 낮고(방어), 위험조정 알파 유의(CAPM t≈3.1·FF3 t≈2.6, 시장베타 음(−)=방어적). 회전율 낮아 거래비용에도 강함 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 단순 수익차는 통계적으로 약함(롱숏 t≈1.6), 수준도 편향 과대 → 수익 우위 단정 아님, 위험대비가 핵심. 보장 아님. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 3구간서 음수·부호 뒤집힘 = '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어(위험조정 알파·낮은 위험)임.",
-        "outlook": "위험: 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
+        "outlook": "위험: 시장 대비 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
         "short": null,
         "spectrum": {
           "active": 0,
           "labels": [
-            "안정적",
-            "보통",
-            "출렁임",
+            "변동 낮음",
+            "중간",
+            "변동 높음",
           ],
         },
         "state": "calm",
@@ -359,9 +359,9 @@ describe("qualityLens — 특성화", () => {
         "spectrum": {
           "active": 2,
           "labels": [
-            "낮음",
-            "보통",
-            "알짜",
+            "하위권",
+            "중간",
+            "상위권",
           ],
         },
         "state": "high",
@@ -433,7 +433,7 @@ describe("assetGrowthLens — 특성화", () => {
           "active": 2,
           "labels": [
             "보수적",
-            "보통",
+            "중간",
             "공격적",
           ],
         },
@@ -587,6 +587,7 @@ describe("note · short/long — i18n 무회귀", () => {
   it("LEVEL_LABELS.ko = 기존 한국어 리터럴(바이트 동일)", () => {
     expect(LEVEL_LABELS.ko).toEqual({
       trend: { strong: "강세", neutral: "중립", weak: "약세" },
+      momrank: { strong: "상위권", neutral: "중간", weak: "하위권" },
       rsi: { hot: "과열", cold: "침체", neutral: "중립" },
       ma: { up: "상승추세", down: "하락추세" },
       per: { cheap: "낮음", mid: "보통", rich: "높음" },

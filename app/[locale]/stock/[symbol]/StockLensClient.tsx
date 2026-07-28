@@ -200,16 +200,18 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   const find = (k: string) => lenses.find((L) => L.key === k) || null;
   const tech = find('technical');
   const mom = find('momentum');
-  const longs = lenses.filter((L) => L.horizon === 'long');
+  // STEP 808 §5: pending·na(판정 아님)는 시간축 집계에서 제외 — pending verdict.tone이 'flat'이라 "중립"으로 새던 것 차단.
+  const scored = (L: LensRead | null | undefined): boolean => !!L && L.state !== 'pending' && L.state !== 'na';
+  const longs = lenses.filter((L) => L.horizon === 'long' && scored(L));
 
   const rsiV = tech?.detail?.rsi14 != null ? Math.round(tech.detail.rsi14 as number) : null;
   const sWord = rsiV == null ? '—' : rsiV >= 70 ? t('word.overbought') : rsiV <= 30 ? t('word.oversold') : t('word.neutral');
   const sTone = rsiV != null && (rsiV >= 70 || rsiV <= 30) ? 'warn' : 'flat';
 
-  const mTone = mom?.verdict?.tone ?? 'flat';
-  const mWord = mTone === 'pos' ? t('word.bull') : mTone === 'warn' ? t('word.bear') : t('word.neutral');
+  const mTone = scored(mom) ? (mom?.verdict?.tone ?? 'flat') : 'flat'; // pending/na 모멘텀은 중기 축을 '중립'으로 세지 않음
+  const mWord = !scored(mom) ? '—' : mTone === 'pos' ? t('word.bull') : mTone === 'warn' ? t('word.bear') : t('word.neutral');
 
-  const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' }));
+  const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' })); // longs는 이미 scored 필터됨
   if (fscore?.supported) longPills.push({ label: 'F-Score', tone: fscore.score >= 7 ? 'pos' : fscore.score <= 3 ? 'warn' : 'flat' });
   const favN = longPills.filter((p) => p.tone === 'pos').length;
   const unfavN = longPills.filter((p) => p.tone === 'warn').length;

@@ -4,13 +4,13 @@
 // 구조: buildStockData(데이터 조달·조립) + 제네릭 오케스트레이터(LENSES 레지스트리 순회). (docs/LENS_ARCHITECTURE.md §5)
 import * as Sentry from "@sentry/nextjs"; // 프레임워크 무관 유지 — precompute tsx 체인(lensPrecompute)이 이미 import하므로 안전
 import YahooFinance from "yahoo-finance2";
-import { type Locale } from "./lensCopy";
+import { type Locale, LENS_MISC } from "./lensCopy";
 import { computeFScore, type FRow } from "./fscore";
 import { marketCap, perFrom, pbrFrom } from "./returns";
 import { LENSES } from "./lenses/registry";
 import type { StockData, LensRead } from "./lenses/types";
 import { createAdminClient } from "./supabase/admin"; // 순수 supabase-js 래퍼 — next/server 무의존(프레임워크 무관 유지)
-import { loadCuts, marketOf, type CutMap } from "./lensCuts"; // 분포 유도 판정 컷(STEP 805)
+import { loadCuts, marketOf, CUT_LENSES, type CutMap } from "./lensCuts"; // 분포 유도 판정 컷(STEP 805)
 
 // yahooSurvey 안내 로그 억제
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
@@ -76,19 +76,29 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
   let resolved = symbol;
   let closes: number[] = [];
   let adjCloses: number[] = []; // 배당 조정 종가(모멘텀·수익률용·STEP 801) — raw closes와 정렬·길이 동일
+  let adjComplete = false; // STEP 808 §9: 계열 전체가 유효 adjclose일 때만 true
   for (const cand of candidates) {
     try {
       const ch = await yf.chart(cand, { period1, interval: "1d" });
       const raws: number[] = [], adjs: number[] = [];
+      let allAdj = true;
       for (const q of ch.quotes ?? []) {
         const c = q.close;
         if (typeof c === "number" && isFinite(c) && c > 0) {
           raws.push(c);
           const a = (q as { adjclose?: number | null }).adjclose;
-          adjs.push(typeof a === "number" && isFinite(a) && a > 0 ? a : c); // adjclose 없으면 raw 폴백(정직)
+          if (typeof a === "number" && isFinite(a) && a > 0) adjs.push(a);
+          else { adjs.push(c); allAdj = false; } // 이 봉 adjclose 결측
         }
       }
-      if (raws.length >= 30) { resolved = cand; closes = raws; adjCloses = adjs; break; }
+      if (raws.length >= 30) {
+        resolved = cand; closes = raws;
+        // 🔴 STEP 808 §9: 봉마다 `adj ?? close`로 섞으면 모멘텀(두 봉 비율)이 배당/분할 계수만큼 통째로 틀림 →
+        //   계열 전체가 유효할 때만 adjclose 사용, 하나라도 결측이면 raw 계열로(모멘텀이 raw로 일관 계산).
+        adjComplete = allAdj;
+        adjCloses = allAdj ? adjs : raws;
+        break;
+      }
     } catch {
       /* 다음 후보 시도 */
     }
@@ -116,7 +126,7 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
 
   // 데이터 부족(가격계열<30) → 재무 fetch·밸류 폴백 생략(현 동작 보존), 빈 재무 번들 반환.
   if (closes.length < 30) {
-    return { symbol, resolved, name, price, changePercent, closes, adjCloses, pe, pb, financials: [] };
+    return { symbol, resolved, name, price, changePercent, closes, adjCloses, adjUsed: adjComplete, pe, pb, financials: [] };
   }
 
   // 연간 재무(fundamentalsTimeSeries) — F-Score·퀄리티·자산성장 + 밸류(E/P·B/M) 폴백에 공용. 실패 시 rows=[] (안전).
@@ -166,16 +176,18 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko"): Pr
     if (pb == null) pb = pbrFrom(mc, lr?.stockholdersEquity);
   }
 
-  return { symbol, resolved, name, price, changePercent, closes, adjCloses, pe, pb, financials: rows };
+  return { symbol, resolved, name, price, changePercent, closes, adjCloses, adjUsed: adjComplete, pe, pb, financials: rows };
 }
 
 // 심볼 1개 → 7팩터(모멘텀·저변동·기술·밸류·퀄리티·자산성장) + F-Score.
 // 제네릭 오케스트레이터: LENSES 레지스트리를 순회해 계산(수동 배선 제거·async 대응).
 export async function computeSymbolLenses(symbol: string, locale: Locale = "ko", cuts?: CutMap): Promise<SymbolLenses> {
   // 분포 유도 판정 컷(STEP 805) — 배치는 시장별 1회 로드분을 주입, 온디맨드(/api/lens)는 여기서 자동 로드(10분 캐시).
-  // 컷 '없음'(빈 테이블) → {} → 렌즈 'pending'(기준 준비 중). 컷 '조회 오류'(DB 장애) → loadCuts가 throw →
-  //   /api/lens가 {error}로 응답 → 화면은 '일시 오류' UI(pending과 구분·STEP 806 §4). 여기서 삼키지 않는다.
-  const cutMap = cuts ?? (await loadCuts(marketOf(symbol)));
+  // 컷 '없음'(빈 테이블) → {} → 렌즈 'pending'(기준 준비 중).
+  // 🔴 STEP 808 §2: 컷 '조회 오류'(DB 장애)를 치명 실패로 만들지 않는다 — 삼켜서 계속 계산하되(가격·이름·기술·F-Score 정상),
+  //   분포 5렌즈만 verdict를 '기준을 불러오지 못했어요'(일시 오류·pending과 구분)로 후처리. loadCuts는 이미 Sentry 캡처.
+  let cutsError = false;
+  const cutMap = cuts ?? (await loadCuts(marketOf(symbol)).catch(() => { cutsError = true; return {} as CutMap; }));
   const [d, tradeAmount] = await Promise.all([buildStockData(symbol, locale), fetchTradeAmount(symbol)]);
 
   if (d.closes.length < 30) {
@@ -201,6 +213,16 @@ export async function computeSymbolLenses(symbol: string, locale: Locale = "ko",
     }),
   );
   const allLenses = settled.filter((l): l is LensRead => l !== null);
+
+  // STEP 808 §2: 컷 조회 실패면 분포 5렌즈의 'pending'(빈 컷→기준 준비 중) verdict를 '기준을 불러오지 못했어요'(일시 오류)로 교체.
+  //   상태(state)는 그대로 두고 문구만 구분(라이브 응답이라 미저장) — 가격·기술·F-Score·이름은 정상 렌더.
+  if (cutsError) {
+    for (const l of allLenses) {
+      if (CUT_LENSES.includes(l.key as (typeof CUT_LENSES)[number]) && l.state === "pending") {
+        l.verdict = { phrase: LENS_MISC[locale].cutsErrorPhrase, plain: LENS_MISC[locale].cutsErrorPlain, tone: "flat" };
+      }
+    }
+  }
 
   // F-Score = 독립 모듈. 현 동작 보존: 재무 행 없으면 null(§docs/LENS_ARCHITECTURE.md §6 "현 UI 유지").
   let fscore: unknown = null;

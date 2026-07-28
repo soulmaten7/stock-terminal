@@ -57,15 +57,17 @@ describe("computeFScore — 지원 조건", () => {
     expect(f.supported).toBe(false);
     expect(f.reason).not.toContain("은행");
   });
-  it("주식수 정수배 급변(분할·유상증자 구분 불가): no_dilute 판정 불가로 제외·max 8(STEP 806 §7)", () => {
-    // T 주식수 = P의 4배 → 4:1 분할일 수도, 100% 유상증자일 수도. 회사행위 데이터 없이 구분 불가 → 이 항목 제외(false-pass·false-fail 회피).
+  it("주식수 정수배 급변(액면분할): no_dilute 오탐 없음(통과)+조정 표기·max 항상 9(STEP 808 §3)", () => {
+    // T 주식수 = P의 4배(4:1 분할) → 원값 비교면 '신주발행=실패' 오탐. 분할로 보고 통과 + 조정 표기. max는 9 고정(소비처 9·7 하드코딩과 정합).
     const split = computeFScore(rows({ t: { ordinarySharesNumber: 400 } }));
-    expect(split.criteria.find((x) => x.key === "no_dilute")).toBeUndefined();
-    expect(split.max).toBe(8);
+    const nd = split.criteria.find((x) => x.key === "no_dilute");
+    expect(nd?.pass).toBe(true);
+    expect(nd?.note).toMatch(/조정/);
+    expect(split.max).toBe(9);
   });
   it("정상 주식수(급변 없음): no_dilute 정상 채점·max 9", () => {
     const f = computeFScore(rows());
-    expect(f.criteria.find((x) => x.key === "no_dilute")).toBeDefined();
+    expect(f.criteria.find((x) => x.key === "no_dilute")?.note).not.toMatch(/조정/);
     expect(f.max).toBe(9);
   });
 });

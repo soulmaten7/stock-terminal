@@ -29,8 +29,8 @@ type Row = {
   symbol: string;
   name: string;
   nameEn?: string | null;
-  price: number;
-  changePercent: number; // 1일
+  price: number | null; // null=결측(→'—'). 0으로 날조 금지(STEP 808 §6)
+  changePercent: number | null; // 1일 · null=결측
   r1w?: number | null;
   r1m?: number | null;
   r3m?: number | null;
@@ -75,8 +75,9 @@ function limitBadge(chg: number): 'upper' | 'lower' | null {
   if (chg <= -29.5) return 'lower';
   return null;
 }
-function LimitBadge({ chg }: { chg: number }) {
+function LimitBadge({ chg }: { chg: number | null }) {
   const t = useTranslations('Board');
+  if (chg == null) return null; // 결측이면 상/하한 배지 없음(STEP 808 §6)
   const b = limitBadge(chg);
   if (!b) return null;
   return (
@@ -107,9 +108,9 @@ async function fetchRows(tab: SubTab, market: KrMarket = 'all'): Promise<Row[]> 
       symbol: String(s.symbol ?? ''),
       name: String(s.name ?? ''),
       nameEn: (s.nameEn as string | null) ?? null,
-      price: Number(s.price ?? 0),
-      changePercent: Number(s.changePercent ?? 0),
-      amount: Number(s.amount ?? 0),
+      price: num(s.price) ?? null, // 결측이면 null(→'—'). "+0.00%" 보합 날조 금지(STEP 808 §6)
+      changePercent: num(s.changePercent) ?? null,
+      amount: Number(s.amount ?? 0), // 정렬 전용(표시 X)이라 0 유지 무해
       lens: (s.lens as LensCount | null) ?? null,
       r1w: num(s.r1w), r1m: num(s.r1m), r3m: num(s.r3m), r6m: num(s.r6m), r1y: num(s.r1y),
     }));

@@ -4,6 +4,7 @@ import { pickLocale } from "@/lib/lensCopy";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { LENSES } from "@/lib/lenses/registry";
 import { isActiveSymbol } from "@/lib/activeMarkets";
+import { isBotUA, clientIp, allowGeneration } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,14 @@ export const maxDuration = 30;
 // 온디맨드 결정론 렌즈 — 심볼당 요청 시 계산(공용 엔진 lib/lensCompute). 30분 인메모리 캐시(같은 종목 재조회 절감).
 // ⚠️ 계산 로직은 lib/lensCompute.ts로 이전 — 배치 프리컴퓨트(스크리닝 토대)와 같은 함수 공유(엔진=검증 일치).
 const cache = new Map<string, { at: number; data: unknown }>();
+const CACHE_TTL = 30 * 60 * 1000;
+const CACHE_MAX = 5000; // STEP 808 §8: 하드 상한 — 사이트맵 수천 심볼을 크롤러가 훑어도 무한 증가 안 하게(삽입순 Map).
+// 만료·상한 스윕: 만료분 제거 후 여전히 상한 초과면 오래된(삽입순) 것부터 제거.
+function sweepCache() {
+  const now = Date.now();
+  for (const [k, v] of cache) if (now - v.at >= CACHE_TTL) cache.delete(k);
+  while (cache.size > CACHE_MAX) { const oldest = cache.keys().next().value; if (oldest === undefined) break; cache.delete(oldest); }
+}
 
 // lens_scores(US 유니버스·시총 상위 1000) 대비 팩터 상대순위(0~100·높을수록 우호 방향)를 렌즈에 주입.
 // DB 함수 lens_percentiles(방향별 계산: 모멘텀·퀄리티=높을수록 / 저변동·밸류·자산성장=낮을수록 우호)를 호출.
@@ -51,7 +60,12 @@ export async function GET(req: Request) {
   const cacheKey = `${symbol}:${locale}`;
 
   const hit = cache.get(cacheKey);
-  if (hit && Date.now() - hit.at < 30 * 60 * 1000) return NextResponse.json(hit.data);
+  if (hit && Date.now() - hit.at < CACHE_TTL) return NextResponse.json(hit.data); // 캐시 히트는 무조건 통과(제품 가치·STEP 808 §8)
+
+  // 캐시 미스만 보호: 봇 차단 + IP 레이트리밋(캐시 미스=야후 3콜+Supabase 2쿼리 → 크롤러가 사이트맵 훑으면 야후 레이트리밋 유발·크론까지 위협).
+  if (isBotUA(req.headers.get("user-agent"))) return NextResponse.json({ symbol, error: "blocked" }, { status: 429 });
+  if (!allowGeneration(`lens:${clientIp(req)}`, 30, 300)) return NextResponse.json({ symbol, error: "rate_limited" }, { status: 429 });
+  sweepCache();
 
   try {
     const data = await computeSymbolLenses(symbol, locale);

@@ -11,6 +11,7 @@ import { getVnName } from '@/lib/vnName';
 import { getGbName } from '@/lib/gbName';
 import { pickLocale } from '@/lib/lensCopy';
 import { blockLLM } from '@/lib/rateLimit';
+import { isActiveSymbol } from '@/lib/activeMarkets';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -49,6 +50,8 @@ export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').trim().toUpperCase();
   // 식별자(symbol) 형식 엄격 검증 — 알려진 종목 형식만(과금 유발 입력 게이트·STEP 793).
   if (!/^[A-Z0-9.\-]{1,15}$/.test(symbol)) return NextResponse.json({ error: 'no_symbol' }, { status: 400 });
+  // 🔴 STEP 808 §7: 활성 시장(KR·US)만 — 파킹 시장 심볼로 유료 LLM 생성 차단(brief·lens와 정합·806 §6 미완분).
+  if (!isActiveSymbol(symbol)) return NextResponse.json({ error: 'inactive_market' }, { status: 400 });
 
   const locale = pickLocale(req.nextUrl.searchParams.get('lang')); // 기본 ko · ?lang=en
   const en = locale === 'en';

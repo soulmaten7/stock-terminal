@@ -115,7 +115,9 @@ export default function WatchlistClient() {
           const j = await (await fetch(`/api/lens?symbol=${encodeURIComponent(item.symbol)}&lang=${locale}`)).json();
           if (cancelled) return;
           const tones: Tone[] = [];
-          for (const l of (j.lenses ?? []) as { verdict?: { tone?: string } | null }[]) {
+          for (const l of (j.lenses ?? []) as { state?: string | null; verdict?: { tone?: string } | null }[]) {
+            // STEP 808 §5: pending(기준 준비 중)·na는 판정한 게 아니라 제외 — 선계산 toneForKey와 동일(도트 수 일치).
+            if (l?.state === 'pending' || l?.state === 'na') continue;
             const tone = l?.verdict?.tone;
             if (tone === 'pos' || tone === 'warn' || tone === 'flat') tones.push(tone);
           }

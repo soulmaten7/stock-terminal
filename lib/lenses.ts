@@ -121,8 +121,8 @@ export const momentum: Lens = {
       name: c.name,
       summary: c.what,
       about: c.about,
-      short: labelOf(locale, "trend", shortState(avg([r1, r3]))),
-      long: labelOf(locale, "trend", trendState),
+      short: labelOf(locale, "trend", shortState(avg([r1, r3]))),   // 단기=1·3개월 절대 추세(강세/약세 유지)
+      long: labelOf(locale, "momrank", trendState),                 // 장기=12-1 분포 순위(상위권/하위권·STEP 808 §4)
       detail: { mom12_1: round(m121), ret1m: round(r1), ret3m: round(r3), ret6m: round(r6), ret12m: round(r12) },
       verdict: isPending ? pendingRead(locale) : readOf(locale, "momentum", readKey, mState === "up" ? "pos" : mState === "down" ? "warn" : "flat"),
       spectrum: specOf(locale, "momentum", mState === "up" ? 2 : mState === "down" ? 0 : mState === "flat" ? 1 : -1),
@@ -248,7 +248,7 @@ export const lowVol: Lens = {
       verdict: isPending ? pendingRead(locale) : readOf(locale, "lowvol", readKey, lvState === "calm" ? "pos" : lvState === "jumpy" ? "warn" : "flat"),
       spectrum: specOf(locale, "lowvol", lvState === "calm" ? 0 : lvState === "jumpy" ? 2 : lvState === "mid" ? 1 : -1),
       headline: vol != null ? `${HEADLINE_PREFIX[locale].lowvol} ${round(vol)}%` : null,
-      outlook: isPending ? null : outlookOf(locale, "lowvol", lvState),
+      outlook: isPending ? null : outlookOf(locale, "lowvol", readKey), // calmHigh면 "절대론 큼" 반영(STEP 808 §4)
       value: round(vol),
       state: lvState,
       note: c.note,

@@ -15,7 +15,7 @@ export function isBotUA(ua: string | null | undefined): boolean {
 
 // Vercel은 x-real-ip를 신뢰 클라이언트 IP로 세팅(엣지에서 위조 불가) → 레이트리밋 키 위조 방지(STEP 797 §3).
 // x-forwarded-for 첫 요소는 클라가 prepend할 수 있어 후순위 폴백(로컬 dev 등).
-export function clientIp(req: NextRequest): string {
+export function clientIp(req: Request | NextRequest): string {
   return (
     req.headers.get("x-real-ip") ||
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||

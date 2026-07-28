@@ -37,6 +37,7 @@ export interface StockData {
   price: number | null;
   closes: number[];                     // raw 종가(기술·저변동 — '가격 지표'라 차트와 정합)
   adjCloses?: number[];                 // 배당 조정 종가(모멘텀·수익률 = 총수익률·STEP 801). 없으면 momentum이 closes로 폴백. closes와 길이·정렬 동일.
+  adjUsed?: boolean;                    // 계열 전체가 유효 adjclose였는지(STEP 808 §9) — false면 adjCloses=raw(모멘텀 raw 일관). 정직 표기용.
   pe: number | null;                    // 밸류(E/P) — 야후 없으면 재무 폴백 반영(STEP696)
   pb: number | null;                    // 밸류(B/M)
   financials: FRow[];                   // 연간 재무(오름차순) — 퀄리티·자산성장·F-Score

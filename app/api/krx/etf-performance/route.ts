@@ -78,6 +78,7 @@ const OFFSETS = { r1w: 7, r1m: 30, r3m: 90, r6m: 180, r1y: 365 };
 let cache: { at: number; data: unknown } | null = null;
 
 export async function GET(req: NextRequest) {
+  const numOrNull = (v: unknown): number | null => { const n = Number(v); return Number.isFinite(n) ? n : null; }; // 결측 0 날조 금지(STEP 808 §6)
   const debug = req.nextUrl.searchParams.get("debug") === "1";
 
   // 스냅샷 우선(크론 kr-etp 미리계산) — 즉시 서빙·라이브 fetch 불안정 회피. debug면 건너뜀(라이브 진단).
@@ -103,9 +104,9 @@ export async function GET(req: NextRequest) {
         const items = data.map((s) => ({
           symbol: s.symbol,
           name: s.name,
-          price: Number(s.price) || 0,
-          changePercent: Number(s.change_percent) || 0,
-          tradeAmount: Number(s.trade_amount) || 0,
+          price: numOrNull(s.price),
+          changePercent: numOrNull(s.change_percent),
+          tradeAmount: numOrNull(s.trade_amount),
           r1w: nn(s.r1w), r1m: nn(s.r1m), r3m: nn(s.r3m), r6m: nn(s.r6m), r1y: nn(s.r1y),
         }));
         return NextResponse.json({ items, source: "kr_etp_snapshot" });

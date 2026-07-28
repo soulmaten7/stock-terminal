@@ -146,16 +146,18 @@ export async function GET(request: NextRequest) {
     }
     if (data.length > 0) {
       const lensMap = await fetchLensMap(sb, data.map((s) => s.symbol));
+      // STEP 808 §6: 결측을 0으로 날조하지 않는다(804 §1 미적용 경로였음) — null 유지, 화면이 '—'로. "+0.00%(보합)" 거짓 방지.
+      const numOrNull = (v: unknown): number | null => { const n = Number(v); return Number.isFinite(n) ? n : null; };
       const stocks = data.map((s, i) => ({
         rank: i + 1,
         symbol: s.symbol,
         name: s.name,
         nameEn: s.name_en ?? null,
-        price: Number(s.price) || 0,
-        changePercent: Number(s.change_percent) || 0,
-        volume: Number(s.volume) || 0,
-        tradeAmount: Number(s.trade_amount) || 0,
-        marketCap: Number(s.market_cap) || 0,
+        price: numOrNull(s.price),
+        changePercent: numOrNull(s.change_percent),
+        volume: numOrNull(s.volume),
+        tradeAmount: numOrNull(s.trade_amount),
+        marketCap: numOrNull(s.market_cap),
         // 1주~1년 수익률을 1일전과 같은 응답에 함께 실어 보냄(별도 kr-performance 병합 제거 → 병합실패로 나머지 '—' 되던 버그 방지)
         r1w: s.r1w, r1m: s.r1m, r3m: s.r3m, r6m: s.r6m, r1y: s.r1y,
         lens: lensMap.get(s.symbol) ?? null,

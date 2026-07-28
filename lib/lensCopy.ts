@@ -235,20 +235,21 @@ export const SPECTRUM_LABELS: Record<Locale, {
   momentum: [string, string, string]; lowvol: [string, string, string]; valuation: [string, string, string]; quality: [string, string, string]; assetgrowth: [string, string, string]; technical: [string, string, string]; fscore: [string, string, string];
 }> = {
   ko: {
-    momentum: ["약세", "중립", "강세"],
-    lowvol: ["안정적", "보통", "출렁임"],
-    valuation: ["싼 편", "보통", "비싼 편"],
-    quality: ["낮음", "보통", "알짜"],
-    assetgrowth: ["보수적", "보통", "공격적"],
+    // 모멘텀은 분포 순위(상대)라 스펙트럼도 순위 표현 — 806의 상대 verdict와 정합(STEP 808 §4). "강세/약세"(절대) 금지.
+    momentum: ["하위권", "중간", "상위권"],
+    lowvol: ["변동 낮음", "중간", "변동 높음"],
+    valuation: ["싼 편", "중간", "비싼 편"],
+    quality: ["하위권", "중간", "상위권"],
+    assetgrowth: ["보수적", "중간", "공격적"],
     technical: ["추세 아래", "중립", "추세 위"],
     fscore: ["약함", "보통", "튼튼"],
   },
   en: {
-    momentum: ["Weak", "Neutral", "Strong"],
-    lowvol: ["Calm", "Average", "Jumpy"],
-    valuation: ["Cheap", "Fair", "Pricey"],
-    quality: ["Low", "Average", "High"],
-    assetgrowth: ["Conservative", "Moderate", "Aggressive"],
+    momentum: ["Bottom", "Mid", "Top"],
+    lowvol: ["Low vol", "Mid", "High vol"],
+    valuation: ["Cheap", "Mid", "Pricey"],
+    quality: ["Bottom", "Mid", "Top"],
+    assetgrowth: ["Conservative", "Mid", "Aggressive"],
     technical: ["Below", "Neutral", "Above"],
     fscore: ["Weak", "Medium", "Strong"],
   },
@@ -266,9 +267,10 @@ export const LENS_OUTLOOK: Record<Locale, {
       down: "단기~중기 불리한 편 — 모멘텀 하위권 흐름은 한동안 이어지기 쉬운 편이에요 (검증된 경향·보장 아님).",
     },
     lowvol: {
-      calm: "위험: 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
+      calm: "위험: 시장 대비 낮은 편(방어적) — 수익 방향이 아니라 '덜 흔들린다'는 관점이에요.",
+      calmHigh: "위험: 시장 대비 낮지만 절대 수준은 높아요 — 덜 흔들린다는 상대 관점(수익 방향 아님).",
       mid: "위험: 보통 — 수익 방향이 아니라 변동성 관점이에요.",
-      jumpy: "위험: 큰 편 — 크게 출렁여요. 변동을 감당할 수 있을 때 (수익 방향 아님).",
+      jumpy: "위험: 시장 대비 큰 편 — 크게 출렁여요. 변동을 감당할 수 있을 때 (수익 방향 아님).",
     },
     valuation: {
       cheap: "장기 유리한 편 — 싼 주식은 역사적으로 장기 우위 (가치 프리미엄, 단 최근 표본선 약함).",
@@ -307,9 +309,10 @@ export const LENS_OUTLOOK: Record<Locale, {
       down: "Short-to-mid term: leans unfavorable — bottom-ranked momentum has tended to persist too (validated, not a guarantee).",
     },
     lowvol: {
-      calm: "Risk: low (defensive) — a risk view, not a return call.",
+      calm: "Risk: low vs. market (defensive) — a risk view, not a return call.",
+      calmHigh: "Risk: low vs. market but high in absolute terms — a relative view of steadiness (not a return call).",
       mid: "Risk: average — a volatility view, not a return call.",
-      jumpy: "Risk: high — it swings a lot; for those who can stomach it (not a return call).",
+      jumpy: "Risk: high vs. market — it swings a lot; for those who can stomach it (not a return call).",
     },
     valuation: {
       cheap: "Long term: leans favorable — cheap stocks have historically won long-term (value premium; weak in our recent sample).",
@@ -378,7 +381,8 @@ export const DETAIL_LABELS: Record<Locale, Record<DetailKey, string>> = {
 // ⚠️ 임계값은 렌즈마다 달라(예: 저변동 라벨 25/45 vs 상태 20/40) 계산은 각 계산모듈이 그대로 하고, 여기선 "표시"만 한다.
 // ⚠️ ko 값 = 기존 한국어 리터럴과 바이트 동일(KR 무회귀 — lenses.charac.test.ts가 고정).
 export const LEVEL_LABELS: Record<Locale, {
-  trend: Record<"strong" | "neutral" | "weak", string>;      // 모멘텀 short·long
+  trend: Record<"strong" | "neutral" | "weak", string>;      // 모멘텀 short(1·3개월 절대 추세 — "강세/약세" 유지)
+  momrank: Record<"strong" | "neutral" | "weak", string>;    // 모멘텀 long(12-1 분포 순위 — 상대 표현·STEP 808 §4)
   rsi: Record<"hot" | "cold" | "neutral", string>;           // 기술 short
   ma: Record<"up" | "down", string>;                         // 기술 long
   per: Record<"cheap" | "mid" | "rich", string>;             // 밸류 long(PER 수준 — verdict 아님)
@@ -388,6 +392,7 @@ export const LEVEL_LABELS: Record<Locale, {
 }> = {
   ko: {
     trend: { strong: "강세", neutral: "중립", weak: "약세" },
+    momrank: { strong: "상위권", neutral: "중간", weak: "하위권" },
     rsi: { hot: "과열", cold: "침체", neutral: "중립" },
     ma: { up: "상승추세", down: "하락추세" },
     per: { cheap: "낮음", mid: "보통", rich: "높음" },
@@ -397,6 +402,7 @@ export const LEVEL_LABELS: Record<Locale, {
   },
   en: {
     trend: { strong: "Strong", neutral: "Neutral", weak: "Weak" },
+    momrank: { strong: "Top-tier", neutral: "Mid", weak: "Bottom-tier" },
     rsi: { hot: "Overbought", cold: "Oversold", neutral: "Neutral" },
     ma: { up: "Uptrend", down: "Downtrend" },
     per: { cheap: "Low", mid: "Average", rich: "High" },
@@ -415,16 +421,21 @@ export const HEADLINE_PREFIX: Record<Locale, { technical: string; lowvol: string
 // STEP 805 기타 문구 — 분포 컷 미존재(기준 준비 중)·PER 기준 명시.
 export const LENS_MISC: Record<Locale, {
   pendingPhrase: string; pendingPlain: string;
+  cutsErrorPhrase: string; cutsErrorPlain: string; // 컷 '조회 실패'(일시 오류) — pending(기준 준비 중)과 구분·STEP 808 §2
   perBasis: string; // PER 산출 기준(외부 TTM과 다름·STEP 805 §5)
 }> = {
   ko: {
     pendingPhrase: "기준 준비 중",
     pendingPlain: "이 시장의 판정 기준(분포)을 아직 모으는 중이에요 — 값은 위에 그대로 있어요.",
+    cutsErrorPhrase: "기준을 불러오지 못했어요",
+    cutsErrorPlain: "판정 기준을 일시적으로 불러오지 못했어요 — 값은 위에 그대로 있어요. 잠시 후 다시 시도해 주세요.",
     perBasis: "연간 실적 기준",
   },
   en: {
     pendingPhrase: "Calibrating",
     pendingPlain: "We are still gathering this market's baseline distribution — the number above stands on its own.",
+    cutsErrorPhrase: "Could not load the baseline",
+    cutsErrorPlain: "We could not load the verdict baseline just now — the number above stands on its own. Please try again in a moment.",
     perBasis: "based on last fiscal year",
   },
 };

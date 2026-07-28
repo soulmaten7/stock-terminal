@@ -124,7 +124,6 @@ async function pass2RemapAndDiff(
   for (const row of rows) {
     const sym = String(row.symbol);
     // 1) 분포 5렌즈 상태 재매핑(값 있는 것만) — 최종 상태 결정.
-    const patch: Record<string, unknown> = { symbol: sym, market, updated_at: at };
     const finalState: Record<string, string | null> = {};
     let changed = false;
     for (const key of LENS_KEYS) finalState[key] = (row[`${key}_state`] as string | null) ?? null;
@@ -134,10 +133,16 @@ async function pass2RemapAndDiff(
       const next = stateFromCut(key, value, cuts[key]);
       if (next != null) {
         finalState[key] = next;
-        if (next !== row[`${key}_state`]) { patch[`${key}_state`] = next; changed = true; }
+        if (next !== row[`${key}_state`]) changed = true;
       }
     }
-    if (changed) updates.push(patch);
+    // 🔴 STEP 808 §1: patch에 7개 상태를 '전부' 담아 행마다 키 집합을 균일화.
+    //   부분 키만 담으면 PostgREST upsert(defaultToNull=true)가 누락 키를 NULL로 채워 안 바뀐 렌즈 상태를 손상시킴(데이터 손상).
+    if (changed) {
+      const patch: Record<string, unknown> = { symbol: sym, market, updated_at: at };
+      for (const key of LENS_KEYS) patch[`${key}_state`] = finalState[key];
+      updates.push(patch);
+    }
     // 2) 최종 상태로 변화 diff(어제 existing 대비) — tone이 실제 바뀐 렌즈만(STEP 764·806 §7).
     const prev = existing.get(sym);
     if (prev) {
@@ -186,7 +191,12 @@ export async function computeLensScoresFor(
   const changeDate = at.slice(0, 10); // 크론 실행일(UTC date) — KR/US 통일, 표시 로케일화는 읽기 쪽(스펙)
   const sb = createAdminClient(); // RLS 우회(쓰기·kr_stock_snapshot 읽기)
   // STEP 805 2-pass: pass1은 '직전' 컷으로 상태 산출(순환 의존 회피), 실행 끝에 새 분포로 컷 재유도 후 pass2에서 상태 재매핑.
-  const prevCuts = await loadCuts(market);
+  // STEP 808 §2: 컷 조회 실패를 크론 전체를 죽이는 치명 실패로 만들지 않는다 — pass1은 pending으로라도 저장,
+  //   이 실행 분포에서 컷을 새로 유도해 pass2가 상태를 정정한다(loadCuts는 이미 Sentry 캡처).
+  const prevCuts = await loadCuts(market).catch((e) => {
+    Sentry.captureException(e, { tags: { pipeline: "lens_prevcuts_load", market } });
+    return {} as CutMap;
+  });
   const existing = await fetchExistingStates(sb, market, universe); // upsert 전 스냅샷 — 어제 상태
   let done = 0, saved = 0;
   let buffer: Record<string, unknown>[] = [];
