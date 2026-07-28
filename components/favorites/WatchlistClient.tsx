@@ -10,7 +10,7 @@ import { TONE_DOT_CLASS as TONE_DOT, changeColorClass, type Tone } from '@/lib/l
 import { pickLocale } from '@/lib/lensCopy';
 import { resolveWatchlistName } from '@/lib/displayName';
 
-type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null };
+type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null; unsupportedMarket?: boolean };
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
 
 function pctText(v: number | null): string {
@@ -87,7 +87,7 @@ export default function WatchlistClient() {
     if (items.length === 0 || lensStarted.current) return;
     lensStarted.current = true;
     let cancelled = false;
-    const queue = items.filter((x) => x.tones == null); // 선계산 없는 것만(top-N 밖·비KR/US)
+    const queue = items.filter((x) => x.tones == null && !x.unsupportedMarket); // 선계산 없는 것만(top-N 밖·비KR/US) — 지원 종료 시장은 조회 자체를 안 함(STEP 799)
     const CONCURRENCY = 4;
 
     async function worker() {
@@ -154,12 +154,18 @@ export default function WatchlistClient() {
               <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{resolveWatchlistName(locale, f)}</span>
               <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
               <span className="ml-auto shrink-0 text-right sm:ml-0">
-                <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
-                <span className={`block text-[11px] font-medium tabular-nums ${changeColorClass(f.changePercent, locale)}`}>{pctText(f.changePercent)}</span>
+                {f.unsupportedMarket ? (
+                  <span className="block text-[11px] font-medium text-unjong-muted">{t('marketNotSupported')}</span>
+                ) : (
+                  <>
+                    <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
+                    <span className={`block text-[11px] font-medium tabular-nums ${changeColorClass(f.changePercent, locale)}`}>{pctText(f.changePercent)}</span>
+                  </>
+                )}
               </span>
             </div>
             <div className="shrink-0 sm:flex sm:w-64 sm:justify-end">
-              <LensSummary lens={lensMap[f.symbol]} t={t} />
+              {f.unsupportedMarket ? null : <LensSummary lens={lensMap[f.symbol]} t={t} />}
             </div>
           </Link>
           {/* 히트영역 44px(STEP 795 §7) — 아이콘은 15px 유지, 패딩으로 확대. -my-1.5로 행 높이 영향 최소화. */}

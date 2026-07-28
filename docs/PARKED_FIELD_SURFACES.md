@@ -1,8 +1,8 @@
-<!-- 2026-07-27 -->
+<!-- 2026-07-28 -->
 # 🅿️ 보류 기능 — 구 보드·정보 탭·유튜브·검증(유사투자자문) 필드 표면
 
-> **상태: 컴포넌트·API·데이터 전부 정상. 렌더 호출부는 제거됨(어느 라우트에서도 화면에 안 뜬다). 🔴 2026-07-27부터 파킹 전용 크론 6개는 스케줄도 중지됨 — §6 참조.**
-> 관련: `docs/STEP_767A_COMMAND.md`(/explore 신설) · `docs/STEP_767B_COMMAND.md`(필드 대전환) · `docs/LOCALE_SOURCE_PLAYBOOK.md` §11(보류 기능 프로토콜).
+> **상태: 컴포넌트·API·데이터 전부 정상. 렌더 호출부는 제거됨(어느 라우트에서도 화면에 안 뜬다). 🔴 2026-07-27부터 파킹 전용 크론 6개는 스케줄도 중지됨 — §6 참조. 🔴 2026-07-28부터 JP·CN(HK 포함)·VN·GB는 제품 표면(검색·관심등록·종목상세·사이트맵) 자체도 차단 — §7 참조.**
+> 관련: `docs/STEP_767A_COMMAND.md`(/explore 신설) · `docs/STEP_767B_COMMAND.md`(필드 대전환) · `docs/LOCALE_SOURCE_PLAYBOOK.md` §11(보류 기능 프로토콜) · `docs/STEP_799_COMMAND.md`(§7 대상 STEP).
 
 ## 1. 왜 보류했나 (한 줄)
 - **2026-07-21 장은태 최종 결정**: 필드 = **오늘(`/`) · 탐색(`/explore`) · 종목상세 · 관심 · 마이 — 5면뿐.**
@@ -49,3 +49,23 @@
 
 ## 6. 발견된 잔여 이슈 (이 STEP 스코프 밖 — 별도 결정 필요)
 - **증권사(broker) 광고 슬롯도 렌더 경로가 사라짐**: `BrokerRanking`·`BrokerAdRow`(광고 슬롯 렌더 위치)가 ToolboxClient 내부에만 있어 이번 파킹으로 함께 비노출됨. `Advertise.slot.brokerWhere`("종목·상품 탭 · 종목 표/증권사 리스트 10행마다")는 이제 존재하지 않는 위치를 가리켜 room 슬롯과 동일한 문제 — 이번 STEP은 room 슬롯만 명시돼 손대지 않음. 후속 STEP에서 `/advertise` 카피 전체 재정비 필요 여부 판단 필요.
+
+## 7. JP·CN(HK 포함)·VN·GB 제품 표면 차단 (2026-07-28 · STEP 799)
+
+> **§2~6과의 차이**: 위 항목들은 "구 보드/정보탭/유튜브/검증" 같은 **기능 단위** 파킹이었다. 이번은 **국가(시장) 단위** 파킹 — JP·CN·VN·GB라는 시장 자체를 검색·관심목록·종목상세·사이트맵 네 진입점 모두에서 동시에 닫는다. §6에서 이미 크론(jp/cn/vn/gb-perf 등)은 중지돼 있었지만, **제품 표면(라우트·검색·등록)은 그 이후에도 열려 있어서** 동결된 데이터가 라이브인 척 노출되는 문제가 있었다 — 이번 STEP이 그 표면 자체를 닫는다.
+
+- **왜**: 감사 결과 — (1) `jp/cn/vn/gb-perf` 크론이 794에서 멎었는데 `/api/watchlist/quotes`가 그 스냅샷 테이블을 계속 읽어 동결된 옛 가격을 현재가처럼 표시(같은 종목이 종목상세에선 야후 실시간, 관심목록에선 옛 값 — 한 앱에서 두 가격). (2) `.HK`가 `countryOf()`상 `'HK'`인데 관심목록의 `SNAPSHOT` 맵엔 `HK` 키가 없어 가격 영구 결측. (3) GB는 야후 통화 단위(펜스)를 파운드 재무와 섞어 PER 100배로 오판정. (4) `formatTradeValue`가 KR 외 전부 `$` 하드코딩(JP는 ~150배, VN은 ~25,000배 과대). **개별 버그가 아니라 완성 안 된 시장을 표면에 노출한 것 자체가 원인** — 표면을 닫으면 이 결함군이 통째로 사라지고 KR·US 검증에 집중 가능.
+
+- **차단 방식 — 단일 제어점**: `lib/activeMarkets.ts`의 `export const ACTIVE_MARKETS = ["KR", "US"] as const;` 하나. `isActiveCountry(country)`·`marketOfSymbol(symbol)`·`isActiveSymbol(symbol)` 3개 헬퍼가 이 배열만 본다.
+
+| 진입점 | 파일 | 처리 |
+|---|---|---|
+| 검색 인덱스 | `app/api/search/route.ts` | `foreignIndex()`가 US만 조립(JP/CN/VN/GB 심볼 번들 import 자체를 제거 — `data/*_symbols.json` 파일은 안 지움) |
+| 관심목록 시세 | `app/api/watchlist/quotes/route.ts` | `SNAPSHOT_ALL`(6개국 전체 설정, 파킹 보존용) → `isActiveCountry`로 필터한 `SNAPSHOT`(KR·US만)으로 실제 조회. 비활성 시장 기존 등록 행은 `unsupportedMarket: true` 플래그 → 클라(`WatchlistClient.tsx`)가 가격 대신 "현재 지원하지 않는 시장" 표시(조용한 `—` 금지) + 그 행은 지연 렌즈 조회 큐에서도 제외 |
+| 관심목록 등록 | `app/api/watchlist/route.ts` (`POST`) | `add===true`일 때 `isActiveSymbol(symbol)`(클라가 보낸 `country` 필드가 아니라 심볼 패턴 자체로 판정 — 더 신뢰도 높음) false면 400 + `{error:'unsupported_market'}`. 클라(`WatchStarToggle` in `StockLensClient.tsx`)는 `res.ok` 확인 후 실패 시 별 상태 되돌림(기존엔 `.catch()`만 있어 400 응답을 못 잡던 버그도 같이 수정) |
+| 종목상세 진입 | `app/[locale]/stock/[symbol]/page.tsx` | `generateMetadata`·페이지 컴포넌트 둘 다 최상단에서 `isActiveSymbol` 체크 — 비활성이면 `resolveStockName`/`getInstrumentType` 호출 자체를 안 하고 즉시 안내 반환(200 + `robots:{index:false}`, 404 아님 — 기존 URL이 검색엔진에 남아있을 수 있어서). `StockLensClient`/`EtfLensClient`를 렌더하지 않으므로 렌즈·공시·브리핑 클라 fetch 자체가 발생 안 함(라이브 확인: 해당 페이지 HTML에 두 컴포넌트명 참조 0건) |
+| 사이트맵 | `app/sitemap.ts` | JP/CN/VN/GB 심볼 번들 import 제거, US만 + `foreignKo`(한글 별칭 맵 — 비활성국 키도 섞여 있음)를 `isActiveSymbol`로 재필터 |
+
+- **라이브 검증(STEP 799 당시)**: `/api/search?q=도요타` → `{"items":[]}`(JP 신문법도 `7203` 티커 검색 동일) · `q=텐센트`/`0700` → 없음(HK 파킹 확인) · `q=BP.L`(GB LSE) → 없음, 반면 `q=BP`(같은 회사의 NYSE ADR — 실제 US 상장이라 정상 노출)는 그대로 뜸(파킹 대상은 시장이지 회사가 아님). `/stock/7203.T` 200 + noindex + 안내 문구(ko/en) + `StockLensClient` 참조 0건. `/sitemap.xml` 46,191줄 중 `.T`/`.HK`/`.VN`/`.L` 0건, KR+US 종목 7,691건 유지. 관심목록 실 DB(`watchlist` 테이블) 확인 결과 현재 등록 행은 US 1건뿐이라 `unsupportedMarket` 배지 자체는 라이브 미노출(향후 비활성국 행이 생기면 자동 적용).
+
+- **복원 절차**: ① `lib/activeMarkets.ts`의 `ACTIVE_MARKETS`에 국가코드 추가(예 `["KR","US","JP"]`) ② `app/api/search/route.ts`의 `foreignIndex()`에 해당국 심볼 배열 import+buildForeign 한 줄 추가 ③ `app/sitemap.ts`의 overseas 배열에 해당국 심볼 배열 다시 스프레드 ④ §6 절차대로 해당국 perf 크론을 `vercel.json`에 재등록 ⑤ 재등록 직후 스냅샷 테이블 최신성 확인(며칠 묵은 크론이면 첫 조회 전 강제 1회 실행 권장) — 그제서야 관심목록·검색·종목상세가 실데이터로 라이브.

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { isActiveSymbol } from '@/lib/activeMarkets';
 
 export const runtime = 'nodejs';
 
@@ -26,6 +27,11 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  // 심볼 패턴(=실제 시장) 기준으로 판정 — 클라가 보낸 country 필드보다 신뢰도 높음(STEP 799: JP/CN/VN/GB 신규 등록 차단).
+  if (add && !isActiveSymbol(symbol)) {
+    return NextResponse.json({ error: 'unsupported_market', reason: 'This market is not supported yet.' }, { status: 400 });
+  }
 
   if (add) {
     await supabase.from('watchlist').upsert(

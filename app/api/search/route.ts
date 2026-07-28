@@ -2,12 +2,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { resolveDisplayName } from "@/lib/displayName";
+import { ACTIVE_MARKETS } from "@/lib/activeMarkets";
 import usSymbols from "@/data/us_symbols.json";
-import jpSymbols from "@/data/jp_symbols.json";
-import cnSymbols from "@/data/cn_symbols.json";
-import vnSymbols from "@/data/vn_symbols.json";
-import gbSymbols from "@/data/gb_symbols.json";
 import foreignKoRaw from "@/data/foreign_ko_names.json";
+// JP/CN/VN/GB 심볼 번들은 STEP 799로 검색 인덱스에서 빠졌지만 파일 자체는 삭제하지 않는다(파킹 —
+// docs/PARKED_FIELD_SURFACES.md §7). 복원 = ACTIVE_MARKETS에 국가코드 추가 + 아래 foreignIndex()에 buildForeign 한 줄.
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,17 +31,11 @@ function buildForeign(country: Country, arr: SymRow[]): IndexEntry[] {
   });
 }
 
-// 해외 5개국 인덱스 — 번들 JSON이라 서버 인스턴스당 1회만 조립(모듈 캐시).
+// 해외 인덱스 — 번들 JSON이라 서버 인스턴스당 1회만 조립(모듈 캐시). ACTIVE_MARKETS=KR·US뿐이라 US만(STEP 799).
 let _foreignIndex: IndexEntry[] | null = null;
 function foreignIndex(): IndexEntry[] {
   if (_foreignIndex) return _foreignIndex;
-  _foreignIndex = [
-    ...buildForeign("US", usSymbols as SymRow[]),
-    ...buildForeign("JP", jpSymbols as SymRow[]),
-    ...buildForeign("CN", cnSymbols as SymRow[]),
-    ...buildForeign("VN", vnSymbols as SymRow[]),
-    ...buildForeign("GB", gbSymbols as SymRow[]),
-  ];
+  _foreignIndex = ACTIVE_MARKETS.includes("US") ? buildForeign("US", usSymbols as SymRow[]) : [];
   return _foreignIndex;
 }
 

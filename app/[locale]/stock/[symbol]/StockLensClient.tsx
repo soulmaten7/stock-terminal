@@ -1016,7 +1016,8 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
     fetch('/api/watchlist', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ symbol, name_ko: name, market, country, add: next }),
-    }).catch(() => setWatched(!next));
+    }).then((r) => { if (!r.ok) setWatched(!next); }) // 400(비대상 시장 거부 등) 응답은 throw하지 않아 res.ok로 별도 확인 필요(STEP 799)
+      .catch(() => setWatched(!next));
   }
 
   return (

@@ -1,11 +1,10 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { isActiveSymbol } from "@/lib/activeMarkets";
 import usSymbols from "@/data/us_symbols.json";
-import jpSymbols from "@/data/jp_symbols.json";
-import cnSymbols from "@/data/cn_symbols.json";
-import vnSymbols from "@/data/vn_symbols.json";
-import gbSymbols from "@/data/gb_symbols.json";
 import foreignKo from "@/data/foreign_ko_names.json";
+// JP/CN/VN/GB 심볼 번들은 STEP 799로 사이트맵에서 빠졌다(파킹 — docs/PARKED_FIELD_SURFACES.md §7).
+// 파일 자체는 삭제하지 않음 — 복원 시 ACTIVE_MARKETS에 국가코드 추가 + 아래 overseas 배열에 해당 심볼 배열 다시 스프레드.
 
 // 사이트맵 = 봇에게 "이 페이지들이 있다"고 알리는 목록.
 // 기존엔 정적 5개뿐이라 수천 종목 페이지를 구글이 발견할 길이 없었음 → 전 종목 추가.
@@ -54,21 +53,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // 해외 종목 (US/JP/CN/VN/GB) — 번들 JSON
+  // 해외 종목 — ACTIVE_MARKETS(KR·US)만(STEP 799). foreignKo엔 JP/CN/VN/GB 키도 섞여 있어 isActiveSymbol로 재필터.
   const overseas = Array.from(
     new Set(
-      [
-        ...(usSymbols as Sym[]),
-        ...(jpSymbols as Sym[]),
-        ...(cnSymbols as Sym[]),
-        ...(vnSymbols as Sym[]),
-        ...(gbSymbols as Sym[]),
-      ]
+      (usSymbols as Sym[])
         .map((r) => r.sym)
         .filter(Boolean)
         .concat(Object.keys(foreignKo as Record<string, string>)), // META·BABA 등 JSON 누락분도 사이트맵에
     ),
-  );
+  ).filter(isActiveSymbol);
   const overseasEntries: MetadataRoute.Sitemap = overseas.map((s) => ({
     url: `${base}/stock/${encodeURIComponent(s)}`,
     lastModified: now,

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { tonesFromStates, type Tone } from "@/lib/lensTones";
+import { isActiveCountry } from "@/lib/activeMarkets";
 import usSymbolsData from "@/data/us_symbols.json";
 import { titleCaseUsName } from "@/lib/usNameFormat";
 
@@ -18,7 +19,9 @@ type WatchRow = { symbol: string; name_ko: string; market: string; country: stri
 type Quote = { symbol: string; price: number | null; changePercent: number | null; market: string | null; nameEn: string | null };
 
 // country(대문자) → 선계산 스냅샷 테이블. KR만 change_percent, 나머지는 r1d(전일대비%).
-const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: boolean; hasNameEn?: boolean }> = {
+// 전체 6개국 설정은 파킹 보존용(docs/PARKED_FIELD_SURFACES.md §7) — 실제 조회는 ACTIVE_MARKETS(KR·US)만(STEP 799:
+// jp/cn/vn/gb-perf 크론이 794에서 멎어 이 테이블을 계속 읽으면 동결된 옛 가격을 현재가처럼 보여주는 버그였다).
+const SNAPSHOT_ALL: Record<string, { table: string; changeCol: string; hasMarket?: boolean; hasNameEn?: boolean }> = {
   KR: { table: "kr_stock_snapshot", changeCol: "change_percent", hasMarket: true, hasNameEn: true },
   US: { table: "us_stock_perf", changeCol: "r1d" },
   JP: { table: "jp_stock_perf", changeCol: "r1d" },
@@ -26,6 +29,8 @@ const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: b
   VN: { table: "vn_stock_perf", changeCol: "r1d" },
   GB: { table: "gb_stock_perf", changeCol: "r1d" },
 };
+const SNAPSHOT: Record<string, { table: string; changeCol: string; hasMarket?: boolean; hasNameEn?: boolean }> =
+  Object.fromEntries(Object.entries(SNAPSHOT_ALL).filter(([country]) => isActiveCountry(country)));
 
 async function fetchQuotes(sb: ReturnType<typeof createAdminClient>, country: string, symbols: string[]): Promise<Map<string, Quote[]>> {
   const cfg = SNAPSHOT[country];
@@ -100,6 +105,7 @@ export async function GET() {
 
   const watchlist = watchRows.map((w) => {
     const country = (w.country || "").toUpperCase();
+    const unsupportedMarket = !isActiveCountry(country); // STEP 799: JP/CN/VN/GB 기존 등록 행 — 정직 결측(가격 대신 안내)
     const candidates = quoteMaps.get(country)?.get(w.symbol) ?? [];
     const match = candidates.length > 1 ? candidates.find((c) => c.market === w.market) ?? candidates[0] : candidates[0];
     // 리스트 표시용 원어명(776 §1 통일 대상) — KR은 kr_stock_snapshot 조인(match.nameEn), US는 번들 맵. JP/CN/VN/GB는 이번 STEP 스코프 밖(null → 클라가 기존 name_ko로 폴백).
@@ -113,6 +119,7 @@ export async function GET() {
       changePercent: match?.changePercent ?? null,
       name_en: nameEn,
       tones: tonesBySym.get(w.symbol) ?? null,
+      unsupportedMarket,
     };
   });
 

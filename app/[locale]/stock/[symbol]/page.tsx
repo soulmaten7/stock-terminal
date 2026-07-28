@@ -9,6 +9,9 @@ import { resolveStockName, tickerOf } from "@/lib/stockName";
 import { getInstrumentType } from "@/lib/instrumentType";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
+import { getTranslations } from "next-intl/server";
+import { Link } from "@/i18n/navigation";
+import { isActiveSymbol } from "@/lib/activeMarkets";
 import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
 
@@ -24,6 +27,14 @@ type Params = { params: Promise<{ locale: string; symbol: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { locale, symbol: raw } = await params;
   const symbol = decodeURIComponent(raw);
+
+  // 비활성 시장(JP·CN/HK·VN·GB) 진입 — 렌즈·공시·브리핑 호출 자체를 막는다(STEP 799). 이름 해석(resolveStockName)조차
+  // 호출 안 함 — 그 함수가 이미 DB/야후를 두드리므로 여기서 완전히 조기 차단해야 "비용·오표시 동시 차단"이 성립한다.
+  if (!isActiveSymbol(symbol)) {
+    const t = await getTranslations({ locale, namespace: "Common" });
+    return { title: t("marketNotSupportedTitle"), description: t("marketNotSupportedDesc"), robots: { index: false } };
+  }
+
   const isEn = locale === "en";
   const ticker = tickerOf(symbol);
   const info = await resolveStockName(symbol);
@@ -100,6 +111,20 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 export default async function StockPage({ params }: Params) {
   const { locale, symbol: raw } = await params;
   const symbol = decodeURIComponent(raw);
+
+  // 비활성 시장 안내(STEP 799) — 404 대신 200 안내 페이지(검색엔진에 남은 기존 URL 배려) + noindex(메타에서 처리).
+  // StockLensClient/EtfLensClient를 렌더하지 않으므로 렌즈·공시·브리핑 클라 fetch 자체가 발생하지 않는다.
+  if (!isActiveSymbol(symbol)) {
+    const t = await getTranslations({ locale, namespace: "Common" });
+    return (
+      <main className="mx-auto flex max-w-xl flex-col items-center px-4 py-24 text-center">
+        <p className="text-lg font-semibold text-unjong-primary">{t("marketNotSupportedTitle")}</p>
+        <p className="mt-2 text-sm leading-relaxed text-unjong-muted">{t("marketNotSupportedDesc")}</p>
+        <Link href="/" className="mt-6 rounded-lg bg-unjong-strong px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90">{t("goHome")}</Link>
+      </main>
+    );
+  }
+
   const isEn = locale === "en";
   const ticker = tickerOf(symbol);
   const info = await resolveStockName(symbol);

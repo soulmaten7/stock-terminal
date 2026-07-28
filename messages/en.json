@@ -17,7 +17,9 @@
     "coinTitle": "Coin — coming soon",
     "coinDesc": "We will ship it in the same structure once Korean stocks are complete.",
     "priceChangeBasis": "Price · 1d change",
-    "andNMore": "+{n} more"
+    "andNMore": "+{n} more",
+    "marketNotSupportedTitle": "This market is not supported yet",
+    "marketNotSupportedDesc": "We are completing Korea and the US first, one market at a time."
   },
   "Home": {
     "category": {
@@ -200,7 +202,8 @@
     "emptyRooms": "Tap ⭐ under Advisory rooms · verification and they gather here.",
     "emptyWatchlist": "Your watchlist is empty.<br></br>Open a stock and tap ⭐ to add it.",
     "lensLoading": "Reading lenses…",
-    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral"
+    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral",
+    "marketNotSupported": "Not supported yet"
   },
   "Business": {
     "title": "Advisory room registration · management",
