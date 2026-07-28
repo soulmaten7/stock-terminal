@@ -170,6 +170,8 @@ relevance(locale, market):
 | 10 | 야후 `.VN`로 HNX 시세 | "No data found"(야후 .VN=HOSE 전용) | VN HNX/UPCOM은 야후 미커버 → VCI 등 현지 소스 |
 | 12 | 东方财富 push2his **kline**(CN A주 일봉) | **Vercel IP 소프트차단(hang)** — 샌드박스/거주지에선 정상, Vercel에서 A주 ~90% 실패 → cn-perf 9일 타임아웃(2026-07-18) | #7의 확장: 东方财富는 quote뿐 아니라 kline도 차단. **CN A주 = 텐센트 `web.ifzq.gtimg.cn/appstock/app/fqkline/get`**(무키·UTF-8 JSON·`qfqday`=[date,open,close,high,low,volume(手)]·Vercel 실측 3,868/3,868 성공·STEP 751)로. 成交额 없음→종가×vol×100 근사 |
 | 11 | VCI(Vietcap) — VN HNX 시세 | **클라우드 IP 지속요청 시 소프트차단**: Vercel=`[]`, **GitHub Actions(Azure)도 일회 프로브는 통과하나 배치 반복 시 `[]`**. 로컬 맥(거주지 IP)만 안정. | ⭐ **G7 교훈(정정)**: VCI류는 **클라우드 IP 전체를 지속요청에서 소프트차단** → GitHub Actions로 못 우회. **거주지 IP 필요** = 로컬 맥 크론(uptime 불안정) 또는 **VN/아시아 VPS·거주지 프록시**(소액 비용·유지보수). ⚠️ **"일회 프로브 통과 ≠ 지속 사용 통과"** — 배치 부하로 재검증할 것. 소형 시장이면 그 인프라 세우기 전엔 커버되는 소스(Yahoo HOSE)로 물러설 것(VN=HOSE 403 확정). 前례 东方財富(CN)은 텐센트 우회 성공(소스마다 다름). |
+| 13 | KRX 투자자별 매매동향·공매도 잔고(새 렌즈 후보 · STEP 811 프로브) | 무료 **클린 OpenAPI**(`data-dbg.krx.co.kr/svc/apis`)에 해당 엔드포인트 **부재(404)** — `stk_bydd_trd`류 일별매매만 있음. `data.krx.co.kr` 일반 통계 JSON(`getJsonData.cmd`)은 세션 쿠키를 붙여도 **`LOGOUT` 400**(OTP 토큰 요구 추정) | **무료 클린 경로로는 KR 수급/공매도 미확보** — krSnapshot이 쓰는 AUTH_KEY API는 시세 전용. 필요 시 (a) `data.krx.co.kr` OTP 토큰 왕복 스크래핑(GenerateOTP→getJsonData·KRX가 자주 바꿔 취약) (b) 증권사/유료 API. **G8: '이미 KRX API 쓰니 수급도 되겠지'는 오판 — 엔드포인트 목록을 먼저 실측**(404 확인). 상세 = `docs/FREE_DATA_PROBE_2026-07.md` B항. |
+| 14 | 야후 애널리스트 추정치(`earningsTrend.epsTrend`) — KR (STEP 811 프로브) | 접근·수신은 되나 **KR 커버리지 55%**(100표본)·애널리스트 중앙값 2명 → 중소형주 반쪽 | **대형주 전용이 됨(기준 3 결측률 위반)** → 전 유니버스 렌즈 부적합. 대형주 한정 파일럿은 가능. US는 30~40명이라 문제없음(시장별 커버리지 실측 필수). 상세 = `FREE_DATA_PROBE_2026-07.md` A항. |
 
 ## 9. 새 언어권 온보딩 체크리스트 (이 순서대로)
 
