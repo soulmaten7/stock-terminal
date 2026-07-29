@@ -1,7 +1,7 @@
 // 분포 유도 '판정 컷'(lens_cuts) — 시장별 값 분포의 하위30%/상위30%(p30/p70)에서 산출한 컷.
 // STEP 805: 렌즈 verdict를 코드 상수 대신 이 컷으로 판정한다(상수는 시장 레벨 차이를 종목 특성으로 오판했음).
 // ⚠️ 컷이 없으면 판정하지 않는다(임의 상수 폴백 금지) → state='pending'(화면 "기준 준비 중").
-// 제외(고정 표준값): RSI 30/70(technical)·F-Score 3/7 — 학술·업계 표준이라 분포 유도 부적합.
+// 제외(고정 관습 임계): RSI 30/70(technical·와일더 1978 경험칙)·F-Score 3/7(우리 밴딩·원전 극단은 8-9/0-1) — 시장 분포가 아니라 고정 관습값이라 분포 유도 부적합(학술·업계 '표준'이라서가 아님).
 import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "./supabase/admin";
 

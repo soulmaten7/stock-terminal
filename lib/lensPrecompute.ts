@@ -201,7 +201,7 @@ export async function computeLensScoresFor(
   let done = 0, saved = 0;
   let buffer: Record<string, unknown>[] = [];
   // 판정 컷 유도용 값 수집(STEP 802 §1) — 유니버스 전체 값의 분포에서 하위30%/상위30% 컷을 산출·저장.
-  // RSI(technical)·F-Score는 학술·업계 표준 고정값이라 제외.
+  // RSI 30/70(technical·와일더 경험칙)·F-Score 3/7(우리 밴딩)은 고정 관습 임계라 분포 유도서 제외(학술·업계 '표준'이라서가 아님).
   const cutValues: Record<string, number[]> = { momentum: [], lowvol: [], valuation: [], quality: [], assetgrowth: [] };
   async function flush() {
     if (!buffer.length) return;
