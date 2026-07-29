@@ -748,8 +748,8 @@
   },
   "StockLens": {
     "factorEnds": {
-      "momentumLo": "약세",
-      "momentumHi": "강세",
+      "momentumLo": "하위권",
+      "momentumHi": "상위권",
       "qualityLo": "평범",
       "qualityHi": "알짜",
       "valuationLo": "비쌈",
@@ -913,8 +913,8 @@
     "narrativeScopeVerifiedUs": "백테스트가 미국 유니버스($5+·13코호트) 기준이라 이 시장에 대한 검증 범위예요. 판정 컷은 시총 상위권 분포로 맞췄어요(백테스트 표본과 완전히 같은 집단은 아니에요).",
     "narrativeScopeFixed": "RSI 30/70은 와일더(1978)가 제시한 관습적 기준이라 분포로 바꾸지 않아요 — 학술 검정으로 나온 임계값이 아니에요.",
     "narrativePercentile": "상위 {v}%",
-    "narrativeCutoffMomentum": "판정 기준: 12-1 수익률이 {hi}%보다 크면 상승, {lo}%보다 작으면 하락으로 판정해요.",
-    "narrativeMethodMomentum": "12-1 모멘텀은 최근 1개월을 제외한 12개월 수익률로 시장 전체를 줄 세워요. 1993년 제가디시·티트만이 데이터로 처음 밝혔어요.",
+    "narrativeCutoffMomentum": "판정 기준: 12-1 수익률을 시장 분포로 줄 세워 상위 30%({hi}% 이상)는 상위권, 하위 30%({lo}% 이하)는 하위권으로 봐요.",
+    "narrativeMethodMomentum": "12-1 모멘텀은 최근 1개월을 제외한 12개월 수익률로 시장 전체를 줄 세워요. 현상은 1993년 제가디시·티트만이 밝혔고, 우리 계산 사양(최근 1개월 제외·상하위 30%)은 카하트(1997) UMD·파마-프렌치 모멘텀 팩터 관행이에요.",
     "narrativeStock": "이 종목은 상위 {pct}%로 “{verdict}”에 해당해요.",
     "narrativeStockNoPctl": "이 종목은 현재 “{verdict}”예요.",
     "narrativeMethodLowvol": "저변동성 렌즈는 최근 1년 일별 수익률의 연환산 변동성으로 안정성을 봐요. 변동성 낮은 주식이 위험 대비 성과가 낫다는 저변동성 이례현상에 기반해요(베이커·브래들리·워글러 2011).",

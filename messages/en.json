@@ -748,8 +748,8 @@
   },
   "StockLens": {
     "factorEnds": {
-      "momentumLo": "Weak",
-      "momentumHi": "Strong",
+      "momentumLo": "Bottom-tier",
+      "momentumHi": "Top-tier",
       "qualityLo": "Ordinary",
       "qualityHi": "Solid",
       "valuationLo": "Expensive",
@@ -913,8 +913,8 @@
     "narrativeScopeVerifiedUs": "The backtest is on a US universe ($5+, 13 cohorts), so it covers this market. The verdict cuts are fit to the top-market-cap distribution (not exactly the same set as the backtest sample).",
     "narrativeScopeFixed": "The 30/70 levels are the conventional thresholds Wilder (1978) proposed, so we do not distribution-fit them — they are not statistically derived cutoffs.",
     "narrativePercentile": "top {v}%",
-    "narrativeCutoffMomentum": "Cutoff: above {hi}% is classified up, below {lo}% is classified down.",
-    "narrativeMethodMomentum": "12-1 momentum ranks the market by the trailing 12-month return, excluding the most recent month. Jegadeesh and Titman first showed this in the data in 1993.",
+    "narrativeCutoffMomentum": "Cutoff: ranked by market distribution — top 30% (above {hi}%) is top-tier, bottom 30% (below {lo}%) is bottom-tier.",
+    "narrativeMethodMomentum": "12-1 momentum ranks the market by the trailing 12-month return, excluding the most recent month. Jegadeesh and Titman showed the phenomenon in 1993; our spec (skipping the most recent month, top/bottom 30%) follows the Carhart (1997) UMD / Fama-French momentum-factor convention.",
     "narrativeStock": "This stock ranks in the top {pct}%, read as “{verdict}.”",
     "narrativeStockNoPctl": "This stock currently reads as “{verdict}.”",
     "narrativeMethodLowvol": "The low-volatility lens measures stability via the trailing one-year annualized volatility of daily returns. It rests on the low-volatility anomaly (Baker-Bradley-Wurgler 2011) — calmer stocks tending to do better per unit of risk.",
