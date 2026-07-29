@@ -264,13 +264,12 @@ export const lowVol: Lens = {
 export const quality: Lens = {
   meta: { key: "quality", nameEn: "Quality (GP/A)", grade: LENS_GRADE.ko.verified, gradeTier: "strong", horizon: "long", backtestRef: "STEP560", percentile: { dir: "high" } },
   compute(d: StockData, locale: Locale = "ko", cuts?: CutMap): LensRead {
-    // GP/A = 최신연도 매출총이익 ÷ **기초(전기말) 총자산**(Novy-Marx 2013 원전·STEP 801). 전기 자산 없으면 산출 불가(null) — 기말로 대체 금지.
+    // GP/A = 최신연도 매출총이익 ÷ **같은 회계연도 기말 총자산**(Novy-Marx 2013 원전 = (REVT−COGS)/AT, 분자·분모 동일 재무제표).
+    // 🔴 STEP 815 원문 정정: 801이 분모를 '전기말(기초)'로 바꿨으나 그건 Piotroski F-Score ROA 관행이지 Novy-Marx GP/A 원전이 아님(원문 JFE 2013·Table2 "(REVT−COGS)/AT" = 당해 기말 AT, 논문 내 'average assets' 언급은 별개 변수). 백테스트도 당해 기말 AT라 라이브·검증 정합.
     const grossProfit = latestGrossProfit(d.financials);
-    const priorAssets = d.financials[d.financials.length - 2]?.totalAssets ?? null;
+    const lrAssets = d.financials[d.financials.length - 1]?.totalAssets ?? null;
     const c = LENS_COPY[locale].quality;
-    // GP/A는 최신 매출총이익 ÷ 기초(전기말) 총자산 → 두 행이 인접 연도여야 '기초자산'이 성립. 연도 건너뜀이면 계산 불가(STEP 803 §5).
-    const gap = nonConsecutive(d.financials[d.financials.length - 1], d.financials[d.financials.length - 2]);
-    const gpa = !gap && grossProfit != null && priorAssets != null && priorAssets > 0 ? (grossProfit / priorAssets) * 100 : null;
+    const gpa = grossProfit != null && lrAssets != null && lrAssets > 0 ? (grossProfit / lrAssets) * 100 : null;
     // STEP 805: 시장 분포 컷으로 판정(기존 상수 15/40 대신).
     const cut = cuts?.quality;
     const qState = gpa == null ? "na" : verdictState("quality", gpa, cuts) ?? "na";

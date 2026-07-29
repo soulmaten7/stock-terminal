@@ -331,7 +331,7 @@ describe("lowVolLens — 특성화", () => {
 
 describe("qualityLens — 특성화", () => {
   it("고GP/A(ko): 전체 LensRead 고정", async () => {
-    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko", CUTS)).toMatchInlineSnapshot(`
+    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50, totalAssets: 100 }]) }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
         "cutSource": {
@@ -354,7 +354,7 @@ describe("qualityLens — 특성화", () => {
         "long": "높음",
         "name": "퀄리티",
         "nameEn": "Quality (GP/A)",
-        "note": "퀄리티(Gross Profitability, Novy-Marx): 매출총이익/총자산. 백테스트(투자가능 $5+·13코호트) 고−저 롱숏 t≈2.9·샤프 0.78·FF3 알파 t≈2.5(시장/규모/가치 넘는 독립 프리미엄)·회전율 낮아 비용 강건 → 검증. 단 수익 '수준'은 생존편향·동일가중으로 과대(방향·유의만 신뢰). ROE는 별도 검증서 유의 미달(대형주 편중)이라 제외. 은행은 매출총이익 구조상 미적용. · 3중 교차검증(코호트 3분할·STEP560): 3/3 구간 +방향·전체 t≈3.2·FF3 알파 t≈2.75(βHML−0.22 독립) = 검증 재확인, 7렌즈 중 가장 단단.",
+        "note": "퀄리티(총수익성/Gross Profitability — Novy-Marx 2013): 매출총이익(매출−매출원가) ÷ 같은 해 총자산. 원문에서 고−저 집단 롱숏이 시장·규모·가치(FF3)를 넘는 유의한 알파(월 ~0.5%·t≈4.5)를 냈고, 밸류(B/M)와 음의 상관이라 '가치의 다른 얼굴'(밸류와 독립·상호보완)로 검증됐어요. 우리 백테스트도 방향 +·밸류와 독립(βHML 음)이나 세기는 표본 구간에 따라 흔들려 특정 t값으로 못박지 않아요(수익 '수준'은 생존편향·동일가중으로 과대). ⚠️ 후속 연구(Ball 외 2015 'Deflating Profitability')는 이 효과가 분모(총자산)로 나눈 데서 상당 부분 나온다(밸류 성분이 섞임)며 영업이익 기준을 제안했고 파마-프렌치도 5팩터에서 영업수익성으로 갔어요 — 분모 민감성이 한계예요. 원문은 단독보다 '수익성 좋은 가치주 매수'처럼 밸류와 결합할 때 가장 강했어요. 은행·보험 등 매출총이익 항목이 없는 금융사는 산출 제외(원문도 금융 제외)되나, 명시적 업종필터가 아니라 매출총이익 보고 여부에 따른 것이라 리츠 등 일부는 값이 나올 수 있어요. '퀄리티'는 넓은 말이라 여기선 총수익성 한 지표로 좁혀 쓴 거예요(QMJ의 수익성·성장·안전 중 수익성 축). 예측·보장 아님.",
         "outlook": "장기 유리한 편 — 알짜 우량주는 역사적으로 장기 우위 (검증된 경향).",
         "short": null,
         "spectrum": {
@@ -377,7 +377,7 @@ describe("qualityLens — 특성화", () => {
     `);
   });
   it("저GP/A(ko): low 상태", async () => {
-    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "ko", CUTS);
+    const r = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5, totalAssets: 100 }]) }), "ko", CUTS);
     expect({ key: r.key, long: r.long, state: r.state, value: r.value, headline: r.headline }).toMatchInlineSnapshot(`
       {
         "headline": "GP/A 5%",
@@ -485,7 +485,7 @@ describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
       technical.compute(sd({ closes: up }), "ko", CUTS),
       valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko", CUTS),
       lowVol.compute(sd({ closes: up }), "ko", CUTS),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50, totalAssets: 100 }]) }), "ko", CUTS),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko", CUTS),
     ]);
     const keys = reads.flatMap((r) => Object.keys(r.detail));
@@ -528,8 +528,8 @@ describe("note · short/long — i18n 무회귀", () => {
       valuation.compute(sd({ pe: 30, pb: 5 }), "en", CUTS),
       lowVol.compute(sd({ closes: up }), "en", CUTS),
       lowVol.compute(sd({ closes: jumpy }), "en", CUTS),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "en", CUTS),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5 }]) }), "en", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50, totalAssets: 100 }]) }), "en", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 5, totalAssets: 100 }]) }), "en", CUTS),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "en", CUTS),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 103 }]) }), "en", CUTS),
     ]);
@@ -555,7 +555,7 @@ describe("note · short/long — i18n 무회귀", () => {
       technical.compute(sd({ closes: up }), "ko", CUTS),
       valuation.compute(sd({ pe: 8, pb: 1.2 }), "ko", CUTS),
       lowVol.compute(sd({ closes: up }), "ko", CUTS),
-      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko", CUTS),
+      quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50, totalAssets: 100 }]) }), "ko", CUTS),
       assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko", CUTS),
     ]);
     for (const r of reads) {
@@ -571,7 +571,7 @@ describe("note · short/long — i18n 무회귀", () => {
       technical: ["153", "−8.7%", "t≈−2.0", "66%", "t≈1.6", "t≈2.7", "FF3", "STEP559"],
       valuation: ["HML", "βHML", "E/P", "B/M", "2021"], // STEP814: 재현 안 되는 백테스트 t값(0.9·1.5·βHML0.71·+6~9%) 삭제 → 언어공통 안정 레퍼런스만 보존 검사(ko 바수/en Basu는 언어차라 제외)
       lowvol: ["Baker-Bradley-Wurgler 2011", "STEP559", "1,000"], // STEP813: 재현 안 되는 t값(1.6·3.1·2.6·18%·161) 삭제 → 안정 레퍼런스만 보존 검사
-      quality: ["t≈2.9", "0.78", "t≈2.5", "t≈3.2", "t≈2.75", "−0.22", "13", "STEP560"],
+      quality: ["Novy-Marx", "FF3", "2015", "QMJ", "B/M"], // STEP815: 재현 안 되는 자체 백테스트 t값(2.9·0.78·2.5·3.2·2.75) 삭제 → 원문/후속연구 안정 레퍼런스만(ko·en 공통)
       assetgrowth: ["2008", "CMA", "13", "+8%", "βHML≈0.17", "t≈1.6", "t<2", "STEP560"],
     };
     for (const [lens, tokens] of Object.entries(TOKENS)) {
@@ -625,7 +625,7 @@ describe("pending 경로 (컷 미주입) — STEP 806", () => {
     expect(lv.state).toBe("pending");
     const v = await valuation.compute(sd({ pe: 12, pb: 1 }), "ko");
     expect(v.state).toBe("pending");
-    const q = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50 }]) }), "ko");
+    const q = await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50, totalAssets: 100 }]) }), "ko"); // STEP815: GP/A 분모=당해 기말 총자산(원전) → 최신행에 totalAssets 필요
     expect(q.state).toBe("pending");
     const ag = await assetGrowth.compute(sd({ financials: fin([{ totalAssets: 100 }, { totalAssets: 130 }]) }), "ko");
     expect(ag.state).toBe("pending");
