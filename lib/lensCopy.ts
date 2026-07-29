@@ -34,10 +34,10 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "가격 출렁임",
       what: "덜 출렁이는 안정적인 종목인지 보는 방법 — 하락장에서 방어적으로 유용해요.",
       about: "덜 흔들리는 안정적 주식이 크게 요동치는 주식보다 위험 대비 성과가 낫다는 발견이에요(저변동성 이례현상). '대박'을 노려 변동 큰 주식에 사람이 몰려 비싸지고, 지루한 우량주는 저평가되기 때문이라 설명해요 — 방어·위험 관리에 씁니다.",
-      note: "저변동성(현상=Baker-Bradley-Wurgler 2011 · 우리 측정=1년 일별 실현변동성): 저변동군은 고변동군보다 실현 위험이 훨씬 낮고(방어) 시장베타가 음(−)이라 하락장에 강한 성격이에요. 회전율도 낮아 거래비용에 강건 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 수익 우위는 우리 표본에서 통계적으로 약하고 불안정해요(표본 구간에 따라 유의성이 흔들리고 부호도 뒤집힘) — 위험 대비 방어가 핵심이지 수익 보장이 아니에요. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 구간마다 부호가 뒤집혀 '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어예요. ⚠️ 우리 측정은 BBW 원문(5년 월별 총변동성·5분위)과 달리 1년 일별 변동성·3분위이고, 유니버스도 '오늘 상위 1,000'이라 생존편향이 있어요.",
+      note: "저변동성(현상=Baker-Bradley-Wurgler 2011 · 우리 측정=1년 일별 실현변동성): 저변동군은 고변동군보다 실현 위험이 훨씬 낮고(방어) 시장베타가 음(−)이라 하락장에 강한 성격이에요. 회전율도 낮아 거래비용에 강건 → 위험관리·방어 렌즈로 유효. 단 '저변동이 수익도 더 높다'는 수익 우위는 우리 표본에서 통계적으로 약하고 불안정해요(표본 구간에 따라 유의성이 흔들리고 부호도 뒤집힘) — 위험 대비 방어가 핵심이지 수익 보장이 아니에요. · 3중 교차검증(STEP559): 단순 저−고 수익 롱숏은 구간마다 부호가 뒤집혀 '저변동이 수익도 더 높다'는 아님 재확인. 이 렌즈 근거는 raw 수익이 아니라 위험대비 방어예요. ⚠️ 우리 측정은 BBW 원문(5년 월별 총변동성·5분위)과 달리 1년 일별 변동성·3분위이고, 유니버스도 '오늘 상위 1,000'(KR=거래대금·US=시총)이라 생존편향이 있어요.",
       scope: {
         verified: "현상은 베이커·브래들리·워글러(2011)가 미국(1968~2008)에서 저변동 '집단'이 위험 대비 성과가 나았음을 보였어요(위험 낮을수록 수익도 낮다는 CAPM을 반증). 다만 우리 측정은 그 논문의 5년 월별 총변동성·5분위가 아니라 1년 일별 실현변동성(일간수익률 표준편차×√252)·상하위 30% 3분위예요 — 총변동성 계열은 같지만 창·빈도·분위가 달라요.",
-        failure: "수익을 더 준다는 신호가 아니에요 — 위험(변동)이 낮다는 것뿐이고, 우리 자체 백테스트에선 수익 우위가 약하고 불안정했어요(표본 구간에 따라 통계적 유의성·부호가 흔들림). 상승장에선 뒤처질 수 있어요. 또 우리 순위는 '오늘 상위 1,000종목'끼리라 상장폐지·쪼그라든 종목이 빠진 생존자 사이 순위예요.",
+        failure: "수익을 더 준다는 신호가 아니에요 — 위험(변동)이 낮다는 것뿐이고, 우리 자체 백테스트에선 수익 우위가 약하고 불안정했어요(표본 구간에 따라 통계적 유의성·부호가 흔들림). 상승장에선 뒤처질 수 있어요. 또 우리 순위는 '오늘 상위 1,000종목'(KR=거래대금·US=시총)끼리라 상장폐지·쪼그라든 종목이 빠진 생존자 사이 순위예요.",
         when: "방어·위험 관리 관점에서, 시장 내 상대적으로 덜 흔들리는 편인지로 보세요.",
       },
     },
@@ -127,10 +127,10 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "Price swings",
       what: "How steady (rather than jumpy) a stock is — handy for playing defense in down markets.",
       about: "The finding that calmer, steadier stocks tend to do better per unit of risk than wild, jumpy ones (the low-volatility anomaly). One story: people chase big-swing names hoping for a jackpot and bid them up, while boring quality names get left cheap. Used for defense and risk management.",
-      note: "Low Volatility (phenomenon = Baker-Bradley-Wurgler 2011 · our measure = 1-year daily realized volatility): the low-volatility group carries much less realized risk than the high-volatility group (defensive), with a negative market beta = it holds up in down markets. Low turnover makes it robust to transaction costs → it works as a risk-management and defense lens. But the plain claim that 'low volatility also earns more' is statistically weak and unstable in our sample (significance and even the sign shift across sample windows) → risk-adjusted defense is the point, not a return guarantee. · Triple cross-validation (STEP559): the plain low−high return long-short flips sign across folds = confirmation that 'low volatility earns more' does not hold. This lens rests on risk-adjusted defense, not raw returns. Note: our measure differs from the paper (5-year monthly total volatility, quintiles) — we use 1-year daily volatility, terciles, and a today's-top-1,000 universe (survivorship).",
+      note: "Low Volatility (phenomenon = Baker-Bradley-Wurgler 2011 · our measure = 1-year daily realized volatility): the low-volatility group carries much less realized risk than the high-volatility group (defensive), with a negative market beta = it holds up in down markets. Low turnover makes it robust to transaction costs → it works as a risk-management and defense lens. But the plain claim that 'low volatility also earns more' is statistically weak and unstable in our sample (significance and even the sign shift across sample windows) → risk-adjusted defense is the point, not a return guarantee. · Triple cross-validation (STEP559): the plain low−high return long-short flips sign across folds = confirmation that 'low volatility earns more' does not hold. This lens rests on risk-adjusted defense, not raw returns. Note: our measure differs from the paper (5-year monthly total volatility, quintiles) — we use 1-year daily volatility, terciles, and a today's-top-1,000 universe (KR by trading value, US by market cap; survivorship).",
       scope: {
         verified: "The phenomenon was shown by Baker-Bradley-Wurgler (2011) on US stocks (1968-2008): the low-volatility group did better on a risk-adjusted basis (a rebuttal to CAPM, which says lower risk means lower return). But our measure is not the paper's 5-year monthly total volatility with quintiles — it is 1-year daily realized volatility (daily-return standard deviation × √252), top/bottom 30% terciles. Same total-volatility family, but a different window, frequency and cut.",
-        failure: "It is not a signal for higher returns — only for lower risk (volatility). In our own backtest the return edge was weak and unstable (significance and even the sign shift across sample windows). It can lag in rising markets. Also, our ranking is among today's top 1,000 names — a rank among survivors (delisted or shrunken stocks are missing).",
+        failure: "It is not a signal for higher returns — only for lower risk (volatility). In our own backtest the return edge was weak and unstable (significance and even the sign shift across sample windows). It can lag in rising markets. Also, our ranking is among today's top 1,000 names (KR by trading value, US by market cap) — a rank among survivors (delisted or shrunken stocks are missing).",
         when: "Read it for defense and risk management — whether it swings relatively less than the market.",
       },
     },
@@ -221,8 +221,8 @@ export const LENS_READINGS: Record<Locale, {
     },
     lowvol: {
       calm: { phrase: "변동 낮은 편(시장 대비)", plain: "가격 변동이 시장에서 적은 편이에요. 하락장에서 방어적으로 버티는 성격이에요 (수익 방향 아님)." },
-      calmHigh: { phrase: "시장 대비 낮지만 절대론 큼", plain: "시장에선 변동이 적은 편이지만 절대 수준은 낮지 않아요 (위 숫자 참고). 하락장 방어 관점이에요." },
-      mid: { phrase: "변동 중간권", plain: "가격 변동이 시장 중간권이에요." },
+      calmHigh: { phrase: "시장 대비 낮지만 절대론 큼", plain: "시장에선 변동이 적은 편이지만 절대 수준은 낮지 않아요 — 연변동성이 40%(우리가 정한 대략적 실무 기준·원전 근거 아님)를 넘어요. 하락장 방어 관점이에요." },
+      mid: { phrase: "변동 중간권", plain: "가격 변동이 시장에선 중간권이에요 — 절대 수준은 위 '연변동성' 숫자로 확인하세요(시장 중간이 절대적으로 낮다는 뜻은 아니에요)." },
       jumpy: { phrase: "변동 높은 편(시장 대비)", plain: "가격 변동이 시장에서 큰 편이에요. 변동을 감당할 수 있을 때 어울려요 (수익 방향 아님)." },
     },
     valuation: {
@@ -269,8 +269,8 @@ export const LENS_READINGS: Record<Locale, {
     },
     lowvol: {
       calm: { phrase: "Low swings (vs. market)", plain: "Its price moves less than most in the market — a defensive profile in down markets (not a return call)." },
-      calmHigh: { phrase: "Low vs. market, high in absolute", plain: "It swings less than most in the market, but the absolute level is not low (see the number above). A defensive-in-down-markets view." },
-      mid: { phrase: "Mid-pack volatility", plain: "Its price movement sits mid-market." },
+      calmHigh: { phrase: "Low vs. market, high in absolute", plain: "It swings less than most in the market, but the absolute level is not low — its annualized volatility is above 40% (a rough practical line we set, not from the source paper). A defensive-in-down-markets view." },
+      mid: { phrase: "Mid-pack volatility", plain: "Its price movement sits mid-market — check the annualized volatility above for the absolute level (mid-market does not mean low in absolute terms)." },
       jumpy: { phrase: "High swings (vs. market)", plain: "Its price moves more than most in the market. Suits you when you can stomach the swings (not a return call)." },
     },
     valuation: {
