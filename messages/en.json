@@ -1,13 +1,13 @@
 {
   "Meta": {
     "title": "Trillion — An eye for stocks, for everyone",
-    "description": "See a stock as data, through the proven lenses professionals use. No forecasts, no recommendations — the judgment is yours. Prices, news, filings, ETFs and IPOs in one place.",
-    "keywords": "Trillion,stock analysis,US stocks,Korean stocks,free stock analysis,AI stock analysis,TR-AI Lens,proven investing methods,momentum value quality,stock research,TR-AI",
+    "description": "See a stock as data, through the published methods professionals use. No forecasts, no recommendations — the judgment is yours. Prices, news, filings, ETFs and IPOs in one place.",
+    "keywords": "Trillion,stock analysis,US stocks,Korean stocks,free stock analysis,TR-AI Lens,published investing methods,momentum value quality,stock research,TR-AI",
     "ogTitle": "An eye for stocks — for everyone.",
     "ogDescription": "Every lens, as data — the judgment is yours.",
     "ogImageAlt": "An eye for stocks, for everyone — Trillion",
     "twitterTitle": "An eye for stocks, for everyone | Trillion",
-    "jsonLdDescription": "See a stock as data, through the proven lenses professionals use. No forecasts, no recommendations, the judgment is yours — an eye for stocks, for everyone."
+    "jsonLdDescription": "See a stock as data, through the published methods professionals use. No forecasts, no recommendations, the judgment is yours — an eye for stocks, for everyone."
   },
   "Common": {
     "appName": "Trillion",
@@ -38,11 +38,11 @@
   "About": {
     "pillar": {
       "armT": "Institutional-grade analysis",
-      "armD": "The analytical eye institutions use, in individual hands. The TR-AI Lens reads stocks through proven methods — momentum, value, quality, and more.",
+      "armD": "The analytical eye institutions use, in individual hands. The TR-AI Lens reads stocks through published methods — momentum, value, quality, and more.",
       "seeT": "Honest data",
       "seeD": "Prices, news, and filings as primary material. When data is missing, we do not invent it — we say \"insufficient data.\"",
       "ownT": "Your judgment",
-      "ownD": "No buy or sell signals. We lay proven lenses side by side; the decision is yours."
+      "ownD": "No buy or sell signals. We lay several lenses side by side; the decision is yours."
     },
     "title": "About Trillion",
     "slogan": "An eye for stocks — for everyone.",
@@ -50,10 +50,10 @@
     "problemTitle": "Why Trillion",
     "problemBody": "Investment information is scattered, and the market is loud with predictions and tips. Chat rooms sell you \"the stock that will go up\"; paid tools hide their method inside a black box. In between, individuals end up leaning on what someone else says. The problem is not too little information — it is the lack of a tool to read it with your own eyes. When someone sells you a stock with great confidence, the first thing to look at is not the confidence — it is their incentive.",
     "lensTitle": "The TR-AI Lens — how we read a stock",
-    "lensIntro": "We read one stock through several proven methods, each on its own. Every lens answers just one honest question, and writes down — right on the screen — which metrics it uses and whose research it leans on.",
+    "lensIntro": "We read one stock through several published methods, each on its own. Every lens answers just one honest question, and writes down — right on the screen — which metrics it uses and whose research it leans on.",
     "lens": {
       "momentum": "Momentum — is the trend continuing? (trend persistence)",
-      "value": "Value — is it cheap against earnings and assets? (the Graham philosophy · the value premium proven by Basu 1977 and Fama-French HML)",
+      "value": "Value — is it cheap against earnings and assets? (the Graham philosophy · the value premium documented by Basu 1977 and Fama-French HML)",
       "quality": "Quality — how well does it turn assets into profit? (Novy-Marx 2013 · gross profits ÷ assets)",
       "fscore": "F-Score — is the balance sheet weak? (Piotroski 2000 · a 9-point financial-health checklist)",
       "lowvol": "Low Volatility — steady per unit of risk? (the low-volatility anomaly)",
@@ -61,7 +61,7 @@
     },
     "lensClose": "Nothing is hidden. Not a black box — a lens we open. Each lens shows the numbers behind it, and when the data is not there, that lens simply says \"insufficient data.\"",
     "noRecTitle": "We do not predict, and we do not recommend",
-    "noRecBody": "There is no \"buy this stock\" signal here. A lens hands you evidence, not certainty; material, not a conclusion. We set several proven viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
+    "noRecBody": "There is no \"buy this stock\" signal here. A lens hands you evidence, not certainty; material, not a conclusion. We set several viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
     "coverageTitle": "How far we look",
     "coverageBody": "{markets} — {count} markets. For each, we take first-hand material — prices, news, filings — from public sources and show it as it is. We do not invent values. And when the data looks odd, we do not erase it on a hunch.",
     "howTitle": "How to use it",
@@ -74,7 +74,7 @@
   },
   "Advertise": {
     "title": "Advertising with Trillion",
-    "lead": "Reach users who come to see stocks as data through proven methods, in the place that is most relevant to them.",
+    "lead": "Reach users who come to see stocks as data through published methods, in the place that is most relevant to them.",
     "slotsHeading": "Ad placements",
     "slotsPreparing": "Ad placements are being prepared. Leave a partnership or advertising inquiry below and we will reach out first when they open.",
     "rulesHeading": "Advertising principles",
