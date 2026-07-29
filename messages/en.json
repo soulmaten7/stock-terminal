@@ -827,9 +827,9 @@
       "detailsItems": "▾ The 9 items — read three ways",
       "detailsBasis": "▾ Scoring basis · origin · why we call it financial health",
       "howToRead": "How to read the score",
-      "howToReadBody": "In practice it is usually read as <s>7 or above good · 4 to 6 middling · 0 to 3 weak</s>. It is the sum of the nine signals Piotroski devised (the higher, the sturdier).",
+      "howToReadBody": "The score is the sum of the nine signals Piotroski devised (0-9; the higher, the sturdier). The on-screen grades <s>Strong (7+), Fair (4-6), Weak (3 or below)</s> are our own bands — in the original, high means 8-9.",
       "whyFinHealth": "Why financial health?",
-      "whyFinHealthBody": "The accounting scholar Piotroski built it in 2000 to <s>screen out the genuinely distressed</s> among cheap value stocks. In our broad sample and 12-year backtest, however, the score showed no valid relationship with subsequent returns (t≈0.7). So we use it only as a reading of <s>financial health</s>, never as a return forecast — that is why this lens is graded financial health."
+      "whyFinHealthBody": "The accounting scholar Piotroski built it in 2000 to <s>screen out the genuinely distressed</s> among cheap value stocks. It worked within the cheap value-stock group in the original, and we have <s>not separately verified any return-forecasting power</s> for this score. So we use it only as a reading of <s>financial health</s>, never as a return forecast — that is why this lens is graded financial health."
     },
     "ai": {
       "summary": "AI summary",

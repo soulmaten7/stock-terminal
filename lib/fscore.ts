@@ -11,7 +11,7 @@ export type FScore = {
   reason?: string;
   score: number; // 0~9
   max: number; // 9
-  grade: string; // 우량 / 중립 / 부실 / - (en: Strong / Neutral / Weak / -)
+  grade: string; // 양호 / 보통 / 취약 / - (en: Strong / Fair / Weak / -) · 810 §5 통일 라벨(우량/중립/부실 아님)
   criteria: FCriterion[];
   asOf?: string; // 최신 회계연도 말
 };

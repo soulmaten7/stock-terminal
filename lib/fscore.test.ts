@@ -73,7 +73,7 @@ describe("computeFScore — 지원 조건", () => {
 });
 
 describe("computeFScore — 9항목 전부 통과 세트(비금융 정상)", () => {
-  it("설계상 9점·우량(ko 기본)", () => {
+  it("설계상 9점·양호(ko 기본)", () => {
     const f = computeFScore(rows());
     expect(f.score).toBe(9);
     expect(f.grade).toBe("양호");
