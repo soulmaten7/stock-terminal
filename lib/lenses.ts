@@ -280,6 +280,9 @@ export const quality: Lens = {
     const cut = cuts?.quality;
     const qState = gpa == null ? "na" : verdictState("quality", gpa, cuts) ?? "na";
     const isPending = qState === "pending";
+    // 🔴 STEP 825 §2-1: na 사유 구분(822 밸류와 동일 원칙) — "매출총이익 데이터 없음"으로 뭉치지 않는다.
+    //   재무는 있는데 매출총이익(매출−매출원가)만 없으면 = 이 지표를 보고하지 않는 회사(금융사 등). 은행이라 단정 금지(803) — 사실만.
+    const naKey = grossProfit == null && d.financials[d.financials.length - 1] != null ? "naNoGrossProfit" : "naMissing";
     return {
       key: "quality",
       grade: LENS_GRADE[locale].verified,
@@ -292,7 +295,7 @@ export const quality: Lens = {
       short: null,
       long: labelOf(locale, "gpa", qState),
       detail: { gpa: round(gpa) },
-      verdict: isPending ? pendingRead(locale) : readOf(locale, "quality", qState, qState === "high" ? "pos" : qState === "low" ? "warn" : "flat"),
+      verdict: isPending ? pendingRead(locale) : qState === "na" ? readOf(locale, "quality", naKey, "flat") : readOf(locale, "quality", qState, qState === "high" ? "pos" : qState === "low" ? "warn" : "flat"),
       spectrum: specOf(locale, "quality", qState === "high" ? 2 : qState === "low" ? 0 : qState === "mid" ? 1 : -1),
       headline: gpa != null ? `GP/A ${round(gpa)}%` : null,
       outlook: isPending ? null : outlookOf(locale, "quality", qState),

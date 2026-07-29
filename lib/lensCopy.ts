@@ -60,7 +60,7 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "돈 버는 힘",
       what: "회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.",
       about: "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
-      note: "퀄리티(총수익성/Gross Profitability — Novy-Marx 2013): 매출총이익(매출−매출원가) ÷ 같은 해 총자산. 원문에서 고−저 집단 롱숏이 시장·규모·가치(FF3)를 넘는 유의한 알파(월 ~0.5%·t≈4.5)를 냈고, 밸류(B/M)와 음의 상관이라 '가치의 다른 얼굴'(밸류와 독립·상호보완)로 검증됐어요. 우리 백테스트도 방향 +·밸류와 독립(βHML 음)이나 세기는 표본 구간에 따라 흔들려 특정 t값으로 못박지 않아요(수익 '수준'은 생존편향·동일가중으로 과대). ⚠️ 후속 연구(Ball 외 2015 'Deflating Profitability')는 이 효과가 분모(총자산)로 나눈 데서 상당 부분 나온다(밸류 성분이 섞임)며 영업이익 기준을 제안했고 파마-프렌치도 5팩터에서 영업수익성으로 갔어요 — 분모 민감성이 한계예요. 원문은 단독보다 '수익성 좋은 가치주 매수'처럼 밸류와 결합할 때 가장 강했어요. 은행·보험 등 매출총이익 항목이 없는 금융사는 산출 제외(원문도 금융 제외)되나, 명시적 업종필터가 아니라 매출총이익 보고 여부에 따른 것이라 리츠 등 일부는 값이 나올 수 있어요. '퀄리티'는 넓은 말이라 여기선 총수익성 한 지표로 좁혀 쓴 거예요(QMJ의 수익성·성장·안전 중 수익성 축). 예측·보장 아님.",
+      note: "퀄리티(총수익성/Gross Profitability — Novy-Marx 2013): 매출총이익(매출−매출원가) ÷ 같은 해 총자산. 원문에서 고−저 집단 롱숏이 시장·규모·가치(FF3)를 넘는 유의한 알파(월 ~0.5%·t≈4.5)를 냈고, 밸류(B/M)와 음의 상관이라 '가치의 다른 얼굴'(밸류와 독립·상호보완)로 검증됐어요. 우리 백테스트도 방향 +·밸류와 독립(βHML 음)이나 세기는 표본 구간에 따라 흔들려 특정 t값으로 못박지 않아요(수익 '수준'은 생존편향·동일가중으로 과대·유니버스=오늘 상위 1,000·KR 거래대금/US 시총). ⚠️ 후속 연구(Ball 외 2015 'Deflating Profitability')는 이 효과가 분모(총자산)로 나눈 데서 상당 부분 나온다(밸류 성분이 섞임)며 영업이익 기준을 제안했고 파마-프렌치도 5팩터에서 영업수익성으로 갔어요 — 분모 민감성이 한계예요. 원문은 단독보다 '수익성 좋은 가치주 매수'처럼 밸류와 결합할 때 가장 강했어요. 은행·보험 등 매출총이익 항목이 없는 금융사는 산출 제외(원문도 금융 제외)되나, 명시적 업종필터가 아니라 매출총이익 보고 여부에 따른 것이라 리츠 등 일부는 값이 나올 수 있어요. '퀄리티'는 넓은 말이라 여기선 총수익성 한 지표로 좁혀 쓴 거예요(QMJ의 수익성·성장·안전 중 수익성 축). 예측·보장 아님.",
       scope: {
         verified: "노비-마르크스(2013)가 총수익성(매출총이익/총자산)이 가치(B/M)만큼 예측력이 있음을 보였어요 — '가치의 다른 얼굴'(밸류와 독립·FF3 알파 유의). 집단 비교로 확인됐어요.",
         failure: "단독 종목 선정이 아니라 밸류와 결합할 때 강했어요(수익성 좋은 가치주). 분모(총자산)로 나눈 데서 효과가 상당 부분 나온다는 후속 비판(Ball 외 2015)이 있고, 은행·보험 등 매출총이익 없는 금융사는 계산이 안 돼요(리츠 등 일부는 값이 나올 수 있음).",
@@ -153,7 +153,7 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "Profitability",
       what: "How efficiently a company turns its assets into profit — good for finding sturdy, high-quality names.",
       about: "Gauges company quality by gross profits divided by assets ('gross profitability'). Novy-Marx showed in 2013 that quality matters as much as cheapness — companies that reliably squeeze profit from their assets tend to do better over the long run.",
-      note: "Quality (Gross Profitability — Novy-Marx 2013): gross profit (revenue − COGS) ÷ same-year total assets. In the original, the high−low long-short earned a significant alpha beyond market/size/value (FF3) of ~0.5%/month (t≈4.5), and because it is negatively correlated with value (B/M) it was verified as 'the other side of value' — independent of and complementary to value. Our backtest also points positive and independent of value (βHML negative), but the strength drifts with the sample window, so we do not pin a specific t-value (the return 'level' is overstated by survivorship and equal weighting). ⚠️ Follow-up work (Ball et al. 2015, 'Deflating Profitability') argues much of the effect comes from the denominator (dividing by total assets mixes in a value component) and proposes operating profitability; Fama-French moved to operating profitability in their five-factor model — deflator sensitivity is a real limitation. The original was strongest combined with value ('buy profitable value firms'), not standalone. Banks, insurers and other financials with no gross-profit line are excluded from scoring (the original excludes financials too), but this is driven by whether a gross-profit line is reported rather than an explicit sector filter, so some (e.g. REITs) can still get a value. 'Quality' is a broad term — here it is narrowed to this one profitability metric (the profitability leg of QMJ's profitability/growth/safety). Not a prediction or a guarantee.",
+      note: "Quality (Gross Profitability — Novy-Marx 2013): gross profit (revenue − COGS) ÷ same-year total assets. In the original, the high−low long-short earned a significant alpha beyond market/size/value (FF3) of ~0.5%/month (t≈4.5), and because it is negatively correlated with value (B/M) it was verified as 'the other side of value' — independent of and complementary to value. Our backtest also points positive and independent of value (βHML negative), but the strength drifts with the sample window, so we do not pin a specific t-value (the return 'level' is overstated by survivorship and equal weighting; universe = today's top 1,000, KR by trading value / US by market cap). ⚠️ Follow-up work (Ball et al. 2015, 'Deflating Profitability') argues much of the effect comes from the denominator (dividing by total assets mixes in a value component) and proposes operating profitability; Fama-French moved to operating profitability in their five-factor model — deflator sensitivity is a real limitation. The original was strongest combined with value ('buy profitable value firms'), not standalone. Banks, insurers and other financials with no gross-profit line are excluded from scoring (the original excludes financials too), but this is driven by whether a gross-profit line is reported rather than an explicit sector filter, so some (e.g. REITs) can still get a value. 'Quality' is a broad term — here it is narrowed to this one profitability metric (the profitability leg of QMJ's profitability/growth/safety). Not a prediction or a guarantee.",
       scope: {
         verified: "Novy-Marx (2013) showed gross profitability (gross profit / assets) predicts as well as value (book-to-market) — 'the other side of value,' independent of value with a significant FF3 alpha. Confirmed on group comparisons.",
         failure: "It is not a standalone stock picker — it was strongest combined with value (profitable value firms). A follow-up critique (Ball et al. 2015) argues much of the effect comes from the total-assets denominator, and banks/insurers with no gross-profit line do not compute (some financials like REITs can still get a value).",
@@ -238,7 +238,9 @@ export const LENS_READINGS: Record<Locale, {
       high: { phrase: "수익성 상위권", plain: "자산 대비 수익성이 시장 상위권이에요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요." },
       mid: { phrase: "수익성 중간권", plain: "자산 대비 수익성이 시장 중간권이에요." },
       low: { phrase: "수익성 하위권", plain: "자산 대비 수익성이 시장에서 낮은 편이에요." },
-      na: { phrase: "산출 불가", plain: "매출총이익 데이터가 없어 이 기법으론 판단하기 어려워요." },
+      na: { phrase: "산출 불가", plain: "재무 데이터가 부족해 이 기법으론 판단하기 어려워요." },
+      naNoGrossProfit: { phrase: "산출 불가 (매출총이익 미보고)", plain: "이 회사는 매출총이익(매출−매출원가)을 보고하지 않아 이 기법을 적용할 수 없어요." },
+      naMissing: { phrase: "산출 불가", plain: "재무 데이터가 부족해 이 기법으론 판단하기 어려워요." },
     },
     assetgrowth: {
       aggressive: { phrase: "확장 공격적(시장 대비)", plain: "자산 확장이 시장에서 공격적인 편이에요. 역사적으로 급히 몸집을 키운 회사는 이후 성과가 약한 편이라 참고해서 볼 신호예요." },
@@ -286,7 +288,9 @@ export const LENS_READINGS: Record<Locale, {
       high: { phrase: "Top-tier profitability", plain: "Its profitability versus assets ranks near the top of the market — a high-quality profile worth watching." },
       mid: { phrase: "Mid-pack profitability", plain: "Its profitability versus assets sits mid-market." },
       low: { phrase: "Bottom-tier profitability", plain: "Its profitability versus assets is on the low side of the market." },
-      na: { phrase: "Can't be scored", plain: "No gross-profit data, so this lens can't judge it." },
+      na: { phrase: "Can't be scored", plain: "Not enough financial data for this lens to judge." },
+      naNoGrossProfit: { phrase: "Can't be scored (no gross profit)", plain: "This company does not report gross profit (revenue − COGS), so this lens cannot be applied." },
+      naMissing: { phrase: "Can't be scored", plain: "Not enough financial data for this lens to judge." },
     },
     assetgrowth: {
       aggressive: { phrase: "Aggressive expansion (vs. market)", plain: "Its asset expansion is among the more aggressive in the market. Historically, fast bulkers have tended to lag afterward — a signal to watch." },
@@ -360,7 +364,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       high: "장기 유리한 편 — 알짜 우량주는 역사적으로 장기 우위 (검증된 경향).",
       mid: "장기: 중립 — 수익성이 특별히 높지도 낮지도 않아요.",
       low: "장기 불리한 편 — 수익성 낮은 회사는 역사적으로 장기 열위 (검증된 경향).",
-      na: "판단 불가 — 데이터 부족.",
+      na: "판단 보류 — 이 종목엔 이 기법을 적용하지 않았어요 (사유는 위 참고).",
     },
     assetgrowth: {
       aggressive: "길게 보면 불리한 편 — 몸집을 공격적으로 키운 회사는 이후 성과가 약했어요 (다만 근거는 아직 약해요).",
@@ -402,7 +406,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       high: "Long term: leans favorable — high-quality names have historically won long-term (validated).",
       mid: "Long term: neutral — profitability is middling.",
       low: "Long term: leans unfavorable — low-profitability names have historically lagged (validated).",
-      na: "Can't judge — not enough data.",
+      na: "On hold — this lens was not applied to this stock (see the reason above).",
     },
     assetgrowth: {
       aggressive: "Long term: leans unfavorable — aggressive expanders have historically lagged afterward (weak in our sample).",
