@@ -323,6 +323,8 @@ export const assetGrowth: Lens = {
     const cut = cuts?.assetgrowth;
     const agState = assetGrowthPct == null ? "na" : verdictState("assetgrowth", assetGrowthPct, cuts) ?? "na";
     const isPending = agState === "pending";
+    // 🔴 STEP 826 §2-1: na 사유 구분(822·825 원칙) — 전년比라 2개 회계연도 필요 → ① 재무 없음 ② 1년치만 ③ 연도 불연속. 업종 단정 금지(803).
+    const naKey = !lr ? "naMissing" : !prev ? "naOneYear" : gap ? "naGap" : "naMissing";
     return {
       key: "assetgrowth",
       grade: LENS_GRADE[locale].weakSignal,
@@ -335,7 +337,7 @@ export const assetGrowth: Lens = {
       short: null,
       long: labelOf(locale, "growth", agState),
       detail: { ag: round(assetGrowthPct) },
-      verdict: isPending ? pendingRead(locale) : readOf(locale, "assetgrowth", agState, agState === "conservative" ? "pos" : agState === "aggressive" ? "warn" : "flat"),
+      verdict: isPending ? pendingRead(locale) : agState === "na" ? readOf(locale, "assetgrowth", naKey, "flat") : readOf(locale, "assetgrowth", agState, agState === "conservative" ? "pos" : agState === "aggressive" ? "warn" : "flat"),
       spectrum: specOf(locale, "assetgrowth", agState === "conservative" ? 0 : agState === "aggressive" ? 2 : agState === "mid" ? 1 : -1),
       headline: assetGrowthPct != null ? `${HEADLINE_PREFIX[locale].assetgrowth} ${round(assetGrowthPct)}%` : null,
       outlook: isPending ? null : outlookOf(locale, "assetgrowth", agState),

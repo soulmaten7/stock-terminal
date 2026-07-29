@@ -73,10 +73,10 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "몸집 관리",
       what: "회사가 자산(몸집)을 얼마나 빠르게 불리는지 보는 방법 — 너무 공격적으로 키우면 이후 성과가 약한 편이에요.",
       about: "회사가 설비 투자·인수 등으로 자산을 얼마나 공격적으로 늘리는지 보는 지표예요. 2008년 쿠퍼·굴렌·실이 '자산을 빠르게 불린 회사일수록 이후 수익은 오히려 약하다'를 데이터로 밝혔어요(과잉 투자·무리한 확장 경계). 파마·프렌치 5팩터 중 투자 팩터(CMA)이기도 해요 — 자본을 신중히 쓰는 회사를 선호하는 관점이에요.",
-      note: "자산성장(투자 팩터 — Cooper-Gulen-Schill 2008 / 파마-프렌치 5팩터 CMA · 같은 계열): 총자산 전년比 증가율((당기−전기)/전기). 자산을 공격적으로 불린 회사가 이후 수익이 약한 편이라는 이상현상 — 학계 정설이고 대규모 재현연구(Hou-Xue-Zhang 2020: 447개 이상현상 중 3분의 2가 탈락한 와중에도 살아남은 축)에서 견고했어요. 밸류와 독립(βHML 낮음 = '자본 규율'이라는 별개 축). ⚠️ 단 원문의 큰 효과(저−고 연 ~20%)는 소형·초소형주·동일가중에 크게 기대요 — 재현연구도 대형주·시총가중에선 훨씬 작아진다고 봤어요. 우리 유니버스는 상위 1,000(대형·중형)이라 효과가 가장 센 소형주 구간이 빠져 있어, 우리 표본에선 방향만 +이고 통계적으론 약해요(효과가 가짜라서가 아니라 센 구간을 안 담아서). 해석은 논쟁 중(CGS=과잉투자·과잉기대 행동재무 / q이론=합리적 투자결정 — 방향은 합의, 이유는 갈림). 은행·보험은 CGS 원문은 제외했으나 우리는 총자산이 있어 값이 나와요(은행 자산성장=예금·대출 팽창이라 제조업 설비투자와 뜻 달라 해석 주의). 유니버스='오늘 상위'라 생존편향. 예측·보장 아님.",
+      note: "자산성장(투자 팩터 — Cooper-Gulen-Schill 2008 / 파마-프렌치 5팩터 CMA · 같은 계열): 총자산 전년比 증가율((당기−전기)/전기). 자산을 공격적으로 불린 회사가 이후 수익이 약한 편이라는 이상현상 — 학계 정설이고 대규모 재현연구(Hou-Xue-Zhang 2020: 447개 이상현상 중 3분의 2가 탈락한 와중에도 살아남은 축)에서 견고했어요. 밸류와 독립(βHML 낮음 = '자본 규율'이라는 별개 축). ⚠️ 단 원문의 큰 효과(저−고 연 ~20%)는 소형·초소형주·동일가중에 크게 기대요 — 재현연구도 대형주·시총가중에선 훨씬 작아진다고 봤어요. 우리 유니버스는 오늘 상위 1,000(KR=거래대금·US=시총)이라 효과가 가장 센 초소형주 구간을 충분히 안 담아, 우리 표본에선 방향만 +이고 통계적으론 약해요(효과가 가짜라서가 아니라 센 구간을 안 담아서). 해석은 논쟁 중(CGS=과잉투자·과잉기대 행동재무 / q이론=합리적 투자결정 — 방향은 합의, 이유는 갈림). 은행·보험은 CGS 원문은 제외했으나 우리는 총자산이 있어 값이 나와요(은행 자산성장=예금·대출 팽창이라 제조업 설비투자와 뜻 달라 해석 주의). 유니버스='오늘 상위'라 생존편향. 예측·보장 아님.",
       scope: {
         verified: "쿠퍼·굴렌·실(2008)이 자산을 급하게 불린 기업들이 이후 평균적으로 저조했음을 보였어요(투자 팩터·FF5 CMA). 대규모 재현연구에서도 살아남은 견고한 축이에요 — 집단 비교예요.",
-        failure: "효과의 큰 부분이 소형·초소형주에서 나와요 — 우리 유니버스(상위 1,000 대형·중형)는 그 구간이 빠져 우리 표본에선 통계적으로 약했어요. 방향(과잉투자 경계)은 정설이나 대형주에선 얇아요. 은행은 자산 성격이 달라 해석 주의.",
+        failure: "효과의 큰 부분이 소형·초소형주에서 나와요 — 우리 유니버스(오늘 상위 1,000·KR 거래대금/US 시총)는 그 초소형 구간을 충분히 안 담아 우리 표본에선 통계적으로 약했어요. 방향(과잉투자 경계)은 정설이나 대형주에선 얇아요(원전도 대형주 효과 약함). 은행은 CGS 원문은 제외했으나 우리는 총자산이 있어 값이 나와요 — 은행 자산성장은 예금·대출 팽창이라 뜻이 달라 해석 주의.",
         when: "자본 규율의 참고 축으로, 시장 내 확장이 보수적인 편인지로 보세요.",
       },
     },
@@ -166,10 +166,10 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "Asset discipline",
       what: "How fast a company is expanding its asset base — growing too aggressively has historically meant weaker returns afterward.",
       about: "Tracks how aggressively a company grows its assets through capex, acquisitions, and the like. Cooper, Gulen, and Schill showed in 2008 that firms expanding fastest tended to underperform later — a caution against overinvestment and empire-building. It's the investment factor (CMA) in the Fama-French five-factor model, favoring companies that spend capital with discipline.",
-      note: "Asset Growth (the investment factor — Cooper-Gulen-Schill 2008 / CMA in the Fama-French 5-factor model, same family): year-over-year growth in total assets ((current − prior) / prior). The anomaly — firms that expand assets aggressively tend to earn less afterward — is academic consensus and held up in large-scale replication (Hou-Xue-Zhang 2020: it survived where two-thirds of 447 anomalies did not). It is independent of value (low βHML — a separate 'capital discipline' axis). ⚠️ But the original's large effect (low−high ~20%/yr) leans heavily on small and microcaps and equal weighting — replication shows it shrinks a lot in large-cap, value-weighted samples. Our universe is the top ~1,000 (large/mid), which excludes the small-cap segment where the effect is strongest, so in our sample the direction is positive but statistically weak (not because the effect is fake, but because we do not hold the segment where it lives). The interpretation is debated (CGS: behavioral overinvestment and over-extrapolation; q-theory: rational investment choice — the direction is agreed, the cause is not). Banks and insurers were excluded in the original CGS study but get a value here because they have total assets (a bank's asset growth is deposit and loan expansion — a different meaning than a manufacturer's capex, so interpret with care). The universe is 'today's top names', so survivorship bias applies. Not a prediction or a guarantee.",
+      note: "Asset Growth (the investment factor — Cooper-Gulen-Schill 2008 / CMA in the Fama-French 5-factor model, same family): year-over-year growth in total assets ((current − prior) / prior). The anomaly — firms that expand assets aggressively tend to earn less afterward — is academic consensus and held up in large-scale replication (Hou-Xue-Zhang 2020: it survived where two-thirds of 447 anomalies did not). It is independent of value (low βHML — a separate 'capital discipline' axis). ⚠️ But the original's large effect (low−high ~20%/yr) leans heavily on small and microcaps and equal weighting — replication shows it shrinks a lot in large-cap, value-weighted samples. Our universe is today's top ~1,000 (KR by trading value, US by market cap), which does not fully hold the microcap segment where the effect is strongest, so in our sample the direction is positive but statistically weak (not because the effect is fake, but because we do not hold the segment where it lives). The interpretation is debated (CGS: behavioral overinvestment and over-extrapolation; q-theory: rational investment choice — the direction is agreed, the cause is not). Banks and insurers were excluded in the original CGS study but get a value here because they have total assets (a bank's asset growth is deposit and loan expansion — a different meaning than a manufacturer's capex, so interpret with care). The universe is 'today's top names', so survivorship bias applies. Not a prediction or a guarantee.",
       scope: {
         verified: "Cooper-Gulen-Schill (2008) showed firms that grew assets fast tended to lag afterward (the investment factor, FF5 CMA). It held up in large-scale replication too — a robust axis. It is a group comparison.",
-        failure: "Much of the effect comes from small and microcaps — our universe (top ~1,000, large/mid) excludes that segment, so it was statistically weak in our sample. The direction (caution on overexpansion) is consensus but thin in large caps. Banks hold assets of a different nature, so interpret with care.",
+        failure: "Much of the effect comes from small and microcaps — our universe (today's top ~1,000, KR by trading value / US by market cap) does not fully hold that segment, so it was statistically weak in our sample. The direction (caution on overexpansion) is consensus but thin in large caps (the original finds the large-cap effect weak too). Banks were excluded in the original CGS study but get a value here because they report total assets — a bank's asset growth is deposit and loan expansion, so interpret with care.",
         when: "Treat it as a reference axis for capital discipline — whether expansion is relatively conservative within the market.",
       },
     },
@@ -247,6 +247,9 @@ export const LENS_READINGS: Record<Locale, {
       mid: { phrase: "확장 중간권", plain: "자산 확장 속도가 시장 중간권이에요." },
       conservative: { phrase: "확장 보수적(시장 대비)", plain: "자산 확장이 시장에서 보수적인 편이에요. 역사적으로 자본을 아껴 쓰는 회사가 이후 성과가 나은 편이었어요." },
       na: { phrase: "산출 불가", plain: "재무 정보가 부족해 이 기법으론 판단하기 어려워요." },
+      naOneYear: { phrase: "산출 불가 (재무 1년치)", plain: "전년 대비 증가율이라 2개 회계연도가 필요한데 1년치만 있어요." },
+      naGap: { phrase: "산출 불가 (연도 불연속)", plain: "재무 연도가 연속되지 않아(중간에 빠진 해가 있어) 전년 대비 계산이 안 돼요." },
+      naMissing: { phrase: "산출 불가", plain: "재무 데이터가 부족해 이 기법으론 판단하기 어려워요." },
     },
     technical: {
       up: { phrase: "상승 추세", plain: "지금 가격이 장기 평균선 위에 있어요. 단기 흐름을 빠르게 훑는 참고용이에요." },
@@ -297,6 +300,9 @@ export const LENS_READINGS: Record<Locale, {
       mid: { phrase: "Mid-pack expansion", plain: "Its asset expansion pace sits mid-market." },
       conservative: { phrase: "Conservative expansion (vs. market)", plain: "Its asset expansion is among the more conservative in the market. Historically, disciplined spenders have tended to fare better afterward." },
       na: { phrase: "Can't be scored", plain: "Not enough financial data for this lens to judge." },
+      naOneYear: { phrase: "Can't be scored (only 1 year)", plain: "This is a year-over-year growth rate, which needs two fiscal years — only one is available." },
+      naGap: { phrase: "Can't be scored (non-consecutive years)", plain: "The fiscal years are not consecutive (a year is missing), so the year-over-year change cannot be computed." },
+      naMissing: { phrase: "Can't be scored", plain: "Not enough financial data for this lens to judge." },
     },
     technical: {
       up: { phrase: "Trend leans up", plain: "The price sits above its long-term average. A quick read of short-term action, for reference." },
@@ -370,7 +376,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       aggressive: "길게 보면 불리한 편 — 몸집을 공격적으로 키운 회사는 이후 성과가 약했어요 (다만 근거는 아직 약해요).",
       mid: "장기: 중립 — 성장 속도가 과하지도 정체도 아니에요.",
       conservative: "길게 보면 유리한 편 — 자본을 아껴 쓴 회사가 이후 더 나았어요 (다만 근거는 아직 약해요).",
-      na: "판단 불가 — 재무 정보 부족.",
+      na: "판단 보류 — 이 종목엔 이 기법을 적용하지 않았어요 (사유는 위 참고).",
     },
     technical: {
       up: "단기 상태: 추세 위 — 참고용이에요 (모멘텀과 겹치는 신호).",
@@ -412,7 +418,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       aggressive: "Long term: leans unfavorable — aggressive expanders have historically lagged afterward (weak in our sample).",
       mid: "Long term: neutral — growth pace is moderate.",
       conservative: "Long term: leans favorable — disciplined spenders have historically fared better (weak in our sample).",
-      na: "Can't judge — not enough data.",
+      na: "On hold — this lens was not applied to this stock (see the reason above).",
     },
     technical: {
       up: "Short-term state: trend up — reference only (overlaps momentum).",

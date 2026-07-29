@@ -756,8 +756,8 @@
       "valuationHi": "싼 편",
       "lowvolLo": "출렁이는 편",
       "lowvolHi": "차분한 편",
-      "assetgrowthLo": "공격적",
-      "assetgrowthHi": "보수적"
+      "assetgrowthLo": "공격적인 편",
+      "assetgrowthHi": "보수적인 편"
     },
     "gauge": {
       "rank": "랭크 <v>{p}</v>/100 · 오른쪽(높을수록) {hi}"
@@ -924,7 +924,7 @@
     "narrativeMethodQuality": "퀄리티 렌즈는 총자산 대비 매출총이익(GP/A)으로 수익 효율을 봐요. 2013년 노비-마르크스가 데이터로 처음 밝혔어요.",
     "narrativeCutoffQuality": "판정 기준: GP/A를 시장 분포로 줄 세워 상위 30%({hi}% 이상)는 수익성 높은 편, 하위 30%({lo}% 이하)는 낮은 편으로 봐요.",
     "narrativeMethodAssetgrowth": "자산성장 렌즈는 총자산의 전년 대비 증가율로 확장 속도를 봐요. 2008년 쿠퍼·굴렌·실이 데이터로 처음 밝혔고, 파마-프렌치 5팩터의 투자 팩터(CMA)이기도 해요.",
-    "narrativeCutoffAssetgrowth": "판정 기준: 자산성장률이 {lo}%보다 작으면 보수적, {hi}%보다 크면 공격적으로 판정해요.",
+    "narrativeCutoffAssetgrowth": "판정 기준: 자산성장률을 시장 분포로 줄 세워 낮은 30%({lo}% 이하)는 확장 보수적, 높은 30%({hi}% 이상)는 확장 공격적으로 봐요.",
     "narrativeMethodTechnical": "기술 렌즈는 RSI(14일)로 과열·침체를, 200일 이동평균 대비 위치로 추세를 봐요. RSI는 1978년 와일더가 만들었어요.",
     "narrativeCutoffTechnical": "RSI 참고 눈금: {hi} 이상 과열·{lo} 이하 침체 (판정은 200일선 기준·RSI는 함께 보는 참고 수치).",
     "narrativeStockTechnical": "현재 200일선 대비 {pct}%로 “{verdict}”로 판정돼요.",

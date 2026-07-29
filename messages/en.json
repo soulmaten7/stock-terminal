@@ -756,8 +756,8 @@
       "valuationHi": "Cheaper",
       "lowvolLo": "Choppier",
       "lowvolHi": "Calmer",
-      "assetgrowthLo": "Aggressive",
-      "assetgrowthHi": "Conservative"
+      "assetgrowthLo": "More aggressive",
+      "assetgrowthHi": "More conservative"
     },
     "gauge": {
       "rank": "Rank <v>{p}</v>/100 · right side (higher) {hi}"
@@ -924,7 +924,7 @@
     "narrativeMethodQuality": "The quality lens measures profit efficiency via gross profit over total assets (GP/A). Novy-Marx first showed this in the data in 2013.",
     "narrativeCutoffQuality": "Cutoff: ranked by market distribution — the top 30% (GP/A at or above {hi}%) reads high profitability, the bottom 30% (at or below {lo}%) reads low.",
     "narrativeMethodAssetgrowth": "The asset growth lens tracks how fast total assets grew versus a year ago. Cooper, Gulen, and Schill first showed this in the data in 2008 — it is also the investment factor (CMA) in the Fama-French five-factor model.",
-    "narrativeCutoffAssetgrowth": "Cutoff: asset growth below {lo}% is classified conservative, above {hi}% is classified aggressive.",
+    "narrativeCutoffAssetgrowth": "Cutoff: ranked by market distribution — the lowest 30% (asset growth at or below {lo}%) reads conservative expansion, the highest 30% (at or above {hi}%) reads aggressive.",
     "narrativeMethodTechnical": "The technical lens reads overbought/oversold via 14-day RSI, and trend via position relative to the 200-day moving average. RSI was created by Welles Wilder in 1978.",
     "narrativeCutoffTechnical": "RSI reference: above {hi} overbought, below {lo} oversold (verdict is 200-day based; RSI is a reference reading shown alongside).",
     "narrativeStockTechnical": "It is currently {pct}% versus the 200-day average, read as “{verdict}.”",
