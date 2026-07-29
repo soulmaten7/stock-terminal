@@ -10,6 +10,8 @@ import { TONE_DOT_CLASS as TONE_DOT, changeColorClass, type Tone } from '@/lib/l
 import { pickLocale } from '@/lib/lensCopy';
 import { resolveWatchlistName } from '@/lib/displayName';
 import { useAuthStore } from '@/stores/authStore';
+import { AsOfBadge } from '@/components/ui/AsOfBadge';
+import { marketToday } from '@/lib/marketDate';
 
 type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null; unsupportedMarket?: boolean };
 type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
@@ -66,6 +68,7 @@ export default function WatchlistClient() {
   const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거
   const [actionError, setActionError] = useState<string | null>(null); // 해제 실패 알림(STEP 804 §5)
   const [lensMap, setLensMap] = useState<Record<string, LensState>>({});
+  const [asOf, setAsOf] = useState<Record<string, string>>({}); // 시장별 스냅샷 기준일(STEP 829 §7)
   const lensStarted = useRef(false);
   const removing = useRef<Set<string>>(new Set()); // 해제 연타 방지(in-flight 가드)
 
@@ -87,6 +90,7 @@ export default function WatchlistClient() {
         if (cancelled) return;
         const list: WatchItem[] = j.watchlist ?? [];
         setItems(list);
+        setAsOf((j.asOf ?? {}) as Record<string, string>);
         setAuth(j.auth !== false);
         setLoading(false);
         // 선계산(lens_scores) 톤이 있는 항목은 즉시 렌더 — 스켈레톤·fetch 없이 바로 채움
@@ -121,9 +125,10 @@ export default function WatchlistClient() {
             const tone = l?.verdict?.tone;
             if (tone === 'pos' || tone === 'warn' || tone === 'flat') tones.push(tone);
           }
+          // STEP 829 §7: supported=true여도 score가 없으면 0으로 날조하지 않는다(804 §1 잔여) — 실수치일 때만 도트.
           const fs = j.fscore as { supported?: boolean; score?: number } | null;
-          if (fs?.supported) {
-            const score = fs.score ?? 0;
+          if (fs?.supported && typeof fs.score === 'number') {
+            const score = fs.score;
             tones.push(score >= 7 ? 'pos' : score <= 3 ? 'warn' : 'flat');
           }
           setLensMap((m) => ({ ...m, [item.symbol]: { state: 'done', tones } }));
@@ -177,9 +182,20 @@ export default function WatchlistClient() {
     );
   }
 
+  // 데이터 기준일 배지 — 홈 시장(ko=KR·en=US) 스냅샷이 오늘과 다를 때만(오늘·탐색과 같은 규칙·STEP 829 §7).
+  //   관심목록은 시장 혼재 플랫 리스트라 TodayClient 관심 섹션과 같이 홈 시장 기준 단일 배지.
+  const homeMarket = locale === 'en' ? 'US' : 'KR';
+  const homeAsOf = asOf[homeMarket] ?? null;
+  const showAsOf = homeAsOf != null && homeAsOf !== marketToday(homeMarket);
+
   return (
     <>
     {actionError && <p className="mb-2 rounded-lg bg-unjong-danger/10 px-3 py-2 text-center text-[13px] text-unjong-danger">{actionError}</p>}
+    {showAsOf && (
+      <div className="mb-2 flex justify-end">
+        <AsOfBadge date={homeAsOf} loc={locale} market={homeMarket} />
+      </div>
+    )}
     <ul className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface">
       {items.map((f) => (
         <li key={`${f.symbol}:${f.market}`} className="group flex items-start gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background active:bg-unjong-background">

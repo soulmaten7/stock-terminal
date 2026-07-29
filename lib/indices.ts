@@ -7,7 +7,10 @@ const yf = new YahooFinance();
 // 30초 서버 캐시 — 그리드 + 하단 티커 + 서버 프리페치가 같은 데이터 공유, Yahoo 호출 절감
 let _cache: { data: IndicesResult; at: number } | null = null;
 const _TTL = 30_000;
-let _lastGood: IndicesResult | null = null; // 직전 정상값 — 빈/실패 응답 시 fallback
+// 🔴 STEP 829 §3: 직전 정상값 폴백에 나이(at)를 달고 TTL을 둔다 — 야후 장애가 며칠 이어져도
+//   '며칠 묵은 코스피·환율'을 현재값으로 내보내지 않는다(804 asOf 원칙을 홈 지수 스트립에도 적용).
+let _lastGood: { data: IndicesResult; at: number } | null = null;
+const _STALE_MAX = 24 * 60 * 60 * 1000; // 24h 초과 폴백은 '현재값'으로 못 씀 → 빈 응답(지어내지 않기)
 
 export type IndexItem = {
   name: string;
@@ -18,7 +21,8 @@ export type IndexItem = {
   spark: number[];
   group: string;
 };
-export type IndicesResult = { items: IndexItem[] };
+// asOf = 데이터의 기준 시각(epoch ms). 신선 조회=now·폴백=직전 정상값 시각 → 화면이 나이를 판단할 수 있다.
+export type IndicesResult = { items: IndexItem[]; asOf: number };
 
 const INDEX_SYMBOLS = [
   // 🇰🇷 KR
@@ -190,15 +194,24 @@ export async function getIndices(): Promise<IndicesResult> {
 
     const items = merged.filter((x) => x.value !== "0");
     if (items.length > 0) {
-      const payload = { items };
-      _cache = { data: payload, at: Date.now() };
-      _lastGood = payload; // 정상값 저장
+      const now = Date.now();
+      const payload: IndicesResult = { items, asOf: now };
+      _cache = { data: payload, at: now };
+      _lastGood = { data: payload, at: now }; // 정상값 + 시각 저장
       return payload;
     }
-    // 결과가 비면 직전 정상값으로 (빈 응답 노출 방지)
-    return _lastGood ?? { items: [] };
+    // 결과가 비면 직전 정상값으로 (빈 응답 노출 방지) — 단 너무 묵었으면 내보내지 않는다.
+    return freshFallback();
   } catch {
-    // 전체 실패 시에도 직전 정상값 유지 (있으면)
-    return _lastGood ?? { items: [] };
+    // 전체 실패 시에도 직전 정상값 유지 (있고, TTL 안이면)
+    return freshFallback();
   }
+}
+
+// 직전 정상값 폴백 — 24h 이내면 그 값(asOf=원래 시각)으로, 그보다 묵었으면 빈 응답(묵은 값을 현재값으로 내보내지 않기).
+function freshFallback(): IndicesResult {
+  if (_lastGood && Date.now() - _lastGood.at <= _STALE_MAX) {
+    return { items: _lastGood.data.items, asOf: _lastGood.at };
+  }
+  return { items: [], asOf: Date.now() };
 }

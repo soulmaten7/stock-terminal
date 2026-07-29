@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { blockWrite } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -8,6 +9,8 @@ export const dynamic = "force-dynamic";
 const SLOTS = ["broker", "room", "other"];
 
 export async function POST(req: NextRequest) {
+  // STEP 829 §6: PII 저장 폼 — 봇·스크립트 대량 삽입 차단(제출은 드무므로 낮게).
+  if (blockWrite(req, "adinquiry", 4, 20)) return NextResponse.json({ error: "too many requests" }, { status: 429 });
   let body: { slot?: string; company?: string; contact_name?: string; email?: string; phone?: string; message?: string };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "잘못된 요청" }, { status: 400 }); }
 

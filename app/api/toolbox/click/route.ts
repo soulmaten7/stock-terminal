@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { blockWrite } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
+  // STEP 829 §6: 클릭 로그(RLS "anyone can insert") — 클릭은 잦으므로 상한 넉넉히, 스크립트 폭주만 봉인. 초과 시 200(무해·기록만 생략).
+  if (blockWrite(req, 'click', 40, 400)) return NextResponse.json({ ok: true });
   const { linkId } = await req.json().catch(() => ({}));
   if (!linkId) return NextResponse.json({ error: 'linkId required' }, { status: 400 });
 

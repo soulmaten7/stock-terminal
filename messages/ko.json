@@ -906,7 +906,7 @@
     "closingFooter": "사실만 정리했어요 · 판단은 당신",
     "narrativePercentileLabel": "거래대금 상위권 내 백분위",
     "narrativePercentileLabelUs": "시총 상위권 내 백분위",
-    "narrativeCutSource": "{market} 분포 하위/상위 30% 기준 · N={n} · {date}",
+    "narrativeCutSource": "{market} 분포 하위/상위 30% 기준 · 이 기법으로 계산된 {n}종목 · {date}",
     "narrativePerBasisTtm": "PER은 최근 4분기 실적(TTM) 기준이에요(야후 제공값).",
     "narrativePerBasisAnnual": "PER은 직전 연간 실적 기준이에요(사이트마다 TTM을 써서 값이 다를 수 있어요).",
     "narrativeScopeVerified": "검증(백테스트)은 미국 유니버스 기준이에요 — 이 시장 자체 검증 데이터는 아직 없어요. 판정 컷만 이 시장 분포로 맞췄어요.",

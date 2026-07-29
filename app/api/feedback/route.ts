@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { blockWrite } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +11,8 @@ const INTENT = ["yes", "maybe", "no"];
 
 // 베타 피드백 삽입 — 비로그인도 허용(지인 베타). 서버 service-role로 저장, 입력 길이 캡.
 export async function POST(req: NextRequest) {
+  // STEP 829 §6: 봇·스크립트 대량 삽입 차단(폼 제출은 드무므로 낮게). 정상 사용자(가끔 제출)는 안 걸림.
+  if (blockWrite(req, "feedback", 4, 20)) return NextResponse.json({ error: "too many requests" }, { status: 429 });
   let body: Record<string, unknown>;
   try { body = await req.json(); } catch { return NextResponse.json({ error: "잘못된 요청" }, { status: 400 }); }
 

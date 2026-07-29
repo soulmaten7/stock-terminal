@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { unzipSync } from "fflate";
 import { blockLLM } from "@/lib/rateLimit";
 import { sanitizeFilingLabel, filingSummaryPasses } from "@/lib/filingGuard";
+import { isActiveCountry } from "@/lib/activeMarkets";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -54,10 +55,13 @@ export async function GET(req: NextRequest) {
   const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
   const col = locale === "en" ? "summary_en" : "summary_ko";
   if (!/^[A-Za-z0-9]+$/.test(docid)) return NextResponse.json({ error: "bad docid" }, { status: 400 });
+  // STEP 829 §4: 파킹 시장(JP) 게이트 — 유료 LLM 호출 차단(캐시 조회 앞). ACTIVE_MARKETS에 "JP" 추가 시 자동 개방.
+  if (!isActiveCountry("JP")) return NextResponse.json({ error: "market not active" }, { status: 400 });
+  const acc = `JP:${docid}`; // STEP 829 §5: 시장 프리픽스(14자리 숫자 docid가 KR rcept 슬롯 선점하던 충돌 차단)
 
   const sb = createAdminClient();
   const { data: hit } = await sb
-    .from("filing_summaries").select(col).eq("accession", docid).maybeSingle();
+    .from("filing_summaries").select(col).eq("accession", acc).maybeSingle();
   const cachedText = (hit as Record<string, string> | null)?.[col];
   if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
 
@@ -128,7 +132,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ summary: "" });
   }
   const { error: upErr } = await sb.from("filing_summaries").upsert(
-    { accession: docid, symbol, [col]: summary, model: "gpt-4o-mini" },
+    { accession: acc, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },
   );
   if (upErr) {

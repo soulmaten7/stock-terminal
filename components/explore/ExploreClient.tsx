@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
-import { marketToday } from '@/lib/marketDate';
+import { AsOfBadge } from '@/components/ui/AsOfBadge';
 import { LENS_READINGS, compactPhrase, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
@@ -55,11 +55,6 @@ function stateLabel(loc: Locale, key: string, state: string | null): string {
   return readings?.[state]?.phrase ?? state;
 }
 // 행 폭이 좁아 괄호 보조어까지 못 담을 때(예 "하락 추세 (200일선 아래)") 메인 상태만 — 원문은 상세에서(STEP 770 §4).
-function weekdayOf(dateStr: string, loc: Locale): string {
-  const d = new Date(dateStr + 'T00:00:00Z');
-  return new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { weekday: 'long', timeZone: 'UTC' }).format(d);
-}
-
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
     const r = await fetch(url);
@@ -87,12 +82,7 @@ function chipClass(active: boolean): string {
   }`;
 }
 
-// UTC 대신 marketToday로 비교 — KST 새벽 UTC 지연으로 배지가 숨던 버그 수정(STEP 804 §3).
-function AsOfBadge({ date, loc, market = 'KR' }: { date: string | null; loc: Locale; market?: string }) {
-  const t = useTranslations('Today');
-  if (!date || date === marketToday(market)) return null;
-  return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
-}
+// AsOfBadge는 components/ui/AsOfBadge로 공용화(STEP 829 §7).
 
 // 섹션 헤더 우측 기준 라벨 — 행마다 붙던 "어제" 프리픽스를 섹션당 한 번으로(STEP 770 §1).
 function BasisLabel() {

@@ -17,10 +17,11 @@ export async function GET(req: NextRequest) {
   const locale = req.nextUrl.searchParams.get('lang') === 'en' ? 'en' : 'ko';
   const col = locale === 'en' ? 'summary_en' : 'summary_ko';
   if (!/^\d{14}$/.test(rcept)) return NextResponse.json({ error: 'bad rcept' }, { status: 400 });
+  const acc = `KR:${rcept}`; // STEP 829 §5: 시장 프리픽스로 네임스페이스 분리(JP docid=14자리 숫자가 KR 슬롯 선점하던 충돌 차단)
 
   const sb = createAdminClient();
   const { data: hit } = await sb
-    .from('filing_summaries').select(col).eq('accession', rcept).maybeSingle();
+    .from('filing_summaries').select(col).eq('accession', acc).maybeSingle();
   const cachedText = (hit as Record<string, string> | null)?.[col];
   if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
 
@@ -79,7 +80,7 @@ export async function GET(req: NextRequest) {
 
   // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
   const { error: upErr } = await sb.from('filing_summaries').upsert(
-    { accession: rcept, symbol, [col]: summary, model: 'gpt-4o-mini' },
+    { accession: acc, symbol, [col]: summary, model: 'gpt-4o-mini' },
     { onConflict: 'accession' },
   );
   if (upErr) {

@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { blockLLM } from "@/lib/rateLimit";
 import { urlCacheKey } from "@/lib/summaryCacheKey";
 import { sanitizeFilingLabel, filingSummaryPasses } from "@/lib/filingGuard";
+import { isActiveCountry } from "@/lib/activeMarkets";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -43,6 +44,8 @@ export async function GET(req: NextRequest) {
   }
   // 캐시 키를 본문 URL 해시로 파생(CN/VN과 동일 규칙·공용 헬퍼).
   const acc = urlCacheKey("GB", url);
+  // STEP 829 §4: 파킹 시장(GB) 게이트 — 유료 LLM 호출 차단(캐시 조회 앞). ACTIVE_MARKETS 추가 시 자동 개방.
+  if (!isActiveCountry("GB")) return NextResponse.json({ error: "market not active" }, { status: 400 });
   const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
   const col = locale === "en" ? "summary_en" : "summary_ko";
 

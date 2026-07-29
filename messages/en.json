@@ -906,7 +906,7 @@
     "closingFooter": "Just the facts, summarized — the judgment is yours.",
     "narrativePercentileLabel": "Percentile among top-turnover names",
     "narrativePercentileLabelUs": "Percentile among top-market-cap names",
-    "narrativeCutSource": "{market} distribution, bottom/top 30% · N={n} · {date}",
+    "narrativeCutSource": "{market} distribution, bottom/top 30% · {n} stocks scored by this lens · {date}",
     "narrativePerBasisTtm": "PER is based on the trailing 12 months (TTM), as provided by Yahoo.",
     "narrativePerBasisAnnual": "PER is based on the last fiscal year (other sites often use TTM, so values can differ).",
     "narrativeScopeVerified": "The backtest is on a US universe — there is no self-validation data for this market yet. Only the verdict cuts are fit to the distribution of this market.",

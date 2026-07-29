@@ -11,7 +11,7 @@ import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
 import { resolveDisplayName, resolveWatchlistName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
-import { marketToday } from '@/lib/marketDate';
+import { AsOfBadge } from '@/components/ui/AsOfBadge';
 import { WatchStar } from '@/components/common/WatchStar';
 import { PageShell } from '@/components/layout/PageShell';
 
@@ -64,19 +64,6 @@ async function fetchJson<T>(url: string): Promise<T | null> {
   } catch {
     return null;
   }
-}
-
-function weekdayOf(dateStr: string, loc: Locale): string {
-  const d = new Date(dateStr + 'T00:00:00Z');
-  return new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { weekday: 'long', timeZone: 'UTC' }).format(d);
-}
-
-// 데이터 기준일이 그 시장의 로컬 '오늘'과 다르면 배지 노출("금요일 기준").
-// UTC 대신 marketToday로 비교 — KST 새벽(UTC 하루 뒤처짐)에 어제 데이터가 '오늘'로 오판돼 배지가 숨던 버그 수정(STEP 804 §3).
-function AsOfBadge({ date, loc, market = 'KR' }: { date: string | null; loc: Locale; market?: string }) {
-  const t = useTranslations('Today');
-  if (!date || date === marketToday(market)) return null;
-  return <span className="ml-2 rounded-full bg-unjong-background px-2 py-0.5 text-[13px] font-medium text-unjong-muted sm:text-[11px]">{t('asOfDay', { day: weekdayOf(date, loc) })}</span>;
 }
 
 // 섹션 헤더 우측 기준 라벨 — 행마다 붙던 "어제" 프리픽스를 섹션당 한 번으로(STEP 770 §1).

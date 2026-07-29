@@ -19,6 +19,10 @@ const CHECKS: Check[] = [
   { name: "US 시세(us-perf)", table: "us_stock_perf", column: "updated_at", thresholdH: 25 },
   { name: "렌즈 KR(kr-lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "KR"], thresholdH: 25 },
   { name: "렌즈 US(lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "US"], thresholdH: 25 },
+  // 🔴 STEP 829 §8: '오늘' 화면 본체 = lens_state_changes. lens_scores만 신선하고 diff(pass2)만 죽으면 이 피드가 굳는다
+  //   (828이 cron ok:false로도 잡으나 health로도 이중 감시). 임계 80h = 정상 주말(금 마지막→월 재개 ~62~72h)에 여유.
+  //   change_date는 상태가 '변한' 종목이 있을 때만 진행 → 주말엔 안 움직이므로 25h가 아니라 80h.
+  { name: "상태변화 피드(lens_state_changes)", table: "lens_state_changes", column: "change_date", thresholdH: 80 },
   { name: "한 입 브리핑(daily-brief)", table: "daily_brief", column: "created_at", thresholdH: 25 },
   // email-brief·jp-disclosures는 결과 테이블 나이로는 실행 여부를 못 잡음(구독자 0·조용한 주말이면 산출물 미갱신).
   // → cron_heartbeats에 매 실행 기록한 last_run_at 나이로 감시(STEP 794 §4).

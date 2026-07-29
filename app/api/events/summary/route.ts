@@ -27,12 +27,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'symbol and valid SEC Archives link required' }, { status: 400 });
   }
   const [, cik, acc, doc] = m;
+  const cacheKey = `US:${acc}`; // STEP 829 §5: 시장 프리픽스로 네임스페이스 분리(6개국 공용 키공간 충돌 차단)
 
   const sb = createAdminClient();
 
   // 1) 전역 캐시(로케일 컬럼 분리·accession 전역 키)
   const { data: hit } = await sb
-    .from('filing_summaries').select(col).eq('accession', acc).maybeSingle();
+    .from('filing_summaries').select(col).eq('accession', cacheKey).maybeSingle();
   const cachedText = (hit as Record<string, string> | null)?.[col];
   if (cachedText) return NextResponse.json({ summary: cachedText, cached: true });
 
@@ -96,7 +97,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ summary: '' });
   }
   const { error: upErr } = await sb.from('filing_summaries').upsert(
-    { accession: acc, symbol, [col]: summary, model: 'gpt-4o-mini' },
+    { accession: cacheKey, symbol, [col]: summary, model: 'gpt-4o-mini' },
     { onConflict: 'accession' },
   );
   if (upErr) {

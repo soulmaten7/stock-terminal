@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { tonesFromStates, type Tone } from "@/lib/lensTones";
 import { isActiveCountry } from "@/lib/activeMarkets";
+import { marketToday } from "@/lib/marketDate";
 import usSymbolsData from "@/data/us_symbols.json";
 import { titleCaseUsName } from "@/lib/usNameFormat";
 
@@ -123,5 +124,20 @@ export async function GET() {
     };
   });
 
-  return NextResponse.json({ auth: true, watchlist });
+  // STEP 829 §7: 데이터 기준일(asOf) — 오늘·탐색과 같은 규칙으로 화면이 스냅샷 나이를 표시(최대 25h 묵음 정직화).
+  //   KR=bas_dd(거래일)·US=us_stock_perf 최신 updated_at을 시장 로컬 날짜로. 관심목록에 실제 있는 시장만 조회.
+  const asOf: Record<string, string> = {};
+  const present = new Set(Array.from(byCountry.keys()).filter((c) => isActiveCountry(c)));
+  await Promise.all([
+    present.has("KR")
+      ? admin.from("kr_stock_snapshot").select("bas_dd").order("bas_dd", { ascending: false }).limit(1)
+          .then(({ data }) => { const d = data?.[0]?.bas_dd as string | undefined; if (d && /^\d{8}$/.test(d)) asOf.KR = `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`; })
+      : Promise.resolve(),
+    present.has("US")
+      ? admin.from("us_stock_perf").select("updated_at").order("updated_at", { ascending: false }).limit(1)
+          .then(({ data }) => { const u = data?.[0]?.updated_at as string | undefined; if (u) asOf.US = marketToday("US", new Date(u)); })
+      : Promise.resolve(),
+  ]);
+
+  return NextResponse.json({ auth: true, watchlist, asOf });
 }

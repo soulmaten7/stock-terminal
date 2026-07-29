@@ -1,5 +1,21 @@
-<!-- 2026-07-28 -->
+<!-- 2026-07-29 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-07-29 — 🛡️ 운영·데이터 정직성: 렌즈 밖 9건 (STEP 829 · HEAD `9013dd5`)
+
+> 828(베타차단 보안 3건) 후속. 렌즈 문구는 안 건드림(820~827 정합 유지·잔여는 830). 정상 사용자 화면 동작 불변.
+
+- **§1 828 baseline 재확인**: 828 보고서가 프루닝 하한 baseline을 KR~489로 적었으나 **실측 KR 905 / US 998**. 코드(`computeLensScoresFor`의 `prevCount`)는 실은 **DB 실측 + 시장별 독립**(`.eq("market", market)`)이라 정상 — **보고 수치만 옛 문서(489)를 베낀 오류**. 교훈(#59): 보고 수치는 문서 기억이 아니라 실측으로.
+- **§2 컷 모집단 성격 명시**: 렌즈마다 컷 표본 N이 다름(KR 밸류 623 vs 모멘텀 883 — 적자·우선주 제외). 근거줄 `narrativeCutSource`를 "N={n}" → **"이 기법으로 계산된 {n}종목"**(ko/en·문구만·계산 무변)으로 성격 명시.
+- **§3 홈 지수 stale 봉인**: `lib/indices.ts` `_lastGood` 폴백에 **at + 24h TTL** + `IndicesResult.asOf` 추가. 야후 며칠 장애 시 묵은 코스피·환율을 현재값으로 서빙하던 것을 `freshFallback()`이 차단(24h 초과 → 빈 응답·지어내지 않기). 804 asOf 원칙을 홈 스트립에 적용. 세계 지수(니케이·항셍·FTSE)는 글로벌 매크로 맥락이라 유지(호출량 미미).
+- **§4 파킹시장 공시요약 게이트**: `jp/cn/vn/gb-events/summary` 4라우트에 **`isActiveCountry(자기시장)` 게이트**(캐시조회 앞) — 파킹 시장 심볼로 유료 LLM 호출 차단. 심볼 스푸핑 안 되게 라우트 자기 시장 기준·ACTIVE_MARKETS 추가 시 자동 개방. 라이브 실측 jp-events → **400** "market not active".
+- **§5 캐시 키 네임스페이스**: `filing_summaries` 6개국 단일 accession 키공간에서 KR(raw rcept)·JP(raw docid)·US(raw acc)가 무프리픽스라 **JP 14자리 docid가 KR 슬롯 선점 가능**했음. `KR:`/`JP:`/`US:` **프리픽스** 부여(CN/GB/VN은 `urlCacheKey`로 이미 네임스페이스) + **기존 1542행 심볼패턴 마이그(무손실·MCP 검증·KR139/JP355/US1048)**. JP는 §4 게이트로 이중 차단.
+- **§6 무인증 쓰기 레이트리밋**: `feedback`·`advertise/inquiry`(PII)·`toolbox/click`(RLS anyone-insert) 3종에 **`blockWrite(req, kind, perMin, perHour)`** 신설(봇 UA + IP·폼 4/20·클릭 40/400). 라이브 실측: 폼 5번째 → **429**, 봇 UA(curl) → 즉시 429.
+- **§7 관심 화면 정직성 2건**: (a) **asOf 배지** — 공용 `components/ui/AsOfBadge`로 추출(오늘·탐색 중복 제거)해 관심 화면에 홈 시장 스냅샷 기준일 표시(quotes 라우트가 KR `bas_dd`·US `updated_at` 반환). (b) **`fs.score ?? 0` 날조 제거** — `supported`인데 score 없으면 0→warn 도트 찍히던 804 §1 잔여. `typeof score === 'number'`일 때만 도트. **동일 버그가 종목상세 렌즈 헤더에도 복제돼 있어 함께 수정**.
+- **§8 health 사각 보강**: `lens_state_changes`('오늘' 화면 본체) 감시 추가(80h·주말 여유). 828의 신선행수 하한(KR 2765/US 5952)·`lens_cuts` 나이 실행 검증 — 로컬 수동 실행 **staleCount 0**(전 항목 ok).
+- **§9 크론 재배치**: US 데이터 의존 순서로 — `lens-scores` 20:00→**21:30**(EST 종가 21:00 UTC 뒤라 장중가 산출 방지·post-close 연중), `daily-brief` 21:00→**22:30**(us-perf 22:00·US 렌즈 뒤라 US 가격·변화 당일값), `email-brief` 22:15→**23:00**(daily-brief 뒤). KR 브리핑 배포 06:00→07:30 KST(pre-market). Hobby 일1회 유지(8개 무변).
+- **✅ 검증**: tsc 0 · vitest **114/114** · build ✓. 라이브(dev): jp-events 400·feedback 429(폼5+봇)·health staleCount 0·종목 페이지 200. 마이그 후 `filing_summaries` 전 행 프리픽스(UNPREFIXED 0). **정직한 한계**: §3 TTL 강제만료·§9 크론 신규시각은 프로덕션 배포 후 관찰(로컬/코드 검증까지).
+- **▶ 다음**: STEP 830(렌즈 잔여·SEO·접근성·문서 마감) → 전체 최종 확인 → 베타.
 
 ## 2026-07-28 (2) — 🇺🇸 US 확장 검증: KR과 같은 잣대로 점검 (STEP 807 · HEAD `5879ca4`)
 

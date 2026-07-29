@@ -4,6 +4,7 @@ import { extractText, getDocumentProxy } from "unpdf";
 import { blockLLM } from "@/lib/rateLimit";
 import { urlCacheKey } from "@/lib/summaryCacheKey";
 import { sanitizeFilingLabel, filingSummaryPasses } from "@/lib/filingGuard";
+import { isActiveCountry } from "@/lib/activeMarkets";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -26,6 +27,8 @@ export async function GET(req: NextRequest) {
   // 캐시 키를 본문 PDF URL에서 파생(해시) — 예전엔 클라 id가 pdf와 독립이라 임의 문서를 임의 id로
   // 저장하는 캐시 포이즈닝이 가능했음. 이제 키가 소스 URL에만 묶임(STEP 793·GB 라우트 원칙과 동일).
   const acc = urlCacheKey(okHkex ? "HK" : "CN", pdf);
+  // STEP 829 §4: 파킹 시장(CN/HK) 게이트 — 유료 LLM 호출 차단(캐시 조회 앞). ACTIVE_MARKETS 추가 시 자동 개방.
+  if (!isActiveCountry(okHkex ? "HK" : "CN")) return NextResponse.json({ error: "market not active" }, { status: 400 });
   const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
   const col = locale === "en" ? "summary_en" : "summary_ko";
 

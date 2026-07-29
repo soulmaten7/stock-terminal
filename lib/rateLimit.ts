@@ -88,3 +88,11 @@ export function blockLLM(req: NextRequest): boolean {
   if (isBotUA(req.headers.get("user-agent"))) return true;
   return !allowGeneration(`llm:${clientIp(req)}`);
 }
+
+// 🔴 STEP 829 §6: 무인증 쓰기(피드백·광고문의·클릭 로그) 레이트리밋 — 봇 차단 + IP 기준 상한.
+//   LLM 라우트보다 낮게(쓰기는 남용 시 DB·PII 오염). kind별 캐(caps)는 호출부가 지정(클릭은 잦고, 폼 제출은 드묾).
+//   상한은 정상 사용자가 안 걸리는 선(폼=분당 몇 번·클릭=분당 수십). 초과 시 호출부가 429.
+export function blockWrite(req: NextRequest, kind: string, perMin: number, perHour: number): boolean {
+  if (isBotUA(req.headers.get("user-agent"))) return true;
+  return !allowGeneration(`w:${kind}:${clientIp(req)}`, perMin, perHour);
+}

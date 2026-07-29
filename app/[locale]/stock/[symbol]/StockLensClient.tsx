@@ -1145,8 +1145,9 @@ export default function StockLensClient({ initialName }: { initialName?: string 
     const tone = l.verdict?.tone;
     if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
   }
-  if (data?.fscore?.supported) {
-    const score = data.fscore.score ?? 0;
+  // STEP 829 §7: supported=true여도 score 없으면 0으로 날조 금지(804 §1 잔여·관심화면과 동일 버그) — 실수치일 때만 도트.
+  if (data?.fscore?.supported && typeof data.fscore.score === 'number') {
+    const score = data.fscore.score;
     headerTones.push(score >= 7 ? 'pos' : score <= 3 ? 'warn' : 'flat');
   }
   const headerPos = headerTones.filter((x) => x === 'pos').length;
