@@ -101,8 +101,8 @@ export const LENS_COPY: Record<Locale, {
       na: "재무 데이터가 부족해 점수를 낼 수 없어요.",
       about: "회계학자 피오트로스키가 2000년 만든, 기업 재무 건강을 9개 항목으로 점수 매기는 체크리스트예요(수익성·부채·효율의 전년 대비 개선). 원래 값싼 가치주 중 '진짜 부실한 곳'을 걸러내려 만들었어요 — 그래서 수익 예측이 아니라 재무 건전성 판단에 씁니다.",
       scope: {
-        verified: "피오트로스키(2000)가 '싼 가치주 집단 안에서' 재무가 개선되는 기업을 골라내면 성과가 나았음을 보였어요. 부실을 걸러내는 도구예요.",
-        failure: "원전은 가치주 집단 안의 도구예요(전 종목 대상 일반 품질 점수로 만든 게 아니에요). 점수가 높다고 오른다는 뜻은 아니에요.",
+        verified: "피오트로스키(2000)가 '싼 가치주(고B/M) 집단 안에서' 재무가 개선되는 기업을 골라내면 성과가 나았음을 보였어요(고점수 8~9 vs 저점수 0~1). 부실을 걸러내는 도구예요.",
+        failure: "원전은 가치주 집단 안의 도구예요(전 종목용 일반 품질 점수가 아니에요) — 효과도 소형·중형의 소외된 가치주에 몰렸고 대형주에선 약했어요. 은행·보험은 유동비율 등 항목이 없어 산출 불가예요. 점수가 높다고 오른다는 뜻은 아니고, 우리 '양호(≥7)'는 자체 기준이에요(피오트로스키의 '높음'은 8~9점).",
         when: "부실 회피 관점에서, 재무가 전년보다 나아졌는지로 보세요.",
       },
     },
@@ -194,8 +194,8 @@ export const LENS_COPY: Record<Locale, {
       na: "Not enough financial data to score this one.",
       about: "A checklist created by accounting professor Piotroski in 2000 that scores financial health on 9 points (year-over-year gains in profitability, debt, and efficiency). It was built to weed out the genuinely weak names among cheap value stocks — so it judges financial health, not future returns.",
       scope: {
-        verified: "Piotroski (2000) showed that, 'within the cheap value-stock group,' picking firms whose financials are improving did better. It is a tool for weeding out weak names.",
-        failure: "The original scope is a tool within the value-stock group (it was not built as a general quality score for all stocks). A high score does not mean the stock will rise.",
+        verified: "Piotroski (2000) showed that, 'within the cheap value-stock (high-B/M) group,' picking firms whose financials are improving did better (high score 8-9 vs low score 0-1). It is a tool for weeding out weak names.",
+        failure: "The original scope is a tool within the value-stock group (not a general quality score for all stocks) — its edge was concentrated in small/mid-cap neglected value names and was weak among large caps. Banks and insurers can't be scored (no current ratio and other inputs). A high score does not mean the stock will rise, and our 'Strong (≥7)' is our own banding (Piotroski's 'high' is 8-9).",
         when: "For avoiding distress — read whether the financials improved year over year.",
       },
     },
