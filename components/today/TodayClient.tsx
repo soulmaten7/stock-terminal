@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor, type Country } from '@/stores/countryStore';
-import { LENS_COPY, LENS_READINGS, pickLocale, type Locale } from '@/lib/lensCopy';
+import { LENS_COPY, LENS_READINGS, compactPhrase, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
@@ -59,10 +59,6 @@ function stateLabel(loc: Locale, key: string, state: string | null): string {
   return readings?.[state]?.phrase ?? state;
 }
 // 행 폭이 좁아 괄호 보조어까지 못 담을 때(예 "하락 추세 (200일선 아래)") 메인 상태만 — 원문은 상세에서(STEP 770 §4).
-function compactPhrase(s: string): string {
-  return s.replace(/\s*\([^)]*\)\s*$/, '');
-}
-
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
     const r = await fetch(url);

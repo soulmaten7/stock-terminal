@@ -1,7 +1,7 @@
 // 렌즈 겉면 카피 — 언어별 맵(원본 = docs/LENS_COPY.md). 이름=영문 앵커(코드 별도)·설명만 언어별.
 // 원칙: 각 언어답게(직역 아님)·짧고 구체·번역 안전. 자동번역 X. 기본 ko, ?lang=en 지원. 다음: ja·zh 열 추가.
 // what=겉면 한 줄(뭔지) · about=알아보기(개념·유래·왜 쓰나) · note=자세히(백테스트 근거·한계).
-// ⚠️ note의 en은 "정확 번역" — 통계·수치·레퍼런스(t값·샤프·βHML·STEP번호·%·$5+)를 한 글자도 바꾸지 않는다(검증 결과가 곧 신뢰).
+// ⚠️ note의 ko·en은 수치·레퍼런스가 **서로 일치**해야 한다(패리티). 단 STEP 813~817 정책: **자체 백테스트 점추정(t·샤프·βHML)이 재실행서 재현 안 되면 ko·en 양쪽에서 삭제**하고 재현 가능한 정성 결론·원문 헤드라인으로 교체한다(근거 없는 수치 화면 금지·CLAUDE.md). 남은 수치는 원문 수치이거나 재현 확인된 것만. 되돌아온 삭제 수치는 `lib/lensDenominator.test.ts` 음성 어서션이 잡는다.
 
 export type Locale = "ko" | "en";
 // question = 카드 제목용 초보자 질문형(STEP 787) — name·nameEn(학술 앵커)은 6곳 소비처(문장·pill·프롬프트)가 있어 rename 대신 이 필드를 신설.
@@ -541,4 +541,15 @@ export function lensQuestion(loc: Locale, key: string): string {
 // 종합 카드의 강점/주의 나열용 짧은 라벨(STEP 788) — question(문장형)보다 짧아 목록에 여러 개 나열해도 안 길어짐.
 export function lensShortLabel(loc: Locale, key: string): string {
   return (LENS_COPY[loc] as unknown as Record<string, { shortLabel: string }>)[key]?.shortLabel ?? key;
+}
+
+// 목록 화면(오늘·탐색)용 판정 축약(STEP 819 §3) — 말미 괄호를 지우되 **상대 한정어("(시장 대비)"/"(vs. market)")는 보존**한다.
+//   806·809가 상세 카드에 붙인 상대성이 목록에서 사라져 절대 표현으로 오독되던 것 방지. "(200일선 아래)" 같은 부가 설명만 축약.
+//   ⚠️ 두 컴포넌트(TodayClient·ExploreClient)에 중복돼 있던 것을 여기로 공용 추출(향후 재발 방지).
+export function compactPhrase(s: string): string {
+  return s
+    .replace(/\s*\(([^)]*)\)\s*$/, (_m, inner: string) =>
+      /시장\s*대비|vs\.?\s*market/i.test(inner) ? `(${inner})` : ""
+    )
+    .trim();
 }

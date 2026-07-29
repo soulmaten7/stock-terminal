@@ -7,7 +7,7 @@ import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
 import { marketToday } from '@/lib/marketDate';
-import { LENS_COPY, LENS_READINGS, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
+import { LENS_COPY, LENS_READINGS, compactPhrase, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
@@ -58,9 +58,6 @@ function stateLabel(loc: Locale, key: string, state: string | null): string {
   return readings?.[state]?.phrase ?? state;
 }
 // 행 폭이 좁아 괄호 보조어까지 못 담을 때(예 "하락 추세 (200일선 아래)") 메인 상태만 — 원문은 상세에서(STEP 770 §4).
-function compactPhrase(s: string): string {
-  return s.replace(/\s*\([^)]*\)\s*$/, '');
-}
 function weekdayOf(dateStr: string, loc: Locale): string {
   const d = new Date(dateStr + 'T00:00:00Z');
   return new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { weekday: 'long', timeZone: 'UTC' }).format(d);

@@ -89,6 +89,10 @@ function Spectrum({ labels, active, tone }: { labels: [string, string, string]; 
 }
 
 // 팩터 퍼센타일 게이지 — 시장 유니버스 대비 순위(0~100·오른쪽=우호 방향). 모집단 표현은 근거줄(시장별 라벨)이 단일 정본(STEP 809 §2). 팩터 5종 공통(Stockopedia식).
+// 🔴 STEP 810 §3·§4 / 819 §2: '수익 우호' 축으로 셀 수 있는 렌즈(수익 신호 검증된 것)만. 저변동(위험 축)·기술(참고용)·F-스코어(건전성 축)는 제외.
+//   종합 닫는 카드(returnEvidence·강점 나열)와 시간축 장기 칸이 **같은 모집단**을 쓰도록 모듈 상수로 공유(페이지 내 집계 불일치 방지).
+const RETURN_LENS = new Set(['momentum', 'valuation', 'quality', 'assetgrowth']);
+
 // 모듈 상수 → 값=ko.json 키. 렌더 지점(renderCard)에서 t()로 해석.
 const FACTOR_ENDS: Record<string, { lo: string; hi: string }> = {
   momentum: { lo: 'factorEnds.momentumLo', hi: 'factorEnds.momentumHi' },
@@ -216,14 +220,16 @@ function ScopeBlock({ lensKey, loc }: { lensKey: string; loc: Locale }) {
 }
 
 // 시간축 스트립 — 단기(RSI)·중기(모멘텀 퍼센타일)·장기(팩터 묶음+개수). 각 칸 자기 축으로 정직하게(하나로 안 뭉침).
-function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreResp | null }) {
+function HorizonStrip({ lenses }: { lenses: LensRead[] }) {
   const t = useTranslations('StockLens');
   const find = (k: string) => lenses.find((L) => L.key === k) || null;
   const tech = find('technical');
   const mom = find('momentum');
   // STEP 808 §5: pending·na(판정 아님)는 시간축 집계에서 제외 — pending verdict.tone이 'flat'이라 "중립"으로 새던 것 차단.
   const scored = (L: LensRead | null | undefined): boolean => !!L && L.state !== 'pending' && L.state !== 'na';
-  const longs = lenses.filter((L) => L.horizon === 'long' && scored(L));
+  // 🔴 STEP 819 §2-1: 장기 칸의 '우호' 집계는 닫는 카드(810 §4)와 동일하게 **수익 렌즈만**(밸류·퀄리티·자산성장).
+  //   저변동(위험 축)·F-스코어(건전성 축)는 '수익 우호'로 세지 않는다(범주 오류 제거·같은 페이지 모집단 통일). 각 렌즈는 자기 카드에 그대로 표시됨.
+  const longs = lenses.filter((L) => L.horizon === 'long' && RETURN_LENS.has(L.key) && scored(L));
 
   const rsiV = tech?.detail?.rsi14 != null ? Math.round(tech.detail.rsi14 as number) : null;
   const sWord = rsiV == null ? '—' : rsiV >= 70 ? t('word.overbought') : rsiV <= 30 ? t('word.oversold') : t('word.neutral');
@@ -233,8 +239,8 @@ function HorizonStrip({ lenses, fscore }: { lenses: LensRead[]; fscore: FScoreRe
   // STEP 809 §3: 중기 축=모멘텀(분포 순위·상대)이라 "강세/약세"(절대) 금지 → "상위권/하위권/중간권"으로 카드 verdict와 정합.
   const mWord = !scored(mom) ? '—' : mTone === 'pos' ? t('word.topRank') : mTone === 'warn' ? t('word.bottomRank') : t('word.neutral');
 
-  const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' })); // longs는 이미 scored 필터됨
-  if (fscore?.supported) longPills.push({ label: 'F-Score', tone: fscore.score >= 7 ? 'pos' : fscore.score <= 3 ? 'warn' : 'flat' });
+  const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' })); // longs는 이미 scored+RETURN_LENS 필터됨
+  // STEP 819 §2-1: F-스코어는 '수익 우호' 축이 아니라 장기 칸 집계에서 제외(닫는 카드와 동일 규칙) — F-스코어 카드에 그대로 표시됨.
   const favN = longPills.filter((p) => p.tone === 'pos').length;
   const unfavN = longPills.filter((p) => p.tone === 'warn').length;
   const lStrong = Math.ceil(longPills.length * 0.6);
@@ -379,6 +385,8 @@ function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
           </span>
         </div>
       </button>
+      {/* STEP 819 §1: F-스코어도 다른 6렌즈와 동일하게 scope(검증 범위·한계·조건)를 노출 — 로그인 게이트 밖(무료). 818이 쓴 scope가 dead copy였던 것 수정. */}
+      {open ? <ScopeBlock lensKey="fscore" loc={locale} /> : null}
       {open ? (
         <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
           <FlagBox flags={flags} />
@@ -1150,9 +1158,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const closingPosLabels: string[] = [];
   const closingWarnLabels: string[] = [];
   const byHorizon: Record<'short' | 'mid' | 'long', ('pos' | 'warn' | 'flat')[]> = { short: [], mid: [], long: [] };
-  // 🔴 STEP 810 §3·§4: 저변동(위험 축)·기술(참고용)은 '수익 우호'가 아니라 종합 verdict·강점 나열에서 제외(범주 오류·저변동 강점 승격 방지).
-  //   개별 카드엔 그대로 표시되고, 여기 '종합' 판정에만 수익 관련 렌즈를 넣는다.
-  const RETURN_LENS = new Set(['momentum', 'valuation', 'quality', 'assetgrowth']);
+  // 🔴 STEP 810 §3·§4: 저변동·기술은 '수익 우호'가 아니라 종합 verdict·강점 나열에서 제외(범주 오류 방지). RETURN_LENS = 모듈 상수(819 §2·시간축과 공유).
   for (const l of lenses) {
     if (l.state === 'na' || l.state === 'pending') continue; // 결측·기준 준비 중 제외(STEP 802 §4·806 §2)
     if (!RETURN_LENS.has(l.key)) continue; // 저변동·기술 제외(수익 신호 아님)
@@ -1348,6 +1354,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           <p className="mt-1.5 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{t.rich('readingGuide', {
             b: (c) => <b className="text-unjong-primary">{c}</b>,
             v: (c) => <span className="text-unjong-accent">{c}</span>,
+            d: (c) => <span className="text-unjong-success">{c}</span>, // STEP 819 §4: 검증(방어) 배지 = 저변동(위험 방어). 배지 색(strong tier=success)과 맞춤.
             w: (c) => <span className="text-amber-400">{c}</span>,
             r: (c) => <span className="text-unjong-muted">{c}</span>,
             f: (c) => <span className="text-amber-400">{c}</span>,
@@ -1364,7 +1371,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
       ) : (
         <div className="mt-4 max-w-4xl">
           <StockBrief symbol={symbol} />
-          {lenses.length ? <HorizonStrip lenses={lenses} fscore={data?.fscore ?? null} /> : null}
+          {lenses.length ? <HorizonStrip lenses={lenses} /> : null}
           {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : isCN ? <CnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
           <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
           {/* 파트 구분 헤더(STEP 788) + 목록 노출(STEP 791) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님.

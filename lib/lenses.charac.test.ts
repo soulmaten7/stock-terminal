@@ -331,7 +331,8 @@ describe("lowVolLens — 특성화", () => {
 
 describe("qualityLens — 특성화", () => {
   it("고GP/A(ko): 전체 LensRead 고정", async () => {
-    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 100 }, { grossProfit: 50, totalAssets: 100 }]) }), "ko", CUTS)).toMatchInlineSnapshot(`
+    // STEP 819 §5: 전기 자산(80)≠당해 자산(100) — GP/A는 당해 기말 100 기준 50%. 분모를 전기말로 되돌리면 62.5%가 되어 이 스냅샷이 깨진다(회귀 잠금).
+    expect(await quality.compute(sd({ financials: fin([{ totalAssets: 80 }, { grossProfit: 50, totalAssets: 100 }]) }), "ko", CUTS)).toMatchInlineSnapshot(`
       {
         "about": "매출총이익을 자산으로 나눈 '총수익성'으로 회사의 질을 보는 방법이에요. 노비-마르크스가 2013년 '싼 것(가치)만큼 질 좋은 것도 중요하다'며 데이터로 밝혔어요 — 자산을 잘 굴려 꾸준히 돈 버는 회사가 장기적으로 낫다는 생각이 바탕이에요.",
         "cutSource": {
