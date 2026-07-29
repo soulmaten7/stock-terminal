@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { unzipSync } from "fflate";
 import { blockLLM } from "@/lib/rateLimit";
+import { sanitizeFilingLabel, filingSummaryPasses } from "@/lib/filingGuard";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -49,7 +50,7 @@ function extractJpText(zip: Uint8Array): string {
 export async function GET(req: NextRequest) {
   const docid = (req.nextUrl.searchParams.get("docid") || "").trim();
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
-  const nm = req.nextUrl.searchParams.get("nm") || "";
+  const nm = sanitizeFilingLabel(req.nextUrl.searchParams.get("nm")); // STEP 828 §1
   const locale = req.nextUrl.searchParams.get("lang") === "en" ? "en" : "ko";
   const col = locale === "en" ? "summary_en" : "summary_ko";
   if (!/^[A-Za-z0-9]+$/.test(docid)) return NextResponse.json({ error: "bad docid" }, { status: 400 });
@@ -121,6 +122,11 @@ export async function GET(req: NextRequest) {
   if (!summary) return NextResponse.json({ error: "llm empty" }, { status: 502 });
 
   // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
+  // 🔴 STEP 828 §1: 출력 가드 — 금지어·언어 검증 실패 시 저장 안 하고 숨김(전역 캐시 오염 방지).
+  if (!filingSummaryPasses(summary, locale)) {
+    Sentry.captureMessage(`[jp-events/summary] output guard blocked (docid ${docid})`, "warning");
+    return NextResponse.json({ summary: "" });
+  }
   const { error: upErr } = await sb.from("filing_summaries").upsert(
     { accession: docid, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },

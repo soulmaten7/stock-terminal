@@ -5,8 +5,10 @@
 //   3) JSON-LD(BreadcrumbList + Corporation) — 구글이 '종목 정보 페이지'로 이해
 // 인터랙티브 본문은 StockLensClient(클라)가 그대로 담당.
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { resolveStockName, tickerOf } from "@/lib/stockName";
 import { getInstrumentType } from "@/lib/instrumentType";
+import { isBotUA } from "@/lib/rateLimit";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
@@ -152,7 +154,10 @@ export default async function StockPage({ params }: Params) {
   }
   const jsonLd = { "@context": "https://schema.org", "@graph": graph };
 
-  const kind = await getInstrumentType(symbol); // ETF/펀드면 구성 뷰로 분기(기업재무 렌즈 대신)
+  // 🔴 STEP 828 §3: 봇/크롤러는 외부 API(네이버·야후) 호출 없이 판별 — 사이트맵 수천 URL 순회가 외부호출 폭주(§2 방아쇠)로 번지는 것 차단.
+  //   서버 HTML SEO(h1·JSON-LD)는 kind와 무관하므로 봇에 equity 폴백해도 노출은 동일. 일반 사용자는 그대로.
+  const ua = (await headers()).get("user-agent");
+  const kind = await getInstrumentType(symbol, { allowExternal: !isBotUA(ua) }); // ETF/펀드면 구성 뷰로 분기(기업재무 렌즈 대신)
 
   // h1도 제목·빵부스러기와 같은 이름으로(en이면 영문명 — 한글명이 영어 화면에 뜨는 것 방지). crumbName과 같은 규칙.
   const h1Name = crumbName || undefined;

@@ -15,6 +15,8 @@ export async function GET(req: Request) {
   }
   try {
     const r = await computeLensScores(1000);
+    // STEP 828 §2-3: 유니버스 붕괴/pass2 실패는 "성공"으로 기록하지 않는다(200이 아닌 500 + 경고 노출).
+    if (!r.ok) return NextResponse.json(r, { status: 500 });
     return NextResponse.json(r);
   } catch (e) {
     Sentry.captureException(e, { tags: { pipeline: "lens_scores" } });

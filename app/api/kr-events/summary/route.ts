@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchDartDocText } from '@/lib/dartSummary';
 import { blockLLM } from '@/lib/rateLimit';
+import { sanitizeFilingLabel, filingSummaryPasses } from '@/lib/filingGuard';
 import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
@@ -12,7 +13,7 @@ export const maxDuration = 30;
 export async function GET(req: NextRequest) {
   const rcept = (req.nextUrl.searchParams.get('rcept') || '').trim();
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').trim();
-  const nm = req.nextUrl.searchParams.get('nm') || '';
+  const nm = sanitizeFilingLabel(req.nextUrl.searchParams.get('nm')); // STEP 828 §1: 클라 라벨 정화(인젝션 차단)
   const locale = req.nextUrl.searchParams.get('lang') === 'en' ? 'en' : 'ko';
   const col = locale === 'en' ? 'summary_en' : 'summary_ko';
   if (!/^\d{14}$/.test(rcept)) return NextResponse.json({ error: 'bad rcept' }, { status: 400 });
@@ -69,6 +70,12 @@ export async function GET(req: NextRequest) {
   const j = await res.json();
   const summary = (j.choices?.[0]?.message?.content || '').trim();
   if (!summary) return NextResponse.json({ error: 'llm empty' }, { status: 502 });
+
+  // 🔴 STEP 828 §1: 출력 가드 — 금지어(추천·매수 등)·언어 검증 실패 시 저장하지 않고 숨긴다(전역 캐시 오염 방지·지어내지 않음).
+  if (!filingSummaryPasses(summary, locale)) {
+    Sentry.captureMessage(`[kr-events/summary] output guard blocked (rcept ${rcept})`, 'warning');
+    return NextResponse.json({ summary: '' });
+  }
 
   // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
   const { error: upErr } = await sb.from('filing_summaries').upsert(

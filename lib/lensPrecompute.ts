@@ -40,6 +40,7 @@ async function topByMarketCap(topN: number): Promise<{ symbols: string[]; tradeA
   for (let i = 0; i < STOCK_SYMS.length; i += 100) chunks.push(STOCK_SYMS.slice(i, i + 100));
   const caps: { sym: string; cap: number }[] = [];
   const tradeAmountOf = new Map<string, number>();
+  let failedChunks = 0; // 🔴 STEP 828 §2-2: 청크 실패를 조용히 스킵하지 않고 집계 — 유니버스 붕괴(야후 부분장애) 감지.
   await mapLimit(chunks, 6, async (grp) => {
     try {
       const qs = (await yf.quote(grp)) as Array<{ symbol?: string; marketCap?: number; regularMarketPrice?: number; regularMarketVolume?: number }>;
@@ -50,9 +51,16 @@ async function topByMarketCap(topN: number): Promise<{ symbols: string[]; tradeA
         }
       }
     } catch {
-      /* 청크 실패는 스킵 */
+      failedChunks++;
     }
   });
+  if (failedChunks > 0) {
+    const frac = failedChunks / chunks.length;
+    Sentry.captureMessage(
+      `[topByMarketCap] 야후 쿼트 청크 ${failedChunks}/${chunks.length}(${(frac * 100).toFixed(0)}%) 실패 → 유니버스 ${caps.length}종목(하한 가드가 프루닝 차단)`,
+      frac >= 0.3 ? "error" : "warning",
+    );
+  }
   caps.sort((a, b) => b.cap - a.cap);
   return { symbols: caps.slice(0, topN).map((c) => c.sym), tradeAmountOf };
 }
@@ -183,13 +191,32 @@ async function pass2RemapAndDiff(
 export async function computeLensScoresFor(
   universe: string[],
   market: string,
-  opts: { concurrency?: number; tradeAmountOf?: Map<string, number> } = {}
-): Promise<{ ok: true; computed: number; universe: number; at: string }> {
+  opts: { concurrency?: number; tradeAmountOf?: Map<string, number>; expected?: number } = {}
+): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; warning?: string }> {
   const concurrency = opts.concurrency ?? 6;
   const tradeAmountOf = opts.tradeAmountOf;
   const at = new Date().toISOString();
   const changeDate = at.slice(0, 10); // 크론 실행일(UTC date) — KR/US 통일, 표시 로케일화는 읽기 쪽(스펙)
   const sb = createAdminClient(); // RLS 우회(쓰기·kr_stock_snapshot 읽기)
+  // 🔴 STEP 828 §2-1: 유니버스 하한 가드 — 이번 유니버스가 '직전 성공 실행'(=현재 lens_scores 행 수) 대비 70% 미만이면 붕괴로 간주.
+  //   근거: 야후 부분장애로 1,000→400이 되면 saved/universe(=400/400=100%)는 통과해 나머지 600 lens_scores를 삭제한다.
+  //   직전 실행분 대비로 봐야 이 함정을 막는다(KR·US 유니버스 크기가 서로 달라도 자기 기준으로 판단). 절대 하한 50은 초기/소국가탭 오검출 방지.
+  //   기준값은 opts.expected로 오버라이드 가능(테스트·특수 호출용). universe=0은 아예 계산·삭제 금지.
+  const { count: prevCount } = await sb
+    .from("lens_scores").select("symbol", { count: "exact", head: true }).eq("market", market);
+  const baseline = opts.expected ?? prevCount ?? universe.length;
+  const floor = Math.max(50, Math.floor(baseline * 0.7));
+  const universeOk = universe.length >= floor;
+  if (universe.length === 0) {
+    Sentry.captureMessage(`[lens-universe-empty] ${market} 유니버스 0 → 계산·프루닝 전면 중단(성공 아님)`, "error");
+    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, warning: "universe-empty" };
+  }
+  if (!universeOk) {
+    Sentry.captureMessage(
+      `[lens-universe-collapse] ${market} 유니버스 ${universe.length} < 하한 ${floor}(직전 ~${baseline}) → 계산은 하되 프루닝·삭제 금지(대량 손실 방지)`,
+      "error",
+    );
+  }
   // STEP 805 2-pass: pass1은 '직전' 컷으로 상태 산출(순환 의존 회피), 실행 끝에 새 분포로 컷 재유도 후 pass2에서 상태 재매핑.
   // STEP 808 §2: 컷 조회 실패를 크론 전체를 죽이는 치명 실패로 만들지 않는다 — pass1은 pending으로라도 저장,
   //   이 실행 분포에서 컷을 새로 유도해 pass2가 상태를 정정한다(loadCuts는 이미 Sentry 캡처).
@@ -273,36 +300,47 @@ export async function computeLensScoresFor(
 
   // STEP 805 pass2(+806 §7) — 새 컷으로 상태 재매핑 + 최종 상태로 변화 diff(값 재계산 없이 DB 저장분만).
   //   pass1이 직전 컷(또는 없음→pending)으로 찍은 상태를 이 실행 분포 컷으로 다시 매핑 → 라이브/선계산 판정 일치.
+  // 🔴 STEP 828 §2-4: pass2(상태 재매핑) 실패 시 프루닝을 건너뛴다 — 이전엔 Sentry 캡처 후 그대로 진행해
+  //   상태가 어긋난 채로 프루닝이 돌았다. 재매핑이 실패하면 이번 실행 결과를 신뢰할 수 없으므로 삭제하지 않는다.
+  let pass2Ok = true;
   try {
     await pass2RemapAndDiff(sb, market, newCuts, at, changeDate, existing, tradeAmountOf);
   } catch (e) {
+    pass2Ok = false;
     Sentry.captureException(e, { tags: { pipeline: "lens_states_remap", market } });
   }
 
   // 신선도(STEP 802 §5) — 이번 실행에서 갱신 안 된(유니버스 이탈) 행 삭제.
-  // 🔴 STEP 806 §3: 저장 성공률이 낮으면(부분 실행) 프루닝이 정상 행을 대량 삭제할 수 있음 → 성공률 ≥80%일 때만 프루닝.
-  const successRate = universe.length > 0 ? saved / universe.length : 0;
-  if (successRate >= 0.8) {
+  // 🔴 STEP 806 §3: 저장 성공률이 낮으면(부분 실행) 프루닝이 정상 행을 대량 삭제할 수 있음 → 성공률 ≥80%일 때만.
+  // 🔴 STEP 828 §2: 위 성공률 + 유니버스 하한(universeOk) + pass2 성공(pass2Ok) 3중 게이트를 모두 통과해야 프루닝.
+  const successRate = saved / universe.length;
+  const canPrune = successRate >= 0.8 && universeOk && pass2Ok;
+  let pruned = false;
+  if (canPrune) {
     try {
       await sb.from("lens_scores").delete().eq("market", market).lt("updated_at", at);
+      pruned = true;
     } catch (e) {
       Sentry.captureException(e, { tags: { pipeline: "lens_scores_prune", market } });
     }
   } else {
-    // 조용히 넘어가지 않는다 — 프루닝 건너뜀을 경고(부분 실행 감지).
+    // 조용히 넘어가지 않는다 — 프루닝 건너뜀을 경고(부분 실행·유니버스 붕괴·pass2 실패 감지).
+    const reason = !universeOk ? "유니버스 붕괴" : !pass2Ok ? "pass2 실패" : `성공률 ${(successRate * 100).toFixed(0)}%<80%`;
     Sentry.captureMessage(
-      `[lens-prune-skip] ${market} 저장 성공률 ${(successRate * 100).toFixed(0)}% < 80% → 프루닝 건너뜀(대량 삭제 방지·저장 ${saved}/${universe.length})`,
+      `[lens-prune-skip] ${market} ${reason} → 프루닝 건너뜀(대량 삭제 방지·저장 ${saved}/${universe.length})`,
       "warning"
     );
-    console.warn(`  ...프루닝 건너뜀(성공률 ${(successRate * 100).toFixed(0)}% · ${saved}/${universe.length})`);
+    console.warn(`  ...프루닝 건너뜀(${reason} · ${saved}/${universe.length})`);
   }
 
-  return { ok: true, computed: saved, universe: universe.length, at };
+  const warning = !universeOk ? "universe-collapse" : !pass2Ok ? "pass2-failed" : successRate < 0.8 ? "low-success" : undefined;
+  return { ok: universeOk && pass2Ok, computed: saved, universe: universe.length, at, pruned, universeOk, pass2Ok, warning };
 }
 
 // US(기존 API 보존) — 시총 상위 N
 export async function computeLensScores(topN = 1000, concurrency = 6) {
   const { symbols: universe, tradeAmountOf } = await topByMarketCap(topN);
+  // 유니버스 하한 가드는 직전 lens_scores 행 수 기준(STEP 828 §2) — 여기선 expected 넘기지 않음.
   return computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf });
 }
 

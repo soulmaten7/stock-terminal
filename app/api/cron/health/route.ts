@@ -63,6 +63,36 @@ export async function GET(req: Request) {
     }
   }
 
+  // 🔴 STEP 828 §2-5: 신선 행 수 하한 — 소스 시세 테이블은 MAX(updated_at)만 보면 99% 실패해도(1행만 갱신) 초록이다.
+  //   '최근 25h 내 갱신된 행 수'가 하한 미만이면 부분 실패로 판정. 하한 = 정상 신선 행수(KR~2765·US~5952)의 절반 수준(오탐 여유).
+  const since = new Date(now - 25 * 36e5).toISOString();
+  for (const { name, table, floor } of [
+    { name: "KR 시세 신선행수(kr-perf)", table: "kr_stock_snapshot", floor: 1500 },
+    { name: "US 시세 신선행수(us-perf)", table: "us_stock_perf", floor: 3000 },
+  ]) {
+    try {
+      const { count } = await sb.from(table).select("symbol", { count: "exact", head: true }).gt("updated_at", since);
+      const n = count ?? 0;
+      results.push({ name, latest: `${n} fresh rows`, ageH: null, thresholdH: 0, status: n < floor ? "stale" : "ok" });
+    } catch (e) {
+      results.push({ name, latest: null, ageH: null, thresholdH: 0, status: "stale", error: String(e) });
+    }
+  }
+
+  // 🔴 STEP 828 §2-5: lens_cuts 나이 감시 — 판정 컷(p30/p70)이 묵으면 전 렌즈 상태가 낡은 기준으로 틀어진다.
+  //   as_of는 날짜(자정 UTC 절삭)라 실행 직후에도 ~12h·다음날 실행전 ~36h → 49h(하루 누락) 임계로 검출.
+  for (const market of ["KR", "US"]) {
+    try {
+      const { data } = await sb.from("lens_cuts").select("as_of").eq("market", market).order("as_of", { ascending: false }).limit(1);
+      const asOf = (data?.[0] as { as_of?: string } | undefined)?.as_of ?? null;
+      const ageH = asOf ? Math.round(((now - new Date(asOf).getTime()) / 36e5) * 10) / 10 : null;
+      const stale = ageH == null || ageH > 49;
+      results.push({ name: `렌즈 컷 ${market}(lens_cuts)`, latest: asOf, ageH, thresholdH: 49, status: stale ? "stale" : "ok" });
+    } catch (e) {
+      results.push({ name: `렌즈 컷 ${market}(lens_cuts)`, latest: null, ageH: null, thresholdH: 49, status: "stale", error: String(e) });
+    }
+  }
+
   const stale = results.filter((r) => r.status === "stale");
   if (stale.length > 0) {
     // 기존 Sentry 배선 재사용 — 이슈 생성 → 이메일 알림. 메시지에 어떤 파이프라인이 몇 시간 밀렸는지 포함.

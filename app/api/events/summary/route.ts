@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { fetchFilingText } from '@/lib/eightKSummary';
 import { blockLLM } from '@/lib/rateLimit';
+import { sanitizeFilingLabel, filingSummaryPasses } from '@/lib/filingGuard';
 import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
@@ -17,7 +18,7 @@ const SEC_ARCHIVE = /^https:\/\/www\.sec\.gov\/Archives\/edgar\/data\/(\d+)\/([A
 export async function GET(req: NextRequest) {
   const symbol = (req.nextUrl.searchParams.get('symbol') || '').toUpperCase();
   const link = req.nextUrl.searchParams.get('link') || '';
-  const items = req.nextUrl.searchParams.get('items') || '';
+  const items = sanitizeFilingLabel(req.nextUrl.searchParams.get('items')); // STEP 828 §1
   const locale = req.nextUrl.searchParams.get('lang') === 'en' ? 'en' : 'ko';
   const col = locale === 'en' ? 'summary_en' : 'summary_ko';
   const m = link.match(SEC_ARCHIVE);
@@ -89,6 +90,11 @@ export async function GET(req: NextRequest) {
 
   // 4) 캐시 저장(전역·영구·로케일 컬럼만 — 반대 로케일 안 지움)
   // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
+  // 🔴 STEP 828 §1: 출력 가드 — 금지어·언어 검증 실패 시 저장 안 하고 숨김(전역 캐시 오염 방지).
+  if (!filingSummaryPasses(summary, locale)) {
+    Sentry.captureMessage(`[events/summary] output guard blocked (acc ${acc})`, 'warning');
+    return NextResponse.json({ summary: '' });
+  }
   const { error: upErr } = await sb.from('filing_summaries').upsert(
     { accession: acc, symbol, [col]: summary, model: 'gpt-4o-mini' },
     { onConflict: 'accession' },

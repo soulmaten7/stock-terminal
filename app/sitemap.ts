@@ -23,6 +23,18 @@ async function krCodes(): Promise<string[]> {
   }
 }
 
+// 🔴 STEP 828 §3-4: 사이트맵 유령 심볼 정리 — us_symbols 번들엔 상폐·미거래분이 섞여(번들 6773 > 라이브 perf) 봇이
+//   해석 안 되는 유령 URL을 훑으면 무의미한 외부호출을 유발한다. 라이브 us_stock_perf에 있는 심볼만 광고한다.
+async function usLiveSet(): Promise<Set<string>> {
+  try {
+    const sb = createAdminClient();
+    const { data } = await sb.from("us_stock_perf").select("symbol").limit(20000);
+    return new Set((data ?? []).map((r) => String(r.symbol).toUpperCase()));
+  } catch {
+    return new Set();
+  }
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
   const now = new Date();
@@ -54,14 +66,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 해외 종목 — ACTIVE_MARKETS(KR·US)만(STEP 799). foreignKo엔 JP/CN/VN/GB 키도 섞여 있어 isActiveSymbol로 재필터.
+  //   🔴 STEP 828 §3-4: 라이브 us_stock_perf에 있는 심볼 + 큐레이션 foreignKo만 광고(유령 URL 제거). DB 실패 시 과잉삭제 방지로 전량 유지.
+  const live = await usLiveSet();
+  const foreignKeys = new Set(Object.keys(foreignKo as Record<string, string>));
   const overseas = Array.from(
     new Set(
       (usSymbols as Sym[])
         .map((r) => r.sym)
         .filter(Boolean)
-        .concat(Object.keys(foreignKo as Record<string, string>)), // META·BABA 등 JSON 누락분도 사이트맵에
+        .concat([...foreignKeys]), // META·BABA 등 JSON 누락분도 사이트맵에
     ),
-  ).filter(isActiveSymbol);
+  )
+    .filter(isActiveSymbol)
+    .filter((s) => live.size === 0 || live.has(s.toUpperCase()) || foreignKeys.has(s));
   const overseasEntries: MetadataRoute.Sitemap = overseas.map((s) => ({
     url: `${base}/stock/${encodeURIComponent(s)}`,
     lastModified: now,

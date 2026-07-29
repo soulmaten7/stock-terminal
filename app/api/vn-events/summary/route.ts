@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { blockLLM } from "@/lib/rateLimit";
 import { urlCacheKey } from "@/lib/summaryCacheKey";
+import { sanitizeFilingLabel, filingSummaryPasses } from "@/lib/filingGuard";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -33,7 +34,7 @@ function extractArticle(html: string): string {
 export async function GET(req: NextRequest) {
   const url = (req.nextUrl.searchParams.get("url") || "").trim();
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
-  const nm = req.nextUrl.searchParams.get("nm") || "";
+  const nm = sanitizeFilingLabel(req.nextUrl.searchParams.get("nm")); // STEP 828 §1
   // SSRF 방지 — 구글뉴스 링크만 허용(리다이렉트는 공개 언론사로만 감).
   if (!/^https:\/\/news\.google\.com\//i.test(url)) {
     return NextResponse.json({ error: "bad url" }, { status: 400 });
@@ -135,6 +136,11 @@ export async function GET(req: NextRequest) {
   if (locale === "ko") summary = summary.replace(/(\d[\d,.]*\s*[조억만천]?\s*)원/g, "$1동");
 
   // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
+  // 🔴 STEP 828 §1: 출력 가드 — 금지어·언어 검증 실패 시 저장 안 하고 숨김(전역 캐시 오염 방지).
+  if (!filingSummaryPasses(summary, locale)) {
+    Sentry.captureMessage(`[vn-events/summary] output guard blocked (acc ${acc})`, "warning");
+    return NextResponse.json({ summary: "" });
+  }
   const { error: upErr } = await sb.from("filing_summaries").upsert(
     { accession: acc, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },

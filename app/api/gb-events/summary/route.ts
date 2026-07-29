@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { blockLLM } from "@/lib/rateLimit";
 import { urlCacheKey } from "@/lib/summaryCacheKey";
+import { sanitizeFilingLabel, filingSummaryPasses } from "@/lib/filingGuard";
 import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "nodejs";
@@ -29,7 +30,7 @@ function extractBody(html: string): string {
 export async function GET(req: NextRequest) {
   const url = (req.nextUrl.searchParams.get("url") || "").trim();
   const symbol = (req.nextUrl.searchParams.get("symbol") || "").trim();
-  const nm = req.nextUrl.searchParams.get("nm") || "";
+  const nm = sanitizeFilingLabel(req.nextUrl.searchParams.get("nm")); // STEP 828 §1
   // SSRF·포이즈닝 방지(STEP 797 §2) — Investegate 공시 상세 URL만 허용. 중간 세그먼트를 경로구분자 없는 토큰으로
   // 제한(예전 [^?#"']+는 `/`·`..` 통과 → `.../a/../../../company/BP./9123456`로 임의 페이지를 임의 id로 저장 가능).
   // 중간은 여러 세그먼트(rns/bp/slug/id) 허용하되 경로구분자만 있는 토큰으로 제한 + `..` 명시 거부(traversal 차단).
@@ -108,6 +109,11 @@ export async function GET(req: NextRequest) {
   if (!summary) return NextResponse.json({ error: "llm empty" }, { status: 502 });
 
   // 저장 실패를 삼키면 같은 공시를 볼 때마다 LLM 재호출 = 조용한 유료 누수(교훈 #31) → 로그+Sentry.
+  // 🔴 STEP 828 §1: 출력 가드 — 금지어·언어 검증 실패 시 저장 안 하고 숨김(전역 캐시 오염 방지).
+  if (!filingSummaryPasses(summary, locale)) {
+    Sentry.captureMessage(`[gb-events/summary] output guard blocked (acc ${acc})`, "warning");
+    return NextResponse.json({ summary: "" });
+  }
   const { error: upErr } = await sb.from("filing_summaries").upsert(
     { accession: acc, symbol, [col]: summary, model: "gpt-4o-mini" },
     { onConflict: "accession" },
