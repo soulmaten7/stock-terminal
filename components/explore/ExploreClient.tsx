@@ -467,13 +467,13 @@ export default function ExploreClient() {
             className="h-[52px] w-full rounded-2xl border border-unjong-border bg-unjong-surface pl-11 pr-11 text-[15px] text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
           />
           {query ? (
-            <button type="button" onClick={() => { setQuery(''); setResults([]); setSearchOpen(false); inputRef.current?.focus(); }} aria-label="clear" className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center text-unjong-muted">
+            <button type="button" onClick={() => { setQuery(''); setResults([]); setSearchOpen(false); inputRef.current?.focus(); }} aria-label={t('searchClear')} className="absolute right-1.5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-unjong-muted">
               <X size={16} />
             </button>
           ) : null}
         </div>
         {searchOpen ? (
-          <div role="listbox" className="absolute left-0 right-0 top-full z-50 mt-1.5 max-h-[70vh] overflow-y-auto rounded-2xl border border-unjong-border bg-unjong-surface py-1.5 shadow-lg">
+          <div role="listbox" aria-live="polite" className="absolute left-0 right-0 top-full z-50 mt-1.5 max-h-[70vh] overflow-y-auto rounded-2xl border border-unjong-border bg-unjong-surface py-1.5 shadow-lg">
             {!query.trim() ? (
               recents.length === 0 ? null : (
                 <>

@@ -190,7 +190,8 @@ export default function WatchlistClient() {
 
   return (
     <>
-    {actionError && <p className="mb-2 rounded-lg bg-unjong-danger/10 px-3 py-2 text-center text-[13px] text-unjong-danger">{actionError}</p>}
+    {/* STEP 830 §9: 동적 에러를 스크린리더에 알림(관심 해제 실패 등) */}
+    {actionError && <p role="alert" aria-live="assertive" className="mb-2 rounded-lg bg-unjong-danger/10 px-3 py-2 text-center text-[13px] text-unjong-danger">{actionError}</p>}
     {showAsOf && (
       <div className="mb-2 flex justify-end">
         <AsOfBadge date={homeAsOf} loc={locale} market={homeMarket} />
@@ -227,6 +228,8 @@ export default function WatchlistClient() {
         </li>
       ))}
     </ul>
+    {/* 🔴 STEP 830 §8: 결측 고백 — 상세는 "N개 판정 안 함"이라 말하는데 리스트는 도트만 줄던 침묵을 메움(도트=판정된 기법만). */}
+    <p className="mt-2 px-1 text-[11px] leading-relaxed text-unjong-muted">{t('lensMissingNote')}</p>
     </>
   );
 }

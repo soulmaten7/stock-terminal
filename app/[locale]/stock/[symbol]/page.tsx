@@ -64,11 +64,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const idPart = hasName ? `(${sub ? `${sub}·` : ""}${ticker})` : "";
   const description = isEn
     ? isVN
-      ? `${main}${idPart} stock price with proven-method lenses (momentum, value, quality, F-Score) and the latest news at a glance. Not a buy or sell signal — material for you to judge for yourself.`
-      : `${main}${idPart} stock price with proven-method lenses (momentum, value, quality, F-Score) and the latest news and filings at a glance. Not a buy or sell signal — material for you to judge for yourself.`
+      ? `${main}${idPart} stock price with published-method lenses (momentum, value, quality, F-Score) and the latest news at a glance. Not a buy or sell signal — material for you to judge for yourself.`
+      : `${main}${idPart} stock price with published-method lenses (momentum, value, quality, F-Score) and the latest news and filings at a glance. Not a buy or sell signal — material for you to judge for yourself.`
     : isVN
-      ? `${main}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
-      : `${main}${idPart} 주가와 검증된 투자기법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
+      ? `${main}${idPart} 주가와 공개된 계산법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
+      : `${main}${idPart} 주가와 공개된 계산법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
 
   // 경로는 routing 설정(as-needed)이 만들게 둔다 — ko는 프리픽스 없음, en은 /en. 직접 조립하면 프리픽스가 틀린다.
   const href = `/stock/${symbol}`;
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   const kw = isEn
     ? hasName
-      ? [main, `${main} stock`, `${main} forecast`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "AI Lens", "Trillion"]
+      ? [main, `${main} stock`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "AI Lens", "Trillion"]
       : [ticker, "stock", "AI Lens", "Trillion"]
     : hasName
       ? [main, `${main} 주가`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "AI 렌즈", "Trillion"]

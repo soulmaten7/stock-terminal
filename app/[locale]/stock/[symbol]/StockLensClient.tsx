@@ -118,12 +118,13 @@ function PctGauge({ pctl, tone, lo, hi }: { pctl: number; tone?: string; lo: str
   );
 }
 
-// 기술(RSI) 존 게이지 — 침체–중립–과열. 높다고 좋은 게 아니라 '과열' 조심 신호(퍼센타일 아님).
+// 기술(RSI) 존 게이지 — 침체–중립–과열. '지금 상태' 표시일 뿐 매매신호 아님(퍼센타일 아님).
+// 🔴 STEP 830 §6: 존 단어를 축 라벨과 같은 과열/침체/중립으로 통일(과매수/과매도 혼용 제거)·설명절은 존 무관 중립문구(과매도에 '과열 조심' 오표시 방지).
 function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
   const t = useTranslations('StockLens');
   const r = rsi == null ? null : Math.max(0, Math.min(100, Math.round(rsi)));
   const mk = r == null ? 'bg-unjong-muted' : r >= 70 ? 'bg-amber-400' : r <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted';
-  const zone = r == null ? '—' : r >= 70 ? t('word.overbought') : r <= 30 ? t('word.oversold') : t('word.neutral');
+  const zone = r == null ? '—' : r >= 70 ? t('rsi.zoneHot') : r <= 30 ? t('rsi.zoneCold') : t('rsi.zoneNeutral');
   const ma = maPct != null ? t('rsi.ma', { dir: maPct >= 0 ? t('rsi.above') : t('rsi.below'), pct: `${maPct > 0 ? '+' : ''}${maPct}` }) : '';
   return (
     <div className="mt-2.5">
@@ -167,18 +168,24 @@ function LensNarrative({ L, loc, market }: { L: LensRead; loc: Locale; market: s
   if (!hasLensNarrative(L)) return null;
   const methodKey = NARRATIVE_METHOD_KEY[L.key];
   const verdict = L.verdict?.phrase ?? null;
-  const topPct = L.percentile != null ? Math.max(1, 100 - L.percentile) : null; // 최상위(percentile 100)가 "상위 0%"로 나오지 않게 최소 1%(STEP 802 §5)
+  // 🔴 STEP 830 §7: 백분위는 방향 인지(이 기법이 좋게 보는 종목이 high) — "상위 {100-p}%"만 쓰면 불리한 종목이
+  //   "하위권 · 상위 97%"로 모순됨. 상위/하위로 갈라 표시(상위=좋게 보는 쪽) → 판정 단어와 절대 안 어긋남·중립 50 이상만 '상위'.
+  const p = L.percentile;
+  const pctlTop = p != null && p >= 50;
+  const pctlVal = p == null ? null : (pctlTop ? Math.max(1, 100 - p) : Math.max(1, Math.round(p)));
+  const pctlStr = pctlVal == null ? null : t(pctlTop ? 'narrativePercentile' : 'narrativePercentileLow', { v: pctlVal });
 
   const stockLine = L.key === 'technical'
     ? (L.detail.ma200vs != null && verdict ? t('narrativeStockTechnical', { pct: L.detail.ma200vs, verdict }) : null)
-    : (verdict ? (topPct != null ? t('narrativeStock', { pct: topPct, verdict }) : t('narrativeStockNoPctl', { verdict })) : null);
+    : (verdict ? (pctlVal != null ? t(pctlTop ? 'narrativeStock' : 'narrativeStockLow', { pct: pctlVal, verdict }) : t('narrativeStockNoPctl', { verdict })) : null);
 
   // 근거 줄 — detail 전 항목(라벨에 %가 이미 포함돼 있어 값 뒤에 별도 % 안 붙임: "12-1모멘텀%: 458.2") + 백분위 + 판정 컷, 한 줄로.
   const evidenceParts = Object.entries(L.detail)
     .filter((entry): entry is [string, number] => entry[1] != null)
     .map(([k, v]) => `${detailLabel(loc, k)}: ${v}`);
   // §4(STEP 807): 백분위 모집단 라벨 = 시장별(US=시총 상위 ~1000 / KR=거래대금 상위). 시장에 맞게.
-  if (topPct != null) evidenceParts.push(`${t(market === 'US' ? 'narrativePercentileLabelUs' : 'narrativePercentileLabel')}: ${t('narrativePercentile', { v: topPct })}`);
+  // STEP 830 §7: 방향 명시("상위=이 기법이 좋게 보는 쪽")를 백분위 옆에 짧게 — 초보가 "상위 5%=많이 성장/비쌈"으로 오독 방지.
+  if (pctlStr != null) evidenceParts.push(`${t(market === 'US' ? 'narrativePercentileLabelUs' : 'narrativePercentileLabel')}: ${pctlStr} ${t('narrativePercentileDir')}`);
   const cutoffKey = NARRATIVE_CUTOFF_KEY[L.key];
   const r1 = (v: number) => Math.round(v * 10) / 10; // 컷 표시 반올림(분포 컷은 소수라)
   if (L.cutoffs && cutoffKey) evidenceParts.push(t(cutoffKey, { hi: r1(L.cutoffs.hi), lo: r1(L.cutoffs.lo) }));
@@ -285,7 +292,7 @@ function HorizonStrip({ lenses }: { lenses: LensRead[] }) {
               <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mTone === 'pos' ? 'bg-unjong-accent' : mTone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted'}`} style={{ left: `${mom.percentile}%` }} />
             </div>
           ) : <div className="mt-2 h-2 rounded-full bg-unjong-background" />}
-          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{t('horizon.topPct', { v: Math.max(1, 100 - mom.percentile) })}</span> : null}</p>
+          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{mom.percentile >= 50 ? t('horizon.topPct', { v: Math.max(1, 100 - mom.percentile) }) : t('horizon.botPct', { v: Math.max(1, Math.round(mom.percentile)) })}</span> : null}</p>
         </div>
         {/* 장기 */}
         <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
@@ -1146,9 +1153,13 @@ export default function StockLensClient({ initialName }: { initialName?: string 
     if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
   }
   // STEP 829 §7: supported=true여도 score 없으면 0으로 날조 금지(804 §1 잔여·관심화면과 동일 버그) — 실수치일 때만 도트.
+  // 🔴 STEP 830 §1: F-스코어 카드는 supported가 아니어도 렌더되고(제목 N=7에 포함), 판정 못하면 '판정하지 않음'(naCount)에 넣어야
+  //   제목 N = 강점+주의+보통+판정안함+준비중 합계가 항상 일치(예전엔 미지원 F-스코어가 어느 버킷에도 안 세어져 7인데 합=6).
   if (data?.fscore?.supported && typeof data.fscore.score === 'number') {
     const score = data.fscore.score;
     headerTones.push(score >= 7 ? 'pos' : score <= 3 ? 'warn' : 'flat');
+  } else if (data?.fscore) {
+    naCount++;
   }
   const headerPos = headerTones.filter((x) => x === 'pos').length;
   const headerWarn = headerTones.filter((x) => x === 'warn').length;
@@ -1263,6 +1274,10 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 {L.verdict.plain ? <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{L.verdict.plain}</p> : null}
               </div>
             ) : null}
+            {/* 🔴 STEP 830 §3: 결측(판정·서사 둘 다 없음) 렌즈는 비로그인에도 '결측'을 먼저 말한다 — 없는 데이터를 로그인 뒤에 있는 것처럼 팔지 않는다. 잠긴 게 없으니 게이트도 안 띄운다(827 §3 '정보 안 뺀다'의 잔여 구멍). */}
+            {!L.verdict && !hasLensNarrative(L) ? (
+              <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t('insufficient')}</p>
+            ) : (
             <div className="flex flex-col items-center gap-2 rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center">
               <Lock size={18} className="text-unjong-muted" />
               <p className="text-sm font-semibold text-unjong-primary">{t('gateTitle')}</p>
@@ -1274,6 +1289,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 {t('gateCta')}
               </Link>
             </div>
+            )}
           </div>
         ) : isOpen ? (
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
@@ -1418,7 +1434,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           {partHeaderCount > 0 ? (
             <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
               <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle', { n: partHeaderCount })}</h2>
-              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}{pendingCount > 0 ? ` · ${t('pendingNote', { n: pendingCount })}` : ''}</p>
+              {/* 🔴 STEP 830 §2: 이 카운트 줄은 '전체 N가지' 모집단(아래 수익 열거는 수익 렌즈 부분집합) — 라벨로 두 모집단 혼동 방지. */}
+              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{t('closingScopeAll')} · {tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}{pendingCount > 0 ? ` · ${t('pendingNote', { n: pendingCount })}` : ''}</p>
               <div className="mt-2.5 space-y-1 text-[13px] sm:text-[12px]">
                 {closingPosLabels.length ? <p className="text-unjong-accent">{t('closingPosLine', { list: closingPosLabels.join(', ') })}</p> : null}
                 {closingWarnLabels.length ? <p className="text-amber-400">{t('closingWarnLine', { list: closingWarnLabels.join(', ') })}</p> : null}

@@ -38,6 +38,9 @@ async function usLiveSet(): Promise<Set<string>> {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
   const now = new Date();
+  // 🔴 STEP 830 §9: hreflang(alternates.languages) — en 전면 패리티인데 색인 경로가 ko뿐이었다.
+  //   next-intl as-needed: 기본 ko는 무프리픽스·en은 `/en` 프리픽스. x-default = ko(기본).
+  const alt = (path: string) => ({ languages: { ko: `${base}${path}`, en: `${base}/en${path}`, "x-default": `${base}${path}` } });
 
   // 공개 페이지 (admin·mypage·auth는 robots에서 제외됨)
   const staticRoutes: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
@@ -54,6 +57,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: r.freq,
     priority: r.priority,
+    alternates: alt(r.path),
   }));
 
   // KR 종목 (한국시장 우선 · 6자리) — 스냅샷 테이블
@@ -63,6 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "daily",
     priority: 0.7,
+    alternates: alt(`/stock/${s}`),
   }));
 
   // 해외 종목 — ACTIVE_MARKETS(KR·US)만(STEP 799). foreignKo엔 JP/CN/VN/GB 키도 섞여 있어 isActiveSymbol로 재필터.
@@ -84,6 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly",
     priority: 0.5,
+    alternates: alt(`/stock/${encodeURIComponent(s)}`),
   }));
 
   return [...staticEntries, ...krEntries, ...overseasEntries];
