@@ -21,11 +21,11 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "오름세",
       what: "요즘 강하게 오른 종목이 계속 갈지 보는 방법 — 오르는 흐름이 이어지는 장에 잘 맞아요.",
       about: "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
-      note: "12-1 모멘텀(Jegadeesh-Titman): 롱숏(고−저 3분위·150개월) 백테스트에서 방향성이 통계적으로 유의(t≈2.5·샤프 0.71·양(+)의 달 67%), 거래비용 차감·시장/규모/가치(FF3) 조정 후에도 유지 — '추세 지속' 방향은 견고. 단 수익 '수준'은 생존편향·동일가중으로 부풀려져 실전 기대치 아님(방향이 맞다는 뜻이지 수익 보장 아님). 주가 $5+ 투자가능 종목 한정 — 페니스탁 포함 시 역전. · 3중 교차검증(초·중·후반 3구간·STEP559): 3구간 모두 +방향(전체 t≈3.6), 성장주 강세기(fold2)만 약화되나 부호 유지 = 시기 무관 단단.",
+      note: "12-1 모멘텀(현상=Jegadeesh-Titman 1993 · 계산 사양=Carhart UMD/FF 12-1): 롱숏(고−저 3분위·150개월) 백테스트에서 방향성이 통계적으로 유의(t≈2.5·샤프 0.71·양(+)의 달 67%), 거래비용 차감·시장/규모/가치(FF3) 조정 후에도 유지 — '추세 지속' 방향은 견고. 단 수익 '수준'은 생존편향·동일가중으로 부풀려져 실전 기대치 아님(방향이 맞다는 뜻이지 수익 보장 아님). 주가 $5+ 투자가능 종목 한정 — 페니스탁 포함 시 역전. · 3중 교차검증(초·중·후반 3구간·STEP559): 3구간 모두 +방향(전체 t≈3.6), 성장주 강세기(fold2)만 약화되나 부호 유지 = 시기 무관 단단.",
       scope: {
-        verified: "제가디시·티트만(1993)이 미국 주식(1965~89)에서 확인했어요. 최근 3~12개월 수익률로 줄 세워 상위 집단(롱)과 하위 집단(숏)의 차이를 본 연구예요 — 개별 종목의 미래가 아니라 집단 간 평균 차이예요.",
-        failure: "12~18개월 뒤엔 오히려 뒤집히는 경향(부분 반전)이 있고, 급락 뒤 급반등장에선 크게 무너지는 '모멘텀 크래시'가 알려져 있어요. '이 종목이 오른다'는 뜻이 아니에요.",
-        when: "최근 1개월은 빼고(단기 반전 회피) 3~6개월 들고 가는 조건에서 확인됐어요. 시장 내 상대 순위로 보세요.",
+        verified: "현상은 제가디시·티트만(1993)이 미국 주식(1965~89·NYSE·AMEX·10분위 롱숏)에서 처음 확인했어요. 다만 우리 계산 사양(12개월 형성·최근 1개월 제외·상하위 30% 3분위)은 그 논문의 기본형이 아니라 카하트(1997) UMD·파마-프렌치 모멘텀 팩터의 관행이에요. 둘 다 '집단 간 평균 차이'지 개별 종목의 미래가 아니에요.",
+        failure: "12~18개월 뒤엔 오히려 뒤집히는 경향(부분 반전)이 있고, 급락 뒤 급반등장에선 크게 무너지는 '모멘텀 크래시'가 알려져 있어요. 또 우리 순위는 '오늘 기준 상위 1,000종목'끼리라 상장폐지·쪼그라든 종목이 빠진 생존자들 사이의 순위예요(논문은 상장폐지분까지 포함). '이 종목이 오른다'는 뜻이 아니에요.",
+        when: "최근 1개월은 빼고(단기 반전 회피) 봐요. 논문은 3~6개월 보유 전제인데 우리는 시점 스냅샷이라 보유기간 개념이 없어요 — 시장 내 상대 순위로만 보세요.",
       },
     },
     lowvol: {
@@ -114,11 +114,11 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "Uptrend",
       what: "Whether a stock that's been climbing keeps climbing — best when trends hold.",
       about: "The idea that stocks which have been rising tend to keep rising for a while — a kind of market inertia. Jegadeesh and Titman first showed it in the data in 1993, often explained by investors reacting slowly to good news. It's the basis of trend-following: ride the recent winners.",
-      note: "12-1 Momentum (Jegadeesh-Titman): in our long-short backtest (top−bottom tercile, 150 months) the direction is statistically significant (t≈2.5, Sharpe 0.71, 67% positive months) and it survives transaction costs and adjustment for market/size/value (FF3) — the 'trends persist' direction is robust. But the return 'level' is inflated by survivorship bias and equal weighting, so it is not a realistic expectation (the direction holds; returns are not guaranteed). Limited to investable stocks priced $5+ — including penny stocks reverses the result. · Triple cross-validation (early/middle/late thirds, STEP559): all three folds point the same way (overall t≈3.6); only the growth-led stretch (fold2) weakens, but the sign holds = solid regardless of period.",
+      note: "12-1 Momentum (phenomenon = Jegadeesh-Titman 1993 · spec = Carhart UMD/FF 12-1): in our long-short backtest (top−bottom tercile, 150 months) the direction is statistically significant (t≈2.5, Sharpe 0.71, 67% positive months) and it survives transaction costs and adjustment for market/size/value (FF3) — the 'trends persist' direction is robust. But the return 'level' is inflated by survivorship bias and equal weighting, so it is not a realistic expectation (the direction holds; returns are not guaranteed). Limited to investable stocks priced $5+ — including penny stocks reverses the result. · Triple cross-validation (early/middle/late thirds, STEP559): all three folds point the same way (overall t≈3.6); only the growth-led stretch (fold2) weakens, but the sign holds = solid regardless of period.",
       scope: {
-        verified: "Jegadeesh and Titman (1993) confirmed it on US stocks (1965-89): rank by the last 3-12 months of returns and compare the top group (long) with the bottom group (short). It is a difference between groups, not a claim about one stock's future.",
-        failure: "It tends to partly reverse 12-18 months later, and it can break down badly in sharp rebounds after a crash (a 'momentum crash'). It does not mean this stock will rise.",
-        when: "Confirmed while skipping the most recent month (to avoid short-term reversal) and holding 3-6 months. Read it as a relative rank within the market.",
+        verified: "The phenomenon was first shown by Jegadeesh and Titman (1993) on US stocks (1965-89, NYSE/AMEX, decile long-short). But our spec (12-month formation, skipping the most recent month, top/bottom 30% terciles) follows the Carhart (1997) UMD / Fama-French momentum-factor convention, not that paper's base form. Both are group averages, not a claim about one stock's future.",
+        failure: "It tends to partly reverse 12-18 months later, and it can break down badly in sharp rebounds after a crash (a 'momentum crash'). Also, our ranking is among today's top 1,000 names, so delisted or shrunken stocks are missing — a rank among survivors (the papers include delisted returns). It does not mean this stock will rise.",
+        when: "We skip the most recent month (to avoid short-term reversal). The papers assume a 3-6 month holding period; we take a point-in-time snapshot with no holding period — read it only as a relative rank within the market.",
       },
     },
     lowvol: {
