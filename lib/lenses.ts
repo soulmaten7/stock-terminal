@@ -193,6 +193,12 @@ export const valuation: Lens = {
     const cut = cuts?.valuation;
     const vState = peVal == null ? "na" : verdictState("valuation", peVal, cuts) ?? "na";
     const isPending = vState === "pending";
+    // 🔴 STEP 822 §2-1: na 사유 구분 — "이익 정보 없음"은 적자·우선주엔 거짓(적자는 정보가 있는 상태). 세 사유를 카드 문구로 나눈다.
+    //   ① KR 우선주(6자리 끝자리≠0·lensCompute와 동일 규칙) ② 적자(pe≤0 또는 직전 순이익≤0) ③ 그 외=재무 결측.
+    const isPref = /^\d{6}$/.test(d.symbol) && !d.symbol.endsWith("0");
+    const lrNi = d.financials[d.financials.length - 1]?.netIncome ?? null;
+    const isLoss = !isPref && ((pe != null && pe <= 0) || (pe == null && lrNi != null && lrNi <= 0));
+    const naKey = isPref ? "naPreferred" : isLoss ? "naLoss" : "naMissing";
     return {
       key: "valuation",
       grade: LENS_GRADE[locale].weakSignal,
@@ -205,7 +211,7 @@ export const valuation: Lens = {
       short: null,
       long: labelOf(locale, "per", vState),
       detail: { per: round(pe), pbr: round(pb) },
-      verdict: isPending ? pendingRead(locale) : readOf(locale, "valuation", vState, vState === "cheap" ? "pos" : vState === "rich" ? "warn" : "flat"),
+      verdict: isPending ? pendingRead(locale) : vState === "na" ? readOf(locale, "valuation", naKey, "flat") : readOf(locale, "valuation", vState, vState === "cheap" ? "pos" : vState === "rich" ? "warn" : "flat"),
       spectrum: specOf(locale, "valuation", vState === "cheap" ? 0 : vState === "rich" ? 2 : vState === "mid" ? 1 : -1),
       headline: pe != null && pe > 0 ? `PER ${round(pe)}` : null,
       outlook: isPending ? null : outlookOf(locale, "valuation", vState),

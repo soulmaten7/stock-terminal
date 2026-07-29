@@ -47,11 +47,11 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "가격 대비 가치",
       what: "버는 돈·가진 자산에 비해 주가가 싼지 보는 방법 — 길게 보는 투자에 잘 맞아요.",
       about: "기업의 이익·순자산에 비해 주가가 싼 '가치주'를 사는 접근이에요. 벤저민 그레이엄이 철학(안전마진)으로 씨를 뿌렸고, 데이터로 입증한 건 따로예요 — 이익 대비 싼 효과는 바수(1977), 순자산 대비 싼 효과는 로젠버그 외(1985)가 밝혔고 파마·프렌치가 이를 'HML' 가치 프리미엄으로 정식화했어요. 시장이 인기 없는 주식을 과하게 싸게 판다는 생각이 바탕이에요.",
-      note: "밸류(가치): 이익 대비 싼 효과는 바수(1977·E/P), 순자산 대비 싼 효과는 로젠버그 외(1985)·파마-프렌치 HML(B/M)로 정식화된 학계 정설이에요. 우리 백테스트(연1회 형성·월별 롱숏·저비용)도 방향이 +이고, 우리 밸류 신호가 학계 HML 팩터에 실제로 대응해요(βHML 양(+)·큼 = '우리 밸류=학계 가치팩터'). 단 프리미엄의 세기·통계적 유의성은 표본 구간에 따라 흔들려(순자산 B/M이 이익 E/P보다 일관되게 강함) 특정 t값으로 못박지 않아요. ⚠️ 최근 ~15년 가치주 부진(성장주 우위)은 학계도 약화를 논쟁 중이라(파마-프렌치 2021: 후반기 프리미엄 하락, 단 변동성이 커 '소멸'이라 단정은 못 함) '지금 시기 유효'라 단정 불가. 화면 판정은 PER(E/P) 기준이고(KR=직전 연간=바수 방식 / US=최근 4분기 TTM), 적자(순이익≤0)는 바수·FF처럼 산출에서 제외해요. 유니버스가 '오늘 상위'라 생존편향이 있고, PER·PBR은 단일종목 절대값이라 같은 업종 안에서 상대비교로 봐야 오독이 없어요. 예측·보장 아님.",
+      note: "밸류(가치): 이익 대비 싼 효과는 바수(1977·E/P), 순자산 대비 싼 효과는 로젠버그 외(1985)·파마-프렌치 HML(B/M)로 정식화된 학계 정설이에요. 우리 백테스트(연1회 형성·월별 롱숏·저비용)도 방향이 +이고, 우리 밸류 신호가 학계 HML 팩터에 실제로 대응해요(βHML 양(+)·큼 = '우리 밸류=학계 가치팩터'). 단 프리미엄의 세기·통계적 유의성은 표본 구간에 따라 흔들려(순자산 B/M이 이익 E/P보다 일관되게 강함) 특정 t값으로 못박지 않아요. ⚠️ 최근 ~15년 가치주 부진(성장주 우위)은 학계도 약화를 논쟁 중이라(파마-프렌치 2021: 후반기 프리미엄 하락, 단 변동성이 커 '소멸'이라 단정은 못 함) '지금 시기 유효'라 단정 불가. 화면 판정은 PER(E/P) 기준이고(KR=직전 연간=바수 방식 / US=최근 4분기 TTM), 적자(순이익≤0)는 바수·FF처럼 산출에서 제외해요. 유니버스가 '오늘 상위'(KR=거래대금·US=시총)라 생존편향이 있고, PER·PBR은 단일종목 절대값이라 같은 업종 안에서 상대비교로 봐야 오독이 없어요. 예측·보장 아님.",
       scope: {
         verified: "바수(1977·이익 대비 E/P)와 로젠버그 외(1985)·파마-프렌치(순자산 대비 B/M=HML)가 데이터로 확인한 '가치 프리미엄'이에요 — 싼 '집단'이 장기 평균에서 비싼 집단을 이겼어요(그레이엄은 철학적 뿌리). 개별 싼 종목이 오른다는 말이 아니에요.",
         failure: "싼 데는 이유가 있는 '가치 함정'이 흔해요(구조적으로 쇠퇴하는 회사는 싼 채로 더 빠질 수 있어요). 최근 ~15년은 성장주가 앞서 가치주가 부진했고, 학계도 프리미엄 약화를 논쟁 중이에요(파마-프렌치 2021).",
-        when: "길게 보는 관점에서, 같은 업종 안에서 상대적으로 싼지로 보세요(섹터·성장성 무시하면 오독).",
+        when: "길게 보는 관점에서, 같은 업종 안에서 상대적으로 싼지로 보세요(섹터·성장성 무시하면 오독). 화면 판정은 이익 대비(PER·E/P)지만 우리 백테스트에선 순자산 대비(PBR·B/M)가 더 강했으니 PBR도 함께 보세요.",
       },
     },
     quality: {
@@ -140,11 +140,11 @@ export const LENS_COPY: Record<Locale, {
       shortLabel: "Value",
       what: "Whether the price looks cheap next to a company's earnings and assets — suited to the long game.",
       about: "Buying stocks priced cheap relative to a company's earnings and net assets. Benjamin Graham sowed the philosophy (margin of safety); the empirical proof came later — the 'cheap on earnings' effect from Basu (1977), the 'cheap on net assets' effect from Rosenberg et al. (1985), formalized by Fama and French as the HML value premium. The premise: the market oversells unpopular stocks.",
-      note: "Value: the 'cheap on earnings' effect (Basu 1977, E/P) and the 'cheap on net assets' effect (Rosenberg et al. 1985, formalized as Fama-French HML, B/M) are established academic factors. Our backtest (annual formation, monthly long-short, low cost) reproduces the positive direction, and our value signal genuinely maps to the academic HML factor (βHML positive and large = 'our value is the academic value factor'). But the strength and statistical significance of the premium drift with the sample window (B/M is consistently stronger than E/P), so we do not pin a specific t-value. ⚠️ Value's ~15-year slump (growth has led) is an open academic debate about a weakening premium (Fama-French 2021: the second-half premium fell, though volatility is too high to call it 'dead'), so we cannot claim it 'works in the current period'. The on-screen verdict is PER-based (E/P: KR = last annual = Basu's basis / US = trailing twelve months), and losses (net income 0 or below) are excluded from scoring, as in Basu and FF. The universe is 'today's top names', so survivorship bias applies, and PER and PBR are absolute single-stock figures — compare within the same industry to avoid misreading. Not a prediction or a guarantee.",
+      note: "Value: the 'cheap on earnings' effect (Basu 1977, E/P) and the 'cheap on net assets' effect (Rosenberg et al. 1985, formalized as Fama-French HML, B/M) are established academic factors. Our backtest (annual formation, monthly long-short, low cost) reproduces the positive direction, and our value signal genuinely maps to the academic HML factor (βHML positive and large = 'our value is the academic value factor'). But the strength and statistical significance of the premium drift with the sample window (B/M is consistently stronger than E/P), so we do not pin a specific t-value. ⚠️ Value's ~15-year slump (growth has led) is an open academic debate about a weakening premium (Fama-French 2021: the second-half premium fell, though volatility is too high to call it 'dead'), so we cannot claim it 'works in the current period'. The on-screen verdict is PER-based (E/P: KR = last annual = Basu's basis / US = trailing twelve months), and losses (net income 0 or below) are excluded from scoring, as in Basu and FF. The universe is 'today's top names' (KR by trading value, US by market cap), so survivorship bias applies, and PER and PBR are absolute single-stock figures — compare within the same industry to avoid misreading. Not a prediction or a guarantee.",
       scope: {
         verified: "The 'value premium' confirmed in the data by Basu (1977, on earnings) and Rosenberg et al. (1985) / Fama-French (net assets, HML) — the cheap group beat the expensive group over long-run averages (Graham is the philosophical root). It is not a claim that one cheap stock will rise.",
         failure: "'Value traps' are common — cheap for a reason (a structurally declining business can stay cheap and fall further). Growth has led for the last ~15 years, and academics are still debating whether the premium has weakened (Fama-French 2021).",
-        when: "For the long game, read whether it is relatively cheap within the same sector (ignoring sector and growth misreads it).",
+        when: "For the long game, read whether it is relatively cheap within the same sector (ignoring sector and growth misreads it). The verdict is earnings-based (PER, E/P), but book-to-market (PBR, B/M) was stronger in our backtest, so check PBR too.",
       },
     },
     quality: {
@@ -229,7 +229,10 @@ export const LENS_READINGS: Record<Locale, {
       cheap: { phrase: "싼 편(시장 대비)", plain: "이익 대비 주가가 시장에서 싼 편이에요. 길게 보는 가치 관점에서 눈여겨보는 특징이에요." },
       mid: { phrase: "밸류 중간권", plain: "이익 대비 주가가 시장 중간권이에요." },
       rich: { phrase: "비싼 편(시장 대비)", plain: "이익 대비 주가가 시장에서 비싼 편이에요. 성장 기대가 미리 반영됐을 수 있어요." },
-      na: { phrase: "산출 불가", plain: "이익 정보가 없어 이 기법으론 판단하기 어려워요." },
+      na: { phrase: "산출 불가", plain: "이익 데이터가 없어 이 기법으론 판단하기 어려워요." },
+      naLoss: { phrase: "적자 (판정 제외)", plain: "지금 적자예요 — PER은 이익이 양수일 때만 의미가 있어 이 기법을 적용하지 않아요(원전 바수·FF도 적자는 제외)." },
+      naPreferred: { phrase: "우선주 (판정 제외)", plain: "우선주라 보통주 기준 PER·PBR이 왜곡돼 이 기법을 적용하지 않아요." },
+      naMissing: { phrase: "산출 불가", plain: "이익 데이터가 없어 이 기법으론 판단하기 어려워요." },
     },
     quality: {
       high: { phrase: "수익성 상위권", plain: "자산 대비 수익성이 시장 상위권이에요. 질 좋은 우량주를 고를 때 눈여겨보는 특징이에요." },
@@ -275,6 +278,9 @@ export const LENS_READINGS: Record<Locale, {
       mid: { phrase: "Mid-pack valuation", plain: "Relative to earnings, its price sits mid-market." },
       rich: { phrase: "Pricey (vs. market)", plain: "Relative to earnings, its price is on the pricier side of the market — growth expectations may be priced in." },
       na: { phrase: "Can't be scored", plain: "No earnings data, so this lens can't judge it." },
+      naLoss: { phrase: "Loss-making (excluded)", plain: "It is currently loss-making — PER is only meaningful with positive earnings, so this lens does not apply (Basu and FF also exclude losses)." },
+      naPreferred: { phrase: "Preferred share (excluded)", plain: "As a preferred share, PER and PBR on a common-share basis are distorted, so this lens does not apply." },
+      naMissing: { phrase: "Can't be scored", plain: "No earnings data, so this lens can't judge it." },
     },
     quality: {
       high: { phrase: "Top-tier profitability", plain: "Its profitability versus assets ranks near the top of the market — a high-quality profile worth watching." },
@@ -348,7 +354,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       cheap: "장기 유리한 편 — 싼 주식은 역사적으로 장기 우위 (가치 프리미엄, 단 최근 표본선 약함).",
       mid: "장기: 중립 — 가격이 특별히 싸지도 비싸지도 않아요.",
       rich: "장기 불리한 편 — 비싼 주식은 역사적으로 장기 수익이 약한 편 (단, 우리 표본선 약함).",
-      na: "판단 불가 — 이익 정보가 없어요.",
+      na: "판단 보류 — 이 종목엔 이 기법을 적용하지 않았어요 (사유는 위 참고).",
     },
     quality: {
       high: "장기 유리한 편 — 알짜 우량주는 역사적으로 장기 우위 (검증된 경향).",
@@ -390,7 +396,7 @@ export const LENS_OUTLOOK: Record<Locale, {
       cheap: "Long term: leans favorable — cheap stocks have historically won long-term (value premium; weak in our recent sample).",
       mid: "Long term: neutral — neither especially cheap nor pricey.",
       rich: "Long term: leans unfavorable — pricey stocks have historically lagged long-term (weak in our sample).",
-      na: "Can't judge — no earnings data.",
+      na: "On hold — this lens was not applied to this stock (see the reason above).",
     },
     quality: {
       high: "Long term: leans favorable — high-quality names have historically won long-term (validated).",
