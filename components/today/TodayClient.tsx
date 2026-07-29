@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor, type Country } from '@/stores/countryStore';
-import { LENS_COPY, LENS_READINGS, compactPhrase, pickLocale, type Locale } from '@/lib/lensCopy';
+import { LENS_READINGS, compactPhrase, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
@@ -49,9 +49,6 @@ type WatchlistQuote = {
 function pct(v?: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
-}
-function lensName(loc: Locale, key: string): string {
-  return (LENS_COPY[loc] as unknown as Record<string, { name: string }>)[key]?.name ?? key;
 }
 function stateLabel(loc: Locale, key: string, state: string | null): string {
   if (!state) return '—';
@@ -105,7 +102,6 @@ function LensChangeRow({
   const key = item.lensKey as LensKey;
   // 도착 상태(B)만 톤 색(STEP 777 §4) — A는 muted 그대로, 776 단일 토큰(TONE_TEXT_CLASS) 재사용.
   const line = t.rich('lensChangeLine', {
-    lensName: lensName(loc, key),
     from: compactPhrase(stateLabel(loc, key, item.fromState)),
     to: compactPhrase(stateLabel(loc, key, item.toState)),
     b: (chunks) => <span className={TONE_TEXT_CLASS[item.toTone]}>{chunks}</span>,

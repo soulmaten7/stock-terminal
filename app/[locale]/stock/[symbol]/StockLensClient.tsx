@@ -1252,6 +1252,16 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         {isOpen ? <ScopeBlock lensKey={L.key} loc={locale} /> : null}
         {isOpen && !authLoading && !user ? ( // 하이드레이션 중 게이트 번쩍 방지(STEP 804 §6)
           <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
+            {/* 🔴 STEP 827 §3: 비로그인이 펼쳐도 판정·headline·읽는법은 유지(정보를 빼지 않는다) — 게이트는 근거 상세(서사·컷·detail)에만. 810 §1 비대칭 제거와 같은 방향. */}
+            {L.verdict ? (
+              <div className="mb-3">
+                <span className="flex flex-wrap items-baseline gap-x-2">
+                  <span className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
+                  {L.headline ? <span className="text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
+                </span>
+                {L.verdict.plain ? <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{L.verdict.plain}</p> : null}
+              </div>
+            ) : null}
             <div className="flex flex-col items-center gap-2 rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center">
               <Lock size={18} className="text-unjong-muted" />
               <p className="text-sm font-semibold text-unjong-primary">{t('gateTitle')}</p>
