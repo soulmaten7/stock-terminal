@@ -67,3 +67,38 @@ US 종목의 **"시장에서 상위 X%"·판정("수익성 상위권" 등)·831 
 
 ## 검증
 - 프로덕션 코드 변경 0: `git diff --stat`에 `app/`·`lib/`(프로브 제외)·`supabase/`·`vercel.json` 없음. tsc 0·test 119·build ✓.
+
+---
+
+## 해결 (STEP 833 · A안 채택 — 정의 변경 없음)
+
+> 🔴 **채택 = A(취득 완전화 + 커버리지·구성 게이트).** 유니버스 정의는 **시총 상위 1,000 그대로**(장은태 07-30). B(거래대금 통일)·C는 **여전히 미결** — 시총 vs 거래대금 두 유니버스 분포 차이·저변동 렌즈 왜곡을 **측정한 뒤** 별도 결정.
+
+**무엇을 했나** (`lib/lensPrecompute.ts`):
+- **3단 취득**: ① 배치 `yf.quote(100)`(현행) → 응답을 `classifyCaps`로 ok/noCapField/noResponse 분류(조용히 안 버림) ② 개별 재시도(noCapField∪noResponse·예산 40s/400건·실측 ~120ms/건@동시성6) ③ 최근값 폴백(신규 `us_market_cap` 테이블·7일 나이제한). 매 실행 fresh cap을 `us_market_cap`에 기록(다음날 폴백 재료). 폴백 사용 수는 로그·응답에 남김.
+- **취득 게이트**(`capGateDecision`): fresh 커버리지 <97%(정상 98.6%) 또는 구성(직전 상위 200 메가캡 fresh 확보 <95%·`us_market_cap`서 유도·상수 티커 배열 금지)이면 → **컷 재유도 금지(전날 컷 유지)·프루닝 금지·Sentry error·크론 500**. 편향 표본으로 판정 기준을 만들지 않는다.
+- **정상화 diff 스킵**(`churnDecision`): 유니버스 churn >10%면 상태 재매핑은 하되 `lens_state_changes` diff 미기록(정상화의 기준선 이동을 '종목 변화'로 오기록 방지·데이터 조건 판정·날짜 하드코딩 없음).
+- **§4**: `lens_distribution` RPC anon/authenticated 실행권한 revoke(서버 admin만 호출·동작 변화 0).
+- 값잠금 테스트 10(`lib/lensUniverseGate.test.ts`): 분류·게이트 임계(0.97/0.95)·ADD 오탐없음·부트스트랩·churn(10%).
+
+**as_of 표기 확인**: 게이트 실패 시 컷은 전날 것 유지 → `lens_cuts.as_of`가 어제 → 화면 근거줄 `narrativeCutSource`가 어제 날짜 표시(831 §10-③ 분포 카드 `as_of`도 동일) → 사용자에게 거짓 아님.
+
+## 라이브 실측 (STEP 833 배포 `d4ebcc7` 후 lens-scores 크론 수동 실행 · 2026-07-30 08:15 UTC)
+
+- **크론 응답**: `ok:true · computed:990 · universe:1000 · pruned:true · cutGateOk:true · cutsUpdated:true · changeDiffRecorded:false`. 소요 **141s / 300s**(재시도 포함·여유 충분).
+- **초대형주 정상화**: `lens_scores` US에 **JPM·V·XOM·PG·HD·MA·LLY·AMD·MU·BAC·GS·AAPL·MSFT 전부 존재**(13/13). `us_market_cap` 5,877행 기록됨(폴백 재료).
+- **프로브 재실행(전/후)**: "유니버스에 있으나 저장 안 됨" **202 → 10**(잔여 10 = SKHY·BSP·LLYVA 등 경계·해외 심볼로 computeSymbolLenses가 스킵·1% 양성 꼬리). "저장됐으나 top1000 밖" **198 → 0**(경계 채움분 사라짐 = 유니버스가 진짜 top-1000).
+- **§3 정상화 diff 스킵 작동**: `lens_state_changes` US = 07-29 **324건** vs 07-30 **0건**(정상화로 컷·상태가 대량 이동했으나 '종목 변화'로 오기록 안 됨·changeDiffRecorded:false).
+- **컷 전/후(편향 제거로 이동 = 정상)**:
+
+| 렌즈 | p30 전(07-29·편향996) | p30 후(07-30·완전1000) | p70 전 | p70 후 | n 전→후 |
+|---|---|---|---|---|---|
+| assetgrowth | 2.670 | **2.480** | 13.424 | **12.125** | 983→976 |
+| lowvol | 28.506 | **27.184** | 44.491 | **40.896** | 982→978 |
+| momentum | −3.724 | **−2.707** | 36.311 | **34.272** | 974→974 |
+| quality | 14.024 | **13.909** | 31.656 | **30.329** | 844→852 |
+| valuation | 17.756 | **18.240** | 35.160 | **35.100** | 872→901 |
+
+  → 초대형주(저변동·우량 다수)가 돌아와 특히 **lowvol p70 44.49→40.90**(고변동 컷 하향)·**quality p70 31.66→30.33** 이동. 편향 제거의 직접 결과.
+- **KR 무영향**: KR 경로(`topKrByTradeAmount`)·컷 불변(코드 diff 없음·기본 opts로 게이트 미적용).
+- **미결(다음)**: B(거래대금 통일)·C — 시총 vs 거래대금 유니버스 분포 차이·저변동 왜곡 측정 후 장은태 결정.

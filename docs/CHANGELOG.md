@@ -1,6 +1,18 @@
 <!-- 2026-07-30 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-30 (3) — 🔧 US 유니버스 취득 완전성(A안·정의 변경 없음) (STEP 833 · HEAD `d4ebcc7`)
+
+> 832 진단의 수정. 유니버스 정의 = **시총 상위 1,000 그대로**(장은태 07-30). 배포 후 lens-scores 크론 수동 실행으로 **정상화 라이브 확인**. 상세 = `docs/US_UNIVERSE_DIAGNOSIS_2026-07.md` §해결.
+
+- **3단 취득**(`lib/lensPrecompute.ts` `topByMarketCap`): ①배치 `yf.quote` 응답을 `classifyCaps`로 ok/noCapField/noResponse 분류(조용히 안 버림·832 사고의 코드 원인) ②개별 재시도(noCapField∪noResponse·예산 **40s/400건**·실측 ~120ms/건@동시성6) ③최근값 폴백(신규 `us_market_cap` 테이블·7일 나이제한·`us_stock_perf`엔 컬럼 안 붙임=808 함정 회피). 매 실행 fresh cap 기록.
+- **취득 게이트**(순수 `capGateDecision`·값잠금): fresh 커버리지 <97%(정상 98.6%) ∨ 구성(직전 상위 200 메가캡 fresh확보<95%·`us_market_cap`서 유도·상수 티커 금지)이면 → **컷 재유도 금지(전날 컷 유지)·프루닝 금지·Sentry error·크론 500**. 편향 표본으로 판정 기준을 안 만든다(832 진짜 피해 차단).
+- **정상화 diff 스킵**(순수 `churnDecision`): 유니버스 churn >10%면 상태 재매핑은 하되 `lens_state_changes` diff 미기록(기준선 이동을 '종목 변화'로 오기록 방지·데이터 조건·날짜 하드코딩 없음).
+- **§4**: `lens_distribution` RPC anon/authenticated 실행권한 revoke(서버 admin만·동작 변화 0). 마이그 `043_...sql`(us_market_cap + revoke).
+- **✅ 라이브 정상화**(배포 `d4ebcc7`·크론 141s/300s): `computed:990·universe:1000·cutGateOk:true·cutsUpdated:true·changeDiffRecorded:false`. **초대형주 13/13 복귀**(JPM·V·XOM·PG·HD·MA·LLY·AMD·MU·BAC·GS·AAPL·MSFT). 프로브 "유니버스에 있으나 저장 안 됨" **202→10**(잔여=경계·해외 심볼 1%)·"저장됐으나 top1000밖" **198→0**. **§3 작동**: US 변화 07-29 324건→07-30 **0건**(정상화 폭증 방지). 컷 이동(편향 제거): lowvol p70 44.49→40.90·quality p70 31.66→30.33 등.
+- **KR 무영향**(코드·컷 diff 0·기본 opts). 값잠금 테스트 10신규(분류·게이트 0.97/0.95·ADD 오탐없음·부트스트랩·churn). tsc 0·vitest **129**·build ✓. 교훈 = `LENS_DEV_PLAYBOOK` #63.
+- **▶ 다음(미결)**: B(거래대금 통일)·C — 시총 vs 거래대금 유니버스 분포 차이·저변동 왜곡 측정 후 장은태 결정. 그 전까진 정의 변경 없음.
+
 ## 2026-07-30 (2) — 🔴 진단전용: US 선계산 유니버스 초대형주 누락 (STEP 832 · HEAD `STEP 832`)
 
 > 🔴 **수정 0·진단만**(프로덕션 코드·마이그·크론 무변). 프로브 1 + 진단 원장 1. 모집단 정의 변경은 전 렌즈 컷 이동이라 장은태 확인 사항. 상세 = `docs/US_UNIVERSE_DIAGNOSIS_2026-07.md`.
