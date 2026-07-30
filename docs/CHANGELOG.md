@@ -1,6 +1,18 @@
 <!-- 2026-07-30 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-07-30 (5) — 🎯 모집단 정의 확정(C안): KR 유니버스 시총 통일 (STEP 835 · HEAD `231852a`)
+
+> 834 측정 → 장은태 C안 확정. KR을 거래대금 상위 → **시총 상위**로 전환(US와 통일·문헌 정합). 상세 = `docs/UNIVERSE_DEFINITION_MEASUREMENT_2026-07.md` §결정.
+
+- **전환 전 KR 측정(§1·프로브 무기록)**: 교집합 773/1000(227 갈림)·**저변동 판정 23.4% 뒤집힘**(A컷 47.6/78.8 vs B 58.3/85.6)·현행 거래대금이 저변동 중앙 +13%·p70 +9% 왜곡. 우선주 005935 시총 유니버스 미편입.
+- **§2 전환**: `topKrByTradeAmount`→`topKrByMarketCap`(시총순·우선주 제외 유지·market_cap null 카운트) + `computeKrLensScores`(커버리지 게이트 95%[KR 시총 100%]·구성 게이트 미적용[DB 벌크]·churn diff 스킵). `tradeAmountOf` 유지(화면 정렬용). 🐞 **PostgREST 1000-row cap** 함정: `.limit(1200)`이 1000서 잘려 우선주 제외 후 978 → `.range()` 페이지네이션으로 정정(→1000).
+- **§3 전환일 diff 스킵**: churn>10%(227 교체) → `changeDiffRecorded:false`. **KR 변화 07-29 491건 → 07-30 0건**(전환 폭증 방지).
+- **§4 문구 정합**: `narrativePercentileLabel` "거래대금 상위권"→"시총 상위권"·8개 렌즈 note "KR=거래대금·US=시총"→"KR·US 모두 시총"(ko/en·재grep 0·charac는 이 문구만·계산 불변). **§5** `lens_distribution` PUBLIC revoke(마이그 044).
+- **🔴 Cowork 가설 메커니즘 정정**: 결론(거래대금→저변동 왜곡) 맞음·메커니즘(강상관) US 반박(Spearman 0.013)·KR 부분성립(0.473) → 원인은 구성 편중(시장별 다름·§0-7). 결론 맞아도 근거 틀리면 근거 고쳐 기록.
+- **라이브**(kr-lens-scores 재실행): 초대형주 존재·우선주 005935 부재·universe 1000·KR 컷 전/후(§측정문서). US 불변(코드·컷 diff 0). tsc 0·vitest 130·build ✓. 교훈 = `LENS_DEV_PLAYBOOK` #65.
+- **▶ 다음**: 836 후보 = US 시총 유니버스 **해외 ADR 편입** 측정·문헌 확인(834 A만=MUFG·TTE·ING 등) → 결정 → 베타 재검토.
+
 ## 2026-07-30 (4) — 📏 모집단 정의 측정: 시총 vs 거래대금 (STEP 834 · 측정전용·결정 없음)
 
 > 🔴 프로덕션 무기록(프로브 2 + 측정문서·`lens_scores`/`lens_cuts`/`us_market_cap` 전후 동일). 택일 = 장은태. 상세 = `docs/UNIVERSE_DEFINITION_MEASUREMENT_2026-07.md`.
