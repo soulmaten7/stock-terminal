@@ -145,13 +145,16 @@ export async function buildStockData(symbol: string, _locale: Locale = "ko", krM
     if (pe != null) peBasis = "ttm"; // 야후 trailingPE = 최근 4분기(TTM)
     pb = (q as { priceToBook?: number }).priceToBook ?? null;
     name = (q as { shortName?: string }).shortName || (q as { longName?: string }).longName || name;
-    price = (q as { regularMarketPrice?: number }).regularMarketPrice ?? null;
+    const rmp = (q as { regularMarketPrice?: number }).regularMarketPrice;
+    price = typeof rmp === "number" && isFinite(rmp) && rmp > 0 ? rmp : null; // STEP 836 §4: 0/음수 종가(거래정지·데이터결측)는 0원 저장 금지 → null
     changePercent = (q as { regularMarketChangePercent?: number }).regularMarketChangePercent ?? null;
     const mcq = (q as { marketCap?: number }).marketCap;
     marketCapQuote = typeof mcq === "number" && isFinite(mcq) && mcq > 0 ? mcq : null;
   } catch {
     /* quote 실패해도 가격기반 렌즈는 계산 */
   }
+  // STEP 836 §4: KR은 현재가도 KRX 스냅샷이 정본 — 야후가 0/결측이면 신뢰 종가로 폴백(0원 표시·시총 0 방지).
+  if (price == null && isKr6 && krMeta?.price != null && krMeta.price > 0) price = krMeta.price;
 
   // 🔴 STEP 836 §2: KR 종목명 정본화 — 스냅샷 이름 우선(야후 오염명 "000300.KS,0P…,0" 배제). en=name_en·없으면 한글 폴백(147bc39).
   if (isKr6 && krMeta && (krMeta.name || krMeta.nameEn)) {
