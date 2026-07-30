@@ -25,3 +25,10 @@ export function marketOfSymbol(symbol: string): string {
 export function isActiveSymbol(symbol: string): boolean {
   return isActiveCountry(marketOfSymbol(symbol));
 }
+
+// 🔴 STEP 836 §1: KR 6자리 코드 → 야후 접미사를 **거래소(kr_stock_snapshot.market)로 결정**(추측 제거).
+//   kosdaq → .KQ · 그 외(kospi 등) → .KS. krSnapshot.ts에 있던 규칙을 공용 헬퍼로(두 곳 복제 방지).
+//   원인: `.KS` 우선 조회가 코스닥 종목의 다른/stale 심볼 계열을 그럴듯하게 물어와 가격 렌즈를 오염(코스닥 ~30%).
+export function krYahooSuffix(market: string | null | undefined): ".KQ" | ".KS" {
+  return market === "kosdaq" ? ".KQ" : ".KS";
+}

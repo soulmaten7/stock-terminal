@@ -3,6 +3,7 @@
 // 크론(/api/cron/kr-perf)이 호출. 화면 라우트는 이 테이블만 즉시 SELECT.
 import { createAdminClient } from "./supabase/admin";
 import { pct } from "./returns";
+import { krYahooSuffix } from "./activeMarkets";
 import YahooFinance from "yahoo-finance2";
 
 const yf = new YahooFinance({ suppressNotices: ["yahooSurvey"] });
@@ -149,8 +150,7 @@ export async function enrichMissingNameEn(
   const list = (data ?? []) as { symbol: string; market: string }[];
   if (list.length === 0) return 0;
 
-  const ysym = (r: { symbol: string; market: string }) =>
-    r.symbol + (r.market === "kosdaq" ? ".KQ" : ".KS");
+  const ysym = (r: { symbol: string; market: string }) => r.symbol + krYahooSuffix(r.market); // 공용 헬퍼(STEP 836 §1)
   const codeByY = new Map(list.map((r) => [ysym(r), r.symbol]));
   const yss = [...codeByY.keys()];
 

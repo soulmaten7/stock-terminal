@@ -12,6 +12,9 @@ export function realizedVol(closes: number[], days = 252): number | null {
   if (rets.length < MIN_RETS) return null;
   const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
   const varc = rets.reduce((a, b) => a + (b - mean) * (b - mean), 0) / (rets.length - 1);
+  // 🔴 STEP 836 §4: 분산 0(가격 계열이 상수 = 거래정지·무거래)이면 '변동 0'을 안정성(calm=강점)으로 읽으면 안 됨 →
+  //   결측(null). 실제 저변동주는 미세하나마 분산이 있어 varc>0 (varc=0 ⟺ 모든 수익률이 동일 = 상수 계열뿐).
+  if (varc <= 0) return null;
   return Math.sqrt(varc) * Math.sqrt(252) * 100;
 }
 
