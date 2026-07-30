@@ -483,8 +483,15 @@ export async function topKrByMarketCap(topN: number): Promise<{ symbols: string[
   const { count: withCap } = await sb.from("kr_stock_snapshot").select("symbol", { count: "exact", head: true }).not("market_cap", "is", null);
   const coverage = total ? (withCap ?? 0) / total : 0;
   const nullCapExcluded = (total ?? 0) - (withCap ?? 0);
-  const { data } = await sb.from("kr_stock_snapshot").select("symbol,market_cap,trade_amount").not("market_cap", "is", null).order("market_cap", { ascending: false }).limit(topN + 200);
-  const all = (data ?? []) as { symbol: string; market_cap: number | null; trade_amount: number | null }[];
+  // 🔴 PostgREST 기본 max-rows 1000 → `.limit(1200)`은 1000에서 잘린다(우선주 제외 후 978로 미달). `.range()` 페이지네이션으로
+  //   topN+여유를 확실히 긁는다(우선주가 고시총대에 몰려 버퍼 필요·실측 top-1200에 우선주 23). name_en 백필 스크립트와 동일 함정 회피.
+  const all: { symbol: string; market_cap: number | null; trade_amount: number | null }[] = [];
+  for (let from = 0; from < topN + 500; from += 1000) {
+    const { data } = await sb.from("kr_stock_snapshot").select("symbol,market_cap,trade_amount").not("market_cap", "is", null).order("market_cap", { ascending: false }).range(from, from + 999);
+    const page = (data ?? []) as { symbol: string; market_cap: number | null; trade_amount: number | null }[];
+    all.push(...page);
+    if (page.length < 1000) break;
+  }
   const rows = all.filter((row) => !isPreferred(row.symbol)).slice(0, topN);
   const tradeAmountOf = new Map<string, number>();
   for (const row of rows) if (row.trade_amount != null) tradeAmountOf.set(row.symbol, Number(row.trade_amount));
