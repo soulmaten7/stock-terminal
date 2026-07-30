@@ -3,8 +3,9 @@ import { computeSymbolLenses } from "@/lib/lensCompute";
 import { pickLocale } from "@/lib/lensCopy";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { LENSES } from "@/lib/lenses/registry";
-import { isActiveSymbol } from "@/lib/activeMarkets";
+import { isActiveSymbol, marketOfSymbol } from "@/lib/activeMarkets";
 import { isBotUA, clientIp, allowGeneration } from "@/lib/rateLimit";
+import type { LensDistribution } from "@/lib/lenses/types";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -50,6 +51,35 @@ async function enrichPercentiles(symbol: string, data: Awaited<ReturnType<typeof
   }
 }
 
+// 🔴 STEP 831 §10-③: 퀄리티 분포 요약 주입 — 시장 단위(전 종목 공통)라 종목별 재조회 대신 시장 캐시(1h).
+//   상세 페이지 요청마다 전 종목 스캔 안 함(§81 성능): DB 집계 RPC 1콜 + 시장별 1h 캐시 = 시장당 시간당 최대 1쿼리.
+const distCache = new Map<string, { at: number; data: LensDistribution }>();
+const DIST_TTL = 60 * 60 * 1000;
+async function enrichQualityDistribution(symbol: string, data: Awaited<ReturnType<typeof computeSymbolLenses>>) {
+  try {
+    const q = data.lenses.find((l) => l.key === "quality");
+    if (!q || q.value == null) return; // 결측 종목은 비교 대상 없음 → 분포 미주입
+    const market = marketOfSymbol(symbol);
+    if (market !== "KR" && market !== "US") return; // 선계산 유니버스 없는 시장은 분포 없음
+    const key = `${market}:quality`;
+    let entry = distCache.get(key);
+    if (!entry || Date.now() - entry.at >= DIST_TTL) {
+      const sb = createAdminClient();
+      const { data: rows, error } = await sb.rpc("lens_distribution", { p_market: market, p_lens: "quality" });
+      const r = Array.isArray(rows) ? (rows[0] as Record<string, unknown>) : null;
+      if (error || !r || r.n == null) return;
+      entry = { at: Date.now(), data: {
+        market, n: Number(r.n), asOf: (r.as_of as string) ?? null,
+        min: Number(r.mn), p30: Number(r.p30), median: Number(r.med), p70: Number(r.p70), max: Number(r.mx),
+      } };
+      distCache.set(key, entry);
+    }
+    q.distribution = entry.data;
+  } catch {
+    /* 분포 실패는 무시 — 나머지 카드 정상 */
+  }
+}
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const symbol = (url.searchParams.get("symbol") || "").trim();
@@ -70,6 +100,7 @@ export async function GET(req: Request) {
   try {
     const data = await computeSymbolLenses(symbol, locale);
     await enrichPercentiles(symbol, data); // US 유니버스 대비 퍼센타일 주입(비US는 null)
+    await enrichQualityDistribution(symbol, data); // STEP 831 §10-③: 퀄리티 시장 분포 주입
     // STEP 806 §7: pending(컷 준비 중)이 하나라도 있으면 캐시하지 않음 — 크론 직후 컷 생기면 즉시 정상 판정 반영.
     const hasPending = Array.isArray(data.lenses) && data.lenses.some((l) => l.state === "pending");
     if (!hasPending) cache.set(cacheKey, { at: Date.now(), data });

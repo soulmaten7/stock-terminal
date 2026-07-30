@@ -43,6 +43,10 @@ type LensRead = {
   cutSource?: { market: string; n: number; asOf: string | null } | null; // 컷 출처(STEP 805 §6)
   valueBasis?: 'ttm' | 'annual' | null; // PER 기준(STEP 809 §1)
   state?: string | null;
+  // STEP 831 §10 깊이 표준(근거 상세) — 미지원/결측이면 undefined.
+  decomposition?: { identityKey: string; source?: 'direct' | 'computed'; parts: { key: string; value: number | null; unit: 'money' | 'pct' | 'x' }[] } | null;
+  timeSeries?: { metricKey: string; unit: 'pct' | 'x' | 'money'; points: { year: number | null; value: number | null; missing?: boolean }[] } | null;
+  distribution?: { market: string; n: number; asOf: string | null; min: number; p30: number; median: number; p70: number; max: number } | null;
 };
 type FCriterion = { key: string; label: string; pass: boolean; note: string; group: string; plain: string };
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
@@ -204,6 +208,67 @@ function LensNarrative({ L, loc, market }: { L: LensRead; loc: Locale; market: s
       {L.cutSource ? <p className="text-[11px] text-unjong-muted">{t(market === 'US' ? 'narrativeScopeVerifiedUs' : 'narrativeScopeVerified')}</p> : null}
       {L.key === 'technical' ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeFixed')}</p> : null}
       <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
+    </div>
+  );
+}
+
+// 🔴 STEP 831 §10: 깊이 표준 렌더(근거 상세) — ① 구성요소 분해 ② 시계열 추이 ③ 시장 분포. 모두 결측이면 아무것도 안 그림.
+//   과밀 방지는 말이 아니라 구조로(표·정렬)·기존 scope/note는 그대로 둠. 로그인 게이트 안(근거 상세).
+function LensDepth({ L, loc, country }: { L: LensRead; loc: Locale; country: string }) {
+  const t = useTranslations('StockLens');
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  const fmt = (value: number | null, unit: 'money' | 'pct' | 'x'): string => {
+    if (value == null) return '—';
+    if (unit === 'money') return formatTradeValue(value, country);
+    if (unit === 'pct') return `${value}%`;
+    return `${value}×`;
+  };
+  const decomp = L.decomposition;
+  const ts = L.timeSeries;
+  const dist = L.distribution;
+  if (!decomp && !ts && !dist) return null;
+  return (
+    <div className="mt-2.5 space-y-3 border-t border-unjong-border pt-2.5">
+      {/* ① 구성요소 분해 — 항등식 + 원자료 표 */}
+      {decomp ? (
+        <div>
+          <p className="text-[12px] font-semibold text-unjong-primary/90">{t('depthDecompTitle')}</p>
+          <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t(decomp.identityKey)}</p>
+          <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px] sm:grid-cols-3">
+            {decomp.parts.map((p) => (
+              <div key={p.key} className="flex justify-between gap-2 tabular-nums">
+                <span className="text-unjong-muted">{detailLabel(loc, p.key)}</span>
+                <span className="text-unjong-primary/90">{fmt(p.value, p.unit)}</span>
+              </div>
+            ))}
+          </div>
+          {decomp.source ? <p className="mt-1 text-[11px] text-unjong-muted">{t(decomp.source === 'direct' ? 'depthSourceDirect' : 'depthSourceComputed')}</p> : null}
+        </div>
+      ) : null}
+      {/* ② 연도별 추이 — 결측 연도는 빈칸으로 표시(건너뛰지 않음) */}
+      {ts && ts.points.length >= 2 ? (
+        <div>
+          <p className="text-[12px] font-semibold text-unjong-primary/90">{t('depthTrendTitle')}</p>
+          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] tabular-nums">
+            {ts.points.map((pt, i) => (
+              <span key={i} className={pt.missing ? 'text-unjong-border' : 'text-unjong-muted'}>
+                {pt.year ?? '—'} <span className={pt.missing ? '' : 'text-unjong-primary/90'}>{pt.missing || pt.value == null ? '—' : `${pt.value}%`}</span>
+              </span>
+            ))}
+          </div>
+          <p className="mt-1 text-[11px] text-unjong-muted">{t('depthTrendNote')}</p>
+        </div>
+      ) : null}
+      {/* ③ 시장 분포 내 위치 — min·p30(하위30컷)·중앙·p70(상위30컷)·max + 이 종목 값 */}
+      {dist ? (
+        <div>
+          <p className="text-[12px] font-semibold text-unjong-primary/90">{t('depthDistTitle')}</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-unjong-muted tabular-nums">
+            {t('depthDistLine', { min: r2(dist.min), p30: r2(dist.p30), med: r2(dist.median), p70: r2(dist.p70), max: r2(dist.max) })}
+          </p>
+          <p className="mt-0.5 text-[11px] text-unjong-muted tabular-nums">{t('depthDistThis', { v: L.detail.gpa ?? '—', market: dist.market, n: dist.n, date: dist.asOf ?? '—' })}</p>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -1311,6 +1376,8 @@ export default function StockLensClient({ initialName }: { initialName?: string 
                 {/* STEP 809 §6: verdict·서사 둘 다 없는 결측(가격계열 부족 등) — 빈 카드 대신 명시적 결측 문구 */}
                 {!hasLensNarrative(L) && !L.verdict ? <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t('insufficient')}</p> : null}
                 <LensNarrative L={L} loc={locale} market={countryOf(symbol)} />
+                {/* STEP 831 §10: 깊이(분해·추이·분포) — 근거 상세라 로그인 게이트 안(이 분기). */}
+                <LensDepth L={L} loc={locale} country={countryOf(symbol)} />
                 {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
               </div>
             </div>

@@ -443,7 +443,9 @@ export type DetailKey =
   | "per" | "pbr"
   | "vol"
   | "gpa"
-  | "ag";
+  | "ag"
+  // STEP 831 §10-①: 퀄리티 GP/A 구성요소 분해 라벨(매출·원가·매출총이익·총자산·마진·회전율).
+  | "revenue" | "cogs" | "grossProfit" | "totalAssets" | "grossMargin" | "assetTurnover";
 
 export const DETAIL_LABELS: Record<Locale, Record<DetailKey, string>> = {
   ko: {
@@ -453,6 +455,8 @@ export const DETAIL_LABELS: Record<Locale, Record<DetailKey, string>> = {
     vol: "연변동성%",
     gpa: "GP/A%",
     ag: "자산성장%",
+    revenue: "매출", cogs: "매출원가", grossProfit: "매출총이익", totalAssets: "총자산",
+    grossMargin: "매출총이익률%", assetTurnover: "자산회전율×",
   },
   en: {
     mom12_1: "12-1 Momentum %", ret1m: "1M %", ret3m: "3M %", ret6m: "6M %", ret12m: "12M %",
@@ -461,6 +465,8 @@ export const DETAIL_LABELS: Record<Locale, Record<DetailKey, string>> = {
     vol: "Ann. volatility %",
     gpa: "GP/A %",
     ag: "Asset growth %",
+    revenue: "Revenue", cogs: "Cost of revenue", grossProfit: "Gross profit", totalAssets: "Total assets",
+    grossMargin: "Gross margin %", assetTurnover: "Asset turnover ×",
   },
 };
 

@@ -344,6 +344,42 @@ describe("qualityLens — 특성화", () => {
           "hi": 40,
           "lo": 15,
         },
+        "decomposition": {
+          "identityKey": "qualityIdentity",
+          "parts": [
+            {
+              "key": "revenue",
+              "unit": "money",
+              "value": null,
+            },
+            {
+              "key": "cogs",
+              "unit": "money",
+              "value": null,
+            },
+            {
+              "key": "grossProfit",
+              "unit": "money",
+              "value": 50,
+            },
+            {
+              "key": "totalAssets",
+              "unit": "money",
+              "value": 100,
+            },
+            {
+              "key": "grossMargin",
+              "unit": "pct",
+              "value": null,
+            },
+            {
+              "key": "assetTurnover",
+              "unit": "x",
+              "value": null,
+            },
+          ],
+          "source": "direct",
+        },
         "detail": {
           "gpa": 50,
         },
@@ -368,6 +404,7 @@ describe("qualityLens — 특성화", () => {
         },
         "state": "high",
         "summary": "회사가 자산 대비 돈을 잘 버는 '알짜'인지 보는 방법 — 튼튼한 우량주를 고를 때 잘 맞아요.",
+        "timeSeries": null,
         "value": 50,
         "verdict": {
           "phrase": "수익성 상위권",
@@ -476,6 +513,9 @@ describe("DETAIL_LABELS · headline — i18n 무회귀", () => {
       vol: "연변동성%",
       gpa: "GP/A%",
       ag: "자산성장%",
+      // STEP 831 §10-①: 퀄리티 GP/A 구성요소 분해 라벨(신규·기존 detail 줄엔 안 뜨고 분해 섹션에서만 사용).
+      revenue: "매출", cogs: "매출원가", grossProfit: "매출총이익", totalAssets: "총자산",
+      grossMargin: "매출총이익률%", assetTurnover: "자산회전율×",
     });
   });
 

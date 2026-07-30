@@ -28,6 +28,28 @@ export type LensRead = {
   cutoffs?: { lo: number; hi: number } | null; // 판정 컷(원값 기준 상태 분기 임계치) — 3단 계산 서사용(STEP 782). 미지원 렌즈는 undefined(응답에 안 실림, byte 불변).
   cutSource?: { market: string; n: number; asOf: string | null } | null; // 컷 출처(분포 유도 시장·표본·기준일·STEP 805 §6). 고정컷(RSI·F-Score)·pending은 없음.
   valueBasis?: "ttm" | "annual" | null; // 밸류 렌즈 전용 — PER을 무엇으로 냈는지(TTM/연간·STEP 809 §1). 화면 문구 분기용.
+  // ── STEP 831 §10 깊이 표준(근거 상세 4축) ── 렌즈별 선택. 미지원/결측이면 undefined(지어내지 않음).
+  decomposition?: LensDecomposition | null; // ① 구성요소 분해(원자료→최종값·항등식). compute()가 채움.
+  timeSeries?: LensTimeSeries | null;        // ② 시계열 추이(연도별·불연속 표시). compute()가 채움.
+  distribution?: LensDistribution | null;    // ③ 분포 내 위치(시장 분포 요약). /api/lens가 주입(compute()는 안 채움).
+};
+
+// ① 구성요소 분해 — parts.key = DETAIL_LABELS 키. source = 최종값 원자료 경로(direct=보고값 / computed=매출−원가).
+export type LensDecomposition = {
+  identityKey: string;                                                     // 항등식 설명 메시지 키(StockLens.<key>)
+  source?: "direct" | "computed";
+  parts: { key: string; value: number | null; unit: "money" | "pct" | "x" }[];
+};
+// ② 시계열 — 결측/불연속 연도는 missing:true로 표시(건너뛰지 않음·STEP 831 §10-②).
+export type LensTimeSeries = {
+  metricKey: string;
+  unit: "pct" | "x" | "money";
+  points: { year: number | null; value: number | null; missing?: boolean }[];
+};
+// ③ 분포 요약 — 시장 전체(lens_scores) 분위. p30/p70 = 판정 컷(lens_cuts) 동일 소스.
+export type LensDistribution = {
+  market: string; n: number; asOf: string | null;
+  min: number; p30: number; median: number; p70: number; max: number;
 };
 
 // ── 표준 데이터 번들 ── 한 번 fetch → 모든 렌즈에 주입(docs/LENS_ARCHITECTURE.md §1).

@@ -7,7 +7,7 @@ import { momentum121FromDaily } from "./momentum"; // momentumState는 STEP 805�
 import { realizedVol } from "./lowvol"; // volState 동일(이중컷 제거)
 import { sma, rsi, rsiState, maTrendState } from "./technical";
 import { LENS_COPY, LENS_READINGS, SPECTRUM_LABELS, LENS_OUTLOOK, LENS_GRADE, LEVEL_LABELS, HEADLINE_PREFIX, LENS_MISC, type Locale } from "./lensCopy";
-import type { Lens, StockData, LensRead } from "./lenses/types";
+import type { Lens, StockData, LensRead, LensDecomposition, LensTimeSeries } from "./lenses/types";
 import { stateFromCut, marketOf, type CutMap, type CutMeta } from "./lensCuts";
 
 export type { LensRead } from "./lenses/types";
@@ -69,6 +69,58 @@ function latestGrossProfit(financials: StockData["financials"]): number | null {
   const lr = financials[financials.length - 1];
   if (!lr) return null;
   return lr.grossProfit ?? (lr.totalRevenue != null && lr.costOfRevenue != null ? lr.totalRevenue - lr.costOfRevenue : null);
+}
+// 한 재무 행의 매출총이익 — 야후 보고값 우선, 없으면 매출−원가(연도별 추이·분해 공용).
+function gpOfRow(r: FRowLite | undefined): number | null {
+  if (!r) return null;
+  return r.grossProfit ?? (r.totalRevenue != null && r.costOfRevenue != null ? r.totalRevenue - r.costOfRevenue : null);
+}
+type FRowLite = { date?: unknown; totalRevenue?: number | null; grossProfit?: number | null; costOfRevenue?: number | null; totalAssets?: number | null };
+
+// 🔴 STEP 831 §10-① GP/A 구성요소 분해 — DuPont: GP/A = 매출총이익률(GP/매출) × 자산회전율(매출/총자산).
+//   원전(Novy-Marx 2013·"Good Growth" w15940)이 DuPont 분해를 명시적으로 논의(우리 발명 아님) — 단 원전 caveat:
+//   분해는 GP/A 자체를 넘는 예측력을 '추가하지 않는다'(서술적 투명성이지 더 강한 신호 아님). 문구에 그 사실 명시.
+//   🔴 세 값을 각각 원자료에서 계산(최종 GP/A에서 역산 금지)·항등식은 코드/테스트로 검산.
+function qualityDecomposition(lr: FRowLite | undefined): LensDecomposition | null {
+  if (!lr) return null;
+  const rev = lr.totalRevenue ?? null;
+  const cogs = lr.costOfRevenue ?? null;
+  const gpDirect = lr.grossProfit ?? null;
+  const at = lr.totalAssets ?? null;
+  const gp = gpDirect != null ? gpDirect : (rev != null && cogs != null ? rev - cogs : null);
+  if (gp == null || at == null || at <= 0) return null; // 분해 불가 → 섹션 미표시(지어내지 않음)
+  const source: "direct" | "computed" = gpDirect != null ? "direct" : "computed";
+  const margin = rev != null && rev > 0 ? (gp / rev) * 100 : null;   // 매출총이익률 %
+  const turnover = rev != null && rev !== 0 && at > 0 ? rev / at : null; // 자산회전율 ×
+  return {
+    identityKey: "qualityIdentity",
+    source,
+    parts: [
+      { key: "revenue", value: rev, unit: "money" },
+      { key: "cogs", value: cogs, unit: "money" },
+      { key: "grossProfit", value: gp, unit: "money" },
+      { key: "totalAssets", value: at, unit: "money" },
+      { key: "grossMargin", value: margin != null ? Math.round(margin * 100) / 100 : null, unit: "pct" },
+      { key: "assetTurnover", value: turnover != null ? Math.round(turnover * 1000) / 1000 : null, unit: "x" },
+    ],
+  };
+}
+
+// 🔴 STEP 831 §10-② 연도별 GP/A(각 해 기말 총자산 분모·815 정합). 결측·불연속 연도는 건너뛰지 않고 missing으로 표시.
+function qualityTimeSeries(financials: FRowLite[]): LensTimeSeries | null {
+  const raw = financials
+    .map((r) => ({ year: yearOfRow(r), gp: gpOfRow(r), at: r.totalAssets ?? null }))
+    .filter((p): p is { year: number; gp: number | null; at: number | null } => p.year != null)
+    .map((p) => ({ year: p.year, value: p.gp != null && p.at != null && p.at > 0 ? Math.round((p.gp / p.at) * 10000) / 100 : null }));
+  if (raw.length < 2) return null; // 1개 연도면 추이가 아님
+  if (!raw.some((p) => p.value != null)) return null; // 전 연도 산출 불가(예: 매출총이익 없는 금융사) → 추이 섹션 미표시(빈 년도 나열 금지)
+  raw.sort((a, b) => a.year - b.year);
+  const points: { year: number | null; value: number | null; missing?: boolean }[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    if (i > 0) { const gap = raw[i].year - raw[i - 1].year; for (let g = 1; g < gap; g++) points.push({ year: raw[i - 1].year + g, value: null, missing: true }); }
+    points.push({ year: raw[i].year, value: raw[i].value });
+  }
+  return { metricKey: "gpa", unit: "pct", points };
 }
 
 // STEP 803 §5: 두 재무 행(T·P)이 인접 회계연도(연도 차 1)인지 — Δ항목(GP/A 기초자산·자산성장 전년比)이 '전년 대비'로 성립하는지 검증.
@@ -272,8 +324,9 @@ export const quality: Lens = {
   compute(d: StockData, locale: Locale = "ko", cuts?: CutMap): LensRead {
     // GP/A = 최신연도 매출총이익 ÷ **같은 회계연도 기말 총자산**(Novy-Marx 2013 원전 = (REVT−COGS)/AT, 분자·분모 동일 재무제표).
     // 🔴 STEP 815 원문 정정: 801이 분모를 '전기말(기초)'로 바꿨으나 그건 Piotroski F-Score ROA 관행이지 Novy-Marx GP/A 원전이 아님(원문 JFE 2013·Table2 "(REVT−COGS)/AT" = 당해 기말 AT, 논문 내 'average assets' 언급은 별개 변수). 백테스트도 당해 기말 AT라 라이브·검증 정합.
+    const lrRow = d.financials[d.financials.length - 1];
     const grossProfit = latestGrossProfit(d.financials);
-    const lrAssets = d.financials[d.financials.length - 1]?.totalAssets ?? null;
+    const lrAssets = lrRow?.totalAssets ?? null;
     const c = LENS_COPY[locale].quality;
     const gpa = grossProfit != null && lrAssets != null && lrAssets > 0 ? (grossProfit / lrAssets) * 100 : null;
     // STEP 805: 시장 분포 컷으로 판정(기존 상수 15/40 대신).
@@ -304,6 +357,9 @@ export const quality: Lens = {
       note: c.note,
       cutoffs: cut ? { lo: cut.lo, hi: cut.hi } : null,
       cutSource: cutSourceOf(cut, marketOf(d.symbol)),
+      // STEP 831 §10: 근거 상세 4축 — ①분해 ②시계열은 compute()가(원자료), ③분포는 /api/lens 주입, ④이력은 미구현(컷 이력 없음).
+      decomposition: qualityDecomposition(lrRow),
+      timeSeries: qualityTimeSeries(d.financials),
     };
   },
 };

@@ -945,6 +945,15 @@
     "narrativePercentileLow": "bottom {v}%",
     "narrativePercentileDir": "(top = the side this lens favors)",
     "narrativeStockLow": "This stock ranks in the bottom {pct}%, read as “{verdict}.”",
+    "depthDecompTitle": "Component breakdown",
+    "qualityIdentity": "GP/A = gross margin × asset turnover (DuPont breakdown · discussed by Novy-Marx — the split adds no predictive power beyond GP/A itself; shown to explain the value)",
+    "depthSourceDirect": "Gross profit: as reported",
+    "depthSourceComputed": "Gross profit: revenue − cost of revenue (computed)",
+    "depthTrendTitle": "GP/A by fiscal year",
+    "depthTrendNote": "Each year uses period-end total assets for that fiscal year · missing years left blank (reference trend)",
+    "depthDistTitle": "Position in the market distribution",
+    "depthDistLine": "Range {min}–{max}% · bottom-30% cut {p30} · median {med} · top-30% cut {p70}",
+    "depthDistThis": "This stock {v}% · across {n} {market} stocks · {date}",
     "gateCta": "Sign up or log in, free →"
   },
   "Today": {

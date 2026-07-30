@@ -945,6 +945,15 @@
     "narrativePercentileLow": "하위 {v}%",
     "narrativePercentileDir": "(상위=이 기법이 좋게 보는 쪽)",
     "narrativeStockLow": "이 종목은 하위 {pct}%로 “{verdict}”에 해당해요.",
+    "depthDecompTitle": "구성요소 분해",
+    "qualityIdentity": "GP/A = 매출총이익률 × 자산회전율 (DuPont 분해 · Novy-Marx가 논의 — 단 분해 자체가 GP/A를 넘는 예측력을 더하진 않아요, ‘왜 이 값인지’ 보기용)",
+    "depthSourceDirect": "매출총이익 = 보고값 그대로",
+    "depthSourceComputed": "매출총이익 = 매출 − 매출원가 (직접 계산)",
+    "depthTrendTitle": "연도별 GP/A",
+    "depthTrendNote": "각 해 기말 총자산 기준 · 결측 연도는 빈칸 (참고용 추이)",
+    "depthDistTitle": "시장 분포 내 위치",
+    "depthDistLine": "범위 {min}~{max}% · 하위 30% 컷 {p30} · 중앙 {med} · 상위 30% 컷 {p70}",
+    "depthDistThis": "이 종목 {v}% · {market} {n}개 종목 기준 · {date}",
     "gateCta": "무료 가입·로그인 →"
   },
   "Today": {
