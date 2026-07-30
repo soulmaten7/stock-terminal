@@ -909,7 +909,7 @@
     "insufficient": "Not enough data to compute this method.",
     "pendingNote": "{n} are still calibrating a baseline.",
     "closingFooter": "Just the facts, summarized — the judgment is yours.",
-    "narrativePercentileLabel": "Percentile among top-turnover names",
+    "narrativePercentileLabel": "Percentile among top-market-cap names",
     "narrativePercentileLabelUs": "Percentile among top-market-cap names",
     "narrativeCutSource": "{market} distribution, bottom/top 30% · {n} stocks scored by this lens · {date}",
     "narrativePerBasisTtm": "PER is based on the trailing 12 months (TTM), as provided by Yahoo.",

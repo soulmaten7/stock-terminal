@@ -470,16 +470,40 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   return computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
 }
 
-// KR 유니버스 — kr_stock_snapshot 거래대금 상위 N (admin 클라·6자리 코드). trade_amount도 같이 반환(추가 조회 없음).
-export async function topKrByTradeAmount(topN: number): Promise<{ symbols: string[]; tradeAmountOf: Map<string, number> }> {
+// 🔴 STEP 835: KR 유니버스 — kr_stock_snapshot **시총 상위 N**(834 측정 → C안: KR·US 모두 시총 통일·문헌 정합).
+//   이전엔 거래대금 상위였으나 문헌 밖 정의 + 저변동 기준선 왜곡(KR 실측 판정 23.4% 뒤집힘·중앙 변동성 +13%) + churn↑라 시총으로 전환.
+//   🔴 tradeAmountOf는 계속 채운다 — 유니버스 기준은 아니어도 lens_state_changes.trade_amount(오늘 화면 정렬·STEP 764)에 쓰인다.
+export async function topKrByMarketCap(topN: number): Promise<{ symbols: string[]; tradeAmountOf: Map<string, number>; coverage: number; nullCapExcluded: number }> {
   const sb = createAdminClient();
-  // STEP 803 §3: 우선주(끝자리 ≠ 0)는 밸류 렌즈가 계산 불가 → 백분위 오염 방지 위해 선계산 유니버스에서 제외.
-  //   제외분만큼 topN이 줄지 않도록 여유 있게 당겨(topN+200) 필터 후 topN으로 컷.
+  // STEP 803 §3: 우선주(끝자리 ≠ 0)는 밸류 렌즈 계산 불가 → 유니버스 제외(시총 정렬서도 동일). 여유 당겨(topN+200) 필터 후 컷.
+  //   실측: 삼성전자우(005935·시총 3위·123조)가 우선주라 이 필터로 유니버스 미편입.
   const isPreferred = (s: string) => /^\d{6}$/.test(s) && !s.endsWith("0");
-  const { data } = await sb.from("kr_stock_snapshot").select("symbol,trade_amount").order("trade_amount", { ascending: false }).limit(topN + 200);
-  const all = (data ?? []) as { symbol: string; trade_amount: number | null }[];
+  // 시총 확보율(게이트용·조용히 안 버림·832 교훈): 전 종목 대비 market_cap 보유 비율.
+  const { count: total } = await sb.from("kr_stock_snapshot").select("symbol", { count: "exact", head: true });
+  const { count: withCap } = await sb.from("kr_stock_snapshot").select("symbol", { count: "exact", head: true }).not("market_cap", "is", null);
+  const coverage = total ? (withCap ?? 0) / total : 0;
+  const nullCapExcluded = (total ?? 0) - (withCap ?? 0);
+  const { data } = await sb.from("kr_stock_snapshot").select("symbol,market_cap,trade_amount").not("market_cap", "is", null).order("market_cap", { ascending: false }).limit(topN + 200);
+  const all = (data ?? []) as { symbol: string; market_cap: number | null; trade_amount: number | null }[];
   const rows = all.filter((row) => !isPreferred(row.symbol)).slice(0, topN);
   const tradeAmountOf = new Map<string, number>();
-  for (const row of rows) if (row.trade_amount != null) tradeAmountOf.set(row.symbol, row.trade_amount);
-  return { symbols: rows.map((row) => row.symbol), tradeAmountOf };
+  for (const row of rows) if (row.trade_amount != null) tradeAmountOf.set(row.symbol, Number(row.trade_amount));
+  if (nullCapExcluded > 0) console.log(`[topKrByMarketCap] market_cap null 제외 ${nullCapExcluded}종목(조용히 안 버림)`);
+  return { symbols: rows.map((row) => row.symbol), tradeAmountOf, coverage, nullCapExcluded };
+}
+
+// 🔴 STEP 835 §2·§3: KR 선계산 — 시총 유니버스 + 커버리지 게이트 + 전환/정상화 diff 스킵(US computeLensScores와 대칭).
+export async function computeKrLensScores(topN = 1000, concurrency = 6) {
+  const sb = createAdminClient();
+  const { symbols: universe, tradeAmountOf, coverage } = await topKrByMarketCap(topN);
+  // §2 커버리지 게이트: KR 시총은 우리 DB(kr_stock_snapshot·KRX 벌크)라 정상 100%(실측) → 95% 임계(5pp 여유·kr-perf 부분실패 감지).
+  //   구성 게이트(직전 상위 N 유지)는 KR엔 미적용 — US 배치 quote 결측 양상이 없다(벌크 읽기). priorTopSyms=[]로 스킵.
+  const { coverageOk, cutGateOk } = capGateDecision(coverage, [], new Set(), { coverageMin: 0.95 });
+  // §3 전환/정상화 diff 스킵 — 직전 lens_scores KR 유니버스 대비 churn(전환일 대량 교체 → 스킵·813 §3 원리).
+  const { data: priorUni } = await sb.from("lens_scores").select("symbol").eq("market", "KR");
+  const priorSet = new Set(((priorUni ?? []) as { symbol: string }[]).map((r) => r.symbol));
+  const { churn, skipChangeDiff } = churnDecision(universe, priorSet);
+  console.log(`[computeKrLensScores] 시총커버 ${(coverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 유니버스 ${universe.length}`);
+  if (!cutGateOk) Sentry.captureMessage(`[kr-cut-gate] KR 시총 확보율 ${(coverage * 100).toFixed(1)}%<95% → 컷 재유도·프루닝 금지`, "error");
+  return computeLensScoresFor(universe, "KR", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
 }

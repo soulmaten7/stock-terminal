@@ -47,6 +47,11 @@ describe("§2 capGateDecision — 편향 표본으로 컷 만들기 차단(🔴 
     expect(g.compositionOk).toBe(true); // 스킵
     expect(g.cutGateOk).toBe(true);
   });
+  it("KR: coverageMin 0.95 오버라이드 + 구성 스킵(priorTop=[]) — 96% 통과·94% 실패", () => {
+    // KR은 우리 DB(kr_stock_snapshot·시총 100% 정상) → 구성 게이트 미적용(priorTop=[]), 커버리지 95% 임계.
+    expect(capGateDecision(0.96, [], new Set(), { coverageMin: 0.95 }).cutGateOk).toBe(true);
+    expect(capGateDecision(0.94, [], new Set(), { coverageMin: 0.95 }).cutGateOk).toBe(false);
+  });
   it("경계: 정확히 95% 구성이면 통과, 94.5%면 실패", () => {
     const fresh95 = new Set(priorTop200.slice(0, 190)); // 190/200=95%
     expect(capGateDecision(0.986, priorTop200, fresh95).cutGateOk).toBe(true);

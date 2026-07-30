@@ -909,7 +909,7 @@
     "insufficient": "데이터가 부족해 이 방법으론 계산하지 못했어요.",
     "pendingNote": "{n}개는 판정 기준을 준비 중이에요.",
     "closingFooter": "사실만 정리했어요 · 판단은 당신",
-    "narrativePercentileLabel": "거래대금 상위권 내 백분위",
+    "narrativePercentileLabel": "시총 상위권 내 백분위",
     "narrativePercentileLabelUs": "시총 상위권 내 백분위",
     "narrativeCutSource": "{market} 분포 하위/상위 30% 기준 · 이 기법으로 계산된 {n}종목 · {date}",
     "narrativePerBasisTtm": "PER은 최근 4분기 실적(TTM) 기준이에요(야후 제공값).",
