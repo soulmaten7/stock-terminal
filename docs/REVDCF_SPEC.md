@@ -1,4 +1,4 @@
-<!-- 2026-07-30 최초 작성 · 2026-07-31 STEP 838(A층 N=623·B-4 커버리지) + 839(frame 재검증: 매출 혼재 판정·병목·구멍3·§9 정정 2건) · 역DCF 설계도면(단일 정본) -->
+<!-- 2026-07-30 최초 · 2026-07-31 STEP 838(N=623·커버리지)+839(frame 재검증)+840(매출 항등식 선택·이자=frames아티팩트·A층 종료) · 역DCF 설계도면(단일 정본) -->
 # 역DCF · 시장 함의 기대치 (GAP 방식) — 설계 명세
 
 > **이 문서의 지위**: 선정 모델의 **단일 설계 정본**. 모든 결정·용어·수치·근거가 여기 모인다.
@@ -85,8 +85,8 @@ D. 산출·표현   — 분포 내 위치 · 화면                §7
 
 | 층 | 상태 (2026-07-30) |
 |---|---|
-| **A 적용 범위** | ✅ **확정 — 규칙 + N=623** (838 프로브 §4 A-6) |
-| **B 모델 입력** | 🔶 목록 확정 + **커버리지 실측 완료**(838 §5 B-4) / 구현 미결(OpInc·Interest 폴백) |
+| **A 적용 범위** | ✅ **종료 — 규칙 + N=623 + 분포표본 분리** (840 §4 A-7) |
+| **B 모델 입력** | 🔶 목록 확정 + 커버리지 실측 + **매출=항등식 선택 규칙 확정**(840 §5 B-4) / 구현 미결(EBIT 폴백·이자 companyfacts 경로) |
 | **C 해법** | 🔴 미설계 |
 | **D 산출·표현** | 🔴 미설계 — **우리 차별점이 여기 있음** |
 
@@ -122,6 +122,20 @@ D. 산출·표현   — 분포 내 위치 · 화면                §7
 | **생존 N** | **623** |
 
 🔑 **교차 검증(SIC 자기신고 보완)**: `AssetsCurrent`(CY2024Q4I) 결측이 금융/REIT와 얼마나 겹치나 = **167/208 = 80.3%**. 유동/비유동 미구분(유동성배열법) = 금융업 강한 보조 신호. 생존자 중 AssetsCurrent 결측은 14뿐. → SIC 분류가 대체로 정확하되, 오분류 가능성은 이 신호로 보완 가능(§4 A-2 한계 완화).
+
+### A-7. 🟢 A층 정식 종료 (STEP 840 · 2026-07-31)
+
+| 항목 | 확정값 |
+|---|---|
+| **멤버십 N** | **623** (매핑 1,000 → 금융 164·REIT 44·SPAC 0·외국 149·매출0 20 제외) |
+| 리밸런싱 | 분기 + ±5% 밴드 · **계산은 매일** (A-3) |
+| 유동성 | FALR ≥ 0.75 · 미달은 표시 + **분포 제외** · 분모 `dei:EntityPublicFloat`(생존자 77.8% 보유) |
+| 판별 한계 | FPI 연 1회 판정 · SIC 자기신고 (AssetsCurrent 신호로 보완) — 조용히 빼지 않고 표시 |
+
+🔑 **멤버십 ≠ 분포 표본 (두 층 분리)**:
+- **멤버십 = 623 전부** — 종목 페이지 계산은 시도(정보를 빼지 않음·827 §3).
+- **분포·백분위 표본 = 623 − FALR 미달 − 구조적 계산불가(FCF 음수 49 등)** ≈ **추정 470~500**. 신뢰 낮은 가격·계산불가가 다른 종목 백분위를 오염시키지 않게(우선주 제외 논리). 상위 3% ≈ **14~15종목** — 충분(New Constructs 2,748 대비 작으나 매일·전 종목·순수 사업회사).
+- 🔴 정확 표본 수는 FALR를 623에 재실측(현재 근사는 상위 1,000 기준) 후 확정. **A층 규칙은 종료 · 분포 표본 N은 B층 구현 중 확정.**
 
 ### A-2. 제외 규칙과 식별 방법
 
@@ -298,11 +312,11 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | PretaxIncome | 587 | 94% | ✅ |
 | Capex(3태그합) | 579 | 93% | ✅ |
 | CashAndCashEquivalents | 555 | 89% | 🔶 |
-| **OperatingIncomeLoss** | **545** | **87.5%** | 🔴 driver 2(EBIT) 병목·~78결측. 839: `…IncludingNCI` 태그 없음(0). **GrossProfit union → 561(90.1%)**·나머지 ~10%는 Pretax+Interest 재구성 |
+| **OperatingIncomeLoss** | **545~554** | **87~89%** | 🔴 driver 2(EBIT) 병목. **840 정정**: GrossProfit는 커버 48%뿐+판관비 전이라 EBIT 아님(폴백 부적). Pretax+Interest 재구성 = median 오차 3.6%지만 **10%내 64%뿐**·이자 frames갭에 CY2024 23%만 → 폴백 약함·재구성분 플래그 |
 | AccountsPayableCurrent | 503 | 81% | 🔶 운전자본 보조 |
 | PP&E Net | 499 | 80% | 🔶 |
 | EntityPublicFloat(dei) | 464 | 74% | 🔴 FALR 분모 — §6 |
-| **InterestExpense** | **149** | **24%** | 🔴🔴 **절벽** CY2023 390→CY2024 149. **839 정정: 목적지 미규명.** `InterestExpenseNonoperating`은 18뿐(838 가설 반박)·3태그 union도 456→**201**만 복구. 남은 destination(`InterestExpenseNet`·`InterestAndDebtExpense` 등) 미탐색 = 🔴**못 잰 것** |
+| **InterestExpense** | **149**(frames) | 실제 훨씬 높음 | 🟢 **840 규명: 절벽은 frames-API 아티팩트**(경제적 소멸 아님). missing 241사 중 표본 40개 **전부 부채 보유**·**37/40이 companyfacts엔 InterestExpense 존재**(SEC가 CY2024 frame 미부여). `InterestPaidNet`(현금흐름표 이자·frames 가용)가 **241 중 212 복구·값 연속**(ABT 637→604·AEP 1807→1838). `Nonoperating`은 9뿐(838·839 가설 확정 반박). → **값은 companyfacts로 조회**(frames 커버리지는 최신연도 과소) |
 | SharesOutstanding | dei 399 / **가중평균 588** | dei 64% / **가중 94%** | ✅ 839: `WeightedAverageNumberOfSharesOutstandingBasic` **94%**로 해결. dei·CommonStockSharesOutstanding(62%)는 열등. + `us_market_cap`(야후) 있어 필수 아님 |
 
 **연속 확보율** (역DCF는 과거 평균이 필요 — B-1 "5년 CAGR 기본"의 실현율):
@@ -334,7 +348,13 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | 불일치(>0.1%) | 275 (70.2%) | 287 (53.5%) |
 | 세분 | — | 정확일치 231·<1% 73·**1-10% 124·>10% 108** |
 
-→ **≤1% 일치 = 304/536(57%)**, **>1% 진짜 개념차 = 232/536(43%·그중 >10%가 108)**. **판정 = 혼재(c).** ADP는 겹치는 frame에서 **완전 일치**(순수 기간버그) · **MA는 Excl 24.98B(gross) vs Rev 16.88B(net·리베이트 차감) = 진짜 gross/net 차이** · WMT ~0.9%·CVX ~4.7%(총매출 vs 계약매출) · GE는 구조조정 scope 차이. **⇒ 값 추출은 우선순위 1개(`Excluding`→`Revenues`→`Including`→`SalesRevenueNet`)·합산 금지·`revenueTag` 기록**(809 `peBasis` 전례). 커버리지 카운트만 union 허용. gross/net 케이스는 마진 분모 왜곡 → basis 표시.
+→ **≤1% 일치 = 304/536(57%)**, **>1% 진짜 개념차 = 232/536(43%·그중 >10%가 108)**. **판정 = 혼재(c).** ADP는 겹치는 frame에서 **완전 일치**(순수 기간버그) · **MA는 Excl 24.98B(gross) vs Rev 16.88B(net·리베이트 차감)** · URI/ADM/BG는 Excl이 **일부 세그먼트**(URI Excl 3.7B = 총매출 16.1B의 23%뿐).
+
+🟢 **매출 태그 선택 = 순서 아니라 회계 항등식 (STEP 840 확정)**: 839의 우선순위(`Excluding`-first)는 **분자(영업이익)와 분모(매출)를 다른 손익계산서에서 뽑아 마진을 왜곡**한다. 대신 **영업이익과 같은 IS에서 온 매출**을 항등식으로 고른다:
+- **id1**: `매출 − 매출원가(CostOfRevenue*) = GrossProfit` · **id2**: `매출 − 총비용(CostsAndExpenses) = OperatingIncomeLoss` (허용오차 1%).
+- 실측(623): id1 판별 **274** · id2 **159** · **판별 433(69.5%)** · 미검증 190(30.5%·gross/cost·CAE 결측 → 우선순위 폴백 + `unverified` 플래그).
+- 🔴 **839 우선순위 오류율 = 24/433 = 5.5%** (Excl≠Rev로 갈리는 25건 중 24건이 우선순위 오답). 심각 사례: URI(Excl 3.7B vs 16.1B)·ADM(25 vs 80B)·BG(17 vs 70B)·MELI(20 vs 29B·핀테크 이자수익)·MA(gross 25 vs net 17B). 이들은 역DCF 현금흐름 경로가 통째로 틀렸을 것.
+- **기록 필드(809 `peBasis` 전례)**: `revenueTag`(실제 태그)·`revenueBasis`(gross/net/unverified)·`revenueCheck`(1/2/불가). 🔴 **합산·union 금지(값)**. 커버리지 카운트만 union.
 
 **§3 병목 (5년 연속 확보 · 누적 교집합)**: 단독 5년 = OperatingIncomeLoss **80.9%(병목)** · Capex 86.5% · OCF 88.6% · Revenue 92.3% · IncomeTax 92.1% · Assets 92.5%. 누적(약한 것부터): OpInc 80.9 → +Capex 75.6 → +OCF 72.2 → +Tax 71.7 → +Rev 71.4 → +Assets **70.3**. 🔑 **최대 낙폭 = OperatingIncomeLoss**(진입 즉시 19% 손실). GrossProfit 폴백 시 EBIT 커버 87.5→**90.1%**(CY2024) → ALL-6 소폭 상승.
 
@@ -442,6 +462,9 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | 🔴 **838: "매출 태그 70% 불일치 → 교환 불가"** | **정정 — 기간 매칭 버그.** `fy` 키로 연간 vs 분기를 비교(MA 4.41B·ADP 3.5B는 분기값). frame 고정 재실행: **57% 일치**·43%만 진짜 개념차(gross/net·scope). 결론은 "교환불가"가 아니라 **혼재 → 우선순위 1개·합산금지** | STEP 839 frame 재검증 |
 | 🔴 **838: "InterestExpense가 `InterestExpenseNonoperating`으로 이동"** | **반박 — Nonoperating은 18뿐.** 3태그 union도 절벽(456→201) 미복구. 목적지 태그 미규명(못 잰 것) | STEP 839 |
 | 🔴 **애플 `Revenues`/`Excluding` 전환기 일치를 일반화** | **정정.** 회사별로 gross/net·scope 차이 실재(MA gross 24.98B vs net 16.88B). 애플은 특수 | STEP 838→839 |
+| 🔴 **839: 매출 = 우선순위 1개(`Excluding`-first)** | **정정 — 순서로 고르면 5.5% 오답**(Excl≠Rev 25건 중 24건 오답·URI Excl=총매출의 23%뿐). **항등식(분자·분모 같은 IS)으로 선택** | STEP 840 §1 |
+| 🔴 **838/839: InterestExpense 절벽 = 실제 데이터 감소·목적지 미규명** | **규명 — frames-API 아티팩트**(경제 소멸 아님·부채 40/40 보유·companyfacts 37/40 존재). `InterestPaidNet` frames로 212/241 복구. **값은 companyfacts로** | STEP 840 §2 |
+| 🔴 **839: GrossProfit union이 EBIT 폴백(90.1%)** | **정정 — GrossProfit는 커버 48%·판관비 전이라 EBIT 아님.** Pretax+Interest 재구성도 10%내 64%뿐. 폴백 약함·플래그 필수 | STEP 840 §3 |
 
 ---
 
@@ -454,9 +477,9 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | 3 | ✅ **FCF 음수 10.8%·정규화 흡수 약함** | STEP 838 (§6) |
 | 4 | ✅ **`dei:EntityPublicFloat` = 생존자 78%만** (전 종목 아님) | STEP 838 (§4 A-6·B-4) |
 | 5 | 🔴 야후 chart **volume 매핑** 추가 (수신은 확인됨) | 구현 |
-| 6 | 🔴 **OperatingIncomeLoss 87.5% = 5년연속 병목** | 구현(GrossProfit union→90.1%·나머지 Pretax+Interest) |
-| 7 | 🔴🔴 **InterestExpense 절벽 목적지 미규명** (Nonoperating·Net union도 456→201만) | 추가 변형 탐색(`InterestExpenseNet`·`InterestAndDebtExpense`) |
-| 12 | 🔴 매출 gross/net 혼재 시 **어느 태그가 IS 마진 분모와 맞는지** | 값 추출 규칙 + basis 기록 |
+| 6 | 🔴 **EBIT 폴백**: OpInc 89% 나머지 = Pretax+Interest 재구성(10%내 64%·플래그) | 구현 |
+| 7 | ✅ **InterestExpense 절벽 = frames 아티팩트** → 값은 companyfacts·`InterestPaidNet` 폴백 | 840 규명(구현은 companyfacts 경로) |
+| 12 | ✅ **매출 = 항등식 선택**(id1/id2)·`revenueTag`/`Basis`/`Check` 기록 | 840 확정(구현) |
 | 8 | 🔴 **C 해법 설계** — 수치 탐색·수렴·경계 | 설계 |
 | 9 | 🔴 **D 표현 설계** — "27년"·민감도·결측 사유 | 목업 |
 | 10 | 🔶 베타 산출 방식 (개별 회귀 vs 업종 베타) | 결정 |
@@ -488,6 +511,11 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | 🟣 InterestExpense 절벽 union 복구 | 456 → 201 (목적지 미규명) | 839 프로브 | 2026-07-31 |
 | 🟣 주식수 `WeightedAvgBasic` 커버 | 588 = 94% (dei 64%·CommonStock 62%) | 839 프로브 | 2026-07-31 |
 | 🟣 구조적 FCF 음수 | 49종목 7.9% (유틸리티 SIC49 = 49%) | 839 프로브 | 2026-07-31 |
+| 🟠 매출 항등식 판별 | id1 274·id2 159·판별 433/623(69.5%)·미검증 190 | 840 프로브 | 2026-07-31 |
+| 🟠 **839 우선순위 오류율** | **24/433 = 5.5%** (Excl≠Rev 25건 중 24 오답) | 840 프로브 | 2026-07-31 |
+| 🟠 이자 절벽 = frames 아티팩트 | missing 40/40 부채보유·37/40 companyfacts 존재·`InterestPaidNet` 212/241 복구 | 840 프로브 | 2026-07-31 |
+| 🟠 EBIT 재구성(Pretax+Int) 오차 | median 3.6% · 10%내 64% · CY2024 가용 23% | 840 프로브 | 2026-07-31 |
+| 🟠 GrossProfit 커버(생존자) | 297/623 = 48% (EBIT 폴백 부적격) | 840 프로브 | 2026-07-31 |
 | US 시총 상위 1,000위 하한 | **$9.20B** (833의 $9.0B서 이동) | 838 프로브 | 2026-07-31 |
 | US 시총 확보 심볼 | 5,877 / 5,962 | 832 프로브 | 2026-07-30 |
 | `us_market_cap` 행수 | 5,879 | Supabase | 2026-07-30 |

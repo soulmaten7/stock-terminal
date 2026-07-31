@@ -1,0 +1,164 @@
+{
+  "probedAt": "2026-07-31T10:30:18.282Z",
+  "survivorsN": 623,
+  "identity": {
+    "survivors": 623,
+    "resolvedByIdentity1": 274,
+    "resolvedByIdentity2": 159,
+    "resolvedTotal": 433,
+    "unverified": 190,
+    "ambiguousYearSkipped": 151,
+    "errorVs839Priority": 24,
+    "errorRateOfResolved": 0.055,
+    "grossNetDist": {
+      "gross": 21,
+      "net": 4,
+      "single": 408,
+      "na": 190
+    },
+    "chosenTagDist": {
+      "RevenueFromContractWithCustomerExcludingAssessedTax": 288,
+      "Revenues": 124,
+      "RevenueFromContractWithCustomerIncludingAssessedTax": 21
+    },
+    "driver1and2Joint": 417,
+    "errorSamples": [
+      "MELI: identity→Revenues(28893000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(20335000000) [id1·CY2025]",
+      "WMB: identity→Revenues(11950000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(14899000000) [id2·CY2025]",
+      "FCX: identity→Revenues(25915000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(25186000000) [id2·CY2025]",
+      "KMI: identity→Revenues(16937000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(15202000000) [id2·CY2025]",
+      "AEP: identity→Revenues(19721000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(19970000000) [id2·CY2024]",
+      "URI: identity→Revenues(16099000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(3695000000) [id1·CY2025]",
+      "D: identity→Revenues(14459000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(14182000000) [id2·CY2024]",
+      "BE: identity→Revenues(2023994000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(2001614000) [id1·CY2025]",
+      "MPLX: identity→Revenues(12998000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(9726000000) [id2·CY2025]",
+      "LNG: identity→Revenues(19976000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(19464000000) [id2·CY2025]",
+      "PAYX: identity→Revenues(6512000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(6301100000) [id2·CY2025]",
+      "ADM: identity→Revenues(80269000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(24956000000) [id1·CY2025]",
+      "SUNB: identity→Revenues(11154000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(2509000000) [id1·CY2025]",
+      "CNP: identity→Revenues(8643000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(8552000000) [id2·CY2024]",
+      "NRG: identity→Revenues(30713000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(30347000000) [id2·CY2025]",
+      "CMS: identity→Revenues(8539000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(8305000000) [id2·CY2025]",
+      "BG: identity→Revenues(70329000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(16944000000) [id1·CY2025]",
+      "GH: identity→Revenues(449538000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(null) [id2·CY2022]",
+      "EVRG: identity→Revenues(5961600000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(5705100000) [id2·CY2025]",
+      "OVV: identity→Revenues(8908000000) vs priority→RevenueFromContractWithCustomerExcludingAssessedTax(8663000000) [id2·CY2025]"
+    ]
+  },
+  "interestCliff": {
+    "survWithIE2023": 390,
+    "survWithIE2024": 149,
+    "missing2024": 241,
+    "sampleCompanyfacts": 40,
+    "interestTagFreqCY2024": [
+      [
+        "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+        38
+      ],
+      [
+        "InterestExpense",
+        37
+      ],
+      [
+        "InterestExpenseNonoperating",
+        36
+      ],
+      [
+        "InterestPaidNet",
+        33
+      ],
+      [
+        "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+        27
+      ],
+      [
+        "MinorityInterest",
+        25
+      ],
+      [
+        "ComprehensiveIncomeNetOfTaxIncludingPortionAttributableToNoncontrollingInterest",
+        21
+      ],
+      [
+        "InterestPayableCurrent",
+        19
+      ],
+      [
+        "InvestmentIncomeInterest",
+        18
+      ],
+      [
+        "NetIncomeLossAttributableToNoncontrollingInterest",
+        18
+      ],
+      [
+        "UnrecognizedTaxBenefitsIncomeTaxPenaltiesAndInterestAccrued",
+        16
+      ],
+      [
+        "FinanceLeaseInterestPaymentOnLiability",
+        16
+      ]
+    ],
+    "debtStillPresentInSample": {
+      "yes": 40,
+      "no": 0
+    },
+    "candidateRecoveryFullMissing": {
+      "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest": {
+        "recovered": 216,
+        "continuitySample": [
+          "ABT: IE2023=637000000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=7013000000",
+          "APD: IE2023=177500000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=4821200000",
+          "LNG: IE2023=1141000000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=5303000000",
+          "HWM: IE2023=218000000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=1383000000",
+          "AEP: IE2023=1806900000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=2937000000",
+          "AAL: IE2023=2145000000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=1154000000",
+          "ADI: IE2023=264641000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=1777340000",
+          "AMAT: IE2023=238000000 → IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest2024=8152000000"
+        ]
+      },
+      "InterestExpenseNonoperating": {
+        "recovered": 9,
+        "continuitySample": [
+          "PAYX: IE2023=37300000 → InterestExpenseNonoperating2024=105400000",
+          "MCHP: IE2023=198300000 → InterestExpenseNonoperating2024=259200000",
+          "FLEX: IE2023=207000000 → InterestExpenseNonoperating2024=218000000",
+          "SIRI: IE2023=423000000 → InterestExpenseNonoperating2024=496000000",
+          "MCK: IE2023=252000000 → InterestExpenseNonoperating2024=265000000",
+          "NTAP: IE2023=64000000 → InterestExpenseNonoperating2024=64000000",
+          "FDX: IE2023=745000000 → InterestExpenseNonoperating2024=789000000",
+          "MDT: IE2023=719000000 → InterestExpenseNonoperating2024=729000000"
+        ]
+      },
+      "InterestPaidNet": {
+        "recovered": 212,
+        "continuitySample": [
+          "ABT: IE2023=637000000 → InterestPaidNet2024=604000000",
+          "APD: IE2023=177500000 → InterestPaidNet2024=198200000",
+          "LNG: IE2023=1141000000 → InterestPaidNet2024=1075000000",
+          "HWM: IE2023=218000000 → InterestPaidNet2024=180000000",
+          "AEP: IE2023=1806900000 → InterestPaidNet2024=1838000000",
+          "AAL: IE2023=2145000000 → InterestPaidNet2024=1933000000",
+          "AMAT: IE2023=238000000 → InterestPaidNet2024=205000000",
+          "AVY: IE2023=119000000 → InterestPaidNet2024=111800000"
+        ]
+      }
+    },
+    "note": "missing = CY2023 InterestExpense 보고했으나 CY2024 미보고 생존자. debtStillPresent=아직 부채 있으면 '소멸' 아니라 '태그이동/미제출' 시사"
+  },
+  "ebitFallback": {
+    "note": "GrossProfit는 판관비 차감 전 = 영업이익 아님(그대로 쓰면 마진 과대). 폴백 = Pretax+InterestExpense 재구성(EBIT 근사).",
+    "opincCoverageCY2024": 554,
+    "grossProfitCoverageCY2024": 297,
+    "reconAvailCY2024": 143,
+    "reconVsActualOpinc": {
+      "n": 346,
+      "p10": -0.06,
+      "median": 0.036,
+      "p90": 0.336,
+      "within5pct": 0.451,
+      "within10pct": 0.642
+    }
+  }
+}
