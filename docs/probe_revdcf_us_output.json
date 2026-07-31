@@ -1,0 +1,529 @@
+{
+  "probedAt": "2026-07-31T08:55:25.655Z",
+  "topN": 1000,
+  "mapping": {
+    "mapped": 1000,
+    "unmapped": 0,
+    "unmappedSample": []
+  },
+  "exclusions": {
+    "finance": 164,
+    "reit": 44,
+    "spac": 0,
+    "foreign": 149,
+    "noRevenue": 20,
+    "survivors": 623,
+    "crossCheck": {
+      "finOrReitCount": 208,
+      "acMissingInFinReit": 167,
+      "acMissingRateInFinReit": 0.803,
+      "acMissingInSurvivors": 14,
+      "note": "AssetsCurrent(CY2024Q4I) 결측이 금융/REIT와 얼마나 겹치나 — 유동성배열법 사용 = 금융업 보조 신호"
+    }
+  },
+  "universeN": {
+    "N": 623,
+    "top3pctCount": 19,
+    "cutoffUSD": 9200786432
+  },
+  "coverageByYear": {
+    "Revenue(3태그합)": {
+      "2016": 488,
+      "2017": 532,
+      "2018": 548,
+      "2019": 562,
+      "2020": 569,
+      "2021": 585,
+      "2022": 599,
+      "2023": 608,
+      "2024": 611,
+      "2025": 600
+    },
+    "OperatingIncomeLoss": {
+      "2016": 463,
+      "2017": 479,
+      "2018": 490,
+      "2019": 503,
+      "2020": 511,
+      "2021": 522,
+      "2022": 538,
+      "2023": 546,
+      "2024": 545,
+      "2025": 532
+    },
+    "IncomeTaxExpenseBenefit": {
+      "2016": 515,
+      "2017": 534,
+      "2018": 547,
+      "2019": 561,
+      "2020": 568,
+      "2021": 584,
+      "2022": 597,
+      "2023": 608,
+      "2024": 611,
+      "2025": 601
+    },
+    "PretaxIncome": {
+      "2016": 501,
+      "2017": 520,
+      "2018": 530,
+      "2019": 539,
+      "2020": 546,
+      "2021": 559,
+      "2022": 573,
+      "2023": 585,
+      "2024": 587,
+      "2025": 579
+    },
+    "AssetsCurrent": {
+      "2016": 496,
+      "2017": 507,
+      "2018": 524,
+      "2019": 541,
+      "2020": 557,
+      "2021": 562,
+      "2022": 574,
+      "2023": 588,
+      "2024": 599,
+      "2025": 600
+    },
+    "LiabilitiesCurrent": {
+      "2016": 496,
+      "2017": 507,
+      "2018": 524,
+      "2019": 541,
+      "2020": 557,
+      "2021": 562,
+      "2022": 574,
+      "2023": 588,
+      "2024": 599,
+      "2025": 600
+    },
+    "AccountsPayableCurrent": {
+      "2016": 424,
+      "2017": 436,
+      "2018": 450,
+      "2019": 460,
+      "2020": 475,
+      "2021": 479,
+      "2022": 490,
+      "2023": 493,
+      "2024": 503,
+      "2025": 504
+    },
+    "Assets": {
+      "2016": 509,
+      "2017": 519,
+      "2018": 536,
+      "2019": 552,
+      "2020": 568,
+      "2021": 576,
+      "2022": 585,
+      "2023": 598,
+      "2024": 609,
+      "2025": 610
+    },
+    "CashAndCashEquivalents": {
+      "2016": 503,
+      "2017": 516,
+      "2018": 531,
+      "2019": 527,
+      "2020": 537,
+      "2021": 541,
+      "2022": 541,
+      "2023": 546,
+      "2024": 555,
+      "2025": 556
+    },
+    "PP&E Net": {
+      "2016": 504,
+      "2017": 513,
+      "2018": 530,
+      "2019": 531,
+      "2020": 515,
+      "2021": 503,
+      "2022": 510,
+      "2023": 506,
+      "2024": 499,
+      "2025": 494
+    },
+    "Capex(3태그합)": {
+      "2016": 506,
+      "2017": 523,
+      "2018": 537,
+      "2019": 545,
+      "2020": 549,
+      "2021": 562,
+      "2022": 576,
+      "2023": 577,
+      "2024": 579,
+      "2025": 564
+    },
+    "InterestExpense": {
+      "2016": 369,
+      "2017": 384,
+      "2018": 392,
+      "2019": 395,
+      "2020": 394,
+      "2021": 406,
+      "2022": 400,
+      "2023": 390,
+      "2024": 149,
+      "2025": 130
+    },
+    "LongTermDebt": {
+      "2016": 336,
+      "2017": 345,
+      "2018": 352,
+      "2019": 377,
+      "2020": 389,
+      "2021": 401,
+      "2022": 403,
+      "2023": 406,
+      "2024": 412,
+      "2025": 410
+    },
+    "OperatingCashFlow": {
+      "2016": 477,
+      "2017": 526,
+      "2018": 540,
+      "2019": 553,
+      "2020": 563,
+      "2021": 574,
+      "2022": 584,
+      "2023": 596,
+      "2024": 594,
+      "2025": 584
+    },
+    "EntityPublicFloat": {
+      "2016": 371,
+      "2017": 382,
+      "2018": 389,
+      "2019": 402,
+      "2020": 419,
+      "2021": 441,
+      "2022": 445,
+      "2023": 453,
+      "2024": 464,
+      "2025": 472
+    },
+    "SharesOutstanding": {
+      "2016": 314,
+      "2017": 314,
+      "2018": 316,
+      "2019": 350,
+      "2020": 337,
+      "2021": 342,
+      "2022": 345,
+      "2023": 364,
+      "2024": 399,
+      "2025": 397
+    }
+  },
+  "survivorsN": 623,
+  "consecutive": {
+    "Revenue(3태그합)": {
+      "5yr": 0.923,
+      "10yr": 0.77
+    },
+    "OperatingIncomeLoss": {
+      "5yr": 0.809,
+      "10yr": 0.701
+    },
+    "IncomeTaxExpenseBenefit": {
+      "5yr": 0.921,
+      "10yr": 0.811
+    },
+    "OperatingCashFlow": {
+      "5yr": 0.886,
+      "10yr": 0.711
+    },
+    "Assets": {
+      "5yr": 0.925,
+      "10yr": 0.812
+    },
+    "Capex(3태그합)": {
+      "5yr": 0.865,
+      "10yr": 0.758
+    },
+    "ALL_6_DRIVERS": {
+      "5yr": 0.703,
+      "10yr": 0.52
+    }
+  },
+  "fcf": {
+    "survivorsWithFcfData": 592,
+    "negLatestPct": 0.108,
+    "neg3yrAvgPct": 0.115,
+    "neg5yrAvgPct": 0.127,
+    "normalizationResolvedBy3yr": 0.172,
+    "normalizationResolvedBy5yr": 0.203,
+    "russell1000Reference": 0.03
+  },
+  "falr": {
+    "floatCoverageInSurvivors": 0.778,
+    "floatSurvivorsWithData": 485,
+    "latestFloatYearDist": {
+      "2016": 1,
+      "2019": 1,
+      "2021": 1,
+      "2022": 1,
+      "2023": 4,
+      "2024": 5,
+      "2025": 472
+    },
+    "yahooVolumeReceived": {
+      "AAPL": true,
+      "MSFT": true,
+      "NVDA": true
+    }
+  },
+  "tagVariants": {
+    "sampleSize": 120,
+    "revenue": [
+      [
+        "Revenues",
+        99
+      ],
+      [
+        "RevenueFromContractWithCustomerExcludingAssessedTax",
+        90
+      ],
+      [
+        "ContractWithCustomerLiabilityRevenueRecognized",
+        70
+      ],
+      [
+        "RevenueRemainingPerformanceObligation",
+        62
+      ],
+      [
+        "SalesRevenueNet",
+        58
+      ],
+      [
+        "DeferredRevenueCurrent",
+        55
+      ],
+      [
+        "BusinessAcquisitionsProFormaRevenue",
+        50
+      ],
+      [
+        "SalesRevenueGoodsNet",
+        41
+      ],
+      [
+        "CostOfRevenue",
+        40
+      ],
+      [
+        "IncreaseDecreaseInDeferredRevenue",
+        38
+      ],
+      [
+        "DeferredRevenue",
+        36
+      ],
+      [
+        "SalesRevenueServicesNet",
+        34
+      ]
+    ],
+    "capex": [
+      [
+        "PaymentsToAcquireBusinessesNetOfCashAcquired",
+        110
+      ],
+      [
+        "PaymentsToAcquirePropertyPlantAndEquipment",
+        105
+      ],
+      [
+        "PaymentsToAcquireInvestments",
+        50
+      ],
+      [
+        "PaymentsToAcquireProductiveAssets",
+        43
+      ],
+      [
+        "PaymentsToAcquireBusinessesGross",
+        35
+      ],
+      [
+        "PaymentsToAcquireIntangibleAssets",
+        33
+      ],
+      [
+        "PaymentsToAcquireEquityMethodInvestments",
+        32
+      ],
+      [
+        "PaymentsToAcquireAvailableForSaleSecurities",
+        29
+      ],
+      [
+        "PaymentsToAcquireMarketableSecurities",
+        28
+      ],
+      [
+        "PaymentsToAcquireShortTermInvestments",
+        27
+      ],
+      [
+        "PaymentsToAcquireAvailableForSaleSecuritiesDebt",
+        26
+      ],
+      [
+        "PaymentsToAcquireOtherInvestments",
+        25
+      ]
+    ],
+    "debt": [
+      [
+        "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree",
+        103
+      ],
+      [
+        "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo",
+        103
+      ],
+      [
+        "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
+        102
+      ],
+      [
+        "LongTermDebt",
+        101
+      ],
+      [
+        "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive",
+        101
+      ],
+      [
+        "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour",
+        101
+      ],
+      [
+        "LongTermDebtNoncurrent",
+        100
+      ],
+      [
+        "LongTermDebtCurrent",
+        93
+      ],
+      [
+        "ProceedsFromIssuanceOfLongTermDebt",
+        89
+      ],
+      [
+        "LongTermDebtMaturitiesRepaymentsOfPrincipalAfterYearFive",
+        86
+      ],
+      [
+        "RepaymentsOfLongTermDebt",
+        86
+      ],
+      [
+        "DebtCurrent",
+        61
+      ]
+    ],
+    "interest": [
+      [
+        "InterestExpense",
+        94
+      ],
+      [
+        "InterestExpenseNonoperating",
+        74
+      ],
+      [
+        "UnrecognizedTaxBenefitsIncomeTaxPenaltiesAndInterestExpense",
+        56
+      ],
+      [
+        "FinanceLeaseInterestExpense",
+        44
+      ],
+      [
+        "InterestExpenseDebt",
+        32
+      ],
+      [
+        "IncomeTaxExaminationPenaltiesAndInterestExpense",
+        21
+      ],
+      [
+        "IncomeTaxExaminationInterestExpense",
+        12
+      ],
+      [
+        "InterestExpenseDebtExcludingAmortization",
+        10
+      ],
+      [
+        "InterestExpenseOther",
+        6
+      ],
+      [
+        "InterestExpenseRelatedParty",
+        5
+      ],
+      [
+        "DebtInstrumentConvertibleInterestExpense",
+        5
+      ],
+      [
+        "DisposalGroupIncludingDiscontinuedOperationInterestExpense",
+        5
+      ]
+    ],
+    "overlapCheck": {
+      "checkedPairs": 125,
+      "mismatches": 88,
+      "mismatchSamples": [
+        "GE FY2018: Excluding=113543000000 Revenues=121615000000",
+        "GE FY2021: Excluding=19492000000 Revenues=20303000000",
+        "GE FY2022: Excluding=21011000000 Revenues=21786000000",
+        "GE FY2023: Excluding=18514000000 Revenues=19423000000",
+        "GE FY2024: Excluding=9879000000 Revenues=10812000000",
+        "MA FY2019: Excluding=24980000000 Revenues=4414000000",
+        "MA FY2020: Excluding=23616000000 Revenues=15301000000",
+        "MA FY2021: Excluding=29845000000 Revenues=18884000000",
+        "ADP FY2019: Excluding=14175200000 Revenues=3498700000",
+        "ADP FY2020: Excluding=14589800000 Revenues=3376800000"
+      ]
+    }
+  },
+  "tagIndustrySignal": {
+    "capImprovementsUsers": 4,
+    "capImprovREITorRealEstate": 0,
+    "note": "PaymentsForCapitalImprovements 사용 = REIT/부동산/호텔 신호 (survivors는 REIT 이미 제외라 표본 적을 수 있음)"
+  },
+  "pathCost": {
+    "A_frames": {
+      "note": "태그당 1회 → CIK로 필터",
+      "totalCallsThisRun": 1348,
+      "totalBytesThisRun": 717745124,
+      "estCallsForCoverage": 220
+    },
+    "B_companyfacts": {
+      "note": "종목당 1회",
+      "sampleCalls": 120,
+      "avgBytesApprox": "표본 companyfacts 평균(누적bytes에 포함)"
+    },
+    "C_bulkZip": {
+      "note": "companyfacts.zip 1회(매일 재컴파일)",
+      "contentLengthBytes": 1392349382,
+      "contentLengthGB": 1.39
+    }
+  },
+  "reproAllFilers": {
+    "Assets@CY2024Q4I": 6249,
+    "NetCashProvidedByUsedInOperatingActivities@CY2024": 6164,
+    "OperatingIncomeLoss@CY2024": 4997,
+    "EntityPublicFloat@CY2024Q2I": 4355
+  }
+}
