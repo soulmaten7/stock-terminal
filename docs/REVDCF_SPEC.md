@@ -1,4 +1,4 @@
-<!-- 2026-07-30 최초 작성 · 2026-07-31 STEP 838 프로브 반영(A층 N=623 확정·B-4 커버리지·§9 정정) · 역DCF 모델 설계도면(단일 정본) -->
+<!-- 2026-07-30 최초 작성 · 2026-07-31 STEP 838(A층 N=623·B-4 커버리지) + 839(frame 재검증: 매출 혼재 판정·병목·구멍3·§9 정정 2건) · 역DCF 설계도면(단일 정본) -->
 # 역DCF · 시장 함의 기대치 (GAP 방식) — 설계 명세
 
 > **이 문서의 지위**: 선정 모델의 **단일 설계 정본**. 모든 결정·용어·수치·근거가 여기 모인다.
@@ -298,12 +298,12 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | PretaxIncome | 587 | 94% | ✅ |
 | Capex(3태그합) | 579 | 93% | ✅ |
 | CashAndCashEquivalents | 555 | 89% | 🔶 |
-| **OperatingIncomeLoss** | **545** | **87.5%** | 🔴 driver 2(EBIT) — ~78종목 결측·폴백 필요(GrossProfit−OpEx 또는 Pretax+Interest) |
+| **OperatingIncomeLoss** | **545** | **87.5%** | 🔴 driver 2(EBIT) 병목·~78결측. 839: `…IncludingNCI` 태그 없음(0). **GrossProfit union → 561(90.1%)**·나머지 ~10%는 Pretax+Interest 재구성 |
 | AccountsPayableCurrent | 503 | 81% | 🔶 운전자본 보조 |
 | PP&E Net | 499 | 80% | 🔶 |
 | EntityPublicFloat(dei) | 464 | 74% | 🔴 FALR 분모 — §6 |
-| **InterestExpense** | **149** | **24%** | 🔴🔴 **절벽** — CY2023 390 → CY2024 149. FASB 택사노미 이동으로 `InterestExpenseNonoperating`(표본 74/120)로 대거 전환. WACC 이자 = 두 태그 합집합 필수 |
-| SharesOutstanding(dei) | 399 | 64% | 🔴 dei 태그 커버 낮음 → us-gaap `CommonStockSharesOutstanding`/가중평균 사용(edgar.ts 전례) |
+| **InterestExpense** | **149** | **24%** | 🔴🔴 **절벽** CY2023 390→CY2024 149. **839 정정: 목적지 미규명.** `InterestExpenseNonoperating`은 18뿐(838 가설 반박)·3태그 union도 456→**201**만 복구. 남은 destination(`InterestExpenseNet`·`InterestAndDebtExpense` 등) 미탐색 = 🔴**못 잰 것** |
+| SharesOutstanding | dei 399 / **가중평균 588** | dei 64% / **가중 94%** | ✅ 839: `WeightedAverageNumberOfSharesOutstandingBasic` **94%**로 해결. dei·CommonStockSharesOutstanding(62%)는 열등. + `us_market_cap`(야후) 있어 필수 아님 |
 
 **연속 확보율** (역DCF는 과거 평균이 필요 — B-1 "5년 CAGR 기본"의 실현율):
 
@@ -326,7 +326,17 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 - **이자**: `InterestExpense` → `InterestExpenseNonoperating` → `InterestExpenseDebt`. (절벽 대응)
 - **부채**: `LongTermDebt`(총) → `LongTermDebtNoncurrent` + `DebtCurrent`. 🔴 빈도 상위 `LongTermDebtMaturitiesRepayments…`는 만기 스케줄 주석이지 잔액 아님 — 함정.
 
-🔴 **겹침 검산 = B-0 정정**: `Excluding` vs `Revenues` 둘 다 보고하는 125쌍 중 **88(70%) 불일치**. GE는 근접(비계약매출 차이)이나 **MA(마스터카드) Excluding 24.98B vs Revenues 4.41B·ADP 14.2B vs 3.5B = 전혀 다른 개념**(일부 회사는 `Revenues`를 세그먼트/기타 라인으로 씀). → **두 태그는 일반적으로 교환 불가.** 값 추출은 **합집합/합산이 아니라 엄격한 우선순위 1개**로. B-0의 "애플 전환기 일치"는 특수 사례였다(§9 정정).
+🔴 **겹침 검산 — 839 재검증으로 838 정정 (frame 기간 매칭)**: 838의 "125쌍 중 88(70%) 불일치·교환 불가"는 **기간 매칭 버그**였다(companyfacts를 `fy` 키로 짝지어 연간 vs 분기를 비교 — MA 4.41B·ADP 3.5B는 **분기값**이었음). SEC `frame`(CY####=연간)으로 고정해 재실행:
+
+| | 838 (버그·기간 미고정) | 839 (frame 고정) |
+|---|---|---|
+| 비교 쌍 | 392(재현) | 536 |
+| 불일치(>0.1%) | 275 (70.2%) | 287 (53.5%) |
+| 세분 | — | 정확일치 231·<1% 73·**1-10% 124·>10% 108** |
+
+→ **≤1% 일치 = 304/536(57%)**, **>1% 진짜 개념차 = 232/536(43%·그중 >10%가 108)**. **판정 = 혼재(c).** ADP는 겹치는 frame에서 **완전 일치**(순수 기간버그) · **MA는 Excl 24.98B(gross) vs Rev 16.88B(net·리베이트 차감) = 진짜 gross/net 차이** · WMT ~0.9%·CVX ~4.7%(총매출 vs 계약매출) · GE는 구조조정 scope 차이. **⇒ 값 추출은 우선순위 1개(`Excluding`→`Revenues`→`Including`→`SalesRevenueNet`)·합산 금지·`revenueTag` 기록**(809 `peBasis` 전례). 커버리지 카운트만 union 허용. gross/net 케이스는 마진 분모 왜곡 → basis 표시.
+
+**§3 병목 (5년 연속 확보 · 누적 교집합)**: 단독 5년 = OperatingIncomeLoss **80.9%(병목)** · Capex 86.5% · OCF 88.6% · Revenue 92.3% · IncomeTax 92.1% · Assets 92.5%. 누적(약한 것부터): OpInc 80.9 → +Capex 75.6 → +OCF 72.2 → +Tax 71.7 → +Rev 71.4 → +Assets **70.3**. 🔑 **최대 낙폭 = OperatingIncomeLoss**(진입 즉시 19% 손실). GrossProfit 폴백 시 EBIT 커버 87.5→**90.1%**(CY2024) → ALL-6 소폭 상승.
 
 ---
 
@@ -349,7 +359,9 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 - FCF 음수 처리 → **정규화(3~5년)로 흡수, 그래도 음수면 계산 불가 표시**
   - 실측 참고: **러셀 1000 적자 비율 약 3%** / 러셀 2000은 40~46%(20년 전 14%). 우리 유니버스는 러셀 1000급이라 영향 작음
   - ✅ **FCF 음수 비율 실측 (STEP 838 · N=623 중 FCF 재료 592)**: 최근연도 **10.8%** · 3년평균 11.5% · 5년평균 12.7%. (적자 3%보다 훨씬 큼 = 설비투자 큰 업종이 이익 나도 FCF 음수 — 스펙 가정 확인)
-  - 🔴 **정규화가 음수를 흡수하는 힘은 약하다**: 최근 음수 종목 중 3년평균으로 양전 **17.2%**·5년평균 **20.3%**만 해소 → **나머지 ~80%는 구조적 음수**(일회성 아님). ⇒ 유니버스의 **약 9%(10.8%×83%)는 지속적 FCF 음수 → "계산 불가"** 표시가 현실. 정규화를 만능으로 쓰면 안 됨
+  - 🔴 **정규화가 음수를 흡수하는 힘은 약하다**: 최근 음수 종목 중 3년평균으로 양전 **17.2%**·5년평균 **20.3%**만 해소 → **나머지 ~80%는 구조적 음수**(일회성 아님).
+  - ✅ **839 확정: 구조적 FCF 음수 = 49종목(7.9%).** 성격 분류(SIC): **규제 유틸리티(SIC 49) 24종목 = 49%**(SRE·SO·DUK·EXC·ED… 대규모 그리드 설비투자>영업현금·안정 수익) · **바이오/제약(SIC 28) 8**(INSM·RVMD·BBIO… R&D 소진 적자) · **자본집약 산업재(SIC 37) 3**(BA·RKLB·RIVN) · **성장 SW/서비스(SIC 73) 5**(CRWV·AUR·FTAI). → 대부분 **적자가 아니라 설비투자·성장 소진**.
+  - **화면 문구 안(822 전례 — "데이터 없음" 아님·사유별)**: "설비투자가 영업현금흐름을 넘어(예: 규제 유틸리티·성장기 기업) **잉여현금흐름 기준 역산이 성립하지 않습니다** — 이 기법의 적용 범위 밖입니다." 🔴 다모다란식 목표이익률 역산은 하지 않음(§6 결정 유지).
 - 🔴 **하지 않기로 한 것**: 다모다란식 "목표 이익률 동시 역산". 적자 기업까지 잡을 수 있으나 **가정이 늘어 model-free의 우아함이 줄어든다**(원전 지적). 우리의 유일한 강점을 깎는다
 
 ---
@@ -426,8 +438,10 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | "적자·FCF 음수는 US에서 더 중요" | **러셀 1000 기준 적자 3%로 영향 작음** | 실측 |
 | "층 1이 닫혔다" | **철회 — 규칙만 정해지고 N·식별정확도·FALR 구현이 미해결** | 자체 검수 |
 | "10층 구조" | **폐기 — 파이프라인 단계와 활동을 뒤섞은 목록.** A~D로 재편 | 장은태 지적 |
-| "`Revenues`와 `RevenueFromContract…Excluding`은 전환기 값 일치(애플)라 이어붙이기 가능" | **일반화 오류 — 정정.** 838 실측: 둘 다 보고하는 125쌍 중 70% 불일치(MA·ADP는 전혀 다른 개념). 애플은 특수 사례. **값 추출은 합산/이어붙이기 아니라 엄격한 우선순위 1개** | STEP 838 겹침 검산 |
 | "capex·매출은 태그만 합치면 커버리지 확보" | **커버리지 카운트엔 맞으나 값 추출엔 위험 — 빈도 상위에 함정 태그**(capex 1위=M&A `PaymentsToAcquireBusinesses`·매출 상위=이연매출인식·부채 상위=만기스케줄 주석). 큐레이션된 우선순위 필요 | STEP 838 변형 발견 |
+| 🔴 **838: "매출 태그 70% 불일치 → 교환 불가"** | **정정 — 기간 매칭 버그.** `fy` 키로 연간 vs 분기를 비교(MA 4.41B·ADP 3.5B는 분기값). frame 고정 재실행: **57% 일치**·43%만 진짜 개념차(gross/net·scope). 결론은 "교환불가"가 아니라 **혼재 → 우선순위 1개·합산금지** | STEP 839 frame 재검증 |
+| 🔴 **838: "InterestExpense가 `InterestExpenseNonoperating`으로 이동"** | **반박 — Nonoperating은 18뿐.** 3태그 union도 절벽(456→201) 미복구. 목적지 태그 미규명(못 잰 것) | STEP 839 |
+| 🔴 **애플 `Revenues`/`Excluding` 전환기 일치를 일반화** | **정정.** 회사별로 gross/net·scope 차이 실재(MA gross 24.98B vs net 16.88B). 애플은 특수 | STEP 838→839 |
 
 ---
 
@@ -440,8 +454,9 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | 3 | ✅ **FCF 음수 10.8%·정규화 흡수 약함** | STEP 838 (§6) |
 | 4 | ✅ **`dei:EntityPublicFloat` = 생존자 78%만** (전 종목 아님) | STEP 838 (§4 A-6·B-4) |
 | 5 | 🔴 야후 chart **volume 매핑** 추가 (수신은 확인됨) | 구현 |
-| 6 | 🔴 **OperatingIncomeLoss 87.5% 폴백** (EBIT ~12% 결측) | 구현(GrossProfit−OpEx or Pretax+Interest) |
-| 7 | 🔴 **InterestExpense 절벽** — `InterestExpenseNonoperating` 합집합 | 구현 |
+| 6 | 🔴 **OperatingIncomeLoss 87.5% = 5년연속 병목** | 구현(GrossProfit union→90.1%·나머지 Pretax+Interest) |
+| 7 | 🔴🔴 **InterestExpense 절벽 목적지 미규명** (Nonoperating·Net union도 456→201만) | 추가 변형 탐색(`InterestExpenseNet`·`InterestAndDebtExpense`) |
+| 12 | 🔴 매출 gross/net 혼재 시 **어느 태그가 IS 마진 분모와 맞는지** | 값 추출 규칙 + basis 기록 |
 | 8 | 🔴 **C 해법 설계** — 수치 탐색·수렴·경계 | 설계 |
 | 9 | 🔴 **D 표현 설계** — "27년"·민감도·결측 사유 | 목업 |
 | 10 | 🔶 베타 산출 방식 (개별 회귀 vs 업종 베타) | 결정 |
@@ -467,6 +482,12 @@ FALR < 0.75  → 계산은 하되 "거래가 적어 가격 신뢰도 낮음" 표
 | 🟢 매출 태그 겹침 불일치 | 88/125 = 70% | 838 프로브 (Excluding vs Revenues) | 2026-07-31 |
 | 🟢 SEC 수집 경로 비용 | frames 태그당1회 / companyfacts 종목당1회 / 벌크ZIP **1.39GB**·일 재컴파일 | 838 프로브 HEAD 실측 | 2026-07-31 |
 | 🟢 B-0 재현 검산 (전체 filer) | Assets 6,249·OCF 6,164·OpInc 4,997·Float 4,355 | 838 프로브 (07-30 대비 late-filer +Δ) | 2026-07-31 |
+| 🟣 매출 겹침(frame 매칭) 일치/불일치 | 57% 일치 · 43% 개념차(>10% 20%) | 839 프로브 (536쌍·838의 70%는 기간버그) | 2026-07-31 |
+| 🟣 5년연속 병목 driver | OperatingIncomeLoss 80.9%(누적 70.3%로 하락 주도) | 839 프로브 | 2026-07-31 |
+| 🟣 EBIT 폴백(GrossProfit union) | 87.5% → 90.1% (CY2024) | 839 프로브 | 2026-07-31 |
+| 🟣 InterestExpense 절벽 union 복구 | 456 → 201 (목적지 미규명) | 839 프로브 | 2026-07-31 |
+| 🟣 주식수 `WeightedAvgBasic` 커버 | 588 = 94% (dei 64%·CommonStock 62%) | 839 프로브 | 2026-07-31 |
+| 🟣 구조적 FCF 음수 | 49종목 7.9% (유틸리티 SIC49 = 49%) | 839 프로브 | 2026-07-31 |
 | US 시총 상위 1,000위 하한 | **$9.20B** (833의 $9.0B서 이동) | 838 프로브 | 2026-07-31 |
 | US 시총 확보 심볼 | 5,877 / 5,962 | 832 프로브 | 2026-07-30 |
 | `us_market_cap` 행수 | 5,879 | Supabase | 2026-07-30 |
