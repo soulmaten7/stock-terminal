@@ -1,5 +1,17 @@
-<!-- 2026-07-30 -->
+<!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-01 — 🗄️ 원전·재료 원본 저장 배치: 다모다란 → Postgres + Storage (STEP 846 · HEAD `e844005`)
+
+> 프로덕션 화면 변경 0. 앞으로 **모든 모델이 쓰는 공용 재료 배선**(규칙 ⓪·⓪-2 4단계). 값은 코드에 안 박고 전부 DB에서 읽는다(§12 B분류).
+
+- **§3 마이그레이션** `20260801_damodaran_reference_data.sql`: 8개 테이블(전부 `as_of DATE NOT NULL` + (as_of,키) 유니크 → 연 1회 새 as_of로 누적·덮어쓰기 금지) + RLS enable·anon/authenticated REVOKE(읽기 service-role만·MCP 적용).
+- **§4 적재** `scripts/ingest_damodaran.ts`(재실행 안전·`--as-of` 기본=파일 `Date updated:` 셀 serial→2026-01-05): **행수** = industry 48,144(US 상장 6,937)·tax_rate 94·country_tax 229·wacc/beta/capex/working_capital 94·global_inputs 1(rf 0.0395·erp 0.0446·spread 0.0023·infl 0.025). **검산 2건 통과**(US 티커 6,937 · 세율 업종 94). US 한계세율 0.2563 확인.
+- **§5 매칭키 DB 고정**: `damodaran_industry`에 생성컬럼 `ticker_norm`(구두점 정규화)·`is_us_listed`(8개 거래소) + 인덱스 — Country 매칭 오분류(TEL→루마니아 등) 차단.
+- **§2 Storage**: 버킷 `sources`(비공개·50MB=프로젝트 글로벌 상한) 생성 + xls 8개 `damodaran/2026-01-05/` 업로드(날짜 폴더=과거본 누적·indname 21.7MB 포함). 🐞 60MB 상한 요청은 글로벌 50MB 초과로 413 → 50MB로 수정.
+- **§1 git 경량화**: `data/sources/damodaran/`(22MB) → `.gitignore`(로컬 유지·정본은 Storage). git엔 원전 시트+원문 HTML(~2MB)만.
+- **§6 registry**: `MATERIAL_SOURCES.damodaran`에 테이블명·Storage 경로 추가(값 아님·좌표만). **§12 B분류 8행 🔴 미배선 → ✅ 배선.**
+- 검증: tsc 0 · vitest 135 · build ✓ · app/ 변경 0.
 
 ## 2026-07-30 (6) — 🔴 KR 코스닥 데이터 오염 봉인 (STEP 836 · HEAD `STEP 836`)
 

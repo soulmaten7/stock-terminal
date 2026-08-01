@@ -52,3 +52,6 @@ scripts/_*.ts
 data/_*.json
 *handoff.zip
 .next-verify/
+
+# STEP 846: 다모다란 원본 xls는 Supabase Storage(sources 버킷)에 보관 — git 경량화(22MB 제외). 로컬 파일은 유지.
+data/sources/damodaran/

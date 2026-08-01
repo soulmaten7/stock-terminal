@@ -1,0 +1,139 @@
+{
+  "5년(CY2024 종료)": {
+    "strict": {
+      "years": "CY2020~CY2024",
+      "both": 498,
+      "revOnly": 69,
+      "ebitOnly": 2
+    },
+    "loose": {
+      "years": "CY2020~CY2024",
+      "both": 553,
+      "revOnly": 14,
+      "ebitOnly": 2
+    },
+    "universe": 611
+  },
+  "5년(CY2023 종료)": {
+    "strict": {
+      "years": "CY2019~CY2023",
+      "both": 489,
+      "revOnly": 66,
+      "ebitOnly": 2
+    },
+    "loose": {
+      "years": "CY2019~CY2023",
+      "both": 539,
+      "revOnly": 16,
+      "ebitOnly": 2
+    },
+    "universe": 611
+  },
+  "10년(CY2024 종료)": {
+    "strict": {
+      "years": "CY2015~CY2024",
+      "both": 365,
+      "revOnly": 64,
+      "ebitOnly": 59
+    },
+    "loose": {
+      "years": "CY2015~CY2024",
+      "both": 399,
+      "revOnly": 30,
+      "ebitOnly": 64
+    },
+    "universe": 611
+  },
+  "10년(CY2023 종료)": {
+    "strict": {
+      "years": "CY2014~CY2023",
+      "both": 0,
+      "revOnly": 0,
+      "ebitOnly": 0
+    },
+    "loose": {
+      "years": "CY2014~CY2023",
+      "both": 0,
+      "revOnly": 0,
+      "ebitOnly": 0
+    },
+    "universe": 611
+  },
+  "_totalFilerCountByTagYear": {
+    "OperatingIncomeLoss": {
+      "2015": 5575,
+      "2016": 5360,
+      "2017": 5231,
+      "2018": 5141,
+      "2019": 5234,
+      "2020": 5381,
+      "2021": 5846,
+      "2022": 5748,
+      "2023": 5341,
+      "2024": 4998,
+      "2025": 4542
+    },
+    "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest": {
+      "2015": 3489,
+      "2016": 3493,
+      "2017": 3493,
+      "2018": 3568,
+      "2019": 4363,
+      "2020": 4825,
+      "2021": 5160,
+      "2022": 5271,
+      "2023": 5058,
+      "2024": 4910,
+      "2025": 4442
+    },
+    "RevenueFromContractWithCustomerExcludingAssessedTax": {
+      "2015": 32,
+      "2016": 1412,
+      "2017": 2146,
+      "2018": 2799,
+      "2019": 3052,
+      "2020": 3163,
+      "2021": 3206,
+      "2022": 3228,
+      "2023": 3136,
+      "2024": 2956,
+      "2025": 2655
+    },
+    "Revenues": {
+      "2015": 3377,
+      "2016": 3630,
+      "2017": 3875,
+      "2018": 3268,
+      "2019": 2839,
+      "2020": 2762,
+      "2021": 2775,
+      "2022": 2792,
+      "2023": 2673,
+      "2024": 2488,
+      "2025": 2182
+    },
+    "RevenueFromContractWithCustomerIncludingAssessedTax": {
+      "2015": 13,
+      "2016": 448,
+      "2017": 855,
+      "2018": 1030,
+      "2019": 883,
+      "2020": 837,
+      "2021": 817,
+      "2022": 808,
+      "2023": 778,
+      "2024": 749,
+      "2025": 639
+    },
+    "SalesRevenueNet": {
+      "2015": 2085,
+      "2016": 1915,
+      "2017": 1649,
+      "2018": 121,
+      "2019": 1
+    }
+  },
+  "_universeSymbols": 623,
+  "_universeCiks": 611,
+  "_measuredAt": "2026-07-31T11:28:12.380Z"
+}

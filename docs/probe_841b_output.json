@@ -1,0 +1,6250 @@
+{
+ "measuredAt": "2026-07-31",
+ "universe": 623,
+ "matched": 595,
+ "partnerships": [
+  "EPD",
+  "ET",
+  "MPLX",
+  "CQP",
+  "WES",
+  "PAA",
+  "SUN"
+ ],
+ "taxTableIndustries": 94,
+ "fallback": {
+  "moneyMakingAvg": 0.19415953892753623
+ },
+ "rows": [
+  {
+   "symbol": "AAPL",
+   "cik": 320193,
+   "sic": "3571",
+   "entityName": "Apple Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "NVDA",
+   "cik": 1045810,
+   "sic": "3674",
+   "entityName": "NVIDIA CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "GOOG",
+   "cik": 1652044,
+   "sic": "7370",
+   "entityName": "Alphabet Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "GOOGL",
+   "cik": 1652044,
+   "sic": "7370",
+   "entityName": "Alphabet Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Entertainment)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2249556616684641
+  },
+  {
+   "symbol": "MSFT",
+   "cik": 789019,
+   "sic": "7372",
+   "entityName": "MICROSOFT CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "AMZN",
+   "cik": 1018724,
+   "sic": "5961",
+   "entityName": "AMAZON COM INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "AVGO",
+   "cik": 1730168,
+   "sic": "3674",
+   "entityName": "Broadcom Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "META",
+   "cik": 1326801,
+   "sic": "7370",
+   "entityName": "Meta Platforms, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Entertainment)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2249556616684641
+  },
+  {
+   "symbol": "TSLA",
+   "cik": 1318605,
+   "sic": "3711",
+   "entityName": "Tesla, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Auto & Truck",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21930680504244338
+  },
+  {
+   "symbol": "LLY",
+   "cik": 59478,
+   "sic": "2834",
+   "entityName": "ELI LILLY & Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "WMT",
+   "cik": 104169,
+   "sic": "5331",
+   "entityName": "Walmart Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "MU",
+   "cik": 723125,
+   "sic": "3674",
+   "entityName": "MICRON TECHNOLOGY INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "AMD",
+   "cik": 2488,
+   "sic": "3674",
+   "entityName": "ADVANCED MICRO DEVICES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "V",
+   "cik": 1403161,
+   "sic": "7389",
+   "entityName": "VISA INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "JNJ",
+   "cik": 200406,
+   "sic": "2834",
+   "entityName": "JOHNSON & JOHNSON",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "MA",
+   "cik": 1141391,
+   "sic": "7389",
+   "entityName": "Mastercard Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "INTC",
+   "cik": 50863,
+   "sic": "3674",
+   "entityName": "INTEL CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "ABBV",
+   "cik": 1551152,
+   "sic": "2834",
+   "entityName": "AbbVie Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "CSCO",
+   "cik": 858877,
+   "sic": "3576",
+   "entityName": "CISCO SYSTEMS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "COST",
+   "cik": 909832,
+   "sic": "5331",
+   "entityName": "COSTCO WHOLESALE CORP /NEW",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "AMAT",
+   "cik": 6951,
+   "sic": "3674",
+   "entityName": "APPLIED MATERIALS INC /DE",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "CVX",
+   "cik": 93410,
+   "sic": "2911",
+   "entityName": "CHEVRON CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Integrated)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.3143721503699604
+  },
+  {
+   "symbol": "KO",
+   "cik": 21344,
+   "sic": "2080",
+   "entityName": "COCA COLA CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Soft)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19573514524683933
+  },
+  {
+   "symbol": "LRCX",
+   "cik": 707549,
+   "sic": "3559",
+   "entityName": "LAM RESEARCH CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "GE",
+   "cik": 40545,
+   "sic": "3600",
+   "entityName": "GENERAL ELECTRIC CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "ORCL",
+   "cik": 1341439,
+   "sic": "7372",
+   "entityName": "ORACLE CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "CAT",
+   "cik": 18230,
+   "sic": "3531",
+   "entityName": "CATERPILLAR INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "PG",
+   "cik": 80424,
+   "sic": "2840",
+   "entityName": "PROCTER & GAMBLE Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "HD",
+   "cik": 354950,
+   "sic": "5211",
+   "entityName": "HOME DEPOT, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Building Supply)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2409399330749097
+  },
+  {
+   "symbol": "MRK",
+   "cik": 310158,
+   "sic": "2834",
+   "entityName": "Merck & Co., Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "NFLX",
+   "cik": 1065280,
+   "sic": "7841",
+   "entityName": "NETFLIX INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "PM",
+   "cik": 1413329,
+   "sic": "2111",
+   "entityName": "Philip Morris International Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Tobacco",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20903824828035658
+  },
+  {
+   "symbol": "PLTR",
+   "cik": 1321655,
+   "sic": "7372",
+   "entityName": "Palantir Technologies Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "RTX",
+   "cik": 101829,
+   "sic": "3724",
+   "entityName": "RTX Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "PANW",
+   "cik": 1327567,
+   "sic": "3577",
+   "entityName": "Palo Alto Networks Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "DELL",
+   "cik": 1571996,
+   "sic": "3571",
+   "entityName": "Dell Technologies Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "GEV",
+   "cik": 1996810,
+   "sic": "3600",
+   "entityName": "GE Vernova Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "TXN",
+   "cik": 97476,
+   "sic": "3674",
+   "entityName": "TEXAS INSTRUMENTS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "KLAC",
+   "cik": 319201,
+   "sic": "3827",
+   "entityName": "KLA CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "LIN",
+   "cik": 1707925,
+   "sic": "2810",
+   "entityName": "LINDE PLC",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United Kingdom",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "ANET",
+   "cik": 1596532,
+   "sic": "3576",
+   "entityName": "Arista Networks, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "TMO",
+   "cik": 97745,
+   "sic": "3829",
+   "entityName": "THERMO FISHER SCIENTIFIC INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "AMGN",
+   "cik": 318154,
+   "sic": "2836",
+   "entityName": "AMGEN INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "IBM",
+   "cik": 51143,
+   "sic": "3570",
+   "entityName": "INTERNATIONAL BUSINESS MACHINES CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "STX",
+   "cik": 1137789,
+   "sic": "3572",
+   "entityName": "Seagate Technology Holdings plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "Singapore",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "MCD",
+   "cik": 63908,
+   "sic": "5812",
+   "entityName": "MCDONALDS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "VZ",
+   "cik": 732712,
+   "sic": "4813",
+   "entityName": "VERIZON COMMUNICATIONS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1848517475418197
+  },
+  {
+   "symbol": "PEP",
+   "cik": 77476,
+   "sic": "2080",
+   "entityName": "PEPSICO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Soft)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19573514524683933
+  },
+  {
+   "symbol": "SNDK",
+   "cik": 2023554,
+   "sic": "3572",
+   "entityName": "Sandisk Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "CRWD",
+   "cik": 1535527,
+   "sic": "7372",
+   "entityName": "CrowdStrike Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "TMUS",
+   "cik": 1283699,
+   "sic": "4812",
+   "entityName": "T-Mobile US, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom (Wireless)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22927244748690737
+  },
+  {
+   "symbol": "APH",
+   "cik": 820313,
+   "sic": "3678",
+   "entityName": "AMPHENOL CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "NEE",
+   "cik": 753308,
+   "sic": "4911",
+   "entityName": "NEXTERA ENERGY INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "ABT",
+   "cik": 1800,
+   "sic": "2834",
+   "entityName": "ABBOTT LABORATORIES",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "TJX",
+   "cik": 109198,
+   "sic": "5651",
+   "entityName": "TJX COMPANIES INC /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "BA",
+   "cik": 12927,
+   "sic": "3721",
+   "entityName": "BOEING CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "ADI",
+   "cik": 6281,
+   "sic": "3674",
+   "entityName": "ANALOG DEVICES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "UNP",
+   "cik": 100885,
+   "sic": "4011",
+   "entityName": "UNION PACIFIC CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation (Railroads)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22435743454239732
+  },
+  {
+   "symbol": "DIS",
+   "cik": 1744489,
+   "sic": "7990",
+   "entityName": "Walt Disney Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "MRVL",
+   "cik": 1835632,
+   "sic": "3674",
+   "entityName": "Marvell Technology, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "GILD",
+   "cik": 882095,
+   "sic": "2836",
+   "entityName": "GILEAD SCIENCES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "DE",
+   "cik": 315189,
+   "sic": "3523",
+   "entityName": "DEERE & CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Farming/Agriculture",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20340963331647635
+  },
+  {
+   "symbol": "QCOM",
+   "cik": 804328,
+   "sic": "3663",
+   "entityName": "QUALCOMM INC/DE",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "WDC",
+   "cik": 106040,
+   "sic": "3572",
+   "entityName": "WESTERN DIGITAL CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "T",
+   "cik": 732717,
+   "sic": "4813",
+   "entityName": "AT&T INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1848517475418197
+  },
+  {
+   "symbol": "SHOP",
+   "cik": 1594805,
+   "sic": "7372",
+   "entityName": "SHOPIFY INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "Canada",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "CRM",
+   "cik": 1108524,
+   "sic": "7372",
+   "entityName": "Salesforce, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "BKNG",
+   "cik": 1075531,
+   "sic": "4700",
+   "entityName": "Booking Holdings Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "SCCO",
+   "cik": 1001838,
+   "sic": "1000",
+   "entityName": "SOUTHERN COPPER CORP/",
+   "isPartnership": false,
+   "damodaranIndustry": "Metals & Mining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.3446283103725081
+  },
+  {
+   "symbol": "COP",
+   "cik": 1163165,
+   "sic": "2911",
+   "entityName": "CONOCOPHILLIPS",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "PFE",
+   "cik": 78003,
+   "sic": "2834",
+   "entityName": "PFIZER INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "UBER",
+   "cik": 1543151,
+   "sic": "7389",
+   "entityName": "Uber Technologies, Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15911874589829184
+  },
+  {
+   "symbol": "ETN",
+   "cik": 1551182,
+   "sic": "3590",
+   "entityName": "Eaton Corp plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "DHR",
+   "cik": 313616,
+   "sic": "3823",
+   "entityName": "DANAHER CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "APP",
+   "cik": 1751008,
+   "sic": "7370",
+   "entityName": "AppLovin Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "CVS",
+   "cik": 64803,
+   "sic": "5912",
+   "entityName": "CVS HEALTH Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "SYK",
+   "cik": 310764,
+   "sic": "3841",
+   "entityName": "STRYKER CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "LMT",
+   "cik": 936468,
+   "sic": "3760",
+   "entityName": "LOCKHEED MARTIN CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "BMY",
+   "cik": 14272,
+   "sic": "2834",
+   "entityName": "BRISTOL MYERS SQUIBB CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "ISRG",
+   "cik": 1035267,
+   "sic": "3842",
+   "entityName": "INTUITIVE SURGICAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "MO",
+   "cik": 764180,
+   "sic": "2111",
+   "entityName": "ALTRIA GROUP, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Tobacco",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20903824828035658
+  },
+  {
+   "symbol": "SPGI",
+   "cik": 64040,
+   "sic": "7320",
+   "entityName": "S&P Global Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "VRTX",
+   "cik": 875320,
+   "sic": "2834",
+   "entityName": "VERTEX PHARMACEUTICALS INC / MA",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "PH",
+   "cik": 76334,
+   "sic": "3490",
+   "entityName": "Parker-Hannifin Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "LOW",
+   "cik": 60667,
+   "sic": "5211",
+   "entityName": "LOWES COMPANIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Building Supply)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2409399330749097
+  },
+  {
+   "symbol": "SBUX",
+   "cik": 829224,
+   "sic": "5810",
+   "entityName": "STARBUCKS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "GLW",
+   "cik": 24741,
+   "sic": "3357",
+   "entityName": "CORNING INC /NY",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "NOW",
+   "cik": 1373715,
+   "sic": "7372",
+   "entityName": "ServiceNow, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "FTNT",
+   "cik": 1262039,
+   "sic": "3577",
+   "entityName": "Fortinet, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "MDT",
+   "cik": 1613103,
+   "sic": "3845",
+   "entityName": "Medtronic plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "HWM",
+   "cik": 4281,
+   "sic": "3350",
+   "entityName": "Howmet Aerospace Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "SO",
+   "cik": 92122,
+   "sic": "4911",
+   "entityName": "SOUTHERN CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "ADP",
+   "cik": 8670,
+   "sic": "7374",
+   "entityName": "AUTOMATIC DATA PROCESSING INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "MCK",
+   "cik": 927653,
+   "sic": "5122",
+   "entityName": "MCKESSON CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "GD",
+   "cik": 40533,
+   "sic": "3730",
+   "entityName": "GENERAL DYNAMICS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "SNOW",
+   "cik": 1640147,
+   "sic": "7372",
+   "entityName": "Snowflake Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "NEM",
+   "cik": 1164727,
+   "sic": "1040",
+   "entityName": "NEWMONT Corp /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Precious Metals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2874659709052919
+  },
+  {
+   "symbol": "NET",
+   "cik": 1477333,
+   "sic": "7372",
+   "entityName": "Cloudflare, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "MAR",
+   "cik": 1048286,
+   "sic": "7011",
+   "entityName": "MARRIOTT INTERNATIONAL INC /MD/",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "ACN",
+   "cik": 1467373,
+   "sic": "7389",
+   "entityName": "Accenture plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "PWR",
+   "cik": 1050915,
+   "sic": "1731",
+   "entityName": "QUANTA SERVICES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "ADBE",
+   "cik": 796343,
+   "sic": "7372",
+   "entityName": "ADOBE INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "DUK",
+   "cik": 1326160,
+   "sic": "4931",
+   "entityName": "Duke Energy CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "TT",
+   "cik": 1466258,
+   "sic": "3822",
+   "entityName": "Trane Technologies plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "MELI",
+   "cik": 1099590,
+   "sic": "7389",
+   "entityName": "MERCADOLIBRE INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "Uruguay",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "DDOG",
+   "cik": 1561550,
+   "sic": "7372",
+   "entityName": "Datadog, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "MNST",
+   "cik": 865752,
+   "sic": "2086",
+   "entityName": "Monster Beverage Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Soft)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19573514524683933
+  },
+  {
+   "symbol": "CEG",
+   "cik": 1868275,
+   "sic": "4911",
+   "entityName": "Constellation Energy Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "CSX",
+   "cik": 277948,
+   "sic": "4011",
+   "entityName": "CSX CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation (Railroads)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22435743454239732
+  },
+  {
+   "symbol": "VLO",
+   "cik": 1035002,
+   "sic": "2911",
+   "entityName": "VALERO ENERGY CORP/TX",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "MPC",
+   "cik": 1510295,
+   "sic": "2911",
+   "entityName": "Marathon Petroleum Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "CDNS",
+   "cik": 813672,
+   "sic": "7372",
+   "entityName": "CADENCE DESIGN SYSTEMS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "WM",
+   "cik": 823768,
+   "sic": "4953",
+   "entityName": "WASTE MANAGEMENT INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Environmental & Waste Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20916445044258325
+  },
+  {
+   "symbol": "MMM",
+   "cik": 66740,
+   "sic": "3841",
+   "entityName": "3M CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Diversified",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17556674557132856
+  },
+  {
+   "symbol": "ABNB",
+   "cik": 1559720,
+   "sic": "7340",
+   "entityName": "Airbnb, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "UPS",
+   "cik": 1090727,
+   "sic": "4210",
+   "entityName": "UNITED PARCEL SERVICE INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15911874589829184
+  },
+  {
+   "symbol": "VRT",
+   "cik": 1674101,
+   "sic": "3679",
+   "entityName": "Vertiv Holdings Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "CMI",
+   "cik": 26172,
+   "sic": "3510",
+   "entityName": "CUMMINS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "WMB",
+   "cik": 107263,
+   "sic": "4922",
+   "entityName": "WILLIAMS COMPANIES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "INTU",
+   "cik": 896878,
+   "sic": "7372",
+   "entityName": "INTUIT INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "FCX",
+   "cik": 831259,
+   "sic": "1000",
+   "entityName": "FREEPORT-MCMORAN INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Metals & Mining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.3446283103725081
+  },
+  {
+   "symbol": "RCL",
+   "cik": 884887,
+   "sic": "4400",
+   "entityName": "ROYAL CARIBBEAN CRUISES LTD",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "DASH",
+   "cik": 1792789,
+   "sic": "7389",
+   "entityName": "DoorDash, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "HCA",
+   "cik": 860730,
+   "sic": "8062",
+   "entityName": "HCA Healthcare, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hospitals/Healthcare Facilities",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2132822043194953
+  },
+  {
+   "symbol": "JCI",
+   "cik": 833444,
+   "sic": "3585",
+   "entityName": "Johnson Controls International plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "PSX",
+   "cik": 1534701,
+   "sic": "2911",
+   "entityName": "Phillips 66",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "CMCSA",
+   "cik": 1166691,
+   "sic": "4841",
+   "entityName": "COMCAST CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Cable TV",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.18964768401420506
+  },
+  {
+   "symbol": "SHW",
+   "cik": 89800,
+   "sic": "5200",
+   "entityName": "SHERWIN WILLIAMS CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "MCO",
+   "cik": 1059556,
+   "sic": "7320",
+   "entityName": "MOODYS CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "EMR",
+   "cik": 32604,
+   "sic": "3600",
+   "entityName": "EMERSON ELECTRIC CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "CTAS",
+   "cik": 723254,
+   "sic": "2320",
+   "entityName": "CINTAS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "EPD",
+   "cik": 1061219,
+   "sic": "4922",
+   "entityName": "ENTERPRISE PRODUCTS PARTNERS L.P.",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "ITW",
+   "cik": 49826,
+   "sic": "3560",
+   "entityName": "ILLINOIS TOOL WORKS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "ROST",
+   "cik": 745732,
+   "sic": "5651",
+   "entityName": "ROSS STORES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "MDLZ",
+   "cik": 1103982,
+   "sic": "2000",
+   "entityName": "Mondelez International, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "GM",
+   "cik": 1467858,
+   "sic": "3711",
+   "entityName": "General Motors Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Auto & Truck",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21930680504244338
+  },
+  {
+   "symbol": "ECL",
+   "cik": 31462,
+   "sic": "2840",
+   "entityName": "ECOLAB INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "EOG",
+   "cik": 821189,
+   "sic": "1311",
+   "entityName": "EOG RESOURCES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "REGN",
+   "cik": 872589,
+   "sic": "2834",
+   "entityName": "REGENERON PHARMACEUTICALS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "HON",
+   "cik": 773840,
+   "sic": "3724",
+   "entityName": "HONEYWELL INTERNATIONAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Diversified",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17556674557132856
+  },
+  {
+   "symbol": "NOC",
+   "cik": 1133421,
+   "sic": "3812",
+   "entityName": "NORTHROP GRUMMAN CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "NSC",
+   "cik": 702165,
+   "sic": "4011",
+   "entityName": "NORFOLK SOUTHERN CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation (Railroads)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22435743454239732
+  },
+  {
+   "symbol": "CL",
+   "cik": 21665,
+   "sic": "2844",
+   "entityName": "COLGATE PALMOLIVE CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "FDX",
+   "cik": 1048911,
+   "sic": "4513",
+   "entityName": "FEDEX CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15911874589829184
+  },
+  {
+   "symbol": "SLB",
+   "cik": 87347,
+   "sic": "1389",
+   "entityName": "SLB LIMITED/NV",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "HLT",
+   "cik": 1585689,
+   "sic": "7011",
+   "entityName": "Hilton Worldwide Holdings Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "ORLY",
+   "cik": 898173,
+   "sic": "5531",
+   "entityName": "O REILLY AUTOMOTIVE INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Automotive)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22522512776040074
+  },
+  {
+   "symbol": "MSI",
+   "cik": 68505,
+   "sic": "3663",
+   "entityName": "Motorola Solutions, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "SNPS",
+   "cik": 883241,
+   "sic": "7372",
+   "entityName": "SYNOPSYS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "TDG",
+   "cik": 1260221,
+   "sic": "3728",
+   "entityName": "TransDigm Group INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "KMI",
+   "cik": 1506307,
+   "sic": "4922",
+   "entityName": "KINDER MORGAN, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "PCAR",
+   "cik": 75362,
+   "sic": "3711",
+   "entityName": "PACCAR INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "MDLN",
+   "cik": 2046386,
+   "sic": "3841",
+   "entityName": "Medline Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "ET",
+   "cik": 1276187,
+   "sic": "4922",
+   "entityName": "Energy Transfer LP",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "AEP",
+   "cik": 4904,
+   "sic": "4911",
+   "entityName": "AMERICAN ELECTRIC POWER CO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "BSX",
+   "cik": 885725,
+   "sic": "3841",
+   "entityName": "BOSTON SCIENTIFIC CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "CVNA",
+   "cik": 1690820,
+   "sic": "5500",
+   "entityName": "CARVANA CO.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Automotive)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22522512776040074
+  },
+  {
+   "symbol": "RSG",
+   "cik": 1060391,
+   "sic": "4953",
+   "entityName": "REPUBLIC SERVICES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Environmental & Waste Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20916445044258325
+  },
+  {
+   "symbol": "CRH",
+   "cik": 849395,
+   "sic": "3241",
+   "entityName": "CRH PUBLIC LTD CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "URI",
+   "cik": 1067701,
+   "sic": "7359",
+   "entityName": "UNITED RENTALS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "TGT",
+   "cik": 27419,
+   "sic": "5331",
+   "entityName": "TARGET CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "APD",
+   "cik": 2969,
+   "sic": "2810",
+   "entityName": "Air Products & Chemicals, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "MPWR",
+   "cik": 1280452,
+   "sic": "3674",
+   "entityName": "MONOLITHIC POWER SYSTEMS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "GWW",
+   "cik": 277135,
+   "sic": "5000",
+   "entityName": "W.W. GRAINGER, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "WBD",
+   "cik": 1437107,
+   "sic": "4841",
+   "entityName": "Warner Bros. Discovery, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "NKE",
+   "cik": 320187,
+   "sic": "3021",
+   "entityName": "NIKE, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Shoe",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.189530678311892
+  },
+  {
+   "symbol": "HPE",
+   "cik": 1645590,
+   "sic": "3570",
+   "entityName": "Hewlett Packard Enterprise Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "NXPI",
+   "cik": 1413447,
+   "sic": "3674",
+   "entityName": "NXP Semiconductors N.V.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "Netherlands",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "D",
+   "cik": 715957,
+   "sic": "4911",
+   "entityName": "DOMINION ENERGY, INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "BE",
+   "cik": 1664703,
+   "sic": "3620",
+   "entityName": "Bloom Energy Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "COR",
+   "cik": 1140859,
+   "sic": "5122",
+   "entityName": "Cencora, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "TEL",
+   "cik": 1385157,
+   "sic": "5065",
+   "entityName": "TE Connectivity plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "FIX",
+   "cik": 1035983,
+   "sic": "1731",
+   "entityName": "COMFORT SYSTEMS USA INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "CTVA",
+   "cik": 1755672,
+   "sic": "0100",
+   "entityName": "Corteva, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "BKR",
+   "cik": 1701605,
+   "sic": "3533",
+   "entityName": "Baker Hughes Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "F",
+   "cik": 37996,
+   "sic": "3711",
+   "entityName": "FORD MOTOR CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Auto & Truck",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21930680504244338
+  },
+  {
+   "symbol": "MPLX",
+   "cik": 1552000,
+   "sic": "4610",
+   "entityName": "MPLX LP",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "NUE",
+   "cik": 73309,
+   "sic": "3312",
+   "entityName": "NUCOR CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Steel",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20550381998555636
+  },
+  {
+   "symbol": "SRE",
+   "cik": 1032208,
+   "sic": "4932",
+   "entityName": "SEMPRA",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "TRGP",
+   "cik": 1389170,
+   "sic": "4922",
+   "entityName": "Targa Resources Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "GRMN",
+   "cik": 1121788,
+   "sic": "3812",
+   "entityName": "GARMIN LTD",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (Consumer & Office)",
+   "damodaranCountry": "Switzerland",
+   "effTaxRateMoneyMaking": NaN
+  },
+  {
+   "symbol": "DAL",
+   "cik": 27904,
+   "sic": "4512",
+   "entityName": "DELTA AIR LINES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Air Transport",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22628440256519328
+  },
+  {
+   "symbol": "FANG",
+   "cik": 1539838,
+   "sic": "1311",
+   "entityName": "Diamondback Energy, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "OKE",
+   "cik": 1039684,
+   "sic": "4923",
+   "entityName": "ONEOK INC /NEW/",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "OXY",
+   "cik": 797468,
+   "sic": "1311",
+   "entityName": "OCCIDENTAL PETROLEUM CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Integrated)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.3143721503699604
+  },
+  {
+   "symbol": "AME",
+   "cik": 1037868,
+   "sic": "3823",
+   "entityName": "AMETEK INC/",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "LNG",
+   "cik": 3570,
+   "sic": "4924",
+   "entityName": "Cheniere Energy, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "LITE",
+   "cik": 1633978,
+   "sic": "3669",
+   "entityName": "Lumentum Holdings Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "FAST",
+   "cik": 815556,
+   "sic": "5200",
+   "entityName": "FASTENAL CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "KEYS",
+   "cik": 1601046,
+   "sic": "3823",
+   "entityName": "Keysight Technologies, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "CAH",
+   "cik": 721371,
+   "sic": "5122",
+   "entityName": "CARDINAL HEALTH INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "EA",
+   "cik": 712515,
+   "sic": "7372",
+   "entityName": "ELECTRONIC ARTS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "CIEN",
+   "cik": 936395,
+   "sic": "3661",
+   "entityName": "CIENA CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "ROK",
+   "cik": 1024478,
+   "sic": "3829",
+   "entityName": "ROCKWELL AUTOMATION, INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "ALAB",
+   "cik": 1736297,
+   "sic": "3674",
+   "entityName": "Astera Labs, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "AZO",
+   "cik": 866787,
+   "sic": "5531",
+   "entityName": "AUTOZONE INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Automotive)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22522512776040074
+  },
+  {
+   "symbol": "DVN",
+   "cik": 1090012,
+   "sic": "1311",
+   "entityName": "DEVON ENERGY CORP/DE",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "LHX",
+   "cik": 202058,
+   "sic": "3812",
+   "entityName": "L3HARRIS TECHNOLOGIES, INC. /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "CARR",
+   "cik": 1783180,
+   "sic": "3585",
+   "entityName": "CARRIER GLOBAL Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "ETR",
+   "cik": 65984,
+   "sic": "4911",
+   "entityName": "ENTERGY CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "EBAY",
+   "cik": 1065088,
+   "sic": "7389",
+   "entityName": "EBAY INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "VST",
+   "cik": 1692819,
+   "sic": "4911",
+   "entityName": "Vistra Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "EW",
+   "cik": 1099800,
+   "sic": "3842",
+   "entityName": "Edwards Lifesciences Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "TER",
+   "cik": 97210,
+   "sic": "3825",
+   "entityName": "TERADYNE, INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "HEI",
+   "cik": 46619,
+   "sic": "3724",
+   "entityName": "HEICO CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "ADSK",
+   "cik": 769397,
+   "sic": "7372",
+   "entityName": "Autodesk, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "WAB",
+   "cik": 943452,
+   "sic": "3743",
+   "entityName": "WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "PYPL",
+   "cik": 1633917,
+   "sic": "7389",
+   "entityName": "PayPal Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "XYZ",
+   "cik": 1512673,
+   "sic": "7372",
+   "entityName": "Block, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "COHR",
+   "cik": 820318,
+   "sic": "3827",
+   "entityName": "COHERENT CORP.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "EXC",
+   "cik": 1109357,
+   "sic": "4931",
+   "entityName": "EXELON CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "BDX",
+   "cik": 10795,
+   "sic": "3841",
+   "entityName": "BECTON DICKINSON & CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "TTWO",
+   "cik": 946581,
+   "sic": "7372",
+   "entityName": "TAKE TWO INTERACTIVE SOFTWARE INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "ODFL",
+   "cik": 878927,
+   "sic": "4213",
+   "entityName": "OLD DOMINION FREIGHT LINE, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "IDXX",
+   "cik": 874716,
+   "sic": "2835",
+   "entityName": "IDEXX LABORATORIES INC /DE",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "CMG",
+   "cik": 1058090,
+   "sic": "5812",
+   "entityName": "CHIPOTLE MEXICAN GRILL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "FERG",
+   "cik": 2011641,
+   "sic": "5070",
+   "entityName": "Ferguson Enterprises Inc. /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "YUM",
+   "cik": 1041061,
+   "sic": "5812",
+   "entityName": "YUM BRANDS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "KDP",
+   "cik": 1418135,
+   "sic": "2080",
+   "entityName": "Keurig Dr Pepper Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Soft)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19573514524683933
+  },
+  {
+   "symbol": "LYV",
+   "cik": 1335258,
+   "sic": "7900",
+   "entityName": "Live Nation Entertainment, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "AXON",
+   "cik": 1069183,
+   "sic": "3480",
+   "entityName": "AXON ENTERPRISE, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "WCN",
+   "cik": 1318220,
+   "sic": "4953",
+   "entityName": "Waste Connections, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Environmental & Waste Services",
+   "damodaranCountry": "Canada",
+   "effTaxRateMoneyMaking": 0.20916445044258325
+  },
+  {
+   "symbol": "MSCI",
+   "cik": 1408198,
+   "sic": "7389",
+   "entityName": "MSCI Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "PAYX",
+   "cik": 723531,
+   "sic": "8700",
+   "entityName": "PAYCHEX INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "ED",
+   "cik": 1047862,
+   "sic": "4931",
+   "entityName": "CONSOLIDATED EDISON INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "TEVA",
+   "cik": 818686,
+   "sic": "2834",
+   "entityName": "TEVA PHARMACEUTICAL INDUSTRIES LTD",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "FLEX",
+   "cik": 866374,
+   "sic": "3672",
+   "entityName": "FLEX LTD.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "RVMD",
+   "cik": 1628171,
+   "sic": "2836",
+   "entityName": "Revolution Medicines, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "MCHP",
+   "cik": 827054,
+   "sic": "3674",
+   "entityName": "MICROCHIP TECHNOLOGY INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "DHI",
+   "cik": 882184,
+   "sic": "1531",
+   "entityName": "HORTON D R INC /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Homebuilding",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2367166379830307
+  },
+  {
+   "symbol": "SYY",
+   "cik": 96021,
+   "sic": "5140",
+   "entityName": "SYSCO CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Wholesalers",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23676102795546677
+  },
+  {
+   "symbol": "CLS",
+   "cik": 1030894,
+   "sic": "3672",
+   "entityName": "CELESTICA INC",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "RKLB",
+   "cik": 1819994,
+   "sic": "3760",
+   "entityName": "Rocket Lab Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "CRWV",
+   "cik": 1769628,
+   "sic": "7372",
+   "entityName": "CoreWeave, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "UAL",
+   "cik": 100517,
+   "sic": "4512",
+   "entityName": "United Airlines Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Air Transport",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22628440256519328
+  },
+  {
+   "symbol": "A",
+   "cik": 1090872,
+   "sic": "3826",
+   "entityName": "AGILENT TECHNOLOGIES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "PCG",
+   "cik": 1004980,
+   "sic": "4931",
+   "entityName": "PG&E Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "IQV",
+   "cik": 1478242,
+   "sic": "8731",
+   "entityName": "IQVIA HOLDINGS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "WDAY",
+   "cik": 1327811,
+   "sic": "7374",
+   "entityName": "Workday, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "ADM",
+   "cik": 7084,
+   "sic": "2070",
+   "entityName": "Archer-Daniels-Midland Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Farming/Agriculture",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20340963331647635
+  },
+  {
+   "symbol": "PEG",
+   "cik": 788784,
+   "sic": "4931",
+   "entityName": "PUBLIC SERVICE ENTERPRISE GROUP INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "NTRA",
+   "cik": 1604821,
+   "sic": "8071",
+   "entityName": "Natera, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "ROP",
+   "cik": 882835,
+   "sic": "3823",
+   "entityName": "ROPER TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "CCL",
+   "cik": 815097,
+   "sic": "4400",
+   "entityName": "Carnival Corp Ltd.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "CRDO",
+   "cik": 1807794,
+   "sic": "3674",
+   "entityName": "Credo Technology Group Holding Ltd",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "Cayman Islands",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "WAT",
+   "cik": 1000697,
+   "sic": "3826",
+   "entityName": "WATERS CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "KVUE",
+   "cik": 1944048,
+   "sic": "2844",
+   "entityName": "Kenvue Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "KR",
+   "cik": 56873,
+   "sic": "5411",
+   "entityName": "KROGER CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Grocery and Food)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16832507879333636
+  },
+  {
+   "symbol": "KMB",
+   "cik": 55785,
+   "sic": "2670",
+   "entityName": "KIMBERLY CLARK CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "WEC",
+   "cik": 783325,
+   "sic": "4931",
+   "entityName": "WEC ENERGY GROUP, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "STLD",
+   "cik": 1022671,
+   "sic": "3312",
+   "entityName": "STEEL DYNAMICS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Steel",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20550381998555636
+  },
+  {
+   "symbol": "HSY",
+   "cik": 47111,
+   "sic": "2060",
+   "entityName": "HERSHEY CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "HEI-A",
+   "cik": 46619,
+   "sic": "3724",
+   "entityName": "HEICO CORP",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "EME",
+   "cik": 105634,
+   "sic": "1731",
+   "entityName": "EMCOR Group, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "VMC",
+   "cik": 1396009,
+   "sic": "1400",
+   "entityName": "Vulcan Materials CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "EXPE",
+   "cik": 1324424,
+   "sic": "4700",
+   "entityName": "Expedia Group, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "TKO",
+   "cik": 1973266,
+   "sic": "7900",
+   "entityName": "TKO Group Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "RBLX",
+   "cik": 1315098,
+   "sic": "7372",
+   "entityName": "Roblox Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "QSR",
+   "cik": 1618756,
+   "sic": "5812",
+   "entityName": "Restaurant Brands International Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "RDDT",
+   "cik": 1713445,
+   "sic": "7374",
+   "entityName": "Reddit, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Entertainment)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2249556616684641
+  },
+  {
+   "symbol": "NTAP",
+   "cik": 1002047,
+   "sic": "3572",
+   "entityName": "NetApp, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "RPRX",
+   "cik": 1802768,
+   "sic": "2834",
+   "entityName": "Royalty Pharma plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "ONC",
+   "cik": 1651308,
+   "sic": "2834",
+   "entityName": "BeOne Medicines Ltd.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "IR",
+   "cik": 1699150,
+   "sic": "3560",
+   "entityName": "Ingersoll Rand Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "EQT",
+   "cik": 33213,
+   "sic": "1311",
+   "entityName": "EQT Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "VG",
+   "cik": 2007855,
+   "sic": "4924",
+   "entityName": "Venture Global, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "VEEV",
+   "cik": 1393052,
+   "sic": "7372",
+   "entityName": "VEEVA SYSTEMS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "ZTS",
+   "cik": 1555280,
+   "sic": "2834",
+   "entityName": "Zoetis Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "ON",
+   "cik": 1097864,
+   "sic": "3674",
+   "entityName": "ON SEMICONDUCTOR CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "MLM",
+   "cik": 916076,
+   "sic": "1400",
+   "entityName": "MARTIN MARIETTA MATERIALS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "JBL",
+   "cik": 898293,
+   "sic": "3672",
+   "entityName": "JABIL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "LVS",
+   "cik": 1300514,
+   "sic": "7011",
+   "entityName": "LAS VEGAS SANDS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "UI",
+   "cik": 1511737,
+   "sic": "3663",
+   "entityName": "Ubiquiti Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "CASY",
+   "cik": 726958,
+   "sic": "5500",
+   "entityName": "CASEYS GENERAL STORES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Grocery and Food)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16832507879333636
+  },
+  {
+   "symbol": "GEHC",
+   "cik": 1932393,
+   "sic": "3844",
+   "entityName": "GE HealthCare Technologies Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "KHC",
+   "cik": 1637459,
+   "sic": "2030",
+   "entityName": "Kraft Heinz Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "ILMN",
+   "cik": 1110803,
+   "sic": "3826",
+   "entityName": "ILLUMINA, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "TPR",
+   "cik": 1116132,
+   "sic": "3100",
+   "entityName": "TAPESTRY, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Apparel",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22113578948012313
+  },
+  {
+   "symbol": "BIIB",
+   "cik": 875045,
+   "sic": "2836",
+   "entityName": "BIOGEN INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "CQP",
+   "cik": 1383650,
+   "sic": "4924",
+   "entityName": "Cheniere Energy Partners, L.P.",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "EL",
+   "cik": 1001250,
+   "sic": "2844",
+   "entityName": "ESTEE LAUDER COMPANIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "AEE",
+   "cik": 1002910,
+   "sic": "4931",
+   "entityName": "AMEREN CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "EIX",
+   "cik": 827052,
+   "sic": "4911",
+   "entityName": "EDISON INTERNATIONAL",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "RMD",
+   "cik": 943819,
+   "sic": "3841",
+   "entityName": "RESMED INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "SUNB",
+   "cik": 2083785,
+   "sic": "7359",
+   "entityName": "Sunbelt Rentals Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "TDY",
+   "cik": 1094285,
+   "sic": "3812",
+   "entityName": "TELEDYNE TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "ATO",
+   "cik": 731802,
+   "sic": "4924",
+   "entityName": "ATMOS ENERGY CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "TWLO",
+   "cik": 1447669,
+   "sic": "7372",
+   "entityName": "TWILIO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "CPNG",
+   "cik": 1834584,
+   "sic": "5961",
+   "entityName": "Coupang, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "FISV",
+   "cik": 798354,
+   "sic": "7389",
+   "entityName": "FISERV INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "DXCM",
+   "cik": 1093557,
+   "sic": "3841",
+   "entityName": "DEXCOM INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "FTI",
+   "cik": 1681459,
+   "sic": "3533",
+   "entityName": "TechnipFMC plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "FE",
+   "cik": 1031296,
+   "sic": "4911",
+   "entityName": "FIRSTENERGY CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "DG",
+   "cik": 29534,
+   "sic": "5331",
+   "entityName": "DOLLAR GENERAL CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "MTD",
+   "cik": 1037646,
+   "sic": "3826",
+   "entityName": "METTLER TOLEDO INTERNATIONAL INC/",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "ES",
+   "cik": 72741,
+   "sic": "4911",
+   "entityName": "EVERSOURCE ENERGY",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "CNP",
+   "cik": 1130310,
+   "sic": "4911",
+   "entityName": "CENTERPOINT ENERGY INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "DOV",
+   "cik": 29905,
+   "sic": "3530",
+   "entityName": "DOVER Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "WSM",
+   "cik": 719955,
+   "sic": "5700",
+   "entityName": "WILLIAMS SONOMA INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Building Supply)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2409399330749097
+  },
+  {
+   "symbol": "AMRZ",
+   "cik": 2035989,
+   "sic": "3241",
+   "entityName": "Amrize Ltd",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "ALNY",
+   "cik": 1178670,
+   "sic": "2834",
+   "entityName": "ALNYLAM PHARMACEUTICALS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "CPRT",
+   "cik": 900075,
+   "sic": "5500",
+   "entityName": "COPART INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "Q",
+   "cik": 2058873,
+   "sic": "3674",
+   "entityName": "Qnity Electronics, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "OTIS",
+   "cik": 1781335,
+   "sic": "3600",
+   "entityName": "Otis Worldwide Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "XYL",
+   "cik": 1524472,
+   "sic": "3561",
+   "entityName": "Xylem Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "ZM",
+   "cik": 1585521,
+   "sic": "7370",
+   "entityName": "Zoom Communications, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "AWK",
+   "cik": 1410636,
+   "sic": "4941",
+   "entityName": "American Water Works Company, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (Water)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15939529259241006
+  },
+  {
+   "symbol": "PPL",
+   "cik": 922224,
+   "sic": "4911",
+   "entityName": "PPL Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "HAL",
+   "cik": 45012,
+   "sic": "1389",
+   "entityName": "HALLIBURTON CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "FICO",
+   "cik": 814547,
+   "sic": "7389",
+   "entityName": "FAIR ISAAC CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "CRS",
+   "cik": 17843,
+   "sic": "3312",
+   "entityName": "CARPENTER TECHNOLOGY CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "MDB",
+   "cik": 1441816,
+   "sic": "7372",
+   "entityName": "MongoDB, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "NRG",
+   "cik": 1013871,
+   "sic": "4911",
+   "entityName": "NRG ENERGY, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "UTHR",
+   "cik": 1082554,
+   "sic": "2834",
+   "entityName": "UNITED THERAPEUTICS Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "VRSK",
+   "cik": 1442145,
+   "sic": "7374",
+   "entityName": "Verisk Analytics, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "HPQ",
+   "cik": 47217,
+   "sic": "3570",
+   "entityName": "HP INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "SYM",
+   "cik": 1837240,
+   "sic": "3569",
+   "entityName": "Symbotic Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "VRSN",
+   "cik": 1014473,
+   "sic": "7371",
+   "entityName": "VERISIGN INC/CA",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "DGX",
+   "cik": 1022079,
+   "sic": "8071",
+   "entityName": "QUEST DIAGNOSTICS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "CPAY",
+   "cik": 1175454,
+   "sic": "7389",
+   "entityName": "CORPAY, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "JBHT",
+   "cik": 728535,
+   "sic": "4213",
+   "entityName": "HUNT J B TRANSPORT SERVICES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "PHM",
+   "cik": 822416,
+   "sic": "1531",
+   "entityName": "PULTEGROUP INC/MI/",
+   "isPartnership": false,
+   "damodaranIndustry": "Homebuilding",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2367166379830307
+  },
+  {
+   "symbol": "LH",
+   "cik": 920148,
+   "sic": "8071",
+   "entityName": "LABCORP HOLDINGS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "FWONK",
+   "cik": 1560385,
+   "sic": "4833",
+   "entityName": "Liberty Media Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "HUBB",
+   "cik": 48898,
+   "sic": "3670",
+   "entityName": "HUBBELL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "ECHO",
+   "cik": 1415404,
+   "sic": "4899",
+   "entityName": "EchoStar CORP",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "INCY",
+   "cik": 879169,
+   "sic": "8731",
+   "entityName": "INCYTE CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "PPG",
+   "cik": 79879,
+   "sic": "2851",
+   "entityName": "PPG INDUSTRIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "SW",
+   "cik": 2005951,
+   "sic": "2650",
+   "entityName": "Smurfit Westrock plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "TEAM",
+   "cik": 1650372,
+   "sic": "7372",
+   "entityName": "Atlassian Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "Australia",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "ROIV",
+   "cik": 1635088,
+   "sic": "2834",
+   "entityName": "Roivant Sciences Ltd.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United Kingdom",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "ATI",
+   "cik": 1018963,
+   "sic": "3317",
+   "entityName": "ATI INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "DLTR",
+   "cik": 935703,
+   "sic": "5331",
+   "entityName": "DOLLAR TREE, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "FOXA",
+   "cik": 1754301,
+   "sic": "4833",
+   "entityName": "Fox Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Broadcasting",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2553680892864994
+  },
+  {
+   "symbol": "OKTA",
+   "cik": 1660134,
+   "sic": "7372",
+   "entityName": "Okta, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "RIVN",
+   "cik": 1874178,
+   "sic": "3711",
+   "entityName": "Rivian Automotive, Inc. / DE",
+   "isPartnership": false,
+   "damodaranIndustry": "Auto & Truck",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21930680504244338
+  },
+  {
+   "symbol": "CTSH",
+   "cik": 1058290,
+   "sic": "7371",
+   "entityName": "COGNIZANT TECHNOLOGY SOLUTIONS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "GPN",
+   "cik": 1123360,
+   "sic": "7389",
+   "entityName": "GLOBAL PAYMENTS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "ZS",
+   "cik": 1713683,
+   "sic": "7371",
+   "entityName": "Zscaler, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "WST",
+   "cik": 105770,
+   "sic": "3841",
+   "entityName": "WEST PHARMACEUTICAL SERVICES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "FIS",
+   "cik": 1136893,
+   "sic": "7389",
+   "entityName": "Fidelity National Information Services, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "DRI",
+   "cik": 940944,
+   "sic": "5812",
+   "entityName": "DARDEN RESTAURANTS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "CHD",
+   "cik": 313927,
+   "sic": "2840",
+   "entityName": "CHURCH & DWIGHT CO INC /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "BURL",
+   "cik": 1579298,
+   "sic": "5311",
+   "entityName": "Burlington Stores, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "NVT",
+   "cik": 1720635,
+   "sic": "3550",
+   "entityName": "nVent Electric plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United Kingdom",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "XPO",
+   "cik": 1166003,
+   "sic": "4700",
+   "entityName": "XPO, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "VLTO",
+   "cik": 1967680,
+   "sic": "3825",
+   "entityName": "Veralto Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Environmental & Waste Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20916445044258325
+  },
+  {
+   "symbol": "FWONA",
+   "cik": 1560385,
+   "sic": "4833",
+   "entityName": "Liberty Media Corp",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "P",
+   "cik": 1474432,
+   "sic": "3572",
+   "entityName": "Everpure, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "MRNA",
+   "cik": 1682852,
+   "sic": "2836",
+   "entityName": "Moderna, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "RL",
+   "cik": 1037038,
+   "sic": "2320",
+   "entityName": "RALPH LAUREN CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Apparel",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22113578948012313
+  },
+  {
+   "symbol": "MTZ",
+   "cik": 15615,
+   "sic": "1623",
+   "entityName": "MASTEC INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "ASTS",
+   "cik": 1780312,
+   "sic": "4899",
+   "entityName": "AST SpaceMobile, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1848517475418197
+  },
+  {
+   "symbol": "CMS",
+   "cik": 811156,
+   "sic": "4931",
+   "entityName": "CMS ENERGY CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "IOT",
+   "cik": 1642896,
+   "sic": "7373",
+   "entityName": "Samsara Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "IP",
+   "cik": 51434,
+   "sic": "2621",
+   "entityName": "INTERNATIONAL PAPER CO /NEW/",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "STE",
+   "cik": 1757898,
+   "sic": "3842",
+   "entityName": "STERIS plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "SN",
+   "cik": 1957132,
+   "sic": "3630",
+   "entityName": "SharkNinja, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Furn/Home Furnishings",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2907765738946773
+  },
+  {
+   "symbol": "LUV",
+   "cik": 92380,
+   "sic": "4512",
+   "entityName": "SOUTHWEST AIRLINES CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Air Transport",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22628440256519328
+  },
+  {
+   "symbol": "STZ",
+   "cik": 16918,
+   "sic": "2080",
+   "entityName": "CONSTELLATION BRANDS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Alcoholic)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24732206096351717
+  },
+  {
+   "symbol": "ULTA",
+   "cik": 1403568,
+   "sic": "5990",
+   "entityName": "Ulta Beauty, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "PKG",
+   "cik": 75677,
+   "sic": "2650",
+   "entityName": "PACKAGING CORP OF AMERICA",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "USFD",
+   "cik": 1665918,
+   "sic": "5140",
+   "entityName": "US Foods Holding Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Wholesalers",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23676102795546677
+  },
+  {
+   "symbol": "FSLR",
+   "cik": 1274494,
+   "sic": "3674",
+   "entityName": "FIRST SOLAR, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "FFIV",
+   "cik": 1048695,
+   "sic": "3576",
+   "entityName": "F5, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "INSM",
+   "cik": 1104506,
+   "sic": "2834",
+   "entityName": "INSMED Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "FOX",
+   "cik": 1754301,
+   "sic": "4833",
+   "entityName": "Fox Corp",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "EXPD",
+   "cik": 746515,
+   "sic": "4731",
+   "entityName": "EXPEDITORS INTERNATIONAL OF WASHINGTON INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15911874589829184
+  },
+  {
+   "symbol": "OMC",
+   "cik": 29989,
+   "sic": "7311",
+   "entityName": "OMNICOM GROUP INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Advertising",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2807582010211933
+  },
+  {
+   "symbol": "THC",
+   "cik": 70318,
+   "sic": "8062",
+   "entityName": "TENET HEALTHCARE CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Hospitals/Healthcare Facilities",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2132822043194953
+  },
+  {
+   "symbol": "DOW",
+   "cik": 1751788,
+   "sic": "2821",
+   "entityName": "DOW INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Basic)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.35148312805189125
+  },
+  {
+   "symbol": "NI",
+   "cik": 1111711,
+   "sic": "4931",
+   "entityName": "NISOURCE INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1446596448467966
+  },
+  {
+   "symbol": "ROKU",
+   "cik": 1428439,
+   "sic": "4841",
+   "entityName": "ROKU, INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "TSN",
+   "cik": 100493,
+   "sic": "2015",
+   "entityName": "TYSON FOODS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "EXE",
+   "cik": 895126,
+   "sic": "1311",
+   "entityName": "EXPAND ENERGY Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "WWD",
+   "cik": 108312,
+   "sic": "3620",
+   "entityName": "Woodward, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "SNA",
+   "cik": 91440,
+   "sic": "3420",
+   "entityName": "Snap-on Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "BG",
+   "cik": 1996862,
+   "sic": "2070",
+   "entityName": "Bunge Global SA",
+   "isPartnership": false,
+   "damodaranIndustry": "Farming/Agriculture",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20340963331647635
+  },
+  {
+   "symbol": "AMCR",
+   "cik": 1748790,
+   "sic": "3990",
+   "entityName": "Amcor plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "Switzerland",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "EFX",
+   "cik": 33185,
+   "sic": "7320",
+   "entityName": "EQUIFAX INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "VTRS",
+   "cik": 1792044,
+   "sic": "2834",
+   "entityName": "Viatris Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "RBA",
+   "cik": 1046102,
+   "sic": "7389",
+   "entityName": "RB GLOBAL INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "RS",
+   "cik": 861884,
+   "sic": "5051",
+   "entityName": "RELIANCE, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Steel",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20550381998555636
+  },
+  {
+   "symbol": "IFF",
+   "cik": 51253,
+   "sic": "2860",
+   "entityName": "INTERNATIONAL FLAVORS & FRAGRANCES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "FTAI",
+   "cik": 1590364,
+   "sic": "7350",
+   "entityName": "FTAI Aviation Ltd.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "GIS",
+   "cik": 40704,
+   "sic": "2040",
+   "entityName": "GENERAL MILLS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "GH",
+   "cik": 1576280,
+   "sic": "8071",
+   "entityName": "Guardant Health, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "LEN",
+   "cik": 920760,
+   "sic": "1520",
+   "entityName": "LENNAR CORP /NEW/",
+   "isPartnership": false,
+   "damodaranIndustry": "Homebuilding",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2367166379830307
+  },
+  {
+   "symbol": "SNX",
+   "cik": 1177394,
+   "sic": "5045",
+   "entityName": "TD SYNNEX CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "MKSI",
+   "cik": 1049502,
+   "sic": "3823",
+   "entityName": "MKS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "LEN-B",
+   "cik": 920760,
+   "sic": "1520",
+   "entityName": "LENNAR CORP /NEW/",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "WES",
+   "cik": 1423902,
+   "sic": "4922",
+   "entityName": "Western Midstream Partners, LP",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "LYB",
+   "cik": 1489393,
+   "sic": "2860",
+   "entityName": "LyondellBasell Industries N.V.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Basic)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.35148312805189125
+  },
+  {
+   "symbol": "CF",
+   "cik": 1324404,
+   "sic": "2870",
+   "entityName": "CF Industries Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "EVRG",
+   "cik": 1711269,
+   "sic": "4931",
+   "entityName": "Evergy, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "CHTR",
+   "cik": 1091667,
+   "sic": "4841",
+   "entityName": "CHARTER COMMUNICATIONS, INC. /MO/",
+   "isPartnership": false,
+   "damodaranIndustry": "Cable TV",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.18964768401420506
+  },
+  {
+   "symbol": "TOST",
+   "cik": 1650164,
+   "sic": "7374",
+   "entityName": "Toast, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "BBY",
+   "cik": 764478,
+   "sic": "5731",
+   "entityName": "BEST BUY CO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "MTSI",
+   "cik": 1493594,
+   "sic": "3674",
+   "entityName": "MACOM Technology Solutions Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "CDW",
+   "cik": 1402057,
+   "sic": "5961",
+   "entityName": "CDW Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "NBIX",
+   "cik": 914475,
+   "sic": "2836",
+   "entityName": "NEUROCRINE BIOSCIENCES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "DD",
+   "cik": 1666700,
+   "sic": "2821",
+   "entityName": "DuPont de Nemours, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "SSNC",
+   "cik": 1402436,
+   "sic": "7372",
+   "entityName": "SS&C Technologies Holdings Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Information Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21739341477226753
+  },
+  {
+   "symbol": "ULS",
+   "cik": 1901440,
+   "sic": "8734",
+   "entityName": "UL Solutions Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "ROL",
+   "cik": 84839,
+   "sic": "7340",
+   "entityName": "ROLLINS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Environmental & Waste Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20916445044258325
+  },
+  {
+   "symbol": "BR",
+   "cik": 1383312,
+   "sic": "7389",
+   "entityName": "BROADRIDGE FINANCIAL SOLUTIONS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Information Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21739341477226753
+  },
+  {
+   "symbol": "ZBH",
+   "cik": 1136869,
+   "sic": "3842",
+   "entityName": "ZIMMER BIOMET HOLDINGS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "LNT",
+   "cik": 352541,
+   "sic": "4931",
+   "entityName": "ALLIANT ENERGY CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "PR",
+   "cik": 1658566,
+   "sic": "1311",
+   "entityName": "Permian Resources Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "PFGC",
+   "cik": 1618673,
+   "sic": "5141",
+   "entityName": "Performance Food Group Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Wholesalers",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23676102795546677
+  },
+  {
+   "symbol": "SMCI",
+   "cik": 1375365,
+   "sic": "3571",
+   "entityName": "Super Micro Computer, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "DKS",
+   "cik": 1089063,
+   "sic": "5940",
+   "entityName": "DICK'S SPORTING GOODS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "ENTG",
+   "cik": 1101302,
+   "sic": "3089",
+   "entityName": "ENTEGRIS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "STRL",
+   "cik": 874238,
+   "sic": "1600",
+   "entityName": "STERLING INFRASTRUCTURE, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "RBC",
+   "cik": 1324948,
+   "sic": "3562",
+   "entityName": "RBC Bearings INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "FLUT",
+   "cik": 1635327,
+   "sic": "7370",
+   "entityName": "Flutter Entertainment plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "FTV",
+   "cik": 1659166,
+   "sic": "3823",
+   "entityName": "Fortive Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "LSCC",
+   "cik": 855658,
+   "sic": "3674",
+   "entityName": "LATTICE SEMICONDUCTOR CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "PAA",
+   "cik": 1070423,
+   "sic": "4610",
+   "entityName": "PLAINS ALL AMERICAN PIPELINE LP",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "H",
+   "cik": 1468174,
+   "sic": "7011",
+   "entityName": "Hyatt Hotels Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "BALL",
+   "cik": 9389,
+   "sic": "3411",
+   "entityName": "BALL Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "CHRW",
+   "cik": 1043277,
+   "sic": "4731",
+   "entityName": "C. H. ROBINSON WORLDWIDE, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Transportation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15911874589829184
+  },
+  {
+   "symbol": "IEX",
+   "cik": 832101,
+   "sic": "3561",
+   "entityName": "IDEX CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "CLH",
+   "cik": 822818,
+   "sic": "4955",
+   "entityName": "CLEAN HARBORS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Environmental & Waste Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20916445044258325
+  },
+  {
+   "symbol": "NWS",
+   "cik": 1564708,
+   "sic": "2711",
+   "entityName": "NEWS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "GPC",
+   "cik": 40987,
+   "sic": "5013",
+   "entityName": "GENUINE PARTS CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "ITT",
+   "cik": 216228,
+   "sic": "3561",
+   "entityName": "ITT INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "OVV",
+   "cik": 1792580,
+   "sic": "1311",
+   "entityName": "Ovintiv Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "APG",
+   "cik": 1796209,
+   "sic": "7340",
+   "entityName": "APi Group Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "NVR",
+   "cik": 906163,
+   "sic": "1531",
+   "entityName": "NVR INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Homebuilding",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2367166379830307
+  },
+  {
+   "symbol": "WCC",
+   "cik": 929008,
+   "sic": "5063",
+   "entityName": "WESCO INTERNATIONAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "DINO",
+   "cik": 1915657,
+   "sic": "4610",
+   "entityName": "HF Sinclair Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oilfield Svcs/Equip.",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1854586896156506
+  },
+  {
+   "symbol": "AKAM",
+   "cik": 1086222,
+   "sic": "7389",
+   "entityName": "AKAMAI TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "NDSN",
+   "cik": 72331,
+   "sic": "3569",
+   "entityName": "NORDSON CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "GEN",
+   "cik": 849399,
+   "sic": "7372",
+   "entityName": "Gen Digital Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "JAZZ",
+   "cik": 1232524,
+   "sic": "2834",
+   "entityName": "Jazz Pharmaceuticals plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "MEDP",
+   "cik": 1668397,
+   "sic": "8731",
+   "entityName": "Medpace Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "BBIO",
+   "cik": 1743881,
+   "sic": "2834",
+   "entityName": "BridgeBio Pharma, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "NTNX",
+   "cik": 1618732,
+   "sic": "7372",
+   "entityName": "Nutanix, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "YUMC",
+   "cik": 1673358,
+   "sic": "5812",
+   "entityName": "Yum China Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "China",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "TLN",
+   "cik": 1622536,
+   "sic": "4911",
+   "entityName": "Talen Energy Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "CDE",
+   "cik": 215466,
+   "sic": "1040",
+   "entityName": "Coeur Mining, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Precious Metals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2874659709052919
+  },
+  {
+   "symbol": "TSCO",
+   "cik": 916365,
+   "sic": "5200",
+   "entityName": "TRACTOR SUPPLY CO /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "SITM",
+   "cik": 1451809,
+   "sic": "3674",
+   "entityName": "SITIME Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "PTC",
+   "cik": 857005,
+   "sic": "7372",
+   "entityName": "PTC INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "J",
+   "cik": 52988,
+   "sic": "1600",
+   "entityName": "JACOBS SOLUTIONS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "VNOM",
+   "cik": 2074176,
+   "sic": "1311",
+   "entityName": "Viper Energy, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "TRU",
+   "cik": 1552033,
+   "sic": "7320",
+   "entityName": "TransUnion",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "JHX",
+   "cik": 1159152,
+   "sic": "3272",
+   "entityName": "James Hardie Industries plc",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "DVA",
+   "cik": 927066,
+   "sic": "8090",
+   "entityName": "DAVITA INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "NWSA",
+   "cik": 1564708,
+   "sic": "2711",
+   "entityName": "NEWS CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Publishing & Newspapers",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2680075404995325
+  },
+  {
+   "symbol": "BWXT",
+   "cik": 1486957,
+   "sic": "3510",
+   "entityName": "BWX Technologies, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "ARMK",
+   "cik": 1584509,
+   "sic": "5812",
+   "entityName": "Aramark",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "SOLV",
+   "cik": 1964738,
+   "sic": "3841",
+   "entityName": "Solventum Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "TXT",
+   "cik": 217346,
+   "sic": "3720",
+   "entityName": "TEXTRON INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "CSL",
+   "cik": 790051,
+   "sic": "3060",
+   "entityName": "CARLISLE COMPANIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "LII",
+   "cik": 1069202,
+   "sic": "3585",
+   "entityName": "LENNOX INTERNATIONAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "NXT",
+   "cik": 1852131,
+   "sic": "3674",
+   "entityName": "Nextpower Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "SWK",
+   "cik": 93556,
+   "sic": "3420",
+   "entityName": "STANLEY BLACK & DECKER, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "FN",
+   "cik": 1408710,
+   "sic": "3661",
+   "entityName": "Fabrinet",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "Cayman Islands",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "MLI",
+   "cik": 89439,
+   "sic": "3350",
+   "entityName": "MUELLER INDUSTRIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "RBRK",
+   "cik": 1943896,
+   "sic": "7372",
+   "entityName": "Rubrik, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "LOGI",
+   "cik": 1032975,
+   "sic": "3577",
+   "entityName": "LOGITECH INTERNATIONAL S.A.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "U",
+   "cik": 1810806,
+   "sic": "7372",
+   "entityName": "Unity Software Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "PAG",
+   "cik": 1019849,
+   "sic": "5500",
+   "entityName": "PENSKE AUTOMOTIVE GROUP, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Automotive)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22522512776040074
+  },
+  {
+   "symbol": "WMG",
+   "cik": 1319161,
+   "sic": "7900",
+   "entityName": "Warner Music Group Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "SUN",
+   "cik": 1552275,
+   "sic": "2911",
+   "entityName": "Sunoco LP",
+   "isPartnership": true,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "BTSG",
+   "cik": 1865782,
+   "sic": "8082",
+   "entityName": "BrightSpring Health Services, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "COO",
+   "cik": 711404,
+   "sic": "3851",
+   "entityName": "COOPER COMPANIES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "MAS",
+   "cik": 62996,
+   "sic": "3430",
+   "entityName": "MASCO CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "HRL",
+   "cik": 48465,
+   "sic": "2011",
+   "entityName": "HORMEL FOODS CORP /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "LDOS",
+   "cik": 1336920,
+   "sic": "7373",
+   "entityName": "Leidos Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "EXEL",
+   "cik": 939767,
+   "sic": "2836",
+   "entityName": "EXELIXIS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "SGI",
+   "cik": 1206264,
+   "sic": "2510",
+   "entityName": "SOMNIGROUP INTERNATIONAL INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Furn/Home Furnishings",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2907765738946773
+  },
+  {
+   "symbol": "DOCN",
+   "cik": 1582961,
+   "sic": "7370",
+   "entityName": "DigitalOcean Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "TOL",
+   "cik": 794170,
+   "sic": "1531",
+   "entityName": "Toll Brothers, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Homebuilding",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2367166379830307
+  },
+  {
+   "symbol": "QXO",
+   "cik": 1236275,
+   "sic": "5030",
+   "entityName": "QXO, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "DTM",
+   "cik": 1842022,
+   "sic": "4922",
+   "entityName": "DT Midstream, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "ALB",
+   "cik": 915913,
+   "sic": "2821",
+   "entityName": "ALBEMARLE CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "UHAL",
+   "cik": 4457,
+   "sic": "7510",
+   "entityName": "U-Haul Holding Co /NV/",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "BAX",
+   "cik": 10456,
+   "sic": "3841",
+   "entityName": "BAXTER INTERNATIONAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "RPM",
+   "cik": 110621,
+   "sic": "2851",
+   "entityName": "RPM INTERNATIONAL INC/DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Chemical (Specialty)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24738525542012677
+  },
+  {
+   "symbol": "ZBRA",
+   "cik": 877212,
+   "sic": "3560",
+   "entityName": "ZEBRA TECHNOLOGIES CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "TYL",
+   "cik": 860731,
+   "sic": "7372",
+   "entityName": "TYLER TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "LECO",
+   "cik": 59527,
+   "sic": "3540",
+   "entityName": "LINCOLN ELECTRIC HOLDINGS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "MKC",
+   "cik": 63754,
+   "sic": "2090",
+   "entityName": "MCCORMICK & CO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "TXRH",
+   "cik": 1289460,
+   "sic": "5812",
+   "entityName": "Texas Roadhouse, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "PINS",
+   "cik": 1506293,
+   "sic": "7370",
+   "entityName": "PINTEREST, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Entertainment)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2249556616684641
+  },
+  {
+   "symbol": "MKC-V",
+   "cik": 63754,
+   "sic": "2090",
+   "entityName": "MCCORMICK & CO INC",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "DECK",
+   "cik": 910521,
+   "sic": "3021",
+   "entityName": "DECKERS OUTDOOR CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Shoe",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.189530678311892
+  },
+  {
+   "symbol": "LULU",
+   "cik": 1397187,
+   "sic": "2300",
+   "entityName": "lululemon athletica inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Apparel",
+   "damodaranCountry": "Canada",
+   "effTaxRateMoneyMaking": 0.22113578948012313
+  },
+  {
+   "symbol": "RRX",
+   "cik": 82811,
+   "sic": "3569",
+   "entityName": "REGAL REXNORD CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "HAS",
+   "cik": 46080,
+   "sic": "3944",
+   "entityName": "HASBRO, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Recreation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2598016946931607
+  },
+  {
+   "symbol": "BF-A",
+   "cik": 14693,
+   "sic": "2080",
+   "entityName": "BROWN FORMAN CORP",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "ALLE",
+   "cik": 1579241,
+   "sic": "7381",
+   "entityName": "Allegion plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "Ireland",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "IONQ",
+   "cik": 1824920,
+   "sic": "7373",
+   "entityName": "IonQ, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Computers/Peripherals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15354539347282112
+  },
+  {
+   "symbol": "TRMB",
+   "cik": 864749,
+   "sic": "3829",
+   "entityName": "TRIMBLE INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "MOG-A",
+   "cik": 67887,
+   "sic": "3590",
+   "entityName": "MOOG INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "BF-B",
+   "cik": 14693,
+   "sic": "2080",
+   "entityName": "BROWN FORMAN CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Alcoholic)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24732206096351717
+  },
+  {
+   "symbol": "ELAN",
+   "cik": 1739104,
+   "sic": "2834",
+   "entityName": "Elanco Animal Health Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "GDDY",
+   "cik": 1609711,
+   "sic": "7373",
+   "entityName": "GoDaddy Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (Internet)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17146716153692687
+  },
+  {
+   "symbol": "FIG",
+   "cik": 1579878,
+   "sic": "7372",
+   "entityName": "Figma, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "SJM",
+   "cik": 91419,
+   "sic": "2033",
+   "entityName": "J M SMUCKER Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "GGG",
+   "cik": 42888,
+   "sic": "3561",
+   "entityName": "GRACO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "WSO-B",
+   "cik": 105016,
+   "sic": "5070",
+   "entityName": "WATSCO INC",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "CCK",
+   "cik": 1219601,
+   "sic": "3411",
+   "entityName": "CROWN HOLDINGS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "DT",
+   "cik": 1773383,
+   "sic": "7372",
+   "entityName": "Dynatrace, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "WSO",
+   "cik": 105016,
+   "sic": "5070",
+   "entityName": "WATSCO INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "CNH",
+   "cik": 1567094,
+   "sic": "3531",
+   "entityName": "CNH Industrial N.V.",
+   "isPartnership": false,
+   "damodaranIndustry": "Farming/Agriculture",
+   "damodaranCountry": "United Kingdom",
+   "effTaxRateMoneyMaking": 0.20340963331647635
+  },
+  {
+   "symbol": "AVY",
+   "cik": 8818,
+   "sic": "2670",
+   "entityName": "Avery Dennison Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Packaging & Container",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23575215136408695
+  },
+  {
+   "symbol": "BWA",
+   "cik": 908255,
+   "sic": "3714",
+   "entityName": "BORGWARNER INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Auto Parts",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.31646841745603793
+  },
+  {
+   "symbol": "GWRE",
+   "cik": 1528396,
+   "sic": "7372",
+   "entityName": "Guidewire Software, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "CORT",
+   "cik": 1088856,
+   "sic": "2834",
+   "entityName": "CORCEPT THERAPEUTICS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "RVTY",
+   "cik": 31791,
+   "sic": "3826",
+   "entityName": "REVVITY, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "MOG-B",
+   "cik": 67887,
+   "sic": "3590",
+   "entityName": "MOOG INC.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "COKE",
+   "cik": 317540,
+   "sic": "2086",
+   "entityName": "Coca-Cola Consolidated, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Beverage (Soft)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19573514524683933
+  },
+  {
+   "symbol": "PEN",
+   "cik": 1321732,
+   "sic": "3841",
+   "entityName": "Penumbra Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "NYT",
+   "cik": 71691,
+   "sic": "2711",
+   "entityName": "NEW YORK TIMES CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Publishing & Newspapers",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2680075404995325
+  },
+  {
+   "symbol": "BJ",
+   "cik": 1531152,
+   "sic": "5331",
+   "entityName": "BJ's Wholesale Club Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  },
+  {
+   "symbol": "ONTO",
+   "cik": 704532,
+   "sic": "3829",
+   "entityName": "ONTO INNOVATION INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "ALGN",
+   "cik": 1097149,
+   "sic": "3842",
+   "entityName": "ALIGN TECHNOLOGY INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "PNW",
+   "cik": 764622,
+   "sic": "4911",
+   "entityName": "PINNACLE WEST CAPITAL CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "AIT",
+   "cik": 109563,
+   "sic": "5080",
+   "entityName": "APPLIED INDUSTRIAL TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Distributors)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.23404243925227916
+  },
+  {
+   "symbol": "ARWR",
+   "cik": 879407,
+   "sic": "2834",
+   "entityName": "ARROWHEAD PHARMACEUTICALS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "APTV",
+   "cik": 1521332,
+   "sic": "3714",
+   "entityName": "Aptiv PLC",
+   "isPartnership": false,
+   "damodaranIndustry": "Auto Parts",
+   "damodaranCountry": "Switzerland",
+   "effTaxRateMoneyMaking": 0.31646841745603793
+  },
+  {
+   "symbol": "UHAL-B",
+   "cik": 4457,
+   "sic": "7510",
+   "entityName": "U-Haul Holding Co /NV/",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "AUR",
+   "cik": 1828108,
+   "sic": "7373",
+   "entityName": "Aurora Innovation, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "DRS",
+   "cik": 1833756,
+   "sic": "3812",
+   "entityName": "Leonardo DRS, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "FIVE",
+   "cik": 1177609,
+   "sic": "5331",
+   "entityName": "FIVE BELOW, INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "AXSM",
+   "cik": 1579428,
+   "sic": "2834",
+   "entityName": "Axsome Therapeutics, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Pharmaceutical)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16800911923646392
+  },
+  {
+   "symbol": "CLX",
+   "cik": 21076,
+   "sic": "2842",
+   "entityName": "CLOROX CO /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Household Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20731495457637963
+  },
+  {
+   "symbol": "CSGP",
+   "cik": 1057352,
+   "sic": "7389",
+   "entityName": "COSTAR GROUP, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Real Estate (Operations & Services)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19580401259799973
+  },
+  {
+   "symbol": "TTMI",
+   "cik": 1116942,
+   "sic": "3672",
+   "entityName": "TTM TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "AMKR",
+   "cik": 1047127,
+   "sic": "3674",
+   "entityName": "AMKOR TECHNOLOGY, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor Equip",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17065978345154367
+  },
+  {
+   "symbol": "CR",
+   "cik": 1944013,
+   "sic": "3490",
+   "entityName": "Crane Co",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "HUBS",
+   "cik": 1404655,
+   "sic": "7372",
+   "entityName": "HUBSPOT INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "DKNG",
+   "cik": 1883685,
+   "sic": "7990",
+   "entityName": "DraftKings Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "SCI",
+   "cik": 89089,
+   "sic": "7200",
+   "entityName": "SERVICE CORP INTERNATIONAL",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "W",
+   "cik": 1616707,
+   "sic": "5961",
+   "entityName": "Wayfair Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Building Supply)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2409399330749097
+  },
+  {
+   "symbol": "MGM",
+   "cik": 789570,
+   "sic": "7011",
+   "entityName": "MGM Resorts International",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "BMRN",
+   "cik": 1048477,
+   "sic": "2834",
+   "entityName": "BIOMARIN PHARMACEUTICAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "DPZ",
+   "cik": 1286681,
+   "sic": "5140",
+   "entityName": "DOMINOS PIZZA INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "WTS",
+   "cik": 795403,
+   "sic": "3490",
+   "entityName": "WATTS WATER TECHNOLOGIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "PODD",
+   "cik": 1145197,
+   "sic": "3841",
+   "entityName": "INSULET CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "WTRG",
+   "cik": 78128,
+   "sic": "4941",
+   "entityName": "Essential Utilities, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Utility (Water)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15939529259241006
+  },
+  {
+   "symbol": "BROS",
+   "cik": 1866581,
+   "sic": "5810",
+   "entityName": "Dutch Bros Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Restaurant/Dining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2130575881425497
+  },
+  {
+   "symbol": "IESC",
+   "cik": 1048268,
+   "sic": "1731",
+   "entityName": "IES Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "MUSA",
+   "cik": 1573516,
+   "sic": "5500",
+   "entityName": "Murphy USA Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Automotive)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22522512776040074
+  },
+  {
+   "symbol": "MDGL",
+   "cik": 1157601,
+   "sic": "2834",
+   "entityName": "MADRIGAL PHARMACEUTICALS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "KNX",
+   "cik": 1492691,
+   "sic": "4213",
+   "entityName": "Knight-Swift Transportation Holdings Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "GNRC",
+   "cik": 1474735,
+   "sic": "3621",
+   "entityName": "GENERAC HOLDINGS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "AA",
+   "cik": 1675149,
+   "sic": "3334",
+   "entityName": "Alcoa Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Metals & Mining",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.3446283103725081
+  },
+  {
+   "symbol": "CRL",
+   "cik": 1100682,
+   "sic": "8731",
+   "entityName": "CHARLES RIVER LABORATORIES INTERNATIONAL, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "TECH",
+   "cik": 842023,
+   "sic": "2836",
+   "entityName": "BIO-TECHNE Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "OC",
+   "cik": 1370946,
+   "sic": "3290",
+   "entityName": "Owens Corning",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "LFUS",
+   "cik": 889331,
+   "sic": "3613",
+   "entityName": "LITTELFUSE INC /DE",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "DY",
+   "cik": 67215,
+   "sic": "1623",
+   "entityName": "DYCOM INDUSTRIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "MANH",
+   "cik": 1056696,
+   "sic": "7372",
+   "entityName": "MANHATTAN ASSOCIATES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "HII",
+   "cik": 1501585,
+   "sic": "3730",
+   "entityName": "HUNTINGTON INGALLS INDUSTRIES, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "EHC",
+   "cik": 785161,
+   "sic": "8060",
+   "entityName": "Encompass Health Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Hospitals/Healthcare Facilities",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2132822043194953
+  },
+  {
+   "symbol": "AEIS",
+   "cik": 927003,
+   "sic": "3679",
+   "entityName": "ADVANCED ENERGY INDUSTRIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "JKHY",
+   "cik": 779152,
+   "sic": "7373",
+   "entityName": "JACK HENRY & ASSOCIATES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "AR",
+   "cik": 1433270,
+   "sic": "1311",
+   "entityName": "ANTERO RESOURCES Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "CYTK",
+   "cik": 1061983,
+   "sic": "2834",
+   "entityName": "CYTOKINETICS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "GMED",
+   "cik": 1237831,
+   "sic": "3841",
+   "entityName": "GLOBUS MEDICAL INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "ARW",
+   "cik": 7536,
+   "sic": "5065",
+   "entityName": "ARROW ELECTRONICS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "KRYS",
+   "cik": 1711279,
+   "sic": "2836",
+   "entityName": "Krystal Biotech, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "DCI",
+   "cik": 29644,
+   "sic": "3564",
+   "entityName": "DONALDSON Co INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "SMMT",
+   "cik": 1599298,
+   "sic": "2834",
+   "entityName": "Summit Therapeutics Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "BSY",
+   "cik": 1031308,
+   "sic": "7372",
+   "entityName": "BENTLEY SYSTEMS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "VSAT",
+   "cik": 797721,
+   "sic": "4899",
+   "entityName": "VIASAT INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16541221214562443
+  },
+  {
+   "symbol": "SMTC",
+   "cik": 88941,
+   "sic": "3674",
+   "entityName": "SEMTECH CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "AES",
+   "cik": 874761,
+   "sic": "4991",
+   "entityName": "AES CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "PNR",
+   "cik": 77360,
+   "sic": "3550",
+   "entityName": "PENTAIR plc",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United Kingdom",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "CACI",
+   "cik": 16058,
+   "sic": "7373",
+   "entityName": "CACI INTERNATIONAL INC /DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Business & Consumer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2245735835052961
+  },
+  {
+   "symbol": "WMS",
+   "cik": 1604028,
+   "sic": "3086",
+   "entityName": "ADVANCED DRAINAGE SYSTEMS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "CART",
+   "cik": 1579091,
+   "sic": "7389",
+   "entityName": "Maplebear Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Grocery and Food)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16832507879333636
+  },
+  {
+   "symbol": "SFD",
+   "cik": 91388,
+   "sic": "2011",
+   "entityName": "SMITHFIELD FOODS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Food Processing",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22809725267257513
+  },
+  {
+   "symbol": "WYNN",
+   "cik": 1174922,
+   "sic": "7011",
+   "entityName": "WYNN RESORTS LTD",
+   "isPartnership": false,
+   "damodaranIndustry": "Hotel/Gaming",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.16615162394642624
+  },
+  {
+   "symbol": "SIRI",
+   "cik": 908937,
+   "sic": "4832",
+   "entityName": "SIRIUS XM HOLDINGS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Cable TV",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.18964768401420506
+  },
+  {
+   "symbol": "ENSG",
+   "cik": 1125376,
+   "sic": "8051",
+   "entityName": "ENSIGN GROUP, INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Hospitals/Healthcare Facilities",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2132822043194953
+  },
+  {
+   "symbol": "CGNX",
+   "cik": 851205,
+   "sic": "3823",
+   "entityName": "COGNEX CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "DOCU",
+   "cik": 1261333,
+   "sic": "7372",
+   "entityName": "DOCUSIGN, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "GSAT",
+   "cik": 1366868,
+   "sic": "4899",
+   "entityName": "Globalstar, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Telecom. Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1848517475418197
+  },
+  {
+   "symbol": "MOD",
+   "cik": 67347,
+   "sic": "3714",
+   "entityName": "MODINE MANUFACTURING CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Building Materials",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.28356853867642806
+  },
+  {
+   "symbol": "IT",
+   "cik": 749251,
+   "sic": "8741",
+   "entityName": "GARTNER INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Computer Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22563711324361344
+  },
+  {
+   "symbol": "AM",
+   "cik": 1623925,
+   "sic": "4922",
+   "entityName": "Antero Midstream Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas Distribution",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20388504396437862
+  },
+  {
+   "symbol": "AAL",
+   "cik": 6201,
+   "sic": "4512",
+   "entityName": "American Airlines Group Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Air Transport",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22628440256519328
+  },
+  {
+   "symbol": "AYI",
+   "cik": 1144215,
+   "sic": "3640",
+   "entityName": "ACUITY INC. (DE)",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "HL",
+   "cik": 719413,
+   "sic": "1400",
+   "entityName": "HECLA MINING CO/DE/",
+   "isPartnership": false,
+   "damodaranIndustry": "Precious Metals",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2874659709052919
+  },
+  {
+   "symbol": "SPXC",
+   "cik": 88205,
+   "sic": "3540",
+   "entityName": "SPX Technologies, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "R",
+   "cik": 85961,
+   "sic": "7510",
+   "entityName": "RYDER SYSTEM INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "GKOS",
+   "cik": 1192448,
+   "sic": "3841",
+   "entityName": "GLAUKOS Corp",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Products",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12774023706720808
+  },
+  {
+   "symbol": "UHS",
+   "cik": 352915,
+   "sic": "8062",
+   "entityName": "UNIVERSAL HEALTH SERVICES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Hospitals/Healthcare Facilities",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2132822043194953
+  },
+  {
+   "symbol": "HALO",
+   "cik": 1159036,
+   "sic": "2836",
+   "entityName": "HALOZYME THERAPEUTICS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Drugs (Biotechnology)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1575395745508596
+  },
+  {
+   "symbol": "LTH",
+   "cik": 1869198,
+   "sic": "7997",
+   "entityName": "Life Time Group Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Recreation",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2598016946931607
+  },
+  {
+   "symbol": "SANM",
+   "cik": 897723,
+   "sic": "3672",
+   "entityName": "SANMINA CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Electronics (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20322179788284844
+  },
+  {
+   "symbol": "LGN",
+   "cik": 2052568,
+   "sic": "1700",
+   "entityName": "Legence Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "GME",
+   "cik": 1326380,
+   "sic": "5734",
+   "entityName": "GameStop Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "BRKR",
+   "cik": 1109354,
+   "sic": "3826",
+   "entityName": "BRUKER CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "OGE",
+   "cik": 1021635,
+   "sic": "4911",
+   "entityName": "OGE ENERGY CORP.",
+   "isPartnership": false,
+   "damodaranIndustry": "Power",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.13013680604114888
+  },
+  {
+   "symbol": "MSGS",
+   "cik": 1636519,
+   "sic": "7990",
+   "entityName": "Madison Square Garden Sports Corp.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "LAD",
+   "cik": 1023128,
+   "sic": "5500",
+   "entityName": "LITHIA MOTORS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Automotive)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22522512776040074
+  },
+  {
+   "symbol": "LLYVK",
+   "cik": 2078416,
+   "sic": "7900",
+   "entityName": "Liberty Live Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Entertainment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.12604725144204554
+  },
+  {
+   "symbol": "RMBS",
+   "cik": 917273,
+   "sic": "3674",
+   "entityName": "RAMBUS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "HSIC",
+   "cik": 1000228,
+   "sic": "5047",
+   "entityName": "HENRY SCHEIN INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Healthcare Support Services",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2299540044260435
+  },
+  {
+   "symbol": "SARO",
+   "cik": 2025410,
+   "sic": "3724",
+   "entityName": "StandardAero, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Aerospace/Defense",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.17112253733048063
+  },
+  {
+   "symbol": "ALSN",
+   "cik": 1411207,
+   "sic": "3714",
+   "entityName": "Allison Transmission Holdings Inc",
+   "isPartnership": false,
+   "damodaranIndustry": "Construction Supplies",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22547510090802267
+  },
+  {
+   "symbol": "FROG",
+   "cik": 1800667,
+   "sic": "7372",
+   "entityName": "JFrog Ltd",
+   "isPartnership": false,
+   "damodaranIndustry": "Software (System & Application)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.1801118280986946
+  },
+  {
+   "symbol": "TKR",
+   "cik": 98362,
+   "sic": "3562",
+   "entityName": "TIMKEN CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Machinery",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.21211063196638047
+  },
+  {
+   "symbol": "ACM",
+   "cik": 868857,
+   "sic": "8711",
+   "entityName": "AECOM",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "LEVI",
+   "cik": 94845,
+   "sic": "2300",
+   "entityName": "LEVI STRAUSS & CO",
+   "isPartnership": false,
+   "damodaranIndustry": "Apparel",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.22113578948012313
+  },
+  {
+   "symbol": "VICR",
+   "cik": 751978,
+   "sic": "3679",
+   "entityName": "VICOR CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Electrical Equipment",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2517917634827783
+  },
+  {
+   "symbol": "SWKS",
+   "cik": 4127,
+   "sic": "3674",
+   "entityName": "SKYWORKS SOLUTIONS, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Semiconductor",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15790418212542343
+  },
+  {
+   "symbol": "LLYVA",
+   "cik": 2078416,
+   "sic": "7900",
+   "entityName": "Liberty Live Holdings, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": null,
+   "damodaranCountry": null,
+   "effTaxRateMoneyMaking": null
+  },
+  {
+   "symbol": "AVTR",
+   "cik": 1722482,
+   "sic": "3826",
+   "entityName": "Avantor, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Heathcare Information and Technology",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.15096664971111606
+  },
+  {
+   "symbol": "FDS",
+   "cik": 1013237,
+   "sic": "7370",
+   "entityName": "FACTSET RESEARCH SYSTEMS INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Financial Svcs. (Non-bank & Insurance)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19308570373525116
+  },
+  {
+   "symbol": "CHWY",
+   "cik": 1766502,
+   "sic": "5961",
+   "entityName": "Chewy, Inc.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (Special Lines)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.24414952499950698
+  },
+  {
+   "symbol": "SAIA",
+   "cik": 1177702,
+   "sic": "4213",
+   "entityName": "SAIA INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Trucking",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2456120559375066
+  },
+  {
+   "symbol": "DAR",
+   "cik": 916540,
+   "sic": "2070",
+   "entityName": "DARLING INGREDIENTS INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Farming/Agriculture",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.20340963331647635
+  },
+  {
+   "symbol": "RRC",
+   "cik": 315852,
+   "sic": "1311",
+   "entityName": "RANGE RESOURCES CORP",
+   "isPartnership": false,
+   "damodaranIndustry": "Oil/Gas (Production and Exploration)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.25337213780269946
+  },
+  {
+   "symbol": "VMI",
+   "cik": 102729,
+   "sic": "3440",
+   "entityName": "VALMONT INDUSTRIES INC",
+   "isPartnership": false,
+   "damodaranIndustry": "Engineering/Construction",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.2394811740203084
+  },
+  {
+   "symbol": "DDS",
+   "cik": 28917,
+   "sic": "5311",
+   "entityName": "DILLARD'S, INC.",
+   "isPartnership": false,
+   "damodaranIndustry": "Retail (General)",
+   "damodaranCountry": "United States",
+   "effTaxRateMoneyMaking": 0.19932835478876912
+  }
+ ]
+}
