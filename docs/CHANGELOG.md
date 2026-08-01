@@ -11,7 +11,7 @@
 >
 > **§4 로딩 측정(코드 변경 0)**: 프리뷰 3333 실측 — `/api/revdcf`(warm 12ms·cold 0.4s·30분 캐시)·`/api/lens`(GOOGL warm 24ms) **둘 다 8초 병목 아님**. "GOOGL 첫 진입 8초"는 **Next dev 라우트 최초 컴파일**(프로덕션 프리빌드엔 없음). `RevDcfSection`은 자체 useEffect라 렌즈를 안 기다림(독립 렌더 확인). → 이번 범위 밖(§4.3), 손대지 않음.
 >
-> 파일: `components/RevDcfSection.tsx`·`components/RevDcfBadge.tsx`·`app/api/revdcf/batch/route.ts`·`components/toolbox/UsMarketBoard.tsx`·`messages/{ko,en}.json`. tsc 0·i18n 파리티 8/8·**`npm run build` 통과(855에서 생략했던 것 이번엔 실행)**·프로덕션 `/revdcf` 404 유지(플래그 OFF). ⓪-3: DB `revdcf_results` as_of=2026-08-01 604행 verdict별 적자 카운트 직접 조회(63/11/4=78 일치). **HEAD: (이 커밋).**
+> 파일: `components/RevDcfSection.tsx`·`components/RevDcfBadge.tsx`·`app/api/revdcf/batch/route.ts`·`components/toolbox/UsMarketBoard.tsx`·`messages/{ko,en}.json`. tsc 0·i18n 파리티 8/8·**`npm run build` 통과(855에서 생략했던 것 이번엔 실행)**·프로덕션 `/revdcf` 404 유지(플래그 OFF). ⓪-3: DB `revdcf_results` as_of=2026-08-01 604행 verdict별 적자 카운트 직접 조회(63/11/4=78 일치). **HEAD `9c9943f`.**
 
 ## 2026-08-01 (10) — 🔴 역DCF 육안 검증 7건 수정 (STEP 855 · 플래그 계속 OFF · 표현 계층만)
 
