@@ -40,8 +40,16 @@ const REV = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", 
 const COST = ["CostOfRevenue", "CostOfGoodsAndServicesSold", "CostOfGoodsSold", "CostOfServices", "CostOfSales", "CostOfOperatingRevenues", "CostOfRevenues"];
 const PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest", "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments", "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic"];
 const INTEREST = ["InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt", "InterestIncomeExpenseNet"];
-const PPE = ["PropertyPlantAndEquipmentNet", "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization", "PropertyPlantAndEquipmentOtherNet", "PublicUtilitiesPropertyPlantAndEquipmentNet"];
-const CASH_OP = ["CashAndCashEquivalentsAtCarryingValue"]; // 운전자본 차감용(운영현금)
+const PPE = ["PropertyPlantAndEquipmentNet", "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization", "PropertyPlantAndEquipmentExcludingLessorAssetUnderOperatingLeaseAfterAccumulatedDepreciation", "PropertyPlantAndEquipmentOtherNet", "PublicUtilitiesPropertyPlantAndEquipmentNet"]; // 852: GM 등 리스제공자 변형 추가
+// 852: 운전자본 차감용 현금 — CVX 등이 후기연도 제한현금포함 태그로 전환 → coalesce
+const CASH_OP = ["CashAndCashEquivalentsAtCarryingValue", "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents"];
+// driver 5 한계형(원전 T5) 재료 — 852
+const CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets", "PaymentsForCapitalImprovements"];
+const CAPSW = ["PaymentsToDevelopSoftware", "CapitalizedComputerSoftwareAdditions"];
+const OTHINV = ["PaymentsForProceedsFromOtherInvestingActivities"];
+const ACQ = ["PaymentsToAcquireBusinessesNetOfCashAcquired"];
+const DNA = ["DepreciationDepletionAndAmortization", "DepreciationAndAmortization", "DepreciationAmortizationAndAccretionNet"];
+const SHARES_MORE = ["WeightedAverageNumberOfSharesOutstandingBasic", "CommonStockSharesOutstanding"]; // 852 폴백
 const CASH_NONOP = ["CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "CashAndCashEquivalentsAtCarryingValue"]; // 비영업(제한현금 포함 우선)
 const SECURITIES = ["ShortTermInvestments", "MarketableSecuritiesCurrent", "AvailableForSaleSecuritiesCurrent", "OtherShortTermInvestments"];
 // 부채: LT + 당기 + 금융리스 (영업리스 제외 · §3 결정) · §5: AndCapitalLeaseObligationsCurrent 추가
@@ -55,7 +63,10 @@ const REL = 0.01; // 항등식 허용오차
 
 export interface DriverBundle {
   startingSales: number; salesGrowth: number; operatingMargin: number; startingMargin: number;
-  fixedCapitalRate: number; workingCapitalRate: number;
+  fixedCapitalRate: number; // = level (기본·엔진 호환)
+  fixedCapitalRateLevel: number; // PP&E÷매출 5년평균
+  fixedCapitalRateMarginal: number | null; // 원전 T5 5년누적 순고정÷5년누적Δ매출 (재료 없으면 null)
+  workingCapitalRate: number;
 }
 export interface DriverMarketPartial { debt: number; nonOperatingAssets: number; shares: number; latestYear: number }
 export type DriverResult =
@@ -85,11 +96,15 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   const rev: Record<number, number> = {}; for (const y of YS) rev[y] = revTagMap[y] ?? revCo.vals[y];
   flags.revenueTag = revenueTag; flags.revenueCheck = revenueCheck;
 
-  // 영업이익 (결측 시 Pretax + Interest 재구성)
+  // 영업이익: OperatingIncomeLoss → 매출−총비용(CostsAndExpenses·852 GE 등) → Pretax+Interest 재구성
   const pretax = coalesceMap(gaap, PRETAX, "flow").vals, interest = coalesceMap(gaap, INTEREST, "flow").vals;
-  const oi: Record<number, number> = {}; let ebitSource = "OperatingIncomeLoss", recon = false;
-  for (const y of YS) { if (oiMap[y] != null) oi[y] = oiMap[y]; else if (pretax[y] != null && interest[y] != null) { oi[y] = pretax[y] + Math.abs(interest[y]); recon = true; } }
-  if (recon) ebitSource = "Pretax+Interest";
+  const oi: Record<number, number> = {}; let ebitSource = "OperatingIncomeLoss", srcRevCae = false, srcRecon = false;
+  for (const y of YS) {
+    if (oiMap[y] != null) oi[y] = oiMap[y];
+    else if (rev[y] != null && cae[y] != null) { oi[y] = rev[y] - cae[y]; srcRevCae = true; }
+    else if (pretax[y] != null && interest[y] != null) { oi[y] = pretax[y] + Math.abs(interest[y]); srcRecon = true; }
+  }
+  ebitSource = srcRevCae ? "Rev-CostsAndExpenses" : srcRecon ? "Pretax+Interest" : "OperatingIncomeLoss";
   flags.ebitSource = ebitSource;
   if (!has5(oi)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "operatingIncome<5yr" } };
 
@@ -98,12 +113,15 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   const assetsCur = annualMap(gaap, "AssetsCurrent", "stock"), liabCur = annualMap(gaap, "LiabilitiesCurrent", "stock");
   const cashOp = coalesceMap(gaap, CASH_OP, "stock").vals;
   if (!has5(ppe)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "ppe<5yr" } };
-  if (!has5(assetsCur) || !has5(liabCur) || !has5(cashOp)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "workingCapital<5yr" } };
+  // 🔴 유동/비유동 미구분(유동성배열법) = 이 기법의 재무형식과 안 맞음 → 회수 아니라 재분류(838: 금융인접 신호)
+  if (!has5(assetsCur) || !has5(liabCur)) return { ok: false, skipReason: "NOT_APPLICABLE_SECTOR", flags: { ...flags, missing: "unclassifiedBalanceSheet" } };
+  if (!has5(cashOp)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "operatingCash<5yr" } };
 
-  // 시장 부분: 주식수(희석)·부채·비영업자산 — 최신연도
-  const sharesMap = annualMap(gaap, SHARES_DIL[0], "flow", "shares");
+  // 시장 부분: 주식수(희석→기본→발행→dei)·부채·비영업자산 — 최신연도
+  const sharesDil = annualMap(gaap, SHARES_DIL[0], "flow", "shares");
   let sharesTag = "WeightedAverageNumberOfDilutedSharesOutstanding";
-  let shares = sharesMap[ly] ?? sharesMap[latestYear(sharesMap) ?? -1];
+  let shares = sharesDil[latestYear(sharesDil) ?? -1];
+  if (shares == null) { for (const t of SHARES_MORE) { const m = annualMap(gaap, t, t.startsWith("Weighted") ? "flow" : "stock", "shares"); const v = m[latestYear(m) ?? -1]; if (v != null) { shares = v; sharesTag = t; break; } } }
   if (shares == null) { const deiSh = annualMap(dei, "EntityCommonStockSharesOutstanding", "stock", "shares"); shares = deiSh[latestYear(deiSh) ?? -1]; sharesTag = "dei:EntityCommonStockSharesOutstanding"; }
   if (shares == null || !(shares > 0)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "shares" } };
   flags.sharesTag = sharesTag;
@@ -125,12 +143,23 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   const salesGrowth = nSpan > 0 && rev[firstY] > 0 ? (rev[lastY] / rev[firstY]) ** (1 / nSpan) - 1 : 0;
   const operatingMargin = mean(YS.filter((y) => rev[y] > 0).map((y) => oi[y] / rev[y]));
   const startingMargin = rev[lastY] > 0 ? oi[lastY] / rev[lastY] : operatingMargin;
-  const fixedCapitalRate = mean(YS.filter((y) => rev[y] > 0).map((y) => ppe[y] / rev[y]));
+  // driver 5 — 이중 산정 (852): level=PP&E÷매출 5년평균 · marginal=원전 T5 5년누적 순고정÷5년누적Δ매출
+  const fixedCapitalRateLevel = mean(YS.filter((y) => rev[y] > 0).map((y) => ppe[y] / rev[y]));
+  const capex = coalesceMap(gaap, CAPEX, "flow").vals, dna = coalesceMap(gaap, DNA, "flow").vals;
+  const acq = coalesceMap(gaap, ACQ, "flow").vals, capsw = coalesceMap(gaap, CAPSW, "flow").vals, othinv = coalesceMap(gaap, OTHINV, "flow").vals;
+  let fixedCapitalRateMarginal: number | null = null;
+  const invYears = YS.slice(1); // 2021~2024 (Δ매출 있는 해)
+  if (invYears.every((y) => capex[y] != null && dna[y] != null)) {
+    let cumNet = 0; for (const y of invYears) cumNet += Math.abs(capex[y]) + Math.abs(acq[y] ?? 0) + Math.abs(capsw[y] ?? 0) + Math.abs(othinv[y] ?? 0) - Math.abs(dna[y]);
+    const cumDRev = rev[lastY] - rev[firstY];
+    if (cumDRev !== 0) fixedCapitalRateMarginal = cumNet / cumDRev;
+  }
   const workingCapitalRate = mean(YS.filter((y) => rev[y] > 0).map((y) => (assetsCur[y] - cashOp[y] - liabCur[y]) / rev[y]));
+  flags.marginalCapexAvailable = fixedCapitalRateMarginal != null;
 
   return {
     ok: true,
-    drivers: { startingSales: rev[lastY], salesGrowth, operatingMargin, startingMargin, fixedCapitalRate, workingCapitalRate },
+    drivers: { startingSales: rev[lastY], salesGrowth, operatingMargin, startingMargin, fixedCapitalRate: fixedCapitalRateLevel, fixedCapitalRateLevel, fixedCapitalRateMarginal, workingCapitalRate },
     market: { debt, nonOperatingAssets, shares, latestYear: lastY },
     flags,
   };

@@ -151,8 +151,8 @@ export const INPUTS: RegistryEntry[] = [
     ours: "PP&E÷매출(자본집약도) 5년 평균 × Δ매출",
     klass: "A",
     divergence:
-      "✅ 847 T5 판독+실측: 원전은 한계형((capex+인수+자본화SW+기타투자)−D&A ÷ Δ매출). 우리 604 한계형 변동 중앙 SD 53%p로 극심 → 수준형(자본집약도 PP&E÷매출·변동 2.34%p) 유지. 인수는 일부 기업 결정적(증분율 중앙 3.2%p·p90 168%p 변화)이나 변동 증폭",
-    open: "🔶 인수·자본화SW 포함 여부는 업종별 선택 재검토(재료 확보 rev·capex·D&A 74%)",
+      "✅ 852 이중 산정: level(PP&E÷매출 5년평균·저분산·설비무거운 기업 과대) + marginal(원전 T5 5년누적 순고정÷5년누적Δ매출·저편향·M&A포함). 둘 다 저장·판정 갈림 68종목(16.6%)이면 화면에 '방법에 따라 다름'. 도미노: T8 15% vs level 6.9% vs marginal 14%(marginal이 근접). 기본값=level(안정)·불일치 시 병기",
+    open: "🔶 갈림 68종목만 method-dependent 표시(화면 STEP). marginal 재료 없는 종목은 level만",
   },
   {
     id: "incrementalWorkingCapitalRate",

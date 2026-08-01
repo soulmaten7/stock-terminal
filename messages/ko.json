@@ -1010,5 +1010,45 @@
     "filterToWarn": "주의 전환",
     "strengthCount": "강점 {n}",
     "tradeAmountLabel": "거래대금 {v}"
+  },
+  "RevDcf": {
+    "badge": {
+      "years": "기대 해독",
+      "valueDestroying": "가치훼손",
+      "belowOne": "무성장 설명",
+      "overCap": "설명 불가",
+      "skipped": "해당 없음"
+    },
+    "headline": {
+      "years": "시장은 {n}년의 초과성장을 요구합니다",
+      "valueDestroying": "지금 이익률로는 성장할수록 가치가 줄어듭니다",
+      "belowOne": "성장이 없다고 봐도 지금 주가가 설명됩니다",
+      "overCap": "이 기법으로는 설명되지 않는 가격입니다",
+      "wideBand": "자본비용 가정에 극도로 민감합니다 — 하나의 숫자로 읽지 마십시오"
+    },
+    "band": {
+      "range": "자본비용 ±1%p에서 {lo}~{hi}년",
+      "sensitive": "자본비용 1%p 차이로 결론이 크게 달라집니다 — 아래 표로 보십시오"
+    },
+    "position": "{n}년 — 이 기법 성립 {total}개 중 상위 {pct}%",
+    "sampleNote": "미국 시총 상위 1,000 중 이 기법이 성립하는 {total}개 기준",
+    "growthNote": "성장률은 과거 5년 실적에서 계산했습니다 — 애널리스트 전망이 아닙니다.",
+    "asOfNote": "세율·자본비용은 {date} 기준",
+    "methodDependent": "투자 강도 산정 방법에 따라 판정이 달라집니다",
+    "skip": {
+      "insufficientHistory": "상장·분할 후 5년이 지나지 않았습니다",
+      "notApplicableSector": "유동/비유동을 구분하지 않는 재무제표라 이 기법이 성립하지 않습니다",
+      "missingTag": "필요한 재무 항목이 5년치 확보되지 않았습니다",
+      "noIndustry": "업종 매핑이 없어 자본비용을 조립할 수 없습니다"
+    },
+    "driver": {
+      "growth": "매출성장(과거5년)",
+      "margin": "영업이익률",
+      "threshold": "임계이익률",
+      "tax": "세율(한계)",
+      "wacc": "자본비용",
+      "capIntensity": "자본집약도",
+      "wcRate": "운전자본율"
+    }
   }
 }

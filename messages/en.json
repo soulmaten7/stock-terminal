@@ -1010,5 +1010,45 @@
     "filterToWarn": "To caution",
     "strengthCount": "Strengths {n}",
     "tradeAmountLabel": "Value traded {v}"
+  },
+  "RevDcf": {
+    "badge": {
+      "years": "Expectations",
+      "valueDestroying": "Value-destroying",
+      "belowOne": "Explained without growth",
+      "overCap": "Unexplained",
+      "skipped": "Not applicable"
+    },
+    "headline": {
+      "years": "The price implies {n} years of above-cost growth.",
+      "valueDestroying": "At the current margin, growth destroys value.",
+      "belowOne": "The price is explained even with no growth.",
+      "overCap": "This method cannot explain the current price.",
+      "wideBand": "Extremely sensitive to the discount rate — do not read as a single number."
+    },
+    "band": {
+      "range": "{lo}–{hi} years across cost of capital ±1%p",
+      "sensitive": "A 1%p change in cost of capital swings the conclusion — see the table below"
+    },
+    "position": "{n} years — top {pct}% of {total} where this method applies",
+    "sampleNote": "Based on {total} of the top 1,000 US companies where this method applies",
+    "growthNote": "Growth is computed from the past 5 years — not an analyst forecast.",
+    "asOfNote": "Tax rate and cost of capital as of {date}",
+    "methodDependent": "The verdict depends on how investment intensity is estimated.",
+    "skip": {
+      "insufficientHistory": "Fewer than 5 years since listing or spin-off.",
+      "notApplicableSector": "The balance sheet is not classified (current vs non-current), so the method does not apply.",
+      "missingTag": "The required 5-year financials are not available.",
+      "noIndustry": "No industry mapping to assemble the cost of capital."
+    },
+    "driver": {
+      "growth": "Sales growth (5y)",
+      "margin": "Operating margin",
+      "threshold": "Threshold margin",
+      "tax": "Tax rate (marginal)",
+      "wacc": "Cost of capital",
+      "capIntensity": "Capital intensity",
+      "wcRate": "Working-capital rate"
+    }
   }
 }

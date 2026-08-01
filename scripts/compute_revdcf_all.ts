@@ -71,16 +71,25 @@ async function main() {
         const w = assembleWacc({ riskFree: rf, erp, unleveredBetaCashAdj: Number(beta.unlevered_beta_cash_adj), taxRate: usTax, deRatio, creditSpread: spread });
         const sharePrice = mcap / dr.market.shares;
         const market: RevDcfMarket = { wacc: w.wacc, inflation, sharePrice, sharesOutstanding: dr.market.shares, debt: dr.market.debt, nonOperatingAssets: dr.market.nonOperatingAssets };
+        // 기본(primary) = level 자본집약도 (dr.drivers.fixedCapitalRate = level)
         const sens = computeGapWithSensitivity({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 100 });
-        // 단조성·임계마진은 base 실행에서 (엔진 재호출 1회)
-        const eng = (await import("../lib/revdcf/engine")).runRevDcf({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 100 });
+        const runRevDcf = (await import("../lib/revdcf/engine")).runRevDcf;
+        const eng = runRevDcf({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 100 });
         const gnum = (v: RevDcfVerdict) => (v.kind === "years" ? v.gap : v.kind === "below_one" ? 0 : v.kind === "over_cap" ? 100 : null);
+        // 852: 한계형 자본집약도로도 판정(갈림 노출)
+        let verdictMarginal: string | null = null, gapMarginal: number | null = null;
+        if (dr.drivers.fixedCapitalRateMarginal != null) {
+          const vm = runRevDcf({ ...dr.drivers, taxRate: usTax, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: 100 }).verdict;
+          verdictMarginal = vm.kind; gapMarginal = vm.kind === "years" ? vm.gap : null;
+        }
         rows.push({
           ...base, ...verdictCols(sens.base),
           gap_wacc_minus1: gnum(sens.waccMinus1), gap_wacc_plus1: gnum(sens.waccPlus1),
           threshold_margin: eng.thresholdMargin, monotonic: eng.monotonic,
           sales_growth: dr.drivers.salesGrowth, operating_margin: dr.drivers.operatingMargin, starting_margin: dr.drivers.startingMargin,
           tax_rate: usTax, fixed_capital_rate: dr.drivers.fixedCapitalRate, working_capital_rate: dr.drivers.workingCapitalRate,
+          fixed_capital_rate_level: dr.drivers.fixedCapitalRateLevel, fixed_capital_rate_marginal: dr.drivers.fixedCapitalRateMarginal,
+          verdict_marginal: verdictMarginal, gap_years_marginal: gapMarginal,
           wacc: w.wacc, beta_unlevered: Number(beta.unlevered_beta_cash_adj), de_ratio: deRatio,
           debt: dr.market.debt, non_operating_assets: dr.market.nonOperatingAssets, shares: dr.market.shares, share_price: sharePrice,
           flags: { ...dr.flags, industry: ind, inflationUsed: inflation, damodaranAsOf: damoAsOf, marketCap: mcap },
