@@ -43,6 +43,7 @@
 ## 5. DB 테이블 (64개 · 그룹)
 - **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot` · `stock_prices` · `stocks`
 - **렌즈/재무**: `lens_scores`(값 `*_value`+상태 `*_state`) · **`lens_cuts`**(판정 컷 · PK `market,lens_key` · `lo`/`hi`=p30/p70·`n`·`as_of`·`method` — 크론 2-pass가 upsert·STEP 802/805) · `lens_state_changes`(오늘/탐색 변화 피드 · pass2 최종 상태로 diff) · `quant_factors` · `financials` · `dividends` · `short_credit` · `supply_demand` · `insider_trades`
+- **🆕 역DCF(모델 트랙 838~850)**: `damodaran_{industry,tax_rate,country_tax,wacc,beta,capex,working_capital,global_inputs,credit_spread}`(846/847 재료·`as_of` 연1회) · **`revdcf_results`**(850 전종목 GAP · PK `as_of,cik` · 매일 쌓음 · verdict/gap 3점(WACC±1%p)/flags jsonb/skip_reason). 파이프라인 = `lib/revdcf/{engine,compute,drivers,registry}.ts` + `scripts/compute_revdcf_all.ts`(재실행 안전·배치 60·companyfacts→driver→WACC 조립→3점 GAP). 🔴 **배치 ~9분 > Vercel 300s** → 크론화 시 **청크 반복 호출**(resumable) 또는 외부 실행. 원본 xls = Storage `sources`. 화면 미배선(D층).
 - **종목명**: `cn_names` · `gb_names` · `jp_names` · `vn_names` (KR·US는 스냅샷/시드에 내장)
 - **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · `ai_view_cache` · `ai_analysis` · **`daily_brief`**(한 입 브리핑 — market별 PK·text_ko/text_en·source_facts jsonb·STEP 778)
 - **공시/뉴스**: `disclosures` · `jp_disclosures` · `news` · `dart_corp_codes` · `macro_indicators`

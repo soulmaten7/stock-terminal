@@ -1,6 +1,17 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (5) — 🟢 역DCF 전종목(604) 배치 + 분포 산출 (STEP 850 · HEAD `158bb97`)
+
+> 화면 0. 엔진(848)·WACC(849) 불변. 전 종목에 적용하는 배치 파이프라인. 매일 크론 전제·재실행 안전.
+
+- **driver 모듈** `lib/revdcf/drivers.ts`: companyfacts→driver 1~5(수준형·매출 항등식 선택·EBIT 재구성 폴백)+시장부분. 🔴 결측 조용히 0 금지 → 필수 5년 미확보면 skipReason. §5.1 부채에 `LongTermDebtAndCapitalLeaseObligationsCurrent` 추가.
+- **배치** `scripts/compute_revdcf_all.ts`(재실행 안전·배치 60·wall timeout): 604→companyfacts→driver→업종 매핑→WACC 조립→3점 GAP→`revdcf_results`. 값 코드에 안 박음(damodaran_* DB·i=expected_inflation 0.025). **~9분·저장 604/604·누락 0.**
+- **테이블** `revdcf_results`(PK as_of,cik·매일 쌓음·flags jsonb·재현 스냅샷)·RLS+anon REVOKE.
+- 🔴 **분포(§4)**: years 195(32%·GAP 중앙 14·p90 41·최대 83)·value_destroying 130(22%)·below_one 70·over_cap 48·skipped 161(MISSING_TAG 107·IPO<5년 39·NO_INDUSTRY 15). **밴드 폭 중앙 6년·p90 50년**·**monotonic mixed 0**. 극단 눈검 정상(고=AAPL/ON·저=MA/ADBE·over_cap=RIVN/IONQ).
+- **§6 검산**: DPZ 배치=25년·WACC 7.07% = 수기 재계산 일치(849 23년과 다름=배치는 현재 드라이버 growth 3.4% vs T8 7%·i 0.025). 저장=시도 604·누락 0.
+- REVDCF_SPEC §7 D층 입력·§11 원장·SYSTEM_MAP 갱신. tsc 0·vitest 151·build ✓·app 0. 🔴 배치 9분>Vercel 300s → 크론 청크화 필요.
+
 ## 2026-08-01 (4) — 🟢 역DCF 재료 배선: WACC 조립 + 부채·비영업·주식수 + 도미노 전입력 재현 (STEP 849 · HEAD `99ed033`)
 
 > 화면 0. 엔진(848) 불변. 엔진에 넣을 재료를 `damodaran_*` DB에서 조립(값 코드에 안 박음).
