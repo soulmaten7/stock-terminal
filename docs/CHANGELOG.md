@@ -13,7 +13,7 @@
 >
 > **§4 판정 = 🔶(부분)**: 출처·단위·결측률·이상치 전부 수치 실측(빈칸 0)이나 ① D&A 21.7% 결측이 marginal 자본집약도를 병기로 제약 ② 저매출/자본집약 이상치서 level driver 불안정(확인만·미처리) ③ 부채 결측에 무차입 혼재 → ✅ 아닌 🔶(낙관 금지).
 >
-> 코드/DB/화면 변경 0(git diff=docs/+scripts/만)·tsc 0·vitest 151/151·프로덕션 `/revdcf` 404. ⓪-3: `drivers.ts` 태그/헬퍼 직접 판독·SEC companyfacts 604 재조회·revdcf_results as_of 2026-08-02·damodaran DB. 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD: (이 커밋).**
+> 코드/DB/화면 변경 0(git diff=docs/+scripts/만)·tsc 0·vitest 151/151·프로덕션 `/revdcf` 404. ⓪-3: `drivers.ts` 태그/헬퍼 직접 판독·SEC companyfacts 604 재조회·revdcf_results as_of 2026-08-02·damodaran DB. 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD `f9949d9`.**
 
 ## 2026-08-02 (3) — 역DCF DoD 항목 3(값 검증): 원전 관찰 3개를 우리 데이터로 재현 (STEP 860 · 읽기전용·코드 0)
 
