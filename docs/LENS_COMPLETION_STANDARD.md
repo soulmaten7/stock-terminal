@@ -41,7 +41,7 @@
 **🎉 7개 렌즈 전부 3중 검증 완결(STEP 812~818).**
 
 **역DCF(새 모델 트랙 · 플래그 OFF · STEP 857)** — 9항목 중 **1번(원전 대조표)만 완료**. 나머지 정직 상태(낙관 금지):
-- **2 입력**🔶 = 838~842 프로브로 태그 커버리지·결측률 실측했으나 DoD "입력 검증" 형식(필드 출처·단위·결측률·이상치)으로 미정리.
+- **2 입력**🔶 = 861에서 DoD 형식(출처·단위·결측률·이상치) 전 필드 실측·정리(아래 §2 입력검증). 핵심 driver 91~98% 확보·최대 결측 D&A 21.7%. 🔶 유지 사유 = D&A 결측이 marginal 자본집약도를 병기로 묶고, 저매출/자본집약 이상치에서 level driver 불안정(확인만·미처리·가드 금지).
 - **3 값**🔶 = 860에서 부분 충족. 손계산 ✅(도미노 오차 0·잔여비중 정확 일치) + **분포 수준 원전 관찰 3개 재현**(§3: 예측기간 5~15/중앙 11·업종 클러스터 ICC 0.195·잔여비중 79.6%≈도미노). 단 **개별 3종목 외부 독립 대조는 여전히 0**(원리적 난점 — 무료 공개 GAP 출처 없음·유료도 가정 비공개라 동일정의 대조 불가). 문자 미충족이라 ✅ 아닌 🔶.
 - **4 컷·분포**🔶 = `years` 222 표본 자체 분포(rank+3분류·855)는 있으나 `lens_cuts`(시장 유도 컷) 체계 아님.
 - **5 경계**🔶 = 스킵 사유 5종(INSUFFICIENT_HISTORY·MISSING_TAG·NOT_APPLICABLE_SECTOR·NO_INDUSTRY·MULTI_CLASS_SHARES)+적자 적용밖 구현. 형식적 3중 검증 패스는 미수행.
@@ -600,14 +600,60 @@
 
 **행 수 = 20**(859에서 "25+ 대체 산출물" 1행 추가) · **동일 8행**(계산식·예측 지평·해 탐색·25+ 대체산출물·driver2·비영업자산·부채·주식수) + **동일 식·값만 차이 1행**(터미널=인플레 값) + **차이 9행**(driver1·3·4·5·6·인플레·모집단·데이터출처·검증사례) + **우리 추가물 2행**(분포·민감도). 🔴 **859 변화: 예측 지평·해 탐색이 "차이"→"동일"**(100→25 정정 · 차이 10→9행), **"25+ 대체 산출물"(C33) 행 신설**.
 
-### 2) 화면 §1 블록(=`/revdcf` 차이 원장)과의 일치 확인
+### 2) 입력 검증 (STEP 861 · DoD 항목 2)
 
-`/revdcf` 방법론 페이지 차이 원장 = 8행(growth·tax·wc·cap·term·horizon·sensitivity·distribution). §1 표의 '차이' 열과 대조:
+> **결측률 정의**: `YS=[2020,2021,2022,2023,2024]` **5년 전부 값 존재(has5)** = 확보. 🔴 **순서 무관 독립 측정**(파이프라인 단락과 별개로 필드별 재조회) · 분모 = SEC fetch 성공 **604/604**(fail 0). 재측정 = `scripts/probe_861_inputs.ts`(읽기전용·`drivers.ts` 헬퍼·태그 그대로 복사). 다모다란 = DB `as_of=2026-01-05`.
 
-- ✅ **일치**: growth(driver1)·tax(driver3)·wc(driver4)·cap(driver5)·term(인플레)·sensitivity(민감도)·distribution(분포) 7행 — 방향·사유 §1과 무모순.
-- ✅ **horizon 불일치 = STEP 859에서 해소**: 배치를 `maxYears:25`로 정정(원전 T8과 동일) → over_cap="25+"·`explained_pct`=25년가치/주가. 방법론 페이지 차이 원장에서 horizon 행 **제거**(이제 동일이라 차이 아님). `overCapExplained` 문구 "100년"→"25년 예측기간+영구연금".
-- 🔴 **잔여 불일치 1건(항목 6 범위·화면 수정 별도)**:
-  1. **driver 6(WACC 조립) 행 부재**: 차이 원장에 growth/tax/wc/cap은 있으나 **자본비용 구성요소 조립(vs 원전 회사별 T7)** 행이 없다(betaCaveat 문단이 CAPM·베타만 부분 언급). 도미노 GAP 8→23년 차이의 거의 전부가 WACC인데 원장에 독립 행이 없어 사용자가 이 차이를 못 본다.
+**§1 — SEC 필드 (per-firm · 5년 독립)**
+
+| 필드 | 출처(태그 union) | 단위 | 5년 결측률(/604) | 비고 |
+|---|---|---|---|---|
+| 매출 | `RevenueFromContractWithCustomerExcludingAssessedTax`·`Revenues`·`…Including`·`SalesRevenueNet`(항등식 선택) | USD | **6.5%** | id1/id2 항등식으로 태그 확정 |
+| 영업이익 | `OperatingIncomeLoss`→`매출−CostsAndExpenses`→`Pretax+Interest` | USD | **8.6%** | 직접만 17.5% → **폴백이 8.9%p 보강** |
+| AssetsCurrent | `AssetsCurrent` | USD | **8.8%** | 결측 = 유동성 미구분(금융인접·NOT_APPLICABLE_SECTOR) |
+| LiabilitiesCurrent | `LiabilitiesCurrent` | USD | **8.8%** | 〃(운전자본 분모) |
+| 현금(운전자본용) | `CashAndCashEquivalents…`·`…RestrictedCash…`(2) | USD | **5.6%** | 852 CVX 제한현금 전환 대응 |
+| PP&E | `PropertyPlantAndEquipmentNet` 외 5 union | USD | **8.3%** | 852 리스제공자 변형 포함 |
+| 주식수(희석) | `WeightedAverageNumberOfDilutedSharesOutstanding`(→기본→dei) | shares | **2.0%**(any 1.3%) | 멀티클래스 5사 회수불가(854) |
+| 부채 | `DebtAndCapitalLeaseObligations`(단일)·LT+당기+금융리스 | USD | **10.1%** | 🔴 "결측"에 **무차입(=0·결측 아님) 포함** — 47사 debtIsZeroOrMissing |
+| capex(marginal용) | `PaymentsToAcquirePropertyPlantAndEquipment` 외 2 | USD | **11.8%** | marginal 고정자본 전용 |
+| D&A(marginal용) | `DepreciationDepletionAndAmortization` 외 2 | USD | 🔴 **21.7%(최대)** | marginal은 capex∩D&A 둘 다 필요 → marginal 커버 낮음(852 병기만) |
+
+🔑 **핵심 driver(매출·영업이익·유동자산부채·현금·PP&E·주식수)는 91~98% 확보** · 최대 결측 = **D&A 5년 21.7%**(한계형 자본집약도 재료라 marginal이 기본 아니고 병기인 이유). 전 필드 확보(=산출가능) = 515/604 = 85.3%.
+
+**§1b — 다모다란(B분류) · 시장 (`as_of` 명시)**
+
+| 필드 | 출처 | 단위 | 결측률 | 비고 |
+|---|---|---|---|---|
+| 한계세율 | `countrytaxrates.xls` US행(DB `damodaran_country_tax`) | 소수 **0.2563** | 0%(전종목 상수) | driver 3 기본 |
+| 업종 실효세율 | `taxrate.xls` | 소수 | 업종매핑 종속 | 병기용 |
+| ERP | `wacc.xls` global(`damodaran_global_inputs`) | 소수 **0.0446** | 0%(상수) | WACC |
+| 무위험 | `wacc.xls` global | 소수 **0.0395** | 0%(상수) | WACC |
+| 신용스프레드 | `damodaran_credit_spread`(7밴드) | 소수 | 업종 std_dev 종속 | 부채비용 |
+| 무차입베타(현금조정) | `betas.xls`(`damodaran_beta`) | 소수 | 업종매핑 종속 | driver 6 |
+| 업종매핑 | `indname.xls` `ticker_norm`·`is_us_listed` | — | 🔴 **1.7%(NO_INDUSTRY 10사)** | 매칭 실패 |
+| 인플레(터미널) | `global_inputs.expected_inflation` | 소수 **0.025** | 0%(상수) | 터미널 |
+| 주가·시가총액 | 시세 파이프라인·`us_market_cap` | USD | **0%**(NO_MARKETCAP 0) | 시장 |
+
+**§2 — 이상치 실측 (🔴 가드 없음 · 세는 것만 · scored 515)**
+
+- 음수·0 비율: 영업이익률 ≤0 **78사(15.1%)**(전부 음수) · 임계이익률 ≤0 **72사** · 운전자본율 <0 **236사(45.8%)**(음수 NWC=선수금·매입채무 큰 리테일·크루즈, 844 기지) · 자본집약도 ≤0 **0사**.
+- 🔴 **자본집약도 100% 초과 = 71사(13.8%)**. 업종: **Power 16·Utility 9·Oil&Gas E&P 8·Oil&Gas 유통 6·Hotel/Gaming 5·Precious Metals 3·Chemical(Specialty) 3·Semiconductor 3** — 자본집약 업종 집중(원리적·오류 아님).
+- 극단 상·하위 5:
+  - 자본집약도 최대: **ARWR 2221%·RIVN 1545%·RCL 711%·CCL 670%·WTRG 580%**(크루즈·수도·저매출 EV/바이오 — 분모(매출)가 작아 폭발).
+  - 영업이익률 최저: **SMMT −7058%·ARWR −3460%·BBIO −2807%·RIVN −2078%·CYTK −2054%**(매출 거의 0인 임상 바이오·초기 EV).
+  - 운전자본율 최저(음수): **RIVN −390%·RCL −157%·CCL −151%**(선수금) / 최고: **SMMT 12785%·RVMD 3086%·ARWR 2826%**(저매출).
+- 🔑 **이상치 원인 = 저매출 분모**(임상 바이오·초기 EV는 매출≈0이라 X÷매출 비율이 폭발) + **자본집약 업종**(유틸·에너지·크루즈). 가드로 지우지 않고 그대로 — 이런 종목은 level driver가 불안정하다는 사실을 노출.
+
+**§3 — 단위·부호 정합**
+
+- **USD 단위 혼입 0**: `annualMap`이 필드별 고정 `unit`("USD" 달러·"shares" 주식수)로만 읽음 — 혼입 구조적 불가.
+- **capex·D&A 부호**: SEC `PaymentsToAcquire…`·`Depreciation…`은 **양수 크기**로 옴(현금흐름표 부호 무관). 표본 8개 전부 양수(예: CIK 2969 capex 6796.7M·D&A 1451.1M · CIK 3570 capex 2238M·D&A 1220M). 우리 한계형 = **순고정 = capex + 인수 − D&A**(전부 양수 전제) → 부호 정합. 일부 D&A=null(해당 태그 미보고)은 결측(21.7%)으로 반영, 부호 오류 아님.
+- **다모다란 소수 vs 퍼센트 혼입 0**: 세율 0.2563·ERP 0.0446·무위험 0.0395·인플레 0.025 전부 **소수(fraction)** — 25.63 같은 퍼센트 혼입 없음.
+
+**§4 — 항목 2 판정 = 🔶 (부분 충족)**
+- 출처·단위·결측률·이상치 **전부 수치로 실측** ✅(빈칸 0). 핵심 driver 91~98% 확보.
+- 🔴 **🔶인 이유**: ① **D&A 21.7% 결측** = 한계형(marginal) 자본집약도 재료 부족 → marginal이 기본이 못 되고 병기에 그침(원전 T5는 한계형이 정의라 여기서 벗어남). ② 이상치(저매출 바이오·EV·자본집약 업종)에서 **level driver가 불안정**함을 확인만 하고 처리는 안 함(가드 금지·의도적). ③ 부채 "결측 10.1%"에 무차입(정상)이 섞여 순수 결측과 미분리. → 실측은 완료했으나 **결측·이상치의 영향이 남아 있어 ✅ 아닌 🔶**(낙관 금지).
 
 ### 3) 값 검증 (STEP 860 · DoD 항목 3)
 
@@ -640,3 +686,13 @@
 - **손계산 ✅ + 분포 수준 독립 대조 ✅(관찰 3개 재현) · 개별 3종목 외부 ❌.** DoD 문자("최소 3종목")를 문자 그대로는 **미충족**이라 🔶 유지(낙관 금지).
 - 🔴 **원리 판정 한 줄**: 개별 종목 외부 대조는 **"아직 못 찾은 것"이 아니라 원리적으로 어렵다** — 어떤 데이터셋도 "이 주가의 함의 GAP"을 무료 공개하지 않고(유료 New Constructs·GuruFocus는 계산 구조·값 비공개라 대조해도 재현 불가), 값이 있어도 그들의 드라이버 가정이 달라 **동일 정의 대조가 성립 안 함**. → 이 모델에서 항목 3의 현실적 최대치 = **원전 관찰의 분포 수준 재현**(달성). 개별 3종목 ✅는 유료 데이터 구매+가정 공개가 전제라 보류.
 
+
+### 6) 주장 정합 (초안 · 화면 §1 블록 ↔ 원전표 · DoD 항목 6)
+
+> STEP 861 §0에서 이동 — 원래 "2)" 자리에 있었으나 내용상 DoD 항목 6(주장 정합) 소속이라 여기로 옮김(내용 불변).
+
+`/revdcf` 방법론 페이지 차이 원장 = 7행(growth·tax·wc·cap·term·sensitivity·distribution·859에서 horizon 제거). §1 표의 '차이' 열과 대조:
+
+- ✅ **일치**: growth(driver1)·tax(driver3)·wc(driver4)·cap(driver5)·term(인플레)·sensitivity(민감도)·distribution(분포) 7행 — 방향·사유 §1과 무모순.
+- ✅ **horizon 불일치 = STEP 859에서 해소**: 배치를 `maxYears:25`로 정정(원전 T8과 동일) → over_cap="25+"·`explained_pct`=25년가치/주가. 방법론 페이지 차이 원장에서 horizon 행 제거. `overCapExplained` 문구 "100년"→"25년 예측기간+영구연금".
+- 🔴 **잔여 불일치 1건(항목 6 범위·화면 수정 별도)**: **driver 6(WACC 조립) 행 부재** — 차이 원장에 growth/tax/wc/cap은 있으나 **자본비용 구성요소 조립(vs 원전 회사별 T7)** 행이 없다(betaCaveat 문단이 CAPM·베타만 부분 언급). 도미노 GAP 8→23년 차이의 거의 전부가 WACC인데 원장에 독립 행이 없어 사용자가 이 차이를 못 본다.

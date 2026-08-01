@@ -1,0 +1,18 @@
+{
+ "fetched": 604,
+ "fetchFail": 0,
+ "cnt": {
+  "revenue": 565,
+  "operatingIncome": 552,
+  "operatingIncome_direct": 498,
+  "assetsCurrent": 551,
+  "liabilitiesCurrent": 551,
+  "cashOp": 570,
+  "ppe": 554,
+  "sharesDiluted": 592,
+  "sharesAny": 596,
+  "debtPresent": 543,
+  "capex5yr": 533,
+  "dna5yr": 473
+ }
+}
