@@ -1,6 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { revdcfEnabled } from "@/lib/revdcf/flag";
 
 // STEP 853 §4 — 역DCF 방법론 페이지 (차이 원장 공개 · 빌린 권위 금지). ko/en · 다크.
+// 🔴 STEP 854: 플래그 OFF면 404(장은태 육안 승인 전 미노출).
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -10,6 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export default async function RevDcfMethodPage({ params }: { params: Promise<{ locale: string }> }) {
+  if (!revdcfEnabled()) notFound();
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("RevDcfMethod");

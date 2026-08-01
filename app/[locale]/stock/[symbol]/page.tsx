@@ -17,6 +17,7 @@ import { isActiveSymbol } from "@/lib/activeMarkets";
 import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
 import RevDcfSection from "@/components/RevDcfSection";
+import { revdcfEnabled } from "@/lib/revdcf/flag";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -171,12 +172,14 @@ export default async function StockPage({ params }: Params) {
       ) : (
         <>
           <StockLensClient initialName={h1Name} />
-          {/* 역DCF 섹션 (US 전용 — 데이터 없으면 자체 미노출) · STEP 853 · StockLensClient 컨테이너 폭에 정합 */}
-          <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">
-            <div className="max-w-4xl">
-              <RevDcfSection symbol={symbol} />
+          {/* 역DCF 섹션 — 🔴 STEP 854: 피처 플래그(기본 OFF) 뒤. 서버 분기라 OFF면 클라로 안 내려감. 장은태 육안 승인 후 ON. */}
+          {revdcfEnabled() && (
+            <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">
+              <div className="max-w-4xl">
+                <RevDcfSection symbol={symbol} />
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
     </>
