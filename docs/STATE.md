@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만.** (CLAUDE.md 문서 규칙)
 
 ## HEAD / 배포
-- 코드 HEAD **`158bb97`**(STEP 850 · 역DCF 전종목 604 배치 + 분포 산출 · 화면 0·DB `revdcf_results`) · origin/main 동기화 · **tsc 0 · vitest 151/151 · build ✓**. ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
+- 코드 HEAD **`0f1f803`**(STEP 850 · 역DCF 전종목 604 배치 + 분포 산출 · 화면 0·DB `revdcf_results`) · origin/main 동기화 · **tsc 0 · vitest 151/151 · build ✓**. ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔬 **역DCF 모델 트랙(838~850)**: 정본 = **`docs/REVDCF_SPEC.md`**. A층 종료 → 846 재료 DB배선 → 847 원전 판독 → 848 엔진(도미노 재현) → 849 WACC 조립 → **850: 전종목 604 배치**(`lib/revdcf/drivers.ts`+`scripts/compute_revdcf_all.ts`→`revdcf_results` 매일). 분포: years 195(GAP 중앙 14)·value_destroying 130·below_one 70·over_cap 48·skipped 161·**밴드 폭 중앙 6년·mixed 0**. 🔴 GAP은 WACC 지배·**화면은 WACC 밴드로**(3점 결정). **다음 = D층 화면**(GAP 밴드·"27년" 읽히게·분포 내 위치)·배치 크론 청크화(9분>300s). ⚠️ 배치 WACC=2026 rf 3.95% → value_destroying 22%(고금리 반영).
 - **렌즈 3중검증(812~819) → 주장 정합(820~827) → 베타차단 보안(828) → 운영·데이터 정직성(829) → 베타 전 마감(830)**: 7렌즈 원전 대조·점추정 제거(812~819) → 렌즈별 화면 문구 정합(820~827) → 프롬프트 인젝션·유니버스 붕괴·크롤러 봉인(828) → 지수 stale·시장 게이트·캐시 네임스페이스·쓰기 레이트리밋·관심 asOf·크론 순서(829) → "7가지" 카운트 정합·비로그인 결측먼저·게이트/메타/RSI/백분위 정직화·SEO·접근성·문서 20STEP 공백(830). 상세 = CHANGELOG 2026-07-29.
 
