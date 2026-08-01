@@ -240,6 +240,8 @@ export const REFERENCE_CASE = {
   company: "Domino's Pizza",
   asOf: "2020-09",
   workbook: "T8",
-  expect: { valueAtYear0PerShare: 285, sharePrice: 418, mifpYears: 8 },
-  note: "우리 역산기가 T8 Inputs 값을 그대로 받아 위 결과를 재현하면 '원전 구조 재현'이 증명된다",
+  expect: { valueAtYear1PerShare: 285, sharePrice: 418, mifpYears: 8 },
+  /** ✅ STEP 848 재현 통과 — lib/revdcf/engine.ts · engine.test.ts */
+  reproduced: { valueAtYear1PerShare: 285.2, mifp: 8, monotonic: "up", passed: true, at: "2026-08-01 STEP 848" },
+  note: "엔진이 T8 Inputs를 그대로 받아 value(year1)=$285.2·MIFP=8 재현 → '원전 구조 재현' 증명(조달 검증은 847 §5 별개). 🔴 GAP은 WACC에 극도로 민감(WACC±1%p→below_one/15년) — driver 6 신중",
 } as const;

@@ -1,6 +1,16 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (3) — 🟢 역DCF 역산기 엔진 구현 + 원전 도미노 재현 (STEP 848 · HEAD `37a86dd`)
+
+> C층 첫 코드. 순수 계산 함수 + 유닛테스트만(화면·DB·SEC 0). 원전 Expectations Investing T8(PIE) 수식 그대로.
+
+- **엔진** `lib/revdcf/engine.ts`: `runRevDcf(drivers, market, options?, hooks?)` — T8 표 스캔(N=1..maxYears)·5분기 판정(`years`/`below_one`/`over_cap`/`value_destroying`/`invalid`)·단조성 명시(mixed 경고)·임계마진 검산. 🔴 **어댑터 훅**(fcf·terminalValue·discountFactor 주입)으로 은행/리츠 확장 대비(FCFF 내부 하드코딩 안 함).
+- 🟢 **도미노 재현 통과(통과 조건)**: value(year 1) **$285.2**(T8 285.20)·**MIFP 8년**·단조 up. `engine.test.ts` 13개 전부 통과(5분기·i=0 vs 1.6%·무작위 100세트 mixed 0·임계↔가치파괴).
+- 🔴 **민감도(도미노)**: **WACC이 압도적** — −1%p→below_one·기준 8·+1%p→15·+2%p→25. 성장/마진 ±1%p는 ±2년. **영향력 WACC ≫ 성장 ≈ 마진** → driver 6(베타) 최대 신중·화면은 GAP 점추정 아닌 WACC 밴드로 표시해야(모델 신뢰도 문제로 기록).
+- **§7 지평 확정**: 계산 100년·표시 25년 컷. 🔴 정정: 성장·마진을 올리면 GAP은 **짧아진다**(25+는 WACC 상승으로 도달) — STEP 전제와 반대.
+- registry `REFERENCE_CASE` 재현 결과 기록·§6 C-7 신설·§11 원장. tsc 0·vitest **148**·build ✓·app+supabase 0.
+
 ## 2026-08-01 (2) — 🔬 원전 정의 기준 driver 3/4/5 재료 실측 (STEP 847 · HEAD `1941d66`)
 
 > 프로덕션 변경 0. 원전(Expectations Investing) T4/T5/T6 스프레드시트를 판독하고, 그 정의대로 604 발행사·CY2020~24 companyfacts로 driver 3/4/5 재료를 실측. **"원전 방식이 우리 데이터로 되는가"만 측정**(설계는 다음).
