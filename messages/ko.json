@@ -1079,7 +1079,7 @@
     "waccBase": "기준",
     "waccHigh": "자본비용 높게(+1%p)",
     "marginVsThreshold": "현재 영업이익률 {margin} < 임계이익률 {threshold} — 새 매출이 버는 이익보다 그를 뒷받침할 투자가 큽니다.",
-    "overCapExplained": "100년치가 주가의 {pct}%를 설명합니다.",
+    "overCapExplained": "25년 예측기간과 영구연금이 주가의 {pct}%를 설명합니다.",
     "methodologyLink": "계산 방법과 원전과의 차이는 방법론 페이지에 공개합니다.",
     "boardCol": "역DCF",
     "boardBadge": {
@@ -1131,12 +1131,6 @@
         "s": "인플레 포함",
         "o": "expected_inflation (다모다란 DB)",
         "w": "실질 0 성장 가정"
-      },
-      "horizon": {
-        "i": "예측 지평",
-        "s": "25년",
-        "o": "계산 100년·표시 25년",
-        "w": "100년은 숫자로 의미 없어 ‘설명 불가’로 표시"
       },
       "sensitivity": {
         "i": "자본비용 민감도",

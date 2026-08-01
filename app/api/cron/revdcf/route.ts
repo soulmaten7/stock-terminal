@@ -66,10 +66,11 @@ export async function GET(req: Request) {
       const sharePrice = mcap / dr.market.shares;
       const market: RevDcfMarket = { wacc: w.wacc, inflation, sharePrice, sharesOutstanding: dr.market.shares, debt: dr.market.debt, nonOperatingAssets: dr.market.nonOperatingAssets };
       const drv = { ...dr.drivers, taxRate: usTax };
-      const sens = computeGapWithSensitivity(drv, market, { maxYears: 100 });
-      const eng = runRevDcf(drv, market, { maxYears: 100 });
+      // 🔴 STEP 859: 원전 T8 지평 = 25년(PIE C31 LOOKUP D27:AB27). over_cap = "25년 가치 < 주가"(원전 "25+"). 이전 100은 원전 이탈이었음.
+      const sens = computeGapWithSensitivity(drv, market, { maxYears: 25 });
+      const eng = runRevDcf(drv, market, { maxYears: 25 });
       let vm: string | null = null, gm: number | null = null;
-      if (dr.drivers.fixedCapitalRateMarginal != null) { const m = runRevDcf({ ...drv, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: 100 }).verdict; vm = m.kind; gm = m.kind === "years" ? m.gap : null; }
+      if (dr.drivers.fixedCapitalRateMarginal != null) { const m = runRevDcf({ ...drv, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: 25 }).verdict; vm = m.kind; gm = m.kind === "years" ? m.gap : null; }
       return {
         ...base, verdict: sens.base.kind, gap_years: sens.base.kind === "years" ? sens.base.gap : null, explained_pct: sens.base.kind === "over_cap" ? sens.base.explainedPct : null,
         gap_wacc_minus1: gnum(sens.waccMinus1), gap_wacc_plus1: gnum(sens.waccPlus1), threshold_margin: eng.thresholdMargin, monotonic: eng.monotonic,

@@ -1079,7 +1079,7 @@
     "waccBase": "Base",
     "waccHigh": "Higher cost of capital (+1%p)",
     "marginVsThreshold": "Operating margin {margin} < threshold {threshold} — new revenue requires more investment than the profit it earns.",
-    "overCapExplained": "100 years explain {pct}% of the price.",
+    "overCapExplained": "The 25-year forecast period plus perpetuity explains {pct}% of the price.",
     "methodologyLink": "The method and how it differs from the source are on the methodology page.",
     "boardCol": "Rev-DCF",
     "boardBadge": {
@@ -1131,12 +1131,6 @@
         "s": "Includes inflation",
         "o": "expected_inflation (Damodaran DB)",
         "w": "Zero real growth assumption"
-      },
-      "horizon": {
-        "i": "Horizon",
-        "s": "25 years",
-        "o": "Compute 100, display 25",
-        "w": "100 years is meaningless as a number, shown as “unexplained”"
       },
       "sensitivity": {
         "i": "Cost-of-capital sensitivity",

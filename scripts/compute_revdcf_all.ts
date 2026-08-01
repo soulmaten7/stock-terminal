@@ -14,7 +14,8 @@ const PROG = "/tmp/850_progress.txt";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const wall = <T>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error("wall")), ms))]);
 // 결정론 as_of: 파일 mtime 아님·오늘 날짜(크론). new Date는 스크립트 컨텍스트라 허용.
-const AS_OF = new Date().toISOString().slice(0, 10);
+// 🔴 STEP 859: 재계산을 새 as_of로 쌓을 때 REVDCF_AS_OF로 덮어쓸 수 있게(과거 행 보존·§1.2). 미지정 시 UTC 오늘.
+const AS_OF = process.env.REVDCF_AS_OF || new Date().toISOString().slice(0, 10);
 
 async function main() {
   const sb = createAdminClient();
@@ -72,14 +73,15 @@ async function main() {
         const sharePrice = mcap / dr.market.shares;
         const market: RevDcfMarket = { wacc: w.wacc, inflation, sharePrice, sharesOutstanding: dr.market.shares, debt: dr.market.debt, nonOperatingAssets: dr.market.nonOperatingAssets };
         // 기본(primary) = level 자본집약도 (dr.drivers.fixedCapitalRate = level)
-        const sens = computeGapWithSensitivity({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 100 });
+        // 🔴 STEP 859: 원전 T8 지평 = 25년(PIE C31). over_cap = 원전 "25+"(25년 가치<주가). gnum 100은 band 인코딩 센티넬(연차 아님).
+        const sens = computeGapWithSensitivity({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 25 });
         const runRevDcf = (await import("../lib/revdcf/engine")).runRevDcf;
-        const eng = runRevDcf({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 100 });
+        const eng = runRevDcf({ ...dr.drivers, taxRate: usTax }, market, { maxYears: 25 });
         const gnum = (v: RevDcfVerdict) => (v.kind === "years" ? v.gap : v.kind === "below_one" ? 0 : v.kind === "over_cap" ? 100 : null);
         // 852: 한계형 자본집약도로도 판정(갈림 노출)
         let verdictMarginal: string | null = null, gapMarginal: number | null = null;
         if (dr.drivers.fixedCapitalRateMarginal != null) {
-          const vm = runRevDcf({ ...dr.drivers, taxRate: usTax, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: 100 }).verdict;
+          const vm = runRevDcf({ ...dr.drivers, taxRate: usTax, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: 25 }).verdict;
           verdictMarginal = vm.kind; gapMarginal = vm.kind === "years" ? vm.gap : null;
         }
         rows.push({

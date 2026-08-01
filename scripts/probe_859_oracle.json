@@ -1,0 +1,20 @@
+{
+ "\uc815\uc0c1(\ub3c4\ubbf8\ub178 8\ub144)": {
+  "verdict": "years",
+  "gap": 8,
+  "explained": null,
+  "ps25": 806.1645921943895
+ },
+ "25+ \uc720\ubc1c(WACC 0.15)": {
+  "verdict": "25+",
+  "gap": null,
+  "explained": 0.12940027852662125,
+  "ps25": 54.08931642412768
+ },
+ "<1 \uc720\ubc1c(\uc8fc\uac00 50)": {
+  "verdict": "<1",
+  "gap": null,
+  "explained": null,
+  "ps25": 806.1645921943895
+ }
+}

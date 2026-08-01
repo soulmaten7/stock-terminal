@@ -17,7 +17,8 @@ export default async function RevDcfMethodPage({ params }: { params: Promise<{ l
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("RevDcfMethod");
-  const rows = ["growth", "tax", "wc", "cap", "term", "horizon", "sensitivity", "distribution"] as const;
+  // STEP 859: 예측 지평(horizon)은 원전 T8과 동일(25년)로 맞춰 차이 원장에서 제거 — 차이만 남긴다.
+  const rows = ["growth", "tax", "wc", "cap", "term", "sensitivity", "distribution"] as const;
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <h1 className="text-2xl font-bold text-unjong-primary">{t("title")}</h1>
