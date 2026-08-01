@@ -102,7 +102,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
   // STEP 854 §2 — 역DCF 배지(플래그 뒤). enabled=false면 컬럼 자체 미렌더. tab==='stock'만.
-  const [revdcf, setRevdcf] = useState<{ enabled: boolean; map: Record<string, { verdict: string; gapYears: number | null }> }>({ enabled: false, map: {} });
+  const [revdcf, setRevdcf] = useState<{ enabled: boolean; map: Record<string, { verdict: string; gapYears: number | null; lossMaking?: boolean }> }>({ enabled: false, map: {} });
 
   // 모바일 하단 시트 스냅포인트: 50vh 기본 → 위로 끌면 66vh, 아래로 끌면 축소/닫힘
   const [sheetDragY, setSheetDragY] = useState(0);
@@ -517,7 +517,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     {/* 역DCF 배지 셀 — th와 동일 조건·브레이크포인트. 데이터 없으면 배지 컴포넌트가 '—' 처리. */}
                     {revdcf.enabled ? (
                       <td className="hidden whitespace-nowrap px-2 py-2.5 sm:table-cell sm:px-3">
-                        <RevDcfBadge verdict={revdcf.map[r.symbol]?.verdict} gapYears={revdcf.map[r.symbol]?.gapYears ?? null} />
+                        <RevDcfBadge verdict={revdcf.map[r.symbol]?.verdict} gapYears={revdcf.map[r.symbol]?.gapYears ?? null} lossMaking={revdcf.map[r.symbol]?.lossMaking} />
                       </td>
                     ) : null}
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'US') : '—'}</td>
@@ -552,7 +552,7 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                         <p className="min-w-0 flex-1 truncate text-[16px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
                         {r.lens ? <LensDots lens={r.lens} size={6} /> : null}
                         {/* 역DCF 배지(모바일) — 🔴 STEP 854 §2: 플래그 ON + 해당 종목 판정 있을 때만. */}
-                        {revdcf.enabled && revdcf.map[r.symbol] ? <RevDcfBadge verdict={revdcf.map[r.symbol]?.verdict} gapYears={revdcf.map[r.symbol]?.gapYears ?? null} /> : null}
+                        {revdcf.enabled && revdcf.map[r.symbol] ? <RevDcfBadge verdict={revdcf.map[r.symbol]?.verdict} gapYears={revdcf.map[r.symbol]?.gapYears ?? null} lossMaking={revdcf.map[r.symbol]?.lossMaking} /> : null}
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-[14px] tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'US') : '—'}</span>

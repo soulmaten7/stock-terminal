@@ -15,8 +15,9 @@ export async function GET(req: Request) {
   const sb = createAdminClient();
   const asOf = (await sb.from("revdcf_results").select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle()).data as { as_of: string } | null;
   if (!asOf?.as_of) return NextResponse.json({ enabled: true, verdicts: {} });
-  const rows = (await sb.from("revdcf_results").select("symbol, verdict, gap_years").eq("as_of", asOf.as_of).in("symbol", symbols)).data as { symbol: string; verdict: string; gap_years: number | null }[] | null;
-  const verdicts: Record<string, { verdict: string; gapYears: number | null }> = {};
-  for (const r of rows ?? []) verdicts[r.symbol.toUpperCase()] = { verdict: r.verdict, gapYears: r.gap_years };
+  // STEP 856 §2 — 적자(영업이익률≤0)는 verdict 무관 "적용 밖"이라 배지도 중립. 종목페이지와 같은 규칙.
+  const rows = (await sb.from("revdcf_results").select("symbol, verdict, gap_years, operating_margin").eq("as_of", asOf.as_of).in("symbol", symbols)).data as { symbol: string; verdict: string; gap_years: number | null; operating_margin: number | null }[] | null;
+  const verdicts: Record<string, { verdict: string; gapYears: number | null; lossMaking: boolean }> = {};
+  for (const r of rows ?? []) verdicts[r.symbol.toUpperCase()] = { verdict: r.verdict, gapYears: r.gap_years, lossMaking: r.operating_margin != null && r.operating_margin <= 0 };
   return NextResponse.json({ enabled: true, verdicts });
 }

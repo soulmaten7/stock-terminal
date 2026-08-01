@@ -1039,6 +1039,7 @@
     "methodLevel": "By equipment (default)",
     "methodMarginal": "By actual investment",
     "lossMaking": "The firm is operating at a loss, so this method does not apply. Reverse DCF decodes the expectations of profitable firms.",
+    "outOfScope": "N/A",
     "scenarioTitle": "Cost-of-capital scenarios",
     "bandCrossWarning": "The conclusion flips entirely depending on the cost-of-capital assumption.",
     "rankLine": "{rank}th longest of {total} where this method applies",

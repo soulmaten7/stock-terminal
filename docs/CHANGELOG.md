@@ -1,6 +1,18 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (11) — 🔴 역DCF 육안 2차 검증 4건 (STEP 856 · 플래그 계속 OFF · 표시 계층만)
+
+> **§1 적자 분기 확대**: 855는 `value_destroying` 적자만 처리 → `years` 4·`over_cap` 11이 통과해 적자사에 "N년 성장 요구"·"설명 불가"가 떴다. `lossMaking = operating_margin≤0`(verdict 조건 제거)로 **78사 전부**(vd 63·over_cap 11·years 4·below_one 0·skipped 0) "적용 밖" 문구. 엔진·DB 불변(표시 계층만·848 재현 보호).
+>
+> **§2 배지 정합(본문·종목배지·보드배지 3곳)**: `lossMaking`을 안 봐서 AAL 본문="성립 안 함"인데 배지=빨강 "가치훼손" 모순 → 적자는 **중립 "적용 밖"**(ko "적용 밖"/en "N/A"·muted·위험색 금지=우리 판정 아니라 적용 범위 밖). 보드 일관 위해 `/api/revdcf/batch`가 `operating_margin`으로 `lossMaking` 산출→`RevDcfBadge`·`UsMarketBoard` 전달.
+>
+> **§3 적용 밖이면 드라이버 숨김**: "성립 안 함"이라며 매출성장·자본집약도·자본비용을 나열하던 것 → 사유(영업이익률)만 남기고 grid 숨김. `growthNote`·기준일·방법론 링크는 유지(무엇을 봤는지는 밝힘).
+>
+> **§4 로딩 측정(코드 변경 0)**: 프리뷰 3333 실측 — `/api/revdcf`(warm 12ms·cold 0.4s·30분 캐시)·`/api/lens`(GOOGL warm 24ms) **둘 다 8초 병목 아님**. "GOOGL 첫 진입 8초"는 **Next dev 라우트 최초 컴파일**(프로덕션 프리빌드엔 없음). `RevDcfSection`은 자체 useEffect라 렌즈를 안 기다림(독립 렌더 확인). → 이번 범위 밖(§4.3), 손대지 않음.
+>
+> 파일: `components/RevDcfSection.tsx`·`components/RevDcfBadge.tsx`·`app/api/revdcf/batch/route.ts`·`components/toolbox/UsMarketBoard.tsx`·`messages/{ko,en}.json`. tsc 0·i18n 파리티 8/8·**`npm run build` 통과(855에서 생략했던 것 이번엔 실행)**·프로덕션 `/revdcf` 404 유지(플래그 OFF). ⓪-3: DB `revdcf_results` as_of=2026-08-01 604행 verdict별 적자 카운트 직접 조회(63/11/4=78 일치). **HEAD: (이 커밋).**
+
 ## 2026-08-01 (10) — 🔴 역DCF 육안 검증 7건 수정 (STEP 855 · 플래그 계속 OFF · 표현 계층만)
 
 > 프리뷰(`localhost:3333` 플래그 ON) 육안 검증에서 나온 7건. 프로덕션 플래그는 **계속 OFF**.

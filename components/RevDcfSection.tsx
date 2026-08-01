@@ -35,8 +35,9 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
 
   const v = r.verdict;
   const d = r.drivers;
-  // §4 — 영업적자(마진 ≤ 0)는 value_destroying이라도 별도 문구(표시 계층 분기 · 엔진·DB 불변).
-  const lossMaking = v === "value_destroying" && d.operatingMargin != null && d.operatingMargin <= 0;
+  // 🔴 856 §1 — 영업적자(마진 ≤ 0)는 verdict 무관 "적용 밖"(표시 계층 분기 · 엔진·DB 불변).
+  //   years 4·over_cap 11·value_destroying 63 전부 여기 걸림 → 적자에 "N년 성장 요구"·"설명 불가" 문구가 뜨던 것 차단.
+  const lossMaking = d.operatingMargin != null && d.operatingMargin <= 0;
   // §6 — 판정(verdict)이 방법에 따라 갈리는 경우만(숫자만 다른 건 제외).
   const methodDependent = r.verdictMarginal != null && r.verdictMarginal !== v;
 
@@ -58,17 +59,22 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
     over_cap: "bg-unjong-accent/15 text-unjong-accent",
     skipped: "bg-unjong-muted/10 text-unjong-muted",
   };
-  const badgeLabel = t(`badge.${v === "value_destroying" ? "valueDestroying" : v === "below_one" ? "belowOne" : v === "over_cap" ? "overCap" : v}`);
+  // 🔴 856 §2 — 배지도 lossMaking을 봐야 본문과 같은 말을 한다. 적자 = 중립(muted)·위험색 금지(우리 판정 아님·적용 밖).
+  const badgeKey = lossMaking ? "skipped" : v;
+  const badgeLabel = lossMaking ? t("outOfScope") : t(`badge.${v === "value_destroying" ? "valueDestroying" : v === "below_one" ? "belowOne" : v === "over_cap" ? "overCap" : v}`);
   const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : "missingTag";
 
   return (
     <section className="mt-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5">
       <div className="mb-3 flex items-center gap-2">
         <h2 className="text-sm font-semibold text-unjong-muted">{t("sectionTitle")}</h2>
-        <span className={`ml-auto rounded-full px-2 py-0.5 text-[11px] font-bold ${badgeClass[v] ?? ""}`}>{badgeLabel}</span>
+        <span className={`ml-auto rounded-full px-2 py-0.5 text-[11px] font-bold ${badgeClass[badgeKey] ?? ""}`}>{badgeLabel}</span>
       </div>
 
-      {v === "years" && (
+      {/* 🔴 856 §1 — 적자면 verdict 무관 "적용 밖" 문구(중립색). 아래 verdict 헤드라인은 전부 !lossMaking 게이트. */}
+      {lossMaking && <p className="text-lg font-bold text-unjong-muted">{t("lossMaking")}</p>}
+
+      {!lossMaking && v === "years" && (
         <>
           <p className="text-lg font-bold text-unjong-primary">{t("headline.years", { n: r.gapYears ?? 0 })}</p>
           {bandCross && <div className="my-3 rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 p-3 text-[13px] text-unjong-accent">{t("bandCrossWarning")}</div>}
@@ -92,18 +98,14 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
         </>
       )}
 
-      {v === "value_destroying" && (
-        lossMaking ? (
-          <p className="text-lg font-bold text-unjong-danger">{t("lossMaking")}</p>
-        ) : (
-          <>
-            <p className="text-lg font-bold text-unjong-danger">{t("headline.valueDestroying")}</p>
-            <p className="mt-1 text-sm text-unjong-muted">{t("marginVsThreshold", { margin: pct(d.operatingMargin), threshold: pct(r.thresholdMargin) })}</p>
-          </>
-        )
+      {!lossMaking && v === "value_destroying" && (
+        <>
+          <p className="text-lg font-bold text-unjong-danger">{t("headline.valueDestroying")}</p>
+          <p className="mt-1 text-sm text-unjong-muted">{t("marginVsThreshold", { margin: pct(d.operatingMargin), threshold: pct(r.thresholdMargin) })}</p>
+        </>
       )}
-      {v === "below_one" && <p className="text-lg font-bold text-unjong-primary">{t("headline.belowOne")}</p>}
-      {v === "over_cap" && (
+      {!lossMaking && v === "below_one" && <p className="text-lg font-bold text-unjong-primary">{t("headline.belowOne")}</p>}
+      {!lossMaking && v === "over_cap" && (
         <>
           <p className="text-lg font-bold text-unjong-accent">{t("headline.overCap")}</p>
           {r.explainedPct != null && <p className="mt-1 text-sm text-unjong-muted">{t("overCapExplained", { pct: Math.round((r.explainedPct as number) * 100) })}</p>}
@@ -120,17 +122,24 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
         </div>
       )}
 
-      {(v === "years" || v === "value_destroying" || v === "below_one") && (
+      {(lossMaking || v === "years" || v === "value_destroying" || v === "below_one") && (
         <>
-          {/* §5 드라이버 — 라벨 + 한 줄 설명(툴팁 아님·모바일 대응) */}
-          <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-2.5 border-t border-unjong-border pt-3 sm:grid-cols-2">
-            <DriverRow k={t("driver.growth")} desc={t("driverDesc.growth")} val={pct(d.salesGrowth)} />
-            <DriverRow k={t("driver.margin")} desc={t("driverDesc.margin")} val={pct(d.operatingMargin)} />
-            {!lossMaking && <DriverRow k={t("driver.threshold")} desc={t("driverDesc.threshold")} val={pct(r.thresholdMargin)} />}
-            <DriverRow k={t("driver.wcRate")} desc={t("driverDesc.wcRate")} val={pct(d.workingCapitalRate)} />
-            <DriverRow k={t("driver.capIntensity")} desc={t("driverDesc.capIntensity")} val={pct(d.fixedCapitalRate)} />
-            <DriverRow k={t("driver.wacc")} desc={t("driverDesc.wacc")} val={pct(d.wacc, 2)} />
-          </div>
+          {/* §5 드라이버 — 라벨 + 한 줄 설명(툴팁 아님·모바일 대응). 🔴 856 §3: 적자면 사유(영업이익률)만 남기고 숨김. */}
+          {lossMaking ? (
+            <div className="mt-4 border-t border-unjong-border pt-3">
+              <DriverRow k={t("driver.margin")} desc={t("driverDesc.margin")} val={pct(d.operatingMargin)} />
+            </div>
+          ) : (
+            <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-2.5 border-t border-unjong-border pt-3 sm:grid-cols-2">
+              <DriverRow k={t("driver.growth")} desc={t("driverDesc.growth")} val={pct(d.salesGrowth)} />
+              <DriverRow k={t("driver.margin")} desc={t("driverDesc.margin")} val={pct(d.operatingMargin)} />
+              <DriverRow k={t("driver.threshold")} desc={t("driverDesc.threshold")} val={pct(r.thresholdMargin)} />
+              <DriverRow k={t("driver.wcRate")} desc={t("driverDesc.wcRate")} val={pct(d.workingCapitalRate)} />
+              <DriverRow k={t("driver.capIntensity")} desc={t("driverDesc.capIntensity")} val={pct(d.fixedCapitalRate)} />
+              <DriverRow k={t("driver.wacc")} desc={t("driverDesc.wacc")} val={pct(d.wacc, 2)} />
+            </div>
+          )}
+          {/* 적용 밖이어도 우리가 무엇을 봤는지는 밝힌다(growthIsHistorical·기준일·방법론 링크 유지) */}
           <p className="mt-3 border-t border-unjong-border pt-2.5 text-[12px] text-unjong-muted">{t("growthNote")}</p>
           {r.flags.damodaranAsOf && <p className="mt-1 text-[12px] text-unjong-muted">{t("asOfNote", { date: String(r.flags.damodaranAsOf) })}</p>}
         </>

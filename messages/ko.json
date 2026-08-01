@@ -1039,6 +1039,7 @@
     "methodLevel": "설비 기준 (기본)",
     "methodMarginal": "실제 투자액 기준",
     "lossMaking": "영업적자 상태라 이 기법이 성립하지 않습니다. 역DCF는 이익을 내는 기업의 기대치를 해독합니다.",
+    "outOfScope": "적용 밖",
     "scenarioTitle": "자본비용 시나리오",
     "bandCrossWarning": "자본비용 가정에 따라 결론이 완전히 달라집니다.",
     "rankLine": "이 기법 성립 {total}개 중 {rank}번째로 긴 기간",
