@@ -16,6 +16,7 @@ import { Link } from "@/i18n/navigation";
 import { isActiveSymbol } from "@/lib/activeMarkets";
 import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
+import RevDcfSection from "@/components/RevDcfSection";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -168,7 +169,15 @@ export default async function StockPage({ params }: Params) {
       {kind === "fund" ? (
         <EtfLensClient symbol={symbol} initialName={h1Name} />
       ) : (
-        <StockLensClient initialName={h1Name} />
+        <>
+          <StockLensClient initialName={h1Name} />
+          {/* 역DCF 섹션 (US 전용 — 데이터 없으면 자체 미노출) · STEP 853 · StockLensClient 컨테이너 폭에 정합 */}
+          <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">
+            <div className="max-w-4xl">
+              <RevDcfSection symbol={symbol} />
+            </div>
+          </div>
+        </>
       )}
     </>
   );

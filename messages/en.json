@@ -1049,6 +1049,70 @@
       "wacc": "Cost of capital",
       "capIntensity": "Capital intensity",
       "wcRate": "Working-capital rate"
-    }
+    },
+    "sectionTitle": "Reverse DCF — market-implied expectations",
+    "yUnit": "y",
+    "belowOneShort": "Explained without growth",
+    "overCapShort": "Unexplained",
+    "waccLow": "Lower cost of capital (−1%p)",
+    "waccBase": "Base",
+    "waccHigh": "Higher cost of capital (+1%p)",
+    "marginVsThreshold": "Operating margin {margin} < threshold {threshold} — new revenue requires more investment than the profit it earns.",
+    "overCapExplained": "100 years explain {pct}% of the price.",
+    "methodologyLink": "The method and how it differs from the source are on the methodology page."
+  },
+  "RevDcfMethod": {
+    "title": "Reverse-DCF methodology",
+    "intro": "This metric decodes the expectations already priced into the stock. It does not set a fair value — it surfaces the growth period the market demands and leaves the judgment to you.",
+    "structure": "The source is Rappaport & Mauboussin, Expectations Investing. We use its calculation structure but source the inputs ourselves from SEC filings and Damodaran public data. So the accurate phrase is not “source-grade” but “source structure + our sourcing.”",
+    "reproTitle": "Reproducing the source example",
+    "repro": "Running the Domino Pizza example from the source through our engine gives $285.2 per share / 8 years (source: $285.20 / 8 years). The engine reproduces; differences come from how inputs are sourced.",
+    "ledgerTitle": "How we differ from the source (disclosed as-is)",
+    "col": {
+      "item": "Item",
+      "source": "Source",
+      "ours": "Ours",
+      "why": "Reason"
+    },
+    "row": {
+      "growth": {
+        "i": "Growth",
+        "s": "Guidance, Value Line",
+        "o": "Past 5-year CAGR",
+        "w": "No consensus data — historical, not an analyst forecast"
+      },
+      "tax": {
+        "i": "Tax rate",
+        "s": "Unlevered cash tax rate",
+        "o": "Marginal rate",
+        "w": "Source inputs cover 58%, 16.2% anomalies"
+      },
+      "wc": {
+        "i": "Working capital",
+        "s": "Marginal",
+        "o": "Level, 5-year average",
+        "w": "Marginal varies 40%p year to year"
+      },
+      "cap": {
+        "i": "Capital intensity",
+        "s": "Marginal",
+        "o": "Level by default, marginal shown too",
+        "w": "Domino source 15% / our marginal 14% / level 6.9% · marginal is M&A-lumpy (over half of investment for 31% of firms) → default level, show both when verdicts differ"
+      },
+      "term": {
+        "i": "Terminal",
+        "s": "Includes inflation",
+        "o": "expected_inflation (Damodaran DB)",
+        "w": "Zero real growth assumption"
+      },
+      "horizon": {
+        "i": "Horizon",
+        "s": "25 years",
+        "o": "Compute 100, display 25",
+        "w": "100 years is meaningless as a number, shown as “unexplained”"
+      }
+    },
+    "betaCaveat": "The cost of capital is computed with CAPM. Research finds beta explains little of the cross-section of stock returns (Fama-French 1992). Since the GAP is sensitive to the cost of capital, we show a range rather than a single number.",
+    "notInvestmentAdvice": "This is neither a forecast nor a recommendation. It is material to judge for yourself."
   }
 }

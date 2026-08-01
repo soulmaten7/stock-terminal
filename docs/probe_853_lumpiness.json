@@ -1,0 +1,12 @@
+{
+  "companiesWithMarginal": 542,
+  "acqShareOfGrossInvestment": {
+    "median": 0.18,
+    "p25": 0,
+    "p75": 0.604,
+    "p90": 0.807
+  },
+  "pctWithAcqOver30": 0.454,
+  "pctWithAcqOver50": 0.314,
+  "pctZeroAcq": 0.323
+}

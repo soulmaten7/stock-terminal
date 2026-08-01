@@ -1,6 +1,17 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (8) — 🟢🔴 역DCF 프로덕션 출시: 종목페이지·방법론·크론 (STEP 853 · HEAD `d04c952`)
+
+> 🔴 **815~852 전부 "화면 변경 0"이었으나 이번은 프로덕션 화면을 바꾼다.** 역DCF는 기존 7렌즈에 **추가**. 기존 화면 무손상(page.tsx +10줄·US 자체게이트).
+
+- **§1 자본집약도 기본값 = level 유지 (852 결정 유지·데이터 근거)**: marginal M&A 럼피니스 실측 = **인수/총투자 median 18%·p75 60%·31%가 >50%** → 클린 기본값 아님. 단 도미노는 marginal 14%(원전 15% 근접·level 6.9%) → 방법론에 3값 공개·판정 갈리면 병기. marginal 기본 시 value_destroying 149→176(참고).
+- **§2 종목페이지 섹션** `components/RevDcfSection.tsx`: 5분기 헤드라인(전용어 없이)·밴드 안 A+극단규칙(DPZ류 below_one↔over_cap 가로지르면 3점표·"숫자로 읽지 마십시오")·method-dependent 병기·드라이버 전부 공개·`growthIsHistorical`·기준일·분포 내 위치(5%단위). US 자체게이트(`/api/revdcf` result=null이면 미노출). `RevDcf` messages.
+- **§4 방법론 페이지** `app/[locale]/revdcf`: 차이 원장 6행(성장·세율·운전자본·자본집약도·터미널·지평) + **도미노 재현 $285.2/8년 공개** + "원전 구조+우리 조달"(빌린 권위 금지) + Fama-French 1992 베타 한계. `RevDcfMethod` messages.
+- **§5 크론** `/api/cron/revdcf`: 일일 배치·동시성6·270s예산·resumable·유니버스=직전 as_of(로컬파일 무의존)·`vercel.json` 22:45(us-perf 22:00 후).
+- **§6 다계열 주식수**: 기본/발행 폴백 추가(일부 회수)·dimension 분할(V·STZ)은 잔존.
+- ko/en 패리티(RevDcf+RevDcfMethod·en 아포스트로피 0)·다크·모바일. §3 보드 배지 = US보드 634줄 밀집 레이아웃 리스크로 **보류**(무손상 우선). tsc 0·vitest 151·build ✓·기존 화면 무손상.
+
 ## 2026-08-01 (7) — 🔴 역DCF 데이터 품질 마감: 자본집약도 이중산정 + skipped 회수 (STEP 852 · HEAD `55a8d95`)
 
 > 화면 나가기 전 판정 신뢰도 마감. 화면 0. 851 지적("가치훼손 낙인이 아티팩트일 수 있음") 해소.
