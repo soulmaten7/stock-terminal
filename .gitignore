@@ -55,3 +55,6 @@ data/_*.json
 
 # STEP 846: 다모다란 원본 xls는 Supabase Storage(sources 버킷)에 보관 — git 경량화(22MB 제외). 로컬 파일은 유지.
 data/sources/damodaran/
+
+# STEP 847: 대용량 companyfacts 원시 캐시(8.7MB·재실행으로 재생성) — 요약 산출물만 커밋
+docs/probe_847_raw.json

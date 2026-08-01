@@ -1,0 +1,95 @@
+{
+  "measuredAt": "2026-08-01T05:02:53.960Z",
+  "issuersFetched": 604,
+  "errors": 0,
+  "driver3": {
+    "coverage5yr": {
+      "cashTax": 531,
+      "taxExp": 564,
+      "pretax": 553,
+      "interest": 427,
+      "oi": 498
+    },
+    "allFivePresent": 351,
+    "binding": {
+      "cashTax": 73,
+      "taxExp": 40,
+      "pretax": 51,
+      "interest": 177,
+      "oi": 106
+    },
+    "cashTaxRate": {
+      "issuers": 351,
+      "median": 0.2032,
+      "p10": -0.036,
+      "p90": 0.3568
+    },
+    "withinIssuerVolatility": {
+      "cashRate_medianSd": 0.0807,
+      "cashRate_p90Sd": 0.5792,
+      "marginalRate_sd": 0
+    },
+    "anomalyRate": 0.162,
+    "marginalConstant": 0.2563,
+    "note": "현금세율=(현금세금+이자×장부세율)/영업이익. 한계세율은 상수(변동 0). anomaly=현금세율<0 또는>1"
+  },
+  "driver4": {
+    "coverage5yr": {
+      "rev": 565,
+      "ar": 494,
+      "inv": 392,
+      "oca": 531,
+      "ap": 511,
+      "accr": 256,
+      "dta": 265,
+      "ocl": 441,
+      "assetsCur": 551,
+      "liabCur": 551,
+      "cash": 570
+    },
+    "allRequiredPresent": 156,
+    "reconVs844_diffOverRev": {
+      "median": 0.0561,
+      "p10": -0.1428,
+      "p90": 0.2995,
+      "n": 624
+    },
+    "incrementalRatePrimary": {
+      "median": 0.1362,
+      "p10": -0.4401,
+      "p90": 0.9209
+    },
+    "withinIssuerVolatility_primaryMarginal": {
+      "medianSd": 0.4007,
+      "p90Sd": 3.2581,
+      "n": 156
+    },
+    "note": "원전 정의(2%현금+AR+Inv+기타+DTA − AP+미지급+기타) — 단기차입금 미차감. 844=AssetsCurrent−현금−LiabilitiesCurrent. 증분율=Δnwc/Δrev(한계형)."
+  },
+  "driver5": {
+    "coverage5yr": {
+      "rev": 565,
+      "capex": 533,
+      "dna": 473,
+      "acq": 306,
+      "capsw": 26,
+      "othinv": 329
+    },
+    "allRequiredPresent": 449,
+    "incrementalRate": {
+      "median": 0.071,
+      "p10": -0.514,
+      "p90": 1.8656
+    },
+    "withinIssuerVolatility": {
+      "medianSd": 0.533,
+      "p90Sd": 5.6458,
+      "n": 448
+    },
+    "acquisitionImpact_absRateDelta": {
+      "median": 0.0316,
+      "p90": 1.6844
+    },
+    "note": "순고정=(capex+인수+자본화SW+기타투자)−D&A. 증분율=순고정/Δrev. acqImpact=인수 포함/제외 증분율 차."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "sampleSize": 60,
+  "with8K": 60,
+  "withEarnings8K": 60,
+  "earningsDocsFetched": 60,
+  "withGuidanceLanguage": 43,
+  "withRevenueGuidanceLanguage": 38,
+  "rateGuidanceOfFetched": 0.717,
+  "rateRevGuidanceOfFetched": 0.633,
+  "samples": [
+    "ABT 2026-07-16 [abt-20260716.htm]: guid=false revGuid=false",
+    "AMAT 2026-05-14 [exhibit991q22026earningsre.htm]: guid=true revGuid=true",
+    "BF-A 2026-06-04 [bfb-20260604.htm]: guid=false revGuid=false",
+    "CMI 2026-05-05 [cmi2026q18-kex99.htm]: guid=true revGuid=true",
+    "EMR 2026-05-05 [a2026q2release_ex991.htm]: guid=true revGuid=true",
+    "HAS 2026-07-21 [exhibit991q22026.htm]: guid=true revGuid=true",
+    "IP 2026-07-30 [nextgenip-20260630ex991.htm]: guid=true revGuid=true",
+    "SPGI 2026-07-28 [spgi-20260728.htm]: guid=true revGuid=false",
+    "NDSN 2026-05-20 [ndsn-q220268kxex991.htm]: guid=true revGuid=true",
+    "PPG 2026-07-28 [exhibit99-2q2026earningsre.htm]: guid=true revGuid=true",
+    "SHW 2026-07-28 [shw-20260728.htm]: guid=false revGuid=false",
+    "TER 2026-07-29 [ter-ex99_1.htm]: guid=true revGuid=true"
+  ],
+  "note": "존재율은 '가이던스 언어 정규식' 근사(정확한 금액·기간 추출엔 LLM 필요). 8-K Item 2.02 최근 1건 본문 스캔."
+}

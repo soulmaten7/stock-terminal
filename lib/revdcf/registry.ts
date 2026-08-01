@@ -51,8 +51,8 @@ export const PRIMARY_SOURCE = {
     T9: { topic: "M&A 분석", sheets: ["Inputs", "Tutorial 9", "SVAR & Premium at Risk"], driver: null },
     T10: { topic: "실물옵션", sheets: ["Inputs", "Tutorial 10", "Real Options Calculations"], driver: null },
   },
-  /** 🔴 미독: T3·T4·T5·T6·T7 (해당 driver 설계 전 반드시 판독할 것) */
-  readStatus: { T3: "미독", T4: "미독", T5: "미독", T6: "미독", T7: "미독", T8: "판독완료", T9: "해당없음", T10: "해당없음" },
+  /** ✅ T3~T8 판독완료 (STEP 847: T4/T5/T6 원전 절차 실측 대조 · T3 마진=OI/rev · T7 WACC=조립) */
+  readStatus: { T3: "판독완료", T4: "판독완료", T5: "판독완료", T6: "판독완료", T7: "판독완료", T8: "판독완료", T9: "해당없음", T10: "해당없음" },
 } as const;
 
 export const MATERIAL_SOURCES = {
@@ -68,7 +68,7 @@ export const MATERIAL_SOURCES = {
       "indname.xls": { table: "damodaran_industry", note: "회사→업종. 매칭키 = is_us_listed + ticker_norm 생성컬럼(§5). US 상장 6,937사" },
       "taxrate.xls": { table: "damodaran_tax_rate", note: "업종별 실효세율 94 (eff_all/eff_money/eff_agg/cash_*)" },
       "countrytaxrates.xls": { table: "damodaran_country_tax", note: "국가별 한계세율. driver 3 기본값 = US 행(0.2563)" },
-      "wacc.xls": { table: "damodaran_wacc + damodaran_global_inputs", note: "업종 WACC 재료 + 상단 스칼라(무위험·ERP·스프레드·인플레). Cost of Capital 열은 대조용만(§12)" },
+      "wacc.xls": { table: "damodaran_wacc + damodaran_global_inputs + damodaran_credit_spread", note: "업종 WACC 재료 + 상단 스칼라(무위험·ERP·스프레드·인플레) + 등급별 credit_spread 7밴드(847·부채비용용). Cost of Capital 열은 대조용만(§12)" },
       "betas.xls": { table: "damodaran_beta", note: "업종별 베타·무차입베타·현금조정 무차입베타(driver 6 하향식)" },
       "capex.xls": { table: "damodaran_capex", note: "업종 CapEx·Net CapEx/Sales (driver 5 대조)" },
       "wcdata.xls": { table: "damodaran_working_capital", note: "업종 WC/Sales (driver 4 대조 · 폴백 금지)" },
@@ -116,8 +116,8 @@ export const INPUTS: RegistryEntry[] = [
     primary: "T8 Inputs!C6",
     ours: "SEC 매출 5년 CAGR (항등식으로 선택된 매출 태그)",
     klass: "A",
-    divergence: null,
-    open: "🔴 원전 T2(매출·성장률 산출법) 미독",
+    divergence: "원전 T2는 과거 CAGR이 아니라 가이던스·Value Line·컨센서스. 847 실측: 무료 8-K 가이던스 매출 존재율 63.3%·~1년. FMP 컨센서스(2~3년) 키 미보유. → 우리는 과거 CAGR 기준선 + (선택)가이던스 오버레이",
+    open: "🔶 N≈1년만 근거값(무료 가이던스)·이후 과거 외삽. FMP 구매 시 2~3년 확장",
   },
   {
     id: "startingSales",
@@ -134,7 +134,7 @@ export const INPUTS: RegistryEntry[] = [
     ours: "SEC 영업이익÷매출 5년 평균 (+10년 병기)",
     klass: "A",
     divergence: "원전은 단일 예측치. 우리는 5년/10년 병기해 순환성을 노출",
-    open: "🔴 원전 T3(마진 산출법) 미독",
+    open: "✅ 847 T3 판독: 마진=영업이익÷매출. 도미노 시작마진 원전 17.39% = 우리 17.39%(정확 일치)",
   },
   {
     id: "startingMargin",
@@ -151,8 +151,8 @@ export const INPUTS: RegistryEntry[] = [
     ours: "PP&E÷매출(자본집약도) 5년 평균 × Δ매출",
     klass: "A",
     divergence:
-      "🔴 원전은 한계형(순capex÷Δ매출). 우리 실측 연도간 변동 ±80%p로 불안정 → 수준형 채택(변동 2.34%p)",
-    open: "🔴 원전 T5 미독 — 원전의 실제 산출 절차 확인 필요",
+      "✅ 847 T5 판독+실측: 원전은 한계형((capex+인수+자본화SW+기타투자)−D&A ÷ Δ매출). 우리 604 한계형 변동 중앙 SD 53%p로 극심 → 수준형(자본집약도 PP&E÷매출·변동 2.34%p) 유지. 인수는 일부 기업 결정적(증분율 중앙 3.2%p·p90 168%p 변화)이나 변동 증폭",
+    open: "🔶 인수·자본화SW 포함 여부는 업종별 선택 재검토(재료 확보 rev·capex·D&A 74%)",
   },
   {
     id: "incrementalWorkingCapitalRate",
@@ -161,8 +161,7 @@ export const INPUTS: RegistryEntry[] = [
     ours: "(유동자산−현금−유동부채)÷매출 5년 평균 × Δ매출",
     klass: "A",
     divergence:
-      "🔴 원전은 한계형(ΔWC÷Δ매출). 실측 변동 94.95%p → 수준형(4.89%p) 채택. 다모다란도 한계형을 '사업이 변하는 기업'에 한정",
-    open: "🔴 원전 T4 미독 · 이자부 유동부채 차감 불가(태그 60.5%)",
+      "✅ 847 T4 판독+실측: 원전은 무이자유동부채만 차감(단기차입금 미차감 → 태그부족 우회 가설). 그러나 원전 정의는 재고·미지급 세부 태그가 희소해 604 중 26%만 확보(844식 91%보다 나쁨)·한계형 변동 여전 SD 40%p → 844 수준형 유지",
   },
   {
     id: "taxRate",
@@ -171,8 +170,7 @@ export const INPUTS: RegistryEntry[] = [
     ours: "US 한계세율 (countrytaxrates.xls · US 행)",
     klass: "B",
     divergence:
-      "🔴 현금세율은 이자 세금방패를 이미 반영 → WACC 세후 부채비용에서 이중계산. 다모다란: '매 기간 동일 세율이면 한계세율이 안전'",
-    open: "🔴 원전 T6(현금세율) 미독 — 기각한 방법의 원전 절차를 안 읽었다",
+      "✅ 847 실측으로 확정: 원전 무차입 현금세율(T6)은 우리 604 중 58%만 5년확보(병목 interest 427)·이상값 16.2%·회사내 변동 SD 8.1%. 한계세율은 상수·전종목·안정 → 채택. (원전은 현금세율이나 조달·안정성 열위)",
   },
   {
     id: "costOfCapital",
@@ -181,7 +179,7 @@ export const INPUTS: RegistryEntry[] = [
     ours: "CAPM 조립: 무위험 + 하향식베타×ERP / 부채비용은 합성등급 스프레드",
     klass: "B",
     divergence: "🔴 다모다란 완성 WACC(Cost of Capital 열) 차용 금지 — 그 안의 세율 25%와 우리 세율이 어긋남",
-    open: "🔴 원전 T7 미독 (T7 Inputs에 베타=1, 세율 16.5% 사용 확인됨)",
+    open: "✅ 847 T7 판독: rf 0.65%·YTM부채 4.55%·ERP 5.1%·β=1·세율 16.5% → WACC 5.35%(도미노). 재료(rf·ERP·β·credit_spread) DB 배선완료 · 🔶 조립 로직 미구현",
   },
   {
     id: "inflation",
