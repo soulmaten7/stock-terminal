@@ -15,7 +15,7 @@
 >
 > **§5 드라이버 설명 한 줄씩**(툴팁 아님·모바일·ko/en 6종). **§6 method-dependent 내용**: "설비 기준(기본)→23년 / 실제 투자액 기준→가치훼손"(level vs marginal 실판정). **§7 차이 원장 2행(sensitivity·distribution) + T8 라벨 스왑 §9 기록**(⓪-3 openpyxl 직접 확인: Inputs B10 fixed/B11 working ↔ Tutorial8 r32 working/r33 fixed 순서 반대·값오류 아님·우리 무영향).
 >
-> 파일: `components/RevDcfSection.tsx`·`app/api/revdcf/route.ts`·`app/[locale]/revdcf/page.tsx`·`messages/{ko,en}.json`. tsc 0·i18n 파리티 8/8·vitest 전체 통과·라이브 실측(3333). 🔴 `npm run build`는 **생략**(프리뷰 dev 서버 3333을 사용자가 육안 검증 중 — build가 `.next` 덮어써 서버 죽이므로). **HEAD: (이 커밋).**
+> 파일: `components/RevDcfSection.tsx`·`app/api/revdcf/route.ts`·`app/[locale]/revdcf/page.tsx`·`messages/{ko,en}.json`. tsc 0·i18n 파리티 8/8·vitest 전체 통과·라이브 실측(3333). 🔴 `npm run build`는 **생략**(프리뷰 dev 서버 3333을 사용자가 육안 검증 중 — build가 `.next` 덮어써 서버 죽이므로). **HEAD `2248b21`.**
 
 ## 2026-08-01 (9) — 🔴 역DCF 노출 즉시 차단(피처 플래그 OFF) + 보드 배지·멀티클래스 회수 (STEP 854)
 
