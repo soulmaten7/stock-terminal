@@ -11,7 +11,7 @@
 >
 > **§3 멀티클래스 주식 회수 = 회수 불가 규명·정직 건너뛰기**: 5사(V·STZ·FWONA·WMG·COKE)가 `MISSING_TAG missing=shares`로 skip. V 프로브로 기전 확정 = **companyfacts는 차원(class dimension) 팩트를 제외** → us-gaap 통합 diluted 주식수 태그 자체가 부재(dei는 2009~10 구값만). 클래스 전환비율·권리 상이 → **강제 합산 금지**(시총 왜곡). `drivers.ts`가 별도 사유 `MULTI_CLASS_SHARES` 부여(`multiClassInferred`로 확정[V·WMG·COKE]/추론[STZ·FWONA] 구분·라이브 5/5 검증). 심볼 하드코딩 없음(5년 영업이력 통과+전 폴백 null = 시그니처). 라벨은 다음 크론에 반영(배지 동작은 skip→회색 "—"로 동일).
 >
-> **§4 육안 검증 준비**: 프리뷰에 `REVDCF_ENABLED=true`(프로덕션은 OFF 유지) 후 장은태 육안 검증 대기. 검증 심볼표(실측 verdict): GOOGL(years 12)·DPZ(years 25·marginal 29)·**APD(years 23·marginal=value_destroying=method-split)**·ABT(over_cap 94.6%)·LNG(below_one)·AAL(value_destroying)·V(skipped 멀티클래스). ko/en × 데스크톱/모바일. tsc 0·vitest 파리티 통과. **HEAD: (이 커밋).**
+> **§4 육안 검증 준비**: 프리뷰에 `REVDCF_ENABLED=true`(프로덕션은 OFF 유지) 후 장은태 육안 검증 대기. 검증 심볼표(실측 verdict): GOOGL(years 12)·DPZ(years 25·marginal 29)·**APD(years 23·marginal=value_destroying=method-split)**·ABT(over_cap 94.6%)·LNG(below_one)·AAL(value_destroying)·V(skipped 멀티클래스). ko/en × 데스크톱/모바일. tsc 0·vitest 파리티 통과. **HEAD `8d6d081`.**
 
 ## 2026-08-01 (8) — 🟢🔴 역DCF 프로덕션 출시: 종목페이지·방법론·크론 (STEP 853 · HEAD `5475a95`)
 
