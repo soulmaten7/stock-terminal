@@ -122,8 +122,19 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   let sharesTag = "WeightedAverageNumberOfDilutedSharesOutstanding";
   let shares = sharesDil[latestYear(sharesDil) ?? -1];
   if (shares == null) { for (const t of SHARES_MORE) { const m = annualMap(gaap, t, t.startsWith("Weighted") ? "flow" : "stock", "shares"); const v = m[latestYear(m) ?? -1]; if (v != null) { shares = v; sharesTag = t; break; } } }
-  if (shares == null) { const deiSh = annualMap(dei, "EntityCommonStockSharesOutstanding", "stock", "shares"); shares = deiSh[latestYear(deiSh) ?? -1]; sharesTag = "dei:EntityCommonStockSharesOutstanding"; }
-  if (shares == null || !(shares > 0)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "shares" } };
+  const deiSh = annualMap(dei, "EntityCommonStockSharesOutstanding", "stock", "shares");
+  if (shares == null) { shares = deiSh[latestYear(deiSh) ?? -1]; sharesTag = "dei:EntityCommonStockSharesOutstanding"; }
+  if (shares == null || !(shares > 0)) {
+    // 🔴 STEP 854 §3 — 멀티클래스 주식(A/B/C 등). companyfacts는 차원(class dimension) 팩트를 제외하므로 통합 주식수 총계가
+    //   존재하지 않는다(V·STZ·FWONA·WMG·COKE). 클래스별 전환비율·권리가 달라 강제 합산은 시총을 왜곡 → 합치지 않고
+    //   별도 사유로 정직히 건너뛴다(회수 불가·개수만 보고). 여기 도달 = 5년 영업이력 게이트(매출·영업이익·PP&E·현금)를 전부
+    //   통과한 실제 상장사인데 희석→기본→발행→dei 전 폴백이 통합 총계를 못 낸 경우 = 통합 주식수가 클래스로만 존재.
+    //   시그니처 확정(confirmed) = dei 커버페이지 태그는 있으나 최신 통합값 없음. 그 외는 추론(inferred).
+    const deiTagPresent = !!(dei as Gaap)?.["EntityCommonStockSharesOutstanding"];
+    const deiRecent = latestYear(deiSh);
+    const confirmed = deiTagPresent && (deiRecent == null || deiRecent < ly - 1);
+    return { ok: false, skipReason: "MULTI_CLASS_SHARES", flags: { ...flags, missing: "shares", multiClass: true, multiClassInferred: !confirmed } };
+  }
   flags.sharesTag = sharesTag;
 
   const single = annualMap(gaap, DEBT_TOTAL_SINGLE[0], "stock");

@@ -1059,7 +1059,13 @@
     "waccHigh": "자본비용 높게(+1%p)",
     "marginVsThreshold": "현재 영업이익률 {margin} < 임계이익률 {threshold} — 새 매출이 버는 이익보다 그를 뒷받침할 투자가 큽니다.",
     "overCapExplained": "100년치가 주가의 {pct}%를 설명합니다.",
-    "methodologyLink": "계산 방법과 원전과의 차이는 방법론 페이지에 공개합니다."
+    "methodologyLink": "계산 방법과 원전과의 차이는 방법론 페이지에 공개합니다.",
+    "boardCol": "역DCF",
+    "boardBadge": {
+      "valueDestroying": "가치훼손",
+      "belowOne": "무성장 설명",
+      "overCap": "설명 불가"
+    }
   },
   "RevDcfMethod": {
     "title": "역DCF 방법론",

@@ -1059,7 +1059,13 @@
     "waccHigh": "Higher cost of capital (+1%p)",
     "marginVsThreshold": "Operating margin {margin} < threshold {threshold} — new revenue requires more investment than the profit it earns.",
     "overCapExplained": "100 years explain {pct}% of the price.",
-    "methodologyLink": "The method and how it differs from the source are on the methodology page."
+    "methodologyLink": "The method and how it differs from the source are on the methodology page.",
+    "boardCol": "Rev-DCF",
+    "boardBadge": {
+      "valueDestroying": "Value-destroying",
+      "belowOne": "Explained w/o growth",
+      "overCap": "Unexplained"
+    }
   },
   "RevDcfMethod": {
     "title": "Reverse-DCF methodology",

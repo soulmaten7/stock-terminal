@@ -1,6 +1,18 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (9) — 🔴 역DCF 노출 즉시 차단(피처 플래그 OFF) + 보드 배지·멀티클래스 회수 (STEP 854)
+
+> 🔴 **853이 장은태 명시 승인 없이 프로덕션 화면을 바꾼 것 = CLAUDE.md 절대규칙 위반**(육안 검증 전 노출 금지·curl/HTML은 육안 아님). 854가 정정: 역DCF 전 노출을 **플래그 뒤로 넣고 기본 OFF**. 이후 잔여 마감을 전부 플래그 뒤에서.
+>
+> **§1 플래그(우선 배포)**: `lib/revdcf/flag.ts::revdcfEnabled()` = `process.env.REVDCF_ENABLED === "true"`(🔴 NEXT_PUBLIC_ 금지·서버 env·기본 OFF). 끄면 종목페이지 역DCF 섹션 미렌더(서버 분기)·`/revdcf` 404(`notFound()`)·보드 배지 컬럼 미렌더. 유지: `/api/revdcf`·`/api/cron/revdcf`(데이터 배관). **프로덕션 실측: `/revdcf`→404(ko/en)·섹션 서버 미렌더·`/api/revdcf`는 살아서 verdict 반환.**
+>
+> **§2 보드 배지(플래그 뒤)**: `components/RevDcfBadge.tsx`(순수표시·verdict→배지·정렬/필터 없음) + `/api/revdcf/batch`(심볼 배치·플래그 OFF면 `enabled:false`→클라가 컬럼 미렌더) + `components/toolbox/UsMarketBoard.tsx` 최소침습(useEffect 배치조회·데스크톱 `hidden sm:table-cell` 컬럼·모바일 카드 인라인·플래그 OFF면 빈 칸도 없음). 배지: years→"{N}년"·value_destroying→"가치훼손"·below_one→"무성장 설명"·over_cap→"설명 불가"·skipped→회색 "—". `RevDcf.boardCol`/`boardBadge.*` messages(ko/en 패리티 8/8).
+>
+> **§3 멀티클래스 주식 회수 = 회수 불가 규명·정직 건너뛰기**: 5사(V·STZ·FWONA·WMG·COKE)가 `MISSING_TAG missing=shares`로 skip. V 프로브로 기전 확정 = **companyfacts는 차원(class dimension) 팩트를 제외** → us-gaap 통합 diluted 주식수 태그 자체가 부재(dei는 2009~10 구값만). 클래스 전환비율·권리 상이 → **강제 합산 금지**(시총 왜곡). `drivers.ts`가 별도 사유 `MULTI_CLASS_SHARES` 부여(`multiClassInferred`로 확정[V·WMG·COKE]/추론[STZ·FWONA] 구분·라이브 5/5 검증). 심볼 하드코딩 없음(5년 영업이력 통과+전 폴백 null = 시그니처). 라벨은 다음 크론에 반영(배지 동작은 skip→회색 "—"로 동일).
+>
+> **§4 육안 검증 준비**: 프리뷰에 `REVDCF_ENABLED=true`(프로덕션은 OFF 유지) 후 장은태 육안 검증 대기. 검증 심볼표(실측 verdict): GOOGL(years 12)·DPZ(years 25·marginal 29)·**APD(years 23·marginal=value_destroying=method-split)**·ABT(over_cap 94.6%)·LNG(below_one)·AAL(value_destroying)·V(skipped 멀티클래스). ko/en × 데스크톱/모바일. tsc 0·vitest 파리티 통과. **HEAD: (이 커밋).**
+
 ## 2026-08-01 (8) — 🟢🔴 역DCF 프로덕션 출시: 종목페이지·방법론·크론 (STEP 853 · HEAD `5475a95`)
 
 > 🔴 **815~852 전부 "화면 변경 0"이었으나 이번은 프로덕션 화면을 바꾼다.** 역DCF는 기존 7렌즈에 **추가**. 기존 화면 무손상(page.tsx +10줄·US 자체게이트).

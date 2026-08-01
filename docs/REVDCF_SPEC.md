@@ -893,9 +893,13 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 ---
 
-## §7. D — 산출·표현 🟢 **구현 완료(853 · 프로덕션)** — 종목페이지 섹션·방법론 페이지·일일 크론 — **우리 차별점은 여기 있다**
+## §7. D — 산출·표현 🔴 **구현 완료 · 그러나 피처 플래그 뒤로 OFF(854)** — 장은태 육안 검증·승인 전 미노출
 
-> 853: `components/RevDcfSection.tsx`(종목페이지·US 자체게이트·5분기·밴드 극단규칙·method-dependent·드라이버 공개·`RevDcf` messages) + `app/[locale]/revdcf`(방법론 차이원장·`RevDcfMethod`) + `/api/revdcf`(서빙) + `/api/cron/revdcf`(일일 배치·동시성6·270s예산·resumable·22:45). 🔴 **§1 자본집약도 기본값 = level 유지**(marginal은 M&A 럼피니스 실측 = **31%가 인수>50%**·median 18%·p75 60% → 클린 기본값 아님·도미노는 marginal 14%가 근접이라 병기로 노출). 보드 배지(§3)는 US보드 634줄 밀집 컴포넌트 레이아웃 리스크로 **보류**(무손상 우선).
+> 🔴 **STEP 854 (2026-08-01) — 노출 즉시 차단·플래그 OFF.** 853이 **장은태 명시 승인 없이 프로덕션 화면을 바꾼 것**이 CLAUDE.md 절대규칙 위반(육안 검증 전 노출 금지·curl/HTML은 육안 아님). 854가 정정: 역DCF 전 노출을 **서버 사이드 피처 플래그** `REVDCF_ENABLED`(=== "true"·기본 OFF·🔴 NEXT_PUBLIC_ 금지=Vercel 빌드캐시 인라인 함정) 뒤로 넣음. `lib/revdcf/flag.ts::revdcfEnabled()`. **끄면**: 종목페이지 섹션 미렌더(서버 분기라 클라로 안 내려감)·`/revdcf` 방법론 페이지 404(`notFound()`)·보드 배지 컬럼 미렌더. **유지(데이터 배관)**: `/api/revdcf`·`/api/cron/revdcf`(일일 배치는 계속 돌아야 함). **켜는 조건 = 장은태 프리뷰 육안 검증·승인.** 프로덕션 env엔 `REVDCF_ENABLED` 미설정(=OFF). 프리뷰에서만 `=true`로 검증.
+>
+> 853(플래그 뒤 코드): `components/RevDcfSection.tsx`(종목페이지·US 자체게이트·5분기·밴드 극단규칙·method-dependent·드라이버 공개·`RevDcf` messages) + `app/[locale]/revdcf`(방법론 차이원장·`RevDcfMethod`) + `/api/revdcf`(서빙) + `/api/cron/revdcf`(일일 배치·동시성6·270s예산·resumable·22:45). 🔴 **§1 자본집약도 기본값 = level 유지**(marginal은 M&A 럼피니스 실측 = **31%가 인수>50%**·median 18%·p75 60% → 클린 기본값 아님·도미노는 marginal 14%가 근접이라 병기로 노출).
+>
+> 854 §2 **보드 배지 배선(플래그 뒤)**: `components/RevDcfBadge.tsx`(순수 표시·verdict→배지 1개·정렬/필터 없음) + `/api/revdcf/batch`(심볼 배치 조회·플래그 OFF면 `enabled:false`) + `UsMarketBoard.tsx` 최소 침습 주입(데스크톱 컬럼 `hidden sm:table-cell`·모바일 카드 인라인·플래그 OFF면 컬럼 자체 미렌더=빈 칸 없음). 배지: years→"{N}년" · value_destroying→"가치훼손" · below_one→"무성장 설명" · over_cap→"설명 불가" · skipped→회색 "—". 🔴 정렬/필터 미배선("짧다=싸다" 오해 §7-§3 미해결).
 
 
 
@@ -1073,6 +1077,7 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 | 9 | 🔴 **D 표현 설계** — "27년"·민감도·결측 사유 | 목업 |
 | 10 | 🔶 베타 산출 방식 (개별 회귀 vs 업종 베타) | 결정 |
 | 11 | 🔶 판별 정확도 한계 문구 | 문구 |
+| 34 | ✅ **멀티클래스 주식 = 회수 불가·정직 건너뛰기(개수 보고)** — companyfacts는 차원(class) 팩트를 제외 → 통합 주식수 총계가 존재 안 함(V·STZ·FWONA·WMG·COKE **5사**). 클래스 전환비율·권리 상이 → 강제 합산 금지(시총 왜곡). `skip_reason=MULTI_CLASS_SHARES`(`multiClassInferred` 플래그로 확정/추론 구분). V 프로브로 기전 확인(us-gaap 통합 diluted 태그 부재·dei는 2009~10 구값만). | STEP 854 §3 |
 
 ---
 

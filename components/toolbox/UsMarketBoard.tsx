@@ -6,6 +6,7 @@ import { useSheetSync, openSheetUrl, closeSheetUrl } from '@/lib/useSheetSync';
 import { Star, ArrowUpDown, ChevronUp, ChevronDown, Hand, Search, X } from 'lucide-react';
 import { getCache, setCache } from '@/lib/clientCache';
 import { StockLogo } from '@/components/ui/StockLogo';
+import RevDcfBadge from '@/components/RevDcfBadge';
 import { formatPrice } from '@/lib/currency';
 import { TONE_DOT_CLASS as TONE_DOT } from '@/lib/lensTones';
 import LensPreview from './LensPreview';
@@ -91,6 +92,7 @@ async function fetchRows(tab: SubTab): Promise<Row[]> {
 
 export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boolean }) {
   const t = useTranslations('Board');
+  const trd = useTranslations('RevDcf');
   const [tab, setTab] = useState<SubTab>(() => (loadBoardView('US')?.sub as SubTab) ?? 'stock');
   const [rows, setRows] = useState<Row[]>(() => getCache<Row[]>(CACHE_KEYS.stock) ?? []);
   const [loading, setLoading] = useState(() => getCache(CACHE_KEYS.stock) === undefined);
@@ -99,6 +101,8 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>(() => loadBoardView('US')?.sortDir ?? 'desc'); // 정렬 방향 — 기본 내림차순
   const [watchSet, setWatchSet] = useState<Set<string>>(new Set());
   const [selectedStock, setSelectedStock] = useState<Row | null>(null);
+  // STEP 854 §2 — 역DCF 배지(플래그 뒤). enabled=false면 컬럼 자체 미렌더. tab==='stock'만.
+  const [revdcf, setRevdcf] = useState<{ enabled: boolean; map: Record<string, { verdict: string; gapYears: number | null }> }>({ enabled: false, map: {} });
 
   // 모바일 하단 시트 스냅포인트: 50vh 기본 → 위로 끌면 66vh, 아래로 끌면 축소/닫힘
   const [sheetDragY, setSheetDragY] = useState(0);
@@ -235,6 +239,21 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   }, [rows, search, sortKey, sortPeriodField, sortDir]);
   const paginated = sorted.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+
+  // STEP 854 §2 — 현재 페이지 종목의 역DCF 판정 배치 조회. 🔴 플래그 OFF면 API가 enabled:false → 컬럼 미렌더.
+  const pageSymbols = paginated.map((r) => r.symbol).join(',');
+  useEffect(() => {
+    if (!pageSymbols) { setRevdcf({ enabled: false, map: {} }); return; }
+    let alive = true;
+    fetch(`/api/revdcf/batch?symbols=${encodeURIComponent(pageSymbols)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((j) => {
+        if (!alive || !j) return;
+        setRevdcf({ enabled: !!j.enabled, map: j.verdicts ?? {} });
+      })
+      .catch(() => { if (alive) setRevdcf({ enabled: false, map: {} }); });
+    return () => { alive = false; };
+  }, [pageSymbols]);
 
 
   function clickHeader(k: 'amount' | 'name' | 'price' | PeriodKey) {
@@ -420,6 +439,8 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     </button>
                   </th>
                   <th className="w-[92px] whitespace-nowrap px-2 py-2.5 text-left font-medium sm:px-3">{t('lensCol')}</th>
+                  {/* 역DCF 배지 컬럼 — 🔴 STEP 854 §2: 플래그 ON + 데이터 있을 때만. 좁은 화면(sm 미만) 숨김(넘침 방지). */}
+                  {revdcf.enabled ? <th className="hidden w-[84px] whitespace-nowrap px-2 py-2.5 text-left font-medium sm:table-cell sm:px-3">{trd('boardCol')}</th> : null}
                   <th className="w-[104px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
                     <button
                       type="button"
@@ -493,6 +514,12 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <td className="whitespace-nowrap px-2 py-2.5 sm:px-3">
                       {r.lens ? <LensDots lens={r.lens} /> : <span className="text-[12px] text-unjong-muted">—</span>}
                     </td>
+                    {/* 역DCF 배지 셀 — th와 동일 조건·브레이크포인트. 데이터 없으면 배지 컴포넌트가 '—' 처리. */}
+                    {revdcf.enabled ? (
+                      <td className="hidden whitespace-nowrap px-2 py-2.5 sm:table-cell sm:px-3">
+                        <RevDcfBadge verdict={revdcf.map[r.symbol]?.verdict} gapYears={revdcf.map[r.symbol]?.gapYears ?? null} />
+                      </td>
+                    ) : null}
                     <td className="whitespace-nowrap px-3 py-2.5 text-right tabular-nums text-unjong-primary sm:px-4">{r.price ? formatPrice(r.price, 'US') : '—'}</td>
                     <td className={`whitespace-nowrap py-2.5 pl-2 pr-3 text-right font-semibold tabular-nums sm:pr-4 ${pctColor(periodCell(r))}`}>{periodCell(r) === undefined ? <span className="text-unjong-muted">…</span> : pct(periodCell(r))}</td>
                     <td className="w-9 px-1 py-2.5 text-center">
@@ -524,6 +551,8 @@ export default function UsMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       <div className="flex items-center gap-1">
                         <p className="min-w-0 flex-1 truncate text-[16px] leading-tight text-unjong-primary"><span className="font-bold">{r.symbol}</span><span className="ml-1.5 text-xs text-unjong-muted">{r.name}</span></p>
                         {r.lens ? <LensDots lens={r.lens} size={6} /> : null}
+                        {/* 역DCF 배지(모바일) — 🔴 STEP 854 §2: 플래그 ON + 해당 종목 판정 있을 때만. */}
+                        {revdcf.enabled && revdcf.map[r.symbol] ? <RevDcfBadge verdict={revdcf.map[r.symbol]?.verdict} gapYears={revdcf.map[r.symbol]?.gapYears ?? null} /> : null}
                       </div>
                       <div className="mt-1 flex items-center justify-between gap-2">
                         <span className="text-[14px] tabular-nums text-unjong-muted">{r.price ? formatPrice(r.price, 'US') : '—'}</span>
