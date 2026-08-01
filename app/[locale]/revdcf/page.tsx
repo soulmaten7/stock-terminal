@@ -17,7 +17,7 @@ export default async function RevDcfMethodPage({ params }: { params: Promise<{ l
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("RevDcfMethod");
-  const rows = ["growth", "tax", "wc", "cap", "term", "horizon"] as const;
+  const rows = ["growth", "tax", "wc", "cap", "term", "horizon", "sensitivity", "distribution"] as const;
   return (
     <main className="mx-auto max-w-3xl px-4 py-8 sm:px-6">
       <h1 className="text-2xl font-bold text-unjong-primary">{t("title")}</h1>

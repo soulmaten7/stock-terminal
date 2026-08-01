@@ -1035,6 +1035,26 @@
     "growthNote": "Growth is computed from the past 5 years — not an analyst forecast.",
     "asOfNote": "Tax rate and cost of capital as of {date}",
     "methodDependent": "The verdict depends on how investment intensity is estimated.",
+    "methodSplitTitle": "The verdict splits by how investment intensity is measured",
+    "methodLevel": "By equipment (default)",
+    "methodMarginal": "By actual investment",
+    "lossMaking": "The firm is operating at a loss, so this method does not apply. Reverse DCF decodes the expectations of profitable firms.",
+    "scenarioTitle": "Cost-of-capital scenarios",
+    "bandCrossWarning": "The conclusion flips entirely depending on the cost-of-capital assumption.",
+    "rankLine": "{rank}th longest of {total} where this method applies",
+    "expectationLevel": {
+      "low": "Lower expectations",
+      "mid": "Middle",
+      "high": "Higher expectations"
+    },
+    "driverDesc": {
+      "growth": "Annual growth computed from the last 5 years of results",
+      "margin": "Revenue minus operating costs, as a share of revenue",
+      "threshold": "The minimum margin needed to preserve value at this growth",
+      "wcRate": "Cash tied up in inventory and receivables per one dollar of new revenue",
+      "capIntensity": "Cash tied up in equipment per one dollar of revenue",
+      "wacc": "The minimum return investors require from this company"
+    },
     "skip": {
       "insufficientHistory": "Fewer than 5 years since listing or spin-off.",
       "notApplicableSector": "The balance sheet is not classified (current vs non-current), so the method does not apply.",
@@ -1116,6 +1136,18 @@
         "s": "25 years",
         "o": "Compute 100, display 25",
         "w": "100 years is meaningless as a number, shown as “unexplained”"
+      },
+      "sensitivity": {
+        "i": "Cost-of-capital sensitivity",
+        "s": "User adjusts it in the spreadsheet",
+        "o": "We compute and show a 3-point band",
+        "w": "Fully automated across names, so the user cannot change inputs; the GAP is most sensitive to the cost of capital (cost of capital ≫ growth ≈ margin)"
+      },
+      "distribution": {
+        "i": "Position in the distribution",
+        "s": "None (single stock only)",
+        "o": "Position within the sample",
+        "w": "A benefit of computing every name daily"
       }
     },
     "betaCaveat": "The cost of capital is computed with CAPM. Research finds beta explains little of the cross-section of stock returns (Fama-French 1992). Since the GAP is sensitive to the cost of capital, we show a range rather than a single number.",

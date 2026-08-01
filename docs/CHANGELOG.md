@@ -1,6 +1,22 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (10) — 🔴 역DCF 육안 검증 7건 수정 (STEP 855 · 플래그 계속 OFF · 표현 계층만)
+
+> 프리뷰(`localhost:3333` 플래그 ON) 육안 검증에서 나온 7건. 프로덕션 플래그는 **계속 OFF**.
+>
+> **§1 = 버그 아님(⓪-3로 규명)**: "flags 전부 비었다 + APD 근거없는 method 문구"라는 전제를 현재 DB/코드로 대조하니 **틀림**. `flags`(jsonb)와 `verdict_marginal`(별도 컬럼)은 다른 저장소 — APD 문구는 `verdict_marginal='value_destroying'`(정상 채워짐)에서 나온 **옳은 표시**. 육안 시점 빈 flags는 `scripts/compute_revdcf_all.ts`가 flags-저장 코드를 갖기 **전** 실행분(파일 mtime 당일 15:43); 이후 크론/재실행(853 route도 flags 저장)이 덮어써 **조회 시 604/604 flags 채워짐·409 verdict_marginal**. **코드 변경 0.** 교훈=`LENS_DEV_PLAYBOOK` #42(상위 지시 STEP도 스냅샷이라 낡음·jsonb blob≠전용 컬럼).
+>
+> **§2 백분위 방향 오류**: GOOGL 12년인데 "상위 60%"(자기보다 긴 종목 비율을 상위%로 오표시). `atOrAbove/total` **폐기** → `/api/revdcf`가 **rank(가장 긴 것=1)+3분류(기대 낮음/중간/높음)** 반환. 좋다/나쁘다 표현 안 함. 라이브: GOOGL rank 122/222·mid(=12년보다 짧은 종목 42%와 정합).
+>
+> **§3 밴드 기본 승격**: 폭>10년이 47%(222 중)라 "예외"가 절반 → bandExtreme 분기 제거, **모든 years 동일 3점 시나리오 표 + 실제 WACC 수치 노출**(APD 6.4%→9y·7.4%→23y·8.4%→51y). 극단(below_one↔over_cap 가로지름·DPZ 0~100)만 경고 1줄.
+>
+> **§4 적자 기업(AAL)**: `operating_margin≤0`이면 **표시 계층에서** "영업적자라 이 기법 성립 안 함" + 임계마진 줄 숨김(엔진·DB 불변=848 재현 보호). **value_destroying 149 중 적자 63·양(+)마진 86.**
+>
+> **§5 드라이버 설명 한 줄씩**(툴팁 아님·모바일·ko/en 6종). **§6 method-dependent 내용**: "설비 기준(기본)→23년 / 실제 투자액 기준→가치훼손"(level vs marginal 실판정). **§7 차이 원장 2행(sensitivity·distribution) + T8 라벨 스왑 §9 기록**(⓪-3 openpyxl 직접 확인: Inputs B10 fixed/B11 working ↔ Tutorial8 r32 working/r33 fixed 순서 반대·값오류 아님·우리 무영향).
+>
+> 파일: `components/RevDcfSection.tsx`·`app/api/revdcf/route.ts`·`app/[locale]/revdcf/page.tsx`·`messages/{ko,en}.json`. tsc 0·i18n 파리티 8/8·vitest 전체 통과·라이브 실측(3333). 🔴 `npm run build`는 **생략**(프리뷰 dev 서버 3333을 사용자가 육안 검증 중 — build가 `.next` 덮어써 서버 죽이므로). **HEAD: (이 커밋).**
+
 ## 2026-08-01 (9) — 🔴 역DCF 노출 즉시 차단(피처 플래그 OFF) + 보드 배지·멀티클래스 회수 (STEP 854)
 
 > 🔴 **853이 장은태 명시 승인 없이 프로덕션 화면을 바꾼 것 = CLAUDE.md 절대규칙 위반**(육안 검증 전 노출 금지·curl/HTML은 육안 아님). 854가 정정: 역DCF 전 노출을 **플래그 뒤로 넣고 기본 OFF**. 이후 잔여 마감을 전부 플래그 뒤에서.

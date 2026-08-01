@@ -900,6 +900,8 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 > 853(플래그 뒤 코드): `components/RevDcfSection.tsx`(종목페이지·US 자체게이트·5분기·밴드 극단규칙·method-dependent·드라이버 공개·`RevDcf` messages) + `app/[locale]/revdcf`(방법론 차이원장·`RevDcfMethod`) + `/api/revdcf`(서빙) + `/api/cron/revdcf`(일일 배치·동시성6·270s예산·resumable·22:45). 🔴 **§1 자본집약도 기본값 = level 유지**(marginal은 M&A 럼피니스 실측 = **31%가 인수>50%**·median 18%·p75 60% → 클린 기본값 아님·도미노는 marginal 14%가 근접이라 병기로 노출).
 >
 > 854 §2 **보드 배지 배선(플래그 뒤)**: `components/RevDcfBadge.tsx`(순수 표시·verdict→배지 1개·정렬/필터 없음) + `/api/revdcf/batch`(심볼 배치 조회·플래그 OFF면 `enabled:false`) + `UsMarketBoard.tsx` 최소 침습 주입(데스크톱 컬럼 `hidden sm:table-cell`·모바일 카드 인라인·플래그 OFF면 컬럼 자체 미렌더=빈 칸 없음). 배지: years→"{N}년" · value_destroying→"가치훼손" · below_one→"무성장 설명" · over_cap→"설명 불가" · skipped→회색 "—". 🔴 정렬/필터 미배선("짧다=싸다" 오해 §7-§3 미해결).
+>
+> 🔴 **STEP 855 (2026-08-01) — 육안 검증 7건 수정(플래그 계속 OFF·표현 계층만)**. ①**§1 = 버그 아님**: `flags`(jsonb)와 `verdict_marginal`(컬럼)은 별개 저장소 · APD "판정 갈림" 문구는 `verdict_marginal`(정상)에서 나온 옳은 표시 · 육안 시점 빈 flags는 script의 flags-저장 코드 추가 **전** 실행분(이후 크론이 덮어써 조회 시 604/604 채워짐). 코드 변경 0(cron/script 둘 다 정상 persist). ②**§2 백분위 방향**: "상위 x%"(`atOrAbove/total`) **폐기** → `/api/revdcf`가 **rank(가장 긴 것=1)+3분류(기대 낮음/중간/높음)** 반환·"짧다=싸다" 오해 차단·좋다/나쁘다 표현 안 함. ③**§3 밴드 기본 승격**: 폭>10년이 47%라 예외 분기(bandExtreme) 제거 → **모든 years가 동일 3점 시나리오 표**(실제 WACC 수치 노출: `wacc±1%p`)·극단(below_one↔over_cap 가로지름)만 경고 1줄. ④**§4 적자 분기**: `operating_margin≤0`이면 표시 계층에서 "영업적자라 성립 안 함" 문구·임계마진 줄 숨김(엔진·DB 불변=848 재현 보호). **value_destroying 149 중 적자 63·양(+)마진 86.** ⑤**§5 드라이버 설명 한 줄씩**(툴팁 아님·모바일·ko/en). ⑥**§6 method-dependent 내용 채움**: "설비 기준(기본)→23년 / 실제 투자액 기준→가치훼손"(level vs marginal 실제 판정). ⑦**§7 차이 원장 2행 + T8 라벨 스왑 §9 기록**. 파일: `components/RevDcfSection.tsx`·`app/api/revdcf/route.ts`·`app/[locale]/revdcf/page.tsx`·messages. 라이브 실측(3333): APD 6.4%→9y·7.4%→23y·8.4%→51y / GOOGL rank 122/222 mid / DPZ 0~100 경고 / AAL 적자문구.
 
 
 
@@ -1036,6 +1038,11 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 | 🔴 **"PP&E 결측 = 자산경량 기업"** | **기각.** 잔여 58사는 GE·GM·디어·서던·CRH = 중자산. 0으로 처리하면 안 됨 | STEP 844 |
 | 🔴 **"PP&E 결측 = 비12월 결산"** | **기각.** 전 분기 프레임 허용해도 **5/58만** 복구 | STEP 844 |
 | 🔴 **838: 수집 경로 = `frames` 채택** | **뒤집음.** frames는 횡단면 카운트용이고 **개별 값 판정에 못 씀**(GE·DE·URI·PEG·ATO가 companyfacts엔 존재). 오늘까지의 커버리지 수치는 **전부 하한** | STEP 844 (§B-5) |
+
+### 🔴 원전 재판독 기록 (STEP 855 §7 · ⓪-3 · `data/sources/expectations-investing/T8.xlsx` 직접 개봉)
+
+- **T8 시트 간 라벨 순서 뒤바뀜(원전 자체 불일치)**: `Inputs` 시트는 **B10 = Incremental fixed capital**, **B11 = Incremental working capital** 순(고정→운전)인데, `Tutorial 8` 시트는 **r32 = Incremental Working Capital Rate**, **r33 = Incremental Fixed Capital Rate** 순(운전→고정)으로 **둘의 순서가 반대**다. openpyxl로 직접 확인(⓪-3). 각 행은 자기 라벨과 값이 맞게 짝지어져 있어 **값 오류는 아니고 순서 표기 불일치**다. 우리는 이름 있는 값(`workingCapitalRate`·`fixedCapitalRate`)으로 조달하므로 영향 없음 — **기록만**.
+- **원전엔 백분위·분포 개념이 없다**: T8은 MIFP를 단일 숫자(r117)로 끝내고 민감도는 "스프레드시트에서 직접 바꿔 보라"(r121)로 넘긴다(종목 하나만 분석). 우리의 **3점 자본비용 밴드**와 **222 표본 내 위치**는 전 종목 자동화의 산물이라 원전에 대응물이 없다 → 방법론 차이 원장(`/revdcf`)에 2행(`sensitivity`·`distribution`) 추가.
 
 ---
 

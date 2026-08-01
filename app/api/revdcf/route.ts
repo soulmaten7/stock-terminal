@@ -25,13 +25,21 @@ export async function GET(req: Request) {
   const row = (await sb.from("revdcf_results").select("*").eq("as_of", asOf).eq("symbol", symbol).maybeSingle()).data as Record<string, unknown> | null;
   if (!row) { const data = { result: null }; cache.set(symbol, { at: Date.now(), data }); return NextResponse.json(data); }
 
-  // 분포 내 위치: years 표본 총수 + 이 종목 GAP 이상인 수(기대 상위%)
-  let sampleTotal: number | null = null, expectationTopPct: number | null = null;
+  // 분포 내 위치 — 🔴 STEP 855 §2: "상위 x%"(방향 헷갈림) 폐기. years 표본 내 순위 + 3분류(기대 낮음/중간/높음).
+  //   긴 GAP = 시장 기대 높음. rankFromLongest 1 = 가장 긴 기간. 좋다/나쁘다 말하지 않는다(BRAND_IDENTITY).
+  let sampleTotal: number | null = null, rankFromLongest: number | null = null;
+  let expectationLevel: "low" | "mid" | "high" | null = null;
   if (row.verdict === "years" && row.gap_years != null) {
+    const g = row.gap_years as number;
     const total = (await sb.from("revdcf_results").select("cik", { count: "exact", head: true }).eq("as_of", asOf).eq("verdict", "years")).count ?? 0;
-    const atOrAbove = (await sb.from("revdcf_results").select("cik", { count: "exact", head: true }).eq("as_of", asOf).eq("verdict", "years").gte("gap_years", row.gap_years as number)).count ?? 0;
+    const longer = (await sb.from("revdcf_results").select("cik", { count: "exact", head: true }).eq("as_of", asOf).eq("verdict", "years").gt("gap_years", g)).count ?? 0;
+    const shorter = (await sb.from("revdcf_results").select("cik", { count: "exact", head: true }).eq("as_of", asOf).eq("verdict", "years").lt("gap_years", g)).count ?? 0;
     sampleTotal = total;
-    if (total > 0) { const raw = (atOrAbove / total) * 100; expectationTopPct = Math.max(5, Math.round(raw / 5) * 5); } // 5% 단위·최소 5%(1%컷 금지)
+    if (total > 0) {
+      rankFromLongest = longer + 1; // 동률이면 최상위 순번
+      const fracShorter = shorter / total; // 0에 가까울수록 짧은 기간(기대 낮음)
+      expectationLevel = fracShorter < 1 / 3 ? "low" : fracShorter > 2 / 3 ? "high" : "mid";
+    }
   }
 
   const flags = (row.flags ?? {}) as Record<string, unknown>;
@@ -50,7 +58,7 @@ export async function GET(req: Request) {
       verdictMarginal: row.verdict_marginal, gapYearsMarginal: row.gap_years_marginal,
       skipReason: row.skip_reason,
       flags: { revenueCheck: flags.revenueCheck, ebitSource: flags.ebitSource, growthIsHistorical: flags.growthIsHistorical, industry: flags.industry, damodaranAsOf: flags.damodaranAsOf },
-      sampleTotal, expectationTopPct,
+      sampleTotal, rankFromLongest, expectationLevel,
     },
   };
   cache.set(symbol, { at: Date.now(), data });

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
-// STEP 853 — 역DCF 종목페이지 섹션. US 전용(데이터 자체가 US뿐이라 KR/타국은 result=null → 미노출).
-// 5분기 헤드라인 + 밴드(극단 규칙) + method-dependent + 드라이버 공개. 다크·모바일·ko/en.
+// STEP 853/855 — 역DCF 종목페이지 섹션. US 전용(데이터 자체가 US뿐이라 KR/타국은 result=null → 미노출).
+// 5분기 헤드라인 + 자본비용 시나리오(3점·기본 표시) + 순위(방향 명시) + 적자 분기 + 드라이버 설명 + 판정 분기. 다크·모바일·ko/en.
 
 type Band = { minus1: number | null; plus1: number | null };
 type Drivers = { salesGrowth: number; operatingMargin: number; startingMargin: number; taxRate: number; fixedCapitalRate: number; fixedCapitalRateLevel: number | null; fixedCapitalRateMarginal: number | null; workingCapitalRate: number; wacc: number };
@@ -13,7 +13,7 @@ type Result = {
   explainedPct: number | null; thresholdMargin: number | null; monotonic: string;
   drivers: Drivers; verdictMarginal: string | null; gapYearsMarginal: number | null; skipReason: string | null;
   flags: { revenueCheck?: string; ebitSource?: string; growthIsHistorical?: boolean; industry?: string; damodaranAsOf?: string };
-  sampleTotal: number | null; expectationTopPct: number | null;
+  sampleTotal: number | null; rankFromLongest: number | null; expectationLevel: "low" | "mid" | "high" | null;
 };
 
 const pct = (x: number | null | undefined, d = 1) => (x == null ? "—" : `${(x * 100).toFixed(d)}%`);
@@ -34,10 +34,22 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
   if (!loaded || !r) return null; // 로딩 중이거나 US 아님 → 미노출
 
   const v = r.verdict;
+  const d = r.drivers;
+  // §4 — 영업적자(마진 ≤ 0)는 value_destroying이라도 별도 문구(표시 계층 분기 · 엔진·DB 불변).
+  const lossMaking = v === "value_destroying" && d.operatingMargin != null && d.operatingMargin <= 0;
+  // §6 — 판정(verdict)이 방법에 따라 갈리는 경우만(숫자만 다른 건 제외).
   const methodDependent = r.verdictMarginal != null && r.verdictMarginal !== v;
-  const band = r.band;
-  const bandExtreme = v === "years" && (band.minus1 === 0 || band.plus1 === 100 || (band.plus1 != null && band.minus1 != null && band.plus1 - band.minus1 > 10));
-  const bandText = (n: number | null) => (n == null ? "—" : n === 0 ? t("belowOneShort") : n === 100 ? t("overCapShort") : `${n}${t("yUnit")}`);
+
+  // §3 — 자본비용 3점 시나리오(항상 표시). 낮은 자본비용(−1%p) ↔ band.minus1, 높은(+1%p) ↔ band.plus1.
+  const wpct = (x: number) => `${(x * 100).toFixed(1)}%`;
+  const wBase = d.wacc, wLow = d.wacc - 0.01, wHigh = d.wacc + 0.01;
+  const gapText = (n: number | null) => (n == null ? "—" : n === 0 ? t("belowOneShort") : n === 100 ? t("overCapShort") : `${n}${t("yUnit")}`);
+  const bandCross = v === "years" && (r.band.minus1 === 0 || r.band.plus1 === 100);
+  const verdictShort = (vd: string | null, gap: number | null) =>
+    vd === "years" ? (gap != null ? `${gap}${t("yUnit")}` : "—")
+    : vd === "value_destroying" ? t("boardBadge.valueDestroying")
+    : vd === "below_one" ? t("boardBadge.belowOne")
+    : vd === "over_cap" ? t("boardBadge.overCap") : "—";
 
   const badgeClass: Record<string, string> = {
     years: "bg-unjong-primary/15 text-unjong-primary",
@@ -47,7 +59,6 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
     skipped: "bg-unjong-muted/10 text-unjong-muted",
   };
   const badgeLabel = t(`badge.${v === "value_destroying" ? "valueDestroying" : v === "below_one" ? "belowOne" : v === "over_cap" ? "overCap" : v}`);
-
   const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : "missingTag";
 
   return (
@@ -60,31 +71,36 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
       {v === "years" && (
         <>
           <p className="text-lg font-bold text-unjong-primary">{t("headline.years", { n: r.gapYears ?? 0 })}</p>
-          {bandExtreme ? (
-            <>
-              <div className="my-3 rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 p-3 text-[13px] text-unjong-accent">{t("headline.wideBand")}</div>
-              <table className="w-full text-[13px]">
-                <tbody>
-                  <tr className="border-b border-unjong-border"><td className="py-1.5 text-unjong-muted">{t("waccLow")}</td><td className="py-1.5 text-right tabular-nums">{bandText(band.minus1)}</td></tr>
-                  <tr className="border-b border-unjong-border"><td className="py-1.5 text-unjong-muted">{t("waccBase")}</td><td className="py-1.5 text-right tabular-nums">{r.gapYears}{t("yUnit")}</td></tr>
-                  <tr><td className="py-1.5 text-unjong-muted">{t("waccHigh")}</td><td className="py-1.5 text-right tabular-nums">{bandText(band.plus1)}</td></tr>
-                </tbody>
-              </table>
-            </>
-          ) : (
-            <p className="mt-1 text-sm text-unjong-muted">{t("band.range", { lo: Math.min(band.minus1 ?? 0, band.plus1 ?? 0), hi: Math.max(band.minus1 ?? 0, band.plus1 ?? 0) })}</p>
+          {bandCross && <div className="my-3 rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 p-3 text-[13px] text-unjong-accent">{t("bandCrossWarning")}</div>}
+          {/* §3 자본비용 시나리오 — 좁든 넓든 동일 형식·실제 WACC 수치 노출 */}
+          <p className="mt-3 text-[12px] font-medium text-unjong-muted">{t("scenarioTitle")}</p>
+          <table className="mt-1 w-full text-[13px]">
+            <tbody>
+              <tr className="border-b border-unjong-border"><td className="py-1.5 text-unjong-muted">{t("driver.wacc")} {wpct(wLow)}</td><td className="py-1.5 text-right tabular-nums">{gapText(r.band.minus1)}</td></tr>
+              <tr className="border-b border-unjong-border"><td className="py-1.5 text-unjong-muted">{t("driver.wacc")} {wpct(wBase)} · {t("waccBase")}</td><td className="py-1.5 text-right font-semibold tabular-nums">{r.gapYears}{t("yUnit")}</td></tr>
+              <tr><td className="py-1.5 text-unjong-muted">{t("driver.wacc")} {wpct(wHigh)}</td><td className="py-1.5 text-right tabular-nums">{gapText(r.band.plus1)}</td></tr>
+            </tbody>
+          </table>
+          {/* §2 순위 — "상위 x%" 폐기·방향 명시(긴 것=기대 높음) */}
+          {r.sampleTotal != null && r.rankFromLongest != null && r.expectationLevel && (
+            <p className="mt-2.5 text-[13px] text-unjong-muted">
+              <span className="font-medium text-unjong-primary">{t(`expectationLevel.${r.expectationLevel}`)}</span>
+              {" · "}{t("rankLine", { rank: r.rankFromLongest, total: r.sampleTotal })}
+            </p>
           )}
-          {r.expectationTopPct != null && r.sampleTotal != null && (
-            <p className="mt-2 text-[13px] text-unjong-muted">{t("position", { n: r.gapYears ?? 0, pct: r.expectationTopPct, total: r.sampleTotal })}</p>
-          )}
+          {r.sampleTotal != null && <p className="mt-0.5 text-[12px] text-unjong-muted">{t("sampleNote", { total: r.sampleTotal })}</p>}
         </>
       )}
 
       {v === "value_destroying" && (
-        <>
-          <p className="text-lg font-bold text-unjong-danger">{t("headline.valueDestroying")}</p>
-          <p className="mt-1 text-sm text-unjong-muted">{t("marginVsThreshold", { margin: pct(r.drivers.operatingMargin), threshold: pct(r.thresholdMargin) })}</p>
-        </>
+        lossMaking ? (
+          <p className="text-lg font-bold text-unjong-danger">{t("lossMaking")}</p>
+        ) : (
+          <>
+            <p className="text-lg font-bold text-unjong-danger">{t("headline.valueDestroying")}</p>
+            <p className="mt-1 text-sm text-unjong-muted">{t("marginVsThreshold", { margin: pct(d.operatingMargin), threshold: pct(r.thresholdMargin) })}</p>
+          </>
+        )
       )}
       {v === "below_one" && <p className="text-lg font-bold text-unjong-primary">{t("headline.belowOne")}</p>}
       {v === "over_cap" && (
@@ -95,19 +111,25 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
       )}
       {v === "skipped" && <p className="text-lg font-bold text-unjong-muted">{t(`skip.${skipKey}`)}</p>}
 
-      {methodDependent && v !== "skipped" && (
-        <div className="my-3 rounded-lg border border-unjong-border bg-unjong-background/40 p-3 text-[13px] text-unjong-muted">{t("methodDependent")}</div>
+      {/* §6 판정 분기 — 무엇이 어떻게 갈리는지 실제 값으로 */}
+      {methodDependent && v !== "skipped" && !lossMaking && (
+        <div className="my-3 rounded-lg border border-unjong-border bg-unjong-background/40 p-3 text-[13px]">
+          <p className="font-medium text-unjong-primary">{t("methodSplitTitle")}</p>
+          <div className="mt-1.5 flex justify-between text-unjong-muted"><span>{t("methodLevel")}</span><span className="tabular-nums">{verdictShort(v, r.gapYears)}</span></div>
+          <div className="mt-0.5 flex justify-between text-unjong-muted"><span>{t("methodMarginal")}</span><span className="tabular-nums">{verdictShort(r.verdictMarginal, r.gapYearsMarginal)}</span></div>
+        </div>
       )}
 
       {(v === "years" || v === "value_destroying" || v === "below_one") && (
         <>
-          <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-1.5 border-t border-unjong-border pt-3 text-[13px] sm:grid-cols-2">
-            <Row k={t("driver.growth")} val={pct(r.drivers.salesGrowth)} />
-            <Row k={t("driver.margin")} val={pct(r.drivers.operatingMargin)} />
-            <Row k={t("driver.threshold")} val={pct(r.thresholdMargin)} />
-            <Row k={t("driver.wcRate")} val={pct(r.drivers.workingCapitalRate)} />
-            <Row k={t("driver.capIntensity")} val={pct(r.drivers.fixedCapitalRate)} />
-            <Row k={t("driver.wacc")} val={pct(r.drivers.wacc, 2)} />
+          {/* §5 드라이버 — 라벨 + 한 줄 설명(툴팁 아님·모바일 대응) */}
+          <div className="mt-4 grid grid-cols-1 gap-x-4 gap-y-2.5 border-t border-unjong-border pt-3 sm:grid-cols-2">
+            <DriverRow k={t("driver.growth")} desc={t("driverDesc.growth")} val={pct(d.salesGrowth)} />
+            <DriverRow k={t("driver.margin")} desc={t("driverDesc.margin")} val={pct(d.operatingMargin)} />
+            {!lossMaking && <DriverRow k={t("driver.threshold")} desc={t("driverDesc.threshold")} val={pct(r.thresholdMargin)} />}
+            <DriverRow k={t("driver.wcRate")} desc={t("driverDesc.wcRate")} val={pct(d.workingCapitalRate)} />
+            <DriverRow k={t("driver.capIntensity")} desc={t("driverDesc.capIntensity")} val={pct(d.fixedCapitalRate)} />
+            <DriverRow k={t("driver.wacc")} desc={t("driverDesc.wacc")} val={pct(d.wacc, 2)} />
           </div>
           <p className="mt-3 border-t border-unjong-border pt-2.5 text-[12px] text-unjong-muted">{t("growthNote")}</p>
           {r.flags.damodaranAsOf && <p className="mt-1 text-[12px] text-unjong-muted">{t("asOfNote", { date: String(r.flags.damodaranAsOf) })}</p>}
@@ -118,11 +140,14 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
   );
 }
 
-function Row({ k, val }: { k: string; val: string }) {
+function DriverRow({ k, desc, val }: { k: string; desc: string; val: string }) {
   return (
-    <div className="flex justify-between">
-      <span className="text-unjong-muted">{k}</span>
-      <span className="tabular-nums">{val}</span>
+    <div className="flex items-start justify-between gap-3">
+      <div className="min-w-0">
+        <div className="text-unjong-primary">{k}</div>
+        <div className="text-[11px] leading-snug text-unjong-muted">{desc}</div>
+      </div>
+      <span className="shrink-0 tabular-nums text-unjong-primary">{val}</span>
     </div>
   );
 }
