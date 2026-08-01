@@ -1,6 +1,18 @@
 <!-- 2026-08-01 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-01 (4) — 🟢 역DCF 재료 배선: WACC 조립 + 부채·비영업·주식수 + 도미노 전입력 재현 (STEP 849 · HEAD `baf430f`)
+
+> 화면 0. 엔진(848) 불변. 엔진에 넣을 재료를 `damodaran_*` DB에서 조립(값 코드에 안 박음).
+
+- **§1 WACC 3점 결정**: 848 민감도(WACC≫성장·마진·베타 설명력 3%)로 **GAP은 단일 숫자가 거짓 정밀도** → `computeGapWithSensitivity`가 WACC −1%p/기준/+1%p **3점** 반환(통계 모델링 없음·가정 0·안 C). `lib/revdcf/compute.ts` 신설.
+- **§2 WACC 조립**(`assembleWacc`·다모다란 완성 Cost of Capital 미사용): Ke=rf+β_relever×ERP·atCoD=(rf+spread)(1−t). 🟢 **94업종 검산 차 중앙 0.08%p**(조립 정확). rf=damodaran(ERP와 짝)·D/E 기업별·spread 밴드.
+- **§3 부채**: LT+당기+금융리스·**영업리스 제외**(T8 정합). 커버 core 459(76%)/리스포함 550(91%). 도미노 4114(장부) vs T8 4170(시장가).
+- **§4 비영업자산**: A(전액) vs B(−매출2%) **GAP 동일**(shift $1.87/주) → **A(원전 그대로) 채택**.
+- **§5 주식수**: **희석**(WeightedAvgDiluted·커버 90%) 채택 — T8 39.35=희석·dei 38.67=기본.
+- **§6 🔴 도미노 전입력 재현**: 부채·비영업·주식수는 원전 근접 재현. **우리 조립 WACC 7.19% vs 원전 5.357% → GAP 8→23년**(밴드 13~38). **차이 거의 전부 WACC**(2026 rf 3.95% vs 2020 0.65%). → GAP은 WACC(rf 빈티지)가 지배·화면은 WACC 밴드 필수.
+- registry INPUTS(부채·비영업·주식수·WACC) open 해소. tsc 0·vitest **151**·build ✓·app 0.
+
 ## 2026-08-01 (3) — 🟢 역DCF 역산기 엔진 구현 + 원전 도미노 재현 (STEP 848 · HEAD `f68291f`)
 
 > C층 첫 코드. 순수 계산 함수 + 유닛테스트만(화면·DB·SEC 0). 원전 Expectations Investing T8(PIE) 수식 그대로.

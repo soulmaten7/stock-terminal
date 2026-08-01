@@ -58,3 +58,5 @@ data/sources/damodaran/
 
 # STEP 847: 대용량 companyfacts 원시 캐시(8.7MB·재실행으로 재생성) — 요약 산출물만 커밋
 docs/probe_847_raw.json
+
+docs/probe_849_raw.json

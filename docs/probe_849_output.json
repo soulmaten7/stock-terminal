@@ -1,0 +1,64 @@
+{
+  "wacc_industry_check": {
+    "n": 94,
+    "diff_median": 0.0008,
+    "diff_p10": -0.0005,
+    "diff_p90": 0.0025,
+    "note": "우리 조립(marginal tax 0.2563) vs 다모다란 완성(eff_tax). 차이는 세율 정의 차 위주"
+  },
+  "debt": {
+    "coverage": {
+      "debtCore5yr": 459,
+      "debtWithLease5yr": 550,
+      "total": 604
+    },
+    "note": "debtCore=LongTermDebt(+AndCapitalLease)+current · withLease=+operating/finance lease. DPZ는 별도 태그(아래)"
+  },
+  "shares": {
+    "coverage": {
+      "dei": 472,
+      "gaap": 363,
+      "dilutedWavg": 546,
+      "total": 604
+    }
+  },
+  "dpz": {
+    "debt_reproduced_M": 4114.4,
+    "t8_debt": 4170,
+    "nonOp_A_M": 495.9,
+    "nonOp_B_M": 423.5,
+    "t8_nonOp": 391.9,
+    "cashOnly_M": 190.6,
+    "restrictedInclusive_M": 483.9,
+    "shares_dei2019_M": 38.67,
+    "shares_dei2020_M": 38.8,
+    "t8_shares": 39.35,
+    "assembledWacc": 0.0719,
+    "t8_wacc": 0.05357,
+    "deRatio": 0.2501,
+    "creditSpread": 0.008872,
+    "gap_ourWacc_nonOpA": "23",
+    "gap_t8Wacc_nonOpA": "7",
+    "sensitivity": {
+      "wacc": 0.07192571986294638,
+      "base": {
+        "kind": "years",
+        "gap": 23
+      },
+      "waccMinus1": {
+        "kind": "years",
+        "gap": 13
+      },
+      "waccPlus1": {
+        "kind": "years",
+        "gap": 38
+      },
+      "waccSource": {}
+    },
+    "nonOp_AvsB_gap": {
+      "A": "7",
+      "B": "7",
+      "shiftPerShare": 1.87
+    }
+  }
+}
