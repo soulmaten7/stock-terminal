@@ -185,10 +185,9 @@ export const INPUTS: RegistryEntry[] = [
     id: "inflation",
     ko: "인플레이션 (잔여가치)",
     primary: "T8 Inputs!C17 = 1.6%",
-    ours: "🔴 미정 — 현재 설계는 0 (터미널 = NOPAT÷WACC)",
+    ours: "✅ `expected_inflation`(damodaran DB·0.025) — 터미널 = NOPAT×(1+i)÷(WACC−i)",
     klass: "B",
-    divergence: "원전 잔여가치 = NOPAT×(1+i)÷(WACC−i). 우리는 i=0이 더 보수적이라 판단했으나 원전과 다름",
-    open: "🔴 재검토 — 원전 방식으로 갈지 결정 필요",
+    divergence: "✅ 851 확정: i=인플레(실질 0 성장)가 정석. i=0(영구 실질감소·부자연)·T8 0.016(도미노 전용) 기각. 3안 실측 GAP 중앙 16/16/14 = WACC(밴드 6년) 대비 2차적. '어느 값 쓸지'는 A분류 규칙",
   },
   { id: "sharePrice", ko: "주가", primary: "T8 Inputs!C21", ours: "기존 시세 파이프라인", klass: "B", divergence: null },
   {

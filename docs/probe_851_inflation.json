@@ -1,0 +1,45 @@
+{
+  "calculated": 443,
+  "i=0": {
+    "dist": {
+      "years": 236,
+      "below_one": 19,
+      "over_cap": 75,
+      "value_destroying": 113,
+      "invalid": 0
+    },
+    "gap": {
+      "median": 16,
+      "p90": 41,
+      "n": 236
+    }
+  },
+  "i=0.016": {
+    "dist": {
+      "years": 222,
+      "below_one": 45,
+      "over_cap": 58,
+      "value_destroying": 118,
+      "invalid": 0
+    },
+    "gap": {
+      "median": 16,
+      "p90": 42,
+      "n": 222
+    }
+  },
+  "i=0.025": {
+    "dist": {
+      "years": 195,
+      "below_one": 70,
+      "over_cap": 48,
+      "value_destroying": 130,
+      "invalid": 0
+    },
+    "gap": {
+      "median": 14,
+      "p90": 40,
+      "n": 195
+    }
+  }
+}
