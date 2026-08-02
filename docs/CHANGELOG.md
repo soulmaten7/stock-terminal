@@ -1,6 +1,22 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (7) — 역DCF DoD 항목 3 최종 소진: 각주15·NC·학술 CAP (STEP 864 · 읽기전용·코드 0)
+
+> 863의 5곳에 더해 3곳(각주15·NC 무료글·학술 CAP)을 소진. 총 8곳. 신규 원본 = `data/sources/academic/mauboussin_johnson_1997_CAP.pdf`.
+>
+> **§1 각주 15(5~15년 출처)**: 로컬 튜토리얼 8p엔 Notes 절 없음(책 본문·미확보) → 개념 추적으로 **CAP 문헌**에 도달. 5~15는 Rappaport market-implied duration + Mauboussin-Johnson MICAP에서 유래(논문 미국시장 총 CAP **10~15년**).
+>
+> **§2 New Constructs 무료 글**: NC "**Growth Appreciation Period(GAP)**" = **우리 개념과 정확히 동일**("ROIC>WACC 연수"·"DCF=주가 되는 GAP 역산"). 🔴 NC는 자체조정 NOPAT·투하자본(비공개)이라 값이 있어도 **재현 불가**.
+>
+> **§3 학술 CAP** (신규 저장): 🔑 **Mauboussin & Johnson 1997 "Competitive Advantage Period"(Financial Management)** = **MICAP(market-implied CAP) = 우리 GAP/MIFP 정확히 같은 개념**(Rappaport 차용·"주가 닿을 때까지 예측지평 늘림"=우리 LOOKUP). 명명 값(1997): 미국시장 총 **10~15**·개별 **0~2~20+**·Intel ~5·MSFT 17~20·Coca-Cola 20+·Kellogg 15·**포장식품 14~16**. 🔴 논문 터미널 = NOPAT/WACC(무성장)로 우리(인플레 영구연금 T8)와 다름.
+>
+> **§4 대조**: 🔴 **재현 가능한 동시점 개별 종목 대조 = 불가**(1997 시점+터미널 정의차+NC 비공개·억지로 안 맞춤). ✅ **범위 대조 정합**: 논문 총 10~15 ≈ 우리 years 중앙 11·개별 0~2~20+ ≈ 우리 1~24·양쪽 테크 최장. 교차시점 예시(검증 아님): MSFT 15(2026)vs17~20(1997)·KO 10vs20+·Intel over_cap vs ~5·포장식품 대부분 value_destroying vs 14~16 — 같은 도구·시대별 기대 압축/확장.
+>
+> **§5 판정 = 🔶 (도메인 상한·총 8곳 소진)**: 손계산 ✅ + 분포 ✅ + **방법 3원 확인 ✅**(GAP=MICAP=NC GAP=Rappaport) + 범위 대조 ✅. **재현 가능 동시점 개별 종목 대조는 0건**(외부 값은 존재하나 1997·정의차·비공개라 재현 불가). 🔴 **임의 ✅ 금지(STEP 864 §5)** — "3종목" 문자를 도메인 상한(도미노 재현+3중 외부 정합)으로 볼지는 **장은태 판단**. 무료 경로 소진(더 뒤질 곳 없음).
+>
+> 코드/DB/화면 0(docs+README+PDF)·tsc 0·vitest 151/151·프로덕션 404. ⓪-3: 튜토리얼 8p Notes 확인·NC methodology 로컬·CAP PDF(Damodaran 사본) 다운·pdftotext 판독·revdcf_results 2026-08-03(KO/INTC/MSFT 등). 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD: (이 커밋).**
+
 ## 2026-08-02 (6) — 역DCF DoD 항목 3: 원전 사례 전수 탐색 → 도미노 1건 입증 (STEP 863 · 읽기전용·코드 0)
 
 > 860이 "원리적 한계"라 단정했으나 근거 부족(책 5~7장 미확인)이었음. 863에서 도미노 외 워크드 PIE/MIFP 사례를 5개 탐색처 전수 소진.

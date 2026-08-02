@@ -27,7 +27,15 @@
 🔴 **판독 상태는 `lib/revdcf/registry.ts`의 `PRIMARY_SOURCE.readStatus`가 정본.**
 2026-08-01 현재 **T8만 판독 완료 · T3~T7 미독** — 해당 driver 설계를 확정하기 전에 반드시 열 것.
 
-🔴 **워크드 PIE/MIFP 사례 = 도미노 1건뿐 (STEP 863 전수 탐색 소진 · 재탐색 불요)**: T9=가상회사(Buyer/Seller Inc.)·T10=Shopify(실물옵션·PIE 아님)·튜토리얼 8p=도미노만·책 5~7장=도미노가 유일 PIE 케이스·Special Site Extras(3장: Active Investor·Pitfalls·Earnings/PE)=일반챕터·Mauboussin 리포트=재현가능 명명 MIFP 없음. **2번째 검증 사례는 무료 원전에 존재하지 않음**(값 검증 = 도미노 정확 재현 + 분포 관찰 3개로 도메인 상한).
+🔴 **워크드 PIE/MIFP 사례 = 도미노 1건뿐 (STEP 863·864 총 8곳 소진 · 재탐색 불요)**: T9=가상회사(Buyer/Seller Inc.)·T10=Shopify(실물옵션·PIE 아님)·튜토리얼 8p=도미노만·책 5~7장=도미노가 유일 PIE 케이스·Special Site Extras(3장: Active Investor·Pitfalls·Earnings/PE)=일반챕터·Mauboussin 리포트=재현가능 명명 MIFP 없음. **864 추가 소진**: 각주15(=CAP 문헌·아래)·NC 무료 글(GAP=우리 개념이나 NOPAT 자체조정 비공개라 재현불가)·학술 CAP. **완전 명세 재현가능 워크드 케이스 = 도미노 1건뿐**(값 검증 = 도미노 정확 재현 + 분포 관찰 3개 + 방법 3원 확인 = 도메인 상한).
+
+## `academic/` — 학술 문헌 (STEP 864)
+
+| 파일 | 출처 | 우리와의 관계 |
+|---|---|---|
+| `mauboussin_johnson_1997_CAP.pdf` | **Mauboussin & Johnson, "Competitive Advantage Period: The Neglected Value Driver"**, Financial Management 1997 (CS First Boston·Damodaran 사이트 사본 `pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/cap.pdf`) | 🔑 **MICAP(market-implied CAP) = 우리 GAP/MIFP와 정확히 같은 개념**(Rappaport의 market-implied duration 차용·"주가에 닿을 때까지 예측지평을 늘림"=우리 LOOKUP). 명명 값(1997): 미국시장 총 **10~15년**·개별 **0~2년~20년+**·Intel ~5·MSFT 17~20·Coca-Cola 20+·Kellogg 15·**포장식품 업종 14~16년**. 🔴 **터미널 = NOPAT/WACC(무성장)** — 우리(인플레 영구연금 T8)·와 다름. 1997 데이터라 **동시점 종목 재현 불가**·범위/패턴만 대조 |
+
+🔴 **값 검증 함의**: 우리 GAP = 학술 MICAP = NC "Growth Appreciation Period" = Rappaport market-implied duration (**3개 독립 출처가 방법을 확인**). 그러나 **재현 가능한 동시점 개별 종목 값 대조는 불가** — CAP 논문은 1997+터미널 다름, NC는 자체조정 NOPAT 비공개, 둘 다 무성장 터미널. 우리 2026 범위(중앙 11·1~24)는 논문 범위(총 10~15·개별 0~2~20+)와 **정합**.
 
 ---
 
