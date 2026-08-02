@@ -1,6 +1,20 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (5) — 역DCF DoD 항목 2 → ✅ (D&A 회수 · 부채 결측 분리) (STEP 862)
+
+> 861 판정 🔶의 두 사유(D&A 21.7% 결측·부채 결측에 무차입 混)를 닫는다. 플래그 OFF·화면 무변화·primary verdict 불변.
+>
+> **§1 D&A 우선체인**(`lib/revdcf/drivers.ts`): 합계 태그 4종(`DepreciationDepletionAndAmortization`·`DepreciationAndAmortization`·`…AndDepletion`·`…AndAccretionNet`) 우선 → 없으면 `Depreciation`+`AmortizationOfIntangibleAssets` 합산 → 없으면 결측(부분값 `DepreciationNonproduction`·단독 감가 미사용). 🔴 합계·분리 union 금지(이중계상). **D&A 5년 결측 21.7%→11.4%**·marginal INV 90.4%·capex∩D&A **85.8%**. 소스 total 513·분리합 66·mixed 9·none 16.
+>
+> **§1.2 검산(합계 ≈ 감가+무형)**: 둘 다 보고한 1450 연도-종목 상대오차 **중앙 0.29%·≤10% 77.1%·≤1% 56.5%**(p90 28.5%=광업/에너지 총계의 depletion·accretion 차). 분리합 폴백은 depletion 없는 split-only 66사에만 적용 → 안전·체인 수정 불요.
+>
+> **§2 부채 분리**: 태그부재 61사 = **무차입 37(값0·정상·이자비용 0/부재)** + **진짜 결측 24(4.0%·이자비용 있는데 태그 못 잡음)**. `debtStatus` present/zero/missing 플래그 추가. 무차입은 결측률에서 제외.
+>
+> **§3 재계산(as_of 2026-08-03·08-02 보존)**: marginal 산출 **409→465사**·method-dependent(verdict≠marginal) **81→99사**(원전 852=68 맥락). 🔴 **primary verdict 불변**(level 기반·D&A 무관·08-02 대비 1사만 변동=SEC 데이터 갱신 경계). **§4 항목 2 = ✅**(861 🔶 사유 ①D&A ②부채混 해소 · ③이상치는 항목5 소속이라 철회). 남은 D&A 11.4%·진짜결측 24사 = 진짜 데이터 부재로 explicit 제외(조용한 0 없음)·24사 부채=0 처리는 항목5.
+>
+> tsc 0·vitest 151/151·build 통과·프로덕션 `/revdcf` 404. 스크립트 `probe_862_dna_debt.ts`(읽기전용). ⓪-3: `drivers.ts` D&A/부채 로직·SEC frames(D&A 태그 filer수)·companyfacts 604 재조회·revdcf_results 08-02/08-03·T5 D&A 정의. 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD: (이 커밋).**
+
 ## 2026-08-02 (4) — 역DCF DoD 항목 2(입력 검증): 필드 출처·단위·결측률·이상치 실측 (STEP 861 · 읽기전용·코드 0)
 
 > **§0 번호 정리**: 역DCF 섹션의 "2) 화면 §1 블록"이 DoD 항목 2 자리를 차지 → 내용상 항목 6 소속이라 **"6) 주장 정합"으로 이동**(내용 불변)하고 **"2) 입력 검증" 신설**. 최종 순서 1→2→3→6.

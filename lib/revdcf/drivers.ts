@@ -48,7 +48,11 @@ const CAPEX = ["PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireP
 const CAPSW = ["PaymentsToDevelopSoftware", "CapitalizedComputerSoftwareAdditions"];
 const OTHINV = ["PaymentsForProceedsFromOtherInvestingActivities"];
 const ACQ = ["PaymentsToAcquireBusinessesNetOfCashAcquired"];
-const DNA = ["DepreciationDepletionAndAmortization", "DepreciationAndAmortization", "DepreciationAmortizationAndAccretionNet"];
+// 🔴 862: D&A 회수. 합계 태그(4종·우선순위) → 없으면 분리(감가 Depreciation + 무형 AmortizationOfIntangibleAssets 둘 다) 합산 → 없으면 결측.
+//   합계와 분리를 union으로 섞으면 이중계상/누락 → 분리 처리. DepreciationNonproduction(부분값)·단독 Depreciation(무형 누락 위험)은 미사용.
+const DNA_TOTAL = ["DepreciationDepletionAndAmortization", "DepreciationAndAmortization", "DepreciationAmortizationAndDepletion", "DepreciationAmortizationAndAccretionNet"];
+const DEPR_ONLY = ["Depreciation"];
+const AMORT_ONLY = ["AmortizationOfIntangibleAssets"];
 const SHARES_MORE = ["WeightedAverageNumberOfSharesOutstandingBasic", "CommonStockSharesOutstanding"]; // 852 폴백
 const CASH_NONOP = ["CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "CashAndCashEquivalentsAtCarryingValue"]; // 비영업(제한현금 포함 우선)
 const SECURITIES = ["ShortTermInvestments", "MarketableSecuritiesCurrent", "AvailableForSaleSecuritiesCurrent", "OtherShortTermInvestments"];
@@ -142,6 +146,11 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   const debtLy = latestYear(debtMap);
   const debt = debtLy != null ? debtMap[debtLy] : 0; // 무차입이면 0 (결측 아님)
   flags.debtIsZeroOrMissing = debtLy == null;
+  // 🔴 862: 부채 태그 부재 시 무차입(정상·값0) vs 진짜 결측(이자비용 있는데 태그 못 잡음) 분리
+  if (debtLy == null) {
+    const iMap = annualMap(gaap, "InterestExpense", "flow"); const iLy = latestYear(iMap);
+    flags.debtStatus = iLy != null && Math.abs(iMap[iLy]) > 0 ? "missing" : "zero";
+  } else flags.debtStatus = "present";
 
   const nonOpCash = coalesceMap(gaap, CASH_NONOP, "stock").vals, sec = coalesceMap(gaap, SECURITIES, "stock").vals;
   const nonOpMap = sumMaps(nonOpCash, sec);
@@ -156,7 +165,16 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   const startingMargin = rev[lastY] > 0 ? oi[lastY] / rev[lastY] : operatingMargin;
   // driver 5 — 이중 산정 (852): level=PP&E÷매출 5년평균 · marginal=원전 T5 5년누적 순고정÷5년누적Δ매출
   const fixedCapitalRateLevel = mean(YS.filter((y) => rev[y] > 0).map((y) => ppe[y] / rev[y]));
-  const capex = coalesceMap(gaap, CAPEX, "flow").vals, dna = coalesceMap(gaap, DNA, "flow").vals;
+  const capex = coalesceMap(gaap, CAPEX, "flow").vals;
+  // 🔴 862 D&A 우선체인: 합계 태그 → (감가+무형 둘 다) 합산 → 결측
+  const dnaTot = coalesceMap(gaap, DNA_TOTAL, "flow").vals;
+  const depr = coalesceMap(gaap, DEPR_ONLY, "flow").vals, amort = coalesceMap(gaap, AMORT_ONLY, "flow").vals;
+  const dna: Record<number, number> = {}; let dnaSrc = "none";
+  for (const y of YS) {
+    if (dnaTot[y] != null) { dna[y] = dnaTot[y]; if (dnaSrc === "none") dnaSrc = "total"; }
+    else if (depr[y] != null && amort[y] != null) { dna[y] = depr[y] + amort[y]; dnaSrc = dnaSrc === "total" ? "mixed" : "split"; }
+  }
+  flags.dnaSource = dnaSrc;
   const acq = coalesceMap(gaap, ACQ, "flow").vals, capsw = coalesceMap(gaap, CAPSW, "flow").vals, othinv = coalesceMap(gaap, OTHINV, "flow").vals;
   let fixedCapitalRateMarginal: number | null = null;
   const invYears = YS.slice(1); // 2021~2024 (Δ매출 있는 해)
