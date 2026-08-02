@@ -1,6 +1,43 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (16) — 🔴 **STEP 870 실행: 방향 재정렬 — 작업 순서를 DoD 순번 → 원전 대조표 차이 9행으로** (문서·지침 전용 · 코드 0줄)
+
+> **성격**: `docs/`·`CLAUDE.md`만 변경. `lib/**`·`app/**`·`components/**`·`messages/**`·`scripts/**` **diff 0**. `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `f87ab9a`).
+>
+> **왜**: 장은태 지적 — *"우리 역DCF에 대해 얘기하지 않았나? 원전원문 그대로 하기로 했어?"* 866~869는 전부 유니버스·보안·청소였고 원전 구현(driver 1~6 등)이 아니었다. 원인은 `docs/STATE.md` "▶ 다음" 1번이 **"DoD 4 → 5 → 6 → 8"**을 가리켜, 각 세션이 STATE를 정확히 따랐을 뿐인데도 표류가 생겼다는 데 있다. **DoD 9항목은 "완성 판정 기준"이지 "작업 순서"가 아닌데, STATE가 그 둘을 섞어 썼다.** 원전과의 실제 거리(`LENS_COMPLETION_STANDARD.md` 607행의 "차이 9행")는 STATE에 한 줄도 없어 STATE부터 읽는 세션에겐 구조적으로 보이지 않았다.
+
+### §1 실측 결과 (착수 전 원본 대조 · ⓪-3)
+
+- **`docs/LENS_COMPLETION_STANDARD.md` 607행**: "차이 9행" = **driver1(매출성장)·driver3(세율)·driver4(운전자본)·driver5(고정자본)·driver6(자본비용)·인플레(터미널)·모집단·데이터출처·검증사례** — 9개, 명령서의 이름·순서와 일치.
+- **`docs/STATE.md` "▶ 다음" grep**: "차이 9행"·"driver 1" 등 **0건 확인** — 명령서 전제와 일치. 기존 1번이 정확히 "DoD 4 → 5 → 6 → 8"이었음을 재확인.
+- **`lib/revdcf/registry.ts` `INPUTS` 대조 — 🔴 불일치 발견**: `divergence` 필드가 non-null인 항목은 13개 중 **10개**(salesGrowth·operatingMargin·incrementalWorkingCapitalRate·incrementalFixedCapitalRate·taxRate·costOfCapital·inflation·sharesOutstanding·debt·nonOperatingAssets)로, 문서의 "차이 9행"과 **개수·구성이 다르다.** 구체적으로: ① `operatingMargin`(driver2)은 registry.ts엔 non-null divergence 텍스트가 있으나(원전은 단일 예측치·우리는 5년/10년 병기) 607행은 이를 **"동일 8행"**에 넣는다(도미노 시작마진 17.39%=17.39% 정확 일치가 근거). ② `sharesOutstanding`·`debt`·`nonOperatingAssets` 셋도 registry.ts엔 non-null divergence(각각 "✅ 849: 희석 채택"·"✅ 849: 영업리스 제외(T8 정합)"·"✅ 849: A(전액) 채택 → 원전 그대로")가 있지만 607행은 셋 다 **"동일"**로 분류한다. ③ 반대로 607행의 "차이 9행" 중 **모집단·데이터출처·검증사례** 3개는 registry.ts `INPUTS` 배열에 **아예 항목으로 존재하지 않는다**(그 표에만 있는 개념적 행). → **registry.ts의 `divergence` non-null은 "원전과 실제로 다름"이 아니라 "결정 근거를 기록함"(원전과 일치하도록 확정한 결정 포함)까지 포괄하는 더 넓은 용도로 쓰이고 있고, `LENS_COMPLETION_STANDARD.md`의 "차이 9행"은 그중 값·절차가 실제로 갈리는 항목만 사람이 큐레이션한 목록이다.** 어느 쪽이 정본인지 판단하지 않고 둘 다 기록만 함.
+- **`data/sources/text/EI_tutorial_02_sales.html` 원문 인용**(driver 1): *"How Do I Project Future Sales Growth Rates? ... Company web sites. Companies commonly publish their guidance for future financial metrics ... Value Line Investment Survey ... Morningstar ... Other useful sites include Koyfin, Zacks, roic.ai and Yahoo Finance."* 도미노 사례: *"we combine our own analysis, analyst reports, and Value Line forecasts to assess a range for Domino's likely sales growth rate. We estimate the price-implied expectations reflect sales growth of 7 percent."* → 원전의 매출성장률 산정은 **가이던스·Value Line·애널리스트 리포트(컨센서스)를 조합한 전망치**이지 과거 매출의 CAGR이 아님을 원문으로 확인.
+
+### §2 `docs/STATE.md` "▶ 다음" 교체
+
+- 기존 "DoD 4 → 5 → 6 → 8" 등 5줄을 **차이 9행 기준 7개 항목**(0~6번)으로 교체 — 0번에 "DoD=완성기준·작업순서=차이9행" 원칙 명시, 1번에 9행 일괄 판정 절차(①결과변화 ②커버리지손실 ③채택여부, 한 행씩·다음 행 제안 금지), 2번에 첫 행(driver 1) 트레이드오프 요약, 3~4번에 DoD 4·5·6·8/DoD 3을 차이 9행 정리 후로 재배치, 5~6번에 기존 인프라·866~867 잔여 항목 보존.
+- **1~2p 상한 유지**를 위해 "🅿️ 배경"·"정체성"·"워크플로우" 섹션을 내용 삭제 없이 압축(불릿 병합) — 전체 줄 수 181→181(무변화).
+
+### §3 `docs/LENS_COMPLETION_STANDARD.md` 진행표 신설
+
+- 607행 요약 문장 바로 아래에 "차이 9행 — 원전 구현 진행표" 표 신설(9행 × ①결과변화 ②커버리지손실 ③판정 열). **미측정 칸은 전부 "미측정"·"🔴 대기"로 비워둠**(이번 STEP에서 채우지 않음).
+
+### §4 `CLAUDE.md` 2건 수정
+
+- **3중 규칙**: `[3중 점검]` 블록 강제 조항을 "점검 자체는 하되 블록 출력은 생략 가능"으로 완화(장은태 지시) — 단 **못 한 축·철회/정정·미측정 목록 3가지는 본문에 반드시 명시**하도록 재확인. 블록 부재를 규칙 위반으로 판단하지 말 것을 명문화.
+- **🚫 창작 금지**: 5항목 뒤에 **6번 신설** — "DoD 9항목은 완성 판정 기준이지 작업 순서가 아니다. 진행 순서는 원전 대조표의 차이 행을 따른다." + 이번 위반 사례를 원문 그대로 기록.
+
+### §5 `docs/LENS_DEV_PLAYBOOK.md` 로그 1행
+
+- 신규 #71 — 문제(866~869가 원전 구현이 아닌 곳에 쓰임)·원인(STATE가 DoD 순번을 가리킴·차이 9행이 STATE에 안 보임)·해결(STATE 교체+진행표+CLAUDE.md 명문화)·교훈("완성 기준"과 "작업 순서"는 다른 문서 역할·문서에 안 적힌 목표는 다음 세션에 존재하지 않는다).
+
+### §6 무변경 확인
+
+- `git diff --stat HEAD -- lib/ app/ components/ messages/ scripts/ data/` 출력 없음 · tsc 0 · vitest 153/153(무변화) · `REVDCF_ENABLED` OFF 유지.
+
+**▶ 다음**: 차이 9행을 한 행씩 판정(첫 행 = driver 1) — **장은태 지시 후에만.** Claude Code는 여기서 멈춘다. driver 1 착수는 이번 STEP의 범위가 아니다.
+
 ## 2026-08-02 (15) — 🟢 **STEP 869 실행: 화면 문구 정정 + 사고 기록 커밋** (문서·문자열 전용 · 로직 diff 0)
 
 > **성격**: `messages/ko.json`·`messages/en.json` 문자열 2건 + `docs/PROD_ACCESS_*.md` 3종 커밋(내용 무수정) + 문서 갱신. `components/`·`lib/`·`app/` **diff 0**. 커밋 = 이 커밋(부모 `6044c3e`). 장은태가 순서를 **② 사고기록 → ① sampleNote → ③ 죽은 키**가 아니라 **① sampleNote를 최우선**으로 재배열 승인(플래그를 켜는 순간 거짓 문구가 나가는 쪽이 더 급함).

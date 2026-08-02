@@ -153,29 +153,29 @@
 
 ---
 
-## ▶ 다음 — 🔴 **장은태 지시 후에만**
-1. 🔴 **DoD 4 → 5 → 6 → 8** (**한 항목씩 · 다음 항목 제안 금지**) — DoD 4는 **🔶 유지**(867로 근거만 채움, ✅ 상향은 장은태 판단)
-2. 🔴 **미측정 잔여**(채택 판정과 무관하게 남는 것 · Claude Code 제안 없음): Russell 3기준(최저주가 $1.00·최저시총 $30M·float 5%) 측정 여부 · OTC 티어(OTCQX/QB/PINK/OTCID) 라벨 신뢰도 규명 · ICC 정본 선택(604 기준 vs 전수 기준) · skipped 89사(15%) 전수 규명(회수 가능 vs 원리적 불가)
-3. 🔴 **DoD 3 판정**(도메인 상한을 ✅로 볼지) = 장은태 결정 대기
-4. 🅿️ **FTSE Russell 1차 문서 원본 미저장**(867에서 발견 — rule ⓪ 갭) — 저장 여부·시점은 장은태 결정
-5. 🅿️ `lib/revdcf/registry.ts`의 `OUR_ADDITIONS.status`(아직 `"재개방"`) 코드 동기화 — `lib/**` 허용되는 후속 STEP 몫
+## ▶ 다음 — 🔴 장은태 지시 후에만
+
+0. 🔑 **지금 하는 일 = 원전 그대로 구현**(CLAUDE.md 🚫 창작 금지). 진행 기준은 **DoD 순번이 아니라 원전 대조표의 차이 9행**이다. 🔴 **DoD 9항목은 "완성 판정 기준"이지 작업 순서가 아니다.** 섞지 말 것. 대조표 정본 = `docs/LENS_COMPLETION_STANDARD.md` §1(행 수 22 = 동일 8 + 값만차이 1 + **차이 9** + 우리 추가물 4)
+
+1. 🔴 **차이 9행을 하나씩 판정한다** — driver1·driver3·driver4·driver5·driver6·인플레·모집단·데이터출처·검증사례. 각 행마다 ① 원전 절차로 바꾸면 결과(GAP 분포·verdict)가 얼마나 달라지나 ② 커버리지를 얼마나 잃나 ③ 그래도 원전을 택할 것인가를 실측해 장은태에게 올린다 → **판정 = 장은태**. 🔴 **한 행씩. 다음 행 제안 금지.**
+
+2. 🔴 **첫 행 = driver 1(매출 성장률)** — 가장 큰 차이. 원전 = 가이던스·Value Line·컨센서스(**앞을 본다**) / 우리 = SEC 매출 5년 CAGR(**뒤를 본다**). 🔑 조달처 차이가 아니라 **모델이 비교하는 대상 자체가 달라지는 자리**다 — 역DCF는 "시장이 건 기대"를 푸는데 기대 자리에 과거 실적을 넣고 있다. 트레이드오프: 무료 8-K 가이던스 존재율 **63.3%·N≈1년**(847) → 원전 쪽으로 가면 커버리지를 크게 잃는다. **충실도 vs 커버리지 = 장은태 결정.**
+
+3. 🔴 **DoD 4·5·6·8은 차이 9행이 정리된 뒤에 판정한다.** 특히 DoD 4(컷·분포)는 원전에 없는 우리 추가물 층이라 원전 구현보다 먼저 올 수 없다.
+
+4. 🔴 **DoD 3 판정**(도메인 상한 ✅ 여부) = 장은태 결정 대기(독립 항목)
+
+5. 🅿️ **인프라 미확정**(모델과 무관·장은태만 가능한 것 포함): 브라우저 육안 2단계 미실행 · Vercel 플랜(`vercel.json` 크론 9개 vs STATE "Hobby" 모순) · `/api/revdcf` 외부 호출 이력(Vercel 로그 403) · `toms-projects` 스코프 접근 권한 · FTSE Russell 1차 문서 원본 미저장(rule ⓪ 갭) · `lib/revdcf/registry.ts`의 `OUR_ADDITIONS.status` 코드 동기화
+
+6. 🅿️ **866~867 잔여 미측정**(원전 구현과 무관·재개는 장은태 지시 후): Russell 3기준 측정 여부 · OTC 티어 라벨 신뢰도 · ICC 정본 선택 · skipped 전수 규명
+
 - 🅿️ 보류: 항목 7·9(노출) · 베타 · 국가탭 확대 · 7렌즈 깊이 확장 — **모델 완성 전 재개 금지**
 
 ---
 
 ## 🅿️ 배경 (역DCF 밖 · 변경 없음)
-- **활성 시장 = KR·US뿐**(799). JP·CN(HK)·VN·GB 파킹(데이터·크론·라우트 보존 · `lib/activeMarkets.ts` · 복원 = `PARKED_FIELD_SURFACES.md` §7).
-- **7렌즈 = 유지·수정만.** 3중검증(812~819)·주장 정합(820~827)·베타차단 보안(828)·운영 정직성(829)·베타 전 마감(830) 완료. 🔴 **깊이 확장은 역DCF 완성 뒤.**
-- **판정 = 분포 유도 컷**(`lens_cuts` 시장별 p30/p70). RSI 30/70·F-Score 3/7만 고정.
-- 🔴 **주의**: `us_market_cap`(5,886행)은 `lib/lensPrecompute.ts:134`가 `data/us_symbols.json`(6,766) 기준으로 채운다. **이 목록을 건드리면 7렌즈 유니버스까지 움직인다.**
-- 미착수: JP/CN/VN/GB 렌즈 선계산 · 대화형 LLM · 푸시/앱스토어.
+- **활성 시장 = KR·US뿐**(799 · JP/CN(HK)/VN/GB 파킹 — `lib/activeMarkets.ts` · 복원 = `PARKED_FIELD_SURFACES.md` §7). **7렌즈 = 유지·수정만**(812~830 완료) — 🔴 깊이 확장은 역DCF 완성 뒤. 판정 = 분포 유도 컷(`lens_cuts` 시장별 p30/p70 · RSI 30/70·F-Score 3/7만 고정). 🔴 `us_market_cap`(5,886)은 `data/us_symbols.json`(6,766) 기준 — 건드리면 7렌즈 유니버스까지 움직임. 미착수: JP/CN/VN/GB 렌즈 선계산 · 대화형 LLM · 푸시/앱스토어.
 
-## 정체성 (권위 = `docs/BRAND_IDENTITY.md`)
-- 사업자 **원트릴리언** · 대표 장은태 · 210-39-33812 · contact@onetrillion.app
-- **"종목을 보는 눈을, 누구에게나."** — 3기둥: 무기·직시·자립. 멍거 톤. **예측·추천 안 함 · 거래 X.**
-- 필드 = **5면**(오늘·탐색·종목상세·관심·마이) · i18n ko·en 전면 패리티.
-
-## 워크플로우 (역할 혼용 금지)
-- **Cowork = 두뇌**: 대화·설계·문서/명령 작성 · DB는 Supabase MCP(`ccbwxcszdoyjxvckedfp`) 직접. **실행·빌드·git 안 함.**
-- **Claude Code = 손**: STEP 실행·빌드·git. `cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet`(Opus는 🔴 표시 시).
-- 세션 종료 = STATE 덮어쓰기 + CHANGELOG 블록 + SYSTEM_MAP(아키텍처 변경 시) + git push.
+## 정체성 (권위 = `docs/BRAND_IDENTITY.md`) · 워크플로우
+- 사업자 **원트릴리언**(대표 장은태·210-39-33812·contact@onetrillion.app) · **"종목을 보는 눈을, 누구에게나."**(3기둥 무기·직시·자립·멍거 톤·예측·추천 안 함·거래 X) · 5면(오늘·탐색·종목상세·관심·마이)·i18n ko·en 패리티.
+- **Cowork=두뇌**(대화·설계·문서 · Supabase MCP 직접 · 실행·git 안 함) / **Claude Code=손**(STEP 실행·빌드·git · `cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet`, Opus는 🔴 표시 시). 세션 종료 = STATE 덮어쓰기 + CHANGELOG + SYSTEM_MAP(구조 변경 시) + push.
