@@ -6,10 +6,14 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 867)** · 부모 `57b3c84`(STEP 866D) · **push 완료 — origin/main 반영.**
-- 🔴 **867은 문서 전용(코드 0줄·DB 0행·화면 0)** — 866~866D가 더한 것도 **측정 전용 프로브 + 문서**뿐. `lib/revdcf/**`·`lib/lensPrecompute.ts`·`app/**`·`scripts/**`·`data/us_symbols.json` **diff 0**(프로덕션 코드는 여전히 `9c5185b`=STEP 865 그대로).
-- **tsc 0 · vitest 151/151** · 프로덕션 **404 유지**(플래그 OFF) · `revdcf_results` = 2026-08-01/02/03 각 **604**(866~867 실행 후 무변경 확인) · `us_market_cap` = **5,886**(866C~867 실행 후에도 무변경 확인 — OTC 시총은 측정 파일에만, 프로덕션 테이블 미기록).
-- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.** push로 Vercel 자동배포되지만 **코드 diff 0·플래그 OFF라 화면은 무변화**(배포 후 `/` 200·역DCF 라우트 404 유지 확인).
+- HEAD = **이 커밋(STEP 868)** · 부모 `e18541f`(STEP 867) · **push 완료 — origin/main 반영.**
+- 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(`trillion.im`·`trillion.app`은 보유한 적 없음 — 2026-08-02 확정, `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
+- 🚨 **STEP 868 = 사고 대응.** `app/api/revdcf/route.ts`가 **STEP 854 게이팅에서 빠져 853 배포 시점부터 공개**돼 있었다(인증·레이트리밋 0건 · 26필드 × 604종목 · 30분 캐시). 피처 플래그를 확인하지 않고 `revdcf_results`를 그대로 반환. **868에서 A안(`{result:null}` 조기 반환)으로 차단** — `REVDCF_ENABLED` OFF 유지, 켜지 않음.
+- 🔴 **"프로덕션 404 유지"는 부정확한 문구였다** — 정확히는: 페이지 2곳(`/revdcf`·`/en/revdcf`)만 **404 실측 확인**돼 있었고, `/api/revdcf`는 **853부터 공개 상태였다가 868에서 차단**. 페이지·API를 하나로 뭉뚱그리면 이런 구멍이 다시 생긴다.
+- 🔑 **868의 부산물**: vitest가 `@/*` 경로 별칭을 몰라 새 라우트 테스트가 즉시 실패 → `vitest.config.ts` 신규(tsconfig `@/*`→`./*`와 동일하게만 별칭 추가, 기존 151 테스트 동작 무변경).
+- 866~867(유니버스 조달 범위 확정)은 그대로 유효 — `lib/revdcf/engine.ts`·`drivers.ts`·`compute.ts`·`data/us_symbols.json` **diff 0**(프로덕션 계산 코드는 `9c5185b`=STEP 865 그대로, 868은 API 라우트 게이팅 2줄만 추가).
+- **tsc 0 · vitest 153/153**(기존 151 + 신규 2) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경) · `us_market_cap` = **5,886**(무변경).
+- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
 
 ---

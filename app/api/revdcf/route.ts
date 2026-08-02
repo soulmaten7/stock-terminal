@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { revdcfEnabled } from "@/lib/revdcf/flag";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +12,11 @@ const cache = new Map<string, { at: number; data: unknown }>();
 const TTL = 30 * 60 * 1000;
 
 export async function GET(req: Request) {
+  // 🔴 STEP 868: 피처 플래그 OFF면 데이터에 닿기 전에 끊는다.
+  //   854가 게이팅을 3곳(페이지 2·batch 1)에만 넣고 이 라우트를 빠뜨려 853부터 공개돼 있었다.
+  //   {result:null}은 기존 반환 형태 재사용 — RevDcfSection이 이미 미렌더로 처리한다(부작용 0).
+  if (!revdcfEnabled()) return NextResponse.json({ result: null });
+
   const symbol = (new URL(req.url).searchParams.get("symbol") || "").toUpperCase().trim();
   if (!symbol) return NextResponse.json({ error: "no symbol" }, { status: 400 });
   const hit = cache.get(symbol);

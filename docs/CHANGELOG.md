@@ -1,6 +1,44 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (14) — 🚨 **STEP 868 실행: `/api/revdcf` 게이팅 누락 차단(A안) + 재발 방지 테스트** (사고 대응)
+
+> **성격**: 사고 대응 1 STEP. `app/api/revdcf/route.ts` 가드 2줄 + 신규 테스트 파일 + 신규 `vitest.config.ts`(부수 필요) + 문서 4개. `lib/revdcf/engine.ts`·`drivers.ts`·`compute.ts`·`components/RevDcfSection.tsx`·`data/us_symbols.json` **diff 0** · `REVDCF_ENABLED` OFF 불변 · 커밋 = 이 커밋(부모 `e18541f`).
+>
+> **발견 경위**: STEP 867 push 후 배포 확인을 시도하다 프로덕션 도메인을 `trillion.im`으로 착각 → 조회 자체가 실패 → 재측정 과정에서 실제 도메인(`onetrillion.app`)을 확인하고 재조회하던 중, 이전 세션이 이미 남긴 진단서(`docs/PROD_ACCESS_DIAGNOSTIC_2026-08-02.md`→`ANSWER`→`ANSWER2`)를 통해 **`/api/revdcf`가 인증 없이 전체 결과를 반환하고 있다는 사실**이 별도로 발견돼 있었음을 확인. 2026-08-02 장은태가 `ANSWER2` §5-1 A안으로 승인.
+>
+> **원인**: STEP 854가 역DCF 노출을 `REVDCF_ENABLED` 뒤로 넣으면서 게이팅을 소비처 3곳(종목페이지 섹션·`/revdcf` 방법론 페이지·`/api/revdcf/batch`)에 넣었는데, **`/api/revdcf` 단건 조회 라우트가 그 목록에서 빠졌다.** `git log --follow -- app/api/revdcf/route.ts` = 이력 2개(`5475a95` STEP 853 생성 · `2248b21` STEP 855)뿐이고 854 커밋(`b9faf79`·`8d6d081`)이 이 파일을 건드린 적이 없어 **853 배포 시점부터 지금까지 계속 공개 상태였음이 확정.**
+
+### §1 노출 범위 (실측)
+
+- `https://onetrillion.app/api/revdcf?symbol=AAPL` → 200 · 심볼당 **26개 필드**(`verdict`·GAP 연수·WACC ±1%p 밴드·`explainedPct`·`thresholdMargin`·`monotonic`·드라이버 9개·`verdictMarginal`·`skipReason`·업종·분포 내 순위·`expectationLevel`) · **604종목 전부 조회 가능** · 인증·레이트리밋 **0건** · 30분 인메모리 캐시.
+- 🔴 **개인정보 유출이 아니다** — 공개 재무데이터에서 우리가 계산한 값. 문제는 **DoD 3·4·5·6·8이 🔶인 미완성 모델의 숫자가 장은태 육안 승인 전에 우리 도메인으로 나가고 있었다는 것.**
+- `revdcf_results`를 읽는 앱 코드 전수(3개) 재확인: `route.ts`(🚨 게이팅 없음, 이번에 수정) · `batch/route.ts`(✅ 게이팅) · `cron/route.ts`(✅ `CRON_SECRET` Bearer 검사, 무변경).
+
+### §2 조치 — A안 (코드 2줄)
+
+- `app/api/revdcf/route.ts`: `import { revdcfEnabled } from "@/lib/revdcf/flag"` 추가 + `GET` 최상단(캐시 조회·`createAdminClient()`·DB 접근보다 앞, `symbol` 파싱보다도 앞)에 `if (!revdcfEnabled()) return NextResponse.json({ result: null })` 삽입.
+- 기존 반환 형태(`{result: null}`) 재사용 — `RevDcfSection.tsx:29,34`가 이미 이 케이스를 미렌더로 처리하므로 **클라이언트 변경 불필요·부작용 0**.
+- B안(404)은 승인되지 않아 채택하지 않음. **의도된 부수 효과**: `symbol` 파라미터 없이 호출해도 이제 400이 아니라 `{result:null}`을 반환(가드가 파싱보다 앞이라 발생 — 노출이 줄어드는 방향이라 그대로 둠).
+
+### §3 재발 방지 테스트 (신규)
+
+- **`app/api/revdcf/`에 테스트가 0개였다** — 그래서 854의 누락을 아무도 못 잡았다. `app/api/revdcf/route.test.ts` 신규: `REVDCF_ENABLED` 미설정 / `"false"` 두 케이스 모두 `{result:null}` 반환 + `createAdminClient` 호출 **0회**를 단언(모킹). `REVDCF_ENABLED="true"` 케이스는 만들지 않음(Supabase 실접속 필요 — 이번에 고정할 것은 "꺼졌을 때 안 나간다" 하나).
+- **부수 필요**: 이 테스트를 작성하면서 처음으로 `app/` 아래 파일이 `@/...` 별칭을 통해 vitest에 import됐는데, 이 저장소에 vitest 설정 자체가 없어 별칭이 전혀 해석되지 않아 즉시 실패했다. `vitest.config.ts`를 신규 작성(tsconfig의 `"@/*": ["./*"]`와 동일하게 `resolve.alias`만 추가) — 기존 151개 테스트는 전부 상대경로 import라 동작 무변화, tsc·vitest 재실행으로 확인.
+
+### §4 무변경 확인
+
+- `git diff --stat HEAD -- lib/revdcf/engine.ts lib/revdcf/drivers.ts lib/revdcf/compute.ts components/RevDcfSection.tsx data/us_symbols.json` 출력 없음 · `REVDCF_ENABLED` OFF 유지 · tsc 0 · vitest **153/153**(기존 151 + 신규 2).
+- `docs/PROD_ACCESS_DIAGNOSTIC_2026-08-02.md`·`docs/PROD_ACCESS_ANSWER_2026-08-02.md`·`docs/PROD_ACCESS_ANSWER2_2026-08-02.md` 3종은 사고 기록이라 **수정하지 않음**(그대로 보존).
+
+### §5 문서 정정
+
+- `docs/STATE.md`: "프로덕션 404 유지" 문구가 부정확했음을 정정 — 페이지 2곳(`/revdcf`·`/en/revdcf`)만 404가 실측 확인돼 있었고, `/api/revdcf`는 853부터 공개 상태였다가 이번에 차단. 프로덕션 도메인을 `https://onetrillion.app`으로 명시.
+- `docs/REVDCF_SPEC.md` §7: STEP 854 문단의 "유지(데이터 배관): `/api/revdcf`·`/api/cron/revdcf`" 서술이 "이 라우트 자체엔 가드가 없다"는 뜻으로 오독될 수 있었던 지점에 STEP 868 문단을 추가해 정정.
+- `docs/LENS_DEV_PLAYBOOK.md`: 문제해결 로그 신규 행(#70) — 🔑 **"게이팅 감사는 데이터 출구에서 시작한다. 게이팅된 곳을 세면 누락이 안 보인다"** + "새 플래그를 만들 때마다 그 데이터를 밖으로 내보내는 곳 전수를 세고 각각에 테스트를 붙인다."
+
+**▶ 다음**: 배포 후 프로덕션 실측(`/api/revdcf?symbol=AAPL`·`=MSFT`(캐시 교차 확인)·`/api/revdcf/batch`·`/revdcf`·`/`·`/stock/AAPL`) — 아래 STATE에 실측치 반영. 플래그를 켜는 것·베타·노출 확대는 **논의하지 않음**(장은태 판단 사항).
+
 ## 2026-08-02 (13) — 🟢 **STEP 867 실행: 유니버스 확정(조달 범위) + 차이 원장 기재 + push** (문서 전용 · 코드 0 · DB 0행)
 
 > **성격**: 문서 정본 갱신 1 STEP. `lib/**`·`app/**`·`scripts/**`·`data/us_symbols.json` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 없음 · 플래그 `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `57b3c84`) — **이 STEP이 866 시리즈 중 유일하게 push를 허가**.
