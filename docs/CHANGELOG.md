@@ -1,6 +1,51 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (20) — 🔬 **STEP 874 실행: 차이 3·4행(driver 4 운전자본 · driver 5 고정자본) 원전식 실측** (측정 전용 · 코드 0줄)
+
+> **성격**: 신규 `scripts/probe_874_wc.ts`(측정 전용) + `docs/probe_874_*.json` + `docs/PRIMARY_SOURCE_MAP.md` git 추가(내용 미수정) + 문서. `lib/**`·`app/**`·`components/**`·`messages/**` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `6649778`).
+>
+> **왜 두 행을 같이 하나**: T4(운전자본)·T5(고정자본)는 둘 다 "증분식 + 5년 누적" 구조로 동일하다. 우리 구현은 driver4가 원전 공식이 아예 없고(수준형만), driver5는 원전식(marginal)을 계산해 두고도 엔진은 level만 쓴다 — 둘 다 ①(원전 절차)조차 안 지키는 같은 자리다.
+
+### §1 원본 재확인
+
+- `T4.xlsx` `Working Capital Analysis!I31` = **0.501%**, `T5.xlsx` `Cash Flow Method!I20` = **11.6%** — 원전 셀 자체가 이 값을 산출함을 직접 확인(별도 재구현 불요, 도미노 앵커 재현 완료).
+- `Tutorial 4` B23 원문 *"Other non-interest bearing current liabilities"* 확인 — 무이자 유동부채만 차감이 **원전에 명시된 설계**임을 재확인(가설 아님).
+- `Tutorial 5` B52 원문 *"we assume that Domino's will invest slightly under this amount at 10.0% ... (see page 92)"* 확인 — 계산값 11.6%를 책이 10.0%로 바꿔 넣은 것 재확인.
+- 🟠 **신규 발견**: `T4.xlsx` `Working Capital Analysis!B32` 각주 *"in the book we do not consider other current assets... The five-year average is 3.2% versus 0.5%"* — **T4도 T5와 같은 유형의 책↔스프레드시트 괴리**를 갖고 있었다(이전 STEP들이 놓친 부분).
+- `lib/revdcf/drivers.ts` 167·184·186·191행 확인 — §0의 코드 인용과 일치.
+
+### §2 driver 4 원전식 두 안 실측 (515 전수)
+
+| | 현행(수준형) | A안(원전 세부태그) | B안(집계 근사) |
+|---|---|---|---|
+| 중앙값 | 1.80% | **15.63%** | 5.83% |
+| 계산 가능 | 515/515 | **65/515(12.6%)** | 514/515(99.8%) |
+| 음수 | 236 | 14 | 220 |
+
+- A안 태그별 5년 결측: AR 62 · Inventory 156 · OtherCurrentAssets 254 · AccountsPayable 78 · **AccruedLiabilitiesCurrent 284(최대 병목)**.
+- B안은 근사임을 명시 — 원전처럼 무이자 항목만 정확히 골라내지 못하고 이자부 유동부채 태그로 뭉뚱그려 차감.
+
+### §3 결과 변화 (엔진 import만·수정 없음)
+
+- **driver4 A안만**: GAP p50 11→**15**(비교가능 20/65) · years 유출2/유입0.
+- **driver4 B안만**: GAP p50 11→**10**(비교가능 169/514) · 유출12/유입4(3배).
+- **driver5(marginal)만**: GAP p50 11→**10**(비교가능 128/465) · DB 실측(§0)과 515/515 정확 일치 재확인 — level 중앙 0.193 vs marginal **0.272** · 음수 0/**101** · \|값\|>1 71/**133** · 계산불가 0/**50(9.7%)**.
+- 🔴 **"years 유출" 정의가 갈린다**: 판정불가(marginal 계산불가 null)를 이탈로 셀지 여부에 따라 **유출 41(비교가능만) 또는 57(null도 이탈로)** — 비대칭비 **5.13배 또는 7.13배**. 후자가 STEP §0의 인용치(57·7배)와 정확히 일치함을 확인. **둘 다 병기**(하나만 고르지 않음 — 873의 인용규율 교훈을 바로 적용한 사례).
+- **driver4A + driver5marginal 동시 적용**: GAP p50 11→**14**(비교가능 13/63) · 유출9/유입1(9배).
+
+### §4 문서
+
+- `docs/LENS_COMPLETION_STANDARD.md` 진행표 3·4행(driver4·5) ①②를 위 수치로 채움. **③은 대기 유지.**
+- `docs/REVDCF_SPEC.md`: §11에 8행 추가(driver5 DB실측 재대조·driver4 A/B실측·태그결측·결과변화·T4/T5앵커재현·T4/T5 책↔스프레드시트 괴리 2건) · §10 신규 2건(#44 원전이 계산값을 그대로 안 씀 — 조정규칙 원전에 없음·#45 T8 15%와 책 10%가 다름, 정본 미확정) · §B-4 driver4 절의 "가설(무이자부채만...)" 표현을 "원전에 명시된 설계"로 정정(🔴 `lib/revdcf/registry.ts`의 동일 문구는 `lib/**` 금지로 미동기화 — 후속 STEP 몫).
+- `docs/PRIMARY_SOURCE_MAP.md`(T3~T7 원본 직독본, 이전 세션이 준비해 둔 untracked 파일) git에 추가 — 내용 미수정.
+
+### §5 무변경 확인
+
+- `git diff --stat HEAD -- lib/ app/ components/ messages/ data/` 출력 없음 · tsc 0 · vitest 153/153(무변화). `revdcf_results` 604×3 — 🔴 프로브 자체의 최종 카운트 쿼리가 이번에도 한 번 396행(2026-08-02)으로 찍혔으나(871과 동일 패턴), 이 스크립트도 쓰기 호출 0건이라 원인이 될 수 없고 즉시 재조회로 604×3 정상 확인(프로덕션 크론 write-in-flight). `us_market_cap` 5,886.
+
+**▶ 다음**: 차이 3·4행(driver4·5)의 ③판정, 그리고 남은 행(driver3·driver6·인플레·모집단·데이터출처·검증사례) 착수 여부 — 전부 **장은태 지시 후에만.** Claude Code는 여기서 멈춘다.
+
 ## 2026-08-02 (19) — ✅ **STEP 873 실행: 차이 9행 1행(driver 1) 판정 확정 + 인용 규율 교훈** (문서 전용 · 코드 0줄)
 
 > **성격**: `docs/` 문서만. `lib/**`·`app/**`·`components/**`·`messages/**`·`scripts/**`·`data/us_symbols.json` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `db5d452`).

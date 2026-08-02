@@ -1,0 +1,166 @@
+{
+  "asOf": "2026-08-03",
+  "n": 515,
+  "driver4": {
+    "current": {
+      "n": 515,
+      "p05": -0.34525601652579374,
+      "p50": 0.01801154317873814,
+      "p95": 0.7389831412936723,
+      "negative": 236,
+      "absOver1": 20,
+      "calcImpossible": 0
+    },
+    "A": {
+      "n": 65,
+      "p05": -0.29087470449172576,
+      "p50": 0.15627190959409595,
+      "p95": 0.7490402371569309,
+      "negative": 14,
+      "absOver1": 3,
+      "calcImpossible": 450
+    },
+    "B": {
+      "n": 514,
+      "p05": -0.7071917967395074,
+      "p50": 0.05834076300237969,
+      "p95": 0.9349354146958951,
+      "negative": 220,
+      "absOver1": 43,
+      "calcImpossible": 1
+    },
+    "tagMissing5yr": {
+      "AR": 62,
+      "Inventory": 156,
+      "OtherCurrentAssets": 254,
+      "AccountsPayable": 78,
+      "AccruedLiabilities": 284
+    },
+    "note": "A안=원전 세부 태그(필요현금 매출×2%+AR+Inv+OtherCA − AP−Accrued). B안=집계 근사(AssetsCurrent−현금·단기투자+필요현금 − (LiabilitiesCurrent−이자부유동부채)). B안은 근사 — 원전처럼 무이자 항목만 정확히 골라내지 못하고 이자부 유동부채 태그로 뭉뚱그려 차감."
+  },
+  "resultChange": {
+    "A_only": {
+      "gap": {
+        "n": 20,
+        "p25": 8.5,
+        "p50": 15,
+        "p75": 18.25
+      },
+      "verdict": {
+        "comparable": 65,
+        "migration": {
+          "below_one→below_one": 12,
+          "value_destroying→value_destroying": 15,
+          "over_cap→over_cap": 14,
+          "years→years": 20,
+          "years→over_cap": 2,
+          "below_one→value_destroying": 1,
+          "over_cap→value_destroying": 1
+        },
+        "yearsOut": 2,
+        "yearsIn": 0,
+        "asymmetryRatio": null,
+        "yearsOutIncludingNullAsLost": 157,
+        "asymmetryRatioIncludingNullAsLost": null
+      }
+    },
+    "B_only": {
+      "gap": {
+        "n": 169,
+        "p25": 5,
+        "p50": 10,
+        "p75": 17
+      },
+      "verdict": {
+        "comparable": 514,
+        "migration": {
+          "over_cap→over_cap": 83,
+          "years→years": 165,
+          "below_one→below_one": 83,
+          "value_destroying→value_destroying": 138,
+          "over_cap→value_destroying": 15,
+          "below_one→value_destroying": 4,
+          "value_destroying→over_cap": 7,
+          "years→over_cap": 10,
+          "over_cap→years": 3,
+          "value_destroying→below_one": 3,
+          "value_destroying→years": 1,
+          "years→value_destroying": 2
+        },
+        "yearsOut": 12,
+        "yearsIn": 4,
+        "asymmetryRatio": 3,
+        "yearsOutIncludingNullAsLost": 12,
+        "asymmetryRatioIncludingNullAsLost": 3
+      }
+    },
+    "driver5_marginal_only": {
+      "gap": {
+        "n": 128,
+        "p25": 5,
+        "p50": 10,
+        "p75": 14.25
+      },
+      "verdict": {
+        "comparable": 465,
+        "migration": {
+          "over_cap→over_cap": 61,
+          "years→value_destroying": 18,
+          "below_one→below_one": 70,
+          "value_destroying→value_destroying": 115,
+          "over_cap→value_destroying": 31,
+          "years→years": 120,
+          "value_destroying→over_cap": 9,
+          "below_one→value_destroying": 6,
+          "years→over_cap": 23,
+          "value_destroying→below_one": 3,
+          "over_cap→years": 3,
+          "over_cap→below_one": 1,
+          "value_destroying→years": 5
+        },
+        "yearsOut": 41,
+        "yearsIn": 8,
+        "asymmetryRatio": 5.13,
+        "yearsOutIncludingNullAsLost": 57,
+        "asymmetryRatioIncludingNullAsLost": 7.13
+      }
+    },
+    "driver4A_plus_driver5marginal_combined": {
+      "gap": {
+        "n": 13,
+        "p25": 9,
+        "p50": 14,
+        "p75": 17
+      },
+      "verdict": {
+        "comparable": 63,
+        "migration": {
+          "below_one→below_one": 11,
+          "value_destroying→value_destroying": 12,
+          "over_cap→value_destroying": 6,
+          "over_cap→over_cap": 8,
+          "value_destroying→over_cap": 3,
+          "years→over_cap": 5,
+          "years→years": 12,
+          "years→value_destroying": 4,
+          "below_one→value_destroying": 1,
+          "over_cap→years": 1
+        },
+        "yearsOut": 9,
+        "yearsIn": 1,
+        "asymmetryRatio": 9,
+        "yearsOutIncludingNullAsLost": 165,
+        "asymmetryRatioIncludingNullAsLost": 165
+      }
+    }
+  },
+  "currentBaseline": {
+    "gap": {
+      "n": 177,
+      "p25": 6,
+      "p50": 11,
+      "p75": 17
+    }
+  },
+  "note": "재료만 — 제안 없음. ③판정은 장은태."
+}

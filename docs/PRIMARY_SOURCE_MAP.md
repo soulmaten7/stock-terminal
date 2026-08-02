@@ -1,0 +1,172 @@
+<!-- 2026-08-02 · 작성 = Cowork · 원본 직접 개봉 판독본 -->
+# 원전 명세 지도 — T3~T7 스프레드시트 직독
+
+> **성격**: 발췌·요약이 아니라 **원본 셀 수식을 그대로 옮긴 판독본**이다. 각 항목에 **원본 파일·시트·셀 좌표**를 붙였다.
+> **왜 만들었나**: 차이 9행을 한 행씩 판정하는데, 지금까지의 판정 근거가 **원본이 아니라 이전 STEP의 요약 문장**에 기대어 있었다. 2026-08-02 하루에 그런 인용이 **여섯 번** 뒤집혔다(플레이북 #72).
+> **원본**: `data/sources/expectations-investing/T{3,4,5,6,7}.xlsx` · 🔴 **T1·T2는 없다**(튜토리얼 #1·#2 404).
+
+---
+
+## §1. driver 3 — 세율 (T6 + T7)
+
+### 원전이 실제로 하는 것
+
+**T6 `Cash Tax Rate` 시트** — NOPAT용 세율
+
+```
+Deferred taxes        = 세금비용 − 현금납부세금        (Inputs!C17 − Inputs!C26)
+Current cash taxes    = 세금비용 − Deferred            (= 현금납부세금)
+Tax shield            = 이자 × 장부세율                (Inputs!C14 × Inputs!C20)
+Unlevered cash taxes  = Current cash taxes − Tax shield   ← 이자가 음수라 실제로는 더함
+Cash tax rate         = Unlevered cash taxes ÷ EBITA   (Inputs!C13)
+```
+
+정의(T6 `Tutorial 6` B15·B16):
+> *"**Unlevered.** …we remove this distortion by calculating a company's tax burden **assuming a company was 100% equity financed with no debt.**"*
+> *"the percent of pre-tax **operating** profits a company would pay in cash taxes … assuming it was 100% equity financed."*
+
+B36: *"we **increase** the tax onus by the taxes shielded by debt."*
+각주 B52: *"For Domino's, we assumed that deferred taxes were the difference between the tax provision and cash taxes paid."* → **Advanced는 대수적으로 "현금납부세금"이 된다.**
+
+**🔴 원전은 방법을 둘 제시한다** (T6 B20~B28):
+- **A. Simplified** — *"just substitutes a company's **book tax rate** as a proxy"*
+- **B. Advanced** — 위 3단계 조정
+
+**T7 `Tutorial 8` 시트 B24·B26** — WACC용 세율
+> *"The after-tax cost of debt-capital = The yield-to-maturity on long-term debt x (1 minus [tax rate])"*
+> *"We enter the **marginal tax rate** in cell C10 of worksheet 'Inputs.'"*
+
+### 🔑 결론 — 원전은 세율을 **두 개** 쓴다
+
+| 쓰이는 곳 | 원전 | 우리 |
+|---|---|---|
+| NOPAT | **무차입 현금세율**(T6) | 한계세율 25.63% |
+| WACC 세후 부채비용 | **한계세율**(T7 B26) | 한계세율 25.63% |
+
+🔴 **우리는 하나를 양쪽에 쓴다** — `app/api/cron/revdcf/route.ts`: `const drv = {...dr.drivers, taxRate: usTax}` 와 `assembleWacc({… taxRate: usTax …})`가 **같은 값**.
+→ **driver 3의 진짜 차이는 "현금세율이냐 한계세율이냐"가 아니라 "세율이 하나냐 둘이냐"다.**
+
+### 🔴 기존 기각 사유가 성립하지 않는다
+
+`REVDCF_SPEC` §622·§966·§1311이 든 이유:
+> ~~*"현금세율은 이자 세금방패를 이미 반영 → WACC 세후 부채비용에서 또 세는 **이중 계산**. **다모다란 지적**을 따름"*~~
+
+1. **T6 현금세율은 unlevered** — 방패를 **빼낸** 값이다. "이미 반영"이 아니다.
+2. **원전은 WACC에 현금세율을 쓰지 않는다**(T7 = 한계세율). 이중계산이 발생할 구조가 아니다.
+3. **다모다란 출처 미확인** — 그의 세율 Q&A(`pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/taxrate.htm`)는 이자 방패 이중계산을 **다루지 않는다.**
+
+### ✅ 결론은 살아남는다 — 다른 근거로
+
+다모다란 원문 직인용:
+> *"the safer choice is the **marginal tax rate** because none of the reasons noted above can be sustained in perpetuity."*
+> *"It is critical that the tax rate used **in perpetuity to compute the terminal value** be the marginal tax rate."*
+
+우리 모델은 25년 + 터미널이고 **터미널 비중이 크다**(원전 관찰 중앙 79.6%). → 한계세율 유지의 근거는 **"이중계산"이 아니라 "영구 구간 = 한계세율"**이다.
+🔴 단 그는 *"1년차는 실효세율로 시작해 시간에 걸쳐 한계세율로 수렴"*도 허용한다. **우리 단일 세율 구조에서는 불가**(driver 1의 페이드 문제와 같은 자리).
+
+### 🔴 열린 것
+- **커버리지 58%(847)를 다시 재야 한다** — 840이 *"이자 절벽 = frames 미부여 아티팩트, companyfacts엔 존재"*를 발견했고 862가 *"무차입 37 / 진짜결측 24"*를 분리했는데 **847은 둘 다 이전**이다. T6에서 이자는 **tax shield에만** 쓰이므로 무차입이면 0이고 병목이 아니다.
+- **원전 A안(장부세율)이 미검토** — 원전이 명시적으로 제시한 방법인데 후보에 없었다.
+
+---
+
+## §2. driver 4 — 운전자본 (T4)
+
+**`Working Capital Analysis` 시트**
+
+```
+Cash                          = 매출 × 0.02          ← C5 = Inputs!C5*0.02
+A/R · Inventory · Other CA    = 실제 값
+Current operating assets      = SUM(위 4)
+Current operating liabilities = SUM(무이자 4항목)
+Net working capital           = 자산 − 부채
+Incremental WC                = 당해 − 전년
+Incremental WC (% of sales)   = ΔNWC ÷ Δ매출          ← 연도별
+🔴 5년 누적                    = (I23−D23) ÷ (I26−D26)   ← I31
+```
+
+**무이자만 차감이 명시돼 있다** — `Tutorial 4` B23: *"Other **non-interest bearing** current liabilities."*
+그리고 `C44 = C39+C41+C42+C43`로 **`C40`(current portion of long-term debt)을 합계에서 뺐다.**
+
+각주 B32: *"in the book we do **not** consider other current assets, so the calculations are slightly [different]"* → **책과 스프레드시트가 다르다.**
+
+### 대조
+| | 원전 | 우리 |
+|---|---|---|
+| 필요현금 | **매출 × 2%** | (미확인 — 우리 정의 확인 필요) |
+| 유동부채 | 무이자만 | 847 판독 **✅ 맞음** |
+| 산출 방식 | **5년 누적**(I31) | 수준형 5년 평균 |
+
+✅ **847의 T4 판독은 옳았다.** 다만 registry가 *"단기차입금 미차감 → **태그부족 우회 가설**"*이라 적었는데, **가설이 아니라 원전에 명시된 설계다**(B23).
+
+🔴 **비대칭**: 원전은 T4·T5 **둘 다** 5년 누적식인데, 우리는 **driver 5만 원전식(marginal)을 병기**하고 **driver 4는 수준형만** 쓴다.
+
+🔴 **849와 충돌 가능성(미확인)**: T4는 **매출 2%를 운전자본에 묶인 현금**으로 본다. 그런데 `registry.nonOperatingAssets`는 *"✅ 849: A(전액) 채택 … **원전 그대로**"*다. **T8의 비영업자산 처리를 확인해야 판정 가능.**
+
+---
+
+## §3. driver 5 — 고정자본 (T5)
+
+**`Cash Flow Method` 시트**
+
+```
+Total Gross Fixed Capital Investments = capex + 인수(net of cash acquired)
+Net Fixed Capital Investments         = 총투자 + D&A        ← D&A 음수라 실제로는 차감
+Incremental Fixed Capital Rate        = −순고정투자 ÷ Δ매출   ← 연도별 (E18)
+🔴 5년 누적                            = −(E13+…+I13) ÷ (E16+…+I16)   ← I20
+```
+
+`Tutorial 5` B18~B21이 포함 항목을 나열: capex · 자본화 소프트웨어 · 기타 투자활동(순) · **인수**.
+B23: *"we need to **deduct depreciation**"*.
+
+### 대조
+✅ **852의 marginal 방식(*"원전 T5 5년누적 순고정÷5년누적Δ매출"*)이 T5 `I20`과 정확히 일치한다.** 인수 포함도 맞다.
+→ **driver 5는 원전식이 이미 구현돼 있고 `revdcf_results`에 `fixed_capital_rate_marginal`·`verdict_marginal`로 매일 저장된다.**
+
+🔴 **level(수준형)이 우리 추가물**이다 — 원전에 없다. 대조표 어느 칸에 있는지 확인 필요.
+
+---
+
+## §4. driver 6 — 자본비용 (T7)
+
+**`Tutorial 8` 시트** — 3단계
+1. **구성요소** — 부채: *"after-tax cost of debt = **yield-to-maturity on long-term debt** × (1 − 한계세율)"* · 자기자본: **CAPM** = 무위험 + 베타 × 시장위험프리미엄
+2. **자본구조** — 부채·자기자본 비중
+3. **가중**
+
+### 대조
+| | 원전 | 우리 |
+|---|---|---|
+| 부채비용 | **회사별 실제 YTM** | 다모다란 **업종 신용스프레드** |
+| 베타 | (T7 Inputs) | 다모다란 **업종 무차입 베타** |
+| 세율 | **한계세율** | 한계세율 ✅ |
+
+🔴 registry `costOfCapital`이 아직 **미결**이다 — 849가 조립을 배선했으나 `divergence`가 ✅로 안 바뀜. **차이 9행 중 registry에서도 미결인 유일한 행.**
+
+---
+
+## §5. driver 2 — 영업이익률 (T3)
+
+`Margins` 시트: `C14 = C12/C5` = 영업이익 ÷ 매출. 영업이익 = 매출총이익 − SG&A − 광고비.
+`Tutorial 3` B46: *"How Do We Estimate A Company's **Future** Operating Profit Margin?"* → B48: *"using one of **four methods**"*.
+
+🔴 **원전은 미래 마진 추정에 네 가지 방법을 제시한다.** driver 1과 같은 구조(앞을 본다)인데, **대조표는 driver 2를 "동일 8행"에 넣었다.** 계산식은 같지만(도미노 17.39% 일치) **추정 방식은 대조된 적이 없다.**
+
+---
+
+## 🔴 이 지도가 바꾸는 것
+
+| 행 | 기존 상태 | 원본 개봉 후 |
+|---|---|---|
+| driver 3 세율 | ✅ 확정(847) | **결론 유지 · 근거 3개 중 2개 무효** · 원전은 세율 **둘** · A안 미검토 · 커버리지 재측정 필요 |
+| driver 4 운전자본 | ✅ 확정(847) | **판독 맞음** · 단 "가설"→"명시된 설계" · 🔴 **원전 5년 누적식 미구현**(driver 5와 비대칭) |
+| driver 5 고정자본 | ✅ 확정(852) | ✅ **원전식과 정확히 일치** · level이 우리 추가물 |
+| driver 6 자본비용 | 🔴 미결 | 원전 = 회사별 YTM · 우리 = 업종 스프레드 |
+| driver 2 영업이익률 | 동일 8행 | 🔴 **미래 마진 추정 4방법이 대조된 적 없음** |
+| 비영업자산 | ✅ 849 "원전 그대로" | 🔴 **T4의 매출 2% 필요현금과 충돌 가능** (T8 확인 필요) |
+
+🔴 **판정은 하지 않았다.** 이 문서는 재료이고, 각 행의 ③판정은 장은태 몫이다.
+
+## 🔴 아직 안 연 것
+- **T8** 비영업자산·필요현금 처리(§2·§6 충돌 확인용) · **T9·T10**
+- 원전 **책 본문**(스프레드시트 각주가 *"in the book we do not consider…"*로 책과 다름을 두 번 명시)
