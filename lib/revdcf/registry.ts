@@ -210,6 +210,68 @@ export const INPUTS: RegistryEntry[] = [
 ];
 
 // ────────────────────────────────────────────────────────────────
+// 2-b. 🔴 원전에 **없는** 우리 추가물 (2026-08-02 신설)
+//
+//  원전(Expectations Investing)은 **투자자가 고른 종목 하나**를 분석하는 책이다.
+//  우리는 전 종목을 자동으로 돌린다 → 원전에 대응물이 없는 항목이 생긴다.
+//  🔴 이 항목들은 "원전 수준"이라 말할 수 없다. 근거를 밖에서 가져와야 하고,
+//     밖이 서로 다르면 **다르다고 적는다**(빌린 권위 금지).
+// ────────────────────────────────────────────────────────────────
+
+export interface OurAddition {
+  id: string;
+  ko: string;
+  /** 원전에 대응물이 없는 이유 */
+  whyAbsentInPrimary: string;
+  /** 우리가 지금 무엇을 하고 있나 */
+  ours: string;
+  /** 외부 관행 — 🔴 일치하지 않으면 그 사실을 적는다 */
+  externalPractice: string;
+  status: "확정" | "재개방" | "미결";
+}
+
+export const OUR_ADDITIONS: OurAddition[] = [
+  {
+    id: "sensitivity",
+    ko: "자본비용 3점 밴드 (−1%p / 기준 / +1%p)",
+    whyAbsentInPrimary:
+      "T8은 MIFP를 단일 숫자(r117)로 끝내고 민감도는 '스프레드시트에서 직접 바꿔 보라'(r121)로 넘긴다 — 종목 하나만 분석하니까",
+    ours: "전 종목 자동이라 사람이 직접 바꿔볼 수 없어 3점을 미리 산출",
+    externalPractice: "Morningstar = 불확실성 등급(트리 300개 분산). New Constructs = 100개 예측기간 시나리오. 방식은 다르나 '단일 숫자로 끝내지 않는다'는 공통",
+    status: "확정",
+  },
+  {
+    id: "distribution",
+    ko: "시장 분포 내 위치 (rank + 3분류)",
+    whyAbsentInPrimary: "원전엔 백분위·분포 개념이 없다(855 §7 T8 개봉 확인)",
+    ours: "전 종목 × 매일 산출의 부산물 — 이게 우리 해자다(계산식이 아니라 분포)",
+    externalPractice: "개인용 계산기(GuruFocus·TIKR·StockInvestorIQ)엔 없음. NC는 등급으로 제공",
+    status: "확정",
+  },
+  {
+    id: "universe",
+    ko: "🔴 유니버스 (어떤 종목을 담을까)",
+    whyAbsentInPrimary:
+      "🔴 원전 튜토리얼 02·08 개봉: liquidity·trading volume·universe·screening **전부 0건**. 투자자가 이미 종목을 골라온 상태를 전제하므로 이 문제가 발생하지 않는다",
+    ours:
+      "🔴 물려받은 시작 목록 1,000 → 616종목/604발행사. **근거 없는 승계**(기존 7렌즈 lens_scores에서 가져옴). A-7 '정식 종료'는 '이 목록 안에서의 종료'로 격하",
+    externalPractice:
+      "🔴 3주체가 전부 다름 — NC=지수 사다리(S&P500→400→600→R3000)+3개월 평균거래량 순(**이유 서술 0건**·2,748사) / Morningstar Quant=유동성 하한만(**지수 무관**·US 4,379사) / Damodaran=**컷 없음**(주가>0 전 상장사 48,156·'제외 말고 남기되 결측 아닌 기업만 값을 보고'). 발췌 = data/sources/text/EXTERNAL_UNIVERSE_QUOTES.md",
+    status: "재개방",
+  },
+  {
+    id: "liquidity",
+    ko: "🔴 유동성 컷 (FALR ≥ 0.75)",
+    whyAbsentInPrimary: "위와 동일 — 원전에 유동성 개념 자체가 없다",
+    ours:
+      "🔴 **확정 취소.** 문서(REVDCF_SPEC A-4)엔 '확정'이었으나 전 저장소 grep 결과 계산 경로엔 **0건** — engine·drivers·compute·배치·크론·API 어디에도 없다(유일한 히트는 probe_revdcf_us.ts §6 주석 '구현 안 함, 오는지만'). 분자(1년 거래대금)도 없어 계산 불가였다. 851 '표시 25년 컷'이 코드에 없던 것과 같은 유형(2회차)",
+    externalPractice:
+      "🔴 FALR(S&P 지수 편입 기준)을 쓰는 역DCF 주체는 **없다**. Morningstar만 유동성 하한을 쓰는데 기준이 다르다(60일 중앙 거래대금 현지통화 5,000/일 — 미국 상장사엔 사실상 안 걸림) 그리고 **이유를 명시**한다('모델 부정확·편향 완화'). Damodaran은 명시적으로 안 쓴다('표본 편향')",
+    status: "재개방",
+  },
+];
+
+// ────────────────────────────────────────────────────────────────
 // 3. 역산기 구조 — 원전 T8 수식 (구현 시 이대로)
 // ────────────────────────────────────────────────────────────────
 

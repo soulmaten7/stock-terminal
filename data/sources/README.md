@@ -37,6 +37,12 @@
 
 🔴 **값 검증 함의**: 우리 GAP = 학술 MICAP = NC "Growth Appreciation Period" = Rappaport market-implied duration (**3개 독립 출처가 방법을 확인**). 그러나 **재현 가능한 동시점 개별 종목 값 대조는 불가** — CAP 논문은 1997+터미널 다름, NC는 자체조정 NOPAT 비공개, 둘 다 무성장 터미널. 우리 2026 범위(중앙 11·1~24)는 논문 범위(총 10~15·개별 0~2~20+)와 **정합**.
 
+## `external/` — 외부 방법론 원본 (유니버스 A-9)
+
+| 파일 | 출처 | 관계 |
+|---|---|---|
+| `morningstar_quant_methodology_2024-12-02.pdf` | **Morningstar Quantitative Equity Ratings Methodology**(2024-12-02 시행·공식 q4cdn `s21.q4cdn.com/198919461/…`) | 유니버스 A-9 외부 준거 — Quant 유동성 하한(현지통화 5,000/일·"모델 편향 완화")·US 4,379사. `EXTERNAL_UNIVERSE_QUOTES.md` 발췌의 **PDF 원본** |
+
 ---
 
 ## `damodaran/` — 재료 데이터셋
@@ -73,8 +79,27 @@
 | `sec_edgar_api.html` | `frames`/`companyfacts`/`companyconcept` 규격 · **frames 배정 규칙**(마지막 제출본 1건 · 365일±30일) |
 | `newconstructs_coverage_methodology.html` | 커버리지 2,748사 · 지수 사다리 · "매출 없는 회사 미커버" |
 | `famafrench2000_abstract.html` | 수익성 평균회귀 **연 38%** · 비선형 |
+| 🔴 `EXTERNAL_UNIVERSE_QUOTES.md` | **외부 3주체 유니버스 규칙 원문 발췌**(2026-08-02) — NC 지수사다리(**이유 서술 없음**) · Morningstar Quant 유동성 하한(현지통화 5,000/일·이유="모델 편향 완화"·US 4,379사) · **Damodaran 컷 없음**(48,156·이유="표본 편향"). 🔴 **발췌지 원본 아님** → 원본은 `external/`·아래 Damodaran/NC 원문 |
+| `damodaran_data_update_1_2026.html` | **Damodaran "Data Update 1 for 2026: The Push and Pull of…"** 블로그 원문(2026-01·유니버스=48,156사 무컷·표본편향 논거의 1차 출처) |
+| `newconstructs_gap.html` | **New Constructs "Growth Appreciation Period(GAP)"** 교육 페이지 원문 — GAP=우리 개념(ROIC>WACC 연수·DCF=주가 역산). 🔴 값은 자체조정 NOPAT(비공개)이라 재현 불가 |
 
-🔴 미확보: `newconstructs_gap.html` (404 — URL 재확인 필요)
+✅ **미저장 3건 → 전부 원본 확보 완료 (2026-08-02)**
+
+| 대상 | 저장 위치 | 취득 경로 |
+|---|---|---|
+| Morningstar Quant 방법론 **PDF 원본** | `external/morningstar_quant_methodology_2024-12-02.pdf` (813KB) | 🔴 지정 URL(`s205.q4cdn.com/437373358/…`)은 **403(edge 차단)** → 동일 문서의 **공식 대체 호스트** `s21.q4cdn.com/198919461/files/doc_downloads/2024/11/Quantative-Equity-Research-Effective-2-Dec-2024.pdf`에서 확보(1페이지 "Morningstar Quantitative Equity Ratings Methodology" 확인) |
+| Damodaran `Data Update 1 for 2026` 원문 | `text/damodaran_data_update_1_2026.html` (161KB) | `aswathdamodaran.blogspot.com/2026/01/data-update-1-for-2026-push-and-pull-of.html` (첫 줄 취득일·URL 주석) |
+| New Constructs **GAP** 페이지 | `text/newconstructs_gap.html` (98KB) | 옛 URL 404 → 검색으로 현행 `www.newconstructs.com/education-growth-appreciation-period/` 확인·확보("growth appreciation period" 12회) |
+
+---
+
+## 🔴 유니버스 = **원전에 없는 우리 추가물** (2026-08-02 확인)
+
+**개봉 확인**: `EI_tutorial_02_sales.html`·`EI_tutorial_08_PIE.html`에서 `liquidity`·`trading volume`·`universe`·`screening` **전부 0건**.
+→ **원전은 단일 종목 분석서**라 "어떤 종목을 담을까"라는 문제가 발생하지 않는다.
+
+따라서 유니버스·유동성 컷은 **원전 대조표의 "우리 추가물" 행**이며, 근거는 원전이 아니라 밖에서 와야 한다.
+🔴 그런데 **밖이 서로 다르다**(위 3주체). 상세 = `EXTERNAL_UNIVERSE_QUOTES.md` · 결정은 `docs/REVDCF_SPEC.md` §4 A-9.
 
 ---
 
