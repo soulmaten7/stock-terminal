@@ -1030,8 +1030,7 @@
       "range": "{lo}–{hi} years across cost of capital ±1%p",
       "sensitive": "A 1%p change in cost of capital swings the conclusion — see the table below"
     },
-    "position": "{n} years — top {pct}% of {total} where this method applies",
-    "sampleNote": "Based on {total} of the top 1,000 US companies where this method applies",
+    "sampleNote": "Based on {total} companies where this method applies",
     "growthNote": "Growth is computed from the past 5 years — not an analyst forecast.",
     "asOfNote": "Tax rate and cost of capital as of {date}",
     "methodDependent": "The verdict depends on how investment intensity is estimated.",

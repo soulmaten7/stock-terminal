@@ -6,13 +6,13 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 868)** · 부모 `e18541f`(STEP 867) · **push 완료 — origin/main 반영.**
-- 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(`trillion.im`·`trillion.app`은 보유한 적 없음 — 2026-08-02 확정, `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 🚨 **STEP 868 = 사고 대응.** `app/api/revdcf/route.ts`가 **STEP 854 게이팅에서 빠져 853 배포 시점부터 공개**돼 있었다(인증·레이트리밋 0건 · 26필드 × 604종목 · 30분 캐시). 피처 플래그를 확인하지 않고 `revdcf_results`를 그대로 반환. **868에서 A안(`{result:null}` 조기 반환)으로 차단** — `REVDCF_ENABLED` OFF 유지, 켜지 않음.
-- 🔴 **"프로덕션 404 유지"는 부정확한 문구였다** — 정확히는: 페이지 2곳(`/revdcf`·`/en/revdcf`)만 **404 실측 확인**돼 있었고, `/api/revdcf`는 **853부터 공개 상태였다가 868에서 차단**. 페이지·API를 하나로 뭉뚱그리면 이런 구멍이 다시 생긴다.
-- 🔑 **868의 부산물**: vitest가 `@/*` 경로 별칭을 몰라 새 라우트 테스트가 즉시 실패 → `vitest.config.ts` 신규(tsconfig `@/*`→`./*`와 동일하게만 별칭 추가, 기존 151 테스트 동작 무변경).
-- 866~867(유니버스 조달 범위 확정)은 그대로 유효 — `lib/revdcf/engine.ts`·`drivers.ts`·`compute.ts`·`data/us_symbols.json` **diff 0**(프로덕션 계산 코드는 `9c5185b`=STEP 865 그대로, 868은 API 라우트 게이팅 2줄만 추가).
-- **tsc 0 · vitest 153/153**(기존 151 + 신규 2) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경) · `us_market_cap` = **5,886**(무변경).
+- HEAD = **이 커밋(STEP 869)** · 부모 `6044c3e`(STEP 868) · **push 완료 — origin/main 반영.**
+- 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(`trillion.im`·`trillion.app`은 보유한 적 없음 — 2026-08-02 확정, `docs/PROD_ACCESS_ANSWER2_2026-08-02.md` — **이제 저장소에 커밋돼 있음**, 869 전엔 untracked라 이 인용이 이 기기 밖에선 열리지 않았다).
+- ✅ **STEP 868 배포 후 실측 완료**(curl·`x-vercel-cache: MISS`로 fresh invocation 확인): `/api/revdcf?symbol={AAPL,MSFT,NVDA,GOOGL,TSLA,AMD}` 전부 `{"result":null}` · `/api/revdcf/batch` 무변화 · `/revdcf` 404 무변화 · `/` 200 · `/stock/AAPL` 역DCF 섹션 미렌더. 853부터 공개돼 있던 `/api/revdcf`는 **현재 차단 확정.**
+- 🚨 **STEP 869 = 화면 문구 정정 + 사고 기록 커밋(문서·문자열 전용·로직 diff 0)**. ① `RevDcf.sampleNote`가 ko/en 둘 다 **폐기된 유니버스("미국 시총 상위 1,000")를 그대로 말하고 있어** 플래그를 켜는 순간 거짓 문구가 나갈 뻔한 것을 선제 정정 — 숫자를 새로 박지 않고(`CLAUDE.md` §12 B분류) 그 수식어만 제거, `{total}`은 런타임 값 그대로 유지. ② `docs/PROD_ACCESS_*.md` 3종(사고 당시 진단서·1차/2차 답변서) **커밋**(내용 무수정) — `STATE.md`가 근거로 인용하는 파일이 untracked라 다른 기기에서 인용이 안 열리던 것 해소. ③ 죽은 키 `RevDcf.position`(855에서 `rankLine`으로 대체·코드 참조 0건) ko/en 양쪽 제거 — `RevDcf` 키 32/32 → **31/31**.
+- 🔴 **미결 2건 기록만(§10 #40·#41)**: "25년" 화면 문구와 코드 `maxYears:25`가 **배선돼 있지 않음**(851 유형 위험·지금은 값이 우연히 같아 무해) · 867 §7 유니버스 공개 문안(ko/en)이 `messages/*.json`에 아직 미반영. 둘 다 **이번엔 안 고침·장은태 판단 대기.**
+- 866~868(유니버스 조달 범위 확정·API 게이팅)은 그대로 유효 — `components/`·`lib/`·`app/` 로직 **diff 0**(869는 `messages/ko.json`·`messages/en.json` 문자열만).
+- **tsc 0 · vitest 153/153**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경) · `us_market_cap` = **5,886**(무변경).
 - ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
 

@@ -38,6 +38,9 @@
 | `docs/STATE.md` | **[최우선·단일 정본]** 현재 상태 — HEAD·현재 상태·다음 할 일(세션마다 덮어쓰기) | 세션 시작 첫 파일 |
 | `docs/SYSTEM_MAP.md` | 아키텍처·6개국 파이프라인·크론·테이블·env·함정(라이브 실측) | STATE 다음(구조 확인) |
 | `docs/CHANGELOG.md` | 변경 이력 — 세션별/STEP별 변경사항(유일한 이력) | 무엇이 바뀌었나 추적 |
+| `docs/PROD_ACCESS_DIAGNOSTIC_2026-08-02.md` | 🚨 **사고 기록** — `/api/revdcf` 게이팅 누락 질의서(원본·미수정) | STEP 868 경위 참고 |
+| `docs/PROD_ACCESS_ANSWER_2026-08-02.md` | 🚨 **사고 기록** — 1차 답변서(원본·미수정, §4에서 스스로 정정됨) | STEP 868 경위 참고 |
+| `docs/PROD_ACCESS_ANSWER2_2026-08-02.md` | 🚨 **사고 기록** — 2차 답변서(원본·미수정) — `docs/STATE.md`가 근거로 인용 | STEP 868 경위 참고 |
 | `docs/_archive/SESSION_BOOT.md` | [폐기] 구 새 세션 부트 — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
 | `docs/_archive/NEW_SESSION_HANDOFF.md` | [폐기] 구 단일 자급형 핸드오프 — `docs/STATE.md`로 통합·폐기 | 히스토리 참고만 |
 | `docs/_archive/NEXT_SESSION_PLAYBOOK.md` | [폐기] 구 마스터 인수인계(디자인·컴포넌트 매핑) — `docs/SYSTEM_MAP.md`로 통합·폐기 | 히스토리 참고만 |

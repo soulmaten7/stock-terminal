@@ -1030,8 +1030,7 @@
       "range": "자본비용 ±1%p에서 {lo}~{hi}년",
       "sensitive": "자본비용 1%p 차이로 결론이 크게 달라집니다 — 아래 표로 보십시오"
     },
-    "position": "{n}년 — 이 기법 성립 {total}개 중 상위 {pct}%",
-    "sampleNote": "미국 시총 상위 1,000 중 이 기법이 성립하는 {total}개 기준",
+    "sampleNote": "이 기법이 성립하는 {total}개 기준",
     "growthNote": "성장률은 과거 5년 실적에서 계산했습니다 — 애널리스트 전망이 아닙니다.",
     "asOfNote": "세율·자본비용은 {date} 기준",
     "methodDependent": "투자 강도 산정 방법에 따라 판정이 달라집니다",

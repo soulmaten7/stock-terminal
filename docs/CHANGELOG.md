@@ -1,6 +1,36 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (15) — 🟢 **STEP 869 실행: 화면 문구 정정 + 사고 기록 커밋** (문서·문자열 전용 · 로직 diff 0)
+
+> **성격**: `messages/ko.json`·`messages/en.json` 문자열 2건 + `docs/PROD_ACCESS_*.md` 3종 커밋(내용 무수정) + 문서 갱신. `components/`·`lib/`·`app/` **diff 0**. 커밋 = 이 커밋(부모 `6044c3e`). 장은태가 순서를 **② 사고기록 → ① sampleNote → ③ 죽은 키**가 아니라 **① sampleNote를 최우선**으로 재배열 승인(플래그를 켜는 순간 거짓 문구가 나가는 쪽이 더 급함).
+
+### §1 `RevDcf.sampleNote` 정정(최우선 — 거짓 방지)
+
+- 기존: ko `"미국 시총 상위 1,000 중 이 기법이 성립하는 {total}개 기준"` / en `"Based on {total} of the top 1,000 US companies where this method applies"` — **866이 "상위 1,000"을 근거 없이 승계된 목록으로 격하했고 867이 유니버스를 거래소 상장(N=2,857)으로 재확정**했는데 문구는 그대로 남아 있었다. 지금은 플래그 OFF라 안 보이지만, 켜는 순간 사실이 아닌 문장이 나갈 뻔했다.
+- 수정: ko `"이 기법이 성립하는 {total}개 기준"` / en `"Based on {total} companies where this method applies"` — **숫자를 새로 박지 않고** "상위 1,000" 수식어만 제거(`CLAUDE.md` §12 B분류: 외부/이동 값은 적지 않는다). `{total}`은 `RevDcfSection.tsx:97`이 넘기는 런타임 값(`r.sampleTotal`) 그대로 유지.
+- 모집단 설명(무엇으로 조달했는지)은 방법론 페이지 몫으로 남김 — 이 문구 자체에 "거래소 상장 2,857개"처럼 새 숫자를 넣지 않았다(또 다른 하드코딩 방지).
+
+### §2 사고 기록 3종 커밋
+
+- `docs/PROD_ACCESS_DIAGNOSTIC_2026-08-02.md`·`docs/PROD_ACCESS_ANSWER_2026-08-02.md`·`docs/PROD_ACCESS_ANSWER2_2026-08-02.md` — 전부 untracked 상태였던 것을 **내용 한 글자도 안 고치고 그대로 커밋**. `docs/STATE.md`가 `ANSWER2`를 근거로 인용하는데 파일 자체가 저장소에 없어 이 기기 밖에서는 그 인용이 열리지 않는 문제를 해소.
+- `docs/INDEX.md`에 세 파일을 "사고 기록"으로 한 줄씩 등재(① 세션·핸드오프 섹션, CHANGELOG.md 행 바로 아래).
+
+### §3 죽은 키 제거
+
+- `RevDcf.position`(ko `"{n}년 — 이 기법 성립 {total}개 중 상위 {pct}%"` / en 대응) — STEP 855가 "상위 x%"(방향 헷갈림)를 폐기하고 `rankLine`으로 대체한 뒤 **코드 참조가 0건**으로 남아 있던 죽은 키. ko/en 양쪽에서 제거 확인 — `RevDcf` 키 개수 **32/32 → 31/31**(패리티 유지).
+
+### §4 손대지 않은 것(전수 점검 결과 · 기록만)
+
+- `RevDcfMethod.repro`("$285.2/8년")·`betaCaveat`(Fama-French 1992 인용)·`RevDcf.overCapExplained`(859에서 확정된 원전 T8 지평 "25년")·`rankLine`은 **A분류(원전 고정값) 또는 런타임 값**이라 유지 대상 — B분류가 아니다.
+- `docs/REVDCF_SPEC.md` §10에 미결 2건만 기록(고치지 않음): **#40** 화면 문구 "25년"과 코드 `maxYears:25`(`app/api/cron/revdcf/route.ts:70·71·73`)가 배선돼 있지 않음(851 유형 위험, 지금은 값이 우연히 같아 무해) · **#41** 867 §7의 유니버스 공개 문안(ko/en 초안)이 `messages/*.json`에 아직 미반영(화면 문구 신설은 플래그 ON 전 판단 사항).
+
+### §5 무변경 확인
+
+- `git diff --stat HEAD -- components/ lib/ app/` 출력 없음 · `git diff --stat HEAD -- messages/` = `ko.json`·`en.json` 2개만 · tsc 0 · vitest 153/153(무변화) · `REVDCF_ENABLED` OFF 유지.
+
+**▶ 다음**: "25년" 배선 여부·867 §7 문안의 messages 반영 여부·플래그를 켜는 것 — 전부 **장은태 판단**. Claude Code는 제안하지 않음.
+
 ## 2026-08-02 (14) — 🚨 **STEP 868 실행: `/api/revdcf` 게이팅 누락 차단(A안) + 재발 방지 테스트** (사고 대응)
 
 > **성격**: 사고 대응 1 STEP. `app/api/revdcf/route.ts` 가드 2줄 + 신규 테스트 파일 + 신규 `vitest.config.ts`(부수 필요) + 문서 4개. `lib/revdcf/engine.ts`·`drivers.ts`·`compute.ts`·`components/RevDcfSection.tsx`·`data/us_symbols.json` **diff 0** · `REVDCF_ENABLED` OFF 불변 · 커밋 = 이 커밋(부모 `e18541f`).
