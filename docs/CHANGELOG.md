@@ -13,7 +13,7 @@
 >
 > **§3 재계산(as_of 2026-08-03·08-02 보존)**: marginal 산출 **409→465사**·method-dependent(verdict≠marginal) **81→99사**(원전 852=68 맥락). 🔴 **primary verdict 불변**(level 기반·D&A 무관·08-02 대비 1사만 변동=SEC 데이터 갱신 경계). **§4 항목 2 = ✅**(861 🔶 사유 ①D&A ②부채混 해소 · ③이상치는 항목5 소속이라 철회). 남은 D&A 11.4%·진짜결측 24사 = 진짜 데이터 부재로 explicit 제외(조용한 0 없음)·24사 부채=0 처리는 항목5.
 >
-> tsc 0·vitest 151/151·build 통과·프로덕션 `/revdcf` 404. 스크립트 `probe_862_dna_debt.ts`(읽기전용). ⓪-3: `drivers.ts` D&A/부채 로직·SEC frames(D&A 태그 filer수)·companyfacts 604 재조회·revdcf_results 08-02/08-03·T5 D&A 정의. 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD: (이 커밋).**
+> tsc 0·vitest 151/151·build 통과·프로덕션 `/revdcf` 404. 스크립트 `probe_862_dna_debt.ts`(읽기전용). ⓪-3: `drivers.ts` D&A/부채 로직·SEC frames(D&A 태그 filer수)·companyfacts 604 재조회·revdcf_results 08-02/08-03·T5 D&A 정의. 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD `39ced5f`.**
 
 ## 2026-08-02 (4) — 역DCF DoD 항목 2(입력 검증): 필드 출처·단위·결측률·이상치 실측 (STEP 861 · 읽기전용·코드 0)
 
