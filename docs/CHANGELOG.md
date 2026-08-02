@@ -1,6 +1,37 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (18) — 🔬 **STEP 872 실행: driver 1 판정 근거 확정 — 원본 저장 + 마지막 측정 1건** (측정+원본저장+문서 · 코드 0줄)
+
+> **성격**: 신규 `scripts/probe_872_range_check.ts`(측정 전용·재조회 없음) + `docs/probe_872_range.json` + `data/sources/academic/`에 원본 PDF 1편 신규 저장 + 문서. `lib/**`·`app/**`·`components/**`·`messages/**`·`data/us_symbols.json` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `6d6930c`).
+>
+> **왜**: 871이 driver1의 ①결과 변화·②커버리지를 쟀지만 "어느 쪽이 나은가"의 외부 근거(B 실무·C 반대 증거)가 비어 있었다. 채운 결과 Cowork 권고가 정해졌다. **③판정(승인)은 여전히 장은태 몫** — 이 STEP은 근거를 문서에 고정하고 빠진 측정 하나를 메울 뿐이다.
+
+### §1 원본 저장 + 검증 (규칙 ⓪)
+
+- `data/sources/academic/chan_karceski_lakonishok_2003_growth_persistence.pdf`(NBER working paper w8282, 198,883 bytes·10p) 신규 저장. 기존 `academic/`엔 `mauboussin_johnson_1997_CAP.pdf` 1편만 있었음(중복 아님).
+- 본문 문자열 직접 검증(`pdftotext`): *"There is a great deal of persistence in sales growth"* / *"[analysts'] long-term estimates ... are over-optimistic and do poorly in predicting realized growth over longer horizons"* — **둘 다 그대로 확인.**
+- `data/sources/README.md`에 저자·연도·발행처·용도(driver1 판정 C축 근거) 등재.
+- 🔴 **부수 발견 — 기존 인용 오류**: `docs/REVDCF_SPEC.md` §B-4가 이미 이 논문을 인용하고 있었는데(원본 미저장 상태에서 작성), "매출 성장 지속성 = 우연 수준(2년25%·3년12.5%·4년6.3%)"이라 적은 수치가 **논문의 실측치가 아니라 "독립이라면 기대되는" 이론값(0.5ⁿ)이었다.** 원문 Table 3의 실제 결론은 **정반대** — 매출 성장은 5년 연속 중앙값 이상 유지 6.3%(실측) vs 3.1%(기대) = 기대의 약 2배로 **지속성이 실재**하고, 오히려 이익(영업이익 3.6%·순이익 3.0%)이 기대치와 거의 같아 지속성이 없다. §B-4 표를 정정(교체 판단은 바꾸지 않음 — 화면 문구의 근거 뉘앙스만 재검토 필요로 표시).
+
+### §2 마지막 측정 — "둘째 안"(기준=과거CAGR 유지 + 범위=야후 low/high)의 자기정합성
+
+- `docs/probe_871_rows.json`(871의 야후 응답)을 그대로 재사용 — **재조회 0건.**
+- low/high 확보 513/515 · **현행 기준값(과거 CAGR)이 그 범위 안에 드는 경우 = 102/513(19.9%)뿐**(범위 아래 193 · 범위 위 218) · 871의 부호반전 55사 중 범위 내는 **0건** · 범위폭 중앙 3.16%p(p25 1.66·p75 7.02).
+- 🔴 **판단하지 않고 사실만**: 기준값이 자기 범위 밖에 표시되는 비율이 80%를 넘는다 — "기준=과거CAGR·범위=야후low/high" 조합은 이대로는 대체로 자기모순적 표시가 된다는 사실만 기록.
+
+### §3 진행표 1행 + 차이 원장 (③판정은 대기 유지)
+
+- `docs/LENS_COMPLETION_STANDARD.md` 차이 9행 진행표 1행(driver1)에 ①(p95 38.8%→52.9%·판정이동 대칭 포함)·②(야후100%·8-K금액추출30.3%)를 보강, **③은 "🔴 대기(각주 ↓)"로 유지**하고 Cowork 권고(교체 안 함)와 근거 ⓐ~ⓔ를 각주로 부착.
+- `docs/REVDCF_SPEC.md` §11 실측 원장에 5행 추가(p95 꼬리 변화·CKL 원문 검증·기존 인용 정정·둘째안 자기정합성). §10 미결에 신규 2건(#42 끝점2개 추정기 대안 미측정·#43 원전 "범위"를 우리가 어떻게 만들지 미결).
+- `docs/STATE.md` "▶ 다음" 1번 아래 driver1 항목을 "근거 확정·승인 대기"로 갱신 — **driver3로 넘어가라는 문구는 쓰지 않음.**
+
+### §4 무변경 확인
+
+- `git diff --stat HEAD -- lib/ app/ components/ messages/ data/us_symbols.json` 출력 없음(`data/sources/academic/`는 신규 파일이라 diff 대상 밖 — 정상) · tsc 0 · vitest 153/153(무변화) · `revdcf_results` 604×3 · `us_market_cap` 5,886.
+
+**▶ 다음**: driver1 ③판정(승인 여부)과 다음 행(driver3~) 착수 여부 — 전부 **장은태 지시 후에만.** Claude Code는 여기서 멈춘다.
+
 ## 2026-08-02 (17) — 🔬 **STEP 871 실행: 차이 9행 1행(driver 1·매출성장률) 실측** (측정 전용 · 코드 0줄)
 
 > **성격**: 신규 `scripts/probe_871_driver1_sources.ts`(측정 전용) + `docs/probe_871_*.json` 3종 + 문서. `lib/**`·`app/**`·`components/**`·`messages/**`·`data/` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `84d4d55`).

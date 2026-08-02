@@ -1,0 +1,16 @@
+{
+  "n": 515,
+  "hasLowHigh": 513,
+  "baseInsideRange": 102,
+  "baseBelowLow": 193,
+  "baseAboveHigh": 218,
+  "pctInside": 19.9,
+  "bySignFlip": {
+    "flipped": 55,
+    "flippedInside": 0
+  },
+  "medianRangeWidthPct": 3.1600128259344107,
+  "rangeWidthP25Pct": 1.6561087630387883,
+  "rangeWidthP75Pct": 7.016095661630772,
+  "note": "야후 low/high는 애널리스트 분산(+1y 컨센서스 분포)이고 원전의 low 시나리오는 서사적 가정(도미노 3%/7%/11%처럼 스토리 기반)이다 — 같은 물건이 아님을 전제로 한 측정. baseInsideRange가 낮으면 '기준=과거CAGR·범위=야후low/high'라는 조합 자체가 자기모순(기준값이 자기 범위 밖에 표시됨)이라는 사실만 보여준다 — 채택 여부는 판단하지 않는다."
+}
