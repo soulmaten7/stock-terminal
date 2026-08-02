@@ -1,0 +1,30 @@
+{
+  "probedAt": "2026-08-02T06:49:55.738Z",
+  "ladder": {
+    "tickersExchangeTotal": 10432,
+    "uniqueCik": 8017,
+    "hasAnnualForm": 6529,
+    "afterForeignCut": 5241,
+    "afterSicFinancialCut": 3897,
+    "afterReitSpacCut": 3897,
+    "afterRevenueCut": 3354,
+    "final": 3354
+  },
+  "droppedBy": {
+    "noAnnualForm": 1488,
+    "foreign": 1288,
+    "sicFinancial": 1344,
+    "reit": 200,
+    "spac": 231,
+    "noRevenue": 543
+  },
+  "secOfficial": {
+    "source": "data/sources/sec/sec_reporting_issuers_20260630.xlsx",
+    "sheet": "Data Visual 2 (Shell vs. Non-shell)",
+    "cy2025_usDomiciledExchangeListed": 3714,
+    "cy2025_usDomiciledExchangeListed_nonShell": 3692,
+    "ttm2025Q2_2026Q1_usDomiciled": 3600,
+    "ttm2025Q2_2026Q1_usDomiciled_nonShell": 3589
+  },
+  "gapVsOfficial": "우리 final(3354) − SEC 비셸 상한(3692) = -338. SEC 수치엔 금융업이 포함되고 우리는 SIC 6000~6999를 뺐으므로 SEC 수치는 상한이지 목표치가 아니다 — 차이는 (a) 우리가 뺀 금융업 규모 (b) 매출태그 없음 컷 (c) 정의 시점차(CY2025 vs 현재)로 설명된다."
+}

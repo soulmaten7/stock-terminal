@@ -26,7 +26,7 @@
 
 출처: `Morningstar Quantitative Equity Ratings Methodology`, Dec. 2, 2024
 URL: `https://s205.q4cdn.com/437373358/files/doc_downloads/methodology_documents/Quantative-Equity-Research-Effective-2-Dec-2024.pdf`
-🔴 **원본 PDF 미저장** (텍스트만 취득)
+원본 PDF: `data/sources/external/morningstar_quant_methodology_2024-12-02.pdf`(813KB · 2026-08-02 확보)
 
 > We exclude illiquid stocks and listed companies with a **median daily traded value below 5,000 in their local currency over the last 60 days**. This step ensures the inclusion of companies with adequate liquidity and trading activity, **helping to mitigate potential inaccuracies and biases in the model**.
 

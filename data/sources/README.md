@@ -45,6 +45,18 @@
 
 ---
 
+## `sec/` — SEC 공식 모집단 통계 + 전수 매핑 (STEP 866)
+
+| 파일 | 무엇을 정의하나 | 갱신 주기 | 좌표 |
+|---|---|---|---|
+| `sec_reporting_issuers_20260630.xlsx` | SEC 공식 제출사 수(모집단 상한의 공식 근거) — Reporting Issuers 통계 | 연 1회(직전 갱신 2026-06-30) | `Stats Table` 시트 · `2025` 행 · `U.S. domiciled exchange listed companies` 열(=3,714) · `Data Visual 2` 시트에 Shell/Non-shell 분리(비셸=3,692) |
+| `company_tickers_exchange_20260802.json` | CIK ↔ ticker ↔ exchange 전수 매핑(10,432행·CIK 기준 8,017개사) | 🔴 SEC 미명시(EDGAR API 공식 문서 `text/sec_edgar_api.html`에 이 파일 자체 언급 없음 — 스코프·갱신주기 서술도 없음. 이유를 지어내지 않고 그대로 기록) | `fields`(`cik`·`name`·`ticker`·`exchange`) / `data` 배열 |
+
+- STEP 866 모집단 사다리(`docs/probe_866_ladder.json`)의 시작점 = `company_tickers_exchange_20260802.json` 전수(`us_market_cap` 상위 1,000이 아니라).
+- SEC 공식 통계(3,714/3,692/3,600/3,589)는 **금융업 포함 상한**이지 목표치가 아니다(우리는 SIC 6000~6999를 뺀다) — `docs/REVDCF_SPEC.md` A-9 정정 참고.
+
+---
+
 ## `damodaran/` — 재료 데이터셋
 
 출처: https://pages.stern.nyu.edu/~adamodar/pc/datasets/

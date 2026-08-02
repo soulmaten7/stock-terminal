@@ -1,0 +1,112 @@
+{
+  "probedAt": "2026-08-02T06:49:55.738Z",
+  "ladderRef": "docs/probe_866_ladder.json",
+  "companyfactsSource": "bulk (companyfacts.zip, 1393191546 bytes 사전 확인·다운로드 완료)",
+  "fullUniverse": {
+    "N": 3354,
+    "computed": 364,
+    "undecidable": 1688,
+    "insufficient": 1302,
+    "undecidableBreakdown": {
+      "over_cap": 419,
+      "value_destroying": 925,
+      "below_one": 344
+    },
+    "insufficientBreakdown": {
+      "MULTI_CLASS_SHARES": 23,
+      "MISSING_TAG": 311,
+      "INSUFFICIENT_HISTORY": 690,
+      "NO_INDUSTRY": 98,
+      "NO_MARKETCAP": 148,
+      "NOT_APPLICABLE_SECTOR": 32
+    },
+    "insufficientCause": {
+      "ourFault_NO_MARKETCAP_NO_INDUSTRY": 246,
+      "companyDisclosure_INSUFFICIENT_HISTORY_MISSING_TAG": 1001,
+      "other": 55
+    }
+  },
+  "the604Reverified": {
+    "asOf": "2026-08-03",
+    "n": 604,
+    "computed": 177,
+    "skipped": 89,
+    "matchesCoworkGivenBaseline": true,
+    "skipBreakdown": {
+      "NOT_APPLICABLE_SECTOR": 4,
+      "NO_INDUSTRY": 10,
+      "MISSING_TAG": 31,
+      "MULTI_CLASS_SHARES": 5,
+      "INSUFFICIENT_HISTORY": 39
+    }
+  },
+  "comparison": {
+    "populationN": {
+      "the604": 604,
+      "fullUniverse": 3354
+    },
+    "yieldPct": {
+      "the604": 29.3,
+      "fullUniverse": 10.9
+    },
+    "gapMedianYears": {
+      "the604": 11,
+      "fullUniverse": 8
+    },
+    "gapP25P75": {
+      "the604": [
+        6,
+        17
+      ],
+      "fullUniverse": [
+        4,
+        15
+      ]
+    },
+    "overCapPct": {
+      "the604": 16.9,
+      "fullUniverse": 12.5
+    },
+    "valueDestroyingPct": {
+      "the604": 24.7,
+      "fullUniverse": 27.6
+    },
+    "residualValueShareMedianPct": {
+      "the604": null,
+      "fullUniverse": 84.7
+    },
+    "industryIcc": {
+      "the604Recorded": 0.195,
+      "the604Recomputed": 0.267,
+      "fullUniverse": 0.176
+    }
+  },
+  "marketCapBucketBreakdown": {
+    "mega(200B+)": {
+      "n": 40,
+      "computed": 19,
+      "yieldPct": 47.5
+    },
+    "large(10-200B)": {
+      "n": 449,
+      "computed": 151,
+      "yieldPct": 33.6
+    },
+    "mid(2-10B)": {
+      "n": 520,
+      "computed": 117,
+      "yieldPct": 22.5
+    },
+    "small(0.3-2B)": {
+      "n": 510,
+      "computed": 48,
+      "yieldPct": 9.4
+    },
+    "micro(<0.3B)": {
+      "n": 533,
+      "computed": 29,
+      "yieldPct": 5.4
+    }
+  },
+  "note": "재료만 — 컷 제안·채택 권고 없음(STEP 866 §금지 5)."
+}
