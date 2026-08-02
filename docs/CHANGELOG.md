@@ -1,6 +1,57 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (17) — 🔬 **STEP 871 실행: 차이 9행 1행(driver 1·매출성장률) 실측** (측정 전용 · 코드 0줄)
+
+> **성격**: 신규 `scripts/probe_871_driver1_sources.ts`(측정 전용) + `docs/probe_871_*.json` 3종 + 문서. `lib/**`·`app/**`·`components/**`·`messages/**`·`data/` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `84d4d55`).
+>
+> **왜**: 870이 만든 "차이 9행 진행표"의 1행(driver 1)을 ①결과 변화 ②커버리지 손실 관점에서 재본다. **③판정은 하지 않는다** — 장은태 몫.
+
+### §0 착수 전 정정 2건 (Cowork 실측 · ⓪-3)
+
+1. **847의 "63.3%"는 커버리지가 아니었다.** 표본 60사(전체 604/2,857 아님)·8-K 1건만·"가이던스 언어가 있나"를 정규식으로만 본 것이지 금액을 뽑은 게 아니었다(`docs/probe_847_guidance.json` 원문 재확인). 원전 절차로 갈아끼울 때의 실제 커버리지는 이 STEP이 515 전수로 다시 잰다.
+2. **원전이 지목한 소스는 8-K가 아니다.** `data/sources/text/EI_tutorial_02_sales.html` 원문: *"Company web sites"*(IR multi-year 가이던스)·*"Value Line Investment Survey"*·*"Morningstar"*·*"Other useful sites include Koyfin, Zacks, roic.ai and Yahoo Finance."* — **Yahoo Finance가 원전 소스 목록에 있고, 우리는 `yahoo-finance2`를 이미 쓰고 있다.** `registry.ts`는 "FMP 컨센서스 키 미보유"라는 막다른 길만 적어놨을 뿐 Yahoo 경로를 검토한 적이 없었다.
+
+### §1 원본 재확인 (착수 전 개봉)
+
+- `EI_tutorial_02_sales.html` 재개봉: §0의 인용 확인. 🔴 **경미한 부정확 발견**: §0이 "5갈래"라 했으나 실제로는 **4개 문단**(회사 IR·Value Line·Morningstar·"기타 유용한 사이트"로 Koyfin/Zacks/roic.ai/Yahoo Finance 4곳을 한 문단에 묶음) — 개별 사이트를 전부 세면 7곳. 판단에 영향 없는 정정.
+- `T8.xlsx` `Inputs!C6` 직접 개봉(openpyxl): **`= 0.07`, 셀 주석 없음.** 도미노 튜토리얼 내러티브의 저(3%)/고(11%) 시나리오는 **"Price Implied Expectations" 계산 시트엔 없고 텍스트 서술로만 존재** — 저/고 컬럼 검색 0건. 원전 자체가 "범위를 기계적으로 계산에 반영"하지는 않는다는 사실을 새로 확인.
+- `lib/revdcf/drivers.ts:163` 확인: `(rev[lastY]/rev[firstY])**(1/nSpan)-1` — 5년 중 **끝점 2개만** 사용(중간 3년 미사용) 확인.
+- `docs/probe_847_guidance.json` 원문: §0 성격 규정과 일치.
+- `lib/revdcf/registry.ts`의 `operatingMargin`(driver2) `divergence` 필드가 non-null("원전은 단일 예측치, 우리는 5년/10년 병기")인데 607행 요약은 driver2를 **"동일 8행"**에 넣는다 — **더 넓게 보면 registry.ts INPUTS 13개 중 non-null divergence는 10개**(operatingMargin·sharesOutstanding·debt·nonOperatingAssets도 포함)로, 문서의 "차이 9행"(모집단·데이터출처·검증사례 포함 — 이 셋은 registry.ts INPUTS에 항목 자체가 없음)과 개수·구성이 다르다. **어느 쪽이 정본인지 판단하지 않고 둘 다 기록만 함**(870에서 이미 발견된 것과 같은 축의 불일치 — registry.ts의 non-null은 "다름"이 아니라 "결정 근거를 남김"까지 포괄하는 더 넓은 용도로 쓰이고 있음).
+
+### §2 커버리지 (515 전수 · as_of 2026-08-03)
+
+| 소스 | 응답/확보 | 비고 |
+|---|---|---|
+| **A. 야후 애널리스트 매출추정**(`quoteSummary` `earningsTrend`) | 응답 515/515 · **0y 성장치 확보 515/515(100%)** · +1y 515/515 · +5y 필드 0/515 | 애널리스트 수 중앙값 16(p25 11·p75 23). 원전 소스 중 우리가 이미 보유 — **가장 높은 커버리지** |
+| **B. 8-K 가이던스**(515 전수 재측정 · 847은 60표본) | 8-K有 515 · 실적발표(2.02) 515 · 본문fetch 515 | 언어존재(가이던스) 380(73.8%) · **매출가이던스 언어존재 303(58.8%)** — 847의 63.3%와 대체로 정합(60표본이 대표성 있었음을 재확인) · **실제 금액추출 156(30.3%)** — 언어존재율과 커버리지는 다른 것임이 전수에서도 재확인 |
+| C. Value Line · Morningstar | 측정 안 함 | 유료·비공개 — 원전 소스이나 접근 불가로 기록만 |
+
+- A∪B = 515(100%, A 단독으로 이미 전수) · A∩B(금액추출) = 156.
+
+### §3 결과 변화 (A로 salesGrowth 교체·나머지 드라이버/WACC/시총 불변·`maxYears:25` 동일 — 엔진 import만, 수정 없음)
+
+- **크로스체크**: 캐시 companyfacts(`/tmp/866_cf`)로 기존 salesGrowth 그대로 재실행 → DB 저장 verdict·gap_years와 **515/515 전원 일치**(계산 파이프라인 재현 검증).
+- `sales_growth` p50: **9.48% → 8.96%**(근접) · 음수 31→28사 · 30%초과 48→67사.
+- `gap_years`(years 판정만): p25 6→5 · **p50 11→9** · p75 17→15 · years 표본수 177→189.
+- **verdict 이동 행렬**(전체 515): `over_cap→years` 46 · `years→years` 118 · `years→over_cap` 44 · `below_one→below_one` 57 · `below_one→value_destroying` 28 · `value_destroying→value_destroying` 103 · `value_destroying→below_one` 12 · `value_destroying→years` 23 · `over_cap→value_destroying` 16 · `value_destroying→over_cap` 11 · `over_cap→over_cap` 40 · `years→value_destroying` 14 · `below_one→years` 2 · `years→below_one` 1. **대각선(동일버킷 유지) 합 318/515 → 판정버킷 변경 197/515(38.3%).**
+- **부호반전**(과거 CAGR과 전망 성장률의 부호가 다른 경우): **55/515(10.7%)**.
+- **저/고 시나리오**: 원전(도미노 3%/7%/11%)처럼 야후 `revenueEstimate.low/high`를 성장률로 환산해 저/고 시나리오 근사 산출이 **513/515 가능**.
+
+### §4 진행표 갱신
+
+- `docs/LENS_COMPLETION_STANDARD.md` 차이 9행 진행표 **1행(driver 1)만** ①②를 채움 — ③판정은 **"🔴 대기"** 그대로 유지. 2~9행 미변경.
+- `docs/REVDCF_SPEC.md` §11 실측 원장에 6개 행 추가(T8 배선값·A/B 커버리지·A∪B/A∩B·결과변화 요약, 전부 날짜·출처 병기).
+
+### §5 무변경 확인 (🔴 실측 중 발견한 것 포함)
+
+- `git diff --stat HEAD -- lib/ app/ components/ messages/ data/` 출력 없음 · tsc 0 · vitest 153/153(무변화) · `us_market_cap` 5,886.
+- `revdcf_results`: 최종 확인 604×3(2026-08-01/02/03). 🔴 **측정 스크립트의 자체 최종 카운트 쿼리가 한 번 `{"2026-08-03":604,"2026-08-02":396}`(2026-08-01 소실)로 찍혔다** — 이 스크립트는 `revdcf_results`에 쓰기 호출이 0건이므로 원인이 될 수 없고, 즉시 재조회한 결과 604×3으로 정상 복원 확인 — 프로덕션 크론의 write-in-flight(다음날 배치가 도는 순간)를 스냅샷으로 잡은 것으로 판단(CLAUDE.md ⓪-3 "한 번 본 스냅샷을 근거로 판단 금지"와 같은 유형 — 재조회로 해소).
+- 별건: 첫 실행에서 야후 `quoteSummary` 호출 하나가 크럼/쿠키 협상 중 무기한 대기하는 것을 관찰(CPU 시간이 9분간 거의 안 늘어남) → kill 후 콜당 8초 타임아웃 래퍼(`withTimeout`)를 프로브 스크립트에만 추가해 재실행, 정상 완료.
+
+**▶ 다음**: 차이 9행 중 driver 1의 ③판정, 그리고 다음 행(driver3~) 착수 여부 — 전부 **장은태 지시 후에만.** Claude Code는 여기서 멈춘다.
+
 ## 2026-08-02 (16) — 🔴 **STEP 870 실행: 방향 재정렬 — 작업 순서를 DoD 순번 → 원전 대조표 차이 9행으로** (문서·지침 전용 · 코드 0줄)
 
 > **성격**: `docs/`·`CLAUDE.md`만 변경. `lib/**`·`app/**`·`components/**`·`messages/**`·`scripts/**` **diff 0**. `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `f87ab9a`).

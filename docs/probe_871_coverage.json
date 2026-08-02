@@ -1,0 +1,30 @@
+{
+  "universe": 515,
+  "asOf": "2026-08-03",
+  "A_yahooAnalystRevenue": {
+    "responded": 515,
+    "has0yGrowth": 515,
+    "hasPlus1y": 515,
+    "hasPlus5yField": 0,
+    "analystCountMedian": 16,
+    "analystCountP25": 11,
+    "analystCountP75": 23
+  },
+  "B_sec8K_full515": {
+    "with8k": 515,
+    "withEarnings8k": 515,
+    "bodyFetched": 515,
+    "guidanceLanguage": 380,
+    "revenueGuidanceLanguage": 303,
+    "amountExtracted": 156,
+    "rateRevGuidLangOfFetched": 0.588,
+    "rateAmountExtractedOfFetched": 0.303
+  },
+  "C_valueLineMorningstar": {
+    "measured": false,
+    "note": "유료·비공개 — 원전 소스이나 우리는 접근 불가로 기록만(측정하지 않음)"
+  },
+  "union": 515,
+  "intersectionAandB": 156,
+  "note": "A=야후 애널리스트 컨센서스(0y period revenueEstimate.growth, 실제 값). B=8-K 언어존재와 금액추출을 분리(847의 63.3%는 언어존재율이지 커버리지가 아니었음). C=측정 안 함."
+}

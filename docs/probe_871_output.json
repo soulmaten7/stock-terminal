@@ -1,0 +1,72 @@
+{
+  "asOf": "2026-08-03",
+  "damoAsOf": "2026-01-05",
+  "n": 515,
+  "baselineCrossCheck": {
+    "matches": 515,
+    "mismatches": 0,
+    "note": "캐시 companyfacts(/tmp/866_cf)로 기존 salesGrowth 그대로 재실행했을 때 DB 저장 verdict·gap_years와 일치하는지(캐시-라이브 시점차 확인용)"
+  },
+  "newSalesGrowth": {
+    "p05": -0.005089999999999999,
+    "p25": 0.05065,
+    "p50": 0.0896,
+    "p75": 0.178950005,
+    "p95": 0.5289599909999997,
+    "negative": 28,
+    "over30pct": 67
+  },
+  "newGapYears": {
+    "p25": 5,
+    "p50": 9,
+    "p75": 15,
+    "n": 189
+  },
+  "verdictMigration": {
+    "over_cap→years": 46,
+    "years→years": 118,
+    "years→over_cap": 44,
+    "below_one→below_one": 57,
+    "below_one→value_destroying": 28,
+    "value_destroying→value_destroying": 103,
+    "value_destroying→below_one": 12,
+    "value_destroying→years": 23,
+    "over_cap→value_destroying": 16,
+    "value_destroying→over_cap": 11,
+    "over_cap→over_cap": 40,
+    "years→value_destroying": 14,
+    "below_one→years": 2,
+    "years→below_one": 1
+  },
+  "signFlips": 55,
+  "scenarioLowHighFeasible": {
+    "n": 513,
+    "note": "야후 revenueEstimate.low/high로 원전의 저/고 시나리오 근사 산출 가능"
+  },
+  "baselineForComparison": {
+    "asOf": "2026-08-03",
+    "n": 515,
+    "salesGrowth": {
+      "p05": -0.01878731921201229,
+      "p25": 0.0547684121727805,
+      "p50": 0.09481637466247417,
+      "p75": 0.15430836882259902,
+      "p95": 0.3883669508241608,
+      "negative": 31,
+      "over30pct": 48
+    },
+    "gapYears": {
+      "p25": 6,
+      "p50": 11,
+      "p75": 17,
+      "n": 177
+    },
+    "verdictMix": {
+      "over_cap": 102,
+      "years": 177,
+      "below_one": 87,
+      "value_destroying": 149
+    }
+  },
+  "note": "재료만 — 제안 없음. ③판정은 장은태."
+}
