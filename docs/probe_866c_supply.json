@@ -1,10 +1,15 @@
 {
-  "probedAt": "2026-08-02T07:36:50.809Z",
+  "probedAt": "2026-08-02T07:57:08.833Z",
   "otcN": 486,
   "quoteReturned": 477,
   "hasMarketCap": 446,
   "hasPriceOnly": 30,
   "noResponse": 9,
+  "quoteReturnedButNoPrice": 1,
+  "quoteReturnedButNoPriceSymbols": [
+    "WDSP"
+  ],
+  "tallyCheck": "quoteReturned(477) = hasMarketCap(446) + hasPriceOnly(30) + quoteReturnedButNoPrice(1) = 477",
   "marketCapPercentiles": {
     "p10": 267291.5,
     "p50": 6829708.5,

@@ -1,0 +1,167 @@
+{
+  "probedAt": "2026-08-02T07:57:26.924Z",
+  "supersedesNote": "866C의 byExchangeField(분포만)를 3분류·insufficientBreakdown과 교차. 티어 채택·컷 제안 없음(STEP 866D §금지).",
+  "byTier": {
+    "OTCQX": {
+      "n": 32,
+      "quoteOk": 32,
+      "hasMarketCap": 32,
+      "priceOnly": 0,
+      "computed": 1,
+      "undecidable": 13,
+      "insufficient": 18,
+      "yieldPctOfN": 3.1,
+      "verdictMix": {
+        "years": 1,
+        "over_cap": 1,
+        "value_destroying": 7,
+        "below_one": 5
+      },
+      "insufficientBreakdown": {
+        "NO_INDUSTRY": 5,
+        "NOT_APPLICABLE_SECTOR": 1,
+        "MISSING_TAG": 7,
+        "INSUFFICIENT_HISTORY": 5
+      },
+      "marketCapMedian": 57338184
+    },
+    "OTCQB": {
+      "n": 165,
+      "quoteOk": 165,
+      "hasMarketCap": 159,
+      "priceOnly": 6,
+      "computed": 3,
+      "undecidable": 52,
+      "insufficient": 110,
+      "yieldPctOfN": 1.8,
+      "verdictMix": {
+        "years": 3,
+        "over_cap": 23,
+        "value_destroying": 22,
+        "below_one": 7
+      },
+      "insufficientBreakdown": {
+        "INSUFFICIENT_HISTORY": 63,
+        "MISSING_TAG": 42,
+        "NO_INDUSTRY": 5
+      },
+      "marketCapMedian": 10358094
+    },
+    "PINK": {
+      "n": 144,
+      "quoteOk": 144,
+      "hasMarketCap": 125,
+      "priceOnly": 19,
+      "computed": 2,
+      "undecidable": 38,
+      "insufficient": 104,
+      "yieldPctOfN": 1.4,
+      "verdictMix": {
+        "years": 2,
+        "over_cap": 18,
+        "value_destroying": 20,
+        "below_one": 0
+      },
+      "insufficientBreakdown": {
+        "INSUFFICIENT_HISTORY": 61,
+        "MISSING_TAG": 34,
+        "NO_INDUSTRY": 9
+      },
+      "marketCapMedian": 2237528
+    },
+    "OTCID": {
+      "n": 135,
+      "quoteOk": 135,
+      "hasMarketCap": 130,
+      "priceOnly": 5,
+      "computed": 2,
+      "undecidable": 22,
+      "insufficient": 111,
+      "yieldPctOfN": 1.5,
+      "verdictMix": {
+        "years": 2,
+        "over_cap": 6,
+        "value_destroying": 14,
+        "below_one": 2
+      },
+      "insufficientBreakdown": {
+        "MISSING_TAG": 39,
+        "INSUFFICIENT_HISTORY": 65,
+        "MULTI_CLASS_SHARES": 1,
+        "NO_INDUSTRY": 4,
+        "NOT_APPLICABLE_SECTOR": 2
+      },
+      "marketCapMedian": 3620956
+    },
+    "UNKNOWN": {
+      "n": 10,
+      "quoteOk": 1,
+      "hasMarketCap": 0,
+      "priceOnly": 0,
+      "computed": 0,
+      "undecidable": 0,
+      "insufficient": 10,
+      "yieldPctOfN": 0,
+      "verdictMix": {
+        "years": 0,
+        "over_cap": 0,
+        "value_destroying": 0,
+        "below_one": 0
+      },
+      "insufficientBreakdown": {
+        "INSUFFICIENT_HISTORY": 5,
+        "NO_INDUSTRY": 1,
+        "MISSING_TAG": 2,
+        "NO_MARKETCAP": 2
+      },
+      "marketCapMedian": null
+    },
+    "EXCHANGE_LISTED": {
+      "n": 2857,
+      "quoteOk": 0,
+      "hasMarketCap": 2836,
+      "priceOnly": 0,
+      "computed": 364,
+      "undecidable": 1688,
+      "insufficient": 805,
+      "yieldPctOfN": 12.7,
+      "verdictMix": {
+        "years": 364,
+        "over_cap": 419,
+        "value_destroying": 925,
+        "below_one": 344
+      },
+      "insufficientBreakdown": {
+        "MULTI_CLASS_SHARES": 21,
+        "MISSING_TAG": 185,
+        "INSUFFICIENT_HISTORY": 485,
+        "NO_INDUSTRY": 73,
+        "NO_MARKETCAP": 12,
+        "NOT_APPLICABLE_SECTOR": 29
+      },
+      "marketCapMedian": 1372540608
+    }
+  },
+  "disclosureFailPctByTier": {
+    "OTCQX": 37.5,
+    "OTCQB": 63.6,
+    "PINK": 66,
+    "OTCID": 77,
+    "UNKNOWN": 70,
+    "EXCHANGE_LISTED": 23.5
+  },
+  "otcMarketsTierClaim": "OTC Markets 공식(2024-10-14 블로그): OTCID = minimal current information standard만 요구, OTCQX/OTCQB의 qualitative standards 없음 — 티어=공시 수준의 계단이라는 주장. 아래 disclosureFailPctByTier가 이 주장을 우리 데이터에서 지지하는지 여부는 숫자로만 판단(해석 없음).",
+  "reportingGaps": {
+    "quoteReturnedButNoPrice": 1,
+    "quoteReturnedButNoPriceSymbols": [
+      "WDSP"
+    ],
+    "mcapSourceBreakdown": {
+      "marketCap": 446,
+      "priceTimesShares": 7,
+      "none": 33
+    },
+    "otcWithMcapNote": "otcWithMcap = marketCap 446 + priceTimesShares 7 = 453. 가격만 있는 30건 중 computeDrivers가 shares를 낸 것만 사용(추정 금지)."
+  },
+  "note": "재료만 — 티어 채택·컷에 의견 없음(STEP 866D §금지사항)."
+}

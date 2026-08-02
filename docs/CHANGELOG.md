@@ -1,6 +1,41 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (12) — 🔴 **STEP 866D 실행: OTC 티어 교차 + 866C 보고 구멍 2건** (측정 전용 · 프로덕션 코드 0 · DB 0행)
+
+> **성격**: 측정 전용 1 STEP, 신규 파일 없음(`scripts/probe_866c_otc_supply.ts`에 단계만 추가). `lib/**`·`app/**`·`data/us_symbols.json`·`docs/probe_survivors.json` **diff 0** · `revdcf_results` 무변경(604×3) · `us_market_cap` 무변경(5,886). 커밋 = 이 커밋(부모 `f547d72`) — **미푸시.**
+>
+> **왜**: 866C의 `byExchangeField`가 OTC 응답을 티어별(OTCQX 32·OTCQB 165·PINK 144·OTCID 135·YHD 1)로 이미 나눴는데 **3분류(산출/판정불가/입력부족)와 교차하지 않았다.** OTC Markets 공식 문서(2024-10-14 블로그·OTCID 2025-07-01 시행)는 *"OTCID는 최소 정보기준만, OTCQX/OTCQB의 qualitative standards 없음"* 이라 주장한다 — 티어=공시 수준의 계단이라면, "OTC는 안 된다"와 "OTC 하위 티어는 안 된다"를 구분해야 한다. 이건 Claude Code 누락이 아니라 866C 명령서 설계 누락(Cowork). 별도로 코드는 맞았지만 출력에 안 실린 보고 구멍 2건도 발견됨.
+
+### §1 OTC 티어 × 3분류 교차표(대조군 EXCHANGE_LISTED 포함)
+
+| 티어 | n | 산출(a) | 산출률(a)÷N | 공시형결격(`INSUFFICIENT_HISTORY`+`MISSING_TAG`)÷n | 시총 중앙값 |
+|---|---|---|---|---|---|
+| OTCQX | 32 | 1 | 3.1% | 37.5% | $57.3M |
+| OTCQB | 165 | 3 | 1.8% | 63.6% | $10.4M |
+| PINK | 144 | 2 | 1.4% | 66.0% | $2.2M |
+| OTCID | 135 | 2 | 1.5% | 77.0% | $3.6M |
+| UNKNOWN | 10 | 0 | 0% | 70.0% | — |
+| **EXCHANGE_LISTED(대조)** | 2,857 | 364 | **12.7%** | **23.5%** | $1,372.5M |
+
+- **OTC Markets 공식 주장이 우리 데이터에서 대체로 확인됨**(숫자로만 — 해석·컷 제안 없음): 공시형결격 비율이 OTCQX→OTCQB→PINK→OTCID로 계단식 상승(37.5%→63.6%→66.0%→77.0%). 단 **OTC 최상위 티어(OTCQX)조차 EXCHANGE_LISTED(23.5%)보다 높고**, 산출률도 3.1% vs 12.7%로 4배 이상 낮다 — "OTCQX만 넣으면 문제 없다"고 볼 근거는 아니다.
+- 티어 정규화는 866C가 실제 관측한 `fullExchangeName` 4종(`OTC Markets OTCQX/OTCQB/OTCPK/OTCID`)+`YHD`만 매핑, 그 외는 추측 없이 `UNKNOWN`.
+
+### §2 866C 보고 구멍 2건(코드는 맞았음 — 출력 누락만)
+
+1. **`mcapSource` 미출력**: `otcWithMcap 453`이 `marketCap 446 + priceTimesShares 7`로 구성됨을 코드는 이미 추적했는데(`mcapSource` 필드) 산출물엔 안 실렸다 → `mcapSourceBreakdown`·`otcWithMcapNote` 키 추가(`probe_866c_output.json`).
+2. **`quoteReturnedButNoPrice` 누락**: 응답 477 − marketCap 446 − 가격만 30 = **1건**(`WDSP`)이 기존 `if/else-if` 구조에서 **어느 칸에도 안 들어갔다** → `else` 분기 추가로 포착, `quoteReturnedButNoPrice`·`quoteReturnedButNoPriceSymbols`·`tallyCheck` 키 추가(`probe_866c_supply.json`).
+
+### §3 무변경 확인
+
+- `revdcf_results` 604×3 · `us_market_cap` 5,886(전후 동일) · `git diff --stat -- lib/ app/ data/us_symbols.json docs/probe_survivors.json` 출력 없음 · tsc 0 · vitest 151/151.
+
+### §4 산출물
+
+- `docs/probe_866d_output.json`(신규 — 티어 교차표 전체) · `docs/probe_866c_supply.json`·`docs/probe_866c_output.json`(키만 추가) · `scripts/probe_866c_otc_supply.ts`(단계 추가).
+
+**▶ 다음**: 유니버스 채택 판정(거래소 기준 vs 상장 기준·OTC 포함 여부(전체/티어별)·컷 적용 여부)은 **장은태 몫**. 866·866B·866C·866D로 재료 완비.
+
 ## 2026-08-02 (11) — 🔴 **STEP 866C 실행: OTC 시총 조달 실측 + 동시 결격 재분류** (측정 전용 · 프로덕션 코드 0 · DB 0행)
 
 > **성격**: 측정 전용 1 STEP. `lib/revdcf/**`·`lib/lensPrecompute.ts`·`app/**`·`data/us_symbols.json` **diff 0** · `revdcf_results` 무변경(2026-08-01/02/03 각 604) · `us_market_cap` **무변경**(5,886 — 866C가 받아온 OTC 시총은 측정 파일에만, 프로덕션 테이블에 안 씀). 커밋 = 이 커밋(부모 `52db062`) — **미푸시.**

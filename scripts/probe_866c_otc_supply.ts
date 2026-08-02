@@ -1,8 +1,10 @@
 // STEP 866C — OTC 시총 조달 가능성 실측 + 동시 결격 재분류 (측정 전용 · 프로덕션 무변경)
+// STEP 866D — 같은 스크립트에 단계 추가: OTC 티어(OTCQX/OTCQB/PINK/OTCID) × 3분류 교차표 + 보고 구멍 2건 메움
+//   (mcapSource 집계·quoteReturnedButNoPrice if/else-if 누락 보정). 신규 파일 없음(866D 지시대로).
 // 실행: npx tsx scripts/probe_866c_otc_supply.ts
 // 🔴 금지: lib/revdcf/**·lib/lensPrecompute.ts 수정(import만) · us_market_cap 쓰기(866C가 받은 OTC 시총을 프로덕션에 넣지 않음) ·
-//   revdcf_results 쓰기 · data/us_symbols.json 수정 · app/** 수정 · "OTC를 넣자/빼자" 제안.
-// 866B의 캐시(companyfacts, /tmp/866_cf)를 재사용 — 재다운로드 금지.
+//   revdcf_results 쓰기 · data/us_symbols.json 수정 · app/** 수정 · "OTC를 넣자/빼자" · "티어 컷 제안".
+// 866B의 캐시(companyfacts, /tmp/866_cf)를 재사용 — 재다운로드 금지. 866D는 야후 조회를 486개(OTC)로 한정(전수 재실행 금지).
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import YahooFinance from "yahoo-finance2";
@@ -77,6 +79,8 @@ async function main() {
   let hasMarketCapN = 0, hasPriceOnlyN = 0, noResponseN = 0;
   const marketCaps: number[] = [];
   const byExchangeField: Record<string, number> = {};
+  // 🔴 866D §보고구멍2: 원래 if/else-if라 marketCap도 price도 없는 응답이 어느 칸에도 안 들어갔다 — else로 채운다.
+  const quoteReturnedButNoPriceSyms: string[] = [];
   for (const sym of otcSyms) {
     const q = quoteBySym.get(sym);
     if (!q) { noResponseN++; continue; }
@@ -84,6 +88,7 @@ async function main() {
     byExchangeField[ex] = (byExchangeField[ex] ?? 0) + 1;
     if (typeof q.marketCap === "number" && q.marketCap > 0) { hasMarketCapN++; marketCaps.push(q.marketCap); }
     else if (typeof q.regularMarketPrice === "number" && q.regularMarketPrice > 0) { hasPriceOnlyN++; }
+    else { quoteReturnedButNoPriceSyms.push(sym); }
   }
   const supply = {
     probedAt: new Date().toISOString(),
@@ -92,13 +97,16 @@ async function main() {
     hasMarketCap: hasMarketCapN,
     hasPriceOnly: hasPriceOnlyN,
     noResponse: noResponseN,
+    quoteReturnedButNoPrice: quoteReturnedButNoPriceSyms.length, // 866D §보고구멍2
+    quoteReturnedButNoPriceSymbols: quoteReturnedButNoPriceSyms,
+    tallyCheck: `quoteReturned(${quoteBySym.size}) = hasMarketCap(${hasMarketCapN}) + hasPriceOnly(${hasPriceOnlyN}) + quoteReturnedButNoPrice(${quoteReturnedButNoPriceSyms.length}) = ${hasMarketCapN + hasPriceOnlyN + quoteReturnedButNoPriceSyms.length}`,
     marketCapPercentiles: { p10: percentile(marketCaps, 10), p50: percentile(marketCaps, 50), p90: percentile(marketCaps, 90) },
     byExchangeField,
     yahooErrors: errors,
     note: "야후 심볼 표기 변형 탐색 없음(원티커 1회만 시도 · 추측 금지). 응답 없음은 그대로 카운트.",
   };
   writeFileSync("docs/probe_866c_supply.json", JSON.stringify(supply, null, 2));
-  console.error(`[1단계 완료] 응답 ${supply.quoteReturned} · marketCap ${hasMarketCapN} · 가격만 ${hasPriceOnlyN} · 무응답 ${noResponseN}`);
+  console.error(`[1단계 완료] 응답 ${supply.quoteReturned} · marketCap ${hasMarketCapN} · 가격만 ${hasPriceOnlyN} · 무응답 ${noResponseN} · 응답O가격X ${quoteReturnedButNoPriceSyms.length}`);
 
   // ══════════════════════════════ 참조 데이터(cron route와 동일 — 값 코드 박기 금지, DB에서 읽기만) ══════════════════════════════
   console.error("[2] Damodaran·시총 참조 데이터 로드…");
@@ -193,6 +201,83 @@ async function main() {
   };
   console.error(`[2단계 완료] otcWithMcap=${otcWithMcap} moved=${JSON.stringify(moved)} from135=${JSON.stringify(from135_NO_MARKETCAP)}`);
 
+  // ══════════════════════════════ 866D §1·2 — 티어를 행에 붙이고 결과와 교차 ══════════════════════════════
+  // 🔴 매핑을 추측으로 늘리지 않는다 — 866C가 실제로 관측한 fullExchangeName 4종 + YHD만 취급, 그 외는 UNKNOWN.
+  function normalizeTier(fullExchangeName: string | undefined): string {
+    if (fullExchangeName === "OTC Markets OTCQX") return "OTCQX";
+    if (fullExchangeName === "OTC Markets OTCQB") return "OTCQB";
+    if (fullExchangeName === "OTC Markets OTCPK") return "PINK";
+    if (fullExchangeName === "OTC Markets OTCID") return "OTCID";
+    return "UNKNOWN"; // 응답 없음 · YHD · 그 외 미관측 값
+  }
+  type TierStat = {
+    n: number; quoteOk: number; hasMarketCap: number; priceOnly: number;
+    computed: number; undecidable: number; insufficient: number; yieldPctOfN: number | null;
+    verdictMix: { years: number; over_cap: number; value_destroying: number; below_one: number };
+    insufficientBreakdown: Record<string, number>;
+    marketCapMedian: number | null;
+  };
+  function emptyTierStat(): TierStat {
+    return { n: 0, quoteOk: 0, hasMarketCap: 0, priceOnly: 0, computed: 0, undecidable: 0, insufficient: 0, yieldPctOfN: null, verdictMix: { years: 0, over_cap: 0, value_destroying: 0, below_one: 0 }, insufficientBreakdown: {}, marketCapMedian: null };
+  }
+  const byTier: Record<string, TierStat> = { OTCQX: emptyTierStat(), OTCQB: emptyTierStat(), PINK: emptyTierStat(), OTCID: emptyTierStat(), UNKNOWN: emptyTierStat() };
+  const tierMcaps: Record<string, number[]> = { OTCQX: [], OTCQB: [], PINK: [], OTCID: [], UNKNOWN: [] };
+  for (const r of otcRows) {
+    const q = quoteBySym.get(r.symbol);
+    const tier = q ? normalizeTier(q.fullExchangeName) : "UNKNOWN";
+    const st = byTier[tier];
+    st.n++;
+    if (q) st.quoteOk++;
+    if (q && typeof q.marketCap === "number" && q.marketCap > 0) { st.hasMarketCap++; tierMcaps[tier].push(q.marketCap); }
+    else if (q && typeof q.regularMarketPrice === "number" && q.regularMarketPrice > 0) st.priceOnly++;
+    const res = otcResults.get(r.cik)!;
+    if (res.bucket === "computed") st.computed++;
+    else if (res.bucket === "undecidable") st.undecidable++;
+    else st.insufficient++;
+    if (res.subTag === "years") st.verdictMix.years++;
+    else if (res.subTag === "over_cap") st.verdictMix.over_cap++;
+    else if (res.subTag === "value_destroying") st.verdictMix.value_destroying++;
+    else if (res.subTag === "below_one") st.verdictMix.below_one++;
+    if (res.bucket === "insufficient") st.insufficientBreakdown[res.subTag] = (st.insufficientBreakdown[res.subTag] ?? 0) + 1;
+  }
+  for (const t of Object.keys(byTier)) { const st = byTier[t]; st.yieldPctOfN = st.n ? +(100 * st.computed / st.n).toFixed(1) : null; st.marketCapMedian = median(tierMcaps[t]); }
+
+  // 대조군: 거래소상장(EXCHANGE_LISTED) — 같은 형식으로 866B/866C의 finalRows 비-OTC·비-null 행에서 산출.
+  const exListedFinal = finalRows.filter((r) => r.exchangeSec != null && r.exchangeSec !== "OTC");
+  const exListedStat: TierStat = emptyTierStat();
+  const exListedMcaps: number[] = [];
+  exListedStat.n = exListedFinal.length;
+  exListedStat.quoteOk = 0; exListedStat.priceOnly = 0; // 이 축은 OTC 전용 개념(야후 조회) — 거래소상장은 866B가 이미 us_market_cap으로 계산해 해당 없음
+  for (const r of exListedFinal) {
+    if (r.marketCap != null && r.marketCap > 0) { exListedStat.hasMarketCap++; exListedMcaps.push(r.marketCap); }
+    if (r.bucket === "computed") exListedStat.computed++;
+    else if (r.bucket === "undecidable") exListedStat.undecidable++;
+    else exListedStat.insufficient++;
+    if (r.subTag === "years") exListedStat.verdictMix.years++;
+    else if (r.subTag === "over_cap") exListedStat.verdictMix.over_cap++;
+    else if (r.subTag === "value_destroying") exListedStat.verdictMix.value_destroying++;
+    else if (r.subTag === "below_one") exListedStat.verdictMix.below_one++;
+    if (r.bucket === "insufficient" && r.subTag) exListedStat.insufficientBreakdown[r.subTag] = (exListedStat.insufficientBreakdown[r.subTag] ?? 0) + 1;
+  }
+  exListedStat.yieldPctOfN = exListedStat.n ? +(100 * exListedStat.computed / exListedStat.n).toFixed(1) : null;
+  exListedStat.marketCapMedian = median(exListedMcaps);
+  (byTier as Record<string, TierStat>).EXCHANGE_LISTED = exListedStat;
+
+  // 공시형 결격(INSUFFICIENT_HISTORY+MISSING_TAG) 비율 — 티어별 vs 거래소상장(대조군).
+  const disclosureFailPct = (st: TierStat) => st.n ? +(100 * ((st.insufficientBreakdown.INSUFFICIENT_HISTORY ?? 0) + (st.insufficientBreakdown.MISSING_TAG ?? 0)) / st.n).toFixed(1) : null;
+  const disclosureFailByTier = Object.fromEntries(Object.entries(byTier).map(([k, v]) => [k, disclosureFailPct(v)]));
+  console.error(`[866D §2 완료] byTier=${JSON.stringify(Object.fromEntries(Object.entries(byTier).map(([k, v]) => [k, { n: v.n, computed: v.computed, yieldPctOfN: v.yieldPctOfN }])))}`);
+  console.error(`  공시형결격비율: ${JSON.stringify(disclosureFailByTier)}`);
+
+  // 866C §보고구멍1: mcapSource 집계(코드는 이미 추적하는데 출력에 없었다)
+  const mcapSourceBreakdown = { marketCap: 0, priceTimesShares: 0, none: 0 };
+  for (const v of otcResults.values()) {
+    if (v.mcapSource === "marketCap") mcapSourceBreakdown.marketCap++;
+    else if (v.mcapSource === "priceTimesShares") mcapSourceBreakdown.priceTimesShares++;
+    else mcapSourceBreakdown.none++;
+  }
+  const otcWithMcapNote = `otcWithMcap = marketCap ${mcapSourceBreakdown.marketCap} + priceTimesShares ${mcapSourceBreakdown.priceTimesShares} = ${mcapSourceBreakdown.marketCap + mcapSourceBreakdown.priceTimesShares}. 가격만 있는 ${hasPriceOnlyN}건 중 computeDrivers가 shares를 낸 것만 사용(추정 금지).`;
+
   // ── 전수 재집계: 비-OTC 866B 결과는 그대로, OTC만 866C 결과로 교체 ──
   const nonOtcFinal = finalRows.filter((r) => r.exchangeSec !== "OTC");
   type MergedRow = { cik: number; symbol: string; bucket: string; subTag: string | null; gapYears: number | null; marketCapBucket: string | null };
@@ -262,10 +347,30 @@ async function main() {
     otcRecompute: { otcWithMcap, moved, from135_NO_MARKETCAP, gapYearsOtc: { median: median(gapYearsOtc), p25: percentile(gapYearsOtc, 25), p75: percentile(gapYearsOtc, 75), n: gapYearsOtc.length }, verdictMixOtc },
     recount: { the866b: { N: 3354, computed: 364, undecidable: 1688, insufficient: 1302, yieldPct: 10.9, gapMedianYears: 8, iccDef860: 0.165, microBucketYieldPctOfN: 3.3 }, the866c: recount866c },
     insufficientCauseCorrected,
+    mcapSourceBreakdown, // 866D §보고구멍1
+    otcWithMcapNote, // 866D §보고구멍1
     note: "재료만 — OTC 채택 여부·심볼 목록 확장 여부 제안 없음(STEP 866C §금지 6). us_market_cap·revdcf_results·us_symbols.json 전부 무변경(측정 전용).",
   };
   writeFileSync("docs/probe_866c_output.json", JSON.stringify(output866c, null, 2));
-  console.error("[4단계] docs/probe_866c_output.json 저장");
+  console.error("[4단계] docs/probe_866c_output.json 저장(866D 키 2개 추가: mcapSourceBreakdown·otcWithMcapNote)");
+
+  // ══════════════════════════════ 866D §4 — 전용 산출물(티어 교차표) ══════════════════════════════
+  const output866d = {
+    probedAt: new Date().toISOString(),
+    supersedesNote: "866C의 byExchangeField(분포만)를 3분류·insufficientBreakdown과 교차. 티어 채택·컷 제안 없음(STEP 866D §금지).",
+    byTier,
+    disclosureFailPctByTier: disclosureFailByTier, // (INSUFFICIENT_HISTORY+MISSING_TAG)÷n, 티어별 vs EXCHANGE_LISTED(대조군)
+    otcMarketsTierClaim: "OTC Markets 공식(2024-10-14 블로그): OTCID = minimal current information standard만 요구, OTCQX/OTCQB의 qualitative standards 없음 — 티어=공시 수준의 계단이라는 주장. 아래 disclosureFailPctByTier가 이 주장을 우리 데이터에서 지지하는지 여부는 숫자로만 판단(해석 없음).",
+    reportingGaps: {
+      quoteReturnedButNoPrice: supply.quoteReturnedButNoPrice,
+      quoteReturnedButNoPriceSymbols: supply.quoteReturnedButNoPriceSymbols,
+      mcapSourceBreakdown,
+      otcWithMcapNote,
+    },
+    note: "재료만 — 티어 채택·컷에 의견 없음(STEP 866D §금지사항).",
+  };
+  writeFileSync("docs/probe_866d_output.json", JSON.stringify(output866d, null, 2));
+  console.error("[866D 완료] docs/probe_866d_output.json 저장");
 
   const rows866c = insufficientAll.map((r, i) => ({ ...reclass[i] }));
   writeFileSync("docs/probe_866c_rows.json", JSON.stringify(rows866c));
@@ -286,6 +391,12 @@ async function main() {
   console.error(`  NO_MARKETCAP 135 출신: computed ${from135_NO_MARKETCAP.computed} / undecidable ${from135_NO_MARKETCAP.undecidable} / 다른 데서 실패 ${from135_NO_MARKETCAP.failedElsewhere}`);
   console.error(`전수 재집계: (a) 364→${recount866c.computed} · 산출률 10.9%→${recount866c.yieldPct}% · GAP중앙 8→${recount866c.gapMedianYears}년 · ICC(860정의) 0.165→${recount866c.iccDef860}`);
   console.error(`동시 결격 3칸: 우리조달만 ${ourFaultOnly} / 회사공시만 ${companyFaultOnly} / 둘다 ${both} (866B 246/1001/55 정정)`);
+  console.error(`\n--- 866D ---`);
+  const tOrder = ["OTCQX", "OTCQB", "PINK", "OTCID", "UNKNOWN", "EXCHANGE_LISTED"];
+  console.error(`티어별 (n/산출/판정불가/입력부족/산출률(a)÷N/시총중앙):`);
+  for (const t of tOrder) { const st = byTier[t]; console.error(`  ${t}: n=${st.n} 산출=${st.computed} 판정불가=${st.undecidable} 입력부족=${st.insufficient} 산출률=${st.yieldPctOfN}% 시총중앙=${st.marketCapMedian}`); }
+  console.error(`공시형 결격(INSUFFICIENT_HISTORY+MISSING_TAG) 비율: ${JSON.stringify(disclosureFailByTier)}`);
+  console.error(`보고 구멍: quoteReturnedButNoPrice ${supply.quoteReturnedButNoPrice}(심볼 ${JSON.stringify(supply.quoteReturnedButNoPriceSymbols)}) · mcapSource marketCap ${mcapSourceBreakdown.marketCap} + priceTimesShares ${mcapSourceBreakdown.priceTimesShares} = ${mcapSourceBreakdown.marketCap + mcapSourceBreakdown.priceTimesShares}`);
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-08-02T07:37:08.197Z",
+  "probedAt": "2026-08-02T07:57:26.923Z",
   "supersedes": "docs/probe_866b_output.json (insufficientCause만)",
   "otcSupplyRef": "docs/probe_866c_supply.json",
   "otcRecompute": {
@@ -61,5 +61,11 @@
     "neitherBlocked_shouldBeZero": 133,
     "total": 1302
   },
+  "mcapSourceBreakdown": {
+    "marketCap": 446,
+    "priceTimesShares": 7,
+    "none": 33
+  },
+  "otcWithMcapNote": "otcWithMcap = marketCap 446 + priceTimesShares 7 = 453. 가격만 있는 30건 중 computeDrivers가 shares를 낸 것만 사용(추정 금지).",
   "note": "재료만 — OTC 채택 여부·심볼 목록 확장 여부 제안 없음(STEP 866C §금지 6). us_market_cap·revdcf_results·us_symbols.json 전부 무변경(측정 전용)."
 }
