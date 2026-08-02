@@ -27,6 +27,8 @@
 🔴 **판독 상태는 `lib/revdcf/registry.ts`의 `PRIMARY_SOURCE.readStatus`가 정본.**
 2026-08-01 현재 **T8만 판독 완료 · T3~T7 미독** — 해당 driver 설계를 확정하기 전에 반드시 열 것.
 
+🔴 **워크드 PIE/MIFP 사례 = 도미노 1건뿐 (STEP 863 전수 탐색 소진 · 재탐색 불요)**: T9=가상회사(Buyer/Seller Inc.)·T10=Shopify(실물옵션·PIE 아님)·튜토리얼 8p=도미노만·책 5~7장=도미노가 유일 PIE 케이스·Special Site Extras(3장: Active Investor·Pitfalls·Earnings/PE)=일반챕터·Mauboussin 리포트=재현가능 명명 MIFP 없음. **2번째 검증 사례는 무료 원전에 존재하지 않음**(값 검증 = 도미노 정확 재현 + 분포 관찰 3개로 도메인 상한).
+
 ---
 
 ## `damodaran/` — 재료 데이터셋
