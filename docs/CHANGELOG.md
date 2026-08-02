@@ -15,7 +15,7 @@
 >
 > **§5 판정 = 🔶 (도메인 상한·총 8곳 소진)**: 손계산 ✅ + 분포 ✅ + **방법 3원 확인 ✅**(GAP=MICAP=NC GAP=Rappaport) + 범위 대조 ✅. **재현 가능 동시점 개별 종목 대조는 0건**(외부 값은 존재하나 1997·정의차·비공개라 재현 불가). 🔴 **임의 ✅ 금지(STEP 864 §5)** — "3종목" 문자를 도메인 상한(도미노 재현+3중 외부 정합)으로 볼지는 **장은태 판단**. 무료 경로 소진(더 뒤질 곳 없음).
 >
-> 코드/DB/화면 0(docs+README+PDF)·tsc 0·vitest 151/151·프로덕션 404. ⓪-3: 튜토리얼 8p Notes 확인·NC methodology 로컬·CAP PDF(Damodaran 사본) 다운·pdftotext 판독·revdcf_results 2026-08-03(KO/INTC/MSFT 등). 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD: (이 커밋).**
+> 코드/DB/화면 0(docs+README+PDF)·tsc 0·vitest 151/151·프로덕션 404. ⓪-3: 튜토리얼 8p Notes 확인·NC methodology 로컬·CAP PDF(Damodaran 사본) 다운·pdftotext 판독·revdcf_results 2026-08-03(KO/INTC/MSFT 등). 🔴 **여기서 멈춤 — 다음 항목 장은태 지시 후.** **HEAD `33607fe`.**
 
 ## 2026-08-02 (6) — 역DCF DoD 항목 3: 원전 사례 전수 탐색 → 도미노 1건 입증 (STEP 863 · 읽기전용·코드 0)
 
