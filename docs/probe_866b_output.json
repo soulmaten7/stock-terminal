@@ -1,0 +1,182 @@
+{
+  "probedAt": "2026-08-02T07:18:46.000Z",
+  "supersedes": "docs/probe_866_output.json",
+  "corrections": [
+    "REVDCF_SPEC.md: '거래소 상장'은 우리 규칙에 없는 조건이었다(근거 없이 삽입) — 철회",
+    "EXTERNAL_UNIVERSE_QUOTES.md: NC 'OTC'·'주식구조 복잡' 제외 사유는 원본에 없다 — 철회(재저장으로 재확인)",
+    "probe_866_ladder.json: reit/spac는 sicFinancial의 부분집합(추가 제외 0) — droppedByNote 추가",
+    "marketCapBucket: 입력부족 행도 시총 조회는 companyfacts와 무관 — 분모 통일(no-mcap 별도 집계)",
+    "industryIcc: 0.195 vs 0.267/0.176은 불일치가 아니라 정의 차이(minGroupSize 5 + 업종출처 flags.industry)"
+  ],
+  "ncRecheck": {
+    "file": "data/sources/text/newconstructs_coverage_methodology.html",
+    "previousCopy": "data/sources/text/_prev_newconstructs_coverage_methodology_20260731.html",
+    "bodyTextLength": 8112,
+    "priorBodyTextLength": 8163,
+    "counts": {
+      "2,748": 0,
+      "OTC": 0,
+      "complex": 0,
+      "share structure": 0
+    },
+    "conclusion": "OTC 0건 재확인 — (2) 철회 확정"
+  },
+  "ladderExchange": {
+    "uniqueCik": {
+      "exchangeListed": 6042,
+      "OTC": 1788,
+      "null": 187
+    },
+    "hasAnnualForm": {
+      "exchangeListed": 5493,
+      "OTC": 1015,
+      "null": 21
+    },
+    "afterForeignCut": {
+      "exchangeListed": 4354,
+      "OTC": 868,
+      "null": 19
+    },
+    "afterSicFinancialCut": {
+      "exchangeListed": 3193,
+      "OTC": 691,
+      "null": 13
+    },
+    "afterRevenueCut_final": {
+      "exchangeListed": 2857,
+      "OTC": 486,
+      "null": 11
+    }
+  },
+  "bucket3Exchange": {
+    "computed": {
+      "exchangeListed": 364,
+      "OTC": 0,
+      "null": 0
+    },
+    "undecidable": {
+      "exchangeListed": 1688,
+      "OTC": 0,
+      "null": 0
+    },
+    "insufficient": {
+      "exchangeListed": 805,
+      "OTC": 486,
+      "null": 11
+    }
+  },
+  "exchangeSourceMismatch": {
+    "bothPresentN": 3095,
+    "mismatchN": 20,
+    "note": "SEC exchange와 Damodaran exchange가 둘 다 있는데 OTC 여부가 갈리는 CIK 수 — 어느 쪽이 맞는지는 판단하지 않는다."
+  },
+  "marketCapBucketBreakdown": {
+    "mega(200B+)": {
+      "n": 43,
+      "computed": 19,
+      "undecidable": 21,
+      "insufficient": 3,
+      "yieldPctOfN": 44.2,
+      "yieldPctOfCalculable": 47.5
+    },
+    "large(10-200B)": {
+      "n": 537,
+      "computed": 151,
+      "undecidable": 298,
+      "insufficient": 88,
+      "yieldPctOfN": 28.1,
+      "yieldPctOfCalculable": 33.6
+    },
+    "no-mcap": {
+      "n": 518,
+      "computed": 0,
+      "undecidable": 0,
+      "insufficient": 518,
+      "yieldPctOfN": 0,
+      "yieldPctOfCalculable": null
+    },
+    "mid(2-10B)": {
+      "n": 671,
+      "computed": 117,
+      "undecidable": 403,
+      "insufficient": 151,
+      "yieldPctOfN": 17.4,
+      "yieldPctOfCalculable": 22.5
+    },
+    "small(0.3-2B)": {
+      "n": 701,
+      "computed": 48,
+      "undecidable": 462,
+      "insufficient": 191,
+      "yieldPctOfN": 6.8,
+      "yieldPctOfCalculable": 9.4
+    },
+    "micro(<0.3B)": {
+      "n": 884,
+      "computed": 29,
+      "undecidable": 504,
+      "insufficient": 351,
+      "yieldPctOfN": 3.3,
+      "yieldPctOfCalculable": 5.4
+    }
+  },
+  "the604YieldTwoBasis": {
+    "ofN": 29.3,
+    "ofCalculable": 34.4
+  },
+  "industryIcc": {
+    "definition860": "minGroupSize=5, industry=flags.industry (기록값 0.195의 정의)",
+    "the604_def860": 0.198,
+    "the604_def860_groups": 11,
+    "the604_def860_n": 93,
+    "the604_noMinGroup": 0.267,
+    "fullUniverse_def860": 0.165,
+    "fullUniverse_def860_groups": 31,
+    "fullUniverse_def860_n": 296,
+    "fullUniverse_noMinGroup": 0.176,
+    "recordedBaseline": 0.195,
+    "note": "🔴 0.195 vs 0.267은 불일치가 아니라 정의 차이(최소 업종 크기 5 필터 + 업종 출처). 866의 '불일치' 표기를 정정."
+  },
+  "fullUniverseSummary": {
+    "N": 3354,
+    "computed": 364,
+    "undecidable": 1688,
+    "insufficient": 1302,
+    "undecidableBreakdown": {
+      "over_cap": 419,
+      "value_destroying": 925,
+      "below_one": 344
+    },
+    "insufficientBreakdown": {
+      "MULTI_CLASS_SHARES": 23,
+      "MISSING_TAG": 311,
+      "INSUFFICIENT_HISTORY": 690,
+      "NO_INDUSTRY": 98,
+      "NO_MARKETCAP": 148,
+      "NOT_APPLICABLE_SECTOR": 32
+    },
+    "insufficientCause": {
+      "ourFault_NO_MARKETCAP_NO_INDUSTRY": 246,
+      "companyDisclosure_INSUFFICIENT_HISTORY_MISSING_TAG": 1001,
+      "other": 55
+    },
+    "gapMedianYears": 8,
+    "gapP25P75": [
+      4,
+      15
+    ]
+  },
+  "the604Summary": {
+    "n": 604,
+    "computed": 177,
+    "undecidable": 338,
+    "skipped": 89,
+    "matchesCoworkGivenBaseline": true,
+    "gapMedianYears": 11,
+    "gapP25P75": [
+      6,
+      17
+    ]
+  },
+  "note": "재료만 — 컷·거래소 기준에 대한 제안·채택 권고 없음(STEP 866B §금지 5). OTC 포함 여부는 미결정(장은태 판정 대기)."
+}

@@ -108,5 +108,6 @@
       "yieldPct": 5.4
     }
   },
-  "note": "재료만 — 컷 제안·채택 권고 없음(STEP 866 §금지 5)."
+  "note": "재료만 — 컷 제안·채택 권고 없음(STEP 866 §금지 5).",
+  "supersededBy": "docs/probe_866b_output.json"
 }

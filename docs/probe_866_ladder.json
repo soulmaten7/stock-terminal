@@ -1,5 +1,5 @@
 {
-  "probedAt": "2026-08-02T06:49:55.738Z",
+  "probedAt": "2026-08-02T07:18:46.000Z",
   "ladder": {
     "tickersExchangeTotal": 10432,
     "uniqueCik": 8017,
@@ -18,6 +18,7 @@
     "spac": 231,
     "noRevenue": 543
   },
+  "droppedByNote": "🔴 배타적이지 않다. reit(200)·spac(231)은 sicFinancial(1344)의 부분집합이라 사다리에서 추가 제외 0. 합산 금지. 배타 합산은 noAnnualForm+foreign+sicFinancial+noRevenue만.",
   "secOfficial": {
     "source": "data/sources/sec/sec_reporting_issuers_20260630.xlsx",
     "sheet": "Data Visual 2 (Shell vs. Non-shell)",
