@@ -1,6 +1,95 @@
 <!-- 2026-08-02 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-02 (11) — 🔴 **STEP 866C 실행: OTC 시총 조달 실측 + 동시 결격 재분류** (측정 전용 · 프로덕션 코드 0 · DB 0행)
+
+> **성격**: 측정 전용 1 STEP. `lib/revdcf/**`·`lib/lensPrecompute.ts`·`app/**`·`data/us_symbols.json` **diff 0** · `revdcf_results` 무변경(2026-08-01/02/03 각 604) · `us_market_cap` **무변경**(5,886 — 866C가 받아온 OTC 시총은 측정 파일에만, 프로덕션 테이블에 안 씀). 커밋 = 이 커밋(부모 `52db062`) — **미푸시.**
+>
+> **왜**: 866B가 "OTC 486 전원 시총 결측이라 산출 0"까지는 밝혔지만, "시총이 붙으면 어떻게 되나"는 측정한 적이 없었다. 또 `insufficientCause`(246/1,001/55)는 파이프라인이 먼저 걸린 사유 하나만 기록해 순서 의존이라 무효였다.
+
+### §1 OTC 486 시총 실측(Yahoo)
+
+- `docs/probe_866b_rows.json`에서 `ladderStage==='final' && exchangeSec==='OTC'` 486개를 그대로(변형 탐색 없이 원티커 1회) 조회.
+- **응답 477/486 · `marketCap` 있음 446 · 가격만(주식수로 역산 가능) 30 · 무응답 9.**
+- Yahoo가 OTC Markets Group을 공식 커버한다는 사실과 일치 — **조달 안 된 게 아니라 우리가 안 받아온 것**이었음을 재확인.
+
+### §2 시총 반영 재계산
+
+- 시총 확보 453개(marketCap 446 + price×shares로 역산 가능 7)를 866B 캐시 companyfacts로 **재다운로드 없이** 재계산.
+- **이동**: computed **8** · undecidable **125** · 여전히 부족 320.
+- 원래 `NO_MARKETCAP` 단독(135)만 보면: computed 8 / undecidable 125 / 다른 사유로 실패 2 — **거의 전량이 시총만 붙으면 즉시 판정이 나왔다.**
+- **전수 재집계(N=3,354 불변)**: 산출(a) 364→**372** · 산출률 10.9%→**11.1%** · GAP 중앙 8→8년(불변, p25/p75는 4~17→4~14.25) · ICC(860 정의) 0.165→**0.177** · micro 버킷 산출률 3.3%→**2.7%**(OTC 신규분이 대부분 micro인데 산출은 적어 분모만 커짐).
+- 🔑 **OTC를 넣어도 (a) 산출은 8건만 늘고, (b) 판정불가가 125건 늘어 분포 구성이 바뀐다** — OTC 소형주가 밸류에이션 극단(고평가·가치파괴)에 몰려 있다는 재료(판단 아님).
+
+### §3 동시 결격 재분류 — `insufficientCause` 정정
+
+- `insufficient` **1,302 전원**을 "먼저 걸린 사유 하나"가 아니라 `hasMarketCap`(OTC는 866C 실측값 대체)·`hasIndustry`·`driversOk` **세 조건을 각각** 재평가.
+- **우리 조달 실패만 113 / 회사 공시 부재만 889 / 둘 다(동시 결격) 167** — 합계 1,169. 나머지 133은 신규 시총으로 이미 §2에서 computed·undecidable로 이동한 OTC(8+125)와 **CIK 100% 일치**(교차검증 확인 — 별도 이상 아님).
+- 866B의 `246/1,001/55`는 **파이프라인 검사 순서가 먼저 걸린 사유만 남긴 결과**였음이 확인됨 — `probe_866b_output.json`의 `insufficientCause`에 `supersededBy: "docs/probe_866c_output.json"` 키만 추가(원본 값은 안 지움).
+- CIK별 재분류 행 저장(`probe_866c_rows.json` 1,302행) — 4필드(`hasMarketCap`·`hasIndustry`·`driversOk`·`firstBlockingReason`) 전부 포함.
+
+### §4 무변경 확인
+
+- `revdcf_results`: 2026-08-01/02/03 각 604(866C 실행 전후 동일).
+- `us_market_cap`: **5,886**(866C 실행 전후 동일 — OTC 시총을 프로덕션 테이블에 쓰지 않음).
+- `git diff --stat -- data/us_symbols.json lib/lensPrecompute.ts lib/revdcf/`: **출력 없음.**
+- tsc 0 · vitest 151/151.
+
+### §5 산출물
+
+- `docs/probe_866c_supply.json`(1단계) · `docs/probe_866c_output.json`(2·3단계) · `docs/probe_866c_rows.json`(CIK별 1,302행) · `docs/probe_866b_output.json`(insufficientCause에 supersededBy 추가) · `scripts/probe_866c_otc_supply.ts`(신규 프로브).
+
+**▶ 다음**: 유니버스 채택 판정(거래소 기준 vs 상장 기준·OTC 포함 여부·컷 적용 여부)은 **장은태 몫** — Claude Code는 제안하지 않음(각 STEP 금지사항). 판정 후 DoD 4 확정 → 5 → 6 → 8.
+
+## 2026-08-02 (10) — 🔴 **STEP 866 + 866B 실행: 모집단 전수 실측 · 정정 6건** (프로덕션 코드 0 · DB 0행 · 플래그 OFF 유지)
+
+> **성격**: 측정 전용 2 STEP. `lib/revdcf/**`·`app/**`·`data/us_symbols.json` **diff 0** · `revdcf_results` **무변경**(2026-08-01/02/03 각 604) · `us_market_cap` 무변경. 커밋 `f3eec0f`(866)·`52db062`(866B) — **미푸시.**
+
+### §1 STEP 866 — 컷 없이 전수 계산
+
+- **모집단 사다리**: `company_tickers_exchange.json` 10,432 → uniqueCik 8,017 → 연차보고 6,529 → 외국 제외 5,241 → 금융 SIC 제외 3,897 → 매출태그 **final 3,354**. (`reit 200`·`spac 231`은 SIC 금융컷의 **부분집합** — 추가 제외 0)
+- **3분류**: 산출(a) **364** / 판정불가(b) **1,688**(over_cap 419·value_destroying 925·below_one 344) / 입력부족(c) **1,302**
+- **604 대비**: 산출률 29.3%→**10.9%** · GAP 중앙 11년→**8년**(p25/p75 6~17→4~15) · over_cap 16.9%→12.5% · value_destroying 24.7%→27.6%
+- **조달**: companyfacts **벌크**(`Content-Length` 1,393,191,546 사전 확인 후 다운로드 · 개별 호출 안 씀)
+- **SEC 공식 통계 확보**(규칙 ⓪): `data/sources/sec/sec_reporting_issuers_20260630.xlsx` — CY2025 미국 소재 거래소 상장 3,714(비셸 3,692)·직전 4분기 3,600(비셸 3,589). 🔴 **`frames` 4,998은 "하한"이 아니라 다른 모집단**(OTC 1,537·외국 937·ADR 394 포함)이었음 → 정정
+- **Claude Code 자체 발견 1건**: 대조 로직이 `산출 515`(=(a)+(b))와 `(a) 177`을 혼동 → `산출률=(a)÷N` 정의로 재확인 후 정정
+
+### §2 STEP 866B — 정정 5건 + 재계산
+
+| # | 정정 |
+|---|---|
+| 1 | 🔴 `REVDCF_SPEC`의 **"거래소 상장"** 조건 철회 — 우리 제외 목록에 없던 조건. **Cowork이 866 명령서 작성 중 근거 없이 삽입** |
+| 2 | 🔴 `EXTERNAL_UNIVERSE_QUOTES.md`의 NC 제외 사유 **"OTC"·"주식구조 복잡" 철회** — 저장본(8,112자)·라이브 페이지 양쪽 `OTC` **0건**. 유일 제외 서술은 *"Companies with no revenue…"* 하나. **`MULTI_CLASS_SHARES` 5사 = "NC와 같은 사유"** 주장도 철회. NC 원본 재저장(직전본 `_prev_…_20260731.html` 보존) |
+| 3 | `probe_866_ladder.json`에 `droppedByNote` — reit/spac 비배타 경고 |
+| 4 | **버킷 분모 통일** — 입력부족 행이 시총 조회 전 early-return돼 버킷에서 빠져 있었음(합 2,052). `yieldPctOfN`·`yieldPctOfCalculable` 병기 + `no-mcap` 별도 |
+| 5 | **ICC는 불일치가 아니라 정의 차이** — `probe_860_validate.ts:47`의 `g.length >= 5` 필터 + 업종 출처(`flags.industry`) |
+
+- **거래소 교차표(신규)**: final 3,354 = 거래소상장 2,857 / **OTC 486** / null 11. 3분류 × 거래소에서 **computed·undecidable의 OTC가 각 0**
+- **버킷((a)÷N 기준)**: mega 44.2%(n43) · large 28.1%(n537) · mid 17.4%(n671) · small 6.8%(n701) · micro 3.3%(n884) · **no-mcap n518(산출 0)**
+- **ICC 4값**: 604_def860 **0.198**(기록 0.195·11업종 93사) · 604_noMin 0.267 · **전수_def860 0.165**(31업종 296사) · 전수_noMin 0.176
+- **Claude Code 자체 발견 1건**: cheerio `.text()`가 `<script>`/`<style>` 본문까지 먹어 23,903자로 나온 것 → 태그 제거 후 8,112자로 정정(BeautifulSoup 교차검증 8,162자)
+- CIK별 행 저장(`probe_866b_rows.json` 8,017행) — **분기 비중을 셀 수 있게 됨**(규칙 ③-iv)
+
+### §3 🔴 Cowork 검증에서 나온 것 — "OTC 산출 0"은 OTC의 성질이 아니다
+
+866B의 완전한 0 두 칸을 `probe_866b_rows.json`로 직접 집계:
+
+| 확인 | 결과 |
+|---|---|
+| final OTC 486의 시총 보유 | **0 / 486** |
+| `damodaran_industry` OTCPK 2,152 중 `us_market_cap` 보유 | **8건 (0.4%)** — NYSE 94.8%·NasdaqGS 94.9%·NasdaqCM 90.4% |
+| final OTC 486 중 `data/us_symbols.json`(6,766)에 있는 것 | **0개** (거래소상장 2,838/2,857 = 99.3%) |
+| Yahoo 공식 거래소 목록 | **OTC Markets Group 커버**(15분 지연·ICE Data Services) |
+
+→ **막힌 게 아니라 안 넣은 것.** 486 전원이 시총 결격이라 드라이버를 통과해도 `NO_MARKETCAP`에서 죽는다 — **산출 0은 예정돼 있었다.**
+→ 🔴 **파생: `insufficientCause`(우리 조달 실패 246 / 회사 공시 부재 1,001 / 기타 55) 무효.** 파이프라인이 `computeDrivers`→`NO_INDUSTRY`→`NO_MARKETCAP` 순이라 **먼저 걸린 사유 하나만** 기록. OTC 486 실제 분해 = `INSUFFICIENT_HISTORY` 199 · `NO_MARKETCAP` 135 · `MISSING_TAG` 124 · `NO_INDUSTRY` 24 · 기타 4 → **323건이 "회사 공시 부재"로 오분류.** 시총 결측만 세도 **518.**
+→ 🔴 **따라서 "OTC를 포함하면 분포가 어떻게 되나"는 한 번도 측정된 적이 없다.** = **STEP 866C**(`docs/STEP_866C_COMMAND.md`) → ✅ **실행 완료, 위 2026-08-02 (11) 참조.**
+
+### §4 🔴 Cowork 규칙 위반 2건 (기록)
+
+1. **3중 규칙 위반** — 866 산출물을 검증하며 **판정을 내리면서 ①의 B(실무)·C(반대 증거)를 건너뛰었다.** `[3중 점검]`에 *"외부 축이 필요 없다고 판단했다"* 고 적었으나 `CLAUDE.md:62-64`는 **"모든 판단 전 강제 · 못 거친 항목은 못 했다고 명시"** 이지 **면제 조항이 아니다.** 08-02(2) 위반과 **같은 모양**(그 문단을 같은 세션에서 읽고 인용까지 했다). 장은태 지적 후 축을 채우자 **판정 1건이 뒤집혔다.**
+2. **정본에 근거 없는 조건 삽입** — `REVDCF_SPEC`에 *"거래소 상장"* 을 써 넣고, 다음 턴에 **그 조건을 기준으로 866을 "결함"이라 판정**했다. **자기가 만든 기준으로 자기가 채점.** 866은 규칙대로 돌았고 3,354는 유효하다. 🔑 **교훈: 명령서에 조건을 쓸 때 그것이 정본에 있는 조건인지 먼저 확인한다.**
+
 ## 2026-08-02 (9) — 🔴 **유니버스 층 재개방 + 3중 규칙 위반 시정** (Cowork 문서 전용 · 코드/DB/화면 무변화 · STEP 미실행)
 
 > **성격**: STEP 없음. **문서·지침만 갱신.** 코드 0줄, DB 0행, 플래그 OFF 유지. 866은 **만들지 않았다**(장은태 승인 전).

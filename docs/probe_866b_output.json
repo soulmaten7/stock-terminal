@@ -158,7 +158,8 @@
     "insufficientCause": {
       "ourFault_NO_MARKETCAP_NO_INDUSTRY": 246,
       "companyDisclosure_INSUFFICIENT_HISTORY_MISSING_TAG": 1001,
-      "other": 55
+      "other": 55,
+      "supersededBy": "docs/probe_866c_output.json"
     },
     "gapMedianYears": 8,
     "gapP25P75": [

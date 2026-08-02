@@ -1,0 +1,22 @@
+{
+  "probedAt": "2026-08-02T07:36:50.809Z",
+  "otcN": 486,
+  "quoteReturned": 477,
+  "hasMarketCap": 446,
+  "hasPriceOnly": 30,
+  "noResponse": 9,
+  "marketCapPercentiles": {
+    "p10": 267291.5,
+    "p50": 6829708.5,
+    "p90": 101633528
+  },
+  "byExchangeField": {
+    "OTC Markets OTCQX": 32,
+    "OTC Markets OTCQB": 165,
+    "OTC Markets OTCPK": 144,
+    "OTC Markets OTCID": 135,
+    "YHD": 1
+  },
+  "yahooErrors": {},
+  "note": "야후 심볼 표기 변형 탐색 없음(원티커 1회만 시도 · 추측 금지). 응답 없음은 그대로 카운트."
+}

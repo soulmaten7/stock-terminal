@@ -1,0 +1,65 @@
+{
+  "probedAt": "2026-08-02T07:37:08.197Z",
+  "supersedes": "docs/probe_866b_output.json (insufficientCause만)",
+  "otcSupplyRef": "docs/probe_866c_supply.json",
+  "otcRecompute": {
+    "otcWithMcap": 453,
+    "moved": {
+      "computed": 8,
+      "undecidable": 125,
+      "stillInsufficient": 320
+    },
+    "from135_NO_MARKETCAP": {
+      "n": 135,
+      "computed": 8,
+      "undecidable": 125,
+      "failedElsewhere": 2
+    },
+    "gapYearsOtc": {
+      "median": 3,
+      "p25": 1,
+      "p75": 4.25,
+      "n": 8
+    },
+    "verdictMixOtc": {
+      "years": 8,
+      "over_cap": 48,
+      "value_destroying": 63,
+      "below_one": 14
+    }
+  },
+  "recount": {
+    "the866b": {
+      "N": 3354,
+      "computed": 364,
+      "undecidable": 1688,
+      "insufficient": 1302,
+      "yieldPct": 10.9,
+      "gapMedianYears": 8,
+      "iccDef860": 0.165,
+      "microBucketYieldPctOfN": 3.3
+    },
+    "the866c": {
+      "N": 3354,
+      "computed": 372,
+      "undecidable": 1813,
+      "insufficient": 1169,
+      "yieldPct": 11.1,
+      "gapMedianYears": 8,
+      "gapP25P75": [
+        4,
+        14.25
+      ],
+      "iccDef860": 0.177,
+      "microBucketYieldPctOfN": 2.7
+    }
+  },
+  "insufficientCauseCorrected": {
+    "ourFaultOnly": 113,
+    "companyFaultOnly": 889,
+    "both": 167,
+    "neitherBlocked_shouldBeZero": 133,
+    "total": 1302
+  },
+  "note": "재료만 — OTC 채택 여부·심볼 목록 확장 여부 제안 없음(STEP 866C §금지 6). us_market_cap·revdcf_results·us_symbols.json 전부 무변경(측정 전용)."
+}
