@@ -1,0 +1,795 @@
+{
+ "distA": {
+  "value_destroying": 63,
+  "over_cap": 15
+ },
+ "distB": {
+  "value_destroying": 63,
+  "over_cap": 15
+ },
+ "yearsA": [],
+ "yearsB": [],
+ "negTermA": 39,
+ "detail": [
+  {
+   "symbol": "SMMT",
+   "om": -70.58304097286215,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "ARWR",
+   "om": -34.59850900304715,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "BBIO",
+   "om": -28.069466173044685,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "RIVN",
+   "om": -20.775038167286606,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "CYTK",
+   "om": -20.535986031222507,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "AUR",
+   "om": -18.07496413199426,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "RVMD",
+   "om": -14.585939408984501,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "IONQ",
+   "om": -9.6720625061013,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "MDGL",
+   "om": -2.7639299850665897,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "INSM",
+   "om": -2.041435971961686,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "CCL",
+   "om": -1.0852625301010188,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "RKLB",
+   "om": -1.0011933929419095,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "GH",
+   "om": -0.9603434366965754,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "RCL",
+   "om": -0.8479799650933169,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ALNY",
+   "om": -0.7020046447058924,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "SNOW",
+   "om": -0.5408984060720307,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "NTRA",
+   "om": -0.5008922877798098,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "GSAT",
+   "om": -0.49606908897763535,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "U",
+   "om": -0.45318723033848657,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "RBLX",
+   "om": -0.34123951411426684,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "GKOS",
+   "om": -0.33601395550456614,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "MRNA",
+   "om": -0.31588916260319194,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "OKTA",
+   "om": -0.3056956140063912,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "NTNX",
+   "om": -0.30133569919394854,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "TTWO",
+   "om": -0.2693395291472922,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "QXO",
+   "om": -0.2561074512972875,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "PLTR",
+   "om": -0.2526123882082688,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "MDB",
+   "om": -0.24044427904675386,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ILMN",
+   "om": -0.2375266296013765,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "SITM",
+   "om": -0.23602948426260983,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "FROG",
+   "om": -0.23484452284593763,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "TWLO",
+   "om": -0.22800423122306665,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ZS",
+   "om": -0.21484913751730708,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "EXE",
+   "om": -0.19985502139440037,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "NET",
+   "om": -0.17684871762596663,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "CRDO",
+   "om": -0.17171002826775258,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "LYV",
+   "om": -0.16565610165970818,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "GWRE",
+   "om": -0.12768192340286078,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "UBER",
+   "om": -0.12405525878648975,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "TOST",
+   "om": -0.12253544337610615,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "SMTC",
+   "om": -0.1175413203146914,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "BE",
+   "om": -0.11565288512108722,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ELAN",
+   "om": -0.10060477105095715,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "AAL",
+   "om": -0.09960285227186784,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "BA",
+   "om": -0.09786696201068794,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "DASH",
+   "om": -0.09697702787173601,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "LTH",
+   "om": -0.09114119348295502,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "BKR",
+   "om": -0.09004715111631272,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "WYNN",
+   "om": -0.08638684200530586,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "DAL",
+   "om": -0.08031470365022342,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "LVS",
+   "om": -0.0787264579068393,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ABNB",
+   "om": -0.07871703324680321,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ROKU",
+   "om": -0.0753173214844711,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "VSAT",
+   "om": -0.07220529382500336,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "MRVL",
+   "om": -0.07054311434954966,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "CRWD",
+   "om": -0.06490933986250755,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "HUBS",
+   "om": -0.055485968828328826,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "LUV",
+   "om": -0.04995727494869128,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "UAL",
+   "om": -0.04718742845388217,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "EXPE",
+   "om": -0.046311253458379796,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "W",
+   "om": -0.04026297062579091,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "FTI",
+   "om": -0.04011719156045899,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "GME",
+   "om": -0.03479913900304797,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "WBD",
+   "om": -0.021961214969669584,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "DOCU",
+   "om": -0.021077743124757024,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "CPNG",
+   "om": -0.019184801542748136,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "DDOG",
+   "om": -0.014396568853375443,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "BROS",
+   "om": -0.012531860551086996,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "IFF",
+   "om": -0.012437131506088694,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "ATI",
+   "om": -0.012219432932005152,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "WDAY",
+   "om": -0.008302754650487642,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "CAH",
+   "om": -0.0036183432306530505,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "PANW",
+   "om": -0.003380217372497968,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "AXON",
+   "om": -0.0017155919251957252,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "CHWY",
+   "om": -0.0015821708514827126,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "XYZ",
+   "om": -0.0008423009461776571,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  },
+  {
+   "symbol": "MSGS",
+   "om": -0.00026343061631163843,
+   "A": "25+",
+   "Agap": null,
+   "B": "25+",
+   "Bgap": null,
+   "monoA": "up",
+   "monoB": "up"
+  },
+  {
+   "symbol": "CRS",
+   "om": -0.0002332367482717257,
+   "A": "value_destroying",
+   "Agap": null,
+   "B": "value_destroying",
+   "Bgap": null,
+   "monoA": "down",
+   "monoB": "down"
+  }
+ ]
+}
