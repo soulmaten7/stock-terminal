@@ -106,9 +106,16 @@ async function main() {
   }
 
   // ── 도미노 대조(재현 아님 — 원전은 i>rf라 이 안 자체가 원전과 반대 방향) ──
+  // 🔴 884 §1 보강: 원래 이 대조를 실제로 돌린 코드가 /tmp/diag883.ts(일회성·미커밋)에만 있어 재현 불가 상태였다.
+  //   같은 계산을 이 커밋된 스크립트 안으로 옮겨 GAP 8→12가 이 파일을 실행할 때마다 재현되게 한다(플레이북 #78).
+  const DPZ_D: RevDcfDrivers = { startingSales: 3618.8, salesGrowth: 0.07, operatingMargin: 0.175, startingMargin: 0.1739, taxRate: 0.165, fixedCapitalRate: 0.15, workingCapitalRate: 0.10 };
+  const DPZ_M_book: RevDcfMarket = { wacc: 0.05357, inflation: 0.016, sharePrice: 418, sharesOutstanding: 39.35, debt: 4170, nonOperatingAssets: 391.9 };
+  const dominoBook = runRevDcf(DPZ_D, DPZ_M_book).verdict;
+  const dominoAtRf = runRevDcf(DPZ_D, { ...DPZ_M_book, inflation: 0.0065 }).verdict;
   const dominoContrast = {
     source: { i: 0.016, rf: 0.0065, i_gt_rf: true },
     thisOption: { i: "=rf(회사별)", note: "우리 시스템에서 i=rf로 하면 i는 회사마다 다른 값(각자의 WACC 조립에 쓰인 rf는 전사 공통 3.95%이므로 실제로는 i도 전사 공통 3.95%)" },
+    dominoRecomputed: { book_i0016: dominoBook, atRf_i00065: dominoAtRf, note: "T8 도미노 드라이버 그대로(startingSales 3618.8·wacc 0.05357·shares 39.35 등) i만 1.6%→0.65%로 바꿔 이 스크립트 안에서 직접 재계산" },
     note: "원전 도미노 케이스는 i(1.6%)>rf(0.65%)였다 — i=rf 안을 도미노에 적용하면 도미노 자신의 원전 값(1.6%)과 다른 값(0.65%)을 쓰게 되어 '재현'이 아니라 '원전과 반대 방향의 대안 대조'가 된다. 앵커 테스트 대상이 아님을 명시",
   };
 
