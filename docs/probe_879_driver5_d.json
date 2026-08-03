@@ -1,0 +1,188 @@
+{
+  "asOf": "2026-08-03",
+  "n": 514,
+  "universe": 515,
+  "sourceQuote": {
+    "negativeRule": "\"For most firms, this negative reinvestment rate will be a temporary phenomenon reflecting lumpy capital expenditures or volatile working capital. For these firms, the current year's reinvestment rate (which is negative) can be replaced with an average reinvestment rate over the last few years.\"",
+    "averagingTarget": "회사 자신의 과거 — 원문 그대로(\"an average reinvestment rate\"). 🔴 industry-average 문장은 별개 문단(급팽창 후 성숙기업 이슈)이라 이 규칙에 끌어오지 않음(879 §2① 확인)",
+    "nYears": "원문 미제시(\"the last few years\"만). 🔴 원문 아님·우리 해석: 데이터가 허용하는 최대치(연간 관측치 4개=2021~2024)를 사용 — k처럼 분포에서 튜닝한 값이 아니라 데이터 한계",
+    "scope": "원문은 음수 재투자율에만 적용. 🔴 |값|>1 극단값엔 원문이 언급 없음 — D안도 그 범위를 넘지 않음(양수·계산불가엔 무개입)",
+    "afterStillNegative": "원문 침묵 — 대체 후 여전히 음수/이상이면 무엇을 하라는 서술 없음. D안은 그대로 사용(추가 가드 없음)하고 잔여 건수를 보고"
+  },
+  "dMechanics": {
+    "negativeBefore": 102,
+    "replaced": 102,
+    "couldNotReplace_allYearDRevZero": 0,
+    "stillNegativeAfterReplace": 65
+  },
+  "optionD": {
+    "distribution": {
+      "n": 464,
+      "pctOfN": 90.1,
+      "median": 0.32743124626023423,
+      "p25": 0.056577599009427916,
+      "p75": 1.0707443306112552,
+      "negative": 65,
+      "absOver1": 135
+    },
+    "gap": {
+      "n": 127,
+      "p25": 5,
+      "p50": 10,
+      "p75": 14
+    },
+    "verdict": {
+      "comparable": 464,
+      "migration": {
+        "over_cap→over_cap": 61,
+        "years→value_destroying": 18,
+        "below_one→below_one": 70,
+        "value_destroying→value_destroying": 118,
+        "over_cap→value_destroying": 31,
+        "years→years": 120,
+        "value_destroying→over_cap": 7,
+        "below_one→value_destroying": 6,
+        "years→over_cap": 23,
+        "value_destroying→below_one": 3,
+        "over_cap→years": 4,
+        "value_destroying→years": 3
+      },
+      "yearsOut": 41,
+      "yearsIn": 7,
+      "yearsOutIncludingNull": 57,
+      "asymmetry": 5.86,
+      "asymmetryIncludingNull": 8.14
+    },
+    "domino": {
+      "anchorable": "not_distinguishable",
+      "note": "도미노(DPZ) 자체의 marginal 재투자율은 +11.6%(양수)라 D안의 '음수 시 대체' 규칙이 발동하지 않는다 — D는 도미노에서 marginal과 완전히 동일한 값을 낸다(A안이 그랬듯 이 케이스로는 D 자체가 검증되지 않는다·878 §3 도미노=원전 어디에도 음수 케이스 사례가 없음)"
+    }
+  },
+  "optionC_kSensitivity": {
+    "p05": {
+      "k": 0.07886880380700748,
+      "distribution": {
+        "n": 443,
+        "pctOfN": 86,
+        "median": 0.26301966418245487,
+        "p25": 0.020182767328085882,
+        "p75": 0.9161411257573364,
+        "negative": 97,
+        "absOver1": 121
+      },
+      "gap": {
+        "n": 128,
+        "p25": 5,
+        "p50": 10,
+        "p75": 14.25
+      },
+      "verdict": {
+        "comparable": 443,
+        "migration": {
+          "over_cap→over_cap": 61,
+          "years→value_destroying": 18,
+          "below_one→below_one": 70,
+          "value_destroying→value_destroying": 94,
+          "over_cap→value_destroying": 31,
+          "years→years": 120,
+          "value_destroying→over_cap": 8,
+          "below_one→value_destroying": 6,
+          "years→over_cap": 23,
+          "value_destroying→below_one": 3,
+          "over_cap→years": 3,
+          "over_cap→below_one": 1,
+          "value_destroying→years": 5
+        },
+        "yearsOut": 41,
+        "yearsIn": 8,
+        "yearsOutIncludingNull": 57,
+        "asymmetry": 5.13,
+        "asymmetryIncludingNull": 7.13
+      }
+    },
+    "p10": {
+      "k": 0.12229450543704126,
+      "distribution": {
+        "n": 417,
+        "pctOfN": 81,
+        "median": 0.2710280395723814,
+        "p25": 0.023140495867768594,
+        "p75": 0.9157776043021945,
+        "negative": 87,
+        "absOver1": 111
+      },
+      "gap": {
+        "n": 128,
+        "p25": 5,
+        "p50": 10,
+        "p75": 14.25
+      },
+      "verdict": {
+        "comparable": 417,
+        "migration": {
+          "over_cap→over_cap": 58,
+          "years→value_destroying": 18,
+          "below_one→below_one": 70,
+          "value_destroying→value_destroying": 81,
+          "years→years": 120,
+          "value_destroying→over_cap": 5,
+          "below_one→value_destroying": 6,
+          "over_cap→value_destroying": 26,
+          "years→over_cap": 23,
+          "value_destroying→below_one": 1,
+          "over_cap→years": 3,
+          "over_cap→below_one": 1,
+          "value_destroying→years": 5
+        },
+        "yearsOut": 41,
+        "yearsIn": 8,
+        "yearsOutIncludingNull": 57,
+        "asymmetry": 5.13,
+        "asymmetryIncludingNull": 7.13
+      }
+    },
+    "p25": {
+      "k": 0.21470864709468984,
+      "distribution": {
+        "n": 348,
+        "pctOfN": 67.6,
+        "median": 0.24841624560342707,
+        "p25": 0.032285546383466576,
+        "p75": 0.9060326506339709,
+        "negative": 67,
+        "absOver1": 86
+      },
+      "gap": {
+        "n": 122,
+        "p25": 5,
+        "p50": 9.5,
+        "p75": 14.75
+      },
+      "verdict": {
+        "comparable": 348,
+        "migration": {
+          "years→value_destroying": 17,
+          "below_one→below_one": 57,
+          "over_cap→over_cap": 36,
+          "value_destroying→value_destroying": 68,
+          "years→years": 115,
+          "years→over_cap": 23,
+          "value_destroying→below_one": 1,
+          "over_cap→years": 3,
+          "over_cap→value_destroying": 16,
+          "value_destroying→over_cap": 4,
+          "below_one→value_destroying": 3,
+          "over_cap→below_one": 1,
+          "value_destroying→years": 4
+        },
+        "yearsOut": 40,
+        "yearsIn": 7,
+        "yearsOutIncludingNull": 62,
+        "asymmetry": 5.71,
+        "asymmetryIncludingNull": 8.86
+      }
+    },
+    "note": "878의 p05 결과(커버리지443/86.0%·유출41/유입8)와 이 재계산이 일치하는지 확인용 — k가 커질수록 계산불가(커버리지↓) 늘고 판정이동은 어떻게 변하는지 사실만. 채택 제안 없음"
+  },
+  "note": "재료만 — 제안 없음. ③판정 칸은 대기 그대로. 어느 안도 채택 언급 없음."
+}
