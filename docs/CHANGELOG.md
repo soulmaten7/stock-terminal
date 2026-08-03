@@ -1,6 +1,43 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (33) — 🔍 **STEP 888 실행: 역DCF 표면 전수 감사 — 브랜드 정체성 가드레일 대조(감사 전용·수정 0)**
+
+> **성격**: `messages/`·`components/`·`lib/`·`app/`·`scripts/`·`data/` **diff 0**. 신규 산출물은 `docs/AUDIT_888_REVDCF_SURFACE.md` 하나뿐. 문구·색을 한 글자도 고치지 않았다 — 교정은 889. DoD 항목 6(주장 정합) 판정 칸은 🔶 그대로(포인터 한 줄만 추가). 커밋 = 이 커밋(부모 `a891a62`).
+
+### §0 왜 감사와 교정을 나눴는가
+
+- Cowork이 `messages/ko.json`의 `RevDcf` 블록 하나만 보고 "어긋나는 건 '가치훼손' 하나뿐"이라 보고했다가, `RevDcfMethod` 블록과 컴포넌트를 마저 열자 최소 4건이 더 나온 사례가 이 STEP의 출발점 — 표면 전체를 보기 전에 교정하면 놓친 것이 그대로 남는다.
+
+### §1 기준 원문 직접 대조
+
+- `docs/BRAND_IDENTITY.md` §0(예언·추천 안 함)·§2(자립)·§4(가드레일: 약한신호·불확실성·과장금지·의존안팔기)·§5(멍거 톤)·§6(🔒 "전문가처럼 본다"↔"전문가가 추천한다" 경계)을 원문 그대로 인용. `CLAUDE.md:339~344`와 대조 — **모순 없음**(같은 3기둥·같은 문장 반복, BRAND_IDENTITY를 권위로 명시 지정).
+
+### §2 7렌즈 교정 원칙 추출(822·824·825·826 직접 개봉 — `docs/_archive/LENS_7_COMPLETED.md`)
+
+- 네 STEP의 실제 교정 문구를 원문으로 확인: 822(밸류) "비쌈/쌈"→"비싼 편/싼 편"+na 사유분기, 824(저변동) "출렁/차분"→"출렁이는 편/차분한 편"+calmHigh 40% 임의성 노출, 825(퀄리티) "평범/알짜"→"수익성 낮은/높은 편"+"은행이라 단정 안 함", 826(자산성장) "공격적/보수적"→"공격적인/보수적인 편"+na 3분기.
+- **추출한 원칙**(889가 쓸 기준): *"화면 문구는 절대적 판단어가 아니라 상대적·서술적 표현으로 쓴다. 계산 불가 사유는 뭉뚱그리지 않고 실제 원인별로 분기한다. 확인 안 된 구체적 원인은 단정하지 않는다. 임의 상수·기준은 그 사실 자체를 화면에 밝힌다."*
+
+### §3~§4 전수 감사 + 씨앗 6건 확인
+
+- 감사 대상: `messages/ko.json`·`en.json`의 `RevDcf`+`RevDcfMethod`(값 문자열 88개, ko/en 키 패리티 1:1 확인) + `RevDcfSection.tsx`·`RevDcfBadge.tsx`·`/revdcf` 방법론 페이지 + 보드 노출 2곳(`UsMarketBoard.tsx`) + 하드코딩 문자열(0건) + 색상 토큰 5종 + 관심목록(배선 없음 확인).
+- Cowork이 사전 제시한 6개 씨앗 중 **5건은 관찰과 일치**, **1건(#5 — RevDcfBadge에 years 분기가 안 보인다)은 관찰과 다름**: 실제로는 `RevDcfBadge.tsx:10`에 `years` 분기가 있고 숫자+단위로 렌더된다(라벨 형태가 다를 뿐 누락 아님).
+- 씨앗 #6("row.wc가 880·887 이후 상태와 안 맞는가")도 **자리를 잘못 짚었다** — 880은 driver5(`row.cap`)를 바꿨고 그 자리는 이미 정확하다. 재조사로 **진짜 문제**를 찾음: `RevDcfMethod`의 원장 표(`row` 7종)에 **driver6(자본비용/WACC) 행 자체가 없다** — 881이 확정한, GAP에 가장 크게 기여하는 항목이 "원전과 다른 점(그대로 공개)"라는 페이지 제목을 내걸고도 빠져 있다. 이것이 이 감사의 최대 발견.
+
+### §5 감사표 요약(`docs/AUDIT_888_REVDCF_SURFACE.md`)
+
+- 총 17행(원자 문자열 단위 88개) · **위반 소지 5건**(가치훼손=유일한 가치판단 배지어 · value_destroying만 위험색 · 방법론 페이지 세율커버리지 "58%"가 847 스냅샷을 날짜 없이 고정 · 도미노재현 "8년"이 T7(GAP7)/T8(GAP8) knife-edge 미표기 · **driver6/WACC 원장행 부재**) · **통과 10건**(headline류·growthNote·skip류·expectationLevel·intro/structure/notInvestmentAdvice/betaCaveat 등 다수는 이미 브랜드 원칙 준수·모범 사례) · **판단 보류 3건**(row.tax·row.term의 887 재분류 미반영 여부·en"Expectations"의 "해독" 프레이밍 손실·below_one 배지/헤드라인 색 불일치) · 노출 없음 1건(관심목록).
+
+### 연동 문서
+
+- `docs/LENS_COMPLETION_STANDARD.md` DoD 6행에 "✅ 888 감사 완료 → 889 교정 대기" 포인터 추가(판정 칸 🔶 불변).
+- `docs/REVDCF_SPEC.md` §10에 **#61 신규**(감사 결과 요약 + 씨앗 오류 기록).
+- `docs/STATE.md` HEAD 갱신(142줄 상한 유지) — STEP 887 상세는 CHANGELOG 포인터로 압축.
+
+### 무변경 확인
+
+- `messages/`·`components/`·`lib/`·`app/`·`scripts/`·`data/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행 · `revdcf_results` 604×3 무변경 · `us_market_cap` 5,887 무변경 · DoD 판정 칸 전부 불변.
+
 ## 2026-08-03 (32) — ✅ **STEP 887 실행: `DECISION_884_TABLE_STRUCTURE.md` 3안건 적용 — 대조표 22→20행 재분류(판정 내용 불변)** (문서 + registry 문자열만)
 
 > **성격**: `data/`·`app/`·`components/`·`messages/`·`scripts/` **diff 0**. 코드 변경 = `lib/revdcf/registry.ts` 문자열(세 항목 한 줄 결론만·`klass` 불변)뿐. 어떤 행의 ③판정도 뒤집지 않았다 — 다섯 칸(판정·근거·대가·불리한사실·재검토조건)은 원문 그대로 옮겼다. 커밋 = 이 커밋(부모 `7615b66`).

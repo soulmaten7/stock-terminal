@@ -6,15 +6,14 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 887)** · 부모 `7615b66`(STEP 886) · **push 완료 — origin/main + revdcf-preview 반영.**
-- ✅ **STEP 887 = `docs/DECISION_884_TABLE_STRUCTURE.md` 3안건 전부 승인·적용(2026-08-03 장은태) — 대조표 22→20행 재분류, 판정 내용은 한 글자도 안 바꿈.** driver3(세율)·driver6(자본비용)·인플레를 "동일 식·값만 차이" 3행으로 묶고(구조는 같고 값의 시점만 다름·877/881/883이 각각 확인), 모집단(7행)을 "제품 전제"로 이동(대안 없음·다른 기능의 수학적 전제), 데이터출처(8행)는 "차이"에 잔류하되 판정 칸만 "🅿️ 제약(1인 운영)"으로 표시 + 재검토조건(팀 규모 확대 시) 명시, 검증사례(9행)는 DoD "값 검증"(항목 3) 축으로 이관 — **새 절을 만들지 않음**, 도미노 재현(848)+분포관찰 3개(860)가 이미 그 자리에 있었다. "차이 9행"은 870이 붙인 고유명사라 이력 보존을 위해 이름은 유지하되 현재 구성은 **4행**(driver1·4·5·데이터출처)임을 정의부에 명시. `LENS_COMPLETION_STANDARD.md`·`registry.ts`(한 줄 결론만)·`REVDCF_SPEC.md` §10(#57~59 해소)·`PRIMARY_SOURCE_MAP.md`(현재 4행 표기)에 반영.
-- ✅ **§0 확인(880 사후, Cowork 독립 재확인)**: `route.ts:24~26` 유니버스 질의는 `verdict`·`skip_reason` 어떤 필터도 걸지 않는다 — `NO_MARGINAL_CAPEX` 50사도 유니버스에 남는다(880의 조치가 실제로 성립).
+- HEAD = **이 커밋(STEP 888)** · 부모 `a891a62`(STEP 887) · **push 완료 — origin/main + revdcf-preview 반영.**
+- 🔍 **STEP 888 = 역DCF 표면 전수 감사(감사 전용·수정 0)** — `docs/AUDIT_888_REVDCF_SURFACE.md` 신설. 브랜드 정체성 가드레일(`BRAND_IDENTITY.md` §0/§4/§5/§6) 대조로 메시지·컴포넌트·색상 전수 확인. **위반 소지 5건**(가치훼손=유일한 가치판단 배지어·value_destroying만 위험색·방법론 페이지의 세율커버리지 58% 스냅샷이 날짜 없이 고정·도미노 재현 "8년"이 T7/T8 knife-edge 미표기·**원장 표에 driver6/WACC 행 자체가 없음**) · **보류 3건** · Cowork 사전 씨앗 6개 중 1개는 관찰 오류로 확인(row.wc가 아니라 row.cap이 880 대상이며 이미 정확). 교정(문구·색 수정)은 889. `messages/components/lib/app/scripts/data` diff 0.
+- ✅ **STEP 887 = `DECISION_884_TABLE_STRUCTURE.md` 3안건 승인·적용(장은태) — 대조표 22→20행 재분류, 판정 불변.** 상세 = `docs/CHANGELOG.md` (32).
 - 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~887(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+차이9행 감사+**대조표 재분류 적용**) 전부 유효 — 상세 CHANGELOG. `app/`·`components/`·`messages/`·`data/` 로직 **diff 0**(887은 문서 + `lib/revdcf/registry.ts` 문자열만).
-- **tsc 0 · vitest 155/155**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행, 아직 880의 level→marginal 전환 미반영) · `us_market_cap` = **5,887**(무변경).
+- 866~888(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+**표면 감사**) 전부 유효 — 상세 CHANGELOG. `app/`·`components/`·`messages/`·`data/` 로직 **diff 0**(887·888 전부 문서 위주).
+- **tsc 0 · vitest 155/155**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행) · `us_market_cap` = **5,887**(무변경).
 - ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
-- ✅ **`docs/DECISION_884_TABLE_STRUCTURE.md` = 887에서 승인·적용 완료.** 문서 본문은 결정 이력이라 그대로 둠(헤더에 적용완료 표시만 추가).
 
 ---
 
@@ -98,7 +97,7 @@
 - 875: 도미노 앵커 재현(driver4 A안 재현실패 원인규명·driver5 marginal=11.617% 정확일치) — driver4 ③판정 확정·driver5는 근거부재로 재개방.
 - 876: driver4 근거3(A안 커버리지12.6%) 철회·재측정(29.5%) — 판정 불변. 플레이북 #75.
 - 877: T7 직접개봉 — 원전이 WACC에도 현금세율 씀(서술≠셀) — driver3 진행표 첫 반영·driver4 근거 재해석·driver6 기록. 플레이북 #76.
-- 878~885: `docs/CHANGELOG.md` (24)~(31) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 감사·재현경로 복구, 문서정본화 준비.
+- 878~888: `docs/CHANGELOG.md` (24)~(33) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888·`docs/AUDIT_888_REVDCF_SURFACE.md`).
 
 ---
 
@@ -107,6 +106,7 @@
 0. 🔑 **지금 하는 일 = 원전 그대로 구현**(CLAUDE.md 🚫 창작 금지). 진행 기준은 **DoD 순번이 아니라 원전 대조표의 차이 9행**(887 재분류 후 현재 4행)이다. 🔴 **DoD 9항목은 "완성 판정 기준"이지 작업 순서가 아니다.** 섞지 말 것. 대조표 정본 = `docs/LENS_COMPLETION_STANDARD.md` §1(행 수 **20** = 동일 8 + 값만차이 3 + 차이 4 + 제품전제 1 + 우리 추가물 4·검증사례는 DoD로 이관)
 
 1. ✅ **차이 9행 전부 판정 완료(2026-08-03 887 기준)** — driver1·driver3·driver4·driver5·driver6·인플레·모집단·데이터출처·검증사례 9행 전부 장은태 판정을 받았고, 887이 그 판정에 맞춰 대조표를 재분류했다(driver3·6·인플레→동일식값만차이, 모집단→제품전제, 데이터출처→차이 잔류, 검증사례→DoD 이관). 대조표 현재 구성 = **차이 4행**(driver1·4·5·데이터출처). 상세 = `LENS_COMPLETION_STANDARD.md` §1.
+1-1. 🔍 **888 감사 완료 → 889 교정 대기** — `docs/AUDIT_888_REVDCF_SURFACE.md`. 위반 소지 5건(가치훼손 배지어·value_destroying 위험색·세율커버리지 58% 스냅샷 미표기 날짜·도미노재현 T7/T8 knife-edge 미표기·driver6/WACC 원장행 부재) + 보류 3건. **문구·색 교정은 889가 §2 추출 원칙("절대→상대·사유분기·단정금지·임의상수노출")으로 진행 — DoD 6 판정 칸은 아직 🔶.**
 
 2. ✅ **driver 1(매출 성장률) = 판정 완료(현행 유지·2026-08-02 승인)** — 근거·재검토조건 = `LENS_COMPLETION_STANDARD.md` 진행표 1행. 🔴 끝점2개 CAGR 추정기 자체는 미승인(§10 #42).
 
