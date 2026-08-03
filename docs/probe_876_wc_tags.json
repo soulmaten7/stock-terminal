@@ -1,0 +1,249 @@
+{
+  "asOf": "2026-08-03",
+  "n515": 515,
+  "tagFrequency": {
+    "rankedTop30": [
+      {
+        "tag": "EmployeeRelatedLiabilitiesCurrent",
+        "companiesWithFull5yr": 349,
+        "companiesAnyYear": 395
+      },
+      {
+        "tag": "OtherAccruedLiabilitiesCurrent",
+        "companiesWithFull5yr": 240,
+        "companiesAnyYear": 301
+      },
+      {
+        "tag": "ContractWithCustomerLiabilityCurrent",
+        "companiesWithFull5yr": 237,
+        "companiesAnyYear": 308
+      },
+      {
+        "tag": "AccruedLiabilitiesCurrent",
+        "companiesWithFull5yr": 231,
+        "companiesAnyYear": 297
+      },
+      {
+        "tag": "OtherLiabilitiesCurrent",
+        "companiesWithFull5yr": 226,
+        "companiesAnyYear": 289
+      },
+      {
+        "tag": "AccountsPayableAndAccruedLiabilitiesCurrent",
+        "companiesWithFull5yr": 52,
+        "companiesAnyYear": 80
+      },
+      {
+        "tag": "OtherSundryLiabilitiesCurrent",
+        "companiesWithFull5yr": 40,
+        "companiesAnyYear": 58
+      },
+      {
+        "tag": "DerivativeLiabilitiesCurrent",
+        "companiesWithFull5yr": 39,
+        "companiesAnyYear": 125
+      },
+      {
+        "tag": "PensionAndOtherPostretirementDefinedBenefitPlansCurrentLiabilities",
+        "companiesWithFull5yr": 36,
+        "companiesAnyYear": 87
+      },
+      {
+        "tag": "IncreaseDecreaseInOtherCurrentLiabilities",
+        "companiesWithFull5yr": 34,
+        "companiesAnyYear": 54
+      },
+      {
+        "tag": "RegulatoryLiabilityCurrent",
+        "companiesWithFull5yr": 24,
+        "companiesAnyYear": 30
+      },
+      {
+        "tag": "DeferredCompensationLiabilityCurrent",
+        "companiesWithFull5yr": 16,
+        "companiesAnyYear": 36
+      },
+      {
+        "tag": "OtherEmployeeRelatedLiabilitiesCurrent",
+        "companiesWithFull5yr": 14,
+        "companiesAnyYear": 22
+      },
+      {
+        "tag": "ContractWithCustomerRefundLiabilityCurrent",
+        "companiesWithFull5yr": 12,
+        "companiesAnyYear": 25
+      },
+      {
+        "tag": "DefinedBenefitPensionPlanLiabilitiesCurrent",
+        "companiesWithFull5yr": 11,
+        "companiesAnyYear": 19
+      },
+      {
+        "tag": "BusinessCombinationContingentConsiderationLiabilityCurrent",
+        "companiesWithFull5yr": 10,
+        "companiesAnyYear": 58
+      },
+      {
+        "tag": "IncreaseDecreaseInOtherCurrentAssetsAndLiabilitiesNet",
+        "companiesWithFull5yr": 9,
+        "companiesAnyYear": 16
+      },
+      {
+        "tag": "WorkersCompensationLiabilityCurrent",
+        "companiesWithFull5yr": 8,
+        "companiesAnyYear": 11
+      },
+      {
+        "tag": "CustomerRefundLiabilityCurrent",
+        "companiesWithFull5yr": 8,
+        "companiesAnyYear": 17
+      },
+      {
+        "tag": "AccountsPayableAndOtherAccruedLiabilitiesCurrent",
+        "companiesWithFull5yr": 8,
+        "companiesAnyYear": 16
+      },
+      {
+        "tag": "PensionAndOtherPostretirementAndPostemploymentBenefitPlansLiabilitiesCurrent",
+        "companiesWithFull5yr": 6,
+        "companiesAnyYear": 13
+      },
+      {
+        "tag": "PostemploymentBenefitsLiabilityCurrent",
+        "companiesWithFull5yr": 3,
+        "companiesAnyYear": 10
+      },
+      {
+        "tag": "LiabilityForUncertainTaxPositionsCurrent",
+        "companiesWithFull5yr": 3,
+        "companiesAnyYear": 34
+      },
+      {
+        "tag": "DepositLiabilityCurrent",
+        "companiesWithFull5yr": 3,
+        "companiesAnyYear": 10
+      },
+      {
+        "tag": "SettlementLiabilitiesCurrent",
+        "companiesWithFull5yr": 3,
+        "companiesAnyYear": 11
+      },
+      {
+        "tag": "DeferredCompensationCashBasedArrangementsLiabilityCurrent",
+        "companiesWithFull5yr": 2,
+        "companiesAnyYear": 8
+      },
+      {
+        "tag": "BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedCurrentAssetsReceivables",
+        "companiesWithFull5yr": 2,
+        "companiesAnyYear": 39
+      },
+      {
+        "tag": "DeferredCompensationShareBasedArrangementsLiabilityCurrent",
+        "companiesWithFull5yr": 2,
+        "companiesAnyYear": 12
+      },
+      {
+        "tag": "OtherDeferredCompensationArrangementsLiabilityCurrent",
+        "companiesWithFull5yr": 1,
+        "companiesAnyYear": 2
+      },
+      {
+        "tag": "LiabilityForUnpaidClaimsAndClaimsAdjustmentExpenseClaimsPaidCurrentYear1",
+        "companiesWithFull5yr": 1,
+        "companiesAnyYear": 3
+      }
+    ],
+    "excludedDeferredRevenueCandidates": [
+      {
+        "tag": "ContractWithCustomerLiabilityCurrent",
+        "companiesWithFull5yr": 237
+      },
+      {
+        "tag": "BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedCurrentLiabilitiesDeferredRevenue",
+        "companiesWithFull5yr": 1
+      }
+    ]
+  },
+  "chosenExpandedTags": [
+    "EmployeeRelatedLiabilitiesCurrent",
+    "OtherAccruedLiabilitiesCurrent",
+    "AccruedLiabilitiesCurrent",
+    "OtherLiabilitiesCurrent",
+    "AccountsPayableAndAccruedLiabilitiesCurrent",
+    "OtherSundryLiabilitiesCurrent"
+  ],
+  "exclusionRules": {
+    "interest": "Debt|Borrowing|Note.*Payable|CommercialPaper|LineOfCredit|CreditFacilit|ConvertibleNotes?",
+    "lease": "Lease",
+    "discontinued": "DisposalGroup|DiscontinuedOperation",
+    "totalItself": [
+      "LiabilitiesCurrent"
+    ],
+    "apHandledSeparately": [
+      "AccountsPayableCurrent"
+    ]
+  },
+  "coverage": {
+    "calculable": 152,
+    "calcImpossible": 363,
+    "noRefData": 0,
+    "pctOfN": 29.5
+  },
+  "distribution": {
+    "median": 0.13035376896376047,
+    "p05": -0.4160424306917487,
+    "p95": 0.8776796356015586,
+    "negative": 44
+  },
+  "resultChange": {
+    "yearsCount": 42,
+    "gapP25": 8.25,
+    "gapP50": 14,
+    "gapP75": 20,
+    "migration": {
+      "below_one→below_one": 28,
+      "over_cap→over_cap": 40,
+      "value_destroying→value_destroying": 35,
+      "years→years": 40,
+      "over_cap→years": 1,
+      "below_one→value_destroying": 1,
+      "value_destroying→over_cap": 2,
+      "years→over_cap": 1,
+      "value_destroying→years": 1,
+      "over_cap→value_destroying": 3
+    },
+    "yearsOut": 1,
+    "yearsIn": 2
+  },
+  "dominoRealAnchor": {
+    "available": true,
+    "note": "도미노(DPZ, CIK 1286681)는 우리 515사 유니버스에 실제로 포함돼 있다 — T4가 쓴 4항목이 DPZ의 오늘날 XBRL에도 그대로 있는지 직접 대조했다(2019-12-29 기준, T4 I열과 동일 연도).",
+    "T4_2019_values": {
+      "AP": 111101000,
+      "AccruedExpenses": 131148000,
+      "AdvertisingFund": 101921000,
+      "OtherAccrued": 66267000
+    },
+    "exactTagMatch": {
+      "AccountsPayable": [
+        "AccountsPayableCurrent"
+      ],
+      "AccruedExpenses": [],
+      "AdvertisingFundLiabilities": [],
+      "OtherAccruedLiabilities": [
+        "OtherAccruedLiabilitiesCurrent"
+      ]
+    },
+    "finding": "AP·OtherAccrued 2항목은 표준 태그(AccountsPayableCurrent·OtherAccruedLiabilitiesCurrent)에 정확히 일치한다. 'Accrued expenses'(131.148M)·'Advertising fund liabilities'(101.921M)는 DPZ의 2019 XBRL 어느 태그에도 정확히 일치하지 않는다 — DPZ의 `AccruedLiabilitiesCurrent` 태그 자체가 2012년 이후로 안 쓰인다(각주 확인). Rappaport의 세부 4분류는 재무제표 주석(footnote) 수준의 수기 재분류로 보이며, 오늘날 표준 XBRL 사실(fact)로는 보존돼 있지 않다.",
+    "implication": "876이 실제 데이터 빈도로 구성한 확장 태그 집합도 이 간극을 못 메운다 — 태그가 '더 정교해서' 못 잡는 게 아니라, 그 개념 자체가 현대 XBRL에 개별 사실로 존재하지 않는다.",
+    "dpzOwnProductionWindow_2020to2024_chosenTagsSum": {
+      "2020": 138357000,
+      "2021": 162144000,
+      "2022": 133399000,
+      "2023": 179639000,
+      "2024": 176957000
+    }
+  },
+  "note": "재료만 — 제안 없음. driver4 ③판정(✅ 현행 유지)은 이 결과와 무관하게 유지(875 근거 1·2·4가 지탱)."
+}

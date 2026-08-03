@@ -1,6 +1,47 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (22) — 🔴 **STEP 876 실행: driver 4 판정 근거 보정 + A안 정확 재측정 + 플레이북 결번 메움** (측정 전용 · 판정 불변 · 코드 0줄)
+
+> **성격**: 신규 `scripts/probe_876_wc_tags.ts`(측정 전용·companyfacts는 866 캐시 재사용) + `docs/probe_876_wc_tags.json`(+`_rows.json`) + 문서. `lib/**`·`app/**`·`components/**`·`messages/**` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `e8375d0`).
+>
+> **왜**: 875의 도미노 앵커가 "공식은 맞고 태그가 틀렸다"를 보여줬는데, 그 말은 **874가 낸 A안 커버리지 12.6%가 원전 방식의 커버리지가 아니라 그 틀린 태그 구현의 커버리지였다**는 뜻이다. driver4 판정(✅ 현행 유지) 각주의 근거 3번이 바로 그 숫자를 인용하고 있었다 — 근거 자체는 살아남지만(1·2·4), 3번은 무효였다. **🔴 판정은 다시 열지 않는다** — 근거 하나가 줄었다는 사실만 정직하게 기록한다.
+
+### §1 확장 A안 재측정 — 목록을 미리 안 정하고 실제 존재부터 센다
+
+- 515사 companyfacts에서 무이자 유동부채성 태그(`Liabilit`+`Current`, `Noncurrent` 제외) 후보를 **먼저 전수 스캔**(36종 발견) — 이자부(`Debt`·`Borrowing`·`Note.*Payable` 등)·리스·총계 자체(`LiabilitiesCurrent`)·중단영업 태그를 명시적으로 배제한 뒤 5년 전부 확보 회사 수로 순위: `EmployeeRelatedLiabilitiesCurrent` 349 · `OtherAccruedLiabilitiesCurrent` 240 · `ContractWithCustomerLiabilityCurrent` 237(이연수익류·제외) · `AccruedLiabilitiesCurrent` 231 · `OtherLiabilitiesCurrent` 226 · `AccountsPayableAndAccruedLiabilitiesCurrent` 52 · `OtherSundryLiabilitiesCurrent` 40.
+- 이연수익/계약부채류(`ContractWithCustomerLiabilityCurrent` 등)는 T4의 4항목에 없는 개념이라 제외하고 상위 6종(이연수익 제외)을 채택.
+- 확장 A안 재계산: 커버리지 **65/515(12.6%) → 152/515(29.5%)** · 중앙 15.63%→13.04% · GAP p50 11→14 · years 177(현행 기준)→42(비교가능 152 기준). **개선됐지만 B안(99.8%)엔 여전히 크게 못 미친다.**
+
+### §1-보너스 도미노(DPZ)는 우리 유니버스에 실존한다 — 실제 XBRL로 재확인
+
+- 도미노 피자는 튜토리얼 고유 사례가 아니라 **CIK 1286681로 우리 515사 유니버스에 실제로 들어 있다**(symbol DPZ·verdict over_cap). T4가 쓴 4항목을 DPZ의 오늘날 실제 2019-12-29 XBRL과 직접 대조했다(추정 없이 금액 일치 여부로).
+- **AP(111.101M)** → `AccountsPayableCurrent` 정확 일치. **Other accrued liabilities(66.267M)** → `OtherAccruedLiabilitiesCurrent` 정확 일치.
+- **Accrued expenses(131.148M)·Advertising fund liabilities(101.921M)는 DPZ의 어떤 태그와도 일치하지 않는다** — `AccruedLiabilitiesCurrent` 자체가 DPZ에서 **2012년 이후로 안 쓰인다**(원본 확인).
+- 🔑 **결론**: 태그를 더 정교하게 골라도 이 간극은 못 메운다. Rappaport의 세부 4분류는 재무제표 주석 수준의 수기 재분류였고, 오늘날 표준 XBRL에는 그 개념 자체가 개별 사실로 보존돼 있지 않다 — 태그 매핑의 한계가 아니라 원전 세부 분류와 현대 공시 관행 사이의 구조적 간극.
+
+### §2 driver 4 판정 각주 보정 — ③칸은 그대로
+
+- `docs/LENS_COMPLETION_STANDARD.md` 진행표 3행 각주: 근거 3번을 취소선 처리 후 **"🔴 무효(876)"**로 교체, 재측정 결과(3′)를 병기. **③칸(✅ 현행 유지)은 건드리지 않았다** — 근거 1·2·4가 판정을 지탱, 근거 3은 애초에 없어도 됐던 것.
+- `docs/REVDCF_SPEC.md` §B-4 driver4 최종화 섹션의 근거 ③도 동일하게 취소선+정정, 도미노(DPZ) 실측을 별도 문단으로 추가.
+
+### §3 플레이북 결번 메움 + 신규
+
+- **#73**(결번 메움 — 874 명령서 초안이 지시했다가 재작성 중 빠졌고 875가 #74로 지정하며 넘어간 자리): 870이 만든 차이 9행 진행표가 `registry.ts`와 어긋나 이미 확정된 행이 `대기`로 잘못 표시됐던 문제 — 원인은 새 표를 만들며 기존 원장과 "행이 아니라 개수만" 대조한 것(871: "10 vs 9"). 교훈: 새 표를 기존 원장과 맞출 때는 개수가 아니라 행을 맞춘다. 문서가 코드보다 새롭다고 더 맞는 게 아니다.
+- **#75**(신규): driver4 판정 근거로 쓴 커버리지 12.6%가 불완전한 구현으로 잰 수였다 — 앵커를 돌려보니 그 구현은 원전 값의 8배를 냈다. 원인은 "커버리지를 재기 전에 그 구현이 옳은지 확인하지 않은 것"(앵커 테스트가 874에 있었으나 실제로는 안 돌았다). 교훈: 커버리지·분포 같은 집계는 구현이 한 케이스라도 정답을 재현한 뒤에 재야 의미가 있다 — 앵커 없이 잰 커버리지는 방법의 커버리지가 아니라 버그의 커버리지다.
+
+### §4 문서
+
+- `docs/REVDCF_SPEC.md` §11에 4행 추가(태그 전수 스캔·확장 A안 재측정·DPZ 실제 데이터 재확인) · §10 신규 #49(driver4 A안 "진짜" 커버리지 정정 + 소진 처리).
+- `docs/PRIMARY_SOURCE_MAP.md`에 §8(A안 커버리지 근거 보정 + DPZ 실제 데이터) **추가**(기존 §1~§7 삭제 없음) + 요약표 driver4 행 갱신.
+- `docs/STATE.md`: driver4 판정 유지 재확인, 근거 보정 사실만 반영.
+
+### §5 무변경 확인
+
+- `git diff --stat HEAD -- lib/ app/ components/ messages/ data/` 출력 없음 · tsc 0 · vitest 153/153(무변화) · `revdcf_results` 604×3(측정 중 한 번 396으로 보인 스냅샷은 이번에도 프로덕션 크론 write-in-flight로 재조회 후 확인 — 내 스크립트는 쓰기 호출 0건) · `us_market_cap` 5,887(875에서 드리프트 공개한 값과 동일 — 추가 변화 없음).
+
+**▶ 다음**: driver5의 제3 방식, 그리고 남은 행(driver3·6·인플레·모집단·데이터출처·검증사례) 착수 여부 — 전부 **장은태 지시 후에만.** Claude Code는 여기서 멈춘다.
+
 ## 2026-08-03 (21) — ✅🔴 **STEP 875 실행: driver 4 판정 확정 · driver 5 근거 부재로 강등 · 도미노 앵커 검증** (측정+판정+문서 · 코드 0줄)
 
 > **성격**: 신규 `scripts/probe_875_dominos_anchor.ts`(측정 전용·네트워크/DB 호출 없음, 도미노 입력 하드코딩 전사) + `docs/probe_875_anchor.json` + 문서. `lib/**`·`app/**`·`components/**`·`messages/**` **diff 0** · `revdcf_results`·`us_market_cap` 쓰기 0건 · `REVDCF_ENABLED` OFF 불변. 커밋 = 이 커밋(부모 `c502094`).

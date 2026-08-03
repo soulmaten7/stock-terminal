@@ -742,9 +742,11 @@ TCJA 이후 **FDII(OBBBA로 영구화 · 실효 ~14%)·GILTI**는 **타이밍 �
 
 🔴 원전과 다르다는 사실을 인정하는 결정이다 — 원전은 증분식+5년누적, 무이자 유동부채만 차감(`Tutorial 4` B23). 우리는 수준형, 유동부채 전액 차감.
 
-**유지 근거**: ① Damodaran이 이 형태(non-cash working capital as a percent of revenues)를 명시적으로 권고 ② 원전 증분식의 불안정성이 문헌에 기록됨(*"unstable... negative? clearly yes"*, 도미노 −26.7%~+18.2%) ③ *"composite ... often more accurate than breaking it down"* — 874 실측(A안 12.6% vs B안 99.8%)과 같은 방향 ④ 원전식으로 바꿔도 결과가 크게 안 바뀜(874: years 177→165·GAP 11→10).
+**유지 근거**: ① Damodaran이 이 형태(non-cash working capital as a percent of revenues)를 명시적으로 권고 ② 원전 증분식의 불안정성이 문헌에 기록됨(*"unstable... negative? clearly yes"*, 도미노 −26.7%~+18.2%) ③ ~~*"composite ... often more accurate than breaking it down"* — 874 실측(A안 12.6% vs B안 99.8%)과 같은 방향~~ 🔴 **무효(876) — §49 참조.** 12.6%는 원전 방식이 아니라 불완전한 태그 매핑(2/4항목 누락)의 커버리지였다. 876이 확장 태그로 12.6%→29.5%까지 재측정했으나 B안(99.8%)엔 여전히 크게 못 미친다. 다모다란의 인용문 자체는 유효하나 이 실측 근거는 철회 ④ 원전식으로 바꿔도 결과가 크게 안 바뀜(874: years 177→165·GAP 11→10).
 
 🔴 **875 도미노 앵커 실측**: A안(874 코드·AP+`AccruedLiabilitiesCurrent` 태그 근사)을 도미노 원본 입력으로 직접 돌리면 **4.219%**로 T4의 0.501%를 재현하지 못했다(원전 4항목 전부를 쓰면 0.501% 정확 일치 — 공식 구조는 맞고 태그가 "Advertising fund liabilities"·"Other accrued liabilities"를 못 잡는 게 원인). B안은 I31과 같은 5년 창(2014→2019)에 필요한 데이터가 `T4.xlsx` 자체에 없어 앵커 시도가 원천 불가능했다. → A안·B안 둘 다 "원전을 그대로 재현한다"고 주장할 수 없다는 사실을 숨기지 않는다(위 근거는 다모다란 실무 방식을 택한 것이므로 이 사실로 뒤집히지 않음).
+
+🔴 **876 도미노(DPZ) 실제 데이터 재확인**: 도미노 피자는 우리 515사 유니버스에 실제로 있다(CIK 1286681). 그 실제 2019 XBRL을 열어보니 AP·`OtherAccruedLiabilitiesCurrent`는 T4 값과 정확히 일치했지만, **"Accrued expenses"·"Advertising fund liabilities"는 오늘날 어떤 태그와도 일치하지 않았다** — 태그 선택을 개선해도 못 메운다는 뜻이다. **판정은 이 결과와 무관하게 유지된다**(근거 ①②④가 지탱).
 
 🔴 **남는 사실**: 유동부채 전액 차감이라 단기차입금이 운전자본에 섞인다(원전은 명시적 제외). 차입 많은 기업에서 운전자본 과소평가 — 크기 미측정(§10 신규 #46). **재검토 조건**: 그 크기를 재고 판정에 유의미하면 재개.
 
@@ -1307,6 +1309,7 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 | 46 | 🔴 **신규(875)** — driver 4가 **유동부채 전액**을 차감해 단기차입금이 운전자본에 섞인다(원전은 무이자만 차감). 차입 많은 기업에서 운전자본 과소평가 — **크기 미측정** | 미측정(향후 STEP) |
 | 47 | 🔴 **신규(875)** — driver 5는 **현행(level)도 원전(marginal)도 근거 부족**(875 §3 근거부재 강등). 제3의 방식(다모다란 sales-to-capital·capex 기반 재투자율 등) **미측정** | 미측정(향후 STEP) |
 | 48 | 🔑 **신규(875)** — **원전은 세 층이 서로 다른 값을 갖는다**: 고정자본 = 튜토리얼 계산 **11.6%** / 책 **10.0%**(T5 B52·page 92) / **T8 워크북 `Inputs!C10`=15%**. 운전자본 = 튜토리얼 계산 **0.5%** / 책 **3.2%**(T4 B32) / **T8 워크북 `Inputs!C11`=10%**. **우리는 T8을 원전으로 본다** — T8만이 출력을 검증할 수 있는 층이기 때문이다(도미노 $285.20·8년 오차 0.0000). 튜토리얼은 절차를 가르치고 책은 서술하고 **T8은 실행된다.** 🔴 책(page 92 등) 미보유로 이 선택은 **재검토 가능** | 장은태 판단(책 확보 시 재검토) |
+| 49 | 🔴 **정정 + 신규(876)** — driver4 A안 "진짜" 커버리지: 875 앵커가 874의 A안(AP+Accrued 2종)이 도미노에서 8배 틀렸음(4.219% vs 0.501%)을 밝혀, 12.6%가 **원전 방식이 아니라 불완전한 태그 매핑의 커버리지**였음이 드러났다. **876 재측정** — 목록을 미리 정하지 않고 515사 companyfacts에서 무이자 유동부채성 태그 전수 스캔(36종 후보) → 이자부·리스·총계·중단영업·이연수익 제외 → 빈도 상위 6종(`EmployeeRelatedLiabilitiesCurrent` 349·`OtherAccruedLiabilitiesCurrent` 240·`AccruedLiabilitiesCurrent` 231·`OtherLiabilitiesCurrent` 226·`AccountsPayableAndAccruedLiabilitiesCurrent` 52·`OtherSundryLiabilitiesCurrent` 40) 채택 → **커버리지 65/515(12.6%)→152/515(29.5%)**(중앙 15.63%→13.04%·GAP p50 11→14). **B안(99.8%)에 여전히 크게 못 미침.** 🔴 도미노(DPZ, CIK 1286681·우리 515사 유니버스에 실존)의 실제 2019 XBRL 재확인: AP·`OtherAccruedLiabilitiesCurrent`는 T4 값과 정확 일치했으나, "Accrued expenses"·"Advertising fund liabilities"는 DPZ의 어떤 현대 태그와도 일치하지 않음(`AccruedLiabilitiesCurrent`는 DPZ에서 2012년 이후 미사용) — **태그를 더 정교하게 골라도 못 메운다. 원전의 세부 4분류 개념 자체가 오늘날 표준 XBRL에 개별 사실로 존재하지 않는다.** | **소진(876) — driver4 판정 불변**(근거 1·2·4가 지탱, 근거 3만 철회) |
 
 ---
 
@@ -1551,3 +1554,6 @@ driver 3을 한계세율로 뒤집은 근거는 *"NOPAT과 WACC이 같은 세율
 | 🟠 **driver4 도미노 앵커(875) — B안 테스트 불가** | `T4.xlsx` `Inputs` 시트에 진짜 현금·이자부유동부채·집계 Current Assets/Liabilities 데이터가 없어 I31과 같은 5년창(2014→2019) 앵커 시도 원천 불가. 참고(다른 3년창 2014→2017, Tutorial4 서술표 이용) = **−1.181%**(직접 비교 불가) | 875 프로브 | 2026-08-03 |
 | 🟢 **driver5 도미노 앵커(875) — marginal** | 우리 공식(production 동일 정의) = **11.617%** vs 원전 T5 I20 = 11.6% → **정확 일치**(공식·데이터 양쪽 검증 완료) | 875 프로브 | 2026-08-03 |
 | 🟠 **driver5 도미노 앵커(875) — level 테스트 불가** | T4·T5·T8 세 파일 어디에도 PP&E 잔액(장부가) 데이터가 없음 — 앵커 테스트 자체가 원천 불가능(원전에 대응 없다는 주장을 데이터 차원에서 재확인) | 875 프로브 | 2026-08-03 |
+| 🟢 **driver4 무이자 유동부채성 태그 전수 스캔(876·515사)** | 후보 36종 — 상위: `EmployeeRelatedLiabilitiesCurrent` 349 · `OtherAccruedLiabilitiesCurrent` 240 · `ContractWithCustomerLiabilityCurrent` 237(이연수익류·제외) · `AccruedLiabilitiesCurrent` 231 · `OtherLiabilitiesCurrent` 226 · `AccountsPayableAndAccruedLiabilitiesCurrent` 52 · `OtherSundryLiabilitiesCurrent` 40 | 876 프로브(이자부·리스·총계·중단영업 제외) | 2026-08-03 |
+| 🟢 **driver4 확장 A안 재측정(876)** | 채택 6종 태그로 커버리지 **65/515(12.6%)→152/515(29.5%)** · 중앙 15.63%→13.04% · GAP p50 11→14 · years 177(현행)→42(비교가능 152 기준) — **B안(99.8%)에 여전히 크게 못 미침** | 876 프로브 | 2026-08-03 |
+| 🔴 **driver4 도미노(DPZ) 실제 데이터 재확인(876)** | 도미노는 515사 유니버스에 실존(CIK 1286681). 2019 XBRL: AP·`OtherAccruedLiabilitiesCurrent`는 T4 값과 **정확 일치**. "Accrued expenses"(131.148M)·"Advertising fund liabilities"(101.921M)는 **어떤 현대 태그와도 일치 안 함**(`AccruedLiabilitiesCurrent`는 DPZ에서 2012년 이후 미사용) — 태그 매핑 개선으로 메울 수 없는, 원전 세부분류 자체가 현대 XBRL에 없는 구조적 한계 | 876 프로브(DPZ companyfacts 직접 개봉) | 2026-08-03 |

@@ -644,8 +644,12 @@
 > **그럼에도 유지하는 근거**
 > 1. **다모다란이 우리 방식을 명시적으로 권고한다**(`pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/noncashwc.htm`) — *"non-cash working capital **as a percent of revenues**"*. 우리 현행이 바로 그 형태다.
 > 2. **원전 증분식의 불안정성이 문헌에 기록돼 있다** — *"unstable, with big increases in some years followed by big decreases"* · *"negative? … clearly yes"*. 도미노 연도별 −26.7%~+18.2%가 그 예다.
-> 3. **집계가 세부 분해보다 낫다는 근거** — *"composite … often more accurate than breaking it down into more detail"*. 874 실측도 같은 방향(A안 65/515=12.6%, 병목 `AccruedLiabilities` 284 결측).
+> ~~3. 집계가 세부 분해보다 낫다는 근거 — 874 실측 A안 12.6%~~
+> **3. 🔴 무효(876).** 874의 A안 구현은 원전 4항목 중 **2개(광고기금부채·기타 미지급부채)를 놓쳐** 도미노에서 **4.219%**를 냈다(원전 0.501%). 12.6%는 **원전 방식의 커버리지가 아니라 불완전한 태그 매핑의 커버리지**였다. 다모다란의 *"composite … more accurate than breaking it down"*은 여전히 유효한 문헌 근거이나, **우리 실측이 그것을 뒷받침한다는 주장은 철회한다.**
+> **3′. 확장 태그로 재측정(876)**: 무이자 유동부채성 태그를 515사 companyfacts에서 목록을 미리 정하지 않고 전수 스캔(36종 후보) → 이자부·리스·총계·중단영업·이연수익 제외 후 빈도 상위 6종 채택(`EmployeeRelatedLiabilitiesCurrent`·`OtherAccruedLiabilitiesCurrent`·`AccruedLiabilitiesCurrent`·`OtherLiabilitiesCurrent`·`AccountsPayableAndAccruedLiabilitiesCurrent`·`OtherSundryLiabilitiesCurrent`) → 커버리지 **65/515(12.6%) → 152/515(29.5%)**로 확대(중앙 15.63%→13.04%, GAP p50 11→14). **여전히 B안(99.8%)에 크게 못 미친다.** 🔴 **도미노(DPZ) 실제 SEC 데이터로 재확인(CIK 1286681·우리 515사 유니버스에 실존)**: T4의 AP·"Other accrued liabilities"는 표준 태그(`AccountsPayableCurrent`·`OtherAccruedLiabilitiesCurrent`)에 정확히 일치했으나, **"Accrued expenses"·"Advertising fund liabilities"는 DPZ의 오늘날 XBRL 어느 태그와도 일치하지 않았다** — `AccruedLiabilitiesCurrent` 태그 자체가 DPZ에서 2012년 이후로 안 쓰인다. **태그를 더 정교하게 골라서 못 잡는 게 아니라, 원전의 세부 4분류 자체가 오늘날 표준 XBRL 사실로 보존돼 있지 않다.**
 > 4. **원전식으로 바꿔도 결과가 크게 안 바뀐다** — 874: `years` 177→165(−12) · GAP 중앙 11→10 · 유출12/유입4. **바꿀 이유가 약하다.**
+>
+> 🔴 **판정은 재측정 결과와 무관하게 유지된다.** 근거 1·2·4가 판정을 지탱한다. 근거 3은 애초에 없어도 됐던 것이었다 — 근거가 하나 줄었다는 사실만 기록한다.
 >
 > 🔴 **875 도미노 앵커 실측 — 남는 사실 추가**: A안을 도미노 원본 입력으로 직접 돌려보니(874 코드 그대로: AP+`AccruedLiabilitiesCurrent` 태그 근사만) **4.219%**가 나와 원전 값 0.501%를 재현하지 **못했다**(원전 4항목 전부를 쓴 재현은 0.501% 정확 일치 — 공식 구조는 맞고, 태그가 도미노의 "Advertising fund liabilities"·"Other accrued liabilities" 2개 항목을 못 잡는 게 원인). B안은 I31과 같은 5년 창(2014→2019)에 필요한 데이터(진짜 현금·이자부 유동부채·집계 잔액)가 `T4.xlsx` `Inputs` 시트 자체에 없어 **같은 앵커로 재현 시도가 원천 불가능**했다(다른 창 2014→2017 참고값 −1.181%는 직접 비교 불가). → **A안·B안 둘 다 "원전을 그대로 재현한다"고 말할 수 없다** — 이 사실은 위 근거를 뒤집지 않는다(현행 유지 결정은 원전 대신 다모다란 실무 방식을 택한 것이지 A안·B안 중 하나를 택한 게 아니므로), 그러나 **숨기지 않는다.**
 >
