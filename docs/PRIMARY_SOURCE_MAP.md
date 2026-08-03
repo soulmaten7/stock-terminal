@@ -224,6 +224,39 @@ B23: *"we need to **deduct depreciation**"*.
 
 🔴 **driver4 판정(✅ 현행 유지)은 이 결과와 무관하게 유지된다** — 판정을 지탱한 근거는 다모다란의 실무 권고(§6)와 원전 증분식의 불안정성(§0/§6)이지, A안의 커버리지 숫자가 아니었다. "커버리지가 낮아서 집계를 택했다"는 근거 하나만 철회됐다.
 
+## §9. 인플레(터미널 성장률) — T8 + 다모다란 (STEP 882)
+
+**`T8.xlsx` `Inputs` 시트**: `C17`="Inflation"=0.016. 그 이상 없음.
+
+**`T8.xlsx` `Price Implied Expectations` 시트** — 잔여가치(터미널) 수식:
+```
+D20 (Present value of residual value) = ((D11×(1+Inputs!C17)) / (Inputs!C16−Inputs!C17)) / ((1+Inputs!C16)^D4)
+```
+D11=NOPAT(year1), Inputs!C16=WACC, Inputs!C17=인플레, D4=연차. → **우리 `NOPAT(N)×(1+i)/(WACC−i)`와 셀 단위로 정확히 일치**(처음 직접 확인).
+
+**`Tutorial 8` 시트(서술)** B115: *"We are now ready to calculate the Market-Implied Forecast Period... Our residual value is a perpetuity with inflation and assumes a 1.6 percent inflation rate."* — i는 인플레로 명시. GDP성장률·영구성장률이라는 대체 서술 없음.
+
+**T9(SVAR·시장반응 분석)·T10(실물옵션)**: 터미널·인플레 관련 서술 없음(881에서 이미 확인, 882 재확인).
+
+### 다모다란 원문 — 영구성장률 상한 (직인용)
+- *"the stable growth rate cannot be greater than the overall growth rate of the economy"*
+- *"it should not exceed the riskless rate used in the valuation"*(`stablegrowthrate.htm`)
+- *"One simple proxy for the nominal growth rate of the economy is the riskfree rate"* → **다모다란의 문자 그대로의 권고는 i=인플레가 아니라 i=rf다.**
+
+🔴 **원전(T8) i=1.6% > rf=0.65%** — 원전이 다모다란 자신의 규칙을 위반한다(driver3에서 나온 것과 같은 유형: 원전이 다모다란 권고를 안 따름). 우리(i=2.5%<rf=3.95%)는 규칙을 만족하나, 문자 그대로의 권장값(rf 자체)은 아니다.
+
+### `expected_inflation`의 실제 출처(재확인)
+`damodaran/wacc.xls` "Industry Averages" 시트 15~16행: *"These costs of capital are in US$. To convert to a different currency, please enter Expected inflation rate in local currency = / Expected inflation rate in US $ ="* — **터미널성장률 권고표가 아니라 통화환산 유틸리티 셀**이다. 개념(기대 인플레)은 맞으나 다모다란이 "터미널 성장률로 쓰라"고 지정한 자리는 아니다.
+
+### 대조
+| | 원전 | 우리 |
+|---|---|---|
+| 터미널 성장률(i) | 1.6%(도미노 2020 스냅샷, i>rf — 규칙 위반) | 2.5%(`expected_inflation`, i<rf — 규칙 만족) |
+| 다모다란 문자 그대로 권고 | — | rf 자체(우리도 원전도 안 씀) |
+| 수식 | `NOPAT(1+i)/(WACC−i)` | 동일(셀 단위 확인) |
+
+✅ **882에서 registry `inflation`(원전대조판정 축) 확정 — 현행 유지.** 근거·대가·재검토조건 = `LENS_COMPLETION_STANDARD.md` 진행표 6행 각주.
+
 ## 🔴 이 지도가 바꾸는 것
 
 | 행 | 기존 상태 | 원본 개봉 후 |
@@ -231,12 +264,13 @@ B23: *"we need to **deduct depreciation**"*.
 | driver 3 세율 | ✅ 확정(847) | **결론 유지(장은태 승인 필요) · 근거 재정정 2회**(877: 원전도 WACC에 현금세율을 씀·이중계산 기각사유 재수정) · A안 미검토 · 커버리지 재측정 필요 · 세율 순효과·도미노 WACC 대조 미측정 |
 | driver 4 운전자본 | ✅ 확정(847) | **판독 맞음** · "가설"→"명시된 설계" 정정 · **875: ✅ 현행 유지 최종 확정**(장은태 승인·다모다란 근거 + 도미노 앵커로 A안 태그한계 확인) · **876: 근거 하나 철회**(A안 12.6% 커버리지는 버그의 커버리지였음·확장해도 29.5%뿐·판정은 불변) |
 | driver 5 고정자본 | ✅ 확정(852) | ✅ marginal은 **원전식과 정확히 일치**(875 앵커 11.617%) · **level(현행 주판정)은 875에서 "확정"→🔴 근거 부재로 강등**(원전에도 다모다란에도 근거 없음·앵커 테스트 불가) |
-| driver 6 자본비용 | 🔴 미결 | 원전 = 회사별 YTM · 우리 = 업종 스프레드 · **877 신규 기록(미판정)**: 베타도 원전은 도미노에 그냥 **1**을 넣음(우리는 업종 무차입베타 재레버리지) · 원전 도미노 WACC 0.05354 vs 우리 515사 분포 미대조 |
+| driver 6 자본비용 | 🔴 미결 | 원전 = 회사별 YTM(베타는 벤더 실측값) · 우리 = 업종 스프레드+재레버리지 베타 · **✅ 881 확정: 현행 유지**(5단계 분해로 차이 절대다수가 시점·방법 아님을 확인) |
+| 인플레(터미널 i) | 🔴 미결 | 원전 T8=1.6%(2020 스냅샷, i>rf — 다모다란 규칙 위반) · 우리=2.5%(`expected_inflation`, i<rf) · **✅ 882 확정: 현행 유지**(§9) |
 | driver 2 영업이익률 | 동일 8행 | 🔴 **미래 마진 추정 4방법이 대조된 적 없음** |
 | 비영업자산 | ✅ 849 "원전 그대로" | 🔴 **T4의 매출 2% 필요현금과 충돌 가능** (T8 확인 필요) |
 
 🔴 **판정은 하지 않았다.** 이 문서는 재료이고, 각 행의 ③판정은 장은태 몫이다.
 
 ## 🔴 아직 안 연 것
-- **T8** 비영업자산·필요현금 처리(§2·§6 충돌 확인용) · **T9·T10**
+- **T8** 비영업자산·필요현금 처리(§2·§6 충돌 확인용) — T9·T10은 881·882에서 열어 WACC·터미널 관련 서술 없음을 확인함(§4·§9)
 - 원전 **책 본문**(스프레드시트 각주가 *"in the book we do not consider…"*로 책과 다름을 두 번 명시)

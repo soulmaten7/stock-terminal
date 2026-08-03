@@ -1,6 +1,39 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (28) — 🔴 **STEP 882 실행: "GAP 8→23년" 전수 정정 · 대조표 구조 결함 기록 · 인플레(터미널 i) ③판정 확정 — 현행 유지** (문서+registry 문자열+프로브만 · 판정 반영)
+
+> **성격**: `app/`·`components/`·`messages/`·`data/` **diff 0**. 코드 변경 = `lib/revdcf/registry.ts` 문자열만. 신규 `scripts/probe_882_inflation.ts`. 크론 수동 실행 안 함. 커밋 = 이 커밋(부모 `7421020`).
+
+### §1 "GAP 8→23년" 전수 정정 — STEP이 나열한 5곳 + 추가 발견 2곳 = 총 7곳
+
+- STEP이 미리 나열한 5곳: `LENS_COMPLETION_STANDARD.md:594`·`:954`, `CHANGELOG.md:888`·`:987`, `REVDCF_SPEC.md:1048`. **Cowork이 내용으로 재grep해 2곳 추가 발견**(STEP 목록에 없었음): `REVDCF_SPEC.md:1047`("최종 GAP" 표 행)·`:1483`(§11 실측 원장 849 행).
+- 7곳 전부 취소선+정정 표시(SPEC·COMPLETION_STANDARD는 본문 교정, CHANGELOG는 이력 문서라 원문 보존 + 대괄호 정정 마커만 삽입). 정정 커밋 전 재grep(`GAP 8→23`)으로 마커 없는 잔존 0건 확인.
+- `docs/LENS_DEV_PLAYBOOK.md` **#80** 신규: 정정을 절차로 강제(①내용으로 grep해 출현목록 ②각 항목 ✅정정/제외사유 ③목록을 보고에 싣기 ④그 다음 커밋) — "부기 한 줄은 정정이 아니다."
+
+### §2 대조표 구조 결함 — 기록만(재분류 안 함)
+
+- `LENS_COMPLETION_STANDARD.md:607`의 22행 대조표에서 **인플레가 "동일 식·값만 차이 1행"과 "차이 9행" 양쪽에 동시 등재**돼 있었다(산술은 맞으나 항목 중복). driver3(877)·driver6(881)도 오늘 같은 성격("구조는 같고 값만 다르다")으로 판명 — 세 행이 사실 "동일 식·값만 차이" 성격에 더 가깝다. **재분류는 장은태 판정**이라 이 STEP은 `:607` 옆에 사실만 기록하고 세 행 각주에 상호 참조를 달았다.
+
+### §3 인플레(터미널 i) ③판정 — 현행 유지
+
+- **① 원전 재개봉**: `T8.xlsx` `Price Implied Expectations!D20` 수식이 우리 `NOPAT(N)×(1+i)/(WACC−i)`와 **셀 단위로 정확히 일치**(처음 직접 확인). `Tutorial 8` B115: *"Our residual value is a perpetuity with inflation and assumes a 1.6 percent inflation rate"* — i=인플레로 명시. T9·T10엔 관련 서술 없음. 원전 i(1.6%)>rf(0.65%).
+- **② 실측(464사, marginal 채택 후 재사용)**: 851 3안 재현 GAP 중앙 11/10/10(851 원측정 16/16/14와 다름 — driver5 전환 때문, 인플레 축과 무관). 터미널 비중 재측정(i=0.025) 중앙 **71.9%**(원전 도미노 N=8 80.1%와 근접). i민감도(1.6~3.0%) GAP중앙은 WACC 대비 2차적 유지되나 **판정버킷은 크게 이동**(over_cap 105→77·below_one 49→85).
+- **③ 검색(직인용)**: 다모다란 — *"the stable growth rate... should not exceed the riskless rate"*(`stablegrowthrate.htm`) → **원전(i>rf)이 이 규칙을 위반**, 우리(i<rf)는 만족. 그의 실제 권고값은 인플레가 아니라 **rf 자체**. `expected_inflation`의 실제 출처 재확인 = 터미널성장률 권고표가 아니라 **통화환산 유틸리티 셀**(`wacc.xls` "Expected inflation rate in US $").
+- **④ 판정**: 현행 유지(`i=expected_inflation`). 근거 4개(원전 규칙위반·우리는 규칙만족·대안들의 자동화 부적합·재측정으로 851 결론 재확인) · 대가(값의 권위가 다모다란이 부여한 게 아니라 재목적화) · 불리한 사실(다모다란의 문자 그대로 권고는 i=rf) · 재검토조건(i=rf 안 미측정).
+
+### §4 원장 정합
+
+- `lib/revdcf/registry.ts` `inflation` — 원전대조판정 축 확정(✅ 현행 유지).
+- `docs/PRIMARY_SOURCE_MAP.md` §9(인플레) 신설 + 요약표 driver6·인플레 행 갱신 + "아직 안 연 것"에서 T9·T10 제거(881·882에서 열어 확인 완료).
+- `docs/REVDCF_SPEC.md` §10 #56(i=rf 미측정)·#57(대조표 구조 결함) 신규, §11에 T8 터미널 셀·882 재측정·다모다란 직인용 3행 신규.
+- `docs/LENS_COMPLETION_STANDARD.md` 진행표 6행 ③판정 확정 + 근거·대가·불리한사실·재검토조건 각주, driver3·6 각주에 상호참조 추가.
+- `docs/STATE.md` §0 유지 + HEAD/다음(6-1 신규) 갱신(196줄, 상한 내).
+
+### 무변경 확인
+
+- `app/`·`components/`·`messages/`·`data/` diff 0 · `revdcf_results` 2026-08-01/02/03 각 604 무변경(크론 미실행) · `us_market_cap` 5,887 무변경 · `REVDCF_ENABLED` OFF 유지.
+
 ## 2026-08-03 (27) — 🔴 **STEP 881 실행: driver 6(자본비용) ③판정 확정 — 현행 유지(업종 구성요소 조립)** (문서+registry 문자열+프로브만 · 판정 반영)
 
 > **성격**: `app/`·`components/`·`messages/`·`data/` **diff 0**. 코드 변경 = `lib/revdcf/registry.ts` 문자열만. 신규 `scripts/probe_881_wacc.ts`. 크론 수동 실행 안 함(`revdcf_results` 604×3 무변경). 커밋 = 이 커밋(부모 `c260ee3`).
@@ -885,7 +918,7 @@
 >
 > 🔴 **표 작성 중 새로 발견한 차이**: **예측 지평 = 원전 25년 컷(T8 C31 LOOKUP D27:AB27=25년·초과 "25+") vs 우리 100년**. 실측: `years` 222 중 **41사가 gap 26~83년**(최대 83)으로 표시됨 → 원전이면 전부 "25+". `/revdcf` 방법론 페이지가 "표시 25년"이라 적었으나 **실제 미구현**.
 >
-> **§2 화면 대조**: `/revdcf` 차이 원장 8행 중 7행(growth·tax·wc·cap·term·sensitivity·distribution) 일치 · **불일치 2건**(항목 6 범위라 화면 수정 안 함): ①horizon 행 "표시 25년" 미구현(위) ②driver 6 WACC 조립 차이 원장 행 부재(betaCaveat 문단만 부분 언급·도미노 GAP 8→23년 차이 거의 전부가 WACC인데 독립 행 없음).
+> **§2 화면 대조**: `/revdcf` 차이 원장 8행 중 7행(growth·tax·wc·cap·term·sensitivity·distribution) 일치 · **불일치 2건**(항목 6 범위라 화면 수정 안 함): ①horizon 행 "표시 25년" 미구현(위) ②driver 6 WACC 조립 차이 원장 행 부재(betaCaveat 문단만 부분 언급·도미노 GAP 8→23년[🔴 정정(882): T7 원본 재현시 7→23년 — 881/882 참조] 차이 거의 전부가 WACC인데 독립 행 없음).
 >
 > **§3 완성 현황표**: 역DCF 행 추가 — **1번만 ✅**, 2🔶(입력 프로브 있으나 DoD 형식 미정리)·3❌(도미노 1건뿐·외부 3종목 미달)·4🔶·5🔶·6🔶·7🔶(플래그 OFF)·8🔶·9❌(프로덕션 미노출). 낙관 없이 정직 표기.
 >
@@ -984,7 +1017,7 @@
 - **§3 부채**: LT+당기+금융리스·**영업리스 제외**(T8 정합). 커버 core 459(76%)/리스포함 550(91%). 도미노 4114(장부) vs T8 4170(시장가).
 - **§4 비영업자산**: A(전액) vs B(−매출2%) **GAP 동일**(shift $1.87/주) → **A(원전 그대로) 채택**.
 - **§5 주식수**: **희석**(WeightedAvgDiluted·커버 90%) 채택 — T8 39.35=희석·dei 38.67=기본.
-- **§6 🔴 도미노 전입력 재현**: 부채·비영업·주식수는 원전 근접 재현. **우리 조립 WACC 7.19% vs 원전 5.357% → GAP 8→23년**(밴드 13~38). **차이 거의 전부 WACC**(2026 rf 3.95% vs 2020 0.65%). → GAP은 WACC(rf 빈티지)가 지배·화면은 WACC 밴드 필수.
+- **§6 🔴 도미노 전입력 재현**: 부채·비영업·주식수는 원전 근접 재현. **우리 조립 WACC 7.19% vs 원전 5.357% → GAP 8→23년**[🔴 정정(882): T7 원본 Inputs로 재현시 GAP 7 — "8"은 T8.xlsx의 다른 조합에서만 나옴, 881/882 참조](밴드 13~38). **차이 거의 전부 WACC**(2026 rf 3.95% vs 2020 0.65%). → GAP은 WACC(rf 빈티지)가 지배·화면은 WACC 밴드 필수.
 - registry INPUTS(부채·비영업·주식수·WACC) open 해소. tsc 0·vitest **151**·build ✓·app 0.
 
 ## 2026-08-01 (3) — 🟢 역DCF 역산기 엔진 구현 + 원전 도미노 재현 (STEP 848 · HEAD `f68291f`)
