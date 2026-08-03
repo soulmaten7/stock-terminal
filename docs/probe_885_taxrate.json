@@ -1,0 +1,329 @@
+{
+  "asOf": "2026-08-03",
+  "coverage": {
+    "n": 464,
+    "cashTaxAvailable": 359,
+    "pct": 77.4,
+    "note": "847 원측정 58%(604 모집단 기준)와 다른 모집단(464·marginal채택후) — 직접 비교 불가, 재측정치로 병기"
+  },
+  "offsetAnalysis": {
+    "wacc_median_base_taxUs": 0.07755891596393508,
+    "wacc_median_cashTax": 0.07773171636218851,
+    "note": "B(NOPAT만 현금세율)는 WACC 불변(기준과 동일) — NOPAT 감소 방향(세율↑→GAP↑)만 단독 관찰 가능. C(WACC만 현금세율)는 NOPAT 불변 — WACC 하락(세율↑→세후부채비용↓→WACC↓→GAP↓) 방향만 단독 관찰 가능. A는 둘의 합성."
+  },
+  "dominoAnchor": {
+    "scenarioA_bookTax0165_bothSides": {
+      "kind": "years",
+      "gap": 8
+    },
+    "note": "engine.test.ts가 이미 검증하는 것과 동일 설정(taxRate=0.165 NOPAT·WACC 양쪽) — 원전이 실제로 하는 시나리오A를 도미노에 적용하면 이미 알려진 GAP=8 재현과 동치임을 재확인"
+  },
+  "baseline_taxUs_bothSides": {
+    "n": 359,
+    "notComputable": 0,
+    "years": 100,
+    "belowOne": 57,
+    "overCap": 70,
+    "valueDestroying": 132,
+    "invalid": 0,
+    "gapP25": 5,
+    "gapMedian": 10,
+    "gapP75": 14,
+    "migration": {
+      "over_cap→over_cap": 43,
+      "years→value_destroying": 18,
+      "below_one→below_one": 54,
+      "value_destroying→value_destroying": 85,
+      "over_cap→value_destroying": 25,
+      "years→years": 94,
+      "value_destroying→over_cap": 8,
+      "below_one→value_destroying": 4,
+      "years→over_cap": 19,
+      "value_destroying→below_one": 2,
+      "over_cap→years": 3,
+      "over_cap→below_one": 1,
+      "value_destroying→years": 3
+    },
+    "yearsOut": 37,
+    "yearsIn": 6,
+    "yearsOutIncludingNull": 37,
+    "asymmetry": 6.17,
+    "asymmetryIncludingNull": 6.17,
+    "sample": [
+      {
+        "symbol": "ABT",
+        "nopatTax": 0.2563,
+        "wacc": 0.07688432444892898,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      },
+      {
+        "symbol": "APD",
+        "nopatTax": 0.2563,
+        "wacc": 0.07396519694323954,
+        "oldVerdict": "years",
+        "newVerdict": "value_destroying",
+        "newGap": null
+      },
+      {
+        "symbol": "LNG",
+        "nopatTax": 0.2563,
+        "wacc": 0.057745074184877454,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "SWKS",
+        "nopatTax": 0.2563,
+        "wacc": 0.10477921195482645,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "HWM",
+        "nopatTax": 0.2563,
+        "wacc": 0.07793782166347735,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      }
+    ]
+  },
+  "scenarioA_cashTax_bothSides": {
+    "n": 359,
+    "notComputable": 0,
+    "years": 98,
+    "belowOne": 64,
+    "overCap": 69,
+    "valueDestroying": 125,
+    "invalid": 3,
+    "gapP25": 5,
+    "gapMedian": 10,
+    "gapP75": 14,
+    "migration": {
+      "over_cap→over_cap": 45,
+      "years→value_destroying": 15,
+      "below_one→below_one": 52,
+      "value_destroying→value_destroying": 83,
+      "over_cap→invalid": 1,
+      "years→years": 90,
+      "value_destroying→over_cap": 7,
+      "below_one→value_destroying": 5,
+      "over_cap→value_destroying": 22,
+      "years→over_cap": 17,
+      "value_destroying→below_one": 2,
+      "over_cap→years": 3,
+      "years→below_one": 9,
+      "over_cap→below_one": 1,
+      "below_one→years": 1,
+      "value_destroying→years": 4,
+      "value_destroying→invalid": 2
+    },
+    "yearsOut": 41,
+    "yearsIn": 8,
+    "yearsOutIncludingNull": 41,
+    "asymmetry": 5.13,
+    "asymmetryIncludingNull": 5.13,
+    "sample": [
+      {
+        "symbol": "ABT",
+        "nopatTax": 0.21675941381430971,
+        "wacc": 0.07713613885359218,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      },
+      {
+        "symbol": "APD",
+        "nopatTax": 0.18933690284267568,
+        "wacc": 0.0749805198935036,
+        "oldVerdict": "years",
+        "newVerdict": "value_destroying",
+        "newGap": null
+      },
+      {
+        "symbol": "LNG",
+        "nopatTax": -0.10367673854913843,
+        "wacc": 0.06527626901995806,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "SWKS",
+        "nopatTax": 0.17793162661685868,
+        "wacc": 0.10566414276054194,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "HWM",
+        "nopatTax": 0.051610441536157514,
+        "wacc": 0.07845957371391564,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      }
+    ]
+  },
+  "scenarioB_cashTax_NOPAT_only": {
+    "n": 359,
+    "notComputable": 0,
+    "years": 100,
+    "belowOne": 64,
+    "overCap": 69,
+    "valueDestroying": 126,
+    "invalid": 0,
+    "gapP25": 5,
+    "gapMedian": 9,
+    "gapP75": 14,
+    "migration": {
+      "over_cap→over_cap": 45,
+      "years→value_destroying": 15,
+      "below_one→below_one": 50,
+      "value_destroying→value_destroying": 83,
+      "over_cap→value_destroying": 23,
+      "years→years": 90,
+      "value_destroying→over_cap": 8,
+      "below_one→value_destroying": 5,
+      "years→over_cap": 16,
+      "value_destroying→below_one": 3,
+      "over_cap→years": 3,
+      "years→below_one": 10,
+      "over_cap→below_one": 1,
+      "below_one→years": 3,
+      "value_destroying→years": 4
+    },
+    "yearsOut": 41,
+    "yearsIn": 10,
+    "yearsOutIncludingNull": 41,
+    "asymmetry": 4.1,
+    "asymmetryIncludingNull": 4.1,
+    "sample": [
+      {
+        "symbol": "ABT",
+        "nopatTax": 0.21675941381430971,
+        "wacc": 0.07688432444892898,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      },
+      {
+        "symbol": "APD",
+        "nopatTax": 0.18933690284267568,
+        "wacc": 0.07396519694323954,
+        "oldVerdict": "years",
+        "newVerdict": "value_destroying",
+        "newGap": null
+      },
+      {
+        "symbol": "LNG",
+        "nopatTax": -0.10367673854913843,
+        "wacc": 0.057745074184877454,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "SWKS",
+        "nopatTax": 0.17793162661685868,
+        "wacc": 0.10477921195482645,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "HWM",
+        "nopatTax": 0.051610441536157514,
+        "wacc": 0.07793782166347735,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      }
+    ]
+  },
+  "scenarioC_cashTax_WACC_only": {
+    "n": 359,
+    "notComputable": 0,
+    "years": 97,
+    "belowOne": 55,
+    "overCap": 72,
+    "valueDestroying": 132,
+    "invalid": 3,
+    "gapP25": 5,
+    "gapMedian": 10,
+    "gapP75": 15,
+    "migration": {
+      "over_cap→over_cap": 44,
+      "years→value_destroying": 20,
+      "below_one→below_one": 51,
+      "value_destroying→value_destroying": 84,
+      "over_cap→invalid": 1,
+      "years→years": 91,
+      "value_destroying→over_cap": 8,
+      "below_one→value_destroying": 5,
+      "over_cap→value_destroying": 23,
+      "years→over_cap": 19,
+      "value_destroying→below_one": 2,
+      "over_cap→years": 3,
+      "below_one→years": 1,
+      "over_cap→below_one": 1,
+      "years→below_one": 1,
+      "value_destroying→invalid": 2,
+      "below_one→over_cap": 1,
+      "value_destroying→years": 2
+    },
+    "yearsOut": 40,
+    "yearsIn": 6,
+    "yearsOutIncludingNull": 40,
+    "asymmetry": 6.67,
+    "asymmetryIncludingNull": 6.67,
+    "sample": [
+      {
+        "symbol": "ABT",
+        "nopatTax": 0.2563,
+        "wacc": 0.07713613885359218,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      },
+      {
+        "symbol": "APD",
+        "nopatTax": 0.2563,
+        "wacc": 0.0749805198935036,
+        "oldVerdict": "years",
+        "newVerdict": "value_destroying",
+        "newGap": null
+      },
+      {
+        "symbol": "LNG",
+        "nopatTax": 0.2563,
+        "wacc": 0.06527626901995806,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "SWKS",
+        "nopatTax": 0.2563,
+        "wacc": 0.10566414276054194,
+        "oldVerdict": "below_one",
+        "newVerdict": "below_one",
+        "newGap": null
+      },
+      {
+        "symbol": "HWM",
+        "nopatTax": 0.2563,
+        "wacc": 0.07845957371391564,
+        "oldVerdict": "over_cap",
+        "newVerdict": "over_cap",
+        "newGap": null
+      }
+    ]
+  },
+  "note": "재료만 — driver3 판정(현행 유지)은 §1 지시대로 바꾸지 않음. 대가·재검토조건 채우기는 보고에서."
+}

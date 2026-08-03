@@ -136,6 +136,24 @@ async function main() {
     note: "각 단계의 wacc·gap 이동폭을 §4 판정에서 해석. 분류(방법 차이 vs 시점 차이) 이동은 여기서 하지 않고 판정 각주에 기록.",
   };
 
+  // 🔴 885 §3-1 — T7 vs T8 4갈래 격리 조합(원래 /tmp/diag881.ts에만 있어 재현 불가였던 것을 이 커밋된 스크립트로 이동).
+  //   "8은 T8의 정확한 조합에서만 나오는 knife-edge — 어느 한 값만 바꿔도 7"이 재현되는지 확인.
+  function gapAt(wacc: number, shares: number): string | number {
+    const D: RevDcfDrivers = { ...baseDrivers, taxRate: tax0 };
+    const M: RevDcfMarket = { wacc, inflation, sharePrice: T7_PRICE, sharesOutstanding: shares, debt: T7_DEBT, nonOperatingAssets: 391.9 };
+    const r = runRevDcf(D, M, { maxYears: 25 });
+    return r.verdict.kind === "years" ? r.verdict.gap : r.verdict.kind;
+  }
+  const T8_WACC = 0.05357, T8_SHARES = 39.35;
+  const T7_WACC_COMPUTED = (steps[0] as { wacc: number }).wacc; // 0단계에서 이미 계산된 T7 정확값(0.053544...)
+  const isolationGrid = {
+    T8exact_wacc0357_shares3935: gapAt(T8_WACC, T8_SHARES),
+    T7exact_wacc053544_shares393: gapAt(T7_WACC_COMPUTED, T7_SHARES),
+    T8wacc_T7shares: gapAt(T8_WACC, T7_SHARES),
+    T7wacc_T8shares: gapAt(T7_WACC_COMPUTED, T8_SHARES),
+    note: "881의 서술(\"두 값 중 하나만 바꿔도 7로 바뀐다 — 8은 T8의 정확한 조합에서만\")을 이 커밋된 스크립트 안에서 재현. 재현 안 되면 이 note를 고치지 않고 실측값을 그대로 남긴다(885 §3 지시).",
+  };
+
   // ══════════════════════════ §2-3 우리 방식 안 두 가지 점검(코드 확인 결과) ══════════════════════════
   const internal_checks = {
     creditSpreadVariable: {
@@ -159,7 +177,7 @@ async function main() {
     },
   };
 
-  const output = { asOf, wacc_distribution, component_distributions, decomposition, internal_checks };
+  const output = { asOf, wacc_distribution, component_distributions, decomposition, internal_checks, isolationGrid };
   writeFileSync("docs/probe_881_wacc.json", JSON.stringify(output, null, 2));
   console.error(JSON.stringify(output, null, 2));
 
