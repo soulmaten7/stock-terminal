@@ -154,13 +154,40 @@ B23: *"we need to **deduct depreciation**"*.
 
 ---
 
+## §6. driver 4 — 다모다란 반대증거 재확인 (STEP 875 §0)
+
+**Damodaran, *Working capital in valuation*** (`pages.stern.nyu.edu/~adamodar/New_Home_Page/valquestions/noncashwc.htm`)
+
+> *"Changes in non-cash working capital are **unstable**, with big increases in some years followed by big decreases in the following years."*
+> *"can the change in non-cash working capital be negative? The answer is **clearly yes**."*
+> *"The non-cash working capital **as a percent of revenues** can be used, in conjunction with expected revenue changes each period, to estimate projected changes in non-cash working capital over time."*
+> *"For most firms, estimating a **composite number** for non-cash working capital is easier to do and often **more accurate than breaking it down into more detail**."*
+
+**이것이 판정하는 것**: 우리 현행(driver 4 = `(유동자산−현금−유동부채)÷매출` 5년 평균)이 정확히 *"as a percent of revenues"* 형태다 — 우리 발명품이 아니라 이유가 붙은 실무 방식. *"composite ... more accurate than detail"*은 A안(세부 태그·874 커버리지 12.6%)보다 B안(집계·99.8%)을 지지하는 방향과 일치. 원전 증분식의 불안정성(*"unstable"*·*"clearly negative"*)은 도미노 연도별 −26.7%~+18.2%가 예다.
+
+🔴 **driver 5에는 이 근거가 적용되지 않는다.** `PP&E÷매출`은 자본집약도이지 재투자율이 아니고, 다모다란의 위 권고는 driver 4(운전자본)에 관한 것이지 driver 5(고정자본 재투자율)에 관한 것이 아니다.
+
+## §7. driver 4·5 — 도미노 앵커 재현 (STEP 875 §1)
+
+874가 "원본 셀이 그 값을 낸다"만 확인했지 "우리 공식으로 돌려서 재현되는가"는 안 했다. `scripts/probe_875_dominos_anchor.ts`가 도미노 입력을 그대로 하드코딩 전사해 우리 세 공식을 돌린 결과:
+
+| 공식 | 기대값(원전 셀) | 우리 결과 | 재현 |
+|---|---|---|---|
+| driver 4 A안(874 코드·AP+Accrued태그만) | T4 `I31`=0.501% | **4.219%** | ❌ 미재현(Advertising fund·Other accrued 2항목 미포착) |
+| driver 4 A안(T4 4항목 전부) | 동상 | **0.501%** | ✅ 정확 일치(공식구조 검증) |
+| driver 4 B안(집계 근사) | 동상 | 테스트 불가 | — `T4.xlsx` `Inputs`에 진짜 현금·이자부부채·집계잔액 데이터 자체가 없음(참고: 다른 3년창 2014→2017 = −1.181%, 직접비교 불가) |
+| driver 5 marginal(원전식) | T5 `I20`=11.6% | **11.617%** | ✅ 정확 일치 |
+| driver 5 level(현행 주판정) | 원전에 대응 없음 | 테스트 불가 | — T4·T5·T8 어디에도 PP&E 잔액 데이터 없음 |
+
+🔑 **결론**: driver 5 marginal은 공식·데이터 양쪽에서 원전과 검증됐다(11.617%≈11.6%). driver 4는 공식 구조는 맞으나(원전 4항목 전부=0.501% 정확 일치), 실제 코드가 쓰는 SEC 태그 근사(AP+Accrued 2종만)로는 도미노 같은 사례에서 원전값을 재현하지 못한다 — 태그 매핑의 한계이지 공식 오류가 아니다. B안·level은 원전 데이터 자체가 없어 앵커 테스트가 원천 불가능하다(이는 "재현 실패"와 다른, 더 근본적인 사실).
+
 ## 🔴 이 지도가 바꾸는 것
 
 | 행 | 기존 상태 | 원본 개봉 후 |
 |---|---|---|
 | driver 3 세율 | ✅ 확정(847) | **결론 유지 · 근거 3개 중 2개 무효** · 원전은 세율 **둘** · A안 미검토 · 커버리지 재측정 필요 |
-| driver 4 운전자본 | ✅ 확정(847) | **판독 맞음** · 단 "가설"→"명시된 설계" · 🔴 **원전 5년 누적식 미구현**(driver 5와 비대칭) |
-| driver 5 고정자본 | ✅ 확정(852) | ✅ **원전식과 정확히 일치** · level이 우리 추가물 |
+| driver 4 운전자본 | ✅ 확정(847) | **판독 맞음** · "가설"→"명시된 설계" 정정 · **875: ✅ 현행 유지 최종 확정**(장은태 승인·다모다란 근거 + 도미노 앵커로 A안 태그한계 확인) |
+| driver 5 고정자본 | ✅ 확정(852) | ✅ marginal은 **원전식과 정확히 일치**(875 앵커 11.617%) · **level(현행 주판정)은 875에서 "확정"→🔴 근거 부재로 강등**(원전에도 다모다란에도 근거 없음·앵커 테스트 불가) |
 | driver 6 자본비용 | 🔴 미결 | 원전 = 회사별 YTM · 우리 = 업종 스프레드 |
 | driver 2 영업이익률 | 동일 8행 | 🔴 **미래 마진 추정 4방법이 대조된 적 없음** |
 | 비영업자산 | ✅ 849 "원전 그대로" | 🔴 **T4의 매출 2% 필요현금과 충돌 가능** (T8 확인 필요) |
