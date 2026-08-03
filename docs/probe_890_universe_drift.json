@@ -1,0 +1,133 @@
+{
+  "generatedAt": "2026-08-03 (STEP 890, git show 재실행 결과)",
+  "section2_snapshotRecount": [
+    {
+      "hash": "98f1265",
+      "date": "2026-08-03",
+      "total": 6779,
+      "stocks": 5964,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "12e2e99",
+      "date": "2026-08-01",
+      "total": 6783,
+      "stocks": 5968,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "e0c6020",
+      "date": "2026-07-31",
+      "total": 6779,
+      "stocks": 5964,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "0655d0e",
+      "date": "2026-07-30",
+      "total": 6779,
+      "stocks": 5964,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "20c007f",
+      "date": "2026-07-29",
+      "total": 6777,
+      "stocks": 5962,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "dcd6e6d",
+      "date": "2026-07-28",
+      "total": 6773,
+      "stocks": 5958,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "9f955ca",
+      "date": "2026-07-27",
+      "total": 6771,
+      "stocks": 5956,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    },
+    {
+      "hash": "bf01660",
+      "date": "2026-07-25",
+      "total": 6775,
+      "stocks": 5960,
+      "etf": 815,
+      "fields": [
+        "name",
+        "sym",
+        "type"
+      ]
+    }
+  ],
+  "section2_hasExchangeFieldInAnySnapshot": false,
+  "section2_note": "us_symbols.json 레코드 스키마는 {sym,name,type}뿐 — exchange 필드가 없다. 866/867의 '거래소 상장 N=2,857'은 이 파일에서 재현 불가능(파생 불가) — 별도 SEC 소스(company_tickers_exchange/sec_reporting_issuers)에서 온 일회성 스냅샷.",
+  "section3_usMarketCap_asOfDistribution": [
+    [
+      "2026-07-30",
+      520
+    ],
+    [
+      "2026-08-02",
+      5367
+    ]
+  ],
+  "section3_revdcfResults_asOfDistribution": [
+    [
+      "2026-08-01",
+      604
+    ],
+    [
+      "2026-08-02",
+      604
+    ],
+    [
+      "2026-08-03",
+      604
+    ]
+  ],
+  "section3_revdcfUniverse_vs_latestUsSymbolsSnapshot_overlap": {
+    "revdcfUniverseSize": 604,
+    "latestSnapshotStockCount": 5964,
+    "overlapCount": 604,
+    "note": "revdcf_results.symbol과 최신 us_symbols.json stock 심볼의 교집합 크기 — 참고용(cron이 이 파일을 읽지 않는다는 코드 사실은 grep으로 별도 확인, 이 숫자는 우연한 교집합 크기일 뿐 인과관계 아님)."
+  }
+}

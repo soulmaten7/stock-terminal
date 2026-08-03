@@ -1,6 +1,49 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (35) — 🔍 **STEP 890 실행: DoD4 전제 확인 — "모집단 N=2,857"은 실제 표본이 아니었다 · 판정서 제출** (코드·데이터·워크플로 diff 0)
+
+> **성격**: `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0**. 변경은 `docs/` + 신규 `scripts/probe_890_universe_drift.ts`(+ `docs/probe_890_universe_drift.json`)뿐. **DoD 4를 ✅로 올리지 않았다** — 권고안을 담은 판정서를 제출했다. 커밋 = 이 커밋(부모 `d5765b9`).
+
+### 왜 지금
+
+867이 "N=2,857 확정 · 근거는 갖췄으나 ✅ 상향은 장은태 판단"이라 적었는데, 887의 rebase 과정에서 `data/us_symbols.json`이 매일 자동으로 갱신·커밋되는 것을 목격 — 그 근거의 밑바탕이 매일 움직이는지 확인이 필요했다.
+
+### §1~§2 원본 개봉 + 재검산
+
+- `scripts/refresh_us_symbols.ts` 직접 개봉: nasdaqtrader `nasdaqlisted.txt`(NASDAQ) + `otherlisted.txt`(NYSE·AMEX 등)를 매일 받아 테스트종목·ETF·워런트/우선주 등을 제외하고 `{sym,name,type}`만 저장 — **거래소 필드 자체가 없다.**
+- 8개 자동갱신 커밋을 `git show`로 직접 재검산(체크아웃 없이) — Cowork이 사전 제시한 수치(6,771~6,783)와 **정확히 일치** 확인. ETF는 815로 불변(정책상 보존), 드리프트는 전부 stock 쪽(5,956~5,968).
+- 60일 무커밋 워크플로 비활성화 경고 문구 확인만 하고 조치 없음(일일 커밋이 자체적으로 타이머를 리셋해 실질 무해).
+
+### §3 전파 사슬 — 두 군데서 끊긴다
+
+- `data/us_symbols.json` → `us_market_cap`: **연결됨**(`lib/lensPrecompute.ts:12`가 직접 import). 단 `us_market_cap`의 `as_of` 분포를 DB에서 직접 읽으니(페이지네이션 없이 읽으면 PostgREST 1000행 상한에 걸려 조용히 잘리는 함정을 스크립트에서 직접 겪고 고쳐 재실측) **2026-07-30(520)·2026-08-02(5,367) 단 2일치뿐** — 오늘(08-03) 갱신이 없다. `upsert(onConflict:"symbol")`라 삭제가 없어 07-30분은 스테일 잔류행으로 추정.
+- `us_market_cap` → 866 "거래소 상장 N=2,857": **연결 안 됨.** 2,857은 SEC 공식 통계(`sec_reporting_issuers_20260630.xlsx`·`company_tickers_exchange.json`)에서 온 완전히 별개의 일회성 스냅샷 — 코드 어디에도 "2857" 리터럴이 없다(grep 0건). `us_symbols.json`에 거래소 필드가 없어 866의 필터를 이 파일에 적용하는 것 자체가 원리적으로 불가능(§3이 요구한 "8일치에 866 필터 적용" 실측은 불가능으로 기록).
+- 866 분류 → `revdcf_results`(604): **연결 안 됨.** `app/api/cron/revdcf/route.ts:12,23~26`의 유니버스는 자기참조(주석 원문 "로컬 파일 의존 없음") — 직전 as_of의 CIK를 그대로 이어받는다. `us_market_cap`은 종목별 시총 값 조회에만 쓰이고 회원 자격 판정엔 안 쓴다.
+- 🔑 **연혁 재구성**(`REVDCF_SPEC` A-6·A-7 대조): 604의 기원은 2026-07-31 `us_market_cap` 시총 상위 1,000의 **일회성 스냅샷**(838)이었다 — 그 이후 완전히 자기참조로 굳어 이후의 `us_market_cap` 변동을 전혀 반영하지 않는다. 867(08-02)이 승인한 2,857은 그 604와 무관하게 별도로 계산된 목표치이고, **그 승인이 604 자리에 구현된 적이 없다.**
+
+### §4 비대칭 확인
+
+7렌즈(`us_market_cap`)는 (실제로는 최근 갱신이 멈췄지만 설계상) 매일 움직이고, 역DCF(`revdcf_results`)는 자기참조로 **완전히 고정**돼 있다. 🔑 **드리프트 자체는 DoD4를 막는 이유가 아니다** — 역DCF 표본은 애초에 안 움직인다(7렌즈 선례를 끌어올 필요조차 없음). 진짜 문제는 `docs/LENS_COMPLETION_STANDARD.md`의 "모집단 = N=2,857 확정"이라는 문장이 **실제 운영 표본을 가리키지 않는다**는 것 — 887의 대조표 재분류 작업 때도 이 불일치가 지적된 적이 없다.
+
+### §5 "확정" 표현 · 박힌 숫자 전수
+
+`2,857`·`5,887`·`604`가 박힌 문서 자리를 전수 확인 — `STATE.md`("867·2026-08-02 승인")·`REVDCF_SPEC.md` A-7("STEP 838 프로브 실측 2026-07-31")은 **이미 날짜와 함께 정확**. `CHANGELOG.md`·`STEP_*_COMMAND.md`의 출현은 이력이라 제외. `messages/*.json`의 `sampleNote`·`rankLine`은 이미 `{total}`로 배선됨(869·889 확인). **결론: "확정" 표기 자체는 대부분 이미 정확 — 문제는 표기 형식이 아니라 그 숫자가 실제로 무엇을 가리키는지의 서술.**
+
+### §6 DECISION_890 — 권고안: 조건부
+
+`docs/DECISION_890_DOD4.md` 신설. **DoD4를 지금 ✅로 올리지 않는다.** 조건(문서만·저비용): "모집단" 서술을 "실제 표본 604(자기참조 고정)"와 "목표치 2,857(867 승인·미구현)"로 명확히 가르면 ✅, 아니면 🔶 유지. 근거 4개·대가(커버리지 21.1%가 도드라짐)·불리한 사실(867 승인이 파이프라인에 영향을 준 적이 없음을 아무도 몰랐다)·재검토 조건·결정을 미룰 때의 비용을 문서에 기록.
+
+### 연동 문서
+
+- `docs/LENS_COMPLETION_STANDARD.md` DoD 4 항목 — 판정 칸 불변, 각주에 890 실측 + 판정서 제출 표시.
+- `docs/REVDCF_SPEC.md` — **A-10 신설**(단절 상세) · §10 **#63·#64 신규** · §11에 드리프트·as_of 분포·자기참조 확인 3행 추가.
+- `docs/STATE.md` — HEAD 갱신 + DoD4 상태 갱신. 130줄(상한 142 이내로 여유 확보 — items 2~6-3을 한 줄 요약으로 압축).
+
+### 무변경 확인
+
+- `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행 · `revdcf_results` 604×3 무변경 · `us_market_cap` 5,887 무변경 · DoD 현황표 미변경.
+
 ## 2026-08-03 (34) — ✅ **STEP 889 실행: 888 감사 결과 교정 — 위반 5건·보류 3건 전부 처리 + DoD 6(주장 정합) = ✅** (계산 diff 0)
 
 > **성격**: `lib/revdcf/**`(engine·drivers·compute·flag)·`app/api/**` **로직 diff 0** — 값은 하나도 안 바뀌었다. 변경은 `messages/ko.json`·`en.json`·`components/RevDcfSection.tsx`·`RevDcfBadge.tsx`·`app/[locale]/revdcf/page.tsx`·`docs/`뿐. 커밋 = 이 커밋(부모 `f0e1548`).
