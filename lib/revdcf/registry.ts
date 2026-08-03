@@ -170,7 +170,7 @@ export const INPUTS: RegistryEntry[] = [
     ours: "US 한계세율 (countrytaxrates.xls · US 행)",
     klass: "B",
     divergence:
-      "✅ 847 실측으로 확정: 원전 무차입 현금세율(T6)은 조달·안정성 열위 → 한계세율 채택. 🔴 877: 원전은 WACC 세후부채비용에도 현금세율을 쓴다(구조는 같고 값만 다름). ✅ 885: 세율 순효과 실측 완료(§10 #50 해소) — 판정 불변. 🔑 정본: `docs/LENS_COMPLETION_STANDARD.md` 진행표 2행 — 근거·대가·재검토조건.",
+      "✅ 847 실측으로 확정: 원전 무차입 현금세율(T6)은 조달·안정성 열위 → 한계세율 채택. 🔴 877: 원전은 WACC 세후부채비용에도 현금세율을 쓴다(구조는 같고 값만 다름). ✅ 885: 세율 순효과 실측 완료(§10 #50 해소) — 판정 불변. ✅ 887(장은태 승인 2026-08-03): 대조표 범주 = \"차이\"에서 \"동일 식·값만 차이\"로 재분류(구조는 같고 값의 시점만 다름 — 판정 자체는 불변). 🔑 정본: `docs/LENS_COMPLETION_STANDARD.md` \"동일 식·값만 차이\" 절 — 근거·대가·재검토조건.",
   },
   {
     id: "costOfCapital",
@@ -178,7 +178,7 @@ export const INPUTS: RegistryEntry[] = [
     primary: "T8 Inputs!C16 (T7에서 산출)",
     ours: "CAPM 조립: 무위험 + 하향식베타×ERP / 부채비용은 합성등급 스프레드",
     klass: "B",
-    divergence: "🔴 다모다란 완성 WACC(Cost of Capital 열) 차용 금지 — 세율 불일치. ✅(배선완료) 849: 구성요소 조립(`lib/revdcf/compute.ts`·`assembleWacc`)으로 배선. ✅ 원전대조판정 확정(881·2026-08-03 장은태) — **현행 유지**(업종 구성요소 조립). 🔑 정본: `docs/LENS_COMPLETION_STANDARD.md` 진행표 5행 — 근거·대가·불리한사실·재검토조건.",
+    divergence: "🔴 다모다란 완성 WACC(Cost of Capital 열) 차용 금지 — 세율 불일치. ✅(배선완료) 849: 구성요소 조립(`lib/revdcf/compute.ts`·`assembleWacc`)으로 배선. ✅ 원전대조판정 확정(881·2026-08-03 장은태) — **현행 유지**(업종 구성요소 조립). ✅ 887(장은태 승인 2026-08-03): 대조표 범주 = \"차이\"에서 \"동일 식·값만 차이\"로 재분류(차이의 절대다수가 방법이 아니라 시점·881 5단계 분해) — 판정 자체는 불변. 🔑 정본: `docs/LENS_COMPLETION_STANDARD.md` \"동일 식·값만 차이\" 절 — 근거·대가·불리한사실·재검토조건.",
     open: "🔶 rf 갱신주기 미결(§10 #56). 정본 = `docs/LENS_COMPLETION_STANDARD.md` 진행표 5행 각주.",
   },
   {
@@ -187,7 +187,7 @@ export const INPUTS: RegistryEntry[] = [
     primary: "T8 Inputs!C17 = 1.6%",
     ours: "✅ `expected_inflation`(damodaran DB·0.025) — 터미널 = NOPAT×(1+i)÷(WACC−i)",
     klass: "B",
-    divergence: "✅(A분류 값선택 확정) 851: i=인플레(실질 0 성장)가 정석 — '어느 값 쓸지'는 A분류 규칙. ✅ 원전대조판정 확정(882·2026-08-03 장은태 · 883 근거교체) — **현행 유지**(`i=expected_inflation`). 🔑 정본: `docs/LENS_COMPLETION_STANDARD.md` 진행표 6행 — 근거·대가·불리한사실·재검토조건.",
+    divergence: "✅(A분류 값선택 확정) 851: i=인플레(실질 0 성장)가 정석 — '어느 값 쓸지'는 A분류 규칙. ✅ 원전대조판정 확정(882·2026-08-03 장은태 · 883 근거교체) — **현행 유지**(`i=expected_inflation`). ✅ 887(장은태 승인 2026-08-03): 대조표 범주 = \"차이\"에서 \"동일 식·값만 차이\"로 재분류(driver3·driver6과 같은 성격 — 시점만 다름) — 판정 자체는 불변. 🔑 정본: `docs/LENS_COMPLETION_STANDARD.md` \"동일 식·값만 차이\" 절 — 근거·대가·불리한사실·재검토조건.",
   },
   { id: "sharePrice", ko: "주가", primary: "T8 Inputs!C21", ours: "기존 시세 파이프라인", klass: "B", divergence: null },
   {

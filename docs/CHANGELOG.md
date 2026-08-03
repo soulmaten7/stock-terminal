@@ -1,6 +1,44 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (32) — ✅ **STEP 887 실행: `DECISION_884_TABLE_STRUCTURE.md` 3안건 적용 — 대조표 22→20행 재분류(판정 내용 불변)** (문서 + registry 문자열만)
+
+> **성격**: `data/`·`app/`·`components/`·`messages/`·`scripts/` **diff 0**. 코드 변경 = `lib/revdcf/registry.ts` 문자열(세 항목 한 줄 결론만·`klass` 불변)뿐. 어떤 행의 ③판정도 뒤집지 않았다 — 다섯 칸(판정·근거·대가·불리한사실·재검토조건)은 원문 그대로 옮겼다. 커밋 = 이 커밋(부모 `7615b66`).
+
+### §0 장은태 승인(2026-08-03) 반영
+
+- `docs/DECISION_884_TABLE_STRUCTURE.md` 세 안건 전부 원안 승인 + 보완 2건(8행 재검토조건 명시·9행에 이관 포인터 한 줄 유지) — 상세 = `docs/STEP_887_COMMAND.md` §0.
+- 승인 근거 = 원전 T8 `Inputs` 시트 자신이 세율·자본비용·인플레를 "Other Value Determinants" 한 범주로 묶어놓았다는 것(① 원전 구조) + 881의 5단계 분해(도미노 WACC 차이의 대부분이 시점 +2.12%p, 방법은 −0.29%p — ② 결과 재현). Cowork이 안건3에 반대했다가(다모다란이 베타를 "method"로 부른다는 근거) 그 기준이 원전·결과 어디에도 걸려 있지 않음을 인정하고 철회 — `docs/LENS_DEV_PLAYBOOK.md`에 신규 항목으로 기록.
+
+### §1 대조표 재분류 적용(`docs/LENS_COMPLETION_STANDARD.md`)
+
+- **행 수 22→20**: 동일 8 + **동일 식·값만 차이 3**(driver3·driver6·인플레, 신설) + **차이 4**(driver1·driver4·driver5·데이터출처) + **제품 전제 1**(모집단, 신설) + 우리 추가물 4. 검증사례(구 9행)는 표 밖으로 — DoD "값 검증"(항목 3) 절로 이관(그 절이 이미 도미노 재현·분포관찰 3개를 담고 있어 새로 만들지 않음).
+- driver3·driver6·인플레 세 행 전체(판정·근거·대가·불리한사실·재검토조건)를 **한 글자도 바꾸지 않고** "동일 식·값만 차이" 절로 이동. 모집단(7행)은 "제품 전제" 절로 이동, 판정 칸만 "🅿️ 제품 전제(대안 없음)"으로 갱신. 데이터출처(8행)는 "차이" 절에 잔류, 판정 칸을 "🅿️ 제약(1인 운영)"으로 갱신하고 재검토조건(팀 규모 확대 시)을 신규로 채움 + "41,072개는 근사치"라는 883의 단서를 함께 남김.
+- 7·8·9행을 함께 다루던 883 §2의 공유 각주는 분할하지 않고 "제품 전제" 절 뒤에 그대로 두어 각 절에서 참조 — 블록 내부 텍스트는 diff 상 완전히 동일함을 확인(`docs/LENS_COMPLETION_STANDARD.md:415` 이하).
+- "차이 9행"이라는 고유명사는 870이 붙인 이름이라 유지하고, 정의부에 "887 재분류 후 현재 구성은 4행"이라는 주석 한 줄만 신설.
+
+### §2 연동 문서 반영
+
+- `lib/revdcf/registry.ts`: `taxRate`·`costOfCapital`·`inflation` 세 항목의 `divergence` 한 줄에 "✅ 887(장은태 승인) — 재분류" 문구만 추가. `klass`(A/B/C)는 손대지 않음.
+- `docs/REVDCF_SPEC.md` §10 #57·#58·#59: "장은태 판정 대기"→"887 해소"로 상태 갱신(서술 자체는 사실 기록이라 유지, 결론 문장만 추가). §12(값 분류 원장)는 확인만 하고 손대지 않음.
+- `docs/PRIMARY_SOURCE_MAP.md`: "차이 9행" 서술 1곳에 "(현재 4행)" 표기 추가.
+- `docs/DECISION_884_TABLE_STRUCTURE.md`: 헤더에 "✅ 2026-08-03 장은태 승인 · 887에서 적용 완료" 한 줄 추가. 본문(안건별 권고안·근거·대가)은 결정 당시 이력이라 그대로 둠.
+- `docs/STATE.md`: HEAD 블록 갱신 + "차이 9행" 3곳 표기 보정 + 6-2·6-3 항목을 "판정 대기"→"적용 완료"로 갱신. 142줄 상한 유지.
+
+### §3 "차이 9행" 문자열 47곳 전수 처리
+
+- `grep -rn "차이 9행"` = **47곳/8파일**(`LENS_COMPLETION_STANDARD` 5·`CHANGELOG` 21·`LENS_DEV_PLAYBOOK` 2·`STATE` 3·`PRIMARY_SOURCE_MAP` 1·`REVDCF_SPEC` 2·`DECISION_884_TABLE_STRUCTURE` 12·`CLAUDE.md` 1) — STEP이 사전에 제시한 47과 정확히 일치(STEP_*_COMMAND.md 파일들의 출현은 이력 문서라 이 47에서 제외되어 있었음을 재확인).
+- 처리: `LENS_COMPLETION_STANDARD.md`의 정의 위치 1곳만 전체 설명 신설, 그 안의 나머지 4곳(대조표 구조 결함 서술·절 제목 등)은 문맥상 이력 서술이라 원문 유지. `STATE.md` 3곳·`PRIMARY_SOURCE_MAP.md` 1곳(현재 상태 서술) = "(현재 4행)" 보정. `CHANGELOG`·`LENS_DEV_PLAYBOOK`·`DECISION_884_TABLE_STRUCTURE`·`CLAUDE.md`의 37곳 = 이력 문서라 전부 무변경.
+
+### 무손실 검증
+
+- 🔴 마커 총수(`docs/*.md`+`CLAUDE.md`, git 추적 파일 기준) **2,695 → 2,695**(변화 없음 — 이동·표현만 바꾸고 신규/삭제 마커 균형).
+- driver1·driver3·driver4·driver5·driver6·인플레 여섯 행의 판정·근거·대가·불리한사실·재검토조건 텍스트는 python 문자열 포함 검사로 이동 전후 완전 동일함을 확인(`diff` 0).
+
+### 무변경 확인
+
+- `data/`·`app/`·`components/`·`messages/`·`scripts/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행 · `revdcf_results` 2026-08-01/02/03 각 604 무변경 · `us_market_cap` 5,887 무변경.
+
 ## 2026-08-03 (31) — 🔴 **STEP 885 실행: 세율 순효과 실측(§10 #50) → driver3 빈 칸 채움 · 감사 지적 5건 정리 · 재현 경로 완전 복구** (문서 + registry 문자열 + 프로브만 · 판정 불변)
 
 > **성격**: `data/`·`app/`·`components/`·`messages/` **diff 0**. 코드 변경 = `lib/revdcf/registry.ts` 문자열 + 신규 `scripts/probe_885_taxrate.ts` + `scripts/probe_881_wacc.ts` 보강. `docs/DECISION_884_TABLE_STRUCTURE.md`는 적용하지 않음. 커밋 = 이 커밋(부모 `7230c17`).
