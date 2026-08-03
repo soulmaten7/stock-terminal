@@ -1,6 +1,57 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (34) — ✅ **STEP 889 실행: 888 감사 결과 교정 — 위반 5건·보류 3건 전부 처리 + DoD 6(주장 정합) = ✅** (계산 diff 0)
+
+> **성격**: `lib/revdcf/**`(engine·drivers·compute·flag)·`app/api/**` **로직 diff 0** — 값은 하나도 안 바뀌었다. 변경은 `messages/ko.json`·`en.json`·`components/RevDcfSection.tsx`·`RevDcfBadge.tsx`·`app/[locale]/revdcf/page.tsx`·`docs/`뿐. 커밋 = 이 커밋(부모 `f0e1548`).
+
+### §1 기준 — 888이 추출한 원칙만으로 교정
+
+> "화면 문구는 절대적 판단어가 아니라 상대적·서술적 표현으로 쓴다. 계산 불가 사유는 실제 원인별로 분기한다. 확인 안 된 구체적 원인은 단정하지 않는다. 임의 상수·기준은 그 사실 자체를 밝힌다."
+
+`docs/AUDIT_888_REVDCF_SURFACE.md`를 정본으로 두고 명령서에 목록을 다시 만들지 않았다 — 처리 후 감사표 각 행에 "889 처리 결과" 열을 추가해 갱신했다.
+
+### §2 위반 5건 교정
+
+1. **판단어→서술어**: `badge.valueDestroying`·`boardBadge.valueDestroying` ko"가치훼손"→"성장이 역효과", en"Value-destroying"→"Growth backfires". 배지 4종이 전부 "모델이 무엇을 설명/못 하는지"의 서술어가 되도록 통일(headline의 조건부 서술과 정합).
+2. **색상**: `value_destroying`의 `bg-unjong-danger/text-unjong-danger`를 `below_one`과 같은 `muted`로 교체(`RevDcfBadge.tsx`·`RevDcfSection.tsx` badgeClass·headline 둘 다). 4개 판정은 서열이 아니라 서로 다른 상태라는 원칙 적용 — `app/globals.css` 토큰 정의는 무변경, 사용처만 교체. 다른 렌즈의 `unjong-danger` 사용처(로그인·피드백·즐겨찾기 등 9개 파일) 무영향 확인.
+3. **박힌 숫자**: `RevDcfMethod.row.tax.w`의 "커버 58%·이상값 16.2%"를 배선이 아니라 정성 표현으로 교체(실시간 서빙 경로가 없는 정적 스크립트 측정값이라 이번 STEP에서 배선 불가) — "원전도 같은 현금세율을 쓰지만 재료가 결측·이상값이 있어 안정적으로 확보되지 않는다"는 사실 서술로. "배선 미구현"을 `REVDCF_SPEC.md` §10 **#62**에 등재.
+4. **기준 미표기**: `repro`에 T7=7년/T8=8년을 **둘 다 병기** — 반올림 한 자리로 결과가 갈릴 만큼 자본비용에 민감하다는, 이미 화면에 있는 주제(`wideBand`·`bandCrossWarning`·`betaCaveat`)와 이어지는 사실이라 숨기지 않음.
+5. **driver6/WACC 원장 행 부재(최우선 처리)**: `RevDcfMethod.row.wacc` 신설(ko/en) + `app/[locale]/revdcf/page.tsx`의 `rows` 배열에 `"wacc"` 추가. 881 실측 그대로 인용(도미노 원전 5.354%〈2020〉 vs 우리 7.19%〈2026〉 — 차이 대부분이 방법이 아니라 금리 시점) + 업종 근사 편향이 515사 전체로는 미측정이라는 사실도 명시. `notInvestmentAdvice`·`betaCaveat`와 중복 없음 확인.
+
+### §3 판단 보류 3건 — 전부 판정(보류 0건)
+
+1. **row.tax·row.term의 887 재분류 반영**: 판정 = 반영한다. row.tax는 #3 교정에 887 언어("방법이 다른 게 아니라 값의 시점이 다르다")를 통합. row.term(인플레)의 "사유"를 "터미널 공식은 원전과 동일 — i 값의 시점만 다르다"로 교체. 근거: 화면을 "우리가 원전과 다른 선택을 했다"로 오독할 위험이 887이 밝힌 실제 구조("같은 식, 다른 시점")보다 크다고 판단.
+2. **en "해독" 프레이밍 손실**: 판정 = 반영한다. `badge.years` en "Expectations"→"Decoded expectations"(710B 선례대로 ko를 직역하지 않고 같은 원칙을 영어로 재적용 — `RevDcfMethod.intro` en이 이미 "decodes"를 쓰고 있어 정합성도 개선).
+3. **below_one 배지/헤드라인 색 불일치**: 판정 = **가드레일 사안으로 재분류**(888의 "가드레일 무관·UI 사안" 분류를 철회) — "서로 다른 상태에 서열을 만들지 않는다"는 §4 원칙이 배지 간뿐 아니라 같은 verdict의 배지↔헤드라인 사이에도 적용돼야 한다고 판단. 헤드라인 색을 `primary`→`muted`로 통일(#2 교정과 함께 처리).
+
+### §4 새로 찾은 것 처리 확인
+
+driver6/WACC 원장행 부재(최대 발견) — 위 §2-5에서 처리. en 프레이밍 손실·below_one 색 불일치 — 위 §3-2·§3-3에서 처리.
+
+### §5 검증
+
+- `npx tsc --noEmit` 0 · `npm run test` 155/155(ko/en 키 패리티·ICU 렌더·축약형 금지 테스트 포함).
+- `git diff --stat HEAD -- lib/ app/api/` · `data/ scripts/` **둘 다 출력 없음**(계산 무변경 확인).
+- ko/en 키 전후 대조(python 스크립트): 양쪽 **+4키**(`RevDcfMethod.row.wacc.i/s/o/w`) 동시 신설, 제거 0, 패리티 100% 유지.
+- `unjong-danger` 사용처 전수 grep: `RevDcfSection.tsx`·`RevDcfBadge.tsx`가 목록에서 빠졌음을 확인(다른 9개 파일=로그인·피드백·즐겨찾기 등은 무영향).
+
+### §6 DoD 6(주장 정합) 판정 — ✅
+
+근거 4개(위반 5건 교정·보류 3건 판정 완료·통과 10건 재검토 후 유지·messages.test.ts 통과), 대가(원장 8행으로 늘어 다소 길어짐), 불리한 사실(라이브 미검증·플래그 OFF — DoD 7·9는 별개로 여전히 블록), 재검토 조건(플래그 ON 후 육안 검증에서 문제 발견 시)을 `docs/LENS_COMPLETION_STANDARD.md`에 각주로 기록.
+
+### 연동 문서
+
+- `docs/AUDIT_888_REVDCF_SURFACE.md` — 감사표 각 행에 "889 처리 결과" 열 추가(정본 유지, 별도 목록 안 만듦).
+- `docs/REVDCF_SPEC.md` §10 — #61 해소 표시·**#62 신규**(배선 미구현 기록).
+- `docs/LENS_COMPLETION_STANDARD.md` — DoD 6 🔶→✅, 판정서 각주 신설.
+- `docs/BRAND_IDENTITY.md` — 무변경(정본이자 기준, 수정 금지 그대로 지킴).
+- `docs/STATE.md` — HEAD 갱신(142줄 상한 유지), DoD 현황표 6행 ✅ 반영.
+
+### 무변경 확인
+
+- `lib/`·`app/api/`·`data/`·`scripts/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행 · `revdcf_results` 604×3 무변경 · `us_market_cap` 5,887 무변경 · DoD 7·9 판정 칸 불변(블록 상태 유지).
+
 ## 2026-08-03 (33) — 🔍 **STEP 888 실행: 역DCF 표면 전수 감사 — 브랜드 정체성 가드레일 대조(감사 전용·수정 0)**
 
 > **성격**: `messages/`·`components/`·`lib/`·`app/`·`scripts/`·`data/` **diff 0**. 신규 산출물은 `docs/AUDIT_888_REVDCF_SURFACE.md` 하나뿐. 문구·색을 한 글자도 고치지 않았다 — 교정은 889. DoD 항목 6(주장 정합) 판정 칸은 🔶 그대로(포인터 한 줄만 추가). 커밋 = 이 커밋(부모 `a891a62`).

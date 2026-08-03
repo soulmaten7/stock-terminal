@@ -52,9 +52,11 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
     : vd === "below_one" ? t("boardBadge.belowOne")
     : vd === "over_cap" ? t("boardBadge.overCap") : "—";
 
+  // 🔴 889(888 감사): 4개 판정은 서열이 아니라 서로 다른 상태 — value_destroying만 위험색(danger)을 쓰던 것을
+  //   below_one과 같은 muted로 통일(색이 판단을 대신 내리지 않게). below_one 배지/헤드라인 색 불일치도 muted로 함께 정리.
   const badgeClass: Record<string, string> = {
     years: "bg-unjong-primary/15 text-unjong-primary",
-    value_destroying: "bg-unjong-danger/15 text-unjong-danger",
+    value_destroying: "bg-unjong-muted/15 text-unjong-muted",
     below_one: "bg-unjong-muted/15 text-unjong-muted",
     over_cap: "bg-unjong-accent/15 text-unjong-accent",
     skipped: "bg-unjong-muted/10 text-unjong-muted",
@@ -102,11 +104,11 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
 
       {!lossMaking && v === "value_destroying" && (
         <>
-          <p className="text-lg font-bold text-unjong-danger">{t("headline.valueDestroying")}</p>
+          <p className="text-lg font-bold text-unjong-muted">{t("headline.valueDestroying")}</p>
           <p className="mt-1 text-sm text-unjong-muted">{t("marginVsThreshold", { margin: pct(d.operatingMargin), threshold: pct(r.thresholdMargin) })}</p>
         </>
       )}
-      {!lossMaking && v === "below_one" && <p className="text-lg font-bold text-unjong-primary">{t("headline.belowOne")}</p>}
+      {!lossMaking && v === "below_one" && <p className="text-lg font-bold text-unjong-muted">{t("headline.belowOne")}</p>}
       {!lossMaking && v === "over_cap" && (
         <>
           <p className="text-lg font-bold text-unjong-accent">{t("headline.overCap")}</p>

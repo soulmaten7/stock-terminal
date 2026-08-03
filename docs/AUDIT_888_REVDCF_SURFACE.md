@@ -72,34 +72,38 @@ DoD 항목 6(주장 정합)의 판정 칸은 이 STEP에서 바꾸지 않았다 
 
 ---
 
-## §5 감사표
+## §5 감사표 (🔴 889 처리 결과 반영 — 이 표가 정본, 별도 목록 만들지 않음)
 
-| # | 자리 | 현재 | 노출 | 가드레일 | 사유 | 실측 연결 |
-|---|---|---|---|---|---|---|
-| 1 | `RevDcf.badge.valueDestroying`·`boardBadge.valueDestroying` (ko"가치훼손"/en"Value-destroying") | 위 §4-1 | 상세페이지+보드(2곳) — **위반 소지 항목 중 최고 노출** | §4·§6 | 다른 3개 배지가 "모델이 뭘 설명 못 하는지"의 서술어인데 이것만 "가치훼손"이라는 평가어 — §6 "전문가가 추천한다로 읽히면 위반"의 인접 위험(추천은 아니나 판단을 대신 내려주는 어투) | 822의 "비쌈/쌈"이 같은 유형으로 이미 교정된 선례 |
-| 2 | verdict 색상 토큰(`RevDcfBadge.tsx:11`·`RevDcfSection.tsx:56~60,105,109,112`) | years=primary·valueDestroying=**danger(빨강)**·belowOne=muted·overCap=accent·skipped=muted | 상세+보드(2곳) | §4 | "문구를 고쳐도 색이 남으면 판단은 그대로"(STEP 자체 지적) — 4개 판정 중 1개만 위험색이라 시각적으로 "나쁨"이 표시됨 | RevDcfBadge.tsx:11 직접 확인 |
-| 3 | `RevDcfMethod.row.tax.w` ko"원전 재료 커버 58%·이상값 16.2%"/en"Source inputs cover 58%, 16.2% anomalies" | 방법론 페이지(낮은 노출·opt-in) | `CLAUDE.md §12`(C분류: 스냅샷은 날짜와 함께) | 847 스냅샷(604모집단)을 날짜 없이 얼려 노출. 885가 다른 모집단(464 중 359)에서 77.4%를 쟀으나 **직접 비교 불가**(모집단 상이 — `LENS_COMPLETION_STANDARD.md` 명시) | 847(58%/16.2%)·885(359/464·77.4%) |
-| 4 | `RevDcfMethod.repro` ko"$285.2 / 8년"/en 동일 | 방법론 페이지 | §4(불확실성을 드러낸다) | GAP=8은 T8의 정확한 값 조합에서만 나오는 knife-edge(881: T7 그대로면 GAP=7) — 화면은 이 사실 없이 단순 재현 성공으로 제시 | 881 5단계 분해·격리실험(`scripts/probe_881_wacc.ts`) |
-| 5 | `RevDcfMethod`의 `row` 7종(growth·tax·wc·cap·term·sensitivity·distribution)에 **driver6(자본비용/WACC) 행 없음** | 방법론 페이지 | §4 — 페이지 자체 제목("원전과 다른 점 — 그대로 공개")과 모순 | GAP에 가장 큰 영향을 주는 항목(881: WACC ±1%p→아래below_one/15년 이동)이 "그대로 공개"를 표방하는 표에서 통째로 빠짐. `app/[locale]/revdcf/page.tsx:21`의 `rows` 배열 자체에 "wacc"가 없음 | 881 5단계 분해(회사T7 vs 업종조립 차이) |
-| 6 | `row.tax`(driver3)·`row.term`(인플레) — 887 재분류("동일 식·값만 차이") 미반영 | 방법론 페이지 | 판단 보류 | 887은 대조표 구조만 재분류했고 화면 배선은 대상 밖이었음(플래그 OFF·의도적 범위) — "차이"로 계속 보여줄지, 887 언어로 갱신할지는 실제 교정(889) 판단 필요 | 887(`docs/LENS_COMPLETION_STANDARD.md` "동일 식·값만 차이" 절) |
-| 7 | `en badge.years`="Expectations" vs `ko badge.years`="기대 해독" | 상세+보드 | 판단 보류(경미) | "해독(decode)"이 모델 정체성의 핵심 동사("시장이 건 기대를 해독")인데 영어는 이 프레이밍을 담지 않음 — 위반은 아니나 보이스 손실 | — |
-| 8 | `belowOne` 배지색(muted) vs 헤드라인 색(`RevDcfSection.tsx:109` `text-unjong-primary`) 불일치 | 상세페이지 | 판단 보류(UI 일관성·가드레일 무관) | 같은 판정에 배지=중립색·헤드라인=브랜드색으로 서로 다름 — 가드레일 위반은 아니나 표시 일관성 문제 | — |
-| 9 | `RevDcfBadge.tsx`의 `years` 분기 | 숫자+단위만 표시, 텍스트 라벨 없음(§4-5) | 통과 | 형태가 다른 3종(텍스트 배지)과 다르나 **누락이 아니며 의도적**(숫자 자체가 정보량이 더 큼) — 가드레일 무관 | — |
-| 10 | `RevDcf.headline.*`(valueDestroying/belowOne/overCap/years/wideBand) | §0 원문 예시 참조 | 상세페이지 | 통과 | 전부 "이 기법으로는/지금 이익률로는" 식으로 **모델의 한계 안에서** 서술 — 대상(기업)에 대한 절대 평가가 아니라 모델-가격 관계 서술 | — |
-| 11 | `RevDcf.growthNote`·`asOfNote`·`expectationLevel.{low,mid,high}` | "과거 5년 실적…애널리스트 전망 아닙니다"·"기대가 낮은 편/중간/높은 편" | 상세페이지 | 통과 | 이미 §2 원칙("~한 편")을 따르고 있고, 방법의 한계를 자진 고지 | — |
-| 12 | `RevDcf.lossMaking`·`RevDcf.skip.*`(5종) | §3 원문 | 상세페이지 | 통과 | 사유별로 분기돼 있고(`noMarginalCapex`가 `missingTag`와 별도 — 880 §1 원칙 그대로), 단정적 업종·상태 추정 없음 | 862·880 선례와 일치 |
-| 13 | `RevDcfMethod.intro`·`structure`·`notInvestmentAdvice`·`betaCaveat`·`ledgerTitle` | §3 원문 | 방법론 페이지 | 통과 | `structure`="정확한 표현은 '원전 수준'이 아니라 '원전 구조 + 우리 조달 방식'"은 CLAUDE.md 표준 문구 그대로. `notInvestmentAdvice`="예측도 추천도 아닙니다"는 §0/§6 그대로. `betaCaveat`는 연구 인용으로 불확실성 자진 공개 | — |
-| 14 | `RevDcfMethod.row`의 growth·wc·cap·sensitivity·distribution 4열(i/s/o/w) | §3 원문 | 방법론 페이지 | 통과 | 판단어 없이 방법 차이만 중립 서술("컨센서스 미보유"·"실측상 GAP이 자본비용에 가장 민감" 등) | — |
-| 15 | ko/en 키 패리티(`RevDcf`+`RevDcfMethod` 전체) | §3 확인 | — | 통과 | 두 언어 키 집합 1:1 일치, 누락·초과 0건 | — |
-| 16 | 하드코딩 문자열(4개 파일 전수) | §3-5 확인 | — | 통과 | 0건 — 전부 `t()` 경유 | — |
-| 17 | 관심목록 노출 | grep 0건 | 노출 없음 | 해당 없음 | 배선 자체가 없어 감사 대상 아님(사실만 기록) | — |
+| # | 자리 | 현재(888 시점) | 노출 | 가드레일 | 사유 | 실측 연결 | **889 처리 결과** |
+|---|---|---|---|---|---|---|---|
+| 1 | `RevDcf.badge.valueDestroying`·`boardBadge.valueDestroying` (ko"가치훼손"/en"Value-destroying") | 위 §4-1 | 상세페이지+보드(2곳) — **위반 소지 항목 중 최고 노출** | §4·§6 | 다른 3개 배지가 "모델이 뭘 설명 못 하는지"의 서술어인데 이것만 "가치훼손"이라는 평가어 — §6 "전문가가 추천한다로 읽히면 위반"의 인접 위험(추천은 아니나 판단을 대신 내려주는 어투) | 822의 "비쌈/쌈"이 같은 유형으로 이미 교정된 선례 | ✅ **교정(2-1)**: ko "가치훼손"→"성장이 역효과", en "Value-destroying"→"Growth backfires"(badge·boardBadge 둘 다). §1 원칙 "절대 판단어→서술" 적용 — headline("지금 이익률로는 성장할수록 가치가 줄어듭니다")의 조건부 서술을 배지 라벨에도 반영 |
+| 2 | verdict 색상 토큰(`RevDcfBadge.tsx:11`·`RevDcfSection.tsx:56~60,105,109,112`) | years=primary·valueDestroying=**danger(빨강)**·belowOne=muted·overCap=accent·skipped=muted | 상세+보드(2곳) | §4 | "문구를 고쳐도 색이 남으면 판단은 그대로"(STEP 자체 지적) — 4개 판정 중 1개만 위험색이라 시각적으로 "나쁨"이 표시됨 | RevDcfBadge.tsx:11 직접 확인 | ✅ **교정(2-2)**: `value_destroying`을 `danger`→`muted`로(below_one과 동일 토큰). §4 "이 배지들은 좋고 나쁨이 아니라 서로 다른 상태" 적용 — years(primary)=수치 있는 주 상태, over_cap(accent)=모델이 설명 못 하는 예외적 상태로 강조 유지, value_destroying·below_one은 둘 다 muted로 통일해 서열 제거. `app/globals.css` 토큰 정의는 무변경(사용처만 교체) |
+| 3 | `RevDcfMethod.row.tax.w` ko"원전 재료 커버 58%·이상값 16.2%"/en"Source inputs cover 58%, 16.2% anomalies" | 방법론 페이지(낮은 노출·opt-in) | `CLAUDE.md §12`(C분류: 스냅샷은 날짜와 함께) | 847 스냅샷(604모집단)을 날짜 없이 얼려 노출. 885가 다른 모집단(464 중 359)에서 77.4%를 쟀으나 **직접 비교 불가**(모집단 상이 — `LENS_COMPLETION_STANDARD.md` 명시) | 847(58%/16.2%)·885(359/464·77.4%) | ✅ **교정(2-3) — 배선 아니라 정성 표현으로 대체.** 이 값을 실시간으로 계산해 API가 서빙하는 경로가 없어(정적 스크립트 측정값) 배선 자체가 이번 STEP 범위 밖 — 숫자(58%·16.2%)를 지우고 "원전 자신도 같은 현금세율을 쓰지만 그 재료가 결측·이상값이 있어 안정적으로 확보되지 않는다"는 정성 서술로 교체. 동시에 887 재분류(§3-1) 반영: "방법이 다른 게 아니라 값의 시점이 다르다"를 문장 앞부분에 명시. **"배선 미구현"을 `REVDCF_SPEC.md` §10 #62에 등재** |
+| 4 | `RevDcfMethod.repro` ko"$285.2 / 8년"/en 동일 | 방법론 페이지 | §4(불확실성을 드러낸다) | GAP=8은 T8의 정확한 값 조합에서만 나오는 knife-edge(881: T7 그대로면 GAP=7) — 화면은 이 사실 없이 단순 재현 성공으로 제시 | 881 5단계 분해·격리실험(`scripts/probe_881_wacc.ts`) | ✅ **교정(2-4)**: T7=7년·T8=8년 **둘 다 표기**하기로 결정 — 반올림 한 자리에 결과가 갈릴 만큼 자본비용에 민감하다는, 이미 화면 다른 곳(`wideBand`·`bandCrossWarning`·`betaCaveat`)에 있는 "GAP은 자본비용에 극도로 민감" 주제와 같은 사실이라 감추지 않고 이어 붙임. ko/en 동시 반영 |
+| 5 | `RevDcfMethod`의 `row` 7종(growth·tax·wc·cap·term·sensitivity·distribution)에 **driver6(자본비용/WACC) 행 없음** | 방법론 페이지 | §4 — 페이지 자체 제목("원전과 다른 점 — 그대로 공개")과 모순 | GAP에 가장 큰 영향을 주는 항목(881: WACC ±1%p→아래below_one/15년 이동)이 "그대로 공개"를 표방하는 표에서 통째로 빠짐. `app/[locale]/revdcf/page.tsx:21`의 `rows` 배열 자체에 "wacc"가 없음 | 881 5단계 분해(회사T7 vs 업종조립 차이) | ✅ **교정(§4-1, 최우선 처리)**: `row.wacc` 신설(ko/en) + `page.tsx`의 `rows` 배열에 `"wacc"` 추가(cap과 term 사이). 881 실측 그대로 인용(도미노 5.354%〈2020〉vs 우리 7.19%〈2026〉, 차이 대부분이 방법 아닌 금리 시점) + 미측정 사실(업종 근사 편향 515사 미측정) 명시. `notInvestmentAdvice`·`betaCaveat`와 문장 중복 없음(확인) |
+| 6 | `row.tax`(driver3)·`row.term`(인플레) — 887 재분류("동일 식·값만 차이") 미반영 | 방법론 페이지 | 판단 보류 | 887은 대조표 구조만 재분류했고 화면 배선은 대상 밖이었음(플래그 OFF·의도적 범위) — "차이"로 계속 보여줄지, 887 언어로 갱신할지는 실제 교정(889) 판단 필요 | 887(`docs/LENS_COMPLETION_STANDARD.md` "동일 식·값만 차이" 절) | ✅ **판정(§3): 반영한다.** row.tax는 위 #3 처리에 통합(같은 문장 안에 887 언어 포함). row.term은 "터미널 공식은 원전과 동일 — i 값의 시점만 다르다"로 사유(w) 교체(ko/en). 근거: 사용자가 이 표를 "우리가 원전과 다른 선택을 했다"로 오독할 위험이 "같은 식, 다른 시점"이라는 887의 발견보다 크다고 판단 |
+| 7 | `en badge.years`="Expectations" vs `ko badge.years`="기대 해독" | 상세+보드 | 판단 보류(경미) | "해독(decode)"이 모델 정체성의 핵심 동사("시장이 건 기대를 해독")인데 영어는 이 프레이밍을 담지 않음 — 위반은 아니나 보이스 손실 | — | ✅ **판정(§3): 반영한다.** en "Expectations"→"Decoded expectations"(710B 선례대로 ko를 직역하지 않고 같은 원칙을 영어로 재적용). `RevDcfMethod.intro` en이 이미 "decodes"를 쓰고 있어 정합성도 개선. `messages.test.ts` 축약형·패리티 테스트로 검증(§5) |
+| 8 | `belowOne` 배지색(muted) vs 헤드라인 색(`RevDcfSection.tsx:109` `text-unjong-primary`) 불일치 | 상세페이지 | 판단 보류(UI 일관성·가드레일 무관) | 같은 판정에 배지=중립색·헤드라인=브랜드색으로 서로 다름 — 가드레일 위반은 아니나 표시 일관성 문제 | — | ✅ **판정(§3): 가드레일 사안으로 재분류한다.** "서로 다른 상태에 서열을 안 만든다"(§4)는 원칙이 배지 간뿐 아니라 같은 verdict의 배지↔헤드라인 사이에도 적용돼야 함 — 헤드라인을 `primary`→`muted`로 통일(#2 교정과 함께 처리). 888의 "가드레일 무관" 분류는 철회 |
+| 9 | `RevDcfBadge.tsx`의 `years` 분기 | 숫자+단위만 표시, 텍스트 라벨 없음(§4-5) | 통과 | 형태가 다른 3종(텍스트 배지)과 다르나 **누락이 아니며 의도적**(숫자 자체가 정보량이 더 큼) — 가드레일 무관 | — | 처리 없음(888 판정 유지 — 통과) |
+| 10 | `RevDcf.headline.*`(valueDestroying/belowOne/overCap/years/wideBand) | §0 원문 예시 참조 | 상세페이지 | 통과 | 전부 "이 기법으로는/지금 이익률로는" 식으로 **모델의 한계 안에서** 서술 — 대상(기업)에 대한 절대 평가가 아니라 모델-가격 관계 서술 | — | 처리 없음(문구 무변경 — 통과 유지) |
+| 11 | `RevDcf.growthNote`·`asOfNote`·`expectationLevel.{low,mid,high}` | "과거 5년 실적…애널리스트 전망 아닙니다"·"기대가 낮은 편/중간/높은 편" | 상세페이지 | 통과 | 이미 §2 원칙("~한 편")을 따르고 있고, 방법의 한계를 자진 고지 | — | 처리 없음(통과 유지) |
+| 12 | `RevDcf.lossMaking`·`RevDcf.skip.*`(5종) | §3 원문 | 상세페이지 | 통과 | 사유별로 분기돼 있고(`noMarginalCapex`가 `missingTag`와 별도 — 880 §1 원칙 그대로), 단정적 업종·상태 추정 없음 | 862·880 선례와 일치 | 처리 없음(통과 유지) |
+| 13 | `RevDcfMethod.intro`·`structure`·`notInvestmentAdvice`·`betaCaveat`·`ledgerTitle` | §3 원문 | 방법론 페이지 | 통과 | `structure`="정확한 표현은 '원전 수준'이 아니라 '원전 구조 + 우리 조달 방식'"은 CLAUDE.md 표준 문구 그대로. `notInvestmentAdvice`="예측도 추천도 아닙니다"는 §0/§6 그대로. `betaCaveat`는 연구 인용으로 불확실성 자진 공개 | — | 처리 없음(모범 사례 — 통과 유지) |
+| 14 | `RevDcfMethod.row`의 growth·wc·cap·sensitivity·distribution 4열(i/s/o/w) | §3 원문 | 방법론 페이지 | 통과 | 판단어 없이 방법 차이만 중립 서술("컨센서스 미보유"·"실측상 GAP이 자본비용에 가장 민감" 등) | — | 처리 없음(통과 유지) |
+| 15 | ko/en 키 패리티(`RevDcf`+`RevDcfMethod` 전체) | §3 확인 | — | 통과 | 두 언어 키 집합 1:1 일치, 누락·초과 0건 | — | 889가 `row.wacc` 1개를 ko/en 동시 신설 — 패리티 유지 확인(§5) |
+| 16 | 하드코딩 문자열(4개 파일 전수) | §3-5 확인 | — | 통과 | 0건 — 전부 `t()` 경유 | — | 처리 없음(통과 유지 — 889 신규 코드도 전부 `t()` 경유 확인) |
+| 17 | 관심목록 노출 | grep 0건 | 노출 없음 | 해당 없음 | 배선 자체가 없어 감사 대상 아님(사실만 기록) | — | 처리 없음(대상 아님) |
 
-**요약**: 감사 대상 총 **17행**(§5 표 기준. §3의 원자 문자열 단위로 세면 88개) · **위반 소지 5건**(#1~5) · **통과 10건**(#9~16, 관심목록 제외) · **판단 보류 3건**(#6~8, 왜 보류인지 각 행 "사유" 칸에 명시) · 노출 없음 1건(#17, 관심목록).
+**요약(888)**: 감사 대상 총 **17행**(§5 표 기준. §3의 원자 문자열 단위로 세면 88개) · **위반 소지 5건**(#1~5) · **통과 10건**(#9~16, 관심목록 제외) · **판단 보류 3건**(#6~8, 왜 보류인지 각 행 "사유" 칸에 명시) · 노출 없음 1건(#17, 관심목록).
 
-🔴 **새로 찾은 것(6개 씨앗 외)**: #5(driver6/WACC이 공개 원장에 행 자체가 없음 — 가장 큰 발견)·#7(en"Expectations"의 "해독" 프레이밍 손실)·#8(below_one 배지/헤드라인 색 불일치). 씨앗 #6은 관찰이 틀렸고(row.wc 아니라 row.cap이 대상, 이미 정상), 재조사로 진짜 문제(#5, #6-표)를 찾음.
+**요약(889 처리)**: 위반 5건 **전부 교정** · 보류 3건 **전부 판정**(보류 0건) · 통과 10건 **전부 무변경 유지** · 관심목록 1건 대상 아님. 신규 키 1개(`row.wacc`, ko/en 동시) 추가.
+
+🔴 **888이 새로 찾은 것(6개 씨앗 외) — 처리 상태**: #5(driver6/WACC 원장행 부재 — 최대 발견) **교정 완료** · #7(en "해독" 프레이밍 손실) **교정 완료** · #8(below_one 색 불일치) **교정 완료(가드레일 사안으로 재분류)**. 씨앗 #6은 관찰이 틀렸던 것으로 확정(row.wc 아니라 row.cap이 대상, 이미 정상) — 재조사로 찾은 진짜 문제(#5)는 처리 완료.
 
 ---
 
-## 무변경 확인
+## 무변경 확인 (889 갱신)
 
-`messages/`·`components/`·`lib/`·`app/`·`scripts/`·`data/` **diff 0**(이 문서·`docs/` 나머지 파일만 변경). `REVDCF_ENABLED` OFF · 크론 미실행 · `revdcf_results` 604×3 · `us_market_cap` 5,887 무변경.
+🔴 **888 시점(감사 전용)의 "diff 0" 서술은 889에서 더 이상 유효하지 않다** — 889는 이 감사표의 위반·보류 8건을 교정한 STEP이므로 `messages/`·`components/`·`app/` 에 의도된 diff가 있다(계산 로직은 무변경). 상세 = STEP 889 커밋·`docs/CHANGELOG.md`.
+
+`lib/revdcf/**`(engine·drivers·compute·flag)·`app/api/**` 로직·`data/`·`scripts/` **diff 0**(889도 계산은 안 건드림). `REVDCF_ENABLED` OFF · 크론 미실행 · `revdcf_results` 604×3 · `us_market_cap` 5,887 무변경.

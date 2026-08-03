@@ -1013,8 +1013,8 @@
   },
   "RevDcf": {
     "badge": {
-      "years": "Expectations",
-      "valueDestroying": "Value-destroying",
+      "years": "Decoded expectations",
+      "valueDestroying": "Growth backfires",
       "belowOne": "Explained without growth",
       "overCap": "Unexplained",
       "skipped": "Not applicable"
@@ -1083,7 +1083,7 @@
     "methodologyLink": "The method and how it differs from the source are on the methodology page.",
     "boardCol": "Rev-DCF",
     "boardBadge": {
-      "valueDestroying": "Value-destroying",
+      "valueDestroying": "Growth backfires",
       "belowOne": "Explained w/o growth",
       "overCap": "Unexplained"
     }
@@ -1093,7 +1093,7 @@
     "intro": "This metric decodes the expectations already priced into the stock. It does not set a fair value — it surfaces the growth period the market demands and leaves the judgment to you.",
     "structure": "The source is Rappaport & Mauboussin, Expectations Investing. We use its calculation structure but source the inputs ourselves from SEC filings and Damodaran public data. So the accurate phrase is not “source-grade” but “source structure + our sourcing.”",
     "reproTitle": "Reproducing the source example",
-    "repro": "Running the Domino Pizza example from the source through our engine gives $285.2 per share / 8 years (source: $285.20 / 8 years). The engine reproduces; differences come from how inputs are sourced.",
+    "repro": "Running the Domino Pizza example from the source through our engine gives $285.2 per share / 8 years (source PIE table: $285.20 / 8 years). Using the WACC worksheet (T7) figures as-is gives 7 years instead — the result is sensitive enough to a single rounding digit that it swings by a year. The engine reproduces; differences come from how inputs are sourced.",
     "ledgerTitle": "How we differ from the source (disclosed as-is)",
     "col": {
       "item": "Item",
@@ -1112,7 +1112,7 @@
         "i": "Tax rate",
         "s": "Unlevered cash tax rate",
         "o": "Marginal rate",
-        "w": "Source inputs cover 58%, 16.2% anomalies"
+        "w": "The source itself also uses a firm-specific cash tax rate in the cost-of-capital calculation — the method is not different, only the vintage of the value is. That input, the cash tax rate, is not reliably available for most names and carries anomalies, so we substitute the marginal rate instead"
       },
       "wc": {
         "i": "Working capital",
@@ -1126,11 +1126,17 @@
         "o": "Marginal (adopted the source method as of 880)",
         "w": "Reproduces the Domino source anchor at 11.6% (880) — measured six alternatives and adopted the only one that connects to the source. Cost: computable for 90.3% (9.7% not computable), 101 negative values, 133 extreme values (|x|>1) — disclosed, not softened"
       },
+      "wacc": {
+        "i": "Cost of capital",
+        "s": "Company-specific funding rate and beta (Domino: vendor beta of 1, actual bond yield)",
+        "o": "Assembled from an industry-average credit spread plus an industry unlevered beta, relevered",
+        "w": "Domino source: 5.354% (2020) vs ours: 7.19% (2026) — most of the gap is timing (risk-free rate 0.65% to 3.95%), not method. How far the industry approximation drifts from an individual company has not yet been measured"
+      },
       "term": {
         "i": "Terminal",
         "s": "Includes inflation",
         "o": "expected_inflation (Damodaran DB)",
-        "w": "Zero real growth assumption"
+        "w": "The terminal formula (NOPAT×(1+i)÷(WACC−i)) is identical to the source — the value used for i differs by vintage: a 2020 snapshot in the source (1.6%) versus our current expected inflation (Damodaran DB)"
       },
       "sensitivity": {
         "i": "Cost-of-capital sensitivity",
