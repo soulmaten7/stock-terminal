@@ -6,11 +6,12 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 880)** · 부모 `dc8045f`(STEP 879) · **push 완료 — origin/main + revdcf-preview 반영.**
-- 🔴 **STEP 880 = driver 5 ③판정 확정(장은태 2026-08-03) — 원전식(marginal) 채택, level은 주 판정에서 하차.** 근거: ①도미노 앵커 통과 유일한 형태(11.617%≈11.6%) ②level은 원전과 연결 지점 자체 없음(T3~T10 전 파일 PP&E 계산 셀 0건) ③level의 안정성은 성숙기업 편향의 대가. 대안 6개(level·A·B·C×3·D) 전부 탈락 확인 후 채택. **코드 전환**: `app/api/cron/revdcf/route.ts`가 marginal을 주 판정에 쓰도록 변경 + marginal null이면 `skip_reason:"NO_MARGINAL_CAPEX"` 행을 그대로 저장(유니버스 보존 — 조용히 안 빠짐, 신규 테스트 2건으로 회귀 방지). **대가**: 커버리지 515→465/515(90.3%)·음수 0→101·극단값 133·판정 65사 변경(유출57/유입8). **화면 문구**(ko/en.json·`RevDcfSection.tsx`) 전수 정정 — "자본집약도"→"증분 재투자율"·`methodLevel` "(기본)" 삭제·방법론 페이지 대조표 갱신. `LENS_DEV_PLAYBOOK` #79(대기는 상태가 아니다) 신규. **크론은 수동 실행 안 함 — `revdcf_results` 604×3은 여전히 이전(level 기반) 로직 결과, 다음 정규 실행부터 marginal 반영.**
+- HEAD = **이 커밋(STEP 881)** · 부모 `c260ee3`(STEP 880) · **push 완료 — origin/main + revdcf-preview 반영.**
+- ✅ **§0 확인(880 사후, Cowork 독립 재확인)**: `route.ts:24~26` 유니버스 질의는 `verdict`·`skip_reason` 어떤 필터도 걸지 않는다 — `NO_MARGINAL_CAPEX` 50사도 유니버스에 남는다(880의 조치가 실제로 성립).
+- 🔴 **STEP 881 = driver 6(자본비용) ③판정 확정(장은태 2026-08-03) — 현행 유지(업종 구성요소 조립).** T7 전 시트 셀 판독(Inputs 8셀 전부·WACC 수식·Tutorial 8 서술 전문) 완료. **5단계 분해**(도미노, T7 구조 고정): 도미노 WACC 차이(5.354%→7.19%·판정 years→over_cap)의 **절대다수가 방법이 아니라 시점**(2020 rf 0.65%→2026 rf 3.95%, 1단계에서 이미 전환) — 베타·부채비용·세율 방식은 그 위에서 ±0.3%p만 이동. 도미노 원전 WACC는 우리 515사 분포 **하위 8.3%**. 내부 점검 2건(합성스프레드 std_dev_equity=원문 정합·현금베타 재레버리지=명시적 서술 못 찾음, 확정 오류 아님) 완료. **근거 3개 + 대가(업종근사 편향 미측정) + 불리한 사실(도미노 스팟체크에서 합성스프레드가 실채권보다 높게 나옴) + 재검토조건**까지 판정표에 기록. 부수 발견: T7 원본 그대로 재현 시 GAP=**7**(기존 "8"은 T8의 살짝 다른 수치조합에서 나온 값).
 - 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~880(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1 판정·driver4 판정+근거보정×2·**driver5 확정(원전식 채택)**·driver3 근거재정정×2·driver6 기록) 전부 유효 — 상세 CHANGELOG (14)~(26). `data/` 로직 **diff 0**(880은 `app/api/cron/revdcf/route.ts`·`lib/revdcf/drivers.ts`·`lib/revdcf/registry.ts`·`messages/*.json`·`components/RevDcfSection.tsx`·신규 테스트).
-- **tsc 0 · vitest 155/155**(+2 신규) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행) · `us_market_cap` = **5,887**(무변경).
+- 866~881(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1 판정·driver4 판정+근거보정×2·driver5 확정(원전식 채택)·**driver6 확정(현행 유지)**·driver3 근거재정정×2) 전부 유효 — 상세 CHANGELOG (14)~(27). `app/`·`components/`·`messages/`·`data/` 로직 **diff 0**(881은 문서+`lib/revdcf/registry.ts` 문자열+`scripts/probe_881_wacc.ts`만).
+- **tsc 0 · vitest 155/155**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행, 아직 880의 level→marginal 전환 미반영) · `us_market_cap` = **5,887**(무변경).
 - ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
 
@@ -173,7 +174,7 @@
 
 5. ✅ **driver 5(고정자본) = 판정 완료(원전식 marginal 채택·2026-08-03 장은태 승인·880)** — 852의 "확정"(level)이 875에서 근거부재로 무효화된 뒤, 6안(level·marginal·A·B·C×3·D) 전부 실측해 marginal만 원전 앵커를 통과함을 확인하고 채택. 근거·대가·재검토조건 = `LENS_COMPLETION_STANDARD.md` 진행표 4행. **대가(현행 유지 아님 — 모델이 실제로 바뀜)**: 커버리지 515→465/515(90.3%)·음수 0→101·극단값 133·판정 65사 변경. 🔴 재검토 조건: 인수>0·음수재투자율 있는 원전급 완전 사례 확보 시(§10 #54).
 
-6. 🔴 **driver 6(자본비용) = 기록만·미판정(877)** — 베타(원전 도미노=1 그대로 vs 우리 업종 무차입베타 재레버리지)·부채비용(회사별 실제YTM vs 업종 신용스프레드)·도미노 WACC(0.05354) vs 우리 515사 분포 대조를 처음 진행표에 기록. **미측정·미판정**(§10 #51).
+6. ✅ **driver 6(자본비용) = 판정 완료(현행 유지·2026-08-03 장은태 승인·881)** — T7 전 시트 재개봉+5단계 분해로 도미노 WACC 차이(5.35%→7.19%)의 절대다수가 방법이 아니라 시점(rf/ERP 2020→2026)임을 확인, 회사별 벤더베타·실채권YTM은 자동화 규모에서 조달 불가라 채택. 근거·대가·불리한사실·재검토조건 = `LENS_COMPLETION_STANDARD.md` 진행표 5행(§10 #51 해소).
 
 7. 🔴 **DoD 4·5·6·8은 차이 9행이 정리된 뒤에 판정한다.** 특히 DoD 4(컷·분포)는 원전에 없는 우리 추가물 층이라 원전 구현보다 먼저 올 수 없다.
 

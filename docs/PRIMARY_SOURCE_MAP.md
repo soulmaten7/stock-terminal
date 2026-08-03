@@ -149,19 +149,21 @@ B23: *"we need to **deduct depreciation**"*.
 
 ## §4. driver 6 — 자본비용 (T7)
 
-**`Tutorial 8` 시트** — 3단계
-1. **구성요소** — 부채: *"after-tax cost of debt = **yield-to-maturity on long-term debt** × (1 − 한계세율)"* · 자기자본: **CAPM** = 무위험 + 베타 × 시장위험프리미엄
-2. **자본구조** — 부채·자기자본 비중
-3. **가중**
+**`Inputs` 시트(881 전 셀 재개봉)** — `C4`=무위험 0.0065 · `C5`=부채YTM 0.04546 · `C7`=ERP 0.051 · `C8`=베타 **1** · `C10`=세율 0.165(880: 현금세율) · `C12`=발행주식 39.3 · `C13`=주가 418 · `C15`=부채시가 4170. 그 외 셀 없음(881 ① 전수 확인).
 
-### 대조
+**`WACC` 시트(수식 그대로)** — 세후부채비용 `C6=C5×(1−Inputs!C10)` · 자기자본비용 `F6=Inputs!C4+(Inputs!C7×Inputs!C8)`(**베타를 재레버리지 없이 그대로 곱함** — CAPM 단순형) · 부채시가 `C8=Inputs!C15` · 자기자본시가 `F8=Inputs!C12×Inputs!C13` · 가중치 = **시장가** 기준(`C10=C8/EV`·`F10=F8/EV`) · `WACC=C6×C10+F6×F10=0.05354`.
+
+**`Tutorial 8` 시트(서술)** — 부채: *"after-tax cost of debt = yield-to-maturity on long-term debt × (1 − marginal tax rate)"*(B24, `Inputs!C10` 지칭 — 880 정정대로 셀 값은 현금세율) · *"we have used a company's actual cost of debt as a proxy... may be better estimated by summing the risk-free rate and the credit spread"*(B53 — 실채권 YTM이 프록시임을 저자 스스로 인정) · 베타 = "**a variety of sources**"(Value Line·Yahoo·Bloomberg·Barra, B69-B87)에서 조달하는 **회사 고유 실측값**(방법론이 "1"이 아니라 그 회사가 그 시점에 그 값이었을 뿐). T9·T10엔 WACC 관련 시트 없음(T9=SVAR/시장반응, T10=실물옵션).
+
+### 대조 (881 확정)
 | | 원전 | 우리 |
 |---|---|---|
-| 부채비용 | **회사별 실제 YTM** | 다모다란 **업종 신용스프레드** |
-| 베타 | (T7 Inputs) | 다모다란 **업종 무차입 베타** |
-| 세율 | **한계세율** | 한계세율 ✅ |
+| 부채비용 | **회사별 실제 YTM**(0.04546) | 다모다란 **업종 신용스프레드**(std_dev_equity 기준) |
+| 베타 | **1**(벤더가 준 실측값·881 확인) | 업종 무차입(현금조정) 베타 재레버리지 |
+| 세율 | **현금세율 0.165**(880 재정정) | 한계세율 0.2563 |
+| 가중치 | 시장가 | 시장가 ✅(동일) |
 
-🔴 registry `costOfCapital`이 아직 **미결**이다 — 849가 조립을 배선했으나 `divergence`가 ✅로 안 바뀜. **차이 9행 중 registry에서도 미결인 유일한 행.**
+✅ **881에서 registry `costOfCapital` 원전대조판정 확정 — 현행 유지.** 근거·대가·재검토조건 = `LENS_COMPLETION_STANDARD.md` 진행표 5행 각주. 핵심: 도미노 WACC 차이(5.35%→7.19%)의 대부분이 **방법이 아니라 시점**(2020 rf 0.65%→2026 rf 3.95%)에서 온다(881 5단계 분해).
 
 ---
 

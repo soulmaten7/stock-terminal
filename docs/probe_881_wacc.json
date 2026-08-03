@@ -1,0 +1,189 @@
+{
+  "asOf": "2026-08-03",
+  "wacc_distribution": {
+    "n": 515,
+    "min": 0.042818,
+    "p05": 0.050472,
+    "p25": 0.071561,
+    "median": 0.077559,
+    "p75": 0.086218,
+    "p95": 0.104779,
+    "max": 0.110437,
+    "domino_original_wacc": 0.05354,
+    "domino_percentile": 0.0835,
+    "note": "도미노 원전 WACC(0.05354)가 우리 515사 분포에서 차지하는 위치 — 하위 몇 %인지"
+  },
+  "component_distributions": {
+    "reconstructedFrom": "515/515(industry/spread 매칭 실패 0건 제외 — revdcf_results엔 중간값 미저장이라 assembleWacc 재실행으로 복원)",
+    "beta_unlevered_cash_adj": {
+      "n": 515,
+      "min": 0.149111,
+      "p25": 0.757904,
+      "median": 0.875688,
+      "p75": 1.079454,
+      "max": 1.590525
+    },
+    "de_ratio": {
+      "n": 515,
+      "min": 0,
+      "p25": 0.0275,
+      "median": 0.105335,
+      "p75": 0.252645,
+      "max": 4.807206
+    },
+    "relevered_beta": {
+      "n": 515,
+      "min": 0.20886,
+      "p25": 0.827446,
+      "median": 0.973581,
+      "p75": 1.182837,
+      "max": 2.457292
+    },
+    "cost_of_equity": {
+      "n": 515,
+      "min": 0.048815,
+      "p25": 0.076404,
+      "median": 0.082922,
+      "p75": 0.092255,
+      "max": 0.149095
+    },
+    "after_tax_cost_of_debt": {
+      "n": 515,
+      "min": 0.033471,
+      "p25": 0.035974,
+      "median": 0.037641,
+      "p75": 0.037641,
+      "max": 0.043057
+    },
+    "debt_weight": {
+      "n": 515,
+      "min": 0,
+      "p25": 0.026764,
+      "median": 0.095297,
+      "p75": 0.201689,
+      "max": 0.8278
+    }
+  },
+  "decomposition": {
+    "fixedStructure": {
+      "debt": 4170,
+      "shares": 39.3,
+      "price": 418,
+      "equityMV": 16427.399999999998,
+      "deRatioForRelever": 0.253844187150736,
+      "debtWeight": 0.20245273675318246,
+      "equityWeight": 0.7975472632468176,
+      "note": "전 5단계 공통 — T7 Inputs!C12/C13/C15 그대로. 인플레(0.016)·드라이버(fixedCapitalRate=0.15 등 T8 그대로)도 고정 — 이 표의 축(rf·ERP·베타·부채비용·세율) 외엔 아무것도 안 바꿈"
+    },
+    "industryUsed": {
+      "industry": "Restaurant/Dining",
+      "unlevered_beta_cash_adj": 0.7830073823550779,
+      "std_dev_equity": 0.411494619604859,
+      "creditSpread": 0.008872
+    },
+    "steps": [
+      {
+        "step": 0,
+        "label": "원전 그대로",
+        "rf": 0.0065,
+        "erp": 0.051,
+        "betaMethod": "plug(=1)",
+        "debtCostMethod": "companyYTM",
+        "tax": 0.165,
+        "costOfEquity": 0.057499999999999996,
+        "afterTaxCostOfDebt": 0.037959099999999996,
+        "wacc": 0.05354389131637973,
+        "expectedWacc": 0.05354,
+        "matchesExpected": true,
+        "gap": 7,
+        "expectedGap": 8
+      },
+      {
+        "step": 1,
+        "label": "rf·ERP만 현재로",
+        "rf": 0.0395,
+        "erp": 0.0446,
+        "betaMethod": "plug(=1)",
+        "debtCostMethod": "companyYTM(unchanged)",
+        "tax": 0.165,
+        "costOfEquity": 0.08410000000000001,
+        "afterTaxCostOfDebt": 0.037959099999999996,
+        "wacc": 0.0747586485187451,
+        "gap": "25+(94.3%)"
+      },
+      {
+        "step": 2,
+        "label": "+베타를 우리 방식으로",
+        "rf": 0.0395,
+        "erp": 0.0446,
+        "betaMethod": "industryRelever",
+        "releveredBeta": 0.9489735458983813,
+        "debtCostMethod": "companyYTM(unchanged)",
+        "tax": 0.165,
+        "costOfEquity": 0.0818242201470678,
+        "afterTaxCostOfDebt": 0.037959099999999996,
+        "wacc": 0.07294360652528678,
+        "gap": "25+(99.6%)"
+      },
+      {
+        "step": 3,
+        "label": "+부채비용을 우리 방식으로",
+        "rf": 0.0395,
+        "erp": 0.0446,
+        "betaMethod": "industryRelever",
+        "releveredBeta": 0.9489735458983813,
+        "debtCostMethod": "syntheticSpread(industry)",
+        "creditSpread": 0.008872,
+        "tax": 0.165,
+        "costOfEquity": 0.0818242201470678,
+        "preTaxCostOfDebt": 0.048372,
+        "afterTaxCostOfDebt": 0.040390619999999995,
+        "wacc": 0.07343587440375687,
+        "gap": "25+(98.1%)"
+      },
+      {
+        "step": 4,
+        "label": "완전 우리 방식",
+        "rf": 0.0395,
+        "erp": 0.0446,
+        "betaMethod": "industryRelever",
+        "releveredBeta": 0.930826586938497,
+        "debtCostMethod": "syntheticSpread(industry)",
+        "creditSpread": 0.008872,
+        "tax": 0.2563,
+        "costOfEquity": 0.08101486577745697,
+        "preTaxCostOfDebt": 0.048372,
+        "afterTaxCostOfDebt": 0.0359742564,
+        "wacc": 0.07189627114395976,
+        "gap": "25+(88.1%)",
+        "referenceFromStep849": {
+          "wacc": 0.0719,
+          "gap": 23,
+          "note": "849는 도미노 실제 2019 SEC 자본구조(debt 4114.4M·shares dei)로 재계산 — 이 실험은 T7 원문 자본구조(debt 4170·shares 39.3)를 끝까지 고정해 'WACC 가정만의 효과'를 격리. 구조가 달라 최종 수치가 849와 정확히 같을 필요는 없다"
+        }
+      }
+    ],
+    "note": "각 단계의 wacc·gap 이동폭을 §4 판정에서 해석. 분류(방법 차이 vs 시점 차이) 이동은 여기서 하지 않고 판정 각주에 기록."
+  },
+  "internal_checks": {
+    "creditSpreadVariable": {
+      "whatOurCodeUses": "compute.ts:41 creditSpreadFor(stdDev: 주가 표준편차, bands) — damodaran_beta.std_dev_equity(업종 2년 주간수익률 표준편차)로 스프레드 밴드를 고른다",
+      "damodaranSyntheticRatingMethod": "syntrating.htm(개별기업용) = 이자보상배율(EBIT/이자비용) 기준 — 주가 표준편차 언급 0건(WebFetch 직접 확인)",
+      "butOurTableSourceIsDifferent": "damodaran_credit_spread는 개별기업 syntrating 표가 아니라 wacc.xls(업종 평균 WACC 데이터셋)에서 옴 — 그 파일 자체가 'Cost of debt = Pre-tax cost of borrowing for sector, estimated based upon the standard deviation of equity'라고 명시(FAQ 시트 row7, data/sources/damodaran/wacc.xls 직접 개봉 확인). std_dev_equity 정의(betas.xls FAQ row11)= 'Simple average across firms of each firm's standard deviation in stock prices in the prior 2 years, using weekly returns'",
+      "verdict": "문제 없음 — 우리가 참조하는 데이터셋(업종 평균 WACC/베타)의 원저자 자신이 업종 단위에서는 이자보상배율 대신 주가표준편차를 쓴다고 명시했다. 이는 개별기업 syntrating(이자보상배율)과는 다른, 별개의 다모다란 방법론이며 우리는 업종 데이터셋 쪽을 일관되게 쓰고 있다(베타도 업종 평균이므로 정합)"
+    },
+    "cashAdjustedBetaRelever": {
+      "whatOurCodeDoes": "compute.ts:31 releveredBeta = unleveredBetaCashAdj × (1+(1-tax)×deRatio) — 현금조정 무차입베타를 그대로 재레버리지 공식에 대입, 현금을 되돌리는 항 없음",
+      "damodaranFormula": "TenQsBottomupBetas.htm — 'Levered Beta = Unlevered beta × (1+(1-taxrate)(D/E))'(현금항 없음) · 'Cash-adjusted beta = Unlevered beta/(1-Cash/FirmValue)'(별도 공식) — 두 공식을 연결해 재레버리지 시 현금을 되돌리라는 서술은 WebFetch 직접 확인 결과 못 찾음",
+      "verdict": "확정적으로 '문제없음'이라 말할 근거는 부족하나(원문이 이 구체적 시퀀스를 명시하지 않음), 재레버리지 공식 자체가 현금항을 포함하지 않아 '어느 unlevered beta를 쓰든 그대로 대입'하는 구조 — 우리 코드가 원전 공식을 있는 그대로 따른 것이지 임의로 현금항을 뺀 게 아니다. cash_over_firm 업종중앙값 3.5%(p90 9.66%·최대 24.1%) — 되돌림을 안 한 영향이 있다면 최대 그 정도 크기. 🔴 못 찾음(추정 아님) — 재검토 여지로 남긴다"
+    },
+    "companySpecificYtmVsSynthetic": {
+      "damodaranHierarchy": "실제 거래채권(YTM) > 실제 신용등급 > 합성등급(무등급 전용) — WebSearch 확인(다중 출처 요약, 1차 링크: syntrating.htm)",
+      "ours": "604종목 전부 업종 합성스프레드 하나로 통일(회사별 YTM 미조달) — 원전(T7)은 도미노 실제 YTM을 직접 씀. 자동화 규모(매일 전종목) 제약상 회사별 YTM 대량 조달 경로 없음(무료 벌크 API 부재) — 실무적 타협이지 다모다란 선호 순서와 일치하진 않음"
+    },
+    "rfErpFrequency": {
+      "damodaranPractice": "다모다란 본인도 ERP를 '매월 초' 갱신해 그 달 내내 사용(2008-09부터, WebSearch 확인) — 일간이 아니라 월간에 가까운 스냅샷 관행. 우리 damodaran_global_inputs.as_of=2026-01-05(연 1회에 가까운 갱신)는 '일간 FRED'보다 오히려 다모다란 자신의 실제 관행에 더 가깝다(빈도만 더 낮음)",
+      "openItemStatus": "registry의 'rf 일간 변형' 미결 항목 — 일간 FRED로 바꿀 근거가 약해짐(다모다란도 일간이 아님). 갱신주기 자체(연1회 vs 월1회)는 별개 문제로 남음 — 이번 STEP에서 결론 안 냄"
+    }
+  }
+}
