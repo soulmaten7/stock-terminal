@@ -151,8 +151,8 @@ export const INPUTS: RegistryEntry[] = [
     ours: "PP&E÷매출(자본집약도) 5년 평균 × Δ매출",
     klass: "A",
     divergence:
-      "✅ 852 이중 산정: level(PP&E÷매출 5년평균·저분산·설비무거운 기업 과대) + marginal(원전 T5 5년누적 순고정÷5년누적Δ매출·저편향·M&A포함). 둘 다 저장·판정 갈림 68종목(16.6%)이면 화면에 '방법에 따라 다름'. 도미노: T8 15% vs level 6.9% vs marginal 14%(marginal이 근접). 기본값=level(안정)·불일치 시 병기",
-    open: "🔶 갈림 68종목만 method-dependent 표시(화면 STEP). marginal 재료 없는 종목은 level만",
+      "✅(배선) 852 이중 산정: level(PP&E÷매출 5년평균·저분산·설비무거운 기업 과대) + marginal(원전 T5 5년누적 순고정÷5년누적Δ매출·저편향·M&A포함). 둘 다 저장·판정 갈림 68종목(16.6%)이면 화면에 '방법에 따라 다름'. 도미노: T8 15% vs level 6.9% vs marginal 14%(marginal이 근접). 기본값=level(안정)·불일치 시 병기. 🔴 원전대조판정(875 강등): level은 원전·다모다란 어디에도 근거 없음(자본집약도≠재투자율) — ③판정 대기, 코드 주판정은 여전히 level(`:191`). marginal은 도미노 앵커로 원전 T5 `I20` 11.6%와 정확 일치(11.617%·875) — 계산불가 50·극단 133 남음",
+    open: "🔶 갈림 68종목만 method-dependent 표시(화면 STEP). marginal 재료 없는 종목은 level만. 🔴 driver5 원전채택 여부 875에서 재개방 — 제3안(sales-to-capital 등) 878이 재료 수집",
   },
   {
     id: "incrementalWorkingCapitalRate",
@@ -161,7 +161,7 @@ export const INPUTS: RegistryEntry[] = [
     ours: "(유동자산−현금−유동부채)÷매출 5년 평균 × Δ매출",
     klass: "A",
     divergence:
-      "✅ 847 T4 판독+실측: 원전은 무이자유동부채만 차감(단기차입금 미차감 → 태그부족 우회 가설). 그러나 원전 정의는 재고·미지급 세부 태그가 희소해 604 중 26%만 확보(844식 91%보다 나쁨)·한계형 변동 여전 SD 40%p → 844 수준형 유지",
+      "✅(배선) 847 T4 판독+실측: 원전은 무이자유동부채만 차감(~~단기차입금 미차감 → 태그부족 우회 가설~~ 🔴 정정(875): 가설이 아니다 — `Tutorial 4` B23이 \"Other non-interest bearing current liabilities\"라 명시한다. **원전의 설계**다). 그러나 원전 정의는 재고·미지급 세부 태그가 희소해 604 중 26%만 확보(844식 91%보다 나쁨)·한계형 변동 여전 SD 40%p → 844 수준형 유지. ✅ 원전대조판정(875·2026-08-03 장은태 승인): 현행(수준형) 유지 — 다모다란 \"% of revenues\" 실무 권고 + 원전 증분식 불안정성 문헌 + 원전식 전환해도 결과 안 크게 안 바뀜. 근거였던 A안 커버리지 12.6%는 876에서 철회(불완전 태그 매핑의 커버리지였음 — 확장해도 29.5%·B안 99.8%엔 못 미침, 도미노 자체가 재현 안 됨)",
   },
   {
     id: "taxRate",
@@ -178,7 +178,7 @@ export const INPUTS: RegistryEntry[] = [
     primary: "T8 Inputs!C16 (T7에서 산출)",
     ours: "CAPM 조립: 무위험 + 하향식베타×ERP / 부채비용은 합성등급 스프레드",
     klass: "B",
-    divergence: "🔴 다모다란 완성 WACC(Cost of Capital 열) 차용 금지 — 세율 불일치. ✅ 849: 구성요소 조립(`lib/revdcf/compute.ts`·`assembleWacc`)으로 배선. 94업종 검산 차 중앙 0.08%p. GAP은 WACC 3점(−1/기준/+1%p)으로 산출(단일 금지)",
+    divergence: "🔴 다모다란 완성 WACC(Cost of Capital 열) 차용 금지 — 세율 불일치. ✅(배선완료) 849: 구성요소 조립(`lib/revdcf/compute.ts`·`assembleWacc`)으로 배선. 94업종 검산 차 중앙 0.08%p. GAP은 WACC 3점(−1/기준/+1%p)으로 산출(단일 금지). 🔴 원전대조판정 미결 — 877이 베타·YTM·세율·도미노WACC(0.05354) 대조표를 진행표에 기록만 했고 판정은 안 냈다(registry에서도 미결로 유지)",
     open: "🔶 rf = damodaran(연·ERP와 짝) 채택·FRED 일간 변형 후속 · 도미노 우리 WACC 7.19%(2026 rf 3.95%) vs 원전 5.357%(2020 0.65%) → GAP 8→23년(차이 거의 전부 WACC)",
   },
   {
@@ -187,7 +187,7 @@ export const INPUTS: RegistryEntry[] = [
     primary: "T8 Inputs!C17 = 1.6%",
     ours: "✅ `expected_inflation`(damodaran DB·0.025) — 터미널 = NOPAT×(1+i)÷(WACC−i)",
     klass: "B",
-    divergence: "✅ 851 확정: i=인플레(실질 0 성장)가 정석. i=0(영구 실질감소·부자연)·T8 0.016(도미노 전용) 기각. 3안 실측 GAP 중앙 16/16/14 = WACC(밴드 6년) 대비 2차적. '어느 값 쓸지'는 A분류 규칙",
+    divergence: "✅(A분류 값선택 확정) 851: i=인플레(실질 0 성장)가 정석. i=0(영구 실질감소·부자연)·T8 0.016(도미노 전용) 기각. 3안 실측 GAP 중앙 16/16/14 = WACC(밴드 6년) 대비 2차적. '어느 값 쓸지'는 A분류 규칙. 🔴 원전대조판정(차이9행 의미의 ③)은 별개 축 — 851은 \"i에 어떤 값을 쓸지\"를 정한 것이지 \"원전 값(1.6%)을 채택할지\"를 판정한 게 아니다(851 자신이 0.016을 \"도미노 전용\"이라 기각). 진행표의 🔴 대기는 이 축 기준으로는 맞다(878 확인·판정 안 냄)",
   },
   { id: "sharePrice", ko: "주가", primary: "T8 Inputs!C21", ours: "기존 시세 파이프라인", klass: "B", divergence: null },
   {

@@ -1,6 +1,40 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (24) — 🔴 **STEP 878 실행: 877 잔여 정정 · registry 두 축 분리 · driver5 제3안 재료 실측** (문서 + registry.ts 문자열만 · 판정 불변)
+
+> **성격**: `app/**`·`components/**`·`messages/**`·`data/` **diff 0**. `lib/**`는 **`revdcf/registry.ts` 문자열만**(런타임 미참조 확인됨). 어느 행의 ③판정도 뒤집지 않았다. 세 안 중 채택 언급 없음. 커밋 = 이 커밋(부모 `c5d2601`).
+
+### §1 SPEC 정정 — 줄번호가 아니라 내용으로 재확인
+
+- 877이 "이중계산 근거 서술이 §622·§991 2곳만 남았고 §1311은 이미 없다"고 보고했으나, 878이 **내용으로 grep**하니 `docs/REVDCF_SPEC.md` §12 A분류 표(당시 1344행 "세율" 행)에 같은 문구가 그대로 살아 있었다 — 줄번호가 문서 성장으로 밀린 것이지 문구가 사라진 게 아니었다. 세 번째 자리도 정정.
+- 같은 표의 "driver 5" 행에 875의 강등(level 근거 없음) 반영 누락을 확인·보강.
+- T3~T10 전 파일 재확인: PP&E 언급은 서술 문장 3건뿐(계산 셀 0) · 예외처리 조건식·코멘트 0건(875의 "PP&E 없음" 진단을 전 시트로 확장 재확인).
+
+### §2 registry.ts — 배선축과 원전대조판정축 분리(신규 스키마 없음)
+
+- `incrementalFixedCapitalRate`·`incrementalWorkingCapitalRate`·`costOfCapital`·`inflation` 4행의 `divergence` 문자열을 "✅(배선) …"와 "🔴 원전대조판정 …"/"✅ 원전대조판정 …" 두 문장으로 재작성 — 배선 완료 여부와 원전 대조 판정 여부가 한 마커에 섞여 진행표(`LENS_COMPLETION_STANDARD.md`)와 3-way로 어긋나 있던 것을 해소.
+- `npx tsc --noEmit` 클린(문자열 리터럴만 변경).
+
+### §3 driver5(고정자본) 제3안 — 재료 실측(①③→②B 순서 준수)
+
+- ③ 다모다란 원문 먼저 확인(WebFetch): sales-to-capital = `Revenues/(Book Equity+Book Debt−Cash)`(강의자료 slide 195) · 음수 재투자율은 "제외"가 아니라 **"최근 수년 평균으로 대체"**(`growth.htm`) — ②의 계산은 이 정의 확정 이후에 작성.
+- ② `scripts/probe_878_driver5.ts`(515사 재사용): 3안-A(capex-only) 커버리지 464/515(90.1%)·중앙 0.5%·years유출5(계산불가포함21) · 3안-B(sales-to-capital) 커버리지 306/515(**59.4%·최저**)·중앙 86.6%·유출37(계산불가포함112·**가장 강한 이탈**) · 3안-C(Δ매출하한, k=p05=0.0789·임의상수 아님) 커버리지 443/515(86.0%)·GAP·판정이동이 marginal과 **완전 동일**.
+- 도미노 앵커: A는 도미노 인수(acquisitions)가 전 연도 0이라 수정 자체가 검증 안 됨(marginal과 동일 재현) · B는 **Book Equity가 T3~T10 어디에도 없어 앵커 불가** · C는 도미노 비율(0.614)이 k(0.0789)를 훨씬 웃돌아 가드 미작동(marginal과 동일 재현).
+- 🔴 **③판정 칸은 대기 그대로.** 세 안 중 어느 것도 채택을 제안하지 않았다.
+
+### §4 플레이북 · 문서
+
+- `docs/LENS_DEV_PLAYBOOK.md` #77 신규 — "줄번호 인용은 문서가 자라면 밀린다. 재확인은 내용으로 grep한다."
+- `docs/REVDCF_SPEC.md` §10에 #47 갱신("재료 소진(878)·채택판정은 미결") + #52(3안-B 도미노 앵커 구조적 불가) + #53(3안-C의 k가드는 다모다란 원문의 "평균 대체"와 다른 우리 설계) 신규.
+- `docs/LENS_COMPLETION_STANDARD.md` 진행표 4행(driver5)에 "878 제3안 실측" 각주 블록 추가.
+
+### §5 무변경 확인
+
+- `app/`·`components/`·`messages/`·`data/` diff 0 · `lib/`는 `revdcf/registry.ts` 문자열만(전체 리포 grep으로 런타임 import 0건 재확인).
+- `revdcf_results` 2026-08-01/02/03 각 604(무변경) · `us_market_cap` 5,887(무변경) — 둘 다 읽기만, 쓰기 없음.
+- `REVDCF_ENABLED` OFF 유지.
+
 ## 2026-08-03 (23) — 🔴 **STEP 877 실행: driver 3 근거 재정정 · driver 4 근거 강화 · driver 6 베타 기록** (문서 전용 · 코드 0줄 · 판정 불변)
 
 > **성격**: 문서만. `lib/**`·`app/**`·`components/**`·`messages/**`·`scripts/**`·`data/` **diff 0**. 새 측정 없음 — 이미 실측된 사실(`T7.xlsx` 직접 개봉·876의 DPZ 실측)을 정본에 반영. 커밋 = 이 커밋(부모 `79cb2b5`). **어느 행의 ③판정도 뒤집지 않았다.**

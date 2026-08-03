@@ -1,0 +1,163 @@
+{
+  "asOf": "2026-08-03",
+  "n": 514,
+  "universe": 515,
+  "kDerivation": {
+    "method": "|5년누적Δ매출| ÷ 5년평균매출의 분포에서 p05를 채택 — 임의 상수 아님",
+    "nSample": 515,
+    "p05": 0.07886880380700748,
+    "p10": 0.12229450543704126,
+    "p25": 0.21470864709468984,
+    "p50": 0.3561183547117395
+  },
+  "optionA_capexOnly": {
+    "distribution": {
+      "n": 464,
+      "pctOfN": 90.1,
+      "median": 0.005036934046803224,
+      "p25": -0.15864444543609468,
+      "p75": 0.2065298972692033,
+      "negative": 226,
+      "absOver1": 65
+    },
+    "gap": {
+      "n": 175,
+      "p25": 5.5,
+      "p50": 10,
+      "p75": 15
+    },
+    "verdict": {
+      "comparable": 464,
+      "migration": {
+        "over_cap→over_cap": 78,
+        "years→value_destroying": 2,
+        "below_one→below_one": 72,
+        "value_destroying→value_destroying": 104,
+        "over_cap→years": 10,
+        "years→years": 156,
+        "value_destroying→over_cap": 15,
+        "below_one→value_destroying": 4,
+        "value_destroying→years": 9,
+        "value_destroying→below_one": 3,
+        "years→over_cap": 2,
+        "over_cap→value_destroying": 7,
+        "over_cap→below_one": 1,
+        "years→below_one": 1
+      },
+      "yearsOut": 5,
+      "yearsIn": 19,
+      "yearsOutIncludingNull": 21,
+      "asymmetry": 0.26,
+      "asymmetryIncludingNull": 1.11
+    },
+    "domino": {
+      "anchorable": true,
+      "note": "T5 도미노 원본 인수(acquisitions)는 전 연도 0 — 인수를 제거해도 값이 바뀌지 않는다. 875의 marginal 앵커(11.617%≈원전 11.6%)와 동일하게 재현됨. 즉 이 수정 자체는 도미노로는 검증되지 않는다(인수가 있는 실제 기업에서만 차이가 남)"
+    }
+  },
+  "optionB_salesToCapital": {
+    "definition": "Damodaran: Sales to Capital = Revenues/(Book Equity+Book Debt−Cash) → 투자율(레벨) = 1/(Sales to Capital) = (BookEquity+BookDebt−Cash)/Revenue, 5년 평균",
+    "distribution": {
+      "n": 306,
+      "pctOfN": 59.4,
+      "median": 0.8662023638140164,
+      "p25": 0.4949202723418213,
+      "p75": 1.7437538933487218,
+      "negative": 2,
+      "absOver1": 139
+    },
+    "gap": {
+      "n": 66,
+      "p25": 5,
+      "p50": 12,
+      "p75": 16
+    },
+    "verdict": {
+      "comparable": 306,
+      "migration": {
+        "over_cap→over_cap": 38,
+        "years→over_cap": 18,
+        "below_one→below_one": 55,
+        "value_destroying→value_destroying": 82,
+        "years→years": 65,
+        "over_cap→value_destroying": 25,
+        "years→value_destroying": 19,
+        "below_one→value_destroying": 2,
+        "below_one→years": 1,
+        "value_destroying→below_one": 1
+      },
+      "yearsOut": 37,
+      "yearsIn": 1,
+      "yearsOutIncludingNull": 112,
+      "asymmetry": 37,
+      "asymmetryIncludingNull": 112
+    },
+    "domino": {
+      "anchorable": false,
+      "reason": "다모다란 정의(Book Equity+Book Debt−Cash)에 필요한 Book(장부) Equity가 T4·T8 어디에도 없다 — T8은 Market Value of Equity(16448.3)만 기록. 앵커 테스트 불가"
+    }
+  },
+  "optionC_deltaSalesFloor": {
+    "kThreshold": 0.07886880380700748,
+    "distribution": {
+      "n": 443,
+      "pctOfN": 86,
+      "median": 0.26301966418245487,
+      "p25": 0.020182767328085882,
+      "p75": 0.9161411257573364,
+      "negative": 97,
+      "absOver1": 121
+    },
+    "gap": {
+      "n": 128,
+      "p25": 5,
+      "p50": 10,
+      "p75": 14.25
+    },
+    "verdict": {
+      "comparable": 443,
+      "migration": {
+        "over_cap→over_cap": 61,
+        "years→value_destroying": 18,
+        "below_one→below_one": 70,
+        "value_destroying→value_destroying": 94,
+        "over_cap→value_destroying": 31,
+        "years→years": 120,
+        "value_destroying→over_cap": 8,
+        "below_one→value_destroying": 6,
+        "years→over_cap": 23,
+        "value_destroying→below_one": 3,
+        "over_cap→years": 3,
+        "over_cap→below_one": 1,
+        "value_destroying→years": 5
+      },
+      "yearsOut": 41,
+      "yearsIn": 8,
+      "yearsOutIncludingNull": 57,
+      "asymmetry": 5.13,
+      "asymmetryIncludingNull": 7.13
+    },
+    "domino": {
+      "anchorable": true,
+      "note": "도미노 Δ매출(2014→2019)=1624.943 · 평균매출≈2647.06 → 비율 0.614(≫k=0.0789) — 하한 가드가 걸리지 않아 marginal과 동일하게 11.617%로 재현"
+    }
+  },
+  "currentComparison": {
+    "level": {
+      "median": 0.193,
+      "negative": 0,
+      "absOver1": 71
+    },
+    "marginal": {
+      "median": 0.272,
+      "negative": 101,
+      "absOver1": 133,
+      "yearsOut": 41,
+      "yearsOutIncludingNull": 57,
+      "asymmetry": 5.13,
+      "asymmetryIncludingNull": 7.13
+    },
+    "note": "874/875 기존 실측값 그대로 인용(재계산 안 함)"
+  },
+  "note": "재료만 — 제안 없음. ③판정 칸은 대기 그대로. 세 안 중 무엇을 채택하자는 언급 없음."
+}
