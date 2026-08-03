@@ -440,6 +440,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
   - **위반 사례(2026-08-01)**: STEP 815~852가 전부 "화면 변경 0"이었는데 853에서 Cowork이 스스로 프로덕션 출시를 결정하고 명령어를 만듦. 육안 검증도 없었음. 세션 내내 지적받은 "임의 판단" 패턴이 가장 위험한 자리에서 재발.
 - 빌드 깨진 코드 push 금지
 - console.log 남긴 채 커밋 금지
+- 🔴 **커밋 전 `docs/COMMIT_GATES.md` 체크리스트를 돈다** (2026-08-03 STEP 886 신설 — `docs/LENS_DEV_PLAYBOOK.md` 87항목 중 절차로 환원 가능한 것만 추출)
 - 한 번에 하나의 작업만 — 멀티태스킹 금지
 - 근거 없는 숫자 만들기 금지 (`docs/STATE.md`·`CHANGELOG.md`·라이브 실측에 없는 수치 금지)
 - 기존 POTAL Supabase 프로젝트 URL/Key 절대 사용 금지 — 반드시 운종 전용 Supabase 프로젝트 (구 stock-platform 명) 사용
