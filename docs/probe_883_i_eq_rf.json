@@ -1,0 +1,63 @@
+{
+  "asOf": "2026-08-03",
+  "divergenceZone": {
+    "n": 464,
+    "waccMinusRf_min": 0.0033183860289780487,
+    "waccMinusRf_p01": 0.00866349814560323,
+    "waccMinusRf_p05": 0.01232331915708016,
+    "waccMinusRf_p10": 0.019296169585262292,
+    "waccMinusRf_median": 0.03821929308495393,
+    "terminalNotViable_WaccLeRf": 0,
+    "note": "WACC≤rf(0.0395)면 터미널 NOPAT(1+i)/(WACC-i)가 성립하지 않음(0나누기·발산). 이 조건을 만족하는 종목 수 = 0"
+  },
+  "iEqRfResult": {
+    "n": 464,
+    "years": 110,
+    "belowOne": 114,
+    "overCap": 54,
+    "valueDestroying": 186,
+    "invalid_terminalDivergent": 0,
+    "gapP25": 4,
+    "gapMedian": 9,
+    "gapP75": 15,
+    "note": "invalid = WACC<=i(rf) 등으로 터미널이 발산해 산출 불가 — 큰 수로 채우지 않고 별도 집계"
+  },
+  "currentIResult": {
+    "n": 464,
+    "years": 128,
+    "belowOne": 74,
+    "overCap": 93,
+    "valueDestroying": 169,
+    "invalid": 0,
+    "gapP25": 5,
+    "gapMedian": 10,
+    "gapP75": 14
+  },
+  "bucketMigration": {
+    "over_cap→years": 22,
+    "value_destroying→value_destroying": 160,
+    "below_one→below_one": 67,
+    "over_cap→over_cap": 50,
+    "value_destroying→over_cap": 4,
+    "years→below_one": 42,
+    "years→years": 86,
+    "over_cap→value_destroying": 19,
+    "below_one→value_destroying": 7,
+    "over_cap→below_one": 2,
+    "value_destroying→below_one": 3,
+    "value_destroying→years": 2
+  },
+  "dominoContrast": {
+    "source": {
+      "i": 0.016,
+      "rf": 0.0065,
+      "i_gt_rf": true
+    },
+    "thisOption": {
+      "i": "=rf(회사별)",
+      "note": "우리 시스템에서 i=rf로 하면 i는 회사마다 다른 값(각자의 WACC 조립에 쓰인 rf는 전사 공통 3.95%이므로 실제로는 i도 전사 공통 3.95%)"
+    },
+    "note": "원전 도미노 케이스는 i(1.6%)>rf(0.65%)였다 — i=rf 안을 도미노에 적용하면 도미노 자신의 원전 값(1.6%)과 다른 값(0.65%)을 쓰게 되어 '재현'이 아니라 '원전과 반대 방향의 대안 대조'가 된다. 앵커 테스트 대상이 아님을 명시"
+  },
+  "note": "재료만 — 판정 처리(A/B/C)는 보고에서"
+}
