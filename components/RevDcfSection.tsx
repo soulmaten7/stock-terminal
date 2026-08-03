@@ -62,7 +62,9 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
   // 🔴 856 §2 — 배지도 lossMaking을 봐야 본문과 같은 말을 한다. 적자 = 중립(muted)·위험색 금지(우리 판정 아님·적용 밖).
   const badgeKey = lossMaking ? "skipped" : v;
   const badgeLabel = lossMaking ? t("outOfScope") : t(`badge.${v === "value_destroying" ? "valueDestroying" : v === "below_one" ? "belowOne" : v === "over_cap" ? "overCap" : v}`);
-  const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : "missingTag";
+  // 🔴 880: NO_MARGINAL_CAPEX(driver5 marginal 산출 불가)을 "missingTag"(재무 5년 미확보)로 뭉치지 않는다 —
+  //   실제 원인이 태그 결측만이 아니라 Δ매출=0 등으로도 갈릴 수 있어(862 선례: 사유 단정 금지) 별도 중립 문구를 쓴다.
+  const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : r.skipReason === "NO_MARGINAL_CAPEX" ? "noMarginalCapex" : "missingTag";
 
   return (
     <section className="mt-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5">
@@ -135,6 +137,7 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
               <DriverRow k={t("driver.margin")} desc={t("driverDesc.margin")} val={pct(d.operatingMargin)} />
               <DriverRow k={t("driver.threshold")} desc={t("driverDesc.threshold")} val={pct(r.thresholdMargin)} />
               <DriverRow k={t("driver.wcRate")} desc={t("driverDesc.wcRate")} val={pct(d.workingCapitalRate)} />
+              {/* 🔴 880: i18n 키는 여전히 "capIntensity"지만 표시값(d.fixedCapitalRate)은 이제 marginal(원전식) — 라벨·설명 문구만 갱신했고 키 이름은 안 바꿈(타 소비처 영향 최소화) */}
               <DriverRow k={t("driver.capIntensity")} desc={t("driverDesc.capIntensity")} val={pct(d.fixedCapitalRate)} />
               <DriverRow k={t("driver.wacc")} desc={t("driverDesc.wacc")} val={pct(d.wacc, 2)} />
             </div>

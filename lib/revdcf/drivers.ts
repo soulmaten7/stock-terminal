@@ -67,7 +67,7 @@ const REL = 0.01; // 항등식 허용오차
 
 export interface DriverBundle {
   startingSales: number; salesGrowth: number; operatingMargin: number; startingMargin: number;
-  fixedCapitalRate: number; // = level (기본·엔진 호환)
+  fixedCapitalRate: number; // 🔴 880: 이 함수의 기본값은 level이지만, 주 판정에 어느 값을 쓸지는 이 타입이 정하지 않는다 — 그건 소비처(route.ts)가 정한다. 880부터 route.ts는 이 필드를 marginal로 덮어써서 엔진에 넘긴다(:191 참조)
   fixedCapitalRateLevel: number; // PP&E÷매출 5년평균
   fixedCapitalRateMarginal: number | null; // 원전 T5 5년누적 순고정÷5년누적Δ매출 (재료 없으면 null)
   workingCapitalRate: number;
@@ -188,6 +188,9 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
 
   return {
     ok: true,
+    // 🔴 880: fixedCapitalRate가 여기선 fixedCapitalRateLevel로 채워지지만, 이 함수는 "무엇이 주 판정인지"를 정하지 않는다.
+    //   주 판정 = 원전식(marginal, 880 §0 확정) — 소비처(app/api/cron/revdcf/route.ts)가 이 필드를 marginal로 덮어써서 쓴다.
+    //   반환 형태를 안 바꾼 이유는 타입 파장(여러 소비처가 DriverBundle.fixedCapitalRate를 참조) 때문.
     drivers: { startingSales: rev[lastY], salesGrowth, operatingMargin, startingMargin, fixedCapitalRate: fixedCapitalRateLevel, fixedCapitalRateLevel, fixedCapitalRateMarginal, workingCapitalRate },
     market: { debt, nonOperatingAssets, shares, latestYear: lastY },
     flags,

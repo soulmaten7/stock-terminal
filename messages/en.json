@@ -1035,8 +1035,8 @@
     "asOfNote": "Tax rate and cost of capital as of {date}",
     "methodDependent": "The verdict depends on how investment intensity is estimated.",
     "methodSplitTitle": "The verdict splits by how investment intensity is measured",
-    "methodLevel": "By equipment (default)",
-    "methodMarginal": "By actual investment",
+    "methodLevel": "By equipment (reference only — not used for the verdict since 880)",
+    "methodMarginal": "By actual investment (source method — used for the verdict)",
     "lossMaking": "The firm is operating at a loss, so this method does not apply. Reverse DCF decodes the expectations of profitable firms.",
     "outOfScope": "N/A",
     "scenarioTitle": "Cost-of-capital scenarios",
@@ -1052,10 +1052,11 @@
       "margin": "Revenue minus operating costs, as a share of revenue",
       "threshold": "The minimum margin needed to preserve value at this growth",
       "wcRate": "Cash tied up in inventory and receivables per one dollar of new revenue",
-      "capIntensity": "Cash tied up in equipment per one dollar of revenue",
+      "capIntensity": "Net investment in equipment per one dollar of revenue growth (source method)",
       "wacc": "The minimum return investors require from this company"
     },
     "skip": {
+      "noMarginalCapex": "Not computable — the data needed for this metric is not available.",
       "insufficientHistory": "Fewer than 5 years since listing or spin-off.",
       "notApplicableSector": "The balance sheet is not classified (current vs non-current), so the method does not apply.",
       "missingTag": "The required 5-year financials are not available.",
@@ -1067,7 +1068,7 @@
       "threshold": "Threshold margin",
       "tax": "Tax rate (marginal)",
       "wacc": "Cost of capital",
-      "capIntensity": "Capital intensity",
+      "capIntensity": "Incremental capital rate",
       "wcRate": "Working-capital rate"
     },
     "sectionTitle": "Reverse DCF — market-implied expectations",
@@ -1120,10 +1121,10 @@
         "w": "Marginal varies 40%p year to year"
       },
       "cap": {
-        "i": "Capital intensity",
+        "i": "Incremental capital rate",
         "s": "Marginal",
-        "o": "Level by default, marginal shown too",
-        "w": "Domino source 15% / our marginal 14% / level 6.9% · marginal is M&A-lumpy (over half of investment for 31% of firms) → default level, show both when verdicts differ"
+        "o": "Marginal (adopted the source method as of 880)",
+        "w": "Reproduces the Domino source anchor at 11.6% (880) — measured six alternatives and adopted the only one that connects to the source. Cost: computable for 90.3% (9.7% not computable), 101 negative values, 133 extreme values (|x|>1) — disclosed, not softened"
       },
       "term": {
         "i": "Terminal",

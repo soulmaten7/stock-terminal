@@ -148,11 +148,11 @@ export const INPUTS: RegistryEntry[] = [
     id: "incrementalFixedCapitalRate",
     ko: "증분 고정자본율",
     primary: "T8 Inputs!C10 (T5에서 산출)",
-    ours: "PP&E÷매출(자본집약도) 5년 평균 × Δ매출",
+    ours: "T5식 5년누적 순고정투자(capex+인수−D&A)÷5년누적Δ매출(marginal) — 880부터 주 판정",
     klass: "A",
     divergence:
-      "✅(배선) 852 이중 산정: level(PP&E÷매출 5년평균·저분산·설비무거운 기업 과대) + marginal(원전 T5 5년누적 순고정÷5년누적Δ매출·저편향·M&A포함). 둘 다 저장·판정 갈림 68종목(16.6%)이면 화면에 '방법에 따라 다름'. 도미노: T8 15% vs level 6.9% vs marginal 14%(marginal이 근접). 기본값=level(안정)·불일치 시 병기. 🔴 원전대조판정(875 강등): level은 원전·다모다란 어디에도 근거 없음(자본집약도≠재투자율) — ③판정 대기, 코드 주판정은 여전히 level(`:191`). marginal은 도미노 앵커로 원전 T5 `I20` 11.6%와 정확 일치(11.617%·875) — 계산불가 50·극단 133 남음",
-    open: "🔶 갈림 68종목만 method-dependent 표시(화면 STEP). marginal 재료 없는 종목은 level만. 🔴 driver5 원전채택 여부 875에서 재개방 — 제3안(sales-to-capital 등) 878이 재료 수집",
+      "✅(배선) 852 이중 산정 유지: level(PP&E÷매출 5년평균)·marginal(원전 T5식) 둘 다 계속 저장(재현·재검토용). 🔴 ✅ 원전대조판정 확정(880·2026-08-03 장은태) — **marginal을 주 판정으로 채택, level은 주 판정에서 내림.** 근거: ①marginal만 도미노 앵커 통과(T5 `I20` 11.6%≈우리 11.617%·875/879 재확인) ②level은 원전·다모다란 어디에도 연결 지점이 없음(T3~T10 전 파일 재확인 — PP&E 계산 셀 0건·879 ①) ③level의 안정성은 성숙기업 편향의 대가(875). 대안(A capex-only·B sales-to-capital·C 하한가드 3종·D 원문 평균대체) 6개 전부 실측 후 탈락(879) — 원전 자신의 처방(D)조차 marginal보다 비대칭비 악화. 대가: 커버리지 515→465/515(90.3%)·음수 0→101·극단값(|값|>1) 71→133·판정이동 65사(유출57/유입8).",
+    open: "🅿️ 재검토 조건: 인수(acquisitions)가 있거나 음수 재투자율이 있는 원전급 완전 사례를 확보하면 A안(capex-only)의 앵커 검증이 가능해짐(§10 #54) — 그때 다시 연다. 크론 다음 정규 실행부터 marginal 반영(880은 수동 실행 안 함).",
   },
   {
     id: "incrementalWorkingCapitalRate",

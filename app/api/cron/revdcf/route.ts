@@ -65,7 +65,10 @@ export async function GET(req: Request) {
       const w = assembleWacc({ riskFree: rf, erp, unleveredBetaCashAdj: +beta.unlevered_beta_cash_adj, taxRate: usTax, deRatio, creditSpread: creditSpreadFor(+beta.std_dev_equity, spreads) ?? 0 });
       const sharePrice = mcap / dr.market.shares;
       const market: RevDcfMarket = { wacc: w.wacc, inflation, sharePrice, sharesOutstanding: dr.market.shares, debt: dr.market.debt, nonOperatingAssets: dr.market.nonOperatingAssets };
-      const drv = { ...dr.drivers, taxRate: usTax };
+      // 🔴 STEP 880: driver 5 ③판정 — 주 판정 = 원전식(marginal). level은 근거 부재로 내림(879).
+      if (dr.drivers.fixedCapitalRateMarginal == null)
+        return { ...base, skip_reason: "NO_MARGINAL_CAPEX", flags: { ...dr.flags, damodaranAsOf: damoAsOf } };
+      const drv = { ...dr.drivers, taxRate: usTax, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal };
       // 🔴 STEP 859: 원전 T8 지평 = 25년(PIE C31 LOOKUP D27:AB27). over_cap = "25년 가치 < 주가"(원전 "25+"). 이전 100은 원전 이탈이었음.
       const sens = computeGapWithSensitivity(drv, market, { maxYears: 25 });
       const eng = runRevDcf(drv, market, { maxYears: 25 });
@@ -75,7 +78,7 @@ export async function GET(req: Request) {
         ...base, verdict: sens.base.kind, gap_years: sens.base.kind === "years" ? sens.base.gap : null, explained_pct: sens.base.kind === "over_cap" ? sens.base.explainedPct : null,
         gap_wacc_minus1: gnum(sens.waccMinus1), gap_wacc_plus1: gnum(sens.waccPlus1), threshold_margin: eng.thresholdMargin, monotonic: eng.monotonic,
         sales_growth: dr.drivers.salesGrowth, operating_margin: dr.drivers.operatingMargin, starting_margin: dr.drivers.startingMargin,
-        tax_rate: usTax, fixed_capital_rate: dr.drivers.fixedCapitalRate, working_capital_rate: dr.drivers.workingCapitalRate,
+        tax_rate: usTax, fixed_capital_rate: drv.fixedCapitalRate, working_capital_rate: dr.drivers.workingCapitalRate,
         fixed_capital_rate_level: dr.drivers.fixedCapitalRateLevel, fixed_capital_rate_marginal: dr.drivers.fixedCapitalRateMarginal, verdict_marginal: vm, gap_years_marginal: gm,
         wacc: w.wacc, beta_unlevered: +beta.unlevered_beta_cash_adj, de_ratio: deRatio, debt: dr.market.debt, non_operating_assets: dr.market.nonOperatingAssets, shares: dr.market.shares, share_price: sharePrice,
         flags: { ...dr.flags, industry: ind, inflationUsed: inflation, damodaranAsOf: damoAsOf, marketCap: mcap },

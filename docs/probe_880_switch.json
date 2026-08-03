@@ -1,0 +1,53 @@
+{
+  "asOf": "2026-08-03",
+  "universe": 515,
+  "wouldSkipNoMargin": 50,
+  "wouldProceedWithMarginal": 464,
+  "cfMissing": 1,
+  "skipRatePct": 9.7,
+  "note": "§2 유니버스 보존 게이트 검증: route.ts의 NO_MARGINAL_CAPEX 분기가 실물 515사 데이터에서 몇 건 발동하는지 실측. 코드 구조상(모든 분기가 {...base, skip_reason} 반환) 이 wouldSkipNoMargin건은 전부 행으로 저장되지, 드롭되지 않는다 — 이 프로브는 '몇 건이 그 분기를 타는지'를 실물로 확인하는 것이지 저장 여부 자체는 코드 리뷰로 이미 확인됨(§2 본문).",
+  "sample_savedFixedCapitalRate_equals_marginal_not_level": [
+    {
+      "symbol": "ABT",
+      "level": 0.23719729782252869,
+      "marginal": -0.6968128575320076,
+      "savedFixedCapitalRate": -0.6968128575320076
+    },
+    {
+      "symbol": "APD",
+      "level": 1.413630019572875,
+      "marginal": 3.5479148044262243,
+      "savedFixedCapitalRate": 3.5479148044262243
+    },
+    {
+      "symbol": "LNG",
+      "level": 1.9662603132453902,
+      "marginal": 0.42127659574468085,
+      "savedFixedCapitalRate": 0.42127659574468085
+    },
+    {
+      "symbol": "SWKS",
+      "level": 0.3113058149019387,
+      "marginal": -0.7862094126231303,
+      "savedFixedCapitalRate": -0.7862094126231303
+    },
+    {
+      "symbol": "HWM",
+      "level": 0.4145153592661437,
+      "marginal": -0.06678949792722248,
+      "savedFixedCapitalRate": -0.06678949792722248
+    }
+  ],
+  "skippedSymbolsSample": [
+    "AMD",
+    "AEP",
+    "ADP",
+    "ITW",
+    "LLY",
+    "WTRG",
+    "TXN",
+    "UNP",
+    "RRC",
+    "LNT"
+  ]
+}

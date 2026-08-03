@@ -1,6 +1,49 @@
 <!-- 2026-08-03 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-03 (26) — 🔴 **STEP 880 실행: driver 5 ③판정 확정(원전식 marginal 채택) — 코드·화면 전환 + 3중 재검증** (첫 실제 모델 변경 · 판정 반영)
+
+> **성격**: 875~879 실측을 근거로 **③판정을 확정**한 첫 행 — driver1·4와 달리 "현행 유지"가 아니라 **모델이 실제로 바뀐다**. `data/` diff 0. 코드 변경 = `app/api/cron/revdcf/route.ts`(주 판정 전환)·`lib/revdcf/drivers.ts`(주석)·`lib/revdcf/registry.ts`(원장)·`messages/ko·en.json`·`components/RevDcfSection.tsx`(화면 문구) + 신규 테스트 2건. 크론은 수동 실행하지 않음 — `revdcf_results` 604×3은 여전히 이전(level) 로직 결과. 커밋 = 이 커밋(부모 `dc8045f`).
+
+### §0 ③판정 — 원전식(marginal) 채택, level 하차
+
+- **근거 셋**: ①원전 앵커를 통과한 유일한 형태(T5 `I20` 11.617%≈11.6%·875/879 재확인) ②`level`은 원전과 연결 지점 자체가 없음(879 ①ᅵT3~T10 전 파일 스캔 — PP&E 계산 셀 0건) ③`level`의 안정성은 성숙기업 편향의 대가.
+- 대안(A capex-only·B sales-to-capital·C 하한가드 3종·D 원문 평균대체) 여섯 번 실측해 전부 탈락 — 원전 자신의 처방(D)조차 marginal보다 비대칭비를 악화(5.13→5.86)시켰다(879).
+- **대가**: 커버리지 515/515→465/515(90.3%, 계산불가 50사) · 극단값 `|값|>1` 71→133 · 음수 0→101 · 판정 65사 변경(유출57/유입8) · GAP p50 11→10.
+
+### §1 주 판정 전환(코드) — 스키마 변경 없음
+
+- `app/api/cron/revdcf/route.ts`: `dr.drivers.fixedCapitalRateMarginal == null`이면 `skip_reason:"NO_MARGINAL_CAPEX"` 행을 **그대로 저장**(레벨로 대체하지 않음 — 862의 "조용한 채움 금지" 원칙). 아니면 `fixedCapitalRate`를 marginal로 덮어써 엔진에 넘긴다. 저장 컬럼 `fixed_capital_rate`도 (이전엔 level을 저장하던 것을) **실제 판정에 쓴 값(marginal)**으로 정정.
+- `verdict_marginal`·`gap_years_marginal` 컬럼은 이제 주 판정과 항상 같은 값이 된다 — **중복이지만 거짓은 아니라 컬럼을 지우거나 다른 값으로 채우지 않았다**(§10 #55).
+- `lib/revdcf/drivers.ts`: `DriverBundle.fixedCapitalRate` 주석 및 반환부(`:191`, 반환 형태 자체는 안 바꿈) 주석 정정 — 이 함수는 기본값(level)만 채울 뿐 "무엇이 주 판정인지"는 소비처(route.ts)가 정한다는 사실을 명시.
+
+### §2 유니버스 보존 게이트 — 검증
+
+- 유니버스는 직전 `as_of`의 CIK 집합(자기참조) — marginal null인 회사가 skip_reason 없이 드롭되면 다음 크론이 그들을 영구 탈락시킨다. 기존 코드 패턴(모든 스킵 경로가 `{...base, skip_reason}`으로 행을 씀)을 그대로 따라 추가했고, `git diff` 및 코드 리뷰로 `return null`/`continue` 등 조기 이탈이 없음을 확인.
+- 신규 `app/api/cron/revdcf/route.test.ts`(2건, mocked Supabase+fetch+computeDrivers): ⓐ marginal null → `NO_MARGINAL_CAPEX` 행이 저장됨을 확인 ⓑ 저장된 `fixed_capital_rate`가 level(0.9)이 아니라 marginal(0.12)임을 확인(회귀 방지 — 854 게이팅 누락이 테스트 부재로 살아남았던 선례).
+
+### §3 3중 재검증
+
+- **패스1**: `scripts/probe_875_dominos_anchor.ts` 재실행 — T5 `I20` 도미노 6년 창 재확인, 우리 공식 = **11.617%**(기대 11.6%, 일치=true) 재현.
+- **패스2**: 전체 vitest 155/155(기존 153 + 신규 2) — `engine.test.ts` 도미노 재현(값 $285·MIFP 8) 영향 없음(하드코딩 드라이버라 route.ts 변경과 무관). 신규 테스트 2건은 §2에 기술.
+- **패스3**: `messages/ko·en.json`·`components/RevDcfSection.tsx`·`app/[locale]/revdcf/page.tsx` 전수 grep — "자본집약도"/"capIntensity" 라벨·설명을 증분 재투자율 개념으로 정정, `methodLevel`의 "(기본)" 표기 삭제(더 이상 사실이 아님), 방법론 페이지 `row.cap`(원전 대조표) 갱신, 신규 skip 사유 `noMarginalCapex`를 "산출 불가"(사유 미단정·862 선례)로 추가. `npx vitest run messages` 8/8(ko/en 키 패리티 유지).
+
+### §4 원장 정합
+
+- `lib/revdcf/registry.ts` `incrementalFixedCapitalRate` — 확정 반영(취소선 없이 이번엔 실제 결정이라 본문 교체, 이전 판정 이력은 SPEC/진행표에 보존).
+- `docs/REVDCF_SPEC.md` §12 A분류 driver5 행 확정 교체 · §10 #55 신규(`verdict_marginal` 컬럼 중복 기록).
+- `docs/LENS_COMPLETION_STANDARD.md` 진행표 4행 ③판정 칸 = ✅ 확정 + 근거·대가·재검토조건 각주.
+- `docs/PRIMARY_SOURCE_MAP.md` §3 — "level이 우리 추가물"을 확정 반영으로 갱신.
+- `docs/LENS_DEV_PLAYBOOK.md` **#79**: "대기는 상태가 아니다" — 판정 가능한 재료가 갖춰지면 선택지 나열이 아니라 단일 권고를 올린다.
+
+### 🔴 Cowork 자체 정정
+
+- Cowork이 이전 여러 STEP의 "못 한 것"에 *"`CLAUDE.md:66`이 아직 `[3중 점검]` 블록을 의무화한다"*고 반복 기재한 바 있으나, **이는 사실이 아니다** — `CLAUDE.md`는 이미 2026-08-02에 "점검 자체는 하되 블록 출력은 생략 가능·블록 부재를 위반으로 판단 말 것"으로 개정돼 있다. 오래된 기억을 원본 재확인 없이 반복 보고한 것으로, 플레이북 #76·#77과 같은 유형의 오류다. `docs/STATE.md` 현재 본문을 확인한 결과 이 잘못된 주장이 남아 있지 않아 **삭제할 대상이 없었음**을 기록한다(문제가 이미 STATE 밖에서만 반복되고 있었다는 뜻).
+
+### §5 무변경 확인
+
+- `data/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 수동 실행 안 함 · `revdcf_results` 2026-08-01/02/03 각 604 무변경(다음 정규 실행부터 marginal 반영) · `us_market_cap` 5,887 무변경.
+
 ## 2026-08-03 (25) — 🔴 **STEP 879 실행: 878 재현성 결함 복구 · driver5 D안(원문 권고) 실측 · k 민감도 · 6안 대조표 완성** (스크립트 커밋 + 문서 · 판정 불변)
 
 > **성격**: `app/**`·`components/**`·`messages/**`·`lib/**` **diff 0**. `scripts/probe_878_driver5.ts`(878이 못 커밋한 것) + `scripts/probe_879_driver5_d.ts`(신규) 커밋. 어느 행의 ③판정도 뒤집지 않았다. 커밋 = 이 커밋(부모 `42746da`).

@@ -143,7 +143,7 @@ B23: *"we need to **deduct depreciation**"*.
 ✅ **852의 marginal 방식(*"원전 T5 5년누적 순고정÷5년누적Δ매출"*)이 T5 `I20`과 정확히 일치한다.** 인수 포함도 맞다.
 → **driver 5는 원전식이 이미 구현돼 있고 `revdcf_results`에 `fixed_capital_rate_marginal`·`verdict_marginal`로 매일 저장된다.**
 
-🔴 **level(수준형)이 우리 추가물**이다 — 원전에 없다. 대조표 어느 칸에 있는지 확인 필요.
+✅ **확정(880·2026-08-03)**: **level(수준형)은 우리 추가물**이며 원전에 없다는 것이 이 대조로 확인된 그대로다 — 875가 이를 근거로 level을 "근거 부재"로 강등했고, 880에서 **주 판정을 marginal(원전식)로 전환, level은 주 판정에서 완전히 내림**(값은 계속 저장). 대조표(§12 A분류)·registry(`incrementalFixedCapitalRate`)·진행표(4행) 전부 이 결정으로 정합.
 
 ---
 
