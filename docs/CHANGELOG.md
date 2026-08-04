@@ -1,6 +1,56 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (44) — ✅ **STEP 899 실행: "판정 불일치" 주장 재확인 → 재현 안 됨 · lossMaking 공유 헬퍼로 강화**
+
+> **성격**: 898의 크로스 서피스 점검 중 나온 "적자 종목이 종목상세=적용 밖·보드=가치훼손으로 갈린다"는 주장을 검증하려던 STEP. 전제: HEAD `6bffecd`(898) · tsc 0 · test 169/169. `REVDCF_ENABLED` 무변경.
+
+### §0~§1 실행 전 재확인 — 주장이 재현되지 않았다
+
+STEP 파일 §0는 *"`components/RevDcfBadge.tsx`는 `verdict`만 보고 `lossMaking`을 보지 않는다(3~4분기 · 897·889에서 확인한 구조)"*라 적었다. 적용부터 하지 않고 코드를 먼저 열었다(⓪-3 원칙):
+
+- `components/RevDcfBadge.tsx` — `lossMaking` prop을 받아 **최우선 분기**한다: `if (lossMaking) return <span>...outOfScope...</span>`. `verdict`만 보는 구조가 아니다.
+- 유일 소비처 `components/toolbox/UsMarketBoard.tsx`(desktop `:520`·mobile `:555`) — 둘 다 `lossMaking={revdcf.map[r.symbol]?.lossMaking}`을 실제로 넘긴다.
+- 그 값의 출처 `app/api/revdcf/batch/route.ts` — 서버에서 `operating_margin != null && operating_margin <= 0`으로 정확히 계산해 반환한다(:19-21, 856 §2 주석 확인).
+- 🔴 **인용된 "897·889"도 틀렸다** — 897은 `revdcf-preview` 브랜치 조사, 889는 브랜드 표현 감사로, 둘 다 이 로직과 무관하다. 실제 구현은 **856 §2**에서 나왔다.
+
+**결론**: §0가 묘사한 "화면마다 다른 판정" 구조는 **현재 코드에서 재현되지 않는다.** AAL(DB `verdict=value_destroying`)이 종목상세에서 "적용 밖"으로 뜨는 것은 사실이지만, 보드에서도 같은 이유로 "적용 밖"이 떠야 정상이고 코드상 그렇게 돼 있다.
+
+### §1 규모 재측정 (`scripts/probe_899_lossmaking.ts`)
+
+- 최신 `as_of`(2026-08-03) 604행 중 `operating_margin<=0` = **69건**: `value_destroying` 54 · `over_cap` 14 · `years` 1.
+- CLAUDE.md:124가 인용한 "63+11+4=78"과 다르다 — 🔴 **재판정이 아니라 재측정**: 880의 driver5(marginal 채택) 전환 이후 갱신된 수치로 보인다.
+- `years`+적자는 **`WBD` 1건뿐**(`gap_years=8`, `operating_margin=-2.2%`) — CLAUDE.md:124가 우려한 "N년 성장 요구가 뜨는 적자 종목"의 현재 유일 후보. 코드 추적 결과 종목상세(`!lossMaking` 게이트가 `years` 헤드라인보다 먼저 적용)·보드(`lossMaking` 최우선 분기) 둘 다 "8년"이 아니라 "적용 밖"을 낸다 — **거짓 문구 없음.**
+- `RevDcfBadge` 소비처 전수 grep: `revdcf` 참조 파일은 저장소 전체에 **12개뿐**(`app/[locale]/revdcf/page.tsx`·`app/[locale]/stock/[symbol]/page.tsx`·`app/api/revdcf/route.ts`·`app/api/revdcf/batch/route.ts`·`app/api/cron/revdcf/route.ts`·`components/RevDcfSection.tsx`·`components/toolbox/UsMarketBoard.tsx`·`lib/revdcf/{engine,flag,registry,drivers}.ts`·`lib/lensPrecompute.ts`(무관 언급)) — **watchlist·briefing·email은 revdcf를 아예 소비하지 않는다.**
+
+### §2 판정 — A (이미 구현됨을 확인, 새로 만든 게 아님)
+
+주장이 재현되지 않아 A/B/C는 "무엇을 고칠까"가 아니라 "무엇이 이미 맞았는지 확인 + 어떻게 더 단단하게 만들까"의 문제가 됐다.
+
+- **A(표면에 lossMaking 분기)** — ✅ 이미 856에서 구현돼 있었다. 새로 추가할 코드가 없다.
+- **B(엔진이 적자면 스킵)** — 표면이 이미 정상 억제하고 있어 이 STEP에서 근본 구조를 바꿀 이유가 부족하다. DB `verdict`가 적자 기업에도 의미상 부적절한 값을 담고 있다는 §0의 "더 깊은 자리" 지적 자체는 유효한 관찰이지만, **현재 사용자에게 도달하는 값이 아니므로**(두 표면 모두 억제) 계산 경로를 바꾸는 위험을 지금 감수할 근거가 약하다 — 기록만 하고 넘긴다.
+- **C(flags에 명시)** — DB 쓰기가 필요해 이 STEP 범위 밖. 대신 **표시 계층의 중복을 없애는 것**으로 같은 효과(divergence 방지)를 달성했다: `RevDcfSection.tsx`와 `batch/route.ts`가 각자 구현하던 `operatingMargin<=0`을 `lib/revdcf/lossMaking.ts`(`isLossMaking`)로 통합.
+
+🔴 **대가**: 아무것도 "고치지" 않았다 — 이미 맞던 걸 확인만 하는 STEP은 "코드 변경 0"이 정직한 결과일 수 있는데, 이번엔 미세한 리팩터(중복 제거)를 더해 실질 변경이 조금 있다. 🔴 **불리한 사실**: DB `verdict` 컬럼 자체가 적자 기업에 의미상 부적절한 판정을 담고 있다는 사실은 여전하다 — 두 표면이 우연히 같은 규칙으로 억제하고 있을 뿐, 세 번째 소비처(watchlist·이메일 등, 아직 없음)가 생기면 그 규칙을 다시 구현해야 하고 잊으면 재발한다. 🔴 **재검토 조건**: revdcf를 소비하는 새 표면(watchlist·briefing·email)이 생기면 반드시 `lib/revdcf/lossMaking.ts::isLossMaking`을 재사용하는지 확인 — 재구현하면 899가 막으려던 위험이 그대로 재발한다.
+
+### §3 적용
+
+- `lib/revdcf/lossMaking.ts` 신설(`isLossMaking(operatingMargin)`) — 계산이 아니라 표시 규칙이라 `engine.ts`·`compute.ts`·`drivers.ts`와 분리.
+- `components/RevDcfSection.tsx`·`app/api/revdcf/batch/route.ts` — 각자의 `operatingMargin <= 0`/`operating_margin <= 0` 인라인 식을 `isLossMaking(...)` 호출로 교체(로직 동일, 출처만 통합).
+- 문구 무변경. `lib/revdcf/engine.ts`·`compute.ts`·`drivers.ts` diff 0. DB 쓰기 0.
+- 신규 테스트 5건(174/174): `lib/revdcf/lossMaking.test.ts` 3건(0 이하=적자·양수=아님·null/undefined=적자 아님) + `app/api/revdcf/batch/route.test.ts` 2건(`WBD` 실측값으로 `verdict=years`여도 `lossMaking:true` 반환 확인 — 이 STEP이 검증하려던 정확히 그 시나리오의 회귀 테스트, 흑자 대조군 1건).
+
+### 연동 문서
+
+- `docs/REVDCF_SPEC.md` §7 — STEP 899 로그 신규. §10 — **#72** 신규(주장 재현 안 됨 기록). §11 — 899 실측 2행 추가(69건 분포·코드 재추적 결론). `scripts/probe_899_lossmaking.ts` + `docs/probe_899_lossmaking.json` 같은 커밋(#78).
+- `docs/LENS_COMPLETION_STANDARD.md` — DoD 7 각주에 899 결과 추가(**판정 안 함** — 크로스 서피스 대상 자체가 좁다는 별개 사유로 🔶 유지).
+- `docs/STATE.md` — HEAD 갱신(STEP 899). DoD 현황 불변.
+- 다모다란 기준일(2026-01-05 표시) 미결 — `lib/revdcf/registry.ts`의 `costOfCapital.open`에 이미 있음을 확인만 함(§10 #56 기존, 손 안 댐).
+
+### 무변경 확인
+
+- `lib/revdcf/engine.ts`·`compute.ts`·`drivers.ts` diff 0(`lib/revdcf/lossMaking.ts`는 신규 파일 — 계산 아닌 표시 규칙) · `data/`·`.github/` diff 0 · `REVDCF_ENABLED` Production OFF 유지 · 크론 미실행 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · DoD 판정 칸 불변(7은 판정하지 않음) · tsc 0 · test 174/174(169+5 신규).
+
 ## 2026-08-04 (43) — ✅ **STEP 898 실행: Cowork 브라우저 육안 검증 반영 · 방법론 표 가독성 결함 수정**
 
 > **성격**: 897이 "브라우저 자동화 도구가 없어 구조적으로 못 봄"이라 적은 한계를 Cowork의 브라우저로 직접 풀고, 그 과정에서 발견한 표 가독성 결함 1건을 수정한 STEP. 전제: HEAD `52a9ec4`(897) · tsc 0 · test 169/169. `REVDCF_ENABLED`는 **어디서도 켜거나 끄지 않음**(env 무변경).

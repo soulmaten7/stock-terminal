@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { skipKeyFor } from "@/lib/revdcf/skipKey";
+import { isLossMaking } from "@/lib/revdcf/lossMaking";
 
 // STEP 853/855 — 역DCF 종목페이지 섹션. US 전용(데이터 자체가 US뿐이라 KR/타국은 result=null → 미노출).
 // 5분기 헤드라인 + 자본비용 시나리오(3점·기본 표시) + 순위(방향 명시) + 적자 분기 + 드라이버 설명 + 판정 분기. 다크·모바일·ko/en.
@@ -38,7 +39,9 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
   const d = r.drivers;
   // 🔴 856 §1 — 영업적자(마진 ≤ 0)는 verdict 무관 "적용 밖"(표시 계층 분기 · 엔진·DB 불변).
   //   years 4·over_cap 11·value_destroying 63 전부 여기 걸림 → 적자에 "N년 성장 요구"·"설명 불가" 문구가 뜨던 것 차단.
-  const lossMaking = d.operatingMargin != null && d.operatingMargin <= 0;
+  // 🔴 899: app/api/revdcf/batch/route.ts와 규칙을 공유(lib/revdcf/lossMaking.ts) — 각자 재구현하면 둘 중
+  //   하나만 바뀔 때 화면 간 불일치가 생긴다.
+  const lossMaking = isLossMaking(d.operatingMargin);
   // §6 — 판정(verdict)이 방법에 따라 갈리는 경우만(숫자만 다른 건 제외).
   const methodDependent = r.verdictMarginal != null && r.verdictMarginal !== v;
 
