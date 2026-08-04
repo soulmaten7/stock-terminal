@@ -15,17 +15,30 @@ function flowFacts(vals: Record<number, number>): Fact[] {
 function stockFacts(vals: Record<number, number>): Fact[] {
   return Object.entries(vals).map(([y, v]) => ({ form: "10-K", fp: "FY", end: `${y}-12-31`, filed: `${+y + 1}-02-01`, val: v }));
 }
-function gaapOf(tags: Record<string, Fact[]>): GaapArg {
-  const g: Record<string, { units: { USD: Fact[] } }> = {};
-  for (const [tag, facts] of Object.entries(tags)) g[tag] = { units: { USD: facts } };
+type TagInput = Fact[] | { unit: string; facts: Fact[] };
+function gaapOf(tags: Record<string, TagInput>): GaapArg {
+  const g: Record<string, { units: Record<string, Fact[]> }> = {};
+  for (const [tag, input] of Object.entries(tags)) {
+    const { unit, facts } = Array.isArray(input) ? { unit: "USD", facts: input } : input;
+    g[tag] = { units: { [unit]: facts } };
+  }
   return g as GaapArg;
 }
 
 const REV_TAG = "RevenueFromContractWithCustomerExcludingAssessedTax";
-const revenue5yr = { [REV_TAG]: flowFacts(five(1000)) };
+const revenue5yr = { [REV_TAG]: flowFacts(five(1000)) }; // 5년 내내 동일값 — Δ매출=0 케이스에도 재사용
 const oi5yr = { OperatingIncomeLoss: flowFacts(five(100)) };
 const ppe5yr = { PropertyPlantAndEquipmentNet: stockFacts(five(500)) };
 const bs5yr = { AssetsCurrent: stockFacts(five(300)), LiabilitiesCurrent: stockFacts(five(200)) };
+const cashOp5yr = { CashAndCashEquivalentsAtCarryingValue: stockFacts(five(50)) };
+const shares5yr = { WeightedAverageNumberOfDilutedSharesOutstanding: { unit: "shares", facts: flowFacts(five(10)) } };
+// driver5 marginal 재료 — invYears(2021~2024)만 필요(drivers.ts:180 YS.slice(1))
+const INV_YEARS = [2021, 2022, 2023, 2024];
+const invFive = (v: number): Record<number, number> => Object.fromEntries(INV_YEARS.map((y) => [y, v]));
+const capexDna4yr = {
+  PaymentsToAcquirePropertyPlantAndEquipment: flowFacts(invFive(80)),
+  DepreciationDepletionAndAmortization: flowFacts(invFive(60)),
+};
 const dei = {} as GaapArg;
 
 describe("computeDrivers — MISSING_TAG 3분기(STEP 896 §4) 회귀 방지", () => {
@@ -62,5 +75,48 @@ describe("computeDrivers — MISSING_TAG 3분기(STEP 896 §4) 회귀 방지", (
     const c = computeDrivers(gaapOf({ ...revenue5yr, ...oi5yr, ...ppe5yr, ...bs5yr }), dei);
     const codes = [a, b, c].map((r) => (!r.ok ? r.skipReason : null));
     expect(new Set(codes).size).toBe(3);
+  });
+});
+
+// STEP 900 §2~§3 — DoD8 경계 케이스 점검에서 나온 미커버 항목 보강. 기존 스킵 5분기 중 세 곳(INSUFFICIENT_HISTORY·
+// NOT_APPLICABLE_SECTOR·MULTI_CLASS_SHARES)이 개별 테스트가 없었다(MISSING_TAG 3종만 896에서 커버됨).
+describe("computeDrivers — 스킵 경계 보강 (STEP 900 §3 — 이전 미커버)", () => {
+  it("매출 5년 미확보(재료 자체가 없음) → INSUFFICIENT_HISTORY", () => {
+    const r = computeDrivers(gaapOf({}), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.skipReason).toBe("INSUFFICIENT_HISTORY");
+      expect(r.flags.missing).toBe("revenue<5yr");
+    }
+  });
+
+  it("유동/비유동 미분류(AssetsCurrent·LiabilitiesCurrent 없음) → NOT_APPLICABLE_SECTOR (매출·영업이익·PP&E는 5년 있음)", () => {
+    const r = computeDrivers(gaapOf({ ...revenue5yr, ...oi5yr, ...ppe5yr }), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.skipReason).toBe("NOT_APPLICABLE_SECTOR");
+      expect(r.flags.missing).toBe("unclassifiedBalanceSheet");
+    }
+  });
+
+  it("5년 이력 전부 확보했으나 주식수 전 폴백(희석→기본→발행→dei)이 실패 → MULTI_CLASS_SHARES", () => {
+    const r = computeDrivers(gaapOf({ ...revenue5yr, ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr }), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.skipReason).toBe("MULTI_CLASS_SHARES");
+      expect(r.flags.missing).toBe("shares");
+    }
+  });
+
+  it("Δ매출=0(5년 전 대비 매출 불변) → fixedCapitalRateMarginal은 null (drivers.ts:186 cumDRev!==0 가드 직접 확인)", () => {
+    // revenue5yr은 5년 내내 동일값(1000)이라 cumDRev = rev[2024]-rev[2020] = 0. NO_MARGINAL_CAPEX(route.ts)는
+    // 이 null을 보고 스킵하는데, 그 null이 실제로 이 조건에서 나오는지는 지금까지 route 레벨 mock으로만 확인됐다(880) —
+    // 여기서 drivers.ts 자체의 0-나눗셈 가드를 직접 확인한다.
+    const r = computeDrivers(gaapOf({ ...revenue5yr, ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr }), dei);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.drivers.salesGrowth).toBe(0);
+      expect(r.drivers.fixedCapitalRateMarginal).toBeNull();
+    }
   });
 });

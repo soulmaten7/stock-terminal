@@ -1,6 +1,56 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (45) — ✅ **STEP 900 실행: DoD 8(테스트) 커버리지 정리 · 판정(✅)** (프로덕션 코드 무변경 · 테스트 3파일뿐)
+
+> **성격**: 899가 스스로 반증하며 끝난 것을 플레이북으로 승격하고, DoD 8을 항목별로 채점·보강·판정한 STEP. 전제: HEAD `aa95aa3`(899) · tsc 0 · test 174/174. `REVDCF_ENABLED` 무변경. `lib/**`·`app/**`·`components/**`·`messages/**` diff = 테스트 파일 3개뿐(프로덕션 코드 0).
+
+### §0 플레이북 신규 — 현상 ≠ 원인
+
+899 §2가 스스로 적은 것: *"`RevDcfBadge.tsx`는 이미 856 §2부터 `lossMaking` 최우선 분기가 있었고... STEP §0가 '897·889에서 확인한 구조'라 인용한 출처 자체가 틀렸다."* Cowork이 브라우저로 본 현상(종목상세 "적용 밖" ↔ DB `value_destroying`)은 사실이었지만, 그 원인 설명("배지가 lossMaking을 안 본다")은 파일 일부만 보고 낸 단정이었고 출처 STEP 번호도 기억에서 나온 것이었다. **890과 같은 모양**("`us_symbols`가 매일 바뀐다"는 관찰은 사실인데 전파 사슬을 추정으로 이어 틀림). `docs/LENS_DEV_PLAYBOOK.md` §0에 **10번** 신설: *"관찰한 현상과 그 원인은 별개다 — 현상을 봤다고 원인을 안 것이 아니다. 원인을 말하려면 해당 코드 경로를 처음부터 끝까지 열고, 출처로 인용하는 STEP은 실제로 열어 확인한다."*
+
+### §2 현재 커버리지 실측 (추정 없이)
+
+- **테스트 파일 전수**: `app/api/cron/revdcf/route.test.ts`(6)·`app/api/revdcf/batch/route.test.ts`(2)·`app/api/revdcf/route.test.ts`(2)·`lib/revdcf/compute.test.ts`(3)·`lib/revdcf/drivers.test.ts`(4)·`lib/revdcf/engine.test.ts`(13)·`lib/revdcf/lossMaking.test.ts`(3)·`lib/revdcf/skipKey.test.ts`(6) = **8개 파일 · 39건**(revdcf 한정, 이번 STEP 이전 기준).
+- **커버리지 도구**: `vitest --coverage`·`@vitest/coverage-v8` **미설치·미설정**(`package.json`·`vitest.config.ts` 확인) — 새로 설치 안 함(도구 도입은 별도 판단).
+- **DoD8 정의(참조값+경계 케이스, 값 검증·스냅샷 금지) 채점**:
+  - 참조값(도미노 재현) ✅
+  - `drivers.ts` 스킵 6반환점(`INSUFFICIENT_HISTORY`·`MISSING_TAG_OPERATING_INCOME`·`MISSING_TAG_PPE`·`NOT_APPLICABLE_SECTOR`·`MISSING_TAG_OPERATING_CASH`·`MULTI_CLASS_SHARES`) — 🔶 3/6(MISSING_TAG 3종만 896에서 커버, 나머지 3개 없음)
+  - `route.ts` 스킵 6종(`NO_INDUSTRY`·`NO_MARKETCAP`·`STALE_MARKETCAP`·`NO_MARGINAL_CAPEX`·`EX`·`HTTP_*`) — 🔶 3/6(880·893만, `NO_INDUSTRY`·`EX`·`HTTP_*` 없음)
+  - `engine.ts` 판정 5종 ✅ · `compute.ts` 민감도·`assembleWacc` ✅ · `WACC≤i` ✅(이상 848·849 기존)
+  - Δ매출=0 — 🔶(route 레벨 mock으로만 간접, drivers.ts 유닛 직접 확인 없음)
+  - 음수 재투자율 — 🔴 없음
+  - 유니버스 보존 — 🔶(4개 사유로만 확인)
+  - 스냅샷 — **0건**(`toMatchSnapshot`·`toMatchInlineSnapshot` 전수 grep)
+
+### §3 빈 곳 채우기 — 🔴로 나온 것만
+
+- `lib/revdcf/drivers.test.ts`(+4): `INSUFFICIENT_HISTORY`(재료 자체 없음) · `NOT_APPLICABLE_SECTOR`(유동/비유동 미분류) · `MULTI_CLASS_SHARES`(주식수 전 폴백 실패) · **Δ매출=0**(5년 내내 동일 매출 → `fixedCapitalRateMarginal`이 `null`로 폴백하는 것을 `drivers.ts` 유닛에서 직접 확인 — `cumDRev !== 0` 가드, `:186`).
+- `lib/revdcf/engine.test.ts`(+1): **음수 `fixedCapitalRate`**(REVDCF_SPEC §10 #47의 실측 "음수 101건" 반영) — `thresholdMargin()` 공식이 부호와 무관하게 계산되는지, node로 사전 검산한 손계산값(`0.09731922398589066`)과 `toBeCloseTo(…, 10)`로 대조. 기대값 출처는 테스트 주석에 산식과 함께 명시.
+- `app/api/cron/revdcf/route.branches.test.ts`(신규 3건): `HTTP_${status}`(SEC fetch가 `!ok`) · `EX`(fetch가 예외를 던짐 — `flags.ex`에 오류 메시지 확인) · `NO_INDUSTRY`(computeDrivers는 성공했으나 업종 매핑 미스). 🔴 **기존 `route.test.ts`의 공유 모킹 상태(`upserts`·`revdcfRangeCalls`·`mcapOverride`)를 건드리지 않기 위해 별도 파일로 분리**(기존 통과 테스트를 깨뜨릴 위험 회피).
+- `INSUFFICIENT_HISTORY`·`MISSING_TAG_*`·`MULTI_CLASS_SHARES` 등은 **899가 "새로 구현이 아니라 이미 있음을 확인"으로 끝난 선례**를 의식해, 추가 전 반드시 `git grep`으로 기존 테스트에 없는지 먼저 확인한 뒤에만 새로 작성.
+- 신규 8건 전부 통과 — 실패해 프로덕션 코드를 고친 사례 없음(§1 규칙대로 실패 시 중단·보고였을 것이나 발생 안 함). **총 182/182.**
+
+### §4 DoD 8 판정 — ✅
+
+`docs/LENS_COMPLETION_STANDARD.md`에 근거·대가·불리한사실·재검토조건을 정식 판정문으로 기록. 핵심:
+1. 커버리지 도구가 없어 **%가 아니라 항목별 유무**로 채점했음을 명시.
+2. **7렌즈(모멘텀) DoD8 기준과 원리는 같다**(`docs/_archive/LENS_7_COMPLETED.md`: "공식·룩백경계·null경계·불변성 — 값 검증, 스냅샷 아님, 통과" 한 줄) — revdcf는 스킵 사유 taxonomy가 훨씬 넓어(12종) 항목을 그만큼 나눠 채점했을 뿐, 더 엄격한 별도 기준을 쓴 게 아니다.
+3. **불리한 사실**: 전부 유닛 테스트(SEC API·Supabase 모킹) — `REVDCF_ENABLED` OFF라 통합·E2E는 검증 범위 밖(DoD 9와 같은 블록 사유). 도미노 재현 외 나머지는 합성 fixture(899의 `WBD` 실측치만 예외). 커버리지 도구가 없어 "빠짐없이 다 됐다"를 자동으로 증명 못 함 — 새 분기가 생기면 이 판정은 자동 갱신되지 않는다.
+
+DoD 3·7·9는 판정하지 않음(불변).
+
+### 연동 문서
+
+- `docs/LENS_COMPLETION_STANDARD.md` — 완성현황표 8테스트 🔶→✅, "1·2·4·5·6 완료"→"1·2·4·5·6·8 완료", DoD8 판정문 신규(다른 항목 판정 칸 불변).
+- `docs/REVDCF_SPEC.md` §10 — **#73** 신규(커버리지 도구·스냅샷 실측+8건 보강 기록).
+- `docs/LENS_DEV_PLAYBOOK.md` — §0 **10번** 신규(현상≠원인, 이력 890·899).
+- `docs/STATE.md` — HEAD 갱신(STEP 900). DoD 현황 "1·2·4·5·6✅/3·8🔶/7·9❌"→**"1·2·4·5·6·8✅/3·7🔶/9❌"**(8행 상세도 갱신).
+
+### 무변경 확인
+
+- `lib/**`·`app/**`·`components/**`·`messages/**` diff = 테스트 파일 3개(`lib/revdcf/drivers.test.ts`·`engine.test.ts` 수정, `app/api/cron/revdcf/route.branches.test.ts` 신규)뿐 — 프로덕션 코드 diff 0. `data/`·`.github/` diff 0. `REVDCF_ENABLED` Production OFF 유지 · 크론 미실행 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · DoD 판정 칸은 8만 상향, 3·7·9 불변 · tsc 0 · test 182/182(174+8 신규).
+
 ## 2026-08-04 (44) — ✅ **STEP 899 실행: "판정 불일치" 주장 재확인 → 재현 안 됨 · lossMaking 공유 헬퍼로 강화**
 
 > **성격**: 898의 크로스 서피스 점검 중 나온 "적자 종목이 종목상세=적용 밖·보드=가치훼손으로 갈린다"는 주장을 검증하려던 STEP. 전제: HEAD `6bffecd`(898) · tsc 0 · test 169/169. `REVDCF_ENABLED` 무변경.

@@ -98,3 +98,16 @@ describe("추가 4 — 임계마진 ↔ value_destroying 일치", () => {
     expect(below.verdict.kind).toBe("value_destroying");
   });
 });
+
+// STEP 900 §2~§3 — DoD8 경계 케이스 점검: 음수 증분 재투자율(fixedCapitalRate<0)이 공식에 그대로 흘러가는지.
+// REVDCF_SPEC §10 #47에 실측된 실제 현상(driver5 marginal 음수 101건 — M&A·자산매각 등으로 순투자<0인 해)의
+// 최소 재현. engine.ts에 음수 fR 전용 분기는 없다(코드 확인) — 공식이 부호와 무관하게 계산되는지가 관측점.
+describe("추가 5 — 음수 fixedCapitalRate (STEP 900 · REVDCF_SPEC §10 #47 실측 반영)", () => {
+  it("thresholdMargin 공식이 음수 fR에서도 손계산과 일치한다", () => {
+    const d: RevDcfDrivers = { startingSales: 1000, salesGrowth: 0.05, operatingMargin: 0.10, startingMargin: 0.10, taxRate: 0.25, fixedCapitalRate: -0.05, workingCapitalRate: 0.10 };
+    const m: RevDcfMarket = { wacc: 0.08, inflation: 0.02, sharePrice: 100, sharesOutstanding: 10, debt: 0, nonOperatingAssets: 0 };
+    // 손계산(node -e로 사전 검산, 899/900 세션 기록): 0.10*1.02/1.05 + [0.05*(-0.05+0.10)*(0.08-0.02)]/[1.05*0.75*1.08]
+    //   = 0.097142857... + 0.000176367... = 0.09731922398589066
+    expect(thresholdMargin(d, m, d.operatingMargin)).toBeCloseTo(0.09731922398589066, 10);
+  });
+});

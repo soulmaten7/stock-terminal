@@ -6,15 +6,15 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 899)** · 부모(STEP 898 `6bffecd`) · **push 완료 — origin/main + revdcf-preview 반영.**
-- ✅ **STEP 899 = "판정 불일치" 주장 재확인 → 재현 안 됨(코드 이미 정상) + lossMaking 공유 헬퍼로 강화.** §0가 "종목상세=적용 밖·보드=가치훼손 갈림(`RevDcfBadge`가 `lossMaking` 안 봄, 897·889에서 확인한 구조)"이라 적었으나, 🔴 **코드 재확인 결과 재현 안 됨** — `RevDcfBadge.tsx`는 856 §2부터 `lossMaking` 최우선 분기가 있고, 유일 소비처 `UsMarketBoard.tsx`(2곳) 둘 다 정확히 그 prop을 넘기며, `app/api/revdcf/batch/route.ts`가 서버에서 정확히 계산해 반환한다. 인용된 "897·889"는 이 로직과 무관한 STEP(출처 자체가 틀림). §1 재측정: 적자 604 중 **69건**(CLAUDE.md:124의 78과 다름 — 880 driver5 전환 이후 갱신치·재판정 아님) · `years`+적자 유일 `WBD`(8년)도 코드·신규테스트로 두 표면 모두 정상 억제 확인. **§2 판정 = A**(이미 구현됨 확인) — `RevDcfSection.tsx`·`batch/route.ts`가 각자 중복 구현하던 `operatingMargin<=0`을 `lib/revdcf/lossMaking.ts`(`isLossMaking`)로 통합해 향후 divergence 위험만 낮춤(계산·DB 무변경). 신규 테스트 5건(174/174). watchlist·briefing·email은 revdcf 미소비 확인(크로스 서피스 대상 자체가 좁음 — DoD 7 🔶 유지 별개 사유). 🔴 **DoD 7은 판정하지 않음.** 상세 = `docs/REVDCF_SPEC.md` §10 #72·§11 899 항목·`scripts/probe_899_lossmaking.ts`.
+- HEAD = **이 커밋(STEP 900)** · 부모(STEP 899 `aa95aa3`) · **push 완료 — origin/main + revdcf-preview 반영.**
+- ✅ **STEP 900 = DoD 8(테스트) 커버리지 정리 · 판정(✅) — 프로덕션 코드 무변경, 테스트만.** §0: 899가 반증된 것을 스스로 인정 — **플레이북 §0에 10번 신설**("관찰한 현상과 그 원인은 별개다"·이력 890·899). §2 실측: 커버리지 도구 미설치(% 판정 불가·설치 안 함) · 스냅샷 0건 · 항목별 채점 결과 `drivers.ts` 스킵 6반환점 중 3개(`INSUFFICIENT_HISTORY`·`NOT_APPLICABLE_SECTOR`·`MULTI_CLASS_SHARES`) 미커버, `route.ts` 스킵 6종 중 3개(`NO_INDUSTRY`·`EX`·`HTTP_*`) 미커버, Δ매출=0·음수 재투자율 미커버(WACC≤i·5판정종·WACC민감도·assembleWacc·도미노 재현은 이미 ✅). §3: 위 8개 전부 보강 — `lib/revdcf/drivers.test.ts`(+4)·`engine.test.ts`(+1)·신규 `app/api/cron/revdcf/route.branches.test.ts`(+3, 기존 파일 공유 모킹 비침습). 기대값은 손계산 주석 병기(예: `thresholdMargin` 음수 fR 케이스 = node로 사전 검산한 0.09731922398589066). **182/182 통과.** §4: **DoD 8 = ✅** — 커버리지 %가 아니라 항목별 유무로 채점함을 명시, 7렌즈(모멘텀 "공식·경계·불변성 값검증" 한 줄)와 원리는 같고 taxonomy가 넓어 항목이 많을 뿐. 불리한 사실 = 전부 유닛테스트(SEC·Supabase 모킹)이고 `REVDCF_ENABLED` OFF라 통합·E2E 불가. DoD 3·7·9는 불변. 상세 = `docs/LENS_COMPLETION_STANDARD.md` "✅ 900 판정 — DoD 8"·`docs/REVDCF_SPEC.md` §10 #73.
+- ✅ **STEP 899 = "판정 불일치" 주장 재확인 → 재현 안 됨 + lossMaking 공유 헬퍼로 강화** — 상세 = `docs/CHANGELOG.md` (44).
 - ✅ **STEP 898 = Cowork 브라우저 육안 검증 반영 + 방법론 표 가독성 결함 수정** — 상세 = `docs/CHANGELOG.md` (43).
 - ✅ **STEP 897 = `revdcf-preview` 정체 규명 + DoD 5 재판정(✅ 상향)** — 상세 = `docs/CHANGELOG.md` (42).
-- ✅ **STEP 896 = 895가 찾은 스킵 사유 오표시 차단 + 문구 4종 신설 + `MISSING_TAG` 3분기** — 상세 = `docs/CHANGELOG.md` (41).
 - 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~899(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+처방 B 적용+관측 연결·상호주석 완성+스킵사유 3자대조·DoD5 판정+스킵사유 오표시 교정·MISSING_TAG 3분기+revdcf-preview 정체 규명·DoD5 ✅ 상향+Cowork 육안검증·방법론 표 가독성 수정+**lossMaking 판정 불일치 재확인·공유 헬퍼 강화**) 전부 유효 — 상세 CHANGELOG. `lib/revdcf/engine.ts`·`compute.ts`·`drivers.ts` diff 0(899는 `lib/revdcf/lossMaking.ts` 신규(계산 아닌 표시 규칙)+`components/RevDcfSection.tsx`·`app/api/revdcf/batch/route.ts` import 교체 + 문서).
-- **tsc 0 · vitest 174/174**(169+5 신규) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0) · `lens_scores`·`lens_cuts` 쓰기 0.
-- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**(899 범위 밖)
+- 866~900(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+처방 B 적용+관측 연결·상호주석 완성+스킵사유 3자대조·DoD5 판정+스킵사유 오표시 교정·MISSING_TAG 3분기+revdcf-preview 정체 규명·DoD5 ✅ 상향+Cowork 육안검증·방법론 표 가독성 수정+lossMaking 판정 불일치 재확인·공유 헬퍼 강화+**DoD8 테스트 보강·✅ 판정**) 전부 유효 — 상세 CHANGELOG. `lib/**`·`app/**`·`components/**`·`messages/**` diff 0(테스트 파일 3개 제외).
+- **tsc 0 · vitest 182/182**(174+8 신규) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0) · `lens_scores`·`lens_cuts` 쓰기 0.
+- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**(900 범위 밖)
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` — Production OFF(불변) · Vercel Preview 스코프는 `true`(897 발견·898 B판정: 배포검증용 아님·손 안 댐).** 켜는(Production) 조건 = 육안 검증 → **장은태 명시 승인.** 로컬 프리뷰 dev = `localhost:3333`(이미 `REVDCF_ENABLED=true`로 기동 중).
 
 ---
@@ -50,7 +50,7 @@
 - 🔴 **정정(866B)**: NC 제외사유로 적었던 "OTC"·"주식구조 복잡"은 원본에 없다(원문 유일 제외서술 = "no revenue"). `MULTI_CLASS_SHARES` 5사도 같은 사유로 철회.
 - **결정 원칙**: 컷은 **전수 분포를 본 뒤에** 정한다. "계산 못 함"과 "계산했는데 감춤"을 뒤섞지 않는다.
 
-### 2) DoD 현황 — **1·2·4·5·6 ✅ / 3·8 🔶 / 7·9 ❌**
+### 2) DoD 현황 — **1·2·4·5·6·8 ✅ / 3·7 🔶 / 9 ❌**
 
 | # | 항목 | 상태 |
 |---|---|---|
@@ -61,7 +61,7 @@
 | 5 | 경계 처리 | ✅ **897 상향**(895의 🔶를 재판정 — 896의 코드 교정을 독립 재확인[코드 재열람+테스트 169/169 재실행+라이브 데이터]. 🔴 불리한 사실 = `RevDcfSection` 클라이언트fetch 구조상 curl로 최종 DOM 미확인·브라우저 도구 없음·신규 코드 4종은 오늘 DB 행 0건이라 유닛테스트로만 확인) — 적자 78사는 865로 지지 |
 | 6 | 주장 정합 | ✅ (889 · 888 감사 위반5+보류3 전부 처리 · 불리한 사실 = 라이브 미검증) |
 | 7 | 화면 일관성 | ❌ 블록 — **모델 완성이 UI보다 먼저**(🚫 창작 금지 §4) |
-| 8 | 테스트 | 🔶 |
+| 8 | 테스트 | ✅ **900** — 스킵사유 12종+경계3종 항목별 채점, 미커버 8건 보강(182/182). 커버리지 도구 없어 %아닌 항목유무 판정. 유닛테스트만(통합·E2E는 플래그OFF라 불가) |
 | 9 | 라이브 실측 | ❌ 블록 — 플래그 OFF |
 
 **전수 vs 604 (두 분모 병기 · 866C 열 = OTC 시총 조달 반영)**
@@ -99,7 +99,7 @@
 - 875: 도미노 앵커 재현(driver4 A안 재현실패 원인규명·driver5 marginal=11.617% 정확일치) — driver4 ③판정 확정·driver5는 근거부재로 재개방.
 - 876: driver4 근거3(A안 커버리지12.6%) 철회·재측정(29.5%) — 판정 불변. 플레이북 #75.
 - 877: T7 직접개봉 — 원전이 WACC에도 현금세율 씀(서술≠셀) — driver3 진행표 첫 반영·driver4 근거 재해석·driver6 기록. 플레이북 #76.
-- 878~899: `docs/CHANGELOG.md` (24)~(44) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), 처방 B 적용·크론 코드 변경(893), retryBudgetHit 관측 연결+상호주석 완성(894), 스킵사유 3자대조+DoD5 🔶유지 판정(895), 스킵사유 오표시 교정+MISSING_TAG 3분기(896), revdcf-preview 정체 규명+DoD5 ✅ 상향(897), Cowork 육안검증·방법론 표 가독성 수정(898), **lossMaking 판정 불일치 주장 재확인·재현 안 됨·공유 헬퍼 강화(899)**.
+- 878~900: `docs/CHANGELOG.md` (24)~(45) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), 처방 B 적용·크론 코드 변경(893), retryBudgetHit 관측 연결+상호주석 완성(894), 스킵사유 3자대조+DoD5 🔶유지 판정(895), 스킵사유 오표시 교정+MISSING_TAG 3분기(896), revdcf-preview 정체 규명+DoD5 ✅ 상향(897), Cowork 육안검증·방법론 표 가독성 수정(898), lossMaking 판정 불일치 주장 재확인·재현 안 됨·공유 헬퍼 강화(899), **DoD8 테스트 보강·✅ 판정(900)**.
 
 ---
 
