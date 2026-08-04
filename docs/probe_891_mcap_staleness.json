@@ -1,0 +1,352 @@
+{
+  "generatedAt": "2026-08-04 (STEP 891)",
+  "section1_1_asOfDistribution": {
+    "2026-08-03": 5361,
+    "2026-07-30": 520,
+    "2026-08-02": 6
+  },
+  "section1_1_latestRevdcfAsOf": "2026-08-03",
+  "section1_1_staleness604Breakdown": [
+    {
+      "mcapAsOf": "2026-08-03",
+      "count": 518
+    },
+    {
+      "mcapAsOf": "2026-07-30",
+      "count": 86
+    }
+  ],
+  "section1_1_verdictDist_fresh": {
+    "over_cap": 84,
+    "value_destroying": 147,
+    "below_one": 56,
+    "skipped": 126,
+    "years": 105
+  },
+  "section1_1_verdictDist_stale": {
+    "skipped": 13,
+    "below_one": 16,
+    "over_cap": 11,
+    "value_destroying": 23,
+    "years": 23
+  },
+  "section1_1_gapMedian_fresh": 9,
+  "section1_1_gapMedian_stale": 12,
+  "section1_1_freshCount": 518,
+  "section1_1_staleCount": 86,
+  "section1_2_producerConflictTarget": "lib/lensPrecompute.ts:134 — onConflict:'symbol' (NOT (as_of,symbol)); PK도 symbol 단독(migration 043 — 원래 설계 의도가 '스냅샷'이 아니라 '최근값 폴백 캐시', 주석 원문: '매 실행 성공 cap 기록 → 다음날 폴백 재료'). 갱신 실패 시 옛 as_of째로 행이 그대로 남는 것은 이 설계상 당연 — 문제는 소비처(revdcf 크론)가 이 캐시를 신선도 필터 없이(as_of 미확인) 통째로 읽는다는 것. 대조: lensPrecompute.ts 자신의 Stage3 폴백은 .gte('as_of', cutoff)로 7일 TTL을 명시 적용 — 같은 테이블인데 두 소비처의 신선도 취급이 다르다.",
+  "section1_2_sample10Classification": [
+    {
+      "symbol": "ADX",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(3180720128) price=25.96"
+    },
+    {
+      "symbol": "AEC",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NasdaqCM marketCap=있음(72392856) price=3.97"
+    },
+    {
+      "symbol": "AEE",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(30304301056) price=109.5"
+    },
+    {
+      "symbol": "AEO",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(2994535424) price=17.87"
+    },
+    {
+      "symbol": "AFB",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(312744896) price=10.88"
+    },
+    {
+      "symbol": "AFG",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(11791576064) price=141.92"
+    },
+    {
+      "symbol": "AFL",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(64493473792) price=126.71"
+    },
+    {
+      "symbol": "AGD",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(314469728) price=12.04"
+    },
+    {
+      "symbol": "AGO",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(3717512704) price=83.95"
+    },
+    {
+      "symbol": "AHT",
+      "result": "야후 응답 있음 — quoteType=EQUITY exchange=NYSE marketCap=있음(21782224) price=3.25"
+    }
+  ],
+  "section1_2_silentFailureCheck": "실패에 대한 로그·플래그 없음 — freshSet에 없으면 그 심볼은 upsert 대상에서 그냥 빠짐(capRows=[...freshSet].map). 조용함.",
+  "section1_3_sensitivitySample": [
+    {
+      "symbol": "LNG",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 54192205824,
+      "staleSharePrice": 236.54,
+      "reproducedVerdict": "below_one",
+      "reproducedGap": null,
+      "dbStoredVerdict": "below_one",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 54081142784,
+        "freshSharePrice": 236.06,
+        "verdict": "below_one",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "ADI",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 172121948160,
+      "staleSharePrice": 345.14,
+      "reproducedVerdict": "over_cap",
+      "reproducedGap": null,
+      "dbStoredVerdict": "over_cap",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 176267067392,
+        "freshSharePrice": 353.46,
+        "verdict": "over_cap",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "ADM",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 38739664896,
+      "staleSharePrice": 78.58,
+      "reproducedVerdict": "below_one",
+      "reproducedGap": null,
+      "dbStoredVerdict": "below_one",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 37621522432,
+        "freshSharePrice": 76.31,
+        "verdict": "below_one",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "AVY",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 12784603136,
+      "staleSharePrice": 158.42,
+      "reproducedVerdict": "below_one",
+      "reproducedGap": null,
+      "dbStoredVerdict": "below_one",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 13176998912,
+        "freshSharePrice": 163.28,
+        "verdict": "below_one",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "BDX",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 46401003520,
+      "staleSharePrice": 159.45,
+      "reproducedVerdict": "over_cap",
+      "reproducedGap": null,
+      "dbStoredVerdict": "over_cap",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 46899736576,
+        "freshSharePrice": 161.16,
+        "verdict": "over_cap",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "CRS",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 26364178432,
+      "staleSharePrice": 524.14,
+      "reproducedVerdict": "value_destroying",
+      "reproducedGap": null,
+      "dbStoredVerdict": "value_destroying",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 27003633664,
+        "freshSharePrice": 536.85,
+        "verdict": "value_destroying",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "CAT",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 360509964288,
+      "staleSharePrice": 736.64,
+      "reproducedVerdict": "years",
+      "reproducedGap": 17,
+      "dbStoredVerdict": "years",
+      "dbStoredGap": 17,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 382305173504,
+        "freshSharePrice": 781.17,
+        "verdict": "years",
+        "gapYears": 18
+      }
+    },
+    {
+      "symbol": "CLX",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 12047393792,
+      "staleSharePrice": 96.53,
+      "reproducedVerdict": "value_destroying",
+      "reproducedGap": null,
+      "dbStoredVerdict": "value_destroying",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 11881732096,
+        "freshSharePrice": 95.2,
+        "verdict": "value_destroying",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "CL",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 74809696256,
+      "staleSharePrice": 90.88,
+      "reproducedVerdict": "years",
+      "reproducedGap": 12,
+      "dbStoredVerdict": "years",
+      "dbStoredGap": 12,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 71921016832,
+        "freshSharePrice": 87.37,
+        "verdict": "years",
+        "gapYears": 9
+      }
+    },
+    {
+      "symbol": "TGT",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 66266480640,
+      "staleSharePrice": 143.5,
+      "reproducedVerdict": "value_destroying",
+      "reproducedGap": null,
+      "dbStoredVerdict": "value_destroying",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 67833442304,
+        "freshSharePrice": 146.89,
+        "verdict": "value_destroying",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "DAL",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 56719986688,
+      "staleSharePrice": 87.53,
+      "reproducedVerdict": "value_destroying",
+      "reproducedGap": null,
+      "dbStoredVerdict": "value_destroying",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 60231692288,
+        "freshSharePrice": 92.95,
+        "verdict": "value_destroying",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "DDS",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 9200786432,
+      "staleSharePrice": 570768.39,
+      "reproducedVerdict": "below_one",
+      "reproducedGap": null,
+      "dbStoredVerdict": "below_one",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 9571065856,
+        "freshSharePrice": 593738.58,
+        "verdict": "below_one",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "DCI",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 10721772544,
+      "staleSharePrice": 87.45,
+      "reproducedVerdict": "years",
+      "reproducedGap": 12,
+      "dbStoredVerdict": "years",
+      "dbStoredGap": 12,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 11129779200,
+        "freshSharePrice": 90.78,
+        "verdict": "years",
+        "gapYears": 13
+      }
+    },
+    {
+      "symbol": "GIS",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 20238221312,
+      "staleSharePrice": 36.3,
+      "reproducedVerdict": "value_destroying",
+      "reproducedGap": null,
+      "dbStoredVerdict": "value_destroying",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 19213502464,
+        "freshSharePrice": 34.46,
+        "verdict": "value_destroying",
+        "gapYears": null
+      }
+    },
+    {
+      "symbol": "HPQ",
+      "staleAsOf": "2026-07-30",
+      "staleCap": 25981589504,
+      "staleSharePrice": 26.27,
+      "reproducedVerdict": "value_destroying",
+      "reproducedGap": null,
+      "dbStoredVerdict": "value_destroying",
+      "dbStoredGap": null,
+      "matchesDb": true,
+      "fresh": {
+        "freshCap": 24801855488,
+        "freshSharePrice": 25.08,
+        "verdict": "value_destroying",
+        "gapYears": null
+      }
+    }
+  ],
+  "section2_2857ListStored": [
+    {
+      "path": "data/sources/sec/sec_reporting_issuers_20260630.xlsx",
+      "exists": true
+    },
+    {
+      "path": "docs/probe_866_universe_output.json",
+      "exists": false
+    },
+    {
+      "path": "docs/probe_867_output.json",
+      "exists": false
+    }
+  ]
+}
