@@ -1061,7 +1061,15 @@
       "notApplicableSector": "The balance sheet is not classified (current vs non-current), so the method does not apply.",
       "missingTag": "The required 5-year financials are not available.",
       "noIndustry": "No industry mapping to assemble the cost of capital.",
-      "staleMarketcap": "Not computed because the market cap data is not recent."
+      "staleMarketcap": "Not computed because the market cap data is not recent.",
+      "noMarketcap": "Not computed because the market cap data is not available.",
+      "multiClassShares": "Not computed because this company has multiple share classes and a combined share count is not available.",
+      "exception": "Not computed because an error occurred while processing this name.",
+      "httpError": "Not computed because the source data (SEC) could not be fetched.",
+      "missingTagOperatingIncome": "Operating income is not available for 5 years.",
+      "missingTagPpe": "Property, plant and equipment (PP&E) is not available for 5 years.",
+      "missingTagOperatingCash": "Operating cash flow is not available for 5 years.",
+      "unspecified": "This name is excluded from the calculation. The specific reason is not shown here yet."
     },
     "driver": {
       "growth": "Sales growth (5y)",

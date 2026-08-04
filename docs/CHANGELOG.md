@@ -1,6 +1,49 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (41) — ✅ **STEP 896 실행: 스킵 사유 오표시 차단 · 문구 4종 신설 · `MISSING_TAG` 3분기** (895가 찾은 결함 2건 교정 · 계산 결과 무변경)
+
+> **성격**: 895가 찾은 두 결함(오표시 4종·`MISSING_TAG` 3원인 혼합)의 코드 교정. `lib/revdcf/engine.ts`·`compute.ts`·`lib/lensPrecompute.ts`·`data/`·`.github/` diff 0. 변경 = `components/RevDcfSection.tsx`(축소)·`lib/revdcf/drivers.ts`(반환 문자열 3곳)·`messages/ko.json`·`messages/en.json`(+8키)·`app/api/cron/revdcf/route.test.ts`(+1건) 및 신규 `lib/revdcf/skipKey.ts`·`skipKey.test.ts`·`drivers.test.ts`. 전제 상태: HEAD `a059f3a`(895) · tsc 0 · test 158/158. 순서 고정 §2→§3→§4 그대로 지킴.
+
+### §2 오표시 차단 — 중립 폴백
+
+`components/RevDcfSection.tsx:70`의 `skipKey` 3항연산자 체인을 `lib/revdcf/skipKey.ts`(신규 순수 함수 `skipKeyFor`+`SKIP_KEY_MAP`)로 추출 — 계산 로직이 아니라 표시 매핑이라 별도 파일로 분리해 RTL 없이도 유닛 테스트 가능하게 함. 매핑에 없는 사유(`HTTP_*` 제외)는 전부 `unspecified`로 간다 — 889 원칙("확인 안 된 구체적 원인은 단정하지 않는다")대로, "재무 5년치 미확보"라는 근거 없는 구체적 주장 대신 "구체적 사유는 아직 화면에 없다"는 사실만 말하는 문구. `HTTP_*`는 상태코드가 가변이라 열거로 못 막으므로 `startsWith("HTTP_")` 별도 분기로 처리(전용 문구 `httpError`로 감 — `unspecified`가 아니라 §3에서 만든 전용 문구).
+
+### §3 문구 4종 신설
+
+`messages/ko.json`·`en.json`의 `RevDcf.skip`에 추가(기존 키 무변경):
+- `noMarketcap` — "시가총액 자료를 확보하지 못해 계산하지 않습니다"(`staleMarketcap`의 "최근 값이 아니어서"와 다른 상태임을 "확보하지 못해"로 구분)
+- `multiClassShares` — "여러 종류(클래스)의 주식이 있어 통합 발행주식수를 확보하지 못했습니다"(판단어 없이 사실만 — 오늘 5건 실발생)
+- `exception` — "처리 중 오류가 발생해 계산하지 않습니다"(내부 오류 문자열 비노출·거짓 사유도 안 만듦)
+- `httpError` — "원자료(SEC) 조회에 실패해 계산하지 않습니다"(**상태코드는 화면에 안 씀** — 일반 사용자에게 HTTP 코드는 의미가 없고 각기 다른 코드마다 문구를 만들면 오히려 원인을 안다고 오해시킬 소지가 있어, `EX`와 동일하게 "내부 구현 상세 비노출" 원칙을 적용)
+- `unspecified`(§2) — "이 종목은 계산에서 제외됐습니다 — 구체적 사유는 아직 화면에 없습니다"
+
+en 4종 + unspecified 전부 축약형(contraction) 없이 작성 — `messages/messages.test.ts`가 이미 ko/en 키셋 패리티·무축약형을 검사하므로 별도 테스트 추가 안 함(§5 4번 항목은 기존 테스트로 커버).
+
+### §4 `MISSING_TAG` 3분기
+
+`lib/revdcf/drivers.ts`의 세 반환 지점 — `:113`(영업이익)·`:119`(PP&E)·`:122`(영업현금흐름) — 이 반환하던 동일 문자열 `"MISSING_TAG"`를 각각 `MISSING_TAG_OPERATING_INCOME`·`MISSING_TAG_PPE`·`MISSING_TAG_OPERATING_CASH`로 분리. `has5(...)` 조건식·순서·`flags` 구성은 **한 글자도 안 바꿈**(diff 육안 확인 — 반환 문자열 3곳만 변경 + 주석 1블록). `route.ts`는 `dr.skipReason`을 그대로 실어 나르는 구조라 별도 수정 불필요(자동으로 새 코드를 씀). 🔴 **896 이전에 쓰인 DB 행은 여전히 `MISSING_TAG`로 남는다** — 과거 행과 신규 행의 코드가 다르다는 사실을 `REVDCF_SPEC.md` §10 #68에 명시. `skip.missingTag` 문구 키는 지우지 않음(과거 행이 그 코드를 갖고 있어 문구가 남아 있어야 함).
+
+### §5 테스트 — 11건 신규(169/169 통과, 158+11)
+
+- `lib/revdcf/skipKey.test.ts`(6건) — 알 수 없는 사유→`unspecified`(895 오표시 회귀 방지)·null→`unspecified`·`HTTP_*` 임의 상태코드→`httpError`·895가 지목한 4종이 각각 전용 키·과거 `MISSING_TAG`는 `missingTag` 유지·신규 3분기 코드가 서로 다른 키.
+- `lib/revdcf/drivers.test.ts`(4건) — **실제 `computeDrivers()` 실행**(모킹 아님)으로 세 조건을 개별 결핍시켜 세 코드가 각각 반환되는지, `flags.missing`이 그대로인지, 세 코드가 서로 겹치지 않는지 확인.
+- `app/api/cron/revdcf/route.test.ts`(1건) — 새 마커 `"missing-oi"`로 `computeDrivers`가 `MISSING_TAG_OPERATING_INCOME`을 반환할 때 route.ts가 사유를 재작성하지 않고 그대로 실어 행을 쓰는지(880 유니버스 보존 교훈) 확인.
+- `lib/revdcf/engine.ts`·`compute.ts` 테스트는 손대지 않음(계산 무변경이므로 회귀 대상 아님).
+
+### §6 커밋 메시지 재확인(894 교훈)
+
+STEP 896의 초안 커밋 메시지를 §2~§4의 실제 결정과 대조 — 초안이 "네 사유에 문구가 없었다"·"폴백은 그대로 남는다(상태코드가 있어 미리 다 나열할 수 없어서)"·"한 코드가 세 결측을 가리켰다"·"과거 행은 옛 코드를 유지한다"·"테스트가 분리·폴백·행 보존을 커버한다"만 서술하고 있어 아직 안 내린 판단을 단정하는 문장이 없음을 확인 — **초안 그대로 사용**(894 같은 함정 없음).
+
+### 연동 문서
+
+- `docs/REVDCF_SPEC.md` §10 — **#68**·**#69** "896 대상" → "896 해소"로 갱신 + 과거/신규 코드 공존 사실 명시.
+- `docs/STATE.md` — HEAD 갱신(STEP 896) + DoD5 행에 "896이 오표시·3분기 교정 완료, 재판정은 897 이후" 부기.
+
+### 무변경 확인
+
+- `lib/revdcf/engine.ts`·`compute.ts`·`lib/lensPrecompute.ts`·`data/`·`.github/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · DoD 판정 칸은 5를 포함해 전부 불변(895 판정 그대로, 이 STEP은 재판정 안 함).
+
 ## 2026-08-04 (40) — ✅ **STEP 895 실행: 스킵 사유 3자 대조(코드↔문서↔화면) · DoD 5 판정(🔶 유지)** (문서 정정만 · 코드 0)
 
 > **성격**: `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0**. 변경은 `docs/`뿐 — 신규 `docs/AUDIT_895_SKIP_REASONS.md`. 전제 상태: 정규 크론이 2026-08-03에 돌아 880 전환이 처음 반영됨(계산 465·`NO_MARGINAL_CAPEX` 50 신설·604×3 유지) — 이 STEP이 만든 변화 아니라 주어진 전제. 커밋 = 이 커밋(부모 `d413b7e`).

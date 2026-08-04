@@ -110,16 +110,18 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   }
   ebitSource = srcRevCae ? "Rev-CostsAndExpenses" : srcRecon ? "Pretax+Interest" : "OperatingIncomeLoss";
   flags.ebitSource = ebitSource;
-  if (!has5(oi)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "operatingIncome<5yr" } };
+  // 🔴 896 §4: 세 MISSING_TAG 원인(영업이익/PP&E/영업현금흐름)이 한 코드로 뭉쳐 flags.missing이 화면에 안 보이던 문제(895 §3-1) —
+  //   조건식·순서·flags는 그대로 두고 반환하는 skipReason 문자열만 원인별로 나눈다. 과거 행은 "MISSING_TAG"로 남는다(REVDCF_SPEC §10).
+  if (!has5(oi)) return { ok: false, skipReason: "MISSING_TAG_OPERATING_INCOME", flags: { ...flags, missing: "operatingIncome<5yr" } };
 
   // driver 5 재료: PP&E · driver 4 재료: 유동자산·유동부채·운영현금
   const ppe = coalesceMap(gaap, PPE, "stock").vals;
   const assetsCur = annualMap(gaap, "AssetsCurrent", "stock"), liabCur = annualMap(gaap, "LiabilitiesCurrent", "stock");
   const cashOp = coalesceMap(gaap, CASH_OP, "stock").vals;
-  if (!has5(ppe)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "ppe<5yr" } };
+  if (!has5(ppe)) return { ok: false, skipReason: "MISSING_TAG_PPE", flags: { ...flags, missing: "ppe<5yr" } };
   // 🔴 유동/비유동 미구분(유동성배열법) = 이 기법의 재무형식과 안 맞음 → 회수 아니라 재분류(838: 금융인접 신호)
   if (!has5(assetsCur) || !has5(liabCur)) return { ok: false, skipReason: "NOT_APPLICABLE_SECTOR", flags: { ...flags, missing: "unclassifiedBalanceSheet" } };
-  if (!has5(cashOp)) return { ok: false, skipReason: "MISSING_TAG", flags: { ...flags, missing: "operatingCash<5yr" } };
+  if (!has5(cashOp)) return { ok: false, skipReason: "MISSING_TAG_OPERATING_CASH", flags: { ...flags, missing: "operatingCash<5yr" } };
 
   // 시장 부분: 주식수(희석→기본→발행→dei)·부채·비영업자산 — 최신연도
   const sharesDil = annualMap(gaap, SHARES_DIL[0], "flow", "shares");

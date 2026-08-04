@@ -68,6 +68,10 @@ vi.mock("@/lib/revdcf/drivers", () => ({
     if (gaap?.__marker === "has-marginal") {
       return { ok: true, drivers: { ...base, fixedCapitalRate: 0.9, fixedCapitalRateLevel: 0.9, fixedCapitalRateMarginal: 0.12 }, market: { debt: 0, nonOperatingAssets: 0, shares: 10, latestYear: 2024 }, flags: {} };
     }
+    // STEP 896 §5 — MISSING_TAG 3분기 중 하나가 route.ts를 거쳐 그대로 skip_reason에 실리는지(유니버스 보존 포함) 확인용 마커.
+    if (gaap?.__marker === "missing-oi") {
+      return { ok: false, skipReason: "MISSING_TAG_OPERATING_INCOME", flags: { missing: "operatingIncome<5yr" } };
+    }
     return { ok: false, skipReason: "UNKNOWN_MARKER", flags: {} };
   }),
 }));
@@ -184,5 +188,34 @@ describe("GET /api/cron/revdcf — us_market_cap 7일 TTL 회귀 방지 (STEP 89
     expect(nomarg?.skip_reason).toBe("NO_MARKETCAP");
     expect(hasmarg?.skip_reason).toBe("NO_MARKETCAP");
     expect(nomarg?.skip_reason).not.toBe("STALE_MARKETCAP");
+  });
+});
+
+describe("GET /api/cron/revdcf — MISSING_TAG 3분기 유니버스 보존 회귀 방지 (STEP 896 §5·880 교훈)", () => {
+  afterEach(() => {
+    vi.resetModules();
+    upserts.length = 0;
+    revdcfRangeCalls = 0;
+    mcapOverride = null;
+    delete process.env.CRON_SECRET;
+  });
+
+  it("drivers.ts가 새 MISSING_TAG_* 코드를 반환해도 route.ts가 그대로 실어 행을 쓴다(드롭 아님)", async () => {
+    process.env.CRON_SECRET = "test-secret";
+    global.fetch = vi.fn(async (url: string | URL) => {
+      const m = /CIK(\d{10})\.json/.exec(String(url));
+      const cik = m ? parseInt(m[1], 10) : 0;
+      const marker = cik === 1 ? "missing-oi" : cik === 2 ? "has-marginal" : "unknown";
+      return { ok: true, json: async () => ({ facts: { "us-gaap": { __marker: marker }, dei: {} } }) } as Response;
+    }) as typeof fetch;
+
+    const { GET } = await import("./route");
+    const res = await GET(new Request("http://x/api/cron/revdcf", { headers: { authorization: "Bearer test-secret" } }));
+    await res.json();
+
+    const nomarg = upserts.find((r) => r.symbol === "NOMARG");
+    expect(nomarg).toBeDefined(); // 🔴 880 교훈 — 스킵돼도 행은 반드시 써진다
+    expect(nomarg?.skip_reason).toBe("MISSING_TAG_OPERATING_INCOME"); // route.ts가 사유를 재작성하지 않고 그대로 통과시킨다
+    expect(nomarg?.verdict).toBe("skipped");
   });
 });

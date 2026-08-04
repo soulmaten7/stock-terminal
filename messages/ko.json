@@ -1061,7 +1061,15 @@
       "notApplicableSector": "유동/비유동을 구분하지 않는 재무제표라 이 기법이 성립하지 않습니다",
       "missingTag": "필요한 재무 항목이 5년치 확보되지 않았습니다",
       "noIndustry": "업종 매핑이 없어 자본비용을 조립할 수 없습니다",
-      "staleMarketcap": "시가총액 자료가 최근 값이 아니어서 계산하지 않습니다"
+      "staleMarketcap": "시가총액 자료가 최근 값이 아니어서 계산하지 않습니다",
+      "noMarketcap": "시가총액 자료를 확보하지 못해 계산하지 않습니다",
+      "multiClassShares": "여러 종류(클래스)의 주식이 있어 통합 발행주식수를 확보하지 못했습니다",
+      "exception": "처리 중 오류가 발생해 계산하지 않습니다",
+      "httpError": "원자료(SEC) 조회에 실패해 계산하지 않습니다",
+      "missingTagOperatingIncome": "영업이익 자료가 5년치 확보되지 않았습니다",
+      "missingTagPpe": "설비자산(PP&E) 자료가 5년치 확보되지 않았습니다",
+      "missingTagOperatingCash": "영업활동현금흐름 자료가 5년치 확보되지 않았습니다",
+      "unspecified": "이 종목은 계산에서 제외됐습니다 — 구체적 사유는 아직 화면에 없습니다"
     },
     "driver": {
       "growth": "매출성장(과거5년)",

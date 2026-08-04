@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { skipKeyFor } from "@/lib/revdcf/skipKey";
 
 // STEP 853/855 — 역DCF 종목페이지 섹션. US 전용(데이터 자체가 US뿐이라 KR/타국은 result=null → 미노출).
 // 5분기 헤드라인 + 자본비용 시나리오(3점·기본 표시) + 순위(방향 명시) + 적자 분기 + 드라이버 설명 + 판정 분기. 다크·모바일·ko/en.
@@ -67,7 +68,9 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
   // 🔴 880: NO_MARGINAL_CAPEX(driver5 marginal 산출 불가)을 "missingTag"(재무 5년 미확보)로 뭉치지 않는다 —
   //   실제 원인이 태그 결측만이 아니라 Δ매출=0 등으로도 갈릴 수 있어(862 선례: 사유 단정 금지) 별도 중립 문구를 쓴다.
   // 🔴 893: STALE_MARKETCAP(시총 7일 TTL 초과)도 같은 원칙으로 NO_MARKETCAP과 분리 — 시총이 없는 것과 묵은 것은 다른 상태다(888/889).
-  const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : r.skipReason === "NO_MARGINAL_CAPEX" ? "noMarginalCapex" : r.skipReason === "STALE_MARKETCAP" ? "staleMarketcap" : "missingTag";
+  // 🔴 896: 895가 발견 — 문구 없는 사유(NO_MARKETCAP·MULTI_CLASS_SHARES·EX·HTTP_*)가 이 자리에서 "missingTag"로
+  //   떨어져 사실과 다르게 표시되고 있었다. SKIP_KEY_MAP 밖의 값은 전부 "unspecified"(중립 폴백)로 간다.
+  const skipKey = skipKeyFor(r.skipReason);
 
   return (
     <section className="mt-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5">
