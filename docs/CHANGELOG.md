@@ -1,6 +1,37 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (39) — ✅ **STEP 894 실행: `retryBudgetHit` 관측 연결 · 상호 주석 완성** (7렌즈 라이브 파이프라인 · 관측·주석만)
+
+> **성격**: `lib/lensPrecompute.ts`는 플래그 뒤에 있지 않고 매일 `lens_scores`·`lens_cuts`를 실제로 쓰는 **라이브 파이프라인**이다. 계산·게이트 로직은 무변경 — 바뀐 것은 console.log 2줄과 주석뿐. `lib/revdcf/**`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0**. 커밋 = 이 커밋(부모 `fb2fafb`).
+
+### §1 관측 연결
+
+- **1-1**: `topByMarketCap`의 `console.log`(구 `:151`)와 `computeLensScores`의 `console.log`(구 `:467`)에 필드만 추가 — `retryBudgetHit`(또는 그 구성식)·`retryAttempted`(재시도 시도 수)·전체대상(`retryAll.length`, 400 한도 이전 후보 총수)·`timeHit`. 새 로그 줄은 만들지 않았다(로그 볼륨 증가 0). 두 diag 필드(`retryBudgetHit`·`retryAttempted`)는 892에서 이미 계산돼 있었으나 어디에도 안 실렸던 것 — 새 계산 없이 기존 값을 잇기만 했다.
+- **1-2**: 조건부 Sentry 경고는 **만들지 않기로 판정**했다. 근거: `us_market_cap` 스테일 표본이 891(520)·892(517) **이틀 연속** RETRY_MAX(400)와 같은 자릿수로 관측됨 — 매일 재시도 한도를 넘길 가능성이 높다고 간접적으로 판단(`retryAll.length` 자체는 아직 실측한 적 없어 확정은 아님). 매일 뜨는 경고는 알림 노이즈가 돼 무시되므로, 로그만으로 관측 가능하게 두는 쪽을 택했다 — 이유를 코드 주석·문서에 명시.
+- **1-3**: `capGateDecision` 시그니처·로직, `RETRY_MAX`·`RETRY_MS`·청크 크기, `us_market_cap` 쓰기 경로, Stage 3 폴백 — **전부 손대지 않았다**(`git diff` 육안 확인 완료).
+
+### §2 상호 주석 완성
+
+893이 `route.ts`에 `lensPrecompute.ts:142`를 가리키는 주석을 달았으나, 그 파일 수정 금지 지시와 부딪혀 반대 방향을 못 달았다고 보고했다. 이번 STEP은 그 파일을 여는 것이 허용돼(§0 — 라이브 파이프라인이지만 관측·주석은 이 STEP의 목적) `lensPrecompute.ts`의 7일 TTL 상수 자리(Stage 3 폴백 직전)에 `route.ts`의 `MCAP_TTL_DAYS`를 가리키는 주석을 신설 — **양방향 상호 참조 완성**. 상수를 공유 모듈로 빼지는 않았다(리팩터이자 7렌즈 구조 변경이라 범위 밖).
+
+### §3 검증
+
+- `git diff HEAD -- lib/lensPrecompute.ts` 육안 확인 — console.log 2줄 확장 + 주석 3곳 추가뿐, 로직 변경 0.
+- `capGateDecision` 호출부(2곳) 인자 동일 · `us_market_cap` upsert 경로 동일 확인.
+- `npx tsc --noEmit` 0 · `npm run test` **158/158 그대로**(7렌즈 관련 테스트 포함 전부 통과 — 회귀 없음).
+- 크론(7렌즈·역DCF 둘 다) 수동 실행 안 함 — 관측 결과는 다음 정규 실행 로그에서 확인.
+
+### 연동 문서
+
+- `docs/REVDCF_SPEC.md` §10 #67 — `retryBudgetHit` 미연결 **해소** 표시 + **"A안 평가는 여전히 미측정"**을 명시적으로 병기(관측 장치만 설치, 관측 결과는 아직 없음).
+- `docs/LENS_DEV_PLAYBOOK.md` **#84 신설**: "진단값을 계산해놓고 어디에도 싣지 않으면 없는 것과 같다 — 계산한 진단은 로그·알림 중 최소 한 곳에 도달시킨다."
+- `docs/STATE.md` — HEAD 갱신, 131줄(상한 142 이내). 893이 남긴 "스킵 사유 목록 불완전"은 이 STEP에서 손대지 않음(895 대상).
+
+### 무변경 확인
+
+- `lib/revdcf/**`·`app/`·`components/`·`messages/`·`data/`·`.github/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행(7렌즈 포함) · `revdcf_results` 604×3 · `us_market_cap`·`lens_scores`·`lens_cuts` 쓰기 0 · DoD 판정 칸 불변.
+
 ## 2026-08-04 (38) — 🔴 **STEP 893 실행: 892 처방 B 적용 — revdcf 크론에 시총 7일 TTL 필터** (오늘 세션 최대 위험 변경)
 
 > **성격**: 매일 도는 `app/api/cron/revdcf/route.ts`의 코드를 바꾼 STEP. `lib/revdcf/**`(engine·drivers·compute) **diff 0** — 계산 로직은 그대로, 어떤 행을 읽느냐만 바뀐다. `lib/lensPrecompute.ts`·`data/`·`.github/`도 diff 0(수정 금지 준수). 장은태 승인(2026-08-04) — 892 §3 처방 B. 커밋 = 이 커밋(부모 `0984953`).

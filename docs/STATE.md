@@ -6,14 +6,14 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 893)** · 부모 `0984953`(STEP 892) · **push 완료 — origin/main + revdcf-preview 반영.**
-- 🔴 **STEP 893 = 892 처방 B 적용 — `app/api/cron/revdcf/route.ts`에 7일 TTL 필터(오늘 세션 최대 위험 변경 · 매일 도는 크론 코드).** `us_market_cap` 읽기에 `as_of` 포함 + `MCAP_TTL_DAYS=7`(`lensPrecompute.ts`와 같은 값·상수 복제, 그 파일은 수정 금지) 미만이면 신규 `skip_reason:"STALE_MARKETCAP"`(`NO_MARKETCAP`과 분리) + `flags`에 나이 기록. **유니버스 보존 확인**(스킵돼도 행 써짐·조기이탈 0건). **오늘 필터 효과 = 실측 0건**(최고령 07-30=5일 전, TTL 7일 미만 — 프로브로 확인). 🔴 **"정확도가 좋아진다"고 적지 않는다** — 892 §2가 이 조치의 근거를 GAP 정확도가 아니라 나이상한 무한 방지·내부 일관성으로 결론지었다(fresh 대조군도 stale군만큼 GAP이 움직임). `retryBudgetHit` 미연결은 **894로 이월**(해소 아님). 계산 로직(`lib/revdcf/**`) diff 0 · 신규 테스트 3건(TTL 안/밖/시총없음) 통과. 상세 = `docs/REVDCF_SPEC.md` A-11·A-12(#67)·`docs/probe_893_ttl_effect.json`.
+- HEAD = **이 커밋(STEP 894)** · 부모 `fb2fafb`(STEP 893) · **push 완료 — origin/main + revdcf-preview 반영.**
+- ✅ **STEP 894 = `retryBudgetHit` 관측 연결 + 상호 주석 완성 — 7렌즈 라이브 파이프라인(`lib/lensPrecompute.ts`) 관측·주석만 변경.** 892가 발견한 "계산되나 소비처 0"인 죽은 진단값(`diag.retryBudgetHit`)을 기존 console.log 2줄(`topByMarketCap`·`computeLensScores US`)에 필드만 추가해 연결(`retryAttempted`·전체대상 `retryAll.length`·`timeHit` 동반). **Sentry 경고는 일부러 안 닮** — 스테일 표본이 891·892 이틀 연속 517~520(RETRY_MAX=400과 같은 자릿수)로 관측돼 매일 걸릴 가능성이 높다고 판단(간접 근거), 매일 뜨는 경고는 노이즈가 되므로 로그만. `lensPrecompute.ts`의 7일 TTL 상수 자리에 893의 `MCAP_TTL_DAYS`를 가리키는 주석 신설 — **상호 주석 양방향 완성**. `capGateDecision` 인자·`RETRY_MAX`/`RETRY_MS`·업서트 경로·Stage3 폴백 **전부 무변경**(diff 육안 확인 — console.log·주석 외 변경 0). 🔴 **A안(재시도 조달 개선) 평가는 여전히 미측정** — 관측 장치만 설치, 다음 정규 크론 로그를 실제로 봐야 안다. 크론 미실행(관측만 달았을 뿐). tsc 0·test 158/158 유지. 상세 = `docs/REVDCF_SPEC.md` §10 #67·`docs/LENS_DEV_PLAYBOOK.md` #84.
+- 🔴 **STEP 893 = 892 처방 B 적용(revdcf 크론 7일 TTL 필터, 오늘 세션 최대 위험 변경)** — 상세 = `docs/CHANGELOG.md` (38).
 - ✅ **STEP 892 = 신선도 원인 부분확정 + 인과 분해 + 처방 판정(B)** — 상세 = `docs/CHANGELOG.md` (37).
 - ✅ **STEP 891 = DoD4 적용(✅) + 시총 신선도 결함 발견** — 상세 = `docs/CHANGELOG.md` (36).
-- ✅ **STEP 890 = DoD4 전제 실측 + 판정서** — 상세 = `docs/CHANGELOG.md` (35).
 - 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~893(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+**처방 B 적용**) 전부 유효 — 상세 CHANGELOG. `lib/revdcf/**`·`lib/lensPrecompute.ts`·`data/`·`.github/` 로직 **diff 0**(893은 `app/api/cron/revdcf/route.ts`(+test)·`components/RevDcfSection.tsx`·`messages/*.json`·`docs/`+프로브 신규뿐).
-- **tsc 0 · vitest 158/158**(신규 3건 포함) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0).
+- 866~894(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+처방 B 적용+**관측 연결·상호주석 완성**) 전부 유효 — 상세 CHANGELOG. `lib/revdcf/**`·`app/`·`components/`·`messages/`·`data/`·`.github/` 로직 **diff 0**(894는 `lib/lensPrecompute.ts`(관측·주석만)+`docs/`+프로브 신규뿐).
+- **tsc 0 · vitest 158/158**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0) · `lens_scores`·`lens_cuts` 쓰기 0.
 - ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
 
@@ -99,7 +99,7 @@
 - 875: 도미노 앵커 재현(driver4 A안 재현실패 원인규명·driver5 marginal=11.617% 정확일치) — driver4 ③판정 확정·driver5는 근거부재로 재개방.
 - 876: driver4 근거3(A안 커버리지12.6%) 철회·재측정(29.5%) — 판정 불변. 플레이북 #75.
 - 877: T7 직접개봉 — 원전이 WACC에도 현금세율 씀(서술≠셀) — driver3 진행표 첫 반영·driver4 근거 재해석·driver6 기록. 플레이북 #76.
-- 878~893: `docs/CHANGELOG.md` (24)~(38) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), **처방 B 적용·크론 코드 변경(893)**.
+- 878~894: `docs/CHANGELOG.md` (24)~(39) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), 처방 B 적용·크론 코드 변경(893), **retryBudgetHit 관측 연결+상호주석 완성(894)**.
 
 ---
 

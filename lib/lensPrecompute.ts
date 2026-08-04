@@ -136,6 +136,8 @@ async function topByMarketCap(topN: number): Promise<{
   }
 
   // ── Stage 3: 최근값 폴백(7일 이내) — 배치·재시도 다 실패한 심볼만. 나이 초과분은 안 씀(829 _lastGood TTL 원리) ──
+  // 🔴 STEP 894(893과 상호주석): 이 7일 값은 app/api/cron/revdcf/route.ts의 MCAP_TTL_DAYS와 같아야 한다(893) —
+  //   그쪽이 이 값을 복제해서 쓴다. 여기를 바꾸면 그 파일의 상수도 같이 바꿀 것.
   let fallbackUsed = 0;
   const stillMissing = STOCK_SYMS.filter((s) => !capOf.has(s));
   if (stillMissing.length) {
@@ -149,7 +151,10 @@ async function topByMarketCap(topN: number): Promise<{
   }
 
   if (failedChunks > 0) Sentry.captureMessage(`[topByMarketCap] 청크 ${failedChunks}/${chunks.length} 실패`, failedChunks / chunks.length >= 0.3 ? "error" : "warning");
-  console.log(`[topByMarketCap] batchOk ${batchOk} · noCapField ${noCapField.length} · noResponse ${noResponse.length} · 재시도복구 ${recovered}/${retrySet.length} · 폴백 ${fallbackUsed} · fresh커버 ${(freshCoverage * 100).toFixed(1)}%`);
+  // 🔴 STEP 894: retryBudgetHit·전체대상(retryAll.length)을 로그에 추가 — 이전까진 diag에 계산만 되고 어디에도 안 실렸다(892 발견).
+  // 🔴 Sentry 경고는 일부러 안 단다 — us_market_cap 스테일 표본이 891·892 이틀 연속 517~520(± RETRY_MAX=400과 같은 자릿수)으로
+  //   관측돼 매일 걸릴 가능성이 높다고 판단(간접 근거 · retryAll 자체는 아직 실측한 적 없음). 매일 뜨는 경고는 알림 노이즈가 돼 무시된다 — 로그만으로 관측 가능하게 둔다.
+  console.log(`[topByMarketCap] batchOk ${batchOk} · noCapField ${noCapField.length} · noResponse ${noResponse.length} · 재시도복구 ${recovered}/${retrySet.length}(전체대상 ${retryAll.length}·한도 ${RETRY_MAX}) · 재시도한도초과 ${retryAll.length > RETRY_MAX || timeHit}(시간초과 ${timeHit}) · 폴백 ${fallbackUsed} · fresh커버 ${(freshCoverage * 100).toFixed(1)}%`);
 
   const caps = [...capOf.entries()].map(([sym, cap]) => ({ sym, cap })).sort((a, b) => b.cap - a.cap);
   const diag: CapDiag = {
@@ -464,7 +469,8 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   const priorSet = new Set(((priorUni ?? []) as { symbol: string }[]).map((r) => r.symbol));
   const { churn, skipChangeDiff } = churnDecision(universe, priorSet);
 
-  console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}`);
+  // 🔴 STEP 894: diag.retryBudgetHit·diag.retryAttempted를 로그에 추가(같은 이유 — 계산되고 버려지던 값).
+  console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}/${diag.retryAttempted} · 재시도한도초과 ${diag.retryBudgetHit}`);
   if (!cutGateOk) Sentry.captureMessage(`[us-cut-gate] 취득 게이트 실패(커버 ${(diag.freshCoverage * 100).toFixed(1)}%·구성 ${(compRatio * 100).toFixed(1)}%) → 컷 재유도·프루닝 금지`, "error");
 
   return computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
