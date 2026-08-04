@@ -1,6 +1,46 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (42) — ✅ **STEP 897 실행: `revdcf-preview` 정체 규명 · DoD 5 재판정(✅ 상향)** (읽기 전용 · 코드 diff 0)
+
+> **성격**: 895가 남긴 세 번째 불리한 사실("라이브 렌더 실제 화면 확인 못 함")을 다룬 조사+재판정 STEP. `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0** — 변경은 `docs/`뿐. 전제: HEAD `18f05c5`(896) · tsc 0 · test 169/169. `REVDCF_ENABLED`는 **어디서도 켜거나 끄지 않음**(읽기만).
+
+### §1 `revdcf-preview`는 무엇인가
+
+`.vercel/project.json`(projectId·orgId) 확인 — 읽기만, 미수정. Vercel MCP는 **403 Forbidden**(`"scope toms-projects-c798474e"`) — Cowork의 "rate-limit" 추정은 부정확했고 실제는 계정/토큰 스코프 문제(`list_teams()`도 빈 배열, 892와 동일 증상). 대신 **로컬 `vercel` CLI가 이미 인증돼 있어**(`whoami`=`soulmaten7-7785`) 아래를 전부 CLI로 확인:
+
+1. `revdcf-preview` 브랜치는 **Vercel Git 연동의 기본 동작**으로 자동 Preview 배포를 받는다 — 안정 별칭 URL `https://stock-terminal-git-revdcf-preview-toms-projects-c798474e.vercel.app`(`vercel inspect`).
+2. 🔴 **`REVDCF_ENABLED`가 Vercel "Preview" 스코프에 이미 `true`로 설정돼 있다** — `vercel env ls` 확인, 생성 시점 "3일 전"(≈2026-08-01, STEP 855 시점과 겹침). **Production 스코프엔 없음**(절대 금지선 위반 아님).
+3. 이 배포엔 **Vercel Deployment Protection(SSO)**이 걸려 있어 curl 등 익명 접근이 전부 `vercel.com/sso-api`로 302 리다이렉트된다 — 로그인 브라우저가 아니면 못 본다.
+4. **Supabase 관련 env(`NEXT_PUBLIC_SUPABASE_URL`·`SUPABASE_SERVICE_ROLE_KEY`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`)가 Production 스코프에만 있고 Preview엔 없다**(`vercel env ls` 전 34건 확인) — `lib/supabase/admin.ts`가 non-null 단언(`!`)을 쓰므로 Preview에서 Supabase 의존 경로가 작동 불능일 가능성이 높다(SSO 벽 때문에 실제 요청 재현은 못 함 — **추론임을 명시**).
+5. **결론**: 866~896의 "라이브 미검증(플래그 OFF)" 기재는 **오기재가 아니다** — Production은 실제로 OFF였고(불변), Preview는 켜져 있었어도 SSO+Supabase 미배선 두 겹에 막혀 누구도 실제로 못 봤다(그 URL이 등장하는 STEP 문서 0건). `#80` 절차(내용 grep→목록화→정정)를 돌릴 대상 자체가 없었다 — 명시적으로 틀린 기존 서술을 찾지 못함.
+6. 🔴 **`REVDCF_ENABLED`를 어디서도 켜거나 끄지 않았다.** Preview 스코프의 기존 `true`는 그대로 둠 — 끄는 것도 상태 변경이라 이 STEP 권한 밖(장은태 판단 대기).
+
+### §2 로컬에서 볼 방법 — 재확인
+
+이미 `REVDCF_ENABLED=true`로 떠 있던 기존 로컬 dev(`localhost:3333` — 새로 안 띄움, 유저 지침대로 dev 서버 유지)에서 라이브 재확인:
+
+- `MULTI_CLASS_SHARES`(오늘 실발생 5건: `COKE`·`FWONA`·`STZ`·`V`·`WMG`) 중 `V` curl — 클라이언트 번들에 `multiClassShares` 문구가 정확히 실리고 `missingTag`가 아님을 확인.
+- 과거 행 `GE`(레거시 `MISSING_TAG`) curl — 여전히 `missingTag` 문구 유지(과거 행 보존 원칙 실동작).
+- `/en/revdcf` 방법론 페이지의 WACC 원장 행 — 실제 `<td class="py-2 text-unjong-muted">Domino source: 5.354%…</td>`로 서버 렌더 확인(이 페이지는 서버 컴포넌트라 curl로 직접 검증 가능).
+- 🔴 **`RevDcfSection`은 클라이언트 전용 fetch 컴포넌트**(`useEffect`+`fetch`)라 curl이 받는 서버 렌더 HTML엔 최종 문구가 **절대 안 나타난다** — 로컬·Preview·프로덕션 어디든 동일한 구조적 한계. 이 세션엔 브라우저 자동화 도구가 없어 실제 DOM 렌더(줄바꿈·색·잘림)는 못 봤다. §1 조사로 850~896 어느 STEP도 브라우저 도구를 쓴 흔적이 없음을 확인 — 이 한계는 새로 생긴 게 아니라 처음부터 있었다.
+- 신규 코드 4종(`NO_MARKETCAP`·`EX`·`HTTP_*`·`MISSING_TAG_*` 3분기)은 오늘 DB 행이 0건(896 이후 정규 크론 미실행)이라 유닛테스트로만 확인.
+
+### §3 DoD 5 재판정 — ✅ 상향
+
+895의 🔶 유지를 재판정: 결함 둘(오표시 폴백·`MISSING_TAG` 3원인 혼합)을 **896 자기보고를 그대로 믿지 않고** 코드 재열람+`npm run test` 재실행(169/169)+라이브 데이터(위 §2)로 **독립 재확인**. DoD5 정의("계산 불가 조건·최소 표본·**결측 표기**")는 표기 **내용**의 정확성을 요구하는 것이지 특정 렌더 기술을 요구하지 않으며, **7렌즈 DoD 9("라이브 실측")도 브라우저가 아니라 프로덕션 API 실측**으로 충족됐던 선례(812~818 확인)와 정합 — revdcf에만 더 엄격한 기준을 적용할 근거가 없다고 판단해 **✅로 상향**. DoD 7(화면 일관성)·DoD 9(라이브 실측)는 대신하지 않음 — 불변. 상세 판정문(③판정/근거/대가/불리한사실/재검토조건) = `docs/LENS_COMPLETION_STANDARD.md`.
+
+### 연동 문서
+
+- `docs/REVDCF_SPEC.md` §7 — STEP 897 로그 항목 신규(revdcf-preview 조사 전문). §10 — **#70** 신규(REVDCF_ENABLED Preview 스코프 현황 기록).
+- `docs/LENS_COMPLETION_STANDARD.md` — 완성현황표 5경계 🔶→✅, "역DCF 9항목 중 1·2 완료"→"1·2·4·5·6 완료", 897 판정 블록 추가(895 판정은 보존).
+- `docs/AUDIT_895_SKIP_REASONS.md` — §2 "896 반영 후 상태" 신규(895 시점 표는 보존).
+- `docs/STATE.md` — HEAD 갱신(STEP 897) + DoD 현황 "1·2·4·6✅/3·5·8🔶"→"1·2·4·5·6✅/3·8🔶" + 플래그 서술을 Production/Preview 구분으로 정정.
+
+### 무변경 확인
+
+- `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` diff 0 · `REVDCF_ENABLED` Production OFF 유지·Preview 스코프도 손 안 댐(있던 그대로) · 크론 미실행 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · DoD 판정 칸은 5만 상향, 7·9 불변(판정 안 함) · tsc 0 · test 169/169(무변화).
+
 ## 2026-08-04 (41) — ✅ **STEP 896 실행: 스킵 사유 오표시 차단 · 문구 4종 신설 · `MISSING_TAG` 3분기** (895가 찾은 결함 2건 교정 · 계산 결과 무변경)
 
 > **성격**: 895가 찾은 두 결함(오표시 4종·`MISSING_TAG` 3원인 혼합)의 코드 교정. `lib/revdcf/engine.ts`·`compute.ts`·`lib/lensPrecompute.ts`·`data/`·`.github/` diff 0. 변경 = `components/RevDcfSection.tsx`(축소)·`lib/revdcf/drivers.ts`(반환 문자열 3곳)·`messages/ko.json`·`messages/en.json`(+8키)·`app/api/cron/revdcf/route.test.ts`(+1건) 및 신규 `lib/revdcf/skipKey.ts`·`skipKey.test.ts`·`drivers.test.ts`. 전제 상태: HEAD `a059f3a`(895) · tsc 0 · test 158/158. 순서 고정 §2→§3→§4 그대로 지킴.

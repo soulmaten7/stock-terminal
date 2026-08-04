@@ -6,16 +6,16 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 896)** · 부모(STEP 895 `a059f3a`) · **push 완료 — origin/main + revdcf-preview 반영.**
-- ✅ **STEP 896 = 895가 찾은 스킵 사유 오표시 차단 + 문구 4종 신설 + `MISSING_TAG` 3분기 — 계산 결과 무변경(반환 문자열·화면 문구만).** §2: `components/RevDcfSection.tsx`의 `skipKey` fallback을 `lib/revdcf/skipKey.ts`(신규·`skipKeyFor`+`SKIP_KEY_MAP`)로 추출, 알 수 없는 사유는 `missingTag`가 아니라 **중립 폴백 `unspecified`**로 감(889 원칙). `HTTP_*`는 접두어 매칭이라 열거 불필요. §3: `NO_MARKETCAP`·`MULTI_CLASS_SHARES`·`EX`·`HTTP_*` 4종 화면 문구 신설(ko/en 패리티·판단어 없이 사실만·HTTP_* 상태코드는 노출 안 함 — 내부 구현 상세 비노출). §4: `lib/revdcf/drivers.ts`의 세 반환 지점(:113·:119·:122, `has5(...)` 조건·순서·`flags`는 무변경)이 `MISSING_TAG_OPERATING_INCOME`·`MISSING_TAG_PPE`·`MISSING_TAG_OPERATING_CASH` 세 코드로 분리. **896 이전 DB 행은 `MISSING_TAG` 그대로 남음**(문구 유지·`REVDCF_SPEC` §10 #68 기록). §5: 신규 테스트 11건(`lib/revdcf/skipKey.test.ts` 6·`lib/revdcf/drivers.test.ts` 4·`route.test.ts` 1) — `engine.ts`/`compute.ts` 테스트 무변경. 커밋 메시지는 STEP 초안 그대로 사용(§2~§4 실제 결정과 일치 확인 — 894 교훈 재점검 완료). 🔴 **DoD5는 이 STEP에서 판정하지 않음**(895의 🔶 유지 — 재판정은 897 이후). 상세 = `docs/REVDCF_SPEC.md` §10 #68~69.
-- ✅ **STEP 895 = 스킵 사유 3자 대조(코드↔문서↔화면) + DoD 5 판정 — 문서 정정만(코드 0).** 🔴 **정규 크론이 08-03에 돌아 880 전환 반영**(계산 465·`NO_MARGINAL_CAPEX` 50 신설, 604×3 유지 — 이 STEP이 발견한 것 아니라 전제 상태로 주어짐). 코드 스킵 사유 = **10종+`HTTP_*`(가변)**(문서 구버전 "5종" 정정). `docs/AUDIT_895_SKIP_REASONS.md` 신설 — 3자 대조 결과 **문구 없는 4종(NO_MARKETCAP·MULTI_CLASS_SHARES·EX·HTTP_*)이 "안 보임"이 아니라 `skip.missingTag`로 잘못 표시됨**(코드 확인). **판정①**: `MISSING_TAG`가 세 원인(영업이익15·PP&E13·현금흐름3)을 한 코드로 뭉침 = **889 원칙 위반**(896에서 교정 완료). **판정②**: DoD5(경계 처리) = **🔶 유지**(3중 검증 패스 완료 — 패스1 원전 T8 C31 재개봉해 경계처리 0건 확인·패스2 실측·패스3에서 오표시 결함 발견해 ✅ 안 줌). 문서 5종→10종+가변 정정. 🔴 **894의 커밋메시지 함정 재확인** — 이 STEP엔 같은 함정 없음(확인 완료). 상세 = `docs/AUDIT_895_SKIP_REASONS.md`·`docs/REVDCF_SPEC.md` §10 #68~69.
+- HEAD = **이 커밋(STEP 897)** · 부모(STEP 896 `18f05c5`) · **push 완료 — origin/main + revdcf-preview 반영.**
+- ✅ **STEP 897 = `revdcf-preview` 정체 규명 + DoD 5 재판정(✅ 상향) — 읽기 전용(코드 diff 0).** §1: `.vercel/project.json` 확인(미수정) → `revdcf-preview`는 Vercel Git 연동 기본동작으로 Preview 배포를 받고 안정 별칭 URL 존재(`vercel inspect` 확인). 🔴 **`REVDCF_ENABLED`가 Vercel Preview 스코프에 이미 3일 전부터 `true`로 설정돼 있었다**(`vercel env ls` · Production엔 없음 · 손 안 댐 — 끄고 켜는 건 이 STEP 권한 밖). 다만 **Vercel Deployment Protection(SSO)**이 익명 접근을 전부 막고(curl 302), **Supabase env가 Production 스코프에만 있어**(Preview 없음) 그 경로로 실제 화면이 검증된 흔적은 없음 — 866~896의 "라이브 미검증(플래그 OFF)" 기재는 **오기재 아님**(Production 기준 정확). Vercel MCP 403(Cowork의 "rate-limit" 추정은 부정확·실제는 스코프 권한 없음) — 로컬 `vercel` CLI는 인증돼 있어 그걸로 전부 확인. §2: 로컬 dev(`localhost:3333`, 이미 `REVDCF_ENABLED=true`로 떠 있던 기존 프로세스)에서 라이브 재검증 — `MULTI_CLASS_SHARES`(`V`) 문구 정상·과거 `MISSING_TAG`(`GE`) 문구 유지·WACC 원장 행 `/en/revdcf`에 서버렌더 확인. 🔴 **`RevDcfSection`은 클라이언트 전용 fetch라 curl로 최종 DOM은 절대 못 봄**(환경 무관 구조적 한계) — 이 세션에 브라우저 도구 없어 진짜 육안 검증은 못 함(과거 STEP 전부 동일 한계였음을 확인). §3: **DoD 5 = ✅ 상향**(895의 🔶 재판정) — 895의 결함 둘(오표시·MISSING_TAG 혼합)을 코드 재열람+테스트 재실행(169/169)+라이브 데이터로 독립 재확인, 7렌즈 DoD9도 브라우저 아닌 API 실측이었다는 선례와 정합. DoD 7·9는 불변(❌·🔶, 판정 안 함). 상세 = `docs/REVDCF_SPEC.md` §10 #70·`docs/LENS_COMPLETION_STANDARD.md` "✅ 897 판정"·`docs/AUDIT_895_SKIP_REASONS.md` §2.
+- ✅ **STEP 896 = 895가 찾은 스킵 사유 오표시 차단 + 문구 4종 신설 + `MISSING_TAG` 3분기** — 상세 = `docs/CHANGELOG.md` (41).
+- ✅ **STEP 895 = 스킵 사유 3자 대조(코드↔문서↔화면) + DoD 5 판정(🔶 유지, 897에서 ✅로 상향됨)** — 상세 = `docs/CHANGELOG.md` (40).
 - ✅ **STEP 894 = `retryBudgetHit` 관측 연결 + 상호 주석 완성** — 상세 = `docs/CHANGELOG.md` (39).
-- 🔴 **STEP 893 = 892 처방 B 적용(revdcf 크론 7일 TTL 필터, 위험 변경)** — 상세 = `docs/CHANGELOG.md` (38).
 - 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~896(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+처방 B 적용+관측 연결·상호주석 완성+스킵사유 3자대조·DoD5 판정+**스킵사유 오표시 교정·MISSING_TAG 3분기**) 전부 유효 — 상세 CHANGELOG. `lib/revdcf/engine.ts`·`compute.ts`·`lib/lensPrecompute.ts`·`data/`·`.github/` diff 0(896도 그대로 지킴).
-- **tsc 0 · vitest 169/169**(158+11 신규) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 896은 배치 쓰기 없음) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0) · `lens_scores`·`lens_cuts` 쓰기 0.
-- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
-- 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
+- 866~897(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+처방 B 적용+관측 연결·상호주석 완성+스킵사유 3자대조·DoD5 판정+스킵사유 오표시 교정·MISSING_TAG 3분기+**revdcf-preview 정체 규명·DoD5 ✅ 상향**) 전부 유효 — 상세 CHANGELOG. `lib/revdcf/engine.ts`·`compute.ts`·`lib/lensPrecompute.ts`·`data/`·`.github/` diff 0(897은 문서만·코드 diff 0).
+- **tsc 0 · vitest 169/169**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0) · `lens_scores`·`lens_cuts` 쓰기 0.
+- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**(897 범위 밖 — 크론 9개와의 모순은 여전히 미해소)
+- 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` — Production OFF(불변) · Vercel Preview 스코프는 `true`(897 발견·3일 전부터·손 안 댐).** 켜는(Production) 조건 = 육안 검증 → **장은태 명시 승인.** 로컬 프리뷰 dev = `localhost:3333`(이미 `REVDCF_ENABLED=true`로 기동 중) · Vercel Preview 배포는 SSO+Supabase 미배선으로 사실상 미사용 채널.
 
 ---
 
@@ -50,7 +50,7 @@
 - 🔴 **정정(866B)**: NC 제외사유로 적었던 "OTC"·"주식구조 복잡"은 원본에 없다(원문 유일 제외서술 = "no revenue"). `MULTI_CLASS_SHARES` 5사도 같은 사유로 철회.
 - **결정 원칙**: 컷은 **전수 분포를 본 뒤에** 정한다. "계산 못 함"과 "계산했는데 감춤"을 뒤섞지 않는다.
 
-### 2) DoD 현황 — **1·2·4·6 ✅ / 3·5·8 🔶 / 7·9 ❌**
+### 2) DoD 현황 — **1·2·4·5·6 ✅ / 3·8 🔶 / 7·9 ❌**
 
 | # | 항목 | 상태 |
 |---|---|---|
@@ -58,7 +58,7 @@
 | 2 | 입력 검증 | ✅ (862 · D&A 결측 21.7%→**11.4%**) |
 | 3 | 값 검증 | 🔶 **도메인 상한**(863·864 · 8곳 소진) · 재현가능 동시점 개별 대조 **0건** · 🔴 **✅ 상향은 장은태 판단** |
 | 4 | 컷·분포 | ✅ (891 · 890 조건부 승인 충족 — 모집단을 실제표본604/목표치2,857/7렌즈표본 세 구분으로 문서화. 불리한 사실 = 604 중 86사 시총 스테일) |
-| 5 | 경계 처리 | 🔶 유지(895 판정 그대로 — **896이 오표시 4종·MISSING_TAG 3분기를 코드로 교정 완료**, 재판정은 897 이후 별도) — 적자 78사는 865로 지지 |
+| 5 | 경계 처리 | ✅ **897 상향**(895의 🔶를 재판정 — 896의 코드 교정을 독립 재확인[코드 재열람+테스트 169/169 재실행+라이브 데이터]. 🔴 불리한 사실 = `RevDcfSection` 클라이언트fetch 구조상 curl로 최종 DOM 미확인·브라우저 도구 없음·신규 코드 4종은 오늘 DB 행 0건이라 유닛테스트로만 확인) — 적자 78사는 865로 지지 |
 | 6 | 주장 정합 | ✅ (889 · 888 감사 위반5+보류3 전부 처리 · 불리한 사실 = 라이브 미검증) |
 | 7 | 화면 일관성 | ❌ 블록 — **모델 완성이 UI보다 먼저**(🚫 창작 금지 §4) |
 | 8 | 테스트 | 🔶 |
@@ -99,7 +99,7 @@
 - 875: 도미노 앵커 재현(driver4 A안 재현실패 원인규명·driver5 marginal=11.617% 정확일치) — driver4 ③판정 확정·driver5는 근거부재로 재개방.
 - 876: driver4 근거3(A안 커버리지12.6%) 철회·재측정(29.5%) — 판정 불변. 플레이북 #75.
 - 877: T7 직접개봉 — 원전이 WACC에도 현금세율 씀(서술≠셀) — driver3 진행표 첫 반영·driver4 근거 재해석·driver6 기록. 플레이북 #76.
-- 878~896: `docs/CHANGELOG.md` (24)~(41) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), 처방 B 적용·크론 코드 변경(893), retryBudgetHit 관측 연결+상호주석 완성(894), 스킵사유 3자대조+DoD5 🔶유지 판정(895), **스킵사유 오표시 교정+MISSING_TAG 3분기(896)**.
+- 878~897: `docs/CHANGELOG.md` (24)~(42) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), 처방 B 적용·크론 코드 변경(893), retryBudgetHit 관측 연결+상호주석 완성(894), 스킵사유 3자대조+DoD5 🔶유지 판정(895), 스킵사유 오표시 교정+MISSING_TAG 3분기(896), **revdcf-preview 정체 규명+DoD5 ✅ 상향(897)**.
 
 ---
 
