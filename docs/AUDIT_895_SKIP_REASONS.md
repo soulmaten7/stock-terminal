@@ -47,4 +47,6 @@
 | `HTTP_${status}`(가변) | ✅ `skip.httpError`(신설·상태코드 비노출) | 유닛테스트만(`skipKey.test.ts` — `HTTP_404`·`HTTP_503`·`HTTP_999` 등 임의 상태코드로 확인) |
 | (매핑에 없는 모든 미래 사유) | ✅ `skip.unspecified`(신설 중립 폴백 — 896 이전엔 `missingTag`로 오표시됐던 자리) | 유닛테스트만 |
 
-🔴 **여전히 남은 것**: `RevDcfSection`이 클라이언트 전용 fetch 컴포넌트라 curl로는 절대 실제 DOM 최종 렌더(줄바꿈·색·잘림)를 볼 수 없다 — 브라우저 자동화 도구가 이 세션에 없어 완전한 육안 검증은 못 했다. 상세 판정 = `docs/LENS_COMPLETION_STANDARD.md` "✅ 897 판정 — DoD 5".
+🔴 **여전히 남은 것**: `RevDcfSection`이 클라이언트 전용 fetch 컴포넌트라 curl로는 절대 실제 DOM 최종 렌더(줄바꿈·색·잘림)를 볼 수 없다 — Claude Code(이 세션)에 브라우저 자동화 도구가 없어 그 경로로는 완전한 육안 검증을 못 했다. 상세 판정 = `docs/LENS_COMPLETION_STANDARD.md` "✅ 897 판정 — DoD 5".
+
+**898 정정(#80 절차)** — 위 문장이 "육안 검증 0건"으로 읽힐 수 있어 정정한다. **Cowork은 브라우저 도구가 있어 898에서 로컬(`localhost:3333`) 육안 검증 7건을 실제로 수행했다**(방법론 페이지 렌더·`repro` 문구·WACC 원장 행·세율 행·과거 `MISSING_TAG` 문구 등 — `REVDCF_SPEC.md` §11 898 항목). 🔴 **다만 이 표(§0~§2)가 다루는 신규 스킵 사유 문구(`multiClassShares`는 라이브 확인 · `noMarketcap`·`exception`·`httpError`·`unspecified`·`MISSING_TAG_*` 3분기)는 898에서도 브라우저로 다시 보지 않았다** — 여전히 유닛테스트 또는 curl 레벨 확인뿐이다. Vercel Preview는 898에서 인증 브라우저로 접속됐으나 `/revdcf`가 500을 반환해 그 경로로도 검증되지 않았다.

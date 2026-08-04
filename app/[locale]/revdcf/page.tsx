@@ -36,7 +36,7 @@ export default async function RevDcfMethodPage({ params }: { params: Promise<{ l
           <table className="w-full min-w-[560px] border-collapse text-[13px]">
             <thead>
               <tr className="border-b border-unjong-border text-left text-unjong-muted">
-                <th className="py-2 pr-3 font-medium">{t("col.item")}</th>
+                <th className="py-2 pr-3 font-medium whitespace-nowrap">{t("col.item")}</th>
                 <th className="py-2 pr-3 font-medium">{t("col.source")}</th>
                 <th className="py-2 pr-3 font-medium">{t("col.ours")}</th>
                 <th className="py-2 font-medium">{t("col.why")}</th>
@@ -45,7 +45,7 @@ export default async function RevDcfMethodPage({ params }: { params: Promise<{ l
             <tbody>
               {rows.map((r) => (
                 <tr key={r} className="border-b border-unjong-border align-top">
-                  <td className="py-2 pr-3 font-medium">{t(`row.${r}.i`)}</td>
+                  <td className="py-2 pr-3 font-medium whitespace-nowrap">{t(`row.${r}.i`)}</td>
                   <td className="py-2 pr-3 text-unjong-muted">{t(`row.${r}.s`)}</td>
                   <td className="py-2 pr-3">{t(`row.${r}.o`)}</td>
                   <td className="py-2 text-unjong-muted">{t(`row.${r}.w`)}</td>
