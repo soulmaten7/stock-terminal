@@ -1,6 +1,42 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (40) — ✅ **STEP 895 실행: 스킵 사유 3자 대조(코드↔문서↔화면) · DoD 5 판정(🔶 유지)** (문서 정정만 · 코드 0)
+
+> **성격**: `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0**. 변경은 `docs/`뿐 — 신규 `docs/AUDIT_895_SKIP_REASONS.md`. 전제 상태: 정규 크론이 2026-08-03에 돌아 880 전환이 처음 반영됨(계산 465·`NO_MARGINAL_CAPEX` 50 신설·604×3 유지) — 이 STEP이 만든 변화 아니라 주어진 전제. 커밋 = 이 커밋(부모 `d413b7e`).
+
+### §0 Cowork 자체 정정(894가 남긴 문제 처리)
+
+894가 "커밋 메시지가 아직 안 내린 판단을 확정형으로 단정해 실행 측이 고쳐 써야 했다"고 보고한 것을 명령서 결함으로 인정 — `docs/LENS_DEV_PLAYBOOK.md` **"0. 관통 원칙"에 8번 신설**(*"명령서의 커밋 메시지에 아직 안 내린 판단의 결과를 확정형으로 쓰지 않는다"*). 이 STEP 자체의 커밋 메시지도 실행 전 재확인 — 판단을 여는 절(§3의 두 판정) 결과를 단정하지 않고 중립적으로 서술돼 있어 **같은 함정 없음**을 확인.
+
+### §1~§2 3자 대조 — Cowork 사전 실측을 전부 재확인 후 표 작성
+
+- 코드: `git grep`으로 직접 재확인 — 스킵 사유 **10종 + `HTTP_${status}`(가변)**. `MISSING_TAG`가 서로 다른 세 코드 위치(`drivers.ts:113`·`:119`·`:122` — 영업이익·PP&E·영업현금흐름)에서 같은 문자열을 반환.
+- 발생 수: Supabase 직접 조회(최신 `as_of`=2026-08-03)로 재확인 — 계산 465, 스킵 139(23.0%): `NO_MARGINAL_CAPEX` 50·`INSUFFICIENT_HISTORY` 39·`MISSING_TAG` 31(`flags->>'missing'`로 세부 조회: 영업이익15·PP&E13·현금흐름3)·`NO_INDUSTRY` 10·`MULTI_CLASS_SHARES` 5·`NOT_APPLICABLE_SECTOR` 4. `NO_MARKETCAP`·`STALE_MARKETCAP`·`EX`·`HTTP_*`는 0건 — Cowork 사전 실측과 전부 일치.
+- 문서(구): 5종만 기재 — 일치.
+- 화면(`messages/ko.json` `RevDcf.skip`): 6종 — 일치. `NO_MARKETCAP`·`MULTI_CLASS_SHARES`·`EX`·`HTTP_*` 문구 없음 — 일치.
+- 🔴 **§1에 없던 발견**: 문구 없는 4종이 코드에서 실제로 어떻게 렌더되는지 `components/RevDcfSection.tsx:70`을 직접 열어 확인 — "안 보임"이 아니라 **`skipKey` 3항연산자의 `else` 분기로 떨어져 `skip.missingTag`("재무 항목 5년치 미확보")가 잘못 표시된다.** `MULTI_CLASS_SHARES`(주식 구조 문제)·`NO_MARKETCAP`(시총 없음)·`EX`(예외)·`HTTP_*`(SEC API 실패) 전부 재무 데이터 5년치와 무관한데 같은 문구가 뜬다. 오늘 `MULTI_CLASS_SHARES` 5건이 실제로 이 오표시 대상.
+- `flags.missing`이 화면에 도달하는지 grep으로 확인 — **0건**(렌더링 코드 없음). `MISSING_TAG`의 세 원인은 DB엔 구분 저장되나 사용자는 절대 구분 못 함.
+
+`docs/AUDIT_895_SKIP_REASONS.md` 신설 — 사유 하나당 한 행(코드 위치·발생 조건·발생 수·문서 기재·화면 문구·문구 없을 때 실제 화면)의 3자 대조표.
+
+### §3 판정 두 개
+
+1. **`MISSING_TAG` 원인 분기 = 889 원칙 위반.** 근거는 위 실측(15/13/3 서로 다른 원인이 한 코드·한 문구로 뭉침, `flags.missing` 미노출). 🔴 코드는 안 고침(계산 경로 변경이라 테스트 필요) — **896 대상**으로 등재.
+2. **DoD 5(경계 처리) = 🔶 유지.** 3중 검증 처음 실행: 패스1(원전 대조) — `T8.xlsx` `Price Implied Expectations!C31` 재개봉, `=IF(...,"25+",IF(...,"<1",LOOKUP(...)))` 확인 — 음수·결측 분기 0건·코멘트 0건(866D 재확인) → 원전엔 경계 처리 개념 자체가 없다(단일 완결 사례만 다룸) → 우리 스킵 사유 전부가 "우리 추가물". 패스2(실측) — 위 3자 대조표 전체. 패스3(화면 정합) — 🔴 **결함 발견**(문구 4종 오표시)으로 ✅를 주지 않음. 대가(문서가 훨씬 길어짐)·불리한 사실(라이브 렌더 미검증·"결측 표기"가 두 군데서 깨짐)·재검토 조건(896 완료 또는 라이브 확인 시)을 판정서 형식으로 `LENS_COMPLETION_STANDARD.md`에 기록.
+
+### 연동 문서
+
+- `docs/AUDIT_895_SKIP_REASONS.md` 신설.
+- `docs/LENS_COMPLETION_STANDARD.md` — DoD 5 서술을 5종→10종+가변으로 정정(취소선 보존) + 판정 두 개 기록.
+- `docs/REVDCF_SPEC.md` §10 — **#68**(`MISSING_TAG` 분기, 896 대상)·**#69**(화면 문구 4종, 896 대상) 신규.
+- `docs/LENS_DEV_PLAYBOOK.md` — "0. 관통 원칙" 8번 신설(894 사건 승격).
+- `docs/STATE.md` — HEAD 갱신 + DoD5 행 갱신, 131줄(상한 142 이내).
+
+### 무변경 확인
+
+- `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행(이 STEP에서는) · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · DoD 판정 칸은 5만 재판정(🔶 유지, 뒤집힘 아님)이고 나머지 불변.
+
 ## 2026-08-04 (39) — ✅ **STEP 894 실행: `retryBudgetHit` 관측 연결 · 상호 주석 완성** (7렌즈 라이브 파이프라인 · 관측·주석만)
 
 > **성격**: `lib/lensPrecompute.ts`는 플래그 뒤에 있지 않고 매일 `lens_scores`·`lens_cuts`를 실제로 쓰는 **라이브 파이프라인**이다. 계산·게이트 로직은 무변경 — 바뀐 것은 console.log 2줄과 주석뿐. `lib/revdcf/**`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0**. 커밋 = 이 커밋(부모 `fb2fafb`).
