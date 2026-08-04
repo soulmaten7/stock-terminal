@@ -66,7 +66,8 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
   const badgeLabel = lossMaking ? t("outOfScope") : t(`badge.${v === "value_destroying" ? "valueDestroying" : v === "below_one" ? "belowOne" : v === "over_cap" ? "overCap" : v}`);
   // 🔴 880: NO_MARGINAL_CAPEX(driver5 marginal 산출 불가)을 "missingTag"(재무 5년 미확보)로 뭉치지 않는다 —
   //   실제 원인이 태그 결측만이 아니라 Δ매출=0 등으로도 갈릴 수 있어(862 선례: 사유 단정 금지) 별도 중립 문구를 쓴다.
-  const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : r.skipReason === "NO_MARGINAL_CAPEX" ? "noMarginalCapex" : "missingTag";
+  // 🔴 893: STALE_MARKETCAP(시총 7일 TTL 초과)도 같은 원칙으로 NO_MARKETCAP과 분리 — 시총이 없는 것과 묵은 것은 다른 상태다(888/889).
+  const skipKey = r.skipReason === "INSUFFICIENT_HISTORY" ? "insufficientHistory" : r.skipReason === "NOT_APPLICABLE_SECTOR" ? "notApplicableSector" : r.skipReason === "NO_INDUSTRY" ? "noIndustry" : r.skipReason === "NO_MARGINAL_CAPEX" ? "noMarginalCapex" : r.skipReason === "STALE_MARKETCAP" ? "staleMarketcap" : "missingTag";
 
   return (
     <section className="mt-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5">

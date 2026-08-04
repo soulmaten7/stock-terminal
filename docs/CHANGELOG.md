@@ -1,6 +1,34 @@
 <!-- 2026-08-04 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-04 (38) — 🔴 **STEP 893 실행: 892 처방 B 적용 — revdcf 크론에 시총 7일 TTL 필터** (오늘 세션 최대 위험 변경)
+
+> **성격**: 매일 도는 `app/api/cron/revdcf/route.ts`의 코드를 바꾼 STEP. `lib/revdcf/**`(engine·drivers·compute) **diff 0** — 계산 로직은 그대로, 어떤 행을 읽느냐만 바뀐다. `lib/lensPrecompute.ts`·`data/`·`.github/`도 diff 0(수정 금지 준수). 장은태 승인(2026-08-04) — 892 §3 처방 B. 커밋 = 이 커밋(부모 `0984953`).
+
+### §1 적용 내용
+
+- **1-1 TTL 필터**: `route.ts`의 `us_market_cap` 조회에 `as_of` 컬럼 추가, `MCAP_TTL_DAYS = 7`(`lib/lensPrecompute.ts:142`와 같은 값) 상수 신설. 🔴 그 파일은 이 STEP 범위 밖(수정 금지)이라 **상수 복제가 불가피** — `route.ts`에 그 파일 줄번호를 가리키는 주석을 남겼다(반대 방향 주석은 lensPrecompute.ts를 못 건드려 불가 — 이 비대칭을 보고에 명시).
+- **1-2 스킵 사유 분기**: 신규 `skip_reason: "STALE_MARKETCAP"`을 `NO_MARKETCAP`과 분리(888/889 원칙 — 시총이 없는 것과 묵은 것은 다른 상태). `flags.marketCapAsOf`·`flags.marketCapAgeDays` 기록. `messages/ko.json`·`en.json`에 `RevDcf.skip.staleMarketcap` 신설(ko/en 패리티·ICU·축약형 테스트 통과) + `components/RevDcfSection.tsx`의 `skipKey` 매핑에 반영(안 하면 새 사유가 조용히 `missingTag`로 뭉개짐 — §4 파일 목록엔 없었으나 배선을 완결하기 위해 필요해 포함).
+- **1-3 유니버스 보존**(880 교훈·이 STEP 최대 위험): `processOne`의 모든 코드 경로가 여전히 `{ ...base, ... }` 형태로 행을 반환함을 코드 재검토로 확인 — `return null`·`continue`·처리되지 않는 `throw` 0건(catch가 `skip_reason:"EX"` 행으로 받는다). STALE_MARKETCAP도 같은 패턴.
+
+### §2 회귀 방지 테스트 — 3건 신설
+
+`app/api/cron/revdcf/route.test.ts`에 새 `describe` 블록 추가: ①TTL 안(3일 전)이면 정상 계산 ②TTL 밖(8일 전)이면 `STALE_MARKETCAP`으로 스킵되고 **행이 써짐**을 확인(880 교훈 재확인) ③시총이 아예 없으면 `NO_MARKETCAP`이지 `STALE_MARKETCAP`이 아님을 확인(사유가 안 섞임). 기존 mock의 `us_market_cap` 응답에 `as_of: TODAY`를 추가해 기존 2건(880 회귀 테스트)도 그대로 통과. `lib/revdcf/**` 테스트는 손대지 않음(계산 불변).
+
+### §3 오늘 효과 = 0 확인(정직)
+
+`scripts/probe_893_ttl_effect.ts`(읽기 전용) — 604 유니버스 전원 조인: `wouldSkipStale(STALE_MARKETCAP)` **0**·`okWithinTtl` 604. 최고령(2026-07-30)이 오늘(08-04) 기준 5일 전이라 7일 TTL 미만 — **이 변경은 오늘 아무것도 바꾸지 않는다.** 892의 불리한 사실을 그대로 인용: 이 조치의 근거는 GAP 정확도 개선이 아니라 나이상한 무한 방지·내부 일관성이다("개선했다"고 적지 않음).
+
+### 연동 문서
+
+- `docs/REVDCF_SPEC.md` — A-11에 "893 적용 완료" 추가, A-12 판정서의 "적용 안 함" 줄을 "893 적용 완료·retryBudgetHit는 894로 이월"로 갱신, §10 #65 갱신 + **#67 신규**(894 대상 명시), §11에 893 실측 1행 추가.
+- `docs/LENS_COMPLETION_STANDARD.md` — DoD 5(경계) 각주에 `STALE_MARKETCAP` 추가 + 기존 스킵 사유 목록이 이미 코드 대비 불완전했다는 사실을 부기(이번에 전부 바로잡지는 않음). **판정 칸 불변**(5는 여전히 🔶).
+- `docs/STATE.md` — HEAD 갱신, 131줄(상한 142 이내).
+
+### 무변경 확인
+
+- `lib/revdcf/**`·`lib/lensPrecompute.ts`·`data/`·`.github/` diff 0 · `REVDCF_ENABLED` OFF 유지 · 크론 미실행(다음 정규 실행에 맡김) · `revdcf_results` 604×3 무변경 · `us_market_cap` 쓰기 0 · DoD 2·4·5 판정 칸 불변.
+
 ## 2026-08-04 (37) — ✅ **STEP 892 실행: 시총 신선도 원인 부분확정 · stale 편향 인과 분해 · 처방 판정(B)** (코드 변경 0)
 
 > **성격**: `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` **diff 0**. 변경은 `docs/` + 신규 `scripts/probe_892_staleness_causal.ts`(+ `docs/probe_892_staleness_causal.json`)뿐. 코드를 고치지 않고 원인을 확정하고 처방을 판정했다 — 적용은 893. 커밋 = 이 커밋(부모 `f6227a5`).

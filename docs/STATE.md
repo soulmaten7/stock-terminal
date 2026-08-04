@@ -6,14 +6,14 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 892)** · 부모 `f6227a5`(STEP 891) · **push 완료 — origin/main + revdcf-preview 반영.**
-- ✅ **STEP 892 = 신선도 원인 부분확정 + stale 편향 인과 분해 + 처방 판정(B) — 코드 변경 0.** §1: `retryBudgetHit` 진단이 계산되나 소비처 0(죽은 값) — 재시도예산이 실제 병목인지 **확정 불가**. STOCK_SYMS 배열위치 ↔ 스테일 **상관 없음**(인덱스비율평균 0.477≈균등). 정리(cleanup) 없어 나이상한 **무한**. §2(핵심): stale 73사 vs fresh 무작위 대조군 86사를 같은 방식 재현 — **대조군 평균 가격변동(4.57%)이 stale군(3.59%)보다 컸는데도** 판정변경·GAP이동 규모가 사실상 동일(13.7% vs 12.8%, 중앙값 둘다 1년). 🔑 **891의 그룹간 GAP중앙값 차이(9 vs 12)는 신선도 인과라는 근거가 약함**(구성효과 쪽에 무게 — 완전 반증은 아님). §3: **처방 = B(revdcf에 TTL 필터, lensPrecompute와 동일 7일 기준)** — 근거는 정확도 개선이 아니라 나이상한 무한 방지. DoD2·4 재판정 안 함(안 흔들림 재확인). 적용은 893. 상세 = `docs/probe_892_staleness_causal.json`·`docs/REVDCF_SPEC.md` A-12.
+- HEAD = **이 커밋(STEP 893)** · 부모 `0984953`(STEP 892) · **push 완료 — origin/main + revdcf-preview 반영.**
+- 🔴 **STEP 893 = 892 처방 B 적용 — `app/api/cron/revdcf/route.ts`에 7일 TTL 필터(오늘 세션 최대 위험 변경 · 매일 도는 크론 코드).** `us_market_cap` 읽기에 `as_of` 포함 + `MCAP_TTL_DAYS=7`(`lensPrecompute.ts`와 같은 값·상수 복제, 그 파일은 수정 금지) 미만이면 신규 `skip_reason:"STALE_MARKETCAP"`(`NO_MARKETCAP`과 분리) + `flags`에 나이 기록. **유니버스 보존 확인**(스킵돼도 행 써짐·조기이탈 0건). **오늘 필터 효과 = 실측 0건**(최고령 07-30=5일 전, TTL 7일 미만 — 프로브로 확인). 🔴 **"정확도가 좋아진다"고 적지 않는다** — 892 §2가 이 조치의 근거를 GAP 정확도가 아니라 나이상한 무한 방지·내부 일관성으로 결론지었다(fresh 대조군도 stale군만큼 GAP이 움직임). `retryBudgetHit` 미연결은 **894로 이월**(해소 아님). 계산 로직(`lib/revdcf/**`) diff 0 · 신규 테스트 3건(TTL 안/밖/시총없음) 통과. 상세 = `docs/REVDCF_SPEC.md` A-11·A-12(#67)·`docs/probe_893_ttl_effect.json`.
+- ✅ **STEP 892 = 신선도 원인 부분확정 + 인과 분해 + 처방 판정(B)** — 상세 = `docs/CHANGELOG.md` (37).
 - ✅ **STEP 891 = DoD4 적용(✅) + 시총 신선도 결함 발견** — 상세 = `docs/CHANGELOG.md` (36).
 - ✅ **STEP 890 = DoD4 전제 실측 + 판정서** — 상세 = `docs/CHANGELOG.md` (35).
-- ✅ **STEP 889 = 888 감사 결과 교정 + DoD 6(주장 정합) = ✅.** 상세 = `docs/CHANGELOG.md` (34).
 - 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~892(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+**신선도 원인·인과분해·처방판정**) 전부 유효 — 상세 CHANGELOG. `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/` 로직 **diff 0**(892는 `docs/`+`scripts/probe_892_staleness_causal.ts` 신규뿐).
-- **tsc 0 · vitest 155/155**(무변화) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0).
+- 866~893(유니버스 조달 범위 확정·API 게이팅·문구정정·driver1~6+인플레 판정 완료+세율순효과 실측+대조표 재분류+표면 감사·교정+DoD4 전제 실측·적용+신선도 원인·인과분해+**처방 B 적용**) 전부 유효 — 상세 CHANGELOG. `lib/revdcf/**`·`lib/lensPrecompute.ts`·`data/`·`.github/` 로직 **diff 0**(893은 `app/api/cron/revdcf/route.ts`(+test)·`components/RevDcfSection.tsx`·`messages/*.json`·`docs/`+프로브 신규뿐).
+- **tsc 0 · vitest 158/158**(신규 3건 포함) · `revdcf_results` = 2026-08-01/02/03 각 **604**(무변경 — 크론 미실행) · `us_market_cap` = **5,887**(총량 무변경 · 쓰기 0).
 - ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**
 - 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` OFF.** 켜는 조건 = 프리뷰 육안 검증 → **장은태 명시 승인.** 프리뷰 dev = `localhost:3333`.
 
@@ -99,7 +99,7 @@
 - 875: 도미노 앵커 재현(driver4 A안 재현실패 원인규명·driver5 marginal=11.617% 정확일치) — driver4 ③판정 확정·driver5는 근거부재로 재개방.
 - 876: driver4 근거3(A안 커버리지12.6%) 철회·재측정(29.5%) — 판정 불변. 플레이북 #75.
 - 877: T7 직접개봉 — 원전이 WACC에도 현금세율 씀(서술≠셀) — driver3 진행표 첫 반영·driver4 근거 재해석·driver6 기록. 플레이북 #76.
-- 878~892: `docs/CHANGELOG.md` (24)~(37) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892).
+- 878~893: `docs/CHANGELOG.md` (24)~(38) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), **처방 B 적용·크론 코드 변경(893)**.
 
 ---
 

@@ -1060,7 +1060,8 @@
       "insufficientHistory": "상장·분할 후 5년이 지나지 않았습니다",
       "notApplicableSector": "유동/비유동을 구분하지 않는 재무제표라 이 기법이 성립하지 않습니다",
       "missingTag": "필요한 재무 항목이 5년치 확보되지 않았습니다",
-      "noIndustry": "업종 매핑이 없어 자본비용을 조립할 수 없습니다"
+      "noIndustry": "업종 매핑이 없어 자본비용을 조립할 수 없습니다",
+      "staleMarketcap": "시가총액 자료가 최근 값이 아니어서 계산하지 않습니다"
     },
     "driver": {
       "growth": "매출성장(과거5년)",

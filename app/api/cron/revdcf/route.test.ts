@@ -1,10 +1,15 @@
 // STEP 880 §3 패스2 — driver 5 ③판정(원전식 marginal 채택) 회귀 방지.
 // ⓐ marginal이 null이면 skip_reason: "NO_MARGINAL_CAPEX" 행이 (드롭되지 않고) 그대로 저장된다(§2 유니버스 보존).
 // ⓑ 주 판정 경로(fixed_capital_rate)에 level이 아니라 marginal이 들어간다(854 게이팅 누락 선례 — 테스트 부재로 회귀가 살아남았던 것과 같은 유형).
+// STEP 893 §2 — 892 처방 B(us_market_cap 7일 TTL) 회귀 방지. 854의 게이팅 누락이 테스트 부재로 살아남았던 것(868)과 같은 일을 반복하지 않는다.
 import { describe, it, expect, vi, afterEach } from "vitest";
+
+const TODAY = new Date().toISOString().slice(0, 10);
+const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000).toISOString().slice(0, 10);
 
 const upserts: Record<string, unknown>[] = [];
 let revdcfRangeCalls = 0;
+let mcapOverride: { symbol: string; market_cap: number; as_of: string }[] | null = null;
 
 function makeSupabaseMock() {
   const chain: {
@@ -38,7 +43,7 @@ function makeSupabaseMock() {
         return { data: [] }; // "done" 조회 — 아무것도 처리된 적 없음
       }
       if (table === "damodaran_industry") return { data: [{ ticker_norm: "NOMARG", industry_group: "IND" }, { ticker_norm: "HASMARG", industry_group: "IND" }] };
-      if (table === "us_market_cap") return { data: [{ symbol: "NOMARG", market_cap: 1000 }, { symbol: "HASMARG", market_cap: 1000 }] };
+      if (table === "us_market_cap") return { data: mcapOverride ?? [{ symbol: "NOMARG", market_cap: 1000, as_of: TODAY }, { symbol: "HASMARG", market_cap: 1000, as_of: TODAY }] };
       return { data: [] };
     };
     c.then = (resolve) => {
@@ -113,5 +118,71 @@ describe("GET /api/cron/revdcf — driver5 ③판정(marginal) 회귀 방지 (ST
     expect(hasmarg?.fixed_capital_rate).not.toBe(0.9);
     expect(hasmarg?.fixed_capital_rate_level).toBe(0.9);
     expect(hasmarg?.fixed_capital_rate_marginal).toBe(0.12);
+  });
+});
+
+describe("GET /api/cron/revdcf — us_market_cap 7일 TTL 회귀 방지 (STEP 893 §2 · 892 처방 B)", () => {
+  afterEach(() => {
+    vi.resetModules();
+    upserts.length = 0;
+    revdcfRangeCalls = 0;
+    mcapOverride = null;
+    delete process.env.CRON_SECRET;
+  });
+
+  const fetchMock = () =>
+    vi.fn(async (url: string | URL) => {
+      const m = /CIK(\d{10})\.json/.exec(String(url));
+      const cik = m ? parseInt(m[1], 10) : 0;
+      const marker = cik === 1 ? "no-marginal" : cik === 2 ? "has-marginal" : "unknown";
+      return { ok: true, json: async () => ({ facts: { "us-gaap": { __marker: marker }, dei: {} } }) } as Response;
+    }) as typeof fetch;
+
+  it("1) 시총이 TTL 안(3일 전)이면 정상 계산된다(스킵 아님)", async () => {
+    process.env.CRON_SECRET = "test-secret";
+    global.fetch = fetchMock();
+    mcapOverride = [{ symbol: "NOMARG", market_cap: 1000, as_of: daysAgo(3) }, { symbol: "HASMARG", market_cap: 1000, as_of: daysAgo(3) }];
+
+    const { GET } = await import("./route");
+    const res = await GET(new Request("http://x/api/cron/revdcf", { headers: { authorization: "Bearer test-secret" } }));
+    await res.json();
+
+    const hasmarg = upserts.find((r) => r.symbol === "HASMARG");
+    expect(hasmarg).toBeDefined();
+    expect(hasmarg?.skip_reason).toBeNull();
+    expect(hasmarg?.verdict).not.toBe("skipped");
+  });
+
+  it("2) 시총이 TTL 밖(8일 전)이면 STALE_MARKETCAP으로 스킵되고 행이 써진다(유니버스 보존)", async () => {
+    process.env.CRON_SECRET = "test-secret";
+    global.fetch = fetchMock();
+    mcapOverride = [{ symbol: "NOMARG", market_cap: 1000, as_of: daysAgo(8) }, { symbol: "HASMARG", market_cap: 1000, as_of: daysAgo(8) }];
+
+    const { GET } = await import("./route");
+    const res = await GET(new Request("http://x/api/cron/revdcf", { headers: { authorization: "Bearer test-secret" } }));
+    await res.json();
+
+    const hasmarg = upserts.find((r) => r.symbol === "HASMARG");
+    expect(hasmarg).toBeDefined(); // 🔴 880 교훈 — 스킵돼도 행은 반드시 써진다(드롭 아님)
+    expect(hasmarg?.skip_reason).toBe("STALE_MARKETCAP");
+    expect(hasmarg?.verdict).toBe("skipped");
+    expect((hasmarg?.flags as Record<string, unknown>)?.marketCapAgeDays).toBeGreaterThanOrEqual(7);
+    expect((hasmarg?.flags as Record<string, unknown>)?.marketCapAsOf).toBe(daysAgo(8));
+  });
+
+  it("3) 시총이 아예 없으면 NO_MARKETCAP으로 남는다(STALE_MARKETCAP과 사유가 섞이지 않는다)", async () => {
+    process.env.CRON_SECRET = "test-secret";
+    global.fetch = fetchMock();
+    mcapOverride = []; // 두 심볼 다 시총 행 자체가 없음
+
+    const { GET } = await import("./route");
+    const res = await GET(new Request("http://x/api/cron/revdcf", { headers: { authorization: "Bearer test-secret" } }));
+    await res.json();
+
+    const nomarg = upserts.find((r) => r.symbol === "NOMARG");
+    const hasmarg = upserts.find((r) => r.symbol === "HASMARG");
+    expect(nomarg?.skip_reason).toBe("NO_MARKETCAP");
+    expect(hasmarg?.skip_reason).toBe("NO_MARKETCAP");
+    expect(nomarg?.skip_reason).not.toBe("STALE_MARKETCAP");
   });
 });

@@ -1060,7 +1060,8 @@
       "insufficientHistory": "Fewer than 5 years since listing or spin-off.",
       "notApplicableSector": "The balance sheet is not classified (current vs non-current), so the method does not apply.",
       "missingTag": "The required 5-year financials are not available.",
-      "noIndustry": "No industry mapping to assemble the cost of capital."
+      "noIndustry": "No industry mapping to assemble the cost of capital.",
+      "staleMarketcap": "Not computed because the market cap data is not recent."
     },
     "driver": {
       "growth": "Sales growth (5y)",

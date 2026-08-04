@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-08-04 (STEP 893 §3)",
+  "asOf": "2026-08-04",
+  "mcapTtlDays": 7,
+  "mcapCutoff": "2026-07-28",
+  "universeSize": 604,
+  "wouldSkipStale_STALE_MARKETCAP": 0,
+  "wouldSkipNoMarketcap_unchanged": 0,
+  "okWithinTtl": 604,
+  "staleSymbolsDetail": [],
+  "expectation": "wouldSkipStale는 0이어야 한다(현재 최고령 07-30 = 오늘 기준 4~5일, TTL 7일보다 짧음). 0이 아니면 필터가 의도보다 넓게 걸린 것 — 중단·보고 대상.",
+  "conclusion": "확인됨 — 오늘 스킵 0건. 이 변경은 오늘 아무것도 바꾸지 않는다(미래 방어)."
+}

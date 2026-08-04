@@ -12,6 +12,10 @@ export const maxDuration = 300;
 // 유니버스 = 직전 as_of의 CIK 집합(로컬 파일 의존 없음). 값 코드에 안 박음(damodaran_* DB).
 const UA = { "User-Agent": "Trillion Research admin@onetrillion.app" };
 const BUDGET_MS = 270_000;
+// 🔴 STEP 893(892 처방 B 적용): us_market_cap 읽기에 신선도 상한. lib/lensPrecompute.ts:142(at10(now-7일))와 같은 7일 기준 —
+//   그 파일은 이 STEP 범위 밖(수정 금지)이라 상수를 복제한다. 값을 바꿀 땐 두 자리 모두 확인할 것.
+//   근거·대가·재검토조건 = docs/REVDCF_SPEC.md A-12(892 처방 판정서).
+const MCAP_TTL_DAYS = 7;
 
 export async function GET(req: Request) {
   const auth = req.headers.get("authorization");
@@ -40,9 +44,10 @@ export async function GET(req: Request) {
   const indRows: { ticker_norm: string; industry_group: string }[] = [];
   for (let f = 0; ; f += 1000) { const { data } = await sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true).range(f, f + 999); const c = (data ?? []) as typeof indRows; indRows.push(...c); if (c.length < 1000) break; }
   const indByT = new Map(indRows.map((r) => [r.ticker_norm, r.industry_group]));
-  const mcapRows: { symbol: string; market_cap: number }[] = [];
-  for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_market_cap").select("symbol, market_cap").range(f, f + 999); const c = (data ?? []) as typeof mcapRows; mcapRows.push(...c); if (c.length < 1000) break; }
-  const mcapBy = new Map(mcapRows.map((r) => [r.symbol.toUpperCase(), +r.market_cap]));
+  const mcapRows: { symbol: string; market_cap: number; as_of: string }[] = [];
+  for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_market_cap").select("symbol, market_cap, as_of").range(f, f + 999); const c = (data ?? []) as typeof mcapRows; mcapRows.push(...c); if (c.length < 1000) break; }
+  const mcapBy = new Map(mcapRows.map((r) => [r.symbol.toUpperCase(), r]));
+  const mcapCutoff = new Date(Date.now() - MCAP_TTL_DAYS * 24 * 3600 * 1000).toISOString().slice(0, 10);
 
   let lastCall = 0;
   const throttle = async () => { const w = lastCall + 130 - Date.now(); if (w > 0) await new Promise((r) => setTimeout(r, w)); lastCall = Date.now(); };
@@ -58,9 +63,16 @@ export async function GET(req: Request) {
       const j = (await wall(r.json(), 20000)) as { facts?: { "us-gaap"?: Record<string, never>; dei?: Record<string, never> } };
       const dr = computeDrivers(j.facts?.["us-gaap"] ?? {}, j.facts?.["dei"] ?? {});
       if (!dr.ok) return { ...base, skip_reason: dr.skipReason, flags: { ...dr.flags, damodaranAsOf: damoAsOf } };
-      const ind = symbol ? indByT.get(symbol.toUpperCase()) : undefined; const beta = ind ? betaByInd.get(ind) : undefined; const mcap = symbol ? mcapBy.get(symbol.toUpperCase()) : undefined;
+      const ind = symbol ? indByT.get(symbol.toUpperCase()) : undefined; const beta = ind ? betaByInd.get(ind) : undefined; const mcapRow = symbol ? mcapBy.get(symbol.toUpperCase()) : undefined;
       if (!ind || !beta) return { ...base, skip_reason: "NO_INDUSTRY", flags: { ...dr.flags, damodaranAsOf: damoAsOf } };
-      if (!mcap || !(mcap > 0)) return { ...base, skip_reason: "NO_MARKETCAP", flags: { ...dr.flags, damodaranAsOf: damoAsOf } };
+      if (!mcapRow || !(mcapRow.market_cap > 0)) return { ...base, skip_reason: "NO_MARKETCAP", flags: { ...dr.flags, damodaranAsOf: damoAsOf } };
+      // 🔴 STEP 893 — 시총이 없는 것과 묵은 것은 다른 상태다(888/889 원칙). us_market_cap은 symbol 단일 PK 누적 캐시라
+      //   갱신 실패 심볼이 옛 as_of째로 조용히 남는다(891/892 실측 — 892 처방 B). 나이를 flags에 남기고 별도 사유로 분기.
+      if (mcapRow.as_of < mcapCutoff) {
+        const ageDays = Math.round((Date.parse(asOf) - Date.parse(mcapRow.as_of)) / 86_400_000);
+        return { ...base, skip_reason: "STALE_MARKETCAP", flags: { ...dr.flags, damodaranAsOf: damoAsOf, marketCapAsOf: mcapRow.as_of, marketCapAgeDays: ageDays } };
+      }
+      const mcap = mcapRow.market_cap;
       const deRatio = dr.market.debt / mcap;
       const w = assembleWacc({ riskFree: rf, erp, unleveredBetaCashAdj: +beta.unlevered_beta_cash_adj, taxRate: usTax, deRatio, creditSpread: creditSpreadFor(+beta.std_dev_equity, spreads) ?? 0 });
       const sharePrice = mcap / dr.market.shares;
