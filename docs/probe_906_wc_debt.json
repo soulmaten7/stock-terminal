@@ -1,0 +1,176 @@
+{
+  "asOf": "2026-08-04",
+  "n604Computable": 465,
+  "tagScan": {
+    "candidateCount": 10,
+    "top12": [
+      {
+        "tag": "LongTermDebtCurrent",
+        "companiesWithFull5yr": 167
+      },
+      {
+        "tag": "DebtCurrent",
+        "companiesWithFull5yr": 85
+      },
+      {
+        "tag": "ConvertibleDebtCurrent",
+        "companiesWithFull5yr": 4
+      },
+      {
+        "tag": "NotesPayableCurrent",
+        "companiesWithFull5yr": 3
+      },
+      {
+        "tag": "UnsecuredDebtCurrent",
+        "companiesWithFull5yr": 2
+      },
+      {
+        "tag": "OtherLongTermDebtCurrent",
+        "companiesWithFull5yr": 2
+      },
+      {
+        "tag": "NotesAndLoansPayableCurrent",
+        "companiesWithFull5yr": 2
+      },
+      {
+        "tag": "OtherNotesPayableCurrent",
+        "companiesWithFull5yr": 1
+      },
+      {
+        "tag": "LongTermCommercialPaperCurrent",
+        "companiesWithFull5yr": 1
+      },
+      {
+        "tag": "SecuredDebtCurrent",
+        "companiesWithFull5yr": 1
+      }
+    ],
+    "chosen": [
+      "LongTermDebtCurrent",
+      "DebtCurrent",
+      "ConvertibleDebtCurrent",
+      "NotesPayableCurrent",
+      "UnsecuredDebtCurrent",
+      "OtherLongTermDebtCurrent",
+      "NotesAndLoansPayableCurrent",
+      "OtherNotesPayableCurrent"
+    ]
+  },
+  "coverage": {
+    "comparable": 246,
+    "uncomputable": 218,
+    "pctComparable": 53,
+    "calcImpossible": 1,
+    "noRefData": 218,
+    "noInterestTagCoverage": 218,
+    "noWaccRefData": 0,
+    "interestTagsAllZero_amongComparable": 1
+  },
+  "contaminationSize": {
+    "medianDeltaWc_pp": 3.361563046570549,
+    "p25_pp": 1.4201315829465875,
+    "p75_pp": 6.708861467100993,
+    "medianInterestShareOfLiabCur_pct": 10.732795475672125,
+    "p90InterestShareOfLiabCur_pct": 26.910300030996105
+  },
+  "verdictMovement": {
+    "migration": {
+      "over_cap→over_cap": 47,
+      "below_one→below_one": 35,
+      "value_destroying→value_destroying": 96,
+      "below_one→value_destroying": 1,
+      "years→years": 61,
+      "years→over_cap": 2,
+      "over_cap→value_destroying": 3,
+      "value_destroying→over_cap": 1
+    },
+    "outflow_comparableOnly": 2,
+    "inflow_comparableOnly": 0,
+    "outflow_includingUncomputable": 67,
+    "inflow_includingUncomputable": 0,
+    "asymmetryRatio_comparable": null,
+    "asymmetryRatio_incl": null
+  },
+  "leverageBias": {
+    "n": 246,
+    "pearsonLeverageVsAbsDelta": 0.22108483034675525,
+    "pearsonLeverageVsSignedDelta": 0.22108483034675525,
+    "note": "signed delta = wcAlt - wcOld(항상 ≥0에 가까움 — 이자부 제외는 부채를 덜 빼므로 운전자본 비율이 커지는 방향). 양의 상관 = 차입 많은 기업일수록 이자부 제외 시 더 크게 오른다(=현행이 그런 기업에서 더 크게 과소평가한다는 뜻)."
+  },
+  "dominoAnchor": {
+    "correction906": "875는 'Tutorial 4' 시트 rows31-44를 2014~2017(4개년)만 전사했다. 906이 openpyxl로 직접 재개봉(2026-08-05)해 보니 실제 표는 2014~2019(6개년) 전부를 담고 있다 — 875의 TUTORIAL4_YEARS가 불완전했다(875를 되돌리지 않음·데이터 자체는 정확했음·창만 좁았음).",
+    "row44IdentityCheck": "906이 6개년 전부 항등식 검증: row44(Current liabilities) == AccountsPayable+AccruedExpenses+AdvertisingFund+OtherAccrued, CurrentPortionOfLongTermDebt(row40) 미포함 — 6/6년 정확 일치(python openpyxl 직접 개봉, 오차 0). 즉 T4 자신의 '유동부채' 소계가 애초에 이자부 항목을 뺀 채로 보고된다.",
+    "level_production_style_actualCash": {
+      "window6yr_2014to2019": {
+        "withInterest_current현행": {
+          "mean": 0.044524142679182525,
+          "pct": "4.452%",
+          "annual": [
+            0.06617474836081565,
+            0.042049998917225495,
+            0.0199627114668306,
+            0.05226976243364815,
+            0.047124192069316284,
+            0.03956344282725897
+          ]
+        },
+        "nonInterest_이자부제외": {
+          "mean": 0.057327494853726624,
+          "pct": "5.733%",
+          "annual": [
+            0.06645812299662908,
+            0.0688184403716082,
+            0.03568981764208671,
+            0.06386382393841558,
+            0.05757995411384846,
+            0.05155481005977167
+          ]
+        }
+      },
+      "window5yr_2015to2019": {
+        "withInterest_current현행": {
+          "mean": 0.040194021542855896,
+          "pct": "4.019%"
+        },
+        "nonInterest_이자부제외": {
+          "mean": 0.040194021542855896,
+          "pct": "5.550%"
+        }
+      },
+      "note": "production driver4는 LEVEL(5년 평균 연간비율)이라 이 두 값이 형식상 우리 생산 공식과 같은 구조다. 그러나 I31(0.501%)은 MARGINAL(끝점차) 값이라 이 LEVEL 결과와 직접 비교(어느쪽이 I31에 가까운지)는 형식이 달라 의미가 없다 — 875가 이미 driver4-level에 대해 지적한 구조적 한계와 같은 종류."
+    },
+    "marginal_matching_I31_definition_reqCash": {
+      "I31_expected": 0.005011166545534272,
+      "I31_pct": "0.501%",
+      "withInterest_현행": {
+        "value": -0.021346065677380698,
+        "pct": "-2.135%",
+        "diffFromI31_pp": "-2.636"
+      },
+      "nonInterest_이자부제외": {
+        "value": 0.005011166545534203,
+        "pct": "0.501%",
+        "diffFromI31_pp": "-0.000",
+        "note": "875의 A_full(0.501%)과 정확히 동일 — 906이 오늘 독립 재현"
+      },
+      "finding": "T4의 필요현금 2% 관례(I31과 동일 정의)로 끝점차를 내면, 이자부 제외가 0.501%로 I31과 정확 일치하고, 이자부 포함은 -2.135%로 부호까지 반전하며 2.6%p 이상 벌어진다. 이 정의(마진·필요현금)는 I31과 형식이 같아 직접 비교가 유효하다."
+    },
+    "marginal_actualCash_reference_only": {
+      "note": "참고용 — production의 실제현금 관례를 그대로 끝점차한 것. I31의 필요현금 관례와 달라 '가까움'의 기준으로 쓰지 않는다(다른 관례로는 이자부포함이 더 가깝게 보일 수 있음 — 그 자체가 결론이 관례 선택에 좌우된다는 증거).",
+      "withInterest_현행": {
+        "value": 0.00691101164779316,
+        "pct": "0.691%"
+      },
+      "nonInterest_이자부제외": {
+        "value": 0.033268243870708064,
+        "pct": "3.327%"
+      }
+    }
+  },
+  "priorRelatedMeasurement_REVDCF_SPEC_line754": {
+    "quote": "이자부 부채를 못 뺀다(단기차입금 4태그 union 60.5%) → 매출 대비 중앙 2.56%p 과소(90%분위 15.87%p)",
+    "source": "docs/REVDCF_SPEC.md:754 (§5 B-4 · STEP 844 · 2026-08-01 · driver4 최종화 875보다 이전)",
+    "discrepancy": "875(2026-08-03, 더 나중·더 권위있는 ③판정)는 driver4 각주에 '그 크기는 미측정'이라 적었다 — 844의 이 수치와 모순된다. 844의 원 스크립트를 찾지 못해(scripts/ 전수 확인 — probe_844류 부재) 오늘 재검증 불가. 906은 이 수치에 의존하지 않고 604 유니버스·현재 drivers.ts로 독립 재측정했다 — 방향(현행이 과소평가)은 일치하나 크기는 906 실측을 정본으로 본다."
+  },
+  "note": "재료만 — 판정 없음. driver4 ③판정(✅ 현행 유지, 875)은 이 결과와 무관하게 유지. 재검토 조건 충족 여부('유의미'의 기준 미정 — LENS_COMPLETION_STANDARD.md §1에 정의 없음)는 장은태 판단 대기."
+}

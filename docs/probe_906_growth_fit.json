@@ -1,0 +1,84 @@
+{
+  "asOf": "2026-08-04",
+  "n": 459,
+  "comparableForVerdict": 459,
+  "coverage": {
+    "calcImpossible": 6,
+    "noRefData": 0
+  },
+  "estimatorComparison": {
+    "cagr_median": 0.09532703954485977,
+    "cagr_p25": 0.05346797241781298,
+    "cagr_p75": 0.15143363154181555,
+    "regression_median": 0.09135823532046294,
+    "regression_p25": 0.046435599900313096,
+    "regression_p75": 0.14738470567026785,
+    "diff_median_pp": -0.34211622304918254,
+    "diff_p25_pp": -1.1628396012376196,
+    "diff_p75_pp": 0.34187823993885313,
+    "signFlipCount": 9,
+    "signFlipPct": 2
+  },
+  "endpointOutlierAnalysis": {
+    "irregularityRatioMedian": 1.1785879833536532,
+    "irregularityRatioP75": 1.499999999999931,
+    "irregularityRatioP90": 1.5000000000000506,
+    "thresholdTable": [
+      {
+        "threshold": 1.5,
+        "flaggedCount": 91,
+        "pctOfN": 19.8,
+        "medianAbsDiff_flagged_pp": 0.35419973530588234,
+        "medianAbsDiff_rest_pp": 0.8570373101596251
+      },
+      {
+        "threshold": 2,
+        "flaggedCount": 0,
+        "pctOfN": 0,
+        "medianAbsDiff_flagged_pp": null,
+        "medianAbsDiff_rest_pp": 0.7756163814380601
+      },
+      {
+        "threshold": 3,
+        "flaggedCount": 0,
+        "pctOfN": 0,
+        "medianAbsDiff_flagged_pp": null,
+        "medianAbsDiff_rest_pp": 0.7756163814380601
+      }
+    ],
+    "note": "endpointIrregularityRatio = mean(|resid[2020]|,|resid[2024]|) / mean(|resid[2021..2023]|), resid=로그선형회귀 잔차. 1보다 크면 끝점이 중간3년보다 추세에서 더 벗어나 있다는 뜻. threshold별로 '끝점이 이상치인' 종목의 |CAGR-회귀| 차이가 나머지보다 큰지 대조."
+  },
+  "verdictMovement": {
+    "migration": {
+      "over_cap→over_cap": 79,
+      "value_destroying→value_destroying": 164,
+      "below_one→below_one": 64,
+      "over_cap→years": 2,
+      "below_one→value_destroying": 6,
+      "value_destroying→below_one": 1,
+      "years→years": 115,
+      "over_cap→value_destroying": 9,
+      "years→over_cap": 12,
+      "value_destroying→over_cap": 4,
+      "below_one→years": 2,
+      "years→value_destroying": 1
+    },
+    "outflow_comparableOnly": 13,
+    "inflow_comparableOnly": 4,
+    "outflow_includingUncomputable": 13
+  },
+  "dominoAnchor": {
+    "stepInstructionError906": "STEP 906 §3-5는 'T3에서 셀로 확인'이라 했으나, T3.xlsx를 직접 개봉하니 제목이 'How Do You Calculate A Company's Operating Profit Margin?'이다 — driver3(마진) 튜토리얼이지 driver1(매출성장) 튜토리얼이 아니다. 매출성장 원전 절은 Tutorial 02('How Do I Project Future Sales Growth Rates?', 이미 873 각주가 인용)인데 data/sources/text/EI_tutorial_02_sales.html만 있고 계산 스프레드시트(T2.xlsx)는 애초에 존재하지 않는다(공개 자료 자체에 없음 — 872가 이미 '튜토리얼 8개' 전수에서 확인한 범위와 일치).",
+    "where7PercentActuallyIs": "도미노 DCF의 성장률 7%는 T8.xlsx 'Inputs' 시트 C6('Sales growth rate')에 있다. 906이 직접 개봉(openpyxl data_only=False)해 셀 타입을 확인 — formula(data_type='f')가 아니라 리터럴 숫자(0.07, data_type='n')다. 5년 매출 이력에서 계산되는 셀 참조·수식이 전혀 없다.",
+    "implication": "7%는 CAGR도 회귀도 아닌 서사적 가정(narrative assumption)이다 — 873의 driver1 ③판정이 이미 확립한 것과 같은 구조('원전은 전망[가이던스·Value Line·컨센서스]을 쓰고 우리는 과거를 쓴다'). 따라서 'CAGR과 회귀 중 어느 쪽이 7%에 더 가까운가'라는 앵커 테스트는 성립하지 않는다 — 7%는 애초에 두 추정기 중 어느 것으로도 재현되도록 설계된 값이 아니다.",
+    "referenceOnly_cagrVsRegressionOnDominosOwnData": {
+      "window": "2015-2019(T3.xlsx 'Margins' 시트 row5 매출 그대로 — Tutorial 3 본문 표 row37과 동일값)",
+      "cagr_endpoints2015to2019": 0.13037342796829554,
+      "cagr_pct": "13.04%",
+      "regression_5yr": 0.13979670346684503,
+      "regression_pct": "13.98%",
+      "note": "7%와 비교하는 값이 아니다(위 참조) — 도미노의 실제 5년 매출로도 두 추정기가 서로 얼마나 다른 값을 내는지 보여주는 참고 수치일 뿐. 두 값 다 T8의 7%와 다르다(둘 다 역사적 추정이고 7%는 서사적 가정이므로 애초에 일치를 기대할 근거가 없다)."
+    }
+  },
+  "note": "재료만 — 판정 없음. driver1 ③판정(✅ 현행 유지·원전 미채택, 873)은 이 결과와 무관하게 유지. 이 STEP은 driver1이 다루지 않은 잔여 질문(추정기 자체 품질)만 측정한다."
+}
