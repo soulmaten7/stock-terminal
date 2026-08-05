@@ -1,6 +1,38 @@
 <!-- 2026-08-05 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-05 (56) — ✅ **STEP 911 실행: 안건 3 채널 정정 · Hobby 플랜 vs 크론 9개 모순 확인** (문서만 · `vercel.json` 무변경)
+
+> **성격**: 908·909가 안건 3(`#67`)을 "Vercel 대시보드 = 장은태 전용 채널"로 적었으나, Cowork이 인증된 브라우저로 직접 열어 반증했다(§0). 진짜 제약이 무엇인지 다시 규명하고, 겸사겸사 STATE §9에 미확정으로 남아 있던 "Vercel 플랜(Hobby) vs 크론 9개" 모순도 DB·공식문서로 확인하는 STEP. 전제: HEAD `a10a3e8`(910) · tsc 0 · test 182/182. **크론 수동 실행 금지·`vercel.json` 수정 금지·`#67` 소진 처리 금지.**
+
+### §0 Cowork 브라우저 실측
+
+`vercel.com/toms-projects-c798474e/stock-terminal/logs`가 인증된 브라우저로 열린다. 검색(`?search=`) 작동. 기본 Timeline "Last 30 minutes"에는 `topByMarketCap` 결과 0건. **플랜 배지 = `Hobby`** — STATE §9가 미확정으로 남겼던 "크론 9개 vs Hobby" 항목이 눈으로 확인됨. 897의 교훈("한쪽이 구조적으로 불가능이라 적은 것이 다른 쪽에서는 가능할 수 있다")이 두 번째로 성립.
+
+### §1 안건 3 재분류
+
+`docs/DECISION_908_PENDING.md`·`docs/REVDCF_SPEC.md` §10 `#67`의 "장은태 전용 채널" 서술을 취소선 보존하며 정정 — 남은 제약은 권한이 아니라 **로그 보존 기간**. `#67`은 소진 처리하지 않음 — 상태 = "채널 확인됨·값 미확보". `docs/LENS_DEV_PLAYBOOK.md` #85 신설(897+911, "이 세션 도구의 한계"를 "시스템의 한계"로 일반화한 오류 패턴을 원칙으로 승격).
+
+### §2 Hobby 플랜 vs 크론 9개 — DB 실측 + 공식문서 검색
+
+**크론 9개 열거 + 쓰기 대상 테이블**: us-perf→`us_stock_perf` · kr-perf→`kr_stock_snapshot` · kr-etp→`kr_etp_snapshot` · kr-lens-scores→`lens_scores`(KR) · lens-scores→`lens_scores`(US)+`us_market_cap`+`lens_cuts` · health→DB 쓰기 없음(읽기전용 진단) · daily-brief→`daily_brief` · email-brief→`cron_heartbeats`+이메일발송 · revdcf→`revdcf_results`.
+
+**최신 as_of/updated_at 실측**(2026-08-05 12:41 UTC 기준, Supabase MCP): us-perf(08-04 22:24)·kr-etp(08-05 10:25)·lens-scores US(08-04 22:18)·daily-brief(08-04)·email-brief 하트비트(08-04 23:14 ok=true)·revdcf(08-04) — **전부 정상**(스케줄상 오늘 실행분이 아직 안 왔거나 이미 왔음). 🔴 **kr-perf**(`kr_stock_snapshot`=08-04 10:37)와 **kr-lens-scores**(`lens_scores` market=KR=08-04 11:13)는 오늘(08-05) 10:00·10:30 UTC 지터 창(±59분, 아래 참조)이 이미 지났는데 갱신이 없다 — 약 1시간41분 초과. 🔴 **`lens_cuts`(US·KR 둘 다)는 2026-07-28 04:33 이후 8일 8시간 정체** — 같은 파이프라인의 값 upsert(`lens_scores`·`us_market_cap`)는 정상 갱신되는데 컷 재유도 upsert만 멈춘 패턴.
+
+**검색(외부 축)**: Vercel 공식(`vercel.com/docs/cron-jobs/usage-and-pricing`, WebFetch) — *"Hobby: 100 cron jobs · Minimum interval Once per day · Scheduling precision Per-hour(±59min)"*. 우리 9개는 전부 1일1회 스케줄이라 **100개 한도 내**(9≤100) — **모순 아님**으로 확정. 로그 보존은 별도 페이지(`vercel.com/docs/logs/runtime`) — *"Hobby: 1 hour of logs"*(Pro=1일·Enterprise=3일).
+
+**모순 여부**: 크론 개수·스케줄 자체는 모순 아님(확정). 다만 **KR 크론 2개의 오늘분 미실행 + `lens_cuts` 8일 정체**는 별개의 실제 이상 징후로 새로 발견됨 — 891~893이 시총 신선도에서 겪은 것과 같은 종류의 문제가 다른 테이블(KR 스냅샷·컷)에도 있을 수 있음을 시사. `vercel.json` 무변경(운영 변경은 이 STEP 범위 밖).
+
+### §3 적용
+
+`docs/DECISION_908_PENDING.md`(안건3 정정)·`docs/REVDCF_SPEC.md` §10 `#67`+§11(4개 원장 행: 대시보드 접근·Hobby 로그보존·Hobby 크론한도·크론9개 신선도 실측)·`docs/STATE.md` §9(Vercel 플랜 항목 해소 표시, 취소선 보존)·`docs/LENS_DEV_PLAYBOOK.md`(#85 신설).
+
+### 검증
+
+tsc 0 · vitest 182/182(무변화) · `git diff --stat HEAD -- lib/ app/ components/ messages/ data/ .github/ vercel.json` 출력 없음(코드·설정 diff 0) · `git status --porcelain` `??` 0건 · DB 쓰기 0(읽기만, Supabase MCP로 확인) · `REVDCF_ENABLED` Production OFF 무변경 · 크론 미실행 · 안건 2·4 무변경.
+
+---
+
 ## 2026-08-05 (55) — ✅ **STEP 910 실행: 안건 1(`#46`) 판정 — 현행 유지 + 한계 공개** (`lib/revdcf/**` diff 0 · 값 무변경)
 
 > **성격**: 906·907·909가 쌓은 재료로 안건 1(driver4 운전자본 정의)을 판정하는 STEP. Cowork이 909 실측을 근거로 낸 판정이며, 값을 안 바꾸므로 장은태가 다르게 판단하면 문서 수정만으로 되돌릴 수 있다(§5). 전제: HEAD `08f80ab`(909) · tsc 0 · test 182/182.
