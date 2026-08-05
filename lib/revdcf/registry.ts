@@ -257,7 +257,7 @@ export const OUR_ADDITIONS: OurAddition[] = [
       "🔴 물려받은 시작 목록 1,000 → 616종목/604발행사. **근거 없는 승계**(기존 7렌즈 lens_scores에서 가져옴). A-7 '정식 종료'는 '이 목록 안에서의 종료'로 격하",
     externalPractice:
       "🔴 3주체가 전부 다름 — NC=지수 사다리(S&P500→400→600→R3000)+3개월 평균거래량 순(**이유 서술 0건**·2,748사) / Morningstar Quant=유동성 하한만(**지수 무관**·US 4,379사) / Damodaran=**컷 없음**(주가>0 전 상장사 48,156·'제외 말고 남기되 결측 아닌 기업만 값을 보고'). 발췌 = data/sources/text/EXTERNAL_UNIVERSE_QUOTES.md",
-    status: "재개방",
+    status: "확정",
   },
   {
     id: "liquidity",
@@ -267,7 +267,7 @@ export const OUR_ADDITIONS: OurAddition[] = [
       "🔴 **확정 취소.** 문서(REVDCF_SPEC A-4)엔 '확정'이었으나 전 저장소 grep 결과 계산 경로엔 **0건** — engine·drivers·compute·배치·크론·API 어디에도 없다(유일한 히트는 probe_revdcf_us.ts §6 주석 '구현 안 함, 오는지만'). 분자(1년 거래대금)도 없어 계산 불가였다. 851 '표시 25년 컷'이 코드에 없던 것과 같은 유형(2회차)",
     externalPractice:
       "🔴 FALR(S&P 지수 편입 기준)을 쓰는 역DCF 주체는 **없다**. Morningstar만 유동성 하한을 쓰는데 기준이 다르다(60일 중앙 거래대금 현지통화 5,000/일 — 미국 상장사엔 사실상 안 걸림) 그리고 **이유를 명시**한다('모델 부정확·편향 완화'). Damodaran은 명시적으로 안 쓴다('표본 편향')",
-    status: "재개방",
+    status: "확정",
   },
 ];
 
