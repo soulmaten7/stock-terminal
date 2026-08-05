@@ -1126,9 +1126,9 @@
       },
       "wc": {
         "i": "Working capital",
-        "s": "Marginal",
-        "o": "Level, 5-year average",
-        "w": "Marginal varies 40%p year to year"
+        "s": "Marginal, non-interest-bearing current liabilities only",
+        "o": "Level, 5-year average, all current liabilities",
+        "w": "Marginal varies 40%p year to year. Subtracting all current liabilities produces a different sign than the source method for some stocks. Within what we have checked, that difference has not changed a verdict."
       },
       "cap": {
         "i": "Incremental capital rate",
