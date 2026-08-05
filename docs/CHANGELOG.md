@@ -1,6 +1,44 @@
 <!-- 2026-08-05 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-05 (57) — ✅ **STEP 912 실행: 라이브 이상징후 진단 — `lens_cuts` 8일 정체 · KR 크론 2개 미실행** (진단만 · 코드 diff 0)
+
+> **성격**: 911이 발견한 두 이상징후(`lens_cuts` 8일 정체·KR 크론 2개 미실행)를 진단하는 STEP. §0에서 이것이 "7렌즈 깊이 확장" 보류 위반이 아니라 "라이브 장애 진단"임을 명시(진단≠확장, 이 STEP이 붙여넣기로 실행된다는 것 자체가 장은태의 범위 승인). 전제: HEAD `a793fef`(911) · tsc 0 · test 182/182. **고치지 않는다 — 진단하고 판정서를 올린다.**
+
+### §1 911 실측 재확인
+
+1시간 경과 후(13:41 UTC) 재조회 — 9개 테이블 전부 911과 동일값. kr-perf·kr-lens-scores 미갱신 폭만 약 1시간 더 늘어남(지터창 초과 약 2h41m·2h11m).
+
+### §2 `lens_cuts` 정체 원인
+
+`lib/lensPrecompute.ts` 코드 확인: `capGateDecision`(coverageOk=freshCoverage≥97%[US]/95%[KR] · compositionOk[US만] · cutGateOk=coverageOk&&compositionOk)이 false면 `lens_cuts` upsert 자체가 호출되지 않는다(:400-401, 전날 컷 유지+Sentry error) — 값(`lens_scores`·`us_market_cap`) upsert는 이 게이트와 무관한 별도 경로(:132, :277)라 정상 동작. "값은 갱신, 컷만 정지"라는 관측과 코드가 정확히 일치.
+
+**US DB 역산**: `us_market_cap` 08-04 upsert 행 5,401/전체 5,888 · `STOCK_SYMS.length`(오늘 기준) 5,966 → `freshCoverage≈90.5%`(게이트 97% 미달, 6.5%p 부족). `capRows`가 `freshSet`으로만 구성됨을 코드로 확인(fallback은 별도 upsert 없음) — 역산 근거는 있으나, STOCK_SYMS가 매일 갱신돼 당일 값과 다를 수 있고 과거일자는 역산 불가 → **강한 정황증거(가설), 확정 아님**.
+
+**KR DB 역산**: `kr_stock_snapshot` 현재 커버리지 100%(2,774/2,774) — 게이트 임계 95%를 상회. 그러나 `onConflict:symbol`이라 과거 실행 시점 값은 안 남음 — **미상**(게이트 문제인지 크론 미실행 문제인지 KR은 US와 다른 그림일 수 있음).
+
+**07-28 무슨 일이 있었나**: `lens_cuts` 최종 성공(07-28 04:33)은 STEP 799~811(같은 날 커밋, 분포유도컷 도입)과 시기가 겹치고 `LENS_DEV_PLAYBOOK.md` #40의 "부트스트랩 SQL 즉시산출" 서술과 정합 가능성이 있다. 🔴 **중요한 시간 모순**: 취득게이트(`capGateDecision`, STEP 833)는 **07-30 커밋** — 정지 시각보다 이틀 뒤 도입됐다. 게이트가 존재하기도 전에 정지가 시작됐다는 뜻 — 최초 원인은 게이트와 무관할 수 있음, **확정 못 함**.
+
+**892·894 재평가 재료**: 892의 *"`retryBudgetHit`이 `capGateDecision` 인자에 없다"*는 코드 확인 결과 여전히 사실. 894의 *"게이트 변경은 범위 밖"* 판단은 "게이트가 실제로 뭔가를 막는지 몰랐던" 전제 위에 있었는데, 이번 진단이 그 전제를 바꿨다 — **재검토 여부는 장은태 몫, 이 STEP은 판단하지 않는다.**
+
+### §3 KR 크론 2개 미실행
+
+`kr_stock_snapshot`·`lens_scores`(KR) 둘 다 `onConflict:symbol`이라 과거 실행 이력이 DB에 안 남음 — 08-04 이전 패턴 여부 **판단 불가**. `cron_heartbeats`엔 `email-brief`·`jp-disclosures`만 있고 KR 크론 2개는 기록 없음 — **관측 수단 없음**. Vercel 로그는 오늘 실행분(10:00·10:30 UTC)이 이미 보존기간(1시간, 911 확정) 밖 — 내일(08-06) 같은 시각에 1시간 내로 확인 필요. 추정으로 원인을 적지 않음.
+
+### §4 판정서 — `docs/DECISION_912_LIVE.md` 신설
+
+무엇이 고장났는지(§1~3 사실) · 사용자 영향(분포유도컷 쓰는 5개 렌즈[모멘텀·저변동·밸류·퀄리티·자산성장]가 8일 전 컷 경계로 판정 중 — **영향 크기는 미측정으로 명시**, RSI·F-Score는 고정 표준값이라 무관) · 원인 확정 여부(US=가설·KR=미상·최초원인=미상) · **권고 하나**: 코드를 지금 고치지 않고, 다음 두 실행 시각(US 오늘 21:30 UTC·KR 내일 10:00·10:30 UTC)에 로그를 확인해 가설을 값으로 확정한 뒤 별도 STEP에서 다룬다. 근거·대가·불리한 사실·미룰 때의 비용 각각 기록.
+
+### §5 적용
+
+`docs/STATE.md` "▶ 다음" 최상단에 00번 항목으로 기록(142줄 상한 내) · `docs/REVDCF_SPEC.md` §11에 4개 원장 행(재확인·US역산·KR역산·시간모순) · `docs/LENS_COMPLETION_STANDARD.md`는 지시대로 건드리지 않음.
+
+### 검증
+
+tsc 0 · vitest 182/182(무변화) · `git diff --stat HEAD -- lib/ app/ components/ messages/ data/ .github/ vercel.json` 출력 없음(코드·설정 diff 0) · `git status --porcelain` `??` 0건 · DB 쓰기 0(읽기만) · `REVDCF_ENABLED` Production OFF 무변경 · 크론 미실행 · 게이트 무변경 · 안건 2·4 무변경.
+
+---
+
 ## 2026-08-05 (56) — ✅ **STEP 911 실행: 안건 3 채널 정정 · Hobby 플랜 vs 크론 9개 모순 확인** (문서만 · `vercel.json` 무변경)
 
 > **성격**: 908·909가 안건 3(`#67`)을 "Vercel 대시보드 = 장은태 전용 채널"로 적었으나, Cowork이 인증된 브라우저로 직접 열어 반증했다(§0). 진짜 제약이 무엇인지 다시 규명하고, 겸사겸사 STATE §9에 미확정으로 남아 있던 "Vercel 플랜(Hobby) vs 크론 9개" 모순도 DB·공식문서로 확인하는 STEP. 전제: HEAD `a10a3e8`(910) · tsc 0 · test 182/182. **크론 수동 실행 금지·`vercel.json` 수정 금지·`#67` 소진 처리 금지.**
