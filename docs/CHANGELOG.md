@@ -1,6 +1,38 @@
 <!-- 2026-08-05 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-05 (58) — ✅ **STEP 913 실행: `lens_cuts` 원인 재조준 — "8일 정체"는 잘못된 열 판독이었다** (진단만 · 코드 diff 0)
+
+> **성격**: 912의 실측(US·KR `lens_cuts.updated_at`이 같은 분·07-28 04:33에 멈춤)에서 "서로 다른 시각에 도는 두 크론이 같은 분에 값을 남길 수 없다"는 단서를 짚어, 원인을 재조준하는 STEP. 전제: HEAD `ae47b76`(912) · tsc 0 · test 182/182. **진단만, 코드 diff 0, 게이트 변경 금지.**
+
+### §1 `lens_cuts` 쓰기 주체 전수
+
+`lens_cuts` 참조 파일 8개를 전수 검색 후 **전부 직접 열어** 확인(grep 매칭만으로 안 끝냄): 쓰기 지점은 `lib/lensPrecompute.ts:403`(US·KR 크론이 공유하는 `computeLensScoresFor` 함수) **하나뿐**. 나머지(`lensCuts.ts`·`lenses/types.ts`·`health/route.ts`·마이그레이션 2건·probe 스크립트 2건)는 전부 읽기 전용이거나 스키마 정의뿐 — `20260728_lens_cuts.sql`을 직접 열어 seed INSERT가 없음(테이블 생성만)을 확인. 저장소에 별도 부트스트랩 스크립트는 없다.
+
+### §2 07-28 04:33 = 씨딩도 정지도 아니었다
+
+`information_schema.columns`로 `lens_cuts.updated_at` 확인 — default=`now()`. `information_schema.triggers`로 이 테이블의 트리거를 확인 — **0건**. `lensPrecompute.ts:394`의 upsert payload(`{market, lens_key, lo, hi, n, as_of, method}`)를 재확인 — **`updated_at` 필드가 없다.** 🔑 **이 컬럼은 최초 INSERT 순간에만 DB 기본값으로 찍히고, 이후 몇 번을 성공적으로 재-upsert해도 다시는 안 바뀐다.** US·KR 10행 전부가 같은 밀리초(07-28 04:33:55.17017)를 공유하는 이유는 "그때 다 같이 멈춰서"가 아니라 "그때 처음 생성된 뒤로 이 컬럼만 아무도 안 건드려서"다.
+
+**진짜 신선도 열(`as_of`, 애플리케이션이 매 실행 명시적으로 채움)을 10행 전부 직접 조회**: **US 5행 = 2026-07-30 · KR 5행 = 2026-08-04.** US=6일 전(진짜로 밀림), **KR=1일 전(정상)**. 대조: `lens_scores`는 payload에 `updated_at: at`을 명시적으로 포함(코드 확인) — 이 테이블의 `updated_at`은 신뢰할 수 있음. `us_market_cap`의 `freshCoverage` 역산(906·912)은 애초에 `as_of` 기준이었어서 영향 없음.
+
+### §3 KR "모순"은 모순이 아니었다
+
+912가 *"KR freshCoverage 100%인데 컷도 07-28에 멈춰 있다"*고 적은 전제(KR 컷이 멈춰 있다)가 틀렸다. KR `lens_cuts.as_of`(08-04)는 `kr_stock_snapshot`·`lens_scores`(KR)의 다른 성공 지표(둘 다 08-04)와 정합하고, `lens_scores` KR 행수(977)와 `lens_cuts` KR `n`값(919~970) 규모도 일치 — 최근 유니버스에서 산출된 값이다. **US·KR 원인은 서로 다르다**: US는 여전히 게이트 미달 가설, KR은 컷 문제 자체가 없었고 있는 건 오늘(08-05) kr-perf·kr-lens-scores 자체가 아직 안 돈 것뿐(912 §3, 913도 재확인 — 유효).
+
+### §4 판정서 갱신 — `docs/DECISION_912_LIVE.md`
+
+새 문서를 만들지 않고 912 본문에 **§6(913 정정) 신설** + 제목·핵심 문장에 취소선 정정 추가(본문 삭제 없음). 912 권고 중 KR 부분(§5 "내일 KR coverage 확인")은 철회 — KR 컷은 애초에 문제가 없었다. US 부분은 유지. **Cowork 실측 정정 등재**: Vercel **MCP** 채널(`get_runtime_logs`)도 **403 Forbidden**(다른 계정 인증: `orgId=team_75sBjDtj4rCJOBtQ2d1gnYE6`·`projectId=prj_o5Eao0DzSsFCo9Oa7ZkxdSKLSHdk`) — 로그 확인 수단은 CLI(907 불가)·MCP(913 불가) 둘 다 안 되고 **인증 브라우저 1개뿐**(911). 사용자 영향은 여전히 미측정으로 유지하되, 영향 범위를 **US 5개 렌즈만**으로 정정(KR 5개 렌즈는 무관).
+
+### §5 적용
+
+`docs/REVDCF_SPEC.md` §10 `#67`(MCP 403 추가) + §11(5개 원장 행: 쓰기주체전수·열판독오류·KR모순해소·MCP403). `docs/STATE.md` "▶ 다음" 00번 항목 전면 갱신(취소선 보존, 142줄 상한 내). `docs/LENS_DEV_PLAYBOOK.md` #86 신규("updated_at"이라는 이름만 보고 신선도 열이라 가정 금지 — payload·트리거 둘 다 확인). `docs/LENS_COMPLETION_STANDARD.md`는 지시대로 건드리지 않음.
+
+### 검증
+
+tsc 0 · vitest 182/182(무변화) · `git diff --stat HEAD -- lib/ app/ components/ messages/ data/ .github/ vercel.json` 출력 없음(코드·설정 diff 0) · `git status --porcelain` `??` 0건 · DB 쓰기 0(읽기만) · `REVDCF_ENABLED` Production OFF 무변경 · 크론 미실행 · 게이트 무변경 · 안건 2·4 무변경.
+
+---
+
 ## 2026-08-05 (57) — ✅ **STEP 912 실행: 라이브 이상징후 진단 — `lens_cuts` 8일 정체 · KR 크론 2개 미실행** (진단만 · 코드 diff 0)
 
 > **성격**: 911이 발견한 두 이상징후(`lens_cuts` 8일 정체·KR 크론 2개 미실행)를 진단하는 STEP. §0에서 이것이 "7렌즈 깊이 확장" 보류 위반이 아니라 "라이브 장애 진단"임을 명시(진단≠확장, 이 STEP이 붙여넣기로 실행된다는 것 자체가 장은태의 범위 승인). 전제: HEAD `a793fef`(911) · tsc 0 · test 182/182. **고치지 않는다 — 진단하고 판정서를 올린다.**
