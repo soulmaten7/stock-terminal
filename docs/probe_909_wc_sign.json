@@ -1,0 +1,93 @@
+{
+  "asOf": "2026-08-04",
+  "reproductionCheck906": {
+    "n906_comparable_expected": 246,
+    "n909_comparable_actual": 246,
+    "n906_medianDelta_expected_pp": 3.36,
+    "n909_medianDelta_actual_pp": 3.36,
+    "coverageTotal909": 246
+  },
+  "signFlipCount": {
+    "total": 26,
+    "pctOfComparable": 10.6,
+    "toPositive_wasNegativeNowPositive": 26,
+    "toNegative_wasPositiveNowNegative": 0
+  },
+  "signDistribution": {
+    "n": 246,
+    "oldNegativeCount": 114,
+    "oldNegativePct": 46.3,
+    "altNegativeCount": 88,
+    "altNegativePct": 35.8
+  },
+  "flipGroupCharacter": {
+    "leverageMedian_flipped": 0.1963186797250257,
+    "leverageMedian_nonFlipped": 0.11400238004048707,
+    "leverageMedian_all": 0.12014034376725258,
+    "leverageP75_flipped": 0.2633084313122122,
+    "leverageP90_flipped": 0.43279398700509364,
+    "industryConcentration_top10": [
+      {
+        "industry": "Drugs (Pharmaceutical)",
+        "count": 2
+      },
+      {
+        "industry": "Drugs (Biotechnology)",
+        "count": 2
+      },
+      {
+        "industry": "Financial Svcs. (Non-bank & Insurance)",
+        "count": 2
+      },
+      {
+        "industry": "Software (System & Application)",
+        "count": 2
+      },
+      {
+        "industry": "Business & Consumer Services",
+        "count": 2
+      },
+      {
+        "industry": "Packaging & Container",
+        "count": 1
+      },
+      {
+        "industry": "Diversified",
+        "count": 1
+      },
+      {
+        "industry": "Trucking",
+        "count": 1
+      },
+      {
+        "industry": "Oil/Gas (Integrated)",
+        "count": 1
+      },
+      {
+        "industry": "Telecom. Services",
+        "count": 1
+      }
+    ],
+    "top3IndustryShareOfFlips": 0.23076923076923078,
+    "flipCountByIndustryTotal": 21
+  },
+  "flipGroupVerdictMovement": {
+    "comparableInFlipGroup": 26,
+    "migration": {
+      "below_one→below_one": 6,
+      "over_cap→over_cap": 3,
+      "value_destroying→value_destroying": 12,
+      "years→years": 5
+    },
+    "outflow": 0,
+    "inflow": 0,
+    "note": "전체 246사 유출2/유입0(906)과 대조 — 반전군 자체의 유출입이 그 부분집합인지 확인"
+  },
+  "dominosPosition": {
+    "found": false,
+    "cik": 1286681,
+    "leveragePercentileAmongComparable": null,
+    "note": "DPZ가 이번 비교가능 표본에 없음(계산불가 사유는 rows.json 별도 확인 필요)"
+  },
+  "note": "재료만 — 판정 없음. 안건 1(#46) 판정은 이 STEP이 하지 않는다."
+}
