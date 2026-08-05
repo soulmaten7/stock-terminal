@@ -1,0 +1,150 @@
+{
+  "asOfCompared": {
+    "stored": "2026-07-30",
+    "today": "2026-08-05"
+  },
+  "n_lens_scores_US": 998,
+  "perLens": {
+    "momentum": {
+      "n": 980,
+      "stored": {
+        "lo": -2.707,
+        "hi": 34.272,
+        "n": 974,
+        "as_of": "2026-07-30"
+      },
+      "today": {
+        "lo": 1.317,
+        "hi": 37.83799999999997
+      },
+      "drift": {
+        "loDelta": 4.024,
+        "hiDelta": 3.565999999999974,
+        "loDeltaPct": 148.6516438862209,
+        "hiDeltaPct": 10.404995331465845
+      },
+      "verdictChanged": 77,
+      "verdictChangedPctOfComputable": 7.86,
+      "sanityMismatch": 0,
+      "sanityChecked": 980,
+      "migration": {
+        "flat→down": 49,
+        "up→flat": 28
+      }
+    },
+    "lowvol": {
+      "n": 986,
+      "stored": {
+        "lo": 27.184,
+        "hi": 40.896,
+        "n": 978,
+        "as_of": "2026-07-30"
+      },
+      "today": {
+        "lo": 27.33,
+        "hi": 41.28
+      },
+      "drift": {
+        "loDelta": 0.14599999999999724,
+        "hiDelta": 0.38400000000000034,
+        "loDeltaPct": 0.5370806356680299,
+        "hiDeltaPct": 0.9389671361502356
+      },
+      "verdictChanged": 17,
+      "verdictChangedPctOfComputable": 1.72,
+      "sanityMismatch": 0,
+      "sanityChecked": 986,
+      "migration": {
+        "mid→calm": 11,
+        "jumpy→mid": 6
+      }
+    },
+    "valuation": {
+      "n": 907,
+      "stored": {
+        "lo": 18.24,
+        "hi": 35.1,
+        "n": 901,
+        "as_of": "2026-07-30"
+      },
+      "today": {
+        "lo": 18.28,
+        "hi": 36.06
+      },
+      "drift": {
+        "loDelta": 0.0400000000000027,
+        "hiDelta": 0.9600000000000009,
+        "loDeltaPct": 0.2192982456140499,
+        "hiDeltaPct": 2.7350427350427373
+      },
+      "verdictChanged": 12,
+      "verdictChangedPctOfComputable": 1.32,
+      "sanityMismatch": 0,
+      "sanityChecked": 907,
+      "migration": {
+        "mid→cheap": 2,
+        "rich→mid": 10
+      }
+    },
+    "quality": {
+      "n": 856,
+      "stored": {
+        "lo": 13.909,
+        "hi": 30.329,
+        "n": 852,
+        "as_of": "2026-07-30"
+      },
+      "today": {
+        "lo": 13.9,
+        "hi": 30.195
+      },
+      "drift": {
+        "loDelta": -0.009000000000000341,
+        "hiDelta": -0.13400000000000034,
+        "loDeltaPct": -0.06470630526997154,
+        "hiDeltaPct": -0.44182135909525644
+      },
+      "verdictChanged": 4,
+      "verdictChangedPctOfComputable": 0.47,
+      "sanityMismatch": 0,
+      "sanityChecked": 856,
+      "migration": {
+        "low→mid": 2,
+        "mid→high": 2
+      }
+    },
+    "assetgrowth": {
+      "n": 979,
+      "stored": {
+        "lo": 2.48,
+        "hi": 12.125,
+        "n": 976,
+        "as_of": "2026-07-30"
+      },
+      "today": {
+        "lo": 2.52,
+        "hi": 12.33
+      },
+      "drift": {
+        "loDelta": 0.040000000000000036,
+        "hiDelta": 0.20500000000000007,
+        "loDeltaPct": 1.6129032258064528,
+        "hiDeltaPct": 1.6907216494845365
+      },
+      "verdictChanged": 7,
+      "verdictChangedPctOfComputable": 0.72,
+      "sanityMismatch": 0,
+      "sanityChecked": 979,
+      "migration": {
+        "aggressive→mid": 6,
+        "mid→conservative": 1
+      }
+    }
+  },
+  "summary": {
+    "totalVerdictChangesAcrossLenses": 117,
+    "uniqueSymbolsWithAtLeastOneChange": 111,
+    "uniqueSymbolsPctOfUniverse": 11.12
+  },
+  "note": "재료만 — 판정·수리 없음. lens_cuts DB에 쓰지 않음(계산만). '오늘 컷'은 지금 이 순간의 lens_scores 스냅샷 기준(크론이 값 자체는 매일 갱신 중이므로 이 값이 곧 실제 최신 분포)."
+}
