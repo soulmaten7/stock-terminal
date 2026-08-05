@@ -1103,6 +1103,7 @@
     "structure": "The source is Rappaport & Mauboussin, Expectations Investing. We use its calculation structure but source the inputs ourselves from SEC filings and Damodaran public data. So the accurate phrase is not “source-grade” but “source structure + our sourcing.”",
     "reproTitle": "Reproducing the source example",
     "repro": "Running the Domino Pizza example from the source through our engine gives $285.2 per share / 8 years (source PIE table: $285.20 / 8 years). Using the WACC worksheet (T7) figures as-is gives 7 years instead — the result is sensitive enough to a single rounding digit that it swings by a year. The engine reproduces; differences come from how inputs are sourced.",
+    "verificationCaveat": "The reproduction above matches a single case the source itself published. There is no contemporaneous outside source to check the per-stock results we compute today against, so whether these figures are correct has never been externally verified.",
     "ledgerTitle": "How we differ from the source (disclosed as-is)",
     "col": {
       "item": "Item",

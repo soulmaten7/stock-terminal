@@ -28,6 +28,7 @@ export default async function RevDcfMethodPage({ params }: { params: Promise<{ l
       <section className="mt-8">
         <h2 className="text-base font-semibold">{t("reproTitle")}</h2>
         <p className="mt-2 rounded-xl border border-unjong-border bg-unjong-surface p-4 text-sm leading-relaxed text-unjong-muted">{t("repro")}</p>
+        <p className="mt-2 rounded-xl border border-unjong-accent/30 bg-unjong-accent/5 p-4 text-sm leading-relaxed text-unjong-accent">{t("verificationCaveat")}</p>
       </section>
 
       <section className="mt-8">
