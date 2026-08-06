@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 927)** · 부모(STEP 926 `f6e4633`) · **push 대기 — 아래 작업 완료 후 push.**
+- HEAD = **이 커밋(STEP 927 `b9ae131`)** · 부모(STEP 926 `f6e4633`) · **push 완료 — origin/main + revdcf-preview 반영(rebase 불필요, divergence 없었음).**
 - 🔴🔴 **다음 세션 최우선 필독**: **① 라이브 건 = 917 계측 배포 · 다음 크론 관측 대기**(변화 없음) **② 대기 안건은 3번(`#67` 로그값) 하나만**(908 정본) **③ DoD7 = 여전히 🔶 미결**(927도 판정 안 함) **④ `#71`(Preview 500) 원인 확정됨(927) — 수리는 장은태**(env 2개 Preview 스코프 추가·위험0·미실행).
 - ✅ **STEP 927 = 🟢 `#71`(Preview 500) 원인 확정 — 코드가 아니라 환경변수 스코프.** Cowork가 인증된 브라우저로 재현+Runtime Logs 확보 — `Error: Your project's URL and Key are required to create a Supabase client!`, Middleware 500·10ms·외부호출 0건(네트워크 이전 단계). `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`·`SUPABASE_SERVICE_ROLE_KEY`·`DATABASE_URL` 전부 Production 전용, `REVDCF_ENABLED`만 Preview 전용이라 "역DCF 보려고 만든 환경에 Supabase가 없어 안 뜨는" 구조. 처방 1단계(`NEXT_PUBLIC_*` 2개, 공개값이라 위험0)를 권고만 하고 **env 미접촉·재배포 안 함**. `docs/REVDCF_SPEC.md` §10 `#71`(소진 아님, "원인 확정·수리 대기") · `docs/DECISION_921_COMPLETION.md`(§2 전제 변화 헤더 추가, 본문 불변 — "순환을 못 깬다"는 결론은 유지하되 이유가 코드가 아니었음을 기록) · `docs/AUDIT_904_OPEN_ITEMS.md` #71행 갱신 · `docs/STATE.md` 갱신. DoD7·`#71` 판정 칸 임의로 안 닫음. 코드 diff 0.
 - ✅ **STEP 925~926 = brief 라벨조립 진단(925)→B안 승인·`email-brief`만 수정(926).** 72개 조합 전수 중복 7건→0(회귀 0), `daily-brief`·`lib/lensCopy.ts`(924) diff 0. A안(daily-brief 포함 전면통일)은 미채택 대기.
