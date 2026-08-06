@@ -36,6 +36,13 @@ export function tickerOf(symbol: string): string {
 // title-case·잡음 제거는 lib/usNameFormat.ts로 이전(클라 컴포넌트와 공유 — STEP 765b). 재수출로 기존 호출부 호환.
 export { titleCaseUsName };
 
+// STEP 924: US 종목명이 티커로 폴백 저장된 곳(lens_scores.name·lens_state_changes.name — 야후 quote 실패 시 심볼 그대로 저장)에서
+// 표시 계층이 쓸 원본(raw, cleanUsName 미적용) 이름. 호출부가 resolveDisplayName(context:'list')에 rawName으로 넘겨 그 안에서 1회만 정제
+// (usNameFormat.ts 비멱등 경고 — 이미 정제된 값을 또 넣지 말 것). 없으면 undefined(호출부가 기존 폴백 유지).
+export function usSymbolRawName(symbol: string): string | undefined {
+  return (_us ||= toMap(usSymbols as SymRow[])).get(symbol.toUpperCase());
+}
+
 export type StockNameInfo = { name: string; en?: string; country: "KR" | "US" | "JP" | "CN" | "VN" | "GB" };
 
 // 해외종목 한글명 오버라이드(서학개미 검색용) — 티커→한글명. 예: TSLA→테슬라, 7203.T→도요타.

@@ -1,6 +1,36 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (69) — 🟢 **STEP 924 실행: 923의 B안(표시 계층 통일) 채택·적용 — 종목명 348/348 해소·모멘텀 중복 수정, DB 쓰기 0·DoD7 판정 칸 불변**
+
+> **성격**: 923이 진단만 하고 남긴 종목명 불일치(348/998 US 행이 티커 그대로 표시)에 대해, 장은태의 위임("가장 베스트인거로 3번 생각하고 검색하고 검증하고 검수해서 진행해")을 받아 923이 카탈로그한 A/B/C/D 중 **B(표시 계층 통일)를 채택**하고 실제로 구현했다. 전제: HEAD `570599b`(923) · tsc 0 · test 182/182.
+
+### §1 923의 B안 정의 재확인
+
+`docs/DECISION_923_NAMING.md` §4 표를 그대로 인용해 이번 STEP 헤더의 "B"가 923의 "B"와 일치함을 확인(ExploreClient가 `lens_scores.name` 대신 상세페이지와 같은 소스를 쓰도록 프론트만 변경). `lib/usNameFormat.ts:10-21`(`titleCaseUsName` — 이미 소문자 있으면 무변경, 비멱등 경고)·`lib/displayName.ts:27`·`lib/stockName.ts`(`_us ||= toMap(usSymbols)` 서버전용 캐시 패턴)를 직접 열람. `data/us_symbols.json`은 현재 서버 파일에서만 import됨(grep 확인) — client 번들에 새로 넣으면 비대해지므로 **서버 삽입점**이 정답.
+
+### §2 종목명 우선순위 구현 — 전수 열거
+
+`resolveDisplayName(` 호출 7곳 전수 확인: `explore/lens-top`(서버, `lens_scores.name` 소스 — **대상**) · `search`(서버, `data/us_symbols.json` 직접 — **이미 정상, 무손**) · `daily-brief`·`email-brief`·`ExploreClient.tsx`(ChangeRow)·`TodayClient.tsx`(nameFor) — 4곳 모두 `lib/todayChanges.ts`의 `getTodayChanges()` 하나를 공유 소비(`lens_state_changes.name`, 같은 파이프라인 산출물이라 같은 결함 공유 확인) — **대상, 단 소스 함수 1곳만 고치면 4곳 전부 반영**. `ExploreClient.tsx`의 `amountTop`(거래대금 목록)은 `/api/yahoo/us-list`가 소스인데 이 라우트는 이미 `data/us_symbols.json` 기반 `NAME_MAP`을 씀 — **결함과 무관, 무손 확인**(코드 열람).
+
+구현: `lib/stockName.ts`에 `usSymbolRawName(symbol)` 신설(기존 `_us` 모듈캐시 재사용, cleanUsName 미적용 원본 반환 — 호출부가 1회만 정제). `app/api/explore/lens-top/route.ts`·`lib/todayChanges.ts` 2곳에서 `market==="US" && name===symbol`일 때만 대체. **348개 전수 대조: 348/348 전부 `us_symbols.json`에 존재 → 잔여 0.** DB 쓰기 0(`.update/.upsert/.insert/.delete` grep 0건). KR 경로는 구조상 이 결함이 없어 손대지 않음.
+
+### §3 모멘텀 이름중복 수정
+
+`lib/lensCopy.ts`에 `lensStateLine(loc,key,state)` 신설 — phrase가 렌즈 이름의 핵심단어(괄호 있으면 괄호 앞까지)를 이미 담고 있으면 이름 생략. **조립을 고쳤다, 문구는 그대로.** 전 렌즈·전 상태 71개 조합을 tsx 스크립트로 전수 출력해 대조 — 실제 중복은 momentum(ko/en 각 3상태)·valuation-ko(mid) 3그룹뿐, 나머지 68개는 문자열 불변(회귀 없음). `ExploreClient.tsx:161`을 이 함수 호출로 교체, 미사용 import 정리.
+
+### §4 안 한 것
+
+DoD7 판정 칸 = **불변**(923의 "같은 이름" 해석 미확정 문제는 이 STEP이 풀지 않음). Alphabet 티커 미표시 = 미접촉(설계 확인만, 923 결론 유지). A안(근본수정, `lensCompute.ts`/`lensPrecompute.ts`) = 미실행. 348개 개별 종목의 Yahoo quote 실패 원인 = 미조사(별도 사안).
+
+### §5 검증
+
+사전 DB스냅샷을 구현 이후에 찍음(순서 위반, 정직히 기록) — 대신 diff 자체에 쓰기 호출 0건임을 grep으로 확인해 안전성 입증. 사후 스냅샷(`docs/probe_924_baseline.json`): `lens_scores`(US) 998행·`revdcf_results` 3,020행·`us_market_cap` 5,892행·`lens_cuts` 10행·20종목 표본 판정 문자열 — 전부 348개 여전히 `name=symbol`(DB 무변경 재확인). `lib/lensPrecompute.ts`·`lib/revdcf/`·`data/`·`.github/`·`vercel.json` diff 0(grep 확인). 라이브 재현(`localhost:3333`, `REVDCF_ENABLED=true` 로컬): `/api/explore/lens-top` MO→"Altria Group, Inc."·HST→"Host Hotels & Resorts, Inc." · `/api/today/changes` 오늘자 108건 중 348-영향 38건 전부 정상명. tsc 0 · test 182/182.
+
+### 문서·검증
+
+`docs/DECISION_923_NAMING.md`(승인기록 추가, 본문 불변) · `docs/REVDCF_SPEC.md` §11(2건) · `docs/STATE.md`(HEAD·다음세션필독·924 상세줄, 141줄) · `docs/LENS_DEV_PLAYBOOK.md` 신규(같은 값을 두 파이프라인이 따로 가져오면 갈린다는 교훈) · `docs/probe_924_baseline.json` 신설. DoD 판정 칸 전부 불변 · `REVDCF_ENABLED` Production OFF · ②단계 미착수 · 안건 3(`#67`) 대기 불변 · DB 쓰기 0 · tsc 0 · test 182/182.
+
 ## 2026-08-06 (68) — 🟢🔴 **STEP 923 실행: 922 `years` 권고 승인 · DoD7은 닫지 않는다(종목명 불일치 실측) — 진단만**
 
 > **성격**: 922가 "카드·보드 육안 검증이 여전히 안 됨"으로 남긴 불리한 사실을 Cowork이 브라우저로 닫으러 갔다가, `years` 권고를 승인하면서 동시에 **비교 대상 밖에서 새 위반**(종목명)을 발견했다. 전제: HEAD `8fef1a7`(922) · tsc 0 · test 182/182. **진단만 — 수리 금지, 7렌즈 목록은 라이브다.**

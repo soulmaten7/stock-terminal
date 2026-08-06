@@ -3,6 +3,7 @@
 import * as Sentry from "@sentry/nextjs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Tone } from "@/lib/lensTones";
+import { usSymbolRawName } from "@/lib/stockName";
 
 export type ChangeItemData = {
   symbol: string;
@@ -136,9 +137,13 @@ export async function getTodayChanges(params: {
   const snaps = await snapMap(sb, market, rows.map((r) => r.symbol));
   const items: ChangeItemData[] = rows.map((r) => {
     const snap = snaps.get(r.symbol);
+    // STEP 924: lens_state_changes.name도 같은 파이프라인 산출물이라 같은 티커-폴백 문제를 공유 —
+    // US 한정, name===symbol일 때만 us_symbols.json 원본으로 대체(DB는 안 건드림). 이 함수 하나가
+    // ExploreClient(ChangeRow)·TodayClient(nameFor)·daily-brief·email-brief 4곳에 공통으로 반영된다.
+    const name = market === "US" && r.name === r.symbol ? (usSymbolRawName(r.symbol) ?? r.name) : r.name;
     return {
       symbol: r.symbol,
-      name: r.name,
+      name,
       lensKey: r.lens_key,
       fromState: r.from_state,
       toState: r.to_state,

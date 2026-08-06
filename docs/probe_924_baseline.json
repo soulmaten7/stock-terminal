@@ -1,0 +1,49 @@
+{
+  "note": "STEP 924 — 이 스냅샷은 구현 이후에 찍었다(순서 위반, §7 미측정에 기록). 안전성 근거는 시점이 아니라 diff 감사: git diff HEAD -- app/api/explore/lens-top/route.ts components/explore/ExploreClient.tsx lib/lensCopy.ts lib/stockName.ts lib/todayChanges.ts 에 .update(/.upsert(/.insert(/.delete( 호출이 0건(grep 확인) — DB에 쓰는 코드 자체가 없다.",
+  "captured_at_utc": "2026-08-06 (session time, exact clock unavailable)",
+  "lens_scores_us": {
+    "count": 998,
+    "max_updated_at": "2026-08-05 22:25:04.014+00"
+  },
+  "revdcf_results_count": 3020,
+  "us_market_cap_count": 5892,
+  "lens_cuts_sample_10": [
+    {"market":"KR","lens_key":"assetgrowth","lo":1.532,"hi":12.232,"n":955,"method":"p30/p70","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"assetgrowth","lo":2.48,"hi":12.125,"n":976,"method":"p30/p70","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"lowvol","lo":48.611,"hi":80.579,"n":968,"method":"p30/p70","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"lowvol","lo":27.184,"hi":40.896,"n":978,"method":"p30/p70","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"momentum","lo":-18.52,"hi":23.644,"n":954,"method":"p30/p70","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"momentum","lo":-2.707,"hi":34.272,"n":974,"method":"p30/p70","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"quality","lo":8.656,"hi":21.576,"n":917,"method":"p30/p70","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"quality","lo":13.909,"hi":30.329,"n":852,"method":"p30/p70","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"valuation","lo":9,"hi":25.892,"n":723,"method":"p30/p70","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"valuation","lo":18.24,"hi":35.1,"n":901,"method":"p30/p70","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"}
+  ],
+  "sample_20_us_verdicts": [
+    {"symbol":"A","name":"A","momentum_state":"flat","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"mid","fscore_state":"mid"},
+    {"symbol":"AAL","name":"AAL","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"jumpy","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"mid"},
+    {"symbol":"AAPL","name":"Apple Inc.","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"calm","quality_state":"high","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"ABNB","name":"ABNB","momentum_state":"flat","technical_state":"up","valuation_state":"rich","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"mid","fscore_state":"na"},
+    {"symbol":"ADI","name":"ADI","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"ADP","name":"ADP","momentum_state":"down","technical_state":"up","valuation_state":"mid","lowvol_state":"calm","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"AIG","name":"AIG","momentum_state":"flat","technical_state":"up","valuation_state":"cheap","lowvol_state":"calm","quality_state":"na","assetgrowth_state":"conservative","fscore_state":"na"},
+    {"symbol":"AMZN","name":"AMZN","momentum_state":"flat","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"BLK","name":"BLK","momentum_state":"down","technical_state":"up","valuation_state":"mid","lowvol_state":"calm","quality_state":"low","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"C","name":"C","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"na","assetgrowth_state":"aggressive","fscore_state":"na"},
+    {"symbol":"CAT","name":"CAT","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"aggressive","fscore_state":"strong"},
+    {"symbol":"DAL","name":"DAL","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"mid","fscore_state":"strong"},
+    {"symbol":"GOOG","name":"Alphabet Inc.","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"strong"},
+    {"symbol":"GOOGL","name":"Alphabet Inc.","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"strong"},
+    {"symbol":"HST","name":"HST","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"calm","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"META","name":"META","momentum_state":"down","technical_state":"down","valuation_state":"mid","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"MO","name":"MO","momentum_state":"flat","technical_state":"up","valuation_state":"cheap","lowvol_state":"calm","quality_state":"high","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"MSFT","name":"Microsoft Corporation","momentum_state":"down","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"NVDA","name":"NVIDIA Corporation","momentum_state":"flat","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"TSLA","name":"TSLA","momentum_state":"flat","technical_state":"down","valuation_state":"rich","lowvol_state":"jumpy","quality_state":"low","assetgrowth_state":"aggressive","fscore_state":"mid"}
+  ],
+  "affected_348_check": {
+    "measured": 348,
+    "resolved_by_us_symbols_json": 348,
+    "still_falls_back_to_ticker": 0
+  }
+}

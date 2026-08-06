@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { tonesFor, firstPosLens, type LensScoreRow } from "@/lib/lensTones";
 import { resolveDisplayName } from "@/lib/displayName";
+import { usSymbolRawName } from "@/lib/stockName";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -71,9 +72,14 @@ export async function GET(req: NextRequest) {
   });
 
   const items = withSnap.slice(0, limit).map(({ row, tones, snap }) => {
+    // STEP 924: lens_scores.name이 야후 quote 실패로 티커 그대로 저장된 US 행(998건 중 348건 실측)은
+    // us_symbols.json(상세페이지가 쓰는 것과 같은 소스)의 원본 이름으로 대체 — DB는 안 건드리고 표시만.
+    const rawName = market === "US" && row.name === row.symbol
+      ? (usSymbolRawName(row.symbol) ?? row.name)
+      : row.name;
     const name = resolveDisplayName({
       loc: lang, market, symbol: row.symbol,
-      nameKo: snap?.nameKo ?? null, nameEn: snap?.nameEn ?? null, rawName: row.name,
+      nameKo: snap?.nameKo ?? null, nameEn: snap?.nameEn ?? null, rawName,
       context: 'list',
     });
     // 랭킹 근거 대표 라벨용(STEP 779 §1) — 표시 순서상 첫 pos 렌즈. pos 0개면 null(호출부가 "강점 0"만 표시).

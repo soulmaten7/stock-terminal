@@ -7,7 +7,7 @@ import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
 import { homeMarketFor } from '@/stores/countryStore';
 import { AsOfBadge } from '@/components/ui/AsOfBadge';
-import { LENS_READINGS, compactPhrase, lensDisplayName, lensStateLabel, pickLocale, type Locale } from '@/lib/lensCopy';
+import { LENS_READINGS, compactPhrase, lensStateLine, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
@@ -158,7 +158,7 @@ function PosRankingBasis({ tones, topLensKey, topLensState, loc, t }: {
       {topLensKey ? (
         <>
           {' · '}
-          <span className={TONE_TEXT_CLASS.pos}>{lensDisplayName(loc, topLensKey)} {compactPhrase(lensStateLabel(loc, topLensKey, topLensState ?? null))}</span>
+          <span className={TONE_TEXT_CLASS.pos}>{lensStateLine(loc, topLensKey, topLensState ?? null)}</span>
         </>
       ) : null}
     </>

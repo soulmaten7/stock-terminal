@@ -556,6 +556,17 @@ export function lensStateLabel(loc: Locale, key: string, state: string | null): 
   const readings = (LENS_READINGS[loc] as unknown as Record<string, Record<string, { phrase: string }>>)[key];
   return readings?.[state]?.phrase ?? state;
 }
+// STEP 924: 이름+상태문구 한 줄 조립 — 일부 phrase(모멘텀 up/flat/down 등)가 이미 렌즈 이름 단어를 담고 있어
+// 단순 연결(name + phrase)이 "모멘텀 모멘텀 상위권"처럼 중복된다. phrase(문구 자체)는 그대로 두고, phrase가
+// 이름의 핵심 단어(괄호·공백 앞까지 — "밸류(가치)"→"밸류")를 이미 담고 있으면 이름을 생략하는 쪽만 조건부로 만든다.
+export function lensStateLine(loc: Locale, key: string, state: string | null): string {
+  const name = lensDisplayName(loc, key);
+  const phrase = compactPhrase(lensStateLabel(loc, key, state));
+  // 괄호 있는 이름("밸류(가치)")만 괄호 앞까지("밸류")로 줄인다 — 괄호 없는 다단어 이름("Low Volatility"·"Asset Growth")은
+  // 통째로 비교해야 한다(첫 단어만 자르면 "Low"가 무관한 phrase와도 우연히 겹쳐 이름이 통째로 사라지는 오탐이 남).
+  const core = /[(（]/.test(name) ? name.replace(/[(（].*$/, "") : name;
+  return phrase.toLowerCase().includes(core.toLowerCase()) ? phrase : `${name} ${phrase}`;
+}
 // 카드 제목용 초보자 질문형(STEP 787) — name과 별개 필드라 6곳 소비처(문장·pill·프롬프트) 무영향.
 export function lensQuestion(loc: Locale, key: string): string {
   return (LENS_COPY[loc] as unknown as Record<string, { question: string }>)[key]?.question ?? key;

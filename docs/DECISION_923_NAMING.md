@@ -4,6 +4,13 @@
 > 이 문서는 **진단이지 수리가 아니다.** 코드 diff 0. 수리 선택지는 나열만 하고 실행하지 않는다.
 > 🔴 **`years` 권고(922)는 승인됐다 — 이 문서는 그것과 별개의 새 발견을 다룬다.**
 
+> ## 🟢 승인 기록 (924 — 본문은 고치지 않는다, 판단은 아래 §4의 것)
+> **장은태 지시, 2026-08-06**: *"가장 베스트인거로 3번 생각하고 검색하고 검증하고 검수해서 진행해"* — Cowork/Claude Code 판단으로 **§4의 B안(표시 계층 통일)을 채택**, A안(근본수정)은 명시적으로 기각.
+> **채택 근거**: ① 규모(348/998=34.9%, 소수 예외 아님) ② 상세 페이지가 이미 정답을 가진 별도 소스(`data/us_symbols.json`)가 존재 ③ A안은 `lensCompute.ts`/`lensPrecompute.ts`(917 계측과 같은 파일대)를 건드리고, 야후 quote가 실패한 개별 원인은 923이 미조사로 남겨 "원인 모르는 파이프라인을 고치는" 리스크가 있음 ④ DoD7은 "표면 간 이름이 같을 것"을 요구하지 "데이터 출처가 정규화될 것"을 요구하지 않는다 — B가 요구를 문자 그대로 충족.
+> **적용**: `app/api/explore/lens-top/route.ts`·`lib/todayChanges.ts` 2곳에서 `lens_scores.name`/`lens_state_changes.name`이 티커와 같을 때만 `data/us_symbols.json` 원본으로 표시값을 대체(`lib/stockName.ts`의 `usSymbolRawName` 신설, DB는 안 씀). 348개 전수 대조 결과 **잔여 0**(전부 `us_symbols.json`에 존재). 모멘텀 이름 중복도 조립 로직(`lib/lensCopy.ts`의 `lensStateLine`)에서 함께 해소.
+> **남는 것(대가, 아래 §4 B행 그대로)**: `lens_scores.name`/`lens_state_changes.name` 자체는 DB에 여전히 티커로 남아 있다 — 다른 소비처(예: 관심목록 폴백 등, 미전수조사)에 위험이 남을 수 있다. **DoD7 판정 칸은 이 승인·적용으로도 바뀌지 않는다** — §1의 "같은 이름"이 무엇을 뜻하는지 자체가 여전히 미정의라, 화면 증상이 없어졌다고 그 해석 문제가 풀린 게 아니기 때문이다.
+> 상세 = `docs/CHANGELOG.md` STEP 924 블록 · `docs/probe_924_baseline.json`(348개 대조 원자료).
+
 ---
 
 ## §0 — Cowork 브라우저 3중 검증 (2026-08-06 · `localhost:3333`)
