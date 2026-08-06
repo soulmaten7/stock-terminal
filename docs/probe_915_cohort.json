@@ -1,0 +1,209 @@
+{
+  "cohortSize_today": 464,
+  "cohortSize_914": 480,
+  "sampleMethod": "심볼 알파벳순 정렬 → 체계적 표집(step=floor(n/SAMPLE_SIZE), 시작 0) → 결정론적·재현 가능(Math.random 미사용)",
+  "sampleSize": 20,
+  "sample": [
+    "AAP",
+    "AMBO",
+    "B",
+    "BST",
+    "CIK",
+    "DBL",
+    "EDSA",
+    "FHN",
+    "GGB",
+    "HEI",
+    "IGC",
+    "KMX",
+    "MGN",
+    "NAK",
+    "NRP",
+    "PG",
+    "RGS",
+    "SRE",
+    "TPC",
+    "VGZ"
+  ],
+  "results": [
+    {
+      "symbol": "AAP",
+      "lastKnownCap": 3525035520,
+      "outcome": "success",
+      "freshMarketCap": 3594414336,
+      "errorMessage": null,
+      "elapsedMs": 1497
+    },
+    {
+      "symbol": "AMBO",
+      "lastKnownCap": 6235502,
+      "outcome": "success",
+      "freshMarketCap": 5692041,
+      "errorMessage": null,
+      "elapsedMs": 136
+    },
+    {
+      "symbol": "B",
+      "lastKnownCap": 61068017664,
+      "outcome": "success",
+      "freshMarketCap": 68945051648,
+      "errorMessage": null,
+      "elapsedMs": 131
+    },
+    {
+      "symbol": "BST",
+      "lastKnownCap": 1528722432,
+      "outcome": "success",
+      "freshMarketCap": 1690517760,
+      "errorMessage": null,
+      "elapsedMs": 134
+    },
+    {
+      "symbol": "CIK",
+      "lastKnownCap": 133857328,
+      "outcome": "success",
+      "freshMarketCap": 133857328,
+      "errorMessage": null,
+      "elapsedMs": 133
+    },
+    {
+      "symbol": "DBL",
+      "lastKnownCap": 278190688,
+      "outcome": "success",
+      "freshMarketCap": 279376992,
+      "errorMessage": null,
+      "elapsedMs": 141
+    },
+    {
+      "symbol": "EDSA",
+      "lastKnownCap": 51634076,
+      "outcome": "success",
+      "freshMarketCap": 49803764,
+      "errorMessage": null,
+      "elapsedMs": 131
+    },
+    {
+      "symbol": "FHN",
+      "lastKnownCap": 12230901760,
+      "outcome": "success",
+      "freshMarketCap": 12420748288,
+      "errorMessage": null,
+      "elapsedMs": 150
+    },
+    {
+      "symbol": "GGB",
+      "lastKnownCap": 9541058560,
+      "outcome": "success",
+      "freshMarketCap": 10090567680,
+      "errorMessage": null,
+      "elapsedMs": 131
+    },
+    {
+      "symbol": "HEI",
+      "lastKnownCap": 49639030784,
+      "outcome": "success",
+      "freshMarketCap": 51255791616,
+      "errorMessage": null,
+      "elapsedMs": 134
+    },
+    {
+      "symbol": "IGC",
+      "lastKnownCap": 25047880,
+      "outcome": "success",
+      "freshMarketCap": 26300274,
+      "errorMessage": null,
+      "elapsedMs": 134
+    },
+    {
+      "symbol": "KMX",
+      "lastKnownCap": 8388365312,
+      "outcome": "success",
+      "freshMarketCap": 8042101760,
+      "errorMessage": null,
+      "elapsedMs": 131
+    },
+    {
+      "symbol": "MGN",
+      "lastKnownCap": 2601100,
+      "outcome": "success",
+      "freshMarketCap": 5205900,
+      "errorMessage": null,
+      "elapsedMs": 130
+    },
+    {
+      "symbol": "NAK",
+      "lastKnownCap": 773229440,
+      "outcome": "success",
+      "freshMarketCap": 946925888,
+      "errorMessage": null,
+      "elapsedMs": 138
+    },
+    {
+      "symbol": "NRP",
+      "lastKnownCap": 1311393280,
+      "outcome": "success",
+      "freshMarketCap": 1391293312,
+      "errorMessage": null,
+      "elapsedMs": 137
+    },
+    {
+      "symbol": "PG",
+      "lastKnownCap": 340208320512,
+      "outcome": "success",
+      "freshMarketCap": 341226782720,
+      "errorMessage": null,
+      "elapsedMs": 167
+    },
+    {
+      "symbol": "RGS",
+      "lastKnownCap": 68416536,
+      "outcome": "success",
+      "freshMarketCap": 68641432,
+      "errorMessage": null,
+      "elapsedMs": 133
+    },
+    {
+      "symbol": "SRE",
+      "lastKnownCap": 58062290944,
+      "outcome": "success",
+      "freshMarketCap": 55342870528,
+      "errorMessage": null,
+      "elapsedMs": 136
+    },
+    {
+      "symbol": "TPC",
+      "lastKnownCap": 4048048640,
+      "outcome": "success",
+      "freshMarketCap": 4463517184,
+      "errorMessage": null,
+      "elapsedMs": 138
+    },
+    {
+      "symbol": "VGZ",
+      "lastKnownCap": 249611008,
+      "outcome": "success",
+      "freshMarketCap": 290482976,
+      "errorMessage": null,
+      "elapsedMs": 132
+    }
+  ],
+  "counts": {
+    "success": 20,
+    "no_data": 0,
+    "rate_limited_or_timeout": 0,
+    "other_error": 0
+  },
+  "interpretation": {
+    "success": "20/20 — 취득 자체는 가능(예산·시간 부족이 원인일 수 있음 → A안 통함 방향의 근거)",
+    "no_data": "0/20 — 원천 취득 불가로 보임(상장폐지·티커변경 등 가능성 → A안 실패, 유니버스 문제 방향의 근거)",
+    "rate_limited_or_timeout": "0/20 — 호출량/응답지연 문제(A안 통하되 대가[동시성·시간예산] 다름)",
+    "other_error": "0/20 — 위 세 갈래로 명확히 안 갈리는 기타 에러(원문 메시지 참조)"
+  },
+  "sanityCheck": {
+    "sampleSize": 20,
+    "resultCount": 20,
+    "allBucketed": true,
+    "ok": true
+  },
+  "caveat": "🔴 표본 20개는 전체(464~480)의 확정 추정치가 아니다. 방향과 대략의 비율만 시사한다 — 전수 추정치를 단정하지 않는다(#10·890 교훈)."
+}
