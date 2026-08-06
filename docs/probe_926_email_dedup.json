@@ -1,0 +1,50 @@
+{
+  "_meta": {
+    "generated_by": "scripts/probe_926_email_dedup.ts",
+    "generated_at": "2026-08-06 (session time, exact clock unavailable)",
+    "note": "app/api/cron/email-brief/route.ts가 실제로 export하는 stripEmbeddedLensName()을 재구현이 아니라 그 함수 자체로 71~72개 조합 전수 검증. live_today_before_after는 925의 probe_925_brief_labels.ts와 같은 데이터소스(getTodayChanges)를 재사용해 오늘 실제 전환 건의 email mover-line을 수정 전/후로 재현 — 라우트 미호출·메일 발송 0·DB 쓰기 0."
+  },
+  "total_combinations": 72,
+  "duplicate_before_count": 7,
+  "duplicate_before_list": [
+    "ko/momentum/up: \"모멘텀 상위권\"",
+    "ko/momentum/flat: \"모멘텀 중간권\"",
+    "ko/momentum/down: \"모멘텀 하위권\"",
+    "ko/valuation/mid: \"밸류 중간권\"",
+    "en/momentum/up: \"Top-tier momentum\"",
+    "en/momentum/flat: \"Mid-pack momentum\"",
+    "en/momentum/down: \"Bottom-tier momentum\""
+  ],
+  "residual_duplicate_after_fix_count": 0,
+  "residual_duplicate_after_fix_list": [],
+  "regressions_non_duplicate_rows_changed_count": 0,
+  "regressions_list": [],
+  "fixed_examples": [
+    { "loc": "ko", "key": "momentum", "state": "up", "lensName": "모멘텀", "before": "모멘텀 상위권", "after": "상위권" },
+    { "loc": "ko", "key": "momentum", "state": "flat", "lensName": "모멘텀", "before": "모멘텀 중간권", "after": "중간권" },
+    { "loc": "ko", "key": "momentum", "state": "down", "lensName": "모멘텀", "before": "모멘텀 하위권", "after": "하위권" },
+    { "loc": "ko", "key": "valuation", "state": "mid", "lensName": "밸류(가치)", "before": "밸류 중간권", "after": "중간권" },
+    { "loc": "en", "key": "momentum", "state": "up", "lensName": "Momentum", "before": "Top-tier momentum", "after": "Top-tier" },
+    { "loc": "en", "key": "momentum", "state": "flat", "lensName": "Momentum", "before": "Mid-pack momentum", "after": "Mid-pack" },
+    { "loc": "en", "key": "momentum", "state": "down", "lensName": "Momentum", "before": "Bottom-tier momentum", "after": "Bottom-tier" }
+  ],
+  "live_today_before_after": {
+    "KR_ko": [
+      { "symbol": "000660", "before": "SK하이닉스 — 밸류(가치) 비싼 편(시장 대비) → 밸류 중간권", "after": "SK하이닉스 — 밸류(가치) 비싼 편(시장 대비) → 중간권", "changed": true },
+      { "symbol": "298040", "before": "효성중공업 — 기술 하락 추세 (200일선 아래) → 상승 추세", "after": "효성중공업 — 기술 하락 추세 (200일선 아래) → 상승 추세", "changed": false },
+      { "symbol": "034020", "before": "두산에너빌리티 — 모멘텀 모멘텀 상위권 → 모멘텀 중간권", "after": "두산에너빌리티 — 모멘텀 상위권 → 중간권", "changed": true },
+      { "symbol": "119850", "before": "지엔씨에너지 — 모멘텀 모멘텀 중간권 → 모멘텀 하위권", "after": "지엔씨에너지 — 모멘텀 중간권 → 하위권", "changed": true },
+      { "symbol": "042660", "before": "한화오션 — 모멘텀 모멘텀 상위권 → 모멘텀 중간권", "after": "한화오션 — 모멘텀 상위권 → 중간권", "changed": true }
+    ],
+    "US_en": [
+      { "symbol": "GOOGL", "before": "Alphabet Inc. — Value Mid-pack valuation → Cheap (vs. market)", "after": "Alphabet Inc. — Value Mid-pack valuation → Cheap (vs. market)", "changed": false },
+      { "symbol": "GOOG", "before": "Alphabet Inc. — Value Mid-pack valuation → Cheap (vs. market)", "after": "Alphabet Inc. — Value Mid-pack valuation → Cheap (vs. market)", "changed": false },
+      { "symbol": "SHOP", "before": "Shopify Inc. — Technical Trend leans down → Trend leans up", "after": "Shopify Inc. — Technical Trend leans down → Trend leans up", "changed": false },
+      { "symbol": "SHOP", "before": "Shopify Inc. — Momentum Mid-pack momentum → Bottom-tier momentum", "after": "Shopify Inc. — Momentum Mid-pack → Bottom-tier", "changed": true },
+      { "symbol": "APP", "before": "Applovin Corporation — Momentum Mid-pack momentum → Top-tier momentum", "after": "Applovin Corporation — Momentum Mid-pack → Top-tier", "changed": true }
+    ]
+  },
+  "925_diagnosis_correction": {
+    "note": "925의 §2 자동 중복탐지(dupCheck)는 lensName 전체 문자열('밸류(가치)')로 phrase를 검색해 'SK하이닉스... 밸류 중간권' 행을 놓쳤다(핵심단어 '밸류'가 아니라 괄호 포함 전체와 비교) — 924가 이미 확립한 'core(괄호 앞까지)' 기준으로 다시 보면 이 행도 중복이었다. 이번 926 §3에서 core 기준으로 재검증해 바로잡았다 — 71~72개 조합 전수 결과(위)는 이 교정된 기준을 쓴다."
+  }
+}

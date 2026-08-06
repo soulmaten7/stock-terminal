@@ -4,6 +4,14 @@
 > 이 문서는 **진단이지 수리가 아니다.** 코드 diff 0(`scripts/` 프로브 제외). 수리 선택지는 나열만 하고 실행하지 않는다.
 > 🔴 **결론을 먼저 말한다**: 924가 *"있을 가능성"*으로 남긴 라벨 중복은 **실재한다**(가능성이 아니라 확인된 결함). 종목명(348개 대조 대상이던 그 결함)은 이 두 경로에서는 이미 정상 — `lib/todayChanges.ts` 하나를 고친 924의 효과가 여기까지 닿았다.
 
+> ## 🟢 B안 채택·적용 (926 — 본문 선택지는 고치지 않는다, 판단은 아래 §4의 것)
+> **장은태 승인, 2026-08-06**: *"B안으로 `email-brief` mover-line만 우선 수정."*
+> **적용**: `app/api/cron/email-brief/route.ts`의 `movers()`에 로컬 함수 `stripEmbeddedLensName(lensName, phrase)` 신설(export — 프로브 검증용) — `from`/`to`가 렌즈이름의 핵심단어(924와 같은 "괄호 앞까지" 판단)를 이미 담고 있으면 그 부분만 제거하고 `lensName` 프리픽스는 그대로 둔다(중복 없던 행의 형태는 안 바뀜). `daily-brief`(`app/api/cron/daily-brief/route.ts`·`lib/dailyBrief.ts`)와 `lib/lensCopy.ts`(924 산출물)는 **손대지 않았다** — diff 0 확인.
+> **검증**: 72개 조합(ko/en × 7렌즈 × 전 상태) 전수 — 수정 전 중복 7건(momentum-ko×3·momentum-en×3·valuation-ko-mid×1) 전부 해소, 잔여 0. 중복 없던 65건 문자열 불변(회귀 0). 오늘 실데이터(925와 같은 소스)로 before/after 재현 — `docs/probe_926_email_dedup.json`.
+> **A안(공유 헬퍼로 전면 통일)은 미채택으로 남긴다** — `daily-brief`의 리터럴 중복 0건이 "LLM이 우회해서"인지 "폴백을 거의 안 타서"인지 925가 미확정으로 남겼고, 926도 확정하지 않았다. **재검토 조건**: `daily-brief` 쪽 성격(폴백 실사용 빈도)이 밝혀지거나, `buildFallbackBrief()`가 실제로 자주 쓰인다는 근거가 생기면 A안(공유 헬퍼)을 다시 검토한다.
+> **부수 발견**: 925의 자동 중복탐지가 `lensName` 전체 문자열로 비교해 "SK하이닉스... 밸류 중간권" 행 하나를 놓쳤었다(924의 "core"[괄호 앞까지] 기준 미적용) — 926 §3에서 core 기준으로 재검증해 이 행도 포함됨을 확인·수정에 반영(`docs/probe_926_email_dedup.json`의 `925_diagnosis_correction`).
+> 상세 = `docs/CHANGELOG.md` STEP 926 블록 · `docs/probe_926_email_dedup.json`.
+
 ---
 
 ## §1 — 경로: `lensStateLine`을 쓰는가, 자체 조립인가

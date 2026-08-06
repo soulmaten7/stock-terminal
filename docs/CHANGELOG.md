@@ -1,6 +1,32 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (71) — 🟢 **STEP 926 실행: 925의 B안 승인·적용 — `email-brief` mover-line 중복 수정, 72개 조합 전수 잔여 0·회귀 0**
+
+> **성격**: 장은태가 925의 세 선택지 중 **B(email mover-line만 우선 수정)**를 승인했다. 전제: HEAD `1d5781e`(925) · tsc 0 · test 182/182. **수정 범위 = `email-brief`뿐. `daily-brief`·`lib/lensCopy.ts`(924 산출물)는 diff 0으로 유지.**
+
+### §1 경로 재확인
+
+925의 A/B/C 표를 그대로 열어 이 STEP의 "B" = 925의 B(email mover-line만)임을 확인. `movers()`·`renderHtml()`의 `moversHtml` 템플릿(`${m.lensName} ${m.from} → ${m.to}`)을 다시 열람. `lensStateLine`(924)은 "from/to 양쪽에 이름을 매번 프리픽스"하는 방식이라, 지금까지 중복이 없던 다른 렌즈 행(예: valuation cheap→rich)까지 형태가 바뀌게 돼 그대로 재사용하지 않기로 판단 — 대신 `lensName` 프리픽스는 유지하고 `from`/`to` 쪽에서 겹치는 부분만 제거하는 로컬 함수를 새로 만들었다(924의 "core" 판단 로직은 그대로 재사용).
+
+### §2 수정
+
+`app/api/cron/email-brief/route.ts`에 `stripEmbeddedLensName(lensName, phrase)` 신설(export — 프로브가 재구현이 아니라 실제 함수를 검증하도록) + `movers()`에서 `from`/`to` 계산 시 적용. `messages/`의 phrase 텍스트는 손대지 않음(조립만 수정). `daily-brief`와 공유되는 지점은 없음을 확인(`movers()`·`renderHtml()`은 `email-brief/route.ts` 로컬 함수, `daily-brief`는 `lib/dailyBrief.ts`의 별도 함수를 씀 — 공용은 `lensDisplayName`/`lensStateLabel` 같은 하위 유틸뿐이라 B안 범위를 넘지 않음). 종목명은 미접촉.
+
+### §3 검증
+
+72개 조합(ko/en × 7렌즈 × 전 상태, `Object.keys` 기반이라 코드 현재 상태를 그대로 반영 — 924가 언급한 "71개"와 1건 차이는 세션 간 카운트 방식 차이로 추정, 재확정은 안 함) 전수 — `scripts/probe_926_email_dedup.ts`가 route.ts의 실제 export 함수를 직접 호출: 수정 전 중복 **7건**(momentum-ko 3·momentum-en 3·valuation-ko-mid 1) → 수정 후 **잔여 0**. 중복 없던 **65건 문자열 완전 불변**(회귀 0). 오늘 실데이터(925의 `probe_925_brief_labels.ts`와 같은 `getTodayChanges` 소스 재사용, 그 사실을 여기 적음)로 before/after 재현 — KR 5건 중 4건·US 5건 중 2건 실제로 달라짐. `daily-brief`·`lib/lensCopy.ts` diff 0을 `git diff --stat`으로 재확인. 메일 발송 0·라우트 미호출(정적 함수만 import)·DB 쓰기 0.
+
+🔴 **925 자체의 진단 오류를 여기서 발견·정정**: 925의 자동 중복탐지는 `lensName` "전체" 문자열("밸류(가치)")로 phrase를 검색했는데, 924가 이미 정의해 둔 "core"(괄호 앞까지 — "밸류")를 안 썼다. 그 결과 925의 §2 표에서 SK하이닉스(밸류-mid) 행이 중복 목록에서 빠졌었다 — core 기준으로 다시 보면 이 행도 중복이었고, 926의 수정이 이 행도 함께 해소한다.
+
+### §4 이 STEP이 못 하는 것
+
+실제 발송 메일의 육안 검증은 이 STEP도 불가(브라우저로 볼 수 있는 화면이 아님) — 문자열 검증(72개 조합 전수 + 오늘 실데이터 재현)이 전부라는 사실을 그대로 남긴다. 과거 발송분은 여전히 측정 불가(925와 동일 — mover-line은 저장 안 됨, "0건"이 아니라 "잴 수 없음" 유지). `daily-brief`의 리터럴 중복 0건이 LLM 우회 때문인지 폴백 저사용 때문인지도 이 STEP은 확정하지 않는다.
+
+### §5 판정서·문서
+
+`docs/DECISION_925_BRIEF.md`에 B안 채택·적용 헤더 추가(본문 선택지 불변) — A안은 미채택 유지, 재검토 조건(`daily-brief` 성격이 밝혀지면) 명시. `docs/REVDCF_SPEC.md` §11(1건) · `docs/STATE.md`(140줄) · `docs/LENS_DEV_PLAYBOOK.md` 신규 · `docs/probe_926_email_dedup.json`·`scripts/probe_926_email_dedup.ts` 신설(같은 커밋). DoD7 판정 칸 불변. `lib/lensPrecompute.ts`(917)·`lib/revdcf/`·`lib/lensCopy.ts`(924)·`app/api/cron/daily-brief/`·`lib/dailyBrief.ts`·`data/`·`.github/`·`vercel.json` diff 0. `REVDCF_ENABLED` Production OFF · 크론 미실행 · 메일 발송 0 · DB 쓰기 0 · tsc 0 · test 182/182.
+
 ## 2026-08-06 (70) — 🔴 **STEP 925 실행: `daily-brief`·`email-brief` 라벨 조립 진단 — 924의 "가능성"이 실재로 확인됨, 수리 미승인 대기**
 
 > **성격**: 924가 *"daily-brief·email-brief에도 momentum과 같은 이름중복 패턴이 있을 가능성"*으로 남긴 것을 확인만 한다. 전제: HEAD `f63d9cb`(924) · tsc 0 · test 182/182. **진단만 — 코드 diff 0(`scripts/` 프로브 제외), 메일 미발송, 크론 미실행.**

@@ -29,15 +29,33 @@ function subjectFor(locale: Locale, at: Date): string {
 
 type MoverLine = { name: string; lensName: string; from: string; to: string; extra: number };
 
+// STEP 926(B안, email-brief 전용): `${lensName} ${from} → ${to}`에서 from/to가 이미 렌즈이름의 핵심단어를
+// 담고 있으면(예: 모멘텀 상위권·밸류 중간권) lensName과 겹쳐 "모멘텀 ... 모멘텀 상위권"처럼 중복된다.
+// lensName 프리픽스는 그대로 두고(다른 렌즈 행의 형태를 안 바꾸려고 — 924의 lensStateLine과 다른 이유로 다른 방식),
+// from/to 쪽에서만 그 핵심단어를 제거한다 — 924의 "core" 판단(괄호 있으면 괄호 앞까지)과 동일 로직 재사용,
+// lib/lensCopy.ts는 손대지 않는다(이 파일 로컬 함수).
+// export = 프로브(scripts/probe_926_*.ts)가 재구현이 아니라 이 함수 자체를 71개 조합으로 직접 검증하기 위함(926 §3).
+export function stripEmbeddedLensName(lensName: string, phrase: string): string {
+  const core = /[(（]/.test(lensName) ? lensName.replace(/[(（].*$/, "") : lensName;
+  if (!phrase.toLowerCase().includes(core.toLowerCase())) return phrase;
+  const escaped = core.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return phrase.replace(new RegExp(escaped, "ig"), "").replace(/\s+/g, " ").trim();
+}
+
 function movers(items: (ChangeItemData & { market: "KR" | "US" })[], loc: Locale): MoverLine[] {
   const sorted = [...items].sort((a, b) => (b.tradeAmount ?? 0) - (a.tradeAmount ?? 0));
-  return groupBySymbol(sorted).slice(0, 5).map(({ item, extra }) => ({
-    name: resolveDisplayName({ loc, market: item.market, symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: "list" }),
-    lensName: lensDisplayName(loc, item.lensKey),
-    from: item.fromState ? lensStateLabel(loc, item.lensKey, item.fromState) : "—",
-    to: lensStateLabel(loc, item.lensKey, item.toState),
-    extra,
-  }));
+  return groupBySymbol(sorted).slice(0, 5).map(({ item, extra }) => {
+    const lensName = lensDisplayName(loc, item.lensKey);
+    const rawFrom = item.fromState ? lensStateLabel(loc, item.lensKey, item.fromState) : "—";
+    const rawTo = lensStateLabel(loc, item.lensKey, item.toState);
+    return {
+      name: resolveDisplayName({ loc, market: item.market, symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: "list" }),
+      lensName,
+      from: item.fromState ? stripEmbeddedLensName(lensName, rawFrom) : rawFrom,
+      to: stripEmbeddedLensName(lensName, rawTo),
+      extra,
+    };
+  });
 }
 
 // 다크 강제 금지 — 이메일 클라 호환 우선(인라인 스타일만, 민트 포인트만). 화면 톤·문법 재사용(사실만·판단은 당신).
