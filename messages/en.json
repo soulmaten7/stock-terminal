@@ -1088,7 +1088,7 @@
     "waccBase": "Base",
     "waccHigh": "Higher cost of capital (+1%p)",
     "marginVsThreshold": "Operating margin {margin} < threshold {threshold} — new revenue requires more investment than the profit it earns.",
-    "overCapExplained": "The 25-year forecast period plus perpetuity explains {pct}% of the price.",
+    "overCapExplained": "The {years}-year forecast period plus perpetuity explains {pct}% of the price.",
     "methodologyLink": "The method and how it differs from the source are on the methodology page.",
     "boardCol": "Rev-DCF",
     "boardBadge": {
@@ -1122,13 +1122,13 @@
         "i": "Tax rate",
         "s": "Unlevered cash tax rate",
         "o": "Marginal rate",
-        "w": "The source itself also uses a firm-specific cash tax rate in the cost-of-capital calculation — the method is not different, only the vintage of the value is. That input, the cash tax rate, is not reliably available for most names and carries anomalies, so we substitute the marginal rate instead"
+        "w": "The source itself also uses a firm-specific cash tax rate in the cost-of-capital calculation — the method is not different, only the vintage of the value is. That input, the cash tax rate, is not reliably available for most names and carries anomalies, so we substitute the marginal rate instead. For reference, the effective tax rate Damodaran reports for the broad U.S. market excluding financials averages {taxEffMoney}% for profitable firms and {taxEffAgg}% in aggregate — both lower than the {taxMarginal}% marginal rate we use."
       },
       "wc": {
         "i": "Working capital",
         "s": "Marginal, non-interest-bearing current liabilities only",
         "o": "Level, 5-year average, all current liabilities",
-        "w": "Marginal varies 40%p year to year. Subtracting all current liabilities produces a different sign than the source method for some stocks. Within what we have checked, that difference has not changed a verdict."
+        "w": "Marginal varies 40%p year to year. Subtracting all current liabilities produces a different sign than the source method for some stocks. Within what we have checked, that difference has not changed a verdict. Damodaran cautions that working capital should not be assumed to keep getting more negative forever — at some point the change must flatten or reverse. As of today, {wcPct}% of our {wcTotal} computable results carry a negative working-capital rate."
       },
       "cap": {
         "i": "Incremental capital rate",
@@ -1162,6 +1162,7 @@
       }
     },
     "betaCaveat": "The cost of capital is computed with CAPM. Research finds beta explains little of the cross-section of stock returns (Fama-French 1992). Since the GAP is sensitive to the cost of capital, we show a range rather than a single number.",
+    "universeCaveat": "Trillion calculates its reverse DCF only for companies listed on US exchanges (NYSE, Nasdaq, and others). 486 over-the-counter (OTC) names (as of 2026-08-02) fall outside this scope — of those, we could obtain a market value for 133, and only 8 actually produced a number of years. The reason we leave them out is price: this model works backward from the share price to infer what the market expects, and OTC quotes are not real-time and trade infrequently, which makes that starting point unreliable. There is another view — Professor Damodaran, whose industry and tax-rate data we rely on, includes OTC names precisely to avoid sampling bias. We know that view and chose differently, which is why we disclose, in numbers, exactly how much we do not see.",
     "notInvestmentAdvice": "This is neither a forecast nor a recommendation. It is material to judge for yourself."
   }
 }

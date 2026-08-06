@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { computeDrivers } from "@/lib/revdcf/drivers";
 import { assembleWacc, creditSpreadFor, computeGapWithSensitivity } from "@/lib/revdcf/compute";
 import { runRevDcf, type RevDcfMarket, type RevDcfVerdict } from "@/lib/revdcf/engine";
+import { REVDCF_DEFAULT_MAX_YEARS } from "./constants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -82,10 +83,11 @@ export async function GET(req: Request) {
         return { ...base, skip_reason: "NO_MARGINAL_CAPEX", flags: { ...dr.flags, damodaranAsOf: damoAsOf } };
       const drv = { ...dr.drivers, taxRate: usTax, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal };
       // 🔴 STEP 859: 원전 T8 지평 = 25년(PIE C31 LOOKUP D27:AB27). over_cap = "25년 가치 < 주가"(원전 "25+"). 이전 100은 원전 이탈이었음.
-      const sens = computeGapWithSensitivity(drv, market, { maxYears: 25 });
-      const eng = runRevDcf(drv, market, { maxYears: 25 });
+      // 🔴 STEP 919(#40): 리터럴 25 3곳을 `REVDCF_DEFAULT_MAX_YEARS`로 통일 — 값은 그대로 25, 화면 문구(overCapExplained)와 이제 한 곳을 공유.
+      const sens = computeGapWithSensitivity(drv, market, { maxYears: REVDCF_DEFAULT_MAX_YEARS });
+      const eng = runRevDcf(drv, market, { maxYears: REVDCF_DEFAULT_MAX_YEARS });
       let vm: string | null = null, gm: number | null = null;
-      if (dr.drivers.fixedCapitalRateMarginal != null) { const m = runRevDcf({ ...drv, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: 25 }).verdict; vm = m.kind; gm = m.kind === "years" ? m.gap : null; }
+      if (dr.drivers.fixedCapitalRateMarginal != null) { const m = runRevDcf({ ...drv, fixedCapitalRate: dr.drivers.fixedCapitalRateMarginal }, market, { maxYears: REVDCF_DEFAULT_MAX_YEARS }).verdict; vm = m.kind; gm = m.kind === "years" ? m.gap : null; }
       return {
         ...base, verdict: sens.base.kind, gap_years: sens.base.kind === "years" ? sens.base.gap : null, explained_pct: sens.base.kind === "over_cap" ? sens.base.explainedPct : null,
         gap_wacc_minus1: gnum(sens.waccMinus1), gap_wacc_plus1: gnum(sens.waccPlus1), threshold_margin: eng.thresholdMargin, monotonic: eng.monotonic,

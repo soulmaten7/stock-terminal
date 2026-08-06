@@ -1,6 +1,42 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (64) — 🟢 **STEP 919 실행: 안건 2 승인 적용 + 905 ④단계 화면 3건** (장은태 2026-08-06 "세 건 전부 권고대로")
+
+> **성격**: 918의 권고를 장은태가 그대로 승인 — `#17` 채택·`#37`·`#43` 현행 유지. 승인 적용(문서) + 905가 화면 4단계로 미뤄둔 `#29`·`#40`·`#41`·`#17` 병기를 함께 처리. 전제: HEAD `ab12d1e`(918) · tsc 0 · test 182/182. **`lib/revdcf/**` 산식 불변 원칙 — 값을 하나도 안 바꾼다.**
+
+### §0 사전 확인
+
+`#29`(REVDCF_SPEC.md:1380)·`#40`(:1390)·`#41`(:1391) 원문 인용 확인. 905가 ④단계로 묶은 근거(`DECISION_905_NEXT.md`) 직접 인용 — #29·#41은 "D층 표현 보강"(855·856·903과 같은 유형, DoD7 무관) · #40은 "코드 내부 상수 공유 리팩터"(화면 문구 아님) · 화면은 `#17·37·43` 결정 이후로 미뤄 중복작업 회피. `#17` "각주 병기"의 위치는 918 §A 원문("방법론 페이지에 각주로 병기") + 기존 driver3 각주(`RevDcfMethod.row.tax.w`) 확인으로 확정. 셋 다 재확인 결과 미해소·유효(전례 #26·#33=해소, #22=무효와 다름).
+
+### §1 안건 2 승인 적용
+
+`docs/DECISION_908_PENDING.md` 안건2 행 "✅ 919 해소" 갱신 · `docs/DECISION_918_AGENDA2.md` 머리에 승인기록만 추가(본문 불변, 907 전례) · `docs/REVDCF_SPEC.md` §10 `#17`(채택으로 소진)·`#37`·`#43`(현행유지로 종결, 각각 불리한 사실 bandCross 8.9%·872 실측 보존) · `docs/LENS_COMPLETION_STANDARD.md` driver1·3 각주에 918→919 적용 기록 추가(③판정 칸 불변, `git diff` 확인 — 순수 텍스트 치환 2줄).
+
+### §2 화면 (905 ④단계)
+
+**`#17` 채택 — driver3 각주 배선**: `app/[locale]/revdcf/page.tsx`에 `loadLedgerFigures()`(신규, Supabase 직접 조회 — try/catch로 실패해도 페이지는 뜸) 추가, `damodaran_tax_rate`(`eff_money`/`eff_agg`, industry="Total Market (without financials)")·`damodaran_country_tax`(US `marginal_rate`)를 매 요청 조회해 `row.tax.w`에 `{taxEffMoney}`/`{taxEffAgg}`/`{taxMarginal}` 파라미터로 병기(19.4%/20.2%/25.6%, as_of=2026-01-05 재확인). **숫자를 안 박고 배선**(CLAUDE.md §12 B분류).
+
+**`#29` 재실측 배선**: 원 항목의 "46.6%"를 DB로 재대조하니 **stale**(현재 43.2%, 201/465, as_of 2026-08-05 — 866~867 유니버스 작업 이후 드리프트). `revdcf_results`(`working_capital_rate`)를 같은 `loadLedgerFigures()`에서 조회해 `row.wc.w`에 `{wcPct}`/`{wcTotal}`로 **라이브 배선**(하드코딩 대신 — 이 값은 매일 바뀌는 값이라 정적 텍스트로 두면 또 stale해짐). 다모다란 원문 직접 확보·인용(`damodaran_working_capital.html`): *"In the long term, however, we should not assume that non-cash working capital will become more and more negative over time."*
+
+**`#40` maxYears 배선**: `route.ts` 3곳(`{maxYears: 25}`)과 화면 문구(`overCapExplained`의 "25년")가 각자 리터럴을 들고 있던 것을 통일. 🔴 **`lib/revdcf/engine.ts`는 건드리지 않는다**(STEP의 lib/ diff 0 요건) — 대신 `app/api/cron/revdcf/constants.ts`(신규, lib/ 밖)에 `REVDCF_DEFAULT_MAX_YEARS = 25`를 정의해 `route.ts`와 `components/RevDcfSection.tsx`가 공유. 값은 그대로 25, 소스만 하나로.
+
+**`#41` 유니버스 공개**: 867 §7-3에 이미 완성돼 있던 ko/en 3문단 초안(OTC 486곳·시총확보 133·GAP산출 8, 다모다란 반대입장 병기)을 `universeCaveat` 키로 새로 만들지 않고 거의 그대로 옮김(날짜 "2026-08-02 기준" 명시 추가 — 866 확정 시점의 스냅샷임을 밝힘). `betaCaveat` 바로 아래, 같은 캐비어트 스타일로 배치(새 섹션 안 만듦).
+
+**`#37`·`#43`은 화면 변경 0** — 현행 유지 판정 그대로, 아무것도 안 만들었음(§0에서 근거 확인만).
+
+라이브 확인: 로컬 dev(`localhost:3333`, `REVDCF_ENABLED=true`) curl로 ko/en `/revdcf` 4건 전부 실 렌더 확인(43.2%/465·19.4%/20.2%/25.6%·486/133/8 문구 정확). `overCapExplained`는 `RevDcfSection.tsx`가 client-only(useEffect fetch)라 curl로 직접 못 보고, hydration payload에 `{years}` 템플릿이 올바르게 실려 있음을 확인 + `messages.test.ts`의 ICU 렌더-안전성 체크로 보완.
+
+### §3 ko/en
+
+`messages.test.ts` 8/8 통과(키 패리티·플레이스홀더 일치·ICU 렌더 무오류·en 축약형 0). en 텍스트는 ko와 동일 밀도(요약 아님) — apostrophe 전면 회피(en.json 기존 규칙, "Damodaran reports" 형태로 소유격 우회).
+
+### 무변경·검증
+
+`lib/` diff 0(engine.ts 미변경 확인) · `data/`·`.github/`·`vercel.json` diff 0 · `RETRY_MAX`·`RETRY_MS`·게이트·임계값·`maxDuration` 불변 · ②단계 미착수 · `LENS_COMPLETION_STANDARD.md` ③판정 칸 전부 불변 · DoD 판정 칸 전부 불변 · 안건 3·4 대기 불변 · `REVDCF_ENABLED` Production OFF · 크론 미실행 · DB 쓰기 0(사전/사후 스냅샷 일치) · tsc 0 · test 182/182.
+
+---
+
 ## 2026-08-06 (63) — 역DCF 복귀: **STEP 918 실행 — 안건 2(`#17`·`#37`·`#43`) 원전 대조·실측·권고 제출** (권고만·코드 diff 0·화면 무변경)
 
 > **성격**: 912~917이 라이브 이상징후 진단·계측으로 승인된 이탈이었고, 917이 계측을 배포만 한 뒤 값은 다음 크론 이후에나 나와 라이브 쪽엔 당장 할 일이 없었다 — "이 모델만 먼저 완벽하게 완성한다"는 원래 방침으로 복귀. 전제: HEAD `a0fddbb`(917) · tsc 0 · test 182/182. 910이 안건 1(driver4)을 판정한 것과 같은 방식(실측 근거 → 권고 → 승인은 장은태) — 안건 2 세 건 각각 독립 판정.

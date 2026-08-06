@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { skipKeyFor } from "@/lib/revdcf/skipKey";
 import { isLossMaking } from "@/lib/revdcf/lossMaking";
+import { REVDCF_DEFAULT_MAX_YEARS } from "@/app/api/cron/revdcf/constants";
 
 // STEP 853/855 — 역DCF 종목페이지 섹션. US 전용(데이터 자체가 US뿐이라 KR/타국은 result=null → 미노출).
 // 5분기 헤드라인 + 자본비용 시나리오(3점·기본 표시) + 순위(방향 명시) + 적자 분기 + 드라이버 설명 + 판정 분기. 다크·모바일·ko/en.
@@ -119,7 +120,7 @@ export default function RevDcfSection({ symbol }: { symbol: string }) {
       {!lossMaking && v === "over_cap" && (
         <>
           <p className="text-lg font-bold text-unjong-accent">{t("headline.overCap")}</p>
-          {r.explainedPct != null && <p className="mt-1 text-sm text-unjong-muted">{t("overCapExplained", { pct: Math.round((r.explainedPct as number) * 100) })}</p>}
+          {r.explainedPct != null && <p className="mt-1 text-sm text-unjong-muted">{t("overCapExplained", { pct: Math.round((r.explainedPct as number) * 100), years: REVDCF_DEFAULT_MAX_YEARS })}</p>}
         </>
       )}
       {v === "skipped" && <p className="text-lg font-bold text-unjong-muted">{t(`skip.${skipKey}`)}</p>}
