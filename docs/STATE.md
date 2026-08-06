@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 926)** · 부모(STEP 925 `1d5781e`) · **push 대기 — 아래 작업 완료 후 push.**
+- HEAD = **이 커밋(STEP 926 `f6e4633`)** · 부모(STEP 925 `1d5781e`) · **push 완료 — origin/main + revdcf-preview 반영(rebase 불필요, divergence 없었음).**
 - 🔴🔴 **다음 세션 최우선 필독**: **① 라이브 건 = 917 계측 배포 · 다음 크론 관측 대기**(변화 없음) **② 대기 안건은 3번(`#67` 로그값) 하나만**(908 정본) **③ DoD7 = 여전히 🔶 미결**(926도 판정 안 함) **④ `email-brief` 라벨중복 926에서 해소**, `daily-brief`(A안)는 여전히 미채택 대기(`docs/DECISION_925_BRIEF.md`).
 - ✅ **STEP 926 = 🟢 925의 B안 승인·적용 — `email-brief`만 수정, `daily-brief`·`lib/lensCopy.ts`(924) diff 0.** `app/api/cron/email-brief/route.ts`의 `movers()`에 로컬 함수 `stripEmbeddedLensName()`(export, 프로브 검증용) 신설 — `lensName` 프리픽스는 유지, `from`/`to`에서 924와 같은 "core"(괄호 앞까지) 판단으로 겹치는 핵심단어만 제거. 72개 조합(ko/en×7렌즈×전상태) 전수 — **route.ts가 export하는 실제 함수를 직접 검증**: 수정 전 중복 7건(momentum-ko 3·momentum-en 3·valuation-ko-mid 1) → 수정 후 **0건**, 중복 없던 65건 문자열 **불변**(회귀 0). 오늘 실데이터로 before/after 재현(`docs/probe_926_email_dedup.json`) — KR 5건 중 4건·US 5건 중 2건 실제로 바뀜. 🔴 **925 자체 오류 발견·정정**: 925의 자동탐지가 `lensName` 전체("밸류(가치)")로 비교해 SK하이닉스 밸류-mid 행을 놓쳤음(924의 core 기준 미적용) — 926에서 바로잡아 검증에 포함. `daily-brief`(A안)는 미채택 유지, 재검토 조건 명시(`docs/DECISION_925_BRIEF.md` 헤더). 메일 발송 0·크론 미실행·DB 쓰기 0·`daily-brief`·`lib/lensCopy.ts` diff 0(git 확인).
 - ✅ **STEP 925 = 🔴 `daily-brief`·`email-brief`의 자체 라벨조립이 924의 `lensStateLine`을 안 씀 — 실측 결과 리터럴 중복 실재.** KR 5건 중 3건·US 5건 중 2건 확인, 수리선택지 A(공유헬퍼)/B(email만)/C(방치) 카탈로그(`docs/DECISION_925_BRIEF.md`) — 926이 B 채택.
