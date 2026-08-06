@@ -1,6 +1,38 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (74) — 🔴 **STEP 929 실행: `LENS_COMPLETION_STANDARD.md`가 7렌즈용으로 신설됐다는 사실 — DoD7·DoD9 모호함 3건의 공통 원인, 판정·권고 없음**
+
+> **성격**: 923(DoD7 "같은 이름")·928(DoD9 "production")에 이어, DoD9의 "KR"이 역DCF의 "US 전용" 표시와 정면 충돌한다는 사실을 세 번째로 발견했다. 전제: HEAD `1c31a49`(928) · tsc 0 · test 182/182. **사실만 기록 — 판정·권고 0, 코드 diff 0, DoD 정의·판정 칸·921 승인 완성정의 전부 불변.**
+
+### §0 원문 직접 재확인
+
+`docs/LENS_COMPLETION_STANDARD.md`를 직접 열어 Cowork가 전달한 표와 대조 — 전부 일치(파일머리 STEP 812 신설·"왜" 절·현황표 제목 "렌즈 7×항목9"·8행째 "역DCF(모델·US 전용)"·DoD7·DoD9 원문). `git log -S "역DCF" -- docs/LENS_COMPLETION_STANDARD.md`로 역DCF 행 최초 추가 시점 확인 = `1217e1d`(STEP 857, 2026-08-01) — 파일 신설(812, 07-29)로부터 3일 뒤.
+
+### §1 세 가지 사실
+
+① 이 문서는 7렌즈용으로 신설됐고 역DCF는 8번째 행으로 뒤에 얹혔다. ② DoD9 "KR·US 각 2종목"과 현황표의 "역DCF(모델·**US 전용**)" 표시가 정면 충돌 — US 전용 모델은 KR 2종목을 원리적으로 못 낸다. Cowork 실측(Preview): KR 종목(SK하이닉스 `000660`)은 정상 렌더+7렌즈 전부 표시되나 역DCF 카드는 없음 — `messages/ko.json:1165`의 `universeCaveat`("미국 거래소... 상장 종목만 계산합니다")와 정합. ③ DoD7의 다섯 표면 중 변화피드·이메일·브리핑 셋은 이미 코드 자체가 없어 N/A로 판정돼 있다 — 🔴 **929 명령 파일은 이 N/A 확인의 출처를 "925"로 지칭했으나, 직접 재확인 결과 실제 출처는 `LENS_COMPLETION_STANDARD.md`의 「🔶 901 판정」 블록이었다**(925의 범위는 email/daily-brief의 7렌즈 라벨 조립이었지 역DCF의 N/A 여부가 아니었음) — 원문 재확인 과정에서 이 오귀속을 발견·정정했다.
+
+### §2 모호함 3건의 공통 원인(관찰만, 원인 단정 없음)
+
+923(DoD7 "같은 이름")·928(DoD9 "production")·929(DoD9 "KR") 셋 모두 "7렌즈용으로 쓰인 문구를 역DCF에 적용할 때" 나온다는 사실만 기록 — 문서를 그렇게 쓴 의도는 알 수 없다.
+
+### §3 판정서
+
+`docs/DECISION_929_DOD_SCOPE.md` 신설 — §0~§2 사실 + 921 승인과의 정합성(옳고 그름 판정 없음) + DoD7 현재 상태(923 재개방·N/A 셋은 기존 사실) + **장은태가 답할 질문 3개**(DoD9항목 그대로 적용 vs 적용가능항목만 / DoD7 다섯표면 중 역DCF해당 둘만 / DoD9를 US 2종목만으로 읽을지 — 답은 안 씀) + 완성까지 남은 것(`#70`결정형·`#71`🟢928소진·`#74`승인완료·DoD7미결, 상태만).
+
+### §4 문서 갱신
+
+`docs/LENS_COMPLETION_STANDARD.md`엔 역DCF 정의 승인 블록 바로 아래 **각주 포인터 1줄만** 추가(`git diff`로 그 한 줄 외 변경 없음을 육안 확인 — DoD 정의·판정 칸 완전 불변). `docs/DECISION_921_COMPLETION.md`에 929 사실 블록 추가(본문 불변, §2의 928 정정 블록 바로 뒤). `docs/DECISION_923_NAMING.md`에 901의 N/A 판정을 사실로 추가(본문 불변). `docs/REVDCF_SPEC.md` §11(신규 1건). `docs/STATE.md`(141줄, `#67`/22:45 UTC 관측 대기 보존).
+
+### §5 플레이북
+
+`docs/LENS_DEV_PLAYBOOK.md`에 신규 1건 — 다른 대상을 위해 쓰인 기준을 새 대상에 적용하면 안 맞는 자리가 하나씩 따로 나타난다는 것, 문구가 안 맞을 땐 "이 문서가 누구를 위해 쓰였는가"를 먼저 확인한다는 것.
+
+### 문서·검증
+
+`docs/DECISION_929_DOD_SCOPE.md` 신설 · `docs/LENS_COMPLETION_STANDARD.md`(각주 1줄) · `docs/DECISION_921_COMPLETION.md`·`docs/DECISION_923_NAMING.md`(사실 추가, 본문 불변) · `docs/REVDCF_SPEC.md`·`docs/STATE.md`·`docs/LENS_DEV_PLAYBOOK.md` 갱신. `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0 · DoD 정의·판정 칸 전부 불변(git diff 육안 확인) · 921 승인 완성정의 불변 · `REVDCF_ENABLED` Production OFF · 환경변수 변경 0 · 재배포 0 · 크론 미실행 · 메일 발송 0 · DB 쓰기 0 · tsc 0 · test 182/182.
+
 ## 2026-08-06 (73) — 🟢 **STEP 928 실행: `#71` 수리 완료 — env 스코프 조정으로 `revdcf-preview` 정상 렌더, DoD9은 여전히 미판정**
 
 > **성격**: 927이 확정한 원인(Preview 스코프에 Supabase 환경변수 없음)을 장은태 승인 하 Cowork이 직접 고쳤다. 전제: HEAD `c0d46e9`(927) · tsc 0 · test 182/182. **문서만 — 코드 diff 0.**

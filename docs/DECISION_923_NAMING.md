@@ -15,6 +15,9 @@
 > **Cowork 실측, 2026-08-06 · `localhost:3333`**: `/explore?market=US` 「Mo」→**「Altria Group, Inc.」**·「Hst」→**「Host Hotels & Resorts, Inc.」** 정상 표시 확인. 「모멘텀 모멘텀 상위권」→**「모멘텀 상위권」**으로 중복 해소 확인. 대조군(Suncor Energy Inc. 등) 정상 유지. `/explore?market=KR` 종목명·라벨 전부 정상, 회귀 없음. 「Alphabet Inc.」 2행은 **그대로**(924가 의도적으로 미접촉 — §2에서 이미 설계로 판정됨).
 > **미확인으로 남은 것**: `resolveDisplayName` 소비처 중 `lib/todayChanges.ts` 경로(ChangeRow·TodayClient·daily-brief·email-brief 공통)는 `/explore`만 봐서는 검증되지 않는다 — **925가 코드·프로브로 답한다**(`docs/DECISION_925_BRIEF.md`).
 
+> ## 🟡 929 — DoD7 다섯 표면 중 셋이 N/A라는 사실 추가(본문은 고치지 않는다)
+> 이 문서 §2가 다룬 "다섯 표면"(카드·목록·변화피드·이메일·브리핑) 중 **변화피드·이메일·브리핑 셋은 역DCF에 코드 자체가 없어 N/A로 이미 판정돼 있다**(901, `docs/LENS_COMPLETION_STANDARD.md`의 「🔶 901 판정」블록 — `lib/todayChanges.ts`·`email-brief`·`daily-brief` 전부 grep 0건, "플래그 OFF라 안 보임"이 아니라 "코드가 없음"). 923·924·925·926이 다룬 종목명 불일치·라벨중복은 전부 **남은 둘(카드·목록)**과 **7렌즈 라벨 조립**(email/daily-brief는 7렌즈 전용 함수를 쓴다) 얘기였지, N/A 셋의 상태를 바꾸지 않는다. DoD7이 여전히 🔶인 이유는 이 N/A 셋 때문이 아니라 §1의 "같은 이름" 해석 미결 때문이다 — 이 사실을 명확히 하기 위해 적는다. 상세 = `docs/DECISION_929_DOD_SCOPE.md`.
+
 ---
 
 ## §0 — Cowork 브라우저 3중 검증 (2026-08-06 · `localhost:3333`)
