@@ -80,7 +80,7 @@
 | 62 | row.tax.w 정량 배선(58%/16.2%) | 실시간 커버리지 계산 API 없음 — 새 인프라 필요 | **인프라 확충 후** |
 | **67** | (독자발견) retryBudgetHit A안 판단 | 관측 장치(894)는 붙었으나 **실제 크론 로그를 아직 한 번도 확인한 적 없음**. **907 재확인**: `vercel logs --help` 원문 재확인 — "from now and for 5 minutes at most"(CLI 근본 제약, 안 바뀜). 여전히 조회 불가 — 권고: Vercel 대시보드(히스토리 보존)를 장은태가 직접 확인 | 아니오(도구 제약, 불변) |
 | 70 | `REVDCF_ENABLED` Preview 스코프 유지/해제 | 결정 안 됨 | **보류(DoD9/노출)** |
-| 71 | Preview 500 원인 정밀 규명 | SSO 벽으로 Claude Code 재현 불가, Cowork 브라우저도 스택트레이스 미확보 | **보류(DoD9/노출)** |
+| 71 | Preview 500 원인 정밀 규명 | ~~SSO 벽으로 Claude Code 재현 불가, Cowork 브라우저도 스택트레이스 미확보~~ 🟢 **927 해소**: Cowork이 인증된 브라우저로 재현 + Runtime Logs 확보 — `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`·`SUPABASE_SERVICE_ROLE_KEY`·`DATABASE_URL`이 Preview 스코프에 없어 middleware가 Supabase 클라이언트 생성 단계에서 즉시 500(10ms·외부호출 0건). 처방 권고(위험0, 미실행)만 기록 — env 변경·재배포는 장은태 몫 | **보류(DoD9/노출) — 원인은 확정, 수리는 미실행** |
 | 74 | `years` 배지 문구 비대칭(카드 vs 보드) | 결함/의도 판정 안 됨 — **DoD7 재개방 전제 조건**으로 이미 명시돼 있음 | **보류(DoD7)** |
 
 ## §4용 분류 (지금 가능 몇 건인지)

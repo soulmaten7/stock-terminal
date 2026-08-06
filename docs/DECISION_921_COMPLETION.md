@@ -9,6 +9,12 @@
 > **적용**: `docs/LENS_COMPLETION_STANDARD.md` DoD 절 머리에 승인된 정의 기록(취소선 보존) · DoD7의 마지막 판단(`boardBadge.years`)은 922가 재료·권고까지 제출(현행 유지 권고, `docs/DECISION_922_BADGE.md`) — 장은태 승인 대기 중이라 DoD7 판정 칸은 아직 🔶.
 > 상세 = `docs/CHANGELOG.md` STEP 922 블록 · `docs/DECISION_922_BADGE.md`.
 
+> ## 🟡 927 정정 — §2의 전제 변화(본문은 고치지 않는다)
+> §2 표의 *"Preview 채널로 우회 가능한가 → 아니오"* 판정은 당시 **원인 미규명**(`#71`) 상태에서 내려졌다. **927이 원인을 확정했다** — Preview 500은 코드 결함이 아니라 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`·`SUPABASE_SERVICE_ROLE_KEY`·`DATABASE_URL`이 Vercel에서 **Production 스코프에만** 설정돼 있고 Preview에는 없어서였다(Runtime Logs 직접 확인, Middleware 500·10ms·외부호출 0건).
+> 🔴 **"아니오"라는 결론 자체을 뒤집지 않는다** — 원인은 알아냈지만 **아직 아무것도 고치지 않았다**(환경변수 미접촉, 재배포 없음). "지금은 여전히 아니오, 단 이유가 코드가 아니라 스코프였다"는 사실만 추가한다. `NEXT_PUBLIC_*` 2개를 Preview 스코프에 추가하는 처방(위험 0, 이미 공개된 값)이 927에 권고로만 기록됐고, 실행·재관측은 장은태 몫이다.
+> **재검토 조건(154행 (b))이 여기서 한 단계 구체화된다**: "Preview 500이 고쳐지면"이 아니라 **"장은태가 위 2개 환경변수를 Preview에 추가하고 재배포한 뒤, `/revdcf`가 실제로 뜨는지 재관측하면"**으로 좁아졌다.
+> 상세 = `docs/CHANGELOG.md` STEP 927 블록 · `docs/REVDCF_SPEC.md` §10 `#71`.
+
 ---
 
 ## §0 — 920 육안 검증 결과 등재 (920의 미결 항목 해소)
