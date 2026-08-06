@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 928)** · 부모(STEP 927 `c0d46e9`) · **push 대기 — 아래 작업 완료 후 push.**
+- HEAD = **이 커밋(STEP 928 `1c31a49`)** · 부모(STEP 927 `c0d46e9`) · **push 완료 — origin/main + revdcf-preview 반영(rebase 불필요).**
 - 🔴🔴 **다음 세션 최우선 필독**: **① 라이브 건 = 917 계측 배포 · 다음 크론 관측 대기**(변화 없음) **② 대기 안건은 3번(`#67` 로그값) 하나만**(908 정본) **③ DoD7 = 여전히 🔶 미결**(928도 판정 안 함) **④ `#71`(Preview 500) 🟢 수리 완료(928) — `revdcf-preview`가 이제 실제로 뜬다.** **⑤ DoD9 "라이브"가 Preview를 인정하는지는 미판정** — 승인된 완성 정의(DoD9 제외 8항목) 불변.
 - ✅ **STEP 928 = 🟢 `#71` 수리 완료 — env 스코프 조정(장은태 승인)으로 `revdcf-preview` 정상 렌더.** Vercel 환경변수 Environments 체크박스만 변경(값 미입력): 1단계 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`(위험0) → middleware 500이 `supabaseKey is required`(SSR)로 바뀜(같은 문제 재발이 아니라 다음 계층 노출) → 코드 재확인(직접 grep, `lib/supabase/admin.ts:5-6`이 `SUPABASE_SERVICE_ROLE_KEY` 사용) → 2단계 그 키도 Preview 추가(별도 승인, RLS우회키라 위험등급 다름 — Vercel Authentication Standard Protection ON=로그인 필요·`NEXT_PUBLIC_` 아니라 브라우저 미노출 근거) → 재배포 → **정상 렌더**(Cowork 브라우저: 홈·`/stock/NVDA` 역DCF 카드, 로컬 dev와 동일). 🔴 **남는 위험**: Preview에 RLS 우회 키 존재(Deployment Protection 의존). `docs/REVDCF_SPEC.md` §10 `#71` 🟢 소진 · `docs/DECISION_921_COMPLETION.md`(928 정정 헤더 — §2 "아니오"의 사실관계는 바뀌었으나 DoD9 판정·완성정의는 그대로) · `docs/AUDIT_904_OPEN_ITEMS.md` 갱신. **DoD9 판정 안 함·완성 정의 안 바꿈.** 코드 diff 0.
 - ✅ **STEP 927 = 🟢 `#71`(Preview 500) 원인 확정 — 코드가 아니라 환경변수 스코프.** Middleware 500·10ms·외부호출0(네트워크 이전 단계) · 4개 Supabase 변수 전부 Production 전용. 처방만 권고, env 미접촉.
