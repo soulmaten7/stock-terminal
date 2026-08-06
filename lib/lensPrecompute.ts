@@ -82,11 +82,17 @@ export type CapDiag = {
   total: number; batchOk: number; noCapField: number; noResponse: number;
   recovered: number; fallbackUsed: number; retryAttempted: number; retryBudgetHit: boolean;
   freshCoverage: number; // 배치+재시도(폴백 제외) cap 확보율 — 커버리지 게이트용(정상 ~98.6%)
+  // 🔴 STEP 917 §1: retryBudgetHit(OR결합, 산식 불변)의 두 항을 각각 관측만 한다 — 게이트 로직 무관, 계측 전용.
+  retryAllLen: number;  // #67의 답 — 오늘 실제로 재시도 대기했던 전체 건수(절단 전)
+  countHit: boolean;    // retryAllLen > RETRY_MAX
+  timeHit: boolean;     // 40초 예산 초과로 루프가 중도 종료됐는가(기존 변수 노출만)
+  stage1Ms: number; stage2Ms: number; stage3Ms: number; acqMs: number; // 916이 없다고 한 단계별 elapsed
 };
 async function topByMarketCap(topN: number): Promise<{
   symbols: string[]; tradeAmountOf: Map<string, number>; capOf: Map<string, number>; freshSet: Set<string>; diag: CapDiag;
 }> {
   const sb = createAdminClient();
+  const tAcq0 = Date.now(); // 🔴 STEP 917 §1: 단계별 elapsed — 계측 전용, 계산엔 안 씀
   const chunks: string[][] = [];
   for (let i = 0; i < STOCK_SYMS.length; i += 100) chunks.push(STOCK_SYMS.slice(i, i + 100));
   const capOf = new Map<string, number>();     // sym → cap(배치+재시도+폴백·랭킹용)
@@ -110,6 +116,7 @@ async function topByMarketCap(topN: number): Promise<{
   const { capOf: batchCaps, noCapField, noResponse } = classifyCaps(STOCK_SYMS, responses);
   for (const [s, c] of batchCaps) { capOf.set(s, c); freshSet.add(s); }
   const batchOk = capOf.size;
+  const tStage1End = Date.now(); // 🔴 STEP 917 §1: Stage1(배치) 경계
 
   // ── Stage 2: 개별 재시도(noCapField∪noResponse) — 예산 40s/400건(실측 ~120ms/건@동시성6 → 330건≈40s) ──
   const RETRY_MAX = 400, RETRY_MS = 40_000;
@@ -134,6 +141,7 @@ async function topByMarketCap(topN: number): Promise<{
     const { error } = await sb.from("us_market_cap").upsert(capRows.slice(i, i + 500), { onConflict: "symbol" });
     if (error) Sentry.captureException(error, { tags: { pipeline: "us_market_cap_upsert" } });
   }
+  const tStage2End = Date.now(); // 🔴 STEP 917 §1: Stage2(재시도+영속화) 경계
 
   // ── Stage 3: 최근값 폴백(7일 이내) — 배치·재시도 다 실패한 심볼만. 나이 초과분은 안 씀(829 _lastGood TTL 원리) ──
   // 🔴 STEP 894(893과 상호주석): 이 7일 값은 app/api/cron/revdcf/route.ts의 MCAP_TTL_DAYS와 같아야 한다(893) —
@@ -150,21 +158,36 @@ async function topByMarketCap(topN: number): Promise<{
     }
   }
 
+  const tStage3End = Date.now(); // 🔴 STEP 917 §1: Stage3(폴백) 경계 · acqMs = 전체
   if (failedChunks > 0) Sentry.captureMessage(`[topByMarketCap] 청크 ${failedChunks}/${chunks.length} 실패`, failedChunks / chunks.length >= 0.3 ? "error" : "warning");
   // 🔴 STEP 894: retryBudgetHit·전체대상(retryAll.length)을 로그에 추가 — 이전까진 diag에 계산만 되고 어디에도 안 실렸다(892 발견).
   // 🔴 Sentry 경고는 일부러 안 단다 — us_market_cap 스테일 표본이 891·892 이틀 연속 517~520(± RETRY_MAX=400과 같은 자릿수)으로
   //   관측돼 매일 걸릴 가능성이 높다고 판단(간접 근거 · retryAll 자체는 아직 실측한 적 없음). 매일 뜨는 경고는 알림 노이즈가 돼 무시된다 — 로그만으로 관측 가능하게 둔다.
-  console.log(`[topByMarketCap] batchOk ${batchOk} · noCapField ${noCapField.length} · noResponse ${noResponse.length} · 재시도복구 ${recovered}/${retrySet.length}(전체대상 ${retryAll.length}·한도 ${RETRY_MAX}) · 재시도한도초과 ${retryAll.length > RETRY_MAX || timeHit}(시간초과 ${timeHit}) · 폴백 ${fallbackUsed} · fresh커버 ${(freshCoverage * 100).toFixed(1)}%`);
+  // 🔴 STEP 917 §1: countHit·timeHit을 OR결합(retryBudgetHit, 산식 불변) 옆에 각각 추가로만 남긴다 — #67의 답.
+  console.log(`[topByMarketCap] batchOk ${batchOk} · noCapField ${noCapField.length} · noResponse ${noResponse.length} · 재시도복구 ${recovered}/${retrySet.length}(전체대상 ${retryAll.length}·한도 ${RETRY_MAX}) · 재시도한도초과 ${retryAll.length > RETRY_MAX || timeHit}(개수절단 ${retryAll.length > RETRY_MAX}·시간초과 ${timeHit}) · 폴백 ${fallbackUsed} · fresh커버 ${(freshCoverage * 100).toFixed(1)}% · 단계별ms(배치${tStage1End - tAcq0}/재시도${tStage2End - tStage1End}/폴백${tStage3End - tStage2End})`);
 
   const caps = [...capOf.entries()].map(([sym, cap]) => ({ sym, cap })).sort((a, b) => b.cap - a.cap);
   const diag: CapDiag = {
     total: STOCK_SYMS.length, batchOk, noCapField: noCapField.length, noResponse: noResponse.length,
     recovered, fallbackUsed, retryAttempted: retrySet.length, retryBudgetHit: retryAll.length > RETRY_MAX || timeHit, freshCoverage,
+    retryAllLen: retryAll.length, countHit: retryAll.length > RETRY_MAX, timeHit,
+    stage1Ms: tStage1End - tAcq0, stage2Ms: tStage2End - tStage1End, stage3Ms: tStage3End - tStage2End, acqMs: tStage3End - tAcq0,
   };
   return { symbols: caps.slice(0, topN).map((c) => c.sym), tradeAmountOf, capOf, freshSet, diag };
 }
 // UTC 날짜(YYYY-MM-DD) 헬퍼 — us_market_cap as_of 등.
 function at10(d: Date = new Date()): string { return d.toISOString().slice(0, 10); }
+
+// 🔴 STEP 917 §0: cron_heartbeats.note(기존 컬럼·스키마 변경 없음)에 계측 JSON 기록.
+//   894가 console.log에 붙인 값은 Hobby 런타임 로그 보존 1시간이라 8 STEP 동안 한 번도 못 읽혔다(911·915·916) —
+//   보존기간이 긴 채널(테이블)로 옮긴다. 실패해도 파이프라인은 계속(계측이 라이브를 세우면 안 됨).
+async function recordHeartbeat(
+  sb: ReturnType<typeof createAdminClient>, job: string, ok: boolean, note: Record<string, unknown>,
+): Promise<void> {
+  try {
+    await sb.from("cron_heartbeats").upsert({ job, last_run_at: new Date().toISOString(), ok, note: JSON.stringify(note) });
+  } catch { /* 계측 실패가 파이프라인을 죽이면 안 됨 */ }
+}
 
 function pick(lenses: LensRead[], key: string) {
   const l = lenses.find((x) => x.key === key);
@@ -297,7 +320,8 @@ export async function computeLensScoresFor(
   // 🔴 STEP 833 §2·§3: cutGateOk=false면 컷 재유도·프루닝 금지(편향 표본으로 판정 기준 안 만듦)·전날 컷 유지·ok:false.
   //   skipChangeDiff=true면 pass2가 상태는 재매핑하되 lens_state_changes diff는 기록 안 함(정상화 실행의 기준선 이동을 '종목 변화'로 오기록 방지).
   opts: { concurrency?: number; tradeAmountOf?: Map<string, number>; expected?: number; cutGateOk?: boolean; skipChangeDiff?: boolean } = {}
-): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean; cutsUpdated: boolean; changeDiffRecorded: boolean; warning?: string }> {
+): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean; cutsUpdated: boolean; changeDiffRecorded: boolean; warning?: string; loopMs: number; pass2Ms: number; pruneMs: number; totalMs: number }> {
+  const tFn0 = Date.now(); // 🔴 STEP 917 §1: 렌즈계산 함수 단계별 elapsed — 계측 전용
   const concurrency = opts.concurrency ?? 6;
   const tradeAmountOf = opts.tradeAmountOf;
   const cutGateOk = opts.cutGateOk !== false;      // STEP 833 §2: 기본 통과(KR 등 무전달 경로 불변)
@@ -316,7 +340,8 @@ export async function computeLensScoresFor(
   const universeOk = universe.length >= floor;
   if (universe.length === 0) {
     Sentry.captureMessage(`[lens-universe-empty] ${market} 유니버스 0 → 계산·프루닝 전면 중단(성공 아님)`, "error");
-    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, cutGateOk, cutsUpdated: false, changeDiffRecorded: false, warning: "universe-empty" };
+    const zeroMs = Date.now() - tFn0;
+    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, cutGateOk, cutsUpdated: false, changeDiffRecorded: false, warning: "universe-empty", loopMs: zeroMs, pass2Ms: 0, pruneMs: 0, totalMs: zeroMs };
   }
   if (!universeOk) {
     Sentry.captureMessage(
@@ -380,6 +405,7 @@ export async function computeLensScoresFor(
   });
   await flush();
   flushLensFailures(`batch ${market}`); // 렌즈별 실패를 1건으로 요약 보고(폭주 억제·STEP 797 §4)
+  const tLoopEnd = Date.now(); // 🔴 STEP 917 §1: 렌즈계산 루프(pass1) 경계 — 916이 못 나눈다고 한 그 분해
 
   // 판정 컷 유도·저장(STEP 802 §1) — 유니버스 값 분포의 하위30%/상위30%(p30/p70). 표본 충분할 때만.
   const pctile = (sorted: number[], p: number): number => {
@@ -425,6 +451,7 @@ export async function computeLensScoresFor(
     pass2Ok = false;
     Sentry.captureException(e, { tags: { pipeline: "lens_states_remap", market } });
   }
+  const tPass2End = Date.now(); // 🔴 STEP 917 §1: pass2(재매핑+diff) 경계
 
   // 신선도(STEP 802 §5) — 이번 실행에서 갱신 안 된(유니버스 이탈) 행 삭제.
   // 🔴 STEP 806 §3: 저장 성공률이 낮으면(부분 실행) 프루닝이 정상 행을 대량 삭제할 수 있음 → 성공률 ≥80%일 때만.
@@ -451,11 +478,16 @@ export async function computeLensScoresFor(
   }
 
   const warning = !cutGateOk ? "cut-gate-failed" : !universeOk ? "universe-collapse" : !pass2Ok ? "pass2-failed" : successRate < 0.8 ? "low-success" : undefined;
-  return { ok: universeOk && pass2Ok && cutGateOk, computed: saved, universe: universe.length, at, pruned, universeOk, pass2Ok, cutGateOk, cutsUpdated, changeDiffRecorded, warning };
+  const tEnd = Date.now(); // 🔴 STEP 917 §1: prune 경계 · totalMs = 함수 전체
+  return {
+    ok: universeOk && pass2Ok && cutGateOk, computed: saved, universe: universe.length, at, pruned, universeOk, pass2Ok, cutGateOk, cutsUpdated, changeDiffRecorded, warning,
+    loopMs: tLoopEnd - tFn0, pass2Ms: tPass2End - tLoopEnd, pruneMs: tEnd - tPass2End, totalMs: tEnd - tFn0,
+  };
 }
 
 // US(기존 API 보존) — 시총 상위 N. 🔴 STEP 833: 3단 취득 + 커버리지/구성 게이트 + 정상화 diff 스킵.
 export async function computeLensScores(topN = 1000, concurrency = 6) {
+  const tRoute0 = Date.now(); // 🔴 STEP 917 §1: 라우트 전체 elapsed(계측 전용)
   const sb = createAdminClient();
   const { symbols: universe, tradeAmountOf, freshSet, diag } = await topByMarketCap(topN);
 
@@ -473,7 +505,18 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}/${diag.retryAttempted} · 재시도한도초과 ${diag.retryBudgetHit}`);
   if (!cutGateOk) Sentry.captureMessage(`[us-cut-gate] 취득 게이트 실패(커버 ${(diag.freshCoverage * 100).toFixed(1)}%·구성 ${(compRatio * 100).toFixed(1)}%) → 컷 재유도·프루닝 금지`, "error");
 
-  return computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+  const r = await computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+  // 🔴 STEP 917 §0/§1: 894 console.log는 8 STEP 동안 못 읽혔다(Hobby 보존 1시간) — cron_heartbeats.note에 장기 보존.
+  //   §2: 계측 실패가 파이프라인을 죽이지 않도록 recordHeartbeat 내부에서 try/catch, 여기선 결과를 기다리지 않고 그대로 반환.
+  await recordHeartbeat(sb, "lens-scores", r.ok, {
+    market: "US",
+    freshCoverage: diag.freshCoverage, coverageOk, compositionOk, compRatio, cutGateOk,
+    retryAllLen: diag.retryAllLen, retrySetLen: diag.retryAttempted, countHit: diag.countHit, timeHit: diag.timeHit, retryBudgetHit: diag.retryBudgetHit,
+    stage1Ms: diag.stage1Ms, stage2Ms: diag.stage2Ms, stage3Ms: diag.stage3Ms, acqMs: diag.acqMs,
+    loopMs: r.loopMs, pass2Ms: r.pass2Ms, pruneMs: r.pruneMs, calcMs: r.totalMs, routeMs: Date.now() - tRoute0,
+    churn, skipChangeDiff, computed: r.computed, universe: r.universe,
+  });
+  return r;
 }
 
 // 🔴 STEP 835: KR 유니버스 — kr_stock_snapshot **시총 상위 N**(834 측정 → C안: KR·US 모두 시총 통일·문헌 정합).
@@ -507,8 +550,11 @@ export async function topKrByMarketCap(topN: number): Promise<{ symbols: string[
 
 // 🔴 STEP 835 §2·§3: KR 선계산 — 시총 유니버스 + 커버리지 게이트 + 전환/정상화 diff 스킵(US computeLensScores와 대칭).
 export async function computeKrLensScores(topN = 1000, concurrency = 6) {
+  const tRoute0 = Date.now(); // 🔴 STEP 917 §1: 라우트 전체 elapsed(계측 전용)
   const sb = createAdminClient();
+  const tAcq0 = Date.now();
   const { symbols: universe, tradeAmountOf, coverage } = await topKrByMarketCap(topN);
+  const acqMs = Date.now() - tAcq0; // 🔴 STEP 917 §1: KR은 벌크 단일읽기라 단계 분해 불필요(US Stage1/2/3 구조 없음) — 전체만
   // §2 커버리지 게이트: KR 시총은 우리 DB(kr_stock_snapshot·KRX 벌크)라 정상 100%(실측) → 95% 임계(5pp 여유·kr-perf 부분실패 감지).
   //   구성 게이트(직전 상위 N 유지)는 KR엔 미적용 — US 배치 quote 결측 양상이 없다(벌크 읽기). priorTopSyms=[]로 스킵.
   const { coverageOk, cutGateOk } = capGateDecision(coverage, [], new Set(), { coverageMin: 0.95 });
@@ -518,5 +564,13 @@ export async function computeKrLensScores(topN = 1000, concurrency = 6) {
   const { churn, skipChangeDiff } = churnDecision(universe, priorSet);
   console.log(`[computeKrLensScores] 시총커버 ${(coverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 유니버스 ${universe.length}`);
   if (!cutGateOk) Sentry.captureMessage(`[kr-cut-gate] KR 시총 확보율 ${(coverage * 100).toFixed(1)}%<95% → 컷 재유도·프루닝 금지`, "error");
-  return computeLensScoresFor(universe, "KR", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+  const r = await computeLensScoresFor(universe, "KR", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+  // 🔴 STEP 917 §2 §0: KR 경로도 US와 동일 계측(요구사항) — 부수적으로 kr-lens-scores 자체의 "오늘 도는가" 관측 수단도 생김
+  //   (kr-perf는 별개 라우트라 이 STEP 범위 밖 — 이 하트비트가 커버하지 않는다).
+  await recordHeartbeat(sb, "kr-lens-scores", r.ok, {
+    market: "KR", coverage, coverageOk, cutGateOk, acqMs,
+    loopMs: r.loopMs, pass2Ms: r.pass2Ms, pruneMs: r.pruneMs, calcMs: r.totalMs, routeMs: Date.now() - tRoute0,
+    churn, skipChangeDiff, computed: r.computed, universe: r.universe,
+  });
+  return r;
 }

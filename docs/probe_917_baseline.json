@@ -1,0 +1,28 @@
+{
+  "purpose": "STEP 917 §3 배포 전 스냅샷 — 다음 크론 실행 후 판정(값 불변)의 대조 기준선. 읽기만, DB 쓰기 0.",
+  "capturedAt_dbNow": "2026-08-06 06:43:07.861741+00",
+  "lens_cuts": [
+    { "market": "KR", "lens_key": "assetgrowth", "lo": 1.528, "hi": 12.246, "n": 957, "as_of": "2026-08-04", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "KR", "lens_key": "lowvol", "lo": 48.727, "hi": 80.56, "n": 970, "as_of": "2026-08-04", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "KR", "lens_key": "momentum", "lo": -16.456, "hi": 30.08, "n": 955, "as_of": "2026-08-04", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "KR", "lens_key": "quality", "lo": 8.648, "hi": 21.588, "n": 919, "as_of": "2026-08-04", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "KR", "lens_key": "valuation", "lo": 8.769, "hi": 26.062, "n": 724, "as_of": "2026-08-04", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "US", "lens_key": "assetgrowth", "lo": 2.48, "hi": 12.125, "n": 976, "as_of": "2026-07-30", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "US", "lens_key": "lowvol", "lo": 27.184, "hi": 40.896, "n": 978, "as_of": "2026-07-30", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "US", "lens_key": "momentum", "lo": -2.707, "hi": 34.272, "n": 974, "as_of": "2026-07-30", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "US", "lens_key": "quality", "lo": 13.909, "hi": 30.329, "n": 852, "as_of": "2026-07-30", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" },
+    { "market": "US", "lens_key": "valuation", "lo": 18.24, "hi": 35.1, "n": 901, "as_of": "2026-07-30", "method": "p30/p70", "updated_at": "2026-07-28 04:33:55.17017+00" }
+  ],
+  "lens_scores": {
+    "note": "이 테이블엔 as_of 컬럼이 없음(914 감사 확인) — updated_at이 신뢰 가능한 신선도 컬럼(payload 명시 확인됨)",
+    "US": { "latest_updated_at": "2026-08-05 22:25:04.014+00", "row_count": 998 },
+    "KR": { "latest_updated_at": "2026-08-04 11:13:36.768+00", "row_count": 977 }
+  },
+  "us_market_cap": { "row_count": 5892, "min_as_of": "2026-07-30", "max_as_of": "2026-08-05" },
+  "cron_heartbeats": [
+    { "job": "email-brief", "last_run_at": "2026-08-05 23:05:32.919+00", "ok": true, "note": null },
+    { "job": "jp-disclosures", "last_run_at": "2026-07-27 16:01:57.475+00", "ok": true, "note": null }
+  ],
+  "cron_heartbeats_caveat": "lens-scores·kr-lens-scores 행은 아직 없음(이 STEP이 처음 배선 — 다음 정규 크론 실행 후 생성되면 그것이 §5 관측 대상)",
+  "expected_next_runs_utc": { "kr-perf": "10:00 (계측 대상 아님 — 이 STEP 범위 밖)", "kr-lens-scores": "10:30", "lens-scores_US": "21:30(지터 ±59분)" }
+}

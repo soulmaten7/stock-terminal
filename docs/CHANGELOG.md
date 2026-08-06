@@ -1,6 +1,36 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (62) — 🟢 **STEP 917 실행: 장은태 승인 A안 ①단계 — 계측만 배포, 값 불변** (912~916 이후 처음으로 `lib/lensPrecompute.ts`를 연다)
+
+> **성격**: 장은태가 "A안 ①단계만 승인 — 계측 로깅만. 결과를 보고 ②단계(증액)는 다시 판정한다"고 명시. 전제: HEAD `1ea93e9`(916) · tsc 0 · test 182/182. **성공 기준 = 값이 하나도 안 바뀌는 것.**
+
+### §0 채널 조사
+
+`cron_heartbeats` 스키마 직접 조회 — `job`(PK)·`last_run_at`·`ok`·**`note text`(nullable, 기존 미사용)**. 스키마 변경 없이 이 컬럼에 계측 JSON을 담을 수 있어 **사다리 1번 채택**. 894의 "매일 발화해서 안 됨" 원문(`STEP_894_COMMAND.md:53`) 재확인 — 막은 건 "경고"(warning) 한정, 실제로 `:420`에 이미 `Sentry.captureMessage(..., "info")`가 존재(894가 "모든 레벨"을 막은 게 아니었음). 부수효과: `lens-scores`·`kr-lens-scores`가 `cron_heartbeats`에 행이 아예 없었다 → 이번 배선으로 두 라우트의 "오늘 도는가" 장기보존 관측 수단도 새로 생김(`kr-perf`는 별개 라우트라 범위 밖).
+
+### §1~2 구현
+
+`lib/lensPrecompute.ts`만 수정. `CapDiag`에 `retryAllLen`(#67의 답)·`countHit`·`timeHit`·`stage1/2/3Ms`·`acqMs` 추가(기존 `retryBudgetHit` OR결합은 그대로, 두 항을 옆에 추가로만 기록) · `computeLensScoresFor` 반환에 `loopMs`·`pass2Ms`·`pruneMs`·`totalMs` 추가 · US/KR 양쪽 끝에 `recordHeartbeat()`(신규, try/catch·루프밖 1회) 추가. 게이트 산식·`RETRY_MAX`/`RETRY_MS`·업서트 payload·`maxDuration`·`vercel.json` 전부 불변.
+
+### §3 검증
+
+`git diff HEAD -- lib/lensPrecompute.ts` 육안 확인 — 추가분 전부 타이머·진단필드·하트비트 기록, 계산값 변경 0. `lib/` 다른 파일·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0. tsc 0 · test 182/182(무변화). 배포 전 스냅샷 = `docs/probe_917_baseline.json`(lens_cuts 10행 값·lens_scores US/KR 최신 updated_at+행수·us_market_cap 행수·cron_heartbeats 기존 2행 — 읽기만).
+
+### §4 상태
+
+**②단계(증액) = 미판정.** A·B·C·D 병기 그대로 유지 — 이 STEP은 계측만 추가했을 뿐 어느 선택지도 채택·기각하지 않음. `#67` 상태 = "①단계로 구조적 해소 예정 — 값은 다음 실행 후"(아직 소진 처리 안 함). `docs/DECISION_912_LIVE.md` §10 추가(본문 불변).
+
+### §5 다음 관측 시점(다음 STEP 입력)
+
+KR `kr-lens-scores` 10:30 UTC · `kr-perf` 10:00 UTC(계측 대상 아님) · US `lens-scores` 21:30 UTC(±59분 지터). 다음 실행 후 `cron_heartbeats.note`(job='lens-scores'/'kr-lens-scores')를 읽어 §1의 값들과 §3 기준선 대비 판정 불변을 확인하는 것이 다음 STEP.
+
+### 무변경
+
+`RETRY_MAX`·`RETRY_MS`·게이트 산식·임계값(97%/95%)·`maxDuration`·`vercel.json`·크론 불변 · Cowork/Claude Code의 DB 직접 쓰기 0 · `lens_cuts` 10행 불변 · `LENS_COMPLETION_STANDARD.md` 불변 · DoD 판정 칸 전부 불변 · `REVDCF_ENABLED` Production OFF.
+
+---
+
 ## 2026-08-06 (61) — ✅ **STEP 916 실행: A안의 실제 형태를 정한다 — 시간예산 산술 확정 · 07-31 방아쇠 기각 · 플랫폼 상한 실측** (진단·설계만 · 코드 diff 0)
 
 > **성격**: 915가 세운 가설("원인은 시간·동시성·예산")을 숫자로 가르는 STEP. 전제: HEAD `0beabca`(915) · tsc 0 · test 182/182. **진단·설계만, 코드 diff 0, `RETRY_MAX`·`RETRY_MS`·게이트·임계값 변경 금지, 크론 수동실행 금지, DB 쓰기 금지.**

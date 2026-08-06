@@ -309,4 +309,37 @@ Vercel **MCP** 채널(`get_runtime_logs`)은 **403 Forbidden**(다른 계정으�
 - 🔴 **KR 크론 재측정**(DB `now()`=2026-08-06 06:09:25 UTC 확인): `kr_stock_snapshot.updated_at` 최신 = 2026-08-04 10:37:44 UTC, `lens_scores`(KR) 최신 = 2026-08-04 11:13:36 UTC. `vercel.json` 스케줄 = `kr-perf` 10:00 UTC·`kr-lens-scores` 10:30 UTC 매일. **08-05 예정분 = 확정 미실행**(그날이 완전히 지남). **08-06 예정분 = 아직 도래 전**(현재 06:09 UTC < 10:00 UTC) — 판정 보류. 🔴 **확정된 연속 미실행 = 1일(08-05) + 오늘분 대기 중** — 915가 쓴 "2일 연속"은 08-06을 이미 실패로 셌다는 뜻인데, 915의 측정 시각(08-06 05:02 UTC)도 마찬가지로 08-06 스케줄 이전이었다 — **그 표현을 정정한다: "확정 1일 + 대기 1일"이 정확하다.**
 - 🔴 **`#67` 로그 확인 — 완전 철회는 아직 이르다.** §1의 산술(330<400<464)은 **코드 자체 벤치마크(주석)**에 근거한 것이지, 오늘의 실제 `retryAll.length`·`freshCoverage` 로그값을 관측한 게 아니다. 지위 재조정: "선택적 보강 자료"에서 → **§4 A안 1단계(계측 추가)가 이 필요를 구조적으로 흡수한다** — 즉석 로그 열람 자체의 지위는 유지되나 우선순위는 낮아진다(계측이 배포되면 로그 열람보다 재현 가능한 방식으로 같은 정보를 얻는다).
 
+---
+
+## §10 — 917: 🟢 A안 ①단계 승인·적용(계측만, 값 불변)
+
+**승인**: 장은태, 2026-08-06. 범위 = *"A안 ①단계만 — 계측 로깅만. 결과를 보고 ②단계(증액)는 다시 판정한다."*
+
+### 917 §0 — 채널 조사·선택
+
+`cron_heartbeats` 스키마 직접 조회: `job text PK`·`last_run_at timestamptz`·`ok boolean`·**`note text`(nullable, 기존 미사용 컬럼)**. 기존 쓰기 코드(`email-brief`·`jp-disclosures`)는 `note`를 안 씀 — **스키마 변경 없이 이 컬럼에 계측 JSON을 담을 수 있다.** 🔴 **채널 사다리 1번 채택**(스키마 변경 불필요).
+
+894의 "매일 발화해서 안 됨" 원문 재확인(`docs/STEP_894_COMMAND.md:53`): *"알림 노이즈를 고려한다... 경고를 안 만들고 로그만 남기는 쪽을 택한다"* — **막은 것은 "경고"(warning/error 레벨 Sentry, 알림 라우팅 대상)였지 "모든 레벨"이 아니었다.** 실제로 같은 파일(`:420`)에 이미 `Sentry.captureMessage(..., "info")`가 존재(`lens-diff-skip`, STEP 833) — info 레벨은 이미 이 파이프라인에서 쓰이고 있었다. 다만 Sentry는 `cron_heartbeats`보다 보존 정책이 이 프로젝트 문서에서 확인된 바 없어(미확인) 1번을 우선했다.
+
+**결론: `cron_heartbeats.note`(JSON 문자열) 채택.** 부수 효과 — `lens-scores`(US)·`kr-lens-scores`(KR)가 이 STEP 전엔 `cron_heartbeats`에 행이 아예 없었다(email-brief·jp-disclosures만 존재) → 이번 배선으로 **"오늘 도는가" 자체의 장기보존 관측 수단이 두 라우트에 새로 생긴다**(단 `kr-perf`는 별개 라우트라 범위 밖 — 여전히 관측 수단 없음).
+
+### 917 §1~§2 — 넣은 계측 항목·구현
+
+`lib/lensPrecompute.ts`만 수정(그 외 `lib/`·`app/`·`data/`·`.github/`·`vercel.json` diff 0, 육안 확인). 값 계산 경로(게이트 산식·`RETRY_MAX`/`RETRY_MS`·업서트 payload)는 전부 불변 — 추가된 줄은 전부 `Date.now()` 타이머·진단 필드·`cron_heartbeats` 기록 하나뿐.
+
+- `CapDiag`에 `retryAllLen`(#67의 답)·`countHit`(=`retryAllLen>RETRY_MAX`)·`timeHit`(기존 변수 노출)·`stage1Ms`/`stage2Ms`/`stage3Ms`/`acqMs` 추가(기존 `retryBudgetHit` OR결합은 그대로, 두 항을 옆에 추가로만 기록).
+- `computeLensScoresFor` 반환에 `loopMs`(pass1 렌즈계산 루프)·`pass2Ms`(재매핑+diff)·`pruneMs`·`totalMs` 추가.
+- `computeLensScores`(US)·`computeKrLensScores`(KR) 끝에 `recordHeartbeat(sb, job, r.ok, {...})` 추가 — `try/catch` 내부(계측 실패가 파이프라인을 못 죽임), 루프 밖에서 실행 끝에 1회만(루프 안 매 건 기록 아님).
+- KR은 US의 3단계(배치/재시도/폴백) 구조가 없어(벌크 단일 읽기) `acqMs` 하나만 — 없는 단계를 억지로 쪼개지 않음.
+
+### 917 §3 — 검증
+
+`npx tsc --noEmit` 0 · `npm run test` 182/182(무변화) · `git diff HEAD -- lib/lensPrecompute.ts` 육안 확인 — 추가분 전부 타이머·진단필드·하트비트 기록, 계산값 변경 0. `git diff --stat`(app/·components/·messages/·data/·.github/·vercel.json) 출력 없음. 배포 전 스냅샷 = `docs/probe_917_baseline.json`(lens_cuts 10행 값·lens_scores US/KR 최신 updated_at+행수·us_market_cap 행수·cron_heartbeats 기존 2행 — 전부 읽기만).
+
+### 917 §4 — 상태
+
+**②단계(증액) = 미판정.** 다음 정규 크론(KR 10:00·10:30 UTC, US 21:30 UTC±지터) 실행 후 `cron_heartbeats.note`를 읽어 `retryAllLen`·단계별 ms를 실측하는 것이 다음 STEP의 입력이다. **A·B·C·D 병기 그대로 유지** — 이 STEP은 계측만 추가했을 뿐 어느 선택지도 채택·기각하지 않았다.
+
+**`#67` 상태 갱신**: *"①단계로 구조적 해소 예정 — 값은 다음 실행 후"*(사다리 1번 채택, 스키마 변경 없이 장기보존 채널 확보). 🔴 **아직 소진 처리 안 함 — 값을 아직 못 얻었다**(계측을 넣었을 뿐, 실제 `retryAllLen` 등의 수치는 다음 크론 실행 후에야 `cron_heartbeats.note`에 쓰인다).
+
 
