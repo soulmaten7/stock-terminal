@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 925)** · 부모(STEP 924 `f63d9cb`) · **push 대기 — 아래 작업 완료 후 push.**
+- HEAD = **이 커밋(STEP 925 `1a14491`)** · 부모(STEP 924 `f63d9cb` · 사이에 GH Actions 봇 커밋 `6e595cd` US 유니버스 일일갱신 rebase) · **push 완료 — origin/main + revdcf-preview 반영.**
 - 🔴🔴 **다음 세션 최우선 필독**: **① 라이브 건 = 917 계측 배포 · 다음 크론 관측 대기**(변화 없음) **② 대기 안건은 3번(`#67` 로그값) 하나만**(908 정본) **③ DoD7 = 여전히 🔶 미결**(925도 판정 안 함) **④ 신규 — `daily-brief`·`email-brief` 라벨 조립 중복 확인됨(925), 수리 미승인 상태로 대기**(`docs/DECISION_925_BRIEF.md`).
 - ✅ **STEP 925 = 🔴 `daily-brief`·`email-brief`의 자체 라벨조립("${lensName} ${from}→${to}")이 924의 `lensStateLine`을 안 씀 — 실측 결과 리터럴 중복 실재(가능성 아님).** §0: 924 육안검증 완료 등재(`/explore` Mo→Altria·Hst→Host·모멘텀중복 해소·KR 무손·Alphabet 그대로=설계). §1: 두 라우트 코드 직접열람 — `lensDisplayName`+`lensStateLabel` 각각 호출 후 템플릿에서 이어붙임(924가 고친 `ExploreClient.tsx:161` 밖의 별도 조립, 924 범위 밖이었음). 종목명은 `getTodayChanges()`(924가 고친 공유함수) 경유라 자동 반영됨. §2: 프로브(`scripts/probe_925_brief_labels.ts`, 라우트 미호출·발송 0)로 오늘 실데이터 재현 — **KR·ko 5건 중 3건·US·en 5건 중 2건**이 "모멘텀 모멘텀"/"Momentum...momentum" 리터럴 중복(`buildFallbackBrief()` 실반환값에 포함). 종목명 잔존 0건(정상). §3: `daily_brief` 저장 24행 전수검색=리터럴중복 0건(LLM 패러프레이즈 추정)이나 **email의 결정론 mover-line은 DB 미저장이라 과거 발송분 측정 불가**. `email-brief` 최초커밋=STEP784(07-23). 수신자 규모=미조사(개인정보). §4: 수리선택지 A(공유헬퍼 통일·권고)/B(email만 우선)/C(방치) 카탈로그, 실행 안 함 — `docs/DECISION_925_BRIEF.md`. DoD7 미판정. 코드 diff 0(`scripts/` 프로브 제외).
 - ✅ **STEP 921~924 = 안건4 재료완성→승인(921~922) → 종목명 불일치 진단(923) → B안 채택·표시계층 통일·모멘텀중복 조립수정(924).** DoD7은 923에서 재개방(종목명), 924가 화면 증상만 해소(DB는 안 건드림·DoD7 칸 불변). 348/998(34.9%) → 924에서 잔여 0. 수리선택지 A~D 카탈로그(`docs/DECISION_923_NAMING.md`).
