@@ -1,6 +1,45 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (68) — 🟢🔴 **STEP 923 실행: 922 `years` 권고 승인 · DoD7은 닫지 않는다(종목명 불일치 실측) — 진단만**
+
+> **성격**: 922가 "카드·보드 육안 검증이 여전히 안 됨"으로 남긴 불리한 사실을 Cowork이 브라우저로 닫으러 갔다가, `years` 권고를 승인하면서 동시에 **비교 대상 밖에서 새 위반**(종목명)을 발견했다. 전제: HEAD `8fef1a7`(922) · tsc 0 · test 182/182. **진단만 — 수리 금지, 7렌즈 목록은 라이브다.**
+
+### §0 Cowork 브라우저 3중 검증
+
+카드(`/stock/NVDA`) = 922의 코드 추적과 정확히 일치(배지="기대 해독"+헤드라인 "시장은 5년의 초과성장을 요구합니다"+WACC 3점밴드+분포위치+드라이버6개+각주3줄, 어절갈림 없음). 보드 배지(`RevDcfBadge.tsx`)는 US 탐색 목록에서 위치를 못 찾아 미확인.
+
+US 탐색 목록(`/explore?market=US`)에서 종목명 불일치 발견 — 「Mo」($68.44)·「Hst」($25.13)이 각각 `/stock/MO`·`/stock/HST` 링크였고, 외부검증(웹)으로 MO=Altria Group, Inc./HST=Host Hotels & Resorts 정식명 확인. **결정적 대조: `/stock/MO` 상세는 "Altria Group, Inc. MO"로 정상** — 같은 앱·같은 순간에 목록만 틀림. 대조군 "Suncor Energy Inc."(`/stock/SU`)는 정상. 부가 관측: "Alphabet Inc." 2행(GOOGL/GOOG 구분불가)·"모멘텀 모멘텀 상위권"(중복).
+
+### §1 922 승인 적용 + DoD7 "같은 이름" 원문 재확인
+
+`DECISION_922_BADGE.md` 머리에 승인기록(`years` 권고 승인, 위임근거 명시) — 본문 불변. `LENS_COMPLETION_STANDARD.md` DoD7 각주에 923 갱신 추가(③판정 칸 불변, 순수 추가). `LENS_COMPLETION_STANDARD.md:24` 원문 재확인 — "같은 이름·판정·단위"에서 "이름"이 판정라벨인지 종목명인지 **어디에도 정의된 적 없음**(모호함, 단정 안 함). 두 해석 다 문법적으로 가능하고, 여러 종목을 다루는 화면 특성상 "이름=종목명" 해석도 최소한 동등히 자연스럽다.
+
+### §2 종목명 일관성 전수 진단
+
+5표면 × 필드·폴백·티커표시 표 작성(코드 서브에이전트 전수 추적). 핵심 발견:
+- **목록**(Explore lens-top) = `lens_scores.name`(런타임, Yahoo quote 경유) / **상세**(SEO h1) = `data/us_symbols.json`(빌드타임 번들) — **물리적으로 다른 파이프라인**이라 하나가 틀려도 다른 하나 무영향. MO/HST가 이 비대칭의 실물 증거.
+- title-case 폴백 코드 찾음: `lib/usNameFormat.ts:10-21`(`titleCaseUsName`) + `lib/displayName.ts:27`(`cleanUsName`).
+- **영향범위 DB 실측**: `lens_scores`(market='US') 998행 중 **348행(34.9%)**이 `name=symbol`(티커 그대로) — 표본 15건 육안확인(AAL·ABNB·ADP 등, 우연한 일치 아님). **2개가 아니라 348개 — 구조적 문제.** 근본원인 = `lib/lensCompute.ts:139,147`(Yahoo quote 실패 시 티커 기본값이 그대로 영속화) → `lib/lensPrecompute.ts:387`.
+- `UsMarketBoard`(`/toolbox`, 별도 컴포넌트)는 `data/us_symbols.json` 기반 다른 NAME_MAP을 써서 **이 결함과 무관**(재현 안 됨) — 결함은 Explore의 lens-top 구동 섹션에 국한.
+- 부가 판정: Alphabet 중복은 **설계**(`DotsRow`가 티커를 시각 텍스트로 렌더한 적 없음, 코드 확인) · NVIDIA 영문/엔비디아 한글은 **설계**(`lib/displayName.ts` STEP 775/776 규칙 — 목록은 로케일 무관 항상 영문, 상세만 ko locale서 한글 오버라이드, Cowork이 유보한 질문에 확답) · 모멘텀 중복은 **별도 조립버그**(`ExploreClient.tsx:161`, `lensStateLabel`의 일부 phrase가 이미 렌즈이름을 내장해 이중 렌더).
+
+**전부 진단만 — 코드 수정 0.**
+
+### §3 보류 목록과의 관계
+
+`STATE.md`에 명시: DoD7 종목명 진단은 "7렌즈 깊이 확장"이 아니라 역DCF 완성의 필요조건 확인이라 범위 안이다. 그러나 목록 화면(7렌즈 라이브) 코드를 고치는 것은 별개 — 수리는 별도 승인 후.
+
+### §4 판정서
+
+`docs/DECISION_923_NAMING.md` 신설. **DoD7 = 🔶 미결 유지**(922의 다섯 표면 비교가 종목명을 비교 대상에 넣지 않았고, 그 축에서 실제 위반이 확인됨). **`years` 권고 승인은 별개 사안 — 기각된 게 아니다.** 수리 선택지 4개(A=근본수정/B=표시만통일/C=방치/D=모멘텀중복 별도수정) 대가와 함께 나열, 실행 안 함. 완성까지 남은 것 갱신 — `#70`·`#71`·`#74`(`#74`는 승인완료) + **DoD7(종목명) 신규 추가.**
+
+### 문서·검증
+
+`docs/DECISION_923_NAMING.md` 신설 · `docs/DECISION_922_BADGE.md`(승인기록) · `docs/REVDCF_SPEC.md` §11(6건) · `docs/STATE.md`(§3 경계 기록 포함, 142줄 내) · `docs/LENS_DEV_PLAYBOOK.md` #93 신규. `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0 · DoD 판정 칸 전부 불변(923 각주만 추가) · `REVDCF_ENABLED` Production OFF · ②단계 미착수 · 안건 3 대기 불변 · DB 쓰기 0(읽기만, Supabase 조회 다수) · tsc 0 · test 182/182.
+
+---
+
 ## 2026-08-06 (67) — 🟢 **STEP 922 실행: 안건 4 승인 적용("921 권고대로") + DoD7 마지막 판단(`boardBadge.years`) 재료·권고**
 
 > **성격**: 장은태가 921 권고를 그대로 승인 — "모델 완성" = DoD9 제외 8항목 닫힘. 승인 적용(문서) + DoD7의 마지막 잔여물(`boardBadge.years` 판단)에 재료·권고를 제출. 전제: HEAD `9c09f58`(921) · tsc 0 · test 182/182. **이 STEP은 권고까지 — 구현은 승인 후(`lib/`·`components/` diff 0이 게이트).**
