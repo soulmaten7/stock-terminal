@@ -1,6 +1,38 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (73) — 🟢 **STEP 928 실행: `#71` 수리 완료 — env 스코프 조정으로 `revdcf-preview` 정상 렌더, DoD9은 여전히 미판정**
+
+> **성격**: 927이 확정한 원인(Preview 스코프에 Supabase 환경변수 없음)을 장은태 승인 하 Cowork이 직접 고쳤다. 전제: HEAD `c0d46e9`(927) · tsc 0 · test 182/182. **문서만 — 코드 diff 0.**
+
+### §0 수리 실측 등재
+
+Vercel 환경변수 Environments 체크박스만 조작(값 미입력): 1단계 `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`를 Preview에 추가(위험0, 이미 공개된 값) → 재배포 → middleware 500이 사라지고 `Error: supabaseKey is required.`(`/[locale]` SSR)로 **바뀜**(같은 실패 재발이 아니라 다음 계층 노출). 코드 직접 재확인(#82 — 인용을 그대로 믿지 않음): `lib/supabase/server.ts:8-9`·`lib/supabase/client.ts:3-4`·`lib/supabase/anon-client.ts:5-6`은 `NEXT_PUBLIC_*` 2개만 쓰고, `lib/supabase/admin.ts:5-6`이 `SUPABASE_SERVICE_ROLE_KEY`를 씀 — 2단계의 원인이 코드로 확인됨. 장은태 **별도 승인**으로 그 키도 Preview에 추가(RLS 우회 키라 1단계와 위험 등급이 다름 — Vercel Authentication Standard Protection이 켜져 있어 로그인한 팀 멤버만 접근 가능하다는 것과, `NEXT_PUBLIC_` 접두어가 아니라 브라우저 번들에 안 들어간다는 것을 근거로 승인). 재배포 후 Cowork 브라우저 육안 확인 — 홈 정상 렌더, `/stock/NVDA`에 역DCF 카드(「기대 해독」 배지·3점 밴드·드라이버6개)까지 로컬 dev와 동일하게 렌더. 🔴 **남는 위험**: Preview 환경에 RLS 우회 키가 존재한다는 사실 자체는 남는다(Deployment Protection에 전적으로 의존).
+
+### §1 문서 갱신
+
+`docs/REVDCF_SPEC.md` §10 `#71` — 🟢 소진 처리(취소선으로 이전 "원인 확정·수리 미실행" 보존, 원인·처방·검증·남는위험 함께 기록). `docs/DECISION_921_COMPLETION.md`에 928 정정 헤더 추가(본문 불변) — §2의 "Preview 채널로 우회 가능한가 → 아니오" 판정의 **사실관계**는 바뀌었음을 기록하되, DoD9 충족 여부는 판정하지 않음. `docs/AUDIT_904_OPEN_ITEMS.md` #71행을 🟢 소진으로 갱신(요약 집계표는 #70·#74도 이미 낡아 있어 이번엔 개별 행만 손댐, 그 사실을 기록). `docs/STATE.md` 갱신(141줄) — "브라우저 육안 2단계 미실행"이 이미 921 문서에 완료 기록돼 있었는데 STATE만 안 따라간 낡은 항목임을 이번에 발견해 함께 정리.
+
+### §2 DoD9 선택지 재개(사실만)
+
+DoD9 원문(`LENS_COMPLETION_STANDARD.md:26`) 그대로 인용 — *"9. 라이브 실측 — KR·US 각 2종목."* 🔴 **이 문장 자체엔 "production" 단어가 없다** — 923이 DoD7 "같은 이름"에서 겪은 것과 같은 종류의 미명시. 921 §4가 *"원문이... production 노출을 뜻해왔다"*고 쓴 건 원문 직접 인용이 아니라 921 자신의 해석이었음을 확인 — 근거가 된 **전례**(7렌즈가 실제로 production API로 DoD9을 충족했다는 895/897 기록)는 실재. Preview에서의 확인은 **US 1종목(NVDA)뿐** — DoD9이 요구하는 KR·US 각 2종목(총 4) 중 1개만, 그것도 Production이 아닌 Preview에서 확인됨. KR 종목의 Preview 렌더는 **이 STEP에서 확인하지 않고 "미확인"으로 남김**. 선택지는 "Production 노출 경로"·"Preview 인정 경로" 개념상 2개로 늘었으나 **어느 쪽도 닫혀 있지 않다** — 완성 정의(DoD9 제외 8항목)는 불변, DoD9·DoD7 판정 칸 모두 불변.
+
+### §3 플레이북
+
+`docs/LENS_DEV_PLAYBOOK.md`에 2건 신규 — 환경변수 스코프 오류가 계층별로 다르게 드러난다는 것(middleware→SSR), `NEXT_PUBLIC_` 접두어 유무가 위험 등급을 가른다는 것.
+
+### 문서·검증
+
+`docs/REVDCF_SPEC.md`·`docs/DECISION_921_COMPLETION.md`·`docs/AUDIT_904_OPEN_ITEMS.md`·`docs/STATE.md`·`docs/LENS_DEV_PLAYBOOK.md` 갱신. 🔴 **자체 발견**: STEP 927이 `docs/CHANGELOG.md` 항목을 빠뜨렸었다(§4에 명시돼 있었는데 누락) — 이번 커밋에 927 몫(72번)을 소급 추가. `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0 · DoD 판정 칸 전부 불변(DoD7·DoD9 미판정) · 완성 정의 불변 · `REVDCF_ENABLED` Production OFF(Preview만 ON) · env 추가 변경 0·재배포 0(이 STEP 자체는) · 크론 미실행 · 메일 발송 0 · DB 쓰기 0 · tsc 0 · test 182/182.
+
+## 2026-08-06 (72) — 🟢 **STEP 927 실행: `#71`(Preview 500) 원인 확정 — 환경변수 Preview 스코프 부재, 수리는 장은태 승인 대기** *(소급 기록 — 927 당시 이 항목이 누락됐던 것을 928에서 발견해 추가)*
+
+> **성격**: `#71`(Preview 500)이 897→898→921→923→925 다섯 STEP 동안 원인 미규명으로 남아 있던 것을, Cowork이 인증된 브라우저로 재현하고 Vercel Runtime Logs를 읽어 확정했다. 전제: HEAD `99054af`(926) · tsc 0 · test 182/182. **문서만 — 코드 diff 0, 환경변수 미접촉.**
+
+Cowork 실측(§0): Vercel Deployments = Preview 배포 전부 `Ready`(빌드는 항상 성공) · Preview URL 접속 시 `Internal Server Error`(500) 재현 · Runtime Logs에 `Error: Your project's URL and Key are required to create a Supabase client!` · Middleware 500·실행시간 10ms·외부 API 호출 0건(네트워크 이전 단계) · 환경변수 스코프(값 미열람) = `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_ANON_KEY`·`SUPABASE_SERVICE_ROLE_KEY`·`DATABASE_URL` 전부 Production 전용, 반면 `REVDCF_ENABLED`는 Preview 전용 — "역DCF를 보려고 만든 환경인데 Supabase가 없어 페이지 자체가 안 뜨는" 구조.
+
+처방(권고만, 미실행) = 1단계 `NEXT_PUBLIC_*` 2개만 Preview에 추가(이미 공개된 값이라 위험 0) → 재배포 → 2단계는 그 후 재관측해 서버 전용 키 필요 여부 판단(`service_role`은 RLS 우회라 별도 위험판단, 장은태 몫). `docs/REVDCF_SPEC.md` §10 `#71` 갱신(소진 아님 — "원인 확정·수리 미실행"으로 명시) · `docs/DECISION_921_COMPLETION.md`에 정정 헤더 추가(본문 불변, §2의 "아니오" 결론은 유지하되 전제가 코드 문제가 아니라 스코프였음을 기록) · `docs/AUDIT_904_OPEN_ITEMS.md` #71행 갱신 · `docs/STATE.md` 갱신 · `docs/LENS_DEV_PLAYBOOK.md` 신규 2건(재현가능한 실패는 지금 만드는 관측이라는 것, 환경변수 스코프를 코드보다 먼저 본다는 것). DoD7·`#71` 판정 칸 임의로 안 닫음(장은태 몫). `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0 · `REVDCF_ENABLED` Production OFF · 크론 미실행 · 메일 발송 0 · DB 쓰기 0 · tsc 0 · test 182/182.
+
 ## 2026-08-06 (71) — 🟢 **STEP 926 실행: 925의 B안 승인·적용 — `email-brief` mover-line 중복 수정, 72개 조합 전수 잔여 0·회귀 0**
 
 > **성격**: 장은태가 925의 세 선택지 중 **B(email mover-line만 우선 수정)**를 승인했다. 전제: HEAD `1d5781e`(925) · tsc 0 · test 182/182. **수정 범위 = `email-brief`뿐. `daily-brief`·`lib/lensCopy.ts`(924 산출물)는 diff 0으로 유지.**
