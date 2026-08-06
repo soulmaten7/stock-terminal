@@ -1,6 +1,20 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (77) — 🟢 **STEP 932 실행: 917 계측 첫 실측값 획득(KR) — ②단계는 여전히 미판정(US 값 부재)**
+
+> **성격**: 917이 배포한 계측이 배포 후 첫 정규 크론(KR)에서 실제로 값을 남겼는지 확인했다. 전제: HEAD `3e31320`(931) · tsc 0 · test 182/182 · `docs/STATE.md` 131줄. **실측값 등재만 — 코드 diff 0·새 판단 0.**
+
+`cron_heartbeats`를 직접 재조회 — Cowork 표·JSON과 완전 일치(3행: `kr-lens-scores` 2026-08-06 10:35:49 UTC ok=true·`email-brief` 08-05 23:05:32 UTC·`jp-disclosures` 07-27). `kr-lens-scores.note`에 계측 JSON 실측 확인: `coverage:1·coverageOk:true·cutGateOk:true·acqMs:4119·loopMs:151439·pass2Ms:1447·pruneMs:227·calcMs:153113·routeMs:157948·churn:0.023·computed:975·universe:1000`.
+
+**확정 5건**: ① 917 계측이 작동한다(로그 대신 DB 채널 선택이 옳았다 — 보존 1시간 밖에서도 값이 남음) ② KR 08-06분 크론 정상 실행(916의 "08-06분 대기" 해소, 08-05분 미실행은 원인 미규명으로 그대로 별건) ③ KR 게이트 통과(coverage 100%·coverageOk·cutGateOk 전부 true — 913·914 판정이 계측으로 확인됨) ④ 단계별 elapsed 분해 최초 확보(`routeMs`≈158초, 300초 상한 대비 여유≈142초, 시간의 95.9%가 `loopMs`) ⑤ 유니버스 1,000/계산 975·churn 0.023.
+
+**미확보 5건(추정 금지)**: `retryAllLen`·`countHit`·`timeHit`은 917 설계대로 KR엔 애초에 없음(결손 아니라 해당 없음, KR은 벌크 단일읽기라 US식 3단계 구조 자체가 없음) · `retryAllLen`은 US 크론(21:30 UTC±지터)에서만 나오며 이 STEP 시점엔 아직 없음 · 🔴 **KR 158초를 US에 적용하지 않음**(유니버스 1,000 vs 5,966·US만 재시도 구조) · `kr-perf`는 917 계측 대상 밖(설계) · `email-brief` 08-06분 실행 여부는 판정하지 않음.
+
+**②단계(예산 증액) = 여전히 미판정** — 916이 정한 입력(`retryAllLen`+US 단계별 elapsed) 둘 다 아직 없다. KR 값으로 US를 판정하지 않는다. 916의 "40초가 464건에 구조적으로 부족" 산술은 그대로 유효. `RETRY_MAX`·`RETRY_MS`·게이트 산식·임계값(97/95)·`maxDuration` 전부 불변.
+
+`docs/DECISION_912_LIVE.md` §11 신설(932 §0~§3) · `docs/REVDCF_SPEC.md` §11(1건) · `docs/STATE.md`("▶ 다음 00" 항목 갱신 — 08-06분 대기 해소·932 실측 요약, 131줄 유지) · `docs/LENS_DEV_PLAYBOOK.md` 신규 1건(보존기간 짧은 로그 대신 DB에 남기면 값을 놓치지 않는다는 것, 917의 894 대비 성공 사례). `lib/lensPrecompute.ts`(917 계측) diff 0 · DoD 판정 칸 전부 불변 · `LENS_COMPLETION_STANDARD.md` diff 0 · `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0 · 환경변수 0 · 재배포 0 · `REVDCF_ENABLED` Production OFF · 크론 미실행 · 메일 발송 0 · DB 쓰기 0(읽기만, 사전/사후 스냅샷 일치) · tsc 0 · test 182/182.
+
 ## 2026-08-06 (76) — 🔴 **STEP 931 실행: 930 CHANGELOG 소급 기록 + "무엇을 손대지 말 것"의 범위 구분 플레이북**
 
 > **성격**: 930 자신의 보고가 *"STEP 930은 §3에서 'CHANGELOG 조치 불필요·확인만'이라 명시했기 때문에... 새 엔트리를 추가하지 않았다"*고 밝힌 것을, 명령서 결함으로 판정하고 바로잡았다. 전제: HEAD `a10fbfa`(930) · tsc 0 · test 182/182. **문서만 — 코드 diff 0·새 판단 0·새 측정 0.**

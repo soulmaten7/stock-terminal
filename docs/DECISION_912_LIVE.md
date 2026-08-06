@@ -342,4 +342,41 @@ Vercel **MCP** 채널(`get_runtime_logs`)은 **403 Forbidden**(다른 계정으�
 
 **`#67` 상태 갱신**: *"①단계로 구조적 해소 예정 — 값은 다음 실행 후"*(사다리 1번 채택, 스키마 변경 없이 장기보존 채널 확보). 🔴 **아직 소진 처리 안 함 — 값을 아직 못 얻었다**(계측을 넣었을 뿐, 실제 `retryAllLen` 등의 수치는 다음 크론 실행 후에야 `cron_heartbeats.note`에 쓰인다).
 
+## §11 — 932: 🟢 첫 실측값 획득(KR) — ②단계는 여전히 미판정(US 값 부재)
+
+### 932 §0 — 직접 재조회(2026-08-06)
+
+```sql
+select job, last_run_at, ok, note from cron_heartbeats order by last_run_at desc;
+```
+
+Cowork 실측과 완전 일치(3행): `kr-lens-scores`(2026-08-06 10:35:49.956+00·ok=true) · `email-brief`(2026-08-05 23:05:32.919+00·ok=true·note=null) · `jp-disclosures`(2026-07-27 16:01:57.475+00·ok=true·note=null). `kr-lens-scores.note` 원문:
+
+```json
+{"market":"KR","coverage":1,"coverageOk":true,"cutGateOk":true,
+ "acqMs":4119,"loopMs":151439,"pass2Ms":1447,"pruneMs":227,
+ "calcMs":153113,"routeMs":157948,
+ "churn":0.023,"skipChangeDiff":false,"computed":975,"universe":1000}
+```
+
+### 932 §1 — 이것으로 확정되는 것(사실만)
+
+① **917 계측이 작동한다** — 배포 후 첫 정규 크론에서 `cron_heartbeats.note`에 값이 실제로 기록됐다. 채널 사다리 1번(로그 대신 DB) 선택이 옳았다 — Hobby 로그 보존 1시간 밖에서도 값이 남는다.
+② **KR 크론 08-06분 정상 실행** — 916이 "08-05분 확정 미실행 + 08-06분 대기"로 남긴 것 중 08-06분이 해소됐다. 🔴 08-05분 미실행 자체는 원인 미규명으로 그대로 남는다(별건, 이 STEP은 조사하지 않음).
+③ **KR은 게이트를 통과한다** — `coverage: 1`(100%)·`coverageOk: true`·`cutGateOk: true`. 913·914의 "KR은 문제 없음" 판정이 계측으로 확인됐다.
+④ **단계별 elapsed 분해 확보(KR)**: `acqMs` 4,119ms(취득) · `loopMs` 151,439ms(렌즈계산 루프) · `pass2Ms` 1,447ms(재매핑+diff) · `pruneMs` 227ms · `calcMs` 153,113ms · `routeMs` 157,948ms(≈158초). `maxDuration` 300초 대비 여유 ≈142초(KR 기준). 시간 대부분은 `loopMs`(라우트의 95.9%)이고 취득(`acqMs`)은 4.1초뿐.
+⑤ KR 유니버스 1,000 / 계산 975 · `churn` 0.023 · `skipChangeDiff` false.
+
+### 932 §2 — 아직 없는 것(추정 금지)
+
+- `retryAllLen`·`countHit`·`timeHit`이 KR note에 없다 — **917이 명시한 설계**(KR은 `topKrByMarketCap`이 벌크 단일읽기라 US식 3단계 구조 자체가 없어 `acqMs` 하나만 기록, 없는 단계를 억지로 안 쪼갬). **결손이 아니라 해당 없음.**
+- `retryAllLen`은 **US 크론에서만** 나온다(21:30 UTC±59분 지터) — 이 STEP 시점(재조회 결과 3행 불변, US 신규 행 없음)엔 아직 없다.
+- 🔴 **KR 158초를 US에 적용하지 않는다** — 유니버스가 1,000 대 5,966이고 US엔 재시도 단계가 있다. "US도 여유가 있을 것"이라 쓰지 않는다.
+- `kr-perf`는 `cron_heartbeats`에 없다(917이 계측 대상 밖으로 둠, 설계) — KR "관측 수단 없음" 문제는 `kr-lens-scores`만 해소됐다.
+- `email-brief` 최신 = 08-05 23:05 그대로(재조회로도 갱신 없음) — 08-06분이 아직 도래 전인지 미실행인지는 **이 STEP은 판단하지 않는다.**
+
+### 932 §3 — ②단계는 여전히 미판정
+
+🔴 **②단계(보수적 예산 증액)를 시작하지 않는다.** 916이 정한 입력은 `retryAllLen`과 US 단계별 elapsed 둘 다인데, 둘 다 아직 없다. KR 값으로 ②단계를 판정하지 않는다 — US의 병목은 재시도 예산(`RETRY_MAX`/`RETRY_MS`)이고 KR엔 그 구조 자체가 없다. 916의 "40초가 464건에 구조적으로 부족" 산술은 그대로 유효하며 이 STEP이 바꾸지 않는다. **A·B·C·D 선택지 병기 그대로 유지.**
+
 
