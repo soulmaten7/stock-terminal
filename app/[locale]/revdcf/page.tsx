@@ -73,9 +73,9 @@ export default async function RevDcfMethodPage({ params }: { params: Promise<{ l
               {rows.map((r) => (
                 <tr key={r} className="border-b border-unjong-border align-top">
                   <td className="py-2 pr-3 font-medium whitespace-nowrap">{t(`row.${r}.i`)}</td>
-                  <td className="py-2 pr-3 text-unjong-muted">{t(`row.${r}.s`)}</td>
-                  <td className="py-2 pr-3">{t(`row.${r}.o`)}</td>
-                  <td className="py-2 text-unjong-muted">{t(`row.${r}.w`, figures)}</td>
+                  <td className="py-2 pr-3 text-unjong-muted break-keep break-words">{t(`row.${r}.s`)}</td>
+                  <td className="py-2 pr-3 break-keep break-words">{t(`row.${r}.o`)}</td>
+                  <td className="py-2 text-unjong-muted break-keep break-words">{t(`row.${r}.w`, figures)}</td>
                 </tr>
               ))}
             </tbody>
