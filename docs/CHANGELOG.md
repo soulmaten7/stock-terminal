@@ -1,6 +1,34 @@
 <!-- 2026-08-06 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-06 (70) — 🔴 **STEP 925 실행: `daily-brief`·`email-brief` 라벨 조립 진단 — 924의 "가능성"이 실재로 확인됨, 수리 미승인 대기**
+
+> **성격**: 924가 *"daily-brief·email-brief에도 momentum과 같은 이름중복 패턴이 있을 가능성"*으로 남긴 것을 확인만 한다. 전제: HEAD `f63d9cb`(924) · tsc 0 · test 182/182. **진단만 — 코드 diff 0(`scripts/` 프로브 제외), 메일 미발송, 크론 미실행.**
+
+### §0 924 육안 검증 등재
+
+`docs/DECISION_923_NAMING.md`에 헤더 블록 추가(본문 불변) — Cowork가 `/explore?market=US`에서 「Mo」→「Altria Group, Inc.」·「Hst」→「Host Hotels & Resorts, Inc.」·「모멘텀 모멘텀 상위권」→「모멘텀 상위권」 확인, KR 무손, Alphabet 2행은 설계라 그대로. `lib/todayChanges.ts` 경로(ChangeRow·TodayClient·daily-brief·email-brief)는 `/explore`만 봐서는 검증 안 됨을 남김 — 이 STEP이 코드·프로브로 답한다.
+
+### §1 경로 확인
+
+`daily-brief`(`buildMarketFacts`)·`email-brief`(`movers()`) 둘 다 `lensDisplayName`+`lensStateLabel`을 **따로** 호출해 `{lensName,from,to}` 3필드로 저장 후 템플릿에서 `${lensName} ${from}→${to}`로 이어붙인다 — `grep -rn "lensStateLine"`이 두 라우트에서 0건. 924는 `ExploreClient.tsx:161` 한 곳만 고쳤고 이 두 라우트는 애초에 924의 수정 범위 밖이었다(923도 이 조립을 발견 안 함). 종목명은 둘 다 `getTodayChanges()`를 거치므로 924의 수정이 자동 반영됨(라벨 조립과 종목명은 서로 다른 필드).
+
+### §2 실측
+
+`scripts/probe_925_brief_labels.ts`(신규, 라우트 미호출·발송 0)로 실제 라우트와 동일한 함수 호출 순서를 재현 — 오늘 실데이터: **KR·ko 5건 중 3건, US·en 5건 중 2건**이 "모멘텀 모멘텀"/"Momentum...momentum" 리터럴 중복. `buildFallbackBrief()`가 실제로 반환하는 문장에 그대로 포함됨을 확인(가능성이 아니라 확정). 종목명 잔존 = 0건(양쪽 다 정상). 산출물 = `docs/probe_925_brief_labels.json`(같은 커밋).
+
+### §3 노출 이력
+
+`daily_brief` 저장 24행(KR9·US15) 전수 정규식 검색 = 리터럴 중복 **0건**(LLM 패러프레이즈가 우연히 회피했을 가능성, 단정 안 함). 🔴 **email의 결정론 mover-line은 DB에 저장되지 않아 과거 실제 발송분은 측정 불가**(daily-brief 본문과 다른 노출 지점). `email-brief` 최초 커밋 = STEP 784(2026-07-23). `cron_heartbeats`는 job당 최신 1행만 보존 — last_run_at 2026-08-05 23:05 UTC ok=true 1건만 확인 가능(이력 아님). **수신자 규모는 조사하지 않음**(개인정보, 범위 밖) — 추정도 하지 않음.
+
+### §4 판정서
+
+`docs/DECISION_925_BRIEF.md` 신설 — 수리 선택지 A(공유 헬퍼로 조립 통일, 권고)/B(email mover-line만 우선)/C(방치) 카탈로그 + 대가, 실행 안 함. **DoD7 판정 칸 불변**(923이 확인한 "같은 이름" 해석 모호함, 이 STEP도 풀지 않음). 승인은 장은태 것.
+
+### 문서·검증
+
+`docs/DECISION_925_BRIEF.md` 신설 · `docs/DECISION_923_NAMING.md`(§0 등재, 본문 불변) · `docs/REVDCF_SPEC.md` §11(2건) · `docs/STATE.md`(140줄) · `docs/LENS_DEV_PLAYBOOK.md` 신규 · `docs/probe_925_brief_labels.json`·`scripts/probe_925_brief_labels.ts` 신설(같은 커밋). `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0(`scripts/` 프로브 제외) · DoD 판정 칸 전부 불변 · `REVDCF_ENABLED` Production OFF · 크론 미실행 · 메일 미발송 · DB 쓰기 0(읽기만) · 924의 `lensStateLine`·`resolveDisplayName` 불변 · tsc 0 · test 182/182.
+
 ## 2026-08-06 (69) — 🟢 **STEP 924 실행: 923의 B안(표시 계층 통일) 채택·적용 — 종목명 348/348 해소·모멘텀 중복 수정, DB 쓰기 0·DoD7 판정 칸 불변**
 
 > **성격**: 923이 진단만 하고 남긴 종목명 불일치(348/998 US 행이 티커 그대로 표시)에 대해, 장은태의 위임("가장 베스트인거로 3번 생각하고 검색하고 검증하고 검수해서 진행해")을 받아 923이 카탈로그한 A/B/C/D 중 **B(표시 계층 통일)를 채택**하고 실제로 구현했다. 전제: HEAD `570599b`(923) · tsc 0 · test 182/182.

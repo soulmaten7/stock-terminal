@@ -11,6 +11,10 @@
 > **남는 것(대가, 아래 §4 B행 그대로)**: `lens_scores.name`/`lens_state_changes.name` 자체는 DB에 여전히 티커로 남아 있다 — 다른 소비처(예: 관심목록 폴백 등, 미전수조사)에 위험이 남을 수 있다. **DoD7 판정 칸은 이 승인·적용으로도 바뀌지 않는다** — §1의 "같은 이름"이 무엇을 뜻하는지 자체가 여전히 미정의라, 화면 증상이 없어졌다고 그 해석 문제가 풀린 게 아니기 때문이다.
 > 상세 = `docs/CHANGELOG.md` STEP 924 블록 · `docs/probe_924_baseline.json`(348개 대조 원자료).
 
+> ## 🟢 924 육안 검증 등재 (925 — 본문은 고치지 않는다)
+> **Cowork 실측, 2026-08-06 · `localhost:3333`**: `/explore?market=US` 「Mo」→**「Altria Group, Inc.」**·「Hst」→**「Host Hotels & Resorts, Inc.」** 정상 표시 확인. 「모멘텀 모멘텀 상위권」→**「모멘텀 상위권」**으로 중복 해소 확인. 대조군(Suncor Energy Inc. 등) 정상 유지. `/explore?market=KR` 종목명·라벨 전부 정상, 회귀 없음. 「Alphabet Inc.」 2행은 **그대로**(924가 의도적으로 미접촉 — §2에서 이미 설계로 판정됨).
+> **미확인으로 남은 것**: `resolveDisplayName` 소비처 중 `lib/todayChanges.ts` 경로(ChangeRow·TodayClient·daily-brief·email-brief 공통)는 `/explore`만 봐서는 검증되지 않는다 — **925가 코드·프로브로 답한다**(`docs/DECISION_925_BRIEF.md`).
+
 ---
 
 ## §0 — Cowork 브라우저 3중 검증 (2026-08-06 · `localhost:3333`)

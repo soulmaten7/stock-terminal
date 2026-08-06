@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "generated_by": "scripts/probe_925_brief_labels.ts",
+    "generated_at": "2026-08-06 (session time, exact clock unavailable)",
+    "note": "읽기 전용 재현 — daily-brief·email-brief 라우트 파일 자체는 호출하지 않았다(크론 미실행·메일 미발송). 같은 함수(getTodayChanges·resolveDisplayName·lensDisplayName·lensStateLabel)로 movers를 직접 재구성해 실제 라우트가 만드는 것과 동일한 문자열을 얻었다."
+  },
+  "KR_ko": {
+    "date": "2026-08-06",
+    "movers_count": 5,
+    "duplicate_label_rows": [
+      {
+        "symbol": "034020",
+        "lensKey": "momentum",
+        "toState": "flat",
+        "lensName": "모멘텀",
+        "from": "모멘텀 상위권",
+        "to": "모멘텀 중간권",
+        "to_via_lensStateLine": "모멘텀 중간권"
+      },
+      {
+        "symbol": "119850",
+        "lensKey": "momentum",
+        "toState": "down",
+        "lensName": "모멘텀",
+        "from": "모멘텀 중간권",
+        "to": "모멘텀 하위권",
+        "to_via_lensStateLine": "모멘텀 하위권"
+      },
+      {
+        "symbol": "042660",
+        "lensKey": "momentum",
+        "toState": "flat",
+        "lensName": "모멘텀",
+        "from": "모멘텀 상위권",
+        "to": "모멘텀 중간권",
+        "to_via_lensStateLine": "모멘텀 중간권"
+      }
+    ],
+    "duplicate_label_count": 3,
+    "ticker_like_name_count": 0,
+    "ticker_like_names": [],
+    "fallback_brief_text": "어제 . 렌즈 전환 5건 — 강점 0·주의 0. SK하이닉스는 밸류(가치) 비싼 편(시장 대비)→밸류 중간권 전환, 효성중공업는 기술 하락 추세 (200일선 아래)→상승 추세 전환, 두산에너빌리티는 모멘텀 모멘텀 상위권→모멘텀 중간권 전환, 지엔씨에너지는 모멘텀 모멘텀 중간권→모멘텀 하위권 전환, 한화오션는 모멘텀 모멘텀 상위권→모멘텀 중간권 전환.",
+    "prompt_text_sample": "[지수 등락]\n\n\n[렌즈 전환]\n전체 5건, 강점 0, 주의 0\n\n[거래대금 상위 전환 종목]\n- SK하이닉스: 밸류(가치) 비싼 편(시장 대비) → 밸류 중간권\n- 효성중공업: 기술 하락 추세 (200일선 아래) → 상승 추세\n- 두산에너빌리티: 모멘텀 모멘텀 상위권 → 모멘텀 중간권\n- 지엔씨에너지: 모멘텀 모멘텀 중간권 → 모멘텀 하위권\n- 한화오션: 모멘텀 모멘텀 상위권 → 모멘텀 중간권",
+    "email_mover_lines_sample": [
+      "SK하이닉스 — 밸류(가치) 비싼 편(시장 대비) → 밸류 중간권",
+      "효성중공업 — 기술 하락 추세 (200일선 아래) → 상승 추세",
+      "두산에너빌리티 — 모멘텀 모멘텀 상위권 → 모멘텀 중간권",
+      "지엔씨에너지 — 모멘텀 모멘텀 중간권 → 모멘텀 하위권",
+      "한화오션 — 모멘텀 모멘텀 상위권 → 모멘텀 중간권"
+    ]
+  },
+  "US_en": {
+    "date": "2026-08-05",
+    "movers_count": 5,
+    "duplicate_label_rows": [
+      {
+        "symbol": "SHOP",
+        "lensKey": "momentum",
+        "toState": "down",
+        "lensName": "Momentum",
+        "from": "Mid-pack momentum",
+        "to": "Bottom-tier momentum",
+        "to_via_lensStateLine": "Bottom-tier momentum"
+      },
+      {
+        "symbol": "APP",
+        "lensKey": "momentum",
+        "toState": "up",
+        "lensName": "Momentum",
+        "from": "Mid-pack momentum",
+        "to": "Top-tier momentum",
+        "to_via_lensStateLine": "Top-tier momentum"
+      }
+    ],
+    "duplicate_label_count": 2,
+    "ticker_like_name_count": 0,
+    "ticker_like_names": [],
+    "fallback_brief_text": "Yesterday . Lens transitions: 5 total — 0 strong, 0 caution. Alphabet Inc. moved Value Mid-pack valuation→Cheap (vs. market), Alphabet Inc. moved Value Mid-pack valuation→Cheap (vs. market), Shopify Inc. moved Technical Trend leans down→Trend leans up, Shopify Inc. moved Momentum Mid-pack momentum→Bottom-tier momentum, Applovin Corporation moved Momentum Mid-pack momentum→Top-tier momentum.",
+    "prompt_text_sample": "[Index changes]\n\n\n[Lens transitions]\nTotal 5, strong 0, caution 0\n\n[Top movers by trade value]\n- Alphabet Inc.: Value Mid-pack valuation → Cheap (vs. market)\n- Alphabet Inc.: Value Mid-pack valuation → Cheap (vs. market)\n- Shopify Inc.: Technical Trend leans down → Trend leans up\n- Shopify Inc.: Momentum Mid-pack momentum → Bottom-tier momentum\n- Applovin Corporation: Momentum Mid-pack momentum → Top-tier momentum",
+    "email_mover_lines_sample": [
+      "Alphabet Inc. — Value Mid-pack valuation → Cheap (vs. market)",
+      "Alphabet Inc. — Value Mid-pack valuation → Cheap (vs. market)",
+      "Shopify Inc. — Technical Trend leans down → Trend leans up",
+      "Shopify Inc. — Momentum Mid-pack momentum → Bottom-tier momentum",
+      "Applovin Corporation — Momentum Mid-pack momentum → Top-tier momentum"
+    ]
+  },
+  "exposure_history_check": {
+    "daily_brief_stored_rows_with_literal_duplicate": 0,
+    "daily_brief_query": "select ... where text_ko ~ '모멘텀\\s*모멘텀' or text_ko ~ '밸류\\s*밸류' or text_en ~* 'momentum\\s+momentum' or text_en ~* 'value\\s+value'",
+    "note": "daily_brief.text_ko/text_en에 저장된 24행(KR 9 + US 15) 전수 검색 — 문자 그대로의 중복 패턴 0건. LLM 경로가 자연스럽게 패러프레이즈해 회피했을 가능성이 높다(추정, 확정 아님). 단 email-brief의 '내 관심종목·오늘 변화' 섹션(moversHtml)은 LLM을 거치지 않는 결정론 템플릿이라 이 0건과 무관하게 별도로 노출됐을 수 있다 — 그 섹션은 DB에 저장되지 않아(발송 시점에만 렌더) 과거 실제 발송분은 측정 불가."
+  },
+  "email_brief_heartbeat": {
+    "job": "email-brief",
+    "last_run_at": "2026-08-05 23:05:32.919+00",
+    "ok": true,
+    "note": "cron_heartbeats는 job당 최신 1행만 upsert로 덮어써 이력이 안 남는다(과거 실행 여부는 이 값으로 알 수 없음) — 라우트 파일 최초 커밋일(git log, STEP 784, 2026-07-23)로 '이 코드가 언제부터 존재했는지'만 대체 확인"
+  },
+  "daily_brief_table_range": {
+    "KR": { "earliest": "2026-07-22", "latest": "2026-08-04", "rows": 9 },
+    "US": { "earliest": "2026-07-21", "latest": "2026-08-05", "rows": 15 }
+  }
+}
