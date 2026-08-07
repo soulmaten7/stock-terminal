@@ -1,0 +1,57 @@
+{
+  "_meta": {
+    "purpose": "STEP 936(계측 ②차) 배포 전 사전 스냅샷 — 읽기 전용. 배포 후 관측 시점(다음 US lens-scores 크론)에 같은 쿼리로 재조회해 판정 불변을 확인하는 것이 목적.",
+    "captured_at": "2026-08-07 (session time, exact clock unavailable) — 배포 직전",
+    "head_before_deploy": "c97e7ee (STEP 935)"
+  },
+  "lens_cuts_10rows": [
+    {"market":"KR","lens_key":"assetgrowth","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"lowvol","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"momentum","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"quality","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"KR","lens_key":"valuation","as_of":"2026-08-06","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"assetgrowth","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"lowvol","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"momentum","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"quality","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"},
+    {"market":"US","lens_key":"valuation","as_of":"2026-07-30","updated_at":"2026-07-28 04:33:55.17017+00"}
+  ],
+  "lens_scores": {
+    "us_count": 1001,
+    "us_max_updated_at": "2026-08-06 22:03:47.418+00",
+    "kr_count": 975,
+    "kr_max_updated_at": "2026-08-06 10:33:16.843+00"
+  },
+  "us_market_cap_count": 5900,
+  "cron_heartbeats": {
+    "row_count": 4,
+    "rows": [
+      {"job":"email-brief","last_run_at":"2026-08-06 23:48:19.172+00","ok":true},
+      {"job":"lens-scores","last_run_at":"2026-08-06 22:06:02.101+00","ok":false},
+      {"job":"kr-lens-scores","last_run_at":"2026-08-06 10:35:49.956+00","ok":true},
+      {"job":"jp-disclosures","last_run_at":"2026-07-27 16:01:57.475+00","ok":true}
+    ]
+  },
+  "sample_20_us_verdicts": [
+    {"symbol":"A","momentum_state":"flat","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"mid","fscore_state":"mid"},
+    {"symbol":"AAL","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"jumpy","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"mid"},
+    {"symbol":"AAPL","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"calm","quality_state":"high","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"ABNB","momentum_state":"flat","technical_state":"up","valuation_state":"rich","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"mid","fscore_state":"na"},
+    {"symbol":"ADI","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"ADP","momentum_state":"down","technical_state":"up","valuation_state":"mid","lowvol_state":"calm","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"AIG","momentum_state":"flat","technical_state":"up","valuation_state":"cheap","lowvol_state":"calm","quality_state":"na","assetgrowth_state":"conservative","fscore_state":"na"},
+    {"symbol":"AMZN","momentum_state":"flat","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"BLK","momentum_state":"down","technical_state":"up","valuation_state":"mid","lowvol_state":"calm","quality_state":"low","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"C","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"na","assetgrowth_state":"aggressive","fscore_state":"na"},
+    {"symbol":"CAT","momentum_state":"up","technical_state":"up","valuation_state":"rich","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"aggressive","fscore_state":"strong"},
+    {"symbol":"DAL","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"mid","fscore_state":"strong"},
+    {"symbol":"GOOG","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"strong"},
+    {"symbol":"GOOGL","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"strong"},
+    {"symbol":"HST","momentum_state":"up","technical_state":"up","valuation_state":"cheap","lowvol_state":"calm","quality_state":"mid","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"META","momentum_state":"down","technical_state":"down","valuation_state":"mid","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"MO","momentum_state":"flat","technical_state":"up","valuation_state":"cheap","lowvol_state":"calm","quality_state":"high","assetgrowth_state":"conservative","fscore_state":"strong"},
+    {"symbol":"MSFT","momentum_state":"down","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"mid","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"NVDA","momentum_state":"flat","technical_state":"up","valuation_state":"mid","lowvol_state":"mid","quality_state":"high","assetgrowth_state":"aggressive","fscore_state":"mid"},
+    {"symbol":"TSLA","momentum_state":"flat","technical_state":"down","valuation_state":"rich","lowvol_state":"jumpy","quality_state":"low","assetgrowth_state":"aggressive","fscore_state":"mid"}
+  ]
+}

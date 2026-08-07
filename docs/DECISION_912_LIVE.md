@@ -527,3 +527,41 @@ Cowork의 계산(전제: 5,966 사용)을 §1에서 확인한 정확한 값(5,96
 🔴 **원인 재분류(가능성으로만, 확정 아님)**: 912~934가 "예산(시간·개수) 문제"로 다뤄 온 것이, 실제로는 **"취득 실패 문제"**(레이트리밋 또는 다른 이유로 재시도 자체가 거의/전혀 성공하지 못함)일 가능성이 이번 진단으로 새로 열렸다. 🔴 **A·B·C·D 선택지는 그대로 병기 — 새 선택지를 만들지 않는다.** 934의 "불가" 판정(부족분 332 중 111만 채워도 93.30%)은 **그대로 유지** — 이 STEP이 뒤집지 않는다(오히려 111건조차 실제로 채워질지가 더 불확실해졌다는 방향으로 934의 결론을 강화하는 쪽에 가깝다).
 
 **다음에 필요한 것(만들지 않음, 별도 승인 사항)**: 재시도 성공/실패를 심볼별로 구분해 남기는 계측(`noCapField`/`noResponse`/에러 유형별 카운트를 `cron_heartbeats.note`에 영속화) — 지금은 성공 합계(`recovered`)조차 note에 없다.
+
+## §15 — 936: 🟢 계측 ②차 배포(장은태 승인 2026-08-07) — 재시도 성공/실패 분해, 값 변경 0
+
+**승인**: 장은태, 2026-08-07. *"계측 ②차 추가 — 원인 규명 계속."* 🔴 **A안 ②단계(예산·상한 증액)와는 무관** — 934가 "불가"로 판정한 그 축은 이 STEP 대상이 아니다. 이건 917의 연장(A안 ①단계, 계측)이다.
+
+### 936 §1 — 935 재확인(코드 직접 열람)
+
+`lib/lensPrecompute.ts` 재열람 — 935의 발견 전부 재확인됨:
+- `stage2Ms`(구 경계, `:151`) = 재시도 mapLimit(`:134-155`) + `us_market_cap` upsert(`:161-166`) 합산. **935가 밝힌 경계 그대로.**
+- 재시도 1건은 즉시반환 경로 없이 실제 `yf.quote(sym)` 호출뿐(`:141`). 성공 시 `freshSet.add(sym)`(`:142`) — 935 확인과 일치.
+- `retryAll = [...noCapField, ...noResponse]`(`:130`), 두 배열은 `classifyCaps(STOCK_SYMS, responses)`(`:116`, Stage1 배치 응답 기준)에서 채워짐.
+- Stage1도 외부호출 한다 — `yf.quote(grp)`(`:107`, 100심볼 청크), `chunks.length`(≈60청크)만큼, 동시성 6. 청크 단위 실패는 `failedChunks`로 이미 카운트되고 있었으나(계산에는 쓰임, `:114`) **diag/note로는 한 번도 안 나간 값**이었다.
+- 재시도 실패 경로 = `try/catch`의 `catch` 블록(원래 `:140`, 빈 블록·주석만) — **실패 사유를 붙잡는 자리가 원래 없었다.** `catch(e)`로 바꿔 `e`를 받는 것부터 이 STEP의 작업.
+
+### 936 §2 — 넣은 계측
+
+1. **`recovered`** — `diag.recovered`는 이미 계산돼 있었으나(917 이전부터) `cron_heartbeats.note`(`computeLensScores`의 `recordHeartbeat` 페이로드)에 **한 번도 포함된 적이 없었다.** 이번에 페이로드에 추가 — 934의 대수적 도출을 다음 크론부터 직접 관측으로 검증 가능해진다.
+2. **재시도 실패 사유별 집계**(`retryFailReasons: Record<string,number>`) — `catch(e)` 블록에서 `e.message`를 `probe_915_cohort.ts`와 같은 정규식 분류(429/rate/timeout → `rate_limited_or_timeout` · not found/404/no fundamentals/invalid → `no_data` · 그 외 `other_error`)로 집계. 같은 분류 기준을 재사용해 915와 직접 비교 가능하게 했다.
+3. **`noCapField`/`noResponse` 길이** — 이미 `diag`에 있었으나(`noCapField: noCapField.length` 등, 917 이전부터) note 페이로드엔 없었다. 추가.
+4. **`stage2` 타이머 분리** — `tRetryEnd`(재시도 루프 직후, upsert 직전) 신설. `retryCallMs = tRetryEnd - t0`(순수 재시도만) · `upsertMs = tStage2End - tRetryEnd`(DB저장만). 기존 `stage2Ms`(합산)는 비교용으로 **그대로 유지**(안 지움).
+5. **Stage1 성공/실패** — `batchOk`(=capOf.size, 이미 있었음)·`failedChunks`/`totalChunks`(=chunks.length, 신규 노출)를 note에 추가.
+6. **실패 심볼 표본** — `retryFailSample`, 최대 5건(`retryFailSample.length < 5`로 하드캡), `{symbol, reason, msg(200자 절단)}`만 — 전체 목록 아님.
+
+🔴 **KR 경로(`topKrByMarketCap`·`computeKrLensScores`) = 전혀 안 건드림**(diff에 그 함수 근처 변경 0, 아래 §3 확인).
+
+### 936 §3 — 구현 안전장치(917과 동일)
+
+`git diff HEAD -- lib/lensPrecompute.ts` 육안 확인 — 추가된 모든 줄이 **새 타입필드·새 로컬변수·새 조건 분기(집계용)·새 타임스탬프·diag/note 페이로드 추가**뿐이다. 기존 `if (typeof q?.marketCap === "number" ...)` 조건·`capOf`/`freshSet`/`recovered`/`tradeAmountOf` 갱신 로직·`RETRY_MAX`/`RETRY_MS`·`capGateDecision`/`churnDecision`/`classifyCaps` 함수 전부 **한 글자도 안 바뀜**. 계측은 `try/catch`(원래도 있던 catch를 확장) 안에서만 일어나 파이프라인을 죽이지 않는다. 루프 안에서 매 건 기록 없음(집계만, note 기록은 루프 종료 후 함수 끝에서 1회). `retryBudgetHit`·`cutGateOk` 산식 = 무변경(diff에 해당 줄 없음).
+
+### 936 §4 — 검증
+
+`npx tsc --noEmit` 0 · `npm run test` 182/182(무변화) · `git diff --stat -- lib/revdcf/ app/ components/ messages/ data/ .github/ vercel.json` 출력 없음. 사전 스냅샷 = `docs/probe_936_baseline.json`(읽기만 — `lens_cuts` 10행·`lens_scores` US 1,001행/KR 975행·`us_market_cap` 5,900행·`cron_heartbeats` 4행·표본 20종목 판정 문자열).
+
+### 936 §5 — 배포 후 관측 시점
+
+이 STEP은 배포까지만. 관측 대상 = **US `lens-scores`, 다음 실행(21:30 UTC±59분 지터)**. KR은 이번 계측 대상 아님(재시도 구조 없음, 917 확인 재확인). 다음에 볼 것: `recovered`(직접 관측) · `retryFailReasons` 분해 · `noCapField`/`noResponse` 길이 · `retryCallMs` vs `upsertMs`(935가 밝힌 경계 문제 해소) · `batchOk`/`failedChunks` · `retryFailSample`(최대5) · `probe_936_baseline.json` 대비 판정 불변(특히 20종목 표본 문자열 무변경).
+
+🔴 **A안 ②단계(증액)는 미판정 유지. 934의 "불가" 판정 불변. A·B·C·D 선택지 병기 유지.**

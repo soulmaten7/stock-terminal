@@ -87,6 +87,13 @@ export type CapDiag = {
   countHit: boolean;    // retryAllLen > RETRY_MAX
   timeHit: boolean;     // 40초 예산 초과로 루프가 중도 종료됐는가(기존 변수 노출만)
   stage1Ms: number; stage2Ms: number; stage3Ms: number; acqMs: number; // 916이 없다고 한 단계별 elapsed
+  // 🔴 STEP 936(계측 ②차, 장은태 승인): 935가 대수적으로만 도출한 것(재시도 성공분)을 직접 관측으로 — 값 계산엔 관여 안 함.
+  retryCallMs: number;      // stage2Ms 중 재시도 mapLimit 루프만(upsert 제외) — 935가 밝힌 타이머 경계 문제 해소
+  upsertMs: number;         // stage2Ms 중 us_market_cap upsert만
+  retryNoCapField: number;  // 재시도 응답은 왔으나 marketCap 없음(호출부 noCapField와 같은 개념, 재시도 단계 버전)
+  retryFailReasons: Record<string, number>; // 재시도 예외를 사유별로 집계(429/timeout·404/no_data·기타) — probe_915_cohort.ts와 같은 분류
+  retryFailSample: { symbol: string; reason: string; msg: string }[]; // 최대 5건, 전체 목록 아님
+  failedChunks: number; totalChunks: number; // stage1 배치청크 성공/실패(이미 있던 failedChunks를 diag로도 노출)
 };
 async function topByMarketCap(topN: number): Promise<{
   symbols: string[]; tradeAmountOf: Map<string, number>; capOf: Map<string, number>; freshSet: Set<string>; diag: CapDiag;
@@ -124,14 +131,30 @@ async function topByMarketCap(topN: number): Promise<{
   const retrySet = retryAll.slice(0, RETRY_MAX);
   const t0 = Date.now();
   let recovered = 0, timeHit = false;
+  // 🔴 STEP 936(계측 ②차): 935가 "성공 0건은 대수적 도출"이라 밝힌 것을 직접 관측으로 — 아래 3개는 집계만, capOf/freshSet/recovered 로직은 무변경.
+  let retryNoCapField = 0;
+  const retryFailReasons: Record<string, number> = {};
+  const retryFailSample: { symbol: string; reason: string; msg: string }[] = [];
   await mapLimit(retrySet, 6, async (sym) => {
     if (Date.now() - t0 > RETRY_MS) { timeHit = true; return; }
     try {
       const q = (await yf.quote(sym)) as { marketCap?: number; regularMarketPrice?: number; regularMarketVolume?: number };
       if (typeof q?.marketCap === "number" && q.marketCap > 0) { capOf.set(sym, q.marketCap); freshSet.add(sym); recovered++; }
+      else { retryNoCapField++; } // 응답은 왔으나 marketCap 없음(classifyCaps의 noCapField와 같은 개념, 재시도 단계 버전) — 계측 전용
       if (typeof q?.regularMarketPrice === "number" && typeof q?.regularMarketVolume === "number" && !tradeAmountOf.has(sym)) tradeAmountOf.set(sym, q.regularMarketPrice * q.regularMarketVolume);
-    } catch { /* 개별도 실패 → 폴백으로 */ }
+    } catch (e) {
+      // 🔴 935 확인대로 즉시반환 경로는 없다 — 여기 도달하면 실제 HTTP 호출이 실패한 것. probe_915_cohort.ts와 같은 분류(재현·비교 가능하도록).
+      const msg = e instanceof Error ? e.message : String(e);
+      const lower = msg.toLowerCase();
+      const reason = /429|rate|timeout|timed out/.test(lower) ? "rate_limited_or_timeout"
+        : /not found|404|no fundamentals|quote not found|invalid/.test(lower) ? "no_data"
+        : "other_error";
+      retryFailReasons[reason] = (retryFailReasons[reason] ?? 0) + 1;
+      if (retryFailSample.length < 5) retryFailSample.push({ symbol: sym, reason, msg: msg.slice(0, 200) });
+      /* 개별도 실패 → 폴백으로 — 기존 동작 무변경 */
+    }
   });
+  const tRetryEnd = Date.now(); // 🔴 STEP 936: 935가 밝힌 stage2Ms 경계 문제(재시도+upsert 혼합) 해소 — 순수 재시도 루프만의 경계
   const freshCoverage = freshSet.size / STOCK_SYMS.length;
 
   // 매 실행 성공(fresh) cap 기록 → 다음날 폴백 재료. us_stock_perf에 컬럼 붙이지 않음(808 부분컬럼 NULL덮기 회피·전용 테이블).
@@ -141,7 +164,7 @@ async function topByMarketCap(topN: number): Promise<{
     const { error } = await sb.from("us_market_cap").upsert(capRows.slice(i, i + 500), { onConflict: "symbol" });
     if (error) Sentry.captureException(error, { tags: { pipeline: "us_market_cap_upsert" } });
   }
-  const tStage2End = Date.now(); // 🔴 STEP 917 §1: Stage2(재시도+영속화) 경계
+  const tStage2End = Date.now(); // 🔴 STEP 917 §1: Stage2(재시도+영속화) 경계 — 그대로 유지(비교용), 936이 아래서 세분화
 
   // ── Stage 3: 최근값 폴백(7일 이내) — 배치·재시도 다 실패한 심볼만. 나이 초과분은 안 씀(829 _lastGood TTL 원리) ──
   // 🔴 STEP 894(893과 상호주석): 이 7일 값은 app/api/cron/revdcf/route.ts의 MCAP_TTL_DAYS와 같아야 한다(893) —
@@ -172,6 +195,10 @@ async function topByMarketCap(topN: number): Promise<{
     recovered, fallbackUsed, retryAttempted: retrySet.length, retryBudgetHit: retryAll.length > RETRY_MAX || timeHit, freshCoverage,
     retryAllLen: retryAll.length, countHit: retryAll.length > RETRY_MAX, timeHit,
     stage1Ms: tStage1End - tAcq0, stage2Ms: tStage2End - tStage1End, stage3Ms: tStage3End - tStage2End, acqMs: tStage3End - tAcq0,
+    // 🔴 STEP 936: 아래 전부 계측 전용 — 계산에 쓰이지 않음.
+    retryCallMs: tRetryEnd - t0, upsertMs: tStage2End - tRetryEnd,
+    retryNoCapField, retryFailReasons, retryFailSample,
+    failedChunks, totalChunks: chunks.length,
   };
   return { symbols: caps.slice(0, topN).map((c) => c.sym), tradeAmountOf, capOf, freshSet, diag };
 }
@@ -515,6 +542,12 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
     stage1Ms: diag.stage1Ms, stage2Ms: diag.stage2Ms, stage3Ms: diag.stage3Ms, acqMs: diag.acqMs,
     loopMs: r.loopMs, pass2Ms: r.pass2Ms, pruneMs: r.pruneMs, calcMs: r.totalMs, routeMs: Date.now() - tRoute0,
     churn, skipChangeDiff, computed: r.computed, universe: r.universe,
+    // 🔴 STEP 936(계측 ②차): 935가 못 본 것 — recovered는 diag에 이미 있었으나 여기 한 번도 안 실렸다.
+    batchOk: diag.batchOk, noCapField: diag.noCapField, noResponse: diag.noResponse,
+    recovered: diag.recovered, fallbackUsed: diag.fallbackUsed,
+    failedChunks: diag.failedChunks, totalChunks: diag.totalChunks,
+    retryCallMs: diag.retryCallMs, upsertMs: diag.upsertMs,
+    retryNoCapField: diag.retryNoCapField, retryFailReasons: diag.retryFailReasons, retryFailSample: diag.retryFailSample,
   });
   return r;
 }

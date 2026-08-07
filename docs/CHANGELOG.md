@@ -1,6 +1,22 @@
 <!-- 2026-08-07 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-07 (81) — 🟢 **STEP 936 실행: 계측 ②차 배포(장은태 승인) — 재시도 성공/실패 분해, 값 변경 0**
+
+> **성격**: 935가 대수적으로 도출한 "재시도 성공 0건"을 다음 크론부터 직접 관측할 수 있게, 원인 규명용 계측 2차분을 배포했다(917의 연장 — A안 ①단계, ②단계인 예산증액과는 무관). 전제: HEAD `c97e7ee`(935) · tsc 0 · test 182/182 · `docs/STATE.md` 131줄. **`lib/lensPrecompute.ts`만, 계측 목적에 한해 수정 — 값 계산 0건 변경.**
+
+**§1**: `lib/lensPrecompute.ts` 재열람으로 935의 발견 전부 재확인 — `stage2Ms`는 재시도+DB upsert 합산 · 재시도 1건은 즉시반환 없이 실제 `yf.quote()` 호출뿐 · `retryAll`은 Stage1 배치 응답 기준으로 채워짐 · Stage1도 외부호출을 함(≈60청크, 동시성6) · 재시도 실패를 붙잡는 자리가 원래 없었음(빈 `catch` 블록).
+
+**§2 넣은 계측**: ① `recovered`(이미 계산돼 있었으나 note 페이로드엔 한 번도 안 실렸던 값 — 934의 대수적 도출을 다음부터 직접 관측 가능하게 함, 최우선) ② 재시도 실패 사유별 집계(`retryFailReasons` — 429/timeout·no_data·기타, `probe_915_cohort.ts`와 동일 분류 기준 재사용) ③ `noCapField`/`noResponse` 길이(기존 계산값을 note에 추가만) ④ `stage2` 타이머 분리(`retryCallMs`=순수 재시도, `upsertMs`=DB저장만 — 935가 밝힌 경계 문제 해소, 기존 `stage2Ms`는 비교용으로 유지) ⑤ Stage1 성공/실패(`batchOk`·`failedChunks`/`totalChunks`) ⑥ 실패 심볼 표본(`retryFailSample`, 최대 5건 하드캡, 전체 목록 아님). KR 경로는 전혀 안 건드림(재시도 구조 자체가 없음, 917 재확인).
+
+**§3 안전장치(917과 동일)**: `git diff` 육안 확인 — 추가된 모든 줄이 새 타입필드·새 로컬변수·새 분기(집계)·새 타임스탬프·페이로드 추가뿐. 기존 `capOf`/`freshSet`/`recovered` 갱신 로직·`RETRY_MAX`/`RETRY_MS`·`capGateDecision`/`churnDecision`/`classifyCaps` 산식 전부 한 글자도 안 바뀜. 계측은 기존 `try/catch` 확장 안에서만(파이프라인 안 죽음), 루프 안 매건기록 없음(집계 후 함수 끝 1회).
+
+**§4**: tsc 0 · test 182/182(무변화) · `lib/revdcf/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0. 사전 스냅샷 = `docs/probe_936_baseline.json`(`lens_cuts` 10행·`lens_scores` US1,001/KR975·`us_market_cap` 5,900·`cron_heartbeats` 4행·표본20종목 판정문자열, 읽기만).
+
+**§5 관측 시점**: 이 STEP은 배포까지만 — 관측은 다음 US `lens-scores` 크론(21:30 UTC±59분 지터). KR은 계측 대상 아님. 다음에 볼 목록: `recovered`·실패사유 분해·`noCapField`/`noResponse` 길이·`retryCallMs` vs `upsertMs`·`batchOk`/`failedChunks`·실패표본·`probe_936_baseline.json` 대비 판정 불변.
+
+`docs/DECISION_912_LIVE.md` §15 신설 · `docs/REVDCF_SPEC.md` §11(1건) · `docs/STATE.md`("▶ 다음 00" 압축 갱신, 131줄 유지). 플레이북 신규 없음(935가 이미 타이머 경계 교훈을 남겼고 이번엔 그 연장 구현이라 중복 판단). DoD 판정 칸 전부 불변 · A안 ②단계 미착수 · 934 "불가" 판정 불변 · `REVDCF_ENABLED` Production OFF · 크론 미실행 · 메일 발송 0 · DB 직접 쓰기 0(읽기만, 사전 스냅샷 확보) · tsc 0 · test 182/182.
+
 ## 2026-08-07 (80) — 🔴 **STEP 935 실행: 재시도 성공분 0건 — 대수적 우연이 아니라 코드 항등식으로 도출됨을 검증, 원인은 취득실패 가능성으로 재분류(확정 아님)**
 
 > **성격**: 934의 부수 발견("재시도 성공 0건"이 대수적으로 시사됨)이 우연인지 코드 구조상 필연인지 갈랐다. 전제: HEAD `847c7f6`(934) · tsc 0 · test 182/182 · `docs/STATE.md` 131줄. **코드 읽기·DB 읽기·검색만 — 코드 diff 0·판정 0·처방 0·계측 추가 0.**
