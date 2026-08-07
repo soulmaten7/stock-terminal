@@ -1,5 +1,19 @@
-<!-- 2026-08-06 -->
+<!-- 2026-08-07 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-07 (78) — 🟢 **STEP 933 실행: `retryAllLen` 획득·`#67` 해소 · 🔴 916 예측 반증(시간 아니라 개수 절단) · ②단계 여전히 미판정**
+
+> **성격**: 917 계측이 US 크론에서 처음 값을 냈다 — 916이 산술로 예측한 "시간 절단이 개수 절단보다 먼저 걸린다"가 실측 결과 정반대였다. 전제: HEAD `edd4b2a`(932) · tsc 0 · test 182/182 · `docs/STATE.md` 131줄. **실측 등재와 반증 기록만 — 코드 diff 0·②단계 판정 0.**
+
+`cron_heartbeats`·`lens_cuts` 직접 재조회 — Cowork 실측(22:46 UTC)과 완전 일치. `lens-scores`(US, 2026-08-06 22:06:02 UTC·**ok=false**) note: `freshCoverage:0.9144·coverageOk:false·compositionOk:false·cutGateOk:false·retryAllLen:511·retrySetLen:400·countHit:true·timeHit:false·stage2Ms:13808(RETRY_MS 40,000ms 중 13.8초만 사용)·routeMs:153765(≈154초, maxDuration 300초 대비 여유≈146초)·universe:1000·computed:918`.
+
+**916 예측 반증(핵심)**: 916은 코드 주석 벤치마크(120ms/건, 순차)와 915 순차 표본(136.68ms/건)에 기대 "40초 안에 처리되는 개수(~330)가 재시도 허용치(400)보다 적어 시간 절단이 먼저 걸린다"고 산술 확정했다. 실측(동시성 6 크론)은 1건당 34.5ms(13,808÷400, 직접 재계산 확인)로 3~4배 빨랐다 — **걸린 것은 개수 절단**(`retryAllLen` 511 > `RETRY_MAX` 400, 111건 미시도). Cowork의 후속 산술(511건 시도 시 17.6초·111건 추가 시 +3.8초)도 전부 직접 재계산해 일치 확인. 916 본문은 고치지 않고 `docs/DECISION_912_LIVE.md` §9(원문 바로 뒤)에 정정 블록만 추가했다.
+
+**확정 7건**: `#67`(`retryAllLen` 미확보) 소진 — 894가 붙인 뒤 8 STEP 넘게 못 얻던 값을 917 계측으로 획득 · `cutGateOk=false`가 게이트 차단의 직접 증거 · `freshCoverage` 91.44%가 916의 DB역산 90.5%를 확인 · KR(`cutGateOk=true`→08-06 갱신) 대 US(false→07-30 정지) **대조군 완성** · `ok=false`가 언제부터인지는 "모름"(최신 1행만 보존) · `updated_at` 10행 전부 07-28 04:33 고정 재확인 · `universe`(1,000)와 `freshCoverage` 분모(5,966)는 다른 대상임을 구분.
+
+**②단계(예산 증액) = 여전히 미판정** — 시간 예산은 부족하지 않고(13.8/40초) 개수 상한이 511에 못 미친다(400)는 사실만 적었다. 🔴 **`RETRY_MAX`를 올리면 97%를 넘는지는 이 실측으로 알 수 없다**(511건 전부 성공한다는 보장 없음, 915는 표본 20건뿐) — "올리면 해결된다"고 쓰지 않았다. `RETRY_MAX`·`RETRY_MS`·게이트 산식·임계값(97/95)·`maxDuration` 전부 불변, `RETRY_MAX` 값도 제안하지 않았다. A·B·C·D 선택지 병기 유지.
+
+`docs/DECISION_912_LIVE.md` §12 신설(933 §0~§3) + §9에 916 정정 블록 · `docs/REVDCF_SPEC.md` §10(`#67` 소진)·§11(1건) · `docs/STATE.md`("▶ 다음 00" 갱신, 131줄 유지) · `docs/LENS_DEV_PLAYBOOK.md` 신규 1건(코드 주석 벤치마크·단일 표본은 실제 실행을 대신 못 한다는 것). `lib/lensPrecompute.ts`(917 계측) diff 0 · DoD 판정 칸 전부 불변 · `LENS_COMPLETION_STANDARD.md` diff 0 · `lib/`·`app/`·`components/`·`messages/`·`data/`·`.github/`·`vercel.json` diff 0 · 환경변수 0 · 재배포 0 · `REVDCF_ENABLED` Production OFF · 크론 미실행 · 메일 발송 0 · DB 쓰기 0(읽기만, 사전/사후 재조회 일치) · tsc 0 · test 182/182.
 
 ## 2026-08-06 (77) — 🟢 **STEP 932 실행: 917 계측 첫 실측값 획득(KR) — ②단계는 여전히 미판정(US 값 부재)**
 
