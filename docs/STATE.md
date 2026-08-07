@@ -6,7 +6,7 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
 ## HEAD / 배포
-- HEAD = **이 커밋(STEP 932 `8c86d00`)** · 부모(STEP 931 `3e31320`) · **push 완료 — origin/main + revdcf-preview 반영(rebase 불필요).** STEP 932 = 917 계측 첫 실측값 획득(KR) 등재 — ②단계 여전히 미판정(US 값 부재), 코드 diff 0.
+- HEAD = **이 커밋(STEP 933 `95d635f`)** · 부모(STEP 932 `edd4b2a`) · **push 완료 — origin/main + revdcf-preview 반영(rebase 불필요).** STEP 933 = `retryAllLen`=511 획득·`#67` 해소·916 예측 반증(병목=개수, 시간 아님) — ②단계 여전히 미판정, 코드 diff 0.
 - 🔴🔴 **다음 세션 최우선 필독**: **① 라이브 건 = 917 계측 배포 · 다음 크론 관측 대기**(변화 없음) **② 대기 안건은 3번(`#67` 로그값) 하나만**(908 정본) **③ DoD7 = 여전히 🔶 미결**(929도 판정 안 함) **④ `LENS_COMPLETION_STANDARD.md`는 7렌즈용으로 신설(812)되고 역DCF는 뒤에(857) 얹힌 문서**임을 929가 확인 — DoD7 "같은 이름"(923)·DoD9 "production"(928)·DoD9 "KR"(929, 역DCF는 US전용이라 원리적 충돌) 모호함 3건이 같은 원인. **⑤ 장은태가 답할 질문 3개만 나열**(`docs/DECISION_929_DOD_SCOPE.md`) — 승인된 완성 정의·DoD 판정 칸 전부 불변.
 - ✅ **STEP 929 = 🔴 사실 기록만(권고·판정 0).** 원문 직접 재확인 — Cowork 표와 전부 일치. `git log -S`로 역DCF 행 추가 시점 확인(`1217e1d`·STEP 857·812 신설 3일 뒤). DoD9 "KR·US 각 2종목" vs 현황표 "역DCF(모델·**US 전용**)" 충돌 — Preview에서 KR종목(SK하이닉스)은 뜨나 역DCF 카드는 없음(Cowork 실측, `universeCaveat`와 정합). 🔴 **929 명령 파일이 "DoD7 다섯표면 중 셋 N/A" 출처를 "925"로 지칭했으나 재확인 결과 실제 출처는 901 — 직접 재확인 중 발견·정정.** `docs/DECISION_929_DOD_SCOPE.md` 신설(질문 3개, 답 없음). `LENS_COMPLETION_STANDARD.md`엔 각주 포인터 1줄만(DoD 정의·판정 칸 diff 0, git diff 확인). `DECISION_921_COMPLETION.md`·`DECISION_923_NAMING.md`에 사실 추가(본문 불변). 코드 diff 0.
 - ✅ **STEP 927~928 = `#71`(Preview 500) 원인 확정(927)→수리 완료(928, 장은태 승인 하 env 2단계 조정, `revdcf-preview` 정상 렌더).** 남는 위험 = Preview에 RLS 우회 키 존재. DoD9 판정·완성정의는 그대로.
