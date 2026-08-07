@@ -96,7 +96,8 @@
 | 🔴 **`data/sources/README.md`** | **[원본 보관소 색인]** 원전 스프레드시트 T3~T10 · 다모다란 8종 · 원문 HTML · 학술 · **외부 유니버스 발췌** · 미저장 목록 | 규칙 ⓪·⓪-3 대조 시 **매번** |
 | 🔴 **`lib/revdcf/registry.ts`** | **[코드형 원장]** 원전 변수 : 우리 값 : **차이 사유** 13행 + **`OUR_ADDITIONS`**(원전에 없는 것: sensitivity·distribution·**universe·liquidity**) | 드라이버·유니버스 손대기 전 |
 | `docs/LENS_COMPLETION_STANDARD.md` | **[완성 기준]** DoD 9항목 + §10 깊이 4축 — 역DCF 현황 표 포함 | "완성" 선언 전 |
-| `docs/LENS_DEV_PLAYBOOK.md` | **[필독]** 기법 렌즈 개발 플레이북 + 문제해결 로그(§0 원칙·**#1~#44**) | 새 렌즈 착수 전 + 막힐 때 |
+| `docs/STEP_LEDGER.md` | **[필독]** STEP 원장 — 성공·부분·실패·**미실행** 전부 한 줄씩(전체 진행을 한눈에) | **STEP 착수 전 매번** |
+| `docs/LENS_DEV_PLAYBOOK.md` | **[필독]** 기법 렌즈 개발 플레이북 + 문제해결 로그(§0 원칙·**#1~#106 · 111행**) | 새 렌즈 착수 전 + 막힐 때 |
 | `docs/LENS_ROADMAP.md` | 기법(렌즈) 로스터 & 로드맵 | 다음 렌즈 선정 시 |
 | `docs/LENS_ARCHITECTURE.md` | **[최신·뼈대]** 렌즈 "독립 배선" 표준 — StockData 번들·Lens 인터페이스·레지스트리·기법당 AI 교체 지점 | 렌즈 구조 변경·새 렌즈·AI 교체 시 |
 | `docs/LENS_STRENGTH_MAP.md` | 기법별 적합 영역(강한 종목·섹터·조건) | 렌즈 가중·선택 근거 |
