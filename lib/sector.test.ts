@@ -54,15 +54,22 @@ describe("fetchSectorMap", () => {
   });
 });
 
-// STEP 940 — resolveSector(0~4순위 해석기) 유닛테스트.
-// missing219(lib/sector.ts가 정적 import하는 실제 파일)의 실 데이터를 3순위 테스트에 그대로 쓴다(sic 값을 지어내지 않음).
+// STEP 940/942 — resolveSector(0~4순위 해석기) 유닛테스트.
+// missing219(lib/sector.ts가 정적 import하는 실제 파일)의 실 데이터를 SIC 관련 테스트에 그대로 쓴다(sic 값을 지어내지 않음).
+// 942: 3순위 = 야후 단독(A안). crossCheck는 나스닥·SIC·야후가 각각 뭐라 했는지 사실만 담는다(sector·source를 안 바꿈).
 type Damo = { ticker_norm: string; primary_sector: string | null; sic_code: string | null };
 
-function mockResolveSb(fx: { gics?: { symbol: string; sector: string }[]; damo?: Damo[]; nasdaq?: { symbol: string; sector: string | null }[] }) {
+function mockResolveSb(fx: {
+  gics?: { symbol: string; sector: string }[];
+  damo?: Damo[];
+  nasdaq?: { symbol: string; sector: string | null }[];
+  yahoo?: { symbol: string; sector: string | null }[];
+}) {
   const tables: Record<string, unknown[]> = {
     us_sector_gics: fx.gics ?? [],
     damodaran_industry: fx.damo ?? [],
     us_sector_nasdaq: fx.nasdaq ?? [],
+    us_sector_yahoo: fx.yahoo ?? [],
   };
   return {
     from: (table: string) => {
@@ -79,6 +86,7 @@ function mockResolveSb(fx: { gics?: { symbol: string; sector: string }[]; damo?:
     },
   } as unknown as SupabaseClient;
 }
+const noCross = { nasdaq: null, sic: null, yahoo: null, disagree: false };
 
 describe("resolveSector", () => {
   it("0순위 우선: SPDR과 Damodaran이 다르면 SPDR이 이긴다", async () => {
@@ -87,25 +95,36 @@ describe("resolveSector", () => {
       damo: [{ ticker_norm: "XYZ", primary_sector: "Financials", sic_code: null }],
     });
     const m = await resolveSector(sb, ["XYZ"]);
-    expect(m.get("XYZ")).toEqual({ sector: "Energy", source: "spdr" });
+    expect(m.get("XYZ")).toEqual({ sector: "Energy", source: "spdr", crossCheck: { nasdaq: null, sic: null, yahoo: null, disagree: false } });
+  });
+
+  it("🔑 0순위 우선 불변(942): SPDR과 야후가 다르면 SPDR이 이긴다", async () => {
+    const sb = mockResolveSb({
+      gics: [{ symbol: "XYZ", sector: "Energy" }],
+      yahoo: [{ symbol: "XYZ", sector: "Utilities" }],
+    });
+    const m = await resolveSector(sb, ["XYZ"]);
+    expect(m.get("XYZ")?.sector).toBe("Energy");
+    expect(m.get("XYZ")?.source).toBe("spdr");
+    expect(m.get("XYZ")?.crossCheck.yahoo).toBe("Utilities"); // 채택은 안 됐지만 사실은 담긴다
   });
 
   it("1순위: SPDR에 없고 Damodaran 직접 매칭만 있으면 damodaran", async () => {
     const sb = mockResolveSb({ damo: [{ ticker_norm: "XYZ", primary_sector: "Materials", sic_code: null }] });
     const m = await resolveSector(sb, ["XYZ"]);
-    expect(m.get("XYZ")).toEqual({ sector: "Materials", source: "damodaran" });
+    expect(m.get("XYZ")).toEqual({ sector: "Materials", source: "damodaran", crossCheck: noCross });
   });
 
   it("2순위 형제: GOOG → GOOGL의 섹터를 물려받는다(GOOG 자체는 Damodaran에 없음)", async () => {
     const sb = mockResolveSb({ damo: [{ ticker_norm: "GOOGL", primary_sector: "Communication Services", sic_code: null }] });
     const m = await resolveSector(sb, ["GOOG"]);
-    expect(m.get("GOOG")).toEqual({ sector: "Communication Services", source: "damodaran-sibling" });
+    expect(m.get("GOOG")).toEqual({ sector: "Communication Services", source: "damodaran-sibling", crossCheck: noCross });
   });
 
   it("2순위 형제: BRK-B → BRKA(정규화 BRKA)의 섹터를 물려받는다", async () => {
     const sb = mockResolveSb({ damo: [{ ticker_norm: "BRKA", primary_sector: "Financials", sic_code: null }] });
     const m = await resolveSector(sb, ["BRK-B"]);
-    expect(m.get("BRK-B")).toEqual({ sector: "Financials", source: "damodaran-sibling" });
+    expect(m.get("BRK-B")).toEqual({ sector: "Financials", source: "damodaran-sibling", crossCheck: noCross });
   });
 
   it("🔴 회귀(940 실측 발견): 구두점 없는 티커끼리는 뿌리·±1글자가 비슷해도 형제로 묶지 않는다 — ASML→ASMB(전혀 다른 회사) 실사례", async () => {
@@ -125,38 +144,23 @@ describe("resolveSector", () => {
     expect(m.has("XYZ-B")).toBe(false);
   });
 
-  it("3순위 합의: 나스닥·SIC 최빈섹터가 일치하면 consensus로 채택(agreed:true)", async () => {
+  it("🔑 3순위(942 A안): 야후 assetProfile 단독으로 채택된다", async () => {
+    const sb = mockResolveSb({ yahoo: [{ symbol: "SONY", sector: "Technology" }] });
+    const m = await resolveSector(sb, ["SONY"]);
+    expect(m.get("SONY")).toEqual({ sector: "Technology", source: "yahoo", crossCheck: { nasdaq: null, sic: null, yahoo: "Technology", disagree: false } });
+  });
+
+  it("🔴 3순위(942): 나스닥·SIC만 있고 야후가 없으면 미분류(나스닥∩SIC 합의는 더 이상 채택 근거가 아니다)", async () => {
     const sb = mockResolveSb({
       damo: [
         { ticker_norm: "AA1", primary_sector: "Consumer Staples", sic_code: "2080" },
         { ticker_norm: "AA2", primary_sector: "Consumer Staples", sic_code: "2080" },
         { ticker_norm: "AA3", primary_sector: "Consumer Staples", sic_code: "2080" },
       ],
-      nasdaq: [{ symbol: "ABEV", sector: "Consumer Staples" }], // missing219 실 데이터: ABEV sic=2080
+      nasdaq: [{ symbol: "ABEV", sector: "Consumer Staples" }], // missing219 실 데이터: ABEV sic=2080 → 나스닥·SIC 합의 O이지만 942 이후로는 채택 안 함
     });
     const m = await resolveSector(sb, ["ABEV"]);
-    expect(m.get("ABEV")).toEqual({ sector: "Consumer Staples", source: "consensus", agreed: true });
-  });
-
-  it("3순위 불일치: 나스닥·SIC 최빈섹터가 다르면 미분류", async () => {
-    const sb = mockResolveSb({
-      damo: [
-        { ticker_norm: "BB1", primary_sector: "Health Care", sic_code: "2834" },
-        { ticker_norm: "BB2", primary_sector: "Health Care", sic_code: "2834" },
-      ],
-      nasdaq: [{ symbol: "ABVX", sector: "Finance" }], // missing219 실 데이터: ABVX sic=2834 → SIC최빈=Health Care, 나스닥=Financials(불일치)
-    });
-    const m = await resolveSector(sb, ["ABVX"]);
-    expect(m.has("ABVX")).toBe(false);
-  });
-
-  it("🔴 나스닥 Miscellaneous는 매핑되지 않는다 → SIC와 무관하게 미분류", async () => {
-    const sb = mockResolveSb({
-      damo: [{ ticker_norm: "CC1", primary_sector: "Materials", sic_code: "1040" }],
-      nasdaq: [{ symbol: "AGI", sector: "Miscellaneous" }], // missing219 실 데이터: AGI sic=1040 → SIC최빈=Materials(있어도 나스닥이 Miscellaneous라 매핑 자체가 없음)
-    });
-    const m = await resolveSector(sb, ["AGI"]);
-    expect(m.has("AGI")).toBe(false);
+    expect(m.has("ABEV")).toBe(false);
   });
 
   it("어느 순위도 못 찾으면 Map에 없다(미분류 = 부재)", async () => {
@@ -172,6 +176,49 @@ describe("resolveSector", () => {
       damo: [{ ticker_norm: "XYZ", primary_sector: "Financials", sic_code: null }],
     });
     const m = await resolveSector(sb, ["XYZ"], { skipTier0: true });
-    expect(m.get("XYZ")).toEqual({ sector: "Financials", source: "damodaran" });
+    expect(m.get("XYZ")?.sector).toBe("Financials");
+    expect(m.get("XYZ")?.source).toBe("damodaran");
+  });
+
+  it("🔑 crossCheck.disagree: nasdaq·sic·yahoo 중 값 있는 게 2개 이상이고 서로 다르면 true(채택된 sector와의 비교가 아니다)", async () => {
+    const sb = mockResolveSb({
+      damo: [{ ticker_norm: "XYZ", primary_sector: "Financials", sic_code: null }], // 1순위로 채택 — crossCheck는 이 값과 무관
+      nasdaq: [{ symbol: "XYZ", sector: "Technology" }], // → GICS Information Technology
+      yahoo: [{ symbol: "XYZ", sector: "Energy" }], // crossCheck용 — nasdaq과 다름
+    });
+    const m = await resolveSector(sb, ["XYZ"]);
+    expect(m.get("XYZ")?.source).toBe("damodaran");
+    expect(m.get("XYZ")?.crossCheck.disagree).toBe(true);
+    expect(m.get("XYZ")?.crossCheck.nasdaq).toBe("Information Technology");
+    expect(m.get("XYZ")?.crossCheck.yahoo).toBe("Energy");
+  });
+
+  it("🔑 crossCheck.disagree: 값을 가진 출처가 하나뿐이면 false", async () => {
+    const sb = mockResolveSb({ damo: [{ ticker_norm: "XYZ", primary_sector: "Financials", sic_code: null }] });
+    const m = await resolveSector(sb, ["XYZ"]);
+    expect(m.get("XYZ")?.crossCheck.disagree).toBe(false);
+  });
+
+  it("🔑 crossCheck는 sector를 바꾸지 않는다 — 나스닥·야후가 갈려도 채택된 damodaran 값 그대로", async () => {
+    const sb = mockResolveSb({
+      damo: [{ ticker_norm: "XYZ", primary_sector: "Financials", sic_code: null }],
+      nasdaq: [{ symbol: "XYZ", sector: "Technology" }],
+      yahoo: [{ symbol: "XYZ", sector: "Energy" }],
+    });
+    const m = await resolveSector(sb, ["XYZ"]);
+    expect(m.get("XYZ")?.sector).toBe("Financials");
+    expect(m.get("XYZ")?.source).toBe("damodaran");
+    expect(m.get("XYZ")?.crossCheck).toEqual({ nasdaq: "Information Technology", sic: null, yahoo: "Energy", disagree: true });
+  });
+
+  it("🔴 나스닥 Miscellaneous는 crossCheck.nasdaq에도 안 남는다(매핑표 밖)", async () => {
+    const sb = mockResolveSb({
+      // us_sector_yahoo.sector는 적재 시점(scripts/ingest_yahoo_sector.ts)에 이미 GICS로 매핑된 값 — 원문("Basic Materials") 아님
+      yahoo: [{ symbol: "AGI", sector: "Materials" }], // 3순위로 채택
+      nasdaq: [{ symbol: "AGI", sector: "Miscellaneous" }],
+    });
+    const m = await resolveSector(sb, ["AGI"]);
+    expect(m.get("AGI")?.source).toBe("yahoo");
+    expect(m.get("AGI")?.crossCheck.nasdaq).toBeNull();
   });
 });

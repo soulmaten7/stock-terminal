@@ -1,6 +1,33 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (100) — 🟢 **STEP 942: Q0 구현 ③ 마감 — `resolveSector` 3순위를 야후로 개편 + `crossCheck` 신호 산출**
+
+> **성격**: (99) 판정(A안)의 실제 구현. `lib/sector.ts` 3순위 교체 + 교차 검증 신호 산출. **화면(⑤)·섹터 컷(④)은 이 STEP에 없다.**
+
+**§1 ⓪-4③ 재확인** — `lib/sector.ts` 현행 3순위(`consensus`, 나스닥∩SIC) 직접 열람 확인 · `docs/probe_941_third_source.json`의 `recoveredCount`가 정확도 아니라 "붙은 건수"임을 재확인 · Supabase 직접조회로 `us_sector_yahoo` 1,021·`us_sector_nasdaq` 7,127·`us_sector_gics` 503·`lens_scores` US 1,021 재확인(939~941과 드리프트 없음).
+
+**§2 구현** — `SectorSource`에서 `"consensus"` 제거·`"yahoo"` 추가. `SectorResolution`에 `crossCheck: {nasdaq, sic, yahoo, disagree}` 신설(`agreed` 필드는 소멸 — 합의 tier 자체가 없어졌으므로). **3순위**를 "나스닥∩SIC 합의"에서 **"야후 `us_sector_yahoo.sector` 단독"**으로 교체. **crossCheck는 모든 tier의 채택 결과에 동봉**된다 — 나스닥·SIC·야후를 미리 전부 읽어 두고(0~2순위로 채택된 건도 포함), `disagree`는 **세 출처끼리 서로 다른지**만 본다(채택된 `sector`와의 비교가 아님 — 규칙 5-2 ④ "사실만, 판정 아님"). `0·1·2순위 로직·industryGroup 모드·시그니처는 한 글자도 안 바꿈`(`fetchSectorMap` diff 0, `git diff` 육안 확인).
+
+**§3 테스트** — `lib/sector.test.ts` 18/18(기존 14 → crossCheck 반영 재작성 + 신규 6: 0순위 우선 SPDR-vs-야후·야후 단독 3순위·나스닥∩SIC만으론 더 이상 채택 안 됨(미분류)·`disagree` true/false 각 1·`crossCheck`가 `sector`를 안 바꾸는 것·`Miscellaneous`가 `crossCheck.nasdaq`에도 안 남는 것). `npm test` **200/200**(무회귀).
+
+**§4 실측**(`scripts/probe_942_final_resolve.ts` → `docs/probe_942_final_resolve.json`, 대상=lens_scores US 1,021)
+
+| | 건수 |
+|---|---|
+| 0순위(spdr) | 498(941과 일치) |
+| 1순위(damodaran) | 311(941과 일치) |
+| 2순위(형제) | 5(941과 일치) |
+| **3순위(야후)** | **207**(사전 추정과 일치) |
+| 미분류 | **0** |
+| **커버리지** | **100.0%**(사전 추정 "약 1,020/1,021"보다 높음 — `FISV`(941 유일 야후 취득 실패)가 다른 tier로 이미 해소돼 있었음) |
+
+0순위 제외 채점(SPDR 대비): 1순위 **99.6%**(487/489, 불일치 `APP`·`DD`=939·940과 동일) · 2순위 **100%**(3/3) · 3순위(야후) **100%**(6/6, 표본 작음 — SPDR과 겹치는 3순위 채택분 자체가 적어 941의 전 구간 95.8%가 정본 수치). **`disagree=true` = 266건**(전건 목록 저장 — "처음 재는 값", 방향 판정 없이 사실만). 섹터별 종목 수(하위 6개, 940 대비 전부 상승): Utilities 43·Real Estate 49·Communication Services 50·Consumer Staples 53·Energy 57·Materials 61 — **④(섹터 컷) 직접 입력 재료**. **`ASML`·`SONY`·`ARCC` 등 941이 지목한 미분류 사례가 전부 야후로 해소됨을 스모크 테스트로 직접 확인**(ASML→Information Technology 정답 · ARCC→Financials).
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 — **③단계 ✅ 완료로 갱신, ④(섹터 컷)이 다음 + §7 ⓖ(모집단 1,021 vs 604) 판정 필요 명시** · `lib/revdcf/registry.ts` 3순위 출처 변경 반영 · `docs/STEP_LEDGER.md` 등재. `CLAUDE.md`·`docs/USER_QUESTIONS_2026-08-08.md`·`docs/LENS_COMPLETION_STANDARD.md` 미수정(99에서 이미 반영됨, 942에서 추가 수정 없음).
+
+**무변경** — `route.ts`·`compute_revdcf_all.ts` diff 0(942는 이 파일들과 무관) · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*`·화면·UI·KR 관련 diff 전부 0 · 테이블 신설·삭제 0(기존 3개 읽기만) · `revdcf_results`/`us_market_cap`/`lens_scores`/`lens_cuts` 쓰기 0 · 크론 미실행 · API 키 미입력 · 야후 오류 보정 규칙 신설 0(창작 금지 준수).
+
 ## 2026-08-08 (99) — ✅ **Q0 3순위 = 야후 단독 확정(A안) ＋ 「비워서 모른다」→「붙이되 출처를 밝힌다」로 원칙 변경**
 
 > **성격**: 판정 반영 ＋ STEP 942 명령서. **코드 diff 0.** 근거 = STEP 941 실측.

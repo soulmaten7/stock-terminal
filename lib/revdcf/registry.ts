@@ -118,8 +118,10 @@ export const MATERIAL_SOURCES = {
     table: { name: "us_sector_gics", note: "as_of·symbol·sector·etf (PK as_of,symbol). 원본 515행 − ⓙ제외 12행 = 503행 적재" },
   },
   /**
-   * STEP 941: Q0 「2-of-2 합의제」가 갈릴 때 깰 3번째 출처. `yahoo-finance2`(기존 보유 라이브러리, 신규 설치 없음)의
-   * assetProfile 모듈. 🔴 야후 의존 추가 — us_market_cap도 야후 계열이라 이미 있던 의존이 하나 더 늘어난 것(941 §④-1).
+   * STEP 941 취득 · 🟢 STEP 942(장은태 A안) — `lib/sector.ts` `resolveSector` **3순위 채택 출처**로 승격.
+   * `yahoo-finance2`(기존 보유 라이브러리, 신규 설치 없음)의 assetProfile 모듈.
+   * 🔴 야후 의존 추가 — us_market_cap도 야후 계열이라 이미 있던 의존이 하나 더 늘어난 것(941 §④-1).
+   * 🔻 이전 3순위였던 "나스닥∩SEC SIC 합의"는 942에서 폐지 — 나스닥·SIC는 `crossCheck`(교차 검증 신호)로만 남음.
    */
   yahoo: {
     module: "assetProfile", // yf.quoteSummary(symbol, { modules: ["assetProfile"] })
@@ -130,6 +132,8 @@ export const MATERIAL_SOURCES = {
     /** STEP 941: 원본 → Postgres 적재(scripts/ingest_yahoo_sector.ts). 실측 성공률 99.9%(1,020/1,021), 매핑표 밖 값 0건. */
     table: { name: "us_sector_yahoo", note: "as_of·symbol·sector_raw(원문)·sector(GICS매핑)·industry·country (PK as_of,symbol)" },
     accuracyProbe: "scripts/probe_941_third_source.ts → docs/probe_941_third_source.json — 값은 여기 안 적는다(재실행하면 바뀔 수 있는 측정값). 재현: npx tsx scripts/probe_941_third_source.ts",
+    /** STEP 942: 3순위 채택 근거·최종 실측. 값은 여기 안 적는다(재실행하면 바뀔 수 있는 측정값). */
+    finalAdoptionProbe: "scripts/probe_942_final_resolve.ts → docs/probe_942_final_resolve.json — 재현: npx tsx scripts/probe_942_final_resolve.ts",
   },
 } as const;
 

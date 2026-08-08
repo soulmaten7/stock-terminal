@@ -1,0 +1,3009 @@
+{
+  "_meta": {
+    "purpose": "STEP 942 §3 — resolveSector 최종 실측(3순위=야후)",
+    "targetCount": 1021,
+    "generatedAt": "2026-08-08T08:29:38.142Z"
+  },
+  "bySource": {
+    "spdr": 498,
+    "damodaran": 311,
+    "damodaran-sibling": 5,
+    "yahoo": 207,
+    "unclassified": 0
+  },
+  "tier012MatchesExpected941": true,
+  "coverage": 1,
+  "scoreExcludingTier0": {
+    "damodaran": {
+      "overlap": 489,
+      "match": 487,
+      "accuracy": 0.9959100204498977
+    },
+    "damodaran-sibling": {
+      "overlap": 3,
+      "match": 3,
+      "accuracy": 1
+    },
+    "yahoo": {
+      "overlap": 6,
+      "match": 6,
+      "accuracy": 1
+    }
+  },
+  "disagreeCount": 266,
+  "disagreeList": [
+    {
+      "symbol": "CSCO",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Communication Services",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ANET",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Communication Services",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GLW",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ACN",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LITE",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Communication Services",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TER",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "KEYS",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CIEN",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ROP",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TDY",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FICO",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FFIV",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Communication Services",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CDW",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ZBRA",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AKAM",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TRMB",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "IT",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "V",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Financials",
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MA",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PYPL",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MSCI",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Financials",
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CPAY",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FIS",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GPN",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FDS",
+      "adoptedSector": "Financials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TMO",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DHR",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CVS",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Staples",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "A",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WAT",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VEEV",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MTD",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RVTY",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WMB",
+      "adoptedSector": "Energy",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BKR",
+      "adoptedSector": "Energy",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "KMI",
+      "adoptedSector": "Energy",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": null,
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TRGP",
+      "adoptedSector": "Energy",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": null,
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "OKE",
+      "adoptedSector": "Energy",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": null,
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GE",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GEV",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ETN",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "UBER",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VRT",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Information Technology",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MMM",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Health Care",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "EMR",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WM",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "URI",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PCAR",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FDX",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CTAS",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DAL",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FAST",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RSG",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "UAL",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PAYX",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Industrials",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "OTIS",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "HUBB",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CPRT",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VRSK",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VLTO",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LUV",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SNA",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "EFX",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DD",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BR",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FTV",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FDXF",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SWK",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ALLE",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "HII",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GNRC",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ROL",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TSLA",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GM",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "F",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GRMN",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RL",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WMT",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "COST",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PG",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PM",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Health Care",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CL",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TGT",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MO",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Health Care",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SYY",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "KVUE",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "KMB",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DG",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CHD",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DLTR",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "EL",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CLX",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AES",
+      "adoptedSector": "Utilities",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Utilities",
+        "yahoo": "Utilities",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SHW",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ECL",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NUE",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VMC",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CTVA",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Staples",
+        "sic": "Consumer Staples",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CRH",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "STLD",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MLM",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PPG",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SW",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PKG",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DOW",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AMCR",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "IFF",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "IP",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Materials",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CF",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BALL",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LYB",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ALB",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AVY",
+      "adoptedSector": "Materials",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CBRE",
+      "adoptedSector": "Real Estate",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Real Estate",
+        "yahoo": "Real Estate",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "INVH",
+      "adoptedSector": "Real Estate",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Real Estate",
+        "yahoo": "Real Estate",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CSGP",
+      "adoptedSector": "Real Estate",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": null,
+        "yahoo": "Real Estate",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "META",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GOOGL",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GOOG",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DIS",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NFLX",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LYV",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "OMC",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TTWO",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Information Technology",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FOXA",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ECHO",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TKO",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NWSA",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "APP",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Information Technology",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FOX",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NWS",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PSKY",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "spdr",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VG",
+      "adoptedSector": "Energy",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LGN",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CHYM",
+      "adoptedSector": "Financials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Financials",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BRK-A",
+      "adoptedSector": "Financials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": null,
+        "sic": "Industrials",
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CIFR",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DTM",
+      "adoptedSector": "Energy",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SOLS",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "USFD",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ASTS",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RBA",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "OSK",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BIO",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "COMP",
+      "adoptedSector": "Real Estate",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Real Estate",
+        "yahoo": "Real Estate",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TEM",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RIVN",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RGLD",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AVTR",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FTI",
+      "adoptedSector": "Energy",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "XPO",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AER",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CGNX",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WWD",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Energy",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NXT",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Industrials",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RPM",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CRS",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AUR",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Information Technology",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WMG",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SIRI",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "EA",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": null,
+        "sic": "Information Technology",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BE",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Energy",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LNG",
+      "adoptedSector": "Energy",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AA",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AIT",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "DCI",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ACM",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FN",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Information Technology",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NYT",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BRKR",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Health Care",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "OSCR",
+      "adoptedSector": "Financials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Health Care",
+        "sic": "Financials",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "QXO",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "VSAT",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CRCL",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Information Technology",
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LFUS",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Energy",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MSGS",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GSAT",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RBLX",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WLK",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LLYVK",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FLUT",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "JLL",
+      "adoptedSector": "Real Estate",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Real Estate",
+        "yahoo": "Real Estate",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WSO",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PINS",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "R",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "APG",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WCN",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RS",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AEIS",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Information Technology",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BJ",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NBIS",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AM",
+      "adoptedSector": "Energy",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "UHAL",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AYI",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MOD",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "HL",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PFGC",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ULS",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Health Care",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FWONK",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MKSI",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ENTG",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SPOT",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ARMK",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GRAB",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RDDT",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ONTO",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WCC",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AAL",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CCK",
+      "adoptedSector": "Materials",
+      "adoptedSource": "damodaran",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FPS",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Energy",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TECK",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SPCX",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SONY",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Staples",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GFL",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "STLA",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "QH",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CCJ",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Materials",
+        "sic": "Materials",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TS",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BHP",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Energy",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "XPEV",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BAM",
+      "adoptedSector": "Financials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Real Estate",
+        "sic": "Financials",
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TRP",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "HMC",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CQP",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Utilities",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BIP",
+      "adoptedSector": "Utilities",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Utilities",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NIO",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "CX",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "EDU",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Real Estate",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TX",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GGB",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LTM",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "GIB",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WSE",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TM",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NTES",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": "Information Technology",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PAYP",
+      "adoptedSector": "Information Technology",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Information Technology",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SUNB",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "INIO",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RACE",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "EPD",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PAC",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "JHX",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TME",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PSO",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NGG",
+      "adoptedSector": "Utilities",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Utilities",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "NTR",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BN",
+      "adoptedSector": "Financials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Real Estate",
+        "sic": "Real Estate",
+        "yahoo": "Financials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "MT",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WES",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "ET",
+      "adoptedSector": "Energy",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Utilities",
+        "sic": "Energy",
+        "yahoo": "Energy",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "HLN",
+      "adoptedSector": "Health Care",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Health Care",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RTO",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "WMS",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "TRI",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "LI",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Consumer Discretionary",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "FWONA",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Communication Services",
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BIDU",
+      "adoptedSector": "Communication Services",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Information Technology",
+        "sic": null,
+        "yahoo": "Communication Services",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "SQM",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RYAAY",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Industrials",
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "RELX",
+      "adoptedSector": "Industrials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": null,
+        "yahoo": "Industrials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "UL",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Consumer Discretionary",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BTI",
+      "adoptedSector": "Consumer Staples",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Health Care",
+        "sic": "Consumer Staples",
+        "yahoo": "Consumer Staples",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "AMRZ",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "PKX",
+      "adoptedSector": "Materials",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Materials",
+        "yahoo": "Materials",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "BEKE",
+      "adoptedSector": "Real Estate",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Financials",
+        "sic": "Real Estate",
+        "yahoo": "Real Estate",
+        "disagree": true
+      }
+    },
+    {
+      "symbol": "HSAI",
+      "adoptedSector": "Consumer Discretionary",
+      "adoptedSource": "yahoo",
+      "crossCheck": {
+        "nasdaq": "Industrials",
+        "sic": "Industrials",
+        "yahoo": "Consumer Discretionary",
+        "disagree": true
+      }
+    }
+  ],
+  "sectorCounts": [
+    {
+      "sector": "Utilities",
+      "n": 43
+    },
+    {
+      "sector": "Real Estate",
+      "n": 49
+    },
+    {
+      "sector": "Communication Services",
+      "n": 50
+    },
+    {
+      "sector": "Consumer Staples",
+      "n": 53
+    },
+    {
+      "sector": "Energy",
+      "n": 57
+    },
+    {
+      "sector": "Materials",
+      "n": 61
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "n": 96
+    },
+    {
+      "sector": "Health Care",
+      "n": 122
+    },
+    {
+      "sector": "Information Technology",
+      "n": 156
+    },
+    {
+      "sector": "Financials",
+      "n": 165
+    },
+    {
+      "sector": "Industrials",
+      "n": 169
+    }
+  ],
+  "unclassifiedDetail": []
+}
