@@ -64,3 +64,6 @@ docs/probe_849_raw.json
 docs/probe_851_cache.json
 
 docs/probe_853_lump_cache.json
+
+# Cowork이 삭제 권한이 없어 옮겨둔 파일 (장은태가 직접 삭제)
+_to_delete/
