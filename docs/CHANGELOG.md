@@ -1,6 +1,22 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (97) — 🟢 **STEP 940: Q0 구현 ③-2 + ①-2단계 — 나스닥·SPDR 테이블 적재 + `resolveSector`(0~4순위) 신설**
+
+> **성격**: DB 테이블 2개 신설(`us_sector_nasdaq`·`us_sector_gics`) + 로컬 원본 적재(재취득 없음) + `lib/sector.ts`에 `sector` 모드 추가(기존 `industryGroup` 모드 완전 불변) + 실측 리포트. 화면(⑤단계)은 이 STEP에 없음.
+
+**§1 테이블·적재** — 마이그레이션 `20260808_us_sector_sources.sql`(RLS = `damodaran_industry`와 동일 패턴, `storage.buckets`/`information_schema` 직접조회로 확인) → `scripts/ingest_us_sector.ts`가 939의 로컬 원본만 읽어 적재(재취득 0). **나스닥 7,127행 → 7,127행**(원본과 정확히 일치, 빈 sector 712건 → null) · **SPDR 515행 − ⓙ판정 제외 12건 → 503행**(제외 목록을 로그·리포트에 그대로 출력). Supabase 직접 재조회로 두 카운트 재확인.
+
+**§2 🔴 `sector` 모드 구현 중 실측으로 결함 발견·수정 — 형제 매칭이 무관한 회사를 오매칭했다** — 초안(구두점 유무와 무관하게 "뿌리 동일"·"±1글자" 패턴을 전체 6,937행에 적용)으로 1차 실측 시 형제(2순위) 35건 산출(사전 추정 ~10의 3.5배). 원인 규명: `ASML`(반도체 장비회사) → `ASMB`(Assembly Biosciences, 전혀 다른 회사·다른 섹터)로 오매칭 — 구두점 없는 두 티커가 우연히 한 글자 차이인 경우와 진짜 형제주식클래스(BRK-B/BRK.A 등)를 구두점 유무만으로는 구분하지 못했다. **수정**: (a) 원본 티커에 `.`/`-`가 있을 때만 뿌리 패턴 시도(BRK-B·MOG-A·HEI-A·WSO-B·UHAL-B·MKC-V처럼 회사가 스스로 클래스를 명시한 경우만) (b) 구두점 없는 불규칙 실제 사례 3쌍(GOOG/GOOGL·FOX/FOXA·NWS/NWSA)은 일반화 대신 **명시 등재**(규칙 A분류, 일반 패턴으로는 안전하게 구분 불가하다는 게 이번 실측 결론). 수정 후 2순위 5건(정확도 3/3 표본 100%), 회귀 테스트로 `ASML→ASMB` 오매칭 재발 방지 고정.
+
+**§3 실측 리포트**(`scripts/probe_940_sector_resolve.ts` → `docs/probe_940_sector_resolve.json`, 대상 = `lens_scores` US 1,021) — **출처별**: 0순위(spdr) 498 · 1순위(damodaran) 311 · 2순위(형제) 5 · 3순위(합의) 137 · 미분류 70 · **커버리지 93.1%**(사전 추정 "약 94~96%"와 근접). **채점(0순위 제외, SPDR 정답지 대비)**: 1순위 정확도 **99.6%**(487/489, 불일치 `APP`·`DD` — 939와 동일) · 2순위 **100%**(3/3) · 3순위 **100%**(3/3, 표본이 작음 — SPDR은 애초 S&P500만 커버해 2·3순위 결과와의 겹침 자체가 작다). 섹터별 종목 수(하위): Utilities 40·Communication Services 44·Consumer Staples 49·Real Estate 49·Energy 50·Materials 50 — 940 §④ 요구대로 섹터 내 컷 판단 재료로 기록.
+
+**§4 검증** — `npm test` **196/196**(기존 185 + `resolveSector` 신규 11 — 요구 6건보다 두텁게, `industryGroup` 모드 기존 3건 회귀 그대로 통과) · `npx tsc --noEmit` 0 · `route.ts`·`compute_revdcf_all.ts` diff 0(940은 이 파일들을 안 건드림, 938이 이미 끝냄) · 역DCF 경로·금지 경로(REVDCF_ENABLED·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*`·KR 관련) diff 전부 0.
+
+**§5 문서** — `data/sources/README.md`(`nasdaq/`·`spdr/` 절에 적재 테이블명 추가 + "무료로는 진짜 GICS 불가" 문장을 940 이전 장은태 판정에 맞춰 정정 — 이 문서는 940의 수정금지 목록 밖) · `lib/revdcf/registry.ts`(두 테이블명 좌표 등재) · `docs/STATE.md` ▶다음 0번 ①·③단계 갱신 + ④(섹터 컷)가 다음임을 명시 · `docs/STEP_LEDGER.md` 등재. `CLAUDE.md`·`docs/USER_QUESTIONS_2026-08-08.md`·`docs/LENS_COMPLETION_STANDARD.md` 미수정(지시대로).
+
+**무변경** — `lib/sector.ts`의 `industryGroup` 모드·시그니처 · `REVDCF_ENABLED` · `data/us_symbols.json` · `.github/` · `vercel.json` · 기존 `probe_*` · KR 관련 · `revdcf_results`/`us_market_cap`/`lens_scores`/`lens_cuts` 쓰기 0 · 크론 미실행 · API 키 미입력 · 기존 테이블 수정·삭제 0(신규 2개만).
+
 ## 2026-08-08 (96) — ✅ **Q0 판정 2건 확정(SPDR 0순위 · 이상 티커 제외) ＋ 「무료로는 진짜 GICS 불가」 정정 ＋ 「13곳」 정정**
 
 > **성격**: 판정 반영 · 정정 3건. **코드 diff 0.** STEP 939 실측이 근거.

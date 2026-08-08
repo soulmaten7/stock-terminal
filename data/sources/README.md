@@ -70,9 +70,11 @@
 |---|---|---|---|
 | `nasdaq_screener_20260808.json` (1.5MB) | **미국 상장 전 종목 7,127건**의 `sector`·`industry`·**`country`**·`marketCap`·`ipoyear`. 🔑 **무료·키 불필요.** Q0 「2-of-2 합의제」의 ③단계 출처 | 🔴 **`data.asOf = null`(939 재현 확인 — 응답이 기준일을 안 준다).** 939에서 같은 날 재조회해 7,127행 전수 대조 — `sector`·`industry` 변경 **0건**(checked 7,127·changed 0). **우리가 취득 시각을 `as_of`로 찍는다**(Damodaran과 동일 구조) | `data` 배열 · `_meta.source` = `https://api.nasdaq.com/api/screener/stocks?tableonly=false&limit=25000&download=true` |
 
+🔑 **940 적재 — Postgres 테이블 `us_sector_nasdaq`**(as_of·symbol·sector·industry·country·ipo_year·market_cap, PK(as_of,symbol)) — 원본 7,127행과 **정확히 일치 적재**(`scripts/ingest_us_sector.ts`). 빈 `sector`(712건)는 `null`로.
+
 🔴 **분류 체계가 GICS가 아니다** — 12개(`Finance`·`Basic Materials`·`Telecommunications`·`Miscellaneous` 등)이고 **`Communication Services`가 없다**(→ `GOOG`·`NTES`가 `Technology`로 감). GICS 이름으로 옮기려면 변환이 필요하고 **변환 손실이 있다.**
 🔴 **시세 컬럼 제거하고 보관** — `lastsale`·`netchange`·`pctchange`·`volume`·`url`은 원응답에 있으나 섹터 분류 목적과 무관해 뺐다(`_meta.note`에 기록).
-🔑 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **무료 소스는 진짜 GICS를 줄 수 없다.** Damodaran `primary_sector`도 GICS 이름을 빌린 그의 배정이다. 🔴 **939에서 예외 발견 — 아래 `spdr/` 절.** 이 문장 자체의 정정 여부는 940 이후 별도 판정(이 STEP에서 안 고침).
+🔑 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **전 종목 진짜 GICS는 무료로 못 얻는다.** Damodaran `primary_sector`도 GICS 이름을 빌린 그의 배정이다. 🟢 **정정(939 발견 → 940 이전 장은태 판정)**: *"무료 소스는 진짜 GICS를 줄 수 없다"*는 **S&P 500 부분집합에 한해 틀렸다** — 아래 `spdr/` 절이 무료·진짜 GICS다. 나스닥 자체 분류는 여전히 GICS가 아니다(이 절 상단 사실 불변).
 
 ---
 
@@ -86,10 +88,13 @@
 
 🔴 **URL 패턴**: `https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-{티커소문자}.xlsx` — **User-Agent 헤더 없으면 실패할 수 있음**(브라우저 UA 필요, 939 실측).
 🔴 **xlsx 구조**: 3행째 `"Holdings:"` | `"As of {date}"` · 헤더행은 첫 열이 `"Name"`(고정 숫자 위치로 찾지 말 것) · `Sector` 열은 전부 `"-"`(못 씀 — 섹터는 **ETF 티커가 결정**) · 헤더 다음부터 **첫 빈 행 전까지**가 실제 보유종목(그 뒤는 각주·면책 문구 텍스트, 939 실측으로 확인).
-🔴 **필터링 안 한 것**: 현금/머니마켓(`SSI US GOV MONEY MARKET CLASS`·`US DOLLAR` 등, 티커=`-`)만 `excluded`로 뺐다. **12개 이상 티커(E-mini 섹터 선물 11개·CONTRA 1개, 예: `IXTU6`="XAK TECHNOLOGY SEP26")는 `data`에 그대로 남아 있다** — 제외 여부는 940에서 판정(임의 필터링 금지, 939 §④).
+🔴 **파일(939 원본) 자체는 그대로 둔다** — 현금/머니마켓(티커=`-`)만 `_meta.excluded`로 표시, 이상 티커 12건은 `data`에 남아 있다(원본은 관측 그대로 보존).
 🔑 **정답지 용도**: S&P 500만 커버(전체 유니버스의 절반 정도) — **커버리지 해결책이 아니라 다른 두 출처(Damodaran·나스닥)가 맞았는지 확인하는 잣대.**
 
 **939 대조 실측**(재현 스크립트 = `scripts/probe_939_gics_truth.ts` → `docs/probe_939_gics_truth.json`, 값은 그 파일이 정본이지 여기 안 박는다): Damodaran `primary_sector`가 SPDR과 **99%대로 높게 일치**, 불일치는 극소수(`APP`·`DD` 2건). 미매핑 219종목 중에도 SPDR에 존재하는 10건이 있어(`GOOG`·`FOX`·`NWS`·`BRK-B`·`BF-B` 등) 형제-우선 규칙의 근거를 보강한다.
+
+🟢 **판정(ⓘ·ⓙ, 2026-08-08 장은태)**: **SPDR을 출처 0순위로 승격**(유일하게 검증된 진짜 GICS) · **이상 티커 12건(E-mini 섹터 선물 11 + CONTRA 1)은 DB 적재에서 제외**(`ECHO`·`FDXF`·`HONA`·`MRSH`는 Damodaran 미등재일 뿐 실회사라 제외 대상 아님 — 판정 근거).
+🔑 **940 적재 — Postgres 테이블 `us_sector_gics`**(as_of·symbol·sector·etf, PK(as_of,symbol)) — 원본 515행 − ⓙ 제외 12행 = **503행 적재**(`scripts/ingest_us_sector.ts`, 제외 목록은 스크립트 로그·리포트에 그대로 출력).
 
 ---
 

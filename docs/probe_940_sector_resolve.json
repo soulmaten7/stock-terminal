@@ -1,0 +1,308 @@
+{
+  "_meta": {
+    "purpose": "STEP 940 §4 — resolveSector 실측 리포트(판정 아님)",
+    "targetsUniverse": "lens_scores US",
+    "targetCount": 1021,
+    "generatedAt": "2026-08-08T07:46:08.626Z"
+  },
+  "bySource": {
+    "spdr": 498,
+    "damodaran": 311,
+    "damodaran-sibling": 5,
+    "consensus": 137,
+    "unclassified": 70
+  },
+  "coverage": 0.931439764936337,
+  "scoreExcludingTier0": {
+    "damodaran": {
+      "overlap": 489,
+      "match": 487,
+      "accuracy": 0.9959100204498977
+    },
+    "damodaran-sibling": {
+      "overlap": 3,
+      "match": 3,
+      "accuracy": 1
+    },
+    "consensus": {
+      "overlap": 3,
+      "match": 3,
+      "accuracy": 1
+    }
+  },
+  "mismatchesExcludingTier0": {
+    "damodaran": [
+      {
+        "symbol": "DD",
+        "predicted": "Materials",
+        "truth": "Industrials"
+      },
+      {
+        "symbol": "APP",
+        "predicted": "Information Technology",
+        "truth": "Communication Services"
+      }
+    ],
+    "damodaran-sibling": [],
+    "consensus": []
+  },
+  "unclassifiedCount": 70,
+  "unclassified": [
+    {
+      "symbol": "FPS"
+    },
+    {
+      "symbol": "TECK"
+    },
+    {
+      "symbol": "SPCX"
+    },
+    {
+      "symbol": "SONY"
+    },
+    {
+      "symbol": "GFL"
+    },
+    {
+      "symbol": "ASML"
+    },
+    {
+      "symbol": "STLA"
+    },
+    {
+      "symbol": "QH"
+    },
+    {
+      "symbol": "PTGX"
+    },
+    {
+      "symbol": "BABA"
+    },
+    {
+      "symbol": "TS"
+    },
+    {
+      "symbol": "BHP"
+    },
+    {
+      "symbol": "XPEV"
+    },
+    {
+      "symbol": "TIGO"
+    },
+    {
+      "symbol": "BAM"
+    },
+    {
+      "symbol": "TRP"
+    },
+    {
+      "symbol": "SE"
+    },
+    {
+      "symbol": "HMC"
+    },
+    {
+      "symbol": "BIP"
+    },
+    {
+      "symbol": "NIO"
+    },
+    {
+      "symbol": "CX"
+    },
+    {
+      "symbol": "EDU"
+    },
+    {
+      "symbol": "TX"
+    },
+    {
+      "symbol": "GGB"
+    },
+    {
+      "symbol": "LTM"
+    },
+    {
+      "symbol": "GIB"
+    },
+    {
+      "symbol": "IHG"
+    },
+    {
+      "symbol": "WSE"
+    },
+    {
+      "symbol": "TM"
+    },
+    {
+      "symbol": "TEAM"
+    },
+    {
+      "symbol": "AXIA"
+    },
+    {
+      "symbol": "ARCC"
+    },
+    {
+      "symbol": "PDD"
+    },
+    {
+      "symbol": "KSPI"
+    },
+    {
+      "symbol": "HTHT"
+    },
+    {
+      "symbol": "PAYP"
+    },
+    {
+      "symbol": "SUNB"
+    },
+    {
+      "symbol": "INIO"
+    },
+    {
+      "symbol": "RACE"
+    },
+    {
+      "symbol": "EPD"
+    },
+    {
+      "symbol": "PAC"
+    },
+    {
+      "symbol": "JHX"
+    },
+    {
+      "symbol": "TME"
+    },
+    {
+      "symbol": "SUZ"
+    },
+    {
+      "symbol": "PSO"
+    },
+    {
+      "symbol": "NGG"
+    },
+    {
+      "symbol": "NTR"
+    },
+    {
+      "symbol": "MT"
+    },
+    {
+      "symbol": "PHG"
+    },
+    {
+      "symbol": "WES"
+    },
+    {
+      "symbol": "ET"
+    },
+    {
+      "symbol": "HLN"
+    },
+    {
+      "symbol": "RTO"
+    },
+    {
+      "symbol": "WMS"
+    },
+    {
+      "symbol": "TRI"
+    },
+    {
+      "symbol": "LI"
+    },
+    {
+      "symbol": "FWONA"
+    },
+    {
+      "symbol": "BIDU"
+    },
+    {
+      "symbol": "SQM"
+    },
+    {
+      "symbol": "RYAAY"
+    },
+    {
+      "symbol": "RELX"
+    },
+    {
+      "symbol": "UL"
+    },
+    {
+      "symbol": "BTI"
+    },
+    {
+      "symbol": "TCOM"
+    },
+    {
+      "symbol": "AMRZ"
+    },
+    {
+      "symbol": "PKX"
+    },
+    {
+      "symbol": "LEN-B"
+    },
+    {
+      "symbol": "BEKE"
+    },
+    {
+      "symbol": "BF-A"
+    },
+    {
+      "symbol": "WTRG"
+    }
+  ],
+  "sectorCounts": [
+    {
+      "sector": "Utilities",
+      "n": 40
+    },
+    {
+      "sector": "Communication Services",
+      "n": 44
+    },
+    {
+      "sector": "Consumer Staples",
+      "n": 49
+    },
+    {
+      "sector": "Real Estate",
+      "n": 49
+    },
+    {
+      "sector": "Energy",
+      "n": 50
+    },
+    {
+      "sector": "Materials",
+      "n": 50
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "n": 81
+    },
+    {
+      "sector": "Health Care",
+      "n": 119
+    },
+    {
+      "sector": "Information Technology",
+      "n": 149
+    },
+    {
+      "sector": "Industrials",
+      "n": 158
+    },
+    {
+      "sector": "Financials",
+      "n": 162
+    }
+  ]
+}

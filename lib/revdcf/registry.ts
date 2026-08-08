@@ -96,6 +96,8 @@ export const MATERIAL_SOURCES = {
     storage: { bucket: "sources", path: "nasdaq/{as_of}/{file}", asOfExample: "nasdaq/2026-08-08/nasdaq_screener_20260808.json" },
     asOfPolicy: "🔴 응답에 asOf 없음(data.asOf=None, 939 실측) — 취득 시각을 우리가 as_of로 찍는다. 같은 날 재조회 시 sector·industry 변경 0건 관측(939)",
     taxonomy: "🔴 분류 체계가 GICS가 아니다 — 12개(Finance·Basic Materials·Telecommunications·Miscellaneous 등), Communication Services 없음(GOOG·NTES가 Technology로 감)",
+    /** STEP 940: 원본 → Postgres 적재(scripts/ingest_us_sector.ts). as_of=취득일 고정(위 asOfPolicy와 동일 근거). */
+    table: { name: "us_sector_nasdaq", note: "as_of·symbol·sector·industry·country·ipo_year·market_cap (PK as_of,symbol). 원본 7,127행과 정확히 일치 적재, 빈 sector 712건은 null" },
   },
   /** STEP 939: 진짜 GICS 정답지(⓪-5-B link_hub 병행조회로 발견). S&P 500 섹터 ETF 11개 holdings = S&P 500 구성종목의 진짜 GICS 섹터. */
   spdr: {
@@ -112,6 +114,8 @@ export const MATERIAL_SOURCES = {
     storage: { bucket: "sources", path: "spdr/{as_of}/{file}", asOfExample: "spdr/2026-08-06/spdr_sector_holdings_2026-08-06.json" },
     coverage: "🔴 S&P 500만 커버(약 515종목) — 커버리지 해결책이 아니라 「정답지」 용도(939 §④)",
     truthCheckProbe: "scripts/probe_939_gics_truth.ts → docs/probe_939_gics_truth.json — 값은 여기 안 적는다(재실행하면 바뀔 수 있는 측정값). 재현: npx tsx scripts/probe_939_gics_truth.ts",
+    /** STEP 940(장은태 ⓘⓙ 판정): 0순위로 승격, 이상 티커 12건 제외 후 Postgres 적재(scripts/ingest_us_sector.ts). as_of=xlsx "As of" 값(취득일 아님). */
+    table: { name: "us_sector_gics", note: "as_of·symbol·sector·etf (PK as_of,symbol). 원본 515행 − ⓙ제외 12행 = 503행 적재" },
   },
 } as const;
 
