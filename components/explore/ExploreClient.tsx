@@ -15,7 +15,7 @@ import { resolveDisplayName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
 import { WatchStar } from '@/components/common/WatchStar';
 import { PageShell } from '@/components/layout/PageShell';
-import { gicsLabel, filterBySector, GICS_SECTORS } from '@/lib/sectorLabel';
+import { gicsLabel, filterBySector, GICS_SECTORS, amountRankingParts, type SectorInfo } from '@/lib/sectorLabel';
 import { Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
@@ -43,12 +43,20 @@ function rowTradeAmount(r: BoardRow): number | null {
   return r.tradeAmount ?? r.amount ?? null;
 }
 // STEP 945 §4 — US 섹터 표시·필터(us_sector_resolved 캐시, GICS 섹터명 기준). KR은 이 정보가 없다(끄지 않음, 단순 미해당).
-type SectorInfo = { sector: string; source: string };
 async function fetchUsSectors(): Promise<Map<string, SectorInfo>> {
   const j = await fetchJson<{ items?: { symbol: string; sector: string | null; source: string | null }[] }>('/api/sector/us');
   const map = new Map<string, SectorInfo>();
   for (const it of j?.items ?? []) { if (it.sector && it.source) map.set(it.symbol, { sector: it.sector, source: it.source }); }
   return map;
+}
+// STEP 946 §1 — amountRankingParts는 lib/sectorLabel.ts로 이전(순수함수 유닛테스트 가능하게). 이 함수는 그 결과를 JSX로 조립만 한다.
+function amountRankingBasis(
+  amt: number | null, market: Country, sectorInfo: SectorInfo | undefined,
+  t: ReturnType<typeof useTranslations>, tEtf: ReturnType<typeof useTranslations>
+): React.ReactNode {
+  const { amtText, sectorText } = amountRankingParts(amt, market, sectorInfo, t, tEtf);
+  if (!sectorText) return amtText;
+  return <>{amtText}{amtText ? ' · ' : ''}{sectorText}</>;
 }
 
 const STORAGE_KEY = 'explore_market';
@@ -478,11 +486,7 @@ export default function ExploreClient() {
               sectorFilteredAmountTop.map((r) => {
                 const amt = rowTradeAmount(r);
                 const sectorInfo = market === 'US' ? sectorMap.get(r.symbol) : undefined;
-                const amtText = amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null;
-                const rankingBasis = sectorInfo
-                  ? <>{amtText}{amtText ? ' · ' : ''}{gicsLabel(sectorInfo.sector, tEtf)}</>
-                  : amtText;
-                return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={rankingBasis} />;
+                return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amountRankingBasis(amt, market, sectorInfo, t, tEtf)} />;
               })
           )}
         </div>
@@ -640,10 +644,15 @@ export default function ExploreClient() {
           <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
             {amountTop.slice(0, 5).map((r) => {
               const amt = rowTradeAmount(r);
-              return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null} />;
+              const sectorInfo = market === 'US' ? sectorMap.get(r.symbol) : undefined;
+              return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amountRankingBasis(amt, market, sectorInfo, t, tEtf)} />;
             })}
           </div>
         )}
+        {/* STEP 946 §1 — 요약 화면도 섹터가 보이므로 출처 안내 필요(규칙 5-2 ④). 필터는 넣지 않음(전체 목록에 이미 있음). */}
+        {market === 'US' && sectorMap.size > 0 && amountTop && amountTop.length > 0 ? (
+          <p className="mt-2 px-4 text-[11px] text-unjong-muted sm:px-0">{t('sectorSourceNote')}</p>
+        ) : null}
       </section>
 
       <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>

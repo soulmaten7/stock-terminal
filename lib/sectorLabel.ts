@@ -2,6 +2,8 @@
 // 🔴 규칙 5-2 — 매핑을 한 곳에 둔다. 화면마다 복붙 금지. messages 키는 추가·삭제하지 않는다(기존 21키 그대로 재사용).
 // 🔴 KR(네이버) 입력은 이 함수를 거치되 결과가 기존과 완전히 동일해야 한다(EtfLensClient.tsx 원래 SECTOR_KEYS와 동일 동작).
 
+import { formatTradeValue } from "./currency";
+
 // (a) 야후 섹터키 → GICS 섹터명(11:1, 941 §1 확정 대응표)
 export const YAHOO_TO_GICS: Record<string, string> = {
   technology: "Information Technology",
@@ -70,4 +72,18 @@ export function gicsLabel(gicsSector: string, t: Translate): string {
 export function filterBySector<T>(items: T[], filter: string, sectorOf: (item: T) => string | undefined): T[] {
   if (filter === "all") return items;
   return items.filter((item) => sectorOf(item) === filter);
+}
+
+export type SectorInfo = { sector: string; source: string };
+
+// STEP 946 §1 — 거래대금 텍스트 + 섹터 라벨 조립을 한 곳으로(규칙 5-2 ① 복붙 금지). 요약 화면·전체 목록이 이 함수를 공유한다.
+// 순수 함수(JSX 아님) — 'use client' 컴포넌트 파일에 두면 그 파일의 import 그래프(next-intl navigation → next/navigation)가
+// Vitest 모듈 해석에서 실패해 테스트가 아예 못 돈다(코드베이스에 컴포넌트 렌더 테스트 인프라 없음, RTL 미설치). lib/*로 분리해 순수 유닛테스트 가능하게.
+export function amountRankingParts(
+  amt: number | null, market: string, sectorInfo: SectorInfo | undefined,
+  t: (key: string, values?: Record<string, string | number | Date>) => string, tEtf: Translate
+): { amtText: string | null; sectorText: string | null } {
+  const amtText = amt != null ? t("tradeAmountLabel", { v: formatTradeValue(amt, market) }) : null;
+  const sectorText = sectorInfo ? gicsLabel(sectorInfo.sector, tEtf) : null;
+  return { amtText, sectorText };
 }

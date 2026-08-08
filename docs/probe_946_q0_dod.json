@@ -1,0 +1,132 @@
+{
+  "_meta": {
+    "step": 946,
+    "purpose": "Q0(섹터 분류) 완성기준 9항목 + §10 4축 전수 대조 — 판정은 하지 않는다, 완료 선언은 장은태 확인 후",
+    "generatedFrom": "직접 Supabase 조회(project ccbwxcszdoyjxvckedfp) + 코드 grep + npx vitest/tsc 실행 결과. 스크립트로 자동 생성한 JSON이 아니라 이번 STEP에서 직접 조회한 값을 손으로 옮겨 적음(재현 절차는 각 필드의 evidence에 명시).",
+    "correction": "STEP_946_COMMAND.md:31이 §10 정의를 ':194-206'으로 인용했으나 실제 위치는 docs/LENS_COMPLETION_STANDARD.md:212(헤더)·218-221(4축 정의) — grep '^## §10' 및 직접 Read로 확인. :194-206은 역DCF DoD8(테스트·커버리지 도구) 판정문 구간이며 §10과 무관."
+  },
+  "dod9Items": [
+    {
+      "n": 1,
+      "item": "원전 대조표(→정의 공개표, 규칙 5-1)",
+      "verdict": "🟡",
+      "evidence": [
+        "docs/USER_QUESTIONS_2026-08-08.md:295-368에 출처 5단계(0=SPDR ~503건·1=Damodaran 802건·2=형제매칭 ~13건·3=Yahoo ~207건·4=미분류)와 각 단계 채택 근거·실측 채점표 존재 — 규칙 5-1 정의 공개표 요건 충족",
+        "화면 공개: messages/ko.json·en.json의 Explore.sectorSourceNote 1개 키를 이번 STEP(946)에서 전체목록에 이어 요약화면에도 노출(components/explore/ExploreClient.tsx) — 945에서 '화면 공개 안 됨'이었던 상태 해소"
+      ],
+      "gap": "화면 문구는 5단계 전체가 아니라 압축된 3단계('S&P 섹터 ETF · Damodaran · Yahoo 순')만 노출한다. 형제매칭(2순위)·미분류(4순위)는 화면에 안 보임 — 문서 대비 축약이라 🟡 유지, 축약을 ✅ 근거로 쓰지 않음."
+    },
+    {
+      "n": 2,
+      "item": "입력 검증",
+      "verdict": "🟡",
+      "evidence": [
+        "직접 조회(2026-08-08, us_sector_resolved): source별 건수 spdr 498 · damodaran 311 · yahoo 207 · damodaran-sibling 5 = 총 1,021건, 결측 0건(1,021/1,021 = 100%)",
+        "as_of 단일값(2026-08-08) — min(as_of)=max(as_of) 확인, 축적 이력 없음(§10 ②에서 재확인)"
+      ],
+      "gap": "🔴 나스닥 스크리너(교차검증 신호로만 쓰는 4순위 하위 출처)의 갱신 주기·필드 정의·country 정확도는 이번 STEP에서도 미측정(946 커맨드가 데이터 조회를 요구하지 않는 범위였음 — '실제 조회 미실시'로 명시된 STEP)."
+    },
+    {
+      "n": 3,
+      "item": "값 검증",
+      "verdict": "🟡",
+      "evidence": [
+        "USER_QUESTIONS_2026-08-08.md:357-367(939 실측) — SPDR 정답지 대비 Damodaran 1순위 일치 492/494=99.6%, 불일치 2건(APP·DD) 원인 규명됨",
+        "같은 문서:322-353(941 실측) — Yahoo 단독 정확도 497건 채점 95.8%, 오류 21건 전부 GICS 2023 개편 미반영으로 원인 규명(체계적, 무작위 아님)",
+        "이번 STEP 직접 재확인(Supabase): TTD·UBER·APP·ASML 4종목 — TTD는 us_sector_resolved에 0행(부재 확인), UBER=Industrials/spdr, APP=Communication Services/spdr, ASML=Information Technology/yahoo. STEP_946_COMMAND.md의 claim과 정확히 일치"
+      ],
+      "gap": "🔴 야후가 실제로 쓰이는 구간(외국 ADR ~207건, 3순위)의 정확도는 여전히 미검증 — 정답지(SPDR=S&P500)가 이 구간에 없음. 표본 18건 중 17/18(SONY만 오답)이 전부이며 이번 STEP에서 추가 검증 안 함."
+    },
+    {
+      "n": 4,
+      "item": "컷·분포",
+      "verdict": "🟡",
+      "evidence": [
+        "직접 조회(sector_cuts): 총 78행 · applied=true 71 · applied=false 7 · method='p30/p70 · sector-scoped · missing-excluded' · as_of=2026-08-08(단일)",
+        "제외 7건 전부 exclude_reason에 실측 수치 포함(예: Real Estate/valuation width_over_iqr=1.986>1, Utilities/lowvol=1.584>1) — 임계값(IQR비 1.0)은 scripts/refresh_sector.ts의 EXCLUDE_THRESHOLD 상수 하나로 관리(943/944 커밋), 방향 부호는 p30/p70 정의상 고정",
+        "재현성: 944에서 refresh_sector.ts를 2회 연속 실행해 산출 동일함을 확인(요약 문서 근거, 이번 STEP 재실행은 안 함 — 크론 미등록·수동 실행 금지 규칙(946 금지 목록)이라 재현하지 않음)"
+      ],
+      "gap": "🔴 화면 소비처 0건 — grep 'sector_cuts|cutIfApplied|sectorCut\\(' app/ components/ (테스트 제외) 결과 0건. 계산·영속화·임계값 근거는 갖췄으나 STATE.md ⑤행이 '각 카드에 업종 대비'(sector_cuts를 실제 쓰는 기능)를 946 범위 밖으로 명시 — 아직 어디에도 안 쓰인다. 계산 정당성만으로 ✅를 주지 않음(후하게 주지 말 것)."
+    },
+    {
+      "n": 5,
+      "item": "경계 처리",
+      "verdict": "✅",
+      "evidence": [
+        "미분류 정의: 4순위(야후 취득 실패분)만 해당, 화면은 그 종목 행의 섹터 텍스트만 비운다(정의는 USER_QUESTIONS §Q Q0)",
+        "구현 확인: lib/sectorLabel.ts의 filterBySector(sectorOf가 undefined 반환 시 안전하게 걸러짐, lib/sectorLabel.test.ts로 회귀 고정) + amountRankingParts(sectorInfo undefined → sectorText:null 반환, 946 신규 테스트 4건 중 2건이 이 케이스를 직접 검증)",
+        "실사례 직접 확인: us-list 모집단이 us_sector_resolved(1,021)보다 넓어 TTD(The Trade Desk)가 실제로 0행 — Supabase 직접 조회로 이번 STEP에서 재확인, ExploreClient.tsx의 sectorMap.get(r.symbol)이 undefined를 반환하는 실제 케이스"
+      ],
+      "gap": "코드·테스트·DB로 확인했을 뿐, 요약화면(946 신규)에서 TTD 행이 실제로 빈 채로 렌더되는 모습을 브라우저로 육안 확인하지는 않음(브라우저 자동화 도구 없음 — 897 선례와 동일한 한계)."
+    },
+    {
+      "n": 6,
+      "item": "주장 정합",
+      "verdict": "🟡",
+      "evidence": [
+        "messages/ko.json Explore.sectorSourceNote: '업종 분류는 S&P 섹터 ETF · Damodaran · Yahoo 순으로 정합니다. 종목마다 출처가 다를 수 있어요.' — USER_QUESTIONS §Q Q0의 출처 우선순위(0=SPDR·1=Damodaran·3=Yahoo)와 대분류 순서가 무모순",
+        "946에서 전체목록·요약화면 두 곳 모두 이 문구를 재사용(신규 키 0개) — 화면 간 문구 자체는 동일"
+      ],
+      "gap": "revdcf의 889/897처럼 화면 문구 전체를 항목별로 훑어 모순 여부를 표로 낸 적이 없음(형식적 감사 미실시) — 존재 확인만 했지 전수 대조는 아님. 문구가 5단계 중 3단계만 언급하는 것이 '단순화'인지 '누락'인지도 판정하지 않음."
+    },
+    {
+      "n": 7,
+      "item": "화면 일관성",
+      "verdict": "✅",
+      "evidence": [
+        "grep -rln 'lib/sectorLabel' app/ components/ (테스트 제외) → 정확히 2개 파일: app/[locale]/stock/[symbol]/EtfLensClient.tsx(ETF 상세) · components/explore/ExploreClient.tsx(Explore 전체목록+요약화면 — 946에서 동일 함수 amountRankingParts 공유로 확장)",
+        "946 리팩터로 amountRankingParts를 lib/sectorLabel.ts로 이전 — 전체목록·요약화면이 물리적으로 같은 함수를 호출(복붙 아님), lib/sectorLabel.test.ts의 '요약·전체가 같은 입력에 같은 출력' 테스트로 고정",
+        "3개 부재 표면 확인(grep 0건, revdcf 901 판정과 동일한 방법): lib/todayChanges.ts·lib/lensTones.ts(변화피드) · app/api/cron/email-brief/(이메일) · app/api/cron/daily-brief/·app/api/brief/(브리핑) · components/watchlist/·app/api/watchlist/(관심목록) 전부 sectorLabel·us_sector_resolved·sector_cuts grep 0건 — '섹터를 다르게 보여줌'이 아니라 '섹터를 아예 안 보여줌'(N/A), revdcf DoD7의 N/A 판단 논리를 그대로 적용"
+      ],
+      "gap": "존재하는 2표면은 일관되나, 표면 자체가 2개뿐이라 검증 범위가 좁음(7렌즈는 5표면). 필터 칩은 전체목록에만 있고 요약화면엔 없음 — 이는 946 커맨드가 명시적으로 지시한 의도된 차이(공간 제약)라 불일치로 세지 않음."
+    },
+    {
+      "n": 8,
+      "item": "테스트",
+      "verdict": "✅",
+      "evidence": [
+        "npx vitest run lib/sectorCuts.test.ts lib/sectorLabel.test.ts lib/sector.test.ts app/api/sector/us/route.test.ts → 4 files, 91 tests 전부 통과(2026-08-08 이번 STEP에서 직접 실행)",
+        "커버 범위: lib/sector.test.ts(resolveSector 0~4순위·crossCheck) · lib/sectorCuts.test.ts(pctile·bootstrap·decideApplied·cutIfApplied) · lib/sectorLabel.test.ts(야후→GICS 11개 ko/en·KR 네이버 회귀 10개·filterBySector·946 신규 amountRankingParts 4건) · route.test.ts(API 응답 형태)",
+        "946 신규 4건이 정확히 검증하는 것: 섹터 있음/없음 분기·거래대금 null 분기·요약-전체 동일함수 재사용 증거(같은 인자→같은 출력)"
+      ],
+      "gap": "커버리지 도구 미설치(revdcf DoD8과 동일 한계) — 항목별 존재 여부로만 채점, %로는 못 냄. 컴포넌트 렌더(RTL) 테스트는 이 코드베이스 전체에 0건이라 amountRankingBasis()의 JSX 조립 부분 자체는 유닛테스트 대상 밖(순수 함수 amountRankingParts만 테스트됨)."
+    },
+    {
+      "n": 9,
+      "item": "라이브 실측",
+      "verdict": "판정 보류(구조적 불일치)",
+      "evidence": [
+        "DoD9 원문 = 'KR·US 각 2종목'. Q0는 설계 자체가 US 전용(us_sector_resolved·sector_cuts 전부 US 유니버스만) — KR 항목은 원리적으로 해당 없음. 같은 구조적 충돌이 역DCF에도 있었고 docs/DECISION_929_DOD_SCOPE.md에 이미 기록됨(929 선례)",
+        "US측 DB 직접대조: TTD·UBER·APP·ASML 4종목을 Supabase에서 이번 STEP에 직접 조회 — STEP_946_COMMAND.md의 claim과 정확히 일치(위 항목3 evidence와 동일 조회)",
+        "curl 200 확인(/explore?market=US·/explore?market=KR·/en/explore?market=US) — 그러나 ExploreClient.tsx는 useEffect+fetch로 데이터를 클라이언트에서 가져오는 구조라 curl이 받는 서버 HTML엔 섹터 값이 나타나지 않음(revdcf RevDcfSection과 동일한 구조적 한계, 897 선례)"
+      ],
+      "gap": "🔴 이번 STEP에서 추가한 요약화면 섹터 라벨은 브라우저 육안 확인이 아직 없음(Claude Code 세션에 브라우저 자동화 도구 없음). '판정하지 않는다'는 946 커맨드 지시를 그대로 따름 — ✅/❌ 강제 배정 안 함."
+    }
+  ],
+  "depth4Axes": [
+    {
+      "axis": "① 구성요소 분해",
+      "applies": false,
+      "reason": "섹터는 범주값(카테고리)이지 수치가 아니라 A=B×C 항등식 분해 대상이 아님. crossCheck 필드(nasdaq/sic/yahoo/disagree, 942)가 '어디서 왔는지'를 기록하지만 이는 §10 정의의 '항등식 분해'와 다른 성격(출처 기록이지 값의 구성요소 분해가 아님) — 억지로 채우지 않고 성립 안 함으로 명시."
+    },
+    {
+      "axis": "② 시계열 추이",
+      "applies": false,
+      "reason": "us_sector_resolved 직접 조회 결과 min(as_of)=max(as_of)=2026-08-08 — 단일 스냅샷만 존재, 이력 없음. PK가 (as_of, symbol)이라 스키마상 여러 as_of를 쌓을 수는 있으나(944 설계), refresh_sector.ts가 수동·크론 미등록이라 실제로 두 번째 as_of가 쌓인 적이 없음. '데이터 없음'이 정확한 표현이며 억지로 '거의 안 변하는 값이라 시계열 무의미'로 단정하지 않음(관찰된 적이 없어 판단 근거 자체가 없음)."
+    },
+    {
+      "axis": "③ 분포 내 위치",
+      "applies": "부분",
+      "reason": "sector_cuts에 섹터×지표별 표본 n(37~50 등) 존재, 필터 칩(components/explore/ExploreClient.tsx)이 섹터별 종목 수를 화면에 노출 — 다만 이는 '어느 섹터에 몇 종목이 있는가'라는 분류의 분포이지, 7렌즈 DoD §10③이 말하는 '값의 min/p30/중앙/p70/max 분포'와는 다른 성격. 섹터 자체는 수치가 아니므로 값 분포 개념이 자연스럽게 적용 안 되고, sector_cuts가 계산한 '섹터 내 지표 분포'는 화면 소비처가 0건(항목4 gap과 동일)이라 이 축의 화면 노출로는 인정하지 않음."
+    },
+    {
+      "axis": "④ 판정 이력",
+      "applies": false,
+      "reason": "섹터 재분류 이력을 담는 테이블·로직이 없음(us_sector_resolved는 캐시일 뿐 이력 아님, 위 ②와 동일 근거). 성립 안 함."
+    }
+  ],
+  "notes": [
+    "🔴 이 JSON은 완료 선언이 아니다 — 장은태 확인 후 완료 여부를 결정한다(946 커맨드 명시 지시).",
+    "🔴 이번 STEP은 새 실측(웹검색·3자 대조)을 하지 않았다 — 946 커맨드 자체가 '실제 조회: 미실시 / 직접 웹검색: 미실시'로 명시한 STEP이며, 이 audit은 기존 실측(939~945)의 재확인 + 이번 STEP 코드 변경분의 신규 검증(테스트·grep·직접 DB조회)으로 구성됨."
+  ]
+}

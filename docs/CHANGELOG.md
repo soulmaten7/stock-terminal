@@ -1,6 +1,25 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (108) — 🟢 **STEP 946: Q0 마감 — 요약 화면 섹터 라벨 ＋ 완성기준 9항목·§10 4축 전수 대조**
+
+> **성격**: (108-pre 아래)의 명령서 실행. **라이브 화면 변경**(요약 목록에 섹터 라벨 확장) ＋ **DoD 전수 재대조**(코드 변경 없는 문서 작업). 🔴 **완료 선언 아님 — 배포됨 · 대조표 산출 · 장은태 판정 대기.**
+
+**§1 요약 화면에 섹터 라벨 추가** — `/explore` 첫 화면의 US 「오늘 거래가 많았던 종목」 5줄에 전체 목록과 **동일한 표기**("거래대금 $X · {섹터}")를 추가. 규칙 5-2 ① 준수를 위해 로직을 `components/explore/ExploreClient.tsx`에서 **`lib/sectorLabel.ts`로 이전**(`amountRankingParts` — 순수 데이터 반환 함수, JSX는 얇은 `amountRankingBasis`가 조립). 이유: 코드베이스에 컴포넌트 렌더 테스트 인프라(RTL)가 전혀 없고, `'use client'` 컴포넌트 파일에서 함수를 직접 export해 테스트하면 `next-intl`→`next/navigation`으로 이어지는 import 그래프가 Vitest 모듈 해석에서 깨진다(직접 겪음 — `ERR_MODULE_NOT_FOUND`). `lib/*`로 옮기니 해소. 필터는 요약 화면에 넣지 않음(공간 제약, 전체 목록에 이미 있음) · 섹터 없으면 기존처럼 빈 칸 · 출처 안내는 기존 `sectorSourceNote` 키 재사용(새 키 0개) · KR 요약 목록 무변경.
+
+**§2 🔑 Q0 완성기준 전수 대조** — `docs/probe_946_q0_dod.json` 신규(9항목 + §10 4축, 항목마다 근거·조회결과·미검증 사항 명시) · `docs/LENS_COMPLETION_STANDARD.md` Q0 행 갱신. **946에서 직접 재조회한 것**: Supabase MCP로 `us_sector_resolved`(1,021행·소스별 breakdown 498/311/207/5)·`sector_cuts`(78행·applied 71/exclude 7·method 필드) 직접 조회, TTD·UBER·APP·ASML 4종목 재확인(명령서 claim과 일치). grep으로 `lib/sectorLabel.ts` 소비처 정확히 2곳(ETF상세·Explore)임을 확인, 나머지 3표면(변화피드·이메일·브리핑·관심목록) 0건(N/A, revdcf 901과 동일 논리) 확인. **9항목 갱신**: 4(컷·분포) ❌→🟡(계산은 검증됐으나 화면 소비처 0건이라 완전 상향은 보류) · 5(경계 처리) 🟡→✅(미분류 안전처리 테스트+TTD 실사례로 확인) · 7(화면 일관성) ❌→✅(단일 함수 공유 확인) · 8(테스트) ❌→✅(4파일 91건 통과) · 9(라이브 실측)는 **판정 보류**로 명시(DoD9 원문 "KR·US 각 2종목"과 Q0의 US 전용 구조가 원리적으로 안 맞음 — 929 선례). 1·2·3·6은 근거 갱신만 하고 🟡 유지(각 항목의 미검증 사항이 남아 있어 상향 근거 부족). **§10 4축**: ①·②·④는 성립 안 함(이유 명시), ③은 부분 성립. 🔴 **STEP_946_COMMAND.md:31의 §10 인용 오류 발견·정정** — 명령서는 §10 정의가 ":194-206"에 있다고 적었으나 실제 위치는 `:212`(헤더)·`:218-221`(4축 정의) — 직접 `grep '^## §10'` + Read로 확인. `:194-206`은 역DCF DoD8(테스트·커버리지 도구) 판정문 구간으로 §10과 무관.
+
+**§3 테스트** — `lib/sectorLabel.test.ts`에 `amountRankingParts` 4건 추가(섹터 있음/없음 분기·거래대금 null 분기·요약-전체 동일함수 재사용 증거) — 별도 컴포넌트 테스트 파일로 시도했다가 위 §1 사유로 `lib/` 기존 테스트 파일에 병합. `npm run test` **273/273**(28파일, 무회귀) · `npx tsc --noEmit` 클린 · `messages.test.ts` 통과(새 키 0, `messages/ko.json`·`en.json` diff 0 확인) · `git diff --stat -- lib/revdcf/ lib/sector.ts lib/sectorCuts.ts` 등 diff 0(렌즈·역DCF 경로 불변).
+
+**§4 실측** — curl로 `/explore?market=US`·`/explore?market=KR`·`/en/explore?market=US` 전부 200 확인. 🔴 **클라이언트 컴포넌트(useEffect+fetch) 구조라 curl로는 요약화면의 실제 섹터 라벨 렌더를 볼 수 없음**(897/898 선례와 동일한 원리적 한계) — 브라우저 육안 확인은 장은태 대기.
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 ⑤(요약화면 확장 반영)·⑥(테스트 91건 통과 반영, DoD9 판정보류 명시) 갱신 · `docs/STEP_LEDGER.md` 946 등재.
+
+**무변경** — `messages/ko.json`·`en.json` diff 0(새 키 0) · KR 경로 전부 diff 0 · 기존 API 수정 0 · `lib/sector.ts`·`lib/sectorCuts.ts`·기존 렌즈 판정 로직·`lens_cuts` diff 0 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*` diff 0 · 크론 등록·수동 실행 0 · API 키 미입력 · `CLAUDE.md`·`USER_QUESTIONS_2026-08-08.md` 미수정.
+
+🔴 **「완료」 선언 금지 — 배포됨 · 대조표 산출 · 장은태 판정 대기.**
+
+
 ## 2026-08-08 (108-pre) — 🔑 **STEP 945 육안 확인(Cowork 브라우저 직접) ＋ 판정 2건 ＋ STEP 946 명령서**
 
 > **성격**: 육안 검증 기록 ＋ 판정 반영. **코드 diff 0.**
