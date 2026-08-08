@@ -1,6 +1,26 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (85) — 🔴 **STEP 937: 계측 ②차 관측 등재 — `recovered=0` 직접 관측 확정, 원인 축 4차 전환("실패"가 아니라 응답에 필드가 없었다)**
+
+> **성격**: 관측 등재 전용. **코드 0줄 · DB 쓰기 0 · 크론 실행 0 · 판정 0.** 936이 배포한 계측이 배포 후 첫 US `lens-scores` 크론(2026-08-07 21:39:56 UTC·`ok:false`)에서 값을 냈고, 그 값을 그대로 등재한다.
+
+**§1 실측(Supabase 직접 재조회로 재확인, 명령 파일 인용과 byte 일치)** — `freshCoverage:0.9227805695142378`(92.28%) · `coverageOk:false`·`compositionOk:false`(`compRatio:0.93`<0.95)·`cutGateOk:false` · `retryAllLen:461`·`retrySetLen:400`·`countHit:true`·`timeHit:false` · `batchOk:5509`·`noCapField:461`·`noResponse:0`·`recovered:0`·`fallbackUsed:0` · `failedChunks:0/60` · `retryCallMs:5703`·`upsertMs:7377` · `retryNoCapField:400`·`retryFailReasons:{}`·`retryFailSample:[]`. KR(`kr-lens-scores`, 08-07 10:43:34·`ok:true`) = `coverage:1`·`cutGateOk:true`·`computed:976` — 문제 없음.
+
+**§2 `recovered=0` 직접 관측 확정** — 934는 항등식으로 **도출**했을 뿐(`recovered` 필드가 그때 저장 안 됨). 이번엔 필드로 **직접 관측**. 항등식 재검산(node 직접 실행): `freshSet.size`=5,509+0=5,509 · 분모=5,509÷0.9227805695142378=**5,970.0000**(오차 없이 정수) · `retryAllLen`=5,970−5,509=**461**(관측값과 일치) · `noCapField+noResponse`=461=`retryAllLen`(일치).
+
+**§3 🔴 원인 축이 4번째로 바뀐다 — "실패"가 아니었다** — `retryFailReasons:{}`·`retryFailSample:[]`(예외 0건, 429도 타임아웃도 5xx도 없음) · `retryNoCapField:400`(재시도 400건 **전부 정상 응답**, 그 응답에 `marketCap` 필드가 없었다) · `noResponse:0`·`failedChunks:0/60`(Stage1도 실패 0). 원인 축 이력: 912~934 *"예산(시간·개수) 문제"* → 935 *"취득 실패 가능성"* → **937 관측: 취득이 실패한 게 아니다.** 🔴 **여기서 원인을 확정하지 않는다** — *"야후에 해당 종목의 시총이 없다"*는 해석이지 관측이 아니다(별도 검증 필요, 이 STEP 범위 밖). 934의 "불가" 판정은 뒤집지 않되, 재시도가 에러 없이 같은 응답을 받는다는 관측은 **강화 방향**으로만 기록한다.
+
+**§4 나머지 계측 해석** — ① **935의 타이머 경계 문제 해소**: `retryCallMs`(5,703ms)+`upsertMs`(7,377ms)=13,080ms=`stage2Ms`와 정확히 일치. 순수 재시도=14.3ms/건(933/934의 34.5ms/건은 DB 저장이 섞인 오염값이었음, 935 지적이 관측으로 확인됨). `timeHit:false`·`countHit:true` — 시간이 아니라 개수(400)에서 잘림(916의 반대 결론인 933이 재확인). ② 커버리지 92.28%(934 시점 91.44%에서 +0.84%p)는 **재시도 덕이 아니라 Stage1 배치가 50건 더 성공**한 것(`recovered=0`이므로). ③ 미시도 61건(461−400) 전부 살려도 (5,509+61)÷5,970=**93.30%**(934가 다른 날 데이터로 계산한 값과 동일, 97% 임계 미달 그대로). ④ `compositionOk:false`(`compRatio:0.93`<0.95)도 이번에 처음 수치로 관측 — 커버리지·구성 게이트 **둘 다** 미달.
+
+**§5 판정 불변 검증 — 936의 성공 기준 충족** — `docs/probe_936_baseline.json` 대비 표본 20종목×7렌즈=**140칸 전부 동일, 변화 0**(Supabase 직접 재조회로 재확인). `lens_cuts` US 5행 `as_of` = 07-30 불변(정지 9일째) · KR 5행 `as_of` = 08-07 정상 갱신. `lens_scores` US 1,001→1,021(churn 8.4%, 유니버스 일일 갱신·정상)·KR 975→976. `cron_heartbeats` 4행 불변.
+
+**§6 못 잰 것** — `marketCap` 필드가 왜 없는지(야후 내부 사정, 원리적 불가) · 461건이 어떤 종목인지(실패용 표본이라 비어 있음, 별도 계측 필요) · 그 종목들이 개별 `yf.quote`로는 나오는지(미검증) · `compRatio` 이전 값·`ok=false` 시작 시점(`cron_heartbeats`는 최신 1행만 보존) · 461 중 폴백 적용분(`fallbackUsed:0` — 폴백도 0건).
+
+**§7 문서** — `docs/DECISION_912_LIVE.md` §16 신설(§2~§4 이관) · `docs/REVDCF_SPEC.md` §11 실측 1건 추가 · `docs/STATE.md` "▶ 다음 00" 갱신(137줄, 범위 유지) · `docs/STEP_LEDGER.md` STEP 937 등재(✅ 성공) · `docs/LENS_DEV_PLAYBOOK.md` **#112** 신설(빈 예외집계도 결과라는 교훈, 기존 #100~111과 중복 없음 확인 후 추가).
+
+**무변경** — tsc 0·test 182/182 · `git diff --stat -- lib/ app/ components/ messages/ data/ .github/ vercel.json` 출력 없음 · DB 쓰기 0 · 크론 미실행 · 메일 발송 0 · `REVDCF_ENABLED` Production OFF(curl로 재확인 — 응답 문자열은 next-intl 번역 카탈로그 JSON일 뿐, 렌더 마커 0건) · DoD 판정 칸 불변 · A안 ②단계 미판정 · 934 "불가" 판정 불변.
+
 ## 2026-08-08 (84) — 🇺🇸🔒 **전면 US 단독 확정: 한국 관련 전부 동결** (장은태 · 최상위 규칙)
 
 > **성격**: 방향 규칙 확정. **코드 diff 0** · 문서만. 🔴 **동결(freeze)이지 제거(remove)가 아니다.**

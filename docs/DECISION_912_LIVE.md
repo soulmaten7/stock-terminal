@@ -565,3 +565,74 @@ Cowork의 계산(전제: 5,966 사용)을 §1에서 확인한 정확한 값(5,96
 이 STEP은 배포까지만. 관측 대상 = **US `lens-scores`, 다음 실행(21:30 UTC±59분 지터)**. KR은 이번 계측 대상 아님(재시도 구조 없음, 917 확인 재확인). 다음에 볼 것: `recovered`(직접 관측) · `retryFailReasons` 분해 · `noCapField`/`noResponse` 길이 · `retryCallMs` vs `upsertMs`(935가 밝힌 경계 문제 해소) · `batchOk`/`failedChunks` · `retryFailSample`(최대5) · `probe_936_baseline.json` 대비 판정 불변(특히 20종목 표본 문자열 무변경).
 
 🔴 **A안 ②단계(증액)는 미판정 유지. 934의 "불가" 판정 불변. A·B·C·D 선택지 병기 유지.**
+
+## §16 — 937: 🔴 계측 ②차 관측 결과 등재 — `recovered=0` 직접 관측 확정, 원인 축 4차 전환
+
+**성격**: 관측 등재 전용(코드 0줄·DB 쓰기 0·크론 실행 0·판정 0). 936이 배포한 계측이 배포 후 첫 US `lens-scores` 크론(2026-08-07 21:39:56 UTC·`ok:false`)에서 값을 냈다. Supabase 직접 재조회로 명령 파일의 인용값과 byte 단위 일치 확인.
+
+### 937 §1 — 실측
+
+```json
+{"market":"US","freshCoverage":0.9227805695142378,"coverageOk":false,
+ "compositionOk":false,"compRatio":0.93,"cutGateOk":false,
+ "retryAllLen":461,"retrySetLen":400,"countHit":true,"timeHit":false,"retryBudgetHit":true,
+ "stage1Ms":3436,"stage2Ms":13080,"stage3Ms":269,"acqMs":16785,
+ "loopMs":135739,"pass2Ms":1075,"pruneMs":1,"calcMs":136815,"routeMs":154509,
+ "churn":0.084,"skipChangeDiff":false,"computed":928,"universe":1000,
+ "batchOk":5509,"noCapField":461,"noResponse":0,
+ "recovered":0,"fallbackUsed":0,
+ "failedChunks":0,"totalChunks":60,
+ "retryCallMs":5703,"upsertMs":7377,
+ "retryNoCapField":400,"retryFailReasons":{},"retryFailSample":[]}
+```
+
+KR(`kr-lens-scores`, 08-07 10:43:34·`ok:true`) = `coverage:1`·`coverageOk:true`·`cutGateOk:true`·`computed:976`. 문제 없음.
+
+### 937 §2 — 최우선 판정: `recovered=0` 직접 관측 확정
+
+| | 934(대수적 도출) | **937(직접 관측)** |
+|---|---|---|
+| `recovered` | 저장 안 됨 → 항등식으로 도출 | **`0` — 필드로 직접 관측** |
+
+항등식 재검산(이번 실행값, node 직접 실행으로 재확인): `freshSet.size = batchOk + recovered` = 5,509+0 = **5,509** · 분모 = 5,509÷0.9227805695142378 = **5,970.0000**(오차 없이 정수) · `retryAllLen` = 5,970−5,509 = **461**(관측값과 일치) · `noCapField(461)+noResponse(0)` = 461 = `retryAllLen`(일치). **934의 대수적 도출이 관측으로 뒷받침됐다** — 재시도 400건이 단 한 건도 복구하지 못했다.
+
+### 937 §3 — 🔴 원인 축이 또 바뀐다: "실패"가 아니었다
+
+관측된 사실만(해석 아님): `retryFailReasons:{}`(예외·에러 0건 — 429도 타임아웃도 5xx도 없음) · `retryFailSample:[]`(잡을 실패가 없었다) · `retryNoCapField:400`(재시도한 400건이 전부 정상 응답을 받았고, 그 응답에 `marketCap` 필드가 없었다) · `noResponse:0`(무응답 0) · `failedChunks/totalChunks:0/60`(Stage1 배치도 실패 0) · `batchOk:5,509`(배치가 5,509건은 정상 취득).
+
+원인 축 이력: 912~934 *"예산(시간·개수) 문제"* → 935 *"취득 실패 가능성"* → **937 관측: 취득이 실패한 게 아니다.**
+
+🔴 **여기서 원인을 확정하지 않는다.** 위는 관측이고, *"야후에 해당 종목의 시총이 없다"*는 해석이다. 축이 세 번 바뀐 이력을 고려해 해석을 결론으로 승격시키지 않는다 — 확정하려면 별도 검증(같은 심볼을 개별 `yf.quote`로 조회해 필드 유무 확인)이 필요하고 이 STEP의 범위가 아니다.
+
+다만 934의 "불가" 판정과의 관계는 적을 수 있다 — 재시도가 에러 없이 같은 응답을 받는다면, 상한을 올려도 같은 응답을 더 많이 받는 것이라는 방향이다. **934의 판정을 뒤집지 않으며, 강화 방향으로 관측됐다는 사실만 기록한다.**
+
+### 937 §4 — 나머지 계측 해석
+
+**4-1. 935의 타이머 경계 문제 해소 — 933/934의 "34.5ms/건"은 오염된 값이었다.** `retryCallMs`(순수 재시도 호출)=5,703ms · `upsertMs`(DB 저장만)=7,377ms · 합=13,080ms=`stage2Ms`와 정확히 일치. 순수 재시도=5,703÷400=**14.3ms/건**(동시성 6 기준 실효 왕복≈86ms) — 933/934가 쓴 34.5ms/건은 DB 저장이 섞인 값이었다(935의 지적이 관측으로 확인됨). `timeHit:false`·`countHit:true` — 시간이 아니라 개수(400)에서 잘렸다(916의 반대 결론인 933이 이번에도 재확인).
+
+**4-2. 커버리지는 개선됐으나 재시도 덕이 아니다.** `freshCoverage` 934시점 91.44%→937 92.28%(+0.84%p) · `retryAllLen` 511→461(−50) · `batchOk` 5,509 · 분모 5,968→5,970(+2). 개선분은 전부 Stage1 배치가 50건 더 성공한 것(`recovered`가 0이므로 재시도 기여 0). `data/us_symbols.json`이 매일 09:00 UTC 자동 갱신되므로 분모도 매일 바뀐다.
+
+**4-3. 미시도분과 도달 상한(934 판정 재확인일 뿐, 재판정 아님).** 미시도 = `retryAllLen`(461)−`retrySetLen`(400) = **61건**. 전부 살린다고 가정: (5,509+61)÷5,970 = **93.30%** — 934가 다른 날 데이터로 계산한 값과 동일. 🔴 97% 임계 미달은 그대로.
+
+**4-4. 구성 게이트도 미달 — 이번에 수치로 처음 관측.** `compositionOk:false`·`compRatio:0.93`(임계 0.95) — 커버리지(97%)뿐 아니라 구성(직전 상위 200 메가캡 fresh 확보율 95%)도 못 넘는다. 두 게이트 모두 실패라 `cutGateOk:false`.
+
+### 937 §5 — 판정 불변 검증(936의 성공 기준 충족)
+
+`docs/probe_936_baseline.json` 대비, Supabase 직접 재조회로 재확인:
+
+| 항목 | 배포 전 | 관측 시점 | 판정 |
+|---|---|---|---|
+| 표본 20종목×7렌즈=140칸 | — | — | ✅ **140칸 전부 동일·변화 0** |
+| `lens_cuts` US 5행 `as_of` | 07-30 | **07-30** | ✅ 불변(정지 지속=9일째) |
+| `lens_cuts` KR 5행 `as_of` | 08-06 | **08-07** | ✅ 정상 갱신 |
+| `lens_scores` US 행수 | 1,001 | **1,021** | 🔶 +20(churn 8.4%, 유니버스 일일갱신·정상) |
+| `lens_scores` KR 행수 | 975 | **976** | 🔶 +1 |
+| `cron_heartbeats` 행수 | 4 | **4** | ✅ |
+
+936은 "값 계산 0건 변경"을 목표로 했고, 140칸 전수 대조로 충족이 확인됐다.
+
+### 937 §6 — 못 잰 것(추정 금지)
+
+`marketCap` 필드가 왜 없는지(야후 내부 사정, 우리 계측으로 원리적 불가) · 461건이 어떤 종목인지(`retryFailSample`이 실패용이라 비었고 필드 없음은 "실패"로 안 잡힘 — 표본을 남기려면 별도 계측 필요) · 그 종목들이 개별 `yf.quote`로는 나오는지(미검증, 915 프로브는 20건 표본이었고 조건이 다름) · `compRatio` 이전 값(이번 note에만 있음, 과거 비교 불가) · `ok=false` 시작 시점(원리적 불가, 최신 1행만 보존) · 461 중 폴백 적용분(`fallbackUsed:0` — 폴백도 0건).
+
+🔴 **A안 ②단계(증액)는 미판정 유지. 934의 "불가" 판정 불변. A·B·C·D 선택지 병기 유지.**
