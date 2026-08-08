@@ -3,9 +3,18 @@
 
 > **이 파일은 무엇인가**: 프로젝트의 모든 참조 문서를 **카테고리별로 한자리에** 모은 카탈로그. "그 내용 어느 문서에 있더라?"를 매번 뒤지지 않게, **언제든 여기서부터** 원하는 문서를 꺼낸다.
 > **사용법**: 아래 카테고리 표에서 목적에 맞는 파일을 찾아 열기. 각 행 = `파일` · `한 줄 용도` · `언제 읽나`.
-> **범위**: 루트 파일 5개 + `docs/` 비-STEP 문서 67개. STEP 실행 명령서(693개)는 §⑩에 한 줄로 요약(개별 나열 X).
-> **버전 표기**: `[최신]` = 현행 정본 · `[보존]`/`[폐기]`/`[아카이브]` = 히스토리(참고만, 충돌 시 최신 우선).
-> **갱신일**: 2026-07-11 · HEAD `ba3ce68`.
+> **범위**: 루트 파일 5개 + `docs/` 비-STEP 문서 **97개**. STEP 실행 명령서(**884개**)는 §⑩에 한 줄로 요약(개별 나열 X). 폐기본은 `docs/_archive/`(**16개**).
+>
+> ### 🔴 상태 표기 (2026-08-08 개정 — 반드시 먼저 볼 것)
+>
+> | 표기 | 뜻 | 취급 |
+> |---|---|---|
+> | `[최신]` | **현행 정본** | 그대로 따른다 |
+> | 🅿️ **동결** | **KR·JP·CN·VN·GB 주제** — 2026-08-08 「🇺🇸🔒 전면 US 단독」 규칙 | 🔴 **신규 착수 금지 · 판정·감사·모델선정에서 수치를 결론에 넣지 말 것.** 내용은 유효 |
+> | 🗄️ **아카이브** | `docs/_archive/` 로 이동됨(폐기·구버전) | 히스토리 참고만. 충돌 시 최신 우선 |
+> | `[보존]`/`[폐기]` | 구 표기(히스토리) | 위와 동일 |
+>
+> **갱신일**: **2026-08-08**.
 
 ---
 
@@ -67,17 +76,17 @@
 
 | 파일 | 용도 | 언제 읽나 |
 |------|------|-----------|
-| `docs/PRODUCT_SPEC_V7.md` | [보존] V7 — "검증된 중립 관문(Gateway)" 재정의 (구 비전 · 정체성 프레임 폐기) | V7 히스토리 · 현행 정체성=BRAND_IDENTITY/STATE |
-| `docs/PRODUCT_SPEC_V6.md` | [보존] V6 — 정체성 5결정(정보+토론+신뢰) | V6 히스토리 참고 |
-| `docs/PRODUCT_SPEC_V4.md` | [보존] V4 — 2창(한국·미국)·토스카드·Trustpilot 평가 | V4 히스토리 참고 |
+| `docs/_archive/PRODUCT_SPEC_V7.md` | [보존] V7 — "검증된 중립 관문(Gateway)" 재정의 (구 비전 · 정체성 프레임 폐기) | V7 히스토리 · 현행 정체성=BRAND_IDENTITY/STATE |
+| `docs/_archive/PRODUCT_SPEC_V6.md` | [보존] V6 — 정체성 5결정(정보+토론+신뢰) | V6 히스토리 참고 |
+| `docs/_archive/PRODUCT_SPEC_V4.md` | [보존] V4 — 2창(한국·미국)·토스카드·Trustpilot 평가 | V4 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V3.md` | [보존] V3 — Stock Terminal 초기 스펙 | V3 히스토리 참고 |
 | `docs/ROADMAP.md` | **[최신]** 마스터 로드맵 — 무엇을/어떤 순서로(Phase 단일 기준) | STATE 다음(순서 확인) |
 | `docs/RELEASE_ROADMAP.md` | **[최신·핵심]** 1·2·3차 출시 로드맵 — 국가셋(KR·US·JP·GB·홍콩·VN)·차수별 범위·광고 활성화 시점 | 출시 계획·차수 결정 시 |
 | `docs/SITE_MAP_V7.md` | SITE MAP V7 — 네이버 증권 구조 복제 spec | IA·메뉴 구조 작업 시 |
-| `docs/TOSS_ANALYSIS_AND_IA.md` | 토스증권 전체 분석 + 새 IA(토스식 개편 spec) | IA 개편 참고 |
-| `docs/NAVER_STOCK_PAGE_ANALYSIS.md` | 네이버 종목 페이지 디테일 분석 + Gap(V6) | 종목 페이지 디테일 보강 시 |
+| `docs/_archive/TOSS_ANALYSIS_AND_IA.md` | 토스증권 전체 분석 + 새 IA(토스식 개편 spec) | IA 개편 참고 |
+| 🅿️ `docs/NAVER_STOCK_PAGE_ANALYSIS.md` | 네이버 종목 페이지 디테일 분석 + Gap(V6) | 종목 페이지 디테일 보강 시 |
 | `docs/HOME_REDESIGN_V2_SPEC.md` | [아카이브] 홈 재설계 V2(세션 #9) | 홈 디자인 히스토리 |
-| `docs/DASHBOARD_SPEC_V3.md` | [최신·대시보드] 풀스크롤 대시보드 재설계 V3.2 | 홈 대시보드 작업 시 |
+| `docs/_archive/DASHBOARD_SPEC_V3.md` | [최신·대시보드] 풀스크롤 대시보드 재설계 V3.2 | 홈 대시보드 작업 시 |
 | `docs/DASHBOARD_SPEC_V1.md` | [폐기] 대시보드 스펙 V1(V3가 대체) | 히스토리만 |
 | `docs/PAGE_FRAME_SPEC.md` | [보존·V3] 전체 페이지 프레임 명세 | V3 프레임 히스토리 |
 | `docs/REFERENCE_PLATFORM_MAPPING.md` | [보존·V3] 레퍼런스 플랫폼 매핑 | 벤치마크 히스토리 |
@@ -110,9 +119,9 @@
 | `docs/LENS_ARCHITECTURE.md` | **[최신·뼈대]** 렌즈 "독립 배선" 표준 — StockData 번들·Lens 인터페이스·레지스트리·기법당 AI 교체 지점 | 렌즈 구조 변경·새 렌즈·AI 교체 시 |
 | `docs/LENS_STRENGTH_MAP.md` | 기법별 적합 영역(강한 종목·섹터·조건) | 렌즈 가중·선택 근거 |
 | `docs/LENS_DISPLAY_CHARTER.md` | 렌즈 표시 헌장 — 모든 카드 공통 표시 규칙(강제 체크리스트) | 렌즈 카드 생성/수정 시 |
-| `docs/AI_LENS_SPEC.md` | [설계·보류] AI 렌즈 해설 설계 스펙(빌드 여부 결정용) | AI 해설 설계 참고 |
+| `docs/_archive/AI_LENS_SPEC.md` | [설계·보류] AI 렌즈 해설 설계 스펙(빌드 여부 결정용) | AI 해설 설계 참고 |
 | `docs/AI_LENS_TECHNIQUE_MAP.md` | 주식 분석 기법 정밀 매핑표(결정론/LLM·오픈소스·라이선스) | 기법 구현 근거 조사 |
-| `docs/AI_BRIEFING_SPEC.md` | AI 브리핑 레이어(R1~R3) — LLM=글 읽어 사실로(비예측) | 브리핑 층 작업 시 |
+| `docs/_archive/AI_BRIEFING_SPEC.md` | AI 브리핑 레이어(R1~R3) — LLM=글 읽어 사실로(비예측) | 브리핑 층 작업 시 |
 | `docs/EVENT_LAYER_SPEC.md` | 이벤트(공시) 사실 레이어 — "세 번째 시계"(US 완성형) | 이벤트/공시 층 작업 시 |
 | `docs/ETF_LENS_PLAN.md` | ETF/ETN/REIT "상품 구성" 상세 설계 | ETF 상품 구성 작업 시 |
 
@@ -124,12 +133,12 @@
 |------|------|-----------|
 | `docs/LOCALE_SOURCE_PLAYBOOK.md` | **[필독]** 언어권 데이터소스 발견·검증·기록 런북(의미우선·검증게이트·실패원장) | 새 locale·데이터소스 착수 전 |
 | `docs/COUNTRY_TAB_PLAYBOOK.md` | **[필독]** 국가 탭 표준 틀(US=레퍼런스·DoD 전 항목) | 새 국가탭 착수 전 매번 |
-| `docs/KR_COMPLETENESS_AUDIT.md` | 한국 완성 감사 — 시장 복제 기준선(있다/예약/안만든다) | 새 시장 복제 체크 |
-| `docs/KR_TAB_FINALIZE_PLAN.md` | 한국 탭 파이널라이즈 마스터 완성 플랜 | 한국탭 폴리시 작업 |
-| `docs/KR_LINK_HUB_CURATION.md` | KR 링크 허브 큐레이션(신뢰 자산 검증·71개) | KR link_hub 갱신 시 |
+| 🅿️ `docs/KR_COMPLETENESS_AUDIT.md` | 한국 완성 감사 — 시장 복제 기준선(있다/예약/안만든다) | 새 시장 복제 체크 |
+| 🅿️ `docs/KR_TAB_FINALIZE_PLAN.md` | 한국 탭 파이널라이즈 마스터 완성 플랜 | 한국탭 폴리시 작업 |
+| 🅿️ `docs/KR_LINK_HUB_CURATION.md` | KR 링크 허브 큐레이션(신뢰 자산 검증·71개) | KR link_hub 갱신 시 |
 | `docs/US_LINK_HUB_CURATION.md` | US 링크 허브 큐레이션 v2(67개/10카테고리) | US link_hub 갱신 시 |
-| `docs/NEXT_SESSION_CN_PLAN.md` | [완료] CN 공시층 + R1(A주 cninfo·HK HKEXnews) 결과 | CN 데이터 히스토리 |
-| `docs/NEXT_SESSION_VN_PLAN.md` | [완료·마감] VN 공시층 결과(공식 공시 소스 부재 실측) | VN 데이터 히스토리 |
+| 🅿️ `docs/NEXT_SESSION_CN_PLAN.md` | [완료] CN 공시층 + R1(A주 cninfo·HK HKEXnews) 결과 | CN 데이터 히스토리 |
+| `docs/_archive/NEXT_SESSION_VN_PLAN.md` | [완료·마감] VN 공시층 결과(공식 공시 소스 부재 실측) | VN 데이터 히스토리 |
 | `docs/PARKED_HNX_VCI_ACTIVATION.md` | 🅿️ 보류 기능 — VN HNX(VCI·거주지 IP 필요·배선 완비) | HNX 재활성화 시 |
 | `docs/PARKED_OAUTH_LOCALE_ACTIVATION.md` | ✅ 완료(710E·`6bccc45`) — OAuth 로케일(로그인 후 언어 유지·쿠키 방식·라이브 실측 성공) | OAuth 로케일 히스토리 |
 
@@ -169,7 +178,7 @@
 | `docs/AD_MONETIZATION_PLAYBOOK.md` | **[최신]** 광고·수익화 런북(전 언어권)·슬롯 인벤토리·어필리에이트·합법성 원장 | 광고·수익화 작업 전 |
 | `docs/LAUNCH_PLAYBOOK.md` | **[최신]** 한국탭 완성→공개 로드맵 + 출시 전 검수 체크리스트(규제 조사) | 출시 준비·검수 시 |
 | `docs/BUSINESS_CLAIM_SPEC.md` | 리딩방·업체 클레임/관리 설계(Phase 2 수익화 토대) | 업체 claim 기능 작업 시 |
-| `docs/ROOM_VERIFICATION_SPEC.md` | 리딩방 검증 설계(금감원 등록·신고 뱃지 · 정체성 프레임=[이력]→BRAND_IDENTITY) | 리딩방 검증 작업 시 |
+| `docs/_archive/ROOM_VERIFICATION_SPEC.md` | 리딩방 검증 설계(금감원 등록·신고 뱃지 · 정체성 프레임=[이력]→BRAND_IDENTITY) | 리딩방 검증 작업 시 |
 
 ---
 
@@ -179,9 +188,35 @@
 |------|------|-----------|
 | `docs/SYSTEM_DESIGN.md` | 시스템 설계서 [보존·V3] — 아키텍처·API 현황·인증/권한·배포 체크 | 아키텍처 참조 |
 | `docs/WIDGET_SPEC_Chart.md` | 위젯 스펙 — Chart(차트) | 차트 위젯/페이지 작업 시 |
-| `docs/WIDGET_SPEC_DartFilings.md` | 위젯 스펙 — DartFilings(DART 공시 피드) | 공시 피드 작업 시 |
+| 🅿️ `docs/WIDGET_SPEC_DartFilings.md` | 위젯 스펙 — DartFilings(DART 공시 피드) | 공시 피드 작업 시 |
 | `docs/WIDGET_SPEC_OrderBook.md` | 위젯 스펙 — OrderBook(호가창) | 호가창 작업 시 |
 | `docs/WIDGET_SPEC_Watchlist.md` | 위젯 스펙 — Watchlist(관심종목) | 관심종목 작업 시 |
+
+---
+
+## ⑪ 판정·감사 기록 (역DCF 트랙 · 884~937)
+
+> 🔑 **성격**: 장은태 판정을 받은 결정서와 감사 보고서. **`STATE.md`가 결론만 요약하고 근거는 여기 있다.**
+
+| 파일 | 용도 | 언제 읽나 |
+|------|------|-----------|
+| `docs/DECISION_912_LIVE.md` | **[최신]** 라이브 이상징후 912~937 전 과정(§10~§16) — `recovered=0` 관측·원인 축 4회 전환 | 라이브 결함 작업 전 |
+| `docs/DECISION_929_DOD_SCOPE.md` | DoD 범위 미결 3문 | DoD 판정 전 |
+| `docs/DECISION_921_COMPLETION.md` | 완성 정의(DoD9 분리) | 완성 선언 전 |
+| `docs/DECISION_908_PENDING.md` · `DECISION_905_NEXT.md` | 미결·다음 후보 목록 | STEP 제안 전 |
+| `docs/DECISION_907_WC_DEF.md` · `DECISION_884_TABLE_STRUCTURE.md` | 운전자본 정의 · 대조표 구조 | 드라이버 작업 전 |
+| `docs/DECISION_890_DOD4.md` · `DECISION_902_DOD3.md` | DoD4·DoD3 판정서 | 해당 DoD 재개 시 |
+| `docs/DECISION_918_AGENDA2.md` · `DECISION_922_BADGE.md` · `DECISION_923_NAMING.md` · `DECISION_925_BRIEF.md` | 안건별 판정 | 해당 화면 손대기 전 |
+| `docs/AUDIT_904_OPEN_ITEMS.md` | §10 미결 76항목 전수 감사 | 미결 정리 시 |
+| `docs/AUDIT_888_REVDCF_SURFACE.md` · `AUDIT_895_SKIP_REASONS.md` | 표면 감사 · 스킵 사유 감사 | 화면·스킵 작업 전 |
+| `docs/COMMIT_GATES.md` | **[최신]** 커밋 전 실행 체크리스트(886 신설) | **커밋 전 매번** |
+| `docs/PRIMARY_SOURCE_MAP.md` | 1차 출처 지도 | 출처 대조 시 |
+| `docs/PARKED_FIELD_SURFACES.md` | 파킹된 표면 복원 절차 | 시장 재개 시 |
+| `docs/US_UNIVERSE_DIAGNOSIS_2026-07.md` · `UNIVERSE_DEFINITION_MEASUREMENT_2026-07.md` | US 유니버스 진단·정의 측정 | 모집단 변경 전 |
+| 🅿️ `docs/FREE_DATA_PROBE_2026-07.md` | 무료 데이터 소스 정찰 | 새 소스 검토 시 |
+| 🅿️ `docs/TIER3_LLM_I18N_DESIGN.md` | LLM 생성물 i18n 설계 | ko 재개 시 |
+| `docs/ABOUT_REWRITE_DRAFT.md` · `docs/BETA_INVITE.md` | About 초안 · 베타 초대 문안 | 카피 작업 시 |
+| `docs/_archive/LENS_7_COMPLETED.md` | 🗄️ 7렌즈 완료 기록 | 히스토리 |
 
 ---
 

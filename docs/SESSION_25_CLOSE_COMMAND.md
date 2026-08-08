@@ -26,11 +26,11 @@ cd ~/stock-terminal && claude --dangerously-skip-permissions --model sonnet
 
 | 파일 | 갱신 내용 |
 |------|---------|
-| `docs/SESSION_KICKOFF.md` | 전면 갱신 (2026-04-23 → 2026-05-27, 세션 #24 → #25 종료, 운종 브랜드 + Layer 0 완성) |
+| `docs/_archive/SESSION_KICKOFF.md` | 전면 갱신 (2026-04-23 → 2026-05-27, 세션 #24 → #25 종료, 운종 브랜드 + Layer 0 완성) |
 | `docs/CHANGELOG.md` | 세션 #25 종료 블록 추가 (STEP 95-A revert · 95-C · 95-D · 95-E · 95-E1 · 95-F · 96 · 97 · 98+99) |
 | `session-context.md` | 세션 #25 후속 STEP 추가 + TODO Layer 별 재정의 (Last GC: 2026-05-27) |
-| `docs/NEXT_SESSION_START.md` | 전면 갱신 (Layer 0 + 21개 카드 디테일 완성, Layer 1 진입 가이드) |
-| `docs/PRODUCT_SPEC_V4.md` | 진행 상태 갱신 (Layer 0 ✅, Layer 1 ⏸️ 시작 예정), 섹션 11·14·15 갱신 |
+| `docs/_archive/NEXT_SESSION_START.md` | 전면 갱신 (Layer 0 + 21개 카드 디테일 완성, Layer 1 진입 가이드) |
+| `docs/_archive/PRODUCT_SPEC_V4.md` | 진행 상태 갱신 (Layer 0 ✅, Layer 1 ⏸️ 시작 예정), 섹션 11·14·15 갱신 |
 | `CLAUDE.md` | 헤더 날짜 그대로 (`<!-- 2026-05-27 -->`) |
 
 Claude Code 는 **검증 + git push** 만 담당.
@@ -50,14 +50,14 @@ echo ""
 echo "=== session-context.md ==="
 head -2 session-context.md
 echo ""
-echo "=== docs/NEXT_SESSION_START.md ==="
-head -1 docs/NEXT_SESSION_START.md
+echo "=== docs/_archive/NEXT_SESSION_START.md ==="
+head -1 docs/_archive/NEXT_SESSION_START.md
 echo ""
-echo "=== docs/SESSION_KICKOFF.md ==="
-head -1 docs/SESSION_KICKOFF.md
+echo "=== docs/_archive/SESSION_KICKOFF.md ==="
+head -1 docs/_archive/SESSION_KICKOFF.md
 echo ""
-echo "=== docs/PRODUCT_SPEC_V4.md ==="
-head -1 docs/PRODUCT_SPEC_V4.md
+echo "=== docs/_archive/PRODUCT_SPEC_V4.md ==="
+head -1 docs/_archive/PRODUCT_SPEC_V4.md
 echo ""
 echo "=== docs/BRAND_IDENTITY.md ==="
 head -1 docs/BRAND_IDENTITY.md
@@ -159,8 +159,8 @@ cd ~/stock-terminal
 rm -f .git/index.lock
 # 갱신된 문서 14개 전체 (운종 브랜드 통일 + V3 보존 명시)
 git add CLAUDE.md README.md CLAUDE_CODE_INSTRUCTIONS.md session-context.md \
-        docs/SESSION_KICKOFF.md docs/CHANGELOG.md docs/NEXT_SESSION_START.md \
-        docs/PRODUCT_SPEC_V4.md docs/SESSION_25_CLOSE_COMMAND.md \
+        docs/_archive/SESSION_KICKOFF.md docs/CHANGELOG.md docs/_archive/NEXT_SESSION_START.md \
+        docs/_archive/PRODUCT_SPEC_V4.md docs/SESSION_25_CLOSE_COMMAND.md \
         docs/BUSINESS_STRATEGY.md docs/PAGE_FRAME_SPEC.md \
         docs/REFERENCE_PLATFORM_MAPPING.md docs/SYSTEM_DESIGN.md
 git status --short
@@ -169,7 +169,7 @@ git commit -m "docs: 세션 #25 종료 — 모든 문서 3번 교차검증 갱�
 세션 #25 (2026-05-27) — 운종(雲從) Layer 0 + 21개 카드 디테일 완성
 
 갱신 문서 6개:
-- docs/SESSION_KICKOFF.md — 전면 갱신 (세션 #24 → #25 종료)
+- docs/_archive/SESSION_KICKOFF.md — 전면 갱신 (세션 #24 → #25 종료)
   · 운종 브랜드 + Layer 0 완성 명시
   · 헤더 4단 통합 + 3컬럼 구조 + 21개 카드 + 21개 디테일
   · 다음 P0 = Layer 1 (3가지 후보)
@@ -179,10 +179,10 @@ git commit -m "docs: 세션 #25 종료 — 모든 문서 3번 교차검증 갱�
 - session-context.md — 세션 #25 후속 STEP 누적 + TODO Layer 별 재정의
   · Last GC: 2026-05-27 (이전 2026-04-23)
   · V3 잔재 TODO 제거, Layer 1~6 로드맵으로 재정의
-- docs/NEXT_SESSION_START.md — 전면 갱신
+- docs/_archive/NEXT_SESSION_START.md — 전면 갱신
   · Layer 0 + 21개 카드 디테일 완성 표시
   · Layer 1 (A·B·C 후보) 진입 가이드
-- docs/PRODUCT_SPEC_V4.md — 진행 상태 갱신
+- docs/_archive/PRODUCT_SPEC_V4.md — 진행 상태 갱신
   · 섹션 9 (레이어 로드맵): Layer 0 ✅
   · 섹션 11 (미루기): 카드 7개 완성 → 완료
   · 섹션 14 (다음 작업): Layer 1 (A·B·C)
@@ -251,8 +251,8 @@ git fetch && git status -sb
 - 다음 세션 = Layer 1 (실데이터 + 채팅 실시간)
 
 세션 종료 가능. 새 세션 시작 시:
-  1. docs/SESSION_KICKOFF.md 먼저 읽기 (최신 상태)
-  2. docs/NEXT_SESSION_START.md 확인 (Layer 1 가이드)
+  1. docs/_archive/SESSION_KICKOFF.md 먼저 읽기 (최신 상태)
+  2. docs/_archive/NEXT_SESSION_START.md 확인 (Layer 1 가이드)
   3. session-context.md TODO 확인 (Layer 1 후보)
   4. Layer 1-A/B/C 중 선택 후 STEP 100 명령서 작성
 ```

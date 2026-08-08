@@ -152,4 +152,4 @@
 ## 참조
 - 광고·수익 철학 일치: `docs/AD_MONETIZATION_PLAYBOOK.md`
 - 로고 프롬프트: `docs/LOGO_PROMPT.md`
-- 현재 상태: `docs/SESSION_BOOT.md`
+- 현재 상태: `docs/_archive/SESSION_BOOT.md`

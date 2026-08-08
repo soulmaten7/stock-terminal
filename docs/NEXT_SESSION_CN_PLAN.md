@@ -1,4 +1,7 @@
 <!-- 2026-07-08 (3rd) -->
+
+> 🅿️ **동결 — 2026-08-08 「🇺🇸🔒 전면 US 단독」 규칙**(`CLAUDE.md`). 이 문서는 **CN 시장 주제**라 신규 착수 대상이 아니다. **내용은 유효하며 삭제·이동하지 않았다.** 🔴 **판정·감사·모델 선정에서 이 문서의 수치를 결론에 넣지 말 것.** ✅ US 완성 후 확장 1순위(한국)에서 재개.
+
 # 🇨🇳 [완료] CN 공시층 + R1 — A주(cninfo) + HK(HKEXnews) 완결
 
 > **✅ 2026-07-08 (3rd) 완결.** STEP 659(`f3fee9b`·A주 이벤트층)·660(`73dfc9b`·A주 R1 PDF)·661(`4404424`·HK 이벤트층+R1). VN과 달리 cninfo·HKEXnews = **진짜 공식 공시**라 US·KR·JP·GB 동급 달성. 원문 PDF=unpdf 텍스트추출. ⚠️ 배포 후 Vercel 도달성만 실측 대기. **▶ 다음 = 광고(대화 먼저).**
@@ -10,14 +13,14 @@
 # 🇨🇳 [원계획] CN(중국·홍콩) 공시층 + R1 원문요약
 
 > **이 파일 하나로 다음 세션이 CN 공시를 처음부터 진행할 수 있게 만든 자급형 실행 계획.**
-> 상위 맥락 = `docs/NEW_SESSION_HANDOFF.md` · 최신 배너 = `docs/SESSION_BOOT.md`.
+> 상위 맥락 = `docs/_archive/NEW_SESSION_HANDOFF.md` · 최신 배너 = `docs/_archive/SESSION_BOOT.md`.
 > 새 세션: ① `NEW_SESSION_HANDOFF.md`로 전체 상태 → ② **이 파일로 CN 착수.**
 
 ---
 
 ## 0. 지금 어디까지 왔나 (2026-07-08 2nd 종료 시점)
 - **공식 공시 R1 = US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS) 4개국 완성.** HEAD `1b8e1e1`.
-- **VN 마감**: 공식 공시원문 소스 부재로 이벤트층(뉴스·이벤트)+R3만. R1 보류. (`docs/NEXT_SESSION_VN_PLAN.md` 결과 기록)
+- **VN 마감**: 공식 공시원문 소스 부재로 이벤트층(뉴스·이벤트)+R3만. R1 보류. (`docs/_archive/NEXT_SESSION_VN_PLAN.md` 결과 기록)
 - **CN 탭 자체는 이미 있음**(STEP 612~620): 종목보드(HK 항셍·A주 상하이/선전·야후 `.HK`/`.SS`/`.SZ`)·R3 뉴스(`cn_names`·zh-HK 번체/zh-CN 간체 텐센트 소스)·매매처는 CN만 미보유. **없는 것 = 종목 페이지 "공시층 + R1".**
 
 ## 1. 목표 (JP/GB와 동급 — CN은 진짜 공시 가능성 높음)

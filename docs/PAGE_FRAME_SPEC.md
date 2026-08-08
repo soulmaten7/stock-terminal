@@ -2,7 +2,7 @@
 # 운종(雲從) · UNJONG — 전체 페이지 프레임 명세서 (V3 명세, 보존 문서)
 
 > **⚠️ 보존 알림** (2026-05-27 세션 #25): 이 문서는 V3 시절 (Stock Terminal) 페이지 프레임 명세입니다.
-> 운종(雲從) V4 의 페이지 구조 (3창 + 21개 카드 + 21개 디테일 페이지) 는 `docs/PRODUCT_SPEC_V4.md` + `docs/SESSION_KICKOFF.md` 참조.
+> 운종(雲從) V4 의 페이지 구조 (3창 + 21개 카드 + 21개 디테일 페이지) 는 `docs/_archive/PRODUCT_SPEC_V4.md` + `docs/_archive/SESSION_KICKOFF.md` 참조.
 > **라이브스코어 톤은 V4 에도 유지** — 정보(카드) 가 주인공, 채팅은 동반자.
 
 ## 설계 철학

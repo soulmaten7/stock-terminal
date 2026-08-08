@@ -1,6 +1,22 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (88) — 🗂️ **문서 정리: 폐기 9건 아카이브 · 동결 배너 7건 · INDEX 전면 갱신 — 깨진 참조 0**
+
+> **성격**: 문서 구조 정리. **코드 diff 0** · 삭제 0건(전부 이동·표시). 🔴 **동기 = 규칙 위반 재발 방지**(플레이북 #114 — Cowork이 US 단독 규칙을 이틀 만에 스스로 어겼고, 원인이 저장소에 KR 시대 문서가 현행과 섞여 있던 것).
+
+**§1 측정** — `docs/` **1,047개·26MB**(STEP 명령서 884 + 비-STEP 106). 참조 실측: `docs/STEP_*.md` **924건** · `docs/대문자.md` **3,514건**. 🔴 **폴더 전면 재편은 4,438건이 깨져 불가** → **이동 최소화 + 표시 중심**으로 방침 결정. 훅(`.claude/hooks/stop-reminder.sh`)이 보는 건 `docs/CHANGELOG.md`·`docs/STATE.md` **둘뿐**임을 확인(이동 대상 아님).
+
+**§2 아카이브 이동 9건** — 문서별 참조처를 전수 조사해 **현행 참조가 CHANGELOG·INDEX(우리가 갱신하는 문서)뿐이거나 폐기 문서끼리인 것만** 이동: `PRODUCT_SPEC_V4`·`V6`·`V7` · `AI_LENS_SPEC` · `AI_BRIEFING_SPEC` · `DASHBOARD_SPEC_V3` · `ROOM_VERIFICATION_SPEC` · `TOSS_ANALYSIS_AND_IA` · `NEXT_SESSION_VN_PLAN` → `docs/_archive/`. **비-STEP 106 → 97개 · `_archive` 7 → 16개.** 🔴 **STEP 명령서 884개는 손대지 않음**(참조 924건 + `@docs/STEP_XXX_COMMAND.md` 실행 관례).
+
+**§3 참조 경로 갱신** — 현행 문서 8건의 링크를 `docs/X.md` → `docs/_archive/X.md`로 치환(CHANGELOG·INDEX·SYSTEM_DESIGN·PAGE_FRAME_SPEC·REFERENCE_PLATFORM_MAPPING·SESSION_25_CLOSE_COMMAND·BUSINESS_STRATEGY·NEXT_SESSION_CN_PLAN). 🔴 **STEP 명령서 안의 옛 경로는 의도적으로 보존**(과거 기록이며 그때는 그 경로가 맞았다 — 이력 불변 원칙).
+
+**§4 🅿️ 동결 배너 7건**(이동 없음 — 참조 보존) — `KR_LINK_HUB_CURATION`·`KR_TAB_FINALIZE_PLAN`·`KR_COMPLETENESS_AUDIT`·`NAVER_STOCK_PAGE_ANALYSIS`·`WIDGET_SPEC_DartFilings`(KR) · `NEXT_SESSION_CN_PLAN`(CN) · `PARKED_HNX_VCI_ACTIVATION`(VN). 머리말 한 줄: *"🅿️ 동결 — 전면 US 단독 규칙. 신규 착수 대상 아님. **판정·감사·모델선정에서 이 문서의 수치를 결론에 넣지 말 것.** 내용은 유효하며 삭제·이동하지 않았다."* 🔑 **파일을 열면 첫 줄에서 걸리게 하는 것이 목적.**
+
+**§5 INDEX 전면 갱신** — 머리말 수치 정정(비-STEP **67→97** · STEP **693→884** · `_archive` 16) · 갱신일 2026-07-11→**2026-08-08** · 🔴 **상태 표기 4종 신설**(`[최신]` / 🅿️**동결** / 🗄️**아카이브** / 구표기) · 동결 문서 **7행에 🅿️ 표시** · **§⑪ 「판정·감사 기록」 신설**로 미등재 **26건**(DECISION 13·AUDIT 3 등) 전수 등재 → **현행 97개 중 미등재 0**(INDEX 자신 제외).
+
+**§6 🔴 3중 검증 결과** — ① **이번 이동으로 깨진 참조 0건** ② 🟡 **기존부터 깨져 있던 10건 발견·수정** — 2026-07-17 핸드오프 통합(SESSION_BOOT·NEXT_SESSION_START·SESSION_KICKOFF·NEW_SESSION_HANDOFF 아카이브) 때 남은 것으로, 8개 문서의 경로를 함께 갱신 → **최종 깨진 참조 0** ③ 훅 참조 파일 2개 존재 확인 · 코드·`data/`·`.github/`·`vercel.json` **diff 0** · **삭제 0건.**
+
 ## 2026-08-08 (87) — ✅ **ⓐ 사용자 질문 확정(Q0~Q5 + 요약층) — 형태까지 · 장은태 승인**
 
 > **성격**: 판정 등재. **코드 diff 0** · DB 읽기만.
@@ -3548,8 +3564,8 @@ driver6/WACC 원장행 부재(최대 발견) — 위 §2-5에서 처리. en 프�
 - **653 GB 공시 이벤트층 = RNS via Investegate (`7a7f3f6`)**: 정찰 결과 GB엔 EDINET급 공식 무료 종합 API 없음 — FCA NSM=정식보고서만(트레이딩업데이트·M&A 누락·완전성 미달), 종합 RNS는 LSEG 상업약관. → **Investegate**(서버렌더·무료·회사별 페이지) 온디맨드+캐시+원문 링크 귀속(ToS 완화). `/api/gb-events`(symbol.L→TIDM→`/company/{TIDM}` HTML 파싱→노이즈 필터[Form 8.x·Rule 8·TR-1·PDMR]→material→최근 8) + `GbEventLayer`·isGB. **Vercel→Investegate 도달성 라이브 통과**(Shell 공시 파싱). ⚠️ Barclays 등 대형 금융=자기가 낸 Form 8.x(남의 회사 포지션)로 page1 도배→빈 층(MVP 수용).
 - **654 GB R1 원문 요약 (`fef75ee`)**: `/api/gb-events/summary`(Investegate 상세→`{source}-announcement` 컨테이너 본문 추출[gnw/rns/prn…·HTML제거·푸터컷·12k]→gpt-4o-mini 한국어 사실 요약→`filing_summaries`[`GB`+id] 캐시·SSRF 방지 URL 검증) + `GbFilingSummary` + `MATERIAL` 정규식 확장(quarter·q1~4·update·outlook·buyback·agreement 등). 라이브: Shell Q2 아웃룩(생산 610-650 kboe/d·LNG 7.4-7.8 MT·화학마진 약 $240/tonne·7/30 발표) 한국어 요약 정확.
 - **📊 공시 R1 현황**: **US(EDGAR)·KR(DART)·JP(EDINET)·GB(RNS)** = 4개국 공시층+원문요약 완성. 남은 완전성 = **VN·CN 공시**.
-- **656 VN 공시 정찰**(코드 없음·investigation): VN도 EDINET급 공식 무료 종합 API 없음. **TCBS 공개 API(`apipubaws.tcbs.com.vn`)는 도달되나 `tcanalysis/v1/ticker/...` 경로 폐기(404·이동)** → 회사-이벤트 엔드포인트는 네트워크 캡처 필요(추측 실패 확인). 대안=CafeF/Vietstock 서버렌더 스크랩(GB Investegate 방식). VN 빌드는 다음 세션 — **자급형 실행계획 `docs/NEXT_SESSION_VN_PLAN.md` 신설**(정찰 결과·빌드 계획·미러 원본·함정 전부).
-- ▶ **다음**: **VN 공시(공시층+R1) — `docs/NEXT_SESSION_VN_PLAN.md` 먼저 읽고 착수** → CN → 광고(대화 먼저).
+- **656 VN 공시 정찰**(코드 없음·investigation): VN도 EDINET급 공식 무료 종합 API 없음. **TCBS 공개 API(`apipubaws.tcbs.com.vn`)는 도달되나 `tcanalysis/v1/ticker/...` 경로 폐기(404·이동)** → 회사-이벤트 엔드포인트는 네트워크 캡처 필요(추측 실패 확인). 대안=CafeF/Vietstock 서버렌더 스크랩(GB Investegate 방식). VN 빌드는 다음 세션 — **자급형 실행계획 `docs/_archive/NEXT_SESSION_VN_PLAN.md` 신설**(정찰 결과·빌드 계획·미러 원본·함정 전부).
+- ▶ **다음**: **VN 공시(공시층+R1) — `docs/_archive/NEXT_SESSION_VN_PLAN.md` 먼저 읽고 착수** → CN → 광고(대화 먼저).
 
 ## 2026-07-07 — STEP 645~648 — 완전성 청산①(매매처 DB)·②-JP(EDINET 공시)·헤더 홈 픽스 ✅
 
@@ -3628,7 +3644,7 @@ driver6/WACC 원장행 부재(최대 발견) — 위 §2-5에서 처리. en 프�
 ## 2026-07-06 — STEP 584~589 마감 + 🔴 AI 브리핑 레이어(R1~R3) 전략·설계 (무료·공개·SEO 모델)
 
 - **STEP 584~589 (코드·문서·HEAD `3f4b647`)**: 584 문서매듭 · **585 페이지명 "AI LENS"** + '이 화면 읽는 법'(progressive disclosure) + 이벤트 severity 재구성(중대 노출·루틴 접힘) · **586 한국어 보이스 v1**(원어민 전문가 톤 재집필: 표본약함→약한 신호·건전성→재무 건전성·근거주의→자료 갱신 · `VOICE_GUIDE.md` 신설) · **587 전문가 톤 1차**(접힘 카드=판정+수치 선언형 · 디스클레이머 통합=상단 1줄+법적문구 전역푸터) · **588 판정 보이스 v2**(구어 제거: 강하게 오르는 흐름→강한 상승 추세·알짜로 잘 버는 우량→높은 수익성) · **589 시간축 스트립 초보 정리**(장기 칸 합의도 단어-우선[엇갈림/대체로 우호적]·암호 꼬리표 제거).
-- **🔴 AI 브리핑 레이어 결정 (전략/설계 · 마스터 `docs/AI_BRIEFING_SPEC.md` 신설)**: LLM = 비정형 텍스트를 사실로 읽는 것만(점수·예측·판정 X). **R1** 공시 원문 요약 · **R2** 종목 브리핑(핵심 긴장+지켜볼 것) · **R3** 뉴스 요약·토픽태그 · R4(Q&A) 안 함. 가드레일=`AI_LENS_SPEC §1` 계승. 배관 재활용(`ai-analysis` OpenAI gpt-4o-mini+`ai_analysis` 캐시 · `eightK` 원문URL).
+- **🔴 AI 브리핑 레이어 결정 (전략/설계 · 마스터 `docs/_archive/AI_BRIEFING_SPEC.md` 신설)**: LLM = 비정형 텍스트를 사실로 읽는 것만(점수·예측·판정 X). **R1** 공시 원문 요약 · **R2** 종목 브리핑(핵심 긴장+지켜볼 것) · **R3** 뉴스 요약·토픽태그 · R4(Q&A) 안 함. 가드레일=`AI_LENS_SPEC §1` 계승. 배관 재활용(`ai-analysis` OpenAI gpt-4o-mini+`ai_analysis` 캐시 · `eightK` 원문URL).
 - **🔑 접근/수익 모델 대전환 (BUSINESS_STRATEGY 2026-07-06)**: AI 브리핑 = 무료·공개(**구독 폐기**) = SEO·글로벌 트래픽 엔진. 로그인 게이트 = 개인화(즐겨찾기·알림)에만·콘텐츠 아님(숨기면 SEO 죽음). 수익 = 광고·디렉토리·브로커 제휴(트래픽 뒤·저거부감부터·배너 맨끝).
 - **리서치(3라운드×2)**: 뉴스 감성 팩터 기각(대형주 예측력 약·이미 반영·LM 상업 라이선스 유료·가짜정밀도) → 뉴스=사실 브리핑만. 추정치 변경 렌즈 = 신선 후보(Yahoo `eps_trend`/`eps_revisions` 라이브 무료 실측·삼성/도요타 커버)이나 백테스트 이력 유료(I/B/E/S) → "참고용"+스냅샷 검증예약 → **보류**(AI 완성 우선).
 - **v2 UI 시안 확정**: 가격 앵커 → R2 브리핑(긴장+지켜볼 것·생성시각) → 시간축 → 렌즈 한 줄 그림 → 공시(R1+렌즈 인과선·경중 분리) → 뉴스(토픽) · 틴트=AI/흰=결정론 · 3개의 시계 타임스탬프.
@@ -3988,11 +4004,11 @@ HEAD `32cb51d`(363). 빌드 ✓. STEP 346~360 후 같은 세션에서 이어서 
 
 ## 2026-06-20 — STEP 272~311 · 🔴 V7 대전환(네이버 클론 폐기 → 게이트웨이+리딩방 검증) + 유튜브 Top100 + 카카오/구글 로그인 + 자가등록·관리자
 
-빌드 ✓ 전 STEP. HEAD `84fab0b`(311). **정체성 재정의: 랭킹·차트·종목상세·상품리스트 폐기 → 흩어진 주식 정보·서비스를 한 곳에 모으는 "검증된 중립 관문" + 리딩방·유사투자자문 검증.** 마스터 비전 = `docs/PRODUCT_SPEC_V7.md`.
+빌드 ✓ 전 STEP. HEAD `84fab0b`(311). **정체성 재정의: 랭킹·차트·종목상세·상품리스트 폐기 → 흩어진 주식 정보·서비스를 한 곳에 모으는 "검증된 중립 관문" + 리딩방·유사투자자문 검증.** 마스터 비전 = `docs/_archive/PRODUCT_SPEC_V7.md`.
 
 **272~280 — V7 전환 전 옛 홈 버그픽스**: 272 isKrxCode 전면교체(영숫자 KRX코드, ETF 미리보기 차트) · 273 기간칩 우측정렬 · 274 주식필터 통합+봉너비고정+종목토론 쓰기창 · 275 차트 꽉채움+ETN 차트제거 · 276 상품 100개 확장 · 277~278 스티키(티커 밑) · 279 기간칩 차트연동 · 280 분봉.
 
-**🔴 V7 대전환** — `docs/PRODUCT_SPEC_V7.md` 작성.
+**🔴 V7 대전환** — `docs/_archive/PRODUCT_SPEC_V7.md` 작성.
 - **281~284** `/toolbox`→홈 승격, 헤더=주식/코인(종목검색 제거), 옛 홈·`/market` 제거, 한국/미국 토글+카테고리 탭, max-w-7xl 폭통일, 지수 티커 복귀.
 - **285~286** 유튜브 Top100(구독자순 1만↑, 코인/부동산/골프 제외) — DB `youtube_channels`, UI, 주간 크론 `/api/cron/youtube-refresh`(월9시KST, `lib/youtube.ts`). env `YOUTUBE_API_KEY`.
 - **287** 탭 순서 재정렬(뉴스·증권사·유튜브 앞)+라벨 개선+기본탭 일치. link_hub 카테고리 +8(네이버페이증권·다음금융·아이투자·KB/신한/하나/메리츠/대신 리서치, DB직접).
@@ -4033,7 +4049,7 @@ HEAD `32cb51d`(363). 빌드 ✓. STEP 346~360 후 같은 세션에서 이어서 
 - **264** **홈 속도** — KRX `ranking` route 5분 캐시(반복 로드 즉시화). 커밋 `14c1493`
 
 **결과**: 주식·ETF·ETN·리츠·미국 5개 전부 동일한 기간 수익률 방식(완전 일관) + /market 통합 비교 + 홈 로딩 개선.
-**리딩방 검증 설계** = `docs/ROOM_VERIFICATION_SPEC.md` 기록(데이터 확보·구현은 플랫폼 완성 후 — 전체 리스트화 + 신고 사실 라벨 + 신고/광고 상위·분리표시).
+**리딩방 검증 설계** = `docs/_archive/ROOM_VERIFICATION_SPEC.md` 기록(데이터 확보·구현은 플랫폼 완성 후 — 전체 리스트화 + 신고 사실 라벨 + 신고/광고 상위·분리표시).
 
 ## 2026-06-15 — STEP 254~260 (ETN 실데이터 연결 + 펀드 시도→제거 + 탭 유지)
 
@@ -4063,7 +4079,7 @@ ETN을 KRX 실데이터로 연결, 펀드는 무료 수익률 소스가 없어 �
 - **253** **ETN 프로브** `/api/krx/etn`(KRX `etn_bydd_trd`). MCP로 찔러 확인 → **`empty_or_not_subscribed`** = 키·주식은 정상이나 **ETN 상품 미구독**. 커밋 `60fbd48`
 
 **데이터 현황**: 주식(국내·미국)·ETF·리츠 = yahoo 실데이터 ✅ / 미리보기 차트 = 전 타입 ✅ / **ETN = KRX 'ETN 일별매매정보' 이용신청 대기**(프로브로 미구독 확정) / **펀드 = KOFIA 소스 대기**.
-**남은 결정(사용자 작업)**: ① ETN KRX 구독 ② 펀드 KOFIA ③ 유튜브 팔로워 API 키 ④ 카카오 OAuth(투표) ⑤ AI 해설 빌드 여부(설계 `docs/AI_LENS_SPEC.md` 완료) ⑥ 평가·검증 MVP 2.0 방향.
+**남은 결정(사용자 작업)**: ① ETN KRX 구독 ② 펀드 KOFIA ③ 유튜브 팔로워 API 키 ④ 카카오 OAuth(투표) ⑤ AI 해설 빌드 여부(설계 `docs/_archive/AI_LENS_SPEC.md` 완료) ⑥ 평가·검증 MVP 2.0 방향.
 
 ## 2026-06-15 — STEP 240·243~246 (데이터 레이어: 기간 수익률 실데이터 + /market 통합 디렉토리)
 
@@ -4236,7 +4252,7 @@ V7 토스 밀착 3차 — 실시간차트 탭(A~D)·종목 미리보기·로고/
 
 ## 2026-06-06 — STEP 154~168 (토스증권 오마주 V7 — 홈 대시보드·풀폭·지수·티커·수급·랭킹100)
 
-V7 방향 재정렬: 네이버 복제 → **토스증권 오마주**. 홈을 토스식 시장 대시보드로, 전 페이지 풀폭 통일. 분석 문서 `docs/TOSS_ANALYSIS_AND_IA.md`. HEAD `959d8fa`. 빌드 ✓ 전 STEP.
+V7 방향 재정렬: 네이버 복제 → **토스증권 오마주**. 홈을 토스식 시장 대시보드로, 전 페이지 풀폭 통일. 분석 문서 `docs/_archive/TOSS_ANALYSIS_AND_IA.md`. HEAD `959d8fa`. 빌드 ✓ 전 STEP.
 
 **홈 대시보드·레이아웃**
 - 154·157 마켓 시총 필터(KIS `market-cap`) · 랭킹 100 확대(KIS 국내 3종 + Yahoo US movers 100, `a8a03cf`)
@@ -4403,7 +4419,7 @@ STEP 134 commit 후 정밀 재검수에서 발견된 4건 처리 — 헤더만 �
 
 - **README.md 전면 재작성**: 핵심 정체성 표 (정보/대화/허브/신뢰) V5 정렬, 운종 V5 페이지 13개 표 추가, "단타·장타·미국주식 × 7개" → "한국 5개·미국 4개 정확 카드", "3창 분리 실시간 채팅" → "종목별 채팅 + 토론·댓글", "21개 카드 + 21개 디테일" → V4 이력으로 강등, 진행 상태 표 STEP 88~135 명시, `cp .env.example .env.local` 실행 가이드 추가
 - **docs/BRAND_IDENTITY.md**: 태그라인 "한국 주식 동선" → "한국 금융 동선" (MVP 2.0 포함), 정체성 5가지(V4) → 4박자(V5) — V4 5가지는 보존 명시, 색상 팔레트 V4 → V4·V5 비교 표 (`#0E7C7B`→`#1AC267`, `#C73E3A`→`#F04452`), 중복 "## 이름" 헤더 정리, 참조 섹션 V5 (NEXT_SESSION_START·SESSION_KICKOFF) 추가
-- **docs/PRODUCT_SPEC_V4.md**: 상단에 ⚠️ "V4 명세 이력 보존" 안내문 추가 — V4→V5 주요 변경 (3창→2창, 21개→9개, 종목별 채팅, MVP 2.0 평가 디렉토리) 요약 + V5 비전 위치 (NEXT_SESSION_START·SESSION_KICKOFF) 명시
+- **docs/_archive/PRODUCT_SPEC_V4.md**: 상단에 ⚠️ "V4 명세 이력 보존" 안내문 추가 — V4→V5 주요 변경 (3창→2창, 21개→9개, 종목별 채팅, MVP 2.0 평가 디렉토리) 요약 + V5 비전 위치 (NEXT_SESSION_START·SESSION_KICKOFF) 명시
 - **.env.example 신규 생성** (STEP 119 결정 후 미생성 상태였음): 21개 키 (Supabase 5 · KIS 6 · DART/ECOS/SEC/FRED 4 · 카카오 OAuth 2 · 토스페이먼츠 2 · OpenAI 1 · SUPABASE_ACCESS_TOKEN rotate 권장) 그룹화
 - **.gitignore 패턴 보정**: `.env*` 규칙에 `!.env.example` 예외 추가 — 템플릿 파일이 git 에 포함되도록
 - 빌드 영향 X (문서·gitignore만)
@@ -5064,7 +5080,7 @@ Layer 1-A (카드 실데이터) 7개 STEP 완성. 단타창 7/7 + 장타창 7/7 
 - `docs/BRAND_IDENTITY.md` 신설 — 이름·의미·태그라인·색상·도메인 전략
 
 ### V4 비전 문서화
-- `docs/PRODUCT_SPEC_V4.md` 신설 — 운종 비전·구조·레이어 로드맵
+- `docs/_archive/PRODUCT_SPEC_V4.md` 신설 — 운종 비전·구조·레이어 로드맵
 - `docs/PRODUCT_SPEC_V3.md` 는 히스토리 보존 (덮어쓰지 않음)
 
 ### Layer 0 (틀) 시작점
@@ -5083,7 +5099,7 @@ Layer 1-A (카드 실데이터) 7개 STEP 완성. 단타창 7/7 + 장타창 7/7 
 - 백업 위치: `~/_BACKUP_20260423_191738/` (2026-04-30 이후 수동 삭제)
 - 본 세션 산출물:
   - `CLAUDE.md` 갱신 — 절대 규칙에 "OTMarketing 분리" 항목 추가, 실행 명령어 경로를 `~/Desktop/OTMarketing` → `~/stock-terminal` 으로 교체
-  - `docs/NEXT_SESSION_START.md` 상단에 "2026-04-23 OTMarketing 분리 직후" 박스 추가 (기존 내용 보존)
+  - `docs/_archive/NEXT_SESSION_START.md` 상단에 "2026-04-23 OTMarketing 분리 직후" 박스 추가 (기존 내용 보존)
   - `docs/CROSS_REFERENCE.md` 신규 생성 — OTMarketing과의 공유 인프라·분리 경계 명시
 
 ### 분리 이전과의 차이
@@ -6325,7 +6341,7 @@ function canAccess(role, minPlan): boolean {
 - 커밋 완료: `49abd20` (AuthGuard DEV_BYPASS), `da61662` (next.config.ts 관련)
 
 ### 문서 업데이트
-- CLAUDE.md, docs/CHANGELOG.md, session-context.md, docs/NEXT_SESSION_START.md 날짜 2026-04-17로 갱신
+- CLAUDE.md, docs/CHANGELOG.md, session-context.md, docs/_archive/NEXT_SESSION_START.md 날짜 2026-04-17로 갱신
 - 세션 #4~5 전체 로그 기록 완료
 
 ### 미해결 / 다음 세션 이슈
