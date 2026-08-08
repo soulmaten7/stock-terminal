@@ -89,7 +89,7 @@
    🔴 **완성 기준 대체**: 원전 대조표를 못 만드는 항목은 그 자리에 **「정의 공개표」**(항목 · 우리 정의 · 왜 이렇게 정했나 · 다른 관행 · 성립 안 하는 경우)를 둔다. 이게 없으면 "완성"이 아니다.
 5-2. 🔴 **값이 아니라 식을 만든다 — `y = f(x)`** (2026-08-08 신설 · 장은태).
    **원문**: *"난 우리가 만드는 모든 모델이 '1+1=2'가 아니라 '(x)+(x)=(y)' 이런 식으로 공식처럼 만드는 게 맞다고 생각해. 그렇게 해야 어떤 걸 추가하거나 내용이 변경되거나 바뀌어도 해당 x에 어떤 걸 바꿔 넣었을 때 제대로 된 y의 답이 나오지 않을까?"*
-   **실측 배경(2026-08-08)**: `damodaran_industry` 조회 블록이 **13개 파일에 복붙**돼 있고 `eq("is_us_listed", true)` 필터가 **13번 따로** 적혀 있다 — `app/api/cron/revdcf/route.ts` · `scripts/compute_revdcf_all.ts` · `probe_851` · `866` · `866c` · `871` · `874` · `876` · `878` · `879` · `906_growth_fit` · `906_wc_debt` · `909`.
+   **실측 배경(2026-08-08)**: 🔴 **2026-08-08 정정 — 「13곳」 중 실제로 고쳐야 하는 운영·재실행 경로는 2곳(`route.ts`·`compute_revdcf_all.ts`)이고, 나머지 11곳은 1회성 조사 기록(`probe_*`)이라 고치면 과거 STEP의 재현성이 깨진다(STEP 938 실측·미접촉 확정).** 규칙의 취지는 유효하다 — **앞으로 만드는 probe가 또 복붙하기 때문**이다. 원문: `damodaran_industry` 조회 블록이 **13개 파일에 복붙**돼 있고 `eq("is_us_listed", true)` 필터가 **13번 따로** 적혀 있다 — `app/api/cron/revdcf/route.ts` · `scripts/compute_revdcf_all.ts` · `probe_851` · `866` · `866c` · `871` · `874` · `876` · `878` · `879` · `906_growth_fit` · `906_wc_debt` · `909`.
    🔴 **그래서 무엇이 문제인가**: Q0 보강(미매핑 219건에 SEC 출처 추가)을 하려면 **13곳을 전부 고쳐야 한다.** 현실적으로는 운영 경로(`route.ts`)만 고쳐지고 **검증 스크립트 12개는 옛 동작(802건)을 그대로 유지**한다 → **운영 결과와 검증 결과가 조용히 갈라지고, 검증이 검증 노릇을 못 하게 된다.** 이건 가정이 아니라 지금 저장소의 상태다.
    **규칙 5항**
    **①** 계산 코드 안에 **특정 출처·테이블·필터를 직접 적지 않는다.** 재료 조달은 함수 밖에서 주입한다.
@@ -214,7 +214,8 @@
 - **Nasdaq** — 🟢 되는 곳. 단 분류 체계가 **GICS가 아니다**(12개 · `Finance`·`Basic Materials`·`Telecommunications`·`Miscellaneous` · 🔴 **Communication Services 없음** → GOOG·NTES가 Technology로 감)
 - **Stock Analysis** — 🟢 종목별 sector 보유(`ASML` = Technology / Semiconductor Equipment & Materials). 🔴 전 종목 일괄 취득 경로 미확인
 - **Financial Modeling Prep** — 🔴 **키 필요(401)**. `registry.ts`의 *"FMP 키 미보유"* 기록과 일치 확인
-- 🔴 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **무료 소스는 진짜 GICS를 줄 수 없다.** Damodaran `primary_sector`도 GICS 이름을 빌린 그의 배정이다. → 「정의 공개표」에 반드시 밝힌다
+- 🔴 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **전 종목 무료 취득은 불가**하다. → 「정의 공개표」에 반드시 밝힌다
+- 🔑 **2026-08-08 정정 — 위 문장을 「줄 수 없다」로 단정한 것은 틀렸다.** ⓪-5-B를 한 번 더 돌아 `link_hub` **`etf` 카테고리**를 조회하니 **State Street SPDR 섹터 ETF holdings**(11개 xlsx·무료)가 나왔고, 그 구성종목이 곧 **S&P 500 종목의 진짜 GICS**였다. **실측: Damodaran `primary_sector` vs 진짜 GICS = 492/494 = 99.6%.** 🔴 **「없다」는 조사 부족의 결과일 수 있다**(플레이북 #111과 같은 병) — 그리고 **같은 카테고리를 한 번 더 판 것**이 답이었다
 
 ---
 
