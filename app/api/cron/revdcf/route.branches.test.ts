@@ -49,12 +49,15 @@ vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
 // computeDrivers는 항상 ok:true — HTTP_*·EX는 fetch 단계에서 먼저 갈리고, NO_INDUSTRY 테스트는 이 성공 결과가
 // industry lookup(위 damodaran_industry 빈 배열)에서 걸리는 것을 본다.
+// STEP 947 §2 — computeDrivers가 이제 fundamentals를 함께 반환한다. 목이 그 계약을 안 지키면 route.ts의
+//   fundamentalsRow()가 dr.fundamentals를 읽다 던진다(947 실제 발견) — 목을 실계약에 맞춘다.
 vi.mock("@/lib/revdcf/drivers", () => ({
   computeDrivers: vi.fn(() => ({
     ok: true,
     drivers: { startingSales: 100, salesGrowth: 0.05, operatingMargin: 0.1, startingMargin: 0.1, fixedCapitalRate: 0.15, fixedCapitalRateLevel: 0.15, fixedCapitalRateMarginal: 0.12, workingCapitalRate: 0.1 },
     market: { debt: 0, nonOperatingAssets: 0, shares: 10, latestYear: 2024 },
     flags: {},
+    fundamentals: { netIncome: 10, equity: 50, revenue: 100, operatingIncome: 10, dna: 5, fiscalYear: 2024, sourceTags: {} },
   })),
 }));
 

@@ -1,0 +1,10 @@
+{
+  "measuredAt": "2026-08-08",
+  "method": "us_market_cap 최신 as_of(2026-08-07) 전 행(5,509)을 필터 없이 대상으로, data/sources/sec/company_tickers_exchange_20260802.json의 ticker→cik 맵과 정확일치(대소문자·구두점 그대로) 대조. 중복 티커는 첫 등장 CIK 채택(원본 파일 내 중복 0건 확인 안 함 — 필요시 재검토).",
+  "mcapSymbols": 5509,
+  "matchedCik": 5497,
+  "unmatched": 12,
+  "unmatchedSamples": ["CNSY", "FRBA", "GRSD", "HIFS", "QNME", "RCBC", "SSBI", "STLN", "TCGX", "TONT", "TOWN", "YARW"],
+  "coveragePct": 99.78,
+  "note": "unmatched 12건 = 전체 unmatched 수(30개 상한 미도달, 전수 나열). 원인 미조사(작음)."
+}

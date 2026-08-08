@@ -120,3 +120,73 @@ describe("computeDrivers — 스킵 경계 보강 (STEP 900 §3 — 이전 미�
     }
   });
 });
+
+// STEP 947 §2-5 — fundamentals(Q1 밸류에이션 재료: netIncome·equity·revenue·operatingIncome·dna·fiscalYear·sourceTags) 회귀 고정.
+describe("computeDrivers — fundamentals(STEP 947 §2) — Q1 밸류에이션 재료", () => {
+  const netIncomeLoss5yr = { NetIncomeLoss: flowFacts(five(80)) };
+  const profitLoss5yr = { ProfitLoss: flowFacts(five(80)) };
+  const equity5yr = { StockholdersEquity: stockFacts(five(400)) };
+  const equityNeg5yr = { StockholdersEquity: stockFacts(five(-50)) };
+  const fullOk = { ...revenue5yr, ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr };
+
+  it("NetIncomeLoss만 있으면 netIncome이 채워지고 sourceTags.netIncome === 'NetIncomeLoss'", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...netIncomeLoss5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBe(80);
+    expect(r.fundamentals.sourceTags.netIncome).toBe("NetIncomeLoss");
+  });
+
+  it("NetIncomeLoss 없고 ProfitLoss만 있으면 폴백으로 값을 채우고 sourceTags에 'ProfitLoss'를 남긴다", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...profitLoss5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBe(80);
+    expect(r.fundamentals.sourceTags.netIncome).toBe("ProfitLoss");
+  });
+
+  it("NetIncomeLoss·ProfitLoss 둘 다 없으면 netIncome은 null이다(0으로 채우지 않는다)", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBeNull();
+    expect(r.fundamentals.sourceTags.netIncome).toBeUndefined();
+  });
+
+  it("StockholdersEquity가 음수(자기자본잠식)이면 음수 그대로 보존한다(가공하지 않는다)", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...equityNeg5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.equity).toBe(-50);
+  });
+
+  it("StockholdersEquity가 있으면 sourceTags.equity가 기록된다", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...equity5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.equity).toBe(400);
+    expect(r.fundamentals.sourceTags.equity).toBe("StockholdersEquity");
+  });
+
+  it("영업이익 5년치가 없어 MISSING_TAG_OPERATING_INCOME으로 return해도 fundamentals가 실려 온다(매출은 채워짐)", () => {
+    const r = computeDrivers(gaapOf({ ...revenue5yr }), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.skipReason).toBe("MISSING_TAG_OPERATING_INCOME");
+      expect(r.fundamentals).toBeDefined();
+      expect(r.fundamentals.fiscalYear).toBe(2024);
+      expect(r.fundamentals.revenue).toBe(1000);
+      expect(r.fundamentals.operatingIncome).toBeNull(); // OperatingIncomeLoss 태그 자체가 없음 — 재구성 재료도 없음
+    }
+  });
+
+  it("매출조차 없어 INSUFFICIENT_HISTORY로 return하면 fundamentals 전부 null(재료 자체가 없음)", () => {
+    const r = computeDrivers(gaapOf({}), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.skipReason).toBe("INSUFFICIENT_HISTORY");
+      expect(r.fundamentals.fiscalYear).toBeNull();
+      expect(r.fundamentals.revenue).toBeNull();
+      expect(r.fundamentals.netIncome).toBeNull();
+      expect(r.fundamentals.equity).toBeNull();
+      expect(r.fundamentals.operatingIncome).toBeNull();
+      expect(r.fundamentals.dna).toBeNull();
+      expect(r.fundamentals.sourceTags).toEqual({});
+    }
+  });
+});

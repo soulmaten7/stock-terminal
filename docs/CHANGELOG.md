@@ -1,6 +1,31 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (111) — 🟢 **STEP 947: Q1 ①단계 — 밸류에이션 4축 재료 확보 (화면 무변경)**
+
+> **성격**: **화면 무변경**(app 페이지·components·messages diff 0, `git diff --stat` 확인) — 크론 미등록·수동실행 0 · 배포는 되나 신규 코드는 아무 데서도 실행 안 됨(코드만 존재).
+
+**§0 측정** — `docs/probe_947_cik_coverage.json`: `us_market_cap` 최신 as_of(2026-08-07) **5,509종목** 전수 대상(필터 없음) vs `data/sources/sec/company_tickers_exchange_20260802.json` → **매칭 5,497(99.78%) · 미매칭 12종목**(`CNSY`·`FRBA`·`GRSD`·`HIFS`·`QNME`·`RCBC`·`SSBI`·`STLN`·`TCGX`·`TONT`·`TOWN`·`YARW`, 원인 미조사).
+
+**§1 `us_cik_map`** — 신규 테이블 + `scripts/load_cik_map.ts`(로컬 원본만 읽음, 재취득 안 함) → **10,432행 적재**(중복 티커 0건, 원본과 정확히 일치).
+
+**§2 `drivers.ts` fundamentals** — SEC 태그 2종 신규(`NetIncomeLoss`/`ProfitLoss`/`...Basic` 3-tag coalesce·`StockholdersEquity` 계열 3종). `computeDrivers()`를 재구성해 `fundamentals`(netIncome·equity·revenue·operatingIncome·dna·fiscalYear·sourceTags)를 **5년 게이트 전부보다 앞에서 수집**, 기존 6개 skip 경로(INSUFFICIENT_HISTORY·MISSING_TAG_*·NOT_APPLICABLE_SECTOR·MULTI_CLASS_SHARES) 전부에 실어 보낸다 — **조건식·순서·skipReason 문자열은 diff 0**(기존 8/8 테스트 무변경 통과로 확인). 신규 테스트 7건(드라이버 재구성)+기존 8건 = 15/15.
+
+**§3 `us_fundamentals`** — 분모 캐시 테이블(`as_of` 없음, 최신 한 벌). 추가지침 B-1 반영 — `unavailable_reason` 컬럼 신설(값 없는 이유, 빈 칸을 null로만 두지 않는다).
+
+**§4 `route.ts` 확장** — 유니버스를 `us_cik_map ⋈ us_market_cap`(5,497)로 넓히되 **역DCF 계산 대상(604)은 불변**. 처리순서 = ①역DCF 604 최우선 매일 전량 ②나머지는 `us_fundamentals.fetched_at` 오래된 순 자동 순환. `processOne`을 kind별로 분기(`revdcf`=기존 로직+fundamentals upsert / `rest`=fundamentals upsert만, `revdcf_results` 안 씀). BUDGET_MS·throttle·동시성6·maxDuration 불변. 🐞 **회귀 발견·수정**: 기존 `route.test.ts`·`route.branches.test.ts`의 `computeDrivers` 목이 신규 `fundamentals` 필드 없이 작성돼 있어, 코드가 `dr.fundamentals`를 읽다 던지고 모든 skip_reason이 "EX"로 뒤바뀜(7건 실패로 실제 발견) → 목을 실계약에 맞춰 수정, 9/9 복구.
+
+**§5 `us_valuation` + `lib/valuation.ts`** — 순수 함수(`computeValuation`)·정의 유일 출처(`VALUATION_SPEC`). PER·PBR·PSR·EV/EBITDA 4식, 음수/결측은 사유와 함께 미성립 처리. **원문 스펙보다 조건 하나 추가**(EV/EBITDA: `debt`·`nonOperatingAssets`가 null이면 `MISSING_MARKET_DATA` — 0으로 가정하지 않음, `VALUATION_SPEC.md`에 이유 공개). 손계산 검산 4케이스(흑자·무차입/흑자·유차입/적자/자기자본음수) + 경계 6건 = 11/11. 🔴 **지시 이탈 1건**: "종목은 us_fundamentals에서 사전순으로 뽑는다"를 못 따름(그 표가 이 시점에 0행이라 뽑을 대상 자체가 없음 — 7-5의 "0이어야 정상"과 같은 이유) → 합성 픽스처(Case A~D)로 대체, 사유를 테스트 파일·본 문서에 명시. 계산은 revdcf 크론 끝에서 SEC 호출 0건으로 전량 수행(`try/finally`로 예산 소진 시에도 보장).
+
+**§6 `docs/VALUATION_SPEC.md`** — 정의 공개표 신규. 원전 없음 실측(EI 튜토리얼 8편 직접 grep: P/E 0·price-to-book 0·price-sales 0·EBITDA 1, ⓪-4③ 재검증) · 4축 식·태그·기간·미성립조건 · 외부근거 3건(Damodaran vebitda.pdf·pbv.pdf·Stock Analysis — 🔴 PDF 원문은 `data/sources/`에 미저장, 빚으로 기록) · 미해결 3건(PSR 원문·다중클래스 합산·비지배지분 혼입) · 업종대비 범위밖 명시 · 미매칭 12종목 전수 공개.
+
+**§7 검증** — `npm test` **291/291**(29파일) · `messages.test.ts` 8/8(새 키 0, `messages/` diff 0) · `npx tsc --noEmit` 클린 · `npm run build` 클린 · `git diff --stat`로 `app/[locale]`·`components/`·`messages/`·`vercel.json`·`data/us_symbols.json`·`.github/workflows/` **0줄** 확인 · `revdcf_results` 29컬럼 불변(information_schema 직접 조회) · `us_cik_map` 10,432 / `us_fundamentals` 0 / `us_valuation` 0(크론 미실행, 정상).
+
+**무변경** — 화면·`revdcf_results` 스키마·기존 렌즈·`lens_cuts`·`REVDCF_ENABLED`·`data/us_symbols.json`·`.github/workflows/`·`vercel.json` · 크론 등록·수동실행 0.
+
+**못 한 것**: CIK 미매칭 12종목 원인 미조사 · Damodaran PDF 원문 미저장 · PSR 정의 원문 미확보 · 다중클래스 시총 합산 미해결 · 실제 종목 기반 손계산 검증(크론 미실행이라 데이터 없음) · 라이브 실측(코드만 존재, 아무 데서도 실행 안 됨).
+
+
 ## 2026-08-08 (110) — ✅ **Q0 마감 (장은태) — 3중 검증·검수 후 · 🔴 「판정 33%」 기준일 불일치 발견·실측**
 
 > **성격**: 마감 판정 ＋ 검증 발견 2건. **코드 diff 0.** 장은태 지시: *"Q0 마감 전에 3번의 마지막 검증 검수를 진행하자. 지금 미룬 판단까지 포함해서."*

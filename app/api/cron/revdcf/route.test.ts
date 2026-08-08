@@ -59,20 +59,23 @@ function makeSupabaseMock() {
 const createAdminClient = vi.fn(() => ({ from: makeSupabaseMock() }));
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient }));
 
+// STEP 947 §2 — computeDrivers가 이제 모든 경로(ok true/false)에 fundamentals를 함께 반환한다. 목이 그 계약을 안 지키면
+//   route.ts의 fundamentalsRow()가 dr.fundamentals를 읽다 던져 skip_reason이 전부 "EX"로 뒤바뀐다(947 실제 발견) — 목을 실계약에 맞춘다.
+const STUB_FUND_OK = { netIncome: 10, equity: 50, revenue: 100, operatingIncome: 10, dna: 5, fiscalYear: 2024, sourceTags: {} };
 vi.mock("@/lib/revdcf/drivers", () => ({
   computeDrivers: vi.fn((gaap: { __marker?: string }) => {
     const base = { startingSales: 100, salesGrowth: 0.05, operatingMargin: 0.1, startingMargin: 0.1, workingCapitalRate: 0.1 };
     if (gaap?.__marker === "no-marginal") {
-      return { ok: true, drivers: { ...base, fixedCapitalRate: 0.9, fixedCapitalRateLevel: 0.9, fixedCapitalRateMarginal: null }, market: { debt: 0, nonOperatingAssets: 0, shares: 10, latestYear: 2024 }, flags: {} };
+      return { ok: true, drivers: { ...base, fixedCapitalRate: 0.9, fixedCapitalRateLevel: 0.9, fixedCapitalRateMarginal: null }, market: { debt: 0, nonOperatingAssets: 0, shares: 10, latestYear: 2024 }, flags: {}, fundamentals: STUB_FUND_OK };
     }
     if (gaap?.__marker === "has-marginal") {
-      return { ok: true, drivers: { ...base, fixedCapitalRate: 0.9, fixedCapitalRateLevel: 0.9, fixedCapitalRateMarginal: 0.12 }, market: { debt: 0, nonOperatingAssets: 0, shares: 10, latestYear: 2024 }, flags: {} };
+      return { ok: true, drivers: { ...base, fixedCapitalRate: 0.9, fixedCapitalRateLevel: 0.9, fixedCapitalRateMarginal: 0.12 }, market: { debt: 0, nonOperatingAssets: 0, shares: 10, latestYear: 2024 }, flags: {}, fundamentals: STUB_FUND_OK };
     }
     // STEP 896 §5 — MISSING_TAG 3분기 중 하나가 route.ts를 거쳐 그대로 skip_reason에 실리는지(유니버스 보존 포함) 확인용 마커.
     if (gaap?.__marker === "missing-oi") {
-      return { ok: false, skipReason: "MISSING_TAG_OPERATING_INCOME", flags: { missing: "operatingIncome<5yr" } };
+      return { ok: false, skipReason: "MISSING_TAG_OPERATING_INCOME", flags: { missing: "operatingIncome<5yr" }, fundamentals: { netIncome: null, equity: null, revenue: 100, operatingIncome: null, dna: null, fiscalYear: 2024, sourceTags: {} } };
     }
-    return { ok: false, skipReason: "UNKNOWN_MARKER", flags: {} };
+    return { ok: false, skipReason: "UNKNOWN_MARKER", flags: {}, fundamentals: { netIncome: null, equity: null, revenue: null, operatingIncome: null, dna: null, fiscalYear: null, sourceTags: {} } };
   }),
 }));
 
