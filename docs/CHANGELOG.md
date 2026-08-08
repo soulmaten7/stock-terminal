@@ -1,6 +1,25 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (113) — 🟢 **STEP 948 재시도(장은태 승인): 401 원인 확정 후 1회 성공 — 밸류에이션 4축 라이브 실측**
+
+> **성격**: (112)의 마지막 재시도. **코드 diff 0**(문서·probe만). 배포 불필요·push 안 함(fb2c5c6 그대로).
+
+**§1 401 원인을 호출 없이 확정** — `vercel env pull`(임시파일, 사용 즉시 삭제)로 받은 Production `CRON_SECRET`과 로컬 `.env.local` 값을 **sha256 앞 8자리·길이만** 비교(값 자체는 어디에도 안 남김) → **raw·unquoted 둘 다 완전 일치.** 🔴 **1차 401의 원인은 Production 시크릿 불일치가 아니라, (112)의 curl이 `.env.local`의 큰따옴표(`"..."`)를 벗기지 않고 그대로 헤더에 넣은 셸 추출 버그**로 확정됐다. 🔑 **명령서 결함 1건째**: 원 STEP 948 명령서 2-1이 "CRON_SECRET은 로컬 .env.local에서 읽어 쓴다"고만 하고 파싱 방법을 지정하지 않아, `cut` 같은 단순 추출이 dotenv 따옴표 관행과 충돌 — 실행 실패가 아니라 **명령서 결함**이었다.
+
+**§2 재시도(마지막 1회) 성공** — 파싱을 node로 교체(앞뒤 공백 제거 + 감싼 따옴표 벗김) 후 `https://onetrillion.app/api/cron/revdcf` GET 1회 → **HTTP 200**, 280.3초 소요(BUDGET_MS=270s 소진 후 정상 종료). 응답 전문: `{"asOf":"2026-08-08","universe":604,"todoAtStart":5878,"processed":1763,"saved":604,"finished":false,"elapsedMs":278954,"revdcfUniverse":604,"fundamentalsUniverse":5890,"fundamentalsSaved":1003,"fundamentalsStalest":"2026-08-08T12:49:35.543+00:00","valuationSaved":1003}`.
+
+**§3 찬 행 수** — `us_fundamentals` **1,003행**(net_income 855·equity 851·revenue 855·operating_income 837·dna 816·debt/non_operating_assets/shares 685 — 뒤 셋은 driver 전체 성공시만). unavailable_reason: null(성공) 685·INSUFFICIENT_HISTORY 227·MISSING_TAG_PPE 34·NOT_APPLICABLE_SECTOR 24·MISSING_TAG_OPERATING_INCOME 22·MISSING_TAG_OPERATING_CASH 6·MULTI_CLASS_SHARES 5. **비지배지분 혼입 실측 = 48건**(equity 851건 중 `StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest` 채택, 5.64%) — 947에서 "추적만 한다"고 남긴 것을 이번에 숫자로 채움. `us_valuation` **1,003행**(per 606·pbr 738·psr 793·ev_ebitda 528). `MISSING_MARKET_DATA`(947에서 원문 스펙보다 추가한 조건)가 실전에서 **131건** 발생 확인. `revdcf_results` 2026-08-08=**604**(08-07과 동일, 감소 없음 — 역DCF 안 깨짐).
+
+**§4 손계산 검산 + SEC 원문 대조** — `us_valuation`에서 조건별 사전순 결정적 선정: ①4축전부(`A`) ②per만미성립(`AIRI`) ③pbr만미성립(`AAL`) ④ev_ebitda만미성립(`ABNB`). 4종목 전부 python 독립 재계산과 **bit-for-bit 일치**. `A`(Agilent, CIK 1090872)의 SEC `companyfacts` 원문을 직접 열어 5개 태그(NetIncomeLoss·StockholdersEquity·Revenue...·OperatingIncomeLoss·D&A)의 회계연도·값을 `us_fundamentals`와 대조 — **전부 일치**(동일 end=2024-10-31 값이 FY24·FY25 두 10-K에 중복 등재돼 있었으나 값 동일이라 무관).
+
+**§5 야후 상대차 — 미실시, 명령서 결함 2건째** — `lens_scores`에 야후 원시 PER/PBR이 저장돼 있다는 명령서 전제를 직접 확인한 결과 **거짓**이었다: 그 테이블엔 파생 점수(`valuation_value`/`valuation_state`)만 있고, 원시 `trailingPE`/`priceToBook`은 `lib/lensCompute.ts`의 즉시계산 값이라 DB에 저장되지 않는다(grep 전수 확인 — 저장 테이블 0곳). 종목별 라이브 재조회(수백 건)가 필요한데, 이는 이번 STEP이 승인한 "크론 1회"를 벗어나는 별도의 대량 라이브 호출이라 **임의로 하지 않고 멈췄다.**
+
+**문서** — `docs/probe_948_live.json` 전면 갱신(1차 실패+2차 성공 전체 기록) · `docs/VALUATION_SPEC.md` 검증절·미해결②(비지배지분) 실측치로 갱신.
+
+**무변경** — 코드 · 화면 · `REVDCF_ENABLED` · 배포(재배포 없음, push 안 함).
+
+
 ## 2026-08-08 (112) — 🔴 **STEP 948: revdcf 크론 1회 수동 실행 — 401로 즉시 실패(재시도 안 함)**
 
 > **성격**: 실행 시도 ＋ 실패 기록. **코드 diff 0**(문서·probe만).
