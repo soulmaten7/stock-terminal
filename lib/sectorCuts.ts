@@ -63,3 +63,45 @@ export function bootstrap(values: number[], rng: () => number, iterations = 1000
     p70WidthOverIqr: iqr > 0 ? p70Width / iqr : null,
   };
 }
+
+// ────────────────────────────────────────────────────────────────
+// STEP 944 — 적용/제외 판정 + 영속화 행 변환의 순수 함수.
+// 🔴 임계값은 여기 상수로 고정하지 않는다 — 호출부(scripts/refresh_sector.ts)가 EXCLUDE_THRESHOLD를 넘긴다(규칙 5-2).
+// ────────────────────────────────────────────────────────────────
+
+export type AppliedDecision = { applied: boolean; excludeReason: string | null; widthOverIqr: number };
+
+/** 부트스트랩 결과 + 임계값 → 적용/제외 판정. p30·p70 중 IQR 대비 더 큰 쪽으로 비교한다(943 §3). */
+export function decideApplied(b: BootstrapResult, threshold: number): AppliedDecision {
+  const widthOverIqr = Math.max(b.p30WidthOverIqr ?? 0, b.p70WidthOverIqr ?? 0);
+  const applied = widthOverIqr <= threshold;
+  return { applied, excludeReason: applied ? null : `bootstrap_width_over_iqr=${widthOverIqr.toFixed(2)} > ${threshold}`, widthOverIqr };
+}
+
+/** 🔴 944 §5-2: applied=false(또는 컷 자체가 없음)면 null — 시장 전체 컷으로 폴백하지 않는다(결함⑤ 재현 금지). */
+export function cutIfApplied(row: { applied: boolean | null; lo: number; hi: number } | undefined): { lo: number; hi: number } | null {
+  if (!row || row.applied !== true) return null;
+  return { lo: row.lo, hi: row.hi };
+}
+
+export type SectorResolvedRow = {
+  as_of: string; symbol: string; sector: string | null; source: string | null;
+  cross_nasdaq: string | null; cross_sic: string | null; cross_yahoo: string | null; disagree: boolean | null;
+};
+
+/** resolveSector Map → us_sector_resolved 행. 🔴 resolveSector 로직을 복제하지 않는다 — 이미 계산된 결과를 형태만 바꾼다. */
+export function toResolvedRows(
+  asOf: string,
+  symbols: string[],
+  resolved: Map<string, { sector: string; source: string; crossCheck: { nasdaq: string | null; sic: string | null; yahoo: string | null; disagree: boolean } }>
+): SectorResolvedRow[] {
+  return symbols.map((symbol) => {
+    const r = resolved.get(symbol);
+    return {
+      as_of: asOf, symbol,
+      sector: r?.sector ?? null, source: r?.source ?? null,
+      cross_nasdaq: r?.crossCheck.nasdaq ?? null, cross_sic: r?.crossCheck.sic ?? null, cross_yahoo: r?.crossCheck.yahoo ?? null,
+      disagree: r?.crossCheck.disagree ?? null,
+    };
+  });
+}

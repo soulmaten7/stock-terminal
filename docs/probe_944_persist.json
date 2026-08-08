@@ -1,0 +1,121 @@
+{
+  "_meta": {
+    "purpose": "STEP 944 §4 — 영속화·적용 검증 리포트(판정 없음)",
+    "asOf": "2026-08-08",
+    "generatedAt": "2026-08-08T10:11:09.479Z"
+  },
+  "persistenceMatch": {
+    "totalSymbols": 1021,
+    "mismatchCount": 0,
+    "mismatches": []
+  },
+  "excludeMatch943": true,
+  "expected943Excluded": [
+    "Communication Services::assetgrowth",
+    "Communication Services::valuation",
+    "Real Estate::assetgrowth",
+    "Real Estate::quality",
+    "Real Estate::valuation",
+    "Utilities::lowvol",
+    "Utilities::quality"
+  ],
+  "actualExcluded": [
+    "Communication Services::assetgrowth",
+    "Communication Services::valuation",
+    "Real Estate::assetgrowth",
+    "Real Estate::quality",
+    "Real Estate::valuation",
+    "Utilities::lowvol",
+    "Utilities::quality"
+  ],
+  "appliedSummary": {
+    "appliedCount": 71,
+    "excludedCount": 7,
+    "bySector": {
+      "Industrials": {
+        "applied": 8,
+        "excluded": 0
+      },
+      "Utilities": {
+        "applied": 5,
+        "excluded": 2
+      },
+      "Real Estate": {
+        "applied": 4,
+        "excluded": 3
+      },
+      "Materials": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Financials": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Consumer Staples": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Information Technology": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Health Care": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Consumer Discretionary": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Energy": {
+        "applied": 7,
+        "excluded": 0
+      },
+      "Communication Services": {
+        "applied": 5,
+        "excluded": 2
+      }
+    },
+    "byMetric": {
+      "assetgrowth": {
+        "applied": 9,
+        "excluded": 2
+      },
+      "fscore": {
+        "applied": 11,
+        "excluded": 0
+      },
+      "momentum": {
+        "applied": 11,
+        "excluded": 0
+      },
+      "valuation": {
+        "applied": 9,
+        "excluded": 2
+      },
+      "technical": {
+        "applied": 11,
+        "excluded": 0
+      },
+      "lowvol": {
+        "applied": 10,
+        "excluded": 1
+      },
+      "quality": {
+        "applied": 9,
+        "excluded": 2
+      },
+      "gap_years": {
+        "applied": 1,
+        "excluded": 0
+      }
+    }
+  },
+  "cannotShowSectorCompare": {
+    "unclassifiedSymbolMetric": 0,
+    "excludedComboSymbolMetric": 320,
+    "showable": 6240,
+    "total": 6560
+  }
+}

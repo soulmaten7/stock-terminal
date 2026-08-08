@@ -147,6 +147,18 @@ export const MATERIAL_SOURCES = {
     /** STEP 943: 컷 표·부트스트랩 흔들림·판정변경 종목수(결함⑤ 크기). 값은 여기 안 적는다(재실행하면 바뀔 수 있음). */
     probe: "scripts/probe_943_sector_cuts.ts → docs/probe_943_sector_cuts.json — 재현: npx tsx scripts/probe_943_sector_cuts.ts",
   },
+  /**
+   * STEP 944: `resolveSector` 결과 캐시. 🔴 진실의 원천이 아니다 — `lib/sector.ts`의 `resolveSector`가 정본.
+   * 갱신 = scripts/refresh_sector.ts(수동 실행만, 크론 미등록). sector_cuts의 applied/exclude_reason/width_over_iqr도
+   * 이 스크립트가 함께 갱신한다(같은 실행에서 ①영속화 ②컷재계산 ③부트스트랩 순서).
+   */
+  sectorResolved: {
+    table: { name: "us_sector_resolved", note: "as_of·symbol·sector·source·cross_nasdaq·cross_sic·cross_yahoo·disagree·updated_at (PK as_of,symbol)" },
+    refreshScript: "scripts/refresh_sector.ts — 수동 실행(npx tsx scripts/refresh_sector.ts), 재실행 안전(같은 as_of면 upsert)",
+    excludeThreshold: "sector_cuts.applied 판정 임계값 = width_over_iqr > 1.0(944 장은태 확정). scripts/refresh_sector.ts의 EXCLUDE_THRESHOLD 상수 하나에서만 관리(규칙 5-2) — 코드 값 아닌 이 좌표를 참조할 것",
+    /** STEP 944: 영속화 정합·제외 표기 정합·적용 요약·업종대비 표시불가 조합수. 값은 여기 안 적는다. */
+    validationProbe: "scripts/probe_944_persist.ts → docs/probe_944_persist.json — 재현: npx tsx scripts/probe_944_persist.ts",
+  },
 } as const;
 
 // ────────────────────────────────────────────────────────────────

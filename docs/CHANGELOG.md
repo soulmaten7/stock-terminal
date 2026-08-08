@@ -1,6 +1,22 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (105) — 🟢 **STEP 944: Q0 구현 ⑤ 준비 — 해석 결과 영속화 + 컷 적용/제외 확정 + 갱신 경로**
+
+> **성격**: `resolveSector` 결과를 테이블로 캐시하고, `sector_cuts`에 적용/제외를 플래그로 남기고, 수동 갱신 스크립트를 만든다. **화면 코드·기존 렌즈 판정 로직 diff 0. 크론 미등록**(별도 승인 사항).
+
+**§1 ⓪-4③ 재확인** — `docs/probe_943_sector_cuts.json` 직접 열람해 IQR 대비 1.0 초과 조합을 재계산 → **7건 정확히 일치**(RealEstate/valuation 1.99·Utilities/lowvol 1.58·RealEstate/assetgrowth 1.46·Utilities/quality 1.27·CommServices/valuation·assetgrowth 각 1.16·RealEstate/quality 1.01) · `lib/sector.ts` 확인 — `resolveSector` 호출마다 DB 쿼리 9회(테이블 4개 로드) 발생, 종목 페이지에서 매번 돌리면 비쌈(영속화 필요성의 근거) · `sector_cuts` 스키마에 적용/제외 칸이 없었음을 직접 확인.
+
+**§2 구현** — 마이그레이션 2건: `sector_cuts`에 `applied`·`exclude_reason`·`width_over_iqr` 컬럼 추가(기존 9개 컬럼·78행 그대로, 컬럼만 추가) · `us_sector_resolved` 신규(RLS = `us_sector_nasdaq`과 동일 패턴). `lib/sectorCuts.ts`에 순수 함수 3개 추가(`decideApplied`—임계값을 인자로 받아 코드에 안 박음(규칙 5-2) · `cutIfApplied`—applied=false면 null, 시장 전체 컷 폴백 없음 · `toResolvedRows`—resolveSector Map을 행으로 변환만, 로직 재계산 안 함). `scripts/refresh_sector.ts` 신규 — ① `resolveSector` 호출→`us_sector_resolved` upsert ② `sector_cuts` 재계산(943의 `sectorCut`/`bootstrap` 그대로 재사용, 복제 없음) ③ 부트스트랩(시드=943 유지)→`applied`/`exclude_reason`/`width_over_iqr` 갱신. **크론 등록 없음 — 수동 실행만.**
+
+**§3 실측** — `refresh_sector.ts` 2회 실행(리팩터 전후) 모두 동일 결과: `us_sector_resolved` **1,021행** · `sector_cuts` **78개 조합(적용 71·제외 7)**·skip 10건 — **943·이전 판정과 전부 일치**(재현성 확인). 소요시간 3.5~5.5초(향후 크론 주기 판단 재료). `scripts/probe_944_persist.ts` 검증: ① **영속화 정합 — 1,021종목 중 불일치 0건**(캐시=실시간 완전 일치) ② **제외 표기 정합 — 943의 7건과 정확히 일치**(true) ③ 적용 요약 71/7 ④ 🔑 **「업종 대비 표시 불가」 (종목×지표) 조합 = 320건 / 전체 6,560건**(전부 제외 조합 소속, 미분류 종목은 0건 — 942 이후 커버리지 100%라서) — **⑤ 화면 설계 직접 입력값**.
+
+**§4 검증** — `lib/sectorCuts.test.ts` 신규 8건(적용/제외 판정 경계값·943의 7건 재현·임계값 바꾸면 집합 바뀜·폴백 없음·행 변환) 전부 통과. `npm test` **215/215**(무회귀). `git diff`로 화면·UI·`lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`·역DCF 경로(`route.ts`·`compute_revdcf_all.ts`) 전부 diff 0 확인 — Supabase 직접 재조회로 `lens_cuts` 완전 무변경(updated_at·as_of 그대로) 재확인.
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 — ⑤(화면)가 다음임을 명시, 착수 전 판정 목록에 `기존 7렌즈 수리 vs Q1~Q4 신규 카드` 추가 · `lib/revdcf/registry.ts`에 `us_sector_resolved` 등재 · `docs/STEP_LEDGER.md` 등재.
+
+**무변경** — 화면·UI 코드 0 · `lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts` diff 0 · `lens_cuts` 쓰기 0(읽기도 안 함, 943과 동일) · `sector_cuts` 기존 행 삭제 0(컬럼 추가·플래그 갱신만) · 시장 전체 컷 폴백 미구현(테스트로 고정) · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*`·KR 관련 diff 0 · 크론 미등록 · API 키 미입력 · `CLAUDE.md`·`USER_QUESTIONS`·`LENS_COMPLETION_STANDARD` 미수정.
+
 ## 2026-08-08 (104) — ✅ **A 유지 재확인 ＋ ⓚ 확정(IQR 대비 1.0) ＋ STEP 944 명령서**
 
 > **성격**: 판정 반영. **코드 diff 0.** 근거 = STEP 943 실측.

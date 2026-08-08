@@ -1,6 +1,6 @@
-// STEP 943 §5 — sectorCut·bootstrap 유닛테스트.
+// STEP 943 §5 — sectorCut·bootstrap 유닛테스트. STEP 944 §5 — decideApplied·cutIfApplied·toResolvedRows.
 import { describe, it, expect } from "vitest";
-import { pctile, sectorCut, bootstrap, mulberry32 } from "./sectorCuts";
+import { pctile, sectorCut, bootstrap, mulberry32, decideApplied, cutIfApplied, toResolvedRows } from "./sectorCuts";
 
 describe("pctile", () => {
   it("알려진 배열에서 정확한 p30/p70을 낸다(선형보간)", () => {
@@ -52,5 +52,61 @@ describe("bootstrap", () => {
     expect(r.iqr).toBeGreaterThan(0);
     expect(r.p30WidthOverIqr).not.toBeNull();
     expect(r.p70WidthOverIqr).not.toBeNull();
+  });
+});
+
+// STEP 944 §5
+describe("decideApplied", () => {
+  it("widthOverIqr이 임계값 이하면 applied:true·exclude_reason:null", () => {
+    const d = decideApplied({ p30Width: 1, p70Width: 1, iqr: 2, p30WidthOverIqr: 0.5, p70WidthOverIqr: 0.4 }, 1.0);
+    expect(d).toEqual({ applied: true, excludeReason: null, widthOverIqr: 0.5 });
+  });
+
+  it("widthOverIqr이 임계값 초과면 applied:false·사유 문자열에 임계값 포함", () => {
+    const d = decideApplied({ p30Width: 3, p70Width: 1, iqr: 2, p30WidthOverIqr: 1.5, p70WidthOverIqr: 0.4 }, 1.0);
+    expect(d.applied).toBe(false);
+    expect(d.widthOverIqr).toBe(1.5);
+    expect(d.excludeReason).toBe("bootstrap_width_over_iqr=1.50 > 1");
+  });
+
+  it("🔑 943 실측 재현: Real Estate valuation(1.99) 임계1.0에서 제외 · 임계2.0에서는 포함", () => {
+    const b = { p30Width: 0, p70Width: 0, iqr: 1, p30WidthOverIqr: 1.99, p70WidthOverIqr: 0.5 };
+    expect(decideApplied(b, 1.0).applied).toBe(false);
+    expect(decideApplied(b, 2.0).applied).toBe(true);
+  });
+
+  it("🔑 임계값을 바꾸면 applied 집합이 바뀐다(943의 7개 제외 조합 재현)", () => {
+    const combos = [1.99, 1.58, 1.46, 1.27, 1.16, 1.16, 1.01]; // 943 §제외 7건의 widthOverIqr
+    const under1 = combos.filter((w) => decideApplied({ p30Width: 0, p70Width: 0, iqr: 1, p30WidthOverIqr: w, p70WidthOverIqr: 0 }, 1.0).applied);
+    const under2 = combos.filter((w) => decideApplied({ p30Width: 0, p70Width: 0, iqr: 1, p30WidthOverIqr: w, p70WidthOverIqr: 0 }, 2.0).applied);
+    expect(under1.length).toBe(0); // 943 확정대로 임계 1.0에서 전부 제외
+    expect(under2.length).toBe(7); // 임계 2.0으로 올리면 전부 포함 — 집합이 바뀜을 증명
+  });
+});
+
+describe("cutIfApplied", () => {
+  it("🔴 944 §5-2: applied=false면 null(시장 전체 컷 폴백 없음)", () => {
+    expect(cutIfApplied({ applied: false, lo: 1, hi: 2 })).toBeNull();
+  });
+
+  it("행 자체가 없으면(undefined) null", () => {
+    expect(cutIfApplied(undefined)).toBeNull();
+  });
+
+  it("applied=true면 lo·hi를 그대로 반환", () => {
+    expect(cutIfApplied({ applied: true, lo: 1, hi: 2 })).toEqual({ lo: 1, hi: 2 });
+  });
+});
+
+describe("toResolvedRows", () => {
+  it("resolveSector Map을 us_sector_resolved 행으로 변환한다(값을 다시 계산하지 않음)", () => {
+    const resolved = new Map([
+      ["AAPL", { sector: "Information Technology", source: "spdr" as const, crossCheck: { nasdaq: "Information Technology", sic: null, yahoo: "Information Technology", disagree: false } }],
+    ]);
+    const rows = toResolvedRows("2026-08-08", ["AAPL", "NOTFOUND"], resolved);
+    expect(rows).toEqual([
+      { as_of: "2026-08-08", symbol: "AAPL", sector: "Information Technology", source: "spdr", cross_nasdaq: "Information Technology", cross_sic: null, cross_yahoo: "Information Technology", disagree: false },
+      { as_of: "2026-08-08", symbol: "NOTFOUND", sector: null, source: null, cross_nasdaq: null, cross_sic: null, cross_yahoo: null, disagree: null },
+    ]);
   });
 });
