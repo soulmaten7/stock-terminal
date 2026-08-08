@@ -170,6 +170,14 @@
 - `us_market_cap`도 일부 종목이 **2026-07-30에서 멈춰 있다**(표본 7종목 확인 — `ACM`·`ADI`·`AIT`·`APA`·`AZO`·`BBY`·`BDX`, 전부 S&P 500). 위 00번의 `lens_cuts` 정지와 **같은 날짜다. 같은 원인인지는 미확인.**
 - `revdcf` 크론의 유니버스 `as_of` 필터 누락(`STEP 947 4-1` 미준수) — `us_market_cap` 최신 `as_of` 조인만 지정됐는데 구현은 `as_of` 무관 전체 조인(5,890 vs 5,497, 차이 393건). 상세 = `docs/probe_948_live.json`의 `cowork_crosscheck` · `docs/VALUATION_SPEC.md` 「아직 못 푼 것 5개」 ④·⑤.
 
+🔴 **00-1c. `us_market_cap` 결측 진단(STEP 949, 2026-08-08) — 원인 진단만, 처방 없음.** 상세 = `docs/probe_949_mcap_gap.json`.
+- **0단계 실측**: `STOCK_SYMS` 5,974 = OK **5,509**(최신 as_of 2026-08-07) + STALE **380**(전부 단일 날짜 **2026-07-30**, 흩어져 있지 않음) + ABSENT **85**(us_market_cap에 행 자체 없음). 배경의 "예상"치(394/71)와 합(465)은 같으나 분해는 다름(380/85) — 차이 14건은 us_market_cap 전체 5,903행 중 type≠stock(ETF 등) 14행이 이전 대략 계산에 섞였을 가능성으로 보이나 **재귀인은 하지 않았다.**
+- **1단계 야후 직접 조회(465건, `lib/lensPrecompute.ts`와 동일 방식 — 배치100·동시성6→개별재시도·동시성6, 대조군 OK사전순100건 동반)**: **A(배치실패·단건성공) 0** · **B(배치·단건 모두 응답하나 marketCap 없음) 82** · **C(배치·단건 모두 무응답) 0** · **D(배치에서 바로 성공) 383**. 대조군 100건은 **전부 D**. 🔴 **AZO·BBY·BDX·ADI·APA 5종목 전부 오늘은 D**(배치에서 바로 marketCap 수신 — 예: AZO 51,054,120,960).
+- **B 82건 관찰(결론 아님)**: 다수가 단일 접미문자 우선주류 표기(`AFGB`·`AFGC`·`AFGD`·`AFGE`·`DUKB`·`KMPB`·`MLPB` 등) 또는 알려진 상품·변동성 ETN 티커(`DGP`·`DGZ`·`DJP`·`DZZ`·`VXX`·`VXZ` 등)를 포함한다.
+- **3단계 타임라인(사실만)**: `us_market_cap` 마지막 성공 **08-07** · `lens_cuts` US **07-30 정지**(5행) · `lens_scores` US **08-07 갱신**(1,021행) · `lens_state_changes` US 렌즈별 마지막 변화일 — momentum·lowvol·technical·valuation **08-07** / quality **07-31** / assetgrowth **07-29** / fscore **07-28**(`lens_cuts` 정지일보다도 이르다).
+- 🔴 **죽은 가설(다시 세우지 말 것)**: 알파벳 편중·`us_symbols.json` 누락(배경에서 이미 폐기) — 이번 실측으로 **배치방식 특정 문제(A=0)·심볼 완전부재(C=0)도 폐기.**
+- 🔴 **미해결**: 왜 383건(D)이 8일 넘게 Production 파이프라인에서만 반복 실패했는지(오늘 직접 조회는 전부 성공) — **일시적 실패라는 뜻은 확인됐으나 그 일시성이 왜 8일씩 이어졌는지는 모른다.**
+
 🔴 **00-2. 방향 재검토(2026-08-07) — 압축.** 모델 우주 63개 재조사 + 렌즈 감사 2건. 요지: 실사용 1위=배수(리포트 97%·P/B56%·P/E51%·CFA 1,980명) · **7렌즈 중 5가 수요 20위 밖** · **`financials` 0행·`macro_indicators` 0행**(렌즈 재무=야후 매요청 호출) · **EV/EBITDA는 SEC 태그 추가 0** · KR은 DART 배치적재 0건. 전문 = `CHANGELOG` (82) · `MODEL_UNIVERSE_63`·`MODEL_BUILD_ORDER`·`VALUE_LENS_DEFECT_AUDIT`·`LENS_AUDIT_02_MOMENTUM`.
 
 🔴 **00-3. 해자 주장 정정 + 유니버스 자기참조(2026-08-07) — 압축.** ① `revdcf_results` **6일 연속 604 무증감**, 원인=`route.ts:28` *"유니버스=직전 as_of의 CIK"* — **신규 편입 경로 없음**(소스는 보유: `us_market_cap` 5,900). ② New Constructs가 **2,748사** 체계 커버 → *"분포 주는 곳 없다"* **철회**. 남는 차별화 = **무료 · 원전 대조 가능 · 한국(확장 시)**. 전문 = `CHANGELOG` (83) · `REVDCF_SPEC` §10 #76·#77.
