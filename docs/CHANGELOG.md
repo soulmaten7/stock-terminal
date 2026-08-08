@@ -1,6 +1,22 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (95) — 🟢 **STEP 939: Q0 구현 ③-1단계 — 출처 정본화 + 진짜 GICS 정답지 확보**
+
+> **성격**: 외부 출처 2종(나스닥·SPDR) 원본 보존 + `registry.ts` 좌표 등재 + 정답지 대조 실측 재현. DB 테이블 신설·적재·`lib/sector.ts` 수정은 이 STEP에 없음(940).
+
+**§1 🔑 정답지 발견 경위** — `CLAUDE.md` ⓪-5-B(link_hub 병행조회)를 돌던 중 `link_hub`의 `etf` 카테고리에서 **State Street SPDR 섹터 ETF holdings**를 발견. 11개 ETF(XLK·XLF·XLV·XLE·XLI·XLY·XLP·XLU·XLB·XLRE·XLC)의 구성종목 = **S&P 500 종목의 진짜 GICS 섹터**이고 무료 — *"무료 소스는 진짜 GICS를 줄 수 없다"*는 이전 주장이 S&P 500 부분집합에 한해 정정 필요함을 발견(🔴 `CLAUDE.md`·`USER_QUESTIONS`·`LENS_COMPLETION_STANDARD` 본문 수정은 940 이후 장은태 판정 — 이 STEP에서 안 고침).
+
+**§2 ⓪-4 ③ 재확인(직접 열람)** — `lib/revdcf/registry.ts`의 `MATERIAL_SOURCES`에 damodaran·sec만 있고 나스닥·SPDR 미등재 확인 · `data/sources/README.md`에 `spdr/` 절 없음 확인 · `app/api/yahoo/us-etf-performance/route.ts:41`에 11개 섹터 ETF 티커 이미 존재(성과 표시용, 티커 목록 재활용) 확인 · Storage 버킷 `sources` 존재 확인(SQL `storage.buckets` 직접조회).
+
+**§3 실측 재현(전부 직접 재실행, Cowork 사전 보고값과 대조)** — ① **SPDR 11/11 취득 성공** — `scripts/fetch_spdr_sectors.ts` 신설, 브라우저 UA 헤더로 xlsx 취득 → **515행**(기대값과 일치) · `as_of=2026-08-06`(xlsx 내부 파싱) · 헤더 위치는 "첫 열=Name"으로 탐색(고정 숫자 금지) · 데이터 블록은 "헤더 다음~첫 빈 행"으로 경계 확정(그 뒤는 각주 텍스트 — 직접 관측으로 발견, 미리 알려진 사실 아님) · 필터는 "티커 없거나 `-`"만 적용(24행 제외, 현금/MMF) — **12개 이상 티커(섹터 E-mini 선물 11+CONTRA 1)는 임의 판단 없이 `data`에 그대로 보존**, `_meta.excluded`는 실제 제외분만. ② **나스닥 `asOf=None` + 0건 변경 재현** — 재조회(7,127행) → `data.asOf = null` 확인, 저장분과 전수 대조(7,127건 체크) → `sector`/`industry` 변경 **0건**. ③ **GICS 정답지 대조**(`scripts/probe_939_gics_truth.ts` → `docs/probe_939_gics_truth.json`) — Damodaran `is_us_listed` 6,937 vs SPDR 515 겹침 **494**·일치 **492**·일치율 **99.6%**(Cowork 사전보고 490/488과 **겹침·일치 수가 +4 차이나나 비율은 동일 99.6%, 불일치 2건[`APP`·`DD`]과 미매핑219 중 SPDR 존재 10건[`GOOG`·`FOX`·`NWS`·`BRK-B`·`BF-B`·`BNY`·`MRSH`·`ECHO`·`FDXF`·`HONA`]은 완전히 동일** — 🔴 +4 차이의 원인은 특정하지 못함, 기대값에 맞춰 필터를 조정하지 않고 그대로 기록).
+
+**§4 저장·등재** — SPDR 원본 `data/sources/spdr/spdr_sector_holdings_2026-08-06.json`(68KB, **git 포함** — 1MB 미만 기준 충족) · 나스닥·SPDR 둘 다 Supabase Storage 버킷 `sources`에 업로드(`nasdaq/2026-08-08/`·`spdr/2026-08-06/`, `storage.objects` 직접조회로 사이즈 일치 확인) · `registry.ts`에 `nasdaq`·`spdr` 좌표 등재(값 대신 좌표만 — 대조 결과 수치는 `docs/probe_939_gics_truth.json`을 가리키기만 하고 본문엔 안 적음) · `data/sources/README.md`에 `spdr/` 절 신설 + `nasdaq/` 절 asOf 실측 갱신.
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 ③단계 상태 갱신 · `docs/STEP_LEDGER.md` STEP 939 등재. `CLAUDE.md`·`docs/USER_QUESTIONS_2026-08-08.md`·`docs/LENS_COMPLETION_STANDARD.md` 미수정(지시대로).
+
+**무변경** — DB 테이블 신설 0 · `lib/sector.ts` diff 0 · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·`probe_*` 기존 11개·KR 관련 diff 전부 0 · 크론 미실행 · API 키 미입력.
+
 ## 2026-08-08 (94) — 🟢 **STEP 938: Q0 구현 ①단계 — 업종 조회를 함수로 모은다(순수 리팩터·동작 diff 0)**
 
 > **성격**: `lib/sector.ts` 신설 + 운영 경로 2곳 교체 + 유닛테스트. **동작 불변이 성공 기준** — 로직을 옮겼을 뿐 바꾸지 않았다. 데이터 원본(나스닥·SEC)은 이 STEP에 없음(939 이후).

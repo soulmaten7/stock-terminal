@@ -1,0 +1,3248 @@
+{
+  "_meta": {
+    "source": "https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-{etf}.xlsx",
+    "acquired": "2026-08-08",
+    "asOf": "2026-08-06",
+    "etfCount": 11,
+    "rows": 515,
+    "note": "S&P 500 섹터 ETF(SPDR Select Sector) 구성종목 = S&P 500 종목의 진짜 GICS 섹터. 11개 전부(Communication Services 포함)라 GICS 11분류 전체 커버. 정답지 용도 — 커버리지 해결책 아님(S&P 500만).",
+    "excluded": [
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLK",
+        "sector": "Information Technology"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLK",
+        "sector": "Information Technology"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLF",
+        "sector": "Financials"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLF",
+        "sector": "Financials"
+      },
+      {
+        "ticker": "-",
+        "name": "POUND STERLING",
+        "etf": "XLF",
+        "sector": "Financials"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLV",
+        "sector": "Health Care"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLV",
+        "sector": "Health Care"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLE",
+        "sector": "Energy"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLE",
+        "sector": "Energy"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLI",
+        "sector": "Industrials"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLI",
+        "sector": "Industrials"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLY",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLY",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLP",
+        "sector": "Consumer Staples"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLP",
+        "sector": "Consumer Staples"
+      },
+      {
+        "ticker": "-",
+        "name": "CONTRA WALGREENS BOOTS",
+        "etf": "XLP",
+        "sector": "Consumer Staples"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLU",
+        "sector": "Utilities"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLU",
+        "sector": "Utilities"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLB",
+        "sector": "Materials"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLB",
+        "sector": "Materials"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLRE",
+        "sector": "Real Estate"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLRE",
+        "sector": "Real Estate"
+      },
+      {
+        "ticker": "-",
+        "name": "SSI US GOV MONEY MARKET CLASS",
+        "etf": "XLC",
+        "sector": "Communication Services"
+      },
+      {
+        "ticker": "-",
+        "name": "US DOLLAR",
+        "etf": "XLC",
+        "sector": "Communication Services"
+      }
+    ]
+  },
+  "data": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "APPLE INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "MICROSOFT CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "BROADCOM INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AMD",
+      "name": "ADVANCED MICRO DEVICES",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MU",
+      "name": "MICRON TECHNOLOGY INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CSCO",
+      "name": "CISCO SYSTEMS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "INTC",
+      "name": "INTEL CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AMAT",
+      "name": "APPLIED MATERIALS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "LRCX",
+      "name": "LAM RESEARCH CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "PLTR",
+      "name": "PALANTIR TECHNOLOGIES INC A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "PANW",
+      "name": "PALO ALTO NETWORKS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "TXN",
+      "name": "TEXAS INSTRUMENTS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "KLAC",
+      "name": "KLA CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ORCL",
+      "name": "ORACLE CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "IBM",
+      "name": "INTL BUSINESS MACHINES CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CROWDSTRIKE HOLDINGS INC   A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "APH",
+      "name": "AMPHENOL CORP CL A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ANET",
+      "name": "ARISTA NETWORKS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "STX",
+      "name": "SEAGATE TECHNOLOGY HOLDINGS",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SNDK",
+      "name": "SANDISK CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MRVL",
+      "name": "MARVELL TECHNOLOGY INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ADI",
+      "name": "ANALOG DEVICES INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "QCOM",
+      "name": "QUALCOMM INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "WDC",
+      "name": "WESTERN DIGITAL CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CRM",
+      "name": "SALESFORCE INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "DELL",
+      "name": "DELL TECHNOLOGIES  C",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "GLW",
+      "name": "CORNING INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "NOW",
+      "name": "SERVICENOW INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ADBE",
+      "name": "ADOBE INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ACN",
+      "name": "ACCENTURE PLC CL A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "FTNT",
+      "name": "FORTINET INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CDNS",
+      "name": "CADENCE DESIGN SYS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "INTU",
+      "name": "INTUIT INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MSI",
+      "name": "MOTOROLA SOLUTIONS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SNPS",
+      "name": "SYNOPSYS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "DDOG",
+      "name": "DATADOG INC   CLASS A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "HPE",
+      "name": "HEWLETT PACKARD ENTERPRISE",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MPWR",
+      "name": "MONOLITHIC POWER SYSTEMS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "COHR",
+      "name": "COHERENT CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "LITE",
+      "name": "LUMENTUM HOLDINGS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "TEL",
+      "name": "TE CONNECTIVITY PLC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "TER",
+      "name": "TERADYNE INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "NXPI",
+      "name": "NXP SEMICONDUCTORS NV",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "KEYS",
+      "name": "KEYSIGHT TECHNOLOGIES IN",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CIEN",
+      "name": "CIENA CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ADSK",
+      "name": "AUTODESK INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "FLEX",
+      "name": "FLEX LTD",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "MCHP",
+      "name": "MICROCHIP TECHNOLOGY INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ROP",
+      "name": "ROPER TECHNOLOGIES INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "NTAP",
+      "name": "NETAPP INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "JBL",
+      "name": "JABIL INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "WDAY",
+      "name": "WORKDAY INC CLASS A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "TDY",
+      "name": "TELEDYNE TECHNOLOGIES INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ON",
+      "name": "ON SEMICONDUCTOR",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "Q",
+      "name": "QNITY ELECTRONICS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CTSH",
+      "name": "COGNIZANT TECH SOLUTIONS A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "FSLR",
+      "name": "FIRST SOLAR INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "HPQ",
+      "name": "HP INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "VRSN",
+      "name": "VERISIGN INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "FICO",
+      "name": "FAIR ISAAC CORP",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "FFIV",
+      "name": "F5 INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "CDW",
+      "name": "CDW CORP/DE",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "ZBRA",
+      "name": "ZEBRA TECHNOLOGIES CORP CL A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "AKAM",
+      "name": "AKAMAI TECHNOLOGIES INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "PTC",
+      "name": "PTC INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SMCI",
+      "name": "SUPER MICRO COMPUTER INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "GEN",
+      "name": "GEN DIGITAL INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "TRMB",
+      "name": "TRIMBLE INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "TYL",
+      "name": "TYLER TECHNOLOGIES INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "IT",
+      "name": "GARTNER INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "GDDY",
+      "name": "GODADDY INC   CLASS A",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "SWKS",
+      "name": "SKYWORKS SOLUTIONS INC",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "IXTU6",
+      "name": "XAK TECHNOLOGY    SEP26",
+      "etf": "XLK",
+      "sector": "Information Technology"
+    },
+    {
+      "ticker": "BRK.B",
+      "name": "BERKSHIRE HATHAWAY INC CL B",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "JPM",
+      "name": "JPMORGAN CHASE + CO",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "V",
+      "name": "VISA INC CLASS A SHARES",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MA",
+      "name": "MASTERCARD INC   A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BAC",
+      "name": "BANK OF AMERICA CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "GS",
+      "name": "GOLDMAN SACHS GROUP INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "WFC",
+      "name": "WELLS FARGO + CO",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MS",
+      "name": "MORGAN STANLEY",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "C",
+      "name": "CITIGROUP INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AXP",
+      "name": "AMERICAN EXPRESS CO",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "SCHW",
+      "name": "SCHWAB (CHARLES) CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BLK",
+      "name": "BLACKROCK INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "COF",
+      "name": "CAPITAL ONE FINANCIAL CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "CB",
+      "name": "CHUBB LTD",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "PGR",
+      "name": "PROGRESSIVE CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "SPGI",
+      "name": "S+P GLOBAL INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BNY",
+      "name": "BANK OF NEW YORK MELLON CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "PNC",
+      "name": "PNC FINANCIAL SERVICES GROUP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BX",
+      "name": "BLACKSTONE INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "USB",
+      "name": "US BANCORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "CME",
+      "name": "CME GROUP INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MRSH",
+      "name": "MARSH + MCLENNAN COS",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "ICE",
+      "name": "INTERCONTINENTAL EXCHANGE IN",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "TRV",
+      "name": "TRAVELERS COS INC/THE",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AON",
+      "name": "AON PLC CLASS A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "HOOD",
+      "name": "ROBINHOOD MARKETS INC   A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "KKR",
+      "name": "KKR + CO INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MCO",
+      "name": "MOODY S CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "ALL",
+      "name": "ALLSTATE CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "TFC",
+      "name": "TRUIST FINANCIAL CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AJG",
+      "name": "ARTHUR J GALLAGHER + CO",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "APO",
+      "name": "APOLLO GLOBAL MANAGEMENT INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AFL",
+      "name": "AFLAC INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MET",
+      "name": "METLIFE INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "PYPL",
+      "name": "PAYPAL HOLDINGS INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "FITB",
+      "name": "FIFTH THIRD BANCORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "STT",
+      "name": "STATE STREET CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AMP",
+      "name": "AMERIPRISE FINANCIAL INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AIG",
+      "name": "AMERICAN INTERNATIONAL GROUP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "NDAQ",
+      "name": "NASDAQ INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "XYZ",
+      "name": "BLOCK INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "PRU",
+      "name": "PRUDENTIAL FINANCIAL INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MSCI",
+      "name": "MSCI INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "HIG",
+      "name": "HARTFORD INSURANCE GROUP INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "IBKR",
+      "name": "INTERACTIVE BROKERS GRO CL A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "MTB",
+      "name": "M + T BANK CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "HBAN",
+      "name": "HUNTINGTON BANCSHARES INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "ACGL",
+      "name": "ARCH CAPITAL GROUP LTD",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "NTRS",
+      "name": "NORTHERN TRUST CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "COIN",
+      "name": "COINBASE GLOBAL INC  CLASS A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "WTW",
+      "name": "WILLIS TOWERS WATSON PLC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "RJF",
+      "name": "RAYMOND JAMES FINANCIAL INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "CFG",
+      "name": "CITIZENS FINANCIAL GROUP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "CBOE",
+      "name": "CBOE GLOBAL MARKETS INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "ARES",
+      "name": "ARES MANAGEMENT CORP   A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "FISV",
+      "name": "FISERV INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "CINF",
+      "name": "CINCINNATI FINANCIAL CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "RF",
+      "name": "REGIONS FINANCIAL CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "SYF",
+      "name": "SYNCHRONY FINANCIAL",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "CPAY",
+      "name": "CORPAY INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "TROW",
+      "name": "T ROWE PRICE GROUP INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "PFG",
+      "name": "PRINCIPAL FINANCIAL GROUP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "FIS",
+      "name": "FIDELITY NATIONAL INFO SERV",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "WRB",
+      "name": "WR BERKLEY CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "KEY",
+      "name": "KEYCORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BRO",
+      "name": "BROWN + BROWN INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "GPN",
+      "name": "GLOBAL PAYMENTS INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "L",
+      "name": "LOEWS CORP",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "AIZ",
+      "name": "ASSURANT INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "EG",
+      "name": "EVEREST GROUP LTD",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "GL",
+      "name": "GLOBE LIFE INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "IVZ",
+      "name": "INVESCO LTD",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "JKHY",
+      "name": "JACK HENRY + ASSOCIATES INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "BEN",
+      "name": "FRANKLIN RESOURCES INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "FDS",
+      "name": "FACTSET RESEARCH SYSTEMS INC",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "ERIE",
+      "name": "ERIE INDEMNITY COMPANY CL A",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "IXAU6",
+      "name": "XAF FINANCIAL     SEP26",
+      "etf": "XLF",
+      "sector": "Financials"
+    },
+    {
+      "ticker": "LLY",
+      "name": "ELI LILLY + CO",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "JNJ",
+      "name": "JOHNSON + JOHNSON",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ABBV",
+      "name": "ABBVIE INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "UNH",
+      "name": "UNITEDHEALTH GROUP INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "MRK",
+      "name": "MERCK + CO. INC.",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "AMGN",
+      "name": "AMGEN INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "TMO",
+      "name": "THERMO FISHER SCIENTIFIC INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ABT",
+      "name": "ABBOTT LABORATORIES",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "GILD",
+      "name": "GILEAD SCIENCES INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "PFE",
+      "name": "PFIZER INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ISRG",
+      "name": "INTUITIVE SURGICAL INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "BMY",
+      "name": "BRISTOL MYERS SQUIBB CO",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "DHR",
+      "name": "DANAHER CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "VRTX",
+      "name": "VERTEX PHARMACEUTICALS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "CVS",
+      "name": "CVS HEALTH CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "SYK",
+      "name": "STRYKER CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "MDT",
+      "name": "MEDTRONIC PLC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "MCK",
+      "name": "MCKESSON CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ELV",
+      "name": "ELEVANCE HEALTH INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "REGN",
+      "name": "REGENERON PHARMACEUTICALS",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "BSX",
+      "name": "BOSTON SCIENTIFIC CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "CI",
+      "name": "THE CIGNA GROUP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "HCA",
+      "name": "HCA HEALTHCARE INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "COR",
+      "name": "CENCORA INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "CAH",
+      "name": "CARDINAL HEALTH INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "EW",
+      "name": "EDWARDS LIFESCIENCES CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "BDX",
+      "name": "BECTON DICKINSON AND CO",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "IDXX",
+      "name": "IDEXX LABORATORIES INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "HUM",
+      "name": "HUMANA INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "A",
+      "name": "AGILENT TECHNOLOGIES INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "WAT",
+      "name": "WATERS CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "IQV",
+      "name": "IQVIA HOLDINGS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "VEEV",
+      "name": "VEEVA SYSTEMS INC CLASS A",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ZTS",
+      "name": "ZOETIS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "RMD",
+      "name": "RESMED INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "DXCM",
+      "name": "DEXCOM INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "GEHC",
+      "name": "GE HEALTHCARE TECHNOLOGY",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "BIIB",
+      "name": "BIOGEN INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "CNC",
+      "name": "CENTENE CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "MTD",
+      "name": "METTLER TOLEDO INTERNATIONAL",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "DGX",
+      "name": "QUEST DIAGNOSTICS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "LH",
+      "name": "LABCORP HOLDINGS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "WST",
+      "name": "WEST PHARMACEUTICAL SERVICES",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "STE",
+      "name": "STERIS PLC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "INCY",
+      "name": "INCYTE CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "MRNA",
+      "name": "MODERNA INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "VTRS",
+      "name": "VIATRIS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ZBH",
+      "name": "ZIMMER BIOMET HOLDINGS INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "COO",
+      "name": "COOPER COS INC/THE",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "BAX",
+      "name": "BAXTER INTERNATIONAL INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "CRL",
+      "name": "CHARLES RIVER LABORATORIES",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "RVTY",
+      "name": "REVVITY INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "SOLV",
+      "name": "SOLVENTUM CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "ALGN",
+      "name": "ALIGN TECHNOLOGY INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "TECH",
+      "name": "BIO TECHNE CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "PODD",
+      "name": "INSULET CORP",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "UHS",
+      "name": "UNIVERSAL HEALTH SERVICES B",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "HSIC",
+      "name": "HENRY SCHEIN INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "DVA",
+      "name": "DAVITA INC",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "IXCU6",
+      "name": "XAV  HEALTH CARE  SEP26",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "2602335D",
+      "name": "CONTRA HOLOGIC INCORPO",
+      "etf": "XLV",
+      "sector": "Health Care"
+    },
+    {
+      "ticker": "XOM",
+      "name": "EXXONMOBIL HOLDINGS CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "CVX",
+      "name": "CHEVRON CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "COP",
+      "name": "CONOCOPHILLIPS",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "PSX",
+      "name": "PHILLIPS 66",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "MPC",
+      "name": "MARATHON PETROLEUM CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "VLO",
+      "name": "VALERO ENERGY CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "SLB",
+      "name": "SLB LTD",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "EOG",
+      "name": "EOG RESOURCES INC",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "WMB",
+      "name": "WILLIAMS COS INC",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "BKR",
+      "name": "BAKER HUGHES CO",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "KMI",
+      "name": "KINDER MORGAN INC",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "TRGP",
+      "name": "TARGA RESOURCES CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "OKE",
+      "name": "ONEOK INC",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "DVN",
+      "name": "DEVON ENERGY CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "OXY",
+      "name": "OCCIDENTAL PETROLEUM CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "FANG",
+      "name": "DIAMONDBACK ENERGY INC",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "EQT",
+      "name": "EQT CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "HAL",
+      "name": "HALLIBURTON CO",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "EXE",
+      "name": "EXPAND ENERGY CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "TPL",
+      "name": "TEXAS PACIFIC LAND CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "APA",
+      "name": "APA CORP",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "IXPU6",
+      "name": "XAE ENERGY        SEP26",
+      "etf": "XLE",
+      "sector": "Energy"
+    },
+    {
+      "ticker": "CAT",
+      "name": "CATERPILLAR INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "GE",
+      "name": "GENERAL ELECTRIC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "RTX",
+      "name": "RTX CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "GEV",
+      "name": "GE VERNOVA INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "BA",
+      "name": "BOEING CO/THE",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "UNP",
+      "name": "UNION PACIFIC CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ETN",
+      "name": "EATON CORP PLC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "DE",
+      "name": "DEERE + CO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "UBER",
+      "name": "UBER TECHNOLOGIES INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "PH",
+      "name": "PARKER HANNIFIN CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "LMT",
+      "name": "LOCKHEED MARTIN CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "HWM",
+      "name": "HOWMET AEROSPACE INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ADP",
+      "name": "AUTOMATIC DATA PROCESSING",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "TT",
+      "name": "TRANE TECHNOLOGIES PLC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "VRT",
+      "name": "VERTIV HOLDINGS CO A",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "PWR",
+      "name": "QUANTA SERVICES INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "GD",
+      "name": "GENERAL DYNAMICS CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "JCI",
+      "name": "JOHNSON CONTROLS INTERNATION",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "MMM",
+      "name": "3M CO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "CSX",
+      "name": "CSX CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "CMI",
+      "name": "CUMMINS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "EMR",
+      "name": "EMERSON ELECTRIC CO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "WM",
+      "name": "WASTE MANAGEMENT INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ITW",
+      "name": "ILLINOIS TOOL WORKS",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "UPS",
+      "name": "UNITED PARCEL SERVICE CL B",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "NSC",
+      "name": "NORFOLK SOUTHERN CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "HON",
+      "name": "HONEYWELL INTERNATIONAL INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "NOC",
+      "name": "NORTHROP GRUMMAN CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "URI",
+      "name": "UNITED RENTALS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "TDG",
+      "name": "TRANSDIGM GROUP INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "PCAR",
+      "name": "PACCAR INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FDX",
+      "name": "FEDEX CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "CTAS",
+      "name": "CINTAS CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FIX",
+      "name": "COMFORT SYSTEMS USA INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "DAL",
+      "name": "DELTA AIR LINES INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FAST",
+      "name": "FASTENAL CO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AME",
+      "name": "AMETEK INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "GWW",
+      "name": "WW GRAINGER INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "LHX",
+      "name": "L3HARRIS TECHNOLOGIES INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "WAB",
+      "name": "WABTEC CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "CARR",
+      "name": "CARRIER GLOBAL CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "HONA",
+      "name": "HONEYWELL AEROSPACE INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ROK",
+      "name": "ROCKWELL AUTOMATION INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FERG",
+      "name": "FERGUSON ENTERPRISES INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AXON",
+      "name": "AXON ENTERPRISE INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "RSG",
+      "name": "REPUBLIC SERVICES INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "UAL",
+      "name": "UNITED AIRLINES HOLDINGS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "PAYX",
+      "name": "PAYCHEX INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ODFL",
+      "name": "OLD DOMINION FREIGHT LINE",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "EME",
+      "name": "EMCOR GROUP INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "IR",
+      "name": "INGERSOLL RAND INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "XYL",
+      "name": "XYLEM INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "DOV",
+      "name": "DOVER CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "OTIS",
+      "name": "OTIS WORLDWIDE CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "HUBB",
+      "name": "HUBBELL INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "CPRT",
+      "name": "COPART INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "VRSK",
+      "name": "VERISK ANALYTICS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "VLTO",
+      "name": "VERALTO CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "EXPD",
+      "name": "EXPEDITORS INTL WASH INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "LUV",
+      "name": "SOUTHWEST AIRLINES CO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "SNA",
+      "name": "SNAP ON INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "EFX",
+      "name": "EQUIFAX INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "JBHT",
+      "name": "HUNT (JB) TRANSPRT SVCS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "DD",
+      "name": "DUPONT DE NEMOURS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "BR",
+      "name": "BROADRIDGE FINANCIAL SOLUTIO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FTV",
+      "name": "FORTIVE CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "IEX",
+      "name": "IDEX CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "CHRW",
+      "name": "C.H. ROBINSON WORLDWIDE INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "LDOS",
+      "name": "LEIDOS HOLDINGS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "J",
+      "name": "JACOBS SOLUTIONS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "NDSN",
+      "name": "NORDSON CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "FDXF",
+      "name": "FEDEX FREIGHT HOLDING CO",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "SWK",
+      "name": "STANLEY BLACK + DECKER INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "TXT",
+      "name": "TEXTRON INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "MAS",
+      "name": "MASCO CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ALLE",
+      "name": "ALLEGION PLC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "LII",
+      "name": "LENNOX INTERNATIONAL INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "HII",
+      "name": "HUNTINGTON INGALLS INDUSTRIE",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "GNRC",
+      "name": "GENERAC HOLDINGS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "PNR",
+      "name": "PENTAIR PLC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "ROL",
+      "name": "ROLLINS INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "BLDR",
+      "name": "BUILDERS FIRSTSOURCE INC",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AOS",
+      "name": "SMITH (A.O.) CORP",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "IXIU6",
+      "name": "XAI EMINI INDUSTR SEP26",
+      "etf": "XLI",
+      "sector": "Industrials"
+    },
+    {
+      "ticker": "AMZN",
+      "name": "AMAZON.COM INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "TSLA",
+      "name": "TESLA INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "HD",
+      "name": "HOME DEPOT INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "MCD",
+      "name": "MCDONALD S CORP",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "TJX",
+      "name": "TJX COMPANIES INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "BKNG",
+      "name": "BOOKING HOLDINGS INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "LOW",
+      "name": "LOWE S COS INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "SBUX",
+      "name": "STARBUCKS CORP",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ROST",
+      "name": "ROSS STORES INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "DASH",
+      "name": "DOORDASH INC   A",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "RCL",
+      "name": "ROYAL CARIBBEAN CRUISES LTD",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "MAR",
+      "name": "MARRIOTT INTERNATIONAL  CL A",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "GM",
+      "name": "GENERAL MOTORS CO",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ORLY",
+      "name": "O REILLY AUTOMOTIVE INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "HLT",
+      "name": "HILTON WORLDWIDE HOLDINGS IN",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ABNB",
+      "name": "AIRBNB INC CLASS A",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "F",
+      "name": "FORD MOTOR CO",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "AZO",
+      "name": "AUTOZONE INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "NKE",
+      "name": "NIKE INC  CL B",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "GRMN",
+      "name": "GARMIN LTD",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "CVNA",
+      "name": "CARVANA CO",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "EBAY",
+      "name": "EBAY INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "CMG",
+      "name": "CHIPOTLE MEXICAN GRILL INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "YUM",
+      "name": "YUM  BRANDS INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "DHI",
+      "name": "DR HORTON INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "CCL",
+      "name": "CARNIVAL CORP LTD",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "EXPE",
+      "name": "EXPEDIA GROUP INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "TPR",
+      "name": "TAPESTRY INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "WSM",
+      "name": "WILLIAMS SONOMA INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "PHM",
+      "name": "PULTEGROUP INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "DRI",
+      "name": "DARDEN RESTAURANTS INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "ULTA",
+      "name": "ULTA BEAUTY INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "GPC",
+      "name": "GENUINE PARTS CO",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "LEN",
+      "name": "LENNAR CORP A",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "TSCO",
+      "name": "TRACTOR SUPPLY COMPANY",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "NVR",
+      "name": "NVR INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "BBY",
+      "name": "BEST BUY CO INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "RL",
+      "name": "RALPH LAUREN CORP",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "DECK",
+      "name": "DECKERS OUTDOOR CORP",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "LVS",
+      "name": "LAS VEGAS SANDS CORP",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "LULU",
+      "name": "LULULEMON ATHLETICA INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "HAS",
+      "name": "HASBRO INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "DPZ",
+      "name": "DOMINO S PIZZA INC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "APTV",
+      "name": "APTIV PLC",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "NCLH",
+      "name": "NORWEGIAN CRUISE LINE HOLDIN",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "MGM",
+      "name": "MGM RESORTS INTERNATIONAL",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "WYNN",
+      "name": "WYNN RESORTS LTD",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "IXYU6",
+      "name": "XAY CONS DISCRET  SEP26",
+      "etf": "XLY",
+      "sector": "Consumer Discretionary"
+    },
+    {
+      "ticker": "WMT",
+      "name": "WALMART INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "COST",
+      "name": "COSTCO WHOLESALE CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "PG",
+      "name": "PROCTER + GAMBLE CO/THE",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "KO",
+      "name": "COCA COLA CO/THE",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "PM",
+      "name": "PHILIP MORRIS INTERNATIONAL",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "CL",
+      "name": "COLGATE PALMOLIVE CO",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "MDLZ",
+      "name": "MONDELEZ INTERNATIONAL INC A",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "PEP",
+      "name": "PEPSICO INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "MNST",
+      "name": "MONSTER BEVERAGE CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "TGT",
+      "name": "TARGET CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "MO",
+      "name": "ALTRIA GROUP INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "KDP",
+      "name": "KEURIG DR PEPPER INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "SYY",
+      "name": "SYSCO CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "ADM",
+      "name": "ARCHER DANIELS MIDLAND CO",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "KVUE",
+      "name": "KENVUE INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "KMB",
+      "name": "KIMBERLY CLARK CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "KR",
+      "name": "KROGER CO",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "CASY",
+      "name": "CASEY S GENERAL STORES INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "DG",
+      "name": "DOLLAR GENERAL CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "HSY",
+      "name": "HERSHEY CO/THE",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "CHD",
+      "name": "CHURCH + DWIGHT CO INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "DLTR",
+      "name": "DOLLAR TREE INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "KHC",
+      "name": "KRAFT HEINZ CO/THE",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "EL",
+      "name": "ESTEE LAUDER COMPANIES CL A",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "GIS",
+      "name": "GENERAL MILLS INC",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "STZ",
+      "name": "CONSTELLATION BRANDS INC A",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "TSN",
+      "name": "TYSON FOODS INC CL A",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "BG",
+      "name": "BUNGE GLOBAL SA",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "MKC",
+      "name": "MCCORMICK + CO NON VTG SHRS",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "CLX",
+      "name": "CLOROX COMPANY",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "SJM",
+      "name": "JM SMUCKER CO/THE",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "HRL",
+      "name": "HORMEL FOODS CORP",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "TAP",
+      "name": "MOLSON COORS BEVERAGE CO   B",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "BF.B",
+      "name": "BROWN FORMAN CORP CLASS B",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "IXRU6",
+      "name": "XAP CONS STAPLES  SEP26",
+      "etf": "XLP",
+      "sector": "Consumer Staples"
+    },
+    {
+      "ticker": "NEE",
+      "name": "NEXTERA ENERGY INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "SO",
+      "name": "SOUTHERN CO/THE",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "DUK",
+      "name": "DUKE ENERGY CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "CEG",
+      "name": "CONSTELLATION ENERGY",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "AEP",
+      "name": "AMERICAN ELECTRIC POWER",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "D",
+      "name": "DOMINION ENERGY INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "SRE",
+      "name": "SEMPRA",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "ETR",
+      "name": "ENTERGY CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "XEL",
+      "name": "XCEL ENERGY INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "EXC",
+      "name": "EXELON CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "VST",
+      "name": "VISTRA CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "ED",
+      "name": "CONSOLIDATED EDISON INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "PCG",
+      "name": "P G + E CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "PEG",
+      "name": "PUBLIC SERVICE ENTERPRISE GP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "WEC",
+      "name": "WEC ENERGY GROUP INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "AEE",
+      "name": "AMEREN CORPORATION",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "DTE",
+      "name": "DTE ENERGY COMPANY",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "ATO",
+      "name": "ATMOS ENERGY CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "ES",
+      "name": "EVERSOURCE ENERGY",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "CNP",
+      "name": "CENTERPOINT ENERGY INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "AWK",
+      "name": "AMERICAN WATER WORKS CO INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "PPL",
+      "name": "PPL CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "EIX",
+      "name": "EDISON INTERNATIONAL",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "NRG",
+      "name": "NRG ENERGY INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "FE",
+      "name": "FIRSTENERGY CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "CMS",
+      "name": "CMS ENERGY CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "NI",
+      "name": "NISOURCE INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "EVRG",
+      "name": "EVERGY INC",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "LNT",
+      "name": "ALLIANT ENERGY CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "PNW",
+      "name": "PINNACLE WEST CAPITAL",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "AES",
+      "name": "AES CORP",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "IXSU6",
+      "name": "XAU UTILITIES     SEP26",
+      "etf": "XLU",
+      "sector": "Utilities"
+    },
+    {
+      "ticker": "LIN",
+      "name": "LINDE PLC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "NEM",
+      "name": "NEWMONT CORP",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "FCX",
+      "name": "FREEPORT MCMORAN INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "SHW",
+      "name": "SHERWIN WILLIAMS CO/THE",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "ECL",
+      "name": "ECOLAB INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "NUE",
+      "name": "NUCOR CORP",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "APD",
+      "name": "AIR PRODUCTS + CHEMICALS INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "VMC",
+      "name": "VULCAN MATERIALS CO",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "CTVA",
+      "name": "CORTEVA INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "CRH",
+      "name": "CRH PLC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "STLD",
+      "name": "STEEL DYNAMICS INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "MLM",
+      "name": "MARTIN MARIETTA MATERIALS",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "PPG",
+      "name": "PPG INDUSTRIES INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "SW",
+      "name": "SMURFIT WESTROCK PLC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "PKG",
+      "name": "PACKAGING CORP OF AMERICA",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "DOW",
+      "name": "DOW INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "AMCR",
+      "name": "AMCOR PLC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "IFF",
+      "name": "INTL FLAVORS + FRAGRANCES",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "IP",
+      "name": "INTERNATIONAL PAPER CO",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "CF",
+      "name": "CF INDUSTRIES HOLDINGS INC",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "BALL",
+      "name": "BALL CORP",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "LYB",
+      "name": "LYONDELLBASELL INDU CL A",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "ALB",
+      "name": "ALBEMARLE CORP",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "AVY",
+      "name": "AVERY DENNISON CORP",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "MOS",
+      "name": "MOSAIC CO/THE",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "IXDU6",
+      "name": "XAB MATERIALS     SEP26",
+      "etf": "XLB",
+      "sector": "Materials"
+    },
+    {
+      "ticker": "WELL",
+      "name": "WELLTOWER INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "PLD",
+      "name": "PROLOGIS INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "EQIX",
+      "name": "EQUINIX INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "AMT",
+      "name": "AMERICAN TOWER CORP",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "DLR",
+      "name": "DIGITAL REALTY TRUST INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "SPG",
+      "name": "SIMON PROPERTY GROUP INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "PSA",
+      "name": "PUBLIC STORAGE",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "VTR",
+      "name": "VENTAS INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "O",
+      "name": "REALTY INCOME CORP",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "CBRE",
+      "name": "CBRE GROUP INC   A",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "IRM",
+      "name": "IRON MOUNTAIN INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "CCI",
+      "name": "CROWN CASTLE INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "EXR",
+      "name": "EXTRA SPACE STORAGE INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "VICI",
+      "name": "VICI PROPERTIES INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "AVB",
+      "name": "AVALONBAY COMMUNITIES INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "EQR",
+      "name": "EQUITY RESIDENTIAL",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "SBAC",
+      "name": "SBA COMMUNICATIONS CORP",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "WY",
+      "name": "WEYERHAEUSER CO",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "ESS",
+      "name": "ESSEX PROPERTY TRUST INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "INVH",
+      "name": "INVITATION HOMES INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "KIM",
+      "name": "KIMCO REALTY CORP",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "MAA",
+      "name": "MID AMERICA APARTMENT COMM",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "HST",
+      "name": "HOST HOTELS + RESORTS INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "DOC",
+      "name": "HEALTHPEAK PROPERTIES INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "REG",
+      "name": "REGENCY CENTERS CORP",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "CSGP",
+      "name": "COSTAR GROUP INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "UDR",
+      "name": "UDR INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "CPT",
+      "name": "CAMDEN PROPERTY TRUST",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "BXP",
+      "name": "BXP INC",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "FRT",
+      "name": "FEDERAL REALTY INVS TRUST",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "ARE",
+      "name": "ALEXANDRIA REAL ESTATE EQUIT",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "XARU6",
+      "name": "EMINI S+P REESTATESEP26",
+      "etf": "XLRE",
+      "sector": "Real Estate"
+    },
+    {
+      "ticker": "META",
+      "name": "META PLATFORMS INC CLASS A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "ALPHABET INC CL A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "GOOG",
+      "name": "ALPHABET INC CL C",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "T",
+      "name": "AT+T INC",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "VZ",
+      "name": "VERIZON COMMUNICATIONS INC",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "DIS",
+      "name": "WALT DISNEY CO/THE",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "CMCSA",
+      "name": "COMCAST CORP CLASS A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "TMUS",
+      "name": "T MOBILE US INC",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "NFLX",
+      "name": "NETFLIX INC",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "LYV",
+      "name": "LIVE NATION ENTERTAINMENT IN",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "WBD",
+      "name": "WARNER BROS DISCOVERY INC",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "OMC",
+      "name": "OMNICOM GROUP",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "TTWO",
+      "name": "TAKE TWO INTERACTIVE SOFTWRE",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "CHTR",
+      "name": "CHARTER COMMUNICATIONS INC A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "FOXA",
+      "name": "FOX CORP   CLASS A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "ECHO",
+      "name": "ECHOSTAR CORP A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "TKO",
+      "name": "TKO GROUP HOLDINGS INC",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "NWSA",
+      "name": "NEWS CORP   CLASS A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "APP",
+      "name": "APPLOVIN CORP CLASS A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "FOX",
+      "name": "FOX CORP   CLASS B",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "TTD",
+      "name": "TRADE DESK INC/THE  CLASS A",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "NWS",
+      "name": "NEWS CORP   CLASS B",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "PSKY",
+      "name": "PARAMOUNT SKYDANCE CL B",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    },
+    {
+      "ticker": "XASU6",
+      "name": "S+P EMINI COM SER SEP26",
+      "etf": "XLC",
+      "sector": "Communication Services"
+    }
+  ]
+}

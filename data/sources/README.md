@@ -68,11 +68,28 @@
 
 | 파일 | 무엇을 정의하나 | 갱신 주기 | 좌표 |
 |---|---|---|---|
-| `nasdaq_screener_20260808.json` (1.5MB) | **미국 상장 전 종목 7,127건**의 `sector`·`industry`·**`country`**·`marketCap`·`ipoyear`. 🔑 **무료·키 불필요.** Q0 「2-of-2 합의제」의 ③단계 출처 | 🔴 **나스닥 미명시** — 시세는 실시간, 분류는 사실상 고정. 재취득으로 확인 필요 | `data` 배열 · `_meta.source` = `https://api.nasdaq.com/api/screener/stocks?tableonly=false&limit=25000&download=true` |
+| `nasdaq_screener_20260808.json` (1.5MB) | **미국 상장 전 종목 7,127건**의 `sector`·`industry`·**`country`**·`marketCap`·`ipoyear`. 🔑 **무료·키 불필요.** Q0 「2-of-2 합의제」의 ③단계 출처 | 🔴 **`data.asOf = null`(939 재현 확인 — 응답이 기준일을 안 준다).** 939에서 같은 날 재조회해 7,127행 전수 대조 — `sector`·`industry` 변경 **0건**(checked 7,127·changed 0). **우리가 취득 시각을 `as_of`로 찍는다**(Damodaran과 동일 구조) | `data` 배열 · `_meta.source` = `https://api.nasdaq.com/api/screener/stocks?tableonly=false&limit=25000&download=true` |
 
 🔴 **분류 체계가 GICS가 아니다** — 12개(`Finance`·`Basic Materials`·`Telecommunications`·`Miscellaneous` 등)이고 **`Communication Services`가 없다**(→ `GOOG`·`NTES`가 `Technology`로 감). GICS 이름으로 옮기려면 변환이 필요하고 **변환 손실이 있다.**
 🔴 **시세 컬럼 제거하고 보관** — `lastsale`·`netchange`·`pctchange`·`volume`·`url`은 원응답에 있으나 섹터 분류 목적과 무관해 뺐다(`_meta.note`에 기록).
-🔑 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **무료 소스는 진짜 GICS를 줄 수 없다.** Damodaran `primary_sector`도 GICS 이름을 빌린 그의 배정이다.
+🔑 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **무료 소스는 진짜 GICS를 줄 수 없다.** Damodaran `primary_sector`도 GICS 이름을 빌린 그의 배정이다. 🔴 **939에서 예외 발견 — 아래 `spdr/` 절.** 이 문장 자체의 정정 여부는 940 이후 별도 판정(이 STEP에서 안 고침).
+
+---
+
+## `spdr/` — S&P 500 진짜 GICS 정답지 (Q0 대조 · 2026-08-08(939) 신설)
+
+🔴 **939의 발견**: `CLAUDE.md` ⓪-5-B(link_hub 병행조회)를 돌다가 `link_hub`의 `etf` 카테고리에서 **State Street SPDR 섹터 ETF holdings**를 찾았다. **11개 ETF(XLK·XLF·XLV·XLE·XLI·XLY·XLP·XLU·XLB·XLRE·XLC)의 구성종목 = S&P 500 종목의 진짜 GICS 섹터**이고 **무료**다 — 위 `nasdaq/` 절의 "무료 소스는 진짜 GICS를 줄 수 없다"는 **S&P 500 부분집합에 한해 예외**가 있다는 뜻(전 종목 커버는 여전히 불가).
+
+| 파일 | 무엇을 정의하나 | 갱신 주기 | 좌표 |
+|---|---|---|---|
+| `spdr_sector_holdings_2026-08-06.json` (68KB · git 포함) | **S&P 500 구성종목 515개**(939 실측·11개 ETF 합계)의 진짜 GICS 섹터. Q0 정답지 대조용 | 🔴 **지수 리밸런싱마다 바뀜** — 취득일마다 `as_of`를 함께 보존(xlsx 내부 "Holdings: As of {date}"에서 파싱, 나스닥과 달리 **출처가 기준일을 준다**) | `data` 배열(`{ticker,name,etf,sector}`) · `_meta.excluded`(티커 없거나 `-`인 24행, 현금/MMF 포지션) · `_meta.source` = SSGA xlsx URL 패턴 |
+
+🔴 **URL 패턴**: `https://www.ssga.com/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-{티커소문자}.xlsx` — **User-Agent 헤더 없으면 실패할 수 있음**(브라우저 UA 필요, 939 실측).
+🔴 **xlsx 구조**: 3행째 `"Holdings:"` | `"As of {date}"` · 헤더행은 첫 열이 `"Name"`(고정 숫자 위치로 찾지 말 것) · `Sector` 열은 전부 `"-"`(못 씀 — 섹터는 **ETF 티커가 결정**) · 헤더 다음부터 **첫 빈 행 전까지**가 실제 보유종목(그 뒤는 각주·면책 문구 텍스트, 939 실측으로 확인).
+🔴 **필터링 안 한 것**: 현금/머니마켓(`SSI US GOV MONEY MARKET CLASS`·`US DOLLAR` 등, 티커=`-`)만 `excluded`로 뺐다. **12개 이상 티커(E-mini 섹터 선물 11개·CONTRA 1개, 예: `IXTU6`="XAK TECHNOLOGY SEP26")는 `data`에 그대로 남아 있다** — 제외 여부는 940에서 판정(임의 필터링 금지, 939 §④).
+🔑 **정답지 용도**: S&P 500만 커버(전체 유니버스의 절반 정도) — **커버리지 해결책이 아니라 다른 두 출처(Damodaran·나스닥)가 맞았는지 확인하는 잣대.**
+
+**939 대조 실측**(재현 스크립트 = `scripts/probe_939_gics_truth.ts` → `docs/probe_939_gics_truth.json`, 값은 그 파일이 정본이지 여기 안 박는다): Damodaran `primary_sector`가 SPDR과 **99%대로 높게 일치**, 불일치는 극소수(`APP`·`DD` 2건). 미매핑 219종목 중에도 SPDR에 존재하는 10건이 있어(`GOOG`·`FOX`·`NWS`·`BRK-B`·`BF-B` 등) 형제-우선 규칙의 근거를 보강한다.
 
 ---
 

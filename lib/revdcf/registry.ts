@@ -87,6 +87,32 @@ export const MATERIAL_SOURCES = {
     frameRule:
       "🔴 frames = '가장 마지막에 제출된 사실 1건' + 기간 365일±30일(연간)에 맞는 것만. 정정본·53주 결산·전환기는 누락 → 개별 판정에 쓰지 말 것",
   },
+  /** STEP 939: Q0 「2-of-2 합의제」 ③단계 출처. 원문 확인: nasdaq.com에 갱신주기 서술 없음 — 우리가 acquired 시각으로 as_of를 찍는다. */
+  nasdaq: {
+    base: "https://api.nasdaq.com",
+    endpoint: "/api/screener/stocks?tableonly=false&limit=25000&download=true",
+    fields: ["symbol", "name", "sector", "industry", "country", "ipoyear", "marketCap"],
+    localDir: "data/sources/nasdaq/", // 🔴 git 제외(.gitignore) — 로컬만. 원본 정본 = Storage(아래)
+    storage: { bucket: "sources", path: "nasdaq/{as_of}/{file}", asOfExample: "nasdaq/2026-08-08/nasdaq_screener_20260808.json" },
+    asOfPolicy: "🔴 응답에 asOf 없음(data.asOf=None, 939 실측) — 취득 시각을 우리가 as_of로 찍는다. 같은 날 재조회 시 sector·industry 변경 0건 관측(939)",
+    taxonomy: "🔴 분류 체계가 GICS가 아니다 — 12개(Finance·Basic Materials·Telecommunications·Miscellaneous 등), Communication Services 없음(GOOG·NTES가 Technology로 감)",
+  },
+  /** STEP 939: 진짜 GICS 정답지(⓪-5-B link_hub 병행조회로 발견). S&P 500 섹터 ETF 11개 holdings = S&P 500 구성종목의 진짜 GICS 섹터. */
+  spdr: {
+    base: "https://www.ssga.com",
+    urlPattern: "/us/en/intermediary/library-content/products/fund-data/etfs/us/holdings-daily-us-en-{ticker,lowercase}.xlsx",
+    note: "🔴 User-Agent 헤더 없으면 실패할 수 있음(939 실측 — 브라우저 UA 필요)",
+    etfToSector: {
+      XLK: "Information Technology", XLF: "Financials", XLV: "Health Care", XLE: "Energy",
+      XLI: "Industrials", XLY: "Consumer Discretionary", XLP: "Consumer Staples", XLU: "Utilities",
+      XLB: "Materials", XLRE: "Real Estate", XLC: "Communication Services",
+    },
+    xlsxStructure: "행3='Holdings:'|'As of {date}'(as_of 파싱원) · 헤더행 첫열='Name'(고정 숫자 위치 금지) · 'Sector'열은 '-'(쓸 수 없음, 섹터는 ETF 티커가 결정) · 헤더 다음부터 첫 빈 행까지가 실제 보유종목(그 뒤는 각주 텍스트, 939 실측)",
+    localDir: "data/sources/spdr/", // git 포함(939 §5 — 1MB 미만)
+    storage: { bucket: "sources", path: "spdr/{as_of}/{file}", asOfExample: "spdr/2026-08-06/spdr_sector_holdings_2026-08-06.json" },
+    coverage: "🔴 S&P 500만 커버(약 515종목) — 커버리지 해결책이 아니라 「정답지」 용도(939 §④)",
+    truthCheckProbe: "scripts/probe_939_gics_truth.ts → docs/probe_939_gics_truth.json — 값은 여기 안 적는다(재실행하면 바뀔 수 있는 측정값). 재현: npx tsx scripts/probe_939_gics_truth.ts",
+  },
 } as const;
 
 // ────────────────────────────────────────────────────────────────

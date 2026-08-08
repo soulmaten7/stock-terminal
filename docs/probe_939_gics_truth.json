@@ -1,0 +1,99 @@
+{
+  "_meta": {
+    "purpose": "STEP 939 §4 — 정답지 대조 실측 재현(판정 아님·사실 기록)",
+    "spdrFile": "data/sources/spdr/spdr_sector_holdings_2026-08-06.json",
+    "missing219File": "data/sources/sec/sec_sic_missing219_20260808.json",
+    "generatedAt": "2026-08-08T05:59:36.723Z"
+  },
+  "spdr": {
+    "asOf": "2026-08-06",
+    "rows": 515,
+    "dupNormTickers": []
+  },
+  "damodaranUsListed": 6937,
+  "comparison": {
+    "overlap": 494,
+    "match": 492,
+    "matchRate": 0.9959514170040485,
+    "mismatches": [
+      {
+        "ticker": "APP",
+        "damodaranSector": "Information Technology",
+        "spdrSector": "Communication Services",
+        "spdrEtf": "XLC"
+      },
+      {
+        "ticker": "DD",
+        "damodaranSector": "Materials",
+        "spdrSector": "Industrials",
+        "spdrEtf": "XLI"
+      }
+    ]
+  },
+  "missing219": {
+    "total": 219,
+    "foundInSpdr": 10,
+    "entries": [
+      {
+        "symbol": "BF-B",
+        "name": "BROWN FORMAN CORP",
+        "spdrSector": "Consumer Staples",
+        "spdrEtf": "XLP"
+      },
+      {
+        "symbol": "BNY",
+        "name": "Bank of New York Mellon Corp",
+        "spdrSector": "Financials",
+        "spdrEtf": "XLF"
+      },
+      {
+        "symbol": "BRK-B",
+        "name": "BERKSHIRE HATHAWAY INC",
+        "spdrSector": "Financials",
+        "spdrEtf": "XLF"
+      },
+      {
+        "symbol": "ECHO",
+        "name": "EchoStar CORP",
+        "spdrSector": "Communication Services",
+        "spdrEtf": "XLC"
+      },
+      {
+        "symbol": "FDXF",
+        "name": "FedEx Freight Holding Company, Inc.",
+        "spdrSector": "Industrials",
+        "spdrEtf": "XLI"
+      },
+      {
+        "symbol": "FOX",
+        "name": "Fox Corp",
+        "spdrSector": "Communication Services",
+        "spdrEtf": "XLC"
+      },
+      {
+        "symbol": "GOOG",
+        "name": "Alphabet Inc.",
+        "spdrSector": "Communication Services",
+        "spdrEtf": "XLC"
+      },
+      {
+        "symbol": "HONA",
+        "name": "Honeywell Aerospace Inc.",
+        "spdrSector": "Industrials",
+        "spdrEtf": "XLI"
+      },
+      {
+        "symbol": "MRSH",
+        "name": "MARSH & MCLENNAN COMPANIES, INC.",
+        "spdrSector": "Financials",
+        "spdrEtf": "XLF"
+      },
+      {
+        "symbol": "NWS",
+        "name": "NEWS CORP",
+        "spdrSector": "Communication Services",
+        "spdrEtf": "XLC"
+      }
+    ]
+  }
+}
