@@ -1,0 +1,1959 @@
+{
+  "_meta": {
+    "purpose": "STEP 943 — 섹터 내 컷 + 부트스트랩 안정성 실측(판정·권고 없음, 숫자만)",
+    "asOf": "2026-08-08",
+    "bootstrapSeed": 943,
+    "bootstrapIterations": 1000,
+    "minN": 20,
+    "generatedAt": "2026-08-08T08:45:20.857Z"
+  },
+  "cutTable": [
+    {
+      "sector": "Energy",
+      "metricKey": "momentum",
+      "lo": 23.292,
+      "hi": 43.182,
+      "n": 57
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "technical",
+      "lo": 4.86,
+      "hi": 13.473999999999997,
+      "n": 57
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "valuation",
+      "lo": 11.79,
+      "hi": 19.878,
+      "n": 55
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "lowvol",
+      "lo": 25.882,
+      "hi": 33.062,
+      "n": 57
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "quality",
+      "lo": 10.16,
+      "hi": 17.386,
+      "n": 57
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "assetgrowth",
+      "lo": 0.15600000000000003,
+      "hi": 7.443999999999999,
+      "n": 57
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "fscore",
+      "lo": 5,
+      "hi": 7,
+      "n": 54
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "momentum",
+      "lo": 6.25,
+      "hi": 50.61,
+      "n": 121
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "technical",
+      "lo": 2.28,
+      "hi": 17.19,
+      "n": 121
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "lowvol",
+      "lo": 30.589,
+      "hi": 44.467999999999996,
+      "n": 122
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "quality",
+      "lo": 22.347,
+      "hi": 38.56,
+      "n": 110
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "assetgrowth",
+      "lo": 0.978,
+      "hi": 11.516,
+      "n": 119
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "fscore",
+      "lo": 5,
+      "hi": 7,
+      "n": 89
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "technical",
+      "lo": 1.58,
+      "hi": 13.89,
+      "n": 161
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "lowvol",
+      "lo": 28.093,
+      "hi": 40.61299999999999,
+      "n": 162
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "quality",
+      "lo": 17.39,
+      "hi": 26.699999999999996,
+      "n": 166
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "assetgrowth",
+      "lo": 2.5300000000000002,
+      "hi": 11.664999999999992,
+      "n": 166
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "fscore",
+      "lo": 6,
+      "hi": 7,
+      "n": 143
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "momentum",
+      "lo": 2.426999999999995,
+      "hi": 39.193,
+      "n": 160
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "valuation",
+      "lo": 25.668,
+      "hi": 40.553999999999995,
+      "n": 163
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "momentum",
+      "lo": 6.991999999999999,
+      "hi": 18.916,
+      "n": 43
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "technical",
+      "lo": -3.696,
+      "hi": 2.0119999999999996,
+      "n": 43
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "valuation",
+      "lo": 19.02,
+      "hi": 22.66,
+      "n": 41
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "lowvol",
+      "lo": 16.968,
+      "hi": 23.291999999999994,
+      "n": 43
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "quality",
+      "lo": 8.02,
+      "hi": 9.475999999999999,
+      "n": 43
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "assetgrowth",
+      "lo": 6.746,
+      "hi": 11.1,
+      "n": 43
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "fscore",
+      "lo": 5,
+      "hi": 6,
+      "n": 42
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "momentum",
+      "lo": 6.052,
+      "hi": 25.19999999999999,
+      "n": 49
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "technical",
+      "lo": 2.807999999999999,
+      "hi": 9.643999999999998,
+      "n": 49
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "valuation",
+      "lo": 26.066,
+      "hi": 39.372,
+      "n": 47
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "lowvol",
+      "lo": 19.439999999999998,
+      "hi": 25.944,
+      "n": 49
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "quality",
+      "lo": 8.298,
+      "hi": 11.706,
+      "n": 47
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "assetgrowth",
+      "lo": 1.386,
+      "hi": 5.7459999999999996,
+      "n": 48
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "fscore",
+      "lo": 5,
+      "hi": 7,
+      "n": 45
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "momentum",
+      "lo": 0.6619999999999999,
+      "hi": 34.193,
+      "n": 164
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "technical",
+      "lo": 4.838999999999999,
+      "hi": 16.431,
+      "n": 164
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "valuation",
+      "lo": 12.76,
+      "hi": 19.907999999999998,
+      "n": 159
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "lowvol",
+      "lo": 24.415000000000003,
+      "hi": 32.086,
+      "n": 164
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "assetgrowth",
+      "lo": 4.26,
+      "hi": 12.68,
+      "n": 161
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "momentum",
+      "lo": 10.559999999999999,
+      "hi": 48.458,
+      "n": 60
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "technical",
+      "lo": -4.08,
+      "hi": 10.9,
+      "n": 61
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "valuation",
+      "lo": 16.556,
+      "hi": 30.537999999999997,
+      "n": 55
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "lowvol",
+      "lo": 31.86,
+      "hi": 48.23,
+      "n": 61
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "quality",
+      "lo": 12.338999999999999,
+      "hi": 19.249,
+      "n": 60
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "assetgrowth",
+      "lo": 3.4859999999999998,
+      "hi": 14.761,
+      "n": 60
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "fscore",
+      "lo": 6,
+      "hi": 7.799999999999997,
+      "n": 55
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "quality",
+      "lo": 10.528,
+      "hi": 21.762,
+      "n": 49
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "momentum",
+      "lo": -6.175000000000001,
+      "hi": 14.367999999999986,
+      "n": 52
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "technical",
+      "lo": 1.0819999999999992,
+      "hi": 10.203999999999995,
+      "n": 52
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "valuation",
+      "lo": 18.864,
+      "hi": 28.859999999999992,
+      "n": 49
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "lowvol",
+      "lo": 25.564,
+      "hi": 30.889999999999997,
+      "n": 53
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "quality",
+      "lo": 23.412,
+      "hi": 44.092,
+      "n": 53
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "assetgrowth",
+      "lo": -1.9440000000000002,
+      "hi": 5.811999999999999,
+      "n": 53
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "fscore",
+      "lo": 5,
+      "hi": 7,
+      "n": 50
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "momentum",
+      "lo": -7.98,
+      "hi": 110.65,
+      "n": 151
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "technical",
+      "lo": 2.5,
+      "hi": 29.68,
+      "n": 151
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "valuation",
+      "lo": 28.448999999999995,
+      "hi": 61.29099999999998,
+      "n": 132
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "lowvol",
+      "lo": 45.08,
+      "hi": 69.70299999999999,
+      "n": 152
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "quality",
+      "lo": 17.319,
+      "hi": 36.583999999999996,
+      "n": 154
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "assetgrowth",
+      "lo": 4.524,
+      "hi": 20.021,
+      "n": 154
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "fscore",
+      "lo": 6,
+      "hi": 7,
+      "n": 103
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "valuation",
+      "lo": 23.282,
+      "hi": 36.406,
+      "n": 93
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "fscore",
+      "lo": 5.799999999999999,
+      "hi": 7,
+      "n": 37
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "momentum",
+      "lo": -10.344999999999999,
+      "hi": 19,
+      "n": 96
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "technical",
+      "lo": -6.505,
+      "hi": 11.915,
+      "n": 96
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "valuation",
+      "lo": 18.614,
+      "hi": 35.41,
+      "n": 88
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "lowvol",
+      "lo": 33.42,
+      "hi": 40.59,
+      "n": 96
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "quality",
+      "lo": 18.988,
+      "hi": 44.846,
+      "n": 95
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "assetgrowth",
+      "lo": 2.8819999999999997,
+      "hi": 12.676,
+      "n": 95
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "fscore",
+      "lo": 5,
+      "hi": 7,
+      "n": 79
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "momentum",
+      "lo": -7.346000000000001,
+      "hi": 24.08499999999998,
+      "n": 50
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "technical",
+      "lo": -9.351,
+      "hi": 8.416999999999993,
+      "n": 50
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "valuation",
+      "lo": 15.675999999999998,
+      "hi": 30.357,
+      "n": 42
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "lowvol",
+      "lo": 29.818,
+      "hi": 41.00099999999999,
+      "n": 50
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "assetgrowth",
+      "lo": 2.531,
+      "hi": 17.200999999999997,
+      "n": 50
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "quality",
+      "lo": 16.682,
+      "hi": 36.135999999999996,
+      "n": 45
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "fscore",
+      "lo": 5.799999999999999,
+      "hi": 7,
+      "n": 37
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "gap_years",
+      "lo": 7.299999999999999,
+      "hi": 14.7,
+      "n": 32
+    }
+  ],
+  "bootstrapTable": [
+    {
+      "sector": "Energy",
+      "metricKey": "momentum",
+      "n": 57,
+      "p30Width": 10.6189,
+      "p70Width": 22.278800000000004,
+      "p30WidthOverIqr": 0.4151250977326036,
+      "p70WidthOverIqr": 0.8709460516028148
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "technical",
+      "n": 57,
+      "p30Width": 5.721399999999999,
+      "p70Width": 5.80635,
+      "p30WidthOverIqr": 0.5522586872586872,
+      "p70WidthOverIqr": 0.5604584942084943
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "valuation",
+      "n": 55,
+      "p30Width": 2.9939999999999998,
+      "p70Width": 8.607999999999999,
+      "p30WidthOverIqr": 0.3088189788550799,
+      "p70WidthOverIqr": 0.887880350696235
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "lowvol",
+      "n": 57,
+      "p30Width": 6.154,
+      "p70Width": 4.8156,
+      "p30WidthOverIqr": 0.5855375832540437,
+      "p70WidthOverIqr": 0.4581921979067554
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "quality",
+      "n": 57,
+      "p30Width": 2.9080999999999992,
+      "p70Width": 6.444000000000003,
+      "p30WidthOverIqr": 0.3157546145494028,
+      "p70WidthOverIqr": 0.6996742671009776
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "assetgrowth",
+      "n": 57,
+      "p30Width": 2.66,
+      "p70Width": 7.037499999999977,
+      "p30WidthOverIqr": 0.30296127562642367,
+      "p70WidthOverIqr": 0.8015375854214096
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "fscore",
+      "n": 54,
+      "p30Width": 1.1000000000000014,
+      "p70Width": 1.0999999999999943,
+      "p30WidthOverIqr": 0.5500000000000007,
+      "p70WidthOverIqr": 0.5499999999999972
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "momentum",
+      "n": 121,
+      "p30Width": 16.009999999999998,
+      "p70Width": 26.07,
+      "p30WidthOverIqr": 0.31361410381978444,
+      "p70WidthOverIqr": 0.5106758080313418
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "technical",
+      "n": 121,
+      "p30Width": 6.630000000000001,
+      "p70Width": 6.620000000000001,
+      "p30WidthOverIqr": 0.3679245283018868,
+      "p70WidthOverIqr": 0.3673695893451721
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "lowvol",
+      "n": 122,
+      "p30Width": 4.03240000000001,
+      "p70Width": 6.83102499999999,
+      "p30WidthOverIqr": 0.24200450112528188,
+      "p70WidthOverIqr": 0.4099639909977488
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "quality",
+      "n": 110,
+      "p30Width": 6.818000000000001,
+      "p70Width": 8.933224999999993,
+      "p30WidthOverIqr": 0.3398380062305297,
+      "p70WidthOverIqr": 0.4452697819314638
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "assetgrowth",
+      "n": 119,
+      "p30Width": 4.308000000000001,
+      "p70Width": 7.912100000000002,
+      "p30WidthOverIqr": 0.3011534428521497,
+      "p70WidthOverIqr": 0.5531003145753235
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "fscore",
+      "n": 89,
+      "p30Width": 1,
+      "p70Width": 1,
+      "p30WidthOverIqr": 0.5,
+      "p70WidthOverIqr": 0.5
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "technical",
+      "n": 161,
+      "p30Width": 8.75,
+      "p70Width": 3.6107500000000012,
+      "p30WidthOverIqr": 0.5421313506815365,
+      "p70WidthOverIqr": 0.2237143742255267
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "lowvol",
+      "n": 162,
+      "p30Width": 3.7601750000000003,
+      "p70Width": 4.758625000000002,
+      "p30WidthOverIqr": 0.24848339666281183,
+      "p70WidthOverIqr": 0.31446390219725767
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "quality",
+      "n": 166,
+      "p30Width": 3.077124999999997,
+      "p70Width": 5.285,
+      "p30WidthOverIqr": 0.24176978982518146,
+      "p70WidthOverIqr": 0.41524258495384014
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "assetgrowth",
+      "n": 166,
+      "p30Width": 3.042624999999997,
+      "p70Width": 7.589250000000005,
+      "p30WidthOverIqr": 0.24119104240982933,
+      "p70WidthOverIqr": 0.6016052318668256
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "fscore",
+      "n": 143,
+      "p30Width": 0,
+      "p70Width": 0,
+      "p30WidthOverIqr": 0,
+      "p70WidthOverIqr": 0
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "momentum",
+      "n": 160,
+      "p30Width": 13.626999999999999,
+      "p70Width": 17.171524999999995,
+      "p30WidthOverIqr": 0.2745580013096257,
+      "p70WidthOverIqr": 0.34597340452324576
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "valuation",
+      "n": 163,
+      "p30Width": 4.330450000000003,
+      "p70Width": 6.2215499999999935,
+      "p30WidthOverIqr": 0.23263228579102885,
+      "p70WidthOverIqr": 0.33422240128928243
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "momentum",
+      "n": 43,
+      "p30Width": 9.508,
+      "p70Width": 9.297999999999998,
+      "p30WidthOverIqr": 0.6140135615111397,
+      "p70WidthOverIqr": 0.600452050371327
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "technical",
+      "n": 43,
+      "p30Width": 4.19,
+      "p70Width": 3.2383,
+      "p30WidthOverIqr": 0.6072463768115942,
+      "p70WidthOverIqr": 0.46931884057971013
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "valuation",
+      "n": 41,
+      "p30Width": 4.129999999999999,
+      "p70Width": 2.8200000000000003,
+      "p30WidthOverIqr": 0.913716814159292,
+      "p70WidthOverIqr": 0.6238938053097346
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "lowvol",
+      "n": 43,
+      "p30Width": 2.3355000000000032,
+      "p70Width": 14.138000000000005,
+      "p30WidthOverIqr": 0.261680672268908,
+      "p70WidthOverIqr": 1.5840896358543428
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "quality",
+      "n": 43,
+      "p30Width": 1.3719999999999999,
+      "p70Width": 3.0139999999999993,
+      "p30WidthOverIqr": 0.5801268498942916,
+      "p70WidthOverIqr": 1.2744186046511623
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "assetgrowth",
+      "n": 43,
+      "p30Width": 3.13,
+      "p70Width": 4.027999999999999,
+      "p30WidthOverIqr": 0.5081168831168831,
+      "p70WidthOverIqr": 0.6538961038961036
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "fscore",
+      "n": 42,
+      "p30Width": 0.29999999999999893,
+      "p70Width": 1,
+      "p30WidthOverIqr": 0.14999999999999947,
+      "p70WidthOverIqr": 0.5
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "momentum",
+      "n": 49,
+      "p30Width": 13.226000000000004,
+      "p70Width": 20.349999999999994,
+      "p30WidthOverIqr": 0.43506578947368435,
+      "p70WidthOverIqr": 0.6694078947368419
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "technical",
+      "n": 49,
+      "p30Width": 3.6569499999999997,
+      "p70Width": 4.820000000000001,
+      "p30WidthOverIqr": 0.39923034934497814,
+      "p70WidthOverIqr": 0.5262008733624456
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "valuation",
+      "n": 47,
+      "p30Width": 5.204000000000001,
+      "p70Width": 34.93800000000002,
+      "p30WidthOverIqr": 0.29576584256891175,
+      "p70WidthOverIqr": 1.9856777493606153
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "lowvol",
+      "n": 49,
+      "p30Width": 2.41,
+      "p70Width": 7.09,
+      "p30WidthOverIqr": 0.30049875311720703,
+      "p70WidthOverIqr": 0.8840399002493766
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "quality",
+      "n": 47,
+      "p30Width": 1.6500000000000004,
+      "p70Width": 4.255999999999981,
+      "p30WidthOverIqr": 0.3923900118906065,
+      "p70WidthOverIqr": 1.0121284185493413
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "assetgrowth",
+      "n": 48,
+      "p30Width": 2.314,
+      "p70Width": 9.599324999999984,
+      "p30WidthOverIqr": 0.35153816938853016,
+      "p70WidthOverIqr": 1.4583099126471681
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "fscore",
+      "n": 45,
+      "p30Width": 1,
+      "p70Width": 1,
+      "p30WidthOverIqr": 0.5,
+      "p70WidthOverIqr": 0.5
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "momentum",
+      "n": 164,
+      "p30Width": 12.806225000000001,
+      "p70Width": 10.935174999999997,
+      "p30WidthOverIqr": 0.28583728586574414,
+      "p70WidthOverIqr": 0.24407510741588073
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "technical",
+      "n": 164,
+      "p30Width": 4.112524999999998,
+      "p70Width": 3.2310000000000016,
+      "p30WidthOverIqr": 0.2833781223083547,
+      "p70WidthOverIqr": 0.22263565891472878
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "valuation",
+      "n": 159,
+      "p30Width": 1.548,
+      "p70Width": 4.966050000000006,
+      "p30WidthOverIqr": 0.16108220603537976,
+      "p70WidthOverIqr": 0.5167585848074927
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "lowvol",
+      "n": 164,
+      "p30Width": 2.405050000000003,
+      "p70Width": 3.457999999999995,
+      "p30WidthOverIqr": 0.2617029379760613,
+      "p70WidthOverIqr": 0.37627856365614754
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "assetgrowth",
+      "n": 161,
+      "p30Width": 1.96,
+      "p70Width": 4.5302500000000006,
+      "p30WidthOverIqr": 0.19066147859922178,
+      "p70WidthOverIqr": 0.44068579766536964
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "momentum",
+      "n": 60,
+      "p30Width": 15.535,
+      "p70Width": 23.839000000000027,
+      "p30WidthOverIqr": 0.3507761783799041,
+      "p70WidthOverIqr": 0.5382782952300317
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "technical",
+      "n": 61,
+      "p30Width": 10.149999999999999,
+      "p70Width": 8.86,
+      "p30WidthOverIqr": 0.5128852956038402,
+      "p70WidthOverIqr": 0.4477008590197069
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "valuation",
+      "n": 55,
+      "p30Width": 5.2620000000000005,
+      "p70Width": 10.479000000000006,
+      "p30WidthOverIqr": 0.2935564853556486,
+      "p70WidthOverIqr": 0.5846025104602515
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "lowvol",
+      "n": 61,
+      "p30Width": 7.120000000000001,
+      "p70Width": 11.310000000000002,
+      "p30WidthOverIqr": 0.34446057087566523,
+      "p70WidthOverIqr": 0.5471698113207548
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "quality",
+      "n": 60,
+      "p30Width": 4.140000000000001,
+      "p70Width": 6.661824999999993,
+      "p30WidthOverIqr": 0.40291970802919713,
+      "p70WidthOverIqr": 0.6483527980535273
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "assetgrowth",
+      "n": 60,
+      "p30Width": 4.276,
+      "p70Width": 11.68030000000001,
+      "p30WidthOverIqr": 0.3219879518072289,
+      "p70WidthOverIqr": 0.879540662650603
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "fscore",
+      "n": 55,
+      "p30Width": 1,
+      "p70Width": 1,
+      "p30WidthOverIqr": 0.3333333333333333,
+      "p70WidthOverIqr": 0.3333333333333333
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "quality",
+      "n": 49,
+      "p30Width": 5.08,
+      "p70Width": 10.505999999999979,
+      "p30WidthOverIqr": 0.3182957393483709,
+      "p70WidthOverIqr": 0.658270676691728
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "momentum",
+      "n": 52,
+      "p30Width": 9.994000000000003,
+      "p70Width": 23.26799999999998,
+      "p30WidthOverIqr": 0.34665279223031575,
+      "p70WidthOverIqr": 0.8070759625390211
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "technical",
+      "n": 52,
+      "p30Width": 8.16,
+      "p70Width": 5.992999999999996,
+      "p30WidthOverIqr": 0.6651722029753414,
+      "p70WidthOverIqr": 0.4885265946606885
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "valuation",
+      "n": 49,
+      "p30Width": 4.509999999999998,
+      "p70Width": 11.996000000000002,
+      "p30WidthOverIqr": 0.30329522528581015,
+      "p70WidthOverIqr": 0.8067249495628782
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "lowvol",
+      "n": 53,
+      "p30Width": 3.030000000000001,
+      "p70Width": 4.4759999999999955,
+      "p30WidthOverIqr": 0.4190871369294609,
+      "p70WidthOverIqr": 0.6190871369294603
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "quality",
+      "n": 53,
+      "p30Width": 12.454649999999997,
+      "p70Width": 13.796000000000006,
+      "p30WidthOverIqr": 0.44930194805194795,
+      "p70WidthOverIqr": 0.49769119769119796
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "assetgrowth",
+      "n": 53,
+      "p30Width": 7.54,
+      "p70Width": 5.382999999999999,
+      "p30WidthOverIqr": 0.7854166666666667,
+      "p70WidthOverIqr": 0.5607291666666666
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "fscore",
+      "n": 50,
+      "p30Width": 1,
+      "p70Width": 1.2999999999999972,
+      "p30WidthOverIqr": 0.5,
+      "p70WidthOverIqr": 0.6499999999999986
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "momentum",
+      "n": 151,
+      "p30Width": 29.65374999999993,
+      "p70Width": 75.88875000000002,
+      "p30WidthOverIqr": 0.17786024891288008,
+      "p70WidthOverIqr": 0.4551731893837158
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "technical",
+      "n": 151,
+      "p30Width": 12.63975,
+      "p70Width": 11.550000000000004,
+      "p30WidthOverIqr": 0.3567527519051651,
+      "p70WidthOverIqr": 0.3259949195596953
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "valuation",
+      "n": 132,
+      "p30Width": 16.03,
+      "p70Width": 21.97932499999999,
+      "p30WidthOverIqr": 0.30919085736329444,
+      "p70WidthOverIqr": 0.4239430031825631
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "lowvol",
+      "n": 152,
+      "p30Width": 7.4334499999999935,
+      "p70Width": 11.177999999999997,
+      "p30WidthOverIqr": 0.2517466768266868,
+      "p70WidthOverIqr": 0.3785623571247142
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "quality",
+      "n": 154,
+      "p30Width": 5.5125749999999965,
+      "p70Width": 7.960725000000011,
+      "p30WidthOverIqr": 0.24775617977528075,
+      "p70WidthOverIqr": 0.35778539325842745
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "assetgrowth",
+      "n": 154,
+      "p30Width": 5.023000000000001,
+      "p70Width": 10.992000000000004,
+      "p30WidthOverIqr": 0.23973272879131372,
+      "p70WidthOverIqr": 0.5246152010499943
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "fscore",
+      "n": 103,
+      "p30Width": 1,
+      "p70Width": 0,
+      "p30WidthOverIqr": 0.5,
+      "p70WidthOverIqr": 0
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "valuation",
+      "n": 93,
+      "p30Width": 5.160750000000004,
+      "p70Width": 9.433,
+      "p30WidthOverIqr": 0.25322620215897956,
+      "p70WidthOverIqr": 0.462855740922473
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "fscore",
+      "n": 37,
+      "p30Width": 1,
+      "p70Width": 2,
+      "p30WidthOverIqr": 0.5,
+      "p70WidthOverIqr": 1
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "momentum",
+      "n": 96,
+      "p30Width": 10.93025,
+      "p70Width": 22.175000000000004,
+      "p30WidthOverIqr": 0.275703115146929,
+      "p70WidthOverIqr": 0.5593391348215413
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "technical",
+      "n": 96,
+      "p30Width": 8.184999999999999,
+      "p70Width": 8.71,
+      "p30WidthOverIqr": 0.36786516853932577,
+      "p70WidthOverIqr": 0.3914606741573034
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "valuation",
+      "n": 88,
+      "p30Width": 4.447825000000002,
+      "p70Width": 9.93239999999999,
+      "p30WidthOverIqr": 0.21784376147912335,
+      "p70WidthOverIqr": 0.4864650422431732
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "lowvol",
+      "n": 96,
+      "p30Width": 5.970000000000002,
+      "p70Width": 7.2649999999999935,
+      "p30WidthOverIqr": 0.45099150141643085,
+      "p70WidthOverIqr": 0.5488196411709155
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "quality",
+      "n": 95,
+      "p30Width": 7.187999999999999,
+      "p70Width": 15.530000000000001,
+      "p30WidthOverIqr": 0.22011943040881943,
+      "p70WidthOverIqr": 0.4755780125555045
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "assetgrowth",
+      "n": 95,
+      "p30Width": 4.045999999999999,
+      "p70Width": 5.636600000000005,
+      "p30WidthOverIqr": 0.32367999999999997,
+      "p70WidthOverIqr": 0.4509280000000004
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "fscore",
+      "n": 79,
+      "p30Width": 1,
+      "p70Width": 1,
+      "p30WidthOverIqr": 0.5,
+      "p70WidthOverIqr": 0.5
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "momentum",
+      "n": 50,
+      "p30Width": 18.861,
+      "p70Width": 39.818000000000026,
+      "p30WidthOverIqr": 0.402368,
+      "p70WidthOverIqr": 0.8494506666666672
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "technical",
+      "n": 50,
+      "p30Width": 8.584375,
+      "p70Width": 10.0511,
+      "p30WidthOverIqr": 0.3814006442297012,
+      "p70WidthOverIqr": 0.4465666999888926
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "valuation",
+      "n": 42,
+      "p30Width": 9.561500000000002,
+      "p70Width": 40.88999999999999,
+      "p30WidthOverIqr": 0.2707106455266139,
+      "p70WidthOverIqr": 1.1577010192525479
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "lowvol",
+      "n": 50,
+      "p30Width": 5.537000000000003,
+      "p70Width": 14.594999999999992,
+      "p30WidthOverIqr": 0.3255144032921813,
+      "p70WidthOverIqr": 0.8580246913580243
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "assetgrowth",
+      "n": 50,
+      "p30Width": 4.796,
+      "p70Width": 19.352000000000004,
+      "p30WidthOverIqr": 0.28671349574054705,
+      "p70WidthOverIqr": 1.1568973247646095
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "quality",
+      "n": 45,
+      "p30Width": 9.383,
+      "p70Width": 14.48,
+      "p30WidthOverIqr": 0.37278506158124747,
+      "p70WidthOverIqr": 0.5752880413190306
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "fscore",
+      "n": 37,
+      "p30Width": 2,
+      "p70Width": 2,
+      "p30WidthOverIqr": 1,
+      "p70WidthOverIqr": 1
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "gap_years",
+      "n": 32,
+      "p30Width": 4.700000000000001,
+      "p70Width": 8,
+      "p30WidthOverIqr": 0.5529411764705884,
+      "p70WidthOverIqr": 0.9411764705882353
+    }
+  ],
+  "nVsWidth": [
+    {
+      "sector": "Industrials",
+      "metricKey": "gap_years",
+      "n": 32,
+      "p30Width": 4.700000000000001,
+      "p70Width": 8
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "fscore",
+      "n": 37,
+      "p30Width": 1,
+      "p70Width": 2
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "fscore",
+      "n": 37,
+      "p30Width": 2,
+      "p70Width": 2
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "valuation",
+      "n": 41,
+      "p30Width": 4.129999999999999,
+      "p70Width": 2.8200000000000003
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "fscore",
+      "n": 42,
+      "p30Width": 0.29999999999999893,
+      "p70Width": 1
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "valuation",
+      "n": 42,
+      "p30Width": 9.561500000000002,
+      "p70Width": 40.88999999999999
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "momentum",
+      "n": 43,
+      "p30Width": 9.508,
+      "p70Width": 9.297999999999998
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "technical",
+      "n": 43,
+      "p30Width": 4.19,
+      "p70Width": 3.2383
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "lowvol",
+      "n": 43,
+      "p30Width": 2.3355000000000032,
+      "p70Width": 14.138000000000005
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "quality",
+      "n": 43,
+      "p30Width": 1.3719999999999999,
+      "p70Width": 3.0139999999999993
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "assetgrowth",
+      "n": 43,
+      "p30Width": 3.13,
+      "p70Width": 4.027999999999999
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "fscore",
+      "n": 45,
+      "p30Width": 1,
+      "p70Width": 1
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "quality",
+      "n": 45,
+      "p30Width": 9.383,
+      "p70Width": 14.48
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "valuation",
+      "n": 47,
+      "p30Width": 5.204000000000001,
+      "p70Width": 34.93800000000002
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "quality",
+      "n": 47,
+      "p30Width": 1.6500000000000004,
+      "p70Width": 4.255999999999981
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "assetgrowth",
+      "n": 48,
+      "p30Width": 2.314,
+      "p70Width": 9.599324999999984
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "momentum",
+      "n": 49,
+      "p30Width": 13.226000000000004,
+      "p70Width": 20.349999999999994
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "technical",
+      "n": 49,
+      "p30Width": 3.6569499999999997,
+      "p70Width": 4.820000000000001
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "lowvol",
+      "n": 49,
+      "p30Width": 2.41,
+      "p70Width": 7.09
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "quality",
+      "n": 49,
+      "p30Width": 5.08,
+      "p70Width": 10.505999999999979
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "valuation",
+      "n": 49,
+      "p30Width": 4.509999999999998,
+      "p70Width": 11.996000000000002
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "fscore",
+      "n": 50,
+      "p30Width": 1,
+      "p70Width": 1.2999999999999972
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "momentum",
+      "n": 50,
+      "p30Width": 18.861,
+      "p70Width": 39.818000000000026
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "technical",
+      "n": 50,
+      "p30Width": 8.584375,
+      "p70Width": 10.0511
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "lowvol",
+      "n": 50,
+      "p30Width": 5.537000000000003,
+      "p70Width": 14.594999999999992
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "assetgrowth",
+      "n": 50,
+      "p30Width": 4.796,
+      "p70Width": 19.352000000000004
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "momentum",
+      "n": 52,
+      "p30Width": 9.994000000000003,
+      "p70Width": 23.26799999999998
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "technical",
+      "n": 52,
+      "p30Width": 8.16,
+      "p70Width": 5.992999999999996
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "lowvol",
+      "n": 53,
+      "p30Width": 3.030000000000001,
+      "p70Width": 4.4759999999999955
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "quality",
+      "n": 53,
+      "p30Width": 12.454649999999997,
+      "p70Width": 13.796000000000006
+    },
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "assetgrowth",
+      "n": 53,
+      "p30Width": 7.54,
+      "p70Width": 5.382999999999999
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "fscore",
+      "n": 54,
+      "p30Width": 1.1000000000000014,
+      "p70Width": 1.0999999999999943
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "valuation",
+      "n": 55,
+      "p30Width": 2.9939999999999998,
+      "p70Width": 8.607999999999999
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "valuation",
+      "n": 55,
+      "p30Width": 5.2620000000000005,
+      "p70Width": 10.479000000000006
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "fscore",
+      "n": 55,
+      "p30Width": 1,
+      "p70Width": 1
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "momentum",
+      "n": 57,
+      "p30Width": 10.6189,
+      "p70Width": 22.278800000000004
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "technical",
+      "n": 57,
+      "p30Width": 5.721399999999999,
+      "p70Width": 5.80635
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "lowvol",
+      "n": 57,
+      "p30Width": 6.154,
+      "p70Width": 4.8156
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "quality",
+      "n": 57,
+      "p30Width": 2.9080999999999992,
+      "p70Width": 6.444000000000003
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "assetgrowth",
+      "n": 57,
+      "p30Width": 2.66,
+      "p70Width": 7.037499999999977
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "momentum",
+      "n": 60,
+      "p30Width": 15.535,
+      "p70Width": 23.839000000000027
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "quality",
+      "n": 60,
+      "p30Width": 4.140000000000001,
+      "p70Width": 6.661824999999993
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "assetgrowth",
+      "n": 60,
+      "p30Width": 4.276,
+      "p70Width": 11.68030000000001
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "technical",
+      "n": 61,
+      "p30Width": 10.149999999999999,
+      "p70Width": 8.86
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "lowvol",
+      "n": 61,
+      "p30Width": 7.120000000000001,
+      "p70Width": 11.310000000000002
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "fscore",
+      "n": 79,
+      "p30Width": 1,
+      "p70Width": 1
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "valuation",
+      "n": 88,
+      "p30Width": 4.447825000000002,
+      "p70Width": 9.93239999999999
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "fscore",
+      "n": 89,
+      "p30Width": 1,
+      "p70Width": 1
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "valuation",
+      "n": 93,
+      "p30Width": 5.160750000000004,
+      "p70Width": 9.433
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "quality",
+      "n": 95,
+      "p30Width": 7.187999999999999,
+      "p70Width": 15.530000000000001
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "assetgrowth",
+      "n": 95,
+      "p30Width": 4.045999999999999,
+      "p70Width": 5.636600000000005
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "momentum",
+      "n": 96,
+      "p30Width": 10.93025,
+      "p70Width": 22.175000000000004
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "technical",
+      "n": 96,
+      "p30Width": 8.184999999999999,
+      "p70Width": 8.71
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "lowvol",
+      "n": 96,
+      "p30Width": 5.970000000000002,
+      "p70Width": 7.2649999999999935
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "fscore",
+      "n": 103,
+      "p30Width": 1,
+      "p70Width": 0
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "quality",
+      "n": 110,
+      "p30Width": 6.818000000000001,
+      "p70Width": 8.933224999999993
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "assetgrowth",
+      "n": 119,
+      "p30Width": 4.308000000000001,
+      "p70Width": 7.912100000000002
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "momentum",
+      "n": 121,
+      "p30Width": 16.009999999999998,
+      "p70Width": 26.07
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "technical",
+      "n": 121,
+      "p30Width": 6.630000000000001,
+      "p70Width": 6.620000000000001
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "lowvol",
+      "n": 122,
+      "p30Width": 4.03240000000001,
+      "p70Width": 6.83102499999999
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "valuation",
+      "n": 132,
+      "p30Width": 16.03,
+      "p70Width": 21.97932499999999
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "fscore",
+      "n": 143,
+      "p30Width": 0,
+      "p70Width": 0
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "momentum",
+      "n": 151,
+      "p30Width": 29.65374999999993,
+      "p70Width": 75.88875000000002
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "technical",
+      "n": 151,
+      "p30Width": 12.63975,
+      "p70Width": 11.550000000000004
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "lowvol",
+      "n": 152,
+      "p30Width": 7.4334499999999935,
+      "p70Width": 11.177999999999997
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "quality",
+      "n": 154,
+      "p30Width": 5.5125749999999965,
+      "p70Width": 7.960725000000011
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "assetgrowth",
+      "n": 154,
+      "p30Width": 5.023000000000001,
+      "p70Width": 10.992000000000004
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "valuation",
+      "n": 159,
+      "p30Width": 1.548,
+      "p70Width": 4.966050000000006
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "momentum",
+      "n": 160,
+      "p30Width": 13.626999999999999,
+      "p70Width": 17.171524999999995
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "technical",
+      "n": 161,
+      "p30Width": 8.75,
+      "p70Width": 3.6107500000000012
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "assetgrowth",
+      "n": 161,
+      "p30Width": 1.96,
+      "p70Width": 4.5302500000000006
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "lowvol",
+      "n": 162,
+      "p30Width": 3.7601750000000003,
+      "p70Width": 4.758625000000002
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "valuation",
+      "n": 163,
+      "p30Width": 4.330450000000003,
+      "p70Width": 6.2215499999999935
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "momentum",
+      "n": 164,
+      "p30Width": 12.806225000000001,
+      "p70Width": 10.935174999999997
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "technical",
+      "n": 164,
+      "p30Width": 4.112524999999998,
+      "p70Width": 3.2310000000000016
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "lowvol",
+      "n": 164,
+      "p30Width": 2.405050000000003,
+      "p70Width": 3.457999999999995
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "quality",
+      "n": 166,
+      "p30Width": 3.077124999999997,
+      "p70Width": 5.285
+    },
+    {
+      "sector": "Industrials",
+      "metricKey": "assetgrowth",
+      "n": 166,
+      "p30Width": 3.042624999999997,
+      "p70Width": 7.589250000000005
+    }
+  ],
+  "verdictChangeByMetric": {
+    "momentum": {
+      "comparedN": 1003,
+      "changedN": 202
+    },
+    "lowvol": {
+      "comparedN": 1009,
+      "changedN": 339
+    },
+    "valuation": {
+      "comparedN": 924,
+      "changedN": 305
+    },
+    "quality": {
+      "comparedN": 879,
+      "changedN": 297
+    },
+    "assetgrowth": {
+      "comparedN": 1006,
+      "changedN": 159
+    }
+  },
+  "skipList": [
+    {
+      "sector": "Consumer Staples",
+      "metricKey": "gap_years",
+      "n": 9,
+      "reason": "n=9 < 20"
+    },
+    {
+      "sector": "Information Technology",
+      "metricKey": "gap_years",
+      "n": 19,
+      "reason": "n=19 < 20"
+    },
+    {
+      "sector": "Communication Services",
+      "metricKey": "gap_years",
+      "n": 5,
+      "reason": "n=5 < 20"
+    },
+    {
+      "sector": "Materials",
+      "metricKey": "gap_years",
+      "n": 4,
+      "reason": "n=4 < 20"
+    },
+    {
+      "sector": "Energy",
+      "metricKey": "gap_years",
+      "n": 6,
+      "reason": "n=6 < 20"
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "metricKey": "gap_years",
+      "n": 19,
+      "reason": "n=19 < 20"
+    },
+    {
+      "sector": "Health Care",
+      "metricKey": "gap_years",
+      "n": 19,
+      "reason": "n=19 < 20"
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "gap_years",
+      "n": 2,
+      "reason": "n=2 < 20"
+    },
+    {
+      "sector": "Real Estate",
+      "metricKey": "gap_years",
+      "n": 1,
+      "reason": "n=1 < 20"
+    },
+    {
+      "sector": "Financials",
+      "metricKey": "gap_years",
+      "n": 3,
+      "reason": "n=3 < 20"
+    }
+  ],
+  "utilitiesDetail": [
+    {
+      "sector": "Utilities",
+      "metricKey": "momentum",
+      "n": 43,
+      "p30Width": 9.508,
+      "p70Width": 9.297999999999998,
+      "p30WidthOverIqr": 0.6140135615111397,
+      "p70WidthOverIqr": 0.600452050371327
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "technical",
+      "n": 43,
+      "p30Width": 4.19,
+      "p70Width": 3.2383,
+      "p30WidthOverIqr": 0.6072463768115942,
+      "p70WidthOverIqr": 0.46931884057971013
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "valuation",
+      "n": 41,
+      "p30Width": 4.129999999999999,
+      "p70Width": 2.8200000000000003,
+      "p30WidthOverIqr": 0.913716814159292,
+      "p70WidthOverIqr": 0.6238938053097346
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "lowvol",
+      "n": 43,
+      "p30Width": 2.3355000000000032,
+      "p70Width": 14.138000000000005,
+      "p30WidthOverIqr": 0.261680672268908,
+      "p70WidthOverIqr": 1.5840896358543428
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "quality",
+      "n": 43,
+      "p30Width": 1.3719999999999999,
+      "p70Width": 3.0139999999999993,
+      "p30WidthOverIqr": 0.5801268498942916,
+      "p70WidthOverIqr": 1.2744186046511623
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "assetgrowth",
+      "n": 43,
+      "p30Width": 3.13,
+      "p70Width": 4.027999999999999,
+      "p30WidthOverIqr": 0.5081168831168831,
+      "p70WidthOverIqr": 0.6538961038961036
+    },
+    {
+      "sector": "Utilities",
+      "metricKey": "fscore",
+      "n": 42,
+      "p30Width": 0.29999999999999893,
+      "p70Width": 1,
+      "p30WidthOverIqr": 0.14999999999999947,
+      "p70WidthOverIqr": 0.5
+    }
+  ]
+}

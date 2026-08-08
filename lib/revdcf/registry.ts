@@ -135,6 +135,18 @@ export const MATERIAL_SOURCES = {
     /** STEP 942: 3순위 채택 근거·최종 실측. 값은 여기 안 적는다(재실행하면 바뀔 수 있는 측정값). */
     finalAdoptionProbe: "scripts/probe_942_final_resolve.ts → docs/probe_942_final_resolve.json — 재현: npx tsx scripts/probe_942_final_resolve.ts",
   },
+  /**
+   * STEP 943: Q0 ④단계 — 섹터 내 컷(p30/p70). 🔴 lens_cuts(시장 전체 컷)와 별개 테이블 — lens_cuts는 절대 안 쓴다.
+   * 계산 = lib/sectorCuts.ts(순수함수) · 적재·부트스트랩·비교 = scripts/probe_943_sector_cuts.ts.
+   */
+  sectorCuts: {
+    table: { name: "sector_cuts", note: "market·sector·metric_key·lo·hi·n·method·as_of·updated_at (PK market,sector,metric_key,as_of)" },
+    metrics: "lens 7종(momentum·technical·valuation·lowvol·quality·assetgrowth·fscore, lens_scores US 대상) + gap_years(역DCF, revdcf_results 최신 as_of 대상) — 지표마다 별개 모집단(판정 ⓖ 원칙)",
+    minN: 20, // n < 20인 (섹터×지표) 조합은 행 없음(skip 목록에 사유 기록)
+    bootstrapMethod: "복원추출 1,000회 · mulberry32 고정시드 · p30/p70의 2.5~97.5 백분위 구간폭 · 원표본 IQR 대비 비율",
+    /** STEP 943: 컷 표·부트스트랩 흔들림·판정변경 종목수(결함⑤ 크기). 값은 여기 안 적는다(재실행하면 바뀔 수 있음). */
+    probe: "scripts/probe_943_sector_cuts.ts → docs/probe_943_sector_cuts.json — 재현: npx tsx scripts/probe_943_sector_cuts.ts",
+  },
 } as const;
 
 // ────────────────────────────────────────────────────────────────

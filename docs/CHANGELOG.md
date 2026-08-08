@@ -1,6 +1,26 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (102) — 🟢 **STEP 943: Q0 구현 ④단계 — 섹터 내 컷 계산 + 부트스트랩 안정성 실측(판정 ⓚ 재료)**
+
+> **성격**: 신규 테이블(`sector_cuts`) 1개에 섹터별 p30/p70 컷 저장 + 부트스트랩으로 흔들림 폭 실측 + 시장 전체 컷 대비 판정 변경 크기(결함⑤) 실측. **화면 적용·기존 렌즈 판정 로직은 이 STEP에 없음**(`lens_cuts`·`lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`·`sector.ts` 전부 diff 0). 🔴 **리포트에 판정·권고 문장 없음 — 숫자만.**
+
+**§1 ⓪-4③ 재확인** — `lens_cuts` 스키마(`market·lens_key·lo·hi·n·method·as_of·updated_at`) 직접 열람 · `docs/probe_942_final_resolve.json` 섹터별 43~169 재확인 · `lib/lensPrecompute.ts:15` `LENS_KEYS` 7종 확인 · `lib/lenses.ts:237` *"절대 임계값의 verdict는 검증 밖(상대·섹터내 비교가 맞음)"* 재확인 — 이 STEP의 배경(결함⑤). `revdcf_results` 스키마 직접 열람 → `gap_years`가 verdict='years'일 때만 non-null(604 중 119) 확인. `lens_scores` 스키마에 `{metric}_value` 숫자 컬럼이 이미 있음을 확인(퍼센타일 계산 재료).
+
+**§2 구현** — `sector_cuts` 테이블 신설(RLS = `lens_cuts`와 동일 패턴) · `lib/sectorCuts.ts` 신규(순수 함수: `pctile`—`lib/lensPrecompute.ts:438`과 동일한 선형보간 공식 재사용·`sectorCut`—n<20이면 null·`bootstrap`—mulberry32 고정시드 PRNG로 1,000회 복원추출) · `scripts/probe_943_sector_cuts.ts`가 지표군마다 **별개 모집단으로 섹터 해석**(ⓖ 원칙: lens 7종=`lens_scores` US 1,021이 대상·`gap_years`=`revdcf_results` 최신 604가 대상 — 각각 `resolveSector` 별도 호출) → (섹터×지표) 그룹핑 → 컷 계산·`sector_cuts` upsert.
+
+**§3 실측 결과**(`docs/probe_943_sector_cuts.json`, 시드=943·1,000회)
+
+- **컷 계산**: 78개 (섹터×지표) 조합 산출 · **skip 10건**(전부 `gap_years` — Real Estate n=1부터 Consumer Discretionary/Health Care n=19까지, revdcf 표본이 원래 작아 섹터로 쪼개면 대부분 20 미만) · 유일하게 살아남은 `gap_years` 조합 = Industrials(n=32).
+- **부트스트랩**: 78개 조합 전부 실측. Utilities(가장 작은 렌즈 섹터, n=41~43) p30/p70 구간폭 절대값 0.3~14.1(지표마다 단위 다름) · **IQR 대비 비율 0.15~1.58**(fscore가 가장 안정적 0.15, lowvol의 p70이 가장 불안정 1.58). **n과 흔들림 폭의 단조 관계는 관찰되지 않음**(같은 n에서도 지표별 분포 형태에 따라 폭이 다름 — 판정 없이 사실만 기록).
+- **🔑 시장 전체 컷 vs 섹터 컷 — 판정 변경 종목 수**(CUT_LENSES 5종, `lib/lensCuts.ts`의 `stateFromCut`을 그대로 재사용해 계산): momentum 202/1,003(20.1%) · lowvol 339/1,009(33.6%) · valuation 305/924(33.0%) · quality 297/879(33.8%) · assetgrowth 159/1,006(15.8%). **이것이 결함⑤의 실측 크기다.**
+
+**§4 검증** — `lib/sectorCuts.test.ts` 신규 7건(p30/p70 선형보간 정확값·결측 제외·n<20 null·n=20 경계·부트스트랩 고정시드 재현·다른 시드면 다름·IQR 비율 산출) 전부 통과. `npm test` **207/207**(무회귀, 26파일). `git diff`로 `lens_cuts`·`lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`·`sector.ts` 전부 diff 0 확인 — Supabase 직접 재조회로 `lens_cuts.updated_at`(전 10행 07-28 04:33 그대로)·`as_of`(US 07-30·KR 08-07 그대로) 무변경 재확인.
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 — **④단계 완료로 갱신 + 판정 ⓚ 대기 명시** · `lib/revdcf/registry.ts`에 `sector_cuts` 테이블 등재 · `docs/STEP_LEDGER.md` 등재.
+
+**무변경** — `lens_cuts` 쓰기 0 · 기존 렌즈 판정 로직(`lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`)·`lib/sector.ts` diff 0 · 화면·UI 코드 0 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*`·KR 관련 diff 0 · 크론 미실행 · API 키 미입력 · `CLAUDE.md`·`USER_QUESTIONS`·`LENS_COMPLETION_STANDARD` 미수정.
+
 ## 2026-08-08 (101) — ✅ **판정 ⓖ 해소 · ⓚⓛ 신설 ＋ `disagree` 재해석 ＋ STEP 943 명령서**
 
 > **성격**: 판정 반영 · 재해석. **코드 diff 0.** 근거 = STEP 942 실측.
