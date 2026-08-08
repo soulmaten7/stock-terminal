@@ -410,7 +410,96 @@
         "actualLatestYear": 2025
       }
     ],
-    "note": "상대차 = (현재값-재계산값)/재계산값. 분모(재계산값)가 0에 가까운 경우 상대차가 극단적으로 커질 수 있다(예: 순이익이 옛해엔 거의 0, 실제최신엔 견조한 경우) — top20의 극값 다수가 이 패턴이며 계산 오류가 아니다."
+    "note": "🔴 signed median(부호 있는 상대차 중앙값)과 absolute median(|상대차| 중앙값)은 다른 수치다 — PER의 경우 signed median=6.8%이지만 absolute median=20.6%(3배 차이). 이게 「중앙값은 작은데 >20% 비율은 50.9%」가 어긋나 보이지 않는 이유다: 289건이 +1%초과, 176건이 -1%미만으로 갈려 signed 중앙값 근처에서 상쇄되지만, 절대 크기로 보면 이미 그 자체가 크다. 결론 없음 — 두 수치를 나란히 놓는다.",
+    "axisRelativeDeltaDistribution_reanalyzed": {
+      "note": "🔴 원래 axisRelativeDeltaDistribution의 'median' 등은 부호 있는 상대차였다 — 중앙값이 작아 보이는 이유는 양수·음수가 섞여 상쇄되기 때문이다. 절대값 분위수를 나란히 병기한다. 추가 SEC 요청 0건(이미 계산된 배열 재집계).",
+      "signedVsAbsolute": {
+        "per": {
+          "n": 483,
+          "signed": {
+            "median": 0.06779661016949143,
+            "p10": -0.43007518796992483,
+            "p25": -0.10474374056777547,
+            "p75": 0.28158001568226176,
+            "p90": 1.076085530630985
+          },
+          "absolute": {
+            "median": 0.20643939393939395,
+            "p75": 0.4834897462634689,
+            "p90": 1.076085530630985
+          },
+          "sign_counts": {
+            "positive_gt1pct": 289,
+            "negative_ltminus1pct": 176,
+            "near_zero_lt1pct": 18
+          },
+          "pct_abs_over_20pct": 0.5093167701863354
+        },
+        "pbr": {
+          "n": 564,
+          "signed": {
+            "median": 0.08706439661027154,
+            "p10": -0.11807589587063069,
+            "p25": 0.004016591410269889,
+            "p75": 0.1883517763541061,
+            "p90": 0.43379029930042423
+          },
+          "absolute": {
+            "median": 0.11690395686500835,
+            "p75": 0.2376936006723497,
+            "p90": 0.5015813161415887
+          },
+          "sign_counts": {
+            "positive_gt1pct": 416,
+            "negative_ltminus1pct": 124,
+            "near_zero_lt1pct": 24
+          },
+          "pct_abs_over_20pct": 0.3049645390070922
+        },
+        "psr": {
+          "n": 609,
+          "signed": {
+            "median": 0.07996671905334188,
+            "p10": -0.021417017146554414,
+            "p25": 0.025247054633943576,
+            "p75": 0.166541039273941,
+            "p90": 0.3394489096948522
+          },
+          "absolute": {
+            "median": 0.0872607381628354,
+            "p75": 0.1817144141717361,
+            "p90": 0.3590064534910789
+          },
+          "sign_counts": {
+            "positive_gt1pct": 495,
+            "negative_ltminus1pct": 76,
+            "near_zero_lt1pct": 38
+          },
+          "pct_abs_over_20pct": 0.21510673234811165
+        },
+        "evEbitda": {
+          "n": 392,
+          "signed": {
+            "median": 0.08562012445939556,
+            "p10": -0.19442635383746557,
+            "p25": -0.02779281548819795,
+            "p75": 0.2107350753068693,
+            "p90": 0.5031020740759802
+          },
+          "absolute": {
+            "median": 0.13739377864040067,
+            "p75": 0.2882932801159406,
+            "p90": 0.7414584690665748
+          },
+          "sign_counts": {
+            "positive_gt1pct": 272,
+            "negative_ltminus1pct": 110,
+            "near_zero_lt1pct": 10
+          },
+          "pct_abs_over_20pct": 0.3622448979591837
+        }
+      }
+    }
   },
   "step3_revdcfImpact": {
     "driverDependencyTable": [
@@ -890,7 +979,8 @@
         "verdictChanged": false,
         "gapYearsChanged": false
       }
-    ]
+    ],
+    "sampleLimitationCaveat": "🔴 표본 20종목은 revdcf_results 심볼 사전순 첫 20개라 전부 'A'로 시작한다(A·AA·AAL·AAPL·ABBV·ABNB·ABT·ACM·ACN·ADBE·ADI·ADM·ADP·ADSK·AEE·AEIS·AEP·AES·AIT·AKAM). 재현 가능하지만 대표성이 없다 — 알파벳 'A' 기업군에 특정 섹터·시총대가 쏠려 있을 수 있다. 42.9%(6/14)를 604종목 전체로 일반화하지 말 것. 전수 또는 계층표본(시총대·섹터별) 재측정이 필요하나, 🔴 이번 STEP에서는 하지 않는다 — SEC 예산·장은태 승인 문제로 남긴다."
   },
   "step4_similarLiterals": {
     "scope": "app/·lib/ 전체(scripts/probe_*·*.test.ts·supabase/migrations/*.sql 제외)",
@@ -929,5 +1019,10 @@
     ],
     "unused_note": "위 kr_frozen_2 중 lib/api/dart.ts가 미사용 1건에 해당한다(KR 2건과 별개 카테고리가 아니라 그 안의 부분집합).",
     "judgmentNote": "판정하지 않는다 — 목록·동결상태·미사용여부 사실만."
+  },
+  "measurementGaps": {
+    "C1_httpStatusNotRecorded": "fetchFacts()가 HTTP 상태 코드를 기록하지 않고 !r.ok만 boolean으로 판단해 'HTTP_NOT_OK'로 뭉뚱그렸다. §1의 HTTP_NOT_OK 40건 중 몇 건이 429였는지 사후에 구분할 수 없다 — 이 스크립트의 계측 부족.",
+    "C2_noRawCache": "companyfacts 원문(JSON)을 디스크에 캐시하지 않고 파생 결과만 저장했다. 같은 조사를 다시 하려면(예: HTTP 코드 재분류) SEC를 처음부터 다시 두드려야 한다.",
+    "C3_fundamentalsAgeDaysAlwaysMinus1": "🔴 직접 확인(Supabase, 2026-08-08): us_valuation.fundamentals_age_days가 1,003행 전부 -1이다. 원인(코드 재확인, app/api/cron/revdcf/route.ts computeAndSaveValuation): `Math.round((Date.parse(asOf) - Date.parse(f.fetched_at)) / 86_400_000)`에서 asOf는 그날 00:00:00Z, fetched_at은 같은 날 그보다 늦은 시각이라 뺄셈이 항상 음수가 되고 반올림하면 -1로 고정된다. 🔴 이 컬럼이 제대로 됐으면 '분모(us_fundamentals)가 며칠 전 데이터인지'가 화면에 보였을 것이고, YS 결함과 별개로 신선도 문제를 더 일찍 드러냈을 수 있다. 사실만 기록 — 고치지 않는다."
   }
 }
