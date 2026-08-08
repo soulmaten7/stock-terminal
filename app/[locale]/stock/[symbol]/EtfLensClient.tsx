@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { changeColorClass } from '@/lib/lensTones';
 import { pickLocale } from '@/lib/lensCopy';
+import { sectorLabel } from '@/lib/sectorLabel';
 import { ExternalLink, Layers, ArrowLeft, Star } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드 — StockLensClient.tsx와 동일 규칙(중복은 기존 두 파일 관례).
@@ -36,23 +37,7 @@ type EtfData = {
   tradeAmount?: number | null;
 };
 
-// 모듈 상수라 훅을 못 쓴다 → 값=ko.json 키. 매핑에 없는 섹터는 원문 키 그대로(번역 대상 아님).
-type Translate = ReturnType<typeof useTranslations>;
-const SECTOR_KEYS: Record<string, string> = {
-  // Yahoo(US)
-  realestate: 'sector.realestate', consumer_cyclical: 'sector.consumer_cyclical', basic_materials: 'sector.basic_materials',
-  consumer_defensive: 'sector.consumer_defensive', technology: 'sector.technology', financial_services: 'sector.financial_services',
-  healthcare: 'sector.healthcare', industrials: 'sector.industrials', communication_services: 'sector.communication_services',
-  energy: 'sector.energy', utilities: 'sector.utilities',
-  // 네이버(KR)
-  it: 'sector.it', financials: 'sector.financials', materials: 'sector.materials', health_care: 'sector.health_care',
-  consumer_discretionary: 'sector.consumer_discretionary', consumer_staples: 'sector.consumer_staples',
-  communication: 'sector.communication', real_estate: 'sector.real_estate', unclassified: 'sector.unclassified', etc: 'sector.etc',
-};
-const sectorLabel = (k: string, t: Translate) => {
-  const key = SECTOR_KEYS[(k ?? '').toLowerCase()];
-  return key ? t(key) : k;
-};
+// STEP 945 — 섹터 라벨 매핑은 lib/sectorLabel.ts로 이관(규칙 5-2, 화면마다 복붙 금지). 동작 동일(야후·GICS·KR 어휘 전부 처리).
 const pct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 // 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — StockLensClient.tsx와 동일 구현(중복은 기존 두 파일 관례).

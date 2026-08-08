@@ -1009,7 +1009,8 @@
     "filterToPos": "To strength",
     "filterToWarn": "To caution",
     "strengthCount": "Strengths {n}",
-    "tradeAmountLabel": "Value traded {v}"
+    "tradeAmountLabel": "Value traded {v}",
+    "sectorSourceNote": "Sector is resolved from S&P sector ETFs, then Damodaran, then Yahoo. The source can differ by stock."
   },
   "RevDcf": {
     "badge": {

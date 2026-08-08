@@ -207,16 +207,18 @@
 | 942 | ✅ 성공 | Q0 구현 ③ 마감 — `resolveSector` 3순위를 나스닥∩SIC 합의에서 야후 단독으로 교체(장은태 A안), `crossCheck:{nasdaq,sic,yahoo,disagree}` 신설(사실만 기록·판정 안 함). 실측: 0/1/2순위 941과 정확히 일치(498/311/5)·3순위(야후) 207·미분류 0·커버리지 100%. `ASML`→정답(Information Technology)·`ARCC`→Financials로 해소 확인. `industryGroup` 모드·0~2순위 로직 diff 0. 테스트 200/200. CHANGELOG (100) |
 | 943 | ✅ 성공 | Q0 구현 ④단계 — `sector_cuts` 신설(78개 섹터×지표 컷 산출·skip10건), 부트스트랩 안정성 실측(시드943·1,000회, Utilities IQR대비 0.15~1.58), **시장 전체 컷 대비 판정 변경 종목수(결함⑤ 크기) 최초 실측**(momentum20.1%~quality33.8%). `lens_cuts` 쓰기 0(읽기도 안 함)·기존 렌즈 판정 로직·`sector.ts` diff 0. 리포트에 판정 문장 0(숫자만). 테스트 207/207. CHANGELOG (102) |
 | 944 | ✅ 성공 | Q0 구현 ⑤ 준비 — `us_sector_resolved`(resolveSector 캐시) 신설·`sector_cuts`에 `applied`/`exclude_reason`/`width_over_iqr` 추가(IQR1.0 초과 7건 제외·71/78 적용, 943과 정확 일치). `scripts/refresh_sector.ts`(수동·크론 미등록, 2회 실행 재현성 확인). 검증: 영속화 1,021종목 불일치 0건·「업종대비 표시불가」320/6,560(4.9%) 최초 산출. 화면·렌즈·`lens_cuts` diff 0. 테스트 215/215. CHANGELOG (105) |
+| 945 | 🟡 부분 | Q0 구현 ⑤단계(리스트 쪽만) — **라이브 화면 변경**(장은태 승인). `lib/sectorLabel.ts` 신설(야후·GICS·KR 3어휘 통일, 신규 messages 키 0개) → `EtfLensClient.tsx` 전환·`/api/sector/us` 신규·`ExploreClient.tsx` US 거래대금 리스트에 섹터 필터+라벨+출처안내(신규 키 1개, 덧붙이기만·KR·기존 API diff 0). 테스트 269/269. **배포됨·장은태 Preview 육안 확인 대기 — 「각 카드에 업종 대비」(Q1~Q4)는 범위 밖이라 미완**. CHANGELOG (107) |
 
 ## 이 구간 집계
 
 - ✅ 기록됨 — **99건**
 - ✅ 성공 — **8건**
+- 🟡 부분 — **1건**
 - ⬜ 미실행 — **1건**
 - 🔴 기록없음 — **7건**
 - 🟡 범위압축 — **24건**
 - 🟡 언급만 — **1건**
-- 합계 — **140건**
+- 합계 — **141건**
 
 ### 🔴 즉시 눈에 띄는 것
 - **837 ⬜ 미실행** — 명령서를 다 써놓고 실행하지 않았고, 하필 그 자리가 **역DCF 방향 전환 지점**이라 경위 복원이 불가능하다. 이 사례가 규칙 ⓐ의 "미실행도 결과다"를 만든 근거다.

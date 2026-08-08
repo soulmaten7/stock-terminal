@@ -15,6 +15,7 @@ import { resolveDisplayName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
 import { WatchStar } from '@/components/common/WatchStar';
 import { PageShell } from '@/components/layout/PageShell';
+import { gicsLabel, filterBySector, GICS_SECTORS } from '@/lib/sectorLabel';
 import { Search as SearchIcon, X, ArrowLeft } from 'lucide-react';
 
 type Country = 'KR' | 'US';
@@ -40,6 +41,14 @@ type BoardRow = {
 };
 function rowTradeAmount(r: BoardRow): number | null {
   return r.tradeAmount ?? r.amount ?? null;
+}
+// STEP 945 §4 — US 섹터 표시·필터(us_sector_resolved 캐시, GICS 섹터명 기준). KR은 이 정보가 없다(끄지 않음, 단순 미해당).
+type SectorInfo = { sector: string; source: string };
+async function fetchUsSectors(): Promise<Map<string, SectorInfo>> {
+  const j = await fetchJson<{ items?: { symbol: string; sector: string | null; source: string | null }[] }>('/api/sector/us');
+  const map = new Map<string, SectorInfo>();
+  for (const it of j?.items ?? []) { if (it.sector && it.source) map.set(it.symbol, { sector: it.sector, source: it.source }); }
+  return map;
 }
 
 const STORAGE_KEY = 'explore_market';
@@ -210,6 +219,7 @@ export default function ExploreClient() {
   const t = useTranslations('Explore');
   const tMaterial = useTranslations('LensPreview');
   const tLogin = useTranslations('Login');
+  const tEtf = useTranslations('EtfLens'); // STEP 945 — sector.* 키(GICS 라벨) 재사용, 신규 키 없음
   const router = useRouter();
   const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 복귀(next)용
   const searchParams = useSearchParams();
@@ -320,6 +330,15 @@ export default function ExploreClient() {
   const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거(STEP 804 §4)
   // 톤 필터 칩(변화 풀리스트 전용·STEP 775 §2) — 정렬 토글 아님, to_tone 기준 필터만. 건수는 서버 집계(counts) 재사용.
   const [toneFilter, setToneFilter] = useState<'all' | 'pos' | 'warn'>('all');
+  // STEP 945 §4 — US 섹터 필터(거래대금 풀리스트 전용). KR은 섹터 데이터가 없어 sectorMap이 항상 빈 채로 남음(끄지 않음).
+  const [sectorMap, setSectorMap] = useState<Map<string, SectorInfo>>(new Map());
+  const [sectorFilter, setSectorFilter] = useState<string>('all');
+  useEffect(() => {
+    if (market !== 'US') { setSectorMap(new Map()); setSectorFilter('all'); return; }
+    let alive = true;
+    fetchUsSectors().then((m) => { if (alive) setSectorMap(m); });
+    return () => { alive = false; };
+  }, [market]);
 
   useEffect(() => {
     const limit = activeList ? 50 : 5;
@@ -389,6 +408,11 @@ export default function ExploreClient() {
     const asOfDate = activeList === 'changes' ? changes?.date ?? null : activeList === 'amount' ? amountAsOf : null;
     // 톤 필터 적용 후 종목당 그룹핑(STEP 776 §3 — 필터 먼저, 그다음 묶기).
     const filteredGroupedChanges = changes ? groupBySymbol(changes.items.filter((it) => toneFilter === 'all' || it.toTone === toneFilter)) : [];
+    // STEP 945 §4 — US 거래대금 풀리스트에서만 섹터 필터(덧붙이기, 기존 정보 삭제 0). KR·다른 리스트는 sectorMap이 비어 있어 무영향.
+    const showSectorFilter = activeList === 'amount' && market === 'US' && sectorMap.size > 0;
+    const sectorFilteredAmountTop = amountTop && showSectorFilter
+      ? filterBySector(amountTop, sectorFilter, (r) => sectorMap.get(r.symbol)?.sector)
+      : amountTop;
     return (
       <PageShell>
         {/* 탐색 본문은 전 구간 680 고정 — PageShell main은 lg에서만 680이라 640~1023구간이 넓어지던 회귀 차단(STEP 798 §1). */}
@@ -425,6 +449,23 @@ export default function ExploreClient() {
         {activeList === 'changes' && changes && (changes.counts?.total ?? 0) > changes.items.length ? (
           <p className="mb-2 px-4 text-[12px] text-unjong-muted sm:px-0">{t('toneCountNote', { shown: changes.items.length })}</p>
         ) : null}
+        {/* STEP 945 §4 — US 거래대금 풀리스트 전용 섹터 필터(GICS 11개). KR·다른 리스트는 showSectorFilter가 false라 안 뜸. */}
+        {showSectorFilter ? (
+          <div className="mb-3 flex flex-wrap gap-1.5 px-4 sm:px-0">
+            <button type="button" onClick={() => setSectorFilter('all')} className={chipClass(sectorFilter === 'all')}>
+              {t('filterAll')} {amountTop?.length ?? 0}
+            </button>
+            {GICS_SECTORS.map((sector) => {
+              const count = amountTop?.filter((r) => sectorMap.get(r.symbol)?.sector === sector).length ?? 0;
+              if (count === 0) return null;
+              return (
+                <button key={sector} type="button" onClick={() => setSectorFilter(sector)} className={chipClass(sectorFilter === sector)}>
+                  {gicsLabel(sector, tEtf)} {count}
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
         <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
           {activeList === 'changes' ? (
             listsFailed.changes ? <LoadFailed /> : changes === null ? <Skeleton /> : filteredGroupedChanges.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
@@ -433,13 +474,22 @@ export default function ExploreClient() {
             listsFailed.pos ? <LoadFailed /> : posTop === null ? <Skeleton /> : posTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
               posTop.map((r) => <DotsRow key={r.symbol} symbol={r.symbol} name={r.name} tones={r.tones} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={<PosRankingBasis tones={r.tones} topLensKey={r.topLensKey} topLensState={r.topLensState} loc={loc} t={t} />} />)
           ) : (
-            listsFailed.amount ? <LoadFailed /> : amountTop === null ? <Skeleton /> : amountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
-              amountTop.map((r) => {
+            listsFailed.amount ? <LoadFailed /> : sectorFilteredAmountTop === null ? <Skeleton /> : sectorFilteredAmountTop.length === 0 ? <p className="py-6 text-center text-[15px] text-unjong-muted sm:text-sm">{t('noItems')}</p> :
+              sectorFilteredAmountTop.map((r) => {
                 const amt = rowTradeAmount(r);
-                return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null} />;
+                const sectorInfo = market === 'US' ? sectorMap.get(r.symbol) : undefined;
+                const amtText = amt != null ? t('tradeAmountLabel', { v: formatTradeValue(amt, market) }) : null;
+                const rankingBasis = sectorInfo
+                  ? <>{amtText}{amtText ? ' · ' : ''}{gicsLabel(sectorInfo.sector, tEtf)}</>
+                  : amtText;
+                return <DotsRow key={r.symbol} symbol={r.symbol} name={resolveDisplayName({ loc, market, symbol: r.symbol, nameKo: r.name, nameEn: r.nameEn, rawName: r.name, context: 'list' })} tones={r.lens} price={r.price} changePercent={r.changePercent} market={market} loc={loc} watched={watchSet.has(r.symbol)} onToggleWatch={toggleWatch} rankingBasis={rankingBasis} />;
               })
           )}
         </div>
+        {/* STEP 945 §4 지시3 — 규칙 5-2 ④(섹터가 표시되는 화면엔 출처가 보일 것) 공통 안내 한 줄. US·거래대금 리스트에만(섹터 데이터가 있을 때만). */}
+        {activeList === 'amount' && market === 'US' && sectorMap.size > 0 ? (
+          <p className="mt-2 px-4 text-[11px] text-unjong-muted sm:px-0">{t('sectorSourceNote')}</p>
+        ) : null}
         </div>
     </PageShell>
     );

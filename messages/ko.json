@@ -1009,7 +1009,8 @@
     "filterToPos": "강점 전환",
     "filterToWarn": "주의 전환",
     "strengthCount": "강점 {n}",
-    "tradeAmountLabel": "거래대금 {v}"
+    "tradeAmountLabel": "거래대금 {v}",
+    "sectorSourceNote": "업종 분류는 S&P 섹터 ETF · Damodaran · Yahoo 순으로 정합니다. 종목마다 출처가 다를 수 있어요."
   },
   "RevDcf": {
     "badge": {

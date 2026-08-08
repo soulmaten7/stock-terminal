@@ -1,6 +1,24 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (107) — 🟢 **STEP 945: Q0 구현 ⑤단계 — 종목 리스트 섹터 분류 + 섹터 어휘 GICS 통일 (라이브 화면 변경)**
+
+> **성격**: (106) 판정(ⓕ→ⓐ GICS명 통일)의 구현. **라이브 화면 변경** — 장은태 승인 하에 진행, 배포 후 육안 확인 대기. Q1~Q4 카드의 "업종 대비"는 이 STEP에 없음(그 카드 자체가 아직 없음).
+
+**§1 ⓪-4③ 재확인** — `EtfLensClient.tsx`의 `SECTOR_KEYS`(야후 11 + 네이버 10, 21키) 직접 열람 확인 · `messages/{ko,en}.json`의 `EtfLens.sector` 21키 전수 대조 → **GICS 11개 전부 기존 키로 커버, 새 키 0개** 확인 · `ExploreClient.tsx` 603줄·US는 `/api/yahoo/us-list` 호출(섹터 필드 없음) 확인 · `docs/probe_944_persist.json` 재확인(`us_sector_resolved` 1,021 전부 일치, 미분류 0).
+
+**§2 구현** — `lib/sectorLabel.ts` 신설: `YAHOO_TO_GICS`(11:1)·`GICS_TO_MESSAGE_KEY`(GICS명→기존 messages 키, 신규 키 0개)·`sectorLabel()`(야후 키는 GICS 경유, KR 네이버 키는 기존과 동일 직접 조회, 매핑 밖은 원문 그대로)·`gicsLabel()`(GICS명 직접 번역, 필터 칩용)·`filterBySector()`(순수 필터 함수). `EtfLensClient.tsx` — 기존 `SECTOR_KEYS`/`sectorLabel` 인라인 구현을 전부 제거하고 `lib/sectorLabel.ts` import로 교체(동작 동일, 로직 한 곳으로). `app/api/sector/us/route.ts` 신규(`us_sector_resolved` 최신 as_of 그대로 노출, `revalidate=86400` — `brokers/route.ts`와 동일 관행, 기존 API 무수정). `ExploreClient.tsx` — US 거래대금 풀리스트(`activeList==='amount'`)에 **덧붙이기만**: GICS 11개 섹터 필터 칩(건수 0인 섹터는 숨김) · 행별 `rankingBasis`에 섹터 라벨 추가(기존 거래대금 텍스트 뒤에 이어붙임, 기존 정보 삭제 0) · 하단 출처 공통 안내 한 줄(규칙 5-2 ④, `sectorSourceNote` 신규 키 1개 ko·en 동시). **KR 목록·KR ETF 화면·기존 API·기존 렌즈 판정 로직·`sector.ts`·`lens_cuts`는 전부 diff 0.**
+
+**§3 실측** — dev 서버 라이브 확인: `/api/etf-holdings?symbol=SPY`가 여전히 야후 원문 키(`realestate`·`consumer_cyclical` 등) 그대로 반환(API 무수정 확인) · `/api/sector/us` 200·1,021건 · `/stock/SPY`·`/explore?list=amount&market=US`·`/en/explore?...`·`/explore?list=amount&market=KR` 전부 HTTP 200(서버 사이드 크래시 없음 — 클라이언트 컴포넌트라 curl로 최종 DOM 확인은 안 됨, 브라우저 도구 없는 환경의 원리적 한계, 897/898 선례와 동일).
+
+**§4 검증** — `lib/sectorLabel.test.ts` 신규 51건(야후 11개 ko·en 전수·**KR 네이버 10개 회귀 — 기존 messages 값과 정확히 일치**·매핑 밖 원문 유지·`filterBySector` 4건) · `app/api/sector/us/route.test.ts` 신규 3건(정상·빈 데이터·DB 오류) · `npm test` **269/269**(무회귀, 28파일) · `messages.test.ts` ko·en 패리티 통과. `git diff`로 `lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`·`sector.ts`·`lens_cuts` 관련 전부 diff 0 확인.
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 — ⑤단계 상태 갱신, ⑥(테스트)이 남음, 「각 카드에 업종 대비」는 Q1~Q4 카드와 함께임을 명시 · `docs/STEP_LEDGER.md` 등재.
+
+**무변경** — `lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`·`lib/sector.ts`·`lens_cuts` diff 0 · 기존 API(`/api/yahoo/us-list`·`/api/etf-holdings` 등) 수정 0 · `messages` 기존 20키(EtfLens.sector 21 + Explore 24) 무변경(신규 1개만 추가) · KR 경로(네이버 섹터 키·KR ETF 화면·KR 목록) 무변경 · `revdcf_results`·`us_market_cap`·`lens_scores` 쓰기 0 · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*` diff 0 · 크론 등록·수동 실행 0 · API 키 미입력 · `CLAUDE.md`·`USER_QUESTIONS`·`LENS_COMPLETION_STANDARD` 미수정.
+
+🔴 **배포 후 — 완료 아님.** 이 STEP은 라이브 화면을 바꾼다. **배포됨 · 장은태 Preview 육안 확인 대기.**
+
 ## 2026-08-08 (106) — ✅ **ⓕ 확정(GICS명 통일) ＋ STEP 945 명령서 · 🔴 Cowork 표류 1건**
 
 > **성격**: 판정 반영. **코드 diff 0.**
