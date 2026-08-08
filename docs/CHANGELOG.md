@@ -1,6 +1,20 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (94) — 🟢 **STEP 938: Q0 구현 ①단계 — 업종 조회를 함수로 모은다(순수 리팩터·동작 diff 0)**
+
+> **성격**: `lib/sector.ts` 신설 + 운영 경로 2곳 교체 + 유닛테스트. **동작 불변이 성공 기준** — 로직을 옮겼을 뿐 바꾸지 않았다. 데이터 원본(나스닥·SEC)은 이 STEP에 없음(939 이후).
+
+**§1 ⓪-4 ③ 재확인(직접 열람) — 설계가 바뀐 두 가지 발견** — ① **용도 분리**: `damodaran_industry` 조회가 13개 파일에 있지만 **두 용도가 서로 다르다** — 역DCF 계산 입력(`industry_group`, 84~94개)은 `damodaran_beta`/`wacc`/`tax_rate`/`capex`/`working_capital` 5개 테이블이 이 이름을 키로 써서 **다른 출처로 대체 불가**, Q0 화면 표시(`primary_sector`, 11개)는 나스닥·SEC 보강이 **가능**(`grep primary_sector` — 코드 사용처 0건, `scripts/ingest_damodaran.ts:78`에서 적재만 하고 아무도 안 읽음). → **함수는 이번엔 `industryGroup` 모드만 구현**, `{섹터,출처,합의여부}`(Q0용) 모드는 939 이후. ② **「13곳」의 성격 정정**: 실제 **운영·재실행 경로는 2곳**(`route.ts`·`compute_revdcf_all.ts`)뿐이고 나머지 11곳은 `probe_851·866·866c·871·874·876·878·879·906×2·909` — **1회성 조사 기록**이라 고치면 과거 STEP 결과의 재현성이 깨짐(의도적 미접촉). Supabase 직접조회로 `damodaran_industry` 48,144행·`is_us_listed` **6,937**·US 내부 `ticker_norm` 중복 **0건** 재확인. 🔴 `CLAUDE.md` 규칙 5-2 §1의 "13곳" 표현 정정은 939 이후 별도 판정(이 STEP에서 CLAUDE.md 미수정).
+
+**§2 구현** — `lib/sector.ts`(`fetchSectorMap(sb, {field:"industryGroup", source:"damodaran"})` → `{byTicker, rows, source}`, Supabase 클라이언트 주입·페이지네이션(1000단위) 기존과 동일·티커 정규화 미추가) 신설. `app/api/cron/revdcf/route.ts:45-47`·`scripts/compute_revdcf_all.ts` 동일 블록을 함수 호출로 교체 — `indByT`/`indByTicker` 변수명·`NO_INDUSTRY` 분기·`symbol.toUpperCase()` 매칭 시점 전부 **무변경**(`git diff` 육안 확인, 순수 이동).
+
+**§3 검증** — `lib/sector.test.ts` 신규 3건(정상 3행·페이징 경계 1,000+1행·빈 결과 0행) 전부 통과. `npm test` **185/185**(기존 182 + 신규 3, 24→25파일) — 특히 `app/api/cron/revdcf/route.branches.test.ts`의 `NO_INDUSTRY` 회귀(:97, 미수정 파일)·`route.test.ts` 전부 재실행해 개별 통과 확인(12/12). `npx tsc --noEmit` 0. `git diff --stat` = 4개 파일(`lib/sector.ts`·`lib/sector.test.ts` 신규, `route.ts`·`compute_revdcf_all.ts` 수정) — 금지 경로(`REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·`probe_*` 11개·`messages/`·`CLAUDE.md`·`USER_QUESTIONS`·`LENS_COMPLETION_STANDARD`) diff 전부 0.
+
+**§4 판정 보류** — 🔴 **동작 불변은 이 STEP에서 확정하지 않는다.** 다음 정규 크론 실행 후 `revdcf_results` 최신 `as_of` 행 수(604)와 `skip_reason` 분포로 별도 확인 필요. 크론 미실행·DB 쓰기 0·`REVDCF_ENABLED` 무변경.
+
+**§5 문서** — `docs/STATE.md` ▶다음 0번 표 ①·② 갱신(둘 다 🟡 부분 — ①은 industryGroup 모드만, ②는 운영 2곳만) · `docs/STEP_LEDGER.md` STEP 938 등재(✅ 성공).
+
 ## 2026-08-08 (93) — ✅ **Q0·Q3 모델 확정 (장은태) — 질문 6개 중 4개 확정**
 
 > **성격**: 질문 정본 갱신. **코드 diff 0.** 확정 현황 → ✅ Q0 · ✅ Q1 · ✅ Q2 · ✅ Q3 / ⬜ Q4 · ⬜ Q5.

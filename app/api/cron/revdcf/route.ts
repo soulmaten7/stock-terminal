@@ -4,6 +4,7 @@ import { computeDrivers } from "@/lib/revdcf/drivers";
 import { assembleWacc, creditSpreadFor, computeGapWithSensitivity } from "@/lib/revdcf/compute";
 import { runRevDcf, type RevDcfMarket, type RevDcfVerdict } from "@/lib/revdcf/engine";
 import { REVDCF_DEFAULT_MAX_YEARS } from "./constants";
+import { fetchSectorMap } from "@/lib/sector";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,9 +43,7 @@ export async function GET(req: Request) {
   const usTax = +(await sb.from("damodaran_country_tax").select("marginal_rate").eq("country", "United States of America").single()).data!.marginal_rate;
   const spreads = (await sb.from("damodaran_credit_spread").select("*")).data as { std_dev_lo: number; std_dev_hi: number | null; spread: number }[];
   const betaByInd = new Map(((await sb.from("damodaran_beta").select("industry, unlevered_beta_cash_adj, std_dev_equity")).data as { industry: string; unlevered_beta_cash_adj: number; std_dev_equity: number }[]).map((b) => [b.industry, b]));
-  const indRows: { ticker_norm: string; industry_group: string }[] = [];
-  for (let f = 0; ; f += 1000) { const { data } = await sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true).range(f, f + 999); const c = (data ?? []) as typeof indRows; indRows.push(...c); if (c.length < 1000) break; }
-  const indByT = new Map(indRows.map((r) => [r.ticker_norm, r.industry_group]));
+  const { byTicker: indByT } = await fetchSectorMap(sb, { field: "industryGroup", source: "damodaran" });
   const mcapRows: { symbol: string; market_cap: number; as_of: string }[] = [];
   for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_market_cap").select("symbol, market_cap, as_of").range(f, f + 999); const c = (data ?? []) as typeof mcapRows; mcapRows.push(...c); if (c.length < 1000) break; }
   const mcapBy = new Map(mcapRows.map((r) => [r.symbol.toUpperCase(), r]));

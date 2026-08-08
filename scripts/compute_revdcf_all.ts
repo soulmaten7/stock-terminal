@@ -7,6 +7,7 @@ import { createAdminClient } from "../lib/supabase/admin";
 import { computeDrivers } from "../lib/revdcf/drivers";
 import { assembleWacc, creditSpreadFor, computeGapWithSensitivity } from "../lib/revdcf/compute";
 import type { RevDcfMarket, RevDcfVerdict } from "../lib/revdcf/engine";
+import { fetchSectorMap } from "../lib/sector";
 
 const UA = process.env.SEC_USER_AGENT || "Trillion Research admin@onetrillion.app";
 const BATCH = Number(process.argv[2] || 60);
@@ -30,9 +31,7 @@ async function main() {
   const spreads = (await sb.from("damodaran_credit_spread").select("*")).data as { std_dev_lo: number; std_dev_hi: number | null; spread: number }[];
   const betaRows = (await sb.from("damodaran_beta").select("industry, unlevered_beta_cash_adj, std_dev_equity")).data as { industry: string; unlevered_beta_cash_adj: number; std_dev_equity: number }[];
   const betaByInd = new Map(betaRows.map((b) => [b.industry, b]));
-  const indRows: { ticker_norm: string; industry_group: string }[] = [];
-  for (let from = 0; ; from += 1000) { const { data } = await sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true).range(from, from + 999); const c = (data ?? []) as typeof indRows; indRows.push(...c); if (c.length < 1000) break; }
-  const indByTicker = new Map(indRows.map((r) => [r.ticker_norm, r.industry_group]));
+  const { byTicker: indByTicker } = await fetchSectorMap(sb, { field: "industryGroup", source: "damodaran" });
   const mcapRows: { symbol: string; market_cap: number }[] = [];
   for (let from = 0; ; from += 1000) { const { data } = await sb.from("us_market_cap").select("symbol, market_cap").range(from, from + 999); const c = (data ?? []) as typeof mcapRows; mcapRows.push(...c); if (c.length < 1000) break; }
   const mcapBySym = new Map(mcapRows.map((r) => [r.symbol.toUpperCase(), Number(r.market_cap)]));
