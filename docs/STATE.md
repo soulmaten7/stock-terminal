@@ -5,6 +5,8 @@
 > 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md`.
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
+🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**
+
 
 ## 🔴🔴 2026-08-08 전환 — **역DCF 단독 진행에서 「질문 Q0~Q5」 체제로** (장은태)
 
@@ -165,6 +167,7 @@
 
 
 🔴🔴 **00. 라이브 이상징후(912→936) — 역DCF 밖.** 🔴 **2026-08-07 장은태: "실사용자 없어" — 「실사용자 노출 중이라 최우선」 전제는 정정됨. 긴급도 하향, 추적은 계속.** 🔴 **모멘텀 감사 ⑤ 영향 서술 추가: 컷 정지는 「US 7렌즈 판정 전체가 8일 된 컷으로 내려지고 있다」는 뜻이다(모멘텀·밸류·퀄리티·저변동·자산성장 5종 전부 — `lens_cuts` 사용 렌즈).** `lens_cuts`(US)가 `as_of` 기준 **07-30부터 정지**(KR은 08-06 갱신·문제 없음). 917 계측(A안①단계) → 932~935로 원인이 "예산(시간·개수)"에서 "취득실패 가능성"으로 재조준(934: A안②단계=RETRY_MAX 증액 **산술상 불가**·935: "재시도성공 0건"이 코드 항등식으로 도출됨). **936(장은태 승인 2026-08-07) — 계측 ②차 배포**: `recovered`·재시도 실패사유 분해(429/no_data/기타)·`noCapField`/`noResponse` 길이·재시도-DB저장 타이머 분리·실패표본(≤5)을 `cron_heartbeats.note`에 추가, 값 계산 0건 변경(`git diff` 육안 확인). **관측 대상 = 다음 US `lens-scores` 크론(21:30 UTC±지터).** **A안②단계(증액)는 6개 STEP 연속 미판정 — 장은태 승인 사항**, `RETRY_MAX`·`RETRY_MS`·게이트·임계값·`maxDuration` 전부 불변. A·B·C·D 선택지 병기 유지. 🅿️ 930의 `send_later` 예약(22:45 UTC·`trig_016oNSwKrTa9qSSGQXQDXGqo`)은 소모됨. **937(2026-08-07 관측·판정 0) — `recovered=0` 직접 관측 확정, 원인 축 4번째 전환**: `retryFailReasons:{}`·`retryFailSample:[]`(예외 0건)·`retryNoCapField:400`(재시도 400건 전부 정상 응답이나 `marketCap` 필드 없음)·`noResponse:0`·`failedChunks:0/60` — **취득이 "실패"한 게 아니라 정상 응답에 필드가 없었다**(912~934 "예산문제"→935 "취득실패가능성"→937 "취득은 실패 아님", 원인은 여전히 미확정). 935가 밝힌 `stage2Ms` 타이머 오염도 해소: 순수 재시도 5,703ms(14.3ms/건)+upsert 7,377ms=13,080ms(`stage2Ms`와 일치) — 933/934의 34.5ms/건은 오염값이었음. `compositionOk:false`(`compRatio:0.93`<0.95)도 최초로 수치 관측 — 커버리지뿐 아니라 구성 게이트도 미달. 934 "불가"(상한 93.30%) 판정 불변, A안②단계 미판정 유지. 표본 20종목×7렌즈=140칸 `probe_936_baseline.json` 대비 전부 동일(936 성공기준 충족). 상세 = `docs/DECISION_912_LIVE.md` §10~§16 · `docs/REVDCF_SPEC.md` §11.
+🔴 **추가 실측(STEP 949, 2026-08-08)**: `lens_scores` US는 **08-07까지 정상 갱신**(1,021행) — `lens_cuts`만 07-30에 멈췄다. **같은 파이프라인의 앞단(lens_scores)은 돌고 뒷단(lens_cuts)만 정지한 것으로 확인**(원인은 미조사). 🔴 `lens_state_changes`의 `fscore` 마지막 변화가 **07-28**로 `lens_cuts` 정지일(07-30)보다도 이르다 — 미조사.
 
 🔴 **00-1b. 교차참조(STEP 948, 2026-08-08) — Q1 밸류에이션 크론 실측 중 발견된 미해결 2건, 이 항목과 날짜가 겹친다.** 🔴 **어느 것도 이번에 고치지 않았다 — 기록만.** 고칠지·어느 순서로 고칠지는 장은태 판정.
 - `us_market_cap`도 일부 종목이 **2026-07-30에서 멈춰 있다**(표본 7종목 확인 — `ACM`·`ADI`·`AIT`·`APA`·`AZO`·`BBY`·`BDX`, 전부 S&P 500). 위 00번의 `lens_cuts` 정지와 **같은 날짜다. 같은 원인인지는 미확인.**
@@ -177,6 +180,10 @@
 - **3단계 타임라인(사실만)**: `us_market_cap` 마지막 성공 **08-07** · `lens_cuts` US **07-30 정지**(5행) · `lens_scores` US **08-07 갱신**(1,021행) · `lens_state_changes` US 렌즈별 마지막 변화일 — momentum·lowvol·technical·valuation **08-07** / quality **07-31** / assetgrowth **07-29** / fscore **07-28**(`lens_cuts` 정지일보다도 이르다).
 - 🔴 **죽은 가설(다시 세우지 말 것)**: 알파벳 편중·`us_symbols.json` 누락(배경에서 이미 폐기) — 이번 실측으로 **배치방식 특정 문제(A=0)·심볼 완전부재(C=0)도 폐기.**
 - 🔴 **미해결**: 왜 383건(D)이 8일 넘게 Production 파이프라인에서만 반복 실패했는지(오늘 직접 조회는 전부 성공) — **일시적 실패라는 뜻은 확인됐으나 그 일시성이 왜 8일씩 이어졌는지는 모른다.**
+
+**00-c. `us_market_cap` 결측 380건(type=stock) — 진단 완료, 처방 미정.**
+🔴 **미해결 핵심 = `LOCAL_OK_PROD_FAIL`**: 로컬 정상(5.1초·383/465 즉시 성공) / Production 8일 실패. 원인 미확정.
+🔴 처방 후보 A~D는 STEP 949 보고에 기록됨. **어느 것도 채택되지 않았다.** 상세 = `docs/probe_949_mcap_gap.json`의 `open_question`(`LOCAL_OK_PROD_FAIL`).
 
 🔴 **00-2. 방향 재검토(2026-08-07) — 압축.** 모델 우주 63개 재조사 + 렌즈 감사 2건. 요지: 실사용 1위=배수(리포트 97%·P/B56%·P/E51%·CFA 1,980명) · **7렌즈 중 5가 수요 20위 밖** · **`financials` 0행·`macro_indicators` 0행**(렌즈 재무=야후 매요청 호출) · **EV/EBITDA는 SEC 태그 추가 0** · KR은 DART 배치적재 0건. 전문 = `CHANGELOG` (82) · `MODEL_UNIVERSE_63`·`MODEL_BUILD_ORDER`·`VALUE_LENS_DEFECT_AUDIT`·`LENS_AUDIT_02_MOMENTUM`.
 

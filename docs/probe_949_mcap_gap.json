@@ -6911,5 +6911,21 @@
       "fscore": "2026-07-28"
     },
     "fact_only": "us_market_cap과 lens_scores·momentum/lowvol/technical/valuation의 lens_state_changes는 2026-08-07까지 갱신됐다. lens_cuts US는 2026-07-30에서 멈춰 있다. quality·assetgrowth·fscore의 lens_state_changes는 lens_cuts보다도 이른 날짜(07-31·07-29·07-28)에서 멈춰 있다. 원인 추정은 적지 않는다."
+  },
+  "open_question": {
+    "id": "LOCAL_OK_PROD_FAIL",
+    "fact": "로컬에서 lensPrecompute와 동일 조건(배치100·동시성6→개별재시도)으로 465건을 조회하니 5.1초에 383건이 정상 응답(D그룹). 같은 종목이 Production에서는 2026-07-30 이후 8일 연속 실패했다.",
+    "why_it_blocks": "🔴 이것이 갈리기 전에는 처방 A~D를 고를 수 없다. 로컬에서 멀쩡한 현상에 재시도 예산(C)을 늘리는 것은 원인과 무관할 수 있고, B그룹 82건 목록화(A)는 D그룹 383건을 설명하지 못한다.",
+    "candidate_causes_unverified": [
+      "Vercel 서버 IP대역에 대한 야후 측 차단·레이트리밋",
+      "Vercel 함수 실행시간 예산 안에서 배치가 잘림",
+      "로컬과 Production의 yahoo-finance2 버전·설정 차이",
+      "07-30 전후 야후 API 변경"
+    ],
+    "note": "🔴 위 4개는 전부 미검증 후보다. 하나도 확인하지 않았다."
+  },
+  "correction": {
+    "stale_count": "Cowork이 394로 보고했으나 실제 type=stock 결측은 380. 차이 14건은 ETF 등 type≠stock. 5974 = 5509 + 380 + 85로 정확히 일치.",
+    "lens_cuts_link_weakened": "Cowork이 「us_market_cap 결측과 lens_cuts 07-30 정지가 같은 원인일 가능성」을 제기했으나 이번 실측으로 약해졌다. lens_scores US는 08-07까지 정상(1,021행)이고 lens_cuts만 5행에서 멈췄다. 같은 파이프라인의 앞단은 돌고 뒷단만 멈춘 것이다. 날짜 일치는 사실이나 공통 원인의 근거는 아니다."
   }
 }
