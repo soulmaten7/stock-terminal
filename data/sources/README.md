@@ -98,6 +98,24 @@
 
 ---
 
+## `yahoo/` — 야후 assetProfile 섹터 (Q0 3번째 출처 · 2026-08-08(941) 신설)
+
+🔴 **API라 파일 원본이 없다** — 좌표만 기록(`lib/revdcf/registry.ts` `yahoo` 항목). 라이브러리는 **`yahoo-finance2`(이미 프로젝트 보유, 신규 설치 없음)**.
+
+🔴 **야후 의존 추가를 명시한다** — `us_market_cap`도 야후 계열이라(937 `retryNoCapField:400` 사례) 이미 있던 의존이 하나 더 늘어난 것이다. 섹터는 정적 데이터라 위험은 낮다.
+
+| 무엇을 정의하나 | 갱신 주기 | 좌표 |
+|---|---|---|
+| `assetProfile.sector`(원문, Title Case) → **11:1로 GICS 매핑**(손실 없음 — 나스닥 12분류의 `Miscellaneous`/`Communication Services` 부재 문제가 야후엔 없다) | 🔴 응답에 기준일 없음(나스닥과 동일 사정) — 취득 시각을 `as_of`로 찍는다 | `yf.quoteSummary(symbol, {modules:["assetProfile"]})` |
+
+🔑 **941 적재 — Postgres 테이블 `us_sector_yahoo`**(as_of·symbol·sector_raw·sector·industry·country, PK(as_of,symbol)) — `lens_scores` US 1,021종목 취득, `scripts/ingest_yahoo_sector.ts`(동시성 6, 기존 야후 재시도 루프 관행). **성공 1,020/1,021(99.9%)**, 실패 1건(`FISV`, `no_data` — Fiserv 구 티커). **매핑표 밖 `sector_raw` 0건.**
+
+**941 대조 실측**(재현 스크립트 = `scripts/probe_941_third_source.ts` → `docs/probe_941_third_source.json`, 값은 그 파일이 정본): SPDR(503) 대비 야후 단독 정확도 **95.8%**(497 겹침, 불일치 21건 — 결제·서비스업체를 IT로, 포장재를 소비재로 분류하는 등 체계적 패턴). 나스닥∩SIC 3순위(현행) 95.3% · 2-of-3 다수결 94.8% · 3-of-3 만장일치 99.2%. **미분류 70건 재분류 시뮬레이션 — 야후 단독으로 70/70(100%) 회수.**
+
+🔴 **판정 대기(942)**: `lib/sector.ts`의 합의 규칙을 이 실측에 맞춰 바꿀지는 이 STEP(941)에서 정하지 않는다.
+
+---
+
 ## `damodaran/` — 재료 데이터셋
 
 출처: https://pages.stern.nyu.edu/~adamodar/pc/datasets/

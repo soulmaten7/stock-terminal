@@ -1,0 +1,20 @@
+{
+  "_meta": {
+    "asOf": "2026-08-08",
+    "target": 1021,
+    "generatedAt": "2026-08-08T08:02:44.778Z"
+  },
+  "success": 1020,
+  "failed": 1,
+  "failReasons": {
+    "no_data": 1
+  },
+  "failSample": [
+    {
+      "symbol": "FISV",
+      "reason": "no_data",
+      "msg": "No fundamentals data found for symbol: FISV"
+    }
+  ],
+  "outOfTable": {}
+}

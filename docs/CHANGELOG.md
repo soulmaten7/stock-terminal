@@ -1,6 +1,33 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (98) — 🟢 **STEP 941: Q0 구현 ③-3단계 — 3번째 출처(야후) 취득 + 조합별 정확도 실측**
+
+> **성격**: 야후 `assetProfile` 섹터 취득·적재(신규 테이블 1개) + 나스닥·SEC SIC·야후 3출처 조합별 정확도 채점 + 미분류 70건 재분류 시뮬레이션. **`lib/sector.ts`는 이 STEP에서 수정하지 않는다**(합의 규칙 변경은 942, 장은태 판정 대기).
+
+**§1 ⓪-4 ③ 재확인** — `app/api/yahoo/` 11개 라우트 확인 · `app/api/etf-holdings/route.ts:87` `yf.quoteSummary(symbol,{modules:[...]})` 기존 관행 확인 · `EtfLensClient.tsx:43`의 야후 11분류(스네이크케이스) 확인. 스모크 테스트로 `assetProfile.sector`가 Title Case로 응답함을 직접 확인(ASML→"Technology"·SONY→"Technology"·BABA→"Consumer Cyclical" — Cowork 사전관측과 일치, SONY 오답 사례도 재현).
+
+**§2 취득·적재** — 마이그레이션 `us_sector_yahoo`(RLS = `us_sector_nasdaq`과 동일 패턴) → `scripts/ingest_yahoo_sector.ts`가 `lens_scores` US 1,021종목에 `yf.quoteSummary(..., {modules:["assetProfile"]})` 동시성 6(기존 재시도 루프 관행)으로 호출. **성공 1,020/1,021(99.9%)**, 실패 1건(`FISV`, `no_data` — Fiserv 구 티커, 리브랜드로 더 이상 안 걸림). **매핑표 밖 `sector_raw` 값 0건**(11:1 대응이 실측으로 완전히 맞아떨어짐).
+
+**§3 🔴 세 출처 조합별 정확도 실측 — 초안에 스코어링 버그 2건 발견·수정** — 1차 결과가 나스닥 단독 정확도 46.9%로 나와 이상신호로 판단, 원인 규명: ① 나스닥 원문 섹터("Finance" 등)를 GICS로 번역하지 않고 SPDR 진짜 GICS("Financials" 등)와 직접 비교(항상 불일치) ② 조합 루프가 대상 유니버스(`lens_scores` US 1,021)가 아니라 나스닥·Damodaran 원자료 전체(수천 건)를 돌아 무관한 종목까지 채점에 섞임. 두 버그 모두 수정 후 재실행 — 결과가 상식적인 범위로 정상화됨(**대상 = lens_scores US 1,021로 전 구간 고정**).
+
+**§4 실측 결과(수정 후, SPDR 503 대비 · `scripts/probe_941_third_source.ts` → `docs/probe_941_third_source.json`)**
+
+| | 겹침 | 정확도 |
+|---|---|---|
+| 나스닥 단독 | 495 | **73.7%** |
+| SIC 단독 | 410 | **75.4%** |
+| **야후 단독** | 497 | **95.8%**(불일치 21건 — ADP·BR·LDOS·JKHY·UBER·XYZ·CPAY·PAYX·FTV·FIS 등 결제·서비스업체를 야후가 IT로 분류하나 GICS는 산업재·금융으로, AMCR·PKG·IP·AVY·BALL·SW 등 포장재를 야후가 소비재로 분류하나 GICS는 소재로 — 체계적 패턴, 무작위 오차 아님) |
+| 나스닥∩SIC(현행 3순위) | 552 합의(실패 281) | **95.3%** |
+| 2-of-3 다수결 | 446 | **94.8%**(결정불가 36건 — 세 출처 전부 갈림) |
+| 3-of-3 만장일치 | 커버리지 534 | **99.2%** |
+
+**미분류 70건 재분류 시뮬레이션**(방법별 회수 건수, 전건 목록 `docs/probe_941_third_source.json`): 야후 단독 **70/70**(100%) · 나스닥 단독 66 · 2-of-3 다수결 49 · SIC 단독 48 · 나스닥∩SIC 8. **야후 하나만으로 미분류 70건 전부에 값이 붙는다** — 941이 답을 찾으러 나선 원래 문제(ASML·SONY·BABA 등 미분류)를 해소할 후보가 확보됨. 세 출처가 모두 갈리는 종목 = **36건**(전건 목록 저장, 942 판정 재료).
+
+**§5 문서** — `data/sources/README.md`에 야후 절 신설(API라 원본 파일 없음, 좌표만 · "야후 의존 추가" 명시 — `us_market_cap`에 이미 있던 의존이 하나 더 늘어난 것) · `lib/revdcf/registry.ts`에 `assetProfile` 좌표 + 테이블명 등재 · `docs/STATE.md` ▶다음 0번 ③단계 갱신 + 942 판정 대기 항목 명시 · `docs/STEP_LEDGER.md` 등재.
+
+**무변경** — `lib/sector.ts` diff 0(합의 규칙 미변경, 942 판정 대기) · `REVDCF_ENABLED`·`data/us_symbols.json`·`.github/`·`vercel.json`·기존 `probe_*`·KR 관련·화면·UI 코드 diff 전부 0 · 기존 테이블 수정·삭제 0(신규 1개만) · `revdcf_results`/`us_market_cap`/`lens_scores`/`lens_cuts` 쓰기 0 · 크론 미실행 · API 키 미입력 · `CLAUDE.md`·`USER_QUESTIONS`·`LENS_COMPLETION_STANDARD` 미수정.
+
 ## 2026-08-08 (97) — 🟢 **STEP 940: Q0 구현 ③-2 + ①-2단계 — 나스닥·SPDR 테이블 적재 + `resolveSector`(0~4순위) 신설**
 
 > **성격**: DB 테이블 2개 신설(`us_sector_nasdaq`·`us_sector_gics`) + 로컬 원본 적재(재취득 없음) + `lib/sector.ts`에 `sector` 모드 추가(기존 `industryGroup` 모드 완전 불변) + 실측 리포트. 화면(⑤단계)은 이 STEP에 없음.

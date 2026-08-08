@@ -117,6 +117,20 @@ export const MATERIAL_SOURCES = {
     /** STEP 940(장은태 ⓘⓙ 판정): 0순위로 승격, 이상 티커 12건 제외 후 Postgres 적재(scripts/ingest_us_sector.ts). as_of=xlsx "As of" 값(취득일 아님). */
     table: { name: "us_sector_gics", note: "as_of·symbol·sector·etf (PK as_of,symbol). 원본 515행 − ⓙ제외 12행 = 503행 적재" },
   },
+  /**
+   * STEP 941: Q0 「2-of-2 합의제」가 갈릴 때 깰 3번째 출처. `yahoo-finance2`(기존 보유 라이브러리, 신규 설치 없음)의
+   * assetProfile 모듈. 🔴 야후 의존 추가 — us_market_cap도 야후 계열이라 이미 있던 의존이 하나 더 늘어난 것(941 §④-1).
+   */
+  yahoo: {
+    module: "assetProfile", // yf.quoteSummary(symbol, { modules: ["assetProfile"] })
+    fields: ["sector", "industry", "country"],
+    library: "yahoo-finance2 (이미 프로젝트 보유 — scripts/enrich_kr_names.ts 등 기존 사용처와 동일 인스턴스 생성법: new YahooFinance({suppressNotices:['yahooSurvey']}))",
+    sectorTaxonomy: "야후 11분류 = GICS 11과 1:1 대응(나스닥 12분류와 달리 손실 없음, 941 §1 확정 대응표) — Technology→Information Technology · Financial Services→Financials · Consumer Cyclical→Consumer Discretionary · Consumer Defensive→Consumer Staples · Basic Materials→Materials · Healthcare→Health Care · 나머지 5개(Communication Services·Industrials·Energy·Utilities·Real Estate) 동명 그대로",
+    asOfPolicy: "🔴 API 응답에 기준일 없음(나스닥과 동일 사정) — 취득 시각을 as_of로 찍는다",
+    /** STEP 941: 원본 → Postgres 적재(scripts/ingest_yahoo_sector.ts). 실측 성공률 99.9%(1,020/1,021), 매핑표 밖 값 0건. */
+    table: { name: "us_sector_yahoo", note: "as_of·symbol·sector_raw(원문)·sector(GICS매핑)·industry·country (PK as_of,symbol)" },
+    accuracyProbe: "scripts/probe_941_third_source.ts → docs/probe_941_third_source.json — 값은 여기 안 적는다(재실행하면 바뀔 수 있는 측정값). 재현: npx tsx scripts/probe_941_third_source.ts",
+  },
 } as const;
 
 // ────────────────────────────────────────────────────────────────

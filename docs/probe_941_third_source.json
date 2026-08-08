@@ -1,0 +1,2632 @@
+{
+  "_meta": {
+    "purpose": "STEP 941 §3 — 세 출처 조합별 정확도 실측(대상=lens_scores US 1,021)",
+    "targetCount": 1021,
+    "spdrTruthCount": 503,
+    "generatedAt": "2026-08-08T08:05:41.619Z"
+  },
+  "acquisition": {
+    "_meta": {
+      "asOf": "2026-08-08",
+      "target": 1021,
+      "generatedAt": "2026-08-08T08:02:44.778Z"
+    },
+    "success": 1020,
+    "failed": 1,
+    "failReasons": {
+      "no_data": 1
+    },
+    "failSample": [
+      {
+        "symbol": "FISV",
+        "reason": "no_data",
+        "msg": "No fundamentals data found for symbol: FISV"
+      }
+    ],
+    "outOfTable": {}
+  },
+  "singleSourceScores": {
+    "nasdaq": {
+      "overlap": 495,
+      "match": 365,
+      "accuracy": 0.7373737373737373,
+      "mismatches": [
+        {
+          "symbol": "CPRT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "PG",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "PM",
+          "predicted": "Health Care",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "ADP",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CVS",
+          "predicted": "Consumer Staples",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "PSKY",
+          "predicted": "Industrials",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "ALB",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "AMCR",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "V",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "GOOG",
+          "predicted": "Information Technology",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "META",
+          "predicted": "Information Technology",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "WMT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "CSCO",
+          "predicted": "Communication Services",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "NWSA",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "GOOGL",
+          "predicted": "Information Technology",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "DHR",
+          "predicted": "Industrials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "MA",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "COST",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "NFLX",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "PPG",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "OMC",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "PKG",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "GEV",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ANET",
+          "predicted": "Communication Services",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "TMO",
+          "predicted": "Industrials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "DIS",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "CTVA",
+          "predicted": "Consumer Staples",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "URI",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "TSLA",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "SNA",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "WMB",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "FAST",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ETN",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "MO",
+          "predicted": "Health Care",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "CL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "KMI",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "CRH",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "TTWO",
+          "predicted": "Information Technology",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "RSG",
+          "predicted": "Utilities",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "TGT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "NUE",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "F",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "LYV",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "DAL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "MMM",
+          "predicted": "Health Care",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "MSCI",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "UAL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ROP",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "VRSK",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "TDY",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "MTD",
+          "predicted": "Industrials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "OTIS",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "AVY",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "EL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "CLX",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "IFF",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "LYB",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "BR",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CDW",
+          "predicted": "Consumer Discretionary",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "TER",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "SHW",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "SYY",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "CHD",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "GPN",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ZBRA",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "GE",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ECHO",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "DOW",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "FOXA",
+          "predicted": "Industrials",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "NWS",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "FOX",
+          "predicted": "Industrials",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "VRT",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "GM",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "FDX",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "LDOS",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "FDXF",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "DG",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "FDS",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "CSGP",
+          "predicted": "Financials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "KEYS",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "FISV",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ECL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "INVH",
+          "predicted": "Financials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "EMR",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CIEN",
+          "predicted": "Utilities",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "JKHY",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "AES",
+          "predicted": "Industrials",
+          "truth": "Utilities"
+        },
+        {
+          "symbol": "TRGP",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "IT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "OKE",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "MLM",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "TRMB",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "WM",
+          "predicted": "Utilities",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "FFIV",
+          "predicted": "Communication Services",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "A",
+          "predicted": "Industrials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "KVUE",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "UBER",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "APP",
+          "predicted": "Information Technology",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "WAT",
+          "predicted": "Industrials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "KMB",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "AKAM",
+          "predicted": "Consumer Discretionary",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "SWK",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "STLD",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "VMC",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "CF",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "ACN",
+          "predicted": "Consumer Discretionary",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "CASY",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "BALL",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "XYZ",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "VEEV",
+          "predicted": "Information Technology",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "CPAY",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "RVTY",
+          "predicted": "Industrials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "GNRC",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "FICO",
+          "predicted": "Consumer Discretionary",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "BKR",
+          "predicted": "Consumer Discretionary",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "SW",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "DLTR",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "LUV",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "GLW",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "GRMN",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "PYPL",
+          "predicted": "Industrials",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "CBRE",
+          "predicted": "Financials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "HUBB",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "RL",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "LITE",
+          "predicted": "Communication Services",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "TKO",
+          "predicted": "Consumer Discretionary",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "EFX",
+          "predicted": "Financials",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "FIS",
+          "predicted": "Consumer Discretionary",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ROL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ALLE",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        }
+      ]
+    },
+    "sic": {
+      "overlap": 410,
+      "match": 309,
+      "accuracy": 0.7536585365853659,
+      "mismatches": [
+        {
+          "symbol": "CNC",
+          "predicted": "Information Technology",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "EQT",
+          "predicted": "Industrials",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "CPRT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CAT",
+          "predicted": "Consumer Staples",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ISRG",
+          "predicted": "Consumer Staples",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "EXE",
+          "predicted": "Health Care",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "ULTA",
+          "predicted": "Consumer Staples",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "ALB",
+          "predicted": "Consumer Staples",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "META",
+          "predicted": "Industrials",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "SPG",
+          "predicted": "Consumer Discretionary",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "AMD",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "DHR",
+          "predicted": "Materials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "WEC",
+          "predicted": "Materials",
+          "truth": "Utilities"
+        },
+        {
+          "symbol": "LH",
+          "predicted": "Real Estate",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "NRG",
+          "predicted": "Communication Services",
+          "truth": "Utilities"
+        },
+        {
+          "symbol": "IP",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "PTC",
+          "predicted": "Utilities",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "AXP",
+          "predicted": "Energy",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "C",
+          "predicted": "Materials",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ICE",
+          "predicted": "Health Care",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "APO",
+          "predicted": "Consumer Staples",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "CTVA",
+          "predicted": "Consumer Staples",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "BAX",
+          "predicted": "Real Estate",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "FRT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "STX",
+          "predicted": "Energy",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "APH",
+          "predicted": "Materials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "PEP",
+          "predicted": "Utilities",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "WBD",
+          "predicted": "Industrials",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "ABT",
+          "predicted": "Consumer Staples",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "FAST",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "T",
+          "predicted": "Materials",
+          "truth": "Communication Services"
+        },
+        {
+          "symbol": "VRTX",
+          "predicted": "Materials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "CL",
+          "predicted": "Health Care",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "KMI",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "HUM",
+          "predicted": "Financials",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "CMG",
+          "predicted": "Materials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "MCK",
+          "predicted": "Consumer Discretionary",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "MAR",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "RCL",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "RSG",
+          "predicted": "Materials",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "BDX",
+          "predicted": "Real Estate",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "SRE",
+          "predicted": "Real Estate",
+          "truth": "Utilities"
+        },
+        {
+          "symbol": "MMM",
+          "predicted": "Real Estate",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CRL",
+          "predicted": "Consumer Staples",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "CPT",
+          "predicted": "Industrials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "GIS",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "NCLH",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "DD",
+          "predicted": "Materials",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "BR",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "REG",
+          "predicted": "Financials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "HAS",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "TER",
+          "predicted": "Energy",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "HPQ",
+          "predicted": "Materials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "CTAS",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "IVZ",
+          "predicted": "Energy",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "DOW",
+          "predicted": "Industrials",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "COF",
+          "predicted": "Real Estate",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ELV",
+          "predicted": "Consumer Discretionary",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "AMP",
+          "predicted": "Health Care",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "KEY",
+          "predicted": "Utilities",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "AME",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "AON",
+          "predicted": "Materials",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "VRT",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "HLT",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "Q",
+          "predicted": "Financials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "LDOS",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "HPE",
+          "predicted": "Financials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "COP",
+          "predicted": "Financials",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "DG",
+          "predicted": "Industrials",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "NSC",
+          "predicted": "Consumer Staples",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "DHI",
+          "predicted": "Financials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "AMT",
+          "predicted": "Financials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "ECL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "ITW",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "TEL",
+          "predicted": "Communication Services",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "TRGP",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "IT",
+          "predicted": "Consumer Discretionary",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "OKE",
+          "predicted": "Utilities",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "CCI",
+          "predicted": "Energy",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "RMD",
+          "predicted": "Energy",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "A",
+          "predicted": "Real Estate",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "CCL",
+          "predicted": "Real Estate",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "KMB",
+          "predicted": "Materials",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "IEX",
+          "predicted": "Financials",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "ETR",
+          "predicted": "Materials",
+          "truth": "Utilities"
+        },
+        {
+          "symbol": "XYZ",
+          "predicted": "Industrials",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "HAL",
+          "predicted": "Industrials",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "TECH",
+          "predicted": "Information Technology",
+          "truth": "Health Care"
+        },
+        {
+          "symbol": "BKR",
+          "predicted": "Financials",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "SW",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "SLB",
+          "predicted": "Materials",
+          "truth": "Energy"
+        },
+        {
+          "symbol": "TPR",
+          "predicted": "Industrials",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "MSI",
+          "predicted": "Industrials",
+          "truth": "Information Technology"
+        },
+        {
+          "symbol": "PCAR",
+          "predicted": "Consumer Staples",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "MCO",
+          "predicted": "Materials",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ROK",
+          "predicted": "Energy",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CBRE",
+          "predicted": "Industrials",
+          "truth": "Real Estate"
+        },
+        {
+          "symbol": "RL",
+          "predicted": "Energy",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "FTV",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "STZ",
+          "predicted": "Materials",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "J",
+          "predicted": "Real Estate",
+          "truth": "Industrials"
+        }
+      ]
+    },
+    "yahoo": {
+      "overlap": 497,
+      "match": 476,
+      "accuracy": 0.9577464788732394,
+      "mismatches": [
+        {
+          "symbol": "ADP",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "AMCR",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "PKG",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "IP",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "AVY",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "DD",
+          "predicted": "Materials",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "BR",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "GPN",
+          "predicted": "Industrials",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "LDOS",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "JKHY",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "UBER",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "CASY",
+          "predicted": "Consumer Discretionary",
+          "truth": "Consumer Staples"
+        },
+        {
+          "symbol": "BALL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "XYZ",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "CPAY",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "SW",
+          "predicted": "Consumer Discretionary",
+          "truth": "Materials"
+        },
+        {
+          "symbol": "GRMN",
+          "predicted": "Information Technology",
+          "truth": "Consumer Discretionary"
+        },
+        {
+          "symbol": "PAYX",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "FTV",
+          "predicted": "Information Technology",
+          "truth": "Industrials"
+        },
+        {
+          "symbol": "FIS",
+          "predicted": "Information Technology",
+          "truth": "Financials"
+        },
+        {
+          "symbol": "ROL",
+          "predicted": "Consumer Discretionary",
+          "truth": "Industrials"
+        }
+      ]
+    }
+  },
+  "combinations": {
+    "nasdaqCapSic": {
+      "agree": 552,
+      "fail": 281,
+      "accuracy": 0.9525691699604744,
+      "overlapWithTruth": 253
+    },
+    "twoOfThree": {
+      "overlapWithTruth": 446,
+      "match": 423,
+      "accuracy": 0.9484304932735426,
+      "undecided": 36
+    },
+    "threeOfThree": {
+      "coverage": 534,
+      "overlapWithTruth": 242,
+      "match": 240,
+      "accuracy": 0.9917355371900827
+    }
+  },
+  "unclassifiedSimulation": {
+    "total": 70,
+    "byMethod": [
+      {
+        "label": "나스닥 단독",
+        "recoveredCount": 66
+      },
+      {
+        "label": "SIC 단독",
+        "recoveredCount": 48
+      },
+      {
+        "label": "야후 단독",
+        "recoveredCount": 70
+      },
+      {
+        "label": "나스닥∩SIC",
+        "recoveredCount": 8
+      },
+      {
+        "label": "2-of-3 다수결",
+        "recoveredCount": 49
+      }
+    ]
+  },
+  "unclassifiedRecoveredDetail": {
+    "nasdaq": [
+      {
+        "symbol": "FPS",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "TECK",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "SPCX",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "SONY",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "GFL",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "ASML",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "STLA",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "QH",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PTGX",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "BABA",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TS",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "BHP",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "XPEV",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TIGO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "BAM",
+        "sector": "Real Estate"
+      },
+      {
+        "symbol": "TRP",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "SE",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "HMC",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "BIP",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "NIO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "CX",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "EDU",
+        "sector": "Real Estate"
+      },
+      {
+        "symbol": "TX",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "GGB",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "LTM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "GIB",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "IHG",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "WSE",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TM",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TEAM",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "ARCC",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "PDD",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "HTHT",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PAYP",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "SUNB",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "INIO",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "RACE",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "EPD",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "PAC",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "JHX",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TME",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "SUZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PSO",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "NGG",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "NTR",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "MT",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "PHG",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "WES",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "ET",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "HLN",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "RTO",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "WMS",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TRI",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "LI",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "FWONA",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "BIDU",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "SQM",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "RYAAY",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "RELX",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "UL",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "BTI",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "TCOM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "AMRZ",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "PKX",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "BEKE",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "WTRG",
+        "sector": "Utilities"
+      }
+    ],
+    "sic": [
+      {
+        "symbol": "FPS",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TECK",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "GFL",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "STLA",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PTGX",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "TS",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "BHP",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "XPEV",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TIGO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "BAM",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "SE",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "HMC",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "BIP",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "NIO",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "CX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "EDU",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "GGB",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "LTM",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "IHG",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TEAM",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "AXIA",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "HTHT",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "SUNB",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "INIO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "RACE",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PAC",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TME",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "SUZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PSO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "NTR",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "MT",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PHG",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "HLN",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "RTO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "WMS",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "LI",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "FWONA",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "SQM",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "RYAAY",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "UL",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "BTI",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "AMRZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PKX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "BEKE",
+        "sector": "Real Estate"
+      },
+      {
+        "symbol": "BF-A",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "WTRG",
+        "sector": "Utilities"
+      }
+    ],
+    "yahoo": [
+      {
+        "symbol": "FPS",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TECK",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "SPCX",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "SONY",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "GFL",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "ASML",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "STLA",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "QH",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "PTGX",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "BABA",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TS",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "BHP",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "XPEV",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TIGO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "BAM",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "TRP",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "SE",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "HMC",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "BIP",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "NIO",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "CX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "EDU",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "TX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "GGB",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "LTM",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "GIB",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "IHG",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "WSE",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "TM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TEAM",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "AXIA",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "ARCC",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "PDD",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "KSPI",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "HTHT",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PAYP",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "SUNB",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "INIO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "RACE",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "EPD",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "PAC",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "JHX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "TME",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "SUZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PSO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "NGG",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "NTR",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "MT",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PHG",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "WES",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "ET",
+        "sector": "Energy"
+      },
+      {
+        "symbol": "HLN",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "RTO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "WMS",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TRI",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "LI",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "FWONA",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "BIDU",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "SQM",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "RYAAY",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "RELX",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "UL",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "BTI",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "TCOM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "AMRZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PKX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "LEN-B",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "BEKE",
+        "sector": "Real Estate"
+      },
+      {
+        "symbol": "BF-A",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "WTRG",
+        "sector": "Utilities"
+      }
+    ],
+    "consensus": [
+      {
+        "symbol": "PTGX",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "TIGO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "IHG",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TEAM",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "HTHT",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "SUZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PHG",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "WTRG",
+        "sector": "Utilities"
+      }
+    ],
+    "majority": [
+      {
+        "symbol": "FPS",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TECK",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "GFL",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "ASML",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "STLA",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PTGX",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "BABA",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "BHP",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "XPEV",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TIGO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "BAM",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "SE",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "HMC",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "NIO",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "CX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "TX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "GGB",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "LTM",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "IHG",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "TEAM",
+        "sector": "Information Technology"
+      },
+      {
+        "symbol": "AXIA",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "ARCC",
+        "sector": "Financials"
+      },
+      {
+        "symbol": "PDD",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "HTHT",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "SUNB",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "INIO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "RACE",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "PAC",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "TME",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "SUZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PSO",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "NGG",
+        "sector": "Utilities"
+      },
+      {
+        "symbol": "NTR",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "MT",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PHG",
+        "sector": "Health Care"
+      },
+      {
+        "symbol": "RTO",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "LI",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "FWONA",
+        "sector": "Communication Services"
+      },
+      {
+        "symbol": "SQM",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "RYAAY",
+        "sector": "Industrials"
+      },
+      {
+        "symbol": "UL",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "BTI",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "TCOM",
+        "sector": "Consumer Discretionary"
+      },
+      {
+        "symbol": "AMRZ",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "PKX",
+        "sector": "Materials"
+      },
+      {
+        "symbol": "BEKE",
+        "sector": "Real Estate"
+      },
+      {
+        "symbol": "BF-A",
+        "sector": "Consumer Staples"
+      },
+      {
+        "symbol": "WTRG",
+        "sector": "Utilities"
+      }
+    ]
+  },
+  "sectorCountsUnderMajority": [
+    {
+      "sector": "Communication Services",
+      "n": 30
+    },
+    {
+      "sector": "Energy",
+      "n": 42
+    },
+    {
+      "sector": "Consumer Staples",
+      "n": 42
+    },
+    {
+      "sector": "Utilities",
+      "n": 46
+    },
+    {
+      "sector": "Materials",
+      "n": 48
+    },
+    {
+      "sector": "Real Estate",
+      "n": 50
+    },
+    {
+      "sector": "Consumer Discretionary",
+      "n": 106
+    },
+    {
+      "sector": "Health Care",
+      "n": 113
+    },
+    {
+      "sector": "Industrials",
+      "n": 134
+    },
+    {
+      "sector": "Information Technology",
+      "n": 146
+    },
+    {
+      "sector": "Financials",
+      "n": 156
+    }
+  ],
+  "allThreeDisagree": [
+    {
+      "symbol": "VG",
+      "nasdaq": "Utilities",
+      "sic": "Materials",
+      "yahoo": "Energy",
+      "truth": null
+    },
+    {
+      "symbol": "LGN",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Energy",
+      "yahoo": "Industrials",
+      "truth": null
+    },
+    {
+      "symbol": "ALB",
+      "nasdaq": "Industrials",
+      "sic": "Consumer Staples",
+      "yahoo": "Materials",
+      "truth": "Materials"
+    },
+    {
+      "symbol": "ASTS",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Communication Services",
+      "yahoo": "Information Technology",
+      "truth": null
+    },
+    {
+      "symbol": "META",
+      "nasdaq": "Information Technology",
+      "sic": "Industrials",
+      "yahoo": "Communication Services",
+      "truth": "Communication Services"
+    },
+    {
+      "symbol": "DHR",
+      "nasdaq": "Industrials",
+      "sic": "Materials",
+      "yahoo": "Health Care",
+      "truth": "Health Care"
+    },
+    {
+      "symbol": "TS",
+      "nasdaq": "Industrials",
+      "sic": "Materials",
+      "yahoo": "Energy",
+      "truth": null
+    },
+    {
+      "symbol": "IP",
+      "nasdaq": "Materials",
+      "sic": "Industrials",
+      "yahoo": "Consumer Discretionary",
+      "truth": "Materials"
+    },
+    {
+      "symbol": "WMG",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Materials",
+      "yahoo": "Communication Services",
+      "truth": null
+    },
+    {
+      "symbol": "CL",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Health Care",
+      "yahoo": "Consumer Staples",
+      "truth": "Consumer Staples"
+    },
+    {
+      "symbol": "RSG",
+      "nasdaq": "Utilities",
+      "sic": "Materials",
+      "yahoo": "Industrials",
+      "truth": "Industrials"
+    },
+    {
+      "symbol": "MMM",
+      "nasdaq": "Health Care",
+      "sic": "Real Estate",
+      "yahoo": "Industrials",
+      "truth": "Industrials"
+    },
+    {
+      "symbol": "BIP",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Industrials",
+      "yahoo": "Utilities",
+      "truth": null
+    },
+    {
+      "symbol": "EDU",
+      "nasdaq": "Real Estate",
+      "sic": "Consumer Discretionary",
+      "yahoo": "Consumer Staples",
+      "truth": null
+    },
+    {
+      "symbol": "ACM",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Materials",
+      "yahoo": "Industrials",
+      "truth": null
+    },
+    {
+      "symbol": "FN",
+      "nasdaq": "Utilities",
+      "sic": "Consumer Staples",
+      "yahoo": "Information Technology",
+      "truth": null
+    },
+    {
+      "symbol": "TER",
+      "nasdaq": "Industrials",
+      "sic": "Energy",
+      "yahoo": "Information Technology",
+      "truth": "Information Technology"
+    },
+    {
+      "symbol": "VSAT",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Communication Services",
+      "yahoo": "Information Technology",
+      "truth": null
+    },
+    {
+      "symbol": "LFUS",
+      "nasdaq": "Energy",
+      "sic": "Industrials",
+      "yahoo": "Information Technology",
+      "truth": null
+    },
+    {
+      "symbol": "APG",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Financials",
+      "yahoo": "Industrials",
+      "truth": null
+    },
+    {
+      "symbol": "DG",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Industrials",
+      "yahoo": "Consumer Staples",
+      "truth": "Consumer Staples"
+    },
+    {
+      "symbol": "WCN",
+      "nasdaq": "Utilities",
+      "sic": "Materials",
+      "yahoo": "Industrials",
+      "truth": null
+    },
+    {
+      "symbol": "RS",
+      "nasdaq": "Industrials",
+      "sic": "Communication Services",
+      "yahoo": "Materials",
+      "truth": null
+    },
+    {
+      "symbol": "HLN",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Consumer Staples",
+      "yahoo": "Health Care",
+      "truth": null
+    },
+    {
+      "symbol": "WMS",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Materials",
+      "yahoo": "Industrials",
+      "truth": null
+    },
+    {
+      "symbol": "AM",
+      "nasdaq": "Utilities",
+      "sic": "Industrials",
+      "yahoo": "Energy",
+      "truth": null
+    },
+    {
+      "symbol": "A",
+      "nasdaq": "Industrials",
+      "sic": "Real Estate",
+      "yahoo": "Health Care",
+      "truth": "Health Care"
+    },
+    {
+      "symbol": "UBER",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Industrials",
+      "yahoo": "Information Technology",
+      "truth": "Industrials"
+    },
+    {
+      "symbol": "KMB",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Materials",
+      "yahoo": "Consumer Staples",
+      "truth": "Consumer Staples"
+    },
+    {
+      "symbol": "BALL",
+      "nasdaq": "Industrials",
+      "sic": "Materials",
+      "yahoo": "Consumer Discretionary",
+      "truth": "Materials"
+    },
+    {
+      "symbol": "BKR",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Financials",
+      "yahoo": "Energy",
+      "truth": "Energy"
+    },
+    {
+      "symbol": "CBRE",
+      "nasdaq": "Financials",
+      "sic": "Industrials",
+      "yahoo": "Real Estate",
+      "truth": "Real Estate"
+    },
+    {
+      "symbol": "RL",
+      "nasdaq": "Industrials",
+      "sic": "Energy",
+      "yahoo": "Consumer Discretionary",
+      "truth": "Consumer Discretionary"
+    },
+    {
+      "symbol": "GRAB",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Industrials",
+      "yahoo": "Information Technology",
+      "truth": null
+    },
+    {
+      "symbol": "AAL",
+      "nasdaq": "Consumer Discretionary",
+      "sic": "Materials",
+      "yahoo": "Industrials",
+      "truth": null
+    },
+    {
+      "symbol": "CCK",
+      "nasdaq": "Industrials",
+      "sic": "Materials",
+      "yahoo": "Consumer Discretionary",
+      "truth": null
+    }
+  ]
+}
