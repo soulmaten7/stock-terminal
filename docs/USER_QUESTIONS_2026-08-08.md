@@ -301,7 +301,12 @@ Q1 "비싸게 사는 건가" = PER · EV/EBITDA · 역DCF(기대 해독)   ← �
 | 순 | 출처 | 건수 | 왜 이 순서인가 |
 |:--:|---|:--:|---|
 | **0** | 🔑 **SPDR 섹터 ETF holdings** (State Street · 11개 ETF) | ~503 | 🔴 **유일하게 검증된 진짜 GICS.** ETF 티커가 섹터를 결정 · **무료 xlsx** · 🔴 **S&P 500만 커버**(빠진 종목은 1순위로 자동 하강) |
-| **1** | **Damodaran `indname.xls`** · 티커 직접(`ticker_norm` ＋ `is_us_listed`) | **802** | 사람이 회사 단위로 배정 · 🔴 **역DCF 5개 입력 테이블(beta·wacc·tax·capex·wc)의 조인키와 동일** |
+| **1** | **Damodaran `indname.xls`** · 티커 직접(`ticker_norm` ＋ `is_us_listed`) | **802** | 사람이 회사 단위로 배정 · 🔴 **역DCF의 업종 입력 조인키와 동일**(단 `industry_group` 94개 — 이 표의 `primary_sector` 11개가 아니다) |
+
+> 🔴 **2026-08-08 정정 — Cowork이 「역DCF 5개 입력 테이블(beta·wacc·tax·capex·wc)」이라 반복해 적은 것은 과장이었다.** 운영 경로(`route.ts`·`compute_revdcf_all.ts`)가 실제로 읽는 damodaran 테이블은 **4개**이고, 그중 **업종별 입력은 `damodaran_beta` 하나**다 — 나머지는 `damodaran_global_inputs`(무위험·ERP, **전역**) · `damodaran_country_tax`(US 한계세율, **국가별**) · `damodaran_credit_spread`(**등급별**). `damodaran_wacc`·`capex`·`working_capital`은 **대조용이라 운영 경로에서 읽지 않는다**. 🔑 즉 **섹터가 역DCF 계산에 들어가는 통로는 `unlevered_beta_cash_adj`(자기자본비용)와 `std_dev_equity`(신용스프레드→부채비용) 둘뿐**이다.
+> 🔴 **그리고 원전에는 섹터가 없다** — `EI_tutorial_07_costofcapital.html` 실측: `industry` **0회** · `comparable` **0회** · `sector` **0회**. 원전은 *"a specific security's relative risk"* 즉 **그 종목 자신의 베타**를 쓴다. 우리가 업종 평균을 쓰는 것은 **전 종목 자동화라 종목별 베타 회귀를 못 돌리기 때문의 대체재**이며, 원전 대조표에 **하향식 베타**로 이미 기록돼 있다.
+> 🔑 **따라서 이 자리에는 「업계 표준」이 따로 없다.** 베타 표를 만든 사람의 분류(**Damodaran 자체 94개** — `Semiconductor Equip` · `Software (Internet)` · `Retail (REITs)` 등, GICS도 SIC도 아님)를 따를 수밖에 없다. **분류를 고른 게 아니라 데이터를 고른 것이고 분류가 따라온 것이다.**
+
 | **2** | **Damodaran · 형제 주식클래스 / 구두점 정규화** | ~13 | 🔑 **같은 회사라 틀릴 수가 없다.** `GOOG`←`GOOGL` · `BRK-B`←`BRKA` · `MOG-A`→`MOGA` 등 |
 | **3** | **야후 `assetProfile`** (2026-08-08 A안 확정) | ~207 | 🔑 **전 구간 정확도 95.8%로 단독 최고**(497건 채점) · 11분류가 **GICS와 1:1** · ADR 전수 커버 |
 | **4** | 그 외 | ~1 | 「미분류」 — 야후 취득 실패분만 |

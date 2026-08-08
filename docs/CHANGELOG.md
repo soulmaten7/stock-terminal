@@ -1,6 +1,33 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (103) — 🔴 **정정: 「역DCF 5개 입력 테이블」은 과장 · 원전에는 섹터가 없다 (원문 실측)**
+
+> **성격**: 사실 정정. **코드 diff 0.** 🔴 **발단 = 장은태 질문** — *"역DCF에서 실제로 계산하는 계산법에 표준으로 사용되는 섹터는 어떤 걸 보고 기준으로 삼아서 계산을 해?"* → 확인해 보니 **Cowork이 반복해 틀리게 말하고 있었다.**
+
+**§1 🔴 정정 — 업종별 입력은 `damodaran_beta` **하나**다** — Cowork이 STEP 938 이후 *"역DCF 5개 입력 테이블(beta·wacc·tax·capex·wc)이 `industry_group`을 키로 쓴다"*를 **명령서·CHANGELOG·질문 정본에 반복 기재**했다. 운영 경로(`route.ts:41-45`·`compute_revdcf_all.ts:28-32`) 직접 열람 결과 실제로 읽는 damodaran 테이블은 **4개**:
+
+| 테이블 | 무엇 | 업종별인가 |
+|---|---|---|
+| `damodaran_global_inputs` | 무위험수익률·ERP | ❌ **전역** |
+| `damodaran_country_tax` | US 한계세율 | ❌ **국가별**(`country='United States of America'`) |
+| `damodaran_credit_spread` | 등급별 스프레드 | ❌ **등급별**(`std_dev_equity` 기반) |
+| 🔑 **`damodaran_beta`** | 무차입베타·주가변동성 | ✅ **업종별 — 이것 하나** |
+
+🔴 `damodaran_wacc`·`damodaran_capex`·`damodaran_working_capital`은 **대조용이라 운영 경로에서 읽지 않는다.**
+🔑 **섹터가 역DCF 계산에 들어가는 통로는 값 둘뿐**: `unlevered_beta_cash_adj`(→자기자본비용) · `std_dev_equity`(→신용스프레드→부채비용). 계산식(`compute.ts:31-32`) = `재차입베타 = 업종 무차입베타 × (1 + (1−세율) × D/E)` · `자기자본비용 = rf + 재차입베타 × ERP` — **업종에서 오는 건 「사업의 본질적 위험」이고 「이 회사가 빚을 얼마나 졌나」는 개별 값**이다.
+
+**§2 🔑 원전에는 섹터가 없다 (원문 실측)** — `data/sources/text/EI_tutorial_07_costofcapital.html` 직접 개봉·문자열 카운트: **`industry` 0회 · `comparable` 0회 · `sector` 0회.** 원전은 *"a **specific security's** relative risk"* 즉 **그 종목 자신의 베타**를 쓴다(단일 종목 분석서라 업종 평균 개념이 불필요). 🔴 **우리가 업종 평균을 쓰는 것은 전 종목 자동화라 종목별 베타 회귀를 못 돌리기 때문의 대체재**이며, 원전 대조표에 **하향식(top-down) 베타**로 이미 「차이」로 기록돼 있다(`registry.ts` `costOfCapital`).
+
+**§3 🔑 따라서 이 자리에는 「업계 표준」이 따로 없다** — 체계는 **Damodaran 자체 94개 분류**(`Semiconductor Equip` · `Software (Internet)` · `Software (System & Application)` · `Retail (REITs)` · `Rubber& Tires` 등)로 **GICS도 SIC도 아니다.** 베타를 재는 목적에 맞게 쪼갠 것(소프트웨어를 인터넷/시스템으로 분리 = 위험 프로필이 다름). 다른 분류를 쓰려면 **그 분류로 만든 베타 표**가 있어야 하는데 무료로는 Damodaran 것뿐이다. 🔑 **분류를 고른 게 아니라 데이터를 고른 것이고 분류가 따라온 것이다.**
+
+**§4 🔑 A/B 선택에 주는 함의** — **역DCF는 GICS 11개와 아무 상관이 없다.** SPDR·나스닥·야후를 아무리 쌓아도 역DCF 계산은 **1밀리도 안 바뀐다.** 따라서 **「업종 대비 판정을 할지 말지」는 역DCF에 영향이 없고, 순수하게 Q1~Q4 카드의 판정 방식 문제**다.
+
+**§5 반영 범위** — `docs/USER_QUESTIONS_2026-08-08.md` §Q Q0 출처표에 정정 각주 3단락 삽입(업종 입력은 beta 하나 · 원전에 섹터 없음 · 업계 표준 부재). 🔴 **`docs/CHANGELOG.md`(94)와 `docs/STEP_938_COMMAND.md`의 같은 서술은 이력이라 고치지 않는다** — 정정은 이 엔트리로 남긴다.
+
+**변경 파일**: `docs/USER_QUESTIONS_2026-08-08.md`. **코드 diff 0.**
+
+
 ## 2026-08-08 (102) — 🟢 **STEP 943: Q0 구현 ④단계 — 섹터 내 컷 계산 + 부트스트랩 안정성 실측(판정 ⓚ 재료)**
 
 > **성격**: 신규 테이블(`sector_cuts`) 1개에 섹터별 p30/p70 컷 저장 + 부트스트랩으로 흔들림 폭 실측 + 시장 전체 컷 대비 판정 변경 크기(결함⑤) 실측. **화면 적용·기존 렌즈 판정 로직은 이 STEP에 없음**(`lens_cuts`·`lib/lenses.ts`·`lensCompute.ts`·`lensPrecompute.ts`·`sector.ts` 전부 diff 0). 🔴 **리포트에 판정·권고 문장 없음 — 숫자만.**
