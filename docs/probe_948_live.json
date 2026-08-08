@@ -141,5 +141,33 @@
     "reason": "STEP 948 명령서는 'lens_scores의 PER은 야후 trailingPE'라고 전제했으나, 직접 확인 결과 lens_scores 테이블은 valuation_value·valuation_state(파생 점수)만 갖고 있고 원시 trailingPE·priceToBook 컬럼이 없다(information_schema 직접 조회). 원시 pe/pb는 lib/lensCompute.ts의 computeSymbolLenses() 안에서만 즉시 계산되고 DB에 저장되지 않는다(grep 3파일 전수 확인 — lib/lensCompute.ts·lib/lenses/types.ts·lib/returns.ts만 참조, 저장 테이블 0곳).",
     "wouldRequire": "us_valuation.per이 있는 종목(606개) 각각에 대해 /api/lens 또는 야후 API를 개별 라이브 호출해야 분포를 낼 수 있음 — 이는 이번 STEP이 승인한 '/api/cron/revdcf 1회'를 벗어나는 별도의 대량 라이브 호출이라 임의로 하지 않았다.",
     "notDone": true
+  },
+
+  "cowork_crosscheck": {
+    "checkedAt": "2026-08-08",
+    "by": "Cowork (Supabase MCP 직접 조회)",
+    "matched": ["us_fundamentals 1003", "us_valuation 1003",
+                "per 606+397", "pbr 738+265", "psr 793+210", "evEbitda 528+475",
+                "revdcf_results 2026-08-08 = 604 (08-07과 동일)",
+                "us_cik_map 10432"],
+    "discrepancies": [
+      {
+        "id": "UNIVERSE_ASOF_FILTER",
+        "found": "fundamentalsUniverse=5890 이지만 STEP 947 명령서 4-1은 us_market_cap 최신 as_of 조인을 지정했다. 최신 as_of(2026-08-07) 조인은 5497, as_of 무관 전체 조인은 5890.",
+        "impact": "낡은 as_of 행 393건이 대기열에 들어온다. 처리된 68건을 검사한 결과 market_cap이 전부 null이고 4축 전부 비어 있어 값 오염은 없다. 피해는 SEC 호출 낭비.",
+        "verified": true,
+        "fixed": false,
+        "claudeCodeReverify": "직접 재확인(2026-08-08, Supabase 직접 조회): us_market_cap group by as_of — 2026-08-07=5509 · 나머지(08-06 2·08-05 1·08-04 1·08-03 2·08-02 5·07-30 383)=394. us_valuation에서 unavailable.per='MISSING_MARKET_CAP'인 68건 전부를 us_market_cap과 조인해 as_of를 직접 확인 — 68건 전부 as_of가 2026-08-07이 아님(대부분 07-30, 일부 08-02·08-04). 표본(ACM·ADI·AIT·APA·AZO·BBY·BDX) 전부 이 68건에 포함됨을 확인. Cowork 진단과 일치."
+      },
+      {
+        "id": "MCAP_STALE_LARGECAPS",
+        "found": "us_market_cap에 2026-07-30 단 1행만 있고 이후 수집이 없는 종목이 존재. 표본: ACM ADI AIT APA AZO BBY BDX (전부 S&P 500).",
+        "impact": "해당 종목은 시총이 없어 Q1 4축이 전부 나오지 않는다. 대형주가 화면에서 빠진다.",
+        "note": "🔴 2026-07-30은 lens_cuts US가 멈춘 날짜와 같다. 인과는 확인하지 않았다. 날짜 일치는 사실, 원인은 추측.",
+        "verified": true,
+        "fixed": false,
+        "claudeCodeReverify": "직접 재확인: 위 68건 조인 결과 07-30 stale 종목 목록에 MCD·HD·CRM·MU·TGT·LOW·MRK 등 대형 우량주 다수 포함(전문은 이 재검증 당시 조회 결과 — 커밋에는 요약만). 값이 잘못 채워진 게 아니라 비어 있는 것(계산 안 됨 vs 재료 없음 구분 확인됨)."
+      }
+    ]
   }
 }
