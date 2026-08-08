@@ -980,7 +980,8 @@
         "gapYearsChanged": false
       }
     ],
-    "sampleLimitationCaveat": "🔴 표본 20종목은 revdcf_results 심볼 사전순 첫 20개라 전부 'A'로 시작한다(A·AA·AAL·AAPL·ABBV·ABNB·ABT·ACM·ACN·ADBE·ADI·ADM·ADP·ADSK·AEE·AEIS·AEP·AES·AIT·AKAM). 재현 가능하지만 대표성이 없다 — 알파벳 'A' 기업군에 특정 섹터·시총대가 쏠려 있을 수 있다. 42.9%(6/14)를 604종목 전체로 일반화하지 말 것. 전수 또는 계층표본(시총대·섹터별) 재측정이 필요하나, 🔴 이번 STEP에서는 하지 않는다 — SEC 예산·장은태 승인 문제로 남긴다."
+    "sampleLimitationCaveat": "🔴 표본 20종목은 revdcf_results 심볼 사전순 첫 20개라 전부 'A'로 시작한다(A·AA·AAL·AAPL·ABBV·ABNB·ABT·ACM·ACN·ADBE·ADI·ADM·ADP·ADSK·AEE·AEIS·AEP·AES·AIT·AKAM). 재현 가능하지만 대표성이 없다 — 알파벳 'A' 기업군에 특정 섹터·시총대가 쏠려 있을 수 있다. 42.9%(6/14)를 604종목 전체로 일반화하지 말 것. 전수 또는 계층표본(시총대·섹터별) 재측정이 필요하나, 🔴 이번 STEP에서는 하지 않는다 — SEC 예산·장은태 승인 문제로 남긴다.",
+    "correction_step951b": "§3의 42.9%는 after가 임시 재계산이었다. 폐기하지 말고 '반쪽 측정'으로 표시한다. 정본은 STEP 951 보강의 값(비교가능 18종목 중 7종목=38.9%, docs/probe_951b_verify.json). 951 보강에서 14종목 중 13종목은 실제 새 코드(computeDrivers+resolveYearWindow)와 완전 일치했으나 ADM 1종목은 salesGrowth·operatingMargin이 실제 값과 달랐다(verdict 결론만 우연히 동일). 표본도 20종목(비교가능 14)뿐이라 대표성은 별개 문제."
   },
   "step4_similarLiterals": {
     "scope": "app/·lib/ 전체(scripts/probe_*·*.test.ts·supabase/migrations/*.sql 제외)",

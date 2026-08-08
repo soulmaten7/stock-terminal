@@ -1,6 +1,22 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (117) — 🔴 **STEP 951 보강: 검증 스크립트가 운영 DB를 재현하지 못했다 — verdict 변동 비율 42.9%·22.2% 둘 다 무효, 정본 38.9%**
+
+> **성격**: 계측 결함 정정(사건 기록). **코드 무변경**·DB 무변경·SEC 신규 요청 0건(캐시 재사용)·push 없음.
+
+**사건** — 950이 낸 42.9%(6/14)와 951이 낸 22.2%(4/18)가 서로 다른 수치였고, 둘 다 판단 근거로 쓸 수 없음이 드러났다. **951의 원인**: `scripts/probe_951_verify.ts`의 before가 `revdcf_results`(as_of=2026-08-08) 저장값과 불일치 — `AA`(before.verdict="years" vs DB="over_cap")·`ABT`(같은 패턴)·`AKAM`(before="over_cap" vs DB="value_destroying") 3건 확인. 원인은 SEC 데이터나 시총·주가 시점차(후보①②)가 아니라 **검증 스크립트 자체의 옛 창 재현 불충분(후보③)** — `computeOldWindow()`가 startingMargin을 5년평균 operatingMargin으로 잘못 근사하고, fixedCapitalRate·workingCapitalRate를 옛 창이 아닌 **새 창 값을 그대로 재사용**했다. `lib/revdcf/drivers.ts` fb2c5c6(951 이전) 로직을 그대로 복제해 AA·ABT·AKAM을 캐시로 충실 재현하니 startingMargin·fixedCapitalRateMarginal·workingCapitalRate·debt·nonOperatingAssets·shares **전 항목이 DB 저장값과 소수점까지 정확히 일치**했다 — 계산 자체는 재현 가능했다는 뜻이며, 실패는 순전히 검증 스크립트의 구현 결함이었다.
+
+**950도 재점검**했다 — 950의 after(임시 재계산)를 실제 새 코드(`computeDrivers`+`resolveYearWindow`, 951의 원본 after)와 겹치는 14종목 전부 대조: 13종목 완전 일치, `ADM` 1종목만 salesGrowth·operatingMargin이 실제 값과 달랐다(verdict는 우연히 같은 결론으로 귀결돼 42.9%라는 숫자 자체는 살아남음). 표본도 20종목(비교가능 14)뿐이라 대표성은 별개 문제. **폐기하지 않고 "반쪽 측정"으로 표시.**
+
+**정정 방법** — before를 재계산하지 않고 `revdcf_results` 저장값을 **그대로 읽는다**(재현 시도 자체를 없앰). after는 새 코드로 계산하되 wacc·tax_rate·debt·non_operating_assets·shares·share_price는 DB 행 그대로 재사용해 **창 이외 입력을 고정** — 창의 효과만 격리. `scripts/probe_951b_verify.ts` 신규(SEC 신규 요청 0건, `docs/probe_951_cache/` 30종목 전부 재사용). 결과 → `docs/probe_951b_verify.json`. **비교가능 18종목 중 7종목(38.9%) verdict 변동**: `A` over_cap→value_destroying · `AA` over_cap→value_destroying · `AAL` value_destroying→years(3) · `ABT` over_cap→value_destroying · `ADM` below_one→value_destroying · `ADSK` over_cap→years(15) · `AMCR` over_cap→value_destroying. 방향별: over_cap→value_destroying 4·value_destroying→years 1·below_one→value_destroying 1·over_cap→years 1. gap_years만 바뀐(verdict 유지) 4종목: `ADBE`(2→1)·`NVDA`(5→4)·`MSFT`(17→14)·`BR`(15→3). 캐시 30종목 전부 커버(부족 0). 🔴 **표본 한계 불변** — 950의 사전순 20 + 951이 추가한 10, 604종목 전수 아니며 `A`로 시작하는 사전순 편향 그대로.
+
+**문서 정정** — `docs/probe_950_ys_window.json`(§3에 `correction_step951b` 필드 추가)·`docs/probe_951_verify.json`(`correction` 필드 추가) 둘 다 원본은 보존하고 정정만 덧붙임(폐기 아님) · `docs/REVDCF_SPEC.md`(§10 950·951 두 문단에 정정 삽입 + §11 새 행 "951 보강") · `docs/STATE.md`(다음할일 최우선 문단에 정정 반영) · `docs/LENS_COMPLETION_STANDARD.md`(951 각주의 22.2% 취소선 처리 + 정정).
+
+**push 판정 재료만 제시(판정 안 함)**: 변동비율 38.9%(전보다 낮지만 42.9%·22.2% 둘 다보다 근거가 탄탄함) · 방향은 대부분 `over_cap→value_destroying`(더 비싸 보이던 종목이 더 비싸 보이는 쪽으로 강화, 반대방향 없음) · 되돌리기 비용(push 후 재원복 어려움 — STEP 951 원 보고와 동일) · 안 바꾸는 비용(950 §1 실측 — 604종목 중 96.5%가 한 해 누락인 채로 매일 크론이 계속 적재).
+
+**무변경** — `lib/`·`app/`·`components/`·`messages/` 코드 diff 0(신규 스크립트 1개 제외) · DB 쓰기 0 · SEC 신규 요청 0(캐시 재사용) · push 없음.
+
 ## 2026-08-08 (116) — 🟢 **STEP 951: YS 고정창 제거 — 종목별 실재 최신 5개 연도로 전환 (장은태 판정)**
 
 > **성격**: 코드 수정(950 진단의 실제 처방 적용). **화면 무변경**·`REVDCF_ENABLED` OFF 유지·크론 미호출·KR 미접촉. push는 별도 승인 후.

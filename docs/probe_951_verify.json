@@ -1892,5 +1892,6 @@
     "nvdaFy2026Check": "PASS — after.fiscalYear=2025(NVDA 자체표기 FY2026), revenue=215,938,000,000·netIncome=120,067,000,000. STEP950 §0 SEC 원문 확인치와 정확히 일치.",
     "aaplFy2025Check": "PASS — after.fiscalYear=2025, revenue=416,161,000,000·netIncome=112,010,000,000. STEP950 §0 SEC 원문 확인치와 정확히 일치.",
     "scriptBugFound": "검증 스크립트(probe_951_verify.ts) 자체의 표시 버그 1건 발견·수정: yearWindow를 after.ok로 게이팅해 AMST·ACT(창은 잡혔으나 이후 다른 게이트에서 skip)의 yearWindow가 null로 잘못 표시됨. drivers.ts 계산 자체는 처음부터 정확했다 — 캐시 재사용으로 재확인(추가 SEC 요청 0건)."
-  }
+  },
+  "correction": "§5의 before가 DB(revdcf_results as_of=2026-08-08)와 불일치(AA·ABT·AKAM 확인 — 예: AA before.verdict='years' vs DB='over_cap'). 22.2%(summary.verdictChanged 4/18)는 무효. 원인 = 이 파일을 만든 probe_951_verify.ts의 computeOldWindow()가 startingMargin을 5년평균 operatingMargin으로 근사하고 fixedCapitalRate·workingCapitalRate를 옛 창이 아닌 새 창 값으로 대체한 결함 — 옛 고정창([2020..2024]) 자체를 충실히 재현하지 않았다. fb2c5c6(951 이전) drivers.ts 로직을 그대로 복제해 AA·ABT·AKAM을 캐시로 재현하니 DB 저장값과 소수점까지 정확히 일치(SEC/시총 시점차·damodaran 입력 문제 아님, 검증 스크립트 자체의 재현 불충분이 원인). 정본은 STEP 951 보강의 값 — before를 재계산하지 않고 DB 저장값을 그대로 읽는 방식(docs/probe_951b_verify.json): 비교가능 18종목 중 7종목(38.9%) 변동."
 }

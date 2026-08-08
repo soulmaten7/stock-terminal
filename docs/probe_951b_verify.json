@@ -1,0 +1,558 @@
+{
+  "measuredAt": "2026-08-08",
+  "sample": [
+    "A",
+    "AA",
+    "AAL",
+    "AAPL",
+    "ABBV",
+    "ABNB",
+    "ABT",
+    "ACM",
+    "ACN",
+    "ADBE",
+    "ADI",
+    "ADM",
+    "ADP",
+    "ADSK",
+    "AEE",
+    "AEIS",
+    "AEP",
+    "AES",
+    "AIT",
+    "AKAM",
+    "NVDA",
+    "MSFT",
+    "AMCR",
+    "AMST",
+    "BR",
+    "ANF",
+    "AVAH",
+    "BBY",
+    "ACRS",
+    "ACT"
+  ],
+  "results": [
+    {
+      "status": "OK",
+      "symbol": "A",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "AA",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "AAL",
+      "verdictBefore": "value_destroying",
+      "gapBefore": null,
+      "verdictAfter": "years",
+      "gapAfter": 3,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "AAPL",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "over_cap",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "ABBV",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "over_cap",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "ABNB",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "status": "OK",
+      "symbol": "ABT",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "ACM",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "status": "OK",
+      "symbol": "ACN",
+      "verdictBefore": "below_one",
+      "gapBefore": null,
+      "verdictAfter": "below_one",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "ADBE",
+      "verdictBefore": "years",
+      "gapBefore": 2,
+      "verdictAfter": "years",
+      "gapAfter": 1,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "ADI",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "status": "OK",
+      "symbol": "ADM",
+      "verdictBefore": "below_one",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "ADP",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "status": "OK",
+      "symbol": "ADSK",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "years",
+      "gapAfter": 15,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "AEE",
+      "verdictBefore": "below_one",
+      "gapBefore": null,
+      "verdictAfter": "below_one",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "AEIS",
+      "verdictBefore": "value_destroying",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "AEP",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "status": "OK",
+      "symbol": "AES",
+      "verdictBefore": "value_destroying",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "AIT",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "status": "OK",
+      "symbol": "AKAM",
+      "verdictBefore": "value_destroying",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "NVDA",
+      "verdictBefore": "years",
+      "gapBefore": 5,
+      "verdictAfter": "years",
+      "gapAfter": 4,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "MSFT",
+      "verdictBefore": "years",
+      "gapBefore": 17,
+      "verdictAfter": "years",
+      "gapAfter": 14,
+      "yearWindow": [
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    },
+    {
+      "status": "OK",
+      "symbol": "AMCR",
+      "verdictBefore": "over_cap",
+      "gapBefore": null,
+      "verdictAfter": "value_destroying",
+      "gapAfter": null,
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
+    },
+    {
+      "symbol": "AMST",
+      "status": "NO_DB_ROW",
+      "afterOk": false
+    },
+    {
+      "status": "OK",
+      "symbol": "BR",
+      "verdictBefore": "years",
+      "gapBefore": 15,
+      "verdictAfter": "years",
+      "gapAfter": 3,
+      "yearWindow": [
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ]
+    },
+    {
+      "symbol": "ANF",
+      "status": "NO_DB_ROW",
+      "afterOk": true
+    },
+    {
+      "symbol": "AVAH",
+      "status": "NO_DB_ROW",
+      "afterOk": true
+    },
+    {
+      "symbol": "BBY",
+      "status": "DB_SKIPPED_NOT_COMPARABLE",
+      "beforeVerdict": "skipped"
+    },
+    {
+      "symbol": "ACRS",
+      "status": "NO_DB_ROW",
+      "afterOk": true
+    },
+    {
+      "symbol": "ACT",
+      "status": "NO_DB_ROW",
+      "afterOk": false
+    }
+  ],
+  "summary": {
+    "measuredAt": "2026-08-08",
+    "sampleTotal": 30,
+    "cacheMissing": [],
+    "cacheCovered": 30,
+    "noDbRow": 5,
+    "dbSkipped": 7,
+    "afterNotOk": 0,
+    "comparable_n": 18,
+    "verdictChanged_n": 7,
+    "verdictChanged_ratio": 0.3888888888888889,
+    "verdictChanged": [
+      {
+        "symbol": "A",
+        "verdictBefore": "over_cap",
+        "gapBefore": null,
+        "verdictAfter": "value_destroying",
+        "gapAfter": null,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "AA",
+        "verdictBefore": "over_cap",
+        "gapBefore": null,
+        "verdictAfter": "value_destroying",
+        "gapAfter": null,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "AAL",
+        "verdictBefore": "value_destroying",
+        "gapBefore": null,
+        "verdictAfter": "years",
+        "gapAfter": 3,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "ABT",
+        "verdictBefore": "over_cap",
+        "gapBefore": null,
+        "verdictAfter": "value_destroying",
+        "gapAfter": null,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "ADM",
+        "verdictBefore": "below_one",
+        "gapBefore": null,
+        "verdictAfter": "value_destroying",
+        "gapAfter": null,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "ADSK",
+        "verdictBefore": "over_cap",
+        "gapBefore": null,
+        "verdictAfter": "years",
+        "gapAfter": 15,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "AMCR",
+        "verdictBefore": "over_cap",
+        "gapBefore": null,
+        "verdictAfter": "value_destroying",
+        "gapAfter": null,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      }
+    ],
+    "verdictUnchanged_symbols": [
+      "AAPL",
+      "ABBV",
+      "ACN",
+      "ADBE",
+      "AEE",
+      "AEIS",
+      "AES",
+      "AKAM",
+      "NVDA",
+      "MSFT",
+      "BR"
+    ],
+    "directionCounts": {
+      "over_cap→value_destroying": 4,
+      "value_destroying→years": 1,
+      "below_one→value_destroying": 1,
+      "over_cap→years": 1
+    },
+    "gapYearsOnlyChanged_n": 4,
+    "gapYearsOnlyChanged": [
+      {
+        "symbol": "ADBE",
+        "verdictBefore": "years",
+        "gapBefore": 2,
+        "verdictAfter": "years",
+        "gapAfter": 1,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "NVDA",
+        "verdictBefore": "years",
+        "gapBefore": 5,
+        "verdictAfter": "years",
+        "gapAfter": 4,
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ]
+      },
+      {
+        "symbol": "MSFT",
+        "verdictBefore": "years",
+        "gapBefore": 17,
+        "verdictAfter": "years",
+        "gapAfter": 14,
+        "yearWindow": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ]
+      },
+      {
+        "symbol": "BR",
+        "verdictBefore": "years",
+        "gapBefore": 15,
+        "verdictAfter": "years",
+        "gapAfter": 3,
+        "yearWindow": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ]
+      }
+    ],
+    "sampleLimitationNote": "🔴 캐시 30종목은 STEP950 §3의 사전순 20종목 + STEP951 §5가 추가한 10종목이다. revdcf_results 604종목 전수가 아니며 사전순 편향이 있다(A로 시작하는 종목 다수)."
+  }
+}
