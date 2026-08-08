@@ -84,7 +84,7 @@
 |:--:|---|:--:|---|
 | 1 | 원전 대조표 | ❌ | 🔴 원전 없음 — EI 튜토리얼 8편에 P/E·price-to-book·price-sales 0회, EBITDA 1회(문맥 미확인). 규칙 5-1 대체물로 `docs/VALUATION_SPEC.md` 작성. 화면 공개 0건(카드 미존재) |
 | 2 | 입력 검증 | 🟡 | `us_fundamentals` 1,003행 기준 결측률·`source_tags` 분포 실측. 비지배지분 혼입 48건(5.64%). 🔴 전체 5,497 중 18.2%만 적재 — 나머지 미측정 |
-| 3 | 값 검증 | ❌ | 손계산 4종목 비트단위 일치 · SEC 원문 대조 1종목(Agilent) 일치. 🔴 **DoD3 요구 「외부 독립 출처 최소 3종목」 0건.** STEP 948 §5가 전제 오류로 미실시 |
+| 3 | 값 검증 | ❌ | 손계산 4종목 비트단위 일치 · SEC 원문 대조 1종목(Agilent) 일치. 🔴 **DoD3 요구 「외부 독립 출처 최소 3종목」 0건.** STEP 948 §5가 전제 오류로 미실시. 🔴 **STEP 950 — DoD3 미충족이 실제로 무엇을 놓쳤는지의 사례**: 손계산 4건·SEC 원문 대조 1건이 전부 통과했으나(947~948), **외부 독립 출처 대조**(stockanalysis.com, NVDA·AAPL)에서 `drivers.ts:12`의 YS 고정창 결함이 드러났다(PER 각각 64.7%·19.5% 과대). **「손계산은 같은 원천을 두 번 세는 것이라 원천의 오류를 못 잡는다」** — us_fundamentals 값과 그 값의 재계산이 bit 단위로 일치해도, 원천 자체(YS가 가리키는 회계연도)가 낡았으면 검증을 통과한 값이 틀릴 수 있다. 상세 = `docs/probe_950_ys_window.json` · `docs/VALUATION_SPEC.md` 미해결 0번 |
 | 4 | 컷·분포 | ❌ | 「업종 대비」 기준선 미존재. `sector_cuts`는 7렌즈용이며 밸류에이션 축용이 아님 |
 | 5 | 경계 처리 | 🟡 | `us_valuation.unavailable`에 축별 사유 기록. 실측 4종(`NEGATIVE_EARNINGS` 등) + `us_fundamentals.unavailable_reason` 7종. 🔴 화면 표기 미정 |
 | 6 | 주장 정합 | ❌ | 대조할 화면 문구 0건 |

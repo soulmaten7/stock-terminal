@@ -5,6 +5,8 @@
 > 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md`.
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
+🔴🔴 **다음에 할 일(최우선, STEP 950 실측·2026-08-08) — YS 고정창 결함, 처방 미결정.** `lib/revdcf/drivers.ts:12`의 `const YS = [2020..2024]` 하드코딩이 최신 회계연도 1~2년을 놓친다(오늘 기준). Q1 4축·역DCF 5드라이버 전부 영향 — 표본 20종목 중 **6종목(42.9%) verdict 변동**, 외부대조로 **NVDA PER 64.7%·AAPL PER 19.5% 과대** 확인. 🔴 **아직 고치지 않았다 — 처방 후보만 있고 채택 0건, 판정은 장은태.** 상세 = `docs/probe_950_ys_window.json` · `docs/VALUATION_SPEC.md`·`docs/REVDCF_SPEC.md` §11.
+
 🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**
 🔴 **Q1은 ①단계(재료)만 끝났다. 9항목 중 ✅ 0건. 커버리지 18.2%.** 「Q1 완료」라고 쓰지 말 것. 상세 = `docs/LENS_COMPLETION_STANDARD.md` Q1 행.
 

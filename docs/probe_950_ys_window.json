@@ -1,0 +1,933 @@
+{
+  "measuredAt": "2026-08-08",
+  "purpose": "lib/revdcf/drivers.ts:12의 하드코딩 YS=[2020..2024] 결함이 Q1 4축·역DCF에 미치는 영향 범위 실측. 고치지 않는다 — 판정은 장은태.",
+  "step0_secDirectVerification": {
+    "method": "SEC data.sec.gov companyfacts 원문 직접 조회(2026-08-08), stockanalysis.com 등 2차 자료 불사용",
+    "AAPL": {
+      "cik": 320193,
+      "latest_10k_annual": {
+        "tag": "RevenueFromContractWithCustomerExcludingAssessedTax/NetIncomeLoss",
+        "start": "2024-09-29",
+        "end": "2025-09-27",
+        "revenue": 416161000000,
+        "netIncome": 112010000000
+      },
+      "ysWindowUses": {
+        "end": "2024-09-28",
+        "calYear": 2024,
+        "revenue": 391035000000,
+        "netIncome": 93736000000
+      },
+      "note": "외부 대조(stockanalysis)와 정확히 일치 확인됨"
+    },
+    "NVDA": {
+      "cik": 1045810,
+      "latest_10k_annual": {
+        "tag": "Revenues/NetIncomeLoss",
+        "start": "2025-01-27",
+        "end": "2026-01-25",
+        "revenue": 215938000000,
+        "netIncome": 120067000000
+      },
+      "ysWindowUses": {
+        "end": "2025-01-26",
+        "calYear": 2024,
+        "revenue": 130497000000,
+        "netIncome": 72880000000
+      },
+      "note": "외부 대조(stockanalysis)와 정확히 일치 확인됨. NVDA는 FYE 1월이라 calYear(month<=5 -> year-1) 규칙이 적용됨"
+    },
+    "MSFT": {
+      "cik": 789019,
+      "latest_10k_annual": {
+        "tag": "RevenueFromContractWithCustomerExcludingAssessedTax/NetIncomeLoss",
+        "start": "2025-07-01",
+        "end": "2026-06-30",
+        "revenue": 331839000000,
+        "netIncome": 133749000000,
+        "filed": "2026-07-29"
+      },
+      "ysWindowUses": {
+        "end": "2024-06-30",
+        "calYear": 2024,
+        "revenue": 245122000000,
+        "netIncome": 88136000000
+      },
+      "note": "STEP 배경에 없던 신규 확인 — MSFT는 FYE 6월(month>5, calYear=year 그대로)이라 이미 calYear 2025·2026 두 해가 SEC에 존재. YS 창은 2024에 갇혀 있어 MSFT는 2년치가 빠짐(missingYears=2)."
+    },
+    "companyfacts_has_latest_data": true,
+    "note_0_3": "세 종목 전부 companyfacts에 실제 최신 연도 데이터가 존재했다(SEC 반영 지연 아님) — 0-3의 중단 조건에 해당하지 않아 나머지 단계를 계속 진행."
+  },
+  "step1_missingYearsScan": {
+    "totalScanned": 1003,
+    "fetchErrors": 142,
+    "fetchErrorKinds": {
+      "NO_REVENUE_DATA": 102,
+      "HTTP_NOT_OK": 40
+    },
+    "missingYearsDistribution": {
+      "1": 831,
+      "2": 11,
+      "0": 19
+    },
+    "zeroMissingCount": 19,
+    "zeroMissingSample": [
+      {
+        "symbol": "LHX",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 1,
+        "fyEndDate": "2025-01-03"
+      },
+      {
+        "symbol": "CTAS",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 5,
+        "fyEndDate": "2025-05-31"
+      },
+      {
+        "symbol": "NERV",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 12,
+        "fyEndDate": "2024-12-31"
+      },
+      {
+        "symbol": "SMMT",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 12,
+        "fyEndDate": "2024-12-31"
+      },
+      {
+        "symbol": "COCP",
+        "actualLatestYear": 2020,
+        "fyEndMonth": 12,
+        "fyEndDate": "2020-12-31"
+      },
+      {
+        "symbol": "BMRA",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 5,
+        "fyEndDate": "2025-05-31"
+      },
+      {
+        "symbol": "SENEB",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 3,
+        "fyEndDate": "2025-03-31"
+      },
+      {
+        "symbol": "SENEA",
+        "actualLatestYear": 2024,
+        "fyEndMonth": 3,
+        "fyEndDate": "2025-03-31"
+      },
+      {
+        "symbol": "BRBS",
+        "actualLatestYear": 2020,
+        "fyEndMonth": 12,
+        "fyEndDate": "2020-12-31"
+      },
+      {
+        "symbol": "BPOP",
+        "actualLatestYear": 2012,
+        "fyEndMonth": 12,
+        "fyEndDate": "2012-12-31"
+      }
+    ],
+    "zeroMissingNote": "회계연도 종료월이 1~5월인 종목은 calYear(month<=5 -> year-1) 규칙으로 최신 실제 연도가 그대로 2024 버킷에 들어와 누락 0으로 나타난다(예: CTAS FYE 2025-05-31 -> calYear 2024). COCP(2020)·BPOP(2012) 등 극단적으로 오래된 예외는 YS창 문제가 아니라 그 기업 자체가 최근 10-K를 안 낸 것으로 보인다(원인 미조사).",
+    "fyEndMonthCrossTab": {
+      "12": {
+        "1": 618,
+        "0": 12
+      },
+      "09": {
+        "1": 37
+      },
+      "10": {
+        "1": 17
+      },
+      "03": {
+        "1": 27,
+        "0": 3
+      },
+      "11": {
+        "1": 12
+      },
+      "06": {
+        "2": 10,
+        "1": 27
+      },
+      "04": {
+        "1": 7
+      },
+      "02": {
+        "1": 7
+      },
+      "01": {
+        "1": 48,
+        "0": 1
+      },
+      "07": {
+        "1": 10,
+        "2": 1,
+        "0": 1
+      },
+      "05": {
+        "1": 11,
+        "0": 2
+      },
+      "08": {
+        "1": 10
+      }
+    },
+    "crossTabNote": "6월(FYE) 종목은 missingYears=2가 두드러진다(MSFT와 같은 패턴) — month>5라 calYear가 그대로 적용되고, 2026-08 현재 이미 calYear 2025·2026 두 해 데이터가 SEC에 존재하기 때문. 12월(FYE) 종목은 압도적으로 missingYears=1.",
+    "dataQualityCaveat": {
+      "finding": "HTTP_NOT_OK 에러 40건 중 대부분이 처리 순서 후반부(인덱스 549~998, 1,003건 중)에 몰려 있다(위치 목록은 원자료 참조). 앞쪽 500건은 HTTP_NOT_OK가 사실상 0건에 가깝다.",
+      "interpretation": "이 클러스터링은 429(rate limit)가 이 스캔의 후반부에서 시작됐을 가능성을 시사한다. 🔴 fetchFacts()가 상태코드를 별도로 기록하지 않아 HTTP_NOT_OK가 429인지 다른 4xx/5xx인지 사후에 구분할 수 없다 — 이건 이번 스크립트의 계측 부족이다.",
+      "impact": "missingYearsDistribution·crossTab의 모수는 1,003 중 861건(실패 142건 제외)이며, 후반부 실패 40건은 「YS 창 문제와 무관하게 데이터 자체가 안 왔다」로 정직하게 제외됐다(0으로도 안 채움) — 분포 자체를 왜곡하진 않으나, 실패 40건이 특정 알파벳 구간에 쏠려 있어 그 구간 종목의 실측치가 이번 결과에 없다는 뜻이다.",
+      "userCorrectionAcknowledged": "🔴 장은태 지적대로 1,003종목 전수 조회는 과했다 — 이 클러스터링이 그 증거다. 이미 완료된 실행이라 되돌리지 않되(추가 SEC 요청 없이 기존 결과를 그대로 씀), 향후 유사 조사는 표본(예: 시총상위+사전순 200)으로 시작해야 한다는 교훈으로 기록한다."
+    }
+  },
+  "step2_q1AxisDistortion": {
+    "recomputeAttempted": 842,
+    "recomputeUniverse": "missingYears>=1인 842종목 전부(us_fundamentals 1,003 중)",
+    "axisRelativeDeltaDistribution": {
+      "per": {
+        "n": 483,
+        "median": 0.06779661016949143,
+        "p10": -0.43007518796992483,
+        "p25": -0.10474374056777547,
+        "p75": 0.28158001568226176,
+        "p90": 1.076085530630985,
+        "pctOver20pct": 0.5093167701863354
+      },
+      "pbr": {
+        "n": 564,
+        "median": 0.08706439661027154,
+        "p10": -0.11807589587063069,
+        "p25": 0.004016591410269889,
+        "p75": 0.1883517763541061,
+        "p90": 0.43379029930042423,
+        "pctOver20pct": 0.3049645390070922
+      },
+      "psr": {
+        "n": 609,
+        "median": 0.07996671905334188,
+        "p10": -0.021417017146554414,
+        "p25": 0.025247054633943576,
+        "p75": 0.166541039273941,
+        "p90": 0.3394489096948522,
+        "pctOver20pct": 0.21510673234811165
+      },
+      "evEbitda": {
+        "n": 392,
+        "median": 0.08562012445939556,
+        "p10": -0.19442635383746557,
+        "p25": -0.02779281548819795,
+        "p75": 0.2107350753068693,
+        "p90": 0.5031020740759802,
+        "pctOver20pct": 0.3622448979591837
+      }
+    },
+    "top20AbsRelativeDelta": [
+      {
+        "symbol": "EBS",
+        "axis": "evEbitda",
+        "relativeDelta": 2583.3665961693755,
+        "currentValue": 8062.6296,
+        "recomputedValue": 3.119770086778969,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "ARWR",
+        "axis": "psr",
+        "relativeDelta": 232.5815263306111,
+        "currentValue": 3486.6104196001124,
+        "recomputedValue": 14.926738746732767,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "QXO",
+        "axis": "psr",
+        "relativeDelta": 119.24956063268893,
+        "currentValue": 306.5033560632689,
+        "recomputedValue": 2.5488937710093245,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "FTAI",
+        "axis": "per",
+        "relativeDelta": 56.71296936189819,
+        "currentValue": 2558.094949550795,
+        "recomputedValue": 44.32443829929909,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "INCY",
+        "axis": "per",
+        "relativeDelta": 38.44963973631765,
+        "currentValue": 749.2638297715775,
+        "recomputedValue": 18.992919448179382,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "SARO",
+        "axis": "per",
+        "relativeDelta": 24.279478767997087,
+        "currentValue": 884.3499704756698,
+        "recomputedValue": 34.982919489432874,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "TKO",
+        "axis": "per",
+        "relativeDelta": 19.769876700680275,
+        "currentValue": 3753.205551020408,
+        "recomputedValue": 180.70427692512396,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "GME",
+        "axis": "evEbitda",
+        "relativeDelta": 19.302040134307124,
+        "currentValue": 300.497985511811,
+        "recomputedValue": 14.801368903020668,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "VICR",
+        "axis": "per",
+        "relativeDelta": 18.343449176048292,
+        "currentValue": 1664.024894109969,
+        "recomputedValue": 86.02524187725632,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "AA",
+        "axis": "per",
+        "relativeDelta": 18.283333333333335,
+        "currentValue": 220.67227306666666,
+        "recomputedValue": 11.443678810717373,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "TOST",
+        "axis": "per",
+        "relativeDelta": 17,
+        "currentValue": 1048.9179082105263,
+        "recomputedValue": 58.27321712280702,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "GILD",
+        "axis": "per",
+        "relativeDelta": 16.72916666666667,
+        "currentValue": 344.5615274666667,
+        "recomputedValue": 19.434727753701527,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "NEPH",
+        "axis": "per",
+        "relativeDelta": 15.135135135135132,
+        "currentValue": 617.6494594594594,
+        "recomputedValue": 38.27978224455612,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "PEN",
+        "axis": "per",
+        "relativeDelta": 11.681059092206679,
+        "currentValue": 912.65848929489,
+        "recomputedValue": 71.97021026861842,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "ALNY",
+        "axis": "pbr",
+        "relativeDelta": 10.763295969472932,
+        "currentValue": 437.20126305747675,
+        "recomputedValue": 37.166561497055156,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "INCY",
+        "axis": "evEbitda",
+        "relativeDelta": 10.385811516306752,
+        "currentValue": 151.28573577489476,
+        "recomputedValue": 13.287215896576491,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "BMY",
+        "axis": "evEbitda",
+        "relativeDelta": 10.21772064434612,
+        "currentValue": 140.28541756592958,
+        "recomputedValue": 12.505697192293276,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "CDE",
+        "axis": "per",
+        "relativeDelta": 8.946893039049236,
+        "currentValue": 303.49385018675724,
+        "recomputedValue": 30.511421907857006,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "HUBS",
+        "axis": "per",
+        "relativeDelta": 8.920267934312879,
+        "currentValue": 2327.805566119274,
+        "recomputedValue": 234.65148134434014,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      },
+      {
+        "symbol": "IONQ",
+        "axis": "pbr",
+        "relativeDelta": 8.898132662258833,
+        "currentValue": 43.204027780817064,
+        "recomputedValue": 4.3648665111907645,
+        "missingYears": 1,
+        "actualLatestYear": 2025
+      }
+    ],
+    "note": "상대차 = (현재값-재계산값)/재계산값. 분모(재계산값)가 0에 가까운 경우 상대차가 극단적으로 커질 수 있다(예: 순이익이 옛해엔 거의 0, 실제최신엔 견조한 경우) — top20의 극값 다수가 이 패턴이며 계산 오류가 아니다."
+  },
+  "step3_revdcfImpact": {
+    "driverDependencyTable": [
+      {
+        "driver": "salesGrowth",
+        "codeLine": "drivers.ts:216",
+        "dependsOn": "firstY(YS[0]=2020 고정)·lastY(=ly, latestYear()가 YS 안에서만 탐색) 두 끝점의 CAGR"
+      },
+      {
+        "driver": "operatingMargin",
+        "codeLine": "drivers.ts:217",
+        "dependsOn": "YS 5개 연도 전체 평균(mean)"
+      },
+      {
+        "driver": "startingMargin",
+        "codeLine": "drivers.ts:218",
+        "dependsOn": "lastY 1개 연도(rev[lastY]<=0이면 operatingMargin으로 폴백)"
+      },
+      {
+        "driver": "fixedCapitalRateLevel",
+        "codeLine": "drivers.ts:220",
+        "dependsOn": "YS 5개 연도 전체 평균"
+      },
+      {
+        "driver": "fixedCapitalRateMarginal",
+        "codeLine": "drivers.ts:224-229",
+        "dependsOn": "firstY·lastY(cumDRev 분모) + invYears=YS.slice(1) 4개 연도 누적(cumNet 분자)"
+      },
+      {
+        "driver": "workingCapitalRate",
+        "codeLine": "drivers.ts:231",
+        "dependsOn": "YS 5개 연도 전체 평균"
+      },
+      {
+        "driver": "(부수) debt·nonOperatingAssets·shares",
+        "codeLine": "drivers.ts:197-211",
+        "dependsOn": "latestYear()를 씀 — 그 함수 자체가 YS 배열만 순회(:36)라 이 셋도 YS에 갇혀 있다. 5개 드라이버 목록엔 없으나 같은 메커니즘의 영향을 받는다는 부수 발견"
+      }
+    ],
+    "sampleSize": 20,
+    "sampleSelectionMethod": "revdcf_results as_of=2026-08-08, 심볼 사전순 첫 20개 — 결정적 선정",
+    "sampleIsNotFullPopulation": "🔴 20종목은 표본이다. revdcf_results 604종목 전수가 아니다.",
+    "testable": 14,
+    "skippedInDb": 6,
+    "skippedInDbNote": "이미 verdict=skipped 상태라 드라이버 값이 DB에 없음 — YS 이동 효과를 격리할 재료 자체가 없다(전체 5게이트 재실행은 이 STEP 범위 밖)",
+    "skippedSymbols": [
+      "ABNB",
+      "ACM",
+      "ADI",
+      "ADP",
+      "AEP",
+      "AIT"
+    ],
+    "verdictChangedCount": 6,
+    "verdictUnchangedCount": 8,
+    "verdictChangedRatioOfTestable": 0.42857142857142855,
+    "beforeAfterAll": [
+      {
+        "symbol": "A",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 1.2818104184457728,
+          "starting_margin": 0.22857142857142856,
+          "operating_margin": 0.20680773727388604,
+          "sales_growth": 0.050824686572932265,
+          "working_capital_rate": 0.11508334372843945
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 1.9236883942766296,
+          "starting_margin": 0.21286701208981001,
+          "operating_margin": 0.21768981172780982,
+          "sales_growth": 0.02400685419721804,
+          "working_capital_rate": 0.1092746730403547,
+          "threshold_margin": 0.22137877539441114,
+          "monotonic": "down"
+        },
+        "verdictChanged": true,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "AA",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.21234189344576465,
+          "starting_margin": 0.03741067675493905,
+          "operating_margin": 0.04123249886981629,
+          "sales_growth": 0.06385868105323578,
+          "working_capital_rate": 0.03185219966067955
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.406480117820324,
+          "starting_margin": 0.09523809523809523,
+          "operating_margin": 0.05340956008844546,
+          "sales_growth": 0.013685387365014456,
+          "working_capital_rate": 0.0296851489611778,
+          "threshold_margin": 0.05363773325802652,
+          "monotonic": "down"
+        },
+        "verdictChanged": true,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "AAL",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.004827249552530238,
+          "starting_margin": 0.04821899614469388,
+          "operating_margin": -0.09960285227186784,
+          "sales_growth": 0.3297756229729669,
+          "working_capital_rate": -0.18866035236562428
+        },
+        "after": {
+          "verdict": "years",
+          "gap_years": 3,
+          "fixed_capital_rate_marginal": 0.14375176760534927,
+          "starting_margin": 0.026851902696172644,
+          "operating_margin": 0.025984405466420744,
+          "sales_growth": 0.16281693181179624,
+          "working_capital_rate": -0.16975523531037195,
+          "threshold_margin": 0.02271870794653188,
+          "monotonic": "up"
+        },
+        "verdictChanged": true,
+        "gapYearsChanged": true
+      },
+      {
+        "symbol": "AAPL",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 0.019756265018880878,
+          "starting_margin": 0.31510222870075566,
+          "operating_margin": 0.2911001428251947,
+          "sales_growth": 0.09247721446491397,
+          "working_capital_rate": -0.07901123104160523
+        },
+        "after": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 0.09097409820435405,
+          "starting_margin": 0.31970799762591884,
+          "operating_margin": 0.3067471136415647,
+          "sales_growth": 0.03275991627577457,
+          "working_capital_rate": -0.1049965472267699,
+          "threshold_margin": 0.30440241104256416,
+          "monotonic": "up"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "ABBV",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -1.0659069325735993,
+          "starting_margin": 0.16219334682429792,
+          "operating_margin": 0.2552301473736208,
+          "sales_growth": 0.05309316944066245,
+          "working_capital_rate": -0.2837907020434976
+        },
+        "after": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -2.231110215595406,
+          "starting_margin": 0.24648463047743624,
+          "operating_margin": 0.2549113193864952,
+          "sales_growth": 0.02138290840395274,
+          "working_capital_rate": -0.29092546894833893,
+          "threshold_margin": 0.251797359293781,
+          "monotonic": "up"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "ABNB",
+        "status": "SKIPPED_IN_DB",
+        "note": "이미 skip 상태 — 드라이버 값이 DB에 없어 YS 이동 효과를 격리할 재료 자체가 없음(전체 게이트 재실행은 범위 밖)"
+      },
+      {
+        "symbol": "ABT",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.6968128575320076,
+          "starting_margin": 0.1626936829558999,
+          "operating_margin": 0.17322791860425626,
+          "sales_growth": 0.04927388927494847,
+          "working_capital_rate": 0.03394228824904475
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -3.524341580207502,
+          "starting_margin": 0.18166847139505504,
+          "operating_margin": 0.17860345292025293,
+          "sales_growth": 0.007194192037995428,
+          "working_capital_rate": 0.028553647124416114,
+          "threshold_margin": 0.18014282017606767,
+          "monotonic": "down"
+        },
+        "verdictChanged": true,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "ACM",
+        "status": "SKIPPED_IN_DB",
+        "note": "이미 skip 상태 — 드라이버 값이 DB에 없어 YS 이동 효과를 격리할 재료 자체가 없음(전체 게이트 재실행은 범위 밖)"
+      },
+      {
+        "symbol": "ACN",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "below_one",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.14088240191449203,
+          "starting_margin": 0.14786394217102491,
+          "operating_margin": 0.1470248055533121,
+          "sales_growth": 0.09998833103004112,
+          "working_capital_rate": -0.06510696263984443
+        },
+        "after": {
+          "verdict": "below_one",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.16363523603538382,
+          "starting_margin": 0.14676657206710142,
+          "operating_margin": 0.14698908723661927,
+          "sales_growth": 0.08360621097031795,
+          "working_capital_rate": -0.058501671649853516,
+          "threshold_margin": 0.13781975808825747,
+          "monotonic": "up"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "ADBE",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "years",
+          "gap_years": 2,
+          "fixed_capital_rate_marginal": 0.089267106634248,
+          "starting_margin": 0.31346198558474775,
+          "operating_margin": 0.3398552554740871,
+          "sales_growth": 0.1369911876546286,
+          "working_capital_rate": -0.20219765758998257
+        },
+        "after": {
+          "verdict": "years",
+          "gap_years": 1,
+          "fixed_capital_rate_marginal": -0.2617735470941884,
+          "starting_margin": 0.36627540073204595,
+          "operating_margin": 0.3472570561675899,
+          "sales_growth": 0.10774954699996808,
+          "working_capital_rate": -0.21954692331098888,
+          "threshold_margin": 0.31732729251955044,
+          "monotonic": "up"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": true
+      },
+      {
+        "symbol": "ADI",
+        "status": "SKIPPED_IN_DB",
+        "note": "이미 skip 상태 — 드라이버 값이 DB에 없어 YS 이동 효과를 격리할 재료 자체가 없음(전체 게이트 재실행은 범위 밖)"
+      },
+      {
+        "symbol": "ADM",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "below_one",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 0.19220779220779222,
+          "starting_margin": 0.0346194317783234,
+          "operating_margin": 0.043829115997482,
+          "sales_growth": 0.07370269785167594,
+          "working_capital_rate": 0.10492719553731795
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": -0.04040270014761249,
+          "starting_margin": 0.07481166853662446,
+          "operating_margin": 0.12689976699946914,
+          "sales_growth": -0.26443438236028094,
+          "working_capital_rate": 0.27856593908670163,
+          "threshold_margin": 0.17146649777594664,
+          "monotonic": "down"
+        },
+        "verdictChanged": true,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "ADP",
+        "status": "SKIPPED_IN_DB",
+        "note": "이미 skip 상태 — 드라이버 값이 DB에 없어 YS 이동 효과를 격리할 재료 자체가 없음(전체 게이트 재실행은 범위 밖)"
+      },
+      {
+        "symbol": "ADSK",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "over_cap",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 0.7911149081589065,
+          "starting_margin": 0.22084488664165716,
+          "operating_margin": 0.1861032111237353,
+          "sales_growth": 0.12777646309412916,
+          "working_capital_rate": -0.560837977413928
+        },
+        "after": {
+          "verdict": "years",
+          "gap_years": 15,
+          "fixed_capital_rate_marginal": 0.19078014184397163,
+          "starting_margin": 0.2189841798501249,
+          "operating_margin": 0.1967074349565571,
+          "sales_growth": 0.13215635222408295,
+          "working_capital_rate": -0.520570753603808,
+          "threshold_margin": 0.17480279879363145,
+          "monotonic": "up"
+        },
+        "verdictChanged": true,
+        "gapYearsChanged": true
+      },
+      {
+        "symbol": "AEE",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "below_one",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 5.060688901038819,
+          "starting_margin": 0.1988718352354716,
+          "operating_margin": 0.20597005895919823,
+          "sales_growth": 0.07099355468691537,
+          "working_capital_rate": -0.12990877916364985
+        },
+        "after": {
+          "verdict": "below_one",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 3.973804573804574,
+          "starting_margin": 0.2302534378906694,
+          "operating_margin": 0.2071467389432693,
+          "sales_growth": 0.08309155959368297,
+          "working_capital_rate": -0.13758205518118455,
+          "threshold_margin": 0.20297805520567364,
+          "monotonic": "up"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "AEIS",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 2.146386798440475,
+          "starting_margin": 0.024696356275303644,
+          "operating_margin": 0.08963580813267362,
+          "sales_growth": 0.011485310599476328,
+          "working_capital_rate": 0.18691523608757526
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 0.5541146753936169,
+          "starting_margin": 0.0933955970647098,
+          "operating_margin": 0.08344986644347449,
+          "sales_growth": 0.05428689029393663,
+          "working_capital_rate": 0.13498890457968588,
+          "threshold_margin": 0.08359447474887567,
+          "monotonic": "down"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "AEP",
+        "status": "SKIPPED_IN_DB",
+        "note": "이미 skip 상태 — 드라이버 값이 DB에 없어 YS 이동 효과를 격리할 재료 자체가 없음(전체 게이트 재실행은 범위 밖)"
+      },
+      {
+        "symbol": "AES",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 6.736058059587472,
+          "starting_margin": 0.19376119889232774,
+          "operating_margin": 0.125876758508097,
+          "sales_growth": 0.06178754253408103,
+          "working_capital_rate": -0.1550553604217401
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 19.312271062271062,
+          "starting_margin": 0.12114771519659936,
+          "operating_margin": 0.1325907735971063,
+          "sales_growth": 0.023651672574271032,
+          "working_capital_rate": -0.18871494868882271,
+          "threshold_margin": 0.14858248360186643,
+          "monotonic": "down"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      },
+      {
+        "symbol": "AIT",
+        "status": "SKIPPED_IN_DB",
+        "note": "이미 skip 상태 — 드라이버 값이 DB에 없어 YS 이동 효과를 격리할 재료 자체가 없음(전체 게이트 재실행은 범위 밖)"
+      },
+      {
+        "symbol": "AKAM",
+        "status": "RECOMPUTED",
+        "actualLatestYear": 2025,
+        "missingYears": 1,
+        "before": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 1.3715232548022178,
+          "starting_margin": 0.1336478444405247,
+          "operating_margin": 0.18400142362021527,
+          "sales_growth": 0.05693998719789839,
+          "working_capital_rate": 0.14271087505475336
+        },
+        "after": {
+          "verdict": "value_destroying",
+          "gap_years": null,
+          "fixed_capital_rate_marginal": 0.7573994045132753,
+          "starting_margin": 0.13472443517676902,
+          "operating_margin": 0.16976411432888133,
+          "sales_growth": 0.05006468475460668,
+          "working_capital_rate": 0.11001306422390163,
+          "threshold_margin": 0.1699904602190237,
+          "monotonic": "down"
+        },
+        "verdictChanged": false,
+        "gapYearsChanged": false
+      }
+    ]
+  },
+  "step4_similarLiterals": {
+    "scope": "app/·lib/ 전체(scripts/probe_*·*.test.ts·supabase/migrations/*.sql 제외)",
+    "reclassification": "🔴 「4건 발견」이 아니라 「US 운영경로 1건 + KR 2건(동결 대상, 미접촉) + 그중 1건은 호출자 0건(미사용)」으로 가른다.",
+    "us_operational_1": [
+      {
+        "file": "lib/revdcf/drivers.ts",
+        "line": 12,
+        "literal": "[2020, 2021, 2022, 2023, 2024]",
+        "willBecomeIncorrect": true,
+        "note": "이번 STEP의 대상. 950 §1~3이 이걸 실측했다"
+      },
+      {
+        "file": "lib/revdcf/drivers.ts",
+        "line": 225,
+        "literal": "YS.slice(1)",
+        "willBecomeIncorrect": true,
+        "note": "YS의 파생 — 별도 원인이 아니라 같은 결함의 연장이라 US 1건에 포함해 센다"
+      }
+    ],
+    "kr_frozen_2": [
+      {
+        "file": "app/api/ecos/route.ts",
+        "line": 21,
+        "literal": "'202301' / '202512'",
+        "willBecomeIncorrect": true,
+        "note": "ECOS(한국은행) 통계 조회 기본 시작/종료월 고정 — 2025-12에서 끊긴다. 🔴 KR 전면 동결 규칙 적용 — 건드리지 않는다. 동결 해제 시 먼저 볼 대상으로만 기록"
+      },
+      {
+        "file": "lib/api/dart.ts",
+        "line": 2,
+        "literal": "bgn_de=20240101",
+        "willBecomeIncorrect": true,
+        "note": "DART 공시목록 조회 시작일 고정. 🔴 KR 전면 동결 규칙 적용 — 건드리지 않는다. 🔴 현재 이 함수(fetchDartDisclosures)를 호출하는 곳이 app/·lib/ 어디에도 없음(Explore 에이전트 grep 확인) — 미사용(dead code) 사실만 기록, 삭제 여부는 판정하지 않는다"
+      }
+    ],
+    "unused_note": "위 kr_frozen_2 중 lib/api/dart.ts가 미사용 1건에 해당한다(KR 2건과 별개 카테고리가 아니라 그 안의 부분집합).",
+    "judgmentNote": "판정하지 않는다 — 목록·동결상태·미사용여부 사실만."
+  }
+}
