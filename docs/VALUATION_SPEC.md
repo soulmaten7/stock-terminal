@@ -76,4 +76,4 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 
 - `lib/valuation.test.ts` — `VALUATION_SPEC`의 formula·basis 고정 문자열 회귀 + 4케이스(흑자·무차입/흑자·유차입/적자/자기자본 음수) 손계산 검산 + 미성립 경계 6건.
 - `lib/revdcf/drivers.test.ts` — `fundamentals`(netIncome·equity·revenue·operatingIncome·dna·fiscalYear·sourceTags) 수집이 driver 5년 게이트보다 앞에서 끝나는지, skip 경로에도 실리는지 회귀 고정.
-- 🔴 **실제 종목 기반 검증은 아직 없다** — `us_fundamentals`·`us_valuation`이 이 STEP 시점에 0행(크론 미실행, 의도된 상태). 크론이 한 번 돌아 데이터가 쌓인 뒤 별도 STEP에서 진행한다.
+- 🔴 **STEP 948(2026-08-08) — 실제 종목 기반 검증 시도, 실패.** 장은태 승인 하 `/api/cron/revdcf`를 Production에 1회 호출했으나 **401(unauthorized)로 즉시 실패** — 재시도 금지 규칙에 따라 그 자리에서 중단했다. `us_fundamentals`·`us_valuation`은 여전히 **0행**. 진단(재호출 없이 로컬 파일 형식만 확인): `.env.local`의 `CRON_SECRET` 값이 큰따옴표로 감싸져 있는데 1회성 셸 추출(`cut`)이 따옴표를 벗기지 않아 헤더에 따옴표 문자가 섞여 들어갔을 가능성이 높다 — **Production 크론 자체가 깨졌다는 증거는 아니다.** 손계산 검산·SEC 원문 대조·야후 상대차 실측은 데이터가 없어 전부 미실시. 상세 = `docs/probe_948_live.json`. **재실행은 별도 승인 필요.**

@@ -1,0 +1,51 @@
+{
+  "measuredAt": "2026-08-08",
+  "outcome": "FAILED_AT_STEP_2 — 크론 호출이 401(unauthorized)로 실패. 재시도 금지 규칙에 따라 즉시 중단·보고. 3~5단계(실측) 전부 미실시(새 데이터 없음).",
+  "step1_predeploy_check": {
+    "deployedSha": "fb2c5c649c06a157d3c39cf07c47d62be9f7e1b1",
+    "verificationMethod": "vercel MCP 툴은 403(Not authorized: scope 'toms-projects-c798474e' 불일치)로 사용 불가 — 로컬 `vercel` CLI(계정 soulmaten7-7785, 별도 인증)로 대체 확인.",
+    "evidence": [
+      "`vercel ls stock-terminal --prod` → onetrillion.app이 가리키는 최신 Production 배포 dpl_EmNXASr2Jc5jGZ5YEQ7TuPZDGzo9, 5분 전 Ready",
+      "`vercel inspect <url> --logs` → 'Cloning github.com/soulmaten7/stock-terminal (Branch: main, Commit: fb2c5c6)' · 'Release: fb2c5c649c06a157d3c39cf07c47d62be9f7e1b1' — SHA 완전 일치",
+      "git commit fb2c5c6 시각(2026-08-08T21:36:12+09:00)과 Vercel 배포 created 시각(2026-08-08 21:36:20 KST) 8초 차 — 정합"
+    ],
+    "revdcfEnabledProduction": "미설정(unset) — `vercel env ls production`에 REVDCF_ENABLED 항목 자체가 없음. `lib/revdcf/flag.ts:5`(`process.env.REVDCF_ENABLED === 'true'`) 확인 결과 unset은 OFF와 동치 — 정상 상태. 값을 바꾸지 않음(조회만)."
+  },
+  "step1_3_pre_execution_snapshot": {
+    "revdcf_results_top3_as_of": [
+      { "as_of": "2026-08-07", "n": 604 },
+      { "as_of": "2026-08-06", "n": 604 },
+      { "as_of": "2026-08-05", "n": 604 }
+    ],
+    "us_fundamentals": 0,
+    "us_valuation": 0,
+    "us_cik_map": 10432,
+    "us_market_cap_latest_as_of": "2026-08-07"
+  },
+  "step2_execution": {
+    "url": "https://onetrillion.app/api/cron/revdcf",
+    "method": "GET",
+    "maxTimeSec": 400,
+    "httpStatus": 401,
+    "timeTotalSec": 1.401106,
+    "responseBody": { "error": "unauthorized" },
+    "action": "즉시 중단 — 재시도하지 않음(STEP 지시 2-4 준수)"
+  },
+  "step2_diagnosis_no_retry": {
+    "note": "🔴 아래는 진단이지 재시도가 아니다 — 프로덕션 크론을 다시 호출하지 않고 로컬 .env.local 파일 형식만 확인했다.",
+    "finding": ".env.local의 CRON_SECRET 값이 큰따옴표로 감싸져 있음(startsWithQuote=true·endsWithQuote=true·raw_len=34·stripped_len=32). curl 커맨드가 `cut -d= -f2-`로 추출하며 따옴표를 벗기지 않아 Authorization 헤더에 따옴표 문자가 그대로 섞여 들어갔을 가능성이 매우 높다(dotenv 파서는 따옴표를 벗기지만 이 1회성 셸 추출은 안 벗김).",
+    "likelyCause": "쉘 추출 버그(내 실행 스크립트 문제) — Production의 실제 CRON_SECRET 자체가 로컬과 다르다는 증거는 아니다.",
+    "cannotRuleOut": "Production 값 자체가 로컬 .env.local과 실제로 다를 가능성도 재시도 없이는 완전히 배제할 수 없다.",
+    "secretValueExposed": false
+  },
+  "step3_step4_step5": "미실시 — 크론이 데이터를 쓰지 못했으므로(0건 그대로) 손계산 검산·SEC 원문 대조·야후 상대차 실측을 수행할 대상 자체가 없다.",
+  "unmeasured": [
+    "us_fundamentals 필드별 결측률(3-1)",
+    "unavailable_reason·source_tags 분포(3-2·3-3) — 비지배지분 혼입 건수 포함",
+    "us_valuation 4축 채워짐 개수·unavailable 사유 분포(3-4·3-5)",
+    "revdcf_results 2026-08-08 행 수 증감(3-6)",
+    "손계산 검산 4종목(4-1~4-3)",
+    "야후 대비 상대차 분포(5-1~5-3)"
+  ],
+  "nextStep": "재실행은 별도 승인 필요(STEP 지시 원문). 재승인 시 curl 추출을 `python-dotenv`류 파서 또는 `set -a; source .env.local; set +a` 방식으로 교체해 따옴표 문제를 근본 해결한 뒤 1회만 재시도할 것을 제안."
+}

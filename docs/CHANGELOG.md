@@ -1,6 +1,25 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (112) — 🔴 **STEP 948: revdcf 크론 1회 수동 실행 — 401로 즉시 실패(재시도 안 함)**
+
+> **성격**: 실행 시도 ＋ 실패 기록. **코드 diff 0**(문서·probe만).
+
+**§1 배포 확인(성공)** — Vercel MCP는 403(스코프 `toms-projects-c798474e` 불일치)라 로컬 `vercel` CLI(계정 `soulmaten7-7785`)로 대체. `vercel inspect <onetrillion.app 배포> --logs` → **`Cloning ... (Branch: main, Commit: fb2c5c6)` · `Release: fb2c5c649c06a157d3c39cf07c47d62be9f7e1b1`** — 커밋 해시 완전 일치 확인. `REVDCF_ENABLED`는 Production에 **미설정**(env 목록에 항목 자체 없음) → `lib/revdcf/flag.ts:5` 확인 결과 unset=OFF와 동치, 정상 상태(값 변경 없음, 조회만).
+
+**§1-3 실행 전 스냅샷** — `revdcf_results` 상위 3개 as_of 전부 **604**(08-05~08-07) · `us_fundamentals` **0** · `us_valuation` **0** · `us_cik_map` **10,432** · `us_market_cap` 최신 as_of **2026-08-07**.
+
+**§2 실행(실패)** — `https://onetrillion.app/api/cron/revdcf` GET 1회 호출(타임아웃 400초) → **HTTP 401** `{"error":"unauthorized"}`(1.4초만에 응답 — 함수 실행 자체가 시작 안 됨). **STEP 지시(2-4) 그대로 즉시 중단, 재시도 안 함.**
+
+**§2 진단(재호출 없이)** — `.env.local`의 `CRON_SECRET` 값이 큰따옴표로 감싸여 저장돼 있는데(`"..."`), 1회성 셸 추출(`cut -d= -f2-`)이 따옴표를 벗기지 않아 Authorization 헤더에 따옴표 문자가 섞여 들어갔을 가능성이 높다(raw 34자 vs 따옴표 제거 시 32자 확인 — 값 자체는 노출 안 함). **Production 크론이 실제로 깨졌다는 증거는 아니다** — 그러나 재시도 없이는 완전히 배제도 못 한다.
+
+**§3~§5 미실시** — 크론이 실패해 `us_fundamentals`·`us_valuation`이 0행 그대로라, 947에서 못 했던 손계산 검산·SEC 원문 대조·야후 상대차 실측을 **이번에도 하지 못했다.**
+
+**문서** — `docs/probe_948_live.json` 신규(배포확인 근거·사전스냅샷·실패 응답 전문·진단·미실시 목록) · `docs/VALUATION_SPEC.md` 「검증」 절의 947 잔여 항목을 이번 시도·실패로 갱신(허위로 "해소"라 적지 않음).
+
+**🔴 다음** — **재실행은 별도 승인 필요**(STEP 원문). 재승인 시 `.env.local` 읽기를 `cut` 대신 `set -a; source .env.local; set +a` 또는 dotenv 파서로 교체해 따옴표 문제를 근본 해결한 뒤 1회만 재시도 제안.
+
+
 ## 2026-08-08 (111) — 🟢 **STEP 947: Q1 ①단계 — 밸류에이션 4축 재료 확보 (화면 무변경)**
 
 > **성격**: **화면 무변경**(app 페이지·components·messages diff 0, `git diff --stat` 확인) — 크론 미등록·수동실행 0 · 배포는 되나 신규 코드는 아무 데서도 실행 안 됨(코드만 존재).
