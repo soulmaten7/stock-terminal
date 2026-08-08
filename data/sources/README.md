@@ -36,6 +36,8 @@
 | `mauboussin_johnson_1997_CAP.pdf` | **Mauboussin & Johnson, "Competitive Advantage Period: The Neglected Value Driver"**, Financial Management 1997 (CS First Boston·Damodaran 사이트 사본 `pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/cap.pdf`) | 🔑 **MICAP(market-implied CAP) = 우리 GAP/MIFP와 정확히 같은 개념**(Rappaport의 market-implied duration 차용·"주가에 닿을 때까지 예측지평을 늘림"=우리 LOOKUP). 명명 값(1997): 미국시장 총 **10~15년**·개별 **0~2년~20년+**·Intel ~5·MSFT 17~20·Coca-Cola 20+·Kellogg 15·**포장식품 업종 14~16년**. 🔴 **터미널 = NOPAT/WACC(무성장)** — 우리(인플레 영구연금 T8)·와 다름. 1997 데이터라 **동시점 종목 재현 불가**·범위/패턴만 대조 |
 | `chan_karceski_lakonishok_2003_growth_persistence.pdf` | **Chan, Karceski & Lakonishok, "The Level and Persistence of Growth Rates"**, Journal of Finance 58(2), 2003 (NBER working paper w8282, `nber.org/system/files/working_papers/w8282/w8282.pdf`) | **driver 1(매출 성장률) 판정의 C축(반대 증거) 근거**(872). 검증된 인용 2건(본문 문자열 그대로 확인): *"There is a great deal of persistence in sales growth"* / *"[analysts'] long-term estimates ... are over-optimistic and do poorly in predicting realized growth over longer horizons"*. 🔑 매출 성장의 **지속성은 지지**하되, **이익 성장의 지속성과 애널리스트 장기 전망의 정확도는 부정적으로** 평가 — 871의 컨센서스 교체 실측(p95 38.8%→52.9%·판정 이동 대칭)과 방향이 정합한다는 근거로 인용됨(872, 채택 판단 아님) |
 
+🔴 **PDF 판독 방법 (2026-08-08 실측 · 재발견 방지)**: `chan_karceski_lakonishok_2003_*.pdf`는 **ToUnicode 맵이 없어** `pypdf` 추출 시 `/G31/G25/G28...` 글리프 코드로 나온다. **복호 = `chr(hex값 + 29)`** (`/G24`→`A` · `/G3`→공백 · `/G11`→`.`). 추출 중 `c` 뒤에 붙는 `._`는 잡음이라 제거. 이 절차로 **47p 전문 판독 완료(2026-08-08)**.
+
 🔴 **값 검증 함의**: 우리 GAP = 학술 MICAP = NC "Growth Appreciation Period" = Rappaport market-implied duration (**3개 독립 출처가 방법을 확인**). 그러나 **재현 가능한 동시점 개별 종목 값 대조는 불가** — CAP 논문은 1997+터미널 다름, NC는 자체조정 NOPAT 비공개, 둘 다 무성장 터미널. 우리 2026 범위(중앙 11·1~24)는 논문 범위(총 10~15·개별 0~2~20+)와 **정합**.
 
 ## `external/` — 외부 방법론 원본 (유니버스 A-9)
@@ -53,8 +55,24 @@
 | `sec_reporting_issuers_20260630.xlsx` | SEC 공식 제출사 수(모집단 상한의 공식 근거) — Reporting Issuers 통계 | 연 1회(직전 갱신 2026-06-30) | `Stats Table` 시트 · `2025` 행 · `U.S. domiciled exchange listed companies` 열(=3,714) · `Data Visual 2` 시트에 Shell/Non-shell 분리(비셸=3,692) |
 | `company_tickers_exchange_20260802.json` | CIK ↔ ticker ↔ exchange 전수 매핑(10,432행·CIK 기준 8,017개사) | 🔴 SEC 미명시(EDGAR API 공식 문서 `text/sec_edgar_api.html`에 이 파일 자체 언급 없음 — 스코프·갱신주기 서술도 없음. 이유를 지어내지 않고 그대로 기록) | `fields`(`cik`·`name`·`ticker`·`exchange`) / `data` 배열 |
 
+| `sec_sic_missing219_20260808.json` | 🔑 **Q0 판정 근거** — Damodaran `indname.xls`(`is_us_listed`) **미매핑 219종목**의 CIK·SIC 전수 조회 결과(회사명 포함). **CIK 매칭 219/219 · SIC 보유 218/219 = 99.5%**(결측 = `ARCC`, BDC라 SIC 미부여) | 재취득 시 갱신 | `data` 배열 · `_meta.source`에 엔드포인트 |
+
 - STEP 866 모집단 사다리(`docs/probe_866_ladder.json`)의 시작점 = `company_tickers_exchange_20260802.json` 전수(`us_market_cap` 상위 1,000이 아니라).
 - SEC 공식 통계(3,714/3,692/3,600/3,589)는 **금융업 포함 상한**이지 목표치가 아니다(우리는 SIC 6000~6999를 뺀다) — `docs/REVDCF_SPEC.md` A-9 정정 참고.
+
+---
+
+## `nasdaq/` — 나스닥 공식 스크리너 (Q0 섹터 분류 · 2026-08-08 신설)
+
+🔴 **git 제외**(`.gitignore`) — 로컬만. 원본 정본 = **Supabase Storage 버킷 `sources`** (다모다란과 동일 관행).
+
+| 파일 | 무엇을 정의하나 | 갱신 주기 | 좌표 |
+|---|---|---|---|
+| `nasdaq_screener_20260808.json` (1.5MB) | **미국 상장 전 종목 7,127건**의 `sector`·`industry`·**`country`**·`marketCap`·`ipoyear`. 🔑 **무료·키 불필요.** Q0 「2-of-2 합의제」의 ③단계 출처 | 🔴 **나스닥 미명시** — 시세는 실시간, 분류는 사실상 고정. 재취득으로 확인 필요 | `data` 배열 · `_meta.source` = `https://api.nasdaq.com/api/screener/stocks?tableonly=false&limit=25000&download=true` |
+
+🔴 **분류 체계가 GICS가 아니다** — 12개(`Finance`·`Basic Materials`·`Telecommunications`·`Miscellaneous` 등)이고 **`Communication Services`가 없다**(→ `GOOG`·`NTES`가 `Technology`로 감). GICS 이름으로 옮기려면 변환이 필요하고 **변환 손실이 있다.**
+🔴 **시세 컬럼 제거하고 보관** — `lastsale`·`netchange`·`pctchange`·`volume`·`url`은 원응답에 있으나 섹터 분류 목적과 무관해 뺐다(`_meta.note`에 기록).
+🔑 **구조적 사실**: **GICS는 S&P Dow Jones Indices·MSCI 공동 소유 라이선스 상품**이라 **무료 소스는 진짜 GICS를 줄 수 없다.** Damodaran `primary_sector`도 GICS 이름을 빌린 그의 배정이다.
 
 ---
 
