@@ -1,6 +1,23 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (116) — 🟢 **STEP 951: YS 고정창 제거 — 종목별 실재 최신 5개 연도로 전환 (장은태 판정)**
+
+> **성격**: 코드 수정(950 진단의 실제 처방 적용). **화면 무변경**·`REVDCF_ENABLED` OFF 유지·크론 미호출·KR 미접촉. push는 별도 승인 후.
+
+**§1~3 코드** — `lib/revdcf/drivers.ts`에 `resolveYearWindow(gaap, {size, maxYear})` 신설(모듈 레벨 가변 상태 0 — 창은 전부 함수 인자로 전달, 워커 병렬 레이스 방지). 창 정의 5줄(매출 기준 단일·10-K 연간만·calYear 5월경계·연속 5개·오늘날짜 유도 상한)이 코드 주석과 `docs/REVDCF_SPEC.md` §10-A에 동일 문장으로 존재(규칙 5-2 ⑤). 헬퍼 3개 개명·시그니처 변경(`has5→hasAll(years,m)`·`latestYear(years,m)`·`sumMaps(years,...ms)`, 기본값 없음 — 누락 시 컴파일 오류). `computeDrivers()` 재구성: 함수 진입 직후 `resolveYearWindow` 호출 → fundamentals(947)는 `window.latestAvailable` 단일 앵커로 창 실패해도 부분 수집 유지 → 창 실패 시 기존 `skipReason="INSUFFICIENT_HISTORY"` 그대로 쓰고 새 사유는 `flags.windowReason`에만 → `WINDOW_MISMATCH` 방어 점검(resolveYearWindow가 본 최신연도와 `years` 끝이 다르면 skip, 정상 동작에선 항상 같아야 함) → 이후 파이프라인은 `YS`→`years`로 전량 교체(8곳). 성공 시 `flags.yearWindow`·`windowSize`·`latestAvailable` 필수 부여(과거 행과의 구분선). `fundamentals.fiscalYear`도 새 창의 최신 연도를 따른다.
+
+**§4 테스트 — 301/301 통과** — 🔑 **기존 픽스처(YS=[2020..2024]) 무수정** — 정확히 5개 연속 연도로 구성돼 있어 `resolveYearWindow`가 그대로 같은 창을 재현, 4-1이 예상한 "픽스처 깨짐"이 실제로는 발생하지 않음(15/15 불변 통과로 확인). `resolveYearWindow` 신규 단위테스트 6케이스(연속5개·6개이상 중 최신5개·중간구멍→NON_CONTIGUOUS·4개뿐→null·maxYear초과연도 배제·1월결산 5월경계 귀속) 전부 통과. `computeDrivers` 창게이트 배선 테스트 2건(INSUFFICIENT_HISTORY+windowReason·성공시 flags 3종) 통과. **§4-3 병렬격리 테스트** — `computeDrivers`는 완전 동기라 진짜 레이스는 구조적으로 불가능(모듈레벨 가변상태를 아예 없앴으므로)하나, "지난 호출의 창이 다음 호출에 새지 않는가"를 회귀 잠금(Promise.all 동시 실행 + 구형→신형→구형 반복 호출 둘 다 통과) — 향후 module-level let을 되살리는 리팩터가 오면 이 테스트가 깨진다.
+
+**§5 검증(SEC 30건, 429 0건)** — `scripts/probe_951_verify.ts` 신규(간격 150ms·동시성2, companyfacts 원문을 `docs/probe_951_cache/`에 캐시·`.gitignore` 등록·git 미포함). 표본 30 = STEP950 §3의 20종목 + NVDA·MSFT(AAPL은 20종목에 이미 있어 중복 제외) + 6월결산 신규 3(AMCR·AMST·BR) + 1월결산 신규 3(ANF·AVAH·BBY) + 사전순 보충 2(ACRS·ACT). **NVDA `fiscalYear=2025`(NVDA표기 FY2026, 매출 215,938,000,000·순이익 120,067,000,000)·AAPL `fiscalYear=2025`(매출 416,161,000,000·순이익 112,010,000,000) — 둘 다 SEC 원문과 정확 일치, PASS.** 6월결산 3종목(ADP·BR·MSFT) 전부 `[2022..2026]`으로 +2년 이동 — STEP950 §1의 "6월결산이 2년누락에 쏠린다" 실측과 정합. **30/30 창 해소**(초기 스크립트 표시버그로 AMST·ACT가 null로 잘못 보였다가 캐시 재사용 재확인으로 정정 — 계산 자체는 처음부터 정확했음). verdict 비교가능 18종목 중 **4종목(22.2%) 변동**(A A·AAL·ABT·AKAM) — 950의 표본추정(42.9%)보다 정밀 재측정(같은 wacc·debt·shares 재사용으로 창 효과만 격리).
+
+**§6 문서** — `docs/REVDCF_SPEC.md` §10-A(창 정의 5줄 신설)·§10 950항목에 951 해소 각주·§11(950보강 아래 951 신규 행) · `docs/VALUATION_SPEC.md` 미해결 0번 → ✅ 해소로 갱신 · `docs/STATE.md` 다음할일 "진단"→"수정 적용(미검증 라이브)"로 전환, 다음 정규크론(07:45 KST) 전까지 DB엔 새 창 값 없음을 명시 · `docs/LENS_COMPLETION_STANDARD.md` Q1 항목3·역DCF DoD3 각주에 951 해소 사실 추가(단 DoD3 판정 자체는 불변 — 외부 3종목 대조 수단은 여전히 없음, YS 수정과는 별개 문제라고 명시).
+
+**무변경** — `app/`·`components/`·`messages/`(화면 무변경) · `REVDCF_ENABLED`(OFF 유지) · `app/api/ecos/route.ts`·`lib/api/dart.ts`(KR, 미접촉) · 크론 등록·수동실행(0) · 과거 `revdcf_results`/`us_valuation`/`us_fundamentals` 행(UPDATE·DELETE 0건).
+
+🔴 **push는 보고 후 장은태가 정한다 — push하면 다음 정규 크론부터 새 창이 적용되며 되돌리기 어렵다.**
+
+
 ## 2026-08-08 (115) — 🔴 **STEP 950: YS 고정창 결함 실측 — 최신 회계연도 1~2년 누락 (고치지 않음)**
 
 > **성격**: 진단 전용. **코드 diff 0**(조사 스크립트 3개 신규 — `probe_950_ys_window.ts`·`probe_950_revdcf_impact.ts` + Explore 에이전트 조사, `lib/revdcf/drivers.ts` 무수정) · **DB diff 0**(읽기만). 처방 미결정.

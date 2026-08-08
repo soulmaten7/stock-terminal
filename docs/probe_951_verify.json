@@ -1,0 +1,1896 @@
+{
+  "measuredAt": "2026-08-08",
+  "sample": [
+    "A",
+    "AA",
+    "AAL",
+    "AAPL",
+    "ABBV",
+    "ABNB",
+    "ABT",
+    "ACM",
+    "ACN",
+    "ADBE",
+    "ADI",
+    "ADM",
+    "ADP",
+    "ADSK",
+    "AEE",
+    "AEIS",
+    "AEP",
+    "AES",
+    "AIT",
+    "AKAM",
+    "NVDA",
+    "MSFT",
+    "AMCR",
+    "AMST",
+    "BR",
+    "ANF",
+    "AVAH",
+    "BBY",
+    "ACRS",
+    "ACT"
+  ],
+  "cacheHits": 0,
+  "newRequests": 30,
+  "aborted": null,
+  "results": [
+    {
+      "symbol": "A",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.02400685419721804,
+        "operatingMargin": 0.21768981172780982,
+        "per": 31.639745326170377,
+        "pbr": 6.115797086485685,
+        "psr": 5.933590696603339,
+        "evEbitda": 24.043909541595927,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.050824686572932265,
+        "operatingMargin": 0.20680773727388604,
+        "per": 31.983388797517456,
+        "pbr": 6.989926781959986,
+        "psr": 6.332809241167435,
+        "evEbitda": 24.347041925501433,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 1303000000,
+        "equity": 6741000000,
+        "revenue": 6948000000,
+        "operatingIncome": 1479000000,
+        "dna": 288000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.050824686572932265,
+        "operatingMargin": 0.20680773727388604,
+        "netIncome": 1289000000,
+        "equity": 5898000000,
+        "revenue": 6510000000,
+        "operatingIncome": 1488000000,
+        "dna": 257000000
+      }
+    },
+    {
+      "symbol": "AA",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.013685387365014456,
+        "operatingMargin": 0.05340956008844546,
+        "per": 11.443678810717373,
+        "pbr": 2.164160899640405,
+        "psr": 1.0319021419998442,
+        "evEbitda": 7.581212132249322,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.06385868105323578,
+        "operatingMargin": 0.04123249886981629,
+        "per": 220.67227306666666,
+        "pbr": 2.567449366686058,
+        "psr": 1.1131009990752416,
+        "evEbitda": 12.867834759889604,
+        "verdict": "years",
+        "gapYears": 18
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 1157000000,
+        "equity": 6118000000,
+        "revenue": 12831000000,
+        "operatingIncome": 1222000000,
+        "dna": 623000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "Pretax+Interest",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.06385868105323578,
+        "operatingMargin": 0.04123249886981629,
+        "netIncome": 60000000,
+        "equity": 5157000000,
+        "revenue": 11895000000,
+        "operatingIncome": 445000000,
+        "dna": 642000000
+      }
+    },
+    {
+      "symbol": "AAPL",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.03275991627577457,
+        "operatingMargin": 0.3067471136415647,
+        "per": 40.824875662387285,
+        "pbr": 62.01828656021049,
+        "psr": 10.988041462184107,
+        "evEbitda": 31.848490638516594,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.09247721446491397,
+        "operatingMargin": 0.2911001428251947,
+        "per": 48.783757819237,
+        "pbr": 80.29489592526778,
+        "psr": 11.694079361039293,
+        "evEbitda": 34.23415334019501,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 112010000000,
+        "equity": 73733000000,
+        "revenue": 416161000000,
+        "operatingIncome": 133050000000,
+        "dna": 11698000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.09247721446491397,
+        "operatingMargin": 0.2911001428251947,
+        "netIncome": 93736000000,
+        "equity": 56950000000,
+        "revenue": 391035000000,
+        "operatingIncome": 123216000000,
+        "dna": 11445000000
+      }
+    },
+    {
+      "symbol": "AAL",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.16281693181179624,
+        "operatingMargin": 0.025984405466420744,
+        "per": 95.06125953153153,
+        "pbr": null,
+        "psr": 0.19313967396994491,
+        "evEbitda": 10.49980905590401,
+        "verdict": "years",
+        "gapYears": 3
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.3297756229729669,
+        "operatingMargin": -0.09960285227186784,
+        "per": 12.472576605200945,
+        "pbr": null,
+        "psr": 0.19464315006179558,
+        "evEbitda": 7.998088867469879,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 111000000,
+        "equity": -3727000000,
+        "revenue": 54633000000,
+        "operatingIncome": 1467000000,
+        "dna": 2200000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.3297756229729669,
+        "operatingMargin": -0.09960285227186784,
+        "netIncome": 846000000,
+        "equity": -3977000000,
+        "revenue": 54211000000,
+        "operatingIncome": 2614000000,
+        "dna": 2200000000
+      }
+    },
+    {
+      "symbol": "ABBV",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.02138290840395274,
+        "operatingMargin": 0.2549113193864952,
+        "per": 102.88251771699007,
+        "pbr": null,
+        "psr": 7.108919553172008,
+        "evEbitda": 21.30272765882657,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.05309316944066245,
+        "operatingMargin": 0.2552301473736208,
+        "per": 101.63195882935952,
+        "pbr": 130.76135936,
+        "psr": 7.7179238092803635,
+        "evEbitda": 28.221281736688923,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 4226000000,
+        "equity": -3270000000,
+        "revenue": 61160000000,
+        "operatingIncome": 15075000000,
+        "dna": 8139000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "Depreciation+AmortizationOfIntangibleAssets"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.05309316944066245,
+        "operatingMargin": 0.2552301473736208,
+        "netIncome": 4278000000,
+        "equity": 3325000000,
+        "revenue": 56334000000,
+        "operatingIncome": 9137000000,
+        "dna": 8386000000
+      }
+    },
+    {
+      "symbol": "ABNB",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.19553218784023874,
+        "operatingMargin": 0.1754000041541722,
+        "per": 42.08897570051772,
+        "pbr": 12.890037563605318,
+        "psr": 8.633724204231681,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.3464350062843753,
+        "operatingMargin": -0.07871703324680321,
+        "per": 39.911411625377646,
+        "pbr": 12.563649308606752,
+        "psr": 9.519493603314718,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 2511000000,
+        "equity": 8199000000,
+        "revenue": 12241000000,
+        "operatingIncome": 2544000000,
+        "dna": null,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.3464350062843753,
+        "operatingMargin": -0.07871703324680321,
+        "netIncome": 2648000000,
+        "equity": 8412000000,
+        "revenue": 11102000000,
+        "operatingIncome": 2553000000,
+        "dna": null
+      }
+    },
+    {
+      "symbol": "ABT",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.007194192037995428,
+        "operatingMargin": 0.17860345292025293,
+        "per": 28.594823926425505,
+        "pbr": 3.578604091617111,
+        "psr": 4.208460370330266,
+        "evEbitda": 17.059954453935,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.04927388927494847,
+        "operatingMargin": 0.17322791860425626,
+        "per": 13.919760580211909,
+        "pbr": 3.9139105256797584,
+        "psr": 4.44702339203814,
+        "evEbitda": 18.97268060300707,
+        "verdict": "years",
+        "gapYears": 10
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 6524000000,
+        "equity": 52130000000,
+        "revenue": 44328000000,
+        "operatingIncome": 8053000000,
+        "dna": 3116000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "Depreciation+AmortizationOfIntangibleAssets"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.04927388927494847,
+        "operatingMargin": 0.17322791860425626,
+        "netIncome": 13402000000,
+        "equity": 47664000000,
+        "revenue": 41950000000,
+        "operatingIncome": 6825000000,
+        "dna": 3218000000
+      }
+    },
+    {
+      "symbol": "ACM",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.04876321978213016,
+        "operatingMargin": 0.04678105591018825,
+        "per": 16.831380021147293,
+        "pbr": 3.793425489371672,
+        "psr": 0.5858521147521298,
+        "evEbitda": 8.826553929139026,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.05019933776354102,
+        "operatingMargin": 0.039822796146787846,
+        "per": 23.505420990091135,
+        "pbr": 4.329003770250503,
+        "psr": 0.5870934062392855,
+        "evEbitda": 10.547429058667095,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 561774000,
+        "equity": 2492584000,
+        "revenue": 16139622000,
+        "operatingIncome": 1026522000,
+        "dna": 175917000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.05019933776354102,
+        "operatingMargin": 0.039822796146787846,
+        "netIncome": 402266000,
+        "equity": 2184205000,
+        "revenue": 16105498000,
+        "operatingIncome": 827442000,
+        "dna": 178812000
+      }
+    },
+    {
+      "symbol": "ACN",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.08360621097031795,
+        "operatingMargin": 0.14698908723661927,
+        "per": 14.00421950468279,
+        "pbr": 3.4469922688074406,
+        "psr": 1.543359646940305,
+        "evEbitda": 8.72813632096949,
+        "verdict": "below_one",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.09998833103004112,
+        "operatingMargin": 0.1470248055533121,
+        "per": 14.80159861314585,
+        "pbr": 3.801187981354781,
+        "psr": 1.6569540858805496,
+        "evEbitda": 9.166933613984943,
+        "verdict": "below_one",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 7678433000,
+        "equity": 31195446000,
+        "revenue": 69672977000,
+        "operatingIncome": 10225664000,
+        "dna": 1368385000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "Depreciation+AmortizationOfIntangibleAssets"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.09998833103004112,
+        "operatingMargin": 0.1470248055533121,
+        "netIncome": 7264787000,
+        "equity": 28288646000,
+        "revenue": 64896464000,
+        "operatingIncome": 9595847000,
+        "dna": 1443225000
+      }
+    },
+    {
+      "symbol": "ADBE",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.10774954699996808,
+        "operatingMargin": 0.3472570561675899,
+        "per": 14.785550074614306,
+        "pbr": 9.070031147896412,
+        "psr": 4.435229586099541,
+        "evEbitda": 11.028556492230155,
+        "verdict": "years",
+        "gapYears": 1
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.1369911876546286,
+        "operatingMargin": 0.3398552554740871,
+        "per": 18.96060648057554,
+        "pbr": 7.474014323431407,
+        "psr": 4.902160987305278,
+        "evEbitda": 13.824160572782311,
+        "verdict": "years",
+        "gapYears": 2
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 7130000000,
+        "equity": 11623000000,
+        "revenue": 23769000000,
+        "operatingIncome": 8706000000,
+        "dna": 818000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.1369911876546286,
+        "operatingMargin": 0.3398552554740871,
+        "netIncome": 5560000000,
+        "equity": 14105000000,
+        "revenue": 21505000000,
+        "operatingIncome": 6741000000,
+        "dna": 857000000
+      }
+    },
+    {
+      "symbol": "ADI",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.10774594104804702,
+        "operatingMargin": 0.2593129903721202,
+        "per": 75.91353583182422,
+        "pbr": 5.08999276106655,
+        "psr": 15.619466847893506,
+        "evEbitda": 35.81473947147439,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.13890878841116505,
+        "operatingMargin": 0.25956976201390514,
+        "per": 105.25578796934823,
+        "pbr": 4.893120225178776,
+        "psr": 18.25809712938906,
+        "evEbitda": 42.69031338271075,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 2267342000,
+        "equity": 33815755000,
+        "revenue": 11019707000,
+        "operatingIncome": 2932496000,
+        "dna": 1998845000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "Depreciation+AmortizationOfIntangibleAssets"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.13890878841116505,
+        "operatingMargin": 0.25956976201390514,
+        "netIncome": 1635273000,
+        "equity": 35176317000,
+        "revenue": 9427157000,
+        "operatingIncome": 2032798000,
+        "dna": 2104316000
+      }
+    },
+    {
+      "symbol": "ADM",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": -0.014935564249946687,
+        "operatingMargin": 0.04157552777226502,
+        "per": 34.24237761781076,
+        "pbr": 1.623275420932278,
+        "psr": 0.45986972644482926,
+        "evEbitda": 12.801930141732283,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": -0.2155203656752679,
+        "operatingMargin": 0.11884287964440902,
+        "per": 20.507379484444446,
+        "pbr": 1.664409913968798,
+        "psr": 1.5145153683174004,
+        "evEbitda": 9.512501967820576,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 1078000000,
+        "equity": 22740000000,
+        "revenue": 80269000000,
+        "operatingIncome": 1867000000,
+        "dna": 1181000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+          "revenue": "Revenues",
+          "operatingIncome": "Pretax+Interest",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": -0.2155203656752679,
+        "operatingMargin": 0.11884287964440902,
+        "netIncome": 1800000000,
+        "equity": 22178000000,
+        "revenue": 24373000000,
+        "operatingIncome": 2961000000,
+        "dna": 1141000000
+      }
+    },
+    {
+      "symbol": "ADP",
+      "status": "OK",
+      "yearWindow": [
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2026,
+        "salesGrowth": 0.07395471892309091,
+        "operatingMargin": 0.23679209526851364,
+        "per": 24.421735739888977,
+        "pbr": 17.871291067780874,
+        "psr": 4.911075147306742,
+        "evEbitda": 17.292947488485506,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.0710942163318915,
+        "operatingMargin": 0.2252225354627373,
+        "per": 28.727433552238807,
+        "pbr": 23.701585602955404,
+        "psr": 5.613059204899336,
+        "evEbitda": 19.83977283885381,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 4413500000,
+        "equity": 6031200000,
+        "revenue": 21947400000,
+        "operatingIncome": 5319700000,
+        "dna": 585900000,
+        "fiscalYear": 2026,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "Rev-CostsAndExpenses",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.0710942163318915,
+        "operatingMargin": 0.2252225354627373,
+        "netIncome": 3752000000,
+        "equity": 4547600000,
+        "revenue": 19202600000,
+        "operatingIncome": 4585600000,
+        "dna": 561900000
+      }
+    },
+    {
+      "symbol": "ADSK",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.13215635222408295,
+        "operatingMargin": 0.1967074349565571,
+        "per": 46.79008751601423,
+        "pbr": 17.271611943513957,
+        "psr": 7.298370575631418,
+        "evEbitda": 29.608041944726452,
+        "verdict": "years",
+        "gapYears": 15
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.12777646309412916,
+        "operatingMargin": 0.1861032111237353,
+        "per": 47.29501651798561,
+        "pbr": 20.06564607706982,
+        "psr": 8.57805551590279,
+        "evEbitda": 34.22102892307692,
+        "verdict": "years",
+        "gapYears": 20
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 1124000000,
+        "equity": 3045000000,
+        "revenue": 7206000000,
+        "operatingIncome": 1578000000,
+        "dna": 195000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.12777646309412916,
+        "operatingMargin": 0.1861032111237353,
+        "netIncome": 1112000000,
+        "equity": 2621000000,
+        "revenue": 6131000000,
+        "operatingIncome": 1354000000,
+        "dna": 180000000
+      }
+    },
+    {
+      "symbol": "AEE",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.08309155959368297,
+        "operatingMargin": 0.2071467389432693,
+        "per": 20.62396977412731,
+        "pbr": 2.2484605507051714,
+        "psr": 3.424436849642005,
+        "evEbitda": 13.441071973611875,
+        "verdict": "below_one",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.07099355468691537,
+        "operatingMargin": 0.20597005895919823,
+        "per": 25.384683942712723,
+        "pbr": 2.487338603268945,
+        "psr": 3.9527246280991735,
+        "evEbitda": 16.085072315789475,
+        "verdict": "below_one",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 1461000000,
+        "equity": 13401000000,
+        "revenue": 8799000000,
+        "operatingIncome": 2026000000,
+        "dna": 1612000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "ProfitLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationAmortizationAndAccretionNet"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.07099355468691537,
+        "operatingMargin": 0.20597005895919823,
+        "netIncome": 1187000000,
+        "equity": 12114000000,
+        "revenue": 7623000000,
+        "operatingIncome": 1516000000,
+        "dna": 1524000000
+      }
+    },
+    {
+      "symbol": "AEIS",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.05428689029393663,
+        "operatingMargin": 0.08344986644347449,
+        "per": 87.71693714285715,
+        "pbr": 9.551800316994424,
+        "psr": 7.2365985501445405,
+        "evEbitda": 58.09127596521739,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.011485310599476328,
+        "operatingMargin": 0.08963580813267362,
+        "per": 240.10760084111115,
+        "pbr": 10.819710308370045,
+        "psr": 8.783531357624831,
+        "evEbitda": 127.1264840342531,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 148400000,
+        "equity": 1362800000,
+        "revenue": 1798800000,
+        "operatingIncome": 168000000,
+        "dna": 62000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "ProfitLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.011485310599476328,
+        "operatingMargin": 0.08963580813267362,
+        "netIncome": 54214000,
+        "equity": 1203100000,
+        "revenue": 1482000000,
+        "operatingIncome": 36600000,
+        "dna": 68500000
+      }
+    },
+    {
+      "symbol": "AEP",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.06622615901908246,
+        "operatingMargin": 0.20522701020266082,
+        "per": 18.519232831168832,
+        "pbr": 2.1981850004496115,
+        "psr": 3.153952840475532,
+        "evEbitda": 13.354475305876909,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.07563079278450946,
+        "operatingMargin": 0.1962621112584581,
+        "per": 22.999692387096776,
+        "pbr": 2.540346071258907,
+        "psr": 3.427495470405608,
+        "evEbitda": 15.488539453106132,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 3696000000,
+        "equity": 31138000000,
+        "revenue": 21702000000,
+        "operatingIncome": 5319000000,
+        "dna": 3325000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "ProfitLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.07563079278450946,
+        "operatingMargin": 0.1962621112584581,
+        "netIncome": 2976000000,
+        "equity": 26944000000,
+        "revenue": 19970000000,
+        "operatingIncome": 4304000000,
+        "dna": 3149000000
+      }
+    },
+    {
+      "symbol": "AES",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.023651672574271032,
+        "operatingMargin": 0.1325907735971063,
+        "per": 11.548298408791208,
+        "pbr": 2.586500505045533,
+        "psr": 0.8590657689855309,
+        "evEbitda": 3.030946428036747,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.06178754253408103,
+        "operatingMargin": 0.125876758508097,
+        "per": 6.259053932102442,
+        "pbr": 2.8839054753018663,
+        "psr": 0.8559172138784819,
+        "evEbitda": 2.4452241427395003,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 910000000,
+        "equity": 4063000000,
+        "revenue": 12233000000,
+        "operatingIncome": 1482000000,
+        "dna": 1457000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "Pretax+Interest",
+          "dna": "DepreciationAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.06178754253408103,
+        "operatingMargin": 0.125876758508097,
+        "netIncome": 1679000000,
+        "equity": 3644000000,
+        "revenue": 12278000000,
+        "operatingIncome": 2379000000,
+        "dna": 1264000000
+      }
+    },
+    {
+      "symbol": "AIT",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.0897410102605023,
+        "operatingMargin": 0.09691150515903221,
+        "per": 31.445722882123626,
+        "pbr": 6.69973312514909,
+        "psr": 2.708008667176226,
+        "evEbitda": 22.43555066913055,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.08387604675740246,
+        "operatingMargin": 0.08054618632646668,
+        "per": 32.03475651826774,
+        "pbr": 7.3175809912593754,
+        "psr": 2.7588014446558318,
+        "evEbitda": 22.878878070404266,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 392988000,
+        "equity": 1844520000,
+        "revenue": 4563424000,
+        "operatingIncome": 498529000,
+        "dna": 60480000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "Depreciation+AmortizationOfIntangibleAssets"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.08387604675740246,
+        "operatingMargin": 0.08054618632646668,
+        "netIncome": 385762000,
+        "equity": 1688781000,
+        "revenue": 4479406000,
+        "operatingIncome": 495823000,
+        "dna": 52354000
+      }
+    },
+    {
+      "symbol": "NVDA",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.6830139148028267,
+        "operatingMargin": 0.4597762382254228,
+        "per": 45.17923581200496,
+        "pbr": 34.48681954212839,
+        "psr": 25.12079998073521,
+        "evEbitda": 40.699529432109884,
+        "verdict": "years",
+        "gapYears": 4
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.6725675679020933,
+        "operatingMargin": 0.3933696925518027,
+        "per": 74.43105524478595,
+        "pbr": 68.38195452040289,
+        "psr": 41.56827594688001,
+        "evEbitda": 65.08153565586855,
+        "verdict": "years",
+        "gapYears": 5
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 120067000000,
+        "equity": 157293000000,
+        "revenue": 215938000000,
+        "operatingIncome": 130387000000,
+        "dna": 2843000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.6725675679020933,
+        "operatingMargin": 0.3933696925518027,
+        "netIncome": 72880000000,
+        "equity": 79327000000,
+        "revenue": 130497000000,
+        "operatingIncome": 81453000000,
+        "dna": 1864000000
+      }
+    },
+    {
+      "symbol": "AKAM",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.05006468475460668,
+        "operatingMargin": 0.16976411432888133,
+        "per": 35.55266990095812,
+        "pbr": 3.2287946644925603,
+        "psr": 3.8189735284297823,
+        "evEbitda": 11.66809657600025,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.05693998719789839,
+        "operatingMargin": 0.18400142362021527,
+        "per": 31.828750268360405,
+        "pbr": 3.294328178114066,
+        "psr": 4.026618004554055,
+        "evEbitda": 12.593530600657799,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 452031000,
+        "equity": 4977371000,
+        "revenue": 4208175000,
+        "operatingIncome": 566944000,
+        "dna": 708611000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerIncludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.05693998719789839,
+        "operatingMargin": 0.18400142362021527,
+        "netIncome": 504918000,
+        "equity": 4878357000,
+        "revenue": 3991168000,
+        "operatingIncome": 533411000,
+        "dna": 648410000
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "status": "OK",
+      "yearWindow": [
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2026,
+        "salesGrowth": 0.1374114735301586,
+        "operatingMargin": 0.4417504660304294,
+        "per": 27.758701360189608,
+        "pbr": 8.392422354689446,
+        "psr": 11.18825258099259,
+        "evEbitda": 18.926103410905235,
+        "verdict": "years",
+        "gapYears": 14
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.14419534154650138,
+        "operatingMargin": 0.4141954373338409,
+        "per": 42.124654491059275,
+        "pbr": 13.82873969920701,
+        "psr": 15.146329371594552,
+        "evEbitda": 28.401949643630296,
+        "verdict": "years",
+        "gapYears": 20
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 133749000000,
+        "equity": 442387000000,
+        "revenue": 331839000000,
+        "operatingIncome": 155237000000,
+        "dna": 39000000000,
+        "fiscalYear": 2026,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "Depreciation+AmortizationOfIntangibleAssets"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.14419534154650138,
+        "operatingMargin": 0.4141954373338409,
+        "netIncome": 88136000000,
+        "equity": 268477000000,
+        "revenue": 245122000000,
+        "operatingIncome": 109433000000,
+        "dna": 20000000000
+      }
+    },
+    {
+      "symbol": "AMST",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": null,
+        "operatingMargin": null,
+        "per": null,
+        "pbr": 2.5113512747658118,
+        "psr": 62.261499741985716,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.2927634447079388,
+        "operatingMargin": null,
+        "per": null,
+        "pbr": 2.733756089727282,
+        "psr": 41.211060576099136,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": -3617086,
+        "equity": 2738503,
+        "revenue": 110459,
+        "operatingIncome": -3603613,
+        "dna": 433803,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.2927634447079388,
+        "operatingMargin": null,
+        "netIncome": -4403182,
+        "equity": 2515712,
+        "revenue": 166881,
+        "operatingIncome": -4579651,
+        "dna": 533667
+      },
+      "_correctionNote": "STEP 951 검증 스크립트의 표시 버그 수정(after.ok로 yearWindow를 게이팅한 게 잘못 — flags.yearWindow는 ok 여부와 무관하게 창이 잡히면 채워진다). 계산 자체(drivers.ts)는 처음부터 옳았다. 캐시 재사용으로 재확인, 추가 SEC 요청 0건."
+    },
+    {
+      "symbol": "AMCR",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.03936779222700815,
+        "operatingMargin": 0.08935191706102483,
+        "per": 43.30306429745597,
+        "pbr": 1.8867552742155524,
+        "psr": 1.474306473182757,
+        "evEbitda": 20.41528934488735,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.022714454737084555,
+        "operatingMargin": 0.09185146962335973,
+        "per": 30.31214500821918,
+        "pbr": 5.701588728678176,
+        "psr": 1.62227755542522,
+        "evEbitda": 19.535028112769485,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 511000000,
+        "equity": 11728000000,
+        "revenue": 15009000000,
+        "operatingIncome": 1009000000,
+        "dna": 722000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.022714454737084555,
+        "operatingMargin": 0.09185146962335973,
+        "netIncome": 730000000,
+        "equity": 3881000000,
+        "revenue": 13640000000,
+        "operatingIncome": 1214000000,
+        "dna": 595000000
+      }
+    },
+    {
+      "symbol": "ANF",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.09131916202409007,
+        "operatingMargin": 0.10262923814960612,
+        "per": 9.871162157417034,
+        "pbr": 3.564297466690885,
+        "psr": 0.9501750742267995,
+        "evEbitda": 4.931075755943824,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.12174581087456371,
+        "operatingMargin": 0.07476776006508161,
+        "per": 8.837329801156082,
+        "pbr": 3.7464768573285374,
+        "psr": 1.011177411248908,
+        "evEbitda": 4.708227531402549,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 506921000,
+        "equity": 1403895000,
+        "revenue": 5266292000,
+        "operatingIncome": 699143000,
+        "dna": 155021000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.12174581087456371,
+        "operatingMargin": 0.07476776006508161,
+        "netIncome": 566223000,
+        "equity": 1335628000,
+        "revenue": 4948587000,
+        "operatingIncome": 740820000,
+        "dna": 153773000
+      }
+    },
+    {
+      "symbol": "BR",
+      "status": "OK",
+      "yearWindow": [
+        2022,
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2026,
+        "salesGrowth": 0.06976165891407171,
+        "operatingMargin": 0.15808000774161662,
+        "per": 16.885733587120875,
+        "pbr": 6.6835522872733675,
+        "psr": 2.5391384378343678,
+        "evEbitda": 15.1814157491483,
+        "verdict": "years",
+        "gapYears": 3
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.09481637466247417,
+        "operatingMargin": 0.1435607839842588,
+        "per": 27.194714613952154,
+        "pbr": 8.755940536850844,
+        "psr": 2.917660028278109,
+        "evEbitda": 19.20611335385698,
+        "verdict": "years",
+        "gapYears": 6
+      },
+      "verdictComparisonAvailable": true,
+      "rawFundamentalsAfter": {
+        "netIncome": 1124300000,
+        "equity": 2840500000,
+        "revenue": 7476800000,
+        "operatingIncome": 1300600000,
+        "dna": 137700000,
+        "fiscalYear": 2026,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationAmortizationAndAccretionNet"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.09481637466247417,
+        "operatingMargin": 0.1435607839842588,
+        "netIncome": 698100000,
+        "equity": 2168200000,
+        "revenue": 6506800000,
+        "operatingIncome": 1017100000,
+        "dna": 119800000
+      }
+    },
+    {
+      "symbol": "AVAH",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.09725214466150356,
+        "operatingMargin": -0.04041804893985405,
+        "per": 9.183042420256495,
+        "pbr": 10.626792868492911,
+        "psr": 0.8492921327026683,
+        "evEbitda": 11.884370350672844,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.07872773160124269,
+        "operatingMargin": -0.06196481890687429,
+        "per": null,
+        "pbr": null,
+        "psr": 1.0207412415670787,
+        "evEbitda": 21.074876418822434,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 225034000,
+        "equity": 194461000,
+        "revenue": 2433199000,
+        "operatingIncome": 256463000,
+        "dna": 10538000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.07872773160124269,
+        "operatingMargin": -0.06196481890687429,
+        "netIncome": -10929000,
+        "equity": -123551000,
+        "revenue": 2024506000,
+        "operatingIncome": 139787000,
+        "dna": 10778000
+      }
+    },
+    {
+      "symbol": "BBY",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": -0.05265119085528447,
+        "operatingMargin": 0.0394824576896773,
+        "per": 17.778176478952293,
+        "pbr": 6.411899681511471,
+        "psr": 0.45585067894749465,
+        "evEbitda": 8.179221016216216,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": -0.0318174965515724,
+        "operatingMargin": 0.042937214315184914,
+        "per": 20.50147859331176,
+        "pbr": 6.768116330484331,
+        "psr": 0.45763992140242726,
+        "evEbitda": 8.532833954887218,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 1069000000,
+        "equity": 2964000000,
+        "revenue": 41691000000,
+        "operatingIncome": 1389000000,
+        "dna": 831000000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": -0.0318174965515724,
+        "operatingMargin": 0.042937214315184914,
+        "netIncome": 927000000,
+        "equity": 2808000000,
+        "revenue": 41528000000,
+        "operatingIncome": 1262000000,
+        "dna": 866000000
+      }
+    },
+    {
+      "symbol": "ACRS",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "windowReason": null,
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": 0.03724709434431772,
+        "operatingMargin": -7.349453404911678,
+        "per": null,
+        "pbr": 8.007337381890146,
+        "psr": 105.47052798364426,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.30361456598797076,
+        "operatingMargin": -6.9684993496746355,
+        "per": null,
+        "pbr": 5.306275325610399,
+        "psr": 44.09254017094017,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": -64923000,
+        "equity": 103082000,
+        "revenue": 7826000,
+        "operatingIncome": -76375000,
+        "dna": 454000,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "operatingIncome": "OperatingIncomeLoss",
+          "dna": "DepreciationDepletionAndAmortization"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.30361456598797076,
+        "operatingMargin": -6.9684993496746355,
+        "netIncome": -132065000,
+        "equity": 155554000,
+        "revenue": 18720000,
+        "operatingIncome": -141932000,
+        "dna": 807000
+      }
+    },
+    {
+      "symbol": "ACT",
+      "status": "OK",
+      "yearWindow": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "after": {
+        "fiscalYear": 2025,
+        "salesGrowth": null,
+        "operatingMargin": null,
+        "per": 10.137061455496823,
+        "pbr": 1.2763066017749913,
+        "psr": 5.530590336673337,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "before": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.020873356809552046,
+        "operatingMargin": 0.7069428885102889,
+        "per": 9.933397373515408,
+        "pbr": 1.368038737446198,
+        "psr": 5.6873029904125065,
+        "evEbitda": null,
+        "verdict": null,
+        "gapYears": null
+      },
+      "verdictComparisonAvailable": false,
+      "rawFundamentalsAfter": {
+        "netIncome": 674244000,
+        "equity": 5355181000,
+        "revenue": 1235827000,
+        "operatingIncome": 908786000,
+        "dna": null,
+        "fiscalYear": 2025,
+        "sourceTags": {
+          "netIncome": "NetIncomeLoss",
+          "equity": "StockholdersEquity",
+          "revenue": "Revenues",
+          "operatingIncome": "Pretax+Interest"
+        }
+      },
+      "rawFundamentalsBefore": {
+        "fiscalYear": 2024,
+        "salesGrowth": 0.020873356809552046,
+        "operatingMargin": 0.7069428885102889,
+        "netIncome": 688068000,
+        "equity": 4996096000,
+        "revenue": 1201774000,
+        "operatingIncome": 929218000,
+        "dna": null
+      },
+      "_correctionNote": "STEP 951 검증 스크립트의 표시 버그 수정(after.ok로 yearWindow를 게이팅한 게 잘못 — flags.yearWindow는 ok 여부와 무관하게 창이 잡히면 채워진다). 계산 자체(drivers.ts)는 처음부터 옳았다. 캐시 재사용으로 재확인, 추가 SEC 요청 0건."
+    }
+  ],
+  "summary": {
+    "totalSample": 30,
+    "cacheHits": 0,
+    "newRequests": 30,
+    "aborted": null,
+    "windowResolutionFailures": 0,
+    "windowResolutionNote": "30/30 종목 전부 5년 연속 창이 잡혔다(교정 후). 6월결산 3종목(ADP·BR·MSFT) 전부 [2022..2026]으로 +2년 이동 — STEP 950 §1의 '6월결산이 2년 누락에 쏠린다' 실측과 정합.",
+    "verdictComparisonAvailable_n": 18,
+    "verdictChanged": [
+      {
+        "symbol": "AA",
+        "before": "years",
+        "after": "value_destroying",
+        "gapYearsBefore": 18,
+        "gapYearsAfter": null
+      },
+      {
+        "symbol": "AAL",
+        "before": "value_destroying",
+        "after": "years",
+        "gapYearsBefore": null,
+        "gapYearsAfter": 3
+      },
+      {
+        "symbol": "ABT",
+        "before": "years",
+        "after": "value_destroying",
+        "gapYearsBefore": 10,
+        "gapYearsAfter": null
+      },
+      {
+        "symbol": "AKAM",
+        "before": "over_cap",
+        "after": "value_destroying",
+        "gapYearsBefore": null,
+        "gapYearsAfter": null
+      }
+    ],
+    "verdictUnchanged_symbols": [
+      "A",
+      "AAPL",
+      "ABBV",
+      "ACN",
+      "ADBE",
+      "ADM",
+      "ADSK",
+      "AEE",
+      "AEIS",
+      "AES",
+      "NVDA",
+      "MSFT",
+      "AMCR",
+      "BR"
+    ],
+    "nvdaFy2026Check": "PASS — after.fiscalYear=2025(NVDA 자체표기 FY2026), revenue=215,938,000,000·netIncome=120,067,000,000. STEP950 §0 SEC 원문 확인치와 정확히 일치.",
+    "aaplFy2025Check": "PASS — after.fiscalYear=2025, revenue=416,161,000,000·netIncome=112,010,000,000. STEP950 §0 SEC 원문 확인치와 정확히 일치.",
+    "scriptBugFound": "검증 스크립트(probe_951_verify.ts) 자체의 표시 버그 1건 발견·수정: yearWindow를 after.ok로 게이팅해 AMST·ACT(창은 잡혔으나 이후 다른 게이트에서 skip)의 yearWindow가 null로 잘못 표시됨. drivers.ts 계산 자체는 처음부터 정확했다 — 캐시 재사용으로 재확인(추가 SEC 요청 0건)."
+  }
+}

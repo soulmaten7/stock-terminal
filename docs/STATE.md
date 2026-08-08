@@ -5,7 +5,7 @@
 > 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md`.
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
 
-🔴🔴 **다음에 할 일(최우선, STEP 950 실측·2026-08-08) — YS 고정창 = 현재 최대 결함. 처방 미결정.** `lib/revdcf/drivers.ts:12`의 `const YS = [2020..2024]` 하드코딩이 최신 회계연도를 놓친다 — **96.5%(831/861, 전수 스캔 확인)가 한 해 누락.** 외부대조로 **NVDA PER 64.7%·AAPL PER 19.5% 과대** 확인. 🔴 **역DCF 판정 변동은 표본 42.9%(6/14) — 사전순 20종목이 전부 'A'로 시작해 대표성이 없다, 604종목 전체로 일반화 금지, 재측정 필요.** 처방 4안 기록됨(대가 병기) · **채택 0건, 판정은 장은태.** 상세 = `docs/probe_950_ys_window.json` · `docs/VALUATION_SPEC.md`·`docs/REVDCF_SPEC.md` §11.
+🟢 **다음에 할 일(최우선, STEP 951·2026-08-08) — YS 고정창 결함 「수정 적용(미검증 라이브)」.** 950이 진단(96.5%가 한 해 누락·NVDA PER 64.7%·AAPL PER 19.5% 과대)한 것을 951에서 장은태 판정대로 **종목별 실재 최신 5개 연도**(`resolveYearWindow()`, 정의 = `docs/REVDCF_SPEC.md` §10-A)로 코드 전환 완료. 표본 30종목 검증 — **30/30 창 해소**, NVDA·AAPL `fiscalYear=2025` PASS(SEC 원문과 정확 일치), 검증가능 18종목 중 verdict 변동 4건(22.2%, 950의 표본추정 42.9%보다 정밀). 🔴 **다음 정규 크론(07:45 KST)이 돌기 전까지는 DB에 새 창 값이 없다** — 이 커밋이 push되고 배포된 뒤 첫 크론 실행 결과를 봐야 실제 라이브 데이터로 확인된다. `REVDCF_ENABLED`는 여전히 OFF(화면 무변경). 과거 `revdcf_results` 행은 재계산하지 않음(장은태 판정). 상세 = `docs/probe_951_verify.json`.
 
 🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**
 🔴 **Q1은 ①단계(재료)만 끝났다. 9항목 중 ✅ 0건. 커버리지 18.2%.** 「Q1 완료」라고 쓰지 말 것. 상세 = `docs/LENS_COMPLETION_STANDARD.md` Q1 행.

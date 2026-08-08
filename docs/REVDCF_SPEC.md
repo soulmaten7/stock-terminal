@@ -1346,10 +1346,25 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 ## §10. 미결 목록
 
+### §10-A. 관측 창 정의(STEP 951, 2026-08-08 장은태 판정) — 종목별 실재 최신 5개 연도
+
+🔴 **코드의 유일한 출처 = `lib/revdcf/drivers.ts`의 `resolveYearWindow()`.** 이 문서는 그 함수 머리 주석과 같은 5줄을 그대로 옮긴다(규칙 5-2 ⑤ — 코드와 문서가 같은 것을 가리킨다).
+
+1. 기준은 **매출**(REV 후보 태그의 coalesce 결과) 하나다 — 태그마다 따로 창을 잡지 않는다.
+2. **10-K 연간 항목만** 센다(`annualMap`의 `isAnnual`·기간 300~400일 필터).
+3. `calYear(end)`로 귀속 연도를 구한다(5월 경계 규칙 그대로 — 종료월 ≤5월이면 전년도 귀속).
+4. 가장 최신 연도부터 거꾸로 **연속 5개**를 잡는다 — 비연속이면 창을 만들지 않는다(`reason: "NON_CONTIGUOUS"`). 연속을 요구하는 이유: CAGR의 `nSpan`이 실제 경과연수와 달라지면 성장률이 틀린다.
+5. 상한 `maxYear`를 둔다(호출부가 오늘 날짜에서 유도해 인자로 넘긴다 — `new Date().getFullYear()`) — 데이터 오류로 미래 연도가 들어오는 것을 막는다.
+
+🔴 **적용일 이전 행은 옛 고정창(`[2020, 2021, 2022, 2023, 2024]`) 기준이며 재계산하지 않는다**(장은태 판정) — `revdcf_results`의 과거 `as_of` 행을 UPDATE/DELETE하지 않았다. **`flags.yearWindow` 유무가 적용 전/후의 구분선**이다 — 이 필드가 있으면 새 창(951 이후), 없으면 옛 고정창(951 이전)이다.
+🔴 **적용 전후로 값이 크게 튈 수 있다 — 시계열로 읽으면 안 된다.** 같은 종목이라도 951 적용 시점을 걸친 `as_of` 구간은 "회사가 바뀐 것"이 아니라 "관측 창이 바뀐 것"이다. `revdcf_results`를 날짜순으로 이어 그래프를 그리면 이 창 전환이 마치 실적 급변처럼 보일 수 있다.
+
 🔴 **신규(STEP 950, 2026-08-08) — YS 고정창 결함, 역DCF 관점.** `lib/revdcf/drivers.ts:12`의 `const YS = [2020, 2021, 2022, 2023, 2024]` 하드코딩이 driver 5개(salesGrowth·operatingMargin·startingMargin·fixedCapitalRate 계열·workingCapitalRate) 전부의 창을 2024에 고정한다 — 오늘(2026-08-08) 기준 이미 SEC에 최신 회계연도가 존재해도 못 본다. `revdcf_results` 604종목도 `us_fundamentals`·`us_valuation`과 **같은 코어**(`computeDrivers`)를 쓰므로 같은 결함을 그대로 물려받는다.
 🔴 **`REVDCF_ENABLED`는 여전히 Production OFF라 사용자에게 노출된 적은 없으나, 값은 매일 크론으로 생성되고 있다** — "노출 안 됐으니 무해하다"가 아니라 "노출 안 됐지만 매일 틀린 값이 쌓이고 있다"는 뜻이다.
 🔴 **표본 실측(20종목, revdcf_results 사전순, 결정적 선정 — 604 전수 아님)**: 이미 skip 상태라 재료가 없는 6종목 제외, 재계산 가능한 14종목 중 **6종목(42.9%) verdict 변동**. before→after: `A` over_cap→value_destroying · `AA` over_cap→value_destroying · `AAL` value_destroying→years(gap 3) · `ABT` over_cap→value_destroying · `ADM` below_one→value_destroying · `ADSK` over_cap→years(gap 15). `ADBE`는 verdict 불변이나 gap_years만 2→1로 변함(집계엔 미포함, 참고 기록). 상세 원자료 = `docs/probe_950_ys_window.json` §3.
 🔴 **해법**: 아직 없음. 판정은 장은태. 처방 후보(대가 병기, 고르지 않음)는 `docs/CHANGELOG.md` STEP 950 항목 참조.
+
+✅ **951(장은태 판정 2026-08-08) — 종목별 실재 최신 5개 연도로 전환, 코드 적용 완료.** 창 정의는 아래 §10-A 5줄(코드·문서 동일 문장). 과거 `revdcf_results` 행은 **재계산하지 않는다**(장은태 판정) — 적용일(이 커밋 배포일)부터 새 창이 쓰인다. 표본 30종목 검증: **30/30 창 해소**(전부 5년 연속 창을 얻음), 검증 가능한 18종목 중 **4종목(22.2%) verdict 변동**(A A·AAL·ABT·AKAM — STEP 950의 20종목 표본 추정치 42.9%보다 정밀 재측정으로 낮게 나옴, 표본이 다르고 격리 방식도 더 엄밀해짐). NVDA `fiscalYear=2025`(NVDA 자체표기 FY2026, 매출 215,938,000,000·순이익 120,067,000,000)·AAPL `fiscalYear=2025`(매출 416,161,000,000·순이익 112,010,000,000) — 둘 다 STEP 950 §0의 SEC 원문 확인치와 정확히 일치(PASS). 6월결산 3종목(`ADP`·`BR`·`MSFT`)은 창이 `[2022..2026]`으로 **+2년 이동** — STEP 950이 예측한 "6월결산이 2년 누락에 쏠린다"는 실측과 정합. 상세 = `docs/probe_951_verify.json`.
 
 | # | 항목 | 어떻게 풀리나 |
 |---|---|---|

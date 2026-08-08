@@ -65,6 +65,9 @@ docs/probe_851_cache.json
 
 docs/probe_853_lump_cache.json
 
+# STEP 951 §5-5: companyfacts 원문 캐시(30종목·수 MB) — STEP 950 f항 지적(캐시 없어 재조사 시 SEC 재호출) 반영, git 제외
+docs/probe_951_cache/
+
 # Cowork이 삭제 권한이 없어 옮겨둔 파일 (장은태가 직접 삭제)
 _to_delete/
 
