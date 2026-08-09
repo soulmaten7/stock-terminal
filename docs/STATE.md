@@ -12,8 +12,11 @@
 ④ 커버리지: 계산된 종목 수가 08-08(604 중 몇 건)과 같은지 — 🔴 줄었으면 회귀다. 표본에서는 계산↔skip 전환이 0건이었다.
 ⑤ `us_fundamentals`의 `fiscal_year` 분포 — 2024가 줄고 2025/2026이 늘어야 한다.
 ⑥ `us_valuation`의 4축(PER·PBR·PSR·EV/EBITDA) 값이 08-08 대비 얼마나 움직였는지.
+⑦ `fiscal_year`가 올라간 종목에서 `net_income`·`equity`·`revenue`가 실제로 얼마나 바뀌었는지 — `us_fundamentals_snapshot`(tag=`pre_step951`, before) vs `us_fundamentals`(after)로 낸다.
 
-🔴 **위험 — `us_fundamentals`는 symbol PK upsert다.** 내일 크론이 오늘(08-08) 값을 덮어쓴다 — 08-08 `us_valuation`의 근거가 된 재무는 남지 않는다. 비교가 필요하면 오늘 값을 미리 떠 둬야 하는데, **지금 뜨지는 않는다** — 필요한지부터 장은태가 판정한다.
+✅ **`us_fundamentals_snapshot`(tag=`pre_step951`)에 1,127행 확보(2026-08-08, STEP 951 부속).** 옛 창(YS=[2020..2024]) 기준 원시 재무. 내일 비교의 before는 여기서 읽는다. 검증 완료(행수 1,127=1,127 일치·symbol 집합 양방향 차집합 0·결정적 5종목 A·AA·AAL·AAPL·ABBV 전 필드 완전 일치). 🔴 **쓸모가 끝나면 지울 것 — 영구 테이블이 아니다.**
+
+🔴 **위험 — `us_fundamentals`는 symbol PK upsert다.** 내일 크론이 오늘(08-08) 값을 덮어쓴다 — 08-08 `us_valuation`의 근거가 된 재무는 스냅샷 없이는 남지 않는다(위 스냅샷으로 해소).
 
 🟢 **다음에 할 일(STEP 951 보강②·2026-08-08) — YS 고정창 결함 「수정 적용(미검증 라이브)」+ verdict 변동 비율 정정 + 미비교 12종목 확인 완료.** 950이 진단(96.5%가 한 해 누락·NVDA PER 64.7%·AAPL PER 19.5% 과대)한 것을 951에서 장은태 판정대로 **종목별 실재 최신 5개 연도**(`resolveYearWindow()`, 정의 = `docs/REVDCF_SPEC.md` §10-A)로 코드 전환 완료. 표본 30종목 검증 — **30/30 창 해소**, NVDA·AAPL `fiscalYear=2025` PASS(SEC 원문과 정확 일치). 🔴 **verdict 변동 비율 정정(951 보강)**: 원래 950이 낸 42.9%·951이 낸 22.2% 둘 다 판단 근거로 쓰지 말 것 — 951의 before가 `revdcf_results` 저장값과 불일치(AA·ABT·AKAM 확인, 검증 스크립트의 옛 창 재현 결함)했고 950의 after도 표본 14종목 중 `ADM` 1종목이 실제 새 코드값과 어긋났다. **before를 재계산하지 않고 DB 저장값을 그대로 읽는 방식으로 재측정한 정본 = 비교가능 18종목 중 7종목(38.9%) verdict 변동**(상세 = `docs/probe_951b_verify.json`). **951 보강②** — 30종목 중 나머지 12종목(skipped 7 + DB없음 5)도 확인 완료, 30종목 상태 전이표 + 변동률 3종(ⓐ라벨만 28.0%·ⓑ+gap_years 44.0%·ⓒ+skip전환 44.0%, N=25) = 상세 아래 신규 항목 2건. 🔴 **다음 정규 크론(07:45 KST)이 돌기 전까지는 DB에 새 창 값이 없다** — 이 커밋이 push되고 배포된 뒤 첫 크론 실행 결과를 봐야 실제 라이브 데이터로 확인된다. `REVDCF_ENABLED`는 여전히 OFF(화면 무변경). 과거 `revdcf_results` 행은 재계산하지 않음(장은태 판정). 상세 = `docs/probe_951_verify.json`(원본+correction+`step951b2_stateTransition`)·`docs/probe_951b_verify.json`·`docs/probe_951c_verify.json`(정본).
 

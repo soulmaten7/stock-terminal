@@ -1,6 +1,20 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (119) — 🟦 **STEP 951 부속: us_fundamentals 옛 창 스냅샷 확보(pre_step951)**
+
+> **성격**: DB 신규 테이블 + 데이터 복사(읽기 전용 소스, 기존 테이블 무수정). **코드 무변경**·크론 미호출·`revdcf_results`/`us_market_cap`/`lens_scores`/`lens_cuts` 무접촉.
+
+**왜** — 2026-08-09 07:45 KST 정규 크론이 `us_fundamentals`(symbol PK upsert)를 951 적용 후 값으로 덮어쓴다. 옛 창(YS=[2020..2024]) 기준 원시 재무(net_income·equity·revenue·operating_income·dna)가 사라지기 전 마지막으로 뜬다.
+
+**테이블** — `supabase/migrations/20260809_us_fundamentals_snapshot.sql` 신규: `us_fundamentals_snapshot(snapshot_tag, symbol, cik, fiscal_year, net_income, equity, revenue, operating_income, dna, debt, non_operating_assets, shares, source_tags, unavailable_reason, fetched_at, captured_at, PK(snapshot_tag, symbol))`. 🔴 날짜를 테이블명에 안 박음(규칙 5-2) — `snapshot_tag` 컬럼으로 시점 구분, 다른 시점 스냅샷도 같은 표에 얹을 수 있게 열어둠. RLS = `us_fundamentals`와 동일 패턴 그대로 확인 후 적용(RLS on·정책 0개·`anon`/`authenticated` 권한 0·`postgres`/`service_role`만 — 두 테이블의 `pg_class.relrowsecurity`·`information_schema.role_table_grants` 직접 대조로 일치 확인).
+
+**복사** — `INSERT INTO ... SELECT ... FROM us_fundamentals`로 전 컬럼(`source_tags`·`unavailable_reason` 포함) `snapshot_tag='pre_step951'`로 복사. **검증 3항목 전부 통과**: 행수 1,127=1,127 일치(🔴 사용자가 언급한 "1,003"과 다름 — 실측 현재값은 1,127. 947~948 이후 fundamentals 유니버스가 계속 넓어져 갱신된 것으로 추정, 확인은 이 STEP 범위 밖) · symbol 집합 양방향 차집합 0(`EXCEPT` 양쪽 0건) · 결정적 5종목(사전순 A·AA·AAL·AAPL·ABBV) `net_income`·`equity`·`revenue`·`operating_income`·`dna`·`fiscal_year`·`source_tags` 전 필드 완전 일치.
+
+**문서** — `docs/STATE.md`(스냅샷 확보 완료 표시 + 익일 확인 항목 ⑦ 추가: fiscal_year 상승 종목의 net_income·equity·revenue 변화폭을 snapshot(before) vs us_fundamentals(after)로 산출) · `docs/VALUATION_SPEC.md`(스냅샷 존재·목적 한 줄).
+
+**무변경** — `us_fundamentals`·`revdcf_results`·`us_market_cap`·`lens_scores`·`lens_cuts` 전부 읽기만(UPDATE/DELETE 0) · `lib/`·`app/`·`components/`·`messages/` 코드 diff 0 · 크론 호출 0.
+
 ## 2026-08-08 (118) — 🟣 **STEP 951 보강②: 미비교 12종목 확인 + 30종목 통합 상태 전이표 + 변동률 3종**
 
 > **성격**: 계측 보강(사실 등재, 판정 없음). **코드 무변경**·DB 무변경·SEC 신규 요청 0건(캐시 재사용)·push 없음.
