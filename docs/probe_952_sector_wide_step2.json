@@ -1,0 +1,10 @@
+{
+  "asOf": "2026-08-08",
+  "wideCount": 1127,
+  "expectedCount": 1127,
+  "nullSectorCount": 90,
+  "resolvedAsOf": "2026-08-08",
+  "overlapChecked": 640,
+  "mismatchCount": 0,
+  "mismatches": []
+}

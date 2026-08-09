@@ -1,9 +1,11 @@
-<!-- 2026-08-08 -->
+<!-- 2026-08-09 -->
 # 🚀 Trillion(트릴리언) — STATE (현재 상태 단일 정본)
 
 > **이 파일 = "지금 어디까지 왔나 + 다음 뭐 할까"의 유일한 정본. 매 세션 덮어쓴다(배너 쌓기 금지).**
 > 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md`.
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
+
+🟢 **STEP 952(2026-08-09) — Q1 ②단계 준비 완료: 섹터 커버리지 확장 + 「업종 대비」 정의 고정.** `resolveSector()`를 `us_valuation` 전체(1,127종목)에 재호출해 `us_sector_wide`(신규 테이블)에 적재 — `us_sector_resolved`(화면용, 1,021)는 무접촉. `lib/sectorRelative.ts` 신설(`SECTOR_RELATIVE_SPEC` = 정의 유일 출처, 백분위 방식·장은태 판정). **섹터표가 둘로 갈렸다** — `us_sector_resolved`(화면용, `/api/sector/us`가 노출) vs `us_sector_wide`(계산용, 화면 무접촉). 통합은 Q1 카드 작업 시 판정. 업종 기준선(백분위 컷 minSample)은 미정 — 표(업종×축 유효표본)만 준비, 내일 새 창 데이터 이후 판정. 상세 = `docs/VALUATION_SPEC.md` 「업종 대비」 절.
 
 🔴 **STEP 951 적용 직후 확인(최우선 — 🔴 2026-08-10 07:45 KST 크론 이후 최초 세션에서. 2026-08-09 07:45 KST 아님 — 정정, 아래 이유 참조)** — 이 push(`e39595d`, 2026-08-08)로 새 창 코드가 Production에 배포됐다(Vercel 배포 성공 확인 완료). `REVDCF_ENABLED`는 OFF라 화면엔 안 보이지만 크론은 매일 돈다.
 🔴 **정정 이유(Cowork DB 직접 조회, 2026-08-08)**: `2026-08-08 22:45 UTC`(=`2026-08-09 07:45 KST`) 크론은 push·배포(`2026-08-09 06:34 UTC`)보다 **먼저** 돌아 옛 코드로 실행됐다 — `us_fundamentals` 22시대 723행 중 669행(92.5%)이 `fiscal_year=2024`인 것이 증거(`revdcf_results as_of=2026-08-08`도 604행 전부 `flags.yearWindow` 없음, 직접 재확인). **새 창의 첫 실행은 `2026-08-09 22:45 UTC`(=`2026-08-10 07:45 KST`)다** — 그 실행은 `revdcf_results`에 `as_of='2026-08-09'`로 쓰인다(코드가 UTC 캘린더 날짜를 그대로 쓰므로 KST로 보이는 "다음날"과 `as_of`가 어긋난다 — 아래 ①의 `as_of` 값 자체는 그대로 맞다, 확인 시점만 하루 늦춘다).

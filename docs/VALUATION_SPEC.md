@@ -67,9 +67,61 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 5. **`us_market_cap` 결측으로 4축이 전부 안 나오는 종목이 있다** — Cowork 교차검증(2026-08-08, `docs/probe_948_live.json`의 `cowork_crosscheck`)이 발견·Claude Code가 재확인: 68종목(`ACM`·`ADI`·`AIT`·`APA`·`AZO`·`BBY`·`BDX` 등 다수 S&P 500 대형주 포함)이 `us_market_cap`의 최신 `as_of`(2026-08-07)에 행이 없고 **2026-07-30 등 옛 `as_of`에만 값이 있어** 분자(시총)가 없다. 🔴 **「계산이 안 된 것」이 아니라 「분자가 없는 것」이다** — 구분해서 읽을 것. 🔴 **날짜 우연 일치, 인과 미확인**: 2026-07-30은 US `lens_cuts`가 정지된 바로 그 날짜다(`STATE.md` ▶다음 00번) — 같은 원인인지는 확인하지 않았다.
 6. **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙 — 종료월≤5월이면 전년도 귀속) NVDA 자신은 이 회계연도를 **FY2026**이라 부른다. 값(매출 215,938,000,000·순이익 120,067,000,000)은 SEC 원문과 정확히 일치하나, 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. **표시 문구 판정 필요(장은태)** — Q1 카드 작업 시 함께 정한다.
 
-## 🔴 범위 밖 — 「업종 대비」
+## 「업종 대비」 — 정의 공개표 (STEP 952, 2026-08-09 장은태 판정)
 
-이 문서는 4개 축의 **절대값 계산**만 다룬다. Q0(섹터 분류, `docs/LENS_COMPLETION_STANDARD.md` Q0 행)가 정의하는 「업종 대비」 비교는 **이 STEP의 범위 밖**이다. `us_sector_resolved`가 1,021행(`lens_scores` US 유니버스 기준)뿐이라, 이번에 넓힌 밸류에이션 유니버스(`us_cik_map ⋈ us_market_cap`, 5천 건대)를 전부 커버하지 못한다 — 업종 대비를 붙이려면 Q0 커버리지 확장이 선행돼야 한다.
+🔴 **원전 없음 — 규칙 5-1 트랙.** 백분위로 업종 대비 위치를 매기는 것은 회계 관행이나 학술 정의가 아니라 우리가 고른 산술 방법이다. 정의를 하나로 고정하고 여기 공개한다. **유일한 출처 = `lib/sectorRelative.ts`의 `SECTOR_RELATIVE_SPEC`**(규칙 5-2 ⑤) — 아래는 그 객체를 그대로 옮겨 적은 것이다.
+
+```
+method: "percentile"
+direction: "higher_is_more_expensive"   // 4축(PER·PBR·PSR·EV/EBITDA) 전부 값이 클수록 비싸다
+axes: ["per", "pbr", "psr", "evEbitda"]
+sectorSource: "us_sector_wide"
+percentileFn: "empirical_rank"          // count(v < target) / n_valid — 아래 계산 정의 그대로
+minSample: null                          // 🔴 미정(장은태 판정 대기, 아래 §minSample 재료 참조)
+unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable에 사유 있음)", "업종 내 유효 표본 < minSample"]
+```
+
+**계산 정의**: 한 종목의 백분위 = 같은 업종·같은 축에서 **그 종목보다 값이 작은 유효 종목의 비율**(`count(v < target) / n_valid`). 값이 없는 종목(결측)은 분모·분자에서 뺀다(0으로 치지 않는다). 동점인 종목들은 서로를 "작다"고 세지 않으므로 같은 백분위를 받는다(중간순위 보정 없음). 🔴 이 함수는 `lib/sectorCuts.ts`의 `pctile()`(백분위→값, type-7 분위수)과 **수학적으로 반대 방향**이라 그 함수를 그대로 재사용하지 않았다 — `pctile`을 부르면 정의 문장과 실제 동작이 어긋난다(분모가 `n-1` vs `n`으로 다름). 상세 = `lib/sectorRelative.ts` 코드 주석.
+
+**섹터 출처 — 5단계 그대로, `resolveSector()`를 수정 없이 재호출**(0순위 SPDR·1순위 Damodaran 직접·2순위 형제클래스·3순위 야후·4순위 미분류). `us_valuation` 최신 as_of(2026-08-08) 1,127종목 전체에 적용한 실측(Q0 1,021 기준과 나란히):
+
+| 출처 | Q0(1,021, STEP 939~942) | 952(1,127) |
+|---|---|---|
+| spdr(0순위) | 498 | 402 |
+| damodaran(1순위) | 311 | 601 |
+| damodaran-sibling(2순위) | 5 | 5 |
+| yahoo(3순위) | 207 | 29 |
+| 미분류(4순위) | 0 | 90 |
+
+🔴 **단순 확장이 아니다 — 두 유니버스는 부분집합 관계가 아니다.** `us_sector_wide`(952, 1,127종목)와 `us_sector_resolved`(Q0, 1,021종목)의 교집합은 **640종목뿐**(직접 교차대조, 불일치 0건 — 같은 함수·같은 입력이면 같은 결과가 나옴은 확인됐다). 나머지는 서로 다른 유니버스 소속이다 — `us_valuation`(SEC XBRL 기반, `us_cik_map ⋈ us_market_cap`)과 `lens_scores`(Q0 원 유니버스)가 애초에 다른 파이프라인이라 종목 구성이 갈린다. 이 때문에 spdr 절대건수가 늘지 않고 오히려 줄고(498→402), damodaran이 거의 두 배(311→601)로 늘고, 미분류 90건이 새로 생겼다 — **1,127 유니버스에 SPDR 미커버 소형주가 대거 포함**된 결과로 해석되나 원인은 이 STEP에서 조사하지 않았다(추정, 미확인).
+
+🔴 **섹터표가 둘로 갈려 있다 — `us_sector_resolved`(화면용, 1,021)와 `us_sector_wide`(계산용, 1,127).** 이유 = **라이브 화면 변경 회피.** `app/api/sector/us/route.ts`가 `us_sector_resolved`의 최신 `as_of`를 그대로 노출하고 `ExploreClient.tsx:467`이 그 값으로 Explore 화면의 거래대금 목록 라벨·필터칩 카운트를 그린다 — 여기 새 `as_of` 행을 넣는 순간 라이브 화면이 바뀐다. Q1은 아직 화면이 없으므로(카드 자체가 없음) 별도 테이블(`us_sector_wide`)에 격리해 계산 재료로만 쓴다. **컬럼 구성은 동일하게 맞췄다** — 통합 판정이 나면(예: Q1 카드 출시 시 `us_sector_resolved`를 이 넓은 유니버스로 교체) `toResolvedRows()` 그대로 옮겨 쓸 수 있다. **통합 여부·시점은 판정 대기(장은태) — Q1 카드 작업 시 함께 정한다.**
+
+**미분류 90종목 전수**(`docs/probe_952_sector_wide_step1.json` 참조): 대부분 소형주·클로즈드엔드펀드(`BME`·`CII`·`CIK`·`CRF`·`DHY`·`FLC` 등)·해외 ADR. `AKO-A`/`AKO-B`처럼 구두점이 있는데도 형제매칭에 안 걸린 케이스 포함(2순위는 Damodaran 내부 형제만 봄 — SPDR/야후에 없고 Damodaran에도 없으면 3개 tier 전부 실패).
+
+**미성립 조건 전수** — `unavailableWhen` 그대로 3가지: ① `sector == null`(위 미분류 90종목) ② 축 값 자체가 없음(`us_valuation.unavailable`에 사유 있음 — `NEGATIVE_EARNINGS`·`MISSING_NET_INCOME` 등, `lib/valuation.ts` 기존 정의) ③ 업종 내 유효 표본 < `minSample`(아직 미정, 아래 재료 참조).
+
+### 🔴 minSample 재료(숫자는 고르지 않았다 — 장은태 판정 재료만)
+
+업종 11개 × 축 4개 유효 표본 수(2026-08-08 실측, `docs/probe_952_sector_sample_table.json`):
+
+| 업종 | PER | PBR | PSR | EV/EBITDA |
+|---|---|---|---|---|
+| Real Estate | **10** | **17** | **18** | **4** |
+| Communication Services | 26 | 40 | 44 | 25 |
+| Energy | 35 | 39 | 42 | 28 |
+| Utilities | 36 | 37 | 37 | 29 |
+| Materials | 40 | 46 | 46 | 37 |
+| Consumer Staples | 40 | 44 | 47 | 34 |
+| Financials | 54 | 59 | 61 | 16 |
+| Consumer Discretionary | 77 | 81 | 94 | 71 |
+| Health Care | 78 | 130 | 148 | 79 |
+| Information Technology | 93 | 139 | 148 | 100 |
+| Industrials | 155 | 159 | 170 | 133 |
+
+🔴 **가장 적은 표본 = Real Estate EV/EBITDA 4건.** Real Estate가 전 축에서 최소치를 차지한다(PER 10도 두 번째로 작음). Financials의 EV/EBITDA(16)도 낮다 — REIT·은행업은 EBITDA 개념 자체가 업종 관행과 안 맞아 결측이 몰리는 것으로 보이나 확인하지 않았다.
+
+**Q0 선례**: `sector_cuts`(섹터×지표 컷)는 78개 조합 중 **7개를 IQR 대비 폭 1.0 초과로 제외, 71개(91%) 적용**(STEP 943~944, `docs/CHANGELOG.md` 검증 완료 — 표본 크기가 아니라 부트스트랩 분산 기준이었다는 점은 다르다). 여기서는 표본 **개수** 하한(`minSample`)을 판정해야 한다 — 위 표가 그 재료다.
 
 ## 🔴 성립하지 않는 경우 — 커버리지 결측 12종목(2026-08-08 실측)
 

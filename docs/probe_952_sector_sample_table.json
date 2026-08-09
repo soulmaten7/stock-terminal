@@ -1,0 +1,68 @@
+{
+  "Materials": {
+    "per": 40,
+    "pbr": 46,
+    "psr": 46,
+    "evEbitda": 37
+  },
+  "Information Technology": {
+    "per": 93,
+    "pbr": 139,
+    "psr": 148,
+    "evEbitda": 100
+  },
+  "Consumer Staples": {
+    "per": 40,
+    "pbr": 44,
+    "psr": 47,
+    "evEbitda": 34
+  },
+  "Consumer Discretionary": {
+    "per": 77,
+    "pbr": 81,
+    "psr": 94,
+    "evEbitda": 71
+  },
+  "Health Care": {
+    "per": 78,
+    "pbr": 130,
+    "psr": 148,
+    "evEbitda": 79
+  },
+  "Utilities": {
+    "per": 36,
+    "pbr": 37,
+    "psr": 37,
+    "evEbitda": 29
+  },
+  "Industrials": {
+    "per": 155,
+    "pbr": 159,
+    "psr": 170,
+    "evEbitda": 133
+  },
+  "Communication Services": {
+    "per": 26,
+    "pbr": 40,
+    "psr": 44,
+    "evEbitda": 25
+  },
+  "Energy": {
+    "per": 35,
+    "pbr": 39,
+    "psr": 42,
+    "evEbitda": 28
+  },
+  "Financials": {
+    "per": 54,
+    "pbr": 59,
+    "psr": 61,
+    "evEbitda": 16
+  },
+  "Real Estate": {
+    "per": 10,
+    "pbr": 17,
+    "psr": 18,
+    "evEbitda": 4
+  }
+}

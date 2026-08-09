@@ -1,5 +1,25 @@
-<!-- 2026-08-08 -->
+<!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-09 (122) — 🟩 **STEP 952: Q1 ②단계 준비 — 섹터 커버리지 확장 + 「업종 대비」 정의 고정**
+
+> **성격**: 신규 인프라(테이블+순수함수), **화면 무변경**. `app/(routes)`·`components/`·`messages/`·`vercel.json`·`data/us_symbols.json`·`.github/workflows/`·`app/api/sector/**` diff 0(확인). 크론 미호출·미등록. `us_sector_resolved` 무접촉(1,021행 불변, 직접 재확인).
+
+**§1 커버리지 실측(적재 전, DB 쓰기 없음)** — `us_valuation` 최신 as_of(2026-08-08) 1,127종목 전체에 `resolveSector()`(수정 없이 그대로 호출) 적용. 출처별: spdr 402·damodaran 601·damodaran-sibling 5·yahoo 29·미분류 90(Q0 1,021 기준 498/311/5/207/0과 나란히). 🔴 **"야후 호출" 재확인 — `resolveSector`는 어느 tier에서도 외부 네트워크 호출을 하지 않는다.** 코드를 직접 재확인한 결과 damodaran_industry·us_sector_nasdaq·us_sector_yahoo·us_sector_gics 4개 Supabase 테이블만 읽는다 — "yahoo tier"는 사전 적재된 `us_sector_yahoo` 테이블 조회이지 라이브 API 호출이 아니다. 레이트리밋 위험 자체가 이 함수 경로에 없다(1,000건 초과 시 중단 조건은 이번 실측으로 해당 없음 확정). `docs/probe_952_sector_wide_step1.json`.
+
+**§2 `us_sector_wide` 신규 테이블 + 적재** — 마이그레이션(`20260809_us_sector_wide.sql`), 컬럼 구성 = `us_sector_resolved`와 동일(as_of·symbol·sector·source·cross_nasdaq·cross_sic·cross_yahoo·disagree·updated_at, PK(as_of,symbol)). RLS = `us_sector_resolved`와 직접 대조해 동일 확인(RLS on·정책 0·anon/authenticated 권한 0). `toResolvedRows()`(`lib/sectorCuts.ts`, 로직 수정 없이 재사용)로 변환 후 1,127행 upsert. **검증**: 행수 1,127=1,127 일치 · `sector null`(미분류) 90 · `us_sector_resolved`와 교차대조 640종목(교집합) 전부 sector 값 일치(**불일치 0건**). 🔴 **두 유니버스는 부분집합 관계가 아니다** — 640/1,127·640/1,021만 겹친다(`us_valuation`은 SEC XBRL 기반, `us_sector_resolved`는 `lens_scores` 기반이라 원 파이프라인이 다름). `docs/probe_952_sector_wide_step2.json`.
+
+**§3 「업종 대비」 정의 고정** — `lib/sectorRelative.ts` 신설(순수 함수, DB·네트워크 접근 없음). `SECTOR_RELATIVE_SPEC`이 정의의 유일한 출처(규칙 5-2 ⑤) — method=percentile(장은태 판정)·direction=higher_is_more_expensive·axes 4개·sectorSource=us_sector_wide·minSample=null(미정)·unavailableWhen 3가지. `sectorPercentiles()` = `count(v < target)/n_valid`. 🔴 **`pctile()`(`lib/sectorCuts.ts`)을 그대로 재사용하지 않았다** — 백분위→값(type-7 분위수, 분모 n-1)과 값→백분위(empirical rank, 분모 n)는 수학적으로 역함수이자 다른 공식이라, `pctile`을 그대로 부르면 "그 종목보다 값이 작은 종목의 비율"이라는 정의 문장과 실제 동작이 어긋난다. 이 이탈은 의도적이며 위 이유로 이 문서에 명시한다. `lib/sectorRelative.test.ts` — 손계산 검산 4케이스(기본+동점·유효표본1개·전부결측·음수혼재) 전부 통과.
+
+**§3-3 minSample 재료** — 업종 11개×축 4개 유효표본 표 산출(`docs/probe_952_sector_sample_table.json`). 최소 = Real Estate EV/EBITDA 4건(Real Estate가 전 축 최소). Q0 선례(`sector_cuts` 78개 조합 중 7개 IQR폭 초과 제외·71개 적용) 병기. **숫자는 고르지 않음** — 표만 제시, 판정 대기(장은태).
+
+**§4 문서** — `docs/VALUATION_SPEC.md`("🔴 범위 밖 — 업종 대비" 절을 "「업종 대비」 — 정의 공개표"로 전환·SECTOR_RELATIVE_SPEC 그대로 옮김·출처 표·미분류 90종목·미성립조건·minSample 재료·두 섹터표 분리 이유 전부 수록) · `docs/STATE.md`(신규 항목 + 섹터표 이원화 한 줄).
+
+**§5 검증** — `npm test` **305/305**(29→30파일, `sectorRelative.test.ts` 4건 신규, 기존 301 불변) · `messages.test.ts` 그대로(ko/en 패리티, 새 키 0) · `npx tsc --noEmit` 클린 · `npm run build` 클린 · `git diff --stat`로 화면 관련 경로 전부 0줄 확인 · `us_sector_resolved` 1,021행 불변(as_of=2026-08-08, 직접 재확인) · `revdcf_results`·`us_market_cap`·`lens_scores`·`lens_cuts` 전부 무접촉.
+
+**무변경** — 화면 전부·`REVDCF_ENABLED`·크론 등록/수동실행(0)·`lib/sector.ts`(resolveSector 로직)·`lib/sectorCuts.ts`(toResolvedRows·pctile 로직)·KR 계열.
+
+**못 한 것 / 판정 필요** — ① minSample 숫자(장은태) ② 업종 기준선(백분위 컷) 계산 자체(내일 새 창 데이터 이후, 이 STEP 범위 밖) ③ `us_sector_resolved`/`us_sector_wide` 통합 여부·시점(Q1 카드 작업 시) ④ spdr 감소·damodaran 급증의 근본 원인(추정만, 미조사) ⑤ 미분류 90종목이 왜 4개 tier 모두에서 빠졌는지 개별 원인(전수 나열만, 원인 미조사).
 
 ## 2026-08-08 (121) — 🟥 **STEP 951 검수 정정: Cowork 3중 검수 6건 반영 — 두 건은 이전 STEP 자체의 오류**
 
