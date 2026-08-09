@@ -1,0 +1,484 @@
+{
+ "step": "960 §1",
+ "measuredAt": "2026-08-09",
+ "purpose": "업종 대표값 비교로 대체 가능한가 — 설계 재료. 대조는 실행하지 않는다(§3 설계만).",
+ "step1_1_unit": {
+  "method": "us_valuation(as_of=2026-08-08) 1,127심볼 -> upper(regexp_replace(symbol,'[^A-Za-z0-9]','','g')) 정규화 -> damodaran_industry.ticker_norm(is_us_listed=true) 직접 조인(SQL, 읽기전용). fetchSectorMap()의 tier-1(damodaran 직접매치)과 같은 원천 테이블·같은 정규화 규칙을 쓰되, 이 STEP은 fetchSectorMap()을 호출하지 않고 SQL로 직접 재현했다(그 함수는 ticker_norm 키의 Map만 반환해 심볼별 분포 집계에 그대로 쓰기 불편, 로직은 100% 동일).",
+  "note_compareOnly": "이 재분류는 대조 전용이다 — SECTOR_RELATIVE_SPEC의 GICS 11 기준은 그대로다. us_sector_wide·us_sector_relative에 쓰지 않는다. 이 STEP은 조회만(DB 쓰기 0).",
+  "matchRate": {
+   "totalSymbols": 1127,
+   "matchedSymbols": 1005,
+   "unmatchedSymbols": 122,
+   "matchRatePct": 89.2
+  },
+  "distribution": {
+   "totalGroups94": 94,
+   "groupsWithAtLeast1": 88,
+   "groupsWithZero": 6,
+   "zeroGroups": [
+    "Broadcasting",
+    "Brokerage & Investment Banking",
+    "Green & Renewable Energy",
+    "Real Estate (General/Diversified)",
+    "Reinsurance",
+    "Rubber& Tires"
+   ],
+   "min": 1,
+   "max": 65,
+   "median": 7.0,
+   "mean": 11.42,
+   "note": "Damodaran 자신의 업종군 표본(예: Banks Regional=568개사)보다 우리 표본은 훨씬 얇다(중앙값 7개사) — 우리 1,127종목 유니버스가 Damodaran의 전체 US 상장사 모집단보다 훨씬 작기 때문. 얇은 업종군은 우리 쪽 집계값 자체의 신뢰도가 낮아진다(958/959에서 minSample=20을 쓴 이유와 같은 문제가 여기서도 재현됨 — 88개 업종군 중 다수가 20 미만)."
+  },
+  "fullDistribution": [
+   [
+    "Broadcasting",
+    0
+   ],
+   [
+    "Brokerage & Investment Banking",
+    0
+   ],
+   [
+    "Green & Renewable Energy",
+    0
+   ],
+   [
+    "Real Estate (General/Diversified)",
+    0
+   ],
+   [
+    "Reinsurance",
+    0
+   ],
+   [
+    "Rubber& Tires",
+    0
+   ],
+   [
+    "Chemical (Diversified)",
+    1
+   ],
+   [
+    "Coal & Related Energy",
+    1
+   ],
+   [
+    "Electronics (Consumer & Office)",
+    1
+   ],
+   [
+    "Insurance (General)",
+    1
+   ],
+   [
+    "Paper/Forest Products",
+    1
+   ],
+   [
+    "Real Estate (Development)",
+    1
+   ],
+   [
+    "Bank (Money Center)",
+    2
+   ],
+   [
+    "Office Equipment & Services",
+    2
+   ],
+   [
+    "Oil/Gas (Integrated)",
+    2
+   ],
+   [
+    "Retail (REITs)",
+    2
+   ],
+   [
+    "Tobacco",
+    2
+   ],
+   [
+    "Advertising",
+    3
+   ],
+   [
+    "Beverage (Alcoholic)",
+    3
+   ],
+   [
+    "Cable TV",
+    3
+   ],
+   [
+    "Insurance (Life)",
+    3
+   ],
+   [
+    "Publishing & Newspapers",
+    3
+   ],
+   [
+    "Retail (Grocery and Food)",
+    3
+   ],
+   [
+    "Shoe",
+    3
+   ],
+   [
+    "Telecom (Wireless)",
+    3
+   ],
+   [
+    "Transportation (Railroads)",
+    3
+   ],
+   [
+    "Diversified",
+    4
+   ],
+   [
+    "Food Wholesalers",
+    4
+   ],
+   [
+    "Furn/Home Furnishings",
+    4
+   ],
+   [
+    "Information Services",
+    4
+   ],
+   [
+    "Recreation",
+    4
+   ],
+   [
+    "Retail (Building Supply)",
+    4
+   ],
+   [
+    "Shipbuilding & Marine",
+    4
+   ],
+   [
+    "Apparel",
+    5
+   ],
+   [
+    "Auto & Truck",
+    5
+   ],
+   [
+    "Homebuilding",
+    5
+   ],
+   [
+    "Real Estate (Operations & Services)",
+    5
+   ],
+   [
+    "Telecom. Services",
+    5
+   ],
+   [
+    "Utility (Water)",
+    5
+   ],
+   [
+    "Auto Parts",
+    6
+   ],
+   [
+    "Chemical (Basic)",
+    6
+   ],
+   [
+    "Education",
+    6
+   ],
+   [
+    "Insurance (Prop/Cas.)",
+    6
+   ],
+   [
+    "Precious Metals",
+    6
+   ],
+   [
+    "Beverage (Soft)",
+    7
+   ],
+   [
+    "Environmental & Waste Services",
+    7
+   ],
+   [
+    "Farming/Agriculture",
+    7
+   ],
+   [
+    "Hospitals/Healthcare Facilities",
+    7
+   ],
+   [
+    "Metals & Mining",
+    7
+   ],
+   [
+    "Packaging & Container",
+    7
+   ],
+   [
+    "Retail (Automotive)",
+    7
+   ],
+   [
+    "Steel",
+    7
+   ],
+   [
+    "Transportation",
+    7
+   ],
+   [
+    "Trucking",
+    7
+   ],
+   [
+    "Air Transport",
+    8
+   ],
+   [
+    "Oil/Gas Distribution",
+    8
+   ],
+   [
+    "Software (Entertainment)",
+    9
+   ],
+   [
+    "Household Products",
+    10
+   ],
+   [
+    "Utility (General)",
+    10
+   ],
+   [
+    "Computers/Peripherals",
+    11
+   ],
+   [
+    "Construction Supplies",
+    11
+   ],
+   [
+    "Retail (General)",
+    11
+   ],
+   [
+    "Semiconductor Equip",
+    11
+   ],
+   [
+    "Engineering/Construction",
+    13
+   ],
+   [
+    "Telecom. Equipment",
+    13
+   ],
+   [
+    "Building Materials",
+    14
+   ],
+   [
+    "Computer Services",
+    14
+   ],
+   [
+    "Restaurant/Dining",
+    14
+   ],
+   [
+    "Retail (Special Lines)",
+    14
+   ],
+   [
+    "Software (Internet)",
+    14
+   ],
+   [
+    "Oilfield Svcs/Equip.",
+    15
+   ],
+   [
+    "R.E.I.T.",
+    16
+   ],
+   [
+    "Oil/Gas (Production and Exploration)",
+    17
+   ],
+   [
+    "Retail (Distributors)",
+    17
+   ],
+   [
+    "Chemical (Specialty)",
+    18
+   ],
+   [
+    "Food Processing",
+    18
+   ],
+   [
+    "Hotel/Gaming",
+    18
+   ],
+   [
+    "Entertainment",
+    19
+   ],
+   [
+    "Healthcare Support Services",
+    20
+   ],
+   [
+    "Investments & Asset Management",
+    20
+   ],
+   [
+    "Electrical Equipment",
+    22
+   ],
+   [
+    "Heathcare Information and Technology",
+    22
+   ],
+   [
+    "Aerospace/Defense",
+    23
+   ],
+   [
+    "Business & Consumer Services",
+    23
+   ],
+   [
+    "Power",
+    23
+   ],
+   [
+    "Electronics (General)",
+    25
+   ],
+   [
+    "Semiconductor",
+    26
+   ],
+   [
+    "Financial Svcs. (Non-bank & Insurance)",
+    27
+   ],
+   [
+    "Machinery",
+    29
+   ],
+   [
+    "Drugs (Pharmaceutical)",
+    31
+   ],
+   [
+    "Healthcare Products",
+    33
+   ],
+   [
+    "Banks (Regional)",
+    36
+   ],
+   [
+    "Software (System & Application)",
+    56
+   ],
+   [
+    "Drugs (Biotechnology)",
+    65
+   ]
+  ]
+ },
+ "step1_2_aggregation": {
+  "damodaranDefinitions_verbatim": {
+   "per_pedata": "'Current PE': Price per share divided by EPS in most recent fiscal year, averaged across all money-making firms in the group. (FAQ 'Why?': Simple average of PE ratios, based upon current earnings, across only money making firms.)",
+   "pbr_pbvdata": "'PBV': Aggregated market capitalization divided by aggregated book value of equity, across all firms in the group.",
+   "psr_psdata": "'PS': Aggregated market capitalization divided by aggregated revenues, across all firms in the group.",
+   "evEbitda_vebitda": "'EV/EBITDA': Aggregate enterprise value divided by aggregate earnings before interest, taxes and depreciation, across all firms in group. (Enterprise Value = Market Capitalization + Total Debt - Cash)"
+  },
+  "ourReplicationPlan": {
+   "per": "money-making(net_income>0) 회원사만 골라 개별 PER(=market_cap/net_income, us_valuation.per)의 단순평균. Damodaran은 'most recent fiscal year'(=Current PE)와 'trailing twelve months'(=Trailing PE) 둘을 구분하는데 우리는 TTM을 안 만든다(연간만) — Current PE 쪽과 비교하는 게 맞다, Trailing PE와 비교하면 그 자체로 기준 불일치가 생긴다.",
+   "pbr": "sum(market_cap) / sum(equity), 회원사 전체 합산. 음수 자기자본 회원사를 분모에 포함할지 FAQ에 명시 없음 — 불명. 우리 처리: 제외(포함하면 분모가 왜곡되어 부호까지 뒤집힐 수 있음) — 이 처리는 우리가 정한 것이라고 명시.",
+   "psr": "sum(market_cap) / sum(revenue). 매출은 사실상 항상 양수라 제외 규칙 불필요.",
+   "evEbitda": "sum(ev) / sum(ebitda). 음수 EBITDA 회원사 포함 여부도 FAQ에 명시 없음 — 불명. 우리 처리: 제외(같은 이유)."
+  },
+  "note": "이 정의들은 fetchSectorMap()·resolveSector()와 무관한 완전히 별도의 집계식이다 — SECTOR_RELATIVE_SPEC의 percentileFn(empirical_rank)과도 다르다. 이 STEP 전용으로만 쓰인다(재사용 안 함, 대조 목적 한정)."
+ },
+ "step1_3_timing": {
+  "gap": "Damodaran 2026-01-05 단일스냅샷 vs 우리 as_of=2026-08-08 — 약 7개월.",
+  "layerA_magnitude": {
+   "what": "자릿수·크기 수준 대조(예: IT 업종 PER이 30대인가 300대인가).",
+   "warning": "상대차를 정확도로 해석하지 않는다 — 7개월간의 주가 변동(분자)이 그대로 섞여 있어, 상대차가 크게 나와도 그게 계산 오류인지 시점 차이인지 이 층만으로는 못 가른다."
+  },
+  "layerB_rankCorrelation": {
+   "what": "업종군 간 순서가 같은가 — Spearman 순위상관(축별 4개, 88개 업종군 기준).",
+   "whyRobustToTiming": "업종 간 상대 배수 서열은 성장률·자본집약도·리스크 같은 구조적 차이를 반영해 단기(개월 단위)로는 잘 안 뒤집힌다는 것이 실증적으로 뒷받침된다 — 아래 검토 참조.",
+   "empiricalCheck": {
+    "source": "siblisresearch.com 'P/E Ratio & Earnings by Sector/Industry' — GICS 섹터별 P/E 이력을 여러 시점(12/31/2023~6/30/2026)으로 제공.",
+    "finding": "WebFetch(요약모델)로 확인한 값 — 2025-12-31 vs 2026-06-30(약 6개월, 이 STEP의 7개월과 근접) 4개 섹터: IT 39.91->39.21(하락) / Financials 18.54->17.28(하락) / Utilities 21.39->21.05(하락) / Real Estate 38.41->42.70(상승). 절대 수준은 전부 변했지만 서열(IT·RealEstate가 위, Financials가 아래)은 유지됐다.",
+    "caveat": "이건 우리가 직접 스피어만 상관을 계산한 게 아니라 WebFetch 요약모델이 4개 섹터·2개 시점만 짚어준 것이다 — 표본이 작고(4개 섹터, GICS11 중 일부) 독립적 자체 계산이 아니므로 '입증'이 아니라 '뒷받침 정황'으로만 쓴다.",
+    "notDone": "siblisresearch.com이 6개 시점 전체를 제공한다고 하니, 거기서 GICS 11섹터 전체의 스피어만 상관을 우리가 직접 계산하는 것은 가능해 보이나 이번 STEP에서 하지 않았다(§2 실행 후보에 남김)."
+   }
+  }
+ },
+ "step2_whatThisValidates": {
+  "validated": [
+   "4축 계산식이 자릿수 수준에서 맞는가(층A)",
+   "업종 간 상대 순서가 독립 출처(Damodaran)와 일치하는가(층B, 축별 Spearman rho)",
+   "특정 업종에서만 크게 어긋나는 곳이 있는가 — 순위 이탈이 큰 업종군을 모델 결함 후보로 표시"
+  ],
+  "notValidated": [
+   "종목별 백분위가 맞는가 — 이 대조로는 검증되지 않는다. Damodaran이 종목별 값을 안 주기 때문에 원리적으로 확인 불가.",
+   "개별 종목 수준의 계산 정확성(이건 958의 stockanalysis.com 5종목 대조가 이미 다룬 영역이고, 이 STEP은 그것과 다른 층위)."
+  ]
+ },
+ "step2_2_dod3": {
+  "question": "이 대조가 DoD3(외부 독립 출처 최소 3종목)을 채우는가.",
+  "answer": "채우지 못한다. DoD3 원문은 '종목' 단위 요건이고, 이 설계는 '업종군'(88개, 여러 종목의 집계) 단위다. 단위 자체가 다르다 — 업종 대조를 아무리 정교하게 해도 '종목' 요건을 채우는 게 아니다.",
+  "whatItDoesInstead": "DoD3와 별개의 검증 축(모델 전체의 업종간 서열 정합성)으로는 유효하다 — 다만 명칭을 DoD3 충족으로 쓰지 않는다."
+ },
+ "step2_3_dod3Alternatives_notChosen": [
+  "STEP 958의 stockanalysis.com 종목 대조를 5->N종목으로 확장(이미 작동 확인된 방법, 확장이 가장 직접적).",
+  "macrotrends·gurufocus의 HTTP 403을 다른 방식(예: 다른 User-Agent·헤더 조합, 또는 공식 API 유무 확인)으로 우회할 수 있는지 조사.",
+  "stockanalysis.com에 종목별 WebFetch 반복 대신 벌크/스크리너 엔드포인트가 있는지 확인(있다면 N종목 확장의 비용을 크게 낮춤, 미확인)."
+ ],
+ "step3_executionDesign_notExecuted": {
+  "steps": [
+   "1. symbol->industry_group 맵 구축(SQL, us_valuation JOIN damodaran_industry via ticker_norm, 읽기전용) - 이미 1-1에서 프로토타입 실행·검증됨(1,005/1,127 매칭).",
+   "2. 88개 업종군 각각에 대해 us_valuation(per,pbr,psr,ev_ebitda,market_cap,ev) + us_fundamentals(net_income,equity,revenue) 조인해 회원사 행 수집.",
+   "3. 1-2 정의대로 우리쪽 업종군 대표값 계산(PER=단순평균, 나머지 3축=합산비율).",
+   "4. Damodaran 4개 xls 파일에서 같은 88개 업종군의 대표값 직접 읽기(추가 다운로드 불필요, 이미 로컬에 있음).",
+   "5. 층A - 업종군x4축 표(우리값·Damodaran값·비율) 만들기.",
+   "6. 층B - 축별 Spearman 순위상관(88개 업종군 기준) 4개 계산.",
+   "7. 이탈이 큰 업종군(순위 차이 크거나 배율 차이 극단적인 곳)을 모델결함 후보로 표시."
+  ],
+  "externalCallsNeeded": "없음 - SEC·야후·웹 전부 불필요. us_valuation·us_fundamentals(이미 저장된 값)와 로컬 xls 파일(이미 다운로드됨)만 읽으면 된다. 새 네트워크 요청 0건.",
+  "expectedOutputShape": "업종군 88 x 4축 표(우리값·Damodaran값·순위·순위차) + 축별 Spearman rho 4개 + 이탈 업종군 목록.",
+  "notExecuted": true
+ },
+ "notDone": [
+  "실제 실행(§3)은 하지 않았다 - 설계만.",
+  "siblisresearch.com의 6개 시점 전체로 스피어만 상관을 직접 계산하지 않았다(1-3 근거는 WebFetch 요약 4개 섹터·2개 시점뿐).",
+  "음수 자기자본·음수 EBITDA 회원사 제외 규칙은 Damodaran FAQ에 명시가 없어 우리가 임의로 정했다(불명으로 표시, 판정 대기).",
+  "sibling-tier(2순위) 매칭까지 포함하면 1,005보다 매칭률이 조금 더 오를 수 있으나 이번엔 tier-1(직접매치)만 썼다."
+ ]
+}

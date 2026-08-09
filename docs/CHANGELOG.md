@@ -1,6 +1,30 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (132) — 🟨 **STEP 960 §1: 업종 대표값 대조 설계 — 단위·집계·시점 어긋남 처리 (실행 안 함)**
+
+> **성격**: 설계·성립성 판단 재료만. **코드·DB·화면·크론 전부 무접촉.** `SECTOR_RELATIVE_SPEC` 무변경. 실제 대조는 §2에서.
+
+**왜** — §0에서 어휘는 완전 일치했지만 3가지 어긋남(단위·집계방식·시점)이 확인됐다. 이걸 각각 어떻게 다룰지 설계하지 않고는 대조 자체가 성립하는지 판단할 수 없었다.
+
+**§1-1 단위** — `us_valuation`(as_of=2026-08-08) 1,127심볼을 `upper(regexp_replace(symbol,'[^A-Za-z0-9]','','g'))`로 정규화해 `damodaran_industry.ticker_norm`(is_us_listed=true)과 직접 조인(읽기전용 SQL — `fetchSectorMap()`의 tier-1 매치와 동일 규칙, 로직만 재현하고 그 함수를 호출하지는 않음: 심볼별 분포 집계엔 Map 반환보다 직접 SQL이 적합). **1,005/1,127(89.2%) 매칭.** 94개 업종군 중 **88개에 ≥1종목, 6개는 0**(Broadcasting·Brokerage & Investment Banking·Green & Renewable Energy·Real Estate General/Diversified·Reinsurance·Rubber& Tires). 업종군당 종목 수 — 최소1·최대65(Drugs Biotechnology)·중앙값7·평균11.4. 🔴 Damodaran 자신의 업종군 표본(예: Banks Regional 568개사)보다 훨씬 얇다 — 우리 유니버스(1,127)가 Damodaran 전체 US 모집단보다 작기 때문. 🔴 **이 재분류는 대조 전용 — `SECTOR_RELATIVE_SPEC`의 GICS 11 기준은 그대로다.** DB 쓰기 0.
+
+**§1-2 집계 방식** — Damodaran FAQ 원문 인용으로 정의 확정(기억 아님, 파일 재확인): PER(`pedata.xls`)="Price per share divided by EPS in most recent fiscal year, averaged across all money-making firms in the group"(**단순평균**) · PBR(`pbvdata.xls`)="Aggregated market capitalization divided by aggregated book value of equity"(**가중 합산비율**) · PSR(`psdata.xls`)="Aggregated market capitalization divided by aggregated revenues" · EV/EBITDA(`vebitda.xls`)="Aggregate enterprise value divided by aggregate earnings before interest, taxes and depreciation" — 뒤 3개 전부 가중 합산비율. 우리 복제안: PER=net_income>0 회원사의 개별 PER 단순평균(Damodaran의 "Current PE"에 대응 — 우리는 TTM이 없어 "Trailing PE"와는 기준이 다름을 명시) · PBR/PSR/EVEBITDA=회원사 합산(sum(numerator)/sum(denominator)). 🔴 **음수 자기자본·음수 EBITDA 회원사를 분모에서 뺄지는 Damodaran FAQ에 명시가 없다 — 불명으로 남기고, 우리는 제외하기로 정했다는 것을 명시**(부호 뒤집힘 방지 목적, 우리 임의 결정임을 숨기지 않음).
+
+**§1-3 시점(7개월 차)** — 재척도 불가(이미 여러 종목이 합산된 값이라 958처럼 개별종목 가격보정을 적용할 지점이 없음). **층A(값 대조)**: 자릿수 수준만 보고 상대차를 정확도로 해석하지 않는다(7개월 주가변동이 섞여 있어서). **층B(순위 대조, 이 대조의 중심)**: 업종군 간 서열이 Spearman 순위상관과 일치하는가. 🔴 순위가 시점 차이에 강한 이유를 "그럴 것 같다"로 안 쓰고 실증 확인 시도 — siblisresearch.com의 GICS 섹터 P/E 이력(2025-12-31→2026-06-30, 약 6개월, 이 STEP의 7개월과 근접)에서 4개 섹터(IT·Financials·Utilities·Real Estate)를 확인한 결과 **절대 수준은 전부 변했으나 서열(IT·RealEstate 상위, Financials 하위)은 유지됨.** 🔴 **단 이건 WebFetch 요약모델이 짚어준 4개 섹터·2개 시점뿐이라 "뒷받침 정황"이지 우리가 직접 계산한 "입증"이 아니다** — 그렇게 정직하게 표시했다.
+
+**§2 이 대조가 검증하는 것 / 못 하는 것** — 검증됨: 4축 계산식의 자릿수 정합성(층A) · 업종 간 서열이 독립출처와 맞는가(층B, 축별 Spearman rho 4개) · 특정 업종만 크게 이탈하는지(모델결함 탐지 후보). 🔴 **검증 안 됨: 종목별 백분위가 맞는가** — Damodaran이 종목별 값을 공개하지 않아 원리적으로 확인 불가.
+
+**§2-2 DoD3 관점** — 🔴 **채우지 못한다.** DoD3 원문("외부 독립 출처 최소 3종목")은 종목 단위 요건인데 이 설계는 업종군(집계) 단위 — 아무리 정교해도 단위 자체가 다르다. **§2-3 다른 경로(고르지 않음)**: STEP 958의 stockanalysis.com 종목 대조를 5→N종목으로 확장(이미 작동 확인된 방법) · macrotrends/gurufocus의 HTTP 403 우회 조사 · stockanalysis.com 벌크 엔드포인트 유무 확인.
+
+**§3 실행 설계(돌리지 않음)** — ① symbol→industry_group 맵(§1-1에서 이미 프로토타입 검증) → ② 88개 업종군별 회원사 재무 수집(`us_valuation`+`us_fundamentals` 조인) → ③ 우리쪽 대표값 계산(§1-2 정의) → ④ Damodaran 4개 xls 값과 나란히(층A) → ⑤ 축별 Spearman 4개(층B) → ⑥ 이탈 업종군 표시. 🔴 **SEC·야후 호출 불필요** — 전부 이미 저장된 값(`us_valuation`·`us_fundamentals`)과 이미 다운로드된 로컬 xls만 읽으면 된다. 예상 산출물 = 업종군 88×4축 표(우리값·Damodaran값·순위·순위차) + Spearman rho 4개 + 이탈 업종군 목록.
+
+**문서** — `docs/probe_960_compare_design.json` 신설(원자료) · `docs/VALUATION_SPEC.md`(검증 절에 설계 전문, "업종 대조는 종목별 백분위를 검증하지 않는다" 명시) · `docs/STATE.md`(960 §1 결과 추가).
+
+**무변경** — 코드·DB·화면·크론 전부 무접촉. `SECTOR_RELATIVE_SPEC` 무변경.
+
+🔴 **결론을 쓰지 않았다 — 대조 실행 여부는 이 보고 후 장은태가 정한다.**
+
 ## 2026-08-09 (131) — 🟨 **STEP 960 §0: Damodaran 업종별 4축 파일 확보·구조 확인 (0단계에서 멈춤)**
 
 > **성격**: 재료 확인만. **코드·DB·화면·크론 전부 무접촉.** `SECTOR_RELATIVE_SPEC` 무변경. 대조(실제 값 비교)는 다음 지시 후.
