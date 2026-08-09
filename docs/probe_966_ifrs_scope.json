@@ -1,0 +1,99 @@
+{
+  "step": 966,
+  "date": "2026-08-09",
+  "purpose": "①-B(타 플랫폼 실무 조사) 규칙 신설 후 첫 적용 — IFRS 외국 상장사 197건 중 A분류(135건)의 원인 정밀화",
+  "sec_new_calls": 0,
+  "note": "docs/probe_951_cache의 197건 전량이 STEP963의 전체 유니버스 fetch(신규 932건)에 이미 포함돼 있어 신규 SEC 호출이 필요하지 않았다.",
+
+  "step1_link_hub_analysis_category": {
+    "source": "Supabase link_hub WHERE category='analysis' AND country='US'",
+    "count": 14,
+    "sites": [
+      "Stock Analysis", "Macrotrends", "Roic.ai", "Koyfin", "TIKR", "GuruFocus",
+      "WallStreetZen", "Wisesheets", "Simply Wall St", "Finbox", "YCharts",
+      "Fiscal.ai (FinChat)", "Value Line", "Financial Modeling Prep"
+    ]
+  },
+
+  "step2_platform_b_results_asml": [
+    { "platform": "stockanalysis.com", "status": "success", "per": 54.85, "pbr": 26.74, "accountingBasisMentioned": false, "includedInIndustryComparison": "unconfirmed" },
+    { "platform": "WallStreetZen", "status": "success", "per": 59.84, "industryAvgPer": 53.15, "accountingBasisMentioned": false, "includedInIndustryComparison": true },
+    { "platform": "GuruFocus", "status": "blocked", "httpStatus": 403 },
+    { "platform": "Simply Wall St", "status": "blocked", "httpStatus": 403 },
+    { "platform": "Macrotrends", "status": "blocked", "httpStatus": 403, "note": "STEP958에서도 동일하게 403 — 일관성 확인" },
+    { "platform": "Finbox", "status": "blocked", "note": "JS 렌더링, 정적 fetch로 콘텐츠 확보 불가" },
+    { "platform": "Koyfin", "status": "blocked", "httpStatus": 404 },
+    { "platform": "Fiscal.ai", "status": "blocked", "httpStatus": 429 },
+    { "platform": "Yahoo Finance", "status": "blocked", "httpStatus": 503 },
+    { "platform": "WSJ", "status": "blocked", "note": "fetch 자체 거부(robots/paywall)" }
+  ],
+  "step2_summary": "최소 3곳 목표 중 2곳 성공(stockanalysis.com·WallStreetZen), 8개 플랫폼 추가 시도 전부 실패 — 3번째 성공 못 채움, 억지로 채우지 않고 기록.",
+
+  "step2a_literature": {
+    "found": false,
+    "note": "IFRS-us GAAP 계정 대응이 배수 계산에서 어떻게 다뤄지는지의 원전·표준 문서 검색은 이번 STEP에서 수행하지 않았다 — ③ 자체 데이터 확인에 시간을 집중 배분. 못 찾은 게 아니라 안 찾았다."
+  },
+
+  "step3_self_data_check": {
+    "universe": "us_fundamentals WHERE fiscal_year IS NULL (197건, STEP964 확정)",
+    "cacheDir": "docs/probe_951_cache",
+    "cacheHit": "197/197 (100%)",
+    "hasIfrsFullNamespace": { "count": 52, "pct": "26.4%" },
+    "ifrsFullSymbols": [
+      "AKAN","AKO-A","AKO-B","ALAR","ALC","ALM","AMTD","ANGH","ARQQ","ASM","ASND","ASTL","AUST","B","BIP",
+      "BLX","BMO","BN","BP","BRIA","CAAP","CAE","CIG","CIG-C","CIGL","CINT","CM","CMBT","CMCL","CMMB",
+      "CMND","CNCK","CNL","CNQ","COOT","CPA","CPAC","CRDL","CRML","CX","CYD","DHT","DRD","ELPC","ELVA",
+      "ENIC","ENLT","LYG","NEUP","NEWP","PRQR","TRMD"
+    ],
+    "hasIfrsFullButNoNamespace_example": "ASML — facts.facts keys = ['dei','us-gaap'] only, no ifrs-full at all despite being IFRS-reporting company",
+    "revenueTagPresent_anyForm": { "count": 48, "of": 52 },
+    "revenueTagForms_seen": ["20-F", "6-K", "6-K/A", "40-F", "40-F/A", "20-F/A"],
+    "full3FieldsViaAnnualFormOnly": {
+      "criteria": "Revenue + ProfitLossAttributableToOwnersOfParent + EquityAttributableToOwnersOfParent, form matches /^(20-F|40-F)/",
+      "count": 25,
+      "pctOf197": "12.7%",
+      "symbols": ["ALC","ANGH","B","BP","CAAP","CIGL","CMBT","CMCL","CX","CYD","DHT","ENLT","NEWP","TRMD"]
+    },
+    "noIfrsFullAtAll": { "count": 145, "pctOf197": "73.6%", "example": "ASML" },
+    "keyFinding_tagPriority": "BP ifrs-full: ProfitLoss=$1,295,000,000 (NCI 포함 총계) vs ProfitLossAttributableToOwnersOfParent=$55,000,000 (지배주주 귀속) — NCI가 $1,240,000,000으로 대부분 차지. us-gaap의 NetIncomeLoss vs NetIncomeLossAvailableToCommonStockholdersBasic(STEP963)과 구조적으로 동일한 문제."
+  },
+
+  "step4_verification_2symbols": [
+    {
+      "symbol": "BP",
+      "fiscalYear": 2025,
+      "ourValue": { "revenue": 192549000000, "profitLossTotal": 1295000000, "profitLossAttributableToOwners": 55000000, "source": "ifrs-full via SEC companyfacts, form=20-F, accn=0000313807-26-000006" },
+      "externalValue": { "revenue": 189335000000, "netIncome": 55000000, "source": "stockanalysis.com" },
+      "relDiff": { "revenue": "1.70%", "netIncome_ownersAttributable": "0% (exact match)" }
+    },
+    {
+      "symbol": "CX",
+      "entityName": "CEMEX SAB DE CV",
+      "fiscalYear": 2024,
+      "ourValue": { "revenue": 16200000000, "profitLossTotal": 960000000, "profitLossAttributableToOwners": 939000000, "equityAttributableToOwners": 12176000000, "source": "ifrs-full via SEC companyfacts, form=20-F" },
+      "externalValue": { "revenue": 16063000000, "netIncome": 939000000, "source": "stockanalysis.com" },
+      "relDiff": { "revenue": "0.85%", "netIncome_ownersAttributable": "0% (exact match)" }
+    }
+  ],
+
+  "step5_consistency_check": {
+    "observation": "ASML은 stockanalysis.com·WallStreetZen 둘 다 PER·PBR을 보여주는데 SEC companyfacts에는 ifrs-full 네임스페이스 자체가 없다(us-gaap도 매출태그 없음).",
+    "inference": "그들이 SEC XBRL을 정본으로 안 쓴다는 뜻(자체 수집·타사 데이터 공급자 등으로 추정, 확인 안 됨).",
+    "policyConflict": "CLAUDE.md의 '야후 재무는 2차 가공물이라 정본으로 쓰지 않는다' 원칙과 'SEC 밖 소스 사용'이 충돌한다 — 이 STEP은 판정하지 않는다."
+  },
+
+  "options_no_judgment": [
+    { "id": 1, "label": "현행 유지", "workScope": "0", "coverageRecovered": "0/197", "mixedAccountingBasisRisk": "없음(문제 자체 없음)" },
+    { "id": 2, "label": "ifrs-full 지원 추가", "workScope": "annualMap isAnnual 필터에 20-F/40-F 추가 + computeDrivers에 us-gaap 없을 때 ifrs-full 폴백 분기 + 신규 태그 배열(Revenue·ProfitLossAttributableToOwnersOfParent·EquityAttributableToOwnersOfParent 등) 3~4종 — 중간 규모", "coverageRecovered": "확실히 25/197(12.7%), 잠재적 최대 52/197(26.4%, 나머지 27건 미확정)", "mixedAccountingBasisRisk": "미검증 — IFRS 기반 배수를 US GAAP 기반 배수와 같은 업종 백분위 분포에 섞어도 되는지 확인 안 됨" },
+    { "id": 3, "label": "SEC 밖 데이터소스 사용", "workScope": "CLAUDE.md 정본 원칙과 정면 충돌 — 그 원칙 재논의가 선행돼야 함", "coverageRecovered": "이론상 145건까지(ifrs-full도 없는 나머지 포함)", "mixedAccountingBasisRisk": "정본 소스 자체가 2차 가공물이 됨" }
+  ],
+
+  "relatedExistingPolicy": "CLAUDE.md '🌍 국가 소속 규칙'이 이미 'ADR은 소속 국가 탭에서 계산한다'(예: MUFG→JP 탭)고 정해 두었다 — 이 197건 중 다수(ADR)가 그 정책 실행 시 US 탭에서 회수할 필요가 없어질 수 있다. 이 STEP은 그 정책을 재론하지 않는다.",
+
+  "notDone": [
+    "①-A 문헌 검색 — 시간을 ③에 집중 배분해 미수행",
+    "27건(ifrs-full 있으나 20-F/40-F 폼으론 3필드 미확보)의 개별 원인 조사 — 태그명이 회사마다 다를 가능성 미확인",
+    "145건(ifrs-full 전무)이 전부 진짜 무데이터인지, 혹은 다른 네임스페이스(회사별 확장 taxonomy 등)를 쓰는지는 미확인",
+    "3번째 성공 플랫폼 확보 — 8개 시도 전부 실패"
+  ]
+}

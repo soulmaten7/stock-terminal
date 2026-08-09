@@ -195,6 +195,43 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 🔴 **고치지 않았다** — 규모와 원인 분류까지만. 처방(대체 태그 추가·REV 배열 확장·화면에서 "데이터 부족" 명시 등)은 판정 대기. 상세 = `docs/probe_964_residuals.json`.
 
+### STEP 966(2026-08-09) — ①-B(타 플랫폼 실무 조사) 첫 적용: 위 A분류(135건) 정밀화
+
+🔴 **CLAUDE.md ①-B 신설(같은 날) 후 첫 적용 사례.** 위 A분류를 "IFRS 택사노미로 의심"이라고만 적었던 것을 실제 데이터로 확인·정밀화한다.
+
+**①-B 실측(4개 플랫폼 실제 조회, `link_hub` `analysis` 카테고리 14곳 중 우선 시도)**: `ASML`(SEC엔 없는 종목) 기준 — **stockanalysis.com**(🟢 PER 54.85·PBR 26.74 표시, 회계기준 언급 없음) · **WallStreetZen**(🟢 PE 59.84 표시, **업종 평균 53.15x와 비교까지 포함** — IFRS 종목도 업종 대비에 그냥 섞는다는 실무 증거, 회계기준 언급 없음) · **GuruFocus·Simply Wall St**(🔴 403, 접속 자체 불가) · **Macrotrends·Finbox·Koyfin·Fiscal.ai·Yahoo Finance·WSJ**(🔴 403/404/429/503/차단, 시도만) — 최소 3곳 중 **2곳 성공**(3번째는 8개 플랫폼을 추가 시도했으나 전부 실패, "못 채웠다"로 기록).
+
+**①-A 문헌**: IFRS-us GAAP 계정 대응이 배수 계산에서 어떻게 다뤄지는지의 원전·표준 문서는 **못 찾았다**(이번 STEP에서 검색 안 함 — 시간 배분상 ③ 자체 데이터 확인에 집중, 아래 참조).
+
+**③ 자체 데이터 확인 — 핵심 발견(SEC 신규 호출 0건, 197건 전량 캐시 존재)**: 위 A분류(135건)가 균질하지 않았다.
+- **52/197(26.4%)은 `ifrs-full` 네임스페이스가 실제로 존재**한다(`ASML`은 없지만 `BP`·`CNQ`·`CM`·`CX` 등은 있음 — 같은 "외국계 IFRS 필자"라도 SEC 제출 방식이 갈린다, 회사·필자 사정으로 추정·미확인).
+- 그중 **48/52는 `Revenue` 태그에 값이 존재**하나, 폼을 `20-F`/`40-F`(연차)로 좁히면 **25/52(전체 197 대비 12.7%)만 `Revenue`·`ProfitLossAttributableToOwnersOfParent`·`EquityAttributableToOwnersOfParent` 3종을 전부 확보**한다(나머지는 `6-K`[수시 제출]에만 값이 있거나 회사별 확장 태그를 씀 — 예: `CNQ`는 이 3종 전부 미확보).
+- **145/197(73.6%)은 `ifrs-full`도 전혀 없다**(`ASML`형) — SEC companyfacts에 재무 데이터 자체가 없는 것으로, 회수 경로가 원리적으로 막혀 있다.
+- 🔑 **태그 우선순위 대응 관계 발견**(us-gaap과 평행) — `ProfitLoss`(비지배지분 포함 총계) vs `ProfitLossAttributableToOwnersOfParent`(지배주주 귀속)의 차이가 963의 `NetIncomeLoss` vs `NetIncomeLossAvailableToCommonStockholdersBasic` 구도와 **정확히 같은 문제**다(`BP`: `ProfitLoss`=$1,295M이나 `ProfitLossAttributableToOwnersOfParent`=$55M — NCI가 $1,240M으로 대부분을 차지).
+
+**② 검증 — 2종목 값 대조(ifrs-full 재추출 vs stockanalysis.com)**:
+| 종목 | 축 | 우리(ifrs-full) | 외부(stockanalysis.com) | 상대차 |
+|---|---|---|---|---|
+| `BP`(FY2025) | Revenue | $192,549M | $189,335M | 1.70% |
+| `BP`(FY2025) | 순이익(지배주주귀속) | $55M(`ProfitLossAttributableToOwnersOfParent`) | $55M | **0%(정확 일치)** |
+| `CX`/CEMEX(FY2024) | Revenue | $16,200M | $16,063M | 0.85% |
+| `CX`/CEMEX(FY2024) | 순이익(지배주주귀속) | $939M(`ProfitLossAttributableToOwnersOfParent`) | $939M | **0%(정확 일치)** |
+
+🔑 **지배주주귀속 순이익 태그를 쓰면 외부와 소수점까지 일치한다** — ifrs-full 데이터 자체의 신뢰성은 이 2종목에서 확인됐다(Revenue는 1~2%대 소차, 총매출 라인 정의 차이로 추정·미확인).
+
+**④ 검수**: `ASML`은 stockanalysis.com·WallStreetZen 둘 다 PER·PBR을 보여주는데 SEC엔 `ifrs-full`조차 없다 — 🔴 **그들이 SEC XBRL을 안 쓴다는 뜻이다**(자체 데이터 수집·타사 재무 데이터 공급자 등으로 추정, 확인 안 됨). CLAUDE.md가 "야후 재무는 2차 가공물이라 정본으로 쓰지 않는다"를 명시하고 있어 **같은 방법(SEC 밖 소스)을 우리가 쓸 수 있는지는 이 원칙과 충돌**한다 — 판정 대상.
+
+**선택지(판정 없음, 대가만)**:
+| # | 선택지 | 작업 규모 | 커버리지 회복 | 회계기준 혼재 문제 |
+|---|---|---|---|---|
+| ① | 현행 유지(손대지 않음) | 0 | 0/197 | 없음(문제 자체가 없음) |
+| ② | `ifrs-full` 지원 추가(20-F/40-F 폼 인정 + Revenue/ProfitLossAttributableToOwnersOfParent/EquityAttributableToOwnersOfParent 등 신규 태그 배열 + 네임스페이스 선택 로직) | `annualMap`의 `isAnnual` 폼 필터 확장 + `computeDrivers`에 us-gaap 없을 때 ifrs-full 폴백 분기 + 신규 태그 상수 배열 3~4종 — 중간 규모(963의 태그 재정렬보다는 크고 새 국가탭보다는 작음) | 확실히 25/197(12.7%), 잠재적으로 최대 52/197(26.4%, 나머지 27건은 필드별 개별 확인 필요·미확정) | 🔴 **미검증** — IFRS(영업권 비상각·리스 인식 등)와 US GAAP 기반 배수를 같은 업종 백분위 분포에 섞어도 되는지 확인 안 됨. 2종목 대조는 절대값 정합성만 봤지 "미국 동종업계와 나란히 백분위를 매겨도 되는가"는 별개 질문 |
+| ③ | SEC 밖 데이터소스(스크래핑·유료 API) 사용 | CLAUDE.md 명시 금지("야후 재무는 2차 가공물이라 정본 아님")와 정면 충돌 — 채택하려면 그 원칙 자체를 먼저 재논의해야 함 | 145건(ifrs-full도 없는 나머지)까지 이론상 가능 | 정본 소스 자체가 2차 가공물이 됨 |
+
+🔴 **이미 존재하는 상위 정책과의 관계(판정 아님, 사실만)**: CLAUDE.md의 "🌍 국가 소속 규칙"이 이미 "ADR은 소속 국가 탭에서 계산한다"(예: MUFG=일본 기업→JP 탭)고 정해 두었다 — 이 197건 중 상당수(ADR)가 그 정책이 실행되면 애초에 "US 탭에서 회수할 필요가 없는" 항목일 수 있다. 이 STEP은 그 정책을 재론하지 않는다 — 지금 US 단독 개발 기간에 US 탭 안에서 무엇을 할지의 재료만 남긴다.
+
+상세 원자료 = `docs/probe_966_ifrs_scope.json`.
+
 ## 검증
 
 - `lib/valuation.test.ts` — `VALUATION_SPEC`의 formula·basis 고정 문자열 회귀 + 4케이스(흑자·무차입/흑자·유차입/적자/자기자본 음수) 손계산 검산 + 미성립 경계 6건.
