@@ -58,7 +58,12 @@
 - 🔴 **Financials EV/EBITDA(16건)는 표본 부족이 아니라 축 불일치일 수 있음(미판정)** — 은행업은 EV(기업가치) 개념 자체가 안 맞을 수 있다. 표시 문구 정할 때 Real Estate(순수 표본부족)와 구분 필요 — Q1 카드 작업 시 재론.
 - 상세 = `docs/VALUATION_SPEC.md` 「파이프라인 완성」 절.
 
+✅ **STEP 957(2026-08-09) — Q1 카드 ① API + 카드 골격, `Q1_ENABLED` 기본 OFF.** `/api/q1/[symbol]`(us_valuation ⋈ us_sector_relative ⋈ us_sector_wide 조회만) + `components/Q1Section.tsx`(4축·백분위·표본수·회계연도) 신설, `page.tsx`에 가드 블록만 추가(diff 10줄). 플래그 OFF 실측 확인(`/api/q1/AAPL` 404 · 페이지 HTML에 실제 렌더 없음 — 메시지 사전 페이로드만 존재, RevDcf와 동일 정상 패턴). valuation 렌즈 철거는 STEP 958로 분리(미착수). 이후 장은태가 로컬에서 `Q1_ENABLED=true`로 육안 확인(`/api/q1/{AAPL,NVDA,AAL,AMT}` 200 확인, `O`는 유니버스 밖 404 — 대조는 STEP 958에서 이어감).
+
+🔴 **STEP 958(2026-08-09) — Q1 모델 결함: PSR-Financials가 minSample로 안 가려진다(판정 대기).** Damodaran 원전 2건(`finsvc.pdf`·`Investment Valuation` c21) 직접 확인 — **Financials 업종은 EV/EBITDA뿐 아니라 PSR도 정의상 미적용**("매출이 재무서비스업엔 측정 가능한 개념이 아니다" 원문 인용). 🔴 **EV/EBITDA-Financials는 CLAUDE.md가 이미 지적한 대로 minSample(20)이 우연히 가려준다(실측 n=16)** — 그런데 **PSR-Financials는 실측 n=61로 임계값을 넘어 그대로 계산·노출된다.** 즉 같은 개념적 결함이 축마다 다르게 「가려짐/노출됨」이 갈리는 것은 minSample이 결함을 걸러내는 장치가 아니라 표본 크기의 우연한 부산물이라는 증거. Real Estate도 비슷하게 얽혀 있다: PER·PBR은 "계산되나 업계는 왜곡됐다고 봄"(P/FFO·NAV 선호, 4개 실무출처)인데 minSample로 가려짐(n=10/17) — 반대로 EV/EBITDA는 "REIT엔 정상 적용"(은행과 달리 부채가 정상 자본구조, 실무출처 확인)인데도 표본부족(n=4)으로 **똑같이** 가려진다. 나머지 9개 업종×4축은 업종별 개별확인 없이 "적용(일반론)"으로만 채웠다(근거 없이 미적용이라 안 적음). 🔴 **`SECTOR_RELATIVE_SPEC`은 바꾸지 않았다 — 판정 대기.** 44칸 표·원전 인용 전문 = `docs/probe_958_external_check.json`. 같은 STEP에서 DoD3(외부 대조)도 stockanalysis.com 5종목 대조로 ❌→🟡 갱신(상세 = `docs/VALUATION_SPEC.md` 검증 절).
+
 🔴 **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙) NVDA 자신은 FY2026이라 부른다. 값은 SEC 원문과 일치하나 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. 표시 문구 판정 필요(장은태) — Q1 카드 작업 시 함께 정한다. 상세 = `docs/VALUATION_SPEC.md` 미해결 6번·`docs/LENS_COMPLETION_STANDARD.md` Q1 항목3.
+🔴 **불일치 기록(2026-08-09, STEP 958 직접측정)**: 이 줄이 쓰인 시점엔 라벨이 `fiscal_year=2025`(NVDA 자체 FY2026)였다는데, **오늘 `us_valuation`(as_of=2026-08-08)을 직접 조회하니 NVDA는 `fundamentals_fiscal_year=2024`(net_income=$72.88B=NVDA 자체 FY2025 실적)로 나온다** — 같은 −1 오프셋 메커니즘이지만 관측된 연도 쌍이 다르다. 원인(크론 실행 시점·연도창 로직 변화 등)은 이번 STEP에서 조사하지 않았다 — 사실만 남긴다.
 
 🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**
 🔴 **Q1은 ①단계(재료)만 끝났다. 9항목 중 ✅ 0건. 커버리지 18.2%.** 「Q1 완료」라고 쓰지 말 것. 상세 = `docs/LENS_COMPLETION_STANDARD.md` Q1 행.

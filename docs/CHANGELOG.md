@@ -1,6 +1,34 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (129) — 🟨 **STEP 958: Q1 모델 검증 — 외부 독립 출처 대조(DoD3) + 업종별 축 적용성 조사**
+
+> **성격**: 조사·검증만(957 카드 골격을 계속 이어감이 아니라 모델 자체가 맞는지 확인). **화면 무변경**(`Q1Section.tsx`·`messages`·`page.tsx` 무접촉)·`SECTOR_RELATIVE_SPEC` 무변경(판정 대기로 표만 만듦)·크론 미호출·KR 미접촉.
+
+**왜** — STEP 948 §5(외부 대조)가 대조 상대(TTM)와 우리(연간)의 기준이 안 맞아 무산됐다. Q1 카드가 화면에 나가기 전에 ① 계산이 실제로 맞는지 외부에서 확인하고 ② 「업종별로 이 축을 써도 되는가」라는, minSample로는 못 잡는 종류의 결함이 있는지 봐야 한다(CLAUDE.md가 이미 "은행 EV/EBITDA는 정의상 성립 안 하는데 minSample이 우연히 가리고 있을 뿐"이라 지적한 것을 실측으로 확인하는 작업).
+
+**§1 외부 대조처 확보** — link_hub analysis·disclosure 카테고리(규칙 ⓪-5-B)에서 4곳 실제 조회: **stockanalysis.com**(됨 — 무료·회계연도별 컬럼+그 시점 종가 명시) · macrotrends.net·gurufocus.com(HTTP 403, 이번 세션 기준 차단) · ycharts.com(접속은 되나 연도별 히스토리 유료). 가격 시점 차이(외부=FY말 종가 · 우리=오늘 시총)를 재척도(오늘가격/FY말가격 배율)로 보정해 비교 가능한 형태로 맞췄다.
+
+**§2 5종목 대조** — AAPL·NVDA·AAL·C(Citigroup)·AMT(American Tower), DoD3 요구 "최소 3종목"을 넘김.
+- AAPL·NVDA·AAL·AMT: 상대차 대부분 **±1~7%**(EV/EBITDA만 AAL +7.10%·AMT −7.56%로 다른 축보다 큼, EV 산식 차이로 추정·미확정). AAPL·NVDA는 SEC `NetIncomeLoss`·`StockholdersEquity`·매출 직접대조로 **분모(재무) 완전 일치** 확인 — 잔차는 분자(가격·주식수 시점) 쪽.
+- 🔴 **NVDA 최초 대조에서 −60.46%(터무니없음)** — 외부 FY2024(2024-01-28 종료) 컬럼과 우리 FY2025(2025-01-26 종료, `calYear` 규칙으로 "2024"라 라벨됨) 데이터를 잘못 비교한 것이 원인이었다. 올바른 외부 FY2025 컬럼으로 재대조하니 전 축 3% 이내로 좁혀짐 — 기존 STATE.md "NVDA 회계연도 라벨" 판정대기 항목과 같은 뿌리(`calYear` 5월 경계 규칙)의 새 증거. 🔴 **부수 발견**: STATE.md의 그 항목은 "fiscal_year=2025 vs NVDA 자체 FY2026"이라 적혀 있는데, 오늘 직접 조회한 `us_valuation`은 NVDA를 `fundamentals_fiscal_year=2024`(NVDA 자체 FY2025 실적)로 보여준다 — 같은 −1 오프셋 메커니즘이나 관측된 연도 쌍이 다르다. 원인은 조사하지 않고 사실만 STATE.md에 남겼다.
+- **Citigroup(금융, EV/EBITDA 성립 여부 확인용)**: PER −21.43%·PBR −10.15%·PSR −21.78%로 유독 크다. SEC 직접대조 결과 `net_income`·`equity` 정확 일치(revenue만 0.51% 차이, 큰 잔차를 설명 못 함) → **분모 오류가 아니다** — 잔차는 재척도 근사의 한계(20개월간 자본정책 변화 미반영)로 추정, 확정 아님. EV/EBITDA는 우리(`MISSING_MARKET_DATA`, driver5 시장데이터 결측)·외부(애초에 미표시) 둘 다 결측이나 사유는 다르다.
+
+**§3 업종별 축 적용성(모델 결함 발견)** — Damodaran 원전 2건을 직접 다운로드해 PyPDF2로 판독(`data/sources/damodaran_pdfs/finsvc.pdf`·`c21.pdf`, WebFetch 1차 시도는 텍스트 손상으로 실패):
+- **"Financials 업종은 EV/EBITDA뿐 아니라 PSR도 정의상 미적용"** — `Investment Valuation` 3rd ed. c21 원문 직접 인용: *"Since sales or revenues are not really measurable for financial service firms, price-to-sales ratios cannot be estimated or used for these firms."* 독립 실무 출처(IB 교육자료 2건)로도 EV/EBITDA 배제 이유(이자비용이 영업비용·부채가 원재료) 교차 확인.
+- 🔴 **핵심 발견 — minSample이 결함을 걸러주는 장치가 아니라 우연이다**: EV/EBITDA-Financials는 minSample(20)이 우연히 가려준다(실측 n=16). 그런데 **PSR-Financials는 실측 n=61로 임계값을 넘어 그대로 계산·화면에 노출된다.** 같은 개념적 결함인데 표본 크기라는 우연에 따라 가려지거나 안 가려지는 것이 실측으로 확인됐다.
+- Real Estate — PER·PBR: 실무출처 4건(P/FFO·NAV가 업계표준) — "계산은 되나 왜곡/비선호"(Financials·EV-EBITDA처럼 정의상 불가능은 아님), minSample로 가려짐(n=10/17). EV/EBITDA: 실무출처 확인 — "REIT엔 정상 적용"(은행과 달리 부채가 정상 자본구조)인데도 표본부족(n=4)으로 **똑같이** 가려진다 — "개념상 맞는 축이 우연히 가려짐" 사례.
+- 나머지 9개 업종×4축 = 업종별 개별 확인 없이 "적용(일반론)"(근거 없이 미적용이라 적지 않는다는 원칙 준수, 원전이 금융서비스업만 예외로 별도 취급하는 구조 위의 소극적 추론임을 명시).
+- 🔴 **`SECTOR_RELATIVE_SPEC`은 이 STEP에서 바꾸지 않았다 — 표만 만들고 장은태 판정을 기다린다.**
+
+**§4 문서** — `docs/probe_958_external_check.json` 신규(1~3단계 원자료 전부) · `data/sources/README.md`(damodaran_pdfs 절 신규, 원본 PDF 2건 저장) · `docs/VALUATION_SPEC.md`(검증 절에 STEP958 항목 2개 추가, DoD3 상태 ❌→🟡) · `docs/LENS_COMPLETION_STANDARD.md`(Q1 항목3 ❌→🟡·요약표 갱신·마감표 갱신) · `docs/STATE.md`(STEP957 소급 기록 + STEP958 모델결함 신규 항목 + NVDA 라벨 불일치 추가기록).
+
+**무변경** — `components/Q1Section.tsx`·`messages/*.json`·`app/[locale]/stock/[symbol]/page.tsx`·`lib/sectorRelative.ts`(SECTOR_RELATIVE_SPEC) diff 0(확인). DB 쓰기 0(조회만). 크론 미호출.
+
+**테스트** — 이 STEP은 코드 변경이 없어 `npm test`/`build` 재실행 불필요(조사·문서만).
+
+🔴 **화면 무변경 · 표시 문구 미접촉 · 크론 미호출** — DoD3는 ❌→🟡(완전 충족 아님, EV/EBITDA 잔차 원인 미분해). 업종별 축 적용성은 **모델 결함으로 기록만 하고 판정은 장은태에게 넘긴다.**
+
 ## 2026-08-09 (128) — 🟩 **STEP 956: Q1 ②단계 완성 — 업종 백분위 계산·저장 배선**
 
 > **성격**: 신규 테이블 + 신규 순수 함수 + 크론 배선(추가분만) + 1회 백필 스크립트. **화면 무변경**(`app/(routes)`·`components`·`messages` 0줄)·`us_valuation`·`revdcf_results`·`us_sector_resolved`·`us_sector_wide`에 쓰지 않음·크론 미호출(스크립트 1회 실행)·`lib/sector.ts`·`lib/valuation.ts` 계산 로직 무수정.

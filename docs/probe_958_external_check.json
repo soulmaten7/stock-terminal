@@ -1,0 +1,147 @@
+{
+  "step": 958,
+  "measuredAt": "2026-08-09",
+  "asOf": "2026-08-08",
+  "note": "값의 신선도는 이 STEP의 문제가 아니다(내일 크론이 새 창으로 갱신). 회계연도를 맞춰 대조해 계산 정확성만 본다.",
+
+  "step1_externalSourceCandidates": {
+    "goal": "연도별(fiscal-year) PER·PBR·PSR·EV/EBITDA 히스토리를 주는 무료 출처 — 948 §5는 TTM 상대와 대조해 무산됨. 우리는 '최신 회계연도 재무 ÷ 오늘 시총'이라 연도별 배수가 필요.",
+    "link_hub_prefilter": "규칙 ⓪-5-B — link_hub analysis·disclosure 카테고리(US, is_active) 먼저 조회. analysis 14건·disclosure 12건 중 연도별 배수를 표 형태로 보여줄 후보 = Stock Analysis(무료·올인원)·GuruFocus(가치지표)·Macrotrends(10년+ 장기차트)·YCharts(유료)·Wisesheets(유료 엑셀).",
+    "candidates": [
+      {
+        "name": "Stock Analysis (stockanalysis.com)",
+        "url": "https://stockanalysis.com/stocks/{SYMBOL}/financials/ratios/",
+        "result": "되는 곳 — 무료·키 불필요. 회계연도별 컬럼(FY2021~FY2025 등)에 P/E·P/B·P/S·EV/EBITDA가 나란히 있고, 각 컬럼이 그 회계연도 말 종가('Last Close Price')를 명시한다. 이번 대조의 실제 출처로 채택."
+      },
+      {
+        "name": "Macrotrends (macrotrends.net)",
+        "url": "https://www.macrotrends.net/stocks/charts/AAPL/apple/pe-ratio",
+        "result": "안 되는 곳(이번 세션 기준) — HTTP 403(WebFetch·curl 둘 다 브라우저 UA로도 차단). link_hub description은 '10년+ 장기 재무 차트'로 후보였으나 실제 조회 실패."
+      },
+      {
+        "name": "GuruFocus (gurufocus.com)",
+        "url": "https://www.gurufocus.com/term/pettm/AAPL",
+        "result": "안 되는 곳(이번 세션 기준) — HTTP 403(동일)."
+      },
+      {
+        "name": "YCharts (ycharts.com)",
+        "url": "https://ycharts.com/companies/AAPL/pe_ratio",
+        "result": "접속은 되나(HTTP 200) 연도별 히스토리는 유료 — 무료 화면은 최근 값 + 최근 2개월 일별값뿐. 'View and export this data back to 1993'가 유료 트라이얼 뒤에 있음."
+      }
+    ],
+    "priceBasisConfirmed": {
+      "external": "회계연도 말 종가(FY-end closing price) × 그 시점 재무 = 회계연도 시점 스냅샷 배수.",
+      "ours": "오늘 시총(us_market_cap, as_of=오늘) ÷ 최신 회계연도 재무(us_fundamentals) — us_valuation.market_cap과 f.shares는 서로 다른 출처(오늘 실제 시총 vs 회계연도 시점 재무의 shares 필드)이며 의도적으로 다르다.",
+      "reconciliation": "직접 대조 불가(가격 시점이 다름) → 외부 FY 배수를 (오늘가격/FY말가격) 배율로 재척도(rescale)해 '오늘 가격 기준이면 얼마였을까'로 변환한 뒤 우리 값과 비교. 이 재척도는 FY말 이후 발생한 자사주매입·유상증자로 주식수가 달라졌다는 점을 반영하지 못하는 근사치임을 명시(§2-3)."
+    }
+  },
+
+  "step2_fiveStockComparison": {
+    "methodologyNote": "표시값 = 외부 FY 배수 × (우리 as_of 가격 / 외부 FY말 종가). relDiffPct = (우리값-재척도값)/재척도값×100.",
+    "rows": [
+      {
+        "symbol": "AAPL", "role": "4축 전부 있는 대형주",
+        "fiscalYearMatched": "FY2024 (2024-09-28)", "notes": "우리 fundamentals_fiscal_year=2024와 정확히 같은 회계연도.",
+        "ourPrice": 313.3299865722656, "extFyEndPrice": 227.79, "rescaleFactor": 1.375521,
+        "axes": {
+          "per": { "our": 48.783757819237, "extFy": 37.47, "rescaledExt": 51.541, "relDiffPct": -5.35 },
+          "pbr": { "our": 80.29489592526778, "extFy": 60.46, "rescaledExt": 83.164, "relDiffPct": -3.45 },
+          "psr": { "our": 11.694079361039293, "extFy": 8.81, "rescaledExt": 12.118, "relDiffPct": -3.50 },
+          "evEbitda": { "our": 34.198330050601136, "extFy": 25.88, "rescaledExt": 35.598, "relDiffPct": -3.93 }
+        },
+        "secDirectCheck": { "netIncome": { "ours": 93736000000, "sec": 93736000000, "match": true }, "stockholdersEquity": { "ours": 56950000000, "sec": 56950000000, "match": true }, "revenue": { "ours": 391035000000, "sec": 391035000000, "match": true } }
+      },
+      {
+        "symbol": "NVDA", "role": "4축 전부 있는 대형주 (회계연도 라벨 확인용)",
+        "fiscalYearMatched": "NVDA 자체 FY2025 (2025-01-26 종료) — 우리 시스템의 fundamentals_fiscal_year=2024와 대응(calYear 5월 경계 규칙으로 NVDA FY2025를 calYear2024로 라벨).",
+        "criticalFinding": "처음에 외부 FY2024(2024-01-28 종료, NVDA 자체 라벨) 컬럼과 대조하니 PER 상대차 -60.5%(터무니없이 큼)가 나왔다 — 원인은 회계연도 자체가 다른 데이터를 비교했기 때문(net_income=72,880,000,000은 NVDA 자체 FY2025 실적이지 FY2024가 아님, FY2024 실적은 $29.76B 수준). 외부 FY2025(2025-01-26 종료) 컬럼으로 다시 맞추자 상대차가 전부 3% 이내로 줄었다 — 이번 STEP에서 새로 확인된 사실이며, 기존 STATE.md의 'NVDA 회계연도 라벨' 표시-문구 판정 대기 항목과 같은 뿌리(calYear 규칙)임을 재확인한다.",
+        "ourPrice": 223.9600067138672, "extFyEndPrice": 142.62, "rescaleFactor": 1.570327,
+        "axes": {
+          "per": { "our": 74.43105524478595, "extFy": 48.51, "rescaledExt": 76.177, "relDiffPct": -2.29 },
+          "pbr": { "our": 68.38195452040289, "extFy": 44.01, "rescaledExt": 69.110, "relDiffPct": -1.05 },
+          "psr": { "our": 41.56827594688001, "extFy": 26.75, "rescaledExt": 42.006, "relDiffPct": -1.04 },
+          "evEbitda": { "our": 64.69013894211265, "extFy": 41.50, "rescaledExt": 65.169, "relDiffPct": -0.73 }
+        },
+        "wrongFiscalYearAttempt": { "externalFy2024ColumnUsedByMistake": { "extFyEndPrice": 61.03, "extPe": 51.29 }, "resultingBogusRelDiffPct": -60.46 }
+      },
+      {
+        "symbol": "AAL", "role": "자본잠식 1 (PBR이 NO_VALUE인 케이스)",
+        "fiscalYearMatched": "FY2024 (2024-12-31)",
+        "correctionNote": "STEP 957 육안확인 요청 문구는 'AAL 적자·PER 미성립'을 전제했으나 실측은 다르다 — AAL은 FY2024 순이익 $846M으로 흑자였고(PER은 정상 계산됨), 문제는 자기자본이 음수(-$3,977M, 다년간 손실·자사주매입·팬데믹부채 누적)라 PBR만 NO_VALUE(NEGATIVE_EQUITY)다. 사실과 다른 전제를 그대로 보고한다.",
+        "ourPrice": 15.9399995803833, "extFyEndPrice": 17.43, "rescaleFactor": 0.914515,
+        "axes": {
+          "per": { "our": 12.472576605200945, "extFy": 14.06, "rescaledExt": 12.858, "relDiffPct": -3.00 },
+          "pbr": { "our": null, "ourUnavailable": "NEGATIVE_EQUITY", "extFy": -2.72, "note": "외부는 음수 P/B를 그대로 보여준다(-2.72). 우리는 음수 자기자본이면 PBR을 아예 내지 않는다(정의상 결정, 규칙 5-1) — 수치 비교 불가, 설계 차이로 기록." },
+          "psr": { "our": 0.19464315006179558, "extFy": 0.21, "rescaledExt": 0.192, "relDiffPct": 1.35 },
+          "evEbitda": { "our": 8.33523053759867, "extFy": 8.51, "rescaledExt": 7.783, "relDiffPct": 7.10 }
+        },
+        "secDirectCheck": "이번 STEP에서 AAL은 SEC 직접 대조를 하지 않음(AAPL·C만 수행) — 미측정으로 남긴다."
+      },
+      {
+        "symbol": "C", "role": "금융 1 (Citigroup, EV/EBITDA 성립 여부 확인)",
+        "fiscalYearMatched": "FY2024 (2024-12-31)",
+        "evEbitdaApplicability": "우리: unavailable.evEbitda='MISSING_MARKET_DATA'(debt·non_operating_assets·shares 전부 null — driver5 시장데이터 자체를 못 구함). 외부(stockanalysis.com): EV/EBITDA 자체를 화면에 표시하지 않음(PE·forwardPE·PEG·PS·PB만 표시) — WebFetch 응답 원문: 'This omission is typical for banking institutions, as the EV/EBITDA metric is more commonly applied to companies with traditional operating earnings structures rather than financial services firms whose profitability is measured differently.' 🔴 이 문장은 페이지 원문이 아니라 WebFetch가 페이지를 요약한 AI 모델의 설명일 가능성이 있어 1차 근거로 못 쓴다 — §3의 Damodaran 원전 인용으로 별도 확인함.",
+        "ourPrice": 135.0, "extFyEndPrice": 70.39, "rescaleFactor": 1.917886,
+        "axes": {
+          "per": { "our": 17.856328871786783, "extFy": 11.85, "rescaledExt": 22.727, "relDiffPct": -21.43 },
+          "pbr": { "our": 1.0855998751282372, "extFy": 0.63, "rescaledExt": 1.208, "relDiffPct": -10.15 },
+          "psr": { "our": 2.8053561947424495, "extFy": 1.87, "rescaledExt": 3.586, "relDiffPct": -21.78 },
+          "evEbitda": { "our": null, "extFy": null, "note": "양쪽 다 결측 — 단 사유가 다르다(우리=데이터 파이프라인 결측, 외부=은행이라 애초에 안 보여줌으로 추정)" }
+        },
+        "secDirectCheck": { "netIncome": { "ours": 12682000000, "sec": 12682000000, "match": true }, "stockholdersEquity": { "ours": 208598000000, "sec": 208598000000, "match": true }, "revenue": { "ours": 80722000000, "sec_us_gaap_Revenues": 81139000000, "diffPct": 0.51, "note": "재무(분모)는 net_income·equity가 SEC와 정확히 일치. revenue만 0.51% 차이(태그 선택 차이로 추정, 원인 미확정) — 이 정도 크기로는 PER·PSR의 -21%대 큰 상대차를 설명 못 한다." }
+      },
+      {
+        "symbol": "AMT", "role": "Real Estate 1 (American Tower)",
+        "fiscalYearMatched": "FY2024 (2024-12-31)",
+        "ourPrice": 172.5399932861328, "extFyEndPrice": 183.41, "rescaleFactor": 0.940734,
+        "axes": {
+          "per": { "our": 35.258638168581705, "extFy": 38.05, "rescaledExt": 35.795, "relDiffPct": -1.50 },
+          "pbr": { "our": 23.77054779492638, "extFy": 25.35, "rescaledExt": 23.848, "relDiffPct": -0.32 },
+          "psr": { "our": 7.9386944813966345, "extFy": 8.46, "rescaledExt": 7.959, "relDiffPct": -0.25 },
+          "evEbitda": { "our": 17.54036434571372, "extFy": 20.17, "rescaledExt": 18.975, "relDiffPct": -7.56 }
+        }
+      }
+    ]
+  },
+
+  "step2_3_decomposition": {
+    "smallResiduals_1to5pct": "AAPL(전축)·NVDA(정정후 전축)·AAL(PER·PSR)·AMT(PER·PBR·PSR) — 전부 이 범위. AAPL·NVDA는 SEC 직접대조로 분모(net_income·equity·revenue)가 정확히 일치함을 확인했으므로, 이 잔차는 분자(시총) 쪽 — 재척도 근사가 FY말 이후의 자사주매입·유상증자로 인한 주식수 변화를 반영하지 못하는 데서 오는 것으로 추정(확정은 아님, 자사주매입 규모를 직접 재지 않았다).",
+    "largerResiduals_evEbitda_7pct": "AAL +7.10%·AMT -7.56% — EV/EBITDA만 다른 3축보다 체계적으로 크게 벌어진다. EV(기업가치) 산식 자체(부채·현금성자산 상계 방식)가 우리와 외부 제공처 사이에 다를 가능성이 높다(리스부채·소수주주지분 포함여부 등) — 원인은 추정이며 이번 STEP에서 정확한 산식 대조까지는 안 갔다.",
+    "largestResidual_C_10to22pct": "Citigroup PER -21.43%·PBR -10.15%·PSR -21.78%. SEC 직접대조 결과 net_income·equity는 정확히 일치, revenue만 0.51% 차이(설명 안 되는 크기). 🔴 결론: 분모(재무데이터) 오류가 아니다 — 잔차 대부분은 분자(가격·주식수 시점) 쪽이며, C는 AAPL·NVDA보다 재척도 근사의 오차가 훨씬 크게 나타난다(2024-12-31~2026-08-08 약 20개월 동안의 자사주매입·배당 등 자본정책 변화가 더 컸을 가능성 — 미확인, 추정)."
+  },
+
+  "step3_sectorAxisApplicability": {
+    "goal": "업종 11 × 축 4 = 44칸의 '실무 적용성'을 외부 근거로. 근거 없으면 불명.",
+    "primarySources": [
+      { "name": "Aswath Damodaran, 'The Valuation of Financial Service Firms' (slide deck)", "url": "https://pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/finsvc.pdf", "savedLocal": "data/sources/damodaran_pdfs/finsvc.pdf", "quote": "Debt, for non-financial service firms, is a source of capital. For a financial service firm, debt is more raw material than source of capital. (slide 12)" },
+      { "name": "Damodaran, Investment Valuation 3rd ed., Chapter 21 'Valuing Financial Service Firms'", "url": "https://pages.stern.nyu.edu/~adamodar/pdfiles/val3ed/c21.pdf", "savedLocal": "data/sources/damodaran_pdfs/c21.pdf", "quote": "Firm value multiples such as value-to-EBITDA or value-to-EBIT cannot be easily adapted to value financial service firms, because neither value nor operating income can be easily estimated for banks or insurance companies. ... Since sales or revenues are not really measurable for financial service firms, price-to-sales ratios cannot be estimated or used for these firms. ... Equity multiples such as price-to-earnings or price-to-book ratios are a much better fit for financial service firms than value multiples such as value to EBITDA. (p.3, p.19-20 'Choices in Multiples')" },
+      { "name": "Practitioner corroboration (IB training material, independent of Damodaran)", "urls": ["eqvista.com/company-valuation/bank-valuation", "ibinterviewquestions.com FIG guide"], "gist": "EBITDA is not a relevant measure of bank profitability because interest expense is an operating cost; including all bank debt in enterprise value produces a meaninglessly large number. P/B and P/TBV play EV/EBITDA's role for financial institutions." },
+      { "name": "REIT valuation practitioner sources (multiple, independent of Damodaran — no direct Damodaran REIT citation found)", "urls": ["wallstreetprep.com/knowledge/price-to-ffo", "ibinterviewquestions.com real-estate-reit-valuation", "reit.com/glossary/net-asset-value"], "gist": "GAAP 감가상각이 REIT 순이익을 왜곡해 P/E는 업계표준에서 P/FFO로 대체됨(계산 자체가 불가능한 건 아님, '왜곡됨·덜 쓰임'). Price-to-book도 취득원가 기준이라 NAV·P/NAV보다 덜 선호됨(마찬가지로 계산은 가능). EV/EBITDA는 REIT에도 널리 쓰인다(은행과 다름 — REIT의 부채는 정상적 자본구조)." }
+    ],
+    "table": {
+      "note": "적용/미적용/불명 3분류. Financials·Real Estate는 위 출처로 직접 확인. 나머지 9개 업종은 업종별 개별 확인을 하지 않았다 — '적용(일반론)'은 위 원전들이 금융서비스업을 '예외'로 별도 취급하는 서술 구조(정상 기업은 4축 전부가 표준 툴킷이라는 전제) 위에서의 소극적 추론이며, 각 업종을 하나씩 반증 탐색한 결과가 아니다. 개별 종목의 결측(적자·자본잠식 등)은 업종 축 적용성과 다른 층위(unavailable NO_VALUE)이며 이 표의 대상이 아니다.",
+      "financials": {
+        "per": { "verdict": "적용", "evidence": "Damodaran c21 p.19 — PE ratio directly discussed and used for banks/insurers throughout the chapter." },
+        "pbr": { "verdict": "적용", "evidence": "Damodaran c21 — PBV은 은행 밸류에이션의 핵심 지표로 별도 절(Price-to-Book Value Ratios)까지 할애." },
+        "psr": { "verdict": "미적용", "evidence": "Damodaran c21 직접 인용: 'Since sales or revenues are not really measurable for financial service firms, price-to-sales ratios cannot be estimated or used for these firms.'", "currentHandling": "🔴 계산됨·화면에 노출됨 — minSample(20)로 안 가려짐(2026-08-08 실측 n=61, 임계값 이상). 이 STEP에서 새로 확인된 사실." },
+        "evEbitda": { "verdict": "미적용", "evidence": "Damodaran finsvc.pdf slide12 + c21 p.19 + 실무 IB 교육자료(독립 출처) 3건 모두 일치.", "currentHandling": "minSample(20)로 가려짐(실측 n=16, 임계값 미만) — CLAUDE.md가 이미 지적한 '우연히 가려짐' 그대로." }
+      },
+      "realEstate": {
+        "per": { "verdict": "미적용(정도차 있음)", "evidence": "다수 실무 출처(4건) — GAAP 감가상각이 순이익을 구조적으로 낮춰 P/FFO가 업계표준. 🔴 계산 자체가 불가능한 Financials·EV/EBITDA와는 성격이 다르다(값은 나오지만 왜곡된다는 주장) — Damodaran 원전에서 REIT 전용 서술은 이번 조사로 못 찾음.", "currentHandling": "minSample(20)로 가려짐(실측 n=10)." },
+        "pbr": { "verdict": "미적용(정도차 있음)", "evidence": "실무 출처(NAV 비교 다건) — 취득원가 기준 장부가가 부동산 시가상승을 반영 못해 NAV·P/NAV 선호. 마찬가지로 계산 불가는 아님.", "currentHandling": "minSample(20)로 가려짐(실측 n=17)." },
+        "psr": { "verdict": "불명", "evidence": "이번 조사에서 REIT 매출(임대수익) 관련 PSR 적용성 서술을 찾지 못함 — 근거 없으므로 불명으로 둔다.", "currentHandling": "minSample(20)로 가려짐(실측 n=18)." },
+        "evEbitda": { "verdict": "적용", "evidence": "실무 출처 — 'REITs use traditional metrics like EBITDA and EV/EBITDA'. 은행과 달리 REIT의 부채는 정상 자본구조(운영의 원재료가 아님)라는 것이 은행 사례와의 핵심 대비점.", "currentHandling": "🔴 minSample(20)로 가려짐(실측 n=4) — 그런데 이 축은 개념상 적용 가능한데도 표본부족으로 가려지는 사례. Financials·EV/EBITDA(개념상 미적용+표본부족 이중)와 다른 성격임을 구분해야 한다." }
+      },
+      "otherNineSectors_generalApplicability": {
+        "sectors": ["Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy", "Health Care", "Industrials", "Information Technology", "Materials", "Utilities"],
+        "allFourAxes": "적용(일반론) — 개별 업종 반증 탐색 없음. 위 표 note 참조.",
+        "caveat": "Health Care(바이오텍 다수 적자)·Information Technology(초기 성장주 적자) 등은 개별 종목 결측(NO_VALUE)이 축 자체의 업종 부적합보다 많을 수 있으나 그건 이 표의 층위가 아니다."
+      }
+    }
+  },
+
+  "sourcesFetchedRaw": {
+    "note": "WebFetch 결과는 페이지를 처리한 소형 모델의 요약이며 원문 그대로의 인용이 아닐 수 있다 — 숫자(가격·배수)는 표 형태 데이터라 왜곡 위험이 낮다고 판단해 채택했으나, Citigroup EV/EBITDA 관련 서술 문장 하나는 신뢰도를 낮춰(§2 해당 항목에 명시) 별도로 Damodaran 원전 PDF를 직접 다운로드해 PyPDF2로 텍스트 추출·확인했다.",
+    "damodaranPdfExtractionMethod": "curl로 PDF 다운로드 → Python PyPDF2로 페이지별 텍스트 추출 → 키워드(EBITDA/debt/bank/multiple) grep으로 관련 페이지 특정 → 전문 인용."
+  }
+}

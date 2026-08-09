@@ -40,6 +40,16 @@
 
 🔴 **값 검증 함의**: 우리 GAP = 학술 MICAP = NC "Growth Appreciation Period" = Rappaport market-implied duration (**3개 독립 출처가 방법을 확인**). 그러나 **재현 가능한 동시점 개별 종목 값 대조는 불가** — CAP 논문은 1997+터미널 다름, NC는 자체조정 NOPAT 비공개, 둘 다 무성장 터미널. 우리 2026 범위(중앙 11·1~24)는 논문 범위(총 10~15·개별 0~2~20+)와 **정합**.
 
+## `damodaran_pdfs/` — Q1 업종별 축 적용성 원전 (STEP 958)
+
+| 파일 | 출처 | 우리와의 관계 |
+|---|---|---|
+| `finsvc.pdf` | Damodaran, **"The Valuation of Financial Service Firms"**(강의 슬라이드, `pages.stern.nyu.edu/~adamodar/pdfiles/eqnotes/finsvc.pdf`) | Q1 「업종별 축 적용성」(Financials × EV/EBITDA) 근거. slide 12: *"Debt, for non-financial service firms, is a source of capital. For a financial service firm, debt is more raw material than source of capital."* |
+| `c21.pdf` | Damodaran, **Investment Valuation** 3rd ed. Chapter 21 "Valuing Financial Service Firms"(`pages.stern.nyu.edu/~adamodar/pdfiles/val3ed/c21.pdf`) | 같은 목적, 더 직접적인 인용. p.3/p.19-20 "Choices in Multiples": *"Firm value multiples such as value-to-EBITDA or value-to-EBIT cannot be easily adapted to value financial service firms... Since sales or revenues are not really measurable for financial service firms, price-to-sales ratios cannot be estimated or used for these firms... Equity multiples such as price-to-earnings or price-to-book ratios are a much better fit for financial service firms than value multiples."* → **Financials 업종은 EV/EBITDA뿐 아니라 PSR도 미적용**(신규 발견, `docs/probe_958_external_check.json`) |
+
+🔴 **PDF 판독 방법**: 두 파일 다 ToUnicode 맵 정상(글리프 복호 불필요) — `PyPDF2.PdfReader(...).pages[i].extract_text()`로 바로 판독됨. 키워드(`EBITDA`·`debt`·`bank`·`multiple`) grep으로 관련 페이지 특정 후 전문 인용.
+🔴 **다운로드**: `curl -A "Mozilla/5.0 ..." -o {file} {url}` — WebFetch 1차 시도는 텍스트가 손상돼 보여(압축 인코딩) 실패, curl로 직접 받아 PyPDF2로 재추출.
+
 ## `external/` — 외부 방법론 원본 (유니버스 A-9)
 
 | 파일 | 출처 | 관계 |
