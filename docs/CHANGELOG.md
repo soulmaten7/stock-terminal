@@ -1,6 +1,28 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (124) — 🟪 **STEP 952b: damodaran tier 누락 원인 규명 — 원래 가설(RAYA형 중복)이 틀렸고, 더 큰 버그(fetchAll 페이지네이션 비결정성)를 발견**
+
+> **성격**: 조사 전용(사실 등재, 판정·처방 없음). **코드 무변경**(`lib/sector.ts` 무수정)·DB 쓰기 0·크론 미호출·화면 무접촉. `us_sector_resolved`·`us_sector_wide` 무갱신.
+
+**§1 RAYA 원자료** — `damodaran_industry`에 `ticker_norm='RAYA'` 3행 전수: TSX `RAY.A`(Stingray Group, Canada, is_us_listed=false) · NasdaqCM `RAYA`(Erayak Power Solution, China, **is_us_listed=true**, primary_sector=Industrials) · CASE `RAYA`(Raya Holding, Egypt, is_us_listed=false). `us_sector_wide`·`us_valuation`·`us_cik_map` 전부 심볼 `RAYA`로 정확히 저장(대소문자·구두점 문제 없음, `norm()` 매칭 정상).
+
+**§2 코드 추적 — 결정적 발견: `resolveSector()`는 비결정적이다.** `resolveSector(sb,['RAYA'])` 단독 호출 → 항상 성공. 그러나 `resolveSector(sb, [전체 1,127종목])` 재호출 시 **두 번 연속 실행에서 RAYA가 한 번은 미분류·한 번은 분류됨**으로 갈렸다 — 같은 코드·같은 인자인데 결과가 다르다. 원인 특정: `lib/sector.ts:64`(및 `:21`)의 `fetchAll()`이 `.order()` 없이 `.range()`로만 페이지네이션 — PostgreSQL/PostgREST는 `ORDER BY` 없는 쿼리의 행 순서를 보장하지 않아 페이지 경계에서 행이 누락될 수 있다. **결정적 실측**: `resolveSector()` 동일 인자 5회 연속 호출 — `damodaran_industry(is_us_listed=true)`의 `COUNT(*)`는 매번 6,937(고정, 데이터 불변)인데 분류 성공 건수(`full.size`)는 **1038/1038/1032/1038/1038**로 흔들렸다(미분류 89/89/**95**/89/89). RAYA는 이 5회 전부 성공 — RAYA 고유 문제가 아니라 **매 실행 무작위로 6개 안팎이 빠지는 일반 버그**임을 확인.
+
+**§3 29건 분류(A~E 재정의)** — 원래 가설 A(ticker_norm 중복형) 폐기, 실측대로: **F(페이지네이션 비결정성) 1건**(`RAYA`) · **B(is_us_listed=false, 설계대로 제외) 28건**(`AERO`·`ALM`·`API`·`ASM`·`MSC` 등 — Damodaran이 미국 상장으로 분류 안 함, 버그 아님) · C(industry_group 결측)·D(티커 표기 불일치)·E(그 외) = **0건**(29건 전부 정규화 매칭은 성공).
+
+**§4 Q0 영향(가장 중요)** — `us_sector_resolved`(1,021, Q0 원 데이터, 재계산 안 함) 재확인: source 분포 498/311/5/207 그대로. `source='yahoo'` 207건 중 **5건**(`PTGX`·`TEAM`·`TIGO`·`WMS`·`WTRG`)이 실제로는 damodaran tier가 잡았어야 정상인데 yahoo까지 내려간 흔적 확인. 이 5건은 SPDR 494종목 정답지(`us_sector_gics`)에 **없음** — "Damodaran vs 진짜 GICS 99.6%(492/494)" 수치가 이 증거로 직접 영향받았는지는 확인도 반증도 안 됨. Q0의 "미분류 0건·커버리지 100%" 숫자 자체는 오늘 재확인해도 참(재확인 완료) — 다만 그 실행의 tier 배정(귀속)이 결정론적이었다는 보장은 없다. **결론 없음** — Q0 마감을 무를지는 장은태 판정.
+
+**§5 기록** — `docs/probe_952b_damodaran_tier.json`(신규, §1~4 원자료+처방후보 3개(판정없음)+미측정 4건) · `docs/VALUATION_SPEC.md`("damodaran tier 조사 완료" 절 신설) · `docs/STATE.md`(ⓐ를 "조사완료·처방미정"으로, Q0 영향 사실 등재) · `docs/LENS_COMPLETION_STANDARD.md`(Q0 행에 952b 각주 — **Q0 판정 자체는 안 건드림**).
+
+**🔴 Cowork 실측 결함 기록(오늘 네 번째) — 조인 중복 미차단.** 951 보강②의 "53건(58.9%)"은 `COUNT(*)`(조인 행수, `ticker_norm` 중복으로 부풀려짐)를 썼어야 할 자리에 `COUNT(DISTINCT symbol)`을 안 써서 난 오류였다(952 보강에서 이미 29건으로 정정됨 — 이번 STEP은 그 재확인이자, 그 차이의 근본 원인(ticker_norm 비유일성)을 규명한 것). STEP 951 부속(120)의 "3일 순환" grep 범위 결함, STEP 947의 "1,127" 개수 오인, 이제 이 조인 중복까지 — **오늘 하루 측정 오류 4건째.**
+
+**신규 스크립트** — `scripts/probe_952b_raya_trace.ts`(RAYA 단독 vs 전체 비교, 최초 비결정성 포착) · `scripts/probe_952b_raya_flaky.ts`(5회 반복 결정적 실측). 둘 다 DB 읽기 전용.
+
+**무변경** — `lib/sector.ts`(무수정, 원인 조사만) · `lib/sectorCuts.ts`·`lib/sectorRelative.ts` · `us_sector_resolved`·`us_sector_wide`(둘 다 무갱신) · 화면 전부 · 크론 등록/수동실행(0).
+
+**못 한 것 / 미측정 / 추측** — `docs/probe_952b_damodaran_tier.json`의 `notDone_unmeasured_speculative` 4건: ① nasdaq/yahoo/spdr 3개 fetch도 같은 버그 영향받는지는 코드 패턴만 확인(개별 반복실측은 damodaran만 함) ② 5회 반복에서 "매번 다른 심볼이 빠지는지" vs "특정 심볼군이 반복 취약한지"는 총 개수 변동만 확인, 개별 심볼 전수비교 안 함 ③ 버그가 언제부터 있었는지(939~942 신설 당시부터인지) git blame 안 봄 ④ PTGX 등 5건이 정말 이 버그 때문인지, 아니면 그 실행 당시 다른 데이터 상태였는지는 재현 불가 — 정황 증거일 뿐 확정 인과 아님.
+
 ## 2026-08-09 (123) — 🟧 **STEP 952 보강: 미분류 90건 원인 실측(Cowork 수치 재검증·정정) + 명령서 결함 1건**
 
 > **성격**: 문서 정정(실측·오류 정정, 판정 없음). **코드 무변경**·DB 무변경·크론 미호출.

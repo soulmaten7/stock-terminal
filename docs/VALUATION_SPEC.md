@@ -100,10 +100,22 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 **미분류 90종목 전수**(`docs/probe_952_sector_wide_step1.json` 참조): 대부분 소형주·클로즈드엔드펀드(`BME`·`CII`·`CIK`·`CRF`·`DHY`·`FLC` 등)·해외 ADR. `AKO-A`/`AKO-B`처럼 구두점이 있는데도 형제매칭에 안 걸린 케이스 포함(2순위는 Damodaran 내부 형제만 봄 — SPDR/야후에 없고 Damodaran에도 없으면 3개 tier 전부 실패).
 
 🔴 **미분류 = 재료 부재가 아니다(2026-08-09 실측, `docs/probe_952b_unclassified.json`).** 90건 중 `us_cik_map` 90건(100%) 존재. **아래 두 수치는 Cowork이 먼저 제시한 값(damodaran 53건/58.9%·nasdaq 88건/97.8%)을 Claude Code가 Supabase 직접 재조회로 독립 재검증해 다르게 나온 결과다 — 원 수치를 정정한다**(90종목 모집단 자체·사전순 표본 20개는 재현 일치 확인됨):
-- `damodaran_industry`: 정규화 매칭 시 **29건(32.2%)**에 실제로 행이 존재(원 보고 53건은 `ticker_norm`이 여러 나라 기업에 중복 매핑돼 부풀려진 JOIN 행수였다 — 서로 다른 심볼 기준으로 세면 29건). 그중 `is_us_listed=true` 행을 가진 것은 **1건뿐**(`RAYA` — 미국 상장 중국기업, `primary_sector="Industrials"`). 🔴 그 1건조차 여전히 미분류로 남아 있다 — `resolveSector` tier-1이 왜 이 명백한 매치를 놓쳤는지는 이 STEP에서 원인을 규명하지 못했다(추가 조사 필요).
+- `damodaran_industry`: 정규화 매칭 시 **29건(32.2%)**에 실제로 행이 존재(원 보고 53건은 `ticker_norm`이 여러 나라 기업에 중복 매핑돼 부풀려진 JOIN 행수였다 — 서로 다른 심볼 기준으로 세면 29건). 그중 `is_us_listed=true` 행을 가진 것은 **1건뿐**(`RAYA` — 미국 상장 중국기업, `primary_sector="Industrials"`).
 - `us_sector_nasdaq`: 원시 존재 **90건(100%)**이나, `resolveSector`는 나스닥을 분류 tier로 쓰지 않는다(`crossCheck` 전용) — 5순위로 새로 추가할 경우 실제로 쓸 수 있는 건 `NASDAQ_TO_GICS` 매핑 성공분(`Miscellaneous`·결측 제외)뿐이며 그 수는 **79건(87.8%)**이다(원 보고 88건과도 다름, 집계 방식 차이로 추정·미확인).
 
-🔑 **질적 결론은 유지된다** — 미분류가 "정보 자체가 없어서"가 아니라 **있는데 안 붙는** 경우가 최소 29건(damodaran) 존재한다. 다만 규모는 원 보고보다 작다(53→29). `ⓐ(damodaran tier 조사)가 ⓑ(나스닥 5순위 추가)보다 먼저`라는 순서 판단은 바뀌지 않지만, ⓐ 조사 시 정확한 건수를 다시 실측해야 한다.
+### 🔴 damodaran tier 조사 완료(STEP 952b, 2026-08-09) — 원인 규명, 처방 미정
+
+`docs/probe_952b_damodaran_tier.json` 참조. **원래 가설(ticker_norm 중복=RAYA형)은 틀렸다** — 조사 중 그보다 크고 일반적인 버그를 발견했다.
+
+🔴 **핵심 발견 — `resolveSector()`는 동일 입력으로 반복 호출해도 결과가 매번 다르다.** `lib/sector.ts`의 `fetchAll()`(damodaran_industry·us_sector_nasdaq·us_sector_yahoo·us_sector_gics 4개 fetch 전부, `:21`·`:64`)이 `.order()` 없이 `.range()`만으로 페이지네이션한다 — PostgreSQL/PostgREST는 `ORDER BY` 없는 쿼리의 행 순서를 실행마다 보장하지 않으므로, 별개의 `.range()` 호출(페이지)들이 실행마다 다른 스캔 순서를 쓰면 경계에 걸친 행이 어느 페이지에도 안 들어가는(누락) 일이 생긴다. **실측**: 동일 인자로 `resolveSector()`를 5회 연속 호출 — `damodaran_industry(is_us_listed=true)`의 `COUNT(*)`는 매번 6,937로 고정(데이터는 안 바뀜)인데 분류 성공 건수는 **1038/1038/1032/1038/1038**로 흔들렸다(미분류 89/89/95/89/89). `RAYA`는 이 5회 전부 성공했다 — 즉 RAYA가 "항상" 실패하는 게 아니라, 어떤 실행에서는 RAYA가, 다른 실행에서는 무작위로 다른 6개 심볼이 빠진다.
+
+**29건 분류(A~E 대신 실측대로)**: **F(페이지네이션 비결정성) 1건**(`RAYA` — 이번 `us_sector_wide` 적재 실행에서 우연히 걸림) + **B(is_us_listed=false, 설계대로 제외) 28건**(`AERO`·`ALM`·`API`·`ASM`·`MSC` 등 — Damodaran이 애초에 미국 상장으로 분류 안 함, 버그 아님) + C(industry_group 결측)·D(티커 표기 불일치)·E(그 외) = **0건**(29건 전부 정규화 매칭 자체는 성공).
+
+🔴 **Q0(1,021종목)에도 같은 흔적이 있다.** `us_sector_resolved`의 `source='yahoo'`(tier-3) 207건 중 **5건**(`PTGX`·`TEAM`·`TIGO`·`WMS`·`WTRG`)이 실제로는 `damodaran_industry`에 `is_us_listed=true`·`primary_sector` 존재 행을 갖고 있다 — tier-1(damodaran)이 잡았어야 정상인데 tier-3까지 내려갔다. 이 5건은 SPDR 494종목 정답지(`us_sector_gics`)에는 없어 **"Damodaran vs 진짜 GICS 99.6%(492/494)" 수치가 이 증거로 직접 영향받았는지는 확인도 반증도 안 된다.** Q0의 "미분류 0건·커버리지 100%"라는 최종 숫자 자체는 오늘 재확인해도 참이다(재확인 완료) — 그러나 **source 라벨(어느 tier가 잡았다는 귀속)의 정확성과 최종 sector 커버리지는 다른 질문**이며, 그 실행의 tier 배정이 항상 결정론적이었다는 보장은 없다.
+
+🔴 **처방 후보(고르지 않음, 판정 대기)**: ① `fetchAll()`의 모든 `.range()` 호출에 안정적인 `.order()` 추가(비용: 소폭 성능저하 가능·다른 fetchAll류 함수도 같은 패턴인지 확인 필요, 이 STEP에서 미조사) ② damodaran tier의 `is_us_listed` 필터 완화(비용: 설계 변경, 28건 B형에 영향) ③ 현행 유지(비용: 비결정성 자체는 남음).
+
+🔑 **질적 결론은 유지된다** — 미분류가 "정보 자체가 없어서"가 아니라 **있는데 안 붙는** 경우가 존재한다(29건 중 1건 확정, 판정 대기 상태로 나머지 재확인 필요). 다만 규모는 최초 보고(53건)보다 작고(29건), 원인은 예상(ticker_norm 중복)과 다르다(fetchAll 페이지네이션 비결정성).
 
 **미성립 조건 전수** — `unavailableWhen` 그대로 3가지: ① `sector == null`(위 미분류 90종목) ② 축 값 자체가 없음(`us_valuation.unavailable`에 사유 있음 — `NEGATIVE_EARNINGS`·`MISSING_NET_INCOME` 등, `lib/valuation.ts` 기존 정의) ③ 업종 내 유효 표본 < `minSample`(아직 미정, 아래 재료 참조).
 

@@ -1,0 +1,86 @@
+{
+  "measuredAt": "2026-08-09",
+  "purpose": "STEP 952b — damodaran tier가 미분류 90건 중 29건에 실제로 재료가 있는데도 안 붙는 원인 조사. 원래 가설(A형: ticker_norm 중복=RAYA형)을 조사하다가 그보다 더 크고 일반적인 버그(F형: fetchAll 페이지네이션 비결정성)를 발견했다.",
+  "headlineFinding": "resolveSector()는 동일 입력으로 반복 호출해도 결과가 매번 다르다 — lib/sector.ts의 fetchAll()이 order 없이 range()로만 페이지네이션해(damodaran_industry·us_sector_nasdaq·us_sector_yahoo·us_sector_gics 4개 fetch 전부 동일 패턴, lib/sector.ts:21·64) PostgreSQL이 스캔 순서를 보장하지 않는다. 실측: 동일 코드·동일 인자로 5회 연속 호출 시 미분류 건수가 89/89/95/89/89로 흔들렸다(COUNT(*)는 항상 6937로 고정 — 데이터 자체는 안 바뀌었다, 페이지네이션 결과만 흔들린다).",
+
+  "step1_rayaRows": {
+    "totalRows": 3,
+    "rows": [
+      { "as_of": "2026-01-05", "exchange": "TSX", "ticker": "RAY.A", "company_name": "Stingray Group Inc. (TSX:RAY.A)", "industry_group": "Broadcasting", "primary_sector": "Communication Services", "sic_code": "4832", "country": "Canada", "ticker_norm": "RAYA", "is_us_listed": false },
+      { "as_of": "2026-01-05", "exchange": "NasdaqCM", "ticker": "RAYA", "company_name": "Erayak Power Solution Group Inc. (NasdaqCM:RAYA)", "industry_group": "Electrical Equipment", "primary_sector": "Industrials", "sic_code": "3690", "country": "China", "ticker_norm": "RAYA", "is_us_listed": true },
+      { "as_of": "2026-01-05", "exchange": "CASE", "ticker": "RAYA", "company_name": "Raya Holding Company for Financial Investments (S.A.E) (CASE:RAYA)", "industry_group": "Retail (Distributors)", "primary_sector": "Industrials", "sic_code": "7370", "country": "Egypt", "ticker_norm": "RAYA", "is_us_listed": false }
+    ],
+    "isUsListedTrueCount": 1,
+    "isUsListedTrueRow": "NasdaqCM:RAYA — Erayak Power Solution Group Inc.(China, is_us_listed=true, primary_sector=Industrials)",
+    "storedSymbolCheck": {
+      "us_sector_wide": "symbol='RAYA' (정확)",
+      "us_valuation": "symbol='RAYA' (정확)",
+      "us_cik_map": "symbol='RAYA', cik=1825875 (정확)",
+      "note": "대소문자·구두점 전부 정확히 'RAYA' — 정규화 문제 없음. norm('RAYA')='RAYA'로 damodaran_industry의 ticker_norm과 정확히 일치한다."
+    }
+  },
+
+  "step2_codeTrace": {
+    "isolatedCall": "resolveSector(sb, ['RAYA']) 단독 호출 → 성공: {sector:'Industrials', source:'damodaran'}",
+    "manualLogicReplay": "lib/sector.ts의 tier0~tier1 로직을 그대로 손으로 복제해 재생 → 매번 성공(RAYA가 tier1에서 정상적으로 잡힘)",
+    "fullListCall_run1": "resolveSector(sb, [전체 1127종목]) → RAYA 미분류(undefined)",
+    "fullListCall_run2_immediately_after": "같은 스크립트를 그대로 재실행 → RAYA 분류됨(damodaran) — 재현 안 됨(비결정적)",
+    "decisive5RunTest": {
+      "description": "동일 인자로 resolveSector() 5회 연속 호출, 매번 damodaran_industry(is_us_listed=true) COUNT(*)와 함께 측정",
+      "results": [
+        { "run": 1, "damoCount": 6937, "fullSize": 1038, "unclassified": 89, "raya": "damodaran" },
+        { "run": 2, "damoCount": 6937, "fullSize": 1038, "unclassified": 89, "raya": "damodaran" },
+        { "run": 3, "damoCount": 6937, "fullSize": 1032, "unclassified": 95, "raya": "damodaran" },
+        { "run": 4, "damoCount": 6937, "fullSize": 1038, "unclassified": 89, "raya": "damodaran" },
+        { "run": 5, "damoCount": 6937, "fullSize": 1038, "unclassified": 89, "raya": "damodaran" }
+      ],
+      "conclusion": "COUNT(*)는 6937로 고정(데이터는 안 변함). full.size(분류 성공 건수)는 1032~1038로 흔들린다(±6). RAYA 자체는 이 5회 전부 성공했다 — 즉 RAYA가 '항상' 실패하는 게 아니라, 어떤 실행에서는 RAYA가, 다른 실행에서는 다른 6개 심볼이 무작위로 빠진다."
+    },
+    "dropPoint": "lib/sector.ts:64 — fetchAll()의 `const { data } = await q.range(f, f + 999);`가 ORDER BY 없이 OFFSET 방식 페이지네이션을 한다(:21의 fetchSectorMap도 동일 패턴). PostgreSQL/PostgREST는 ORDER BY 없는 쿼리의 행 순서를 실행마다 보장하지 않는다 — 별개의 .range() 호출(페이지)들이 서로 다른 스캔 순서를 쓰면 경계에 걸친 행이 어느 페이지에도 안 들어가거나(누락) 두 페이지에 겹쳐 들어갈 수 있다(중복은 Map이 덮어써서 안 보임, 누락만 관측된다).",
+    "note": "이건 RAYA 고유 문제가 아니라 lib/sector.ts의 fetchAll() 전체(4개 호출 지점: damodaran_industry·us_sector_nasdaq·us_sector_yahoo·us_sector_gics)에 걸친 일반 버그다."
+  },
+
+  "step3_classification29": {
+    "note": "🔴 원래 가설(A=ticker_norm 중복형)은 틀렸다 — 실제로는 F(페이지네이션 비결정성) 1건 + B(is_us_listed=false, 설계대로 제외) 28건이다. C(industry_group 결측)·D(티커 표기 불일치)·E(그 외)는 0건 — 29건 전부 ticker_norm 정규화 매칭에는 성공했다(D=0 확정).",
+    "F_paginationNondeterminism": {
+      "n": 1,
+      "symbols": ["RAYA"],
+      "description": "is_us_listed=true 행이 실재하고 primary_sector도 있는데, fetchAll()의 페이지네이션이 이 행을 이번 us_sector_wide 적재 실행에서 우연히 놓쳤다. 재실행하면 잡힐 수도 있고 다른 심볼이 대신 빠질 수도 있다(비결정적)."
+    },
+    "B_isUsListedFalseOnly": {
+      "n": 28,
+      "symbols": ["AERO","ALAR","ALM","API","ASM","AUC","BME","CAE","CIG","CIGI","CII","CMBT","CMCM","CMII","CNL","COPR","CRDL","CRON","DBL","ELVA","FLC","LGHL","LIF","LIFE","LILAK","LIME","MSC","VSA"],
+      "sample3": ["AERO(4행 전부 is_us_listed=false)", "ASM(7행 전부 false)", "MSC(4행 전부 false)"],
+      "description": "damodaran_industry에 이 심볼로 매칭되는 행이 있지만 전부 is_us_listed=false다(Damodaran이 미국 상장으로 분류 안 함) — resolveSector tier-1의 :96 필터가 의도한 대로 제외한 것이다. 이건 버그가 아니라 설계다. 페이지네이션이 완벽했어도 이 28건은 여전히 미분류였을 것이다."
+    },
+    "C_industryGroupEmpty": { "n": 0 },
+    "D_tickerMismatch": { "n": 0, "note": "정규화(norm()) 매칭이 29건 전부에서 성공했다 — 표기 불일치는 관측되지 않았다." },
+    "E_other": { "n": 0 }
+  },
+
+  "step4_q0Impact": {
+    "us_sector_resolved_sourceBreakdown_todayReread": { "spdr": 498, "damodaran": 311, "yahoo": 207, "damodaran-sibling": 5, "total": 1021 },
+    "q0BaselineMatch": "위 분포는 Q0(STEP 939~942) 기록치(498/311/5/207)와 정확히 일치 — us_sector_resolved는 아직 재계산되지 않은 원 데이터다.",
+    "yahooSourced_couldHaveMatchedDamodaran": {
+      "n": 5,
+      "symbols": ["PTGX", "TEAM", "TIGO", "WMS", "WTRG"],
+      "description": "us_sector_resolved에서 source='yahoo'(tier-3)로 저장된 207건 중 5건이 실제로는 damodaran_industry에 is_us_listed=true·primary_sector 존재 행을 갖고 있다 — tier-1(damodaran)이 잡았어야 정상인데 tier-3(yahoo)까지 내려갔다. 같은 페이지네이션 버그의 흔적으로 보인다(확정 아님 — 그 실행 당시의 실제 스캔 순서는 재현 불가).",
+      "spdrGroundTruthOverlap": "0건 — 이 5개 심볼은 us_sector_gics(SPDR 494종목 정답지)에 없다. 따라서 Q0의 'Damodaran vs 진짜 GICS 99.6%(492/494)' 수치의 표본에는 이 5건이 포함되지 않는다 — 이 구체적 증거로는 99.6% 수치가 직접 영향받았는지 확인도 반증도 안 된다."
+    },
+    "coverageClaim": "🔴 Q0의 '미분류 0건·커버리지 100%'라는 결과 자체(숫자)는 오늘 재확인해도 여전히 참이다(us_sector_resolved 1,021행 전부 sector not null, 별도 재확인 완료) — 그러나 그 결과를 낸 실행이 이 페이지네이션 버그로부터 완전히 자유로웠다는 뜻은 아니다. 위 5건처럼 '진짜로는 damodaran 소속인데 yahoo로 표시된' 사례가 있어도 sector 값 자체가 우연히 맞으면(또는 값 차이가 감지되지 않으면) '미분류 0건'이라는 최종 결과에는 안 잡힌다 — source 라벨의 정확성과 최종 sector 커버리지는 서로 다른 질문이다.",
+    "conclusionNote": "🔴 결론을 내리지 않는다(장은태 판정). 사실만: ① 같은 버그가 오늘 5건에서 확인됐다 ② Q0의 SPDR 정답지 494종목 표본에는 이 5건이 없어 99.6% 수치가 직접 영향받았는지는 미확인 ③ Q0의 '0 미분류'라는 최종 결과 자체는 오늘 재확인해도 참이지만, 그 실행 과정의 tier 배정이 항상 결정론적이었다는 보장은 없다."
+  },
+
+  "prescriptionCandidates_noJudgment": [
+    { "candidate": "fetchAll()의 모든 .range() 호출에 안정적인 .order()(예: 기본키 또는 ticker_norm 오름차순)를 추가한다", "cost": "쿼리 실행계획이 인덱스 스캔이 아니라 정렬을 포함하게 될 수 있어 소폭 느려질 수 있다(미측정). lib/sector.ts뿐 아니라 같은 패턴을 쓰는 다른 fetchAll류 함수도 같이 봐야 할 수 있다(이 STEP에서 다른 파일은 조사 안 함)." },
+    { "candidate": "damodaran tier의 is_us_listed 필터를 완화한다(예: false여도 후보로 삼되 exchange가 US계열이면 채택)", "cost": "설계 변경 — 28건(B형)이 영향받는다. Damodaran이 is_us_listed=false로 분류한 이유를 존중할지 재검토가 필요하다." },
+    { "candidate": "지금 상태를 유지하고 재실행으로 흡수한다(다음 크론 실행이 다른 무작위 조합으로 대부분 잡을 가능성)", "cost": "결정론성이 없다는 사실 자체는 남는다 — '오늘은 90건, 내일은 다른 수의 다른 심볼들'이 계속 반복될 수 있다." }
+  ],
+
+  "notDone_unmeasured_speculative": [
+    "us_sector_nasdaq·us_sector_yahoo·us_sector_gics 3개 fetch도 같은 페이지네이션 버그의 영향을 받는지는 코드 패턴만 확인했고(같은 fetchAll 함수, .order() 없음) 개별 실측(반복호출로 흔들림 확인)은 damodaran_industry 하나만 했다 — 나머지 3개는 추정이다.",
+    "5회 반복에서 매번 다른 6개 심볼이 빠지는지, 아니면 특정 심볼 그룹이 반복적으로 취약한지는 5회 각각의 '어느 심볼이 빠졌는지' 전수 비교를 하지 않았다(총 개수 변동만 확인) — 미측정.",
+    "이 버그가 언제부터 있었는지(939~942 신설 당시부터인지, 이후 변경으로 생겼는지)는 git blame/log를 안 봐서 모른다.",
+    "us_sector_resolved의 5건(PTGX·TEAM·TIGO·WMS·WTRG)이 실제로 이 버그 때문에 yahoo로 내려간 것인지, 아니면 다른 이유(예: 그 실행 당시엔 is_us_listed 값 자체가 지금과 달랐을 가능성)인지는 그 실행을 재현할 수 없어 확정할 수 없다 — 정황 증거일 뿐 확정 인과가 아니다."
+  ]
+}
