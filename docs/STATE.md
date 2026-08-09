@@ -44,6 +44,12 @@
 - 🔴 **`damodaran_industry`가 왜 유독 불안정했는지는 여전히 미확정** — 정렬을 걸어 증상은 사라졌으나 원인을 안 것은 아니다.
 - 상세 = `docs/probe_954_verify.json`(검증)·`docs/probe_954_paging_backlog.json`(28곳 대장).
 
+✅ **STEP 955(2026-08-09) — us_sector_wide 재생성(954 처방 코드로) 완료.** 952가 적재한 1,127행은 954 이전의 비결정적 페이지네이션으로 만들어진 값이었다 — 재적재 전 **3회 반복으로 안정성 확인**(미분류 89/89/89, 전부 동일)한 뒤 같은 `as_of`(2026-08-08)로 upsert(DELETE 없음). 이전 값은 `us_sector_wide_snapshot`(tag=`pre_step954_paging`)에 보존.
+- **변화**: 미분류→분류 1건(`RAYA`, damodaran/Industrials — 952b 조사의 그 종목) · 분류→미분류 0건(회귀 없음) · sector 값 변경 0건 · source만 변경 3건(`WTRG`·`TEAM`·`WMS`, 전부 yahoo→damodaran). **출처 분포(확정): spdr402·damodaran605·sibling5·yahoo26·미분류89.**
+- 🔴 **`us_sector_resolved`(Q0, 1,021, 라이브 화면)에 대한 함의(조사만, 무접촉)** — 위 tier 변경 3종목(`WTRG`·`TEAM`·`WMS`)이 `us_sector_resolved`에도 전부 존재한다 → **3/1,021건이 「Q0 산출물도 같은 문제를 가졌다」의 크기다.** `us_sector_resolved` 재생성 여부 = **판정 대기**(라이브 화면이 읽는 표라 이동 시 별도 승인 필요). Q0 마감 판정 자체는 건드리지 않음.
+- `PTGX`·`TIGO`(952b가 지목한 나머지 2건)는 `us_valuation`(1,127) 유니버스 밖이라 이 재생성 대상 자체가 아니었다 — `us_sector_resolved`에서만 다뤄지는 종목, 그쪽 데이터는 미확인 그대로.
+- 상세 = `docs/probe_955_sector_regen.json`.
+
 🔴 **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙) NVDA 자신은 FY2026이라 부른다. 값은 SEC 원문과 일치하나 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. 표시 문구 판정 필요(장은태) — Q1 카드 작업 시 함께 정한다. 상세 = `docs/VALUATION_SPEC.md` 미해결 6번·`docs/LENS_COMPLETION_STANDARD.md` Q1 항목3.
 
 🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**

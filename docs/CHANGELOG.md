@@ -1,6 +1,30 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (127) — 🟩 **STEP 955: us_sector_wide 재생성 — 954 이후 코드로 재현 가능한 값 확정**
+
+> **성격**: DB 재적재(같은 as_of upsert, DELETE 없음). **화면 무변경**·`us_sector_resolved`(1,021)는 완전 무접촉·크론 미호출·`lib/sector.ts` 무수정(954 코드 그대로 호출)·`scripts/refresh_sector.ts` 미실행.
+
+**왜** — `us_sector_wide`(STEP 952 적재)는 954 이전의 비결정적 페이지네이션으로 만들어진 값이었다(미분류 90 = STEP 953이 확인한 "흔들리는 값" 중 하나). Q1 「업종 대비」 기준선 재료가 이 표인데, 흔들린 값 위에 기준선을 만들면 기준선도 재현 불가능해진다.
+
+**§1 재생성 전 스냅샷** — `us_sector_wide_snapshot`(신규, tag=`pre_step954_paging`)에 기존 1,127행 그대로 복사. 검증: 1,127행·미분류 90건(예상과 일치). RLS = `us_sector_wide`와 동일 패턴.
+
+**§2 재생성** — 대상 = `us_valuation` 최신 as_of(2026-08-08) 1,127종목(952와 동일 유니버스, 임의 축소 없음). `resolveSector(sb, symbols)`를 **954 코드로 무수정 호출**. 🔴 **적재 전 3회 반복** — 미분류 89/89/89(전부 동일, 안정 확인 후 적재 진행). `toResolvedRows()`로 변환해 같은 `as_of`(2026-08-08)로 upsert(DELETE 없음).
+
+**§3 before/after 전수 대조** — 미분류→분류 **1건**(`RAYA` → `damodaran`/`Industrials`, 952b 조사의 그 종목이 정확히 고쳐짐) · 분류→미분류 **0건**(회귀 없음) · sector 값 변경 **0건**(어느 종목도 배정된 섹터 자체는 안 바뀜) · source만 변경(sector 동일) **3건**(`WTRG`·`TEAM`·`WMS`, 전부 `yahoo`→`damodaran`). 산술 검산: damodaran 601→605(+4=신규분류1+source변경3) · yahoo 29→26(−3) · 미분류 90→89(−1) — 전부 정합.
+
+**§3-2 감시 5종목(952b 지목)** — `WTRG`·`TEAM`·`WMS` 3건은 `yahoo`→`damodaran`으로 올라감(예상대로). `PTGX`·`TIGO` 2건은 **before·after 둘 다 결과 없음** — `us_valuation`(1,127) 유니버스 자체에 없는 종목이라 이 재생성의 대상이 아니었다(교집합 640종목 문제, `us_sector_resolved`에서만 존재).
+
+**§3-3 출처 단계별 건수(952와 나란히, 확정값)**: spdr 402(불변) · damodaran 601→**605** · sibling 5(불변) · yahoo 29→**26** · 미분류 90→**89**.
+
+**§4 `us_sector_resolved`에 대한 함의(조사만, 무접촉)** — tier 변경 3종목(`WTRG`·`TEAM`·`WMS`) 전부 `us_sector_resolved`(1,021)에도 존재 — **3/1,021건이 「Q0 산출물도 같은 문제를 가졌다」의 크기.** `docs/STATE.md`에 등재: `us_sector_resolved` 재생성 여부 = 판정 대기(라이브 화면, 별도 승인). **Q0 마감 판정은 건드리지 않음.**
+
+**§5 문서** — `docs/VALUATION_SPEC.md`(출처표에 955 열 추가·952의 90이 흔들린 값이었다는 정정·`us_sector_resolved` 함의 단락) · `docs/STATE.md`(00-e 아래 955 결과 추가).
+
+**무변경** — `app/`·`components/`·`messages/`·`vercel.json`·`.github/workflows/`·`data/us_symbols.json`·`lib/sector.ts` diff 0(확인) · `us_sector_resolved`(1,021) 재확인 불변 · 크론 등록/수동실행 0 · `scripts/refresh_sector.ts` 미실행.
+
+**테스트** — `npm test` **310/310**(무변경 유지, 신규 테스트 없음 — 이 STEP은 데이터 재적재만).
+
 ## 2026-08-09 (126) — 🟦 **STEP 954: 페이지네이션 비결정성 처방 적용 — fetchAllRows 신설, 실측으로 흔들린 lib/sector.ts 2곳만 이관**
 
 > **성격**: 코드 수정(953 조사의 실제 처방 적용, 실측 지점만). **화면 무변경**·`us_sector_resolved`(1,021)·`us_sector_wide`(1,127) 무갱신·크론 미호출·DB 쓰기 0·KR 미접촉.

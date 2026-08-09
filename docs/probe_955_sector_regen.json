@@ -1,0 +1,133 @@
+{
+  "asOf": "2026-08-08",
+  "step1_snapshot": {
+    "total": 1127,
+    "nullSector": 90
+  },
+  "step2_targetCount": 1127,
+  "step2_existingAsOfMatch": true,
+  "step2_3_stabilityRuns": [
+    {
+      "classified": 1038,
+      "unclassified": 89
+    },
+    {
+      "classified": 1038,
+      "unclassified": 89
+    },
+    {
+      "classified": 1038,
+      "unclassified": 89
+    }
+  ],
+  "step2_3_stable": true,
+  "step2_4_saved": 1127,
+  "step3_unclassifiedToClassified": [
+    {
+      "symbol": "RAYA",
+      "newSector": "Industrials",
+      "newSource": "damodaran"
+    }
+  ],
+  "step3_classifiedToUnclassified": [],
+  "step3_sectorChanged": [],
+  "step3_sourceChanged": [
+    {
+      "symbol": "WTRG",
+      "sector": "Utilities",
+      "beforeSource": "yahoo",
+      "afterSource": "damodaran"
+    },
+    {
+      "symbol": "TEAM",
+      "sector": "Information Technology",
+      "beforeSource": "yahoo",
+      "afterSource": "damodaran"
+    },
+    {
+      "symbol": "WMS",
+      "sector": "Industrials",
+      "beforeSource": "yahoo",
+      "afterSource": "damodaran"
+    }
+  ],
+  "step3_2_watch5": [
+    {
+      "symbol": "PTGX",
+      "before": {
+        "sector": null,
+        "source": null
+      },
+      "after": {
+        "sector": null,
+        "source": null
+      }
+    },
+    {
+      "symbol": "TEAM",
+      "before": {
+        "sector": "Information Technology",
+        "source": "yahoo"
+      },
+      "after": {
+        "sector": "Information Technology",
+        "source": "damodaran"
+      }
+    },
+    {
+      "symbol": "TIGO",
+      "before": {
+        "sector": null,
+        "source": null
+      },
+      "after": {
+        "sector": null,
+        "source": null
+      }
+    },
+    {
+      "symbol": "WMS",
+      "before": {
+        "sector": "Industrials",
+        "source": "yahoo"
+      },
+      "after": {
+        "sector": "Industrials",
+        "source": "damodaran"
+      }
+    },
+    {
+      "symbol": "WTRG",
+      "before": {
+        "sector": "Utilities",
+        "source": "yahoo"
+      },
+      "after": {
+        "sector": "Utilities",
+        "source": "damodaran"
+      }
+    }
+  ],
+  "step3_3_sourceTally_after": {
+    "spdr": 402,
+    "damodaran": 605,
+    "damodaran-sibling": 5,
+    "yahoo": 26,
+    "unclassified": 89
+  },
+  "step3_3_sourceTally_952": {
+    "spdr": 402,
+    "damodaran": 601,
+    "damodaran-sibling": 5,
+    "yahoo": 29,
+    "unclassified": 90
+  },
+  "step4_tierChangedAlsoInResolved": {
+    "n": 3,
+    "symbols": [
+      "WTRG",
+      "TEAM",
+      "WMS"
+    ]
+  }
+}

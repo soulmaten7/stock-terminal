@@ -85,27 +85,31 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 **섹터 출처 — 5단계 그대로, `resolveSector()`를 수정 없이 재호출**(0순위 SPDR·1순위 Damodaran 직접·2순위 형제클래스·3순위 야후·4순위 미분류). `us_valuation` 최신 as_of(2026-08-08) 1,127종목 전체에 적용한 실측(Q0 1,021 기준과 나란히):
 
-| 출처 | Q0(1,021, STEP 939~942) | 952(1,127) |
-|---|---|---|
-| spdr(0순위) | 498 | 402 |
-| damodaran(1순위) | 311 | 601 |
-| damodaran-sibling(2순위) | 5 | 5 |
-| yahoo(3순위) | 207 | 29 |
-| 미분류(4순위) | 0 | 90 |
+| 출처 | Q0(1,021, STEP 939~942) | 952(1,127, 페이지네이션 비결정성 이전값) | 955(1,127, 954 처방 후 재생성 — **확정값**) |
+|---|---|---|---|
+| spdr(0순위) | 498 | 402 | 402 |
+| damodaran(1순위) | 311 | 601 | **605** |
+| damodaran-sibling(2순위) | 5 | 5 | 5 |
+| yahoo(3순위) | 207 | 29 | **26** |
+| 미분류(4순위) | 0 | 90 | **89** |
 
-🔴 **단순 확장이 아니다 — 두 유니버스는 부분집합 관계가 아니다.** `us_sector_wide`(952, 1,127종목)와 `us_sector_resolved`(Q0, 1,021종목)의 교집합은 **640종목뿐**(직접 교차대조, 불일치 0건 — 같은 함수·같은 입력이면 같은 결과가 나옴은 확인됐다). 나머지는 서로 다른 유니버스 소속이다 — `us_valuation`(SEC XBRL 기반, `us_cik_map ⋈ us_market_cap`)과 `lens_scores`(Q0 원 유니버스)가 애초에 다른 파이프라인이라 종목 구성이 갈린다. 이 때문에 spdr 절대건수가 늘지 않고 오히려 줄고(498→402), damodaran이 거의 두 배(311→601)로 늘고, 미분류 90건이 새로 생겼다 — **1,127 유니버스에 SPDR 미커버 소형주가 대거 포함**된 결과로 해석되나 원인은 이 STEP에서 조사하지 않았다(추정, 미확인).
+🔴 **952의 90은 흔들리는 값이었다 — 확정값은 89(STEP 955, 2026-08-09).** `lib/sector.ts`의 `damodaran_industry` 읽기가 `.order()` 없이 페이지네이션돼(STEP 953 실측: 동일 인자 반복 호출 시 결과가 흔들림) 952 적재 시점에 우연히 걸린 값이 90이었다. STEP 954가 처방(`fetchAllRows`, 정렬 키 고유 전순서)을 적용한 뒤 STEP 955가 **재적재 전 3회 반복으로 안정성을 확인**(미분류 89/89/89, 3회 전부 동일)하고서야 `us_sector_wide`를 같은 `as_of`(2026-08-08)로 재적재했다 — DELETE 없이 upsert, 이전 값은 `us_sector_wide_snapshot`(tag=`pre_step954_paging`)에 보존. **변화**: 미분류→분류 1건(`RAYA` — 952b 조사의 그 종목, `damodaran`/`Industrials`로 정확히 분류됨) · 분류→미분류 0건(회귀 없음) · sector 값 변경 0건(어느 종목도 배정된 섹터 자체가 바뀌지 않음) · source만 변경(sector 동일) 3건(`WTRG`·`TEAM`·`WMS`, 전부 `yahoo`→`damodaran`— 952b가 지목했던 5건 중 `us_sector_wide` 유니버스에 실제로 존재하는 3건). `PTGX`·`TIGO`는 애초에 `us_valuation`(1,127) 유니버스 밖이라 이 표 자체에 없다(교집합 640종목 문제, 아래 참조 — `us_sector_resolved`에서만 다뤄지는 종목).
+
+🔴 **단순 확장이 아니다 — 두 유니버스는 부분집합 관계가 아니다.** `us_sector_wide`(1,127종목)와 `us_sector_resolved`(Q0, 1,021종목)의 교집합은 **640종목뿐**(직접 교차대조, 불일치 0건 — 같은 함수·같은 입력이면 같은 결과가 나옴은 확인됐다). 나머지는 서로 다른 유니버스 소속이다 — `us_valuation`(SEC XBRL 기반, `us_cik_map ⋈ us_market_cap`)과 `lens_scores`(Q0 원 유니버스)가 애초에 다른 파이프라인이라 종목 구성이 갈린다. 이 때문에 spdr 절대건수가 늘지 않고 오히려 줄고(498→402), damodaran이 거의 두 배(311→605)로 늘고, 미분류 89건이 새로 생겼다 — **1,127 유니버스에 SPDR 미커버 소형주가 대거 포함**된 결과로 해석되나 원인은 조사하지 않았다(추정, 미확인).
+
+🔴 **`us_sector_resolved`(Q0, 라이브 화면용)도 같은 문제를 가졌을 가능성 — 조사만, 무접촉(STEP 955 §4).** STEP 955에서 tier/source가 바뀐 3종목(`WTRG`·`TEAM`·`WMS`)이 `us_sector_resolved`(1,021)에도 전부 존재한다 — **3/1,021건이 「Q0 산출물도 같은 페이지네이션 비결정성 문제를 가졌다」의 크기**다. `us_sector_resolved` 자체는 건드리지 않았다(라이브 화면이 읽는 표, 재생성 여부는 별도 승인 대기 — `docs/STATE.md` 참조). Q0 마감 판정 자체는 변경하지 않는다.
 
 🔴 **섹터표가 둘로 갈려 있다 — `us_sector_resolved`(화면용, 1,021)와 `us_sector_wide`(계산용, 1,127).** 이유 = **라이브 화면 변경 회피.** `app/api/sector/us/route.ts`가 `us_sector_resolved`의 최신 `as_of`를 그대로 노출하고 `ExploreClient.tsx:467`이 그 값으로 Explore 화면의 거래대금 목록 라벨·필터칩 카운트를 그린다 — 여기 새 `as_of` 행을 넣는 순간 라이브 화면이 바뀐다. Q1은 아직 화면이 없으므로(카드 자체가 없음) 별도 테이블(`us_sector_wide`)에 격리해 계산 재료로만 쓴다. **컬럼 구성은 동일하게 맞췄다** — 통합 판정이 나면(예: Q1 카드 출시 시 `us_sector_resolved`를 이 넓은 유니버스로 교체) `toResolvedRows()` 그대로 옮겨 쓸 수 있다. **통합 여부·시점은 판정 대기(장은태) — Q1 카드 작업 시 함께 정한다.**
 
-**미분류 90종목 전수**(`docs/probe_952_sector_wide_step1.json` 참조): 대부분 소형주·클로즈드엔드펀드(`BME`·`CII`·`CIK`·`CRF`·`DHY`·`FLC` 등)·해외 ADR. `AKO-A`/`AKO-B`처럼 구두점이 있는데도 형제매칭에 안 걸린 케이스 포함(2순위는 Damodaran 내부 형제만 봄 — SPDR/야후에 없고 Damodaran에도 없으면 3개 tier 전부 실패).
+**미분류 89종목 전수(확정값, STEP 955)** — 952 당시 목록(90건, `docs/probe_952_sector_wide_step1.json`)에서 `RAYA` 1건이 빠진 나머지: 대부분 소형주·클로즈드엔드펀드(`BME`·`CII`·`CIK`·`CRF`·`DHY`·`FLC` 등)·해외 ADR. `AKO-A`/`AKO-B`처럼 구두점이 있는데도 형제매칭에 안 걸린 케이스 포함(2순위는 Damodaran 내부 형제만 봄 — SPDR/야후에 없고 Damodaran에도 없으면 3개 tier 전부 실패).
 
 🔴 **미분류 = 재료 부재가 아니다(2026-08-09 실측, `docs/probe_952b_unclassified.json`).** 90건 중 `us_cik_map` 90건(100%) 존재. **아래 두 수치는 Cowork이 먼저 제시한 값(damodaran 53건/58.9%·nasdaq 88건/97.8%)을 Claude Code가 Supabase 직접 재조회로 독립 재검증해 다르게 나온 결과다 — 원 수치를 정정한다**(90종목 모집단 자체·사전순 표본 20개는 재현 일치 확인됨):
 - `damodaran_industry`: 정규화 매칭 시 **29건(32.2%)**에 실제로 행이 존재(원 보고 53건은 `ticker_norm`이 여러 나라 기업에 중복 매핑돼 부풀려진 JOIN 행수였다 — 서로 다른 심볼 기준으로 세면 29건). 그중 `is_us_listed=true` 행을 가진 것은 **1건뿐**(`RAYA` — 미국 상장 중국기업, `primary_sector="Industrials"`).
 - `us_sector_nasdaq`: 원시 존재 **90건(100%)**이나, `resolveSector`는 나스닥을 분류 tier로 쓰지 않는다(`crossCheck` 전용) — 5순위로 새로 추가할 경우 실제로 쓸 수 있는 건 `NASDAQ_TO_GICS` 매핑 성공분(`Miscellaneous`·결측 제외)뿐이며 그 수는 **79건(87.8%)**이다(원 보고 88건과도 다름, 집계 방식 차이로 추정·미확인).
 
-### 🔴 damodaran tier 조사 완료(STEP 952b, 2026-08-09) — 원인 규명, 처방 미정
+### ✅ damodaran tier 조사·처방 완료(STEP 952b~955, 2026-08-09) — 원인 규명(952b) → 공용 헬퍼 처방(954) → us_sector_wide 재생성(955)
 
-`docs/probe_952b_damodaran_tier.json` 참조. **원래 가설(ticker_norm 중복=RAYA형)은 틀렸다** — 조사 중 그보다 크고 일반적인 버그를 발견했다.
+`docs/probe_952b_damodaran_tier.json` 참조. **원래 가설(ticker_norm 중복=RAYA형)은 틀렸다** — 조사 중 그보다 크고 일반적인 버그를 발견했다. 🔴 **`RAYA` 자체는 STEP 955에서 정상 분류로 확정됐다**(damodaran/Industrials) — 이 절 아래 내용은 원인 규명 과정의 기록으로 남긴다.
 
 🔴 **핵심 발견 — `resolveSector()`는 동일 입력으로 반복 호출해도 결과가 매번 다르다.** `lib/sector.ts`의 `fetchAll()`(damodaran_industry·us_sector_nasdaq·us_sector_yahoo·us_sector_gics 4개 fetch 전부, `:21`·`:64`)이 `.order()` 없이 `.range()`만으로 페이지네이션한다 — PostgreSQL/PostgREST는 `ORDER BY` 없는 쿼리의 행 순서를 실행마다 보장하지 않으므로, 별개의 `.range()` 호출(페이지)들이 실행마다 다른 스캔 순서를 쓰면 경계에 걸친 행이 어느 페이지에도 안 들어가는(누락) 일이 생긴다. **실측**: 동일 인자로 `resolveSector()`를 5회 연속 호출 — `damodaran_industry(is_us_listed=true)`의 `COUNT(*)`는 매번 6,937로 고정(데이터는 안 바뀜)인데 분류 성공 건수는 **1038/1038/1032/1038/1038**로 흔들렸다(미분류 89/89/95/89/89). `RAYA`는 이 5회 전부 성공했다 — 즉 RAYA가 "항상" 실패하는 게 아니라, 어떤 실행에서는 RAYA가, 다른 실행에서는 무작위로 다른 6개 심볼이 빠진다.
 
