@@ -1,0 +1,118 @@
+{
+  "measuredAt": "2026-08-09",
+  "purpose": "STEP 953 — STEP 952b가 lib/sector.ts에서 실측한 fetchAll() 페이지네이션 비결정성이 운영 경로(app/·lib/) 전반에 얼마나 퍼져 있는지 전수 조사. 코드 무수정·DB 무쓰기·크론 미호출.",
+
+  "coworkClaimVsReverify": {
+    "coworkClaimed": "app/·lib/ 전수 grep 31곳 (revdcf 7·yahoo-list 5·Perf.ts 6·search 2·lens-top 2·sector.ts 2·lensPrecompute 1·sector/us 1·krx 3·krSnapshot 1·advisors 1)",
+    "claudeCodeReverified": "app/·lib/ 전수 grep(테스트 파일 제외) — 실제 .range() 호출 지점은 30곳(파일별 세부 카운트는 아래 site 목록 참조). revdcf=8(7 아님)·search=1(2 아님)·lens-top=1(2 아님)·Perf.ts=5(6 아님, krPerf.ts 존재하지 않음) — 다수 항목에서 Cowork 원 카운트와 다르다.",
+    "note": "🔴 오늘 다섯 번째 측정 오류(3일순환 grep범위·damodaran 53→29·nasdaq 88→79·pctile 지시·이번 31→30). 아래 전수는 Claude Code가 직접 grep+수동대조로 확정한 값이다."
+  },
+
+  "gradingCriteria": {
+    "A": "유니버스·집합 선정에 쓰임 → 종목이 조용히 빠진다",
+    "B": "집계·통계에 쓰임 → 숫자가 흔들린다",
+    "C": "화면 목록 → 표시가 흔들린다(치명적이지 않을 수 있음)",
+    "D": "총 행 수 < 페이지 크기(1000) → 경계 자체가 없음, 실질 무해"
+  },
+
+  "sites": [
+    { "file": "lib/sector.ts", "line": 64, "table": "damodaran_industry+us_sector_nasdaq+us_sector_yahoo+us_sector_gics(4-fetch 공용 fetchAll)", "approxRows": "damo 6,937(is_us_listed=true 필터) 기타 상이", "pageSize": 1000, "usedFor": "resolveSector() 섹터 분류(유니버스)", "grade": "A", "hasOrder": false, "graderNote": "STEP 952b가 이미 비결정성 확정. 본 STEP §2에서 재확인." },
+    { "file": "lib/sector.ts", "line": 21, "table": "damodaran_industry(is_us_listed=true)", "approxRows": 6937, "pageSize": 1000, "usedFor": "fetchSectorMap(industryGroup) — revdcf 크론이 WACC 업종/베타 조회에 사용, 실패시 skip_reason=NO_INDUSTRY", "grade": "A", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 48, "table": "us_fundamentals(전체)", "approxRows": 1127, "pageSize": 1000, "usedFor": "us_valuation 계산 대상(fundRows)", "grade": "A", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 53, "table": "us_market_cap(당일 as_of)", "approxRows": 5557, "pageSize": 1000, "usedFor": "Q1 시총(marketCap) 값 — 결측시 해당 축만 null(멤버십 아님)", "grade": "B", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 59, "table": "us_stock_perf(symbol,price)", "approxRows": 6376, "pageSize": 1000, "usedFor": "표시용 현재가만(계산 미사용, 코드 주석 명시)", "grade": "C", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 92, "table": "revdcf_results(직전 as_of)", "approxRows": 604, "pageSize": 1000, "usedFor": "🔴 역DCF 유니버스(자기참조) 선정", "grade": "D", "hasOrder": false, "graderNote": "604<1000, 단일 페이지 — 경계 자체가 없다. §3-2에서 8일치 실측으로 재확인." },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 95, "table": "revdcf_results(당일 as_of)", "approxRows": "0~604", "pageSize": 1000, "usedFor": "당일 재실행 스킵셋", "grade": "D", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 106, "table": "us_market_cap(전체)", "approxRows": 5906, "pageSize": 1000, "usedFor": "\"나머지\" fundamentals 유니버스(mcapBy) 구성 — 유니버스 조인 키", "grade": "A", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 112, "table": "us_cik_map(전체)", "approxRows": 10432, "pageSize": 1000, "usedFor": "CIK 매핑 — 유니버스 구성 조인 키", "grade": "A", "hasOrder": false },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 121, "table": "us_fundamentals(symbol,fetched_at)", "approxRows": 1127, "pageSize": 1000, "usedFor": "\"나머지\" 처리 우선순위(오래된 순 정렬 재료) — 멤버십 아니라 순서만 영향", "grade": "B", "hasOrder": false },
+    { "file": "app/api/sector/us/route.ts", "line": 16, "table": "us_sector_resolved", "approxRows": 1021, "pageSize": 1000, "usedFor": "Explore 화면 라벨·필터칩(화면 노출)", "grade": "C", "hasOrder": false },
+    { "file": "app/api/advisors/route.ts", "line": 109, "table": "advisor_directory", "approxRows": 1539, "pageSize": 1000, "usedFor": "유사투자자문사 목록 화면", "grade": "C", "hasOrder": false, "graderNote": "코드 주석이 DB .order()를 의도적으로 뺀 이력을 명시(접두어 문제로 JS 재정렬 채택) — order 부재가 의도적 선택이었다." },
+    { "file": "app/api/explore/lens-top/route.ts", "line": 31, "table": "lens_scores", "approxRows": "US 1023 · KR 976", "pageSize": 1000, "usedFor": "홈 \"강점이 많은 종목\" TOP-N 랭킹", "grade": "C(US) / D(KR, 976<1000)", "hasOrder": false },
+    { "file": "app/api/search/route.ts", "line": 50, "table": "kr_stock_snapshot", "approxRows": 2774, "pageSize": 1000, "usedFor": "검색 자동완성 인덱스 — 빠지면 해당 종목이 검색에서 안 보임", "grade": "A", "hasOrder": false },
+    { "file": "app/api/yahoo/us-list/route.ts", "line": 75, "table": "us_stock_perf", "approxRows": 6376, "pageSize": 1000, "usedFor": "US 시장 보드 목록 화면", "grade": "C", "hasOrder": false },
+    { "file": "app/api/yahoo/cn-list/route.ts", "line": 84, "table": "cn_stock_perf", "approxRows": 7079, "pageSize": 1000, "usedFor": "CN 시장 보드 목록 화면", "grade": "C", "hasOrder": false },
+    { "file": "app/api/yahoo/jp-list/route.ts", "line": 78, "table": "jp_stock_perf", "approxRows": 4256, "pageSize": 1000, "usedFor": "JP 시장 보드 목록 화면", "grade": "C", "hasOrder": false },
+    { "file": "app/api/yahoo/gb-list/route.ts", "line": 74, "table": "gb_stock_perf", "approxRows": 349, "pageSize": 1000, "usedFor": "GB 시장 보드 목록 화면", "grade": "D", "hasOrder": false },
+    { "file": "app/api/yahoo/vn-list/route.ts", "line": 74, "table": "vn_stock_perf", "approxRows": 402, "pageSize": 1000, "usedFor": "VN 시장 보드 목록 화면", "grade": "D", "hasOrder": false },
+    { "file": "lib/usPerf.ts", "line": 63, "table": "us_stock_perf(symbol,updated_at)", "approxRows": 6376, "pageSize": 1000, "usedFor": "일일 성능갱신 크론 처리 우선순위(신선도 역순) — 멤버십은 로컬 STOCK_SYMS(파일)가 결정, 이 읽기는 순서만", "grade": "B", "hasOrder": false },
+    { "file": "lib/cnPerf.ts", "line": 119, "table": "cn_stock_perf(symbol,updated_at)", "approxRows": 7079, "pageSize": 1000, "usedFor": "위와 동일(CN)", "grade": "B", "hasOrder": false },
+    { "file": "lib/jpPerf.ts", "line": 63, "table": "jp_stock_perf(symbol,updated_at)", "approxRows": 4256, "pageSize": 1000, "usedFor": "위와 동일(JP)", "grade": "B", "hasOrder": false },
+    { "file": "lib/gbPerf.ts", "line": 54, "table": "gb_stock_perf(symbol,updated_at)", "approxRows": 349, "pageSize": 1000, "usedFor": "위와 동일(GB)", "grade": "D", "hasOrder": false },
+    { "file": "lib/vnPerf.ts", "line": 54, "table": "vn_stock_perf(symbol,updated_at)", "approxRows": 402, "pageSize": 1000, "usedFor": "위와 동일(VN)", "grade": "D", "hasOrder": false },
+    { "file": "lib/krSnapshot.ts", "line": 149, "table": "kr_stock_snapshot(name_en is null, 필터)", "approxRows": 6, "pageSize": 1000, "usedFor": "신규상장 영문명 증분 보정 대상", "grade": "D", "hasOrder": false },
+    { "file": "app/api/krx/etf-performance/route.ts", "line": 97, "table": "kr_etp_snapshot(kind=etf)", "approxRows": "~1147(주석)", "pageSize": 1000, "usedFor": "ETF 보드", "grade": "제외(order 있음: trade_amount desc)", "hasOrder": true },
+    { "file": "app/api/krx/etn-performance/route.ts", "line": 98, "table": "kr_etp_snapshot(kind=etn)", "approxRows": "~386(주석)", "pageSize": 1000, "usedFor": "ETN 보드", "grade": "제외(order 있음: trade_amount desc)", "hasOrder": true },
+    { "file": "app/api/krx/ranking/route.ts", "line": 141, "table": "kr_stock_snapshot", "approxRows": "가변(필터별)", "pageSize": 1000, "usedFor": "KR 랭킹 화면", "grade": "제외(order 있음: 동적 컬럼)", "hasOrder": true },
+    { "file": "lib/lensPrecompute.ts", "line": 277, "table": "lens_scores", "approxRows": "US 1023 / KR 976", "pageSize": 1000, "usedFor": "렌즈 상태변화 diff(lens_state_changes)", "grade": "제외(order 있음: symbol asc — 코드 주석 \"페이지네이션 안정성(§7)\", 이미 이 버그를 인지하고 조치된 선례)", "hasOrder": true },
+    { "file": "lib/lensPrecompute.ts", "line": 572, "table": "kr_stock_snapshot(market_cap not null)", "approxRows": "topN+500", "pageSize": 1000, "usedFor": "topKrByMarketCap() — KR 렌즈 유니버스(시총 상위 N)", "grade": "제외(order 있음: market_cap desc — 단 동점 시 완전 안전은 아님, tie-break 컬럼 없음)", "hasOrder": true }
+  ],
+
+  "gradeSummary": {
+    "A": { "n": 6, "files": ["lib/sector.ts:64", "lib/sector.ts:21", "app/api/cron/revdcf/route.ts:48", "app/api/cron/revdcf/route.ts:106", "app/api/cron/revdcf/route.ts:112", "app/api/search/route.ts:50"] },
+    "B": { "n": 6, "files": ["app/api/cron/revdcf/route.ts:53", "app/api/cron/revdcf/route.ts:121", "lib/usPerf.ts:63", "lib/cnPerf.ts:119", "lib/jpPerf.ts:63"], "note": "usPerf·cnPerf·jpPerf 3곳 + revdcf 2곳 = 5곳 실측 대상. gbPerf·vnPerf는 행수<1000이라 D로 분류(같은 코드 패턴이지만 오늘 데이터로는 경계 없음)." },
+    "C": { "n": 6, "files": ["app/api/cron/revdcf/route.ts:59", "app/api/sector/us/route.ts:16", "app/api/advisors/route.ts:109", "app/api/explore/lens-top/route.ts:31(US분)", "app/api/yahoo/us-list/route.ts:75", "app/api/yahoo/cn-list/route.ts:84", "app/api/yahoo/jp-list/route.ts:78"] },
+    "D": { "n": 8, "files": ["app/api/cron/revdcf/route.ts:92", "app/api/cron/revdcf/route.ts:95", "app/api/yahoo/gb-list/route.ts:74", "app/api/yahoo/vn-list/route.ts:74", "lib/gbPerf.ts:54", "lib/vnPerf.ts:54", "lib/krSnapshot.ts:149", "app/api/explore/lens-top/route.ts:31(KR분)"] },
+    "excludedHasOrder": { "n": 5, "files": ["app/api/krx/etf-performance/route.ts:97", "app/api/krx/etn-performance/route.ts:98", "app/api/krx/ranking/route.ts:141", "lib/lensPrecompute.ts:277", "lib/lensPrecompute.ts:572"] },
+    "totalSites": 30
+  },
+
+  "step2_repeatedMeasurement": {
+    "method": "각 지점(A·B 등급 중 발견 우선순위 높은 9곳 실측, revdcf 최우선)을 동일 인자로 10회 연속 호출해 결과 심볼 집합의 크기·10회 합집합 대비 결측을 관측",
+    "repeats": 10,
+    "results": [
+      { "site": "A-1 lib/sector.ts:64 resolveSector()", "counts": [1038,1038,1029,1038,1038,1038,1038,1038,1038,1038], "flaky": true, "note": "10회 중 1회, 9개 심볼 결측(952b 원 관측과 같은 패턴)" },
+      { "site": "A-2 lib/sector.ts:21 fetchSectorMap(industryGroup)", "counts": [6937,6937,6819,6937,6937,6937,6937,6937,6937,6937], "flaky": true, "note": "10회 중 1회, 118행 결측 — A-1보다 큰 폭. damodaran_industry 읽기 2곳 모두 흔들림 확인." },
+      { "site": "A-3 revdcf:48 us_fundamentals(전체)", "counts": [1127,1127,1127,1127,1127,1127,1127,1127,1127,1127], "flaky": false },
+      { "site": "A-4 revdcf:106 us_market_cap(전체)", "counts": [5906,5906,5906,5906,5906,5906,5906,5906,5906,5906], "flaky": false },
+      { "site": "A-5 revdcf:112 us_cik_map(전체)", "counts": [10432,10432,10432,10432,10432,10432,10432,10432,10432,10432], "flaky": false },
+      { "site": "A-6 search:50 kr_stock_snapshot", "counts": [2774,2774,2774,2774,2774,2774,2774,2774,2774,2774], "flaky": false },
+      { "site": "D-ref revdcf:92 revdcf_results(참고)", "counts": [604,604,604,604,604,604,604,604,604,604], "flaky": false, "note": "D등급 예측과 정확히 일치 — 단일페이지는 흔들리지 않는다" },
+      { "site": "B-1 revdcf:53 us_market_cap(당일as_of)", "counts": [5557,5557,5557,5557,5557,5557,5557,5557,5557,5557], "flaky": false },
+      { "site": "B-2 usPerf:63 us_stock_perf", "counts": [6376,6376,6376,6376,6376,6376,6376,6376,6376,6376], "flaky": false },
+      { "site": "B-3 jpPerf:63 jp_stock_perf", "counts": [4256,4256,4256,4256,4256,4256,4256,4256,4256,4256], "flaky": false },
+      { "site": "B-4 cnPerf:119 cn_stock_perf", "counts": [7079,7079,7079,7079,7079,7079,7079,7079,7079,7079], "flaky": false }
+    ],
+    "headlineFinding": "🔴 실측한 9개 order-less 지점 중 오직 damodaran_industry를 읽는 2곳(lib/sector.ts:21·:64)만 흔들렸다. us_cik_map(10,432행, damodaran_industry의 6,937/48,144보다 필터 결과는 작지만 전체 테이블 자체 크기는 damodaran이 압도적으로 큼)을 포함해 나머지 7곳은 10회 전부 완벽히 안정적이었다 — '모든 order-less 읽기가 똑같이 위험하다'는 가정은 실측으로 기각된다.",
+    "explainAttempt": {
+      "hypothesis": "damodaran_industry가 이 조사에서 가장 큰 테이블(전체 48,144행, 다음으로 큰 us_cik_map은 10,432행)이라 파라렐 시퀀셜 스캔이 트리거될 가능성을 의심했다",
+      "checkDone": "EXPLAIN (ANALYZE, VERBOSE)로 실제 쿼리 플랜 확인",
+      "checkResult": "🔴 가설 기각 — Index Scan(idx_damo_industry_us, is_us_listed 인덱스)이었다. Parallel/Seq Scan이 아니다.",
+      "conclusion": "🔴 정확한 메커니즘은 미확정이다. Index Scan도 ORDER BY 없이는 물리적 튜플 순서(TID) 안정성을 보장하지 않으며, damodaran_industry가 이 조사에서 가장 큰 테이블(48,144행)이라는 점과의 상관관계는 있으나 인과는 증명하지 못했다. 인과를 단정하지 않는다."
+    }
+  },
+
+  "step3_existingUnresolvedConnections": {
+    "step949_usMarketCapGap380": {
+      "verdict": "설명 안 됨",
+      "evidence": "lib/lensPrecompute.ts:20 — `const STOCK_SYMS: string[] = (symbols as Sym[])...` , import 출처는 `import symbols from \"../data/us_symbols.json\"`(파일 3행) — DB 읽기가 전혀 아니다. 코드 직접 열람으로 확정.",
+      "lensPrecompute568Check": "lib/lensPrecompute.ts:568~579는 `topKrByMarketCap()` 함수(KR 전용) — `.order(\"market_cap\", {ascending:false})`가 이미 있다(:572). 애초에 order-less 읽기가 아니다 — 이 버그의 후보조차 아니었다."
+    },
+    "step952b_revdcfSelfReference5Missing": {
+      "verdict": "설명 안 됨",
+      "evidence": "app/api/cron/revdcf/route.ts:92의 읽기(revdcf_results, 직전 as_of) 자체가 604<1000(단일 페이지, D등급) — 페이지 경계가 존재하지 않는다. 8일치(2026-08-01~08-08) 전수 대조: 매일 정확히 604행·604 distinct CIK. day1 vs day8 CIK 집합 차집합 = 양방향 0(완전 무변동). 604 고정 자체가 반증이다(STEP 지시 그대로).",
+      "conclusion": "AMST·ANF·AVAH·ACRS·ACT의 미편입은 페이지네이션 비결정성이 아니라 자기참조 유니버스 설계(STATE 00-3, route.ts:88 \"유니버스=직전 as_of의 CIK\") 그 자체의 결과다."
+    },
+    "state00_lensCutsUsStall": {
+      "verdict": "알 수 없음(확인 범위 내에서는 설명 안 됨)",
+      "evidence": "lib/lensPrecompute.ts에서 lens_cuts 계산(cutValues → cutRows → upsert, :433~456)에 직접 닿는 order-less DB 페이지네이션을 찾지 못했다 — US 유니버스는 STOCK_SYMS(파일 기반), KR 유니버스는 topKrByMarketCap()(order 있음). lens_cuts 계산 자체는 이미 만들어진 universe 배열을 순회할 뿐 자체 DB 페이지네이션이 없다.",
+      "scope_caveat": "🔴 이 확인은 lensPrecompute.ts의 직접 경로에 한정됐다. STEP 933~937이 이미 별도 원인(취득실패 가능성→정상응답에 필드없음)으로 조사를 진행했고, 이 STEP에서 그 조사 체인 전체를 재검증하지는 않았다 — '알 수 없음'이 정확한 표현이다."
+    }
+  },
+
+  "step4_prescriptionCandidates_noChoice": [
+    { "id": "①", "candidate": "모든 order-less .range() 호출에 고유키 기준 .order() 추가", "cost": "정렬 비용(인덱스 없는 컬럼이면 성능저하 가능, 미측정) · A/B등급 12곳(레거시 KR 3곳 동결 제외 시 실질 수정대상은 이 STEP에서 셈한 범위 내) 전부 손대야 함 · 파일 수 = A 6개 서로 다른 파일 + B 5개 서로 다른 파일(중복 제외) 대략 9~10개 파일" },
+    { "id": "②", "candidate": "공용 fetchAllRows(sb, table, select, filters, orderCol) 헬퍼를 만들어 한 곳에서 보장", "cost": "30개 호출부 전부 이 헬퍼로 교체 — 변경 범위가 ①보다 넓다(호출부 리팩터링 포함)" },
+    { "id": "③", "candidate": "등급 A만 먼저 고친다(6곳: lib/sector.ts×2, revdcf/route.ts×3, search/route.ts×1)", "cost": "B·C등급은 그대로 남음 — 수치·화면이 계속 흔들릴 수 있음. 단 실측(§2)상 A등급 중 실제로 흔들린 건 damodaran_industry를 읽는 lib/sector.ts 2곳뿐이었다(revdcf 3곳·search 1곳은 10회 무결함) — '등급 A 전부 위험'이 아니라 damodaran_industry 특이적일 가능성." },
+    { "id": "④", "candidate": ".range() 대신 keyset(커서) 페이지네이션으로 전환", "cost": "구현 변경 폭이 가장 크다 — 30곳 전부 쿼리 구조 자체를 바꿔야 함" }
+  ],
+  "prescriptionCandidates_krExcluded": "🔴 KR 계열(app/api/krx/*·lib/krSnapshot.ts·app/api/search/route.ts의 kr_stock_snapshot 읽기 포함)은 전면 동결 — 위 후보 어느 것을 채택해도 KR 파일은 수정 대상에서 제외된다.",
+
+  "notDone_unmeasured_speculative": [
+    "B등급 중 실측 안 한 지점: revdcf:121(us_fundamentals fetched_at) — A-3(같은 테이블 전체 읽기)와 취약면이 같을 것으로 추정했으나 별도 실측은 안 함.",
+    "damodaran_industry 읽기가 왜 유독 불안정한지 정확한 메커니즘 미확정 — EXPLAIN으로 Index Scan 확인, Parallel Scan 가설은 기각했으나 대안 설명(HOT 업데이트·autovacuum 타이밍 등)은 검증하지 않았다.",
+    "us_cik_map(10,432행)이 damodaran_industry(6,937/48,144)보다 필터결과는 작지만 전체 테이블 크기 순위상 damodaran이 가장 크다는 상관관계만 확인 — 다른 큰 테이블(예: us_stock_perf 6,376·cn_stock_perf 7,079)은 안정적이었으므로 '테이블 크기'만으로는 완전히 설명되지 않는다. 원인 불명.",
+    "10회 반복에서 매번 다른 심볼이 빠지는지, 특정 심볼이 반복 취약한지는 952b에서 확인했으나(RAYA는 5회 전부 성공, 다른 심볼들이 빠짐) 이번 953의 A-2(fetchSectorMap) 118건 결측 사례에서는 어떤 심볼들인지 개별 확인하지 않았다.",
+    "krx 계열 3곳·lensPrecompute 2곳은 order가 있어 이 STEP 범위에서 제외했으나, 그 order 컬럼(trade_amount·market_cap)이 완전한 고유키가 아니라는 잔여 위험은 평가하지 않았다(동점 시 이론상 여전히 불안정 가능 — 실측 안 함)."
+  ]
+}

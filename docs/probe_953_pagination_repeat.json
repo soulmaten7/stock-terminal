@@ -1,0 +1,314 @@
+{
+  "measuredAt": "2026-08-09",
+  "repeats": 10,
+  "results": [
+    {
+      "label": "A-1 lib/sector.ts:64 resolveSector() classified-symbols",
+      "counts": [
+        1038,
+        1038,
+        1029,
+        1038,
+        1038,
+        1038,
+        1038,
+        1038,
+        1038,
+        1038
+      ],
+      "unionSize": 1038,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        9,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "A-2 lib/sector.ts:21 fetchSectorMap(industryGroup)",
+      "counts": [
+        6937,
+        6937,
+        6819,
+        6937,
+        6937,
+        6937,
+        6937,
+        6937,
+        6937,
+        6937
+      ],
+      "unionSize": 6937,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        118,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "A-3 revdcf:48 us_fundamentals(전체)",
+      "counts": [
+        1127,
+        1127,
+        1127,
+        1127,
+        1127,
+        1127,
+        1127,
+        1127,
+        1127,
+        1127
+      ],
+      "unionSize": 1127,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "A-4 revdcf:106 us_market_cap(전체)",
+      "counts": [
+        5906,
+        5906,
+        5906,
+        5906,
+        5906,
+        5906,
+        5906,
+        5906,
+        5906,
+        5906
+      ],
+      "unionSize": 5906,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "A-5 revdcf:112 us_cik_map(전체)",
+      "counts": [
+        10432,
+        10432,
+        10432,
+        10432,
+        10432,
+        10432,
+        10432,
+        10432,
+        10432,
+        10432
+      ],
+      "unionSize": 10432,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "A-6 search:50 kr_stock_snapshot",
+      "counts": [
+        2774,
+        2774,
+        2774,
+        2774,
+        2774,
+        2774,
+        2774,
+        2774,
+        2774,
+        2774
+      ],
+      "unionSize": 2774,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "D-ref revdcf:92 revdcf_results(직전as_of, 참고용)",
+      "counts": [
+        604,
+        604,
+        604,
+        604,
+        604,
+        604,
+        604,
+        604,
+        604,
+        604
+      ],
+      "unionSize": 604,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "B-1 revdcf:53 us_market_cap(당일as_of)",
+      "counts": [
+        5557,
+        5557,
+        5557,
+        5557,
+        5557,
+        5557,
+        5557,
+        5557,
+        5557,
+        5557
+      ],
+      "unionSize": 5557,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "B-2 usPerf:63 us_stock_perf",
+      "counts": [
+        6376,
+        6376,
+        6376,
+        6376,
+        6376,
+        6376,
+        6376,
+        6376,
+        6376,
+        6376
+      ],
+      "unionSize": 6376,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "B-3 jpPerf:63 jp_stock_perf",
+      "counts": [
+        4256,
+        4256,
+        4256,
+        4256,
+        4256,
+        4256,
+        4256,
+        4256,
+        4256,
+        4256
+      ],
+      "unionSize": 4256,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "label": "B-4 cnPerf:119 cn_stock_perf",
+      "counts": [
+        7079,
+        7079,
+        7079,
+        7079,
+        7079,
+        7079,
+        7079,
+        7079,
+        7079,
+        7079
+      ],
+      "unionSize": 7079,
+      "perRunMissingFromUnion": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

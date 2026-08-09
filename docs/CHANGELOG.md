@@ -1,6 +1,27 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (125) — 🟫 **STEP 953: ORDER 없는 페이지네이션 31곳(재확인 30곳) 전수 조사 — 실제로 흔들린 건 damodaran_industry 읽는 2곳뿐**
+
+> **성격**: 조사 전용(사실 등재·처방 미정). **코드 무변경**·DB 쓰기 0·크론 미호출·화면 무접촉. KR 계열은 조사만 하고 수정대상에서 제외.
+
+**Cowork 수치 재검증(오늘 다섯 번째)** — "app/·lib/ 31곳" 주장을 전수 재grep — 실제 `.range()` 호출 지점은 **30곳**(order 있는 5곳 포함). revdcf=8(7 아님)·search=1(2 아님)·lens-top=1(2 아님)·Perf.ts=5(6 아님, krPerf.ts 없음) 등 다수 항목이 원 카운트와 다름.
+
+**§1 등급표(30곳)** — **A(유니버스 선정) 6곳**: `lib/sector.ts:21·64`(damodaran) · `revdcf/route.ts:48·106·112`(us_fundamentals·us_market_cap·us_cik_map) · `search/route.ts:50`(kr_stock_snapshot 검색색인). **B(집계·통계) 6곳**: `revdcf/route.ts:53·121` · `us/jp/cnPerf.ts`(신선도 정렬, gb·vn은 행수<1000이라 D). **C(화면 목록) 6곳**: `revdcf/route.ts:59`·`sector/us`·`advisors`·`lens-top(US분)`·`yahoo us/cn/jp-list`. **D(단일페이지·무해) 8곳**: `revdcf/route.ts:92·95`(604<1000)·`yahoo gb/vn-list`·`gb/vnPerf.ts`·`krSnapshot.ts`·`lens-top(KR분)`. **order 있어 제외 5곳**: `krx etf/etn/ranking`(trade_amount·동적컬럼)·`lensPrecompute.ts:277`(symbol asc — "페이지네이션 안정성" 주석, 이미 이 버그를 인지하고 조치된 선례)·`:572`(market_cap desc, KR).
+
+**§2 10회 반복 실측(9곳)** — 🔴 **핵심 발견: 실제로 흔들린 건 damodaran_industry를 읽는 2곳뿐이다.** `lib/sector.ts:21`(6937/6937/**6819**/6937/6937/6937/6937/6937/6937/6937 — 10회 중 1회 118행 결측) · `lib/sector.ts:64`(1038×9 + **1029**×1 — 9건 결측, 952b 원 관측과 동일 패턴). 같은 A등급인 `revdcf:48·106·112`·`search:50`(us_cik_map **10,432행** 포함, damodaran보다 큰 필터전 대상은 아니지만 결과 행수는 더 큼)은 **10회 전부 완벽히 안정적**이었다. B등급(`revdcf:53`·`us/jp/cnPerf`)도 전부 안정. **"모든 order-less 읽기가 위험하다"는 가정은 실측으로 기각됨.** `EXPLAIN (ANALYZE, VERBOSE)`로 damodaran_industry 쿼리 플랜 확인 — **Index Scan**(`idx_damo_industry_us`)이었다, 파라렐/시퀀셜 스캔이 아니다. 🔴 **정확한 불안정 메커니즘은 미확정 — 인과 단정 안 함.**
+
+**§3 기존 미해결 3건과의 연결(단정 금지, 검증만)**:
+- **STEP 949 "`us_market_cap` 결측 380건"(STATE 00-c) = 설명 안 됨.** `STOCK_SYMS`는 `data/us_symbols.json` **파일**에서 온다(`lib/lensPrecompute.ts:20`, 코드 직접 확인) — DB 페이지네이션과 무관. `:568~579`는 KR 전용 `topKrByMarketCap()`으로 이미 `.order("market_cap",...)`가 있다 — 애초에 후보가 아니었다.
+- **STEP 952b "`revdcf_results` 미편입 5종목"(STATE 00-3) = 설명 안 됨.** `revdcf/route.ts:92`의 읽기 자체가 604<1000(단일 페이지, D등급) — 경계가 없다. 8일치(08-01~08-08) 전수 대조: 매일 정확히 604행·604 distinct CIK, day1↔day8 CIK 집합 차집합 양방향 **0**(완전 무변동). 원인은 그대로 자기참조 유니버스 설계다.
+- **STATE 00번 "`lens_cuts` US 07-30 정지" = 알 수 없음(확인 범위 내에서는 설명 안 됨).** `lensPrecompute.ts`의 `lens_cuts` 계산 직접 경로(US=파일기반·KR=order 있음)에서 관련 order-less 읽기를 못 찾음 — 단 912~937의 전체 조사 체인(취득실패 가능성 등)은 재검증하지 않았다.
+
+**§4 처방 후보(고르지 않음)** — ① 전 지점 `.order()` 추가(비용: 정렬비용·범위 넓음) ② 공용 `fetchAllRows` 헬퍼(비용: 30곳 호출부 리팩터) ③ 등급 A만 우선(비용: B·C 잔존, 단 실측상 A 6곳 중 실제 위험은 damodaran 2곳뿐이었다는 재료 포함) ④ keyset 페이지네이션 전환(비용: 구현 변경 최대). **KR 계열(krx·krSnapshot·search의 kr_stock_snapshot 읽기 포함) 전부 동결 — 어느 후보든 수정 대상에서 제외.**
+
+**§5 기록** — `docs/probe_953_pagination.json`(30곳 전수·10회 반복·§3 검증 전문) · `scripts/probe_953_pagination_repeat.ts`(신규, DB 읽기전용) · `docs/STATE.md`(00-e 신설 + 00-c·00-3·00번에 "설명됨/안됨/알수없음" 교차참조 추가, 기존 미해결 판정은 그대로 열어둠) · `docs/SYSTEM_MAP.md` §10 함정 목록에 아키텍처 위험 등재.
+
+**무변경** — `lib/`·`app/`·`components/`·`messages/` 코드 diff 0(신규 스크립트 1개 제외) · DB 쓰기 0 · 크론 호출 0.
+
 ## 2026-08-09 (124) — 🟪 **STEP 952b: damodaran tier 누락 원인 규명 — 원래 가설(RAYA형 중복)이 틀렸고, 더 큰 버그(fetchAll 페이지네이션 비결정성)를 발견**
 
 > **성격**: 조사 전용(사실 등재, 판정·처방 없음). **코드 무변경**(`lib/sector.ts` 무수정)·DB 쓰기 0·크론 미호출·화면 무접촉. `us_sector_resolved`·`us_sector_wide` 무갱신.
