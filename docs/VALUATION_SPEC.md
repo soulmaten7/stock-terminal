@@ -54,7 +54,7 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 
 ## 외부 근거
 
-- **EV 정의·현금 정합성** — Damodaran, *vebitda.pdf*: *"Market Value of Equity + Market Value of Debt − Cash."* 현금을 분자에서 빼면 분모(EBITDA)에서도 현금성 이자수익이 빠져야 정합한데, 우리 EBITDA(`operatingIncome + dna`)는 애초에 이자수익이 안 들어가 있어 정합한다.
+- **EV 정의·현금 정합성** — Damodaran, *vebitda.pdf*: *"Market Value of Equity + Market Value of Debt − Cash."* 현금을 분자에서 빼면 분모(EBITDA)에서도 현금성 이자수익이 빠져야 정합한데, 우리 EBITDA(`operatingIncome + dna`)는 애초에 이자수익이 안 들어가 있어 정합한다. 🔴 **STEP 969 — "Market Value of Debt"를 실제로 얼마나 정확히 구성하는지가 태그 회수 완전성에 달려 있음을 확인.** EV 정의 자체(시총+부채−비영업자산)는 무변경이나, 부채(`debt`) 회수가 태그 배열 밖 태그(예: GM의 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities`) 때문에 `0`으로 잘못 계산되는 사례가 있었음을 발견·수정 — 「확정0 / 확정값 / 모름」 3분류와 태그 확장 정의는 `docs/REVDCF_SPEC.md` §10-D(정본, EV/EBITDA의 부채 입력이 여기서 정해진다 — 같은 내용을 중복 기재하지 않음).
 - **자기자본 정의** — Damodaran, *pbv.pdf*: 보통주 장부가(common equity book value) 기준이어야 한다는 근거. 🔴 **STEP 963부터 실제로 구현됨** — `commonEquity = equity − 우선주 − (NCI포함 태그일 때만)비지배지분`을 PBR 분모로 쓴다(그 전엔 이 인용이 아직 코드와 안 맞는 아스피레이셔널 주석이었다 — 963이 그 간극을 닫았다).
 - **음수 PER 처리 관행** — Stock Analysis 용어 페이지: 음수 PER은 통상 `n/a`로 표기하는 것이 관행.
 - 🔴 **미확보**: 위 두 Damodaran PDF는 `data/sources/`에 원문이 저장돼 있지 않다(SEC CIK 파일과 달리 이번 STEP이 로컬 원본 확보를 지시하지 않았음). 이 절의 인용은 STEP 947 명령서 원문을 따른 것이고, **PDF 원문 재대조는 이번 세션에서 하지 않았다** — ⓪ 원전 인벤토리 규칙상 남은 빚으로 기록한다.

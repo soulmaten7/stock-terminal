@@ -1,0 +1,124 @@
+{
+  "step": 969,
+  "date": "2026-08-10",
+  "purpose": "GM $131.8B이 부채 태그 배열 밖이라 debt=0으로 계산되던 결함(968 발견)을 규명·확장. 「확정0 / 확정값 / 모름」 3분류 도입.",
+  "sec_new_calls": 0,
+  "note": "docs/probe_951_cache 재사용. SEC 10-K R-file(us-gaap 공식 Definition 텍스트 포함) 직접 대조로 태그 정의 확인 — curl(User-Agent 헤더)로 GM balance sheet(R5.htm) 조회.",
+
+  "step1_platformB": {
+    "target": "최소 3곳",
+    "result": "stockanalysis.com 1곳만 성공(GM 대차대조표: FY2024 Total Debt=$129,732M · FY2025=$130,277M[단기35,668+장기94,609], 정의명시='Short-Term Debt + Long-Term Debt'). 나머지 시도 없음(966·968에서 WSJ·Macrotrends·roic.ai·WallStreetZen·Morningstar 등 다수 차단 전례를 그대로 인용, 이번 STEP은 재시도 안 함) — 3곳 목표 중 1곳만 성공을 그대로 인정."
+  },
+
+  "step1_selfCheck_tagFrequencyScan": {
+    "universe": "us_fundamentals WHERE debt=0 (103건, 코드 변경 전 상태)",
+    "method": "SEC companyfacts 캐시에서 us-gaap 태그명에 Debt|Borrowing|Notes|Loan|Lease가 들어간 것을 전수 추출, 그 종목의 저장된 fiscal_year 시점 값이 실제로 있는 것만 카운트",
+    "totalOutsideArrayTags": 259,
+    "afterNoiseFilter_note": "운영리스 공시(OperatingLease*)·매도가능/만기보유증권으로서의 채무증권(AvailableForSale/HeldToMaturity*Debt*)·수취채권(NotesReceivable 등)·현금흐름표 동사형 항목(RepaymentsOf*·ProceedsFrom* 등)·만기스케줄 공시(LongTermDebtMaturitiesRepaymentsOfPrincipal*)·리스이자비용(FinanceLeaseInterest*)을 소음으로 제외 — 이 STEP의 §1 실측으로 확정한 소음 분류.",
+    "adoptedNewTags": {
+      "DEBT_TOTAL_SINGLE_added": ["LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities"],
+      "DEBT_LT_added": ["ConvertibleDebtNoncurrent", "ConvertibleLongTermNotesPayable", "LongTermNotesPayable", "SeniorLongTermNotes", "UnsecuredLongTermDebt", "OtherLongTermDebtNoncurrent"],
+      "DEBT_CUR_added": ["ConvertibleDebtCurrent", "ConvertibleNotesPayableCurrent", "NotesPayableCurrent", "SeniorNotesCurrent", "UnsecuredDebtCurrent", "MediumtermNotesCurrent", "LongTermConstructionLoanCurrent", "ShortTermBorrowings", "OtherBorrowings"]
+    },
+    "excludedCandidates_lowFrequencyOrUnverified": [
+      { "tag": "SeniorNotes", "freq": 2, "reason": "단일 총액 태그로 보이나 만기 구분 없음 — LT/CUR 어느 배열에 넣어야 할지 불명확, R-file 정의 대조 안 함" },
+      { "tag": "ShortTermBankLoansAndNotesPayable", "freq": 2, "reason": "정의 대조 안 함(빈도 낮음)" },
+      { "tag": "NotesPayable", "freq": 1, "reason": "기간 구분 없는 단일 태그, LT/CUR 판단 불가" },
+      { "tag": "LoansPayableToBank", "freq": 1, "reason": "정의 대조 안 함(빈도 낮음)" },
+      { "tag": "FinanceLeaseLiability", "freq": 3, "reason": "분리형(FinanceLeaseLiabilityNoncurrent/Current)의 미분리 단일 변형 — 이중계상 방지 로직을 별도로 설계해야 해서 이번엔 보류" },
+      { "tag": "DebtInstrumentCarryingAmount", "freq": 4, "reason": "채무상품(instrument) 차원 태그 — 같은 회사가 여러 상품을 발행하면 다중값이 나와 합산 시 이중계상 위험, 채택 안 함" }
+    ],
+    "trueZeroVerification": {
+      "method": "「진짜 무차입」으로 보이던 대형 종목(PLTR·ANET·ISRG·NOW·SNOW·DDOG·CDNS·VRSN·EA·GRMN)에서 배열 밖 부채꼴 태그 매치 여부 개별 확인",
+      "result": "PLTR·ANET·ISRG·GRMN·CDNS는 매치 없음(진짜 무차입 가능성 유지) — 단 CDNS는 969 §1의 전체 스캔에서 별도로 확인 필요(아래 backfill 결과에서 CDNS가 실제로 0→값 전환됨, 이는 969가 새로 추가한 태그가 CDNS에도 걸렸다는 뜻이므로 이 표본체크의 'true zero' 추정이 CDNS에 대해서는 틀렸음을 사후 확인). NOW·SNOW·DDOG·EA도 backfill 결과 0→값으로 전환됨(같은 이유) — 즉 사전 표본체크에서 '무차입으로 보임'이라 적었던 종목 다수가 실제로는 969가 채택한 신규 태그로 부채가 잡혔다."
+    }
+  },
+
+  "step1_gmVerification": {
+    "source": "https://www.sec.gov/Archives/edgar/data/1467858/000146785826000013/R5.htm (CONSOLIDATED BALANCE SHEETS, curl + User-Agent 헤더)",
+    "finding": "GM의 주 대차대조표는 Automotive·GM Financial 두 세그먼트로 나뉘어 'Short-term debt and current portion of long-term debt'(us-gaap_DebtCurrent)·'Long-term debt'(us-gaap_LongTermDebtAndCapitalLeaseObligations)를 세그먼트별로 각각 태깅한다 — 그러나 이 세그먼트 차원(dimension) 태그는 SEC companyfacts API에서 제외된다(854의 멀티클래스 주식과 동일한 구조적 제약, companyfacts는 차원 팩트를 안 준다).",
+    "companyfactsCheck": {
+      "DebtCurrent": "MISSING(제로 엔트리)",
+      "LongTermDebtAndCapitalLeaseObligations": "MISSING(제로 엔트리)",
+      "LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities": "15개 엔트리 존재 — 유일하게 노출되는 비차원(non-dimensional) 총액 태그"
+    },
+    "values": {
+      "FY2023": 123494000000, "FY2024": 131758000000, "FY2025": 131574000000
+    },
+    "externalCompare": {
+      "FY2024": { "ours": 131758000000, "external_stockanalysis": 129732000000, "relDiffPct": 1.56 },
+      "FY2025": { "ours": 131574000000, "external_stockanalysis": 130277000000, "relDiffPct": 0.99 }
+    },
+    "residualExplanation": "1.0~1.6% 잔차 — 억지로 안 맞춤(대전제 준수). 가능성: stockanalysis.com이 금융리스를 제외하거나 다른 세부항목 처리가 다를 수 있음(미확정, 추정으로 채우지 않음)."
+  },
+
+  "step2_threeWayClassification": {
+    "implementation": "lib/revdcf/drivers.ts — DEBT_TOTAL_SINGLE을 2태그로 확장(coalesceMap 전환) + DEBT_LT/DEBT_CUR 확장 + debtLy==null일 때 배열 밖 태그 스캔(DEBT_KEYWORD_RE 매치·DEBT_NOISE_RE 제외·DEBT_KNOWN_TAGS 제외)으로 unresolved 여부 판정.",
+    "newSkipReason": "UNRESOLVED_DEBT",
+    "flags": ["flags.debtBasis: 'tagged'|'none'|'unresolved'", "flags.debtTagsSeen(unresolved일 때만)"],
+    "sourceTagsAdded": "sourceTags.debt = 채택 태그명(단일) 또는 'combined(LT+CUR+lease)'(합산)"
+  },
+
+  "step4_impact": {
+    "method": "구코드(969 이전) vs 신코드 완전 대조, 1,127종목 전량, SEC 신규호출 0(scripts/probe_969_impact.ts)",
+    "checked": 1127, "noCache": 0,
+    "okFlippedCount_unexpected": 0,
+    "note": "이 스크립트는 fresh computeDrivers()로 old/new 둘 다 계산(같은 세션·같은 캐시라 window 동일) — DriverBundle·market 전체를 비교했으나 debt 외 필드는 무변화(969가 debt 로직만 건드렸으므로 자명)."
+  },
+
+  "step5_backfillAndSelfCaughtBug": {
+    "backfillScript": "scripts/backfill_step969_debt.ts — pinned-year 방식(저장된 fiscal_year에 고정 재추출, 963/967과 동일 방법론)",
+    "firstAttempt_bugFound": {
+      "description": "🔴 자체 발견한 결함 — 백필 스크립트가 'fiscal_year IS NOT NULL'만을 대상 조건으로 삼아, 실제로는 driver 파이프라인의 더 앞선 게이트(NOT_APPLICABLE_SECTOR·MISSING_TAG_PPE·INSUFFICIENT_HISTORY 등)에서 이미 탈락해 debt·shares·nonOperatingAssets가 전부 null이던 191종목에도 debt만 단독으로 계산해 써 넣었다 — shares·nonOperatingAssets는 그대로 null인데 debt만 채워지는 모순 상태가 발생.",
+      "affectedCount": 191,
+      "sampleSymbols": ["ABCB", "C", "BLK", "CVNA", "DD", "DE", "EMR", "GE", "HON", "NKE", "OXY", "SLB", "SHOP", "STZ", "URI", "V", "VTR"],
+      "verification": "이 191건 전부 before.shares == null && before.nonOperatingAssets == null(100%) — driver 파이프라인이 더 앞선 게이트에서 멈췄었다는 증거.",
+      "fix": "scripts/fix_step969_scope_bug.ts — us_fundamentals_snapshot(tag=pre_step969)에서 이 191건을 원상복구, us_valuation.ev_ebitda 재계산(debt·nonOperatingAssets가 다시 null이 되므로 자동으로 MISSING_MARKET_DATA), us_sector_relative 1,127행 재계산. 복구 후 검증 = 191건 전부 debt=null 확인(0건 잔존 오류)."
+    },
+    "legitimateFinalResult": {
+      "totalLegitimateChanges": 137,
+      "note": "before.debt IS NOT NULL(즉 원래도 debt 계산 라인에 도달했던 종목)이었던 것만 969의 정당한 대상.",
+      "breakdown": {
+        "zeroToValue": { "count": 20, "note": "GM 포함 — 상위: GM($131.758B)·AKAM($3.546B)·CDNS($2.476B)·SNOW($2.272B)·U($2.239B)·EA($1.884B)·VRSN($1.792B)·DDOG($1.613B)·NOW($1.489B)·NET($1.287B) 등" },
+        "valueToValue": { "count": 103, "note": "이미 일부 부채가 잡혀 있었으나 신규 태그가 추가로 잡히며 총액이 바뀐 경우 — 가장 큰 폭: ORCL $10.205B→$95.502B(+835.8%, 오라클은 실제로 부채가 큰 회사로 알려져 있어 이 정정이 특히 의미있음)·GMED·BMRN·FIVN·NTNX·DXCM·CME·SMCI·HL·APLD" },
+        "valueToZero": { "count": 10, "note": "🔴 부분 미규명 — 예: ALKS old=$290.73M→new=$0. 개별확인(ALKS) 결과 저장된 fiscal_year(2024) 시점엔 부채 태그가 SEC 캐시에 전혀 없다(coalesce 결과 undefined) — 이전 저장값 290.73M은 debt·fiscal_year가 서로 다른 계산 시점(vintage)에서 온 값일 가능성(963/965/967/968이 반복 발견한 필드 간 시점 불일치 패턴과 동일 성격으로 추정하나, 이 10건 전부를 개별 검증하지는 않았다 — 미확정으로 남김)." },
+        "zeroToUnresolved": { "count": 3, "symbols": ["BLZE(FinanceLeaseLiability)", "EXPD(ShortTermBankLoansAndNotesPayable)", "TXRH(FinanceLeaseLiability)"] },
+        "valueToUnresolved": { "count": 1, "symbols": ["CODA(BusinessCombinationRecognizedIdentifiableAssetsAcquiredAndLiabilitiesAssumedCapitalLeaseObligation)"] }
+      },
+      "totalCoverageLoss_UNRESOLVED_DEBT": 4,
+      "coverageLossGate": "20건 미만이라 통과 — 적재 진행"
+    }
+  },
+
+  "step4_3_evEbitdaImpact": {
+    "changedCount": 100,
+    "medianAbsRelDiff": 0.007558092434257811,
+    "p90AbsRelDiff": 0.11899113651952697,
+    "note": "969 이전 대비(신코드 fundamentals 공통 사용, debt·nonOperatingAssets만 old/new 교체) — 절대상대차 중앙값 0.76%·p90 11.9%로 충분히 작다(GM 등 소수 대형 변화가 p90을 끌어올림)."
+  },
+
+  "step4_2_revdcfVerdictImpact": {
+    "method": "ceteris paribus — debt만 구코드↔신코드로 교체, driver bundle·shares·nonOperatingAssets·WACC재료(rf/erp/usTax/beta/creditSpread)는 같은 날 fresh 계산값(구코드 기준)으로 고정. 604 유니버스 중 skipped 제외 434건 재계산.",
+    "firstAttempt_bugFound": "🔴 1차 시도가 DB 저장 revdcf_results 행(startingSales 미저장)의 다른 필드와 오늘 fresh debt를 섞어 썼다가 startingSales=0 플레이스홀더로 인해 거의 전 종목이 over_cap으로 튀는 결함이 났다(963/965/967의 '옛창·새창 혼입'과 동일 성격의 함정) — driver 부분(startingSales 등)도 오늘 fresh 계산값(rOld.drivers)으로 통일해 정정.",
+    "checked": 434,
+    "changedCount": 6,
+    "changes": [
+      { "symbol": "EXPD", "note": "969로 UNRESOLVED_DEBT 신규 skip" },
+      { "symbol": "GM", "before": "below_one", "after": "years(gap=5)", "oldDebt": 0, "newDebt": 131574000000 },
+      { "symbol": "HL", "beforeGap": 20, "afterGap": 21, "oldDebt": 13900000, "newDebt": 282527000 },
+      { "symbol": "USFD", "beforeGap": 15, "afterGap": 14, "oldDebt": 5757000000, "newDebt": 5200000000 },
+      { "symbol": "VRSK", "beforeGap": 13, "afterGap": 11, "oldDebt": 6306000000, "newDebt": 4737200000 },
+      { "symbol": "XYL", "beforeGap": 6, "afterGap": 7, "oldDebt": 1533000000, "newDebt": 2067000000 }
+    ],
+    "note": "GM이 가장 뚜렷한 변화(라벨 자체가 바뀜: below_one→years) — 나머지는 같은 라벨 내 gap 폭 변화(1년 안팎).",
+    "caveat": "🔴 revdcf_results(as_of=2026-08-08)는 이 STEP에서 쓰지 않았다(대전제 §5-3) — 위 6건은 '다음 정규 크론이 새 코드로 돌면 이렇게 바뀔 것'이라는 예측이지, 이미 반영된 값이 아니다."
+  },
+
+  "notDoneOrUnresolved": [
+    "①-B 3곳 목표 중 2곳 미시도(966·968 차단 전례를 그대로 인용, 재시도 안 함)",
+    "GM 1.0~1.6% 잔차 완전 규명 안 됨(금융리스 처리 차이로 추정, 확정 아님)",
+    "value→zero 10건 중 ALKS만 개별 확인, 나머지 9건은 같은 메커니즘으로 추정만 함(vintage 시점 불일치)",
+    "SeniorNotes·ShortTermBankLoansAndNotesPayable·NotesPayable·LoansPayableToBank·FinanceLeaseLiability(단일)·DebtInstrumentCarryingAmount — 정의 미대조로 배열 확장에서 제외(발견은 됨)",
+    "운영리스 자본화 — 이 STEP 범위 밖, 미판정으로 명시"
+  ]
+}

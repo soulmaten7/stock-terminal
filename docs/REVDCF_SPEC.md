@@ -1461,6 +1461,38 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 상세 = `docs/probe_967_bank_revenue.json`.
 
+### §10-D. 부채 「확정0 / 확정값 / 모름」 3분류(STEP 969, 2026-08-10) — WACC의 D/E를 통해 verdict를 바꾸는 정의
+
+🔴 **이 절은 역DCF 코어에 실제로 영향을 준다.** `debt` → `deRatio`(=debt/시총) → `assembleWacc()`의 releveredBeta·비중 → `wacc` → `runRevDcf()`의 verdict. 968이 발견한 GM 사례(`debt=0`로 잘못 계산되던 것)를 계기로 부채 회수 규칙 전체를 재정의한다.
+
+**배경**: `lib/revdcf/drivers.ts`는 원래 `debtLy == null`(부채 태그 배열로 못 잡음)이면 무조건 `debt = 0`으로 채웠다. 이 정의는 **"진짜 무차입"**과 **"태그를 못 찾아서 결과적으로 0"**을 구분하지 못했다 — GM은 후자였다(세그먼트 차원 태그가 companyfacts에서 제외되고, 유일하게 노출되는 총액 태그 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities`가 배열 밖에 있었다).
+
+**3분류 정의(코드 = `lib/revdcf/drivers.ts`, `flags.debtBasis`)**:
+
+| 분류 | 조건 | debt 값 | 후속 |
+|---|---|---|---|
+| **확정값(tagged)** | `DEBT_TOTAL_SINGLE`(단일 총액, 우선) 또는 `DEBT_LT`+`DEBT_CUR`+`FIN_LEASE`(부분합) 중 하나로 값이 잡힘 | 그 값 | 정상 진행 |
+| **확정0(none)** | 위 배열 전부에 값이 없고, 배열 밖에서도 부채꼴 태그(`DEBT_KEYWORD_RE` 매치·`DEBT_NOISE_RE` 제외·`DEBT_KNOWN_TAGS` 제외)가 하나도 안 잡힘 | `0` | 정상 진행(진짜 무차입) |
+| **모름(unresolved)** | 위 배열엔 없으나 배열 밖에서 부채꼴 태그가 발견됨 | `null` | 🔴 **`skipReason="UNRESOLVED_DEBT"`로 skip** — 0으로 채우면 WACC가 조용히 틀린다(969 대전제) |
+
+**태그 배열 확장(969 §1, 원문 정의를 SEC 10-K R-file의 us-gaap 공식 Definition 텍스트로 직접 대조)**:
+- `DEBT_TOTAL_SINGLE`에 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities` 추가(GM이 쓰는 태그) — 원래 있던 `DebtAndCapitalLeaseObligations`와 같은 "단일 총액" 개념이라 이중계상 없이 coalesce로 병합.
+- `DEBT_LT`에 `ConvertibleDebtNoncurrent`·`ConvertibleLongTermNotesPayable`·`LongTermNotesPayable`·`SeniorLongTermNotes`·`UnsecuredLongTermDebt`·`OtherLongTermDebtNoncurrent` 추가.
+- `DEBT_CUR`에 `ConvertibleDebtCurrent`·`ConvertibleNotesPayableCurrent`·`NotesPayableCurrent`·`SeniorNotesCurrent`·`UnsecuredDebtCurrent`·`MediumtermNotesCurrent`·`LongTermConstructionLoanCurrent`·`ShortTermBorrowings`·`OtherBorrowings` 추가.
+- 🔴 **의도적으로 제외한 태그**(빈도 낮음·정의 미대조·이중계상 위험): `SeniorNotes`·`ShortTermBankLoansAndNotesPayable`·`NotesPayable`(만기 구분 없음)·`LoansPayableToBank`·`FinanceLeaseLiability`(미분리 단일 변형)·`DebtInstrumentCarryingAmount`(채무상품 차원 태그, 다중값 위험). 이 태그만 있는 종목은 `UNRESOLVED_DEBT`로 skip된다.
+
+**GM 검산**: 969 이전 `debt=0` → 969 후 pinned FY2024=$131,758,000,000(FY2025=$131,574,000,000). 외부(stockanalysis.com, §1) FY2024=$129,732M·FY2025=$130,277M — 상대차 **1.56%(FY2024)·0.99%(FY2025)**, 억지로 안 맞춤(대전제) — 미설명 잔차로 남긴다.
+
+**영향 실측(969 §4, 1,127종목 전량 + 604 revdcf 유니버스)**: `debt` 값이 바뀐 **137건**(정당한 범위만 — 이전에도 debt 계산 라인에 도달했던 종목. `fiscal_year`는 있으나 더 앞선 게이트에서 이미 탈락해 `shares`·`nonOperatingAssets`도 null이던 191종목은 969 범위 밖이라 백필에서 제외·복구 — 아래 참조) — 0→값 20건(GM 포함)·값→다른값 103건(최대: `ORCL` $10.205B→$95.502B, +835.8%)·값→0 10건(일부 미규명)·`UNRESOLVED_DEBT` 신규 skip 4건(20건 미만, 적재 진행). **revdcf verdict 재계산(ceteris paribus, 434건 중)**: **6건 변화** — `GM`은 라벨 자체가 `below_one`→`years`(gap 5)로 바뀌고, `HL`·`USFD`·`VRSK`·`XYL`은 같은 라벨 내 gap이 1~2년 이동, `EXPD`는 `UNRESOLVED_DEBT`로 신규 skip. EV/EBITDA는 100건 변화(절대상대차 중앙값 0.76%·p90 11.9%).
+
+🔴 **백필 도중 자체 발견·수정한 결함**: 1차 백필 스크립트가 "`fiscal_year` 확보"만을 대상 조건으로 삼아, 실제로는 더 앞선 게이트(`NOT_APPLICABLE_SECTOR`·`MISSING_TAG_PPE`·`INSUFFICIENT_HISTORY` 등)에서 이미 탈락해 `shares`·`nonOperatingAssets`가 전부 null이던 191종목(`C`·`BLK`·`CVNA`·`DD`·`DE`·`EMR`·`GE`·`HON`·`NKE`·`OXY`·`SLB`·`SHOP`·`STZ`·`URI`·`V`·`VTR` 등)에도 `debt`만 단독으로 써 넣었다 — 다른 필드는 null인데 `debt`만 채워지는 모순 상태. 스냅샷(`pre_step969`)으로 191건 전부 원상복구 후 재검증(0건 잔존). **이 191건은 969의 대상이 아니다** — `debt`가 애초에 null이었다는 것은 driver 파이프라인이 debt 계산 줄에 도달한 적이 없다는 뜻이라 debt만 단독 계산하면 안 된다.
+
+🔴 **`revdcf_results`(as_of=2026-08-08)는 이 STEP에서 건드리지 않았다** — 위 verdict 변화 6건은 예측치이지 이미 반영된 값이 아니다. 다음 정규 크론이 새 코드로 604 유니버스를 다시 계산하면 그때 반영된다. **08-08 행은 옛 debt 기준(GM 포함 다수 종목이 `debt=0`으로 계산된 채)으로 남아 있다** — 이 사실을 잊고 그 as_of를 "최신"으로 인용하면 안 된다.
+
+🔴 **운영리스 자본화는 이 STEP 범위 밖 — 미판정.** 손대지 않았다.
+
+상세 = `docs/probe_969_debt_tags.json`.
+
 | # | 항목 | 어떻게 풀리나 |
 |---|---|---|
 | 1 | 🔶 ~~✅ 유니버스 N=623 확정~~ → **재개방(A-9)** — 616/604로 정정됐고, 그마저 **물려받은 1,000 안에서의 값**이다 | STEP 838 → 842 → **866 재확정** |

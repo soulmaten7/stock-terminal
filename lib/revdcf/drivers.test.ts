@@ -466,3 +466,48 @@ describe("computeDrivers — 창 격리(STEP 951 §4-3, 병렬 안전성 회귀 
     expect(r3.fundamentals.fiscalYear).toBe(2020); // r2 처리 후에도 r1과 동일한 입력엔 동일한 결과
   });
 });
+
+// STEP 969 §3-3 — 부채 「0 / 값 / 모름」 3분류 회귀. fullOk는 이 describe 전용으로 다시 조립(모듈 상단 5년 픽스처 재사용).
+describe("computeDrivers — 부채 3분류(STEP 969)", () => {
+  const equity5yr = { StockholdersEquity: stockFacts(five(400)) };
+  const netIncomeLoss5yr = { NetIncomeLoss: flowFacts(five(80)) };
+  const fullOkDebt = { ...revenue5yr, ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr, ...equity5yr, ...netIncomeLoss5yr };
+
+  it("배열 밖 태그(예: ConvertibleDebtNoncurrent)만 있어도 잡힌다 — 969에서 새로 추가된 태그", () => {
+    const conv5yr = { ConvertibleDebtNoncurrent: stockFacts(five(1000)) };
+    const r = computeDrivers(gaapOf({ ...fullOkDebt, ...conv5yr }), dei);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.market.debt).toBe(1000);
+      expect(r.flags.debtBasis).toBe("tagged");
+    }
+  });
+
+  it("Including/ExcludingCurrentMaturities 단일총액 태그가 둘 다 있어도 이중계상하지 않는다(하나만 채택)", () => {
+    const dual5yr = {
+      DebtAndCapitalLeaseObligations: stockFacts(five(5000)),
+      LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities: stockFacts(five(7000)),
+    };
+    const r = computeDrivers(gaapOf({ ...fullOkDebt, ...dual5yr }), dei);
+    expect(r.ok).toBe(true);
+    // coalesceMap은 배열 순서상 먼저 나오는 태그(DebtAndCapitalLeaseObligations)를 채택 — 5000+7000=12000이 되면 이중계상 버그.
+    if (r.ok) expect(r.market.debt).toBe(5000);
+  });
+
+  it("부채꼴 태그가 전무하면 debt=0·debtBasis='none'(진짜 무차입)", () => {
+    const r = computeDrivers(gaapOf({ ...fullOkDebt }), dei);
+    expect(r.ok).toBe(true);
+    if (r.ok) { expect(r.market.debt).toBe(0); expect(r.flags.debtBasis).toBe("none"); }
+  });
+
+  it("배열이 못 잡는 부채꼴 태그(예: SeniorNotes)만 있으면 UNRESOLVED_DEBT로 skip한다(0으로 채우지 않는다)", () => {
+    const unresolved5yr = { SeniorNotes: stockFacts(five(2000)) };
+    const r = computeDrivers(gaapOf({ ...fullOkDebt, ...unresolved5yr }), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.skipReason).toBe("UNRESOLVED_DEBT");
+      expect(r.flags.debtBasis).toBe("unresolved");
+      expect(r.flags.debtTagsSeen).toEqual(["SeniorNotes"]);
+    }
+  });
+});

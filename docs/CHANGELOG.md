@@ -1,5 +1,37 @@
-<!-- 2026-08-09 -->
+<!-- 2026-08-10 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-10 (140) — 🟩 **STEP 969: 부채 태그 누락 규명 — 「0 / 값 / 모름」 3분류 도입 (역DCF 코어 변경)**
+
+> **성격**: 코드 변경(부채 회수 로직 확장, 태그 배열만 추가·이중계상 방지 유지) + DB 백필(137행) + 문서. **역DCF 코어에 실제 영향(WACC→verdict). 화면 무접촉. 크론 미호출. `revdcf_results`는 건드리지 않음(다음 정규 크론이 반영).**
+
+**왜** — STEP968이 GM의 EV/EBITDA 잔차(직접구성 후에도 −75.58%)를 딥다이브하다가 `debt` 필드가 0으로 잘못 저장돼 있고, 실제 부채(`LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities`=$131.8B)가 태그 배열 밖이라 완전 누락됨을 발견했다. 이 STEP이 그 규명·수정을 실행한다.
+
+**①-B + ③** — stockanalysis.com 1곳만 성공(GM Total Debt FY2024=$129,732M·FY2025=$130,277M[단기35,668+장기94,609], 정의="Short-Term Debt + Long-Term Debt"). 나머지 4~5곳 시도 없음(966·968의 반복 차단 전례를 그대로 인용). `us_fundamentals` `debt=0`인 103종목 캐시 전수 스캔 — Debt/Borrowing/Notes/Loan/Lease 키워드 태그 259개가 배열 밖에서 발견됨(운영리스 공시·매도가능/만기보유증권으로서의 채무증권·수취채권·현금흐름표 동사형 항목·만기스케줄 공시·리스이자비용을 소음으로 제외한 뒤). GM의 세그먼트(Automotive/GM Financial) 차원 태그(`DebtCurrent`·`LongTermDebtAndCapitalLeaseObligations`)는 SEC companyfacts에서 차원 팩트라 제외되고(854의 멀티클래스 주식과 동일 구조), 유일하게 노출되는 비차원 총액 태그가 배열 밖에 있었다(SEC 10-K R-file, `curl`+User-Agent로 직접 확인 — R-file에 us-gaap 공식 Definition 텍스트가 렌더링에 포함돼 정의 대조가 가능했다).
+
+**태그 확장(정의를 SEC R-file로 직접 대조한 것만 채택)** — `DEBT_TOTAL_SINGLE`에 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities` 추가(기존 `DebtAndCapitalLeaseObligations`와 같은 "단일 총액" 개념, coalesceMap으로 병합해 이중계상 없음) · `DEBT_LT`에 6종(`ConvertibleDebtNoncurrent`·`ConvertibleLongTermNotesPayable`·`LongTermNotesPayable`·`SeniorLongTermNotes`·`UnsecuredLongTermDebt`·`OtherLongTermDebtNoncurrent`) · `DEBT_CUR`에 9종(`ConvertibleDebtCurrent`·`ConvertibleNotesPayableCurrent`·`NotesPayableCurrent`·`SeniorNotesCurrent`·`UnsecuredDebtCurrent`·`MediumtermNotesCurrent`·`LongTermConstructionLoanCurrent`·`ShortTermBorrowings`·`OtherBorrowings`). 🔴 **의도적 제외**(빈도 낮음·정의 미대조·이중계상 위험): `SeniorNotes`·`ShortTermBankLoansAndNotesPayable`·`NotesPayable`(만기 구분 없음)·`LoansPayableToBank`·`FinanceLeaseLiability`(미분리 단일 변형)·`DebtInstrumentCarryingAmount`(채무상품 차원 태그).
+
+**「확정0 / 확정값 / 모름」 3분류(§2, 핵심)** — `flags.debtBasis="tagged"|"none"|"unresolved"`. 배열로 못 잡았을 때, 배열 밖에서도 부채꼴 태그가 전혀 없으면 진짜 무차입(`none`, `debt=0`) — 있으면 "모름"(`unresolved`)으로 **새 `skipReason="UNRESOLVED_DEBT"`로 skip**한다(0으로 채우면 WACC의 D/E가 조용히 틀린다). `sourceTags.debt`에 채택 태그(또는 `"combined(LT+CUR+lease)"`) 기록. 테스트 4건 신규(배열 밖 태그 인식·이중계상 방지·확정0·모름skip) — **345/345 통과**.
+
+**GM 검산** — 969 이전 `debt=0` → 이후 pinned FY2024=$131,758,000,000(FY2025=$131,574,000,000). 외부 대비 FY2024 **1.56%차**·FY2025 **0.99%차** — 억지로 안 맞춤, 미설명 잔차로 남김(금융리스 처리 차이 등으로 추정하나 미확정).
+
+**§4 영향 실측(1,127종목 전량, SEC 신규호출 0)** — 구코드 vs 신코드 완전 대조: 예상외 ok변화 0건. `debt` 0→값 20건(GM 포함, 그 외 `AKAM`·`CDNS`·`SNOW`·`U`·`EA`·`VRSN`·`DDOG`·`NOW`·`NET` 등) · EV/EBITDA 100건 변화(절대상대차 중앙값 0.76%·p90 11.9%). **revdcf verdict 재계산(ceteris paribus — debt만 old↔new, 나머지는 같은 날 fresh 계산값으로 고정, 434건 중)**: **6건 변화** — `GM`이 `below_one`→`years`(gap5)로 라벨 자체 변경(가장 뚜렷), `HL`·`USFD`·`VRSK`·`XYL`은 같은 라벨 내 gap 1~2년 이동, `EXPD`는 `UNRESOLVED_DEBT` 신규 skip.
+
+🔴 **1차 시도 결함 2건, 둘 다 자체 발견·수정**:
+1. **영향측정 스크립트** — DB 저장 `revdcf_results` 행의 필드(특히 미저장된 `startingSales`)와 오늘 fresh 계산한 `debt`를 섞어 썼다가 `startingSales=0` 플레이스홀더로 거의 전 종목이 `over_cap`으로 튀는 결함(963/965/967의 "옛창·새창 혼입"과 동일 성격) → driver 부분도 오늘 fresh 계산값(같은 세션, 같은 캐시라 window 동일)으로 통일해 정정.
+2. **백필 스크립트(더 심각, 실제 DB 오염)** — "`fiscal_year` 확보"만을 대상 조건으로 삼아, 실제로는 더 앞선 게이트(`NOT_APPLICABLE_SECTOR`·`MISSING_TAG_PPE`·`INSUFFICIENT_HISTORY` 등)에서 이미 탈락해 `shares`·`nonOperatingAssets`도 전부 null이던 **191종목**(`C`·`BLK`·`CVNA`·`DD`·`DE`·`EMR`·`GE`·`HON`·`NKE`·`OXY`·`SLB`·`SHOP`·`STZ`·`URI`·`V`·`VTR` 등 다수 대형주 포함)에도 `debt`만 단독으로 계산해 써 넣었다 — 다른 필드는 null인데 `debt`만 채워지는 모순 상태. `us_fundamentals_snapshot`(tag=`pre_step969`)으로 191건 전부 원상복구 → `us_valuation.ev_ebitda` 재계산(자동으로 `MISSING_MARKET_DATA` 복원) → `us_sector_relative` 1,127행 재계산 → 검증(191건 전부 `debt=null` 확인, 0건 잔존).
+
+**정당한 최종 백필 결과(137건 — `fiscal_year`뿐 아니라 `debt` 자체가 이미 계산 라인에 도달했던 종목만)**: 0→값 **20건**(GM `$131.758B` 포함) · 값→다른값 **103건**(최대 `ORCL` $10.205B→$95.502B, **+835.8%** — 오라클은 실제로 부채가 큰 회사로 알려져 있어 이 정정이 특히 의미 있다) · 값→0 **10건**(🔴 부분 미규명 — `ALKS` 개별확인 결과 저장된 `fiscal_year` 시점엔 부채 태그가 SEC 캐시에 전혀 없다, 이전 저장값은 `debt`·`fiscal_year`가 다른 계산 시점[vintage]에서 온 값일 가능성으로 추정하나 나머지 9건은 개별검증 안 함) · `UNRESOLVED_DEBT` 신규 skip **4건**(`BLZE`·`EXPD`·`TXRH`·`CODA`, 20건 미만이라 적재 진행).
+
+**적재** — `us_fundamentals_snapshot`(tag=`pre_step969`) 1,127행 선스냅샷 → pinned-year 방식(963/967과 동일 방법론, 저장된 `fiscal_year`에 고정 재추출 — computeDrivers() 그대로 부르면 오늘 기준 최신연도로 재해석돼 969와 무관한 window drift가 섞인다) → `us_fundamentals`·`us_valuation`(ev_ebitda만, per·pbr·psr은 debt와 무관이라 저장값 재사용) 각 137행 갱신 → `us_sector_relative` 1,127행 재계산.
+
+🔴 **`revdcf_results`(as_of=2026-08-08)는 이 STEP에서 건드리지 않았다(대전제 §5-3)** — 위 verdict 변화 6건은 예측치다. **08-08 행은 옛 debt 기준(다수 종목 `debt=0`)으로 남아 있다** — 다음 정규 크론이 새 코드로 604 유니버스를 다시 계산해야 반영된다.
+
+**문서** — `docs/probe_969_debt_tags.json`(원자료, 태그스캔·GM검증·영향측정·백필·자체발견결함 전문) · `docs/REVDCF_SPEC.md` §10-D 신설(정본) · `docs/VALUATION_SPEC.md`(EV 절에서 §10-D 교차참조) · `docs/STATE.md`(969 신규 블록 + 08-08 옛기준 경고).
+
+**무변경** — EV 정의(시총+부채−비영업자산) 자체는 무변경, 부채 **찾는 방법**만 확장. `app/(routes)`·`components`·`messages` 무접촉. KR 미접촉. 운영리스 자본화는 범위 밖(미판정, 손대지 않음).
+
+**못 한 것** — ①-B 3곳 목표 중 1곳만(4~5곳 재시도 안 함) · GM 1.0~1.6% 잔차 완전 규명 안 됨 · 값→0 10건 중 9건 개별검증 안 함 · `SeniorNotes` 등 6개 태그 정의 미대조로 배열 확장 제외 · 운영리스 자본화 미판정.
 
 ## 2026-08-09 (139) — 🟨 **STEP 968: 잔차 규명① — 재척도 근사 제거 후 정면 대조**
 

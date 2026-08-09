@@ -123,10 +123,25 @@ const SHARES_MORE = ["WeightedAverageNumberOfSharesOutstandingBasic", "CommonSto
 const CASH_NONOP = ["CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents", "CashAndCashEquivalentsAtCarryingValue"]; // 비영업(제한현금 포함 우선)
 const SECURITIES = ["ShortTermInvestments", "MarketableSecuritiesCurrent", "AvailableForSaleSecuritiesCurrent", "OtherShortTermInvestments"];
 // 부채: LT + 당기 + 금융리스 (영업리스 제외 · §3 결정) · §5: AndCapitalLeaseObligationsCurrent 추가
-const DEBT_LT = ["LongTermDebtNoncurrent", "LongTermDebt", "LongTermDebtAndCapitalLeaseObligations"];
-const DEBT_CUR = ["LongTermDebtCurrent", "DebtCurrent", "LongTermDebtAndCapitalLeaseObligationsCurrent"];
-const FIN_LEASE = ["FinanceLeaseLiabilityNoncurrent", "FinanceLeaseLiabilityCurrent"];
-const DEBT_TOTAL_SINGLE = ["DebtAndCapitalLeaseObligations"]; // 단일 총액 태그(있으면 우선)
+// 🔴 STEP 969 — debt=0인 103종목(us_fundamentals) 전수 스캔으로 배열 밖 태그를 찾아 확장. 정의를 SEC 10-K
+//   R-file(us-gaap 공식 Definition 텍스트가 렌더링에 포함됨, 969 §1 실측 방법)로 직접 대조해 확인된 것만 추가 —
+//   이름만 비슷한 태그(예: IncludingCurrentMaturities 변형)는 원문 대조 없이 넣지 않는다. 이중계상 방지:
+//   신규 태그는 전부 DEBT_LT/DEBT_CUR(coalesceMap이 연도별로 "처음 값이 있는 태그 하나만" 쓰는 배열)에만 추가하거나
+//   DEBT_TOTAL_SINGLE(단일 총액, LT+CUR 합산보다 항상 우선)에만 추가한다 — 같은 개념을 두 배열에 동시에 넣지 않는다.
+export const DEBT_LT = ["LongTermDebtNoncurrent", "LongTermDebt", "LongTermDebtAndCapitalLeaseObligations", "ConvertibleDebtNoncurrent", "ConvertibleLongTermNotesPayable", "LongTermNotesPayable", "SeniorLongTermNotes", "UnsecuredLongTermDebt", "OtherLongTermDebtNoncurrent"];
+export const DEBT_CUR = ["LongTermDebtCurrent", "DebtCurrent", "LongTermDebtAndCapitalLeaseObligationsCurrent", "ConvertibleDebtCurrent", "ConvertibleNotesPayableCurrent", "NotesPayableCurrent", "SeniorNotesCurrent", "UnsecuredDebtCurrent", "MediumtermNotesCurrent", "LongTermConstructionLoanCurrent", "ShortTermBorrowings", "OtherBorrowings"];
+export const FIN_LEASE = ["FinanceLeaseLiabilityNoncurrent", "FinanceLeaseLiabilityCurrent"];
+// 🔴 969 — GM 사례(§1): 세그먼트(Automotive/GM Financial) 차원 태그(DebtCurrent 등)가 companyfacts에서
+//   차원 팩트라 제외되고(854의 멀티클래스 주식과 같은 구조적 제약), 대신 이 단일 합계 태그만 노출된다.
+//   SEC 10-K R-file 정의 대조로 확인: "Amount of debt and lease obligation" 계열의 총액 버전.
+//   GM FY2025 검산: 우리(태그 원문값)=$131,574M vs stockanalysis.com FY2025=$130,277M(1.0%차, §3-2).
+export const DEBT_TOTAL_SINGLE = ["DebtAndCapitalLeaseObligations", "LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities"]; // 단일 총액 태그(있으면 우선)
+// 🔴 969 §2 — "확정0(태그 자체가 없음)"과 "모름(태그는 있는데 못 잡음)"을 가르는 스캔용. 위 배열에 실제로 들어간
+//   전체 태그 목록(대조 배제용) + 부채꼴이지만 소음인 패턴(운영리스 공시·매도가능증권으로서의 채무증권·수취채권·
+//   현금흐름표 동사형 항목)을 제외한다 — 969 §1 실측(103종목 전수 스캔)으로 확정한 소음 분류 그대로.
+export const DEBT_KNOWN_TAGS = new Set([...DEBT_LT, ...DEBT_CUR, ...FIN_LEASE, ...DEBT_TOTAL_SINGLE]);
+export const DEBT_KEYWORD_RE = /Debt|Borrowing|Notes|Loan|Lease/i;
+export const DEBT_NOISE_RE = /^(RepaymentsOf|ProceedsFrom|Payments|GainsLosses|GainLoss|Amortization|Interest|Induced|Provision|Impairment|Deferred|Increase|AllowanceFor|RightOfUseAssetObtainedInExchangeFor)|OperatingLease|AvailableForSale|HeldToMaturity|LeaseCost|LesseeOperatingLease|SubleaseIncome|LeaseExpense|LeaseIncome|LeaseRightOfUse|NotesReceivable|LoansReceivable|NotesAndLoansReceivable|LeaseLiabilityUndiscounted|SalesTypeLease|SalesTypeAndDirectFinancingLease|NetInvestmentInLease|LeaseholdImprovements|DebtSecurities|DebtInstrument|AccountsAndNotesReceivable|LineOfCreditFacility|MaturitiesRepaymentsOfPrincipal|LeaseLiabilityPaymentsDue|LeasePrincipalPayments|TradingSecuritiesDebt|LeasePayment|DebtIssuanceCostsIncurredDuring|DebtAndEquitySecurities|LiabilitiesOtherThanLongtermDebt|FinanceLeaseInterest/i;
 const SHARES_DIL = ["WeightedAverageNumberOfDilutedSharesOutstanding"];
 // STEP 947 §2 — Q1 밸류에이션(PER·PBR) 재료. 역DCF driver와 무관 — 새 축 2개만 추가.
 // 🔴 STEP 963 — 보통주 귀속 순이익을 최우선으로. GAAP EPS 정의(FASB ASC 260) 자체가 이미 "보통주 귀속 순이익÷보통주식수"라
@@ -356,16 +371,36 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   }
   flags.sharesTag = sharesTag;
 
-  const single = annualMap(gaap, DEBT_TOTAL_SINGLE[0], "stock");
-  const debtMap = hasAll(years, single) || single[lastY] != null ? single : sumMaps(years, coalesceMap(gaap, DEBT_LT, "stock").vals, coalesceMap(gaap, DEBT_CUR, "stock").vals, sumMaps(years, annualMap(gaap, FIN_LEASE[0], "stock"), annualMap(gaap, FIN_LEASE[1], "stock")));
+  // 🔴 969 — DEBT_TOTAL_SINGLE이 이제 2개 태그(GM 사례로 추가)라 coalesceMap으로 전환(동작: 연도별로 첫 값 있는 태그 하나만 채택, 969 §1).
+  const singleCo = coalesceMap(gaap, DEBT_TOTAL_SINGLE, "stock");
+  const debtMap = hasAll(years, singleCo.vals) || singleCo.vals[lastY] != null
+    ? singleCo.vals
+    : sumMaps(years, coalesceMap(gaap, DEBT_LT, "stock").vals, coalesceMap(gaap, DEBT_CUR, "stock").vals, sumMaps(years, annualMap(gaap, FIN_LEASE[0], "stock"), annualMap(gaap, FIN_LEASE[1], "stock")));
   const debtLy = latestYear(years, debtMap);
-  const debt = debtLy != null ? debtMap[debtLy] : 0; // 무차입이면 0 (결측 아님)
-  flags.debtIsZeroOrMissing = debtLy == null;
-  // 🔴 862: 부채 태그 부재 시 무차입(정상·값0) vs 진짜 결측(이자비용 있는데 태그 못 잡음) 분리
+  // 🔴 862: 부채 태그 부재 시 무차입(정상·값0) vs 진짜 결측(이자비용 있는데 태그 못 잡음) 분리 — 969가 아래에서 이 신호를 그대로 재사용.
+  const iMap = annualMap(gaap, "InterestExpense", "flow"); const iLy = latestYear(years, iMap);
+  flags.debtStatus = debtLy != null ? "present" : (iLy != null && Math.abs(iMap[iLy]) > 0 ? "missing" : "zero");
+
+  // 🔴 969 §2 — 「확정0 / 확정값 / 모름」 3분류. debtLy가 null이면 위 배열로 못 잡은 것 — 그게 "진짜 무차입"인지
+  //   "부채꼴 태그가 있는데 우리가 못 알아본 것"인지 직접 스캔해서 가른다(969 §1: 배열 밖 태그 전수조사로 소음 규칙 확정).
   if (debtLy == null) {
-    const iMap = annualMap(gaap, "InterestExpense", "flow"); const iLy = latestYear(years, iMap);
-    flags.debtStatus = iLy != null && Math.abs(iMap[iLy]) > 0 ? "missing" : "zero";
-  } else flags.debtStatus = "present";
+    const unresolvedTags: string[] = [];
+    for (const tag of Object.keys(gaap)) {
+      if (DEBT_KNOWN_TAGS.has(tag) || !DEBT_KEYWORD_RE.test(tag) || DEBT_NOISE_RE.test(tag)) continue;
+      const m = annualMap(gaap, tag, "stock");
+      if (m[lastY] != null) unresolvedTags.push(tag);
+    }
+    if (unresolvedTags.length > 0) {
+      // 🔴 "모름"이면 skip한다 — 0으로 채우면 WACC의 D/E가 조용히 틀린다(969 대전제).
+      return { ok: false, skipReason: "UNRESOLVED_DEBT", flags: { ...flags, debtBasis: "unresolved", debtTagsSeen: unresolvedTags }, fundamentals };
+    }
+    flags.debtBasis = "none";
+  } else {
+    flags.debtBasis = "tagged";
+    sourceTags.debt = hasAll(years, singleCo.vals) || singleCo.vals[lastY] != null ? (singleCo.tagAt[debtLy] ?? "single") : "combined(LT+CUR+lease)";
+  }
+  const debt = debtLy != null ? debtMap[debtLy] : 0; // 무차입이면 0 (결측 아님 — debtBasis="none"으로 구분)
+  flags.debtIsZeroOrMissing = debtLy == null;
 
   const nonOpCash = coalesceMap(gaap, CASH_NONOP, "stock").vals, sec = coalesceMap(gaap, SECURITIES, "stock").vals;
   const nonOpMap = sumMaps(years, nonOpCash, sec);
