@@ -1,6 +1,31 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (130) — 🟩 **STEP 959: 업종×축 적용성 전수 조사 — 44칸 근거 수집, Damodaran 라이브 데이터셋 신규 발견**
+
+> **성격**: 조사만(코드 변경 0). **화면·DB·크론 전부 무접촉.** `SECTOR_RELATIVE_SPEC` 무변경 — 표만 만들고 장은태 판정을 기다린다.
+
+**왜** — 958이 44칸 중 8칸(Financials·Real Estate)만 실제 근거로 채우고 나머지 36칸은 "적용(일반론)"이라고 근거 없이 적었다. 장은태 판정: 확실한 2칸(Financials PSR·EV/EBITDA)만 먼저 막지 않고 44칸 전부에 근거를 모은 뒤 한 번에 정한다. 그 사이 PSR-Financials 61종목은 "틀린 값일 수 있는 채로" 남지만 `Q1_ENABLED`가 OFF라 화면에는 안 나가 사용자 피해는 없다 — 이 사실을 문서에 남기는 것이 이 STEP의 최소 요건이었다.
+
+**§0 안을 먼저 열었다** — `data/sources/damodaran/`의 xls 8종(beta·capex·countrytaxrates·indname·taxrate·totalbeta·wacc·wcdata) 전부 재확인: 업종별 배수 데이터는 없음(전부 계산 투입재료). 🔑 **`data/sources/text/damodaran_data_update_1_2026.html`(기존 저장본) 재검토에서 결정적 신호 발견** — Damodaran 본인이 *"my estimate the PE ratio for an industry grouping..."*·*"the EV/EBITDA multiple that I report for emerging market steel companies"*를 직접 언급. 이 신호를 따라 웹서치 → `pedata.xls`(PE)·`pbvdata.xls`(PBV)·`vebitda.xls`(EV/EBITDA)·`psdata.xls`(Price/Sales) 4개 라이브 데이터셋 확보(우리 4축과 정확히 1:1 대응, `data/sources/damodaran_multiples/`에 원본 저장). DB `damodaran_*` 9개 테이블도 xls와 대응, 배수 데이터 없음 재확인. link_hub는 958에서 이미 조회 완료.
+
+**§1 축별 성립 조건 선정의** — 업종 대입 전에 4축 각각의 분자/분모·붕괴조건을 원전 근거로 먼저 세움(사후 이유붙이기 방지). `docs/SECTOR_AXIS_APPLICABILITY.md` §1 표 참조.
+
+**§2 44칸 판정** — `indname.xls`("By industry" 시트, US만)로 Damodaran의 94개 업종군 → GICS 11섹터 매핑을 직접 구축(다수결)한 뒤, 4개 라이브 데이터셋의 업종군별 `NA` 패턴을 집계.
+- **Financials**: PER·PBR = 적용(9개 업종군 중 NA 0). **PSR = 조건부**(🔴 c21 교과서는 "측정 불가"라 명시하나, 같은 저자의 라이브 `psdata.xls`는 9/9 업종군 전부 실제 계산해 발행 — 원전 내부 상충, 이번 STEP 신규발견). **EV/EBITDA = 조건부**(라이브 `vebitda.xls`: 은행·증권 3개 업종군[Bank Money Center·Banks Regional·Brokerage & Investment Banking, 615개사]만 NA, 보험·자산운용 6개 업종군[558개사]은 실값 — `finsvc.pdf`의 "부채=원재료" 논리가 은행에만 해당함을 정밀 확인).
+- **Real Estate**: PER·PBR = 조건부(계산되나 REIT 실무는 FFO/NAV 선호, 958 실무출처). **PSR = 적용**(🟢 958의 "불명" 정정 — 라이브 데이터 5개 업종군 전부 NA 없음). EV/EBITDA = 적용(실무출처와 정합).
+- **나머지 9개 업종×4축(36칸)**: 🟢 958의 "적용(일반론, 근거없음)"을 **근거 있는 "적용"**으로 정정 — 라이브 데이터로 각 섹터 4~17개 업종군 중 NA 0~2개(개별 업종군 예외 3건은 구조적 신호로 안 봄, 각주 처리).
+- **집계**: 적용 40·조건부 4·미적용 0·불명 0.
+- **§2-4 현재 뚫려 있는 칸**: **PSR×Financials, n=61, minSample 안 가려짐.** 이 STEP이 요구된 문서화(4-3)를 정확히 이 칸에 대해 수행함.
+
+**§3 처방 후보(고르지 않음)** — ① NOT_APPLICABLE 추가·계산 제외(발동 대상 0칸, 확정 미적용이 없음) ② 계산은 하되 표시만 가림 ③ 조건부 계산+별도 사유 표시(가장 적은 코드 변경으로 이번 결론 반영 가능, 4칸 대상) ④ 업종별 대체 축(FFO 등, Q1 전체 재설계급 대가).
+
+**§4 문서** — `docs/SECTOR_AXIS_APPLICABILITY.md` 신설(44칸 표 전문·근거·인용, 판정 자료 정본) · `docs/probe_959_axis_applicability.json` 신설(원자료 — 라이브 데이터셋 전체 덤프 포함) · `data/sources/README.md`(damodaran_multiples 절 신규) · `docs/VALUATION_SPEC.md`(교차참조 + 958 "일반론" 표기 정정 + PSR×Financials 노출 사실 명시) · `docs/STATE.md`(958 옆에 정정 표시 + 959 결과 추가).
+
+**무변경** — 코드(`app/`·`components/`·`lib/`·`messages/`) diff 0. DB 쓰기 0(조회만). 크론 미호출. `lib/sectorRelative.ts`(SECTOR_RELATIVE_SPEC) diff 0.
+
+🔴 **화면 무변경 · DB 무변경 · 크론 미호출 · SPEC 미변경.** 44칸 판정은 장은태에게 넘긴다.
+
 ## 2026-08-09 (129) — 🟨 **STEP 958: Q1 모델 검증 — 외부 독립 출처 대조(DoD3) + 업종별 축 적용성 조사**
 
 > **성격**: 조사·검증만(957 카드 골격을 계속 이어감이 아니라 모델 자체가 맞는지 확인). **화면 무변경**(`Q1Section.tsx`·`messages`·`page.tsx` 무접촉)·`SECTOR_RELATIVE_SPEC` 무변경(판정 대기로 표만 만듦)·크론 미호출·KR 미접촉.

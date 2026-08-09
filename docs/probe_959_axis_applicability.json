@@ -1,0 +1,3611 @@
+{
+ "step": 959,
+ "measuredAt": "2026-08-09",
+ "step0_internalInventory": {
+  "damodaranXlsFiles8": "베타·wacc·capex·wcdata·taxrate·totalbeta·indname·countrytaxrates — 전부 확인함. 업종별 배수(PE/PBV/PS/EV-EBITDA) 데이터는 이 8개 안에 없음(전부 계산 투입재료: 베타·WACC·세율·운전자본비율·산업분류).",
+  "newDiscovery": "data/sources/text/damodaran_data_update_1_2026.html(이미 저장돼 있던 블로그 글)을 재검토하니 'PE ratio for an industry grouping'·'EV/EBITDA multiple ... for emerging market steel companies'를 직접 언급 — Damodaran이 업종별 배수 데이터셋을 별도로 발행한다는 신호. 웹서치로 실제 파일 발견: pedata.xls·pbvdata.xls·vebitda.xls·psdata.xls(4개, 우리 4축과 정확히 대응) — 전부 다운로드해 data/sources/damodaran_multiples/에 저장.",
+  "dbTables": "damodaran_* 9개 테이블(damodaran_beta·capex·country_tax·credit_spread·global_inputs·industry·tax_rate·wacc·working_capital) 확인 — 전부 xls 파일과 대응, 배수 데이터 없음.",
+  "linkHubAnalysis": "958에서 이미 조회 완료(⓪-5-B 재확인) — analysis 14곳 중 stockanalysis.com이 최종 채택 출처. 이번 STEP은 Damodaran 1차 데이터셋 자체를 새로 찾은 것이라 link_hub 재조회는 안 함(958 결과 그대로 유효).",
+  "conclusion": "🔑 0단계에서 Damodaran 자료로 44칸 중 대부분이 갈렸다 — 중단하지 않고 계속 진행."
+ },
+ "step1_axisConditions": {
+  "per": {
+   "definition": "분자=시가총액(또는 주가) · 분모=순이익(또는 EPS)",
+   "source": "Damodaran pedata.xls FAQ — 'Aggregate Mkt Cap/ Net Income (all firms)'",
+   "individualBreakCondition": "순이익이 음수·0이면 무의미(업종 무관, 개별종목 unavailable=NEGATIVE_EARNINGS로 이미 처리 중)",
+   "sectorLevelConcern": "REIT는 GAAP 감가상각이 순이익을 구조적으로 낮춰 실무는 FFO(Funds From Operations)를 표준 지표로 씀 — 계산 자체는 되나 왜곡(조건부 카테고리의 전형)",
+   "sectorLevelConcernSource": "실무출처 4건(958에서 확보: wallstreetprep.com/knowledge/price-to-ffo, ibinterviewquestions.com REIT valuation guide, dividend.com, fairpriceindex.com)"
+  },
+  "pbr": {
+   "definition": "분자=시가총액 · 분모=자기자본 장부가치",
+   "source": "Damodaran pbvdata.xls FAQ — 'Aggregated market capitalization divided by aggregated book value of equity'",
+   "individualBreakCondition": "자기자본이 음수면 무의미(업종 무관, 개별종목 unavailable=NEGATIVE_EQUITY로 이미 처리 중)",
+   "sectorLevelConcern": "REIT는 취득원가 기준 장부가가 부동산 시가상승을 못 담아 NAV/P-NAV를 선호 — 계산은 되나 덜 선호(조건부)",
+   "sectorLevelConcernSource": "실무출처(958: reit.com/glossary/net-asset-value 등)"
+  },
+  "psr": {
+   "definition": "분자=시가총액(또는 EV) · 분모=매출(revenue)",
+   "source": "Damodaran psdata.xls FAQ — 'Price/Sales'/'EV/Sales'",
+   "individualBreakCondition": "해당 없음(매출은 거의 항상 양수)",
+   "sectorLevelConcern": "🔴 원전 내부 상충 — c21 교과서 원문(958 확보): 'Since sales or revenues are not really measurable for financial service firms, price-to-sales ratios cannot be estimated or used for these firms.' 그러나 같은 저자의 **라이브 psdata.xls(2026-01 갱신)는 Financials 9개 업종군 전부(0/9 NA)에서 실제 Price/Sales 값을 계산해 발행**한다. 텍스트(이론)와 실제 관행(데이터) 사이 불일치 — 이번 STEP 신규발견.",
+   "sectorLevelConcernSource": "data/sources/damodaran_pdfs/c21.pdf(텍스트) vs data/sources/damodaran_multiples/psdata.xls(라이브 데이터)"
+  },
+  "evEbitda": {
+   "definition": "분자=EV(시가총액+순부채) · 분모=EBITDA",
+   "source": "Damodaran vebitda.xls FAQ — 'Enterprise Value = Market Capitalization + Total Debt - Cash'",
+   "individualBreakCondition": "해당 없음(EBITDA가 음수인 경우는 있으나 우리 unavailable 체계에서 별도 처리, 이 STEP 범위 밖)",
+   "sectorLevelConcern": "부채가 자본조달 수단이 아니라 '영업의 원재료'인 업종에서는 EV 개념 자체가 안 맞는다 — finsvc.pdf 원문 직접인용(958 확보): 'Debt, for non-financial service firms, is a source of capital. For a financial service firm, debt is more raw material than source of capital.' 🔑 라이브 vebitda.xls로 정밀화(이번 STEP 신규): Financials 9개 업종군 중 **은행·증권 3개군(Bank Money Center·Banks Regional·Brokerage & Investment Banking, 615개사)만 NA** — 보험·자산운용 6개군(Financial Svcs Non-bank&Insurance·Insurance General/Life/Prop-Cas·Investments & Asset Mgmt·Reinsurance, 558개사)은 실제 계산됨.",
+   "sectorLevelConcernSource": "data/sources/damodaran_pdfs/finsvc.pdf + data/sources/damodaran_multiples/vebitda.xls"
+  }
+ },
+ "step2_verdictTable": {
+  "Financials": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "Damodaran 라이브 pedata.xls: Financials 9개 업종군 중 0개 NA(전부 계산됨).",
+    "confidence": "상"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "Damodaran 라이브 pbvdata.xls: Financials 9개 업종군 중 0개 NA.",
+    "confidence": "상"
+   },
+   "psr": {
+    "verdict": "조건부",
+    "evidence": "🔴 원전 내부 상충 — c21 교과서는 '측정 불가·사용 불가'라 명시하나, 같은 저자의 라이브 psdata.xls는 9/9 업종군 전부 실제 계산해 발행 중.",
+    "confidence": "하(상충)",
+    "note": "n=61로 minSample(20) 안 가려짐 — 현재 뚫려있는 칸"
+   },
+   "evEbitda": {
+    "verdict": "조건부",
+    "evidence": "vebitda.xls 라이브데이터: 은행·증권 3개군(615개사)=NA, 보험·자산운용 6개군(558개사)=실값. finsvc.pdf 원문(부채=원재료)과 정합.",
+    "confidence": "상(세분화 필요)",
+    "note": "n=16<minSample(20)로 가려짐 — 단 세분화하면 보험/자산운용 하위집합은 표본이 다를 수 있음(미확인)"
+   }
+  },
+  "Real Estate": {
+   "per": {
+    "verdict": "조건부",
+    "evidence": "라이브 pedata.xls는 계산함(0/5 NA)이나 Retail REITs PE=109.9로 이례적으로 높음 — 실무출처 4건이 GAAP감가상각 왜곡·P/FFO 선호를 명시.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "조건부",
+    "evidence": "라이브 pbvdata.xls는 계산함(0/5 NA)이나 실무출처가 NAV/P-NAV 선호를 명시(취득원가 장부가 문제).",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "🟢 958의 '불명' 정정 — 라이브 psdata.xls: Real Estate 5개 업종군 전부(0/5 NA) 실제 계산됨.",
+    "confidence": "상"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 vebitda.xls: Real Estate 5개 업종군 전부(0/5 NA) 실제 계산됨 — 실무출처(958)와도 정합(REIT 부채는 정상 자본구조).",
+    "confidence": "상"
+   }
+  },
+  "Communication Services": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Communication Services 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Communication Services 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Communication Services 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Communication Services 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Consumer Discretionary": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Discretionary 16개 업종군 중 NA 2개.",
+    "confidence": "중",
+    "note": "개별 업종군 예외 ['Electronics (Consumer & Office)', 'Rubber& Tires'] 있음(구조적 신호로 보지 않음 — 소표본/저수익연도 등으로 추정, 미확인)"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Discretionary 16개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Discretionary 16개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Discretionary 16개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Consumer Staples": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Staples 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Staples 8개 업종군 중 NA 1개.",
+    "confidence": "중",
+    "note": "개별 업종군 예외 ['Tobacco'] 있음(구조적 신호로 보지 않음 — 소표본/저수익연도 등으로 추정, 미확인)"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Staples 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Consumer Staples 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Energy": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Energy 5개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Energy 5개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Energy 5개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Energy 5개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Health Care": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Health Care 6개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Health Care 6개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Health Care 6개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Health Care 6개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Industrials": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Industrials 17개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Industrials 17개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Industrials 17개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Industrials 17개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Information Technology": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Information Technology 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Information Technology 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Information Technology 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Information Technology 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Materials": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Materials 8개 업종군 중 NA 1개.",
+    "confidence": "중",
+    "note": "개별 업종군 예외 ['Chemical (Diversified)'] 있음(구조적 신호로 보지 않음 — 소표본/저수익연도 등으로 추정, 미확인)"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Materials 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Materials 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Materials 8개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  },
+  "Utilities": {
+   "per": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Utilities 4개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "pbr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Utilities 4개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "psr": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Utilities 4개 업종군 중 NA 0개.",
+    "confidence": "중"
+   },
+   "evEbitda": {
+    "verdict": "적용",
+    "evidence": "라이브 데이터: Utilities 4개 업종군 중 NA 0개.",
+    "confidence": "중"
+   }
+  }
+ },
+ "step2_currentState": {
+  "Communication Services": {
+   "per": {
+    "n": 26,
+    "shown": true
+   },
+   "pbr": {
+    "n": 40,
+    "shown": true
+   },
+   "psr": {
+    "n": 44,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 25,
+    "shown": true
+   }
+  },
+  "Consumer Discretionary": {
+   "per": {
+    "n": 77,
+    "shown": true
+   },
+   "pbr": {
+    "n": 81,
+    "shown": true
+   },
+   "psr": {
+    "n": 94,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 71,
+    "shown": true
+   }
+  },
+  "Consumer Staples": {
+   "per": {
+    "n": 40,
+    "shown": true
+   },
+   "pbr": {
+    "n": 44,
+    "shown": true
+   },
+   "psr": {
+    "n": 47,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 34,
+    "shown": true
+   }
+  },
+  "Energy": {
+   "per": {
+    "n": 35,
+    "shown": true
+   },
+   "pbr": {
+    "n": 39,
+    "shown": true
+   },
+   "psr": {
+    "n": 42,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 28,
+    "shown": true
+   }
+  },
+  "Financials": {
+   "per": {
+    "n": 54,
+    "shown": true
+   },
+   "pbr": {
+    "n": 59,
+    "shown": true
+   },
+   "psr": {
+    "n": 61,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 16,
+    "shown": false
+   }
+  },
+  "Health Care": {
+   "per": {
+    "n": 78,
+    "shown": true
+   },
+   "pbr": {
+    "n": 130,
+    "shown": true
+   },
+   "psr": {
+    "n": 148,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 79,
+    "shown": true
+   }
+  },
+  "Industrials": {
+   "per": {
+    "n": 155,
+    "shown": true
+   },
+   "pbr": {
+    "n": 159,
+    "shown": true
+   },
+   "psr": {
+    "n": 170,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 133,
+    "shown": true
+   }
+  },
+  "Information Technology": {
+   "per": {
+    "n": 93,
+    "shown": true
+   },
+   "pbr": {
+    "n": 139,
+    "shown": true
+   },
+   "psr": {
+    "n": 148,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 100,
+    "shown": true
+   }
+  },
+  "Materials": {
+   "per": {
+    "n": 40,
+    "shown": true
+   },
+   "pbr": {
+    "n": 46,
+    "shown": true
+   },
+   "psr": {
+    "n": 46,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 37,
+    "shown": true
+   }
+  },
+  "Real Estate": {
+   "per": {
+    "n": 10,
+    "shown": false
+   },
+   "pbr": {
+    "n": 17,
+    "shown": false
+   },
+   "psr": {
+    "n": 18,
+    "shown": false
+   },
+   "evEbitda": {
+    "n": 4,
+    "shown": false
+   }
+  },
+  "Utilities": {
+   "per": {
+    "n": 36,
+    "shown": true
+   },
+   "pbr": {
+    "n": 37,
+    "shown": true
+   },
+   "psr": {
+    "n": 37,
+    "shown": true
+   },
+   "evEbitda": {
+    "n": 29,
+    "shown": true
+   }
+  }
+ },
+ "step2_counts": {
+  "적용": 40,
+  "조건부": 4
+ },
+ "step2_4_exposedCells_notApplicableButNotMasked": [
+  {
+   "sector": "Financials",
+   "axis": "psr",
+   "verdict": "조건부",
+   "n": 61
+  }
+ ],
+ "step3_prescriptionCandidates": [
+  {
+   "id": 1,
+   "name": "NOT_APPLICABLE을 unavailable 사유에 추가, 계산에서 제외",
+   "cost": "lib/sectorRelativeBatch.ts에 업종×축 예외표 하드코딩 필요(규칙 5-2 위반 소지 — f/x 경계 재검토 필요). 조건부 칸(4개)을 미적용과 같게 취급하면 과잉배제.",
+   "cellsChanged": "미적용 확정 0개(이번 조사 결과 전부 조건부로 판정됨) — 후보①은 '미적용' 카테고리가 있어야 발동하는데 현재 그 카테고리가 빔. 발동 대상 없음(0칸)."
+  },
+  {
+   "id": 2,
+   "name": "계산은 하되 표시에서만 가린다",
+   "cost": "저장은 그대로, Q1Section.tsx에 업종×축 숨김표 추가 필요 — 화면 코드 변경(이번 STEP 범위 밖).",
+   "cellsChanged": "조건부 4칸(Financials PSR·EVEBITDA, RealEstate PER·PBR) 대상 가능 — 정확히는 판정 후 결정."
+  },
+  {
+   "id": 3,
+   "name": "조건부는 계산하되 별도 사유로 표시",
+   "cost": "unavailable에 새 사유코드(예: CONDITIONAL_DISTORTED) 추가 — 스키마 변경(us_sector_relative.unavailable jsonb라 값 종류 늘리는 건 컬럼 변경 없이 가능, 다만 lib/sectorRelativeBatch.ts·Q1Section.tsx 양쪽 수정 필요).",
+   "cellsChanged": "조건부 4칸 전부 대상 — 가장 적은 코드변경으로 이번 조사 결론(적용/조건부/미적용 3분류)을 화면에 그대로 반영 가능."
+  },
+  {
+   "id": 4,
+   "name": "업종별 대체 축 사용(Real Estate→FFO, Financials→P/TBV 등)",
+   "cost": "🔴 새 축 신설 — FFO는 us_fundamentals에 없는 완전히 새로운 재무 데이터(감가상각 조정 필요, SEC 태그도 별도 조사 필요). 범위가 Q1 전체 재설계에 가까움. 대가가 다른 3개 후보보다 훨씬 크다.",
+   "cellsChanged": "이론상 Real Estate 4칸(PER 대체) 전부 및 Financials 일부 — 단 신규 데이터 파이프라인 없이는 0칸(구현 전이라 당장 바꿀 칸 없음)."
+  }
+ ],
+ "step5_notDone": [
+  "업종군-세부 매핑을 firm-count 기반 다수결로만 했다 — R.E.I.T.처럼 Financials/Real Estate 경계가 애매한 10개 업종군은 소수 소속(예: R.E.I.T.의 Financials쪽 43개사)을 무시했다.",
+  "우리 실제 us_sector_wide의 섹터 배정(SPDR/Damodaran/야후 5단계)과 Damodaran 라이브데이터의 IndustryGroup 배정이 1:1로 같은 회사를 가리키는지 종목단위로 재확인하지 않았다 — 둘 다 'Damodaran 계열'이라 개연성은 높으나 직접 대조는 안 함.",
+  "9개 '적용' 섹터는 '계산 가능함(NA 없음)'만 확인했고, REIT처럼 '계산되나 왜곡'인지의 질적 문제까지는 섹터별로 개별조사하지 않았다.",
+  "Financials×EV/EBITDA를 은행/보험으로 세분화했을 때 우리 실제 106개 Financials 종목 중 몇 개가 은행류인지는 세지 않았다(다음 조사 후보)."
+ ],
+ "rawData_damodaranLiveMultiples": {
+  "generatedAt": "2026-08-09",
+  "primaryFieldUsed": {
+   "per": "trailingPE",
+   "pbr": "pbv",
+   "psr": "priceSales",
+   "evEbitda": "evEbitda"
+  },
+  "bySector": {
+   "Communication Services": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Advertising",
+       "value": 44.433,
+       "firms": 52
+      },
+      {
+       "group": "Broadcasting",
+       "value": 44.759,
+       "firms": 24
+      },
+      {
+       "group": "Cable TV",
+       "value": 6.105,
+       "firms": 9
+      },
+      {
+       "group": "Entertainment",
+       "value": 108.631,
+       "firms": 92
+      },
+      {
+       "group": "Publishing & Newspapers",
+       "value": 15.18,
+       "firms": 19
+      },
+      {
+       "group": "Software (Entertainment)",
+       "value": 39.34,
+       "firms": 77
+      },
+      {
+       "group": "Telecom (Wireless)",
+       "value": 107.136,
+       "firms": 12
+      },
+      {
+       "group": "Telecom. Services",
+       "value": 16.788,
+       "firms": 39
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 324
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Advertising",
+       "value": 4.551,
+       "firms": 52
+      },
+      {
+       "group": "Broadcasting",
+       "value": 1.665,
+       "firms": 24
+      },
+      {
+       "group": "Cable TV",
+       "value": 1.313,
+       "firms": 9
+      },
+      {
+       "group": "Entertainment",
+       "value": 4.798,
+       "firms": 92
+      },
+      {
+       "group": "Publishing & Newspapers",
+       "value": 2.284,
+       "firms": 19
+      },
+      {
+       "group": "Software (Entertainment)",
+       "value": 9.098,
+       "firms": 77
+      },
+      {
+       "group": "Telecom (Wireless)",
+       "value": 3.472,
+       "firms": 12
+      },
+      {
+       "group": "Telecom. Services",
+       "value": 1.636,
+       "firms": 39
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 324
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Advertising",
+       "value": 11.999,
+       "firms": 52
+      },
+      {
+       "group": "Broadcasting",
+       "value": 7.847,
+       "firms": 24
+      },
+      {
+       "group": "Cable TV",
+       "value": 6.208,
+       "firms": 9
+      },
+      {
+       "group": "Entertainment",
+       "value": 19.411,
+       "firms": 92
+      },
+      {
+       "group": "Publishing & Newspapers",
+       "value": 11.238,
+       "firms": 19
+      },
+      {
+       "group": "Software (Entertainment)",
+       "value": 22.014,
+       "firms": 77
+      },
+      {
+       "group": "Telecom (Wireless)",
+       "value": 8.974,
+       "firms": 12
+      },
+      {
+       "group": "Telecom. Services",
+       "value": 6.535,
+       "firms": 39
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 324
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Advertising",
+       "value": 1.643,
+       "firms": 52
+      },
+      {
+       "group": "Broadcasting",
+       "value": 0.827,
+       "firms": 24
+      },
+      {
+       "group": "Cable TV",
+       "value": 0.857,
+       "firms": 9
+      },
+      {
+       "group": "Entertainment",
+       "value": 3.869,
+       "firms": 92
+      },
+      {
+       "group": "Publishing & Newspapers",
+       "value": 1.47,
+       "firms": 19
+      },
+      {
+       "group": "Software (Entertainment)",
+       "value": 9.015,
+       "firms": 77
+      },
+      {
+       "group": "Telecom (Wireless)",
+       "value": 2.479,
+       "firms": 12
+      },
+      {
+       "group": "Telecom. Services",
+       "value": 1.392,
+       "firms": 39
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 324
+    }
+   },
+   "Industrials": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Aerospace/Defense",
+       "value": 92.8,
+       "firms": 79
+      },
+      {
+       "group": "Air Transport",
+       "value": 18.322,
+       "firms": 23
+      },
+      {
+       "group": "Building Materials",
+       "value": 32.798,
+       "firms": 41
+      },
+      {
+       "group": "Business & Consumer Services",
+       "value": 36.397,
+       "firms": 155
+      },
+      {
+       "group": "Construction Supplies",
+       "value": 42.748,
+       "firms": 40
+      },
+      {
+       "group": "Diversified",
+       "value": 15.731,
+       "firms": 20
+      },
+      {
+       "group": "Electrical Equipment",
+       "value": 80.04,
+       "firms": 112
+      },
+      {
+       "group": "Engineering/Construction",
+       "value": 63.332,
+       "firms": 48
+      },
+      {
+       "group": "Environmental & Waste Services",
+       "value": 66.55,
+       "firms": 53
+      },
+      {
+       "group": "Information Services",
+       "value": 24.917,
+       "firms": 15
+      },
+      {
+       "group": "Machinery",
+       "value": 35.761,
+       "firms": 105
+      },
+      {
+       "group": "Office Equipment & Services",
+       "value": 18.552,
+       "firms": 14
+      },
+      {
+       "group": "Retail (Distributors)",
+       "value": 28.797,
+       "firms": 62
+      },
+      {
+       "group": "Shipbuilding & Marine",
+       "value": 18.873,
+       "firms": 8
+      },
+      {
+       "group": "Transportation",
+       "value": 28.868,
+       "firms": 19
+      },
+      {
+       "group": "Transportation (Railroads)",
+       "value": 21.529,
+       "firms": 4
+      },
+      {
+       "group": "Trucking",
+       "value": 37.423,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 17,
+     "naFirms": 0,
+     "realFirms": 824
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Aerospace/Defense",
+       "value": 7.88,
+       "firms": 79
+      },
+      {
+       "group": "Air Transport",
+       "value": 2.841,
+       "firms": 23
+      },
+      {
+       "group": "Building Materials",
+       "value": 3.616,
+       "firms": 41
+      },
+      {
+       "group": "Business & Consumer Services",
+       "value": 5.299,
+       "firms": 155
+      },
+      {
+       "group": "Construction Supplies",
+       "value": 5.456,
+       "firms": 40
+      },
+      {
+       "group": "Diversified",
+       "value": 1.783,
+       "firms": 20
+      },
+      {
+       "group": "Electrical Equipment",
+       "value": 6.507,
+       "firms": 112
+      },
+      {
+       "group": "Engineering/Construction",
+       "value": 5.49,
+       "firms": 48
+      },
+      {
+       "group": "Environmental & Waste Services",
+       "value": 6.585,
+       "firms": 53
+      },
+      {
+       "group": "Information Services",
+       "value": 3.795,
+       "firms": 15
+      },
+      {
+       "group": "Machinery",
+       "value": 4.501,
+       "firms": 105
+      },
+      {
+       "group": "Office Equipment & Services",
+       "value": 2.924,
+       "firms": 14
+      },
+      {
+       "group": "Retail (Distributors)",
+       "value": 4.042,
+       "firms": 62
+      },
+      {
+       "group": "Shipbuilding & Marine",
+       "value": 1.499,
+       "firms": 8
+      },
+      {
+       "group": "Transportation",
+       "value": 4.787,
+       "firms": 19
+      },
+      {
+       "group": "Transportation (Railroads)",
+       "value": 5.834,
+       "firms": 4
+      },
+      {
+       "group": "Trucking",
+       "value": 2.858,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 17,
+     "naFirms": 0,
+     "realFirms": 824
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Aerospace/Defense",
+       "value": 21.584,
+       "firms": 79
+      },
+      {
+       "group": "Air Transport",
+       "value": 7.575,
+       "firms": 23
+      },
+      {
+       "group": "Building Materials",
+       "value": 11.607,
+       "firms": 41
+      },
+      {
+       "group": "Business & Consumer Services",
+       "value": 14.257,
+       "firms": 155
+      },
+      {
+       "group": "Construction Supplies",
+       "value": 16.819,
+       "firms": 40
+      },
+      {
+       "group": "Diversified",
+       "value": 11.415,
+       "firms": 20
+      },
+      {
+       "group": "Electrical Equipment",
+       "value": 24.586,
+       "firms": 112
+      },
+      {
+       "group": "Engineering/Construction",
+       "value": 17.179,
+       "firms": 48
+      },
+      {
+       "group": "Environmental & Waste Services",
+       "value": 15.613,
+       "firms": 53
+      },
+      {
+       "group": "Information Services",
+       "value": 11.498,
+       "firms": 15
+      },
+      {
+       "group": "Machinery",
+       "value": 16.217,
+       "firms": 105
+      },
+      {
+       "group": "Office Equipment & Services",
+       "value": 8.595,
+       "firms": 14
+      },
+      {
+       "group": "Retail (Distributors)",
+       "value": 13.708,
+       "firms": 62
+      },
+      {
+       "group": "Shipbuilding & Marine",
+       "value": 7.953,
+       "firms": 8
+      },
+      {
+       "group": "Transportation",
+       "value": 12.55,
+       "firms": 19
+      },
+      {
+       "group": "Transportation (Railroads)",
+       "value": 13.488,
+       "firms": 4
+      },
+      {
+       "group": "Trucking",
+       "value": 10.413,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 17,
+     "naFirms": 0,
+     "realFirms": 824
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Aerospace/Defense",
+       "value": 3.173,
+       "firms": 79
+      },
+      {
+       "group": "Air Transport",
+       "value": 0.578,
+       "firms": 23
+      },
+      {
+       "group": "Building Materials",
+       "value": 1.677,
+       "firms": 41
+      },
+      {
+       "group": "Business & Consumer Services",
+       "value": 2.202,
+       "firms": 155
+      },
+      {
+       "group": "Construction Supplies",
+       "value": 2.831,
+       "firms": 40
+      },
+      {
+       "group": "Diversified",
+       "value": 2.849,
+       "firms": 20
+      },
+      {
+       "group": "Electrical Equipment",
+       "value": 4.091,
+       "firms": 112
+      },
+      {
+       "group": "Engineering/Construction",
+       "value": 1.581,
+       "firms": 48
+      },
+      {
+       "group": "Environmental & Waste Services",
+       "value": 3.086,
+       "firms": 53
+      },
+      {
+       "group": "Information Services",
+       "value": 1.705,
+       "firms": 15
+      },
+      {
+       "group": "Machinery",
+       "value": 3.077,
+       "firms": 105
+      },
+      {
+       "group": "Office Equipment & Services",
+       "value": 1.025,
+       "firms": 14
+      },
+      {
+       "group": "Retail (Distributors)",
+       "value": 1.513,
+       "firms": 62
+      },
+      {
+       "group": "Shipbuilding & Marine",
+       "value": 1.454,
+       "firms": 8
+      },
+      {
+       "group": "Transportation",
+       "value": 1.266,
+       "firms": 19
+      },
+      {
+       "group": "Transportation (Railroads)",
+       "value": 5.26,
+       "firms": 4
+      },
+      {
+       "group": "Trucking",
+       "value": 1.422,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 17,
+     "naFirms": 0,
+     "realFirms": 824
+    }
+   },
+   "Consumer Discretionary": {
+    "per": {
+     "naGroups": [
+      {
+       "group": "Electronics (Consumer & Office)",
+       "value": "NA",
+       "firms": 8
+      },
+      {
+       "group": "Rubber& Tires",
+       "value": "NA",
+       "firms": 3
+      }
+     ],
+     "realGroups": [
+      {
+       "group": "Apparel",
+       "value": 37.828,
+       "firms": 35
+      },
+      {
+       "group": "Auto & Truck",
+       "value": 64.32,
+       "firms": 33
+      },
+      {
+       "group": "Auto Parts",
+       "value": 28.073,
+       "firms": 35
+      },
+      {
+       "group": "Education",
+       "value": 26.966,
+       "firms": 32
+      },
+      {
+       "group": "Furn/Home Furnishings",
+       "value": 17.384,
+       "firms": 27
+      },
+      {
+       "group": "Homebuilding",
+       "value": 11.453,
+       "firms": 30
+      },
+      {
+       "group": "Hotel/Gaming",
+       "value": 46.603,
+       "firms": 63
+      },
+      {
+       "group": "Recreation",
+       "value": 119.015,
+       "firms": 49
+      },
+      {
+       "group": "Restaurant/Dining",
+       "value": 48.329,
+       "firms": 64
+      },
+      {
+       "group": "Retail (Automotive)",
+       "value": 54.826,
+       "firms": 34
+      },
+      {
+       "group": "Retail (Building Supply)",
+       "value": 23.465,
+       "firms": 14
+      },
+      {
+       "group": "Retail (General)",
+       "value": 51.004,
+       "firms": 23
+      },
+      {
+       "group": "Retail (Special Lines)",
+       "value": 314.01,
+       "firms": 94
+      },
+      {
+       "group": "Shoe",
+       "value": 24.475,
+       "firms": 11
+      }
+     ],
+     "naGroupCount": 2,
+     "realGroupCount": 14,
+     "naFirms": 11,
+     "realFirms": 544
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Apparel",
+       "value": 3.894,
+       "firms": 35
+      },
+      {
+       "group": "Auto & Truck",
+       "value": 7.725,
+       "firms": 33
+      },
+      {
+       "group": "Auto Parts",
+       "value": 1.865,
+       "firms": 35
+      },
+      {
+       "group": "Education",
+       "value": 2.603,
+       "firms": 32
+      },
+      {
+       "group": "Electronics (Consumer & Office)",
+       "value": 3.852,
+       "firms": 8
+      },
+      {
+       "group": "Furn/Home Furnishings",
+       "value": 2.453,
+       "firms": 27
+      },
+      {
+       "group": "Homebuilding",
+       "value": 1.633,
+       "firms": 30
+      },
+      {
+       "group": "Hotel/Gaming",
+       "value": 12.303,
+       "firms": 63
+      },
+      {
+       "group": "Recreation",
+       "value": 4.028,
+       "firms": 49
+      },
+      {
+       "group": "Restaurant/Dining",
+       "value": 74.735,
+       "firms": 64
+      },
+      {
+       "group": "Retail (Automotive)",
+       "value": 7.479,
+       "firms": 34
+      },
+      {
+       "group": "Retail (Building Supply)",
+       "value": 132.204,
+       "firms": 14
+      },
+      {
+       "group": "Retail (General)",
+       "value": 7.193,
+       "firms": 23
+      },
+      {
+       "group": "Retail (Special Lines)",
+       "value": 7.254,
+       "firms": 94
+      },
+      {
+       "group": "Rubber& Tires",
+       "value": 0.789,
+       "firms": 3
+      },
+      {
+       "group": "Shoe",
+       "value": 6.06,
+       "firms": 11
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 16,
+     "naFirms": 0,
+     "realFirms": 555
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Apparel",
+       "value": 10.305,
+       "firms": 35
+      },
+      {
+       "group": "Auto & Truck",
+       "value": 47.756,
+       "firms": 33
+      },
+      {
+       "group": "Auto Parts",
+       "value": 6.428,
+       "firms": 35
+      },
+      {
+       "group": "Education",
+       "value": 9.261,
+       "firms": 32
+      },
+      {
+       "group": "Electronics (Consumer & Office)",
+       "value": 30.697,
+       "firms": 8
+      },
+      {
+       "group": "Furn/Home Furnishings",
+       "value": 11.274,
+       "firms": 27
+      },
+      {
+       "group": "Homebuilding",
+       "value": 8.918,
+       "firms": 30
+      },
+      {
+       "group": "Hotel/Gaming",
+       "value": 14.933,
+       "firms": 63
+      },
+      {
+       "group": "Recreation",
+       "value": 10.391,
+       "firms": 49
+      },
+      {
+       "group": "Restaurant/Dining",
+       "value": 17.494,
+       "firms": 64
+      },
+      {
+       "group": "Retail (Automotive)",
+       "value": 14.787,
+       "firms": 34
+      },
+      {
+       "group": "Retail (Building Supply)",
+       "value": 14.422,
+       "firms": 14
+      },
+      {
+       "group": "Retail (General)",
+       "value": 17.379,
+       "firms": 23
+      },
+      {
+       "group": "Retail (Special Lines)",
+       "value": 11.468,
+       "firms": 94
+      },
+      {
+       "group": "Rubber& Tires",
+       "value": 6.744,
+       "firms": 3
+      },
+      {
+       "group": "Shoe",
+       "value": 16.865,
+       "firms": 11
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 16,
+     "naFirms": 0,
+     "realFirms": 555
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Apparel",
+       "value": 1.273,
+       "firms": 35
+      },
+      {
+       "group": "Auto & Truck",
+       "value": 3.344,
+       "firms": 33
+      },
+      {
+       "group": "Auto Parts",
+       "value": 0.642,
+       "firms": 35
+      },
+      {
+       "group": "Education",
+       "value": 1.744,
+       "firms": 32
+      },
+      {
+       "group": "Electronics (Consumer & Office)",
+       "value": 0.961,
+       "firms": 8
+      },
+      {
+       "group": "Furn/Home Furnishings",
+       "value": 0.977,
+       "firms": 27
+      },
+      {
+       "group": "Homebuilding",
+       "value": 1.067,
+       "firms": 30
+      },
+      {
+       "group": "Hotel/Gaming",
+       "value": 3.258,
+       "firms": 63
+      },
+      {
+       "group": "Recreation",
+       "value": 1.261,
+       "firms": 49
+      },
+      {
+       "group": "Restaurant/Dining",
+       "value": 3.341,
+       "firms": 64
+      },
+      {
+       "group": "Retail (Automotive)",
+       "value": 0.893,
+       "firms": 34
+      },
+      {
+       "group": "Retail (Building Supply)",
+       "value": 1.847,
+       "firms": 14
+      },
+      {
+       "group": "Retail (General)",
+       "value": 2.008,
+       "firms": 23
+      },
+      {
+       "group": "Retail (Special Lines)",
+       "value": 1.434,
+       "firms": 94
+      },
+      {
+       "group": "Rubber& Tires",
+       "value": 0.138,
+       "firms": 3
+      },
+      {
+       "group": "Shoe",
+       "value": 1.953,
+       "firms": 11
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 16,
+     "naFirms": 0,
+     "realFirms": 555
+    }
+   },
+   "Financials": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Bank (Money Center)",
+       "value": 14.951,
+       "firms": 15
+      },
+      {
+       "group": "Banks (Regional)",
+       "value": 33.602,
+       "firms": 568
+      },
+      {
+       "group": "Brokerage & Investment Banking",
+       "value": 86.542,
+       "firms": 32
+      },
+      {
+       "group": "Financial Svcs. (Non-bank & Insurance)",
+       "value": 26.138,
+       "firms": 176
+      },
+      {
+       "group": "Insurance (General)",
+       "value": 33.964,
+       "firms": 21
+      },
+      {
+       "group": "Insurance (Life)",
+       "value": 12.557,
+       "firms": 20
+      },
+      {
+       "group": "Insurance (Prop/Cas.)",
+       "value": 18.334,
+       "firms": 57
+      },
+      {
+       "group": "Investments & Asset Management",
+       "value": 75.305,
+       "firms": 283
+      },
+      {
+       "group": "Reinsurance",
+       "value": 15.421,
+       "firms": 1
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 9,
+     "naFirms": 0,
+     "realFirms": 1173
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Bank (Money Center)",
+       "value": 1.622,
+       "firms": 15
+      },
+      {
+       "group": "Banks (Regional)",
+       "value": 1.138,
+       "firms": 568
+      },
+      {
+       "group": "Brokerage & Investment Banking",
+       "value": 2.809,
+       "firms": 32
+      },
+      {
+       "group": "Financial Svcs. (Non-bank & Insurance)",
+       "value": 3.661,
+       "firms": 176
+      },
+      {
+       "group": "Insurance (General)",
+       "value": 3.452,
+       "firms": 21
+      },
+      {
+       "group": "Insurance (Life)",
+       "value": 1.434,
+       "firms": 20
+      },
+      {
+       "group": "Insurance (Prop/Cas.)",
+       "value": 2.024,
+       "firms": 57
+      },
+      {
+       "group": "Investments & Asset Management",
+       "value": 2.49,
+       "firms": 283
+      },
+      {
+       "group": "Reinsurance",
+       "value": 1.023,
+       "firms": 1
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 9,
+     "naFirms": 0,
+     "realFirms": 1173
+    },
+    "evEbitda": {
+     "naGroups": [
+      {
+       "group": "Bank (Money Center)",
+       "value": "NA",
+       "firms": 15
+      },
+      {
+       "group": "Banks (Regional)",
+       "value": "NA",
+       "firms": 568
+      },
+      {
+       "group": "Brokerage & Investment Banking",
+       "value": "NA",
+       "firms": 32
+      }
+     ],
+     "realGroups": [
+      {
+       "group": "Financial Svcs. (Non-bank & Insurance)",
+       "value": 57.524,
+       "firms": 176
+      },
+      {
+       "group": "Insurance (General)",
+       "value": 15.758,
+       "firms": 21
+      },
+      {
+       "group": "Insurance (Life)",
+       "value": 12.522,
+       "firms": 20
+      },
+      {
+       "group": "Insurance (Prop/Cas.)",
+       "value": 8.436,
+       "firms": 57
+      },
+      {
+       "group": "Investments & Asset Management",
+       "value": 38.029,
+       "firms": 283
+      },
+      {
+       "group": "Reinsurance",
+       "value": 8.671,
+       "firms": 1
+      }
+     ],
+     "naGroupCount": 3,
+     "realGroupCount": 6,
+     "naFirms": 615,
+     "realFirms": 558
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Bank (Money Center)",
+       "value": 4.094,
+       "firms": 15
+      },
+      {
+       "group": "Banks (Regional)",
+       "value": 3.674,
+       "firms": 568
+      },
+      {
+       "group": "Brokerage & Investment Banking",
+       "value": 2.871,
+       "firms": 32
+      },
+      {
+       "group": "Financial Svcs. (Non-bank & Insurance)",
+       "value": 5.221,
+       "firms": 176
+      },
+      {
+       "group": "Insurance (General)",
+       "value": 3.53,
+       "firms": 21
+      },
+      {
+       "group": "Insurance (Life)",
+       "value": 0.952,
+       "firms": 20
+      },
+      {
+       "group": "Insurance (Prop/Cas.)",
+       "value": 1.36,
+       "firms": 57
+      },
+      {
+       "group": "Investments & Asset Management",
+       "value": 4.59,
+       "firms": 283
+      },
+      {
+       "group": "Reinsurance",
+       "value": 0.599,
+       "firms": 1
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 9,
+     "naFirms": 0,
+     "realFirms": 1173
+    }
+   },
+   "Consumer Staples": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Beverage (Alcoholic)",
+       "value": 28.296,
+       "firms": 14
+      },
+      {
+       "group": "Beverage (Soft)",
+       "value": 47.764,
+       "firms": 27
+      },
+      {
+       "group": "Farming/Agriculture",
+       "value": 19.116,
+       "firms": 35
+      },
+      {
+       "group": "Food Processing",
+       "value": 47.968,
+       "firms": 78
+      },
+      {
+       "group": "Food Wholesalers",
+       "value": 26.803,
+       "firms": 13
+      },
+      {
+       "group": "Household Products",
+       "value": 33.072,
+       "firms": 110
+      },
+      {
+       "group": "Retail (Grocery and Food)",
+       "value": 20.541,
+       "firms": 15
+      },
+      {
+       "group": "Tobacco",
+       "value": 23.208,
+       "firms": 10
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 302
+    },
+    "pbr": {
+     "naGroups": [
+      {
+       "group": "Tobacco",
+       "value": "NA",
+       "firms": 10
+      }
+     ],
+     "realGroups": [
+      {
+       "group": "Beverage (Alcoholic)",
+       "value": 1.914,
+       "firms": 14
+      },
+      {
+       "group": "Beverage (Soft)",
+       "value": 6.869,
+       "firms": 27
+      },
+      {
+       "group": "Farming/Agriculture",
+       "value": 2.423,
+       "firms": 35
+      },
+      {
+       "group": "Food Processing",
+       "value": 1.796,
+       "firms": 78
+      },
+      {
+       "group": "Food Wholesalers",
+       "value": 4.879,
+       "firms": 13
+      },
+      {
+       "group": "Household Products",
+       "value": 5.847,
+       "firms": 110
+      },
+      {
+       "group": "Retail (Grocery and Food)",
+       "value": 3.935,
+       "firms": 15
+      }
+     ],
+     "naGroupCount": 1,
+     "realGroupCount": 7,
+     "naFirms": 10,
+     "realFirms": 292
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Beverage (Alcoholic)",
+       "value": 8.605,
+       "firms": 14
+      },
+      {
+       "group": "Beverage (Soft)",
+       "value": 16.904,
+       "firms": 27
+      },
+      {
+       "group": "Farming/Agriculture",
+       "value": 16.038,
+       "firms": 35
+      },
+      {
+       "group": "Food Processing",
+       "value": 10.012,
+       "firms": 78
+      },
+      {
+       "group": "Food Wholesalers",
+       "value": 11.075,
+       "firms": 13
+      },
+      {
+       "group": "Household Products",
+       "value": 13.174,
+       "firms": 110
+      },
+      {
+       "group": "Retail (Grocery and Food)",
+       "value": 8.942,
+       "firms": 15
+      },
+      {
+       "group": "Tobacco",
+       "value": 13.461,
+       "firms": 10
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 302
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Beverage (Alcoholic)",
+       "value": 1.754,
+       "firms": 14
+      },
+      {
+       "group": "Beverage (Soft)",
+       "value": 3.569,
+       "firms": 27
+      },
+      {
+       "group": "Farming/Agriculture",
+       "value": 0.918,
+       "firms": 35
+      },
+      {
+       "group": "Food Processing",
+       "value": 1.048,
+       "firms": 78
+      },
+      {
+       "group": "Food Wholesalers",
+       "value": 0.314,
+       "firms": 13
+      },
+      {
+       "group": "Household Products",
+       "value": 2.673,
+       "firms": 110
+      },
+      {
+       "group": "Retail (Grocery and Food)",
+       "value": 0.34,
+       "firms": 15
+      },
+      {
+       "group": "Tobacco",
+       "value": 5.298,
+       "firms": 10
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 302
+    }
+   },
+   "Materials": {
+    "per": {
+     "naGroups": [
+      {
+       "group": "Chemical (Diversified)",
+       "value": "NA",
+       "firms": 4
+      }
+     ],
+     "realGroups": [
+      {
+       "group": "Chemical (Basic)",
+       "value": 24.421,
+       "firms": 29
+      },
+      {
+       "group": "Chemical (Specialty)",
+       "value": 196.774,
+       "firms": 59
+      },
+      {
+       "group": "Metals & Mining",
+       "value": 54.118,
+       "firms": 73
+      },
+      {
+       "group": "Packaging & Container",
+       "value": 16.428,
+       "firms": 19
+      },
+      {
+       "group": "Paper/Forest Products",
+       "value": 12.851,
+       "firms": 6
+      },
+      {
+       "group": "Precious Metals",
+       "value": 26.799,
+       "firms": 56
+      },
+      {
+       "group": "Steel",
+       "value": 47.575,
+       "firms": 19
+      }
+     ],
+     "naGroupCount": 1,
+     "realGroupCount": 7,
+     "naFirms": 4,
+     "realFirms": 261
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Chemical (Basic)",
+       "value": 1.117,
+       "firms": 29
+      },
+      {
+       "group": "Chemical (Diversified)",
+       "value": 1.083,
+       "firms": 4
+      },
+      {
+       "group": "Chemical (Specialty)",
+       "value": 2.45,
+       "firms": 59
+      },
+      {
+       "group": "Metals & Mining",
+       "value": 4.337,
+       "firms": 73
+      },
+      {
+       "group": "Packaging & Container",
+       "value": 2.184,
+       "firms": 19
+      },
+      {
+       "group": "Paper/Forest Products",
+       "value": 1.828,
+       "firms": 6
+      },
+      {
+       "group": "Precious Metals",
+       "value": 3.64,
+       "firms": 56
+      },
+      {
+       "group": "Steel",
+       "value": 1.876,
+       "firms": 19
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 265
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Chemical (Basic)",
+       "value": 8.567,
+       "firms": 29
+      },
+      {
+       "group": "Chemical (Diversified)",
+       "value": 8.385,
+       "firms": 4
+      },
+      {
+       "group": "Chemical (Specialty)",
+       "value": 13.359,
+       "firms": 59
+      },
+      {
+       "group": "Metals & Mining",
+       "value": 11.391,
+       "firms": 73
+      },
+      {
+       "group": "Packaging & Container",
+       "value": 9.71,
+       "firms": 19
+      },
+      {
+       "group": "Paper/Forest Products",
+       "value": 8.183,
+       "firms": 6
+      },
+      {
+       "group": "Precious Metals",
+       "value": 10.676,
+       "firms": 56
+      },
+      {
+       "group": "Steel",
+       "value": 11.591,
+       "firms": 19
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 265
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Chemical (Basic)",
+       "value": 0.465,
+       "firms": 29
+      },
+      {
+       "group": "Chemical (Diversified)",
+       "value": 0.338,
+       "firms": 4
+      },
+      {
+       "group": "Chemical (Specialty)",
+       "value": 2.121,
+       "firms": 59
+      },
+      {
+       "group": "Metals & Mining",
+       "value": 3.812,
+       "firms": 73
+      },
+      {
+       "group": "Packaging & Container",
+       "value": 1.034,
+       "firms": 19
+      },
+      {
+       "group": "Paper/Forest Products",
+       "value": 0.758,
+       "firms": 6
+      },
+      {
+       "group": "Precious Metals",
+       "value": 5.84,
+       "firms": 56
+      },
+      {
+       "group": "Steel",
+       "value": 0.99,
+       "firms": 19
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 265
+    }
+   },
+   "Energy": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Coal & Related Energy",
+       "value": 17.008,
+       "firms": 16
+      },
+      {
+       "group": "Oil/Gas (Integrated)",
+       "value": 16.244,
+       "firms": 4
+      },
+      {
+       "group": "Oil/Gas (Production and Exploration)",
+       "value": 30.983,
+       "firms": 142
+      },
+      {
+       "group": "Oil/Gas Distribution",
+       "value": 23.717,
+       "firms": 23
+      },
+      {
+       "group": "Oilfield Svcs/Equip.",
+       "value": 33.3,
+       "firms": 97
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 282
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Coal & Related Energy",
+       "value": 2.247,
+       "firms": 16
+      },
+      {
+       "group": "Oil/Gas (Integrated)",
+       "value": 1.708,
+       "firms": 4
+      },
+      {
+       "group": "Oil/Gas (Production and Exploration)",
+       "value": 1.356,
+       "firms": 142
+      },
+      {
+       "group": "Oil/Gas Distribution",
+       "value": 2.882,
+       "firms": 23
+      },
+      {
+       "group": "Oilfield Svcs/Equip.",
+       "value": 1.918,
+       "firms": 97
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 282
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Coal & Related Energy",
+       "value": 10.369,
+       "firms": 16
+      },
+      {
+       "group": "Oil/Gas (Integrated)",
+       "value": 8.163,
+       "firms": 4
+      },
+      {
+       "group": "Oil/Gas (Production and Exploration)",
+       "value": 5.146,
+       "firms": 142
+      },
+      {
+       "group": "Oil/Gas Distribution",
+       "value": 11.562,
+       "firms": 23
+      },
+      {
+       "group": "Oilfield Svcs/Equip.",
+       "value": 8.63,
+       "firms": 97
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 282
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Coal & Related Energy",
+       "value": 2.754,
+       "firms": 16
+      },
+      {
+       "group": "Oil/Gas (Integrated)",
+       "value": 1.578,
+       "firms": 4
+      },
+      {
+       "group": "Oil/Gas (Production and Exploration)",
+       "value": 2.004,
+       "firms": 142
+      },
+      {
+       "group": "Oil/Gas Distribution",
+       "value": 2.783,
+       "firms": 23
+      },
+      {
+       "group": "Oilfield Svcs/Equip.",
+       "value": 0.572,
+       "firms": 97
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 282
+    }
+   },
+   "Information Technology": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Computer Services",
+       "value": 51.599,
+       "firms": 64
+      },
+      {
+       "group": "Computers/Peripherals",
+       "value": 81.132,
+       "firms": 36
+      },
+      {
+       "group": "Electronics (General)",
+       "value": 48.443,
+       "firms": 114
+      },
+      {
+       "group": "Semiconductor",
+       "value": 100.184,
+       "firms": 66
+      },
+      {
+       "group": "Semiconductor Equip",
+       "value": 46.825,
+       "firms": 31
+      },
+      {
+       "group": "Software (Internet)",
+       "value": 67.211,
+       "firms": 29
+      },
+      {
+       "group": "Software (System & Application)",
+       "value": 79.174,
+       "firms": 309
+      },
+      {
+       "group": "Telecom. Equipment",
+       "value": 84.716,
+       "firms": 57
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 706
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Computer Services",
+       "value": 4.728,
+       "firms": 64
+      },
+      {
+       "group": "Computers/Peripherals",
+       "value": 34.082,
+       "firms": 36
+      },
+      {
+       "group": "Electronics (General)",
+       "value": 4.969,
+       "firms": 114
+      },
+      {
+       "group": "Semiconductor",
+       "value": 13.312,
+       "firms": 66
+      },
+      {
+       "group": "Semiconductor Equip",
+       "value": 9.703,
+       "firms": 31
+      },
+      {
+       "group": "Software (Internet)",
+       "value": 10.856,
+       "firms": 29
+      },
+      {
+       "group": "Software (System & Application)",
+       "value": 9.137,
+       "firms": 309
+      },
+      {
+       "group": "Telecom. Equipment",
+       "value": 8.371,
+       "firms": 57
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 706
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Computer Services",
+       "value": 14.095,
+       "firms": 64
+      },
+      {
+       "group": "Computers/Peripherals",
+       "value": 25.424,
+       "firms": 36
+      },
+      {
+       "group": "Electronics (General)",
+       "value": 19.991,
+       "firms": 114
+      },
+      {
+       "group": "Semiconductor",
+       "value": 34.753,
+       "firms": 66
+      },
+      {
+       "group": "Semiconductor Equip",
+       "value": 24.743,
+       "firms": 31
+      },
+      {
+       "group": "Software (Internet)",
+       "value": 30.261,
+       "firms": 29
+      },
+      {
+       "group": "Software (System & Application)",
+       "value": 24.484,
+       "firms": 309
+      },
+      {
+       "group": "Telecom. Equipment",
+       "value": 24.074,
+       "firms": 57
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 706
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Computer Services",
+       "value": 1.24,
+       "firms": 64
+      },
+      {
+       "group": "Computers/Peripherals",
+       "value": 6.432,
+       "firms": 36
+      },
+      {
+       "group": "Electronics (General)",
+       "value": 3.017,
+       "firms": 114
+      },
+      {
+       "group": "Semiconductor",
+       "value": 15.462,
+       "firms": 66
+      },
+      {
+       "group": "Semiconductor Equip",
+       "value": 7.489,
+       "firms": 31
+      },
+      {
+       "group": "Software (Internet)",
+       "value": 8.759,
+       "firms": 29
+      },
+      {
+       "group": "Software (System & Application)",
+       "value": 11.007,
+       "firms": 309
+      },
+      {
+       "group": "Telecom. Equipment",
+       "value": 6.13,
+       "firms": 57
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 8,
+     "naFirms": 0,
+     "realFirms": 706
+    }
+   },
+   "Health Care": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Drugs (Biotechnology)",
+       "value": 64.276,
+       "firms": 496
+      },
+      {
+       "group": "Drugs (Pharmaceutical)",
+       "value": 55.668,
+       "firms": 228
+      },
+      {
+       "group": "Healthcare Products",
+       "value": 43.065,
+       "firms": 204
+      },
+      {
+       "group": "Healthcare Support Services",
+       "value": 83.767,
+       "firms": 104
+      },
+      {
+       "group": "Heathcare Information and Technology",
+       "value": 506.547,
+       "firms": 115
+      },
+      {
+       "group": "Hospitals/Healthcare Facilities",
+       "value": 18.804,
+       "firms": 31
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 6,
+     "naFirms": 0,
+     "realFirms": 1178
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Drugs (Biotechnology)",
+       "value": 8.217,
+       "firms": 496
+      },
+      {
+       "group": "Drugs (Pharmaceutical)",
+       "value": 6.644,
+       "firms": 228
+      },
+      {
+       "group": "Healthcare Products",
+       "value": 4.435,
+       "firms": 204
+      },
+      {
+       "group": "Healthcare Support Services",
+       "value": 2.796,
+       "firms": 104
+      },
+      {
+       "group": "Heathcare Information and Technology",
+       "value": 4.002,
+       "firms": 115
+      },
+      {
+       "group": "Hospitals/Healthcare Facilities",
+       "value": 5.623,
+       "firms": 31
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 6,
+     "naFirms": 0,
+     "realFirms": 1178
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Drugs (Biotechnology)",
+       "value": 15.779,
+       "firms": 496
+      },
+      {
+       "group": "Drugs (Pharmaceutical)",
+       "value": 15.248,
+       "firms": 228
+      },
+      {
+       "group": "Healthcare Products",
+       "value": 19.778,
+       "firms": 204
+      },
+      {
+       "group": "Healthcare Support Services",
+       "value": 11.169,
+       "firms": 104
+      },
+      {
+       "group": "Heathcare Information and Technology",
+       "value": 21.272,
+       "firms": 115
+      },
+      {
+       "group": "Hospitals/Healthcare Facilities",
+       "value": 8.864,
+       "firms": 31
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 6,
+     "naFirms": 0,
+     "realFirms": 1178
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Drugs (Biotechnology)",
+       "value": 7.312,
+       "firms": 496
+      },
+      {
+       "group": "Drugs (Pharmaceutical)",
+       "value": 5.625,
+       "firms": 228
+      },
+      {
+       "group": "Healthcare Products",
+       "value": 4.365,
+       "firms": 204
+      },
+      {
+       "group": "Healthcare Support Services",
+       "value": 0.365,
+       "firms": 104
+      },
+      {
+       "group": "Heathcare Information and Technology",
+       "value": 4.703,
+       "firms": 115
+      },
+      {
+       "group": "Hospitals/Healthcare Facilities",
+       "value": 1.081,
+       "firms": 31
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 6,
+     "naFirms": 0,
+     "realFirms": 1178
+    }
+   },
+   "Utilities": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Green & Renewable Energy",
+       "value": 32.25,
+       "firms": 15
+      },
+      {
+       "group": "Power",
+       "value": 24.741,
+       "firms": 46
+      },
+      {
+       "group": "Utility (General)",
+       "value": 19.92,
+       "firms": 14
+      },
+      {
+       "group": "Utility (Water)",
+       "value": 23.066,
+       "firms": 14
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 4,
+     "naFirms": 0,
+     "realFirms": 89
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Green & Renewable Energy",
+       "value": 1.263,
+       "firms": 15
+      },
+      {
+       "group": "Power",
+       "value": 2.276,
+       "firms": 46
+      },
+      {
+       "group": "Utility (General)",
+       "value": 1.81,
+       "firms": 14
+      },
+      {
+       "group": "Utility (Water)",
+       "value": 1.995,
+       "firms": 14
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 4,
+     "naFirms": 0,
+     "realFirms": 89
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Green & Renewable Energy",
+       "value": 13.444,
+       "firms": 15
+      },
+      {
+       "group": "Power",
+       "value": 12.381,
+       "firms": 46
+      },
+      {
+       "group": "Utility (General)",
+       "value": 13.727,
+       "firms": 14
+      },
+      {
+       "group": "Utility (Water)",
+       "value": 14.138,
+       "firms": 14
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 4,
+     "naFirms": 0,
+     "realFirms": 89
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "Green & Renewable Energy",
+       "value": 3.762,
+       "firms": 15
+      },
+      {
+       "group": "Power",
+       "value": 2.736,
+       "firms": 46
+      },
+      {
+       "group": "Utility (General)",
+       "value": 2.903,
+       "firms": 14
+      },
+      {
+       "group": "Utility (Water)",
+       "value": 4.428,
+       "firms": 14
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 4,
+     "naFirms": 0,
+     "realFirms": 89
+    }
+   },
+   "Real Estate": {
+    "per": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "R.E.I.T.",
+       "value": 36.954,
+       "firms": 190
+      },
+      {
+       "group": "Real Estate (Development)",
+       "value": 11.353,
+       "firms": 14
+      },
+      {
+       "group": "Real Estate (General/Diversified)",
+       "value": 40.249,
+       "firms": 12
+      },
+      {
+       "group": "Real Estate (Operations & Services)",
+       "value": 107.335,
+       "firms": 54
+      },
+      {
+       "group": "Retail (REITs)",
+       "value": 368.687,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 296
+    },
+    "pbr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "R.E.I.T.",
+       "value": 1.992,
+       "firms": 190
+      },
+      {
+       "group": "Real Estate (Development)",
+       "value": 0.993,
+       "firms": 14
+      },
+      {
+       "group": "Real Estate (General/Diversified)",
+       "value": 1.164,
+       "firms": 12
+      },
+      {
+       "group": "Real Estate (Operations & Services)",
+       "value": 3.064,
+       "firms": 54
+      },
+      {
+       "group": "Retail (REITs)",
+       "value": 2.076,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 296
+    },
+    "evEbitda": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "R.E.I.T.",
+       "value": 19.871,
+       "firms": 190
+      },
+      {
+       "group": "Real Estate (Development)",
+       "value": 10.23,
+       "firms": 14
+      },
+      {
+       "group": "Real Estate (General/Diversified)",
+       "value": 17.287,
+       "firms": 12
+      },
+      {
+       "group": "Real Estate (Operations & Services)",
+       "value": 21.951,
+       "firms": 54
+      },
+      {
+       "group": "Retail (REITs)",
+       "value": 16.727,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 296
+    },
+    "psr": {
+     "naGroups": [],
+     "realGroups": [
+      {
+       "group": "R.E.I.T.",
+       "value": 5.886,
+       "firms": 190
+      },
+      {
+       "group": "Real Estate (Development)",
+       "value": 1.773,
+       "firms": 14
+      },
+      {
+       "group": "Real Estate (General/Diversified)",
+       "value": 4.823,
+       "firms": 12
+      },
+      {
+       "group": "Real Estate (Operations & Services)",
+       "value": 1.236,
+       "firms": 54
+      },
+      {
+       "group": "Retail (REITs)",
+       "value": 7.815,
+       "firms": 26
+      }
+     ],
+     "naGroupCount": 0,
+     "realGroupCount": 5,
+     "naFirms": 0,
+     "realFirms": 296
+    }
+   }
+  }
+ },
+ "rawData_industryGroupToSectorMapping": {
+  "Advertising": {
+   "sector": "Communication Services",
+   "count": 52,
+   "total": 52,
+   "allSectors": {
+    "Communication Services": 52
+   }
+  },
+  "Aerospace/Defense": {
+   "sector": "Industrials",
+   "count": 79,
+   "total": 79,
+   "allSectors": {
+    "Industrials": 79
+   }
+  },
+  "Air Transport": {
+   "sector": "Industrials",
+   "count": 23,
+   "total": 23,
+   "allSectors": {
+    "Industrials": 23
+   }
+  },
+  "Apparel": {
+   "sector": "Consumer Discretionary",
+   "count": 35,
+   "total": 35,
+   "allSectors": {
+    "Consumer Discretionary": 35
+   }
+  },
+  "Auto & Truck": {
+   "sector": "Consumer Discretionary",
+   "count": 33,
+   "total": 33,
+   "allSectors": {
+    "Consumer Discretionary": 33
+   }
+  },
+  "Auto Parts": {
+   "sector": "Consumer Discretionary",
+   "count": 35,
+   "total": 35,
+   "allSectors": {
+    "Consumer Discretionary": 35
+   }
+  },
+  "Bank (Money Center)": {
+   "sector": "Financials",
+   "count": 15,
+   "total": 15,
+   "allSectors": {
+    "Financials": 15
+   }
+  },
+  "Banks (Regional)": {
+   "sector": "Financials",
+   "count": 568,
+   "total": 568,
+   "allSectors": {
+    "Financials": 568
+   }
+  },
+  "Beverage (Alcoholic)": {
+   "sector": "Consumer Staples",
+   "count": 14,
+   "total": 14,
+   "allSectors": {
+    "Consumer Staples": 14
+   }
+  },
+  "Beverage (Soft)": {
+   "sector": "Consumer Staples",
+   "count": 27,
+   "total": 27,
+   "allSectors": {
+    "Consumer Staples": 27
+   }
+  },
+  "Broadcasting": {
+   "sector": "Communication Services",
+   "count": 24,
+   "total": 24,
+   "allSectors": {
+    "Communication Services": 24
+   }
+  },
+  "Brokerage & Investment Banking": {
+   "sector": "Financials",
+   "count": 32,
+   "total": 32,
+   "allSectors": {
+    "Financials": 32
+   }
+  },
+  "Building Materials": {
+   "sector": "Industrials",
+   "count": 41,
+   "total": 41,
+   "allSectors": {
+    "Industrials": 41
+   }
+  },
+  "Business & Consumer Services": {
+   "sector": "Industrials",
+   "count": 137,
+   "total": 155,
+   "allSectors": {
+    "Industrials": 137,
+    "Consumer Discretionary": 18
+   }
+  },
+  "Cable TV": {
+   "sector": "Communication Services",
+   "count": 9,
+   "total": 9,
+   "allSectors": {
+    "Communication Services": 9
+   }
+  },
+  "Chemical (Basic)": {
+   "sector": "Materials",
+   "count": 29,
+   "total": 29,
+   "allSectors": {
+    "Materials": 29
+   }
+  },
+  "Chemical (Diversified)": {
+   "sector": "Materials",
+   "count": 4,
+   "total": 4,
+   "allSectors": {
+    "Materials": 4
+   }
+  },
+  "Chemical (Specialty)": {
+   "sector": "Materials",
+   "count": 59,
+   "total": 59,
+   "allSectors": {
+    "Materials": 59
+   }
+  },
+  "Coal & Related Energy": {
+   "sector": "Energy",
+   "count": 16,
+   "total": 16,
+   "allSectors": {
+    "Energy": 16
+   }
+  },
+  "Computer Services": {
+   "sector": "Information Technology",
+   "count": 64,
+   "total": 64,
+   "allSectors": {
+    "Information Technology": 64
+   }
+  },
+  "Computers/Peripherals": {
+   "sector": "Information Technology",
+   "count": 36,
+   "total": 36,
+   "allSectors": {
+    "Information Technology": 36
+   }
+  },
+  "Construction Supplies": {
+   "sector": "Industrials",
+   "count": 32,
+   "total": 40,
+   "allSectors": {
+    "Industrials": 32,
+    "Materials": 8
+   }
+  },
+  "Diversified": {
+   "sector": "Industrials",
+   "count": 12,
+   "total": 20,
+   "allSectors": {
+    "Industrials": 12,
+    "Financials": 8
+   }
+  },
+  "Drugs (Biotechnology)": {
+   "sector": "Health Care",
+   "count": 496,
+   "total": 496,
+   "allSectors": {
+    "Health Care": 496
+   }
+  },
+  "Drugs (Pharmaceutical)": {
+   "sector": "Health Care",
+   "count": 228,
+   "total": 228,
+   "allSectors": {
+    "Health Care": 228
+   }
+  },
+  "Education": {
+   "sector": "Consumer Discretionary",
+   "count": 32,
+   "total": 32,
+   "allSectors": {
+    "Consumer Discretionary": 32
+   }
+  },
+  "Electrical Equipment": {
+   "sector": "Industrials",
+   "count": 112,
+   "total": 112,
+   "allSectors": {
+    "Industrials": 112
+   }
+  },
+  "Electronics (Consumer & Office)": {
+   "sector": "Consumer Discretionary",
+   "count": 8,
+   "total": 8,
+   "allSectors": {
+    "Consumer Discretionary": 8
+   }
+  },
+  "Electronics (General)": {
+   "sector": "Information Technology",
+   "count": 114,
+   "total": 114,
+   "allSectors": {
+    "Information Technology": 114
+   }
+  },
+  "Engineering/Construction": {
+   "sector": "Industrials",
+   "count": 48,
+   "total": 48,
+   "allSectors": {
+    "Industrials": 48
+   }
+  },
+  "Entertainment": {
+   "sector": "Communication Services",
+   "count": 92,
+   "total": 92,
+   "allSectors": {
+    "Communication Services": 92
+   }
+  },
+  "Environmental & Waste Services": {
+   "sector": "Industrials",
+   "count": 53,
+   "total": 53,
+   "allSectors": {
+    "Industrials": 53
+   }
+  },
+  "Farming/Agriculture": {
+   "sector": "Consumer Staples",
+   "count": 20,
+   "total": 35,
+   "allSectors": {
+    "Industrials": 15,
+    "Consumer Staples": 20
+   }
+  },
+  "Financial Svcs. (Non-bank & Insurance)": {
+   "sector": "Financials",
+   "count": 176,
+   "total": 176,
+   "allSectors": {
+    "Financials": 176
+   }
+  },
+  "Food Processing": {
+   "sector": "Consumer Staples",
+   "count": 78,
+   "total": 78,
+   "allSectors": {
+    "Consumer Staples": 78
+   }
+  },
+  "Food Wholesalers": {
+   "sector": "Consumer Staples",
+   "count": 13,
+   "total": 13,
+   "allSectors": {
+    "Consumer Staples": 13
+   }
+  },
+  "Furn/Home Furnishings": {
+   "sector": "Consumer Discretionary",
+   "count": 27,
+   "total": 27,
+   "allSectors": {
+    "Consumer Discretionary": 27
+   }
+  },
+  "Green & Renewable Energy": {
+   "sector": "Utilities",
+   "count": 15,
+   "total": 15,
+   "allSectors": {
+    "Utilities": 15
+   }
+  },
+  "Healthcare Products": {
+   "sector": "Health Care",
+   "count": 204,
+   "total": 204,
+   "allSectors": {
+    "Health Care": 204
+   }
+  },
+  "Healthcare Support Services": {
+   "sector": "Health Care",
+   "count": 104,
+   "total": 104,
+   "allSectors": {
+    "Health Care": 104
+   }
+  },
+  "Heathcare Information and Technology": {
+   "sector": "Health Care",
+   "count": 115,
+   "total": 115,
+   "allSectors": {
+    "Health Care": 115
+   }
+  },
+  "Homebuilding": {
+   "sector": "Consumer Discretionary",
+   "count": 30,
+   "total": 30,
+   "allSectors": {
+    "Consumer Discretionary": 30
+   }
+  },
+  "Hospitals/Healthcare Facilities": {
+   "sector": "Health Care",
+   "count": 31,
+   "total": 31,
+   "allSectors": {
+    "Health Care": 31
+   }
+  },
+  "Hotel/Gaming": {
+   "sector": "Consumer Discretionary",
+   "count": 63,
+   "total": 63,
+   "allSectors": {
+    "Consumer Discretionary": 63
+   }
+  },
+  "Household Products": {
+   "sector": "Consumer Staples",
+   "count": 106,
+   "total": 110,
+   "allSectors": {
+    "Consumer Staples": 106,
+    "Consumer Discretionary": 4
+   }
+  },
+  "Information Services": {
+   "sector": "Industrials",
+   "count": 15,
+   "total": 15,
+   "allSectors": {
+    "Industrials": 15
+   }
+  },
+  "Insurance (General)": {
+   "sector": "Financials",
+   "count": 21,
+   "total": 21,
+   "allSectors": {
+    "Financials": 21
+   }
+  },
+  "Insurance (Life)": {
+   "sector": "Financials",
+   "count": 20,
+   "total": 20,
+   "allSectors": {
+    "Financials": 20
+   }
+  },
+  "Insurance (Prop/Cas.)": {
+   "sector": "Financials",
+   "count": 57,
+   "total": 57,
+   "allSectors": {
+    "Financials": 57
+   }
+  },
+  "Investments & Asset Management": {
+   "sector": "Financials",
+   "count": 283,
+   "total": 283,
+   "allSectors": {
+    "Financials": 283
+   }
+  },
+  "Machinery": {
+   "sector": "Industrials",
+   "count": 105,
+   "total": 105,
+   "allSectors": {
+    "Industrials": 105
+   }
+  },
+  "Metals & Mining": {
+   "sector": "Materials",
+   "count": 73,
+   "total": 73,
+   "allSectors": {
+    "Materials": 73
+   }
+  },
+  "Office Equipment & Services": {
+   "sector": "Industrials",
+   "count": 14,
+   "total": 14,
+   "allSectors": {
+    "Industrials": 14
+   }
+  },
+  "Oil/Gas (Integrated)": {
+   "sector": "Energy",
+   "count": 4,
+   "total": 4,
+   "allSectors": {
+    "Energy": 4
+   }
+  },
+  "Oil/Gas (Production and Exploration)": {
+   "sector": "Energy",
+   "count": 142,
+   "total": 142,
+   "allSectors": {
+    "Energy": 142
+   }
+  },
+  "Oil/Gas Distribution": {
+   "sector": "Energy",
+   "count": 23,
+   "total": 23,
+   "allSectors": {
+    "Energy": 23
+   }
+  },
+  "Oilfield Svcs/Equip.": {
+   "sector": "Energy",
+   "count": 97,
+   "total": 97,
+   "allSectors": {
+    "Energy": 97
+   }
+  },
+  "Packaging & Container": {
+   "sector": "Materials",
+   "count": 19,
+   "total": 19,
+   "allSectors": {
+    "Materials": 19
+   }
+  },
+  "Paper/Forest Products": {
+   "sector": "Materials",
+   "count": 6,
+   "total": 6,
+   "allSectors": {
+    "Materials": 6
+   }
+  },
+  "Power": {
+   "sector": "Utilities",
+   "count": 46,
+   "total": 46,
+   "allSectors": {
+    "Utilities": 46
+   }
+  },
+  "Precious Metals": {
+   "sector": "Materials",
+   "count": 56,
+   "total": 56,
+   "allSectors": {
+    "Materials": 56
+   }
+  },
+  "Publishing & Newspapers": {
+   "sector": "Communication Services",
+   "count": 10,
+   "total": 19,
+   "allSectors": {
+    "Industrials": 9,
+    "Communication Services": 10
+   }
+  },
+  "R.E.I.T.": {
+   "sector": "Real Estate",
+   "count": 147,
+   "total": 190,
+   "allSectors": {
+    "Financials": 43,
+    "Real Estate": 147
+   }
+  },
+  "Real Estate (Development)": {
+   "sector": "Real Estate",
+   "count": 14,
+   "total": 14,
+   "allSectors": {
+    "Real Estate": 14
+   }
+  },
+  "Real Estate (General/Diversified)": {
+   "sector": "Real Estate",
+   "count": 12,
+   "total": 12,
+   "allSectors": {
+    "Real Estate": 12
+   }
+  },
+  "Real Estate (Operations & Services)": {
+   "sector": "Real Estate",
+   "count": 54,
+   "total": 54,
+   "allSectors": {
+    "Real Estate": 54
+   }
+  },
+  "Recreation": {
+   "sector": "Consumer Discretionary",
+   "count": 49,
+   "total": 49,
+   "allSectors": {
+    "Consumer Discretionary": 49
+   }
+  },
+  "Reinsurance": {
+   "sector": "Financials",
+   "count": 1,
+   "total": 1,
+   "allSectors": {
+    "Financials": 1
+   }
+  },
+  "Restaurant/Dining": {
+   "sector": "Consumer Discretionary",
+   "count": 64,
+   "total": 64,
+   "allSectors": {
+    "Consumer Discretionary": 64
+   }
+  },
+  "Retail (Automotive)": {
+   "sector": "Consumer Discretionary",
+   "count": 34,
+   "total": 34,
+   "allSectors": {
+    "Consumer Discretionary": 34
+   }
+  },
+  "Retail (Building Supply)": {
+   "sector": "Consumer Discretionary",
+   "count": 14,
+   "total": 14,
+   "allSectors": {
+    "Consumer Discretionary": 14
+   }
+  },
+  "Retail (Distributors)": {
+   "sector": "Industrials",
+   "count": 44,
+   "total": 62,
+   "allSectors": {
+    "Industrials": 44,
+    "Consumer Discretionary": 18
+   }
+  },
+  "Retail (General)": {
+   "sector": "Consumer Discretionary",
+   "count": 16,
+   "total": 23,
+   "allSectors": {
+    "Consumer Discretionary": 16,
+    "Consumer Staples": 7
+   }
+  },
+  "Retail (Grocery and Food)": {
+   "sector": "Consumer Staples",
+   "count": 15,
+   "total": 15,
+   "allSectors": {
+    "Consumer Staples": 15
+   }
+  },
+  "Retail (REITs)": {
+   "sector": "Real Estate",
+   "count": 26,
+   "total": 26,
+   "allSectors": {
+    "Real Estate": 26
+   }
+  },
+  "Retail (Special Lines)": {
+   "sector": "Consumer Discretionary",
+   "count": 87,
+   "total": 94,
+   "allSectors": {
+    "Consumer Discretionary": 87,
+    "Consumer Staples": 7
+   }
+  },
+  "Rubber& Tires": {
+   "sector": "Consumer Discretionary",
+   "count": 3,
+   "total": 3,
+   "allSectors": {
+    "Consumer Discretionary": 3
+   }
+  },
+  "Semiconductor": {
+   "sector": "Information Technology",
+   "count": 66,
+   "total": 66,
+   "allSectors": {
+    "Information Technology": 66
+   }
+  },
+  "Semiconductor Equip": {
+   "sector": "Information Technology",
+   "count": 31,
+   "total": 31,
+   "allSectors": {
+    "Information Technology": 31
+   }
+  },
+  "Shipbuilding & Marine": {
+   "sector": "Industrials",
+   "count": 8,
+   "total": 8,
+   "allSectors": {
+    "Industrials": 8
+   }
+  },
+  "Shoe": {
+   "sector": "Consumer Discretionary",
+   "count": 11,
+   "total": 11,
+   "allSectors": {
+    "Consumer Discretionary": 11
+   }
+  },
+  "Software (Entertainment)": {
+   "sector": "Communication Services",
+   "count": 77,
+   "total": 77,
+   "allSectors": {
+    "Communication Services": 77
+   }
+  },
+  "Software (Internet)": {
+   "sector": "Information Technology",
+   "count": 29,
+   "total": 29,
+   "allSectors": {
+    "Information Technology": 29
+   }
+  },
+  "Software (System & Application)": {
+   "sector": "Information Technology",
+   "count": 309,
+   "total": 309,
+   "allSectors": {
+    "Information Technology": 309
+   }
+  },
+  "Steel": {
+   "sector": "Materials",
+   "count": 19,
+   "total": 19,
+   "allSectors": {
+    "Materials": 19
+   }
+  },
+  "Telecom (Wireless)": {
+   "sector": "Communication Services",
+   "count": 12,
+   "total": 12,
+   "allSectors": {
+    "Communication Services": 12
+   }
+  },
+  "Telecom. Equipment": {
+   "sector": "Information Technology",
+   "count": 57,
+   "total": 57,
+   "allSectors": {
+    "Information Technology": 57
+   }
+  },
+  "Telecom. Services": {
+   "sector": "Communication Services",
+   "count": 39,
+   "total": 39,
+   "allSectors": {
+    "Communication Services": 39
+   }
+  },
+  "Tobacco": {
+   "sector": "Consumer Staples",
+   "count": 10,
+   "total": 10,
+   "allSectors": {
+    "Consumer Staples": 10
+   }
+  },
+  "Transportation": {
+   "sector": "Industrials",
+   "count": 19,
+   "total": 19,
+   "allSectors": {
+    "Industrials": 19
+   }
+  },
+  "Transportation (Railroads)": {
+   "sector": "Industrials",
+   "count": 4,
+   "total": 4,
+   "allSectors": {
+    "Industrials": 4
+   }
+  },
+  "Trucking": {
+   "sector": "Industrials",
+   "count": 26,
+   "total": 26,
+   "allSectors": {
+    "Industrials": 26
+   }
+  },
+  "Utility (General)": {
+   "sector": "Utilities",
+   "count": 14,
+   "total": 14,
+   "allSectors": {
+    "Utilities": 14
+   }
+  },
+  "Utility (Water)": {
+   "sector": "Utilities",
+   "count": 14,
+   "total": 14,
+   "allSectors": {
+    "Utilities": 14
+   }
+  }
+ }
+}

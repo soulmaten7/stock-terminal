@@ -50,6 +50,21 @@
 🔴 **PDF 판독 방법**: 두 파일 다 ToUnicode 맵 정상(글리프 복호 불필요) — `PyPDF2.PdfReader(...).pages[i].extract_text()`로 바로 판독됨. 키워드(`EBITDA`·`debt`·`bank`·`multiple`) grep으로 관련 페이지 특정 후 전문 인용.
 🔴 **다운로드**: `curl -A "Mozilla/5.0 ..." -o {file} {url}` — WebFetch 1차 시도는 텍스트가 손상돼 보여(압축 인코딩) 실패, curl로 직접 받아 PyPDF2로 재추출.
 
+## `damodaran_multiples/` — 업종별 배수 라이브 데이터셋 (STEP 959 신규 발견)
+
+🔑 **기존 `data/sources/damodaran/`의 8개 xls(betas·capex·countrytaxrates·indname·taxrate·totalbeta·wacc·wcdata)에는 업종별 배수(PE·PBV·PS·EV/EBITDA) 데이터가 없었다** — 전부 계산 투입재료뿐이었다. `data/sources/text/damodaran_data_update_1_2026.html`(기존 저장본)을 STEP 959에서 재검토하다 *"my estimate the PE ratio for an industry grouping..."*·*"the EV/EBITDA multiple that I report for emerging market steel companies"*를 발견 → Damodaran이 업종별 배수를 별도 데이터셋으로 발행한다는 신호 → 웹서치로 아래 4개 확보.
+
+| 파일 | 출처 | 무엇을 담나 |
+|---|---|---|
+| `pedata.xls` | `pages.stern.nyu.edu/~adamodar/pc/datasets/pedata.xls` | 업종별 Current PE·Trailing PE·Forward PE·PEG. `Industry Averages` 시트, `Industry Name` 기준 |
+| `pbvdata.xls` | `.../pbvdata.xls` | 업종별 PBV·ROE·EV/Invested Capital·ROIC |
+| `vebitda.xls` | `.../vebitda.xls` | 업종별 EV/EBITDA·EV/EBITDAR&D·EV/EBIT·EV/EBIT(1-t) |
+| `psdata.xls` | `.../psdata.xls` | 업종별 Price/Sales·EV/Sales·Net Margin |
+
+🔴 **핵심 발견**: `vebitda.xls`에서 **Financials 9개 업종군 중 은행·증권 3개(Bank Money Center·Banks Regional·Brokerage & Investment Banking)만 `NA`**, 보험·자산운용 6개는 실값 계산됨 — `finsvc.pdf`의 "부채=원재료" 논리가 은행에만 해당하고 보험엔 해당 안 됨을 실측 데이터로 확인. `psdata.xls`에서는 **Financials 9개 업종군 전부 실값 계산됨**(NA 0개) — `c21.pdf` 교과서 원문("PSR을 못 쓴다")과 **상충**. 상세 = `docs/SECTOR_AXIS_APPLICABILITY.md`.
+🔴 **다운로드**: `curl -A "Mozilla/5.0 ..." -o {file} {url}`. **판독**: `xlrd.open_workbook()`(정식 BIFF 바이너리, `PyPDF2` 아님) — `Industry Averages` 시트, 헤더는 8번째 행(`pedata`/`pbvdata`/`psdata`) 또는 9번째 행(`vebitda`)에 있음(파일마다 다름, 헤더 로우 하드코딩 전 매번 확인할 것).
+🔴 **업종군→GICS 섹터 매핑**: 별도 크로스워크가 없어 `data/sources/damodaran/indname.xls`("By industry" 시트, `Country=United States`만)의 `Industry Group`↔`Primary Sector` 실측 빈도로 직접 구축(94개 업종군, US 상장사 기준 다수결). 10개 업종군은 소속 섹터가 갈림(예: `R.E.I.T.`는 Real Estate 147개사·Financials 43개사) — 다수결로만 처리, 소수 소속은 버렸다(미해결로 기록).
+
 ## `external/` — 외부 방법론 원본 (유니버스 A-9)
 
 | 파일 | 출처 | 관계 |
