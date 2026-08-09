@@ -1,0 +1,153 @@
+{
+ "step": 962,
+ "measuredAt": "2026-08-09",
+ "purpose": "Q1 4축 정의 정밀화 — 판정 재료만. SPEC 미변경, lib/valuation.ts 미수정.",
+ "secCallLog": {
+  "cacheReused": 23,
+  "newCompanyfactsCalls": 78,
+  "rateLimit": "150ms 간격 · 순차(동시성 1, 지시상한 2 이하 충족) · 429 없음",
+  "additionalTargetedCalls": "Citigroup(C)은 기존 STEP958 컨셉조회 대신 이번엔 companyfacts 1회로 통합 조회(신규 1건, 위 78건에 포함)",
+  "totalNewSecRequests": 78
+ },
+ "step1_pbr_denominator": {
+  "sampleSize": {
+   "universe100first": 100,
+   "withNonNullEquity": 70,
+   "matchedToSecInstant": 70
+  },
+  "tagPresenceIn70": {
+   "PreferredStockValue_or_Outstanding": 2,
+   "MinorityInterest": 22,
+   "Goodwill": 49,
+   "IntangibleAssetsNetExcludingGoodwill": 37,
+   "anyOfPreferredOrNci": 23,
+   "anyOfGoodwillOrIntangibles": 47
+  },
+  "candidateB_commonEquity_subPrefAndNci": {
+   "definition": "StockholdersEquity - PreferredStockValue - MinorityInterest",
+   "symbolsCompared": 60,
+   "symbolsChanged": 20,
+   "medianAbsRelDiff": 0.0,
+   "p90AbsRelDiff": 0.0321,
+   "newlyNegativeOrZeroDenominator": 1,
+   "note": "대부분의 종목은 우선주·비지배지분이 아예 없어 중앙값이 0 — p90(3.2%)이 실제 영향권."
+  },
+  "candidateC_tangibleBook_subGoodwillIntangibles": {
+   "definition": "candidateB - Goodwill - IntangibleAssetsNetExcludingGoodwill",
+   "symbolsCompared": 49,
+   "symbolsChanged": 35,
+   "medianAbsRelDiff": 0.1652,
+   "p90AbsRelDiff": 3.88,
+   "newlyNegativeOrZeroDenominator": 12,
+   "negativeSymbols": [
+    "ABBV",
+    "ADEA",
+    "ADSK",
+    "AES",
+    "AEYE",
+    "AIRE",
+    "ALIT",
+    "ALLE",
+    "ALSN",
+    "AMCR",
+    "AME",
+    "AMGN"
+   ],
+   "negativeSymbolsSectors": {
+    "Health Care": 2,
+    "Information Technology": 4,
+    "Utilities": 1,
+    "Industrials": 4,
+    "Materials": 1
+   },
+   "note": "🔴 12/49(24.5%, 전체70기준 17%)가 유형장부가 음수로 전환 — PBR 계산 자체가 불가능해진다(우리 현재 NEGATIVE_EQUITY 규칙을 그대로 적용하면). 기술주(IT 4곳)가 가장 많지만 Industrials(4곳)도 동률 — '기술주만의 문제'가 아니라 M&A로 영업권이 큰 기업 전반의 문제."
+  },
+  "sectorConcentration_prefNci": {
+   "sampleUsed": "100개 알파벳순 표본(A~AMRN) — 대형 은행이 거의 없는 편중 표본",
+   "distribution": {
+    "Industrials": 4,
+    "Information Technology": 4,
+    "Materials": 3,
+    "Utilities": 3,
+    "Health Care": 3,
+    "Consumer Staples": 2,
+    "Financials": 2,
+    "Real Estate": 1,
+    "Communication Services": 1
+   },
+   "caveat": "🔴 이 100종목 표본은 알파벳순(A~AMRN)이라 대형 은행이 ABCB(소형 지역은행) 정도뿐이다. Financials가 표본에서 특별히 크게 나타나지 않은 것은 '금융업이 영향 안 받는다'는 뜻이 아니라 '이 표본에 대형 금융사가 적어서'일 가능성이 높다 — Citigroup(별도 확인) 자체는 우선주 17.85B로 크게 영향받는다."
+  },
+  "citigroupDeepDive": {
+   "sourceReverified": "SEC companyfacts 직접 재조회(1차 STEP958과 별개, 이번 STEP에서 재확인) — PreferredStockValue=17,850,000,000(2024-12-31, 10-K 0000831001-25-000067·0000831001-26-000011 양쪽 동일값), MinorityInterest=768,000,000, StockholdersEquity=208,598,000,000(변동없음, 우선주+비지배지분 별도가 아니라 StockholdersEquity 자체엔 NCI 미포함 — StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest=209,366,000,000=208,598+768로 정합).",
+   "pbrA_current": 1.0855998751282372,
+   "pbrB_commonEquity_subPrefOnly": 1.1871891854803196,
+   "shiftAtoB_pct": -8.557129023288807,
+   "note_userGivenFigureMatch": "장은태가 준 '−8.56%'와 소수점까지 정확히 일치(독립 재계산 확인).",
+   "vsStep958ExternalRescaled_1_208": {
+    "relDiff_A": -10.132460668192282,
+    "relDiff_B": -1.7227495463311562,
+    "interpretation": "958 원보고 −10.15%(반올림)와 재계산 −10.13%는 오차범위 내 일치. 우선주 조정 후 잔차는 −1.72%로 대폭 축소 — 원래 갭의 대부분(약 8.4%p)이 우선주 혼입 때문이었다. 🔴 남은 −1.72%는 여전히 미설명(재척도 근사·자사주매입 등 958이 이미 지목한 후보로 추정, 확정 아님)."
+   }
+  }
+ },
+ "step2_psr_individual_definition": {
+  "searched": [
+   "psdata.xls Variables & FAQ(전체 재확인)",
+   "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/variable.htm(WebFetch)",
+   "c21.pdf 「Choices in Multiples」 절 재확인(PyPDF2)"
+  ],
+  "found_aggregateOnly": "psdata.xls FAQ: \"PS: Aggregated market capitalization divided by aggregated revenues, across all firms in the group.\" — 업종 집계 정의뿐, 종목 단위 정의 아님.",
+  "found_qualitativeOnly": "c21.pdf p.19: \"Since sales or revenues are not really measurable for financial service firms, price-to-sales ratios cannot be estimated or used for these firms.\" — '측정 불가'라고만 하고 어떤 라인아이템을 말하는지는 정의하지 않음.",
+  "variableHtmResult": "🔴 못 찾았다 — variable.htm 페이지 자체가 Revenue/Sales를 정의하지 않는다(WebFetch로 직접 확인, gross/net 여부·금융업 처리 방식 모두 미기재).",
+  "conclusion": "🔴 종목 단위 정의 원문은 못 찾았다. 일반론으로 채우지 않는다.",
+  "citigroupRevenueTagInvestigation": {
+   "ourStoredValue": 80722000000,
+   "secTagUsed": "Revenues",
+   "finding": "🔴 같은 태그(Revenues)·같은 기간(2024-01-01~2024-12-31)에 값이 두 개 존재: 81,139,000,000(FY2024 10-K 원본, 0000831001-25-000067, 2025-02-21 제출) vs 80,722,000,000(FY2025 10-K의 전년 비교치, 0000831001-26-000011, 2026-02-20 제출). 우리 저장값은 후자(최신 제출본의 비교치)와 정확히 일치 — 태그 선택 문제가 아니라 제출 버전(vintage) 문제였다. 958이 '설명 안 되는 0.51% 차이'로 남겨둔 것의 원인을 이번에 확인했다.",
+   "grossVsNet": "InterestAndDividendIncomeOperating(총 이자수익) = 143,713,000,000 — Revenues(80.7~81.1B)의 거의 2배. 우리·Damodaran 둘 다 쓰는 'Revenues'는 총이자수익이 아니라 순수익(이자비용 차감 후) 개념으로 보인다 — 🔴 Citigroup 자체 10-K의 손익계산서 라인 명칭까지는 직접 열어 확인하지 않았다(추정)."
+  }
+ },
+ "step3_ev_ebitda_cash": {
+  "damodaranDefinition": "variable.htm(WebFetch 확인): \"Cash and Marketable Securities reported in the balance sheet.\" — 제한현금 포함 여부는 명시 안 됨.",
+  "ourCurrentDefinition": "CASH_NONOP=[CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents, CashAndCashEquivalentsAtCarryingValue](제한현금 포함 태그 우선) + SECURITIES=[ShortTermInvestments,MarketableSecuritiesCurrent,AvailableForSaleSecuritiesCurrent,OtherShortTermInvestments] 합산 — Damodaran의 'Cash and Marketable Securities' 정의와 큰 틀에서 일치(증권 포함까지 이미 반영), 제한현금 포함 여부만 원문에 없어 불명.",
+  "sensitivityTest": {
+   "sampleSize": 32,
+   "symbolsWhereTagsDiffer": 17,
+   "medianAbsRelDiff_evEbitda": 3.05e-05,
+   "p90AbsRelDiff_evEbitda": 0.0575,
+   "maxAbsRelDiff_evEbitda": 0.092,
+   "note": "현금 태그 자체는 종목별로 최대 84~98% 차이가 나지만(ADM·AEE 등), EV/EBITDA 전체에 대한 영향은 median 0%·p90 5.75%·max 9.2%로 완화된다(현금이 EV 전체에서 차지하는 비중이 작아서)."
+  },
+  "step958AnomalyCheck": {
+   "AAL": "🔴 설명 안 됨 — AAL은 CashAndCashEquivalentsAtCarryingValue 태그 자체가 없다(제한현금포함 태그만 존재). 두 정의 중 고를 여지가 없어 EV/EBITDA가 완전히 동일(8.33523...). 958의 AAL +7.10% 잔차는 현금정의로 설명되지 않는다.",
+   "AMT": "🔴 미확인 — AMT는 이번 100종목 알파벳순 표본(A~AMRN) 밖이라 이번 조사에 포함되지 않았다."
+  }
+ },
+ "step4_per_preferred_dividend": {
+  "damodaranFaqReconfirmed": "pedata.xls FAQ 'Current PE': \"Price per share divided by EPS in most recent fiscal year, averaged across all money-making firms in the group.\" — 최근회계연도 ✅ 흑자기업만 ✅ (기존 확인 재확인).",
+  "notAddressedInFaq": "🔴 우선주 배당 차감 여부는 FAQ 원문에 명시 없음. 다만 'EPS'는 GAAP 표준정의(FASB ASC 260) 자체가 이미 '보통주 귀속 순이익 ÷ 가중평균 보통주식수'다 — 우선주가 있는 기업의 'EPS'는 정의상 이미 우선주 배당을 뺀 값이다. 우리 현재 식(marketCap/netIncome, 총순이익 그대로)은 우선주가 없는 기업에서만 'price/EPS'와 같아진다.",
+  "citigroupDeepDive": {
+   "secTagsFound": {
+    "NetIncomeLossAvailableToCommonStockholdersBasic": 11458000000,
+    "NetIncomeLossAvailableToCommonStockholdersDiluted": 11532000000,
+    "ourStoredNetIncome_total": 12682000000
+   },
+   "impliedPreferredDividends_approx": 1224000000,
+   "perA_current_totalNI": 17.856328871786783,
+   "perB_commonBasic": 19.76382987886193,
+   "shiftAtoB_pct": -9.651474530831106,
+   "vsStep958ExternalRescaled_22_727": {
+    "relDiff_A": -21.43121013865982,
+    "relDiff_B": -13.03810499026739,
+    "interpretation": "958 원보고 −21.43%. 우선주배당 조정 후 잔차 −13.04% — 갭의 약 8.4%p(−21.43 → −13.04)를 설명하나, PBR(잔차 −1.72%)만큼 깨끗이 안 닫힌다. 🔴 남은 −13%는 여전히 크고 미설명 — PBR보다 설명력이 낮다는 것을 숨기지 않는다."
+   }
+  }
+ },
+ "notDone": [
+  "PBR 후보 ⓑⓒ의 섹터별 영향은 100종목 알파벳순 표본(대형 금융사 희박)으로만 쟀다 — Financials 섹터 전체를 대표하지 못할 수 있다.",
+  "AMT(Real Estate)의 EV/EBITDA 현금민감도는 표본 밖이라 확인 못 함.",
+  "Citigroup 10-K 원문 손익계산서를 직접 열어 'Revenues' 태그가 정확히 어느 줄과 대응하는지는 확인하지 않았다(태그값 대조로 추정만 함).",
+  "PSR의 '총매출 vs 순매출' 질문은 비금융기업 기준으로는 우리 REV 4태그가 이미 순매출(매출에누리·반품 차감) 계열이라 사실상 답이 나와 있으나, 이걸 명시적으로 문서화하지는 않았다.",
+  "판정하지 않았다 — 후보 3개(PBR)·2개(EV/EBITDA)의 영향만 실측하고 어느 것을 쓸지는 정하지 않았다."
+ ]
+}
