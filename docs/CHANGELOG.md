@@ -1,6 +1,31 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (135) — 🟨 **STEP 964: 잔여 계측 결함 정리 + 제출버전(vintage) 정책 재료**
+
+> **성격**: 조사·실측만. **코드·DB·화면·크론 전부 무접촉.** `lib/valuation.ts`·`SECTOR_RELATIVE_SPEC` 미변경. SEC 신규 호출 0건(`docs/probe_951_cache` 1,127종목 전량 캐시 재사용). 판정은 장은태.
+
+**왜** — 963이 Q1 4축 정의를 닫았지만 보고 중 세 가지가 "모른다"로 남았다: `common_equity` 백필 수 925 vs 930 불일치·플래그(`preferredStockUnknown`·`commonEquityNciNotSubtracted`) 미측정·제출버전(vintage) 문제(Citigroup Revenues 이중값)의 정책 미확정. 다음 정규 크론(당초 명령서 기준 "내일 07:45")이 새 창 값으로 갈아엎기 전에 정리한다.
+
+**1단계 — 925 vs 930 규명 완료(버그 아님)** — `common_equity`가 채워진 925행 vs `net_income`/`fiscal_year`가 채워진 930행의 5행 차이(`ANDG`·`CNK`·`CQP`·`LGN`·`MDLN`)를 `us_fundamentals_snapshot(tag=pre_step963)`과 대조: 이 5종목은 **963 이전부터 `equity` 자체가 null**이었다(StockholdersEquity 계열 태그가 그 회계연도에 원래 안 잡힘). `commonEquity`는 `equity`에서 파생되므로 분모가 없으면 자동 null — 계산 로직 결함이 아니라, STEP963 보고서의 "930행"이 스크립트의 순이익 재계산 성공 건수(`updates.length`)를 가리킨 표현상 정밀도 문제였다.
+
+**2단계 — 플래그 건수 실측(963에서 미측정)** — `preferredStockUnknown` = 930건 중 **496건(53.3%)**. 세분화: 363건(73.2%)은 `PreferredStockValue`류 태그가 회사 XBRL facts에 아예 없음(강한 "우선주 미발행" 신호) · 133건(26.8%)은 다른 연도엔 있는데 하필 고정연도(ly)에만 없음(약한 신호, 진짜 "모른다"). 섹터 분포는 963의 우려(Financials·Utilities 편중)를 **반증** — Financials(41.0%)가 12개 섹터 중 오히려 가장 낮고 Materials(70.0%)·Energy(69.0%)가 가장 높다. `commonEquityNciNotSubtracted` = **34/930(3.7%)**, Utilities 10.5%로 최고(963의 "Utilities p90 11.8% > Financials p90 8.8%"에 일부 기여했을 가능성, 인과 미확인).
+
+**3단계 — `fiscal_year` null 197건 분류** — `us_valuation` 4축·`us_sector_relative` 4개 백분위 **전부 null**(197/197 교차확인 — Q1 카드가 통째로 비는 종목 수). 캐시 전수 분류: **A. us-gaap 매출태그 자체가 없음(IFRS 외국사 등 의심) 135건(68.5%)**(`ASML` — 20-F만 제출, 매출태그 0개) · **B. 매출태그는 있으나 10-K 폼으로 안 잡힘(6-K/8-K 전용) 47건(23.9%)**(`AKTX` — 매출값이 8-K 하나뿐) · **C. 매출태그·10-K 둘 다 있으나 매출태그 자체는 10-K로 안 잡힘(은행형) 8건(4.1%)**(`CBSH`·`ABCB`) · **D. 미분류 7건(3.6%)**. 고치지 않음 — 규모·원인만.
+
+**4단계 — 제출버전(vintage) 정책 재료(이 STEP의 중심)**
+- **코드 위치**: `lib/revdcf/drivers.ts:31-32`의 `annualMap()` — `if (!prev || String(e.filed) > String(prev.filed)) by[y] = {...}` — 같은 연도에 `filed`가 여럿이면 **가장 최근 제출값**을 무조건 채택. 🔴 이게 "정한 정책"이 아니라 **코드가 우연히 그렇게 동작했을 뿐**이라는 사실 자체가 처음 확인됨 — 채택 이유를 설명하는 주석·문서가 어디에도 없었다.
+- **ⓐ(재작성 반영·최신 제출값) vs ⓑ(원본 제출값·당시 투자자가 본 값)** — 어느 쪽이 옳다고 안 정함, 각각 무엇에 맞는지만 기록.
+- **영향 규모(930종목 전량)**: netIncome(PER) 41/930(4.4%, 중앙값 0.66%·p90 27.3%·max 1730%) · equity(PBR) 45/930(4.8%, 중앙값 0.67%·p90 273.5%·max 737.7%) · revenue(PSR 재료) 55/930(5.9%, 중앙값 0.54%·p90 31.5%·max 74.2%). 🔴 **최대폭 사례(`WDC` 13,003M→6,317M·`DD` 12,386M→6,719M·`TKO` 2,804M→4,884M)는 사업분할·인수의 회계 반영으로 확인됨**(WDC = 2025-02-21 SanDisk 스핀오프로 FY2024 비교치가 계속영업 기준 재분류, SEC 10-K·보도자료로 확인) — 단순 오류정정이 아니라 기업구조 변경이 주 원인. 중앙값은 세 축 다 1% 미만, p90은 소수 극단값에 좌우.
+- **외부 대조(stockanalysis.com, 2건)**: `WDC`·`DD` 둘 다 우리 최신 제출값(ⓐ)과 **정확히 일치** — 외부도 재작성 반영값을 쓴다는 근거. `Citigroup`은 third value($70,613M)로 우리 ⓐ($81,139M)·ⓑ($80,722M) 어느 쪽과도 안 맞음 — 은행 매출 정의 차이로 추정되나 **확인 안 됨 · 모른다**.
+- **처방 후보(판정 없음)**: ① 현행 유지(최신 제출) ② 원본 제출 고정 ③ 둘 다 저장·화면에서 선택 ④ flags에 기록만 하고 계산은 현행.
+
+**문서** — `docs/probe_964_residuals.json`(원자료) · `docs/VALUATION_SPEC.md`(미해결 항목3에 플래그 실측 추가·「fiscal_year 미확보 197종목」신규 절·미해결 신규 8번 vintage·검증절 STEP964 기록, 헤더 "6개"→"8개" 정정) · `docs/STATE.md`(963 §5-3 항목에 964 재료 반영·신규 항목 3개 추가).
+
+**무변경** — 코드 diff 0(조회 스크립트 `scripts/probe_964_residuals.ts` 신규 추가만, 기존 파일 무수정). DB 쓰기 0. `app/(routes)`·`components`·`messages` 무접촉. KR 미접촉.
+
+**못 한 것 / 확인 안 된 것** — `preferredStockUnknown` 496건이 "진짜 우선주 없음"인지 개별 10-K 원문 대조는 안 함(태그 부재 정황 증거만). 197건 중 D(미분류 7건)는 개별 원인 조사 안 함. Citigroup 매출 third value($70,613M)의 정체는 모른다.
+
 ## 2026-08-09 (134) — 🟩 **STEP 963: Q1 4축 정의 확정 — PER·PBR을 보통주 기준으로 통일 (구현·백필 완료)**
 
 > **성격**: 코드 변경 + DB 백필(첫 실제 프로덕션 데이터 변경). **화면·크론·KR 무접촉.** `psr`·`evEbitda`는 무변경.

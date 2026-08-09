@@ -59,7 +59,7 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 - **음수 PER 처리 관행** — Stock Analysis 용어 페이지: 음수 PER은 통상 `n/a`로 표기하는 것이 관행.
 - 🔴 **미확보**: 위 두 Damodaran PDF는 `data/sources/`에 원문이 저장돼 있지 않다(SEC CIK 파일과 달리 이번 STEP이 로컬 원본 확보를 지시하지 않았음). 이 절의 인용은 STEP 947 명령서 원문을 따른 것이고, **PDF 원문 재대조는 이번 세션에서 하지 않았다** — ⓪ 원전 인벤토리 규칙상 남은 빚으로 기록한다.
 
-## 🔴 아직 못 푼 것 6개
+## 🔴 아직 못 푼 것 8개
 
 0. ✅ **YS 고정창 결함 — 해소(STEP 951, 2026-08-08 장은태 판정).** 원래 문제(STEP 950): `lib/revdcf/drivers.ts:12`의 `const YS = [2020, 2021, 2022, 2023, 2024]`가 하드코딩이라 최신 회계연도 1~2년이 누락돼 **4축 전부가 영향**(NVDA PER 64.7%·AAPL PER 19.5% 과대). **951 — `resolveYearWindow()`로 전환**: 창 정의 = 종목별 실재 최신 5개 연도(매출 기준·연속·오늘 날짜 유도 상한, 정의 전문 = `docs/REVDCF_SPEC.md` §10-A). 30종목 검증 — **30/30 창 해소**, NVDA `fiscalYear=2025`(=NVDA 표기 FY2026, 매출 215,938,000,000·순이익 120,067,000,000)·AAPL `fiscalYear=2025`(매출 416,161,000,000·순이익 112,010,000,000) 둘 다 SEC 원문과 정확 일치. `fiscal_year`가 이제 매년 자동으로 올라간다(2024 고정 → 종목별 최신). 🔴 **과거 `us_valuation`/`us_fundamentals` 행은 재계산하지 않는다** — 다음 정규 크론부터 새 창이 적용되며, 그 전까지 DB엔 여전히 옛 창 값이 있다(`fundamentals_fiscal_year`가 951 이전 행은 대부분 2024, 이후 행부터 종목별로 다르다). 상세 = `docs/probe_951_verify.json`.
    🔴 **적용 경계(Q1 관점, 못박기) — 2026-08-08 push `e39595d`, 첫 정규 크론 🔴 2026-08-10 07:45 KST(정정 — 2026-08-09 07:45 KST 크론은 배포보다 먼저 돌아 옛 코드로 실행됨, `us_fundamentals` 22시대 723행 중 669행이 `fiscal_year=2024`로 실측 확인. 새 창의 첫 실행은 `2026-08-09 22:45 UTC`이며 `revdcf_results as_of='2026-08-09'`로 쓰인다)**: `us_fundamentals.fiscal_year`/`us_valuation.fundamentals_fiscal_year`가 종목별로 갈리기 시작한 행 = 새 창(951 이후). 대부분 2024로 고정된 행 = 옛 창(951 이전). **두 구간을 시계열로 이어 읽지 말 것** — PER·PBR·PSR·EV/EBITDA가 회사 실적 급변이 아니라 관측 연도 이동으로 크게 튈 수 있다. 🔴 `us_fundamentals`는 symbol PK upsert라 크론이 돌 때마다 이전 값이 사라진다 — **`us_fundamentals_snapshot`(tag=`pre_step951`, 2026-08-08, 1,127행)에 옛 창 원시 재무를 떠 뒀다** — 951 이전/이후 원시값(net_income·equity·revenue·operating_income·dna) 비교는 이 스냅샷을 before로 쓴다. 임시 테이블이며 쓸모가 끝나면 지운다.
@@ -73,6 +73,10 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 4. **야후 대비 상대차 미측정** — 🔴 **원인은 STEP 948 명령서 §5의 전제 오류다** — "`lens_scores`에 야후 원시 PER이 저장돼 있다"고 썼으나 실제로는 파생 점수(`valuation_value`·`valuation_state`)만 있고, 원시 `trailingPE`·`priceToBook`은 어디에도 저장되지 않는다(`lib/lensCompute.ts`의 즉시계산 값). 따라서 **`lensCompute.ts` 교체 판정의 근거가 아직 없다** — 측정 수단(라이브 재조회 방식 등) 설계가 선행돼야 한다.
 5. **`us_market_cap` 결측으로 4축이 전부 안 나오는 종목이 있다** — Cowork 교차검증(2026-08-08, `docs/probe_948_live.json`의 `cowork_crosscheck`)이 발견·Claude Code가 재확인: 68종목(`ACM`·`ADI`·`AIT`·`APA`·`AZO`·`BBY`·`BDX` 등 다수 S&P 500 대형주 포함)이 `us_market_cap`의 최신 `as_of`(2026-08-07)에 행이 없고 **2026-07-30 등 옛 `as_of`에만 값이 있어** 분자(시총)가 없다. 🔴 **「계산이 안 된 것」이 아니라 「분자가 없는 것」이다** — 구분해서 읽을 것. 🔴 **날짜 우연 일치, 인과 미확인**: 2026-07-30은 US `lens_cuts`가 정지된 바로 그 날짜다(`STATE.md` ▶다음 00번) — 같은 원인인지는 확인하지 않았다.
 6. **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙 — 종료월≤5월이면 전년도 귀속) NVDA 자신은 이 회계연도를 **FY2026**이라 부른다. 값(매출 215,938,000,000·순이익 120,067,000,000)은 SEC 원문과 정확히 일치하나, 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. **표시 문구 판정 필요(장은태)** — Q1 카드 작업 시 함께 정한다.
+8. 🔴 **제출버전(vintage) 정책 — 지금까지 정한 적이 없다(2026-08-09, STEP 964 재료 · 판정 대기).** 같은 회계연도에 SEC XBRL이 값을 두 개 이상 갖는 경우가 있다 — ⓐ 그 연도 원래 10-K 제출값(당시 투자자가 본 값) vs ⓑ 이후 10-K의 전년 비교치(합병·구조조정·오류정정 등으로 재작성된 값). **코드 위치**: `lib/revdcf/drivers.ts:31-32`의 `annualMap()` — `if (!prev || String(e.filed) > String(prev.filed)) by[y] = {...}` — 같은 연도에 여러 `filed`가 있으면 **가장 최근에 제출된 값**(ⓑ 재작성치)을 무조건 채택한다. 🔴 이게 "우리가 정한 정책"이 아니라 **코드가 우연히 그렇게 동작하고 있었을 뿐**이라는 사실 자체가 이번에 처음 확인됐다 — 채택 이유를 설명하는 주석·문서가 어디에도 없었다.
+   **영향 규모(930종목 전량, 캐시만 사용·SEC 신규호출 0건, STEP 964 실측)**: 같은 연도·같은 태그에 값이 실제로 다른 이중 제출이 존재하는 종목 수 — netIncome(PER 재료) 41/930(4.4%, 절대상대차 중앙값 0.66%·p90 27.3%·max 1730%) · equity(PBR 재료) 45/930(4.8%, 중앙값 0.67%·p90 273.5%·max 737.7%) · revenue(PSR 재료, 축 자체는 미사용이나 fundamentals에는 존재) 55/930(5.9%, 중앙값 0.54%·p90 31.5%·max 74.2%). 🔴 **최대폭 사례(WDC 13,003M→6,317M·DD 12,386M→6,719M·TKO 2,804M→4,884M)는 전부 사업분할·인수 등 회계상 재작성 사유가 확인됨**(WDC는 2025-02-21 SanDisk 스핀오프로 FY2024 비교치가 계속영업 기준으로 재분류됨, SEC 10-K·보도자료로 확인) — 단순 오류정정이 아니라 **기업구조 변경의 회계 반영**이 vintage 차이의 주된 원인 중 하나. p90이 소수 극단값에 좌우되며 중앙값은 세 축 다 1% 미만.
+   **외부 대조(stockanalysis.com, 2건)**: WDC·DD 둘 다 **우리 latestVal(ⓑ 재작성치)과 정확히 일치** — stockanalysis.com도 재작성 반영값을 쓴다는 근거. Citigroup은 **third value($70,613M)로 우리 ⓐ($81,139M)·ⓑ($80,722M) 어느 쪽과도 안 맞음** — 은행업 특유의 매출 정의 차이(순이자수익 처리 등)로 추정되나 **확인 안 됨 · 모른다.**
+   **처방 후보(판정 없음)**: ① 현행 유지(최신 제출·ⓑ) ② 원본 제출 고정(ⓐ) ③ 둘 다 저장하고 화면에서 선택 ④ 어느 쪽인지 `sourceTags`/flags에 기록만 하고 계산은 현행. 🔴 원전(Rappaport & Mauboussin, *Expectations Investing*)의 전제는 "그 시점 시장이 가격에 반영한 기대"라 철학적으로는 ⓐ(당시 값)에 가깝다는 긴장이 있으나, 이것도 **판정이 아니라 관찰**이다. 상세 = `docs/probe_964_residuals.json`.
 
 ## 「업종 대비」 — 정의 공개표 (STEP 952, 2026-08-09 장은태 판정)
 
@@ -180,6 +184,18 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 🔴 **원인은 조사하지 않았다.** 목록에 `HIFS`·`TOWN`·`FRBA` 등 현재 상장·보고 중인 것으로 보이는 이름이 포함돼 있어, 상장폐지가 아니라 SEC 파일의 누락일 가능성이 있으나 **확인하지 않았다.** 「없다」가 아니라 「모른다」다. 근거 = `docs/probe_947_cik_coverage.json`.
 
+## 🔴 `fiscal_year` 미확보 197종목 — Q1 카드가 통째로 빈다(2026-08-09 STEP 964 실측)
+
+`us_fundamentals.fiscal_year`가 null인 197종목(전부 `unavailable_reason='INSUFFICIENT_HISTORY'`)은 `us_valuation`의 4축(per·pbr·psr·ev_ebitda) **전부 null**이고 `us_sector_relative`의 4개 백분위도 **전부 null**이다(197/197, 교차확인 완료) — 즉 이 종목들은 Q1 카드를 열면 **숫자도 백분위도 하나도 안 뜨는 완전 공백 상태**가 된다.
+
+원인을 캐시(`docs/probe_951_cache/`, SEC 신규호출 0건)로 표본 분류(197건 전수, 캐시없음 0건):
+- **A. us-gaap 매출태그 자체가 회사 XBRL facts에 없음 = 135건(68.5%)** — 외국 민간 발행사가 IFRS 택사노미(`ifrs-full`)를 쓰거나 US GAAP 매출 개념 자체를 안 쓰는 경우로 의심. **표본 확인**: `ASML`(20-F만 제출, us-gaap 매출태그 0개 — IFRS 필자로 알려진 회사와 정합) · `CNI`(6-K만 제출, 연차 애뉴얼 폼 자체가 없음).
+- **B. 매출태그는 있으나 10-K 폼으로는 한 번도 안 잡힘(6-K/8-K 전용 등) = 47건(23.9%)**. **표본**: `AKTX`(매출 값이 8-K 하나에만 존재 — 최근 리버스머지·8-K 프로포르마로 추정, 정식 10-K 연차보고 이력이 아직 없음).
+- **C. 매출태그·10-K 폼 둘 다 존재하나, 매출태그 자체가 10-K로는 안 잡힘(10-Q에만) = 8건(4.1%)**. **표본**: `CBSH`·`ABCB`(지역은행지주 — `Revenues` 태그가 10-Q 114건엔 있으나 10-K 0건. 은행은 통상 이자수익/비이자수익 구조로 손익을 태깅해 우리 `REV` 배열과 안 맞는 것으로 추정 — 838의 "금융인접 신호" 패턴과 겹친다).
+- **D. 그 외 미분류 = 7건(3.6%)** — 개별 원인 조사 안 함.
+
+🔴 **고치지 않았다** — 규모와 원인 분류까지만. 처방(대체 태그 추가·REV 배열 확장·화면에서 "데이터 부족" 명시 등)은 판정 대기. 상세 = `docs/probe_964_residuals.json`.
+
 ## 검증
 
 - `lib/valuation.test.ts` — `VALUATION_SPEC`의 formula·basis 고정 문자열 회귀 + 4케이스(흑자·무차입/흑자·유차입/적자/자기자본 음수) 손계산 검산 + 미성립 경계 6건.
@@ -219,5 +235,11 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
   - **§4 적재**: `us_fundamentals_snapshot`(tag=`pre_step963`) 1,127행 선스냅샷 → `us_fundamentals` 930행 갱신(197행은 fiscal_year 미확보라 무접촉) → `us_valuation`(as_of=2026-08-08) 930행 갱신(price·market_cap은 기존값 그대로 — 시점오염 방지) → `us_sector_relative`(`computeSectorRelativeBatch` 순수함수 재사용, 로직복제 없음) 1,127행 재계산. 백필 후 행수 전부 불변(us_valuation 1,127·us_fundamentals 1,127·us_sector_wide 1,127·**revdcf_results 604**) — 🔴 **revdcf_results verdict 분포·AAL(value_destroying)·AAPL(over_cap)·NVDA(years·gap5) 개별 확인 전부 백필 전과 동일**, 코드상 `dr.fundamentals`를 참조하는 곳이 route.ts의 `fundamentalsRow()`(Q1 전용) 하나뿐임과 정합.
   - 🔴 **PSR·EV/EBITDA는 등재만 하고 손대지 않음**(아래 항목 1·962 EV/EBITDA 단락) · Citigroup Revenues 이중값(제출버전 문제)은 STATE.md 신규 항목.
   - 상세 원자료 = `docs/probe_963_definition_apply.json`.
+- 🟡 **STEP 964(2026-08-09) — 잔여 계측 결함 정리 + 제출버전(vintage) 정책 재료. 조회 전용(DB 무변경·SEC 신규호출 0, 캐시 1,127종목 전량 재사용).**
+  - **925 vs 930 규명 — 완료.** `net_income`/`fiscal_year`가 채워진 930행 중 **5행**(`ANDG`·`CNK`·`CQP`·`LGN`·`MDLN`)은 `common_equity`가 null이다. 원인 = 963의 계산 버그가 아니라 **이 5종목은 963 이전부터 `equity` 자체가 null**이었다(`us_fundamentals_snapshot(tag=pre_step963)` 대조로 확인 — `StockholdersEquity` 계열 태그가 애초에 그 회계연도에 안 잡힌다). `commonEquity`는 `equity`에서 파생되므로 분모가 없으면 자동으로 null. STEP 963 보고서의 "930행"은 스크립트의 `updates.length`(순이익 재계산 성공 건수)를 가리킨 것으로, "common_equity가 채워진 행 수"와 같다고 명시하지 않은 표현상 정밀도 문제였다 — 계산 로직 자체엔 결함이 없다.
+  - **preferredStockUnknown = 496/930(53.3%)**. 세분화하면 **363건(73.2%)은 `PreferredStockValue`류 태그가 그 회사의 XBRL facts에 아예 한 번도 등장하지 않고**(강한 "우선주 미발행" 신호), **133건(26.8%)은 다른 회계연도엔 태그가 있으나 하필 그 종목의 고정연도(ly)에만 없다**(더 약한 신호, 진짜 "모른다"에 가깝다). 963의 190종목 표본 결과(태그 키 존재 76/156 중 실제 0 아닌 값은 6/156)와 정합 — 태그가 있어도 대부분 $0으로 명시적으로 채워지는 관행이 있다는 점과 겹쳐 읽으면, "태그 부재"가 "우선주 없음"에 가깝다는 정황은 쌓이지만 **100% 확정은 아니다**(개별 10-K 원문 대조는 이 STEP 범위 밖).
+  - **commonEquityNciNotSubtracted = 34/930(3.7%)** — 훨씬 작다. 섹터별 발생률: Utilities 4/38(10.5%, 최고) · Financials 5/61(8.2%) · Health Care 5/160(3.1%). 🔴 **963이 발견한 "Utilities p90 11.8% > Financials p90 8.8%"의 일부는 이 미차감 잔차가 기여했을 가능성이 있다**(Utilities의 NCI 미차감률이 표본 내 최고) — 단 인과관계는 확인하지 않았다.
+  - **preferredStockUnknown의 섹터 분포는 963의 우려(Financials·Utilities 편중)를 반증한다** — 오히려 Financials(41.0%)가 12개 섹터 중 **가장 낮은** 발생률이고(우선주를 실제로 발행하는 업종이라 태그가 채워지는 경우가 많다는 뜻과 정합), Materials(70.0%)·Energy(69.0%)·미분류(73.3%)가 가장 높다.
+  - 상세 = `docs/probe_964_residuals.json`.
 
 7. ✅ **PER 분자 — 우선주 배당 차감(2026-08-08 STEP 962 발견 → 2026-08-09 STEP 963 구현 완료).** Damodaran `pedata.xls` FAQ는 "Price per share divided by EPS"라 하는데 GAAP `EPS` 자체가 이미 "보통주 귀속 순이익 ÷ 가중평균 보통주식수"로 정의된다(FASB ASC 260) — 즉 원문이 말하는 "EPS"는 우선주가 있는 기업에서 이미 우선주 배당을 뺀 값이다. **963이 `NET_INCOME` 배열을 `NetIncomeLossAvailableToCommonStockholdersBasic` 최우선으로 재정렬해 구현·백필 완료.** Citigroup 실측 그대로 반영: PER 17.86→19.76(−9.65% 이동). STEP 958 대조 잔차(−21.43%)는 조정 후 −13.04%로 줄지만 **PBR만큼(−1.72%) 깨끗이 안 닫힌다** — 여전히 큰 잔차가 남고, 이건 숨기지 않는다.

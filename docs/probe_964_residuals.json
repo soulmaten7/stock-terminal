@@ -1,0 +1,1484 @@
+{
+ "step2_flags": {
+  "evaluated": 930,
+  "noCache": 0,
+  "preferredStockUnknown": 496,
+  "commonEquityNciNotSubtracted": 34,
+  "bySector": {
+   "Health Care": {
+    "n": 160,
+    "prefUnknown": 82,
+    "nciNotSub": 5
+   },
+   "Materials": {
+    "n": 50,
+    "prefUnknown": 35,
+    "nciNotSub": 0
+   },
+   "Industrials": {
+    "n": 178,
+    "prefUnknown": 95,
+    "nciNotSub": 9
+   },
+   "Information Technology": {
+    "n": 162,
+    "prefUnknown": 71,
+    "nciNotSub": 6
+   },
+   "Consumer Discretionary": {
+    "n": 105,
+    "prefUnknown": 56,
+    "nciNotSub": 2
+   },
+   "Financials": {
+    "n": 61,
+    "prefUnknown": 25,
+    "nciNotSub": 5
+   },
+   "Communication Services": {
+    "n": 45,
+    "prefUnknown": 28,
+    "nciNotSub": 0
+   },
+   "Consumer Staples": {
+    "n": 55,
+    "prefUnknown": 31,
+    "nciNotSub": 1
+   },
+   "Utilities": {
+    "n": 38,
+    "prefUnknown": 24,
+    "nciNotSub": 4
+   },
+   "Energy": {
+    "n": 42,
+    "prefUnknown": 29,
+    "nciNotSub": 1
+   },
+   "Real Estate": {
+    "n": 19,
+    "prefUnknown": 9,
+    "nciNotSub": 1
+   },
+   "null": {
+    "n": 15,
+    "prefUnknown": 11,
+    "nciNotSub": 0
+   }
+  }
+ },
+ "step3_fiscalYearNull": {
+  "total": 197,
+  "noCache": 0,
+  "cat_ifrsNoRevTag": 135,
+  "cat_no10KFormAtAll": 47,
+  "cat_revTagNo10K": 8,
+  "cat_other": 7,
+  "sample": {
+   "ifrsNoRevTag": [
+    "ABCB",
+    "ACXP",
+    "ADAC",
+    "ADAM",
+    "ADIG",
+    "ADIL",
+    "AERO",
+    "AESP"
+   ],
+   "revTagNo10K": [
+    "AKTX",
+    "APA",
+    "ARMP",
+    "ARR",
+    "CBSH",
+    "CFBK",
+    "CTGO",
+    "NEWT"
+   ],
+   "no10KFormAtAll": [
+    "ADAG",
+    "AFRI",
+    "AKTS",
+    "ALC",
+    "ALLT",
+    "ALMR",
+    "AMSS",
+    "AMTD"
+   ],
+   "other": [
+    "ALMS",
+    "ARAI",
+    "BPOP",
+    "CABR",
+    "COPR",
+    "CSWC",
+    "NEUP"
+   ]
+  },
+  "symbols": [
+   "ABCB",
+   "ACXP",
+   "ADAC",
+   "ADAG",
+   "ADAM",
+   "ADIG",
+   "ADIL",
+   "AERO",
+   "AESP",
+   "AEXA",
+   "AFBI",
+   "AFJK",
+   "AFRI",
+   "AKAN",
+   "AKO-A",
+   "AKO-B",
+   "AKTS",
+   "AKTX",
+   "ALAR",
+   "ALC",
+   "ALDF",
+   "ALDX",
+   "ALF",
+   "ALIS",
+   "ALLT",
+   "ALM",
+   "ALMR",
+   "ALMS",
+   "ALOV",
+   "ALPX",
+   "AMSS",
+   "AMTB",
+   "AMTD",
+   "ANGH",
+   "AOD",
+   "APA",
+   "APGE",
+   "API",
+   "APMC",
+   "APMD",
+   "ARAI",
+   "ARMP",
+   "AROW",
+   "ARQQ",
+   "ARR",
+   "ARTL",
+   "ASA",
+   "ASM",
+   "ASML",
+   "ASND",
+   "ASPC",
+   "ASTL",
+   "AUB",
+   "AUDC",
+   "AUGO",
+   "AURA",
+   "AURE",
+   "AUST",
+   "AVAT",
+   "B",
+   "BIP",
+   "BLW",
+   "BLX",
+   "BLZR",
+   "BME",
+   "BMO",
+   "BMRC",
+   "BN",
+   "BP",
+   "BPAC",
+   "BPOP",
+   "BPRN",
+   "BQ",
+   "BRBI",
+   "BRIA",
+   "BRVE",
+   "BZUN",
+   "CAAP",
+   "CAAS",
+   "CABA",
+   "CABR",
+   "CAE",
+   "CBRS",
+   "CBSH",
+   "CDT",
+   "CDTG",
+   "CFBK",
+   "CFND",
+   "CHEC",
+   "CIG",
+   "CIG-C",
+   "CIGI",
+   "CIGL",
+   "CII",
+   "CIK",
+   "CIM",
+   "CING",
+   "CINT",
+   "CLPS",
+   "CLST",
+   "CLWT",
+   "CLYM",
+   "CM",
+   "CMBT",
+   "CMCL",
+   "CMCM",
+   "CMDB",
+   "CMII",
+   "CMMB",
+   "CMND",
+   "CMPS",
+   "CMRE",
+   "CMTV",
+   "CNCK",
+   "CNEY",
+   "CNF",
+   "CNI",
+   "CNL",
+   "CNOB",
+   "CNQ",
+   "CNSP",
+   "CNTN",
+   "CNTX",
+   "CNXU",
+   "COAG",
+   "COE",
+   "COOT",
+   "COPL",
+   "COPR",
+   "CP",
+   "CPA",
+   "CPAC",
+   "CPOP",
+   "CPZ",
+   "CRAN",
+   "CRAQ",
+   "CRDL",
+   "CRF",
+   "CRML",
+   "CRNT",
+   "CSIQ",
+   "CSQ",
+   "CSQR",
+   "CSTE",
+   "CSWC",
+   "CTAA",
+   "CTBI",
+   "CTGO",
+   "CX",
+   "CYD",
+   "DAC",
+   "DBL",
+   "DHT",
+   "DHY",
+   "DOX",
+   "DRD",
+   "ELMT",
+   "ELOG",
+   "ELPC",
+   "ELPW",
+   "ELTK",
+   "ELVA",
+   "ENIC",
+   "ENLT",
+   "ENLV",
+   "FCBM",
+   "FLC",
+   "FVN",
+   "HFWA",
+   "HGLB",
+   "HIHO",
+   "LATA",
+   "LGHL",
+   "LIME",
+   "LIMN",
+   "LWAC",
+   "LX",
+   "LXEH",
+   "LYG",
+   "MGYR",
+   "MSBI",
+   "MSC",
+   "NEUP",
+   "NEWP",
+   "NEWT",
+   "PDC",
+   "PROV",
+   "PRQR",
+   "RAY",
+   "RAYA",
+   "RBNE",
+   "TP",
+   "TRMD",
+   "TRMK",
+   "TROO",
+   "VSA",
+   "VSME"
+  ]
+ },
+ "step4_vintage": {
+  "symbolsChecked": 930,
+  "noCache": 0,
+  "axisSummary": {
+   "netIncome": {
+    "dupNonequalCount": 41,
+    "medianAbsRelDiff": 0.006608478802992519,
+    "p90AbsRelDiff": 0.2731208287164687,
+    "maxAbsRelDiff": 17.30707370393504
+   },
+   "equity": {
+    "dupNonequalCount": 45,
+    "medianAbsRelDiff": 0.0067243035542747355,
+    "p90AbsRelDiff": 2.734516129032258,
+    "maxAbsRelDiff": 7.3766033594693985
+   },
+   "revenue": {
+    "dupNonequalCount": 55,
+    "medianAbsRelDiff": 0.005389057818534744,
+    "p90AbsRelDiff": 0.3153773171427795,
+    "maxAbsRelDiff": 0.7416715727509601
+   }
+  },
+  "netIncome": [
+   {
+    "symbol": "ABT",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 13351000000,
+    "latestVal": 13400000000,
+    "absRelDiff": 0.0036701370683843906
+   },
+   {
+    "symbol": "AD",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -39000000,
+    "latestVal": -39403000,
+    "absRelDiff": 0.010333333333333333
+   },
+   {
+    "symbol": "AEP",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 2967100000,
+    "latestVal": 2967000000,
+    "absRelDiff": 0.0000337029422668599
+   },
+   {
+    "symbol": "ANET",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 2852054000,
+    "latestVal": 2852100000,
+    "absRelDiff": 0.000016128726875437843
+   },
+   {
+    "symbol": "ASPI",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -32422728,
+    "latestVal": -32423000,
+    "absRelDiff": 0.000008389176876171555
+   },
+   {
+    "symbol": "ASST",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -6448042,
+    "latestVal": -21580000,
+    "absRelDiff": 2.346752393982545
+   },
+   {
+    "symbol": "BLKB",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -283172000,
+    "latestVal": -299524000,
+    "absRelDiff": 0.05774582232706624
+   },
+   {
+    "symbol": "CASH",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 166815000,
+    "latestVal": 181541000,
+    "absRelDiff": 0.08827743308455474
+   },
+   {
+    "symbol": "CE",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -1522000000,
+    "latestVal": -1542000000,
+    "absRelDiff": 0.013140604467805518
+   },
+   {
+    "symbol": "CHWY",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 392738000,
+    "latestVal": 392700000,
+    "absRelDiff": 0.00009675661637020099
+   },
+   {
+    "symbol": "CNO",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 404000000,
+    "latestVal": 420800000,
+    "absRelDiff": 0.041584158415841586
+   },
+   {
+    "symbol": "CNTY",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -128170000,
+    "latestVal": -153601000,
+    "absRelDiff": 0.19841616602949208
+   },
+   {
+    "symbol": "CODI",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 12808000,
+    "latestVal": -208861000,
+    "absRelDiff": 17.30707370393504
+   },
+   {
+    "symbol": "CORZ",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -1122420000,
+    "latestVal": -1245289000,
+    "absRelDiff": 0.10946793535396732
+   },
+   {
+    "symbol": "COUR",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -79530000,
+    "latestVal": -79500000,
+    "absRelDiff": 0.0003772161448509996
+   },
+   {
+    "symbol": "CRMD",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -17930020,
+    "latestVal": -17930000,
+    "absRelDiff": 0.0000011154477239846916
+   },
+   {
+    "symbol": "CRWD",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -19271000,
+    "latestVal": -15241000,
+    "absRelDiff": 0.20912251569716153
+   },
+   {
+    "symbol": "CSGP",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 138700000,
+    "latestVal": 139000000,
+    "absRelDiff": 0.0021629416005767843
+   },
+   {
+    "symbol": "D",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 1849000000,
+    "latestVal": 1759000000,
+    "absRelDiff": 0.048674959437533805
+   },
+   {
+    "symbol": "DVN",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 2891000000,
+    "latestVal": 2893000000,
+    "absRelDiff": 0.0006918021445866483
+   },
+   {
+    "symbol": "ELTX",
+    "year": 2022,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -38807000,
+    "latestVal": -28208000,
+    "absRelDiff": 0.2731208287164687
+   },
+   {
+    "symbol": "ELUT",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -53949000,
+    "latestVal": -53949,
+    "absRelDiff": 0.999
+   },
+   {
+    "symbol": "ENTG",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 292787000,
+    "latestVal": 292800000,
+    "absRelDiff": 0.00004440087845430296
+   },
+   {
+    "symbol": "HIND",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -7130000,
+    "latestVal": -1447461,
+    "absRelDiff": 0.7969900420757363
+   },
+   {
+    "symbol": "HUBB",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 776300000,
+    "latestVal": 777500000,
+    "absRelDiff": 0.0015457941517454592
+   },
+   {
+    "symbol": "IFF",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 243000000,
+    "latestVal": 263000000,
+    "absRelDiff": 0.0823045267489712
+   },
+   {
+    "symbol": "ITT",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 518300000,
+    "latestVal": 519900000,
+    "absRelDiff": 0.003087015242137758
+   },
+   {
+    "symbol": "LAD",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 802000000,
+    "latestVal": 796700000,
+    "absRelDiff": 0.006608478802992519
+   },
+   {
+    "symbol": "LII",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 806900000,
+    "latestVal": 811100000,
+    "absRelDiff": 0.005205105961085636
+   },
+   {
+    "symbol": "LILA",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -657000000,
+    "latestVal": -689400000,
+    "absRelDiff": 0.049315068493150684
+   },
+   {
+    "symbol": "LILAK",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -657000000,
+    "latestVal": -689400000,
+    "absRelDiff": 0.049315068493150684
+   },
+   {
+    "symbol": "MOG-B",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 207220000,
+    "latestVal": 208786000,
+    "absRelDiff": 0.007557185599845574
+   },
+   {
+    "symbol": "MPWR",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 1786700000,
+    "latestVal": 1592058000,
+    "absRelDiff": 0.1089393854592265
+   },
+   {
+    "symbol": "NEOG",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -1092044000,
+    "latestVal": -1092000000,
+    "absRelDiff": 0.00004029141682935852
+   },
+   {
+    "symbol": "PAG",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 918900000,
+    "latestVal": 968900000,
+    "absRelDiff": 0.054412884971161174
+   },
+   {
+    "symbol": "PH",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 2844215000,
+    "latestVal": 2844000000,
+    "absRelDiff": 0.00007559203506064063
+   },
+   {
+    "symbol": "PRIM",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 180888000,
+    "latestVal": 180900000,
+    "absRelDiff": 0.00006633939233116624
+   },
+   {
+    "symbol": "QXO",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": -23031000,
+    "latestVal": -23000000,
+    "absRelDiff": 0.00134601189700838
+   },
+   {
+    "symbol": "ROK",
+    "year": 2024,
+    "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+    "earliestVal": 948200000,
+    "latestVal": 948000000,
+    "absRelDiff": 0.0002109259649862898
+   },
+   {
+    "symbol": "SERV",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": -39191052,
+    "latestVal": -39191000,
+    "absRelDiff": 0.0000013268334822959078
+   },
+   {
+    "symbol": "STE",
+    "year": 2024,
+    "tag": "NetIncomeLoss",
+    "earliestVal": 614641000,
+    "latestVal": 614600000,
+    "absRelDiff": 0.0000667056053859082
+   }
+  ],
+  "equity": [
+   {
+    "symbol": "AD",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 4577000000,
+    "latestVal": 4576706000,
+    "absRelDiff": 0.00006423421455101595
+   },
+   {
+    "symbol": "AEIS",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 1203171000,
+    "latestVal": 1203100000,
+    "absRelDiff": 0.00005901073081049992
+   },
+   {
+    "symbol": "AEP",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 26943800000,
+    "latestVal": 26944000000,
+    "absRelDiff": 0.000007422857948767435
+   },
+   {
+    "symbol": "AES",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 3175000000,
+    "latestVal": 3644000000,
+    "absRelDiff": 0.14771653543307087
+   },
+   {
+    "symbol": "ANET",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 9994807000,
+    "latestVal": 9994800000,
+    "absRelDiff": 7.003636988688226e-7
+   },
+   {
+    "symbol": "ASPI",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 47898492,
+    "latestVal": 47899000,
+    "absRelDiff": 0.000010605761868244203
+   },
+   {
+    "symbol": "ASST",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 2786571,
+    "latestVal": 23342000,
+    "absRelDiff": 7.3766033594693985
+   },
+   {
+    "symbol": "BLKB",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 141993000,
+    "latestVal": 126839000,
+    "absRelDiff": 0.10672357088025466
+   },
+   {
+    "symbol": "BZAI",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": -23361003,
+    "latestVal": -110463000,
+    "absRelDiff": 3.728521288234071
+   },
+   {
+    "symbol": "CASH",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 839882000,
+    "latestVal": 822466000,
+    "absRelDiff": 0.020736246282215834
+   },
+   {
+    "symbol": "CE",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 5175000000,
+    "latestVal": 5129000000,
+    "absRelDiff": 0.008888888888888889
+   },
+   {
+    "symbol": "CHWY",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 261459000,
+    "latestVal": 261500000,
+    "absRelDiff": 0.00015681234916373123
+   },
+   {
+    "symbol": "CNO",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 2498400000,
+    "latestVal": 2515200000,
+    "absRelDiff": 0.0067243035542747355
+   },
+   {
+    "symbol": "CNTY",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": -9300000,
+    "latestVal": -34731000,
+    "absRelDiff": 2.734516129032258
+   },
+   {
+    "symbol": "CODI",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 1296793000,
+    "latestVal": 678620000,
+    "absRelDiff": 0.47669365889544435
+   },
+   {
+    "symbol": "CODX",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 54311918,
+    "latestVal": 53875157,
+    "absRelDiff": 0.008041715632285349
+   },
+   {
+    "symbol": "CORZ",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": -820180000,
+    "latestVal": -943049000,
+    "absRelDiff": 0.14980735936014045
+   },
+   {
+    "symbol": "COUR",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 597420000,
+    "latestVal": 597400000,
+    "absRelDiff": 0.00003347728566167855
+   },
+   {
+    "symbol": "CRBP",
+    "year": 2022,
+    "tag": "StockholdersEquity",
+    "earliestVal": 32990017,
+    "latestVal": 32990000,
+    "absRelDiff": 5.153074034487463e-7
+   },
+   {
+    "symbol": "CRMD",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 84656950,
+    "latestVal": 84657000,
+    "absRelDiff": 5.9061896276679e-7
+   },
+   {
+    "symbol": "CSGP",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 7553500000,
+    "latestVal": 7553000000,
+    "absRelDiff": 0.00006619447938041967
+   },
+   {
+    "symbol": "CSR",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 653900000,
+    "latestVal": 751988000,
+    "absRelDiff": 0.15000458785747056
+   },
+   {
+    "symbol": "CYN",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 11593650,
+    "latestVal": -1047916,
+    "absRelDiff": 1.090387065333178
+   },
+   {
+    "symbol": "D",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 27253000000,
+    "latestVal": 26863000000,
+    "absRelDiff": 0.014310351154001394
+   },
+   {
+    "symbol": "ELTX",
+    "year": 2022,
+    "tag": "StockholdersEquity",
+    "earliestVal": 43772000,
+    "latestVal": -102145000,
+    "absRelDiff": 3.33356940509915
+   },
+   {
+    "symbol": "ENTG",
+    "year": 2024,
+    "tag": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+    "earliestVal": 3691504000,
+    "latestVal": 3691500000,
+    "absRelDiff": 0.0000010835691902270727
+   },
+   {
+    "symbol": "FLD",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": -8322918,
+    "latestVal": -67808929,
+    "absRelDiff": 7.1472542442446265
+   },
+   {
+    "symbol": "HUBB",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 3268300000,
+    "latestVal": 3396200000,
+    "absRelDiff": 0.03913349447725117
+   },
+   {
+    "symbol": "IFF",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 13876000000,
+    "latestVal": 13834000000,
+    "absRelDiff": 0.003026808878639377
+   },
+   {
+    "symbol": "ITT",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 2762600000,
+    "latestVal": 2778800000,
+    "absRelDiff": 0.005864041120683414
+   },
+   {
+    "symbol": "LAD",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 6655500000,
+    "latestVal": 6650200000,
+    "absRelDiff": 0.0007963338592141837
+   },
+   {
+    "symbol": "LII",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 850200000,
+    "latestVal": 962100000,
+    "absRelDiff": 0.13161609033168667
+   },
+   {
+    "symbol": "LILA",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 1121000000,
+    "latestVal": 1088600000,
+    "absRelDiff": 0.028902765388046387
+   },
+   {
+    "symbol": "LILAK",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 1121000000,
+    "latestVal": 1088600000,
+    "absRelDiff": 0.028902765388046387
+   },
+   {
+    "symbol": "LLY",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 14192100000,
+    "latestVal": 14272000000,
+    "absRelDiff": 0.005629892686776446
+   },
+   {
+    "symbol": "MOG-B",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 1860633000,
+    "latestVal": 1806040000,
+    "absRelDiff": 0.029341089833406157
+   },
+   {
+    "symbol": "MPWR",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 3145767000,
+    "latestVal": 3073629000,
+    "absRelDiff": 0.02293176830960462
+   },
+   {
+    "symbol": "NEOG",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 2071254000,
+    "latestVal": 2071200000,
+    "absRelDiff": 0.00002607116268695196
+   },
+   {
+    "symbol": "PAG",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 5209800000,
+    "latestVal": 5401000000,
+    "absRelDiff": 0.036700065261622325
+   },
+   {
+    "symbol": "PH",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 12071972000,
+    "latestVal": 12072000000,
+    "absRelDiff": 0.0000023194222120462174
+   },
+   {
+    "symbol": "PRIM",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 1409533000,
+    "latestVal": 1409500000,
+    "absRelDiff": 0.000023412009509532588
+   },
+   {
+    "symbol": "QXO",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 5052899000,
+    "latestVal": 5052900000,
+    "absRelDiff": 1.9790619206914683e-7
+   },
+   {
+    "symbol": "ROK",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 3498300000,
+    "latestVal": 3498000000,
+    "absRelDiff": 0.00008575593859874797
+   },
+   {
+    "symbol": "SERV",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 131680914,
+    "latestVal": 131681000,
+    "absRelDiff": 6.530938872432188e-7
+   },
+   {
+    "symbol": "STE",
+    "year": 2024,
+    "tag": "StockholdersEquity",
+    "earliestVal": 6603405000,
+    "latestVal": 6603400000,
+    "absRelDiff": 7.571851188894215e-7
+   }
+  ],
+  "revenue": [
+   {
+    "symbol": "AEIS",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 1482042000,
+    "latestVal": 1482000000,
+    "absRelDiff": 0.00002833927783423142
+   },
+   {
+    "symbol": "AEP",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 19721300000,
+    "latestVal": 19721000000,
+    "absRelDiff": 0.000015211978926338527
+   },
+   {
+    "symbol": "ANET",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 7003146000,
+    "latestVal": 7003100000,
+    "absRelDiff": 0.0000065684765104140335
+   },
+   {
+    "symbol": "APP",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 4709248000,
+    "latestVal": 3224058000,
+    "absRelDiff": 0.3153773171427795
+   },
+   {
+    "symbol": "ASPI",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 4144226,
+    "latestVal": 4144000,
+    "absRelDiff": 0.00005453370544946149
+   },
+   {
+    "symbol": "BLFS",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+    "earliestVal": 82254000,
+    "latestVal": 74647000,
+    "absRelDiff": 0.0924818245921171
+   },
+   {
+    "symbol": "BLKB",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 1155495000,
+    "latestVal": 1154624000,
+    "absRelDiff": 0.0007537895014690674
+   },
+   {
+    "symbol": "BTSG",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 11266472000,
+    "latestVal": 10072214000,
+    "absRelDiff": 0.10600106226687467
+   },
+   {
+    "symbol": "C",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 81139000000,
+    "latestVal": 80722000000,
+    "absRelDiff": 0.005139328806122826
+   },
+   {
+    "symbol": "CARG",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 894384000,
+    "latestVal": 798044000,
+    "absRelDiff": 0.10771659600350632
+   },
+   {
+    "symbol": "CASH",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 754705000,
+    "latestVal": 797412000,
+    "absRelDiff": 0.0565876733293141
+   },
+   {
+    "symbol": "CASS",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 127251000,
+    "latestVal": 109929000,
+    "absRelDiff": 0.13612466699672301
+   },
+   {
+    "symbol": "CBRE",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 35103000000,
+    "latestVal": 35181000000,
+    "absRelDiff": 0.0022220323049312023
+   },
+   {
+    "symbol": "CE",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 10280000000,
+    "latestVal": 10268000000,
+    "absRelDiff": 0.0011673151750972762
+   },
+   {
+    "symbol": "CHWY",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 11861335000,
+    "latestVal": 11861300000,
+    "absRelDiff": 0.0000029507639738697206
+   },
+   {
+    "symbol": "CODI",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 2198233000,
+    "latestVal": 1788013000,
+    "absRelDiff": 0.18661352095069084
+   },
+   {
+    "symbol": "COUR",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 694674000,
+    "latestVal": 694700000,
+    "absRelDiff": 0.00003742762792331367
+   },
+   {
+    "symbol": "CPRI",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 4442000000,
+    "latestVal": 3621000000,
+    "absRelDiff": 0.18482665466006304
+   },
+   {
+    "symbol": "CRMD",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 43472170,
+    "latestVal": 43472000,
+    "absRelDiff": 0.000003910547828645315
+   },
+   {
+    "symbol": "CSGP",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 2736200000,
+    "latestVal": 2736000000,
+    "absRelDiff": 0.00007309407207075506
+   },
+   {
+    "symbol": "DAN",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 10284000000,
+    "latestVal": 7734000000,
+    "absRelDiff": 0.24795799299883314
+   },
+   {
+    "symbol": "DD",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 12386000000,
+    "latestVal": 6719000000,
+    "absRelDiff": 0.4575326982076538
+   },
+   {
+    "symbol": "ELUT",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+    "earliestVal": 24375000,
+    "latestVal": 14467000,
+    "absRelDiff": 0.4064820512820513
+   },
+   {
+    "symbol": "ENSG",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 4260485000,
+    "latestVal": 4237525000,
+    "absRelDiff": 0.005389057818534744
+   },
+   {
+    "symbol": "ENTG",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 3241208000,
+    "latestVal": 3241200000,
+    "absRelDiff": 0.0000024682155542007797
+   },
+   {
+    "symbol": "FTV",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 6231800000,
+    "latestVal": 4080900000,
+    "absRelDiff": 0.34514907410379025
+   },
+   {
+    "symbol": "GPN",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 10105894000,
+    "latestVal": 7735970000,
+    "absRelDiff": 0.23450908944819726
+   },
+   {
+    "symbol": "HGTY",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 548756000,
+    "latestVal": 548631000,
+    "absRelDiff": 0.00022778794218195335
+   },
+   {
+    "symbol": "HON",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 38498000000,
+    "latestVal": 34717000000,
+    "absRelDiff": 0.09821289417632084
+   },
+   {
+    "symbol": "IP",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 18619000000,
+    "latestVal": 15835000000,
+    "absRelDiff": 0.14952467909125086
+   },
+   {
+    "symbol": "KMB",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 20058000000,
+    "latestVal": 16805000000,
+    "absRelDiff": 0.1621796789310998
+   },
+   {
+    "symbol": "LEVI",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 6355300000,
+    "latestVal": 6032000000,
+    "absRelDiff": 0.05087092662816862
+   },
+   {
+    "symbol": "LILA",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+    "earliestVal": 4456900000,
+    "latestVal": 4446800000,
+    "absRelDiff": 0.0022661491170993292
+   },
+   {
+    "symbol": "LILAK",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+    "earliestVal": 4456900000,
+    "latestVal": 4446800000,
+    "absRelDiff": 0.0022661491170993292
+   },
+   {
+    "symbol": "LLY",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 45042700000,
+    "latestVal": 45043000000,
+    "absRelDiff": 0.0000066603467376511625
+   },
+   {
+    "symbol": "LYB",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 40302000000,
+    "latestVal": 33394000000,
+    "absRelDiff": 0.17140588556399186
+   },
+   {
+    "symbol": "MLM",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 6536000000,
+    "latestVal": 5662000000,
+    "absRelDiff": 0.13372093023255813
+   },
+   {
+    "symbol": "MOG-B",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 3609160000,
+    "latestVal": 3608960000,
+    "absRelDiff": 0.00005541455629564774
+   },
+   {
+    "symbol": "NEOG",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 894661000,
+    "latestVal": 894700000,
+    "absRelDiff": 0.000043591930351272716
+   },
+   {
+    "symbol": "NKSH",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerIncludingAssessedTax",
+    "earliestVal": 7474000,
+    "latestVal": 7446000,
+    "absRelDiff": 0.0037463205780037465
+   },
+   {
+    "symbol": "NWSA",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 10085000000,
+    "latestVal": 8252000000,
+    "absRelDiff": 0.18175508180466038
+   },
+   {
+    "symbol": "OC",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 10975000000,
+    "latestVal": 9851000000,
+    "absRelDiff": 0.10241457858769931
+   },
+   {
+    "symbol": "OXY",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 27413000000,
+    "latestVal": 22710000000,
+    "absRelDiff": 0.17156093824098056
+   },
+   {
+    "symbol": "PAG",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 30455200000,
+    "latestVal": 31864800000,
+    "absRelDiff": 0.04628437836559931
+   },
+   {
+    "symbol": "PH",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 19929606000,
+    "latestVal": 19930000000,
+    "absRelDiff": 0.00001976958300128964
+   },
+   {
+    "symbol": "PRG",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 2463496000,
+    "latestVal": 2399081000,
+    "absRelDiff": 0.02614779971227881
+   },
+   {
+    "symbol": "PRIM",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 6366838000,
+    "latestVal": 6366800000,
+    "absRelDiff": 0.000005968425771159876
+   },
+   {
+    "symbol": "QXO",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 56873000,
+    "latestVal": 56900000,
+    "absRelDiff": 0.0004747419689483586
+   },
+   {
+    "symbol": "ROK",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 8264200000,
+    "latestVal": 8264000000,
+    "absRelDiff": 0.000024200769584472787
+   },
+   {
+    "symbol": "SERV",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 1812483,
+    "latestVal": 1813000,
+    "absRelDiff": 0.0002852440547028579
+   },
+   {
+    "symbol": "STE",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 5459515000,
+    "latestVal": 5459500000,
+    "absRelDiff": 0.000002747496801455807
+   },
+   {
+    "symbol": "THC",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 20665000000,
+    "latestVal": 20675000000,
+    "absRelDiff": 0.0004839099927413501
+   },
+   {
+    "symbol": "TKO",
+    "year": 2024,
+    "tag": "Revenues",
+    "earliestVal": 2804341000,
+    "latestVal": 4884241000,
+    "absRelDiff": 0.7416715727509601
+   },
+   {
+    "symbol": "VSEC",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 1080132000,
+    "latestVal": 786256000,
+    "absRelDiff": 0.27207415389970857
+   },
+   {
+    "symbol": "WDC",
+    "year": 2024,
+    "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+    "earliestVal": 13003000000,
+    "latestVal": 6317000000,
+    "absRelDiff": 0.5141890333000076
+   }
+  ],
+  "citiRevenue": {
+   "symbol": "C",
+   "year": 2024,
+   "tag": "Revenues",
+   "earliestVal": 81139000000,
+   "latestVal": 80722000000,
+   "absRelDiff": 0.005139328806122826
+  }
+ }
+}
