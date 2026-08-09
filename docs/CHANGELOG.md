@@ -1,6 +1,24 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (120) — 🟨 **STEP 951 부속: push(`c895917`) + 정정 4건 — 새 창 첫 실행일·스냅샷 원인·순환속도 추정 철회**
+
+> **성격**: push 확인 + 문서 정정(사실 등재, 판정 없음). **코드 무변경**·DB 무변경·크론 미호출.
+
+**push** — `c895917`을 main·revdcf-preview 두 브랜치에 push, `git ls-remote`로 HEAD 일치 확인.
+
+**정정 근거(Cowork DB 직접 조회를 Claude Code가 독립 재확인)**: `us_fundamentals.fetched_at` 시간대 집계 = 12시대(UTC) 404행·22시대 723행(404+723=1,127, 실측 일치) · 22시대 723행 중 669행(92.5%)이 `fiscal_year=2024` · `revdcf_results as_of=2026-08-08` 604행 전부 `flags.yearWindow` 없음(0건) · `as_of=2026-08-09` 행 0건(직접 재조회 확인) · `vercel.json` 크론 스케줄 `"45 22 * * *"`(22:45 UTC) 확인.
+
+**정정① — 스냅샷 행수 원인**: "947 이후 유니버스 확장 추정"을 철회 — 실제 원인은 12시대(STEP 948 수동실행, 404행="1,003"의 출처) + 22시대(정규크론 1회분, 723행) 두 배치의 합. 스냅샷 자체는 유효(1,127행 전부 951 이전/옛 코드 산출물), 재확보 불필요. `docs/CHANGELOG.md`(119)·`docs/STEP_LEDGER.md`(951 부속 행) 갱신.
+
+**정정② — 새 창 첫 실행일**: `2026-08-08 22:45 UTC`(=`2026-08-09 07:45 KST`) 크론은 push·배포(`2026-08-09 06:34 UTC`)보다 **먼저** 돌아 옛 코드로 실행됐다 — `fiscal_year` 92.5%가 2024인 것이 증거. **새 창의 첫 실행 = `2026-08-09 22:45 UTC`(=`2026-08-10 07:45 KST`)**, `revdcf_results as_of='2026-08-09'`로 쓰인다(코드가 UTC 캘린더 날짜를 그대로 씀 — KST로 보이는 "다음날"과 `as_of` 값이 어긋나므로 확인 시점 문구만 하루 늦추고 `as_of` 필터 값 자체는 원래 맞았다). `docs/STATE.md`("STEP 951 적용 직후 확인" 머리말)·`docs/REVDCF_SPEC.md`(§10 적용 경계 못박기)·`docs/VALUATION_SPEC.md`(Q1 적용 경계) 3곳 갱신.
+
+**정정③ — 「3일 순환」 철회, 그런데 그 문구 자체가 없었다**: 🔴 `docs/VALUATION_SPEC.md`·`STATE.md`·`CHANGELOG.md`(+ 참고로 `REVDCF_SPEC.md`도) 4개 파일 전수 grep — "3일 순환"·"3일이면 전량" 문구가 어디에도 존재하지 않았다. STEP 947 §4는 "나머지는 `fetched_at` 오래된 순 자동 순환"이라고만 적었을 뿐 구체 일수를 문서에 남긴 적이 없다 — 그 숫자는 아마 대화(비영속) 중에만 언급됐을 것. 문구를 찾아 지우는 대신 **정확한 실측을 새로 기록**: `us_fundamentals` 순증 하루 약 124건(1,003→1,127) · 이 속도면 5,497 전량까지 **약 35일**(단일 관측치 외삽, 정밀 아님) · 크론이 쓴 723행 중 대부분은 역DCF 604 매일 재처리 몫이라 "나머지" 순증은 이보다 적음. `docs/VALUATION_SPEC.md`에 추가.
+
+**처방 후보(판정 없음, 장은태 대기)**: ① 역DCF 604를 매일 전량 대신 격일/주간으로 ② 크론 예산(`BUDGET_MS=270,000ms`) 여유 확인 먼저(실행 22:52~22:56 UTC ≈ 4분 vs 예산 4.5분 — 여유 있는지는 이 1회 관측만으로 판단 불가, Runtime Logs 1시간 보존 제약으로 정확한 종료·타임아웃 여부 미확인).
+
+**무변경** — `lib/`·`app/`·`components/`·`messages/` 코드 diff 0 · DB 쓰기 0 · 크론 호출 0.
+
 ## 2026-08-08 (119) — 🟦 **STEP 951 부속: us_fundamentals 옛 창 스냅샷 확보(pre_step951)**
 
 > **성격**: DB 신규 테이블 + 데이터 복사(읽기 전용 소스, 기존 테이블 무수정). **코드 무변경**·크론 미호출·`revdcf_results`/`us_market_cap`/`lens_scores`/`lens_cuts` 무접촉.
@@ -9,7 +27,9 @@
 
 **테이블** — `supabase/migrations/20260809_us_fundamentals_snapshot.sql` 신규: `us_fundamentals_snapshot(snapshot_tag, symbol, cik, fiscal_year, net_income, equity, revenue, operating_income, dna, debt, non_operating_assets, shares, source_tags, unavailable_reason, fetched_at, captured_at, PK(snapshot_tag, symbol))`. 🔴 날짜를 테이블명에 안 박음(규칙 5-2) — `snapshot_tag` 컬럼으로 시점 구분, 다른 시점 스냅샷도 같은 표에 얹을 수 있게 열어둠. RLS = `us_fundamentals`와 동일 패턴 그대로 확인 후 적용(RLS on·정책 0개·`anon`/`authenticated` 권한 0·`postgres`/`service_role`만 — 두 테이블의 `pg_class.relrowsecurity`·`information_schema.role_table_grants` 직접 대조로 일치 확인).
 
-**복사** — `INSERT INTO ... SELECT ... FROM us_fundamentals`로 전 컬럼(`source_tags`·`unavailable_reason` 포함) `snapshot_tag='pre_step951'`로 복사. **검증 3항목 전부 통과**: 행수 1,127=1,127 일치(🔴 사용자가 언급한 "1,003"과 다름 — 실측 현재값은 1,127. 947~948 이후 fundamentals 유니버스가 계속 넓어져 갱신된 것으로 추정, 확인은 이 STEP 범위 밖) · symbol 집합 양방향 차집합 0(`EXCEPT` 양쪽 0건) · 결정적 5종목(사전순 A·AA·AAL·AAPL·ABBV) `net_income`·`equity`·`revenue`·`operating_income`·`dna`·`fiscal_year`·`source_tags` 전 필드 완전 일치.
+**복사** — `INSERT INTO ... SELECT ... FROM us_fundamentals`로 전 컬럼(`source_tags`·`unavailable_reason` 포함) `snapshot_tag='pre_step951'`로 복사. **검증 3항목 전부 통과**: 행수 1,127=1,127 일치(🔴 사용자가 언급한 "1,003"과 다름 — 실측 현재값은 1,127) · symbol 집합 양방향 차집합 0(`EXCEPT` 양쪽 0건) · 결정적 5종목(사전순 A·AA·AAL·AAPL·ABBV) `net_income`·`equity`·`revenue`·`operating_income`·`dna`·`fiscal_year`·`source_tags` 전 필드 완전 일치.
+
+🔴 **정정(2026-08-08, Cowork DB 직접 조회 — Claude Code 독립 재확인 완료)**: 원인은 유니버스 확장이 아니었다. `us_fundamentals.fetched_at`을 시간대별로 집계하면 **2026-08-08 12시대 404행**(STEP 948의 수동 크론 실행 직후 값 — 명령서가 인용한 "1,003"은 이 시점 값) + **22시대 723행**(정규 크론, `vercel.json` 스케줄 `"45 22 * * *"` = 22:45 UTC 1회분)으로 정확히 갈린다(404+723=1,127). 🔴 **이 22시대 배치는 옛 코드로 실행됐다** — `fiscal_year` 분포가 723행 중 **669행(92.5%)이 2024**(그 외 null 49·2022 3·2023 2)로, `resolveYearWindow` 적용 후라면 종목별로 갈렸어야 할 값이 옛 고정창 그대로다. 이는 이 크론이 STEP 951 코드 배포(2026-08-09 06:34 UTC)보다 **먼저**(2026-08-08 22:45 UTC) 돌았기 때문 — 순서상 당연하다. **스냅샷 자체는 유효하다** — 1,127행 전부 951 적용 이전(옛 코드) 산출물이며 `pre_step951` 태그가 정확히 그 경계를 가리킨다. 다시 뜰 필요 없음. 상세 = §"새 창 적용 시점 정정" 아래.
 
 **문서** — `docs/STATE.md`(스냅샷 확보 완료 표시 + 익일 확인 항목 ⑦ 추가: fiscal_year 상승 종목의 net_income·equity·revenue 변화폭을 snapshot(before) vs us_fundamentals(after)로 산출) · `docs/VALUATION_SPEC.md`(스냅샷 존재·목적 한 줄).
 
