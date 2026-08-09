@@ -1098,6 +1098,24 @@
       "overCap": "Unexplained"
     }
   },
+  "Q1": {
+    "sectionTitle": "Valuation vs. sector",
+    "headline": "More expensive than {pct}% of the {n} peers in this sector.",
+    "axis": {
+      "per": "P/E",
+      "pbr": "P/B",
+      "psr": "P/S",
+      "evEbitda": "EV/EBITDA"
+    },
+    "sampleNote": "Sample: {n} peers",
+    "fiscalYearNote": "Based on fiscal year {year}",
+    "sectorSourceNote": "{sector} sector, source: {source}",
+    "unavailable": {
+      "noSector": "We could not determine the sector for this stock.",
+      "noValue": "This metric cannot be computed for this stock (for example, negative earnings).",
+      "sampleTooSmall": "Fewer than 20 peers are available for comparison."
+    }
+  },
   "RevDcfMethod": {
     "title": "Reverse-DCF methodology",
     "intro": "This metric decodes the expectations already priced into the stock. It does not set a fair value — it surfaces the growth period the market demands and leaves the judgment to you.",

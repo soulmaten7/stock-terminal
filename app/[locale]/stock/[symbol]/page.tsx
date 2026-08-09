@@ -18,6 +18,8 @@ import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
 import RevDcfSection from "@/components/RevDcfSection";
 import { revdcfEnabled } from "@/lib/revdcf/flag";
+import Q1Section from "@/components/Q1Section";
+import { q1Enabled } from "@/lib/q1/flag";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -172,6 +174,14 @@ export default async function StockPage({ params }: Params) {
       ) : (
         <>
           <StockLensClient initialName={h1Name} />
+          {/* Q1 카드 — 🔴 STEP 957: 피처 플래그(기본 OFF) 뒤. 서버 분기라 OFF면 클라로 안 내려감. 장은태 육안 승인 후 ON. */}
+          {q1Enabled() && (
+            <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">
+              <div className="max-w-4xl">
+                <Q1Section symbol={symbol} />
+              </div>
+            </div>
+          )}
           {/* 역DCF 섹션 — 🔴 STEP 854: 피처 플래그(기본 OFF) 뒤. 서버 분기라 OFF면 클라로 안 내려감. 장은태 육안 승인 후 ON. */}
           {revdcfEnabled() && (
             <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">

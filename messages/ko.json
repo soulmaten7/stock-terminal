@@ -1098,6 +1098,24 @@
       "overCap": "설명 불가"
     }
   },
+  "Q1": {
+    "sectionTitle": "업종 대비 밸류에이션",
+    "headline": "이 업종 {n}개 중 비싼 쪽 {pct}%",
+    "axis": {
+      "per": "PER",
+      "pbr": "PBR",
+      "psr": "PSR",
+      "evEbitda": "EV/EBITDA"
+    },
+    "sampleNote": "표본 {n}개",
+    "fiscalYearNote": "{year}년 실적 기준",
+    "sectorSourceNote": "{sector} 업종 · 출처: {source}",
+    "unavailable": {
+      "noSector": "업종을 확정하지 못했습니다.",
+      "noValue": "이 종목은 이 지표를 낼 수 없습니다(적자·자본잠식 등).",
+      "sampleTooSmall": "비교할 종목이 20개 미만입니다."
+    }
+  },
   "RevDcfMethod": {
     "title": "역DCF 방법론",
     "intro": "이 지표는 주가에 이미 박힌 기대를 거꾸로 계산합니다. 적정주가를 매기지 않고, 시장이 요구하는 성장 기간을 숫자로 꺼내 판단은 당신에게 넘깁니다.",
