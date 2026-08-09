@@ -99,6 +99,12 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 **미분류 90종목 전수**(`docs/probe_952_sector_wide_step1.json` 참조): 대부분 소형주·클로즈드엔드펀드(`BME`·`CII`·`CIK`·`CRF`·`DHY`·`FLC` 등)·해외 ADR. `AKO-A`/`AKO-B`처럼 구두점이 있는데도 형제매칭에 안 걸린 케이스 포함(2순위는 Damodaran 내부 형제만 봄 — SPDR/야후에 없고 Damodaran에도 없으면 3개 tier 전부 실패).
 
+🔴 **미분류 = 재료 부재가 아니다(2026-08-09 실측, `docs/probe_952b_unclassified.json`).** 90건 중 `us_cik_map` 90건(100%) 존재. **아래 두 수치는 Cowork이 먼저 제시한 값(damodaran 53건/58.9%·nasdaq 88건/97.8%)을 Claude Code가 Supabase 직접 재조회로 독립 재검증해 다르게 나온 결과다 — 원 수치를 정정한다**(90종목 모집단 자체·사전순 표본 20개는 재현 일치 확인됨):
+- `damodaran_industry`: 정규화 매칭 시 **29건(32.2%)**에 실제로 행이 존재(원 보고 53건은 `ticker_norm`이 여러 나라 기업에 중복 매핑돼 부풀려진 JOIN 행수였다 — 서로 다른 심볼 기준으로 세면 29건). 그중 `is_us_listed=true` 행을 가진 것은 **1건뿐**(`RAYA` — 미국 상장 중국기업, `primary_sector="Industrials"`). 🔴 그 1건조차 여전히 미분류로 남아 있다 — `resolveSector` tier-1이 왜 이 명백한 매치를 놓쳤는지는 이 STEP에서 원인을 규명하지 못했다(추가 조사 필요).
+- `us_sector_nasdaq`: 원시 존재 **90건(100%)**이나, `resolveSector`는 나스닥을 분류 tier로 쓰지 않는다(`crossCheck` 전용) — 5순위로 새로 추가할 경우 실제로 쓸 수 있는 건 `NASDAQ_TO_GICS` 매핑 성공분(`Miscellaneous`·결측 제외)뿐이며 그 수는 **79건(87.8%)**이다(원 보고 88건과도 다름, 집계 방식 차이로 추정·미확인).
+
+🔑 **질적 결론은 유지된다** — 미분류가 "정보 자체가 없어서"가 아니라 **있는데 안 붙는** 경우가 최소 29건(damodaran) 존재한다. 다만 규모는 원 보고보다 작다(53→29). `ⓐ(damodaran tier 조사)가 ⓑ(나스닥 5순위 추가)보다 먼저`라는 순서 판단은 바뀌지 않지만, ⓐ 조사 시 정확한 건수를 다시 실측해야 한다.
+
 **미성립 조건 전수** — `unavailableWhen` 그대로 3가지: ① `sector == null`(위 미분류 90종목) ② 축 값 자체가 없음(`us_valuation.unavailable`에 사유 있음 — `NEGATIVE_EARNINGS`·`MISSING_NET_INCOME` 등, `lib/valuation.ts` 기존 정의) ③ 업종 내 유효 표본 < `minSample`(아직 미정, 아래 재료 참조).
 
 ### 🔴 minSample 재료(숫자는 고르지 않았다 — 장은태 판정 재료만)

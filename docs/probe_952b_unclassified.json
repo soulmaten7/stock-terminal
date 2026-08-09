@@ -1,0 +1,26 @@
+{
+  "measuredAt": "2026-08-09",
+  "purpose": "STEP 952 미분류 90건이 '재료 부재'가 아니라는 실측. Cowork이 먼저 제시한 수치(damodaran 53건/58.9%·nasdaq 88건/97.8%)를 Claude Code가 Supabase 직접 재조회로 독립 재검증한 결과, 두 수치 모두 다르게 나왔다(아래). 원 수치를 그대로 쓰지 않고 정정한다.",
+  "unclassifiedCount": 90,
+  "cowork_reported": {
+    "us_cik_map": "90건 (100%)",
+    "us_sector_nasdaq": "88건 (97.8%)",
+    "damodaran_industry": "53건 (58.9%)"
+  },
+  "claude_code_reverified": {
+    "us_cik_map": { "n": 90, "pct": 1.0, "note": "일치 — 정확히 90/90" },
+    "us_sector_nasdaq": {
+      "rawPresence_n": 90, "rawPresence_pct": 1.0,
+      "gicsMappable_n": 79, "gicsMappable_pct": 0.878,
+      "note": "raw presence(심볼 존재)는 90/90(100%)로 Cowork 수치(88)보다 높다. 단 resolveSector는 nasdaq을 실제 분류 tier로 쓰지 않는다(crossCheck 전용) — 5순위로 새로 추가할 때 실제로 쓸 수 있는 수는 NASDAQ_TO_GICS 매핑 성공분(Miscellaneous·null 제외) = 79/90(87.8%). Cowork의 88(97.8%)과도 다르다 — 원인 미확인, 집계 방식 차이로 추정."
+    },
+    "damodaran_industry": {
+      "anyRow_n": 29, "anyRow_pct": 0.322,
+      "isUsListedTrue_n": 1, "isUsListedTrue_pct": 0.011,
+      "note": "🔴 Cowork 수치(53건/58.9%)와 크게 다르다. 원인 규명: raw JOIN(정규화 매칭)의 행 수는 54건이었으나 damodaran_industry의 ticker_norm이 유일하지 않아(한 정규화 티커에 여러 나라/기업이 매핑) 행 카운트가 부풀려진다 — 실제 '매칭되는 서로 다른 unclassified 심볼'은 29개뿐. 그중 is_us_listed=true 행을 가진 것은 1개(RAYA)뿐이고, 그 RAYA조차 여전히 미분류로 남아 있다(resolveSector tier-1이 왜 못 잡았는지는 별도 원인 — RAYA의 ticker_norm='RAYA'가 damodaran_industry에 3행(미국 상장 중국기업 true 1건 + 이집트 false 1건 + 캐나다 RAY.A false 1건)으로 존재, is_us_listed=true 행이 정확히 하나뿐인데도 미분류 — 추가 조사 필요, 이 STEP에서 원인 미규명)."
+    }
+  },
+  "sampleFirst20_confirmed": ["ADAC","ADAG","ADIG","AERO","AESP","AKO-A","AKO-B","AKTS","AKTX","ALAR","ALM","ALMR","ALOV","ALOY","ALPX","AMRN","AMSS","AMTD","AOD","API"],
+  "sampleFirst20_note": "Cowork이 제시한 사전순 표본 20개와 정확히 일치(재현 확인됨) — 90종목 모집단 자체는 맞다. 불일치는 damodaran/nasdaq 매칭 집계 방식에서만 발생했다.",
+  "conclusion": "미분류가 '재료 부재'가 아니라는 원 결론(질적)은 유지된다 — damodaran_industry에 29건(32.2%)이 실재하고 그중 최소 1건(RAYA)은 is_us_listed=true인데도 안 붙었다. 다만 규모(정량)는 Cowork 원보고보다 작다. ⓐ(damodaran tier 조사)가 여전히 ⓑ보다 우선이라는 순서 판단은 바뀌지 않는다 — 버그 존재 가능성의 방향은 동일하고, 정확한 건수는 ⓐ 조사에서 다시 실측해야 한다."
+}
