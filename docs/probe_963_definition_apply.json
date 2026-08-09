@@ -1,0 +1,269 @@
+{
+ "step": 963,
+ "measuredAt": "2026-08-09",
+ "purpose": "Q1 4축 정의 확정 실행 — PER·PBR을 보통주 기준으로. §1 태그존재율 → §2 코드변경 → §3 영향실측(메모리) → §4 적재.",
+ "preflight": {
+  "claim": "역DCF driver(salesGrowth·operatingMargin 등)는 net_income·equity를 안 쓴다.",
+  "verified": "코드 직접 확인 — DriverFundamentals(netIncome·equity·commonEquity 등)는 DriverBundle(driver 계산 결과)과 완전히 분리된 구조체. lib/revdcf/engine.ts·compute.ts는 dr.fundamentals를 참조하지 않음(grep 확인). fundamentalsRow()(route.ts, Q1 전용)만 dr.fundamentals를 읽는다.",
+  "result": "확인됨 — 착수 진행."
+ },
+ "step1_tagExistenceRate": {
+  "sampleConstruction": "시총 상위 100(대형 은행 포함 목적) + 심볼 사전순 100(962와 동일 방법, 대조용) — 중복 제외 190개 목표, 캐시 부재로 SEC 신규조회 후 실제 156종목에서 값매칭 성공(no_cache=0, 나머지는 us_fundamentals.equity가 null이라 애초 비교대상 아님).",
+  "financialsInSample": "190종목 중 us_sector_wide 기준 Financials 19개(10.0%) — 962의 알파벳전용 표본(2/100)보다 훨씬 대표성 있음.",
+  "results": {
+   "NetIncomeLossAvailableToCommonStockholdersBasic_present": {
+    "count": 54,
+    "of": 156,
+    "pct": 34.6
+   },
+   "PreferredStockValue_family_tagPresent": {
+    "count": 76,
+    "of": 156,
+    "nonzeroValue": 6,
+    "note": "태그 존재(76건 중 다수가 명시적 $0 — 우선주 수권만 하고 미발행) vs 실제 0이 아닌 값(6건: ALB·ALLY·C·HWM·PG·V) — 경제적 유의성은 후자 기준."
+   },
+   "MinorityInterest_present_nonzero": {
+    "count": 72,
+    "of": 156,
+    "pct": 46.2
+   },
+   "AvailableToCommon_differsFromNetIncomeLoss": {
+    "count": 25,
+    "of": 54,
+    "note": "차이 중 큰 건은 실제 우선주 보유 종목(ALLY 16.5%·ALB -11.6%·C 9.65%)과 대체로 일치. 작은 건(<2%)은 참여증권 등 다른 조정 요인으로 추정, 개별 추적 안 함."
+   }
+  }
+ },
+ "step2_codeChanges": {
+  "driversTs": [
+   "NET_INCOME 배열 순서 변경: [AvailableToCommonStockholdersBasic, NetIncomeLoss, ProfitLoss] — coalesceMap 로직 무변경, 배열만.",
+   "PREFERRED=[PreferredStockValue,PreferredStockValueOutstanding] · NCI=[MinorityInterest] 신규 상수.",
+   "commonEquity 계산 블록 추가 — equity(총자기자본)는 유지, 신규 필드로 병기.",
+   "DriverFundamentals에 commonEquity·preferredStock·minorityInterest 3필드 추가.",
+   "flags.preferredStockUnknown·flags.commonEquityNciNotSubtracted — 결측 사유 구분 플래그.",
+   "annualMap·coalesceMap·NET_INCOME·EQUITY·PREFERRED·NCI·Gaap export 추가(검증 스크립트 재사용용, 동작 무변경)."
+  ],
+  "valuationTs": [
+   "VALUATION_SPEC.per.formula: 'marketCap / netIncome' → 'marketCap / netIncomeAvailableToCommon'(문서 문자열만, 계산함수 무수정).",
+   "VALUATION_SPEC.pbr.formula: 'marketCap / equity' → 'marketCap / commonEquity'(문서 문자열만).",
+   "computeValuation() 함수 바디는 완전히 무수정 — 호출부(route.ts)가 넘기는 값만 달라짐."
+  ],
+  "routeTs": [
+   "fundamentalsRow(): common_equity·preferred_stock·minority_interest 3필드 추가(us_fundamentals에 저장).",
+   "computeAndSaveValuation(): SELECT에 common_equity 추가, computeValuation() 호출 시 equity 인자를 f.equity(총자기자본) 대신 f.common_equity로 교체."
+  ],
+  "migration": "supabase/migrations/20260809_us_fundamentals_common_equity.sql — us_fundamentals에 common_equity·preferred_stock·minority_interest 3컬럼 추가(nullable, 기존 컬럼 무변경).",
+  "tests": "lib/revdcf/drivers.test.ts 7케이스 신규(AvailableToCommon 우선순위·폴백·commonEquity 계산 4종·음수 보존) · lib/valuation.test.ts 1케이스 고정문자열 갱신(의도된 변경) — 전체 332/332 통과."
+ },
+ "step3_impactMeasurement": {
+  "methodology": "🔴 1차 시도 결함(기록) — computeDrivers()를 그대로 호출하면 resolveYearWindow가 '오늘 기준 최신연도'를 다시 골라 저장된 옛 창과 다른 연도를 비교하게 됨(PER 중앙값 19.5%라는 비현실적 결과로 발견). 정정 — annualMap/coalesceMap을 export해 us_fundamentals.fiscal_year에 '고정'한 재추출로 전환. 이 정정 자체가 VALUATION_SPEC.md 미해결0번('옛 창·새 창 혼입 주의')의 실제 재현 사례.",
+  "secCalls": "companyfacts 신규 932건(캐시 195건 재사용, 전체 1,127종목 완전 커버) — 150ms 간격 순차, 429 0건.",
+  "per": {
+   "comparable": 645,
+   "changed": 125,
+   "medianAbsRelDiff": 0,
+   "p90AbsRelDiff": 0.009970696328180708,
+   "newlyUnavailable": 3,
+   "newlyAvailable": 0
+  },
+  "pbr": {
+   "comparable": 803,
+   "changed": 56,
+   "medianAbsRelDiff": 0,
+   "p90AbsRelDiff": 0,
+   "newlyUnavailable": 0,
+   "newlyAvailable": 0
+  },
+  "sectorBreakdown_full": {
+   "Health Care": {
+    "n": 160,
+    "pbrChanged": 2,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "Materials": {
+    "n": 50,
+    "pbrChanged": 3,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "Industrials": {
+    "n": 178,
+    "pbrChanged": 9,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "Information Technology": {
+    "n": 162,
+    "pbrChanged": 2,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "Consumer Discretionary": {
+    "n": 105,
+    "pbrChanged": 4,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "Financials": {
+    "n": 61,
+    "pbrChanged": 11,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0.08817407757805117,
+    "pbrNewlyUnavail": 0
+   },
+   "Communication Services": {
+    "n": 45,
+    "pbrChanged": 4,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0.013482874331146625,
+    "pbrNewlyUnavail": 0
+   },
+   "Consumer Staples": {
+    "n": 55,
+    "pbrChanged": 4,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "Utilities": {
+    "n": 38,
+    "pbrChanged": 10,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0.1181752873563217,
+    "pbrNewlyUnavail": 0
+   },
+   "Energy": {
+    "n": 42,
+    "pbrChanged": 4,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0.002822353036045529,
+    "pbrNewlyUnavail": 0
+   },
+   "Real Estate": {
+    "n": 19,
+    "pbrChanged": 1,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0,
+    "pbrNewlyUnavail": 0
+   },
+   "null": {
+    "n": 15,
+    "pbrChanged": 2,
+    "pbrMedianAbsRelDiff": 0,
+    "pbrP90AbsRelDiff": 0.0005468825324771988,
+    "pbrNewlyUnavail": 0
+   }
+  },
+  "financialsHighlight": {
+   "n": 61,
+   "pbrChanged": 11,
+   "pbrMedianAbsRelDiff": 0,
+   "pbrP90AbsRelDiff": 0.08817407757805117,
+   "pbrNewlyUnavail": 0
+  },
+  "utilitiesHighlight": {
+   "n": 38,
+   "pbrChanged": 10,
+   "pbrMedianAbsRelDiff": 0,
+   "pbrP90AbsRelDiff": 0.1181752873563217,
+   "pbrNewlyUnavail": 0
+  },
+  "note_utilitiesLargerThanFinancials": "🔴 예상과 다른 것 — Financials(p90 8.8%)보다 Utilities(p90 11.8%)가 더 크게 움직였다. 규제 유틸리티(VST·NRG·AES·EIX·PCG·D)가 전통적으로 우선주를 자본조달 수단으로 널리 쓰기 때문 — 실측으로 확인, 맞추려 하지 않고 그대로 보고.",
+  "citigroup": {
+   "symbol": "C",
+   "sector": "Financials",
+   "fiscalYear": 2024,
+   "oldPer": 17.856328871786783,
+   "newPer": 19.76382987886193,
+   "oldPbr": 1.0855998751282372,
+   "newPbr": 1.1871891854803196,
+   "newCommonEquity": 190748000000,
+   "newEquity": 208598000000,
+   "newPreferred": 17850000000,
+   "newNci": 768000000,
+   "eqTag": "StockholdersEquity",
+   "oldPerAvail": true,
+   "newPerAvail": true,
+   "oldPbrAvail": true,
+   "newPbrAvail": true
+  },
+  "citigroupMatchesGivenFigures": "PER 17.856→19.764(-9.65%이동)·PBR 1.0856→1.1872(-8.56%이동) — 장은태 제공 수치와 소수점까지 일치. STEP958 잔차(PER -21.43%→재계산 -13.04%·PBR -10.15%→재계산 -1.72%)도 962/963에서 일관.",
+  "coverageLoss": {
+   "per": {
+    "newlyUnavailable": 3,
+    "symbols": [
+     "APG",
+     "FTAI",
+     "QXO"
+    ],
+    "reason": "우선주배당 차감 후 보통주 귀속 순이익이 음수/0으로 전환(원래도 PER이 매우 높던 종목 — APG 72x·FTAI 2558x·QXO 623x, 이익이 이미 얇았음). 경제적으로 유효한 전환, 오류 아님."
+   },
+   "pbr": {
+    "newlyUnavailable": 0,
+    "note": "예측(962의 1건)보다 적음 — §3-4 중단조건 미해당, 적재 진행."
+   }
+  },
+  "verdict": "커버리지 손실이 예측을 넘지 않아 §3-4 중단조건 미해당 — §4 적재 진행."
+ },
+ "step4_backfill": {
+  "executedAsScript": "scripts/backfill_step963_common_equity.ts(크론 아님, 1회 실행)",
+  "snapshotBeforeOverwrite": "us_fundamentals_snapshot(tag='pre_step963') 1,127행 — 백필 전 net_income·equity 원본 보존.",
+  "usFundamentalsUpdated": 930,
+  "usFundamentalsUntouched": 197,
+  "usValuationUpdated": 930,
+  "usValuationUntouched": 197,
+  "usSectorRelativeRecomputed": 1127,
+  "postBackfillRowCounts": {
+   "us_valuation": 1127,
+   "us_fundamentals": 1127,
+   "us_sector_relative": 1127,
+   "us_sector_wide": 1127,
+   "revdcf_results": 604
+  },
+  "citigroupPostBackfill": {
+   "per": 19.76382987886193,
+   "pbr": 1.1871891854803196,
+   "psr_unchanged": 2.8053561947424495,
+   "evEbitda_unchanged_still_MISSING_MARKET_DATA": true
+  },
+  "revdcfVerdictDistribution_unchanged": {
+   "skipped": 170,
+   "value_destroying": 156,
+   "years": 119,
+   "over_cap": 94,
+   "below_one": 65,
+   "total": 604
+  },
+  "revdcfSpotCheck": {
+   "AAL": "value_destroying(불변)",
+   "AAPL": "over_cap(불변)",
+   "NVDA": "years·gap_years=5(불변)"
+  }
+ },
+ "step5_registerOnly_noCodeChange": [
+  {
+   "axis": "PSR",
+   "action": "종목 단위 정의 원문을 두 번(958·962·963) 찾았으나 없음 — 규칙 5-1대로 우리 정의(marketCap/revenue) 고정·공개 유지. 계산 무변경."
+  },
+  {
+   "axis": "EV/EBITDA",
+   "action": "현금 태그 차이(최대 84~98%)에도 EV/EBITDA 전체 영향은 작음(중앙값 0.003%·p90 5.75%, STEP962 실측). 현행 유지. AAL의 958 잔차(+7.10%)는 여전히 미설명."
+  },
+  {
+   "item": "Citigroup Revenues 태그 이중값(81,139M 원본 vs 80,722M 재작성)",
+   "action": "STATE.md 신규 항목 등재 — '어느 제출 버전을 쓰는가'가 정해진 적 없음. 판정 대기."
+  }
+ ],
+ "notDone": [
+  "PSR·EV/EBITDA 코드는 전혀 안 건드림(지시대로).",
+  "commonEquityNciNotSubtracted·preferredStockUnknown 플래그가 실제로 몇 건씩 서는지는 이번 백필 로그에서 집계하지 않음(추후 조사 후보).",
+  "925/930(us_fundamentals_common_equity_filled)로 5건 차이 — 원인(eqVal 자체가 null인 5개 심볼) 개별 확인 안 함.",
+  "Utilities가 Financials보다 크게 움직인 원인은 6개 종목 직접 확인으로 설명했으나 나머지 32개 Utilities 종목은 개별 확인 안 함."
+ ]
+}

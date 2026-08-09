@@ -21,23 +21,28 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 
 | 축 | 식 | 기간 | 미성립 조건 |
 |---|---|---|---|
-| **PER** | `marketCap / netIncome` | **연간(FY) 고정**(장은태 판정 2026-08-08 — 분기 TTM은 이 STEP 범위 밖) | `netIncome <= 0` · `netIncome == null` |
-| **PBR** | `marketCap / equity` | 최신 회계연도(FY) | `equity <= 0` · `equity == null` |
+| **PER** | `marketCap / netIncomeAvailableToCommon` | **연간(FY) 고정**(장은태 판정 2026-08-08 — 분기 TTM은 이 STEP 범위 밖) | `netIncome <= 0` · `netIncome == null` |
+| **PBR** | `marketCap / commonEquity` | 최신 회계연도(FY) | `equity <= 0` · `equity == null` |
 | **PSR** | `marketCap / revenue` | 최신 회계연도(FY) | `revenue <= 0` · `revenue == null` |
 | **EV/EBITDA** | `(marketCap + debt - nonOperatingAssets) / (operatingIncome + dna)` | 최신 회계연도(FY) | `ebitda <= 0` · `operatingIncome == null` · `dna == null` · 🔴 **`debt == null` 또는 `nonOperatingAssets == null`**(아래 "코드가 스펙보다 넓힌 것" 참조) |
 
+🔴 **STEP 963(2026-08-09, 장은태 위임→Cowork 판정) — PER·PBR을 보통주 기준으로 확정.** 아래 태그표가 갱신된 버전. 근거·영향 실측 = 검증 절 STEP 963 항목.
+
 **분자(공통) 출처** — `us_market_cap.market_cap`(최신 `as_of`, US 크론이 매일 갱신). 5-5 확정대로 **주가에서 시총을 역산하지 않는다** — `market_cap`을 그대로 쓴다.
 
-**분모 출처 — SEC XBRL `us-gaap` 태그(`lib/revdcf/drivers.ts`의 `NET_INCOME`·`EQUITY`, 기존 `REV`·`OperatingIncomeLoss`·D&A 체인 재사용)**
+**분모 출처 — SEC XBRL `us-gaap` 태그(`lib/revdcf/drivers.ts`의 `NET_INCOME`·`EQUITY`·`PREFERRED`·`NCI`, 기존 `REV`·`OperatingIncomeLoss`·D&A 체인 재사용)**
 
 | 필드 | 태그(우선순위 — coalesce, 첫 매치 채택) | 비고 |
 |---|---|---|
-| `netIncome` | `NetIncomeLoss` → `ProfitLoss` → `NetIncomeLossAvailableToCommonStockholdersBasic` | flow(연간 duration 300~400일) |
-| `equity` | `StockholdersEquity` → `StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest` → `CommonStockholdersEquity` | stock(시점) · 🔴 **2번째 태그는 비지배지분이 섞인다** — 아래 미해결 참조 |
-| `revenue` | 기존 역DCF `REV` 4종 태그(항등식 선택, `drivers.ts:39`) | 재사용, 새 태그 없음 |
-| `operatingIncome` | `OperatingIncomeLoss` → (매출−`CostsAndExpenses`) → (세전이익+이자비용) | 재사용 |
-| `dna` | 기존 D&A 우선체인(합계 태그 → 감가+무형 분리합산, `drivers.ts:51~55`) | 재사용 |
-| `debt`·`nonOperatingAssets` | 기존 역DCF 시장 부분(`drivers.ts` 부채·비영업자산 계산) | 🔴 **driver 파이프라인 전체가 성공(`ok:true`)해야만 채워진다** — PER·PBR·PSR·매출/영업이익/D&A와 달리 5년 게이트 뒤에서 계산되기 때문(아래 "코드가 스펙보다 넓힌 것" 참조) |
+| `netIncome`(PER 분모) | 🔴 **`NetIncomeLossAvailableToCommonStockholdersBasic` → `NetIncomeLoss` → `ProfitLoss`**(963, 순서 변경) | flow(연간) · GAAP EPS 정의(FASB ASC 260) 자체가 보통주 귀속 순이익이라 1순위로 승격 — 태그 있는 해만 적용, 없는 해는 자동 폴백 |
+| `equity`(총자기자본, 그대로 저장) | `StockholdersEquity` → `StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest` → `CommonStockholdersEquity` | stock(시점) · 무변경 |
+| 🔴 `commonEquity`(PBR 분모, 963 신규) | `equity` − (2번째 태그일 때만 `MinorityInterest`) − `PreferredStockValue`(계열) | `us_fundamentals.common_equity`에 별도 저장 — `equity`는 안 건드림 |
+| 🔴 `preferredStock`(963 신규) | `PreferredStockValue` → `PreferredStockValueOutstanding` | 없으면 0으로 간주하되 `flags.preferredStockUnknown`으로 "없음"과 "태그누락"을 구분 |
+| 🔴 `minorityInterest`(963 신규) | `MinorityInterest` | `equity`가 NCI포함 태그일 때만 차감·태그 없으면 `flags.commonEquityNciNotSubtracted` |
+| `revenue` | 기존 역DCF `REV` 4종 태그(항등식 선택, `drivers.ts:39`) | 재사용, 새 태그 없음(963 무변경) |
+| `operatingIncome` | `OperatingIncomeLoss` → (매출−`CostsAndExpenses`) → (세전이익+이자비용) | 재사용(963 무변경) |
+| `dna` | 기존 D&A 우선체인(합계 태그 → 감가+무형 분리합산, `drivers.ts:51~55`) | 재사용(963 무변경) |
+| `debt`·`nonOperatingAssets` | 기존 역DCF 시장 부분(`drivers.ts` 부채·비영업자산 계산) | 🔴 **driver 파이프라인 전체가 성공(`ok:true`)해야만 채워진다** — PER·PBR·PSR·매출/영업이익/D&A와 달리 5년 게이트 뒤에서 계산되기 때문(아래 "코드가 스펙보다 넓힌 것" 참조)(963 무변경) |
 
 **모든 값은 어느 회계연도(`fiscalYear`)에서 왔는지, 어느 태그에서 왔는지(`sourceTags`)와 함께 저장된다**(`us_fundamentals.fiscal_year`·`source_tags` — 규칙 5-2 ④, 결과에 출처를 실어 보낸다).
 
@@ -50,7 +55,7 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 ## 외부 근거
 
 - **EV 정의·현금 정합성** — Damodaran, *vebitda.pdf*: *"Market Value of Equity + Market Value of Debt − Cash."* 현금을 분자에서 빼면 분모(EBITDA)에서도 현금성 이자수익이 빠져야 정합한데, 우리 EBITDA(`operatingIncome + dna`)는 애초에 이자수익이 안 들어가 있어 정합한다.
-- **자기자본 정의** — Damodaran, *pbv.pdf*: 보통주 장부가(common equity book value) 기준이어야 한다는 근거 — `StockholdersEquity`(비지배지분 제외)를 1순위로 둔 이유.
+- **자기자본 정의** — Damodaran, *pbv.pdf*: 보통주 장부가(common equity book value) 기준이어야 한다는 근거. 🔴 **STEP 963부터 실제로 구현됨** — `commonEquity = equity − 우선주 − (NCI포함 태그일 때만)비지배지분`을 PBR 분모로 쓴다(그 전엔 이 인용이 아직 코드와 안 맞는 아스피레이셔널 주석이었다 — 963이 그 간극을 닫았다).
 - **음수 PER 처리 관행** — Stock Analysis 용어 페이지: 음수 PER은 통상 `n/a`로 표기하는 것이 관행.
 - 🔴 **미확보**: 위 두 Damodaran PDF는 `data/sources/`에 원문이 저장돼 있지 않다(SEC CIK 파일과 달리 이번 STEP이 로컬 원본 확보를 지시하지 않았음). 이 절의 인용은 STEP 947 명령서 원문을 따른 것이고, **PDF 원문 재대조는 이번 세션에서 하지 않았다** — ⓪ 원전 인벤토리 규칙상 남은 빚으로 기록한다.
 
@@ -64,6 +69,7 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
 2. **다중 클래스 주식(GOOG/GOOGL 등) 시총 합산 미해결** — 현재 `us_market_cap`은 **클래스별로 별도** 값을 갖는다(`resolveSector`의 형제 매칭과 달리, 시총 자체를 합산하는 로직이 없다). PER·PBR 등은 클래스별로 각각 계산되며, 통합 시총 기준 배수와 다를 수 있다.
 3. **`StockholdersEquity`에 비지배지분이 섞이는 변형** — 2순위 태그(`StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest`)를 쓴 기업은 PBR 분모가 순수 보통주 지분보다 크게 잡힐 수 있다. **추적만 한다** — `source_tags.equity`에 실제 채택 태그를 기록해 사후에 걸러낼 수 있게 해 두었을 뿐, 자동 보정은 하지 않는다. 🔴 **실측(STEP 948, 2026-08-08)**: `equity`를 확보한 851건 중 **48건(5.64%)**이 이 2순위 태그를 채택 — "가능성 있음"이 아니라 실측치. 이 48건은 PBR이 실제보다 낮게(저평가로) 잡혀 있을 수 있다는 뜻이며, 자동 보정은 여전히 안 함.
    🔴 **STEP 962(2026-08-09) 확장 — 우선주도 같은 문제, 더 크다.** `StockholdersEquity`는 **우선주로도 구분되지 않는다**(태그 자체가 보통주+우선주를 합친 값). 100종목 표본(70종목 유효) 중 **2종목만 `PreferredStockValue`(류) 태그 보유**했으나 — Citigroup 개별 재검증에서 우선주 17.85B 조정만으로 **PBR이 −8.56% 이동**(SEC 원문 재확인, 장은태 제공 수치와 정확 일치) — STEP 958의 대조 잔차(−10.15%)의 대부분(약 8.4%p)을 설명하고 잔차를 −1.72%로 좁혔다. **비지배지분(NCI)까지 뺀 "보통주 장부가"(후보ⓑ) 영향**: 100종목 표본에서 유효비교 60건 중 20건 값 변화, p90 절대상대차 3.21%. **유형장부가(후보ⓒ, 영업권·무형자산까지 차감)는 훨씬 파괴적** — 49건 중 35건 변화(p90 388%!), **12건이 장부가 음수로 전환**(ABBV·ADEA·ADSK·AES·AEYE·AIRE·ALIT·ALLE·ALSN·AMCR·AME·AMGN — IT 4·Industrials 4·Health Care 2·Utilities 1·Materials 1, 기술주만의 문제가 아니라 M&A 영업권이 큰 기업 전반의 문제). 판정 없음, 후보 3개 영향만 기록 — 상세 = `docs/probe_962_definition_refine.json` §1.
+   ✅ **STEP 963(2026-08-09, 장은태 위임→Cowork 판정) — 후보ⓑ(보통주 장부가) 채택·구현 완료.** 우선주·비지배지분(NCI포함 태그일 때만) 둘 다 뺀 `commonEquity`를 PBR 분모로 확정(`us_fundamentals.common_equity` 신규 컬럼, `equity`는 그대로 보존). 후보ⓒ(유형장부가)는 채택하지 않음(위 문단의 12/49 음수전환 등 파괴적 영향 때문 — 이 STEP에서 판정, 은행 실무의 유형장부가 관행은 별도 논의 대상으로 미룸). **전 유니버스(930종목, fiscal_year 확보분) 실측**: PBR 절대상대차 중앙값 0%·p90 0%(대부분 무영향), **Financials(61종목) p90 8.8%· 🔴 Utilities(38종목) p90 11.8%로 Financials보다 더 크게 이동**(규제 유틸리티의 전통적 우선주 자본조달 관행 — VST·NRG·AES·EIX·PCG·D 확인). 커버리지 손실 0건(예측 1건보다 적음). PER도 같은 원리로 보통주 귀속 순이익 기준 확정(`NET_INCOME` 배열 순서 변경만, 새 태그 0개) — 절대상대차 p90 1.0%, 새로 unavailable 3건(APG·FTAI·QXO, 우선주배당 차감 후 보통주 귀속 손실 전환·경제적으로 유효). Citigroup PER 17.86→19.76·PBR 1.0856→1.1872, as_of=2026-08-08에 백필 완료. 상세 = `docs/probe_963_definition_apply.json`.
 4. **야후 대비 상대차 미측정** — 🔴 **원인은 STEP 948 명령서 §5의 전제 오류다** — "`lens_scores`에 야후 원시 PER이 저장돼 있다"고 썼으나 실제로는 파생 점수(`valuation_value`·`valuation_state`)만 있고, 원시 `trailingPE`·`priceToBook`은 어디에도 저장되지 않는다(`lib/lensCompute.ts`의 즉시계산 값). 따라서 **`lensCompute.ts` 교체 판정의 근거가 아직 없다** — 측정 수단(라이브 재조회 방식 등) 설계가 선행돼야 한다.
 5. **`us_market_cap` 결측으로 4축이 전부 안 나오는 종목이 있다** — Cowork 교차검증(2026-08-08, `docs/probe_948_live.json`의 `cowork_crosscheck`)이 발견·Claude Code가 재확인: 68종목(`ACM`·`ADI`·`AIT`·`APA`·`AZO`·`BBY`·`BDX` 등 다수 S&P 500 대형주 포함)이 `us_market_cap`의 최신 `as_of`(2026-08-07)에 행이 없고 **2026-07-30 등 옛 `as_of`에만 값이 있어** 분자(시총)가 없다. 🔴 **「계산이 안 된 것」이 아니라 「분자가 없는 것」이다** — 구분해서 읽을 것. 🔴 **날짜 우연 일치, 인과 미확인**: 2026-07-30은 US `lens_cuts`가 정지된 바로 그 날짜다(`STATE.md` ▶다음 00번) — 같은 원인인지는 확인하지 않았다.
 6. **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙 — 종료월≤5월이면 전년도 귀속) NVDA 자신은 이 회계연도를 **FY2026**이라 부른다. 값(매출 215,938,000,000·순이익 120,067,000,000)은 SEC 원문과 정확히 일치하나, 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. **표시 문구 판정 필요(장은태)** — Q1 카드 작업 시 함께 정한다.
@@ -206,5 +212,12 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
   - **EV/EBITDA 현금 범위** — Damodaran `variable.htm`: *"Cash and Marketable Securities reported in the balance sheet."*(제한현금 포함여부 불명기재). 우리 현재식(제한현금포함 태그 우선+증권 4종 합산)은 큰 틀에서 정합. 100종목 중 32종목 실측 — 현금 태그 자체는 종목별로 최대 84~98% 차이나지만 EV/EBITDA 전체 영향은 median 0.003%·p90 5.75%·max 9.2%로 완화됨. 🔴 **STEP 958의 EV/EBITDA 이상치(AAL +7.10%) 원인 재확인 — 설명 안 됨.** AAL은 `CashAndCashEquivalentsAtCarryingValue` 태그 자체가 없어(제한현금포함 태그만 존재) 두 정의 중 고를 여지가 없다 — EV/EBITDA가 완전히 동일하게 나온다. AMT(Real Estate, −7.56%)는 표본 밖이라 미확인.
   - **PER 우선주 배당 차감 — 신규 조사(못박은 적 없던 항목, 아래 신규 7번으로 등재).**
   - 상세 원자료 = `docs/probe_962_definition_refine.json`. 🔴 **판정 없음 — 장은태가 축별로 고른다.**
+- ✅ **STEP 963(2026-08-09, 장은태 위임→Cowork 판정) — PER·PBR 보통주 기준 구현·백필 완료.** 착수 전 코드로 확인: `DriverFundamentals`(netIncome·equity·commonEquity 등)는 `DriverBundle`(driver 1~5 계산)과 완전히 분리된 구조체이고 `lib/revdcf/engine.ts`·`compute.ts`는 `dr.fundamentals`를 참조하지 않음(grep 확인) — **역DCF 무영향 확정 후 착수.**
+  - **§1 태그존재율(190종목 표본, 시총상위100+사전순100 — 대형은행 포함 목적 명시)**: `NetIncomeLossAvailableToCommonStockholdersBasic` 54/156(34.6%) · `PreferredStockValue`류 태그존재 76/156(대부분 명시적 $0)이나 **실제 0 아닌 값은 6/156뿐**(ALB·ALLY·C·HWM·PG·V) · `MinorityInterest` 72/156(46.2%). Financials 19/190(10.0%, 962의 2/100보다 대표성 개선).
+  - **§2 코드 변경**: `NET_INCOME` 배열 재정렬(새 태그 0개, coalesceMap 로직 무수정) · `commonEquity`(=equity−우선주−[NCI포함태그일때만]비지배지분) 신규 필드(`equity`는 보존) · `us_fundamentals`에 `common_equity`·`preferred_stock`·`minority_interest` 3컬럼 추가(마이그레이션) · `lib/valuation.ts` formula 문자열 갱신(계산함수 무수정) · `annualMap`·`coalesceMap`·태그배열 export 추가(재사용용, 동작무변경) · 테스트 7건 신규(332/332 통과).
+  - **§3 영향 실측(1,127종목 전량, SEC companyfacts 신규 932건·429 0건)**: 🔴 **1차 시도가 `computeDrivers()`를 그대로 호출해 "오늘 기준 최신연도"로 재해석되는 함정에 빠짐**(PER 중앙값 19.5%라는 비현실적 결과로 발견 — 미해결0번의 "옛창·새창 혼입" 실제 재현 사례) → `annualMap`/`coalesceMap`을 저장된 `fiscal_year`에 고정해 재추출하는 것으로 정정. **PER**: 절대상대차 중앙값 0%·p90 1.0%, 새로 unavailable 3건(APG·FTAI·QXO — 우선주배당 차감 후 보통주귀속 손실 전환, 원래도 PER 72~2558배로 이익이 얇았던 종목, 경제적으로 유효). **PBR**: 중앙값 0%·p90 0%, 새로 unavailable 0건(예측 1건보다 적음). **Financials(61종목) p90 8.8%.** 🔴 **예상과 다른 것 — Utilities(38종목) p90 11.8%로 Financials보다 큼**(규제 유틸리티 VST·NRG·AES·EIX·PCG·D의 전통적 우선주 자본조달 관행, 실측 확인). Citigroup: PER 17.856→19.764(−9.65%)·PBR 1.0856→1.1872(−8.56%) — 장은태 제공 수치와 정확 일치.
+  - **§4 적재**: `us_fundamentals_snapshot`(tag=`pre_step963`) 1,127행 선스냅샷 → `us_fundamentals` 930행 갱신(197행은 fiscal_year 미확보라 무접촉) → `us_valuation`(as_of=2026-08-08) 930행 갱신(price·market_cap은 기존값 그대로 — 시점오염 방지) → `us_sector_relative`(`computeSectorRelativeBatch` 순수함수 재사용, 로직복제 없음) 1,127행 재계산. 백필 후 행수 전부 불변(us_valuation 1,127·us_fundamentals 1,127·us_sector_wide 1,127·**revdcf_results 604**) — 🔴 **revdcf_results verdict 분포·AAL(value_destroying)·AAPL(over_cap)·NVDA(years·gap5) 개별 확인 전부 백필 전과 동일**, 코드상 `dr.fundamentals`를 참조하는 곳이 route.ts의 `fundamentalsRow()`(Q1 전용) 하나뿐임과 정합.
+  - 🔴 **PSR·EV/EBITDA는 등재만 하고 손대지 않음**(아래 항목 1·962 EV/EBITDA 단락) · Citigroup Revenues 이중값(제출버전 문제)은 STATE.md 신규 항목.
+  - 상세 원자료 = `docs/probe_963_definition_apply.json`.
 
-7. 🆕 **PER 분자 — 우선주 배당 차감 여부(2026-08-09 STEP 962 신설).** Damodaran `pedata.xls` FAQ는 "Price per share divided by EPS"라 하는데 GAAP `EPS` 자체가 이미 "보통주 귀속 순이익 ÷ 가중평균 보통주식수"로 정의된다(FASB ASC 260) — 즉 원문이 말하는 "EPS"는 우선주가 있는 기업에서 이미 우선주 배당을 뺀 값이다. 우리 현재 식(`marketCap/netIncome`, 총순이익 그대로)은 **우선주가 없는 기업에서만** "price/EPS"와 같아진다. Citigroup 실측(SEC `NetIncomeLossAvailableToCommonStockholdersBasic`=$11,458M vs 우리 저장 총순이익 $12,682M, 우선주배당 약 $1,224M): 조정 시 PER이 17.86→19.76(−9.65% 이동, PBR의 −8.56%와 비슷한 규모). STEP 958 대조 잔차(−21.43%)는 조정 후 −13.04%로 줄지만 **PBR만큼(−1.72%) 깨끗이 안 닫힌다** — 여전히 큰 잔차가 남고, 이건 숨기지 않는다. 판정 없음.
+7. ✅ **PER 분자 — 우선주 배당 차감(2026-08-08 STEP 962 발견 → 2026-08-09 STEP 963 구현 완료).** Damodaran `pedata.xls` FAQ는 "Price per share divided by EPS"라 하는데 GAAP `EPS` 자체가 이미 "보통주 귀속 순이익 ÷ 가중평균 보통주식수"로 정의된다(FASB ASC 260) — 즉 원문이 말하는 "EPS"는 우선주가 있는 기업에서 이미 우선주 배당을 뺀 값이다. **963이 `NET_INCOME` 배열을 `NetIncomeLossAvailableToCommonStockholdersBasic` 최우선으로 재정렬해 구현·백필 완료.** Citigroup 실측 그대로 반영: PER 17.86→19.76(−9.65% 이동). STEP 958 대조 잔차(−21.43%)는 조정 후 −13.04%로 줄지만 **PBR만큼(−1.72%) 깨끗이 안 닫힌다** — 여전히 큰 잔차가 남고, 이건 숨기지 않는다.

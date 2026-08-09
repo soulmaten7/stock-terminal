@@ -10,7 +10,7 @@
  */
 
 type Fact = { form?: string; fp?: string; start?: string; end?: string; val: number; filed?: string };
-type Gaap = Record<string, { units?: Record<string, Fact[]> }>;
+export type Gaap = Record<string, { units?: Record<string, Fact[]> }>;
 
 // STEP 951 — 창 "크기"(5년, 원전 T8 관측기간)는 방법론 고정값(규칙 5-2의 f) — 어느 5개 "연도"인지는 종목별로 연다(x).
 const WINDOW_SIZE = 5;
@@ -18,7 +18,9 @@ const WINDOW_SIZE = 5;
 const calYear = (end: string) => { const y = +end.slice(0, 4), m = +end.slice(5, 7); return m <= 5 ? y - 1 : y; };
 const isAnnual = (f?: string) => /^10-K/.test(String(f));
 
-function annualMap(g: Gaap, tag: string, kind: "flow" | "stock", unit = "USD"): Record<number, number> {
+// STEP 963 — export만 추가(동작 무변경). 검증 스크립트가 특정 연도(과거 as_of의 fiscal_year)를 고정해
+//   재추출할 때 이 로직을 재사용하기 위함 — resolveYearWindow는 "오늘 기준 최신"을 고르므로 그대로 못 씀.
+export function annualMap(g: Gaap, tag: string, kind: "flow" | "stock", unit = "USD"): Record<number, number> {
   const arr = g[tag]?.units?.[unit];
   const by: Record<number, { val: number; filed: string }> = {};
   if (!Array.isArray(arr)) return {};
@@ -31,7 +33,7 @@ function annualMap(g: Gaap, tag: string, kind: "flow" | "stock", unit = "USD"): 
   }
   const o: Record<number, number> = {}; for (const y of Object.keys(by)) o[+y] = by[+y].val; return o;
 }
-function coalesceMap(g: Gaap, tags: string[], kind: "flow" | "stock", unit = "USD"): { vals: Record<number, number>; tagAt: Record<number, string> } {
+export function coalesceMap(g: Gaap, tags: string[], kind: "flow" | "stock", unit = "USD"): { vals: Record<number, number>; tagAt: Record<number, string> } {
   const vals: Record<number, number> = {}, tagAt: Record<number, string> = {};
   for (const t of tags) { const m = annualMap(g, t, kind, unit); for (const y of Object.keys(m)) { const yy = +y; if (vals[yy] == null) { vals[yy] = m[yy]; tagAt[yy] = t; } } }
   return { vals, tagAt };
@@ -87,9 +89,15 @@ const FIN_LEASE = ["FinanceLeaseLiabilityNoncurrent", "FinanceLeaseLiabilityCurr
 const DEBT_TOTAL_SINGLE = ["DebtAndCapitalLeaseObligations"]; // 단일 총액 태그(있으면 우선)
 const SHARES_DIL = ["WeightedAverageNumberOfDilutedSharesOutstanding"];
 // STEP 947 §2 — Q1 밸류에이션(PER·PBR) 재료. 역DCF driver와 무관 — 새 축 2개만 추가.
-const NET_INCOME = ["NetIncomeLoss", "ProfitLoss", "NetIncomeLossAvailableToCommonStockholdersBasic"];
+// 🔴 STEP 963 — 보통주 귀속 순이익을 최우선으로. GAAP EPS 정의(FASB ASC 260) 자체가 이미 "보통주 귀속 순이익÷보통주식수"라
+//   Damodaran pedata.xls FAQ의 "price/EPS"는 우선주가 있는 기업에서 이미 우선주배당을 뺀 값을 뜻한다(963 조사 확정).
+//   배열 순서만 바꾼다 — coalesceMap은 연도별로 첫 번째로 값이 있는 태그를 쓰므로, 이 태그가 없는 해만 NetIncomeLoss로 폴백.
+export const NET_INCOME = ["NetIncomeLossAvailableToCommonStockholdersBasic", "NetIncomeLoss", "ProfitLoss"];
 // 🔴 2번째(...IncludingPortionAttributableToNoncontrollingInterest)는 비지배지분이 섞인다. sourceTags로 어느 태그를 썼는지 반드시 기록.
-const EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "CommonStockholdersEquity"];
+export const EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest", "CommonStockholdersEquity"];
+// STEP 963 — 보통주 장부가(commonEquity) 계산용. EQUITY(총자기자본)에서 이 둘을 뺀다(Damodaran pbv.pdf: 보통주 시총엔 보통주 장부가).
+export const PREFERRED = ["PreferredStockValue", "PreferredStockValueOutstanding"];
+export const NCI = ["MinorityInterest"];
 
 const REL = 0.01; // 항등식 허용오차
 
@@ -106,6 +114,10 @@ export interface DriverMarketPartial { debt: number; nonOperatingAssets: number;
 export interface DriverFundamentals {
   netIncome: number | null;
   equity: number | null;
+  // STEP 963 — 보통주 장부가(PBR 분모 후보). equity(총자기자본)는 그대로 남기고 새 필드로 병기(비교 가능하게).
+  commonEquity: number | null;
+  preferredStock: number | null;
+  minorityInterest: number | null;
   revenue: number | null;
   operatingIncome: number | null;
   dna: number | null;
@@ -179,6 +191,24 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   if (fNetIncome != null && ly != null) sourceTags.netIncome = niCo.tagAt[ly];
   const fEquity: number | null = ly != null ? eqCo.vals[ly] ?? null : null;
   if (fEquity != null && ly != null) sourceTags.equity = eqCo.tagAt[ly];
+  // STEP 963 — commonEquity = equity에서 비지배지분(EQUITY가 NCI포함 태그일 때만)·우선주를 뺀 값.
+  const prefCo = coalesceMap(gaap, PREFERRED, "stock");
+  const nciCo = coalesceMap(gaap, NCI, "stock");
+  const fPreferredStock: number | null = ly != null ? prefCo.vals[ly] ?? null : null;
+  const fMinorityInterest: number | null = ly != null ? nciCo.vals[ly] ?? null : null;
+  let fCommonEquity: number | null = null;
+  if (fEquity != null) {
+    if (sourceTags.equity === "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest") {
+      if (fMinorityInterest != null) fCommonEquity = fEquity - fMinorityInterest;
+      else { fCommonEquity = fEquity; flags.commonEquityNciNotSubtracted = true; } // NCI 태그가 없어 못 뺐음을 표시(0으로 간주 안 함)
+    } else {
+      fCommonEquity = fEquity; // StockholdersEquity·CommonStockholdersEquity는 이미 NCI 미포함
+    }
+    fCommonEquity = fCommonEquity - (fPreferredStock ?? 0);
+  }
+  if (fPreferredStock == null) flags.preferredStockUnknown = true; // "우선주 없음"과 "태그 누락"을 구분할 수 없음을 표시
+  if (fPreferredStock != null && ly != null) sourceTags.preferredStock = prefCo.tagAt[ly];
+  if (fMinorityInterest != null && ly != null) sourceTags.minorityInterest = nciCo.tagAt[ly];
   const fRevenue: number | null = ly != null ? rev[ly] ?? null : null;
   if (fRevenue != null && ly != null) sourceTags.revenue = revTagMap[ly] != null ? revenueTag : (revCo.tagAt[ly] ?? revenueTag);
   const fOperatingIncome: number | null = ly != null ? oi[ly] ?? null : null;
@@ -189,7 +219,7 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   if (fDna != null && ly != null) {
     sourceTags.dna = dnaTot[ly] != null ? (dnaTotCo.tagAt[ly] ?? "DepreciationDepletionAndAmortization") : "Depreciation+AmortizationOfIntangibleAssets";
   }
-  const fundamentals: DriverFundamentals = { netIncome: fNetIncome, equity: fEquity, revenue: fRevenue, operatingIncome: fOperatingIncome, dna: fDna, fiscalYear: ly, sourceTags };
+  const fundamentals: DriverFundamentals = { netIncome: fNetIncome, equity: fEquity, commonEquity: fCommonEquity, preferredStock: fPreferredStock, minorityInterest: fMinorityInterest, revenue: fRevenue, operatingIncome: fOperatingIncome, dna: fDna, fiscalYear: ly, sourceTags };
 
   // ── STEP 951 §3-1 — 창 게이트. 기존 skipReason("INSUFFICIENT_HISTORY") 그대로 재사용, 새 사유는 flags.windowReason에만. ──
   if (window.years == null) return { ok: false, skipReason: "INSUFFICIENT_HISTORY", flags: { ...flags, missing: "revenue<5yr", windowReason: window.reason, latestAvailable: window.latestAvailable }, fundamentals };

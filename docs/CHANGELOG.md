@@ -1,6 +1,49 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (134) — 🟩 **STEP 963: Q1 4축 정의 확정 — PER·PBR을 보통주 기준으로 통일 (구현·백필 완료)**
+
+> **성격**: 코드 변경 + DB 백필(첫 실제 프로덕션 데이터 변경). **화면·크론·KR 무접촉.** `psr`·`evEbitda`는 무변경.
+
+**왜** — 958/962가 Citigroup PBR·PER 대조 잔차의 상당 부분이 우선주 혼입 때문임을 밝혔고, 962의 3후보(현행/보통주/유형장부가) 실측을 근거로 장은태가 위임한 판정을 Cowork이 내렸다: PBR=보통주 장부가, PER=보통주 귀속 순이익. 업종별 차등을 두지 않은 이유는 섹터 분류 자체가 100%가 아니라(Damodaran 99.6%·야후 95.8%) 분류 오류가 계산 정의 오류로 증폭되기 때문 — 단일 정의면 분류가 틀려도 계산은 안 틀린다.
+
+**착수 전 확인(대전제)** — `lib/revdcf/drivers.ts`를 직접 읽어 `DriverFundamentals`(netIncome·equity·commonEquity 등, Q1 전용)와 `DriverBundle`(driver 1~5, 역DCF 계산용)이 완전히 분리된 구조체임을 코드로 확인. `lib/revdcf/engine.ts`·`compute.ts`는 `dr.fundamentals`를 전혀 참조하지 않는다(grep 전수 확인) — `dr.fundamentals`를 읽는 곳은 `route.ts`의 `fundamentalsRow()`(Q1 전용) 단 하나. **역DCF 무영향을 코드로 확정한 뒤 착수.**
+
+**§1 태그 존재율(190종목 표본)** — 표본 = 시총 상위 100(대형 은행 포함 목적) + 심볼 사전순 100(962와 동일, 대조용), 중복 10 제외. Financials 19/190(10.0%) — 962의 알파벳전용 표본(2/100)보다 대표성 개선. `NetIncomeLossAvailableToCommonStockholdersBasic` 54/156(34.6%) · `PreferredStockValue`류 태그 존재 76/156이나 **실제 0이 아닌 값은 6/156뿐**(ALB·ALLY·C·HWM·PG·V — 태그 존재와 경제적 유의성을 구분) · `MinorityInterest` 72/156(46.2%). AvailableToCommon이 NetIncomeLoss와 실제로 다른 25/54건 중 큰 차이는 대체로 우선주 보유 종목과 일치(ALLY 16.5%·ALB −11.6%·C 9.65%).
+
+**§2 코드 변경**
+- `lib/revdcf/drivers.ts`: `NET_INCOME` 배열을 `[NetIncomeLossAvailableToCommonStockholdersBasic, NetIncomeLoss, ProfitLoss]`로 재정렬(coalesceMap 로직 무수정, 새 SEC 태그 0개 — 태그 있는 해만 우선 적용, 없는 해는 자동 폴백). `PREFERRED`·`NCI` 신규 태그 배열 + `commonEquity` 계산 블록(`equity`는 그대로 보존, 새 필드로 병기) + `flags.preferredStockUnknown`·`flags.commonEquityNciNotSubtracted`(결측 사유 구분) + `DriverFundamentals`에 `commonEquity`·`preferredStock`·`minorityInterest` 3필드 추가. `annualMap`·`coalesceMap`·태그배열·`Gaap` 타입 export 추가(검증 스크립트 재사용용, 기존 동작 무변경).
+- `lib/valuation.ts`: `VALUATION_SPEC.per.formula`="marketCap / netIncomeAvailableToCommon"·`pbr.formula`="marketCap / commonEquity"로 문서 문자열 갱신(계산 함수 `computeValuation()` 바디는 완전히 무수정 — 호출부가 넘기는 값만 달라짐).
+- `app/api/cron/revdcf/route.ts`: `fundamentalsRow()`에 `common_equity`·`preferred_stock`·`minority_interest` 3필드 추가, `computeAndSaveValuation()`의 `computeValuation()` 호출에서 `equity` 인자를 `f.equity`(총자기자본) 대신 `f.common_equity`로 교체. diff는 이 추가분만.
+- 마이그레이션 `20260809_us_fundamentals_common_equity.sql` — `us_fundamentals`에 `common_equity`·`preferred_stock`·`minority_interest` 3컬럼 추가(nullable, 기존 컬럼 무변경).
+- 테스트: `lib/revdcf/drivers.test.ts` 7케이스 신규(AvailableToCommon 우선순위·폴백·commonEquity 4종 계산·음수 보존) · `lib/valuation.test.ts` 1케이스 고정문자열 갱신(의도된 변경, 회귀 아님) — 전체 **332/332 통과**.
+
+**§3 영향 실측(1,127종목 전량, 메모리 계산·DB 쓰기 0)**
+- SEC 신규 확보: companyfacts 932건(캐시 195건 재사용, 전체 유니버스 완전 커버) — 150ms 간격 순차, **429 0건**.
+- 🔴 **1차 시도 결함(기록으로 남김)**: `computeDrivers()`를 그대로 호출하면 내부의 `resolveYearWindow()`가 "오늘 기준 최신 연도"를 다시 골라 `us_fundamentals`에 저장된 옛 창(fiscal_year)과 다른 연도를 비교하게 된다 — PER 절대상대차 **중앙값 19.5%·p90 93.8%**라는 비현실적 결과로 발견(Citigroup 재계산값이 SEC 원문과 안 맞음을 재확인하다 포착). **VALUATION_SPEC.md 미해결0번("옛 창·새 창을 시계열로 이어 읽지 말 것")의 실제 재현 사례.** → `annualMap`/`coalesceMap`을 저장된 `fiscal_year`에 "고정"해 재추출하는 방식으로 정정(§2에서 export한 헬퍼 재사용, 재구현 없음).
+- **PER**: 비교가능 645건 중 125건 변화(19.4%), 절대상대차 **중앙값 0%·p90 1.0%**. 새로 unavailable **3건**(APG·FTAI·QXO — 우선주배당 차감 후 보통주 귀속 순이익이 음수/0으로 전환. 셋 다 원래도 PER이 72~2558배로 극단적이던, 이익이 이미 얇은 종목 — 경제적으로 유효한 전환, 오류 아님).
+- **PBR**: 비교가능 803건 중 56건 변화(7.0%), 절대상대차 **중앙값 0%·p90 0%**. 새로 unavailable **0건**(962의 100종목 표본 예측 1건보다 적음 — §3-4 중단조건 미해당).
+- **섹터별**: Financials(61종목) PBR p90 8.8%. 🔴 **예상과 다른 것 — Utilities(38종목) p90 11.8%로 Financials보다 더 크게 움직였다.** 개별 확인(VST·NRG·AES·EIX·PCG·D) 결과 규제 유틸리티가 전통적으로 우선주를 자본조달 수단으로 널리 써 왔기 때문 — 맞추려 하지 않고 실측 그대로 보고.
+- **Citigroup**: PER 17.856→19.764(−9.65% 이동)·PBR 1.0856→1.1872(−8.56% 이동) — **장은태 제공 수치와 소수점까지 정확히 일치**(SEC `companyfacts` 독립 재조회로 재확인). STEP958 대조 잔차: PBR −10.15%→**−1.72%**(거의 해소) · PER −21.43%→**−13.04%**(축소하나 PBR만큼 안 닫힘, 잔차가 크다는 사실 그대로 기록).
+
+**§4 적재(스크립트 1회, 크론 아님)**
+- `us_fundamentals_snapshot`(tag=`pre_step963`) 1,127행 선스냅샷(백필 전 원본 보존).
+- `us_fundamentals` 930행 갱신(net_income·common_equity·preferred_stock·minority_interest·source_tags — 197행은 fiscal_year 미확보라 애초 대상 아님, 무접촉).
+- `us_valuation`(as_of=2026-08-08) 930행 갱신 — 🔴 **price·market_cap은 기존 저장값 그대로 재사용**(us_market_cap 최신 as_of를 다시 안 불러 시점 오염을 막음), psr·ev_ebitda 입력은 무변경이라 값도 무변경. 197행 무접촉.
+- `us_sector_relative`(as_of=2026-08-08) 1,127행 재계산 — `lib/sectorRelativeBatch.ts`의 `computeSectorRelativeBatch()` 순수 함수 재사용(로직 복제 없음).
+- **후처리 검증**: `us_valuation`·`us_fundamentals`·`us_sector_wide` 1,127 불변, `us_sector_relative` 1,127 불변, **`revdcf_results` 604 불변**(row count) · verdict 분포(skipped170·value_destroying156·years119·over_cap94·below_one65=604) · `AAL`=value_destroying·`AAPL`=over_cap·`NVDA`=years/gap_years=5 개별 확인 전부 백필 전과 동일 — **역DCF 무영향을 결과로도 재확인**.
+
+**§5 등재만 하고 손대지 않은 것**
+- **PSR** — 종목 단위 정의 원문을 958·962·963 세 번 찾았으나 없음. 규칙 5-1대로 현재 정의(`marketCap/revenue`) 고정·공개 유지, 계산 무변경.
+- **EV/EBITDA** — 현금 태그 차이(최대 84~98%)에도 전체 영향이 작음(962 실측: 중앙값 0.003%·p90 5.75%). 현행 유지. AAL의 958 잔차(+7.10%)는 여전히 미설명.
+- 🆕 **Citigroup Revenues 태그 이중값 — STATE.md 신규 항목.** 같은 `Revenues` 태그·같은 기간에 SEC가 두 값(81,139M FY2024 10-K 원본 / 80,722M FY2025 10-K 재작성 비교치)을 갖고 있고, 우리는 후자를 자동 채택 중(`annualMap`의 `filed` 최신값 우선 로직) — 이게 의도된 정책인지 판정된 적 없어 등재. 판정 대기.
+
+**문서** — `docs/probe_963_definition_apply.json`(원자료, SEC 호출로그·§1~§4 전부) · `docs/VALUATION_SPEC.md`(정의표 갱신+미해결1·3번에 963 결과 추가+검증절 종합기록+미해결7번 완료로 갱신) · `docs/LENS_COMPLETION_STANDARD.md`(Q1 항목3에 963 결과 추가, DoD3 상태는 958과 동일 🟡 유지 — 정의 정확도 개선이지 외부대조 추가가 아님) · `docs/STATE.md`(963 결과 + Citigroup Revenues 신규항목).
+
+**무변경** — `app/(routes)`·`components`·`messages`·`vercel.json`·`.github/workflows`·`data/us_symbols.json` diff 0(`app/api/cron/revdcf/route.ts`만 변경, API/크론 라우트라 화면 아님). `lib/revdcf/engine.ts`·`compute.ts`(역DCF 판정 로직) diff 0. KR 미접촉.
+
+🔴 **처음이자 유일하게 다른 점 — 이번 STEP은 실제로 프로덕션 DB에 새 값을 적재했다**(958~962·959~960은 전부 조사·설계만). 판정 위임(장은태→Cowork)이 명시적으로 있었기 때문에 가능했던 것이며, 사후 보고로 결과를 투명하게 남긴다.
+
 ## 2026-08-09 (133) — 🟨 **STEP 962: Q1 4축 정의 정밀화 — 판정 재료 (SPEC·`lib/valuation.ts` 무변경)**
 
 > **성격**: 조사·실측만. **코드·DB·화면·크론 전부 무접촉.** `SECTOR_RELATIVE_SPEC`·`VALUATION_SPEC.md`의 계산 정의·`lib/valuation.ts` 미변경. 판정은 장은태.

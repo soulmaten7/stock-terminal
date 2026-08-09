@@ -163,6 +163,69 @@ describe("computeDrivers — fundamentals(STEP 947 §2) — Q1 밸류에이션 �
     expect(r.fundamentals.sourceTags.equity).toBe("StockholdersEquity");
   });
 
+  // STEP 963 §2-4 — commonEquity·NET_INCOME 우선주 우선순위 회귀 고정.
+  const availToCommon5yr = { NetIncomeLossAvailableToCommonStockholdersBasic: flowFacts(five(70)) };
+  const preferred5yr = { PreferredStockValue: stockFacts(five(60)) };
+  const nciEquity5yr = { StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest: stockFacts(five(450)) };
+  const minorityInterest5yr = { MinorityInterest: stockFacts(five(50)) };
+
+  it("NetIncomeLossAvailableToCommonStockholdersBasic이 있으면 그것을 쓴다(NetIncomeLoss가 있어도 우선)", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...netIncomeLoss5yr, ...availToCommon5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBe(70);
+    expect(r.fundamentals.sourceTags.netIncome).toBe("NetIncomeLossAvailableToCommonStockholdersBasic");
+  });
+
+  it("AvailableToCommon이 없으면 기존대로 NetIncomeLoss로 폴백한다", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...netIncomeLoss5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBe(80);
+    expect(r.fundamentals.sourceTags.netIncome).toBe("NetIncomeLoss");
+  });
+
+  it("우선주 태그가 없으면 commonEquity == equity이고 preferredStockUnknown 플래그가 선다", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...equity5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.commonEquity).toBe(400);
+    expect(r.fundamentals.preferredStock).toBeNull();
+    expect(r.flags.preferredStockUnknown).toBe(true);
+  });
+
+  it("우선주가 있으면 commonEquity = equity - 우선주", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...equity5yr, ...preferred5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.equity).toBe(400);
+    expect(r.fundamentals.commonEquity).toBe(340);
+    expect(r.fundamentals.preferredStock).toBe(60);
+    expect(r.fundamentals.sourceTags.preferredStock).toBe("PreferredStockValue");
+  });
+
+  it("EQUITY가 NCI포함 태그로 채택되고 MinorityInterest가 있으면 commonEquity에서 NCI를 뺀다", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...nciEquity5yr, ...minorityInterest5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.equity).toBe(450);
+    expect(r.fundamentals.sourceTags.equity).toBe("StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest");
+    expect(r.fundamentals.commonEquity).toBe(400); // 450 - 50(NCI) - 0(우선주 없음)
+    expect(r.fundamentals.minorityInterest).toBe(50);
+    expect(r.fundamentals.sourceTags.minorityInterest).toBe("MinorityInterest");
+  });
+
+  it("EQUITY가 NCI포함 태그인데 MinorityInterest 태그가 없으면 못 빼고 flags.commonEquityNciNotSubtracted가 선다", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...nciEquity5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.commonEquity).toBe(450); // 못 뺐음 — equity 그대로
+    expect(r.flags.commonEquityNciNotSubtracted).toBe(true);
+  });
+
+  it("commonEquity가 음수가 될 수 있다 — 가공하지 않고 그대로 보존한다(PBR 계산 단계에서 unavailable 처리)", () => {
+    const smallEquity5yr = { StockholdersEquity: stockFacts(five(30)) };
+    const bigPreferred5yr = { PreferredStockValue: stockFacts(five(60)) };
+    const r = computeDrivers(gaapOf({ ...fullOk, ...smallEquity5yr, ...bigPreferred5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.equity).toBe(30);
+    expect(r.fundamentals.commonEquity).toBe(-30);
+  });
+
   it("영업이익 5년치가 없어 MISSING_TAG_OPERATING_INCOME으로 return해도 fundamentals가 실려 온다(매출은 채워짐)", () => {
     const r = computeDrivers(gaapOf({ ...revenue5yr }), dei);
     expect(r.ok).toBe(false);

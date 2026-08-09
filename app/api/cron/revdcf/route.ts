@@ -38,6 +38,8 @@ function fundamentalsRow(u: Universe, dr: DriverResult, unavailableReason: strin
     symbol: u.symbol, cik: u.cik,
     fiscal_year: f.fiscalYear,
     net_income: f.netIncome, equity: f.equity, revenue: f.revenue, operating_income: f.operatingIncome, dna: f.dna,
+    // STEP 963 — 보통주 장부가·우선주·비지배지분(PBR 재계산 재료). equity는 그대로 총자기자본.
+    common_equity: f.commonEquity, preferred_stock: f.preferredStock, minority_interest: f.minorityInterest,
     debt: market ? market.debt : null, non_operating_assets: market ? market.nonOperatingAssets : null, shares: market ? market.shares : null,
     source_tags: f.sourceTags,
     unavailable_reason: unavailableReason,
@@ -47,8 +49,8 @@ function fundamentalsRow(u: Universe, dr: DriverResult, unavailableReason: strin
 
 // STEP 947 §5-4 — us_valuation 전량 계산. SEC 호출 0건(us_fundamentals + us_market_cap + us_stock_perf만 읽는다). try/finally로 항상 실행.
 async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number; stalestFetchedAt: string | null }> {
-  const fundRows: { symbol: string; cik: number; fiscal_year: number | null; net_income: number | null; equity: number | null; revenue: number | null; operating_income: number | null; dna: number | null; debt: number | null; non_operating_assets: number | null; fetched_at: string }[] = [];
-  for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_fundamentals").select("symbol,cik,fiscal_year,net_income,equity,revenue,operating_income,dna,debt,non_operating_assets,fetched_at").range(f, f + 999); const c = (data ?? []) as typeof fundRows; fundRows.push(...c); if (c.length < 1000) break; }
+  const fundRows: { symbol: string; cik: number; fiscal_year: number | null; net_income: number | null; equity: number | null; common_equity: number | null; revenue: number | null; operating_income: number | null; dna: number | null; debt: number | null; non_operating_assets: number | null; fetched_at: string }[] = [];
+  for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_fundamentals").select("symbol,cik,fiscal_year,net_income,equity,common_equity,revenue,operating_income,dna,debt,non_operating_assets,fetched_at").range(f, f + 999); const c = (data ?? []) as typeof fundRows; fundRows.push(...c); if (c.length < 1000) break; }
   if (fundRows.length === 0) return { saved: 0, stalestFetchedAt: null };
 
   const mcapLatest = (await sb.from("us_market_cap").select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle()).data as { as_of: string } | null;
@@ -64,7 +66,8 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
 
   const rows = fundRows.map((f) => {
     const marketCap = mcapBySym.get(f.symbol.toUpperCase()) ?? null;
-    const v = computeValuation({ marketCap, netIncome: f.net_income, equity: f.equity, revenue: f.revenue, operatingIncome: f.operating_income, dna: f.dna, debt: f.debt, nonOperatingAssets: f.non_operating_assets });
+    // STEP 963 — PBR 분모를 보통주 장부가(common_equity)로. equity(총자기자본)는 us_fundamentals에 그대로 남아 대조용으로 쓸 수 있다.
+    const v = computeValuation({ marketCap, netIncome: f.net_income, equity: f.common_equity, revenue: f.revenue, operatingIncome: f.operating_income, dna: f.dna, debt: f.debt, nonOperatingAssets: f.non_operating_assets });
     const ageDays = f.fetched_at ? Math.round((Date.parse(asOf) - Date.parse(f.fetched_at)) / 86_400_000) : null;
     return {
       as_of: asOf, symbol: f.symbol, price: priceBySym.get(f.symbol.toUpperCase()) ?? null, market_cap: marketCap,

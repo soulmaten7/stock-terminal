@@ -10,9 +10,10 @@ import { computeValuation, VALUATION_SPEC, type ValuationInputs } from "./valuat
 
 describe("VALUATION_SPEC — 정의 고정(규칙 5-1) — docs/VALUATION_SPEC.md와 글자 그대로 일치해야 한다(§6-2)", () => {
   it("4개 축의 formula·unavailableWhen이 고정 문자열이다", () => {
-    expect(VALUATION_SPEC.per.formula).toBe("marketCap / netIncome");
+    // STEP 963 — per·pbr formula 문자열을 보통주 기준으로 갱신(의도된 변경, 회귀 아님). psr·evEbitda는 무변경.
+    expect(VALUATION_SPEC.per.formula).toBe("marketCap / netIncomeAvailableToCommon");
     expect(VALUATION_SPEC.per.basis).toBe("annual");
-    expect(VALUATION_SPEC.pbr.formula).toBe("marketCap / equity");
+    expect(VALUATION_SPEC.pbr.formula).toBe("marketCap / commonEquity");
     expect(VALUATION_SPEC.psr.formula).toBe("marketCap / revenue");
     expect(VALUATION_SPEC.evEbitda.formula).toBe("(marketCap + debt - nonOperatingAssets) / (operatingIncome + dna)");
   });

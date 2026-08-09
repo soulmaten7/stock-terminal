@@ -7,12 +7,19 @@
  */
 export const VALUATION_SPEC = {
   per: {
-    formula: "marketCap / netIncome",
+    // 🔴 STEP 963(2026-08-09 장은태 위임→Cowork 판정) — 보통주 귀속 순이익 기준으로 확정.
+    //   근거: Damodaran pedata.xls FAQ "Price per share divided by EPS" — GAAP EPS(FASB ASC 260) 자체가
+    //   이미 "보통주 귀속 순이익÷보통주식수"다. 입력값(netIncome)은 drivers.ts의 NET_INCOME 태그 우선순위
+    //   변경으로 이미 보통주 기준이 됨(NetIncomeLossAvailableToCommonStockholdersBasic 최우선) — 이 함수 자체는 무수정.
+    formula: "marketCap / netIncomeAvailableToCommon",
     basis: "annual", // 장은태 판정 2026-08-08: 연간(FY) 고정. 분기 TTM은 이 STEP 범위 밖.
     unavailableWhen: ["netIncome <= 0", "netIncome == null"],
   },
   pbr: {
-    formula: "marketCap / equity",
+    // 🔴 STEP 963 — 보통주 장부가 기준으로 확정. 근거: Damodaran pbv.pdf(보통주 시가총액에는 보통주 장부가를 대응시킨다).
+    //   입력값(equity)은 route.ts가 us_fundamentals.common_equity(drivers.ts가 우선주·비지배지분을 뺀 값)를
+    //   넘긴다 — 이 함수 자체는 무수정(어떤 값이 들어오든 그대로 나눈다).
+    formula: "marketCap / commonEquity",
     unavailableWhen: ["equity <= 0", "equity == null"],
   },
   psr: {
@@ -60,13 +67,13 @@ export function computeValuation(inp: ValuationInputs): ValuationResult {
   }
   const marketCap = inp.marketCap;
 
-  // PER = marketCap / netIncome. 음수·0 이익은 계산하지 않는다(관행 — 음수 PER은 무의미, Stock Analysis 용어 페이지).
+  // PER = marketCap / netIncome(호출부가 보통주 귀속 순이익을 넘긴다, STEP 963). 음수·0 이익은 계산하지 않는다(관행 — 음수 PER은 무의미, Stock Analysis 용어 페이지).
   let per: number | null = null;
   if (inp.netIncome == null) unavailable.per = "MISSING_NET_INCOME";
   else if (!(inp.netIncome > 0)) unavailable.per = "NEGATIVE_EARNINGS";
   else per = marketCap / inp.netIncome;
 
-  // PBR = marketCap / equity. 보통주 장부가 기준(Damodaran pbv.pdf) — 음수 자기자본(자본잠식)은 계산하지 않는다.
+  // PBR = marketCap / equity(호출부가 보통주 장부가=commonEquity를 넘긴다, Damodaran pbv.pdf, STEP 963 확정) — 음수(자본잠식)는 계산하지 않는다.
   let pbr: number | null = null;
   if (inp.equity == null) unavailable.pbr = "MISSING_EQUITY";
   else if (!(inp.equity > 0)) unavailable.pbr = "NEGATIVE_EQUITY";
