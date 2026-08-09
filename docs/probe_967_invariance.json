@@ -1,0 +1,999 @@
+{
+ "checked930": 930,
+ "noCache930": 0,
+ "mismatches930": [],
+ "checked197": 197,
+ "noCache197": 0,
+ "newlyOk": [],
+ "stillSkipped": [
+  {
+   "symbol": "ABCB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "ACXP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ADAC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ADAG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ADAM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ADIG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ADIL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AERO",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AESP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AEXA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AFBI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "AFJK",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AFRI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AKAN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AKO-A",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AKO-B",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AKTS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AKTX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALAR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALDF",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALDX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALF",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALIS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALLT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALMR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALMS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALOV",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ALPX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AMSS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AMTB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "AMTD",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ANGH",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AOD",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "APA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "APGE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "API",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "APMC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "APMD",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ARAI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ARMP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AROW",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "MISSING_TAG_OPERATING_INCOME"
+  },
+  {
+   "symbol": "ARQQ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ARR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ARTL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ASA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ASM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ASML",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ASND",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ASPC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ASTL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AUB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "AUDC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AUGO",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AURA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AURE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AUST",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "AVAT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "B",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BIP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BLW",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BLX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BLZR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BME",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BMO",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BMRC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "BN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BPAC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BPOP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BPRN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "BQ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BRBI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BRIA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BRVE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "BZUN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CAAP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CAAS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CABA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CABR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CAE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CBRS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CBSH",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "CDT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CDTG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CFBK",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "CFND",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CHEC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CIG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CIG-C",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CIGI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CIGL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CII",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CIK",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CIM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CING",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CINT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CLPS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CLST",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "CLWT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CLYM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMBT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMCL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMCM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMDB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMII",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMMB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMND",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMPS",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMRE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CMTV",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "CNCK",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNEY",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNF",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNOB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "CNQ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNSP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNTN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNTX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CNXU",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "COAG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "COE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "COOT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "COPL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CPA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CPAC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CPOP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CPZ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CRAN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CRAQ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CRDL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CRF",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CRML",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CRNT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CSIQ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CSQ",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CSQR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CSTE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CSWC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CTAA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CTBI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "CTGO",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "CYD",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "DAC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "DBL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "DHT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "DHY",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "DOX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "DRD",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ELMT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ELOG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ELPC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ELPW",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ELTK",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ELVA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ENIC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ENLT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "ENLV",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "FCBM",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "FLC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "FVN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "HFWA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "HGLB",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "HIHO",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LATA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LGHL",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LIME",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LIMN",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LWAC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LX",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LXEH",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "LYG",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "MGYR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "MSBI",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "MSC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "NEUP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "NEWP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "NEWT",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "MISSING_TAG_OPERATING_INCOME"
+  },
+  {
+   "symbol": "PDC",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "PROV",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "PRQR",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "RAY",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "RAYA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "RBNE",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "TP",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "TRMD",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "TRMK",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "NOT_APPLICABLE_SECTOR"
+  },
+  {
+   "symbol": "TROO",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "VSA",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  },
+  {
+   "symbol": "VSME",
+   "skipReasonOld": "INSUFFICIENT_HISTORY",
+   "skipReasonNew": "INSUFFICIENT_HISTORY"
+  }
+ ],
+ "skipReasonDist": {
+  "NOT_APPLICABLE_SECTOR": 17,
+  "INSUFFICIENT_HISTORY": 177,
+  "MISSING_TAG_OPERATING_INCOME": 2
+ },
+ "revdcfTotal": 604,
+ "revdcfNotIn930": [
+  "SUNB"
+ ]
+}

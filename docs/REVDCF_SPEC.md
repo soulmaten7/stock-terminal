@@ -1441,6 +1441,26 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 🔴 **Citigroup third value($70,613M, stockanalysis.com)는 이 정책으로 설명되지 않는다** — 우리 ⓐ($81,139M)·ⓑ($80,722M) 어느 쪽과도 안 맞는다. 은행 매출 정의 차이(순이자수익 처리 등)로 추정되나 미확인. **이 판정이 그 잔차를 닫지 않는다는 사실을 명시한다.**
 
+### §10-C. 은행형 매출 폴백(STEP 967, 2026-08-09) — 창 정의(§10-A)에 두 번째 매출 시리즈 추가
+
+🔴 **§10-A 5줄은 안 바뀐다.** 표준 REV 4종으로 창이 성립하는 회사는 지금과 완전히 같은 경로·같은 값을 쓴다(967 §4-1, 930종목 전수 대조 불일치 0건으로 실측 확인). 이 절은 **REV 4종이 완전히 전무할 때만** 열리는 두 번째 매출 정의다.
+
+**정의(①-A, FDIC 감독매뉴얼·Quarterly Banking Profile)**: *"Net operating revenue = net interest income + noninterest income."* 은행은 손익계산서가 매출총이익 구조가 아니라 이자·비이자 구조라 표준 REV 4종(`RevenueFromContractWithCustomer...`·`Revenues`·`SalesRevenueNet`)을 쓰지 않는다(SEC 10-K 원문 대조로 확정 — `CBSH` 사례).
+
+**코드 = `lib/revdcf/drivers.ts`의 `REV_BANK_NII`(`InterestIncomeExpenseNet`)·`REV_BANK_NONINT`(`NoninterestIncome`)**. 트리거 조건 — ① `resolveYearWindow`(REV 기준)가 창을 못 만들고, ② `coalesceMap(gaap, REV, "flow").vals`가 **완전히 빈 경우(0년)**일 때만 시도한다. ②가 없으면 REV 데이터가 일부(비연속)만 있는 회사까지 건드리게 된다(967에서 실제로 발견·수정된 결함 — `BRBS`·`CBU`·`PRK` 참조, 아래).
+
+**창 탐색 알고리즘은 §10-A의 5줄과 동일**(연속 5년·10-K만·calYear 5월 경계·maxYear 상한) — `findContiguousWindow()`로 분리해 재사용, 새로 구현하지 않았다. 합산은 두 시리즈 다 값이 있는 연도만(부분합 금지) — `sumMaps()`(기존 함수) 재사용.
+
+**분기 기준 — 섹터 라벨이 아니라 태그 존재**: STEP963이 Q1 4축(PER·PBR) 정의에서 업종별 차등을 배제한 이유는 *"섹터 분류가 100%가 아니라 분류 오류가 계산 정의 오류로 증폭된다"*였다. 이 폴백은 그 우려에 해당하지 않는다 — 분기 기준이 "그 회사가 은행 섹터로 분류됐는가"가 아니라 "REV 4종 태그가 실제로 있는가/없는가"뿐이기 때문이다. 섹터 라벨을 아예 참조하지 않는다.
+
+🔴 **1차 구현 결함(자체 발견·수정, 967)**: 트리거를 "창 실패"로만 뒀다가 930종목 값 불변 검증에서 회귀 3건 적발 — `BRBS`(REV 2018~2020만 존재)·`CBU`·`PRK`(REV 2022~2025만 존재)가 은행형 창으로 갈아타며 fiscalYear·fundamentals 전체가 바뀜(`BRBS` fiscalYear 2020→2025). 위 트리거 조건 ②를 추가해 수정 — 재검증 불일치 0건.
+
+🔴 **부작용(발견만, 안 고침)**: `BPOP`은 REV 2008~2012에만 데이터가 남아 있어(그 이후 소멸) 트리거 조건 ②(REV 완전 전무)에 안 걸려 은행형 폴백을 못 받는다 — 명백히 은행인데 낡은 REV 잔여 데이터(fiscalYear=2012)에 계속 갇힌다.
+
+**결과(967 실측, 1,127종목 전량)**: 197건 중 **19건**(전부 미국 지역은행: `ABCB`·`AFBI`·`AMTB`·`AROW`·`AUB`·`BMRC`·`BPRN`·`CBSH`·`CFBK`·`CLST`·`CMTV`·`CNOB`·`CTBI`·`HFWA`·`MGYR`·`MSBI`·`NEWT`·`PROV`·`TRMK`)가 `flags.revenuePath='bank'`로 fundamentals 확보. `ok:true`(driver 5년 게이트 전체 통과)는 **0건** — 은행은 revenue 게이트 통과 후 `NOT_APPLICABLE_SECTOR`(유동/비유동 미구분 대차대조표)에서 막힌다(838 패턴). 🔴 **역DCF(revdcf_results) 영향 = 0건**(19건 전부 604 자기참조 유니버스 밖 — DB 조회로 확인). Q1(us_fundamentals·us_valuation)만 영향받는다(백필 완료, as_of=2026-08-08).
+
+상세 = `docs/probe_967_bank_revenue.json`.
+
 | # | 항목 | 어떻게 풀리나 |
 |---|---|---|
 | 1 | 🔶 ~~✅ 유니버스 N=623 확정~~ → **재개방(A-9)** — 616/604로 정정됐고, 그마저 **물려받은 1,000 안에서의 값**이다 | STEP 838 → 842 → **866 재확정** |

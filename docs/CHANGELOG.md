@@ -1,6 +1,30 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (138) — 🟩 **STEP 967: 은행형 매출 경로 추가 — 순이자수익 + 비이자수익 폴백 (구현·백필 완료)**
+
+> **성격**: 코드 변경(폴백 경로 추가, 기존 REV 경로 무변경) + DB 백필(19행). **화면·크론 무접촉. KR 미접촉.**
+
+**왜** — STEP964가 `fiscal_year` null 197건 중 C분류(8건, 표본 `CBSH`·`ABCB`)를 "은행형 손익구조라 REV 태그를 안 씀"으로 진단만 하고 처방을 미뤘다. 이 STEP이 그 처방을 실행한다.
+
+**①-B(신설 직후 첫 적용) + ①-A** — stockanalysis.com이 은행(`CBSH`)에도 "Revenue" 라인을 표시(FY2024 1,631M·FY2025 1,712M, 구성 비공개)함을 확인. 원전(FDIC Examination Policies Manual §5.1·Quarterly Banking Profile): *"Net operating revenue = net interest income + noninterest income."* SEC 10-K 원문(`CBSH` R5.htm, curl+User-Agent 헤더로 직접 대조) — FY2024 순이자수익 $1,040.246M + 비이자수익 $615.553M = $1,655.799M, 외부 $1,631M과 1.52% 차이. 대손충당금 차감 가설로 0.497%(FY2024)/0.234%(FY2025)까지 좁혔으나 **완전히 닫지 못함 — 미확정으로 남김**.
+
+**2단계 회복 규모(코드 전, 사전 측정)** — 197건 캐시 전량(SEC 신규호출 0): `InterestIncomeExpenseNet` 29건·`NoninterestIncome` 20건·둘 다 존재 20건·연속 5년 창 성립 20건. 단일태그(`RevenuesNetOfInterestExpense`, Citigroup류)는 0건 — 코드에 경로 추가 안 함(쓰이지 않는 파라미터 금지). 🔴 국가별 분류(미국57/미매칭55/캐나다24/기타61, 명령서 제공치)를 damodaran_industry 조인·Nasdaq 스크리너 두 방법으로 재현 시도 — **둘 다 불일치**(damodaran: 미매칭91/US56/기타45/Canada5, Nasdaq: US85/China20/Canada18) — 원 산출 방법 규명 못 함, 미해결로 남김. 회복 건수는 20건으로 "10건 미만이면 멈춘다" 기준(§2-4)을 넘어 3단계 진행.
+
+**3단계 구현** — `lib/revdcf/drivers.ts`: `resolveYearWindow` 내부 로직을 `findContiguousWindow(vals, opts)`로 분리(순수 리팩터, 동작 무변경 — 은행 폴백이 재사용) · `REV_BANK_NII`(`InterestIncomeExpenseNet`)·`REV_BANK_NONINT`(`NoninterestIncome`) 신규 상수 · `computeDrivers()`에 폴백 블록 추가(트리거 = REV 창 실패 **AND** REV coalesce 완전 전무) · `flags.revenuePath="standard"|"bank"` · `sourceTags.revenue="InterestIncomeExpenseNet+NoninterestIncome"`(합성 라벨, `ebitSource`의 기존 관행과 동일 패턴). 🔑 **섹터 라벨이 아니라 태그 존재로 분기** — STEP963의 업종별 차등 배제 판정(섹터분류 오류가 계산정의 오류로 번짐)과 정합, 이 분기는 섹터 라벨을 참조하지 않는다. 테스트 5건 신규(폴백 미발동/발동+합계검증/부분태그 미발동 2건/기본값 검증) — **341/341 통과**.
+
+**🔴 1차 구현 결함(자체 발견·수정)** — 트리거를 "5년 창 실패"로만 뒀다가 §4-1(930종목 값 불변 대조)에서 회귀 3건(`BRBS`·`CBU`·`PRK`) 적발. 이 3종목은 REV 태그가 완전히 없는 게 아니라 일부 연도만(`BRBS` 2018~2020, `CBU`/`PRK` 2022~2025) 있어 표준 경로가 이미 그 데이터로 fiscalYear·fundamentals를 확정해 뒀는데, 은행형 폴백이 이를 덮어써 완전히 다른 값(`BRBS` fiscalYear 2020→2025, revenue 3.2M→91.7M 등)으로 갈아치웠다 — 값이 바뀌면 안 된다는 §4의 원칙을 정확히 겨냥해 잡힌 회귀. **수정** = 트리거 조건에 "REV coalesce 결과가 0년(태그 자체가 완전히 없음)"을 추가 — 부분 REV 데이터가 있는 회사는 폴백 대상에서 제외. 재검증 = **930종목 전수 대조 불일치 0건**. 🔴 **부작용(발견만, 안 고침)**: `BPOP`은 REV 2008~2012에만 데이터가 남아 있어(트리거 조건에 안 걸림) 명백히 은행인데도 낡은 잔여 데이터(fiscalYear=2012)에 계속 갇힌다.
+
+**4단계 값 불변·역DCF 확인** — 구코드(967 이전, `cc10ece`) vs 신코드 완전 대조(1,127종목 전량, SEC 신규호출 0): **930종목 불일치 0건.** 197종목: `flags.revenuePath='bank'`로 fundamentals 확보 **19건**(전부 미국 지역은행). `ok:true`(driver 5년 전체 통과)는 **0건** — 은행은 revenue 게이트 통과 후 `NOT_APPLICABLE_SECTOR`(유동/비유동 미구분 대차대조표) 게이트에서 막힌다(838의 "금융인접 신호" 패턴). 🔴 하지만 `fundamentals`는 그 게이트보다 **먼저** 수집되므로(947 설계) Q1 카드(PER·PBR·PSR)엔 실질 회복이다. `revdcf_results`(604) — 19건 전부 자기참조 유니버스 밖(DB 조회로 확인) → **영향 0건**, verdict 분포 불변.
+
+**백필** — `us_fundamentals_snapshot`(tag=`pre_step967`) 1,127행 선스냅샷(공통 컬럼만, `common_equity` 등 3컬럼은 스냅샷 테이블에 없어 STEP963 전례대로 제외) → `us_fundamentals`·`us_valuation`(as_of=2026-08-08) 각 19행 갱신(price·market_cap 기존값 재사용, debt·비영업자산은 driver5 게이트 실패로 미확보 유지) → `us_sector_relative` 1,127행 재계산(`computeSectorRelativeBatch` 재사용). **후처리 검증**: `us_fundamentals` fiscal_year 확보 930→**949**(+19) · `CBSH` 실측 PER 15.01·PBR 2.24·PSR 4.82(EV/EBITDA만 `MISSING_MARKET_DATA`) · `revdcf_results` 604행·verdict 분포(skipped170·value_destroying156·years119·over_cap94·below_one65) 불변.
+
+**문서** — `docs/probe_967_bank_revenue.json`(원자료) · `docs/REVDCF_SPEC.md` §10-C 신설(정본, 트리거 조건·1차결함·부작용·결과 전문) · `docs/VALUATION_SPEC.md`(197종목 섹션에 STEP967 서브섹션 추가) · `docs/STATE.md`(967 신규 블록).
+
+**무변경** — REV 4종 경로 값 완전 동일(930종목 실측 확인). `app/(routes)`·`components`·`messages` 무접촉. KR 미접촉. 크론 미호출.
+
+**못 한 것** — 1.52% 잔차 완전 규명(0.5%/0.23%까지만) · 국가별 분류 재현(두 방법 다 불일치) · `BPOP`류(낡은 REV 잔여로 은행형 전환 안 됨) 처방 · 은행 operatingIncome 태그의 개념 정합성(EV/EBITDA는 이미 다른 게이트로 막혀 있어 당장 영향 없음).
+
 ## 2026-08-09 (137) — 🟩 **STEP 966: ①-B(타 플랫폼 실무 조사) 규칙 신설 + IFRS 범위 첫 적용**
 
 > **성격**: 문서 규칙 신설(CLAUDE.md) + 조사(판정 없음). **코드·DB·화면·크론 전부 무접촉.** SEC 신규 호출 0건.

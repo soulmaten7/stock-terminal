@@ -66,6 +66,17 @@ const sumMaps = (years: number[], ...ms: Record<number, number>[]): Record<numbe
 const hasAll = (years: number[], m: Record<number, number>) => years.every((y) => m[y] != null);
 const latestYear = (years: number[], m: Record<number, number>): number | null => { for (let i = years.length - 1; i >= 0; i--) if (m[years[i]] != null) return years[i]; return null; };
 
+// STEP 967 §3 — 순수 창탐색 로직을 연도→값 맵 인자로 분리(동작 무변경 — resolveYearWindow가 REV로 이 함수를
+//   부르던 것을 그대로 옮겼을 뿐). 은행형 매출 폴백(computeDrivers 안)이 같은 로직을 재사용하기 위함 — 창 탐색
+//   알고리즘을 두 번 구현하지 않는다.
+function findContiguousWindow(vals: Record<number, number>, opts: { size: number; maxYear: number }): { years: number[] | null; reason?: string; latestAvailable: number | null } {
+  const allYears = Object.keys(vals).map(Number).filter((y) => y <= opts.maxYear).sort((a, b) => a - b);
+  const latestAvailable = allYears.length ? allYears[allYears.length - 1] : null;
+  if (allYears.length < opts.size) return { years: null, reason: "TOO_FEW_YEARS", latestAvailable };
+  const top = allYears.slice(-opts.size);
+  for (let i = 1; i < top.length; i++) { if (top[i] !== top[i - 1] + 1) return { years: null, reason: "NON_CONTIGUOUS", latestAvailable }; }
+  return { years: top, latestAvailable };
+}
 // STEP 951 §1 — 창 계산의 유일한 출처. 코드와 docs/REVDCF_SPEC.md가 같은 5줄을 가리킨다(규칙 5-2 ⑤):
 //   ① 기준은 매출(REV 후보 태그의 coalesce 결과) 하나다 — 태그마다 따로 창을 잡지 않는다.
 //   ② 10-K 연간 항목만 센다(annualMap의 isAnnual·기간 300~400일 필터).
@@ -75,16 +86,23 @@ const latestYear = (years: number[], m: Record<number, number>): number | null =
 //   ⑤ 상한 maxYear를 둔다(호출부가 오늘 날짜에서 유도해 인자로 넘긴다) — 데이터 오류로 미래 연도가 들어오는 것을 막는다.
 export function resolveYearWindow(gaap: Gaap, opts: { size: number; maxYear: number }): { years: number[] | null; reason?: string; latestAvailable: number | null } {
   const revVals = coalesceMap(gaap, REV, "flow").vals;
-  const allYears = Object.keys(revVals).map(Number).filter((y) => y <= opts.maxYear).sort((a, b) => a - b);
-  const latestAvailable = allYears.length ? allYears[allYears.length - 1] : null;
-  if (allYears.length < opts.size) return { years: null, reason: "TOO_FEW_YEARS", latestAvailable };
-  const top = allYears.slice(-opts.size);
-  for (let i = 1; i < top.length; i++) { if (top[i] !== top[i - 1] + 1) return { years: null, reason: "NON_CONTIGUOUS", latestAvailable }; }
-  return { years: top, latestAvailable };
+  return findContiguousWindow(revVals, opts);
 }
 
 // ── 태그 union (840/847/849 확정) ────────────────────────────────────────────
 const REV = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "RevenueFromContractWithCustomerIncludingAssessedTax", "SalesRevenueNet"];
+// 🔴 STEP 967 — 은행형 매출 폴백. 은행은 손익계산서가 이자·비이자 구조라 위 REV 4종을 안 쓴다(REV 태그 자체가 없음).
+//   기존 REV 경로가 5년 창을 못 만들 때만(computeDrivers §3-1 게이트 직전) 시도하는 폴백 — REV 경로가 성립하는
+//   회사는 이 상수들을 아예 참조하지 않는다(값 무변경).
+//   🔑 섹터 라벨이 아니라 태그 존재 여부로 분기한다 — STEP963이 업종별 차등을 배제한 이유(섹터분류 오류가
+//   계산정의 오류로 번짐, 분류 정확도가 100%가 아님)는 여기 해당 안 된다. 이 분기의 기준은 "그 회사가 은행
+//   섹터인가"가 아니라 "REV 4종 태그가 5년 연속 존재하는가"뿐이므로 섹터 라벨의 정확도에 의존하지 않는다.
+//   정의 근거(①-A) = FDIC 감독매뉴얼(Examination Policies Manual §5.1 EARNINGS)·FDIC Quarterly Banking Profile
+//   용어: "Net operating revenue = net interest income + noninterest income."
+//   실측(STEP967, us_fundamentals.fiscal_year IS NULL 197건 전량, SEC 신규호출 0) — 이 두 태그만으로 20/197 회복
+//   (전부 미국 지역은행). 변형 태그는 발견되지 않아 추가하지 않는다(규칙 5-2 ③ 실측 선행 — 쓰이지 않는 파라미터 금지).
+const REV_BANK_NII = ["InterestIncomeExpenseNet"];
+const REV_BANK_NONINT = ["NoninterestIncome"];
 const COST = ["CostOfRevenue", "CostOfGoodsAndServicesSold", "CostOfGoodsSold", "CostOfServices", "CostOfSales", "CostOfOperatingRevenues", "CostOfRevenues"];
 const PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest", "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments", "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic"];
 const INTEREST = ["InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt", "InterestIncomeExpenseNet"];
@@ -158,13 +176,38 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
 
   // STEP 951 §3-1 — 함수 진입 직후 창을 계산한다. maxYear는 오늘 날짜에서 유도(코드에 숫자로 안 박음·규칙 5-2).
   const maxYear = new Date().getFullYear();
-  const window = resolveYearWindow(gaap, { size: WINDOW_SIZE, maxYear });
+  // 🔴 STEP 967 — 이하 재할당 가능(let). 표준 REV 창이 안 잡힐 때만 은행형 폴백으로 덮어쓴다(아래).
+  let window = resolveYearWindow(gaap, { size: WINDOW_SIZE, maxYear });
+  const revCo = coalesceMap(gaap, REV, "flow"); // STEP 967 — 폴백 게이트 조건에도 쓰므로 위로 끌어올림(동작 무변경, 위치만 이동)
+
+  // STEP 967 §3 — 은행형 매출 폴백. 🔴 REV 태그가 "완전히 전무"할 때만 시도한다 — window.years==null만으로 트리거하면
+  //   REV 데이터가 일부(3~4년) 있어 표준 경로가 이미 특정 연도(ly)를 앵커로 skip 판정을 내린 종목까지 건드리게
+  //   된다(실측으로 발견: `BRBS`[REV 2018~2020 보유]·`CBU`·`PRK`[REV 2022~2025 보유]가 은행형 창[NII+NonInt]으로
+  //   갈아타며 fiscalYear·revenue 등 fundamentals가 통째로 바뀜 — 930건 불변 검증에서 실제로 잡힌 회귀).
+  //   🔴 REV coalesce 결과가 0년(태그 자체가 없음)일 때만 폴백을 시도해야 "기존 REV 경로 무변경"이 지켜진다.
+  let revenuePath: "standard" | "bank" = "standard";
+  let bankRevVals: Record<number, number> = {};
+  if (window.years == null && Object.keys(revCo.vals).length === 0) {
+    const niiCo = coalesceMap(gaap, REV_BANK_NII, "flow");
+    const nonIntCo = coalesceMap(gaap, REV_BANK_NONINT, "flow");
+    // 🔴 두 시리즈 다 값이 있는 연도만 유효(부분합 금지) — 한쪽만 있으면 그 해의 "총매출"을 대표할 수 없다.
+    //   sumMaps는 이미 있는 함수를 그대로 재사용한다(신규 합산 로직 없음) — years 인자를 "둘 다 있는 연도"로
+    //   미리 좁혀서 넘기므로 sumMaps 내부의 "있는 것만 더한다" 동작이 결과적으로 "둘 다 있을 때만" 합산이 된다.
+    const bothYears = Object.keys(niiCo.vals).map(Number).filter((y) => nonIntCo.vals[y] != null);
+    const candidateBankRev = sumMaps(bothYears, niiCo.vals, nonIntCo.vals);
+    const bankWindow = findContiguousWindow(candidateBankRev, { size: WINDOW_SIZE, maxYear });
+    if (bankWindow.years != null) {
+      bankRevVals = candidateBankRev;
+      window = bankWindow;
+      revenuePath = "bank";
+    }
+  }
+  flags.revenuePath = revenuePath;
 
   // ── STEP 947 §2-3 — fundamentals(Q1 밸류에이션 재료) 선수집. driver 5년 게이트 전부보다 앞에서 끝낸다.
   //    아래 각 유무 게이트가 반환하는 skip 경로에도 fundamentals가 실린다. 게이트 조건식·순서·skipReason 문자열은 불변.
   //    STEP 951: 앵커 연도(ly)는 이제 resolveYearWindow가 본 최신 연도 — 창이 아예 안 잡혀도(window.years===null) 단일
   //    시점 값은 구할 수 있으면 구한다(947 설계 유지: skip 경로에도 부분 데이터).
-  const revCo = coalesceMap(gaap, REV, "flow");
   const ly = window.latestAvailable;
   const gp = annualMap(gaap, "GrossProfit", "flow"), cost = coalesceMap(gaap, COST, "flow").vals;
   const cae = annualMap(gaap, "CostsAndExpenses", "flow"), oiMap = annualMap(gaap, "OperatingIncomeLoss", "flow");
@@ -178,11 +221,15 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   else if (id2.length === 1) { revenueTag = id2[0][0]; revenueCheck = "id2"; }
   else { revenueTag = (ly != null ? revCo.tagAt[ly] : undefined) ?? REV[0]; revenueCheck = "unverified"; }
   const revTagMap = annualMap(gaap, revenueTag, "flow");
-  flags.revenueTag = revenueTag; flags.revenueCheck = revenueCheck;
+  // 🔴 STEP 967 — 은행형 경로에서는 위 REV 항등식 판정(id1/id2, GrossProfit·CostsAndExpenses 기반)이 무의미하다
+  //   (은행은 그 개념 자체가 없다) — flags를 실제 채택 경로로 덮어써 오표시를 막는다.
+  flags.revenueTag = revenuePath === "bank" ? "InterestIncomeExpenseNet+NoninterestIncome" : revenueTag;
+  flags.revenueCheck = revenuePath === "bank" ? "bank_fallback" : revenueCheck;
 
   // STEP 951 — 계산에 쓸 연도 집합: 창이 잡혔으면 그 5개, 아니면(fundamentals 전용) 앵커 1개뿐(또는 0개).
   const computeYears = window.years ?? (ly != null ? [ly] : []);
-  const rev: Record<number, number> = {}; for (const y of computeYears) rev[y] = revTagMap[y] ?? revCo.vals[y];
+  // 🔴 STEP 967 — 은행형 경로는 revTagMap·revCo가 비어 있으므로(REV 태그 자체가 없어 창이 안 잡혔던 것) bankRevVals로 대체.
+  const rev: Record<number, number> = {}; for (const y of computeYears) rev[y] = revenuePath === "bank" ? bankRevVals[y] : (revTagMap[y] ?? revCo.vals[y]);
 
   // 영업이익: OperatingIncomeLoss → 매출−총비용(CostsAndExpenses·852 GE 등) → Pretax+Interest 재구성
   const pretax = coalesceMap(gaap, PRETAX, "flow").vals, interest = coalesceMap(gaap, INTEREST, "flow").vals;
@@ -232,7 +279,11 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   if (fPreferredStock != null && ly != null) sourceTags.preferredStock = prefCo.tagAt[ly];
   if (fMinorityInterest != null && ly != null) sourceTags.minorityInterest = nciCo.tagAt[ly];
   const fRevenue: number | null = ly != null ? rev[ly] ?? null : null;
-  if (fRevenue != null && ly != null) sourceTags.revenue = revTagMap[ly] != null ? revenueTag : (revCo.tagAt[ly] ?? revenueTag);
+  if (fRevenue != null && ly != null) {
+    // 🔴 STEP 967 — 은행형 경로는 단일 태그가 아니라 두 태그의 합이므로, ebitSource의 기존 관행(재구성값은
+    //   합성 라벨로 표시 — 예 "Rev-CostsAndExpenses")과 같은 방식으로 합성 라벨을 남긴다(원시 태그명 아님).
+    sourceTags.revenue = revenuePath === "bank" ? "InterestIncomeExpenseNet+NoninterestIncome" : (revTagMap[ly] != null ? revenueTag : (revCo.tagAt[ly] ?? revenueTag));
+  }
   const fOperatingIncome: number | null = ly != null ? oi[ly] ?? null : null;
   if (fOperatingIncome != null && ly != null) {
     sourceTags.operatingIncome = oiMap[ly] != null ? "OperatingIncomeLoss" : (rev[ly] != null && cae[ly] != null ? "Rev-CostsAndExpenses" : "Pretax+Interest");
@@ -263,7 +314,8 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
 
   // STEP 951 §3-3 — 창 일치성 방어 점검: resolveYearWindow가 본 최신 연도(ly)와 창의 끝(years 마지막)이 같아야 한다.
   //   다르면 그 자체가 버그다(정상 동작에서는 항상 같아야 함 — resolveYearWindow가 스스로 구성한 창이므로).
-  const lyCheck = latestYear(years, revCo.vals);
+  // 🔴 STEP 967 — 은행형 경로는 창을 bankRevVals로 구성했으므로 대조 대상도 bankRevVals여야 한다(revCo는 이 경로에서 비어 있음).
+  const lyCheck = latestYear(years, revenuePath === "bank" ? bankRevVals : revCo.vals);
   if (lyCheck !== years[years.length - 1]) return { ok: false, skipReason: "WINDOW_MISMATCH", flags: { ...flags, windowReason: "mismatch", latestAvailable: window.latestAvailable }, fundamentals };
 
   // STEP 951 §3-4 — 창을 flags에 반드시 남긴다. 과거 행(이 필드 없음)과의 구분선.

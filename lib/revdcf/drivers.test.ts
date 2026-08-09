@@ -294,6 +294,61 @@ describe("computeDrivers — fundamentals(STEP 947 §2) — Q1 밸류에이션 �
   });
 });
 
+// STEP 967 §3-4 — 은행형 매출(순이자수익+비이자수익) 폴백 회귀.
+describe("computeDrivers — 은행형 매출 폴백(STEP 967)", () => {
+  const niiNonint5yr = {
+    InterestIncomeExpenseNet: flowFacts(five(700)),
+    NoninterestIncome: flowFacts(five(300)),
+  };
+  const bankFullOk = { ...niiNonint5yr, ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr };
+  const fullOk = { ...revenue5yr, ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr };
+
+  it("Revenues 계열(REV 4종)이 있으면 폴백이 발동하지 않는다 — 표준 경로 값 그대로", () => {
+    // 표준 REV 태그와 은행형 태그가 둘 다 있어도(가상 상황) REV가 우선이어야 한다(기존 경로 무변경 원칙).
+    const r = computeDrivers(gaapOf({ ...fullOk, ...niiNonint5yr }), dei);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.flags.revenuePath).toBe("standard");
+      expect(r.drivers.startingSales).toBe(1000); // REV_TAG값(1000) — NII+NonInt(700+300=1000)와 우연히 같아도 출처는 REV여야 함
+    }
+    expect(r.fundamentals.sourceTags.revenue).toBe(REV_TAG);
+  });
+
+  it("NII+비이자만 있으면(REV 4종 전무) 폴백이 발동하고 합계가 맞는다", () => {
+    const r = computeDrivers(gaapOf(bankFullOk), dei);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.flags.revenuePath).toBe("bank");
+      expect(r.drivers.startingSales).toBe(1000); // 700(NII) + 300(NonInt)
+    }
+    expect(r.fundamentals.revenue).toBe(1000);
+    expect(r.fundamentals.sourceTags.revenue).toBe("InterestIncomeExpenseNet+NoninterestIncome");
+  });
+
+  it("NII만 있고 비이자수익이 없으면(REV 4종도 전무) 폴백이 발동하지 않는다 — 창 미성립", () => {
+    const niiOnly = { InterestIncomeExpenseNet: flowFacts(five(700)) };
+    const r = computeDrivers(gaapOf({ ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr, ...niiOnly }), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.skipReason).toBe("INSUFFICIENT_HISTORY");
+    expect(r.flags.revenuePath).toBe("standard"); // 폴백도 실패 — 기본값 유지
+    expect(r.fundamentals.revenue).toBeNull(); // 부분합 금지 — NII만으로 revenue를 채우지 않는다
+  });
+
+  it("비이자수익만 있고 NII가 없으면(REV 4종도 전무) 폴백이 발동하지 않는다 — 창 미성립", () => {
+    const nonIntOnly = { NoninterestIncome: flowFacts(five(300)) };
+    const r = computeDrivers(gaapOf({ ...oi5yr, ...ppe5yr, ...bs5yr, ...cashOp5yr, ...shares5yr, ...capexDna4yr, ...nonIntOnly }), dei);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.skipReason).toBe("INSUFFICIENT_HISTORY");
+    expect(r.flags.revenuePath).toBe("standard");
+  });
+
+  it("아무 매출 재료도 없으면 flags.revenuePath는 기본값 'standard'로 남는다(빈 값 아님)", () => {
+    const r = computeDrivers(gaapOf({}), dei);
+    expect(r.ok).toBe(false);
+    expect(r.flags.revenuePath).toBe("standard");
+  });
+});
+
 // STEP 951 §1 — resolveYearWindow: 종목별 실재 최신 5개 연도 계산의 유일한 출처. 6개 케이스 전부.
 // 커스텀 end 날짜가 필요해 이 블록 전용 flowFacts를 따로 둔다(파일 상단의 flowFacts는 end를 `${y}-12-31`로 고정).
 function flowFactsAt(entries: [number, string, number][]): Fact[] {

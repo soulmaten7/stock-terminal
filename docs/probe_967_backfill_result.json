@@ -1,0 +1,31 @@
+{
+ "snapSaved": 1127,
+ "targetsTotal": 197,
+ "skippedNoCache": 0,
+ "skippedNotBank": 178,
+ "recoveredCount": 19,
+ "recoveredSymbols": [
+  "ABCB",
+  "AFBI",
+  "AMTB",
+  "AROW",
+  "AUB",
+  "BMRC",
+  "BPRN",
+  "CBSH",
+  "CFBK",
+  "CLST",
+  "CMTV",
+  "CNOB",
+  "CTBI",
+  "HFWA",
+  "MGYR",
+  "MSBI",
+  "NEWT",
+  "PROV",
+  "TRMK"
+ ],
+ "fundSaved": 19,
+ "valSaved": 19,
+ "relSaved": 1127
+}

@@ -232,6 +232,24 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 상세 원자료 = `docs/probe_966_ifrs_scope.json`.
 
+### STEP 967(2026-08-09) — 은행형 매출 폴백 구현 완료: 197건 중 미국 은행 19건 회복
+
+🔴 **위 C분류(STEP964, 8건, 표본 `CBSH`·`ABCB`)의 실제 처방** — "매출태그·10-K 폼 둘 다 있으나 매출태그 자체가 10-K로 안 잡히는" 은행형 종목은 은행 손익계산서가 이자·비이자 구조라 표준 REV 4종을 안 쓰기 때문이다(추정이 아니라 SEC 10-K 원문[`CBSH` R5.htm] 직접 대조로 확정). **정의(①-A) = FDIC 감독매뉴얼(Examination Policies Manual §5.1)·Quarterly Banking Profile의 공식 용어**: *"Net operating revenue = net interest income + noninterest income."*
+
+**코드 구현**: `lib/revdcf/drivers.ts`에 `InterestIncomeExpenseNet`+`NoninterestIncome` 폴백 추가 — 🔴 **표준 REV 4종이 완전히 전무할 때만** 시도(부분 데이터가 있는 회사는 제외, 아래 "1차 시도 결함" 참조). 섹터 라벨이 아니라 태그 존재 여부로 분기(STEP963의 업종별 차등 배제 판정과 정합 — 그 판정은 "섹터 분류가 100%가 아니라서 계산 정의에 오류가 번진다"는 이유였는데, 이 분기는 "그 회사가 은행 섹터인가"를 안 보고 "REV 태그가 실제로 있는가"만 보므로 섹터 분류 정확도에 의존하지 않는다).
+
+🔴 **1차 구현 결함(자체 발견·수정)**: 트리거 조건을 "5년 창 실패"로만 두었다가 930종목 값 불변 검증에서 회귀 3건(`BRBS`·`CBU`·`PRK`) 적발 — 이 3종목은 REV 태그가 완전히 없는 게 아니라 일부 연도만(`BRBS` 2018~2020) 있어 표준 경로가 이미 그 REV 데이터로 fiscalYear·fundamentals를 정해 두고 있었는데, 은행형 폴백이 이를 덮어써 완전히 다른 값(예: `BRBS` fiscalYear 2020→2025)으로 갈아치웠다. **수정 = 트리거 조건에 "REV coalesce 결과가 0년(태그 자체가 완전히 없음)" 조건 추가.** 이 수정 후 930종목 재검증 = **불일치 0건**.
+
+**회복 실측**: 197건 중 19건이 `flags.revenuePath='bank'`로 `fundamentals`(fiscalYear·revenue·netIncome·equity 등)가 채워짐 — `ABCB`·`AFBI`·`AMTB`·`AROW`·`AUB`·`BMRC`·`BPRN`·`CBSH`·`CFBK`·`CLST`·`CMTV`·`CNOB`·`CTBI`·`HFWA`·`MGYR`·`MSBI`·`NEWT`·`PROV`·`TRMK`(전부 미국 지역은행). 🔴 **`ok:true`(역DCF 완전 성공)는 0건** — 은행은 revenue 게이트를 통과한 뒤 `NOT_APPLICABLE_SECTOR`(유동/비유동 미구분 대차대조표) 게이트에서 막힌다(838의 "금융인접 신호" 패턴 그대로). 하지만 `fundamentals`는 그 게이트보다 **먼저** 수집되므로(947 설계) Q1 카드(PER·PBR·PSR)엔 실질적 회복이다 — 백필 후 `CBSH` 실측: PER 15.01·PBR 2.24·PSR 4.82(EV/EBITDA만 `MISSING_MARKET_DATA`로 unavailable, driver5 게이트 실패로 debt·비영업자산 미확보이기 때문).
+
+🔴 **회복 안 되는 이유(178건)**: 대부분(177건)은 여전히 `INSUFFICIENT_HISTORY`(REV도 은행형도 5년 못 채움 — STEP966의 IFRS 외국사 등) · `NOT_APPLICABLE_SECTOR` 17건(이미 다른 사유로 창은 잡히나 대차대조표 미분류) · `MISSING_TAG_OPERATING_INCOME` 2건.
+
+**1.52% 잔차(STEP967 §1-2)**: `CBSH` R5.htm 원문 대조 결과 — 순이자수익(1,040.246M)에서 대손충당금(32.903M)을 뺀 값(1,007.343M) + 비이자수익(615.553M) = 1,622.896M, 외부(stockanalysis.com) 1,631M과 **0.497%까지 좁혀지나 완전히 닫히지는 않는다**(FY2025는 0.234% — 잔차 크기가 연도마다 달라 단일 공식으로 설명 안 됨). 🔴 **미확정으로 남긴다.** 우리 정의(대손충당금 차감 없는 총 순영업수익)는 FDIC 정의를 그대로 따른 것으로 유지.
+
+🔴 **미해결 — 국가별 분류 재현 실패**: 이 STEP의 명령서에 주어진 "미국57/미매칭55/캐나다24/기타61" 분류를 damodaran_industry 조인·Nasdaq 스크리너 country 필드 두 가지 방법으로 재현 시도했으나 **둘 다 일치하지 않았다**(damodaran: 미매칭91/US56/기타45/Canada5, Nasdaq: US85/China20/Canada18). 원 분류 산출 방법을 규명하지 못해 미해결로 남긴다.
+
+상세 원자료 = `docs/probe_967_bank_revenue.json`.
+
 ## 검증
 
 - `lib/valuation.test.ts` — `VALUATION_SPEC`의 formula·basis 고정 문자열 회귀 + 4케이스(흑자·무차입/흑자·유차입/적자/자기자본 음수) 손계산 검산 + 미성립 경계 6건.
