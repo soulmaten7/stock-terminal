@@ -4,11 +4,15 @@ import { describe, it, expect } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { fetchSectorMap, resolveSector } from "./sector";
 
+// STEP 954 — fetchSectorMap이 이제 fetchAllRows(내부에서 .order()를 건 뒤 .range())를 쓴다 —
+// 이 mock의 검증 대상(입력→출력 동등·페이징 경계·빈 결과)은 그대로이고, .order()가 체인에 없어서
+// 나던 "q.order is not a function"만 고친다(다른 어설션은 무변경).
 function mockSb(pages: { ticker_norm: string; industry_group: string }[][]) {
   let call = 0;
   const chain = {
     select: () => chain,
     eq: () => chain,
+    order: () => chain,
     range: async () => {
       const data = pages[call] ?? [];
       call++;

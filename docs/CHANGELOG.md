@@ -1,6 +1,24 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (126) — 🟦 **STEP 954: 페이지네이션 비결정성 처방 적용 — fetchAllRows 신설, 실측으로 흔들린 lib/sector.ts 2곳만 이관**
+
+> **성격**: 코드 수정(953 조사의 실제 처방 적용, 실측 지점만). **화면 무변경**·`us_sector_resolved`(1,021)·`us_sector_wide`(1,127) 무갱신·크론 미호출·DB 쓰기 0·KR 미접촉.
+
+**§1 `lib/supabasePaging.ts` 신설** — `fetchAllRows<T>(build, orderBy, pageSize=1000)`. `orderBy: PageOrder[]`는 **필수 인자·기본값 없음**, 빈 배열이면 즉시 `throw`. `orderBy` 순서대로 `.order(col, {ascending:true, nullsFirst})`를 걸고 `.range()`로 페이지네이션 — 마지막 페이지 판정은 기존 `lib/sector.ts`와 동일(반환 행 수 < pageSize). 에러는 삼키지 않고 던짐. 재시도·백오프 없음(범위 밖). JSDoc에 STEP 953 실측(damodaran_industry 10회 중 1회 118건 결측) 근거와 "orderBy는 고유 전순서여야 한다" 명시. `lib/supabasePaging.test.ts` 5건(빈배열 throw·2페이지 이상 order 호출 확인·nullsFirst 전달·마지막 페이지 경계·에러 전파) 전부 통과.
+
+**§2 `lib/sector.ts` 2곳만 이관** — `fetchSectorMap`의 직접 페이지네이션 루프 + 옛 로컬 `fetchAll()`(완전 삭제, 4개 내부 호출부 전부 `fetchAllRows`로 교체: damodaran_industry crossCheck 재료·nasdaq·yahoo·gics). 정렬 키 — **damodaran_industry**: `UNIQUE(as_of, exchange, ticker)` 실측 확인(Cowork 제시 "확정 사실" 재확인) → `[{column:"exchange", nullsFirst:true}, {column:"ticker"}]`(as_of는 현재 단일값이라 정렬에 안 넣음, 🔴 늘어나면 고유 전순서 아니게 됨을 코드·문서에 명시). **us_sector_nasdaq·us_sector_yahoo·us_sector_gics**: `UNIQUE(as_of, symbol)` 직접 조회로 확인(이 STEP에서 새로 조사·확정) → 각 fetch가 이미 `as_of`로 필터되므로 `symbol` 하나로 전순서. 🔴 **판정 로직(tier 순서·형제 매칭·crossCheck) diff = 0** — `git diff lib/sector.ts` 육안 확인, "행을 어떻게 읽는가"만 바뀜.
+
+**§3 검증** — damodaran_industry(`fetchAllRows` 직접) **20회 반복 — 20/20 정확히 6,937**(하나도 안 흔들림, 처방 성공). `resolveSector(sb, us_valuation 최신 as_of 1,127종목)` **5회 반복 — 미분류 89/89/89/89/89 완전 고정**(953의 89/89/**95**/89/89 흔들림 완전 해소). 🔴 **재현 가능한 최종 미분류 건수 = 89** — 952가 보고했던 "90"은 흔들리는 값 중 하나에 불과했다. DB 쓰기 0(메모리 결과만 집계).
+
+**§4 잔여 28곳 대장(우선순위 없음)** — `docs/probe_954_paging_backlog.json`: 각 지점의 테이블·PK/UNIQUE 유무·후보 정렬키·라이브 화면 경로 여부(승인 필요성) 전수. 🔴 **`advisor_directory`에 PRIMARY KEY·UNIQUE가 전혀 없다** — `pg_constraint` 조회 0건. 코드는 `biz_no`를 행 식별자로 쓰지만 DB가 강제하지 않는다 — 페이지네이션과 별개의 데이터 무결성 문제로 등재, 처방 없음. 라이브 화면 경로 10곳(Explore·검색·유사투자자문사·홈 랭킹·5개국 보드) · KR 동결 5곳(krx 3·krSnapshot·lensPrecompute:572) · 이미 안전 1곳(`lensPrecompute.ts:277`, order(symbol asc)가 실제 PK와 정확히 일치).
+
+**§5 문서** — `docs/SYSTEM_MAP.md`(§10에 아키텍처 원칙 추가: "Supabase 전체 조회는 `fetchAllRows`를 쓴다, 정렬 키는 고유 전순서 필수 인자, `.range()` 직접 사용 금지") · `docs/STATE.md`(00-e를 "조사 완료"→"처방 적용(2곳)·잔여 28곳 대장"으로 갱신). 🔴 **`damodaran_industry`가 왜 유독 불안정했는지는 여전히 미확정** — 정렬을 걸어 증상은 사라졌으나 원인을 안 것은 아니다(재확인·명시).
+
+**무변경** — `app/`·`components/`·`messages/`·`vercel.json`·`.github/workflows/`·`data/us_symbols.json` diff 0(확인) · `us_sector_resolved`(1,021)·`us_sector_wide`(1,127) 재확인 불변 · `lib/sector.ts`의 tier 순서·형제매칭·crossCheck 로직 diff 0 · 크론 등록/수동실행 0 · DB 쓰기 0 · KR 파일(krx·krSnapshot) 무접촉.
+
+**테스트/빌드** — `npm test` **310/310**(31파일, `supabasePaging.test.ts` 5건 신규 + 기존 305 불변, `lib/sector.test.ts`는 `mockSb`에 `.order()` 스텁 추가만·검증 성질 불변) · `npx tsc --noEmit` 클린 · `npm run build` 클린.
+
 ## 2026-08-09 (125) — 🟫 **STEP 953: ORDER 없는 페이지네이션 31곳(재확인 30곳) 전수 조사 — 실제로 흔들린 건 damodaran_industry 읽는 2곳뿐**
 
 > **성격**: 조사 전용(사실 등재·처방 미정). **코드 무변경**·DB 쓰기 0·크론 미호출·화면 무접촉. KR 계열은 조사만 하고 수정대상에서 제외.

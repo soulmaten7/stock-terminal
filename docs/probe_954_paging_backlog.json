@@ -1,0 +1,46 @@
+{
+  "measuredAt": "2026-08-09",
+  "purpose": "STEP 954 §4 — STEP 953의 30곳 중 이번에 이관한 2곳(lib/sector.ts:21·64)을 뺀 28곳 대장. 우선순위 없음 — 표만, 판정은 장은태.",
+  "note": "고유 전순서 키 = information_schema/pg_constraint 직접 조회(PRIMARY KEY·UNIQUE)로 확인. 조회 안 된 테이블은 명시.",
+
+  "specialFinding": "🔴 advisor_directory에는 PRIMARY KEY도 UNIQUE 제약도 전혀 없다(pg_constraint 조회 결과 0건). 코드는 `biz_no`를 행 식별자로 취급하지만 DB가 이를 강제하지 않는다 — 이건 페이지네이션 문제와 별개로 그 자체가 데이터 무결성 문제다.",
+
+  "sites": [
+    { "file": "app/api/cron/revdcf/route.ts", "line": 48, "table": "us_fundamentals", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "revdcf 크론 내부(DB 쓰기 있음, 화면 아님)" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 53, "table": "us_market_cap", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "as_of는 필터일 뿐 PK 아님(심볼당 최신 1행) — symbol만으로 전순서" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 59, "table": "us_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "표시용 값만(계산 미사용)" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 92, "table": "revdcf_results", "pkOrUnique": "PRIMARY KEY (as_of, cik)", "candidateOrderKey": "cik(as_of는 이미 필터됨)", "liveScreenPath": false, "note": "D등급(604<1000, 현재 경계 없음) — 향후 604를 넘으면 필요" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 95, "table": "revdcf_results", "pkOrUnique": "PRIMARY KEY (as_of, cik)", "candidateOrderKey": "cik(as_of는 이미 필터됨)", "liveScreenPath": false, "note": "D등급, 당일 재실행 스킵셋" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 106, "table": "us_market_cap", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "\"나머지\" 유니버스 구성 조인 키 — A등급" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 112, "table": "us_cik_map", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "CIK 매핑 — A등급이나 953 10회 실측 안정" },
+    { "file": "app/api/cron/revdcf/route.ts", "line": 121, "table": "us_fundamentals", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "처리 우선순위 재료(신선도)" },
+    { "file": "app/api/sector/us/route.ts", "line": 16, "table": "us_sector_resolved", "pkOrUnique": "PRIMARY KEY (as_of, symbol)", "candidateOrderKey": "symbol(as_of는 이미 필터됨)", "liveScreenPath": true, "note": "🔴 Explore 화면이 직접 읽는 표 — 수정 시 화면 경로, 승인 필요" },
+    { "file": "app/api/advisors/route.ts", "line": 109, "table": "advisor_directory", "pkOrUnique": "🔴 없음(PK·UNIQUE 둘 다 0건)", "candidateOrderKey": "biz_no(코드가 행 식별자로 취급하나 DB 미강제)", "liveScreenPath": true, "note": "🔴 유사투자자문사 화면 — 승인 필요. 고유키 부재 자체가 별도 문제(specialFinding 참조)" },
+    { "file": "app/api/explore/lens-top/route.ts", "line": 31, "table": "lens_scores", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "홈 \"강점이 많은 종목\" — 승인 필요. US(1023)만 다중페이지, KR(976)은 현재 D등급" },
+    { "file": "app/api/search/route.ts", "line": 50, "table": "kr_stock_snapshot", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "검색 자동완성 인덱스 — 승인 필요" },
+    { "file": "app/api/yahoo/us-list/route.ts", "line": 75, "table": "us_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "US 보드 목록 — 승인 필요" },
+    { "file": "app/api/yahoo/gb-list/route.ts", "line": 74, "table": "gb_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "GB 보드 — D등급(349<1000), 승인 필요성은 낮으나 화면 경로는 맞음" },
+    { "file": "app/api/yahoo/cn-list/route.ts", "line": 84, "table": "cn_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "CN 보드 — 승인 필요" },
+    { "file": "app/api/yahoo/jp-list/route.ts", "line": 78, "table": "jp_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "JP 보드 — 승인 필요" },
+    { "file": "app/api/yahoo/vn-list/route.ts", "line": 74, "table": "vn_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": true, "note": "VN 보드 — D등급(402<1000), 화면 경로는 맞음" },
+    { "file": "lib/usPerf.ts", "line": 63, "table": "us_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "성능갱신 크론 내부(우선순위 재료, 멤버십은 파일기반 STOCK_SYMS가 결정)" },
+    { "file": "lib/gbPerf.ts", "line": 54, "table": "gb_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "D등급(349<1000)" },
+    { "file": "lib/cnPerf.ts", "line": 119, "table": "cn_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "크론 내부, 953 10회 실측 안정" },
+    { "file": "lib/jpPerf.ts", "line": 63, "table": "jp_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "크론 내부, 953 10회 실측 안정" },
+    { "file": "lib/vnPerf.ts", "line": 54, "table": "vn_stock_perf", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "D등급(402<1000)" },
+    { "file": "lib/krSnapshot.ts", "line": 149, "table": "kr_stock_snapshot(name_en is null 필터)", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "symbol", "liveScreenPath": false, "note": "🔴 KR 동결 — 조사만. D등급(현재 6행)" },
+    { "file": "app/api/krx/etf-performance/route.ts", "line": 97, "table": "kr_etp_snapshot(kind=etf)", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "이미 order(trade_amount desc) — symbol을 2차 정렬키로 추가하면 동점 잔여위험 해소", "liveScreenPath": true, "note": "🔴 KR 동결 — 조사만. ETF 보드" },
+    { "file": "app/api/krx/etn-performance/route.ts", "line": 98, "table": "kr_etp_snapshot(kind=etn)", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "이미 order(trade_amount desc) — 위와 동일 잔여위험", "liveScreenPath": true, "note": "🔴 KR 동결 — 조사만. ETN 보드" },
+    { "file": "app/api/krx/ranking/route.ts", "line": 141, "table": "kr_stock_snapshot", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "이미 order(동적 컬럼) — symbol 2차 정렬키 추가 여지", "liveScreenPath": true, "note": "🔴 KR 동결 — 조사만. KR 랭킹 화면" },
+    { "file": "lib/lensPrecompute.ts", "line": 277, "table": "lens_scores", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "이미 order(symbol asc) — 정확히 PK와 일치, 추가 조치 불필요", "liveScreenPath": false, "note": "이미 완전히 안전(선례, STEP 953에서 확인)" },
+    { "file": "lib/lensPrecompute.ts", "line": 572, "table": "kr_stock_snapshot", "pkOrUnique": "PRIMARY KEY (symbol)", "candidateOrderKey": "이미 order(market_cap desc) — symbol 2차 정렬키 추가 여지(동점 잔여위험)", "liveScreenPath": false, "note": "🔴 KR 동결 — 조사만. topKrByMarketCap() KR 렌즈 유니버스" }
+  ],
+
+  "summary": {
+    "totalRemaining": 28,
+    "byPkStatus": { "hasPk": 27, "noPk": 1 },
+    "liveScreenPathCount": 10,
+    "krFrozenCount": 5,
+    "alreadySafeCount": 1
+  }
+}

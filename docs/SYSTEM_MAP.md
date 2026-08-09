@@ -98,6 +98,7 @@
 - **`Promise.all` 하나 실패 = 전체 reject** → 부분 허용은 심볼별 `try/catch` 격리(+`_lastGood` fallback). (지수 티커 소실 원인.)
 - **PostgREST 기본 1000행 캡** → 전종목 처리 시 `.range(from, from+999)` 페이지네이션(안 하면 조용히 누락 · name_en 버그 원인).
 - 🔴 **`.range()` 페이지네이션은 `.order()` 없이는 여전히 불안정하다**(STEP 952b·953, 2026-08-09). `ORDER BY` 없는 쿼리는 PostgreSQL이 행 순서를 실행마다 보장하지 않아, 별개의 `.range()` 페이지 호출들이 경계에서 행을 놓칠 수 있다 — 실측(동일 인자 10회 반복): `lib/sector.ts:21`·`:64`(`damodaran_industry` 읽기)는 10회 중 1회 각각 9건·118건 결측, 반면 같은 order-less 패턴의 다른 8개 지점(`us_cik_map` 10,432행 포함)은 10회 전부 안정적이었다 — **어느 지점이 실제로 흔들리는지는 예측이 아니라 반복 실측으로만 안다.** 전수·등급·처방 후보(미채택) = `docs/probe_953_pagination.json`·`docs/STATE.md` 00-e. **KR 계열은 전면 동결이라 수정 대상에서 제외.**
+  - 🔴 **아키텍처 원칙(STEP 954, 2026-08-09 처방 적용) — Supabase 전체 조회는 `lib/supabasePaging.ts`의 `fetchAllRows()`를 쓴다.** 정렬 키는 **고유 전순서여야 하며 필수 인자**다(기본값 없음 · 빈 배열이면 즉시 throw). `.range()`를 직접 쓰지 않는다. 실측으로 흔들린 2곳(`lib/sector.ts`의 `fetchSectorMap`·`resolveSector` 4-fetch)만 이관 완료 — 잔여 28곳은 대장만 작성(`docs/probe_954_paging_backlog.json`, 우선순위 없음). 🔴 **`damodaran_industry`가 왜 유독 불안정했는지는 여전히 미확정** — 정렬을 걸어 증상은 사라졌으나 원인을 안 것은 아니다(`EXPLAIN`은 Index Scan 확인, 파라렐 스캔 가설은 기각).
 - **PostgREST `.in()` 대량 심볼 = URL 길이 초과 400인데 조용히 실패**(`data:null`·2,000개부터 실측 실패) → **1,000개 청크**로 나눠 호출(STEP 757 · 6개 리스트 라우트 적용).
 - **클라 빈 응답 무비판 반영 금지** — 데이터 있을 때만 갱신 + 재시도.
 - **Supabase CLI가 옛 프로젝트에 링크됨**(§2) → CLI DB 명령 금지.

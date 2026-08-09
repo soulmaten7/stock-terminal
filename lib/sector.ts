@@ -5,6 +5,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 // STEP 940 — Q0 「2-of-2 합의제」 3순위 SIC 재료. 939가 보존한 스냅샷(재취득 없이 그대로 참조).
 // 🔴 날짜가 박힌 파일명 — 재취득 시 새 좌표로 교체(939 관행: registry.ts에 좌표, 값은 여기 안 박음).
 import missing219 from "../data/sources/sec/sec_sic_missing219_20260808.json";
+// STEP 954 — STEP 953이 실측한 페이지네이션 비결정성(damodaran_industry 10회 중 1회 결측) 처방.
+// 🔴 이 파일이 damodaran_industry를 읽는 두 지점(fetchSectorMap 직접 루프 + 아래 옛 로컬 fetchAll)만 이관한다.
+import { fetchAllRows } from "./supabasePaging";
 
 export type SectorMap = {
   byTicker: Map<string, string>;
@@ -16,13 +19,13 @@ export async function fetchSectorMap(
   sb: SupabaseClient,
   opts: { field: "industryGroup"; source: "damodaran" }
 ): Promise<SectorMap> {
-  const rows: { ticker_norm: string; industry_group: string }[] = [];
-  for (let f = 0; ; f += 1000) {
-    const { data } = await sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true).range(f, f + 999);
-    const c = (data ?? []) as typeof rows;
-    rows.push(...c);
-    if (c.length < 1000) break;
-  }
+  // STEP 954 — damodaran_industry는 UNIQUE(as_of, exchange, ticker). 이 함수 호출은 as_of로 안 거르므로
+  // (테이블 전체가 현재 as_of 1개뿐이라 (exchange, ticker)만으로 전순서) 🔴 as_of가 2개 이상이 되면
+  // (exchange, ticker)만으로는 더 이상 고유 전순서가 아니게 된다 — 그때는 as_of를 orderBy 맨 앞에 추가할 것.
+  const rows = await fetchAllRows<{ ticker_norm: string; industry_group: string }>(
+    () => sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true),
+    [{ column: "exchange", nullsFirst: true }, { column: "ticker" }]
+  );
   const byTicker = new Map(rows.map((r) => [r.ticker_norm, r.industry_group]));
   return { byTicker, rows: rows.length, source: opts.source };
 }
@@ -56,19 +59,6 @@ const NASDAQ_TO_GICS: Record<string, string> = {
 
 const SIC_CONSENSUS_THRESHOLD = 0.7;
 
-async function fetchAll<T>(sb: SupabaseClient, table: string, select: string, eqFilter?: [string, unknown]): Promise<T[]> {
-  const rows: T[] = [];
-  for (let f = 0; ; f += 1000) {
-    let q = sb.from(table).select(select);
-    if (eqFilter) q = q.eq(eqFilter[0], eqFilter[1] as never);
-    const { data } = await q.range(f, f + 999);
-    const c = (data ?? []) as T[];
-    rows.push(...c);
-    if (c.length < 1000) break;
-  }
-  return rows;
-}
-
 async function latestAsOf(sb: SupabaseClient, table: string): Promise<string | null> {
   const { data } = await sb.from(table).select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle();
   return (data as { as_of: string } | null)?.as_of ?? null;
@@ -92,14 +82,21 @@ export async function resolveSector(
   const targetNormToOriginal = new Map(targets.map((t) => [norm(t), t]));
 
   // ── crossCheck 재료 준비(모든 tier의 채택 결과에 동봉) — 나스닥·SIC·야후를 미리 전부 읽는다 ──
-  const damo = await fetchAll<{ ticker_norm: string; primary_sector: string | null; sic_code: string | null }>(
-    sb, "damodaran_industry", "ticker_norm, primary_sector, sic_code", ["is_us_listed", true]
+  // STEP 954 — damodaran_industry UNIQUE(as_of, exchange, ticker), 이 fetch는 as_of로 안 거름(테이블이
+  // as_of 1개뿐이라 (exchange,ticker)만으로 전순서 — as_of가 늘면 orderBy 맨 앞에 추가할 것, fetchSectorMap과 동일 사유).
+  const damo = await fetchAllRows<{ ticker_norm: string; primary_sector: string | null; sic_code: string | null }>(
+    () => sb.from("damodaran_industry").select("ticker_norm, primary_sector, sic_code").eq("is_us_listed", true),
+    [{ column: "exchange", nullsFirst: true }, { column: "ticker" }]
   );
   const damoByNorm = new Map(damo.map((r) => [r.ticker_norm, r]));
 
   const nasdaqAsOf = opts?.nasdaqAsOf ?? (await latestAsOf(sb, "us_sector_nasdaq"));
+  // STEP 954 — us_sector_nasdaq UNIQUE(as_of, symbol). 이 fetch는 as_of로 이미 거르므로 symbol 하나로 전순서.
   const nasdaqRows = nasdaqAsOf
-    ? await fetchAll<{ symbol: string; sector: string | null }>(sb, "us_sector_nasdaq", "symbol, sector", ["as_of", nasdaqAsOf])
+    ? await fetchAllRows<{ symbol: string; sector: string | null }>(
+        () => sb.from("us_sector_nasdaq").select("symbol, sector").eq("as_of", nasdaqAsOf),
+        [{ column: "symbol" }]
+      )
     : [];
   const nasdaqRawByNorm = new Map(nasdaqRows.map((r) => [norm(r.symbol), r.sector]));
   const nasdaqGicsByNorm = new Map<string, string>();
@@ -128,8 +125,12 @@ export async function resolveSector(
   for (const [n, sic] of sicCodeByNorm) { const s = sicMajority.get(sic); if (s) sicGicsByNorm.set(n, s); }
 
   const yahooAsOf = opts?.yahooAsOf ?? (await latestAsOf(sb, "us_sector_yahoo"));
+  // STEP 954 — us_sector_yahoo UNIQUE(as_of, symbol), as_of로 이미 거름 → symbol 하나로 전순서.
   const yahooRows = yahooAsOf
-    ? await fetchAll<{ symbol: string; sector: string | null }>(sb, "us_sector_yahoo", "symbol, sector", ["as_of", yahooAsOf])
+    ? await fetchAllRows<{ symbol: string; sector: string | null }>(
+        () => sb.from("us_sector_yahoo").select("symbol, sector").eq("as_of", yahooAsOf),
+        [{ column: "symbol" }]
+      )
     : [];
   const yahooByNorm = new Map<string, string>();
   for (const r of yahooRows) if (r.sector) yahooByNorm.set(norm(r.symbol), r.sector);
@@ -147,8 +148,12 @@ export async function resolveSector(
   // 🔴 skipTier0: 940 §4-2(0순위 제외 채점) 전용 — 1~3순위만 SPDR 정답지로 정확도를 잴 때 쓴다. 기본 동작(false) 불변.
   if (!opts?.skipTier0) {
     const spdrAsOf = opts?.spdrAsOf ?? (await latestAsOf(sb, "us_sector_gics"));
+    // STEP 954 — us_sector_gics UNIQUE(as_of, symbol), as_of로 이미 거름 → symbol 하나로 전순서.
     const gicsRows = spdrAsOf
-      ? await fetchAll<{ symbol: string; sector: string }>(sb, "us_sector_gics", "symbol, sector", ["as_of", spdrAsOf])
+      ? await fetchAllRows<{ symbol: string; sector: string }>(
+          () => sb.from("us_sector_gics").select("symbol, sector").eq("as_of", spdrAsOf),
+          [{ column: "symbol" }]
+        )
       : [];
     for (const r of gicsRows) {
       const n = norm(r.symbol);
