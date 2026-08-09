@@ -29,6 +29,11 @@ export function annualMap(g: Gaap, tag: string, kind: "flow" | "stock", unit = "
     if (kind === "flow") { if (!e.start || !e.end) continue; const d = (Date.parse(e.end) - Date.parse(e.start)) / 86400000; if (d < 300 || d > 400) continue; }
     else { if (e.fp && e.fp !== "FY") continue; if (!e.end) continue; }
     const y = calYear(e.end); const prev = by[y];
+    // 🔴 제출버전(vintage) 정책 — 장은태 판정 2026-08-09(STEP 965). 같은 회계연도에 여러 제출이 있으면
+    //   **가장 최근 제출값**을 쓴다(재작성 반영). 근거 ① 분자가 오늘 시총이므로 분모도 오늘 기준 최신 재무여야
+    //   시점이 맞는다 ② 외부(stockanalysis.com)도 최신값을 쓴다 — WDC·DD 실측 일치(STEP 964)
+    //   ③ 영향 4~6%대이며 최대폭은 사업분할 회계반영으로 원인 규명됨(STEP 964). 대가: 「그 시점 정보만으로
+    //   판단」이라는 성질을 잃는다 — 백테스트를 도입하면 이 정책을 재검토해야 한다. 정본 = docs/REVDCF_SPEC.md 제출버전 절.
     if (!prev || String(e.filed) > String(prev.filed)) by[y] = { val: e.val, filed: String(e.filed) };
   }
   const o: Record<number, number> = {}; for (const y of Object.keys(by)) o[+y] = by[+y].val; return o;
@@ -37,6 +42,23 @@ export function coalesceMap(g: Gaap, tags: string[], kind: "flow" | "stock", uni
   const vals: Record<number, number> = {}, tagAt: Record<number, string> = {};
   for (const t of tags) { const m = annualMap(g, t, kind, unit); for (const y of Object.keys(m)) { const yy = +y; if (vals[yy] == null) { vals[yy] = m[yy]; tagAt[yy] = t; } } }
   return { vals, tagAt };
+}
+// STEP 965 §2 — annualMap의 선택 로직(위 filed 최신값 우선)은 그대로 두고, 그 선택이 실제로 재작성을
+//   거쳤는지(같은 연도에 값이 서로 다른 제출이 2개 이상 있었는지)만 사후 확인하는 기록 전용 함수.
+//   annualMap의 필터(isAnnual·기간 300~400일·fp==FY)를 그대로 복제한다 — annualMap 자체는 건드리지 않는다.
+//   🔴 filed만 다르고 값이 같은 단순 재제출은 재작성이 아니다(값이 실제로 달라야만 true).
+export function detectRestated(g: Gaap, tag: string, kind: "flow" | "stock", year: number, unit = "USD"): boolean {
+  const arr = g[tag]?.units?.[unit];
+  if (!Array.isArray(arr)) return false;
+  const valsAtYear = new Set<number>();
+  for (const e of arr) {
+    if (!isAnnual(e.form) || e.val == null) continue;
+    if (kind === "flow") { if (!e.start || !e.end) continue; const d = (Date.parse(e.end) - Date.parse(e.start)) / 86400000; if (d < 300 || d > 400) continue; }
+    else { if (e.fp && e.fp !== "FY") continue; if (!e.end) continue; }
+    if (calYear(e.end) !== year) continue;
+    valsAtYear.add(e.val);
+  }
+  return valsAtYear.size > 1;
 }
 // STEP 951 §2 — years를 인자로 받는다(모듈 레벨 상태 금지·워커 병렬 레이스 방지). 기본값 없음 — 호출부 누락 시 컴파일 오류.
 const sumMaps = (years: number[], ...ms: Record<number, number>[]): Record<number, number> => { const o: Record<number, number> = {}; for (const y of years) { let s: number | null = null; for (const m of ms) if (m[y] != null) s = (s ?? 0) + m[y]; if (s != null) o[y] = s; } return o; };
@@ -219,6 +241,20 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   if (fDna != null && ly != null) {
     sourceTags.dna = dnaTot[ly] != null ? (dnaTotCo.tagAt[ly] ?? "DepreciationDepletionAndAmortization") : "Depreciation+AmortizationOfIntangibleAssets";
   }
+  // STEP 965 §2 — 재작성(vintage) 감지·기록. 값 선택은 그대로(annualMap 무변경) — 이미 채택된 태그가
+  //   같은 연도에 서로 다른 값을 낸 제출을 2개 이상 가졌는지만 사후 확인한다. 단일 태그 조회(coalesceMap)로
+  //   구한 필드만 검사 — operatingIncome·dna는 재구성(Rev-CostsAndExpenses 등) 경로가 있어 단일 태그 전제가
+  //   깨지므로 이번엔 범위 밖(감지 안 함 ≠ 재작성 없음, "확인 안 함"으로 남긴다).
+  const restated: string[] = [];
+  if (ly != null) {
+    if (sourceTags.netIncome && detectRestated(gaap, sourceTags.netIncome, "flow", ly)) restated.push("netIncome");
+    if (sourceTags.equity && detectRestated(gaap, sourceTags.equity, "stock", ly)) restated.push("equity");
+    if (sourceTags.revenue && detectRestated(gaap, sourceTags.revenue, "flow", ly)) restated.push("revenue");
+    if (sourceTags.preferredStock && detectRestated(gaap, sourceTags.preferredStock, "stock", ly)) restated.push("preferredStock");
+    if (sourceTags.minorityInterest && detectRestated(gaap, sourceTags.minorityInterest, "stock", ly)) restated.push("minorityInterest");
+  }
+  flags.restated = restated;
+
   const fundamentals: DriverFundamentals = { netIncome: fNetIncome, equity: fEquity, commonEquity: fCommonEquity, preferredStock: fPreferredStock, minorityInterest: fMinorityInterest, revenue: fRevenue, operatingIncome: fOperatingIncome, dna: fDna, fiscalYear: ly, sourceTags };
 
   // ── STEP 951 §3-1 — 창 게이트. 기존 skipReason("INSUFFICIENT_HISTORY") 그대로 재사용, 새 사유는 flags.windowReason에만. ──

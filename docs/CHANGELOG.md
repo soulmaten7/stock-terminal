@@ -1,6 +1,31 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (136) — 🟩 **STEP 965: 제출버전(vintage) 정책 확정 — 최신 제출값(재작성 반영) + `flags.restated`**
+
+> **성격**: 코드 변경(주석 + 신규 기록 함수, 계산 로직 무변경) + 문서 신설. **화면·크론·KR 무접촉. DB 쓰기 0.**
+
+**왜** — 964가 남긴 미해결(annualMap의 filed 최신값 우선 선택이 "정한 정책"이 아니라 "우연한 동작"이었다는 사실)을 장은태가 위임 판정: 처방 ① 현행 유지(최신 제출값) + ④ flags 기록 채택. ② 원본 제출 고정·③ 둘 다 저장은 채택 안 함.
+
+**판정 근거 3개** — ① 분자(오늘 시총)·분모(재무) 시점 정합: 원본 고정을 쓰면 한 수식에 두 시점이 섞인다 ② 외부(stockanalysis.com) 대조 유지: WDC·DD 둘 다 최신 제출값과 일치(964 실측) ③ 영향이 작다(4~6%대, 최대폭은 사업분할 회계반영으로 원인 규명됨).
+
+**채택 안 한 것의 대가** — ② 원본 고정: "그 시점 정보만으로 판단"이라는 성질을 잃는다. 원전(Expectations Investing)의 전제(그 시점 시장이 가격에 반영한 기대)와는 철학적 긴장이 남음 — **재검토 조건 = 백테스트 도입 시.** ③ 둘 다 저장: 저장량 2배 + "정본이 뭔가" 판정이 그대로 남음.
+
+**1단계 — 코드에 정의로 박음**: `lib/revdcf/drivers.ts:37`의 `annualMap()` 선택부(`if (!prev || String(e.filed) > String(prev.filed))`)에 판정 근거 3개 + 대가 + 재검토조건을 담은 주석 추가. **코드 동작은 한 글자도 안 바뀜**(주석만).
+
+**2단계 — 재작성 기록**: `detectRestated(g, tag, kind, year)` 신규 export(annualMap의 필터를 복제해 같은 연도·같은 태그에 값이 실제로 다른 제출이 2개 이상 있는지만 확인 — annualMap 자체는 무수정). `computeDrivers()`가 `flags.restated`에 재작성 감지 필드명 배열을 싣는다(netIncome·equity·revenue·preferredStock·minorityInterest 5종 — operatingIncome·dna는 재구성 경로[Rev-CostsAndExpenses 등]가 있어 단일 태그 전제가 깨져 이번 범위 밖, "감지 안 함"≠"재작성 없음"으로 문서화). filed만 다르고 값이 같은 단순 재제출은 재작성으로 안 센다. 감지 안 된 경우도 빈 배열(필드 자체를 빼지 않음). **테스트 4건 신규**(재작성 감지+최신값 채택 회귀·단순재제출 제외·단일제출 빈배열·skip경로에도 빈배열 실림) — 전체 **336/336 통과**.
+
+**3단계 — 값 불변 확인(1,127종목 전량, SEC 신규 호출 0건, `docs/probe_951_cache` 재사용)**
+- **구코드(965 이전, `a532b31`) vs 신코드 완전 대조** — `git show HEAD:lib/revdcf/drivers.ts`로 구코드를 추출해 별도 모듈로 동적 import, 같은 캐시 1,127개에 대해 `computeDrivers()`를 각각 실행하고 `ok`·`skipReason`·`drivers`(DriverBundle)·`market`·`fundamentals`(9필드) 전부를 JSON 깊은 비교. **불일치 0건**(ok건수도 구코드 736=신코드 736, 완전 일치) — 이번 STEP의 코드 변경이 계산에 미치는 영향이 정말로 0임을 실측으로 증명.
+- **신코드 vs DB 저장값** — 🔴 **1차 시도가 `computeDrivers()`를 그대로 불러 DB와 대조하다 6,723건 "불일치"가 나옴** — 원인 진단: `resolveYearWindow`가 "오늘 기준 최신연도"로 재해석해 DB의 옛 창(예: `AA` DB=2024 vs 재계산=2025)과 섞이는, STEP963 §3의 "1차 시도 결함"과 동일한 함정을 이 검증 스크립트에서도 재현한 것 — **STEP965이 만든 문제가 아니라 검증 방법론의 실수.** → STEP963 백필과 동일한 pinned-year 방식(row.fiscal_year에 고정해 `annualMap`/`coalesceMap`으로 재추출)으로 정정 — net_income·common_equity·preferred_stock·minority_interest(963이 실제로 쓴 필드) 대조 = **불일치 0건**. revenue·operating_income·dna·fiscal_year는 963이 pinning을 적용한 적 없는 필드라 이 STEP 검증 범위에서 명시적으로 제외(VALUATION_SPEC 미해결0번과 같은 뿌리, STEP965와 무관).
+- **역DCF 확인** — `revdcf_results` as_of=2026-08-08 604행 verdict 분포(skipped170·value_destroying156·years119·over_cap94·below_one65) 조회, DB 쓰기가 없었으므로 자명하게 불변. 위 완전 대조(구코드=신코드의 DriverBundle+market)가 이 불변을 수학적으로 보증 — `engine.ts`·`compute.ts`가 `dr.fundamentals`·`flags`를 참조하지 않음은 963에서 이미 grep 확인됨.
+
+**문서** — `docs/REVDCF_SPEC.md` §10-B 신설(정본 — 판정 근거·대가·재검토조건·값불변검증 전문) · `docs/VALUATION_SPEC.md` 미해결 8번을 🔴판정대기→✅확정으로 갱신(REVDCF_SPEC §10-B 교차참조만, 내용 복제 없음) · `docs/STATE.md`(963 §5-3·964 항목에 965 결론 반영 + 965 신규 블록 추가).
+
+**무변경** — `app/(routes)`·`components`·`messages` diff 0. `lib/revdcf/engine.ts`·`compute.ts` diff 0. DB 쓰기 0(스크립트는 조회·비교만). KR 미접촉.
+
+🔴 **여전히 미해결** — Citigroup third value($70,613M, stockanalysis.com)는 이 정책으로 설명 안 됨. 은행 매출 정의 차이로 추정되나 확인 안 됨.
+
 ## 2026-08-09 (135) — 🟨 **STEP 964: 잔여 계측 결함 정리 + 제출버전(vintage) 정책 재료**
 
 > **성격**: 조사·실측만. **코드·DB·화면·크론 전부 무접촉.** `lib/valuation.ts`·`SECTOR_RELATIVE_SPEC` 미변경. SEC 신규 호출 0건(`docs/probe_951_cache` 1,127종목 전량 캐시 재사용). 판정은 장은태.

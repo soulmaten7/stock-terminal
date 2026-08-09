@@ -252,6 +252,46 @@ describe("computeDrivers — fundamentals(STEP 947 §2) — Q1 밸류에이션 �
       expect(r.fundamentals.sourceTags).toEqual({});
     }
   });
+
+  // STEP 965 §2-4 — 제출버전(vintage) 재작성 감지 회귀. annualMap의 선택 로직(filed 최신값 우선)은 무변경 —
+  // 이미 선택된 값이 실제로 재작성을 거쳤는지(같은 연도에 값이 다른 제출이 2개 이상)만 flags.restated에 기록.
+  it("같은 연도에 값이 다른 제출이 2개면 flags.restated에 필드명이 실리고, 값 선택은 기존 규칙(최신 filed) 그대로다", () => {
+    const netIncomeRestated2024 = {
+      NetIncomeLoss: [
+        ...flowFacts(five(80)),
+        { form: "10-K", start: "2024-01-01", end: "2024-12-31", filed: "2026-02-01", val: 90 }, // 원본(2025-02-01,80)보다 늦게 제출된 재작성치
+      ],
+    };
+    const r = computeDrivers(gaapOf({ ...fullOk, ...netIncomeRestated2024 }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBe(90); // 기존 규칙대로 최신 filed값(90) 채택 — 값 선택 로직 무변경
+    expect(r.flags.restated).toContain("netIncome");
+  });
+
+  it("같은 연도에 값이 같은 제출이 2개(단순 재제출)면 재작성으로 세지 않는다", () => {
+    const netIncomeResubmitted2024 = {
+      NetIncomeLoss: [
+        ...flowFacts(five(80)),
+        { form: "10-K", start: "2024-01-01", end: "2024-12-31", filed: "2026-02-01", val: 80 }, // filed만 다르고 값은 동일
+      ],
+    };
+    const r = computeDrivers(gaapOf({ ...fullOk, ...netIncomeResubmitted2024 }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.fundamentals.netIncome).toBe(80);
+    expect(r.flags.restated).not.toContain("netIncome");
+  });
+
+  it("단일 제출뿐이면 restated는 빈 배열이다(필드 자체를 빼지 않는다)", () => {
+    const r = computeDrivers(gaapOf({ ...fullOk, ...netIncomeLoss5yr, ...equity5yr }), dei);
+    expect(r.ok).toBe(true);
+    expect(r.flags.restated).toEqual([]);
+  });
+
+  it("skip 경로(창 미성립)에도 flags.restated는 실린다(빈 배열, undefined 아님)", () => {
+    const r = computeDrivers(gaapOf({ ...revenue5yr }), dei);
+    expect(r.ok).toBe(false);
+    expect(r.flags.restated).toEqual([]);
+  });
 });
 
 // STEP 951 §1 — resolveYearWindow: 종목별 실재 최신 5개 연도 계산의 유일한 출처. 6개 케이스 전부.

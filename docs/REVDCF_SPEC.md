@@ -1418,6 +1418,29 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 🔴 **표본 한계**: 캐시 30종목은 950의 사전순 20 + 951이 추가한 10(6월결산 3·1월결산 3·사전순 보충 2·NVDA·MSFT) — `A`로 시작하는 사전순 편향 그대로, 604종목 전수의 대표표본이 아니다. 상세 = `docs/probe_951_verify.json`(`step951b2_stateTransition` 필드)·`docs/probe_951c_verify.json`(skipped 7·DB없음 5 원자료).
 
+### §10-B. 제출버전(vintage) 정책(STEP 965, 2026-08-09 장은태 위임 → Cowork 판정) — 최신 제출값(재작성 반영) + `flags.restated` 기록
+
+🔴 **코드의 유일한 출처 = `lib/revdcf/drivers.ts`의 `annualMap()`(§10-A와 동일 함수).** 이 절은 §10-A(어느 "연도"를 볼지)와 다른 축이다 — §10-A는 관측 창의 **연도 선택**을, 이 절은 같은 연도에 **제출이 여럿일 때 어느 값을 쓸지**를 다룬다.
+
+**배경**: STEP 962/963이 Citigroup의 `Revenues` 태그가 같은 회계연도(2024)에 두 값(81,139,000,000 FY2024 10-K 원본 vs 80,722,000,000 FY2025 10-K의 전년 비교치)을 갖고, 우리는 후자를 자동 채택하고 있음을 발견했다 — `annualMap`의 `String(e.filed) > String(prev.filed)` 비교가 같은 연도에 여러 `filed`가 있으면 **가장 최근 제출값**을 무조건 채택하는 로직이었다. 🔴 **이게 "정한 정책"이 아니라 "코드가 우연히 그렇게 동작했을 뿐"이라는 사실 자체가 STEP964에서 처음 확인됐다** — 채택 이유를 설명하는 주석·문서가 어디에도 없었다.
+
+**정책(장은태 판정)**: **최신 제출값(재작성 반영, ⓐ)을 그대로 쓴다.** 원본 제출값(그 시점 투자자가 본 값, ⓑ)으로 바꾸지 않는다. **계산 로직은 무변경** — `annualMap`의 선택부(`lib/revdcf/drivers.ts:37`, `if (!prev || String(e.filed) > String(prev.filed)) by[y] = {...}`)는 STEP965에서 주석만 추가됐고 동작은 963 이전과 완전히 동일하다.
+
+**판정 근거 셋**:
+1. 🔑 **분자·분모 시점 정합.** Q1은 오늘 시총(분자)을 오늘 기준 재무(분모)로 나눈다. 원본 제출값 고정(ⓑ)을 쓰면 분모만 그 시점 값이 되어 한 수식 안에 두 시점(오늘 가격 vs 과거 재무)이 섞인다 — 최신 제출값(ⓐ)이 분자·분모의 시점을 맞춘다.
+2. **외부 대조 유지.** STEP 964가 stockanalysis.com에서 `WDC`·`DD` 둘 다 우리 최신 제출값과 정확히 일치함을 실측했다 — 원본 고정으로 바꾸면 외부 통용 관행과 갈린다.
+3. **영향이 작다.** 930종목 중 재작성이 감지된 종목은 netIncome 41건(4.4%)·equity 45건(4.8%)·revenue 55건(5.9%)뿐이고, 최대폭 종목(`WDC`·`DD`·`TKO`)은 사업분할(SanDisk 스핀오프 등) 회계 반영으로 원인이 규명됐다(STEP 964).
+
+**채택하지 않은 것의 대가(숨기지 않는다)**:
+- **② 원본 제출 고정** — "그 시점 정보만으로 판단"이라는 성질을 잃는다. 이 모델의 원전(Rappaport & Mauboussin, *Expectations Investing*)은 "시장이 그 시점에 가격에 반영한 기대"를 해독하는 게 전제라 철학적으로는 ⓑ에 더 가깝다는 긴장이 남는다. **재검토 조건 = 백테스트를 도입하는 시점.** 과거 시점 기준으로 GAP을 재현하려면 그 시점에 실제로 알려졌던 값(ⓑ)이 필요해진다 — 지금은 실시간 판단만 하므로 문제가 안 되지만, 과거로 돌아가 검증하는 순간 이 정책을 다시 열어야 한다.
+- **③ 둘 다 저장** — 저장량 2배(`us_fundamentals`·`us_fundamentals_snapshot` 등 전 테이블) + "어느 것이 정본인가"라는 판정이 그대로 남는다. 문제를 풀지 않고 미루는 선택이라 채택하지 않았다.
+
+**재작성 기록(`flags.restated`)**: 값 선택은 그대로 두되, "이 필드가 재작성을 거쳤는가"를 사후에 기록한다. `detectRestated()`(`lib/revdcf/drivers.ts`, STEP965 신규 export)가 같은 연도·같은 태그에 **값이 실제로 다른** 제출이 2개 이상 있었는지만 확인한다(filed만 다르고 값이 같은 단순 재제출은 재작성으로 세지 않는다). `computeDrivers()`가 `flags.restated`에 재작성이 감지된 필드명 배열을 싣는다(netIncome·equity·revenue·preferredStock·minorityInterest 5종 — operatingIncome·dna는 재구성 경로가 있어 단일 태그 전제가 깨지므로 이번 STEP 범위 밖, "감지 안 함"≠"재작성 없음"). 감지 안 된 경우도 빈 배열로 남긴다(필드 자체를 빼지 않는다 — "없음"과 "확인 안 함"을 구분).
+
+**값 불변 검증(STEP965 §3, 실측)**: 1,127종목 전량 캐시 재사용(SEC 신규 호출 0) — ① **구코드(965 이전, `a532b31`) vs 신코드 완전 대조**(DriverBundle·market·ok·skipReason·fundamentals 9개 필드) = **불일치 0건**(계산 로직이 정말로 한 글자도 안 바뀌었음을 증명). ② **신코드를 pinned-year 방식(STEP963 백필과 동일 방법론)으로 재추출해 `us_fundamentals` 저장값과 대조**(net_income·common_equity·preferred_stock·minority_interest — 963이 실제로 쓴 필드) = **불일치 0건**. revenue·operating_income·dna·fiscal_year는 963이 pinning을 적용한 적 없는 필드라 이 대조에서 제외(§10-A의 옛창·새창 이슈와 같은 뿌리, STEP965와 무관). ③ `revdcf_results` as_of=2026-08-08 604행 verdict 분포(skipped170·value_destroying156·years119·over_cap94·below_one65) — DB 쓰기 자체가 없었으므로 자명하게 불변이나, ①의 DriverBundle+market 완전 일치(구코드=신코드, `engine.ts`/`compute.ts`가 `dr.fundamentals`·`flags`를 참조하지 않음은 963에서 grep 확인됨)가 이 불변을 수학적으로 보증한다. 상세 = `docs/probe_965_invariance.json`.
+
+🔴 **Citigroup third value($70,613M, stockanalysis.com)는 이 정책으로 설명되지 않는다** — 우리 ⓐ($81,139M)·ⓑ($80,722M) 어느 쪽과도 안 맞는다. 은행 매출 정의 차이(순이자수익 처리 등)로 추정되나 미확인. **이 판정이 그 잔차를 닫지 않는다는 사실을 명시한다.**
+
 | # | 항목 | 어떻게 풀리나 |
 |---|---|---|
 | 1 | 🔶 ~~✅ 유니버스 N=623 확정~~ → **재개방(A-9)** — 616/604로 정정됐고, 그마저 **물려받은 1,000 안에서의 값**이다 | STEP 838 → 842 → **866 재확정** |
