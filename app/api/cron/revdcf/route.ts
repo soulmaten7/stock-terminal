@@ -6,6 +6,9 @@ import { runRevDcf, type RevDcfMarket, type RevDcfVerdict } from "@/lib/revdcf/e
 import { REVDCF_DEFAULT_MAX_YEARS } from "./constants";
 import { fetchSectorMap } from "@/lib/sector";
 import { computeValuation, VALUATION_SPEC } from "@/lib/valuation";
+import { fetchAllRows } from "@/lib/supabasePaging";
+import { computeSectorRelativeBatch, type ValuationInput, type SectorInput } from "@/lib/sectorRelativeBatch";
+import { SECTOR_RELATIVE_SPEC } from "@/lib/sectorRelative";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -75,6 +78,35 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
   for (let i = 0; i < rows.length; i += 1000) { const batch = rows.slice(i, i + 1000); const { error } = await sb.from("us_valuation").upsert(batch, { onConflict: "as_of,symbol" }); if (!error) saved += batch.length; }
   const stalestFetchedAt = fundRows.reduce<string | null>((min, r) => (min == null || r.fetched_at < min ? r.fetched_at : min), null);
   return { saved, stalestFetchedAt };
+}
+
+// STEP 956 §3-3 — 업종 백분위 저장. SEC 호출 0건(us_valuation + us_sector_wide만 읽는다). try/finally로 항상 실행(947 §5-4와 같은 원칙).
+async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number }> {
+  const valuationRows = await fetchAllRows<{ symbol: string; per: number | null; pbr: number | null; psr: number | null; ev_ebitda: number | null }>(
+    () => sb.from("us_valuation").select("symbol, per, pbr, psr, ev_ebitda").eq("as_of", asOf),
+    [{ column: "symbol" }]
+  );
+  if (valuationRows.length === 0) return { saved: 0 };
+  const sectorRows = await fetchAllRows<{ symbol: string; sector: string | null }>(
+    () => sb.from("us_sector_wide").select("symbol, sector").eq("as_of", asOf),
+    [{ column: "symbol" }]
+  );
+
+  const valuations: ValuationInput[] = valuationRows.map((r) => ({ symbol: r.symbol, per: r.per, pbr: r.pbr, psr: r.psr, evEbitda: r.ev_ebitda }));
+  const sectors: SectorInput[] = sectorRows.map((r) => ({ symbol: r.symbol, sector: r.sector }));
+  const results = computeSectorRelativeBatch(valuations, sectors, SECTOR_RELATIVE_SPEC.minSample);
+
+  const dbRows = results.map((r) => ({
+    as_of: asOf, symbol: r.symbol, sector: r.sector,
+    per_pct: r.perPct, pbr_pct: r.pbrPct, psr_pct: r.psrPct, ev_ebitda_pct: r.evEbitdaPct,
+    per_n: r.perN, pbr_n: r.pbrN, psr_n: r.psrN, ev_ebitda_n: r.evEbitdaN,
+    unavailable: r.unavailable, min_sample: r.minSample,
+    updated_at: new Date().toISOString(),
+  }));
+
+  let saved = 0;
+  for (let i = 0; i < dbRows.length; i += 1000) { const batch = dbRows.slice(i, i + 1000); const { error } = await sb.from("us_sector_relative").upsert(batch, { onConflict: "as_of,symbol" }); if (!error) saved += batch.length; }
+  return { saved };
 }
 
 export async function GET(req: Request) {
@@ -219,7 +251,7 @@ export async function GET(req: Request) {
     }
   }
 
-  let valuationSaved = 0, fundamentalsStalest: string | null = null;
+  let valuationSaved = 0, fundamentalsStalest: string | null = null, sectorRelativeSaved = 0;
   try {
     await Promise.all(Array.from({ length: 6 }, worker));
     await flush();
@@ -229,6 +261,9 @@ export async function GET(req: Request) {
     const v = await computeAndSaveValuation(sb, asOf);
     valuationSaved = v.saved;
     fundamentalsStalest = v.stalestFetchedAt;
+    // STEP 956 §3-3 — us_valuation 계산 직후. 같은 이유로 finally 안(예산 소진과 무관하게 항상 실행).
+    const sr = await computeAndSaveSectorRelative(sb, asOf);
+    sectorRelativeSaved = sr.saved;
   }
 
   const finished = idx >= todo.length;
@@ -236,5 +271,7 @@ export async function GET(req: Request) {
     asOf, universe: univ.length, todoAtStart: todo.length, processed: idx, saved, finished, elapsedMs: Date.now() - t0,
     // STEP 947 §4-5
     revdcfUniverse: todoRevdcf.length, fundamentalsUniverse: fundamentalsUniverseAll.length, fundamentalsSaved, fundamentalsStalest, valuationSaved,
+    // STEP 956 §3-3
+    sectorRelativeSaved,
   });
 }

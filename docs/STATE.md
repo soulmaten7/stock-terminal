@@ -50,6 +50,14 @@
 - `PTGX`·`TIGO`(952b가 지목한 나머지 2건)는 `us_valuation`(1,127) 유니버스 밖이라 이 재생성 대상 자체가 아니었다 — `us_sector_resolved`에서만 다뤄지는 종목, 그쪽 데이터는 미확인 그대로.
 - 상세 = `docs/probe_955_sector_regen.json`.
 
+✅ **STEP 956(2026-08-09) — Q1 ②단계 완성: 업종 백분위 계산·저장 배선.** `minSample=20` 확정(장은태 판정) → `us_sector_relative`(신규 테이블, `us_valuation`과 분리) → `lib/sectorRelativeBatch.ts`(순수 함수, 유닛테스트 9케이스) → `app/api/cron/revdcf/route.ts` 맨 끝에 추가 배선(diff는 추가분만, SEC 호출 0건·`finally`로 예산소진과 무관하게 항상 실행) → `scripts/backfill_sector_relative.ts`로 `as_of=2026-08-08` 1회 백필 완료.
+- **결과**: `us_sector_relative` 1,127행(섹터 있는 1,038 + 없는 89). `unavailable` 사유별 셀 수(4축×1,127) = `NO_VALUE` 1,189 · `SAMPLE_TOO_SMALL` 182 · `NO_SECTOR` 356.
+- **빈 칸 = 44칸(11업종×4축) 중 5칸**(실측, 예측과 일치): Real Estate 전 축(n=10/17/18/4, 전부 <20) + Financials EV/EBITDA(n=16<20). 나머지 39칸은 전부 계산됨.
+- **손계산 검산**: Industrials PER(n=155) 최저(`CNDT`)·최고(`FTAI`)·중앙근처(`IEX`) 3종목 모두 저장값과 정확히 일치(`0`·`0.9935483870967742`·`0.5096774193548387`). minSample 경계도 실측 일치(Financials EV/EBITDA 16건→전부 null, Utilities EV/EBITDA 29건→전부 계산).
+- 🔴 **화면 무변경**(`app/(routes)`·`components`·`messages` 0줄) · **크론 미호출**(스크립트로만 1회 백필) · **Q1 카드는 여전히 미착수** — 계산·저장까지만 끝났다.
+- 🔴 **Financials EV/EBITDA(16건)는 표본 부족이 아니라 축 불일치일 수 있음(미판정)** — 은행업은 EV(기업가치) 개념 자체가 안 맞을 수 있다. 표시 문구 정할 때 Real Estate(순수 표본부족)와 구분 필요 — Q1 카드 작업 시 재론.
+- 상세 = `docs/VALUATION_SPEC.md` 「파이프라인 완성」 절.
+
 🔴 **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙) NVDA 자신은 FY2026이라 부른다. 값은 SEC 원문과 일치하나 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. 표시 문구 판정 필요(장은태) — Q1 카드 작업 시 함께 정한다. 상세 = `docs/VALUATION_SPEC.md` 미해결 6번·`docs/LENS_COMPLETION_STANDARD.md` Q1 항목3.
 
 🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**

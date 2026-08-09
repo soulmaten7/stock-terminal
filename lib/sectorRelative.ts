@@ -18,7 +18,13 @@ export const SECTOR_RELATIVE_SPEC = {
   //   실제 동작이 달라진다(pctile의 선형보간 인덱스는 (n-1)분모라 empirical 비율(n분모)과 다른 수치를 낸다).
   //   그래서 이 함수는 새로 작성하되, pctile과 같은 계열(lib/sectorCuts.ts)의 선형정렬 전제를 공유한다.
   percentileFn: "empirical_rank", // count(v < target) / n_valid — pctile()과는 다른 함수(위 주석 참조)
-  minSample: null, // 🔴 §3-3에서 재료만 낸다. 이 STEP은 숫자를 고르지 않는다(장은태 판정 대기).
+  // 🔴 minSample = 20 (STEP 956, 장은태 판정 2026-08-09). 20건이면 백분위 해상도가 5% 단위(1/20).
+  //   이 기준에서 비는 칸은 44칸(11업종×4축) 중 5칸 — Real Estate 전 축(PER 10·PBR 17·PSR 18·EV 4)과
+  //   Financials EV(16). 실측 표본표 = docs/VALUATION_SPEC.md 「업종 대비」 절.
+  //   🔴 Financials EV/EBITDA(16건)는 "표본이 적다"가 아니라 "축이 안 맞는다"일 수 있다 — 은행은 부채가
+  //   영업 재료라 EV 개념 자체가 잘 안 맞는다. minSample로는 똑같이 걸러지지만 걸러지는 이유가 다르다 —
+  //   표시 문구를 정할 때 이 둘을 구분해야 한다(🔴 미판정, Q1 카드 작업 시).
+  minSample: 20,
   unavailableWhen: [
     "sector == null",
     "축 값이 없음(us_valuation.unavailable에 사유 있음)",

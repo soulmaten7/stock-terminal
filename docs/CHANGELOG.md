@@ -1,6 +1,32 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (128) — 🟩 **STEP 956: Q1 ②단계 완성 — 업종 백분위 계산·저장 배선**
+
+> **성격**: 신규 테이블 + 신규 순수 함수 + 크론 배선(추가분만) + 1회 백필 스크립트. **화면 무변경**(`app/(routes)`·`components`·`messages` 0줄)·`us_valuation`·`revdcf_results`·`us_sector_resolved`·`us_sector_wide`에 쓰지 않음·크론 미호출(스크립트 1회 실행)·`lib/sector.ts`·`lib/valuation.ts` 계산 로직 무수정.
+
+**왜** — 952~955가 「업종 대비」 정의(`SECTOR_RELATIVE_SPEC`)와 안정된 섹터 배정(`us_sector_wide`)까지 준비했지만, 실제로 백분위를 계산해 저장하는 배선은 0곳이었다(죽은 코드). 이 STEP이 그 배선을 완성한다.
+
+**§1 SPEC 확정** — `lib/sectorRelative.ts`의 `SECTOR_RELATIVE_SPEC.minSample`을 `null`→**`20`**(장은태 판정 2026-08-09). 근거 주석에 44칸(11업종×4축) 중 5칸이 빈다는 것과 Financials EV/EBITDA(16건)는 표본부족이 아니라 축 불일치일 수 있다는 미판정 사항을 명시. 기존 테스트(`lib/sectorRelative.test.ts`) `minSample` 미참조 확인 — 회귀 없음.
+
+**§2 저장처 신설** — `supabase/migrations/20260809_us_sector_relative.sql` → `us_sector_relative`(PK `as_of,symbol`). `us_valuation`에 컬럼을 얹지 않고 별도 테이블로 둔 이유 = 백분위는 같은 업종 다른 종목 값이 전부 있어야 나와 종목별 upsert 루프 안에서 낼 수 없음(사후 UPDATE는 부분갱신·경합 위험). RLS = `us_valuation`과 동일 패턴(직접 조회 대조: `relrowsecurity=true`·anon/authenticated 권한 0). `unavailable` 컬럼은 jsonb로 `NO_SECTOR`/`NO_VALUE`/`SAMPLE_TOO_SMALL` 3종 기록.
+
+**§3 계산 배선**
+- `lib/sectorRelativeBatch.ts` 신설 — `computeSectorRelativeBatch(valuations, sectors, minSample)`. 순수 함수(DB·네트워크 접근 없음) — 업종·축별로 그룹핑해 `sectorPercentiles()`(`lib/sectorRelative.ts`, 재구현 없이 그대로 호출)를 부르고, 유효표본<minSample이면 전부 `pct=null`+`SAMPLE_TOO_SMALL`, 섹터 없으면 전부 `pct=null`+`NO_SECTOR`, 섹터·표본은 충분하나 그 종목 값만 없으면 `pct=null`+`NO_VALUE`로 3분류.
+- `app/api/cron/revdcf/route.ts` 맨 끝(`us_valuation` 계산 직후, 기존 `finally` 블록 안)에 `computeAndSaveSectorRelative()` 호출 추가 — SEC 호출 0건(`us_valuation`+`us_sector_wide`만 읽음), 예산 소진과 무관하게 항상 실행(947 §5-4와 같은 원칙). 응답 JSON에 `sectorRelativeSaved` 추가. 🔴 **diff는 이 추가분만**(`git diff` 확인 — 기존 로직 1줄도 안 바뀜, `let valuationSaved...` 선언 줄에 변수 하나 추가된 것 제외).
+
+**§4 백필** — `scripts/backfill_sector_relative.ts`(§3-1 순수 함수를 그대로 import, 로직 복제 없음)로 `as_of=2026-08-08` 1회 실행. **적재 결과: `us_sector_relative` 1,127행**(섹터 있는 1,038 + 없는 89). `unavailable` 사유별 셀 수(4축×1,127행) = `NO_VALUE` 1,189 · `SAMPLE_TOO_SMALL` 182 · `NO_SECTOR` 356. 업종×축 44칸 중 **5칸이 빈다**(예측과 정확히 일치): Real Estate 전 축(n=10/17/18/4) + Financials EV/EBITDA(n=16). 나머지 39칸 전부 계산됨(Communication Services EV/EBITDA n=25가 최소).
+
+**§5 손계산 검산** — Industrials PER(n=155, Supabase 직접 조회로 전체 정렬 확인): 최저(`CNDT`, 순위0) `pct=0/155=0` ✓ · 최고(`FTAI`, 순위154) `pct=154/155=0.9935483870967742` ✓ · 중앙근처(`IEX`, 순위79) `pct=79/155=0.5096774193548387` ✓ — 저장값과 정확히 일치. minSample 경계: Financials EV/EBITDA(16건) → 106건 전부 `pct=null`·`SAMPLE_TOO_SMALL` 확인 / Utilities EV/EBITDA(29건) → 40건 전부 계산됨 확인. `lib/sectorRelativeBatch.test.ts` 신설 — 9케이스(표본 19/20/21 경계·동점 무보정·전부결측·섹터null 4축 일괄·종목별 NO_VALUE vs SAMPLE_TOO_SMALL 구분·음수 PER 혼재·축별 독립 판정).
+
+**§6 문서** — `docs/VALUATION_SPEC.md`(SPEC 블록 `minSample:20`으로 갱신, 44칸 중 5칸 빈 표 추가, 「파이프라인 완성」 절 신설) · `docs/STATE.md`(STEP 955 블록 아래 956 결과 추가, Q1 카드 미착수 명시).
+
+**무변경** — `app/`·`components/`·`messages/`·`vercel.json`·`.github/workflows/`·`data/us_symbols.json`·`lib/sector.ts`·`lib/valuation.ts` diff 0(확인). `us_valuation` 1,127·`us_sector_wide` 1,127·`us_sector_resolved` 1,021 전부 재확인 불변. 크론 등록/수동실행 0(스크립트로만 1회 백필).
+
+**테스트** — `npx tsc --noEmit` 클린 · `npm test`에 `lib/sectorRelativeBatch.test.ts` 9케이스 신규(전부 통과) · `npm run build` 예정(커밋 전 확인).
+
+🔴 **화면 무변경 · 크론 미호출 · Q1 카드는 여전히 미착수** — 계산·저장까지만 끝났다. 🔴 **Financials EV/EBITDA(16건)는 표본 부족이 아니라 축 불일치일 수 있음(미판정, Q1 카드 작업 시 재론).**
+
 ## 2026-08-09 (127) — 🟩 **STEP 955: us_sector_wide 재생성 — 954 이후 코드로 재현 가능한 값 확정**
 
 > **성격**: DB 재적재(같은 as_of upsert, DELETE 없음). **화면 무변경**·`us_sector_resolved`(1,021)는 완전 무접촉·크론 미호출·`lib/sector.ts` 무수정(954 코드 그대로 호출)·`scripts/refresh_sector.ts` 미실행.

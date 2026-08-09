@@ -77,7 +77,7 @@ direction: "higher_is_more_expensive"   // 4축(PER·PBR·PSR·EV/EBITDA) 전부
 axes: ["per", "pbr", "psr", "evEbitda"]
 sectorSource: "us_sector_wide"
 percentileFn: "empirical_rank"          // count(v < target) / n_valid — 아래 계산 정의 그대로
-minSample: null                          // 🔴 미정(장은태 판정 대기, 아래 §minSample 재료 참조)
+minSample: 20                            // ✅ 확정(STEP 956, 2026-08-09 장은태 판정) — 20건이면 백분위 해상도 5%(1/20)
 unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable에 사유 있음)", "업종 내 유효 표본 < minSample"]
 ```
 
@@ -123,7 +123,7 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 **미성립 조건 전수** — `unavailableWhen` 그대로 3가지: ① `sector == null`(위 미분류 90종목) ② 축 값 자체가 없음(`us_valuation.unavailable`에 사유 있음 — `NEGATIVE_EARNINGS`·`MISSING_NET_INCOME` 등, `lib/valuation.ts` 기존 정의) ③ 업종 내 유효 표본 < `minSample`(아직 미정, 아래 재료 참조).
 
-### 🔴 minSample 재료(숫자는 고르지 않았다 — 장은태 판정 재료만)
+### ✅ minSample = 20 확정 (STEP 956, 2026-08-09 장은태 판정)
 
 업종 11개 × 축 4개 유효 표본 수(2026-08-08 실측, `docs/probe_952_sector_sample_table.json`):
 
@@ -143,7 +143,27 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 🔴 **가장 적은 표본 = Real Estate EV/EBITDA 4건.** Real Estate가 전 축에서 최소치를 차지한다(PER 10도 두 번째로 작음). Financials의 EV/EBITDA(16)도 낮다 — REIT·은행업은 EBITDA 개념 자체가 업종 관행과 안 맞아 결측이 몰리는 것으로 보이나 확인하지 않았다.
 
-**Q0 선례**: `sector_cuts`(섹터×지표 컷)는 78개 조합 중 **7개를 IQR 대비 폭 1.0 초과로 제외, 71개(91%) 적용**(STEP 943~944, `docs/CHANGELOG.md` 검증 완료 — 표본 크기가 아니라 부트스트랩 분산 기준이었다는 점은 다르다). 여기서는 표본 **개수** 하한(`minSample`)을 판정해야 한다 — 위 표가 그 재료다.
+**Q0 선례**: `sector_cuts`(섹터×지표 컷)는 78개 조합 중 **7개를 IQR 대비 폭 1.0 초과로 제외, 71개(91%) 적용**(STEP 943~944, `docs/CHANGELOG.md` 검증 완료 — 표본 크기가 아니라 부트스트랩 분산 기준이었다는 점은 다르다). 여기서는 표본 **개수** 하한(`minSample`)을 판정해야 한다 — 위 표가 그 재료였다.
+
+**minSample=20 적용 결과 — 44칸(11업종×4축) 중 5칸이 비었다(실측, `us_sector_relative` 백필 조회 확인)**:
+
+| 업종 | PER | PBR | PSR | EV/EBITDA |
+|---|---|---|---|---|
+| Real Estate(n=19) | 🔴 없음(10<20) | 🔴 없음(17<20) | 🔴 없음(18<20) | 🔴 없음(4<20) |
+| Financials(n=106) | 있음(54) | 있음(59) | 있음(61) | 🔴 없음(16<20) |
+| 나머지 9개 업종 | 전부 있음(≥25) | 전부 있음(≥37) | 전부 있음(≥37) | 전부 있음(≥25, Utilities만 29) |
+
+🔴 **Financials EV/EBITDA(16건)는 "표본이 적다"가 아니라 "축이 안 맞는다"일 가능성이 있다** — 은행은 부채가 영업 재료라 EV(기업가치=시총+순부채) 개념 자체가 비은행 기업과 다르게 작동한다. `minSample`은 두 원인을 구분하지 못하고 둘 다 `SAMPLE_TOO_SMALL`로 묶는다 — **표시 문구를 정할 때 이 둘을 구분해야 한다(🔴 미판정, Q1 카드 작업 시 재론).**
+
+## ✅ 파이프라인 완성 (STEP 956, 2026-08-09)
+
+- **저장처**: `us_sector_relative`(PK `as_of,symbol`) — `us_valuation`(절대값)과 분리(백분위는 같은 업종 다른 종목 값이 전부 있어야 나와 종목별 upsert 루프 안에서 계산 불가). RLS = `us_valuation`과 동일 패턴(anon/authenticated 권한 0).
+- **계산**: `lib/sectorRelativeBatch.ts`의 `computeSectorRelativeBatch()` — 순수 함수(DB 접근 없음). `lib/sectorRelative.ts`의 `sectorPercentiles()`를 그대로 호출(재구현 없음). 유닛테스트 = `lib/sectorRelativeBatch.test.ts`(9케이스: 표본 19/20/21 경계·동점·전부결측·섹터null·종목별 NO_VALUE·음수 PER 혼재·축별 독립 판정).
+- **배선**: `app/api/cron/revdcf/route.ts`의 `us_valuation` 계산 직후(`finally` 블록 안, SEC 호출 0건 — 예산 소진과 무관하게 항상 실행). 응답 JSON에 `sectorRelativeSaved` 추가. diff는 이 추가분만(기존 로직 무변경, 코드 diff로 확인 완료).
+- **백필**: `scripts/backfill_sector_relative.ts`(§3-1 순수 함수를 그대로 import — 로직 복제 없음)로 `as_of=2026-08-08` 1회 실행 — `us_sector_relative` **1,127행** 적재(섹터 있는 1,038 + 섹터 없는 89). `unavailable` 사유별 셀 수(4축×1,127행 기준) = `NO_VALUE` 1,189 · `SAMPLE_TOO_SMALL` 182(= 5개 빈 칸의 소속 종목 수 합: Real Estate 19×4 + Financials 106×1×... 정확히는 위 표의 각 셀 소속 종목 수 합) · `NO_SECTOR` 356(=89종목×4축).
+- **손계산 검산**: Industrials PER(n=155, 위 표) — 최저(`CNDT`, 순위 0) `pct=0/155=0` ✓ · 최고(`FTAI`, 순위 154) `pct=154/155=0.9935483870967742` ✓ · 중앙 근처(`IEX`, 순위 79) `pct=79/155=0.5096774193548387` ✓ — 저장값과 소수점 4자리 이상 정확히 일치(직접 Supabase 조회로 대조). `minSample` 경계도 실측대로 확인: Financials EV/EBITDA(16건) → 106건 전부 `pct=null`·`SAMPLE_TOO_SMALL` / Utilities EV/EBITDA(29건) → 40건 전부 계산됨.
+
+🔴 **Q1 카드 화면은 여전히 미착수.** 이 STEP은 계산·저장까지다 — 사용자에게 보이는 화면(카드·문구·Real Estate/Financials EV 결측 표시 방식)은 별도 작업.
 
 ## 🔴 성립하지 않는 경우 — 커버리지 결측 12종목(2026-08-08 실측)
 
