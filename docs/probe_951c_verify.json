@@ -1,0 +1,331 @@
+{
+  "measuredAt": "2026-08-08",
+  "step1_skipped7": [
+    {
+      "symbol": "ACM",
+      "dbSkipReason": "STALE_MARKETCAP",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "fixedCapitalRateMarginal_new": 0.0197947669869264,
+      "replicated": {
+        "symbol": "ACM",
+        "stage": "STALE_MARKETCAP",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "marketCapAsOf": "2026-07-30",
+        "marketCapAgeDays": 10,
+        "fixedCapitalRateMarginal": 0.0197947669869264
+      }
+    },
+    {
+      "symbol": "ADI",
+      "dbSkipReason": "STALE_MARKETCAP",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "fixedCapitalRateMarginal_new": -1.4448351052204005,
+      "replicated": {
+        "symbol": "ADI",
+        "stage": "STALE_MARKETCAP",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "marketCapAsOf": "2026-07-30",
+        "marketCapAgeDays": 10,
+        "fixedCapitalRateMarginal": -1.4448351052204005
+      }
+    },
+    {
+      "symbol": "AIT",
+      "dbSkipReason": "STALE_MARKETCAP",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "fixedCapitalRateMarginal_new": 0.22619199174391058,
+      "replicated": {
+        "symbol": "AIT",
+        "stage": "STALE_MARKETCAP",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "marketCapAsOf": "2026-07-30",
+        "marketCapAgeDays": 10,
+        "fixedCapitalRateMarginal": 0.22619199174391058
+      }
+    },
+    {
+      "symbol": "BBY",
+      "dbSkipReason": "STALE_MARKETCAP",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "fixedCapitalRateMarginal_new": 0.0381330685203575,
+      "replicated": {
+        "symbol": "BBY",
+        "stage": "STALE_MARKETCAP",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "marketCapAsOf": "2026-07-30",
+        "marketCapAgeDays": 10,
+        "fixedCapitalRateMarginal": 0.0381330685203575
+      }
+    },
+    {
+      "symbol": "ABNB",
+      "dbSkipReason": "NO_MARGINAL_CAPEX",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "fixedCapitalRateMarginal_new": null,
+      "replicated": {
+        "symbol": "ABNB",
+        "stage": "NO_MARGINAL_CAPEX",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "invYearsInfo": "invYears 중 capex 또는 dna 결측 — fixedCapitalRateMarginal null"
+      }
+    },
+    {
+      "symbol": "ADP",
+      "dbSkipReason": "NO_MARGINAL_CAPEX",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2023,
+        2024,
+        2025,
+        2026
+      ],
+      "fixedCapitalRateMarginal_new": null,
+      "replicated": {
+        "symbol": "ADP",
+        "stage": "NO_MARGINAL_CAPEX",
+        "yearWindow": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "invYearsInfo": "invYears 중 capex 또는 dna 결측 — fixedCapitalRateMarginal null"
+      }
+    },
+    {
+      "symbol": "AEP",
+      "dbSkipReason": "NO_MARGINAL_CAPEX",
+      "driverOk": true,
+      "driverSkipReason": null,
+      "oldInvYears": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "newInvYears": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "fixedCapitalRateMarginal_new": null,
+      "replicated": {
+        "symbol": "AEP",
+        "stage": "NO_MARGINAL_CAPEX",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "invYearsInfo": "invYears 중 capex 또는 dna 결측 — fixedCapitalRateMarginal null"
+      }
+    }
+  ],
+  "step2_dbAbsent5": [
+    {
+      "symbol": "AMST",
+      "cik": 1807166,
+      "inRevdcfResultsEver": false,
+      "note": "revdcf_results 전체 기간(2026-08-01~08-08) 어떤 as_of에도 존재하지 않음 — Supabase 직접 조회 확인",
+      "referenceComputation": {
+        "symbol": "AMST",
+        "stage": "DRIVER_SKIP",
+        "skipReason": "MISSING_TAG_OPERATING_INCOME",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "windowReason": null
+      }
+    },
+    {
+      "symbol": "ANF",
+      "cik": 1018840,
+      "inRevdcfResultsEver": false,
+      "note": "revdcf_results 전체 기간(2026-08-01~08-08) 어떤 as_of에도 존재하지 않음 — Supabase 직접 조회 확인",
+      "referenceComputation": {
+        "symbol": "ANF",
+        "stage": "COMPUTED",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "verdict": "below_one",
+        "gapYears": null,
+        "fixedCapitalRateMarginal": 0.10550142772174746,
+        "wacc": 0.08418374002481865
+      }
+    },
+    {
+      "symbol": "AVAH",
+      "cik": 1832332,
+      "inRevdcfResultsEver": false,
+      "note": "revdcf_results 전체 기간(2026-08-01~08-08) 어떤 as_of에도 존재하지 않음 — Supabase 직접 조회 확인",
+      "referenceComputation": {
+        "symbol": "AVAH",
+        "stage": "NO_MARGINAL_CAPEX",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "invYearsInfo": "invYears 중 capex 또는 dna 결측 — fixedCapitalRateMarginal null"
+      }
+    },
+    {
+      "symbol": "ACRS",
+      "cik": 1557746,
+      "inRevdcfResultsEver": false,
+      "note": "revdcf_results 전체 기간(2026-08-01~08-08) 어떤 as_of에도 존재하지 않음 — Supabase 직접 조회 확인",
+      "referenceComputation": {
+        "symbol": "ACRS",
+        "stage": "COMPUTED",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "verdict": "value_destroying",
+        "gapYears": null,
+        "fixedCapitalRateMarginal": -0.7276995305164319,
+        "wacc": 0.08031506441727865
+      }
+    },
+    {
+      "symbol": "ACT",
+      "cik": 1823529,
+      "inRevdcfResultsEver": false,
+      "note": "revdcf_results 전체 기간(2026-08-01~08-08) 어떤 as_of에도 존재하지 않음 — Supabase 직접 조회 확인",
+      "referenceComputation": {
+        "symbol": "ACT",
+        "stage": "DRIVER_SKIP",
+        "skipReason": "MISSING_TAG_PPE",
+        "yearWindow": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "windowReason": null
+      }
+    }
+  ],
+  "mcapCutoffUsed": "2026-08-02"
+}

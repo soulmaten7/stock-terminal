@@ -1893,5 +1893,215 @@
     "aaplFy2025Check": "PASS — after.fiscalYear=2025, revenue=416,161,000,000·netIncome=112,010,000,000. STEP950 §0 SEC 원문 확인치와 정확히 일치.",
     "scriptBugFound": "검증 스크립트(probe_951_verify.ts) 자체의 표시 버그 1건 발견·수정: yearWindow를 after.ok로 게이팅해 AMST·ACT(창은 잡혔으나 이후 다른 게이트에서 skip)의 yearWindow가 null로 잘못 표시됨. drivers.ts 계산 자체는 처음부터 정확했다 — 캐시 재사용으로 재확인(추가 SEC 요청 0건)."
   },
-  "correction": "§5의 before가 DB(revdcf_results as_of=2026-08-08)와 불일치(AA·ABT·AKAM 확인 — 예: AA before.verdict='years' vs DB='over_cap'). 22.2%(summary.verdictChanged 4/18)는 무효. 원인 = 이 파일을 만든 probe_951_verify.ts의 computeOldWindow()가 startingMargin을 5년평균 operatingMargin으로 근사하고 fixedCapitalRate·workingCapitalRate를 옛 창이 아닌 새 창 값으로 대체한 결함 — 옛 고정창([2020..2024]) 자체를 충실히 재현하지 않았다. fb2c5c6(951 이전) drivers.ts 로직을 그대로 복제해 AA·ABT·AKAM을 캐시로 재현하니 DB 저장값과 소수점까지 정확히 일치(SEC/시총 시점차·damodaran 입력 문제 아님, 검증 스크립트 자체의 재현 불충분이 원인). 정본은 STEP 951 보강의 값 — before를 재계산하지 않고 DB 저장값을 그대로 읽는 방식(docs/probe_951b_verify.json): 비교가능 18종목 중 7종목(38.9%) 변동."
+  "correction": "§5의 before가 DB(revdcf_results as_of=2026-08-08)와 불일치(AA·ABT·AKAM 확인 — 예: AA before.verdict='years' vs DB='over_cap'). 22.2%(summary.verdictChanged 4/18)는 무효. 원인 = 이 파일을 만든 probe_951_verify.ts의 computeOldWindow()가 startingMargin을 5년평균 operatingMargin으로 근사하고 fixedCapitalRate·workingCapitalRate를 옛 창이 아닌 새 창 값으로 대체한 결함 — 옛 고정창([2020..2024]) 자체를 충실히 재현하지 않았다. fb2c5c6(951 이전) drivers.ts 로직을 그대로 복제해 AA·ABT·AKAM을 캐시로 재현하니 DB 저장값과 소수점까지 정확히 일치(SEC/시총 시점차·damodaran 입력 문제 아님, 검증 스크립트 자체의 재현 불충분이 원인). 정본은 STEP 951 보강의 값 — before를 재계산하지 않고 DB 저장값을 그대로 읽는 방식(docs/probe_951b_verify.json): 비교가능 18종목 중 7종목(38.9%) 변동.",
+  "step951b2_stateTransition": {
+    "N_population": 25,
+    "N_note": "18 verdict-comparable + 7 skipped(revdcf_results 존재) — DB_ABSENT 5건은 before 상태 자체가 없어 제외",
+    "transitionMatrix": {
+      "over_cap": {
+        "value_destroying": [
+          "A",
+          "AA",
+          "ABT",
+          "AMCR"
+        ],
+        "over_cap": [
+          "AAPL",
+          "ABBV"
+        ],
+        "years": [
+          "ADSK"
+        ]
+      },
+      "value_destroying": {
+        "years": [
+          "AAL"
+        ],
+        "value_destroying": [
+          "AEIS",
+          "AES",
+          "AKAM"
+        ]
+      },
+      "below_one": {
+        "below_one": [
+          "ACN",
+          "AEE"
+        ],
+        "value_destroying": [
+          "ADM"
+        ]
+      },
+      "years": {
+        "years": [
+          "ADBE",
+          "NVDA",
+          "MSFT",
+          "BR"
+        ]
+      },
+      "skipped:STALE_MARKETCAP": {
+        "skipped:STALE_MARKETCAP": [
+          "ACM",
+          "ADI",
+          "AIT",
+          "BBY"
+        ]
+      },
+      "skipped:NO_MARGINAL_CAPEX": {
+        "skipped:NO_MARGINAL_CAPEX": [
+          "ABNB",
+          "ADP",
+          "AEP"
+        ]
+      },
+      "DB_ABSENT": {
+        "DB_ABSENT": [
+          "AMST",
+          "ANF",
+          "AVAH",
+          "ACRS",
+          "ACT"
+        ]
+      }
+    },
+    "ratio_a_labelChanged": {
+      "n": 7,
+      "N": 25,
+      "ratio": 0.28,
+      "list": [
+        {
+          "symbol": "A",
+          "before": "over_cap",
+          "after": "value_destroying"
+        },
+        {
+          "symbol": "AA",
+          "before": "over_cap",
+          "after": "value_destroying"
+        },
+        {
+          "symbol": "AAL",
+          "before": "value_destroying",
+          "after": "years"
+        },
+        {
+          "symbol": "ABT",
+          "before": "over_cap",
+          "after": "value_destroying"
+        },
+        {
+          "symbol": "ADM",
+          "before": "below_one",
+          "after": "value_destroying"
+        },
+        {
+          "symbol": "ADSK",
+          "before": "over_cap",
+          "after": "years"
+        },
+        {
+          "symbol": "AMCR",
+          "before": "over_cap",
+          "after": "value_destroying"
+        }
+      ]
+    },
+    "ratio_b_plusGapYearsOnly": {
+      "n": 11,
+      "N": 25,
+      "ratio": 0.44,
+      "gapOnlyList": [
+        {
+          "symbol": "ADBE",
+          "before": "years",
+          "gapBefore": 2,
+          "after": "years",
+          "gapAfter": 1
+        },
+        {
+          "symbol": "NVDA",
+          "before": "years",
+          "gapBefore": 5,
+          "after": "years",
+          "gapAfter": 4
+        },
+        {
+          "symbol": "MSFT",
+          "before": "years",
+          "gapBefore": 17,
+          "after": "years",
+          "gapAfter": 14
+        },
+        {
+          "symbol": "BR",
+          "before": "years",
+          "gapBefore": 15,
+          "after": "years",
+          "gapAfter": 3
+        }
+      ]
+    },
+    "ratio_c_plusSkipComputeTransition": {
+      "n": 11,
+      "N": 25,
+      "ratio": 0.44,
+      "transitions": [],
+      "note": "0건 관측(표본 30종목 내) — skipped 7건 전부 새 창에서도 skip 유지"
+    },
+    "gapYearsDiffTable": [
+      {
+        "symbol": "ADBE",
+        "before": 2,
+        "after": 1,
+        "absDiff": -1,
+        "relDiff": -0.5
+      },
+      {
+        "symbol": "NVDA",
+        "before": 5,
+        "after": 4,
+        "absDiff": -1,
+        "relDiff": -0.2
+      },
+      {
+        "symbol": "MSFT",
+        "before": 17,
+        "after": 14,
+        "absDiff": -3,
+        "relDiff": -0.17647058823529413
+      },
+      {
+        "symbol": "BR",
+        "before": 15,
+        "after": 3,
+        "absDiff": -12,
+        "relDiff": -0.8
+      }
+    ],
+    "gapYearsDiffAbsRelMedian": 0.35,
+    "gapYearsDiffExcluded": [
+      "AAL(라벨변경, before gap 없음)",
+      "ADSK(라벨변경, before gap 없음)"
+    ],
+    "directionTally_labelTransitionsOnly": {
+      "below_one": {
+        "in": 0,
+        "out": 1
+      },
+      "over_cap": {
+        "in": 0,
+        "out": 5
+      },
+      "value_destroying": {
+        "in": 5,
+        "out": 1
+      },
+      "years": {
+        "in": 2,
+        "out": 0
+      }
+    }
+  },
+  "step951b2_skippedAndAbsentDetail": "docs/probe_951c_verify.json 참조 (skipped 7건 invYears/replicated 계산·DB없음 5건 원인+참고계산)"
 }

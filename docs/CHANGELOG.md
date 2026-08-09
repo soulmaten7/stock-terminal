@@ -1,6 +1,32 @@
 <!-- 2026-08-08 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-08 (118) — 🟣 **STEP 951 보강②: 미비교 12종목 확인 + 30종목 통합 상태 전이표 + 변동률 3종**
+
+> **성격**: 계측 보강(사실 등재, 판정 없음). **코드 무변경**·DB 무변경·SEC 신규 요청 0건(캐시 재사용)·push 없음.
+
+**skipped 7건** — `revdcf_results`(as_of=2026-08-08)의 skip_reason을 직접 재조회해 재확인: `STALE_MARKETCAP` 4(`ACM`·`ADI`·`AIT`·`BBY`)·`NO_MARGINAL_CAPEX` 3(`ABNB`·`ADP`·`AEP`). route.ts 파이프라인을 그대로 재현(오늘 시점 참고 계산, DB 미기록)한 결과 **7건 전부 새 창에서도 skip 유지**. STALE_MARKETCAP 4건은 `us_market_cap.as_of=2026-07-30`(10일 경과, TTL 7일 초과)로 여전히 막힘 — 새 창에서 `fixedCapitalRateMarginal` 자체는 4건 전부 정상 산출됐으나 이 게이트는 시총 신선도만 보고 창은 안 본다(**949와 같은 뿌리, 951과 독립**). NO_MARGINAL_CAPEX 3건은 invYears가 새 창으로 이동(ABNB·AEP `[2022..2025]`·ADP `[2023..2026]`)했지만 `fixedCapitalRateMarginal`은 여전히 null — capex/dna 원자료 결측 위치를 확인: ABNB(capex 2022만 존재, 2023~2025 전무 + dna 2024·2025 결측)·ADP(4개 invYears 전부 capex 태그 없음)·AEP(2023~2025엔 capex 있으나 2022만 없음). **결측이 창을 따라 이동했을 뿐 — window 문제가 아니라 원자료 태그 문제.**
+
+**DB 없음 5건** — `AMST`·`ANF`·`AVAH`·`ACRS`·`ACT`가 `revdcf_results`(2026-08-01~08-08, 전체 8개 as_of) 어디에도 존재한 적 없음을 Supabase 직접 조회로 확인(count=0). 원인 = route.ts의 유니버스가 **자기참조**("직전 as_of의 CIK 집합"을 매일 이어받음, 외부 마스터 리스트 없음) — 한 번도 초기 유니버스에 없었던 종목은 편입 경로가 구조적으로 없다. 캐시 존재 5건 전부 참고 계산(DB 미기록) — `ANF`(계산됨: below_one)·`ACRS`(계산됨: value_destroying)·`AVAH`(NO_MARGINAL_CAPEX)·`AMST`(MISSING_TAG_OPERATING_INCOME)·`ACT`(MISSING_TAG_PPE). "유니버스에 없다"와 "계산이 안 된다"는 별개로 유지 — 섞지 않음.
+
+**30종목 통합 상태 전이표(before=DB 저장값 그대로, after=새 코드+DB 시장입력 고정)** — 7×7 카테고리(verdict 4종+skip 2종+DB_ABSENT). 전문 = `docs/REVDCF_SPEC.md` §10 951 보강② 문단.
+
+**변동률 3종(N=25 = 18 verdict비교가능 + 7 skip존속, DB_ABSENT 5건은 before 상태 자체가 없어 제외)** — ⓐ 라벨만 변경 7/25=**28.0%** · ⓑ ⓐ+gap_years만 변경(ADBE·NVDA·MSFT·BR) 11/25=**44.0%** · ⓒ ⓑ+skip↔계산 전환 +0(표본 내 0건, skip 7건 전부 존속) 11/25=**44.0%**. 🔑 ⓐ만 보면 28.0%로 과소평가 — `BR`(gap 15→3, −80%)·`MSFT`(17→14) 같은 라벨불변·크기변동 사례를 ⓑ가 잡아 44.0%로 오른다.
+
+**gap_years 절대/상대차(years→years 4건만, 라벨변경 2건 AAL·ADSK는 한쪽 gap 없어 제외)**: ADBE −1(−50.0%)·NVDA −1(−20.0%)·MSFT −3(−17.6%)·BR −12(−80.0%). **│상대차│ 중앙값 = 35.0%**(부호 상쇄 없음, STEP 950 전례 반영).
+
+**방향 집계(라벨 전이 건수만, 강도 해석 없음)**: value_destroying 들어옴 5·나감 1 · over_cap 나감 5·들어옴 0 · years 들어옴 2·나감 0 · below_one 나감 1·들어옴 0.
+
+**표본 한계** — 캐시 30종목은 950의 사전순 20 + 951이 추가한 10, 604종목 전수의 대표표본 아님(불변, 재확인).
+
+**신규 스크립트** — `scripts/probe_951c_verify.ts`(skipped 7·DB없음 5를 route.ts 파이프라인 그대로 재현, damodaran_*·us_market_cap·us_cik_map 읽기 전용 조회, SEC 호출 0) → `docs/probe_951c_verify.json`. `docs/probe_951_verify.json`에 `step951b2_stateTransition` 필드 추가(기존 `correction` 필드 보존).
+
+**문서** — `docs/REVDCF_SPEC.md`(§10 "951 보강②" 문단 신설 — 상태 전이표·변동률 3종·gap diff·방향 집계 전문 + §11 기존 "951 보강" 행의 강도 해석 문구 제거) · `docs/STATE.md`(신규 항목 후보 2건 등재, 판정 없음: ①유니버스 자기참조 구조 ②STALE_MARKETCAP=949와 같은 뿌리).
+
+**push 판정 재료만(판정 안 함)**: 위 변동률 3종·gap diff·방향 집계 전부 사실로만 기록. 결론 없음.
+
+**무변경** — `lib/`·`app/`·`components/`·`messages/` 코드 diff 0(신규 스크립트 1개 제외) · DB 쓰기 0 · SEC 신규 요청 0(캐시 재사용) · push 없음.
+
 ## 2026-08-08 (117) — 🔴 **STEP 951 보강: 검증 스크립트가 운영 DB를 재현하지 못했다 — verdict 변동 비율 42.9%·22.2% 둘 다 무효, 정본 38.9%**
 
 > **성격**: 계측 결함 정정(사건 기록). **코드 무변경**·DB 무변경·SEC 신규 요청 0건(캐시 재사용)·push 없음.
