@@ -1,6 +1,34 @@
 <!-- 2026-08-09 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-09 (131) — 🟨 **STEP 960 §0: Damodaran 업종별 4축 파일 확보·구조 확인 (0단계에서 멈춤)**
+
+> **성격**: 재료 확인만. **코드·DB·화면·크론 전부 무접촉.** `SECTOR_RELATIVE_SPEC` 무변경. 대조(실제 값 비교)는 다음 지시 후.
+
+**왜** — 959에서 Damodaran이 업종별 4축(PE·PBV·PS·EV/EBITDA)을 매년 발행한다는 사실이 나왔고, Q0가 SPDR을 정답지로 섹터 분류를 검증한 것과 같은 구조를 Q1에 쓸 수 있어 보였다. 그런데 Cowork이 `data/sources/damodaran/`(기존 8종 디렉토리)를 봤을 때 4종이 안 보인다는 지적이 들어와, "신규 확보"가 실제 다운로드인지 존재 확인일 뿐인지부터 갈라야 했다.
+
+**§0-1 파일 존재 확인** — `find . -iname '{pedata,pbvdata,psdata,vebitda}.xls'` 전수 확인 결과 `data/sources/damodaran_multiples/`(신규 디렉토리, 959에서 생성)에 4개 전부 존재. `git log --all`·이전 push 확인으로 커밋(`8acd413`)·원격 반영도 이미 완료돼 있었음을 재확인. 🔴 **정정**: 959의 "신규 확보"는 정확한 표현이었다 — 다만 저장 위치가 기존 `data/sources/damodaran/`이 아니라 새 디렉토리라 후속 확인에서 헷갈렸다.
+
+**§0-2 gitignore 선례** — 판단하지 않고 3가지를 그대로 보고: `data/sources/nasdaq/`=무시(`.gitignore:75`, README가 "정본=Supabase Storage"라 명시) · `data/sources/spdr/`=커밋(`git ls-files` 확인) · 🔴 **`data/sources/damodaran/`(기존 8종)도 무시였다 — 이번에 처음 확인.** `git ls-files data/sources/damodaran/` 결과 0건, git 히스토리에 한 번도 커밋된 적 없음(로컬 전용). README.md는 이 사실을 명시하지 않고 있었다. `data/sources/damodaran_multiples/`(신규 4종)는 spdr 계열(커밋)을 따랐다(959에서 이미 실행됨, 이 STEP에서 재검토·번복 안 함). 파일 크기·URL·갱신일 기록: pedata 61,952B·pbvdata 52,736B·vebitda 58,880B·psdata 52,736B, 전부 `pages.stern.nyu.edu/~adamodar/pc/datasets/{name}.xls`, 헤더 "Date updated" 필드 전부 **2026-01-05**(엑셀 시리얼 46027 직접 변환).
+
+**§0-3 구조 확인**
+- **시트·행·컬럼**: 4개 파일 전부 `Variables & FAQ`(설명) + `Industry Averages`(데이터, 104~105행×9~10열) 2시트 구조. 컬럼은 파일마다 다름(pedata=Current/Trailing/Forward PE+PEG, pbvdata=PBV+ROE+EV/InvCap+ROIC, vebitda=EV/EBITDAR&D·EV/EBITDA·EV/EBIT·EV/EBIT(1-t) 각 2벌, psdata=Price/Sales+NetMargin+EV/Sales+PretaxOpMargin).
+- **어휘 일치**: 🟢 pedata.xls의 94개 업종명 vs `damodaran_industry.industry_group`(is_us_listed=true, DB 직접조회) 94개 — **대칭차집합 = 공집합(완전 일치, 94개 전수 대조).** 나머지 3개 파일도 서로 및 pedata와 그룹 집합이 완전히 같음을 확인.
+- **집계 방식**: 🔴 **4개 파일 FAQ 전문을 확인 — 중앙값(median)·백분위(percentile) 컬럼은 어디에도 없다.** "단순평균(equal-weighted, pedata의 Current/Trailing/Forward PE만 해당)" 아니면 "가중 합산비율(aggregate ratio of sums — 시총 합÷순이익 합 방식, 나머지 컬럼 전부)" 둘 중 하나뿐.
+- **기준일·지역**: 전부 "US companies" 명시(region 부합, US 단독 규칙 충족). 갱신일은 전부 2026-01-05 단일 스냅샷 — 우리 `as_of=2026-08-08`과 약 7개월 차. 이미 여러 종목이 합산된 값이라 958처럼 개별종목 재척도로 시점을 맞출 수 없다.
+
+**§0-4 대조가 성립하는가 — 사실만 나열(결론 없음)**
+- **단위 불일치**: 우리 GICS 11섹터 vs Damodaran 94개 업종군 — 959의 다수결 크로스워크(10개 업종군 소속 갈림, 소수 소속 버림)가 그대로 남는다.
+- **집계방식 불일치**: 우리 = 종목별 백분위(분포 안에서의 위치). Damodaran = 업종 대표값 하나(평균 또는 가중합산비율, 분포가 아님).
+- **기준시점 불일치**: 약 7개월 차, 보정 수단 없음.
+- 🔴 **가장 근본적인 차이 — 데이터 형태 자체가 다르다.** Q0/SPDR 대조는 **종목 단위 라벨을 종목 단위로 1:1 대조**했다(같은 종류의 것끼리). Damodaran 배수 파일은 **종목별 값을 공개하지 않고 업종 대표값만 공개**한다 — 우리가 검증하려는 것(종목별 백분위)과 Damodaran이 주는 것(업종 대표값 1개)은 같은 종류의 데이터가 아니다.
+
+**문서** — `docs/probe_960_damodaran_multiples_structure.json` 신설(원자료) · `docs/VALUATION_SPEC.md`(교차참조 + 정정) · `docs/STATE.md`(960 §0 결과 추가).
+
+**무변경** — 코드·DB·화면·크론 전부 무접촉. `SECTOR_RELATIVE_SPEC` 무변경.
+
+🔴 **결론을 쓰지 않았다 — 어긋나는 지점만 나열했다.** 대조 실행 여부는 이 보고 후 장은태가 정한다.
+
 ## 2026-08-09 (130) — 🟩 **STEP 959: 업종×축 적용성 전수 조사 — 44칸 근거 수집, Damodaran 라이브 데이터셋 신규 발견**
 
 > **성격**: 조사만(코드 변경 0). **화면·DB·크론 전부 무접촉.** `SECTOR_RELATIVE_SPEC` 무변경 — 표만 만들고 장은태 판정을 기다린다.

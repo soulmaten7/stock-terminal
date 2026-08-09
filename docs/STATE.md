@@ -70,6 +70,8 @@
 - 나머지 9개 업종×4축(36칸)은 "근거 없는 일반론"에서 "라이브 데이터 기반 적용"으로 정정 — 개별 업종군 예외 3건(Consumer Discretionary PER 2곳·Consumer Staples PBR 1곳·Materials PER 1곳)은 구조적 신호로 보지 않고 각주 처리.
 - 처방 후보 4개 기록만(제외/표시만가림/조건부표시/대체축), 고르지 않음. `SECTOR_RELATIVE_SPEC` 무변경. 판정 자료 정본 = `docs/SECTOR_AXIS_APPLICABILITY.md` · 원자료 = `docs/probe_959_axis_applicability.json`.
 
+🟡 **STEP 960 §0(2026-08-09) — Damodaran 업종별 4축을 Q1 DoD3 정답지로 쓸 수 있는지 재료만 확인, 0단계에서 멈춤.** 🔴 정정: 959의 "신규 확보"는 정확했다(다운로드·커밋·push 완료) — 위치가 `data/sources/damodaran_multiples/`(신규 디렉토리)라 헷갈렸을 뿐, `data/sources/damodaran/`(기존 8종)에는 원래 없다. 실측: **어휘 완전일치**(94개 업종명, DB `damodaran_industry.industry_group`과 대칭차집합 공집합, 4개 파일 전수 대조) · **중앙값·백분위는 어디에도 없음**(단순평균 또는 가중합산비율뿐, FAQ 전문 확인) · 전부 US·2026-01-05 단일 스냅샷(우리 as_of와 7개월 차). 🔴 **어긋나는 지점(결론 아님)**: 업종 단위 불일치(94↔11) · 집계방식 불일치(종목별 백분위 vs 업종 대표값 1개) · 기준시점 불일치 · **가장 근본적으로 Damodaran 파일이 종목별 값을 안 준다 — Q0/SPDR과 달리 "같은 종류의 것"을 비교하는 게 아니다.** gitignore 선례 3가지 확인(nasdaq=무시·spdr=커밋·**damodaran 원본 8종도 무시였다는 사실을 이번에 처음 확인**) — 판단 안 함. 대조 자체는 다음 지시 후. 상세 = `docs/probe_960_damodaran_multiples_structure.json`.
+
 🔴 **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙) NVDA 자신은 FY2026이라 부른다. 값은 SEC 원문과 일치하나 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. 표시 문구 판정 필요(장은태) — Q1 카드 작업 시 함께 정한다. 상세 = `docs/VALUATION_SPEC.md` 미해결 6번·`docs/LENS_COMPLETION_STANDARD.md` Q1 항목3.
 🔴 **불일치 기록(2026-08-09, STEP 958 직접측정)**: 이 줄이 쓰인 시점엔 라벨이 `fiscal_year=2025`(NVDA 자체 FY2026)였다는데, **오늘 `us_valuation`(as_of=2026-08-08)을 직접 조회하니 NVDA는 `fundamentals_fiscal_year=2024`(net_income=$72.88B=NVDA 자체 FY2025 실적)로 나온다** — 같은 −1 오프셋 메커니즘이지만 관측된 연도 쌍이 다르다. 원인(크론 실행 시점·연도창 로직 변화 등)은 이번 STEP에서 조사하지 않았다 — 사실만 남긴다.
 

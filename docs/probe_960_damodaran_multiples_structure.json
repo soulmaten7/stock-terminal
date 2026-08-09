@@ -1,0 +1,97 @@
+{
+  "step": 960,
+  "measuredAt": "2026-08-09",
+  "purpose": "Damodaran 업종별 4축(pedata/pbvdata/vebitda/psdata)을 Q1 DoD3 정답지로 쓸 수 있는지 — 재료 확인만, 대조는 다음 STEP.",
+
+  "step0_1_fileExistenceCheck": {
+    "claim": "Cowork이 data/sources/damodaran/(원래 8종 디렉토리)를 봤을 때 4종이 없었다는 지적.",
+    "finding": "🔴 정정 — 4개 파일은 STEP 959에서 실제로 다운로드·커밋·push까지 완료됐다. 단 위치가 `data/sources/damodaran/`(기존 8종 디렉토리)가 아니라 신규 디렉토리 `data/sources/damodaran_multiples/`다. `find . -iname '{pedata,pbvdata,psdata,vebitda}.xls'` 전수확인 결과 해당 신규 디렉토리에만 존재, 다른 위치 없음. `git log --all -- data/sources/damodaran_multiples/`로 커밋(`8acd413`) 확인, `git ls-remote`로 원격 반영도 이전 STEP에서 이미 확인됨.",
+    "correction": "STEP 959 보고의 '신규 확보'는 정확한 표현이었다(실제로 새로 다운로드함) — 다만 어느 디렉토리에 저장했는지가 후속 세션에서 바로 안 보였다. 원인은 디렉토리명 명명 규칙(damodaran/ vs damodaran_multiples/)이 문서 상단 어디에도 색인돼 있지 않았기 때문 — README.md에는 절이 있으나 상위 디렉토리 목록에서 한눈에 안 보임."
+  },
+
+  "step0_2_gitignorePolicy": {
+    "precedent_nasdaq": "data/sources/nasdaq/ — .gitignore:75에 명시적으로 무시됨(git check-ignore 확인). README는 '원본 정본 = Supabase Storage 버킷 sources'라 명시.",
+    "precedent_spdr": "data/sources/spdr/ — gitignore 안 됨, git ls-files로 커밋 확인됨(spdr_sector_holdings_2026-08-06.json, 68KB).",
+    "precedent_damodaran_original8": "🔴 신규 확인 — data/sources/damodaran/(기존 8종 xls)도 .gitignore:57에 명시적으로 무시되고 있다. git ls-files 결과 0건 — 로컬에만 존재하고 git 히스토리엔 한 번도 커밋된 적 없다. README.md는 이 사실을 명시하지 않았다(이번에 처음 확인).",
+    "precedent_damodaran_multiples_thisStep": "data/sources/damodaran_multiples/(신규 4종) — gitignore 안 됨(git check-ignore exit=1), STEP 959에서 커밋됨. 위 세 선례와 비교하면 이건 spdr/damodaran_pdfs 계열(커밋)을 따른 것.",
+    "note": "🔴 판단하지 않는다 — 3가지 선례(nasdaq=무시·spdr=커밋·damodaran원본8종=무시)를 그대로 보고만 한다. damodaran_multiples/를 커밋한 결정은 이미 내려졌고(959), 이 STEP에서 재검토·번복하지 않는다."
+  },
+
+  "step0_2_fileMetadata": {
+    "pedata.xls": {"sizeBytes": 61952, "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/pedata.xls", "dateUpdatedField": "2026-01-05(엑셀 시리얼 46027, 헤더 'Date updated:' 필드 직접 변환)"},
+    "pbvdata.xls": {"sizeBytes": 52736, "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/pbvdata.xls", "dateUpdatedField": "2026-01-05"},
+    "vebitda.xls": {"sizeBytes": 58880, "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/vebitda.xls", "dateUpdatedField": "2026-01-05"},
+    "psdata.xls": {"sizeBytes": 52736, "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/psdata.xls", "dateUpdatedField": "2026-01-05"},
+    "downloadMethod": "curl -A \"Mozilla/5.0 (Trillion Research admin@onetrillion.app)\" -o {file} {url} — 959에서 실행, 이 STEP에서 재다운로드 없이 기존 파일 재검증만 함(불필요한 재요청 회피)."
+  },
+
+  "step0_3_fileStructure": {
+    "pedata.xls": {
+      "sheets": ["Variables & FAQ (12x3)", "Industry Averages (104x10)"],
+      "headerRow": 7,
+      "columns": ["Industry Name","Number of firms","% of Money-losing firms","Current PE","Trailing PE","Forward PE","Aggregate Mkt Cap/ Net Income (all firms)","Aggregate Mkt Cap/ Trailing Net Income (only money making firms)","Expected growth - next 5 years","PEG Ratio"],
+      "industryGroupCount": 94,
+      "aggregationMethods": {
+        "Current/Trailing/Forward PE": "단순평균(equal-weighted) — 원문 FAQ: 'averaged across all money-making firms in the group' / 'Simple average of PE ratios... Will be biased by non-money making firms and by equal averaging'",
+        "Aggregate Mkt Cap/Net Income": "가중(합산비율) — 원문 FAQ: 'Aggregate market capitalization of equity divided by aggregated net income, across all companies in group... closer to a weighted average, with larger firms weighted more than smaller ones'"
+      },
+      "region": "US companies (row2 명시)"
+    },
+    "pbvdata.xls": {
+      "sheets": ["Variables & FAQ (8x3)", "Industry Averages (104x9)"],
+      "headerRow": 7,
+      "columns": ["Industry Name","Number of firms","PBV","ROE","EV/ Invested Capital","ROIC"],
+      "industryGroupCount": 94,
+      "aggregationMethod": "가중(합산비율) — 원문 FAQ: 'Aggregated market capitalization divided by aggregated book value of equity, across all firms in the group'",
+      "region": "US companies"
+    },
+    "vebitda.xls": {
+      "sheets": ["Variables & FAQ (8x3)", "Industry Averages (105x10)"],
+      "headerRow": 8,
+      "columns": ["Industry Name","Number of firms","EV/EBITDAR&D","EV/EBITDA","EV/EBIT","EV/EBIT (1-t)","(중복 4컬럼)"],
+      "industryGroupCount": 94,
+      "aggregationMethod": "가중(합산비율) — 원문 FAQ: 'Aggregate enterprise value divided by aggregate earnings before interest, taxes and depreciation, across all firms in group'",
+      "region": "US companies"
+    },
+    "psdata.xls": {
+      "sheets": ["Variables & FAQ (8x3)", "Industry Averages (104x9)"],
+      "headerRow": 7,
+      "columns": ["Industry Name","Number of firms","Price/Sales","Net Margin","EV/ Sales","Pre-tax Operating Margin"],
+      "industryGroupCount": 94,
+      "aggregationMethod": "가중(합산비율) — 원문 FAQ: 'Aggregated market capitalization divided by aggregated revenues, across all firms in the group'",
+      "region": "US companies"
+    },
+    "noPercentileOrMedianAnywhere": "🔴 4개 파일 FAQ 전문을 확인 — '단순평균(equal-weighted)' 또는 '가중 합산비율(aggregate ratio of sums)' 둘 중 하나뿐이다. 중앙값(median)·백분위(percentile) 컬럼은 어디에도 없다."
+  },
+
+  "step0_3_vocabularyMatch": {
+    "method": "pedata.xls의 'Industry Name' 컬럼(Total Market 행 2개 제외, 94개) vs damodaran_industry.industry_group(is_us_listed=true, DB 직접조회, 94개) 집합 비교.",
+    "result": "🟢 완전 일치 — 대칭차집합(symmetric difference) = 공집합. 94/94 전부 일치.",
+    "crossCheckOtherThreeFiles": "pbvdata·vebitda·psdata 세 파일도 서로 및 pedata와 94개 그룹 집합이 완전히 동일함을 확인(symmetric_difference 전부 공집합).",
+    "sample10": [
+      "Advertising","Aerospace/Defense","Air Transport","Apparel","Auto & Truck",
+      "Auto Parts","Bank (Money Center)","Banks (Regional)","Beverage (Alcoholic)","Beverage (Soft)"
+    ],
+    "note": "어휘는 완전히 일치한다 — 같은 저자의 같은 분류체계(indname.xls의 Industry Group)를 그대로 쓰기 때문. 표본 10개가 아니라 전수(94개) 대조를 했고 전부 일치했다."
+  },
+
+  "step0_3_referenceDate": {
+    "damodaranFiles": "전부 2026-01-05 갱신(단일 스냅샷, 4개 파일 공통).",
+    "ourData": "us_sector_relative as_of=2026-08-08.",
+    "gap": "약 7개월. Damodaran 파일은 개별 종목 데이터가 아니라 '갱신 시점의 집계값'이라 STEP 958처럼 재척도(가격비율 보정)로 시점을 맞출 수 없다 — 재척도는 개별 종목의 가격만 보정하면 되지만, 이건 이미 여러 종목이 합산된 결과라 그 안의 시총 구성 자체가 갱신 시점 것이다."
+  },
+
+  "step0_4_comparisonFeasibility_factsOnly": {
+    "instruction": "🔴 결론(성립한다/안 한다)을 쓰지 않는다. 어긋나는 지점만 나열한다.",
+    "gap1_unit": "우리 = GICS 11섹터. Damodaran = 94개 업종군. STEP 959에서 이미 다수결 크로스워크를 만들었고 10개 업종군이 소속이 갈렸다(예: R.E.I.T. 147 Real Estate vs 43 Financials, 소수 소속 버림) — 이 손실이 그대로 남는다.",
+    "gap2_aggregationMethod": "우리 = 종목별 백분위(개별 종목이 업종 내에서 몇 % 위치인지). Damodaran = 업종군 전체의 '단순평균' 또는 '가중 합산비율' 중 하나(둘 다 대표값 하나, 분포가 아님). 종목별 값을 안 주기 때문에 우리 백분위 결과를 종목 단위로 대조할 방법 자체가 없다 — 있는 건 '업종 대표값 하나'뿐이라, 기껏해야 우리 업종 중앙값(현재 계산·저장 안 하고 있음)과 Damodaran 업종 대표값을 나란히 놓는 정도가 최대치다.",
+    "gap3_referenceDate": "Damodaran 2026-01-05 단일 스냅샷 vs 우리 as_of=2026-08-08 — 약 7개월 차. 개별종목 재척도(958 방식)를 이미 합산된 값에는 적용할 수 없다.",
+    "gap4_dataShape": "🔴 가장 근본적인 차이 — Q0/SPDR 대조는 **종목 단위 카테고리(섹터 라벨)를 종목 단위로 1:1 대조**했다(같은 종류의 것끼리 비교). Damodaran 배수 파일은 **종목별 값을 공개하지 않고 업종 대표값만 공개**한다. 우리가 검증하려는 것(종목별 백분위가 맞는지)과 Damodaran이 주는 것(업종 대표값 1개)은 **같은 종류의 데이터가 아니다** — grain이 다르다."
+  },
+
+  "notDone": [
+    "실제 대조(우리 값 vs Damodaran 값)는 이 STEP에서 하지 않았다 — 지시대로 0단계에서 멈춤.",
+    "우리가 업종별 대표값(평균·중앙값)을 별도로 계산해 Damodaran 집계값과 나란히 놓는 것이 유의미한지는 검토하지 않았다.",
+    "vebitda.xls의 중복 4컬럼(EV/EBITDAR&D 등이 두 번 나옴)이 왜 두 벌인지(전기 대비? 다른 표본?) 확인하지 않았다."
+  ]
+}
