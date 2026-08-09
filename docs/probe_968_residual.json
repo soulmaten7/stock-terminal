@@ -1,0 +1,139 @@
+{
+  "step": 968,
+  "date": "2026-08-09",
+  "purpose": "STEP958 외부대조 잔차가 대부분 음수인 체계적 편향 — 재척도(price ratio only) 방법의 편향 가설을 검증하고, 가능하면 재척도 없는 정면 대조로 대체",
+  "note": "조사 전용. 코드·DB·VALUATION_SPEC·SECTOR_RELATIVE_SPEC 계산 정의 무변경.",
+
+  "step1_platformB": {
+    "target": "최소 3곳, 회계연도별 배수의 주가·주식수 시점 확인",
+    "attempts": [
+      { "platform": "stockanalysis.com", "status": "success", "findings": "표에 'Last Close Price'·'Market Cap' 행이 회계연도별로 존재. 🔴 958이 '회계연도 말 종가를 명시한다'고 적었으나 재확인 결과 페이지에 그 사실을 밝히는 명시적 문구는 없다(958의 서술을 정정 — 라벨만 있지 방법론 설명은 없음). 단 Yahoo 독립 조회로 AAPL FY2024 'Last Close Price'=$227.79가 2024-09-27(FY2024 말 직전 거래일) 실제 종가와 정확히 일치함을 확인 — 라벨이 안 밝혀도 실제로는 FY말 종가다. 'Market Cap' 행에서 역산한 주식수(AAPL: $3,443,453M/$227.79=15,116,822,904주)가 우리 FY 희석가중평균주식수(15,408,095,000)보다 1.9% 적다 — 기말 실제 발행주식수(자사주매입이 연중 진행되면 가중평균보다 적음)를 쓴다는 정황." },
+      { "platform": "WSJ", "status": "blocked", "reason": "WebFetch 자체 거부(robots/paywall)" },
+      { "platform": "Macrotrends", "status": "blocked", "reason": "HTTP 403(958·964·966에서도 반복 확인된 패턴)" },
+      { "platform": "roic.ai", "status": "blocked", "reason": "HTTP 403" },
+      { "platform": "WallStreetZen", "status": "blocked", "reason": "HTTP 404(두 경로 시도 모두)" },
+      { "platform": "Morningstar", "status": "blocked", "reason": "HTTP 403" }
+    ],
+    "conclusion": "🔴 3곳 목표 중 1곳만 성공(stockanalysis.com). 5곳 추가 시도 전부 차단 — 966에서도 8곳 차단된 동일 패턴. 억지로 채우지 않는다.",
+    "priceBasisReverification": "확인됨 — FY-end 종가(회계연도 말 직전 거래일 종가). Yahoo Finance 독립 조회(query1.finance.yahoo.com/v8/finance/chart)로 AAPL 2024-09-27 종가 $227.79와 정확히 일치.",
+    "sharesBasisInference": "명시적 문구 없음(추론) — Market Cap÷Price 역산치가 우리 FY 가중평균희석주식수보다 일관되게 낮음 → 기말 시점 실제 발행주식수로 추정(확정 아님, 명시 문구 없어 추론에 머무름)."
+  },
+
+  "step2_residualStructure": {
+    "original5_958_rescaleResiduals": {
+      "AAPL": { "per": -5.35, "pbr": -3.45, "psr": -3.50, "evebitda": -3.93 },
+      "NVDA": { "per": -2.29, "pbr": -1.05, "psr": -1.04, "evebitda": -0.73 },
+      "AAL": { "per": -3.00, "pbr": null, "psr": 1.35, "evebitda": 7.10 },
+      "C": { "per": -21.43, "pbr": -10.15, "psr": -21.78, "evebitda": null },
+      "AMT": { "per": -1.50, "pbr": -0.32, "psr": -0.25, "evebitda": -7.56 }
+    },
+    "signStructure": "17/18 값이 음수(AAL PSR +1.35%만 예외) — 체계적 음수 편향 확인. 우리(오늘 시총 기준) 값이 재척도된 외부값보다 일관되게 작다.",
+    "expandedSet_selection": {
+      "method": "us_fundamentals.shares(FY 희석가중평균) vs us_valuation.market_cap/price(오늘 내재 주식수)의 변동률 — 결정적 선정(시총상위·자사주매입 추정 아님). fy_shares>1,000,000 필터(소형주 단위오류 배제).",
+      "topIncrease5_candidates_before_split_check": ["BKNG(+2106%, 2026-04-06 25:1 분할 확인·제외)", "PROP(+533%)", "QXO(+429%)", "HGTY(+317%)", "CRWD(+316%, 2026-07-02 4:1 분할 확인·제외)", "CODX(+264%)", "BRCC(+252%)"],
+      "bottomDecrease5_candidates": ["COOK(-97.8%, 극단치 미검증·배제)", "AMRN(-94.9%, 극단치 미검증·배제)", "ONC(-91.7%, 극단치 미검증·배제)", "LVO(-83.7%, 극단치 미검증·배제)", "CRIS(-69.1%, 극단치 미검증·배제)", "AMCR(-67.9%, 극단치 미검증·배제)", "CNNE(-31.8%)", "DVA(-26.9%)", "DAN(-25.9%, revenue vintage 이중값 발견·복잡성 배제)", "LUV(-23.9%)", "PRKS(-21.5%)", "CARS(-20.6%)", "ANGI(-20.0%)", "GM(-19.9%)", "CROX(-19.9%)"],
+      "splitsFound": { "BKNG": "2026-04-06 25-for-1 stock split(WebSearch로 확인·제외)", "CRWD": "2026-07-02 4-for-1 stock split(WebSearch로 확인·제외)" },
+      "finalSelection_increases5": ["PROP", "QXO", "HGTY", "BRCC", "CODX"],
+      "finalSelection_decreases5": ["GM", "LUV", "CROX", "DVA", "CARS"],
+      "excludedExtremesReason": "COOK·AMRN·ONC·LVO·CRIS·AMCR는 -68~-98%로 자사주매입만으로는 설명하기 어려운 크기라 반대분할(reverse split) 의심 — 개별 검증 시간 부족으로 배제(추정으로 채우지 않음, 그대로 기록)."
+    },
+    "hypothesisTest": {
+      "method": "15종목(원본5+신규10) 전체에 대해 958식 재척도 잔차를 재계산 후, |평균절대잔차|와 주식수 변동률의 Pearson 상관",
+      "fullSet_n15_including_extreme_dilution": { "pearson_r_signed": 0.733, "pearson_r_abs": 0.728 },
+      "excludingExtremeDilutionOutliers_n10": {
+        "symbols": ["AAPL", "NVDA", "AAL", "C", "AMT", "GM", "LUV", "CROX", "DVA", "CARS"],
+        "pearson_r": -0.920,
+        "note": "change_rate가 전부 음수인 부분표본 — r=-0.92는 |변동률|이 클수록 |잔차|가 커진다는 뜻(음수×음수 상관이라 부호가 음)",
+        "orderedBySharesChange": [
+          { "symbol": "DVA", "changePct": -26.9, "meanAbsResidual": 25.76 },
+          { "symbol": "GM", "changePct": -19.9, "meanAbsResidual": 26.67 },
+          { "symbol": "LUV", "changePct": -23.9, "meanAbsResidual": 18.72 },
+          { "symbol": "CROX", "changePct": -19.9, "meanAbsResidual": 17.49 },
+          { "symbol": "CARS", "changePct": -20.6, "meanAbsResidual": 13.78 },
+          { "symbol": "C", "changePct": -13.5, "meanAbsResidual": 12.19 },
+          { "symbol": "AAL", "changePct": -8.2, "meanAbsResidual": 3.82 },
+          { "symbol": "AAPL", "changePct": -5.3, "meanAbsResidual": 4.06 },
+          { "symbol": "NVDA", "changePct": -2.4, "meanAbsResidual": 1.28 },
+          { "symbol": "AMT", "changePct": -0.5, "meanAbsResidual": 2.13 }
+        ]
+      },
+      "verdict": "🔑 가설 참(TRUE) — 거의 단조로운 순서(DVA·GM만 근소하게 뒤바뀜)로 주식수 변동폭이 클수록 재척도 잔차가 크다. 확장5종목(극단치 배제, 250~530% 희석)까지 포함해도 방향은 유지되나 극단치가 상관을 지배."
+    }
+  },
+
+  "step3_directConstruction": {
+    "method": "FY말 시총 = Yahoo FY말 종가(query1.finance.yahoo.com, 야후 15회 호출, 종목당 1회) × 우리 FY 희석주식수(us_fundamentals.shares). C는 shares가 null이라 SEC 캐시에서 WeightedAverageNumberOfDilutedSharesOutstanding(FY2024=1,940,100,000) 직접 추출. 재척도(가격비율) 사용 안 함.",
+    "yahooCallCount": 15,
+    "splitAdjustmentNote": "이 15종목 중 분할 이력 있는 종목 없음(확인된 분할 2건[BKNG·CRWD]은 애초에 후보 선정 단계에서 배제됨) — 별도 분할조정 표시 종목 0건.",
+    "excludedSymbols": { "count": 0, "reason": "15종목 전부 shares 확보(C는 SEC 캐시 직접 추출로 보완)" },
+    "resultsBySymbol": "결과 전문은 아래 perAxisSummary·companyDetail 참조",
+    "residualComparisonTable_medianP90_absRelDiff": {
+      "per": { "rescale_n11_median": 19.83, "rescale_n11_p90": 26.90, "direct_n11_median": 0.07, "direct_n11_p90": 5.70 },
+      "pbr": { "rescale_n14_median": 17.23, "rescale_n14_p90": 277.10, "direct_n14_median": 8.29, "direct_n14_p90": 44.79 },
+      "psr": { "rescale_n15_median": 18.02, "rescale_n15_p90": 276.91, "direct_n15_median": 8.34, "direct_n15_p90": 50.17 },
+      "evebitda": { "rescale_n11_median": 15.85, "rescale_n11_p90": 161.21, "direct_n11_median": 8.90, "direct_n11_p90": 37.59 }
+    },
+    "signBiasResolved": "PER은 사실상 완전 해소(중앙값 19.83%→0.07%). PBR·PSR·EV/EBITDA는 중앙값 50%대 감소하나 완전히 안 닫힘 — 부호 편향(958의 17/18 음수)은 direct 결과에서 사라짐(양수·음수 혼재로 전환, 아래 companyDetail 참조).",
+    "companyDetail": {
+      "AAPL": { "per": -0.07, "pbr": 1.93, "psr": 1.88, "evebitda": 1.64, "fyMarketCap_ours": 3509809856602, "fyMarketCap_ext": 3443453000000, "mcapGapPct": 1.93 },
+      "NVDA": { "per": 0.06, "pbr": 1.33, "psr": 1.34, "evebitda": 1.31, "fyMarketCap_ours": 3537546358887, "fyMarketCap_ext": 3490910000000, "mcapGapPct": 1.34 },
+      "AAL": { "per": 5.70, "pbr": null, "psr": 10.43, "evebitda": 2.88, "fyMarketCap_ours": 12572259220, "fyMarketCap_ext": 11461000000, "mcapGapPct": 9.70 },
+      "C": { "per": 0.58, "pbr": 13.64, "psr": -9.53, "evebitda": null, "fyMarketCap_ours": 136563637816, "fyMarketCap_ext": 132127000000, "mcapGapPct": 3.36 },
+      "AMT": { "per": 0.06, "pbr": 0.14, "psr": 0.21, "evebitda": -8.90, "fyMarketCap_ours": 85857890914, "fyMarketCap_ext": 85723000000, "mcapGapPct": 0.16 },
+      "GM": { "per": 0.07, "pbr": 13.52, "psr": 25.17, "evebitda": -75.58, "fyMarketCap_ours": 60141830517, "fyMarketCap_ext": 53004000000, "mcapGapPct": 13.47 },
+      "LUV": { "per": 0.75, "pbr": 8.22, "psr": 7.75, "evebitda": 10.50, "fyMarketCap_ours": 21617659313, "fyMarketCap_ext": 19947000000, "mcapGapPct": 8.38 },
+      "CROX": { "per": -0.03, "pbr": 5.93, "psr": 5.80, "evebitda": 0.15, "fyMarketCap_ours": 6553398887, "fyMarketCap_ext": 6188000000, "mcapGapPct": 5.90 },
+      "DVA": { "per": -0.01, "pbr": 8.36, "psr": 8.34, "evebitda": -14.34, "fyMarketCap_ours": 13051826966, "fyMarketCap_ext": 12044000000, "mcapGapPct": 8.37 },
+      "CARS": { "per": 0.68, "pbr": 4.73, "psr": 4.77, "evebitda": 3.45, "fyMarketCap_ours": 1167816705, "fyMarketCap_ext": 1116000000, "mcapGapPct": 4.64 },
+      "PROP": { "per": null, "pbr": -40.39, "psr": -40.42, "evebitda": null, "fyMarketCap_ours": 106938235, "fyMarketCap_ext": 179000000, "mcapGapPct": -40.26, "note": "극단 희석 종목(+533%) — 방향은 회복(958식 +277%에서 -40%로) 되었으나 크기가 여전히 큼" },
+      "QXO": { "per": null, "pbr": -44.79, "psr": -50.17, "evebitda": null, "fyMarketCap_ours": 3243599922, "fyMarketCap_ext": 6510000000, "mcapGapPct": -50.18, "note": "극단 희석 종목(+429%) — 신주 발행 규모가 매우 커서 FY 희석가중평균과 기말 실제 발행주식수 자체의 괴리가 큰 것으로 추정(미확정)" },
+      "HGTY": { "per": -89.49, "pbr": 309.69, "psr": 106.87, "evebitda": -37.59, "fyMarketCap_ours": 794455519, "fyMarketCap_ext": 869000000, "mcapGapPct": -8.58, "note": "🔴 시총 갭(-8.6%)은 작은데 PER·PBR·PSR 잔차가 매우 큼 — 시총이 아니라 재무(분모) 쪽 문제로 추정. 개별 규명 안 함(못한 것)." },
+      "BRCC": { "per": null, "pbr": -9.18, "psr": -8.61, "evebitda": -24.24, "fyMarketCap_ours": 225410977, "fyMarketCap_ext": 248000000, "mcapGapPct": -9.11 },
+      "CODX": { "per": null, "pbr": -8.20, "psr": -8.20, "evebitda": null, "fyMarketCap_ours": 22751528, "fyMarketCap_ext": 25000000, "mcapGapPct": -8.99 }
+    }
+  },
+
+  "step4_remainingResidualDecomposition": {
+    "citigroup": {
+      "per": { "958_rescale": -21.43, "958_afterPreferredAdj_963": -13.04, "968_direct": 0.58, "conclusion": "🔑 968이 963의 미해결 −13.04%를 사실상 완전히 닫았다 — 그 잔차의 거의 전부가 재척도(주식수 시점 불일치)였다. 실제 계산 결함이 아니었다." },
+      "pbr": {
+        "958_rescale": -10.15, "968_direct_commonEquityBasis": 13.64,
+        "recheck_totalEquityBasis": { "computation": "fyMarketCap(136,563,637,816) / totalStockholdersEquity(208,598,000,000, 963 SEC확인치) = 0.6547", "relDiffVsExt063": 3.92,
+          "conclusion": "🔴 부호·크기가 크게 좁혀진다(13.64%→3.92%) — stockanalysis.com의 PBR이 963이 채택한 commonEquity(우선주 제외)가 아니라 총자기자본(우선주 포함) 기준일 가능성이 높다. 963의 정책 선택(Damodaran pbv.pdf 근거)은 유효하나, 외부 플랫폼과의 직접 비교치는 이 정의 차이 때문에 정확히 안 맞는다 — 판정 대상 아님, 사실만 기록." }
+      },
+      "psr": { "958_rescale": -21.78, "968_direct": -9.53, "conclusion": "958 대비 절반 이하로 줄었으나 완전히 안 닫힘 — 매출(분모) STEP964/965의 vintage 이슈(81,139M vs 80,722M)와 별개로 남는 잔차, 원인 미규명." },
+      "evebitda": { "958": null, "968": null, "note": "양쪽 다 결측(우리=MISSING_MARKET_DATA, 외부=은행이라 미표시) — 958과 동일, 대조 불가." }
+    },
+    "evEbitdaSystematicBias": {
+      "observation": "direct construction 후에도 EV/EBITDA 중앙값(8.90%)이 다른 축보다 크고, GM(-75.58%)·HGTY(-37.59%)·DVA(-14.34%)·BRCC(-24.24%)·AMT(-8.90%)에서 큰 잔차 지속.",
+      "gmDeepDive": {
+        "finding": "🔴 GM의 debt 필드가 us_fundamentals에 0으로 저장돼 있다(실제 무차입 아님) — SEC 원문 확인 결과 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities` = $131,758,000,000(FY2024)이 존재하나, 우리 DEBT_LT·DEBT_CUR·DEBT_TOTAL_SINGLE 태그 union 어디에도 이 정확한 태그명이 없어 완전히 누락됐다.",
+        "secTagsChecked": ["LongTermDebtNoncurrent(없음)", "LongTermDebt(없음)", "LongTermDebtAndCapitalLeaseObligations(없음)", "LongTermDebtCurrent(없음)", "DebtCurrent(없음)", "LongTermDebtAndCapitalLeaseObligationsCurrent(없음)", "DebtAndCapitalLeaseObligations(없음)", "FinanceLeaseLiabilityNoncurrent/Current(없음)"],
+        "actualTagFound": "LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities = 131,758,000,000",
+        "impact": "이 결측이 EV를 실제보다 $131.8B 낮게 만들어 EV/EBITDA가 크게 과소평가됨(direct 1.53배 vs 외부 6.28배) — GM은 캡티브 금융자회사(GM Financial) 부채가 커서 이 결측의 영향이 특히 크다.",
+        "scope": "🔴 이 STEP은 조사 전용 — 코드(DEBT_LT 등 태그 union)를 고치지 않는다. 발견만 기록, 처방은 별도 STEP."
+      },
+      "othersUndecomposed": "HGTY·DVA·BRCC·AMT의 EV/EBITDA 잔차는 개별 분해하지 않았다(GM처럼 SEC 원문까지 되짚지 않음) — 못 한 것으로 남긴다."
+    },
+    "hgtyAnomaly": {
+      "observation": "HGTY는 시총 갭이 −8.6%로 작은데 PER(−89.5%)·PBR(+309.7%)·PSR(+106.9%)이 극단적으로 크다 — 분자(시총) 문제가 아니라 분모(재무) 문제로 추정.",
+      "investigated": false,
+      "note": "🔴 규명 못 함 — 시간 배분상 GM 사례 하나로 EV/EBITDA 계열 검증을 마쳤고 HGTY의 PER/PBR/PSR 이상은 별도 조사가 필요하나 이번 STEP에서 하지 않았다."
+    }
+  },
+
+  "step5_verificationSectionJudgment": {
+    "step958_claim": "'AAPL·NVDA·AMT·AAL은 상대차 대부분 ±1~7%(EV/EBITDA만 AAL +7.10%·AMT −7.56%로 다른 축보다 큼)'",
+    "reassessment": "🔴 부분적으로 무효 — 방향(작은 잔차)은 맞았으나 근거(SEC 데이터 정확·잔차는 분자쪽 근사 오차로 추정)가 이번에 **확인**됐다(958은 '추정'으로만 남겼음). 다만 958의 검증 표본(5종목)은 우연히 주식수 변동이 작은(-0.5%~-8.2%) 종목들이라 잔차가 작게 나온 것 — 표본을 넓히면(GM·LUV·CROX·DVA·CARS, 변동 -19.9%~-26.9%) 같은 재척도 방법으로 13~27%의 '가짜 오차'가 났을 것이다. 🔴 958의 '±5%(1~7%) 통과' 프레이밍은 재현성이 낮은 표본 특이적 결과였다 — 이번 968의 직접구성(재척도 제거) 방법이 더 견고한 대조 기준이다.",
+    "newBaseline": "정본 대조 방법 = 직접구성(FY말종가×FY희석주식수, 재척도 없음). 잔차 중앙값(15종목): PER 0.07%·PBR 8.29%·PSR 8.34%·EV/EBITDA 8.90%."
+  },
+
+  "notDoneOrUnresolved": [
+    "①-B 3곳 목표 중 1곳만 성공(stockanalysis.com) — 5곳 추가 차단",
+    "PBR·PSR·EV/EBITDA의 direct construction 후 남는 중앙값 ~8% 잔차의 완전한 원인 규명(Citigroup PBR·GM EV/EBITDA 2건만 개별 규명, 나머지는 미규명)",
+    "HGTY의 PER/PBR/PSR 극단 이상치(시총갭 작은데 배수갭 큼) — 미조사",
+    "PROP·QXO(극단 희석 종목)의 잔차가 direct construction 후에도 -40~-50%로 남는 이유 — 희석가중평균 vs 기말발행주식수 자체의 괴리로 추정하나 미확정",
+    "COOK·AMRN·ONC·LVO·CRIS·AMCR의 대규모 주식수 감소가 반대분할인지 실제 자사주매입인지 미검증(선정 후보에서 배제만 함)",
+    "야후 호출 15건(15종목×1회) — 429 없음"
+  ]
+}
