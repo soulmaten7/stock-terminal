@@ -134,3 +134,56 @@ describe("computeSectorRelativeBatch — STEP 956 §5-3 손계산 경계 검산"
     expect(m1.unavailable.pbr).toBe("SAMPLE_TOO_SMALL");
   });
 });
+
+describe("computeSectorRelativeBatch — STEP 980 median_relative(perRel·perMed) 확장", () => {
+  it("표본 19 — minSample 미달이면 perRel·perMed도 percentile과 똑같이 null(같은 게이트 공유)", () => {
+    const { valuations, sectors } = makeSector("Test", 19, "R19_");
+    const rows = computeSectorRelativeBatch(valuations, sectors, 20);
+    for (const r of rows) {
+      expect(r.perRel).toBeNull();
+      expect(r.perMed).toBeNull();
+      expect(r.unavailable.per).toBe("SAMPLE_TOO_SMALL");
+    }
+  });
+
+  it("표본 20 — 값 1..20, 중앙값=(10+11)/2=10.5, 배율=값/10.5", () => {
+    const { valuations, sectors } = makeSector("Test", 20, "R20_");
+    const rows = computeSectorRelativeBatch(valuations, sectors, 20);
+    const byS = new Map(rows.map((r) => [r.symbol, r]));
+    for (const r of rows) expect(r.perMed).toBeCloseTo(10.5);
+    expect(byS.get("R20_1")!.perRel).toBeCloseTo(1 / 10.5);
+    expect(byS.get("R20_20")!.perRel).toBeCloseTo(20 / 10.5);
+  });
+
+  it("백분위 순위와 배율 순위가 항상 일치한다(같은 모집단의 단조변환, 979 실측과 동일 결론)", () => {
+    const { valuations, sectors } = makeSector("Test", 20, "RANK_");
+    const rows = computeSectorRelativeBatch(valuations, sectors, 20);
+    const sortedByPct = [...rows].sort((a, b) => (a.perPct ?? 0) - (b.perPct ?? 0)).map((r) => r.symbol);
+    const sortedByRel = [...rows].sort((a, b) => (a.perRel ?? 0) - (b.perRel ?? 0)).map((r) => r.symbol);
+    expect(sortedByRel).toEqual(sortedByPct);
+  });
+
+  it("섹터 null — perRel·perMed도 4축 전부 null(NO_SECTOR)", () => {
+    const valuations: ValuationInput[] = [{ symbol: "X", per: 10, pbr: 1, psr: 1, evEbitda: 1 }];
+    const sectors: SectorInput[] = [{ symbol: "X", sector: null }];
+    const rows = computeSectorRelativeBatch(valuations, sectors, 1);
+    const r = rows[0];
+    expect(r.perRel).toBeNull(); expect(r.pbrRel).toBeNull(); expect(r.psrRel).toBeNull(); expect(r.evEbitdaRel).toBeNull();
+    expect(r.perMed).toBeNull(); expect(r.pbrMed).toBeNull(); expect(r.psrMed).toBeNull(); expect(r.evEbitdaMed).toBeNull();
+  });
+
+  it("극단값(중앙값의 1750배)도 잘리지 않고 그대로 저장된다 — 상한 없음(980 확정)", () => {
+    const valuations: ValuationInput[] = [
+      { symbol: "LOW1", per: 10, pbr: null, psr: null, evEbitda: null },
+      { symbol: "LOW2", per: 15, pbr: null, psr: null, evEbitda: null },
+      { symbol: "MED", per: 20, pbr: null, psr: null, evEbitda: null },
+      { symbol: "HIGH1", per: 25, pbr: null, psr: null, evEbitda: null },
+      { symbol: "EXTREME", per: 35010, pbr: null, psr: null, evEbitda: null }, // 중앙값(20) 대비 1750.5배
+    ];
+    const sectors: SectorInput[] = valuations.map((v) => ({ symbol: v.symbol, sector: "Extreme" }));
+    const rows = computeSectorRelativeBatch(valuations, sectors, 1);
+    const extreme = rows.find((r) => r.symbol === "EXTREME")!;
+    expect(extreme.perMed).toBeCloseTo(20);
+    expect(extreme.perRel).toBeCloseTo(1750.5);
+  });
+});

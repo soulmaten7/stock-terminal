@@ -77,21 +77,39 @@ Q1의 최심층 축(역DCF)은 원전(Rappaport & Mauboussin, *Expectations Inve
    🔴 **STEP 964가 남긴 영향 규모 실측**(930종목 전량, netIncome 41건 4.4%·equity 45건 4.8%·revenue 55건 5.9%, 최대폭 WDC·DD·TKO는 사업분할 회계반영으로 원인 규명)과 **외부 대조**(stockanalysis.com — WDC·DD 우리 최신 제출값과 정확히 일치)는 이 판정의 근거 ②③으로 그대로 채택됐다.
    🔴 **Citigroup third value($70,613M)는 이 판정으로도 설명되지 않는다** — 여전히 미해결로 남긴다.
 
-## 「업종 대비」 — 정의 공개표 (STEP 952, 2026-08-09 장은태 판정)
+## 「업종 대비」 — 정의 공개표 (STEP 952 최초 · STEP 980에서 정본을 중앙값 배율로 교체, 2026-08-10)
 
-🔴 **원전 없음 — 규칙 5-1 트랙.** 백분위로 업종 대비 위치를 매기는 것은 회계 관행이나 학술 정의가 아니라 우리가 고른 산술 방법이다. 정의를 하나로 고정하고 여기 공개한다. **유일한 출처 = `lib/sectorRelative.ts`의 `SECTOR_RELATIVE_SPEC`**(규칙 5-2 ⑤) — 아래는 그 객체를 그대로 옮겨 적은 것이다.
+🔴 **정본 = median_relative(중앙값 배율). percentile은 전환기 대조군으로 계속 계산·저장**(폐기 안 함, 제거 여부는 별도 판정). **유일한 출처 = `lib/sectorRelative.ts`의 `SECTOR_RELATIVE_SPEC`**(규칙 5-2 ⑤) — 아래는 그 객체를 그대로 옮겨 적은 것이다.
 
 ```
-method: "percentile"
+method: "median_relative"               // 🔴 STEP 980 정본(장은태 위임 판정, 979 근거)
+methodPrior: "percentile"               // 전환기 대조군 — 삭제 안 함
 direction: "higher_is_more_expensive"   // 4축(PER·PBR·PSR·EV/EBITDA) 전부 값이 클수록 비싸다
 axes: ["per", "pbr", "psr", "evEbitda"]
 sectorSource: "us_sector_wide"
-percentileFn: "empirical_rank"          // count(v < target) / n_valid — 아래 계산 정의 그대로
-minSample: 20                            // ✅ 확정(STEP 956, 2026-08-09 장은태 판정) — 20건이면 백분위 해상도 5%(1/20)
+medianRelativeFn: "value / sector_median"
+medianTieBreak: "표준 정의(가운데 두 값 평균) — 원전 미명시, 우리가 고정"
+medianRelativeCap: "없음(원전 근거 없음 — 980 확정)"
+percentileFn: "empirical_rank"          // count(v < target) / n_valid — 아래 계산 정의 그대로(대조군용)
+minSample: 20                            // 956 확정, 980에서도 유지(장은태 위임 판정) — 원전 근거 없는 우리 값임을 계속 공개
 unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable에 사유 있음)", "업종 내 유효 표본 < minSample"]
 ```
 
-**계산 정의**: 한 종목의 백분위 = 같은 업종·같은 축에서 **그 종목보다 값이 작은 유효 종목의 비율**(`count(v < target) / n_valid`). 값이 없는 종목(결측)은 분모·분자에서 뺀다(0으로 치지 않는다). 동점인 종목들은 서로를 "작다"고 세지 않으므로 같은 백분위를 받는다(중간순위 보정 없음). 🔴 이 함수는 `lib/sectorCuts.ts`의 `pctile()`(백분위→값, type-7 분위수)과 **수학적으로 반대 방향**이라 그 함수를 그대로 재사용하지 않았다 — `pctile`을 부르면 정의 문장과 실제 동작이 어긋난다(분모가 `n-1` vs `n`으로 다름). 상세 = `lib/sectorRelative.ts` 코드 주석.
+### 정본 전환(STEP 980) — 왜 중앙값 배율인가
+
+🔴 **원전 근거**: Damodaran `multiples.pdf`("RELATIVE VALUATION" 학술논문, `data/sources`에 원본 없어 직접 재확보)·`ch19.pdf`(Investment Valuation 2nd ed.) — *"the median... is often a more reliable comparison point"*(`relval.pdf`) + 표본이 우편향돼 평균보다 중앙값이 대표성 있음(`multiples.pdf`: *"multiples... are skewed towards the positive values. Consequently, the average values... will be higher than median values, and the latter are much more representative"*). **백분위는 원전 근거가 없다(952 자백)** · **평균은 원전이 직접 경계한다.** 셋 중 중앙값만 원전이 명시 권고하는 유일한 집계값이다(979 결론 재확인).
+
+**음수 처리**: 새 규칙 불필요. `lib/valuation.ts`의 `NEGATIVE_EARNINGS`·`NEGATIVE_EQUITY`·`NEGATIVE_REVENUE`·`NEGATIVE_EBITDA` 4종이 sector-relative 계산에 도달하기 **이전** 단계(`computeValuation()`)에서 이미 제외한다 — 원전(`ch19.pdf`: *"price to book ratios cannot be computed"*, 5,903사 중 728사 실측 · `pedata.xls` FAQ: *"averaged across all money-making firms"*)과 정확히 일치(979 확정, 이번엔 재검토 안 함).
+
+**minSample=20 — 유지, 단 원전 근거 없음을 계속 공개**: 장은태 위임 판정. 근거 = Real Estate×EV/EBITDA(n=4)에서 CSGP 1개사가 중앙값을 지배함을 979에서 실측 — 극소표본에서 중앙값 대표성 자체가 약하다. 🔴 **20이라는 숫자 자체는 이번(980 ①-A-3)에도 원전에서 못 찾았다** — `relval.pdf`·`ch19.pdf` 어디에도 하한 언급이 없다. median_relative·percentile 두 방식이 이 하나의 minSample을 공유한다(`lib/sectorRelativeBatch.ts`) — 유효표본<20이면 둘 다 null.
+
+**상한(cap)을 두지 않은 이유**: `multiples.pdf`가 *"services that compute and report **average** values for multiples either throw out these outliers... or constrain the multiples to be less than or equal to a fixed number(예: PE>500→500)"*라고 절단 관행을 언급하지만, **이건 "평균" 계산 맥락에서만 나오고 바로 다음 문장이 "그래서 평균 대신 중앙값을 보라"고 이어진다** — 중앙값을 쓰는 이유 자체가 이 절단이 필요 없어서다(980 ①-A-2). 개별 종목 배율(우리 최종 산출물)에 상한을 걸 원전 근거가 없다. 실측(2026-08-09): LSCC(반도체) per_rel=124.4배, DKNG per_rel=114.7배 등 상한 없이 저장됨 확인.
+
+**동점/짝수표본**: 원전 미명시(980 ①-A-1) — 표준 통계 정의(가운데 두 값 평균)를 그대로 쓴다. `sectorMedian()`이 SQL `percentile_cont(0.5)`와 동일 결과를 내도록 설계·검증(979의 SQL 실측과 코드 단위테스트가 서로 대조 기준).
+
+**순위 보존**: median_relative와 percentile은 같은 모집단의 서로 다른 단조변환이라 순위가 항상 같다 — 980 §5-1에서 **44칸 전체·2개 as_of·2,995건 전수 대조, 불일치 0건**으로 확인(수학적으로 당연한 결과).
+
+**계산 정의(percentile, 대조군 — 무변경)**: 한 종목의 백분위 = 같은 업종·같은 축에서 **그 종목보다 값이 작은 유효 종목의 비율**(`count(v < target) / n_valid`). 값이 없는 종목(결측)은 분모·분자에서 뺀다(0으로 치지 않는다). 동점인 종목들은 서로를 "작다"고 세지 않으므로 같은 백분위를 받는다(중간순위 보정 없음). 🔴 이 함수는 `lib/sectorCuts.ts`의 `pctile()`(백분위→값, type-7 분위수)과 **수학적으로 반대 방향**이라 그 함수를 그대로 재사용하지 않았다 — `pctile`을 부르면 정의 문장과 실제 동작이 어긋난다(분모가 `n-1` vs `n`으로 다름). 상세 = `lib/sectorRelative.ts` 코드 주석.
 
 **섹터 출처 — 5단계 그대로, `resolveSector()`를 수정 없이 재호출**(0순위 SPDR·1순위 Damodaran 직접·2순위 형제클래스·3순위 야후·4순위 미분류). `us_valuation` 최신 as_of(2026-08-08) 1,127종목 전체에 적용한 실측(Q0 1,021 기준과 나란히):
 

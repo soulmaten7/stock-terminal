@@ -144,6 +144,9 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
   const dbRows = results.map((r) => ({
     as_of: asOf, symbol: r.symbol, sector: r.sector, sector_as_of: sectorAsOf,
     per_pct: r.perPct, pbr_pct: r.pbrPct, psr_pct: r.psrPct, ev_ebitda_pct: r.evEbitdaPct,
+    // 🔴 STEP 980 — 정본(median_relative). rel = 값÷섹터중앙값, med = 그 섹터·축의 중앙값.
+    per_rel: r.perRel, pbr_rel: r.pbrRel, psr_rel: r.psrRel, ev_ebitda_rel: r.evEbitdaRel,
+    per_med: r.perMed, pbr_med: r.pbrMed, psr_med: r.psrMed, ev_ebitda_med: r.evEbitdaMed,
     per_n: r.perN, pbr_n: r.pbrN, psr_n: r.psrN, ev_ebitda_n: r.evEbitdaN,
     unavailable: r.unavailable, min_sample: r.minSample,
     updated_at: new Date().toISOString(),
