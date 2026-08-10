@@ -1,0 +1,88 @@
+{
+  "step": 989,
+  "scope": "investigation + verification only. No production deploy, no push (main/revdcf-preview untouched). package.json/package-lock.json upgraded temporarily then reverted — confirmed byte-identical to committed state at the end.",
+  "section1_version_facts": {
+    "1_1": {
+      "declared_range_package_json": "^3.14.0",
+      "locked_installed_version": "3.15.4",
+      "latest_available_on_npm": "4.0.2",
+      "4x_release_dates": { "4.0.0": "2026-07-11", "4.0.1": "2026-08-07", "4.0.2": "2026-08-09 (same day as our last observed cron heartbeat)" }
+    },
+    "1_2_breaking_changes_4x": {
+      "source": "docs/UPGRADING.md(공식, WebFetch 직접 확인)",
+      "only_breaking_change": "Node.js 22+ required (Node 20 dropped)",
+      "quote_quoteSummary_chart_fundamentalsTimeSeries_api": "변경 없음(문서 명시 + 2단계 실측: 4.0.2로 올려도 우리 4개 호출부 전부 정상 동작, 아래 §3 참조)",
+      "code_change_scope_if_upgraded": "없음(API 시그니처 무변경이므로 lib/lensCompute.ts·lib/lensPrecompute.ts·app/api/yahoo/* 등 어느 호출부도 코드 수정 불필요 — 실측으로 확인, npm run build·전체 테스트 통과)"
+    },
+    "1_3_crumb_commit_actual_diff": {
+      "commit": "835c599617bbe400ac3e3129eeb42fa13460d0fc",
+      "before": "getCrumb.js: module-level `let crumb`/`let promise` (전역 공유) · yahooFinanceFetch.js: module-level `const _queue` · quoteCombine.js: module-level `const slugMap`",
+      "after": "전부 WeakMap 기반으로 전환 — crumb/queue는 cookieJar 또는 instance 객체를 키로, slugMap도 instance 키로. 즉 '인스턴스(또는 쿠키자) 단위로 격리'로 바뀐 것이지 '매 요청마다 새로 받는 것'으로 바뀐 게 아니다.",
+      "🔴_critical_implication": "우리는 `new YahooFinance()`를 lensPrecompute.ts:17에서 **1회만** 생성한다(단일 인스턴스, 단일 쿠키자). 인스턴스가 하나뿐이면 3.x(모듈레벨=사실상 전역 하나)와 4.x(WeakMap이지만 조회 키가 그 하나뿐인 인스턴스) 사이에 **동작 차이가 없다** — 이 수정이 고치는 버그(여러 인스턴스/쿠키자 간 상태 오염)는 우리 사용 패턴에서 애초에 발생할 수 없는 종류다."
+    }
+  },
+  "section2_reproduction_test": {
+    "method": "US 전체 유니버스(5,972종목)를 프로덕션과 동일한 배치100·동시성6으로 조회하되, 각 청크 fetch 직전 `getCrumbClear(cookieJar)`(패키지 공개 서브경로 `yahoo-finance2/lib/getCrumb`, 내부 해킹 아님)로 크럼·쿠키를 지워 '매 요청이 콜드스타트처럼 크럼을 새로 받는' 상황을 흉내냄. 동시성6이라 여러 청크의 리셋이 서로 겹칠 수 있음(의도된 설계 — 실제 동시성 조건을 살리기 위함).",
+    "3x_result": { "version": "3.15.4", "totalChunks": 60, "failedChunks": 53, "responded": 672, "noResponse": 5300, "missingCount_amongResponded": 13, "missingSymbols_sample": ["AFGB", "AFGC", "AFGD", "AMUB", "AQNB", "ZTR"] },
+    "4x_result": { "version": "4.0.2", "totalChunks": 60, "failedChunks": 53, "responded": 700, "noResponse": 5272, "missingCount_amongResponded": 13, "missingSymbols_sample": ["AADX", "AFGB", "AFGC", "XELLL"] },
+    "verdict_2_1_2_2": {
+      "reproduced": "🔑 부분 재현 — 정확한 증상은 다르다. 크럼을 공격적으로 리셋하니 실제로 심각한 실패(53/60 청크 전체 거부, 오류메시지 'User is unable to access this feature')가 났다. 이는 프로덕션의 증상(200 응답인데 marketCap만 selective하게 빔, noResponse=0)과 다르다 — 여기선 반대로 청크 전체가 거부되고(noResponse 대량 발생), 응답한 것 중 결측은 949의 기존 B그룹(우선주시리즈·ETN, AFGB·AFGC·ZTR류) 배경노이즈뿐이었다.",
+      "version_difference": "❌ 없음. 3.15.4와 4.0.2가 완전히 동일한 실패 패턴(60개 중 53개 청크 실패)을 보였다 — §1-3의 예측(단일 인스턴스라 이 수정이 적용 안 됨)과 정확히 일치.",
+      "conclusion_2_3": "🔴 이 가설(크럼 상태 공유 버그, 4.0.0에서 수정됨)로는 프로덕션의 정확한 증상을 설명할 수 없다 — 재현 시도가 오히려 다른(더 심한) 증상을 냈고, 버전 업그레이드가 그 증상조차 바꾸지 못했다. 988이 남긴 생존 가설 중 크럼 계열은 이번 실측으로 사실상 소진됐다. 남은 것은 988의 실행시각(21:30 UTC)과 IP/네트워크 가설뿐이다."
+    },
+    "methodological_caveat": "🔴 이 실험은 '하루 1회 콜드스타트'를 정확히 재현한 게 아니라 '60개 청크가 거의 동시에 크럼을 리셋하며 충돌하는' 훨씬 공격적인 스트레스 테스트다. 정교한 신호 대신 광범위한 파괴(53/60 청크 거부)를 냈다 — 실제 하루 1회 콜드스타트(크럼을 정확히 1번만 새로 받는 정상적인 상황)는 987/985/986 어디서도 재현된 적이 없다(전부 100% 성공). 이 실험이 보여주는 것은 '이 메커니즘이 취약할 수 있다'는 방향성이지, 프로덕션의 정확한 재현이 아니다."
+  },
+  "section3_upgrade_impact_NOT_APPLIED": {
+    "3_1_test_build_results_under_4_0_2": {
+      "vitest": "367/367 통과(전체, KR 관련 테스트 포함 — 34개 파일 전부)",
+      "tsc_noEmit": "clean(에러 0)",
+      "npm_run_build": "성공(에러 0, 전체 라우트 정상 목록화)",
+      "failures": "없음"
+    },
+    "3_2_call_sites": {
+      "methods_used_in_production_code": ["yf.quote(", "yf.quoteSummary(", "yf.chart(", "yf.fundamentalsTimeSeries("],
+      "files_lib_and_app": ["lib/lensCompute.ts", "lib/lensPrecompute.ts", "lib/usPerf.ts", "lib/krSnapshot.ts", "lib/jpPerf.ts", "lib/cnPerf.ts", "lib/gbPerf.ts", "lib/vnPerf.ts", "lib/indices.ts", "lib/instrumentType.ts", "lib/revdcf/registry.ts", "app/api/etf-holdings/route.ts", "app/api/yahoo/us-etn-performance/route.ts", "app/api/yahoo/us-reit-performance/route.ts", "app/api/yahoo/reit-performance/route.ts", "app/api/yahoo/kr-performance/route.ts", "app/api/yahoo/us-etf-performance/route.ts"],
+      "all_pass_under_4x": "예 — 위 4개 메서드 시그니처가 4.x에서 안 바뀌어(§1-2) 코드 수정 없이 빌드·테스트 전부 통과. KR 경로(krSnapshot.ts·kr-performance route)도 포함돼 있었고 관련 테스트 깨짐 없음(동결 원칙 충족)."
+    },
+    "3_2b_side_effects_observed": {
+      "npm_install_output": "removed 15 packages, changed 18 packages(4.0.2 설치 시)",
+      "npm_audit_before_upgrade_baseline": "14 vulnerabilities(4 moderate, 10 high) — 되돌린 뒤 재확인한 원래 상태",
+      "npm_audit_during_4x": "9 vulnerabilities(0 moderate, 9 high)",
+      "note": "🔑 업그레이드가 취약점을 늘리지 않았다 — 오히려 줄었다(14→9). 처음엔 우려했으나 되돌린 뒤 원래 기준선을 재보니 반대 방향이었음(정정)."
+    },
+    "3_3_revert_confirmation": {
+      "steps": ["git checkout -- package.json package-lock.json", "npm install(재동기화 중 npm이 무관한 정규화 드리프트 36줄을 냄 — @emnapi/*·eslint peer플래그 등, yahoo-finance2와 무관)", "git checkout -- package-lock.json(드리프트 제거, 커밋본과 완전히 동일하게 재복구)"],
+      "final_check": "git diff --quiet package.json package-lock.json → 종료코드 0(diff 없음) 확인",
+      "installed_version_after_revert": "3.15.4(node_modules/yahoo-finance2/package.json 직접 확인)",
+      "post_revert_tests": "npx tsc --noEmit 클린 · vitest 367/367 통과 — 원상복구가 기능적으로도 완전함을 재확인",
+      "dev_server": "npm run build가 로컬 dev서버(.next)에 영향 줄 수 있음(알려진 함정) — 확인 결과 dev서버(localhost:3333) 계속 200 정상 응답, 재시작 불필요"
+    }
+  },
+  "section4_options_no_choice": [
+    {
+      "option": "A. 현행 3.15.4 유지, 업그레이드 안 함",
+      "evidence_strength": "실측으로 뒷받침됨 — 4.x가 우리 증상을 재현/해결 어느 쪽도 못 함(§2 핵심 결과)",
+      "deploy_required": "불필요(아무것도 안 함)",
+      "reversible": "해당없음",
+      "kr_impact": "없음(무변경)",
+      "failure_mode": "없음(현행 유지)"
+    },
+    {
+      "option": "B. 4.0.2로 업그레이드",
+      "evidence_strength": "🔴 약함 — §2가 4.x도 같은 증상을 보임을 실측으로 확인, 업그레이드가 원인을 해소한다는 증거가 없다",
+      "deploy_required": "필요(프로덕션 배포)",
+      "reversible": "쉬움(코드변경 없음, package.json 버전만)",
+      "kr_impact": "테스트상 없음(367/367 통과, KR 경로 포함) — 단 이건 로컬 테스트일 뿐 프로덕션 KR 라이브 동작 실측은 아님",
+      "failure_mode": "🔴 Vercel의 실제 Node.js 버전이 22 미만이면 위험 — 4.0.2의 package.json에 `engines:{node:'>=22.0.0'}`가 명시돼 있다(신규 확인). Vercel 설정을 확인할 수단이 없어(983에서 이미 403 확인) 이 위험이 실재하는지 판단 불가. 최소 리스크는 아님."
+    },
+    {
+      "option": "C. 근본원인 조사를 다른 방향(988의 생존 가설: 실행시각·IP/네트워크)으로 이어간다",
+      "evidence_strength": "988이 이미 실행시각은 배포 없이 검증 가능하다고 표시함",
+      "deploy_required": "실행시각 검증은 불필요, IP/네트워크 검증은 필요",
+      "reversible": "해당없음(조사)",
+      "kr_impact": "없음",
+      "failure_mode": "없음(조사)"
+    }
+  ],
+  "hypotheses_status": "🔴 988이 남긴 크럼 계열 생존 가설('같은 실행 내 다른 메커니즘일 가능성')이 이번 실측으로 사실상 소진됐다 — 4.x로도 재현된 증상이 안 바뀜. 배치방식·심볼부재(949 폐기)는 되살리지 않음."
+}

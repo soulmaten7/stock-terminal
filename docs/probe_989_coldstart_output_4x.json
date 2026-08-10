@@ -1,0 +1,25 @@
+{
+  "version": "4.0.2",
+  "universe": 5972,
+  "responded": 700,
+  "noResponse": 5272,
+  "failedChunks": 53,
+  "totalChunks": 60,
+  "resetErrors": 0,
+  "missingCount": 13,
+  "missingSymbols": [
+    "AADX",
+    "AFGB",
+    "AFGC",
+    "AFGD",
+    "AFGE",
+    "AMUB",
+    "AQNB",
+    "ARTC",
+    "ATHS",
+    "ATMP",
+    "ATTO",
+    "BAR",
+    "XELLL"
+  ]
+}

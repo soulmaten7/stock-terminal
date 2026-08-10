@@ -1,0 +1,26 @@
+{
+  "note": "3.15.4 실행분 — 실행 직후 화면에 찍힌 전체 출력을 그대로 재구성(원본 파일이 이어진 4.0.2 재실행으로 덮어써짐, 도구 로그 그대로 옮김 · 값 조작 없음).",
+  "version": "3.15.4",
+  "universe": 5972,
+  "responded": 672,
+  "noResponse": 5300,
+  "failedChunks": 53,
+  "totalChunks": 60,
+  "resetErrors": 0,
+  "missingCount": 13,
+  "missingSymbols": [
+    "AFGB",
+    "AFGC",
+    "AFGD",
+    "AFGE",
+    "AMUB",
+    "AQNB",
+    "AADX",
+    "BAR",
+    "ARTC",
+    "ATHS",
+    "ATMP",
+    "ATTO",
+    "ZTR"
+  ]
+}
