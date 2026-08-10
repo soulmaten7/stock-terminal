@@ -1,0 +1,84 @@
+{
+  "step": 983,
+  "scope": "design + investigation only — 0 code, 0 migrations, 0 DB writes, no cron manually triggered",
+  "section1_current_observability_inventory": {
+    "section1_1_cron_heartbeats_schema": {
+      "columns": ["job (text, PRIMARY KEY)", "last_run_at (timestamptz)", "ok (boolean)", "note (text — JSON.stringify()된 자유형식)"],
+      "pk_confirmed_via_information_schema": "job",
+      "current_row_count": 4,
+      "current_rows": ["kr-lens-scores", "email-brief", "lens-scores", "jp-disclosures(스케줄 제거된 파킹 크론의 잔존 레코드, 07-27 이후 미갱신)"],
+      "retention": "이력 없음 — job당 최신 1건만 존재(upsert 시 이전 값 덮어씀). '보존기간'이라는 개념 자체가 이 테이블엔 없다(설계상 스냅샷 테이블)."
+    },
+    "section1_2_nine_crons_matrix": [
+      { "path": "/api/cron/us-perf", "schedule": "0 22 * * *", "writes_cron_heartbeats": false, "monitored_by_health": "간접(us_stock_perf 나이 25h·신선행수 3000 하한)" },
+      { "path": "/api/cron/kr-perf", "schedule": "0 10 * * *", "writes_cron_heartbeats": false, "monitored_by_health": "간접(kr_stock_snapshot 나이 25h·신선행수 1500 하한)" },
+      { "path": "/api/cron/kr-etp", "schedule": "15 10 * * *", "writes_cron_heartbeats": false, "monitored_by_health": "간접(kr_etp_snapshot 나이 25h)" },
+      { "path": "/api/cron/kr-lens-scores", "schedule": "30 10 * * *", "writes_cron_heartbeats": true, "heartbeat_semantics": "ok = 실제 성공여부(r.ok, universeOk&&pass2Ok&&cutGateOk)", "monitored_by_health": "직접(heartbeat 없음, lens_scores 나이·행수) + 간접" },
+      { "path": "/api/cron/lens-scores", "schedule": "30 21 * * *", "writes_cron_heartbeats": true, "heartbeat_semantics": "ok = 실제 성공여부(동일 패턴)", "monitored_by_health": "간접(lens_scores US 나이·행수 700 하한, lens_cuts US 나이 49h)" },
+      { "path": "/api/cron/health", "schedule": "0 12 * * *", "writes_cron_heartbeats": false, "monitored_by_health": "🔴 자기 자신을 감시하는 주체가 없음 — health가 죽으면 아무도 모른다(감시자의 감시자 부재)" },
+      { "path": "/api/cron/daily-brief", "schedule": "30 22 * * *", "writes_cron_heartbeats": false, "monitored_by_health": "간접(daily_brief 나이 25h)" },
+      { "path": "/api/cron/email-brief", "schedule": "0 23 * * *", "writes_cron_heartbeats": true, "heartbeat_semantics": "🔴 다른 둘과 다름 — ok:true를 실제 작업 시작 '전'에 무조건 기록(실행됐음을 남기려는 의도적 설계, '성공'이 아니라 '실행'을 뜻함). 코드 주석이 명시.", "monitored_by_health": "직접(cron_heartbeats.last_run_at 25h)" },
+      { "path": "/api/cron/revdcf", "schedule": "45 22 * * *", "writes_cron_heartbeats": false, "monitored_by_health": "🔴 없음 — health의 CHECKS 배열에 revdcf_results/us_valuation/us_sector_relative 어느 것도 없음. REVDCF_ENABLED=false는 화면 노출만 막지 계산 자체는 매일 돈다(route.ts에 그 플래그 참조 없음, 코드로 확인) — 즉 매일 도는 크론인데 관측이 완전히 0." }
+    ],
+    "section1_2_summary": { "total_crons": 9, "write_heartbeat": 3, "no_heartbeat_but_indirectly_monitored": 4, "no_observability_at_all": 2, "no_observability_list": ["health(자기자신)", "revdcf"] },
+    "section1_3_how_982_read_freshCoverage": {
+      "mechanism": "lensPrecompute.ts:538 recordHeartbeat(sb,'lens-scores', r.ok, {...diag 필드 전부...}) — computeLensScores()가 매 실행 끝에 diag(CapDiag 타입: freshCoverage·noCapField·retryAllLen 등 20여개 필드)를 JSON.stringify해 note 컬럼에 통째로 넣는다.",
+      "why_it_worked": "이 필드들은 STEP917·STEP936에서 '계측 전용'으로 이미 추가돼 있었다(917 §0: Vercel 1시간 로그를 못 읽어서 옮긴 것 — 지금 982가 한 것과 같은 문제를 그때 이미 겪고 고쳤다). 982는 이미 있는 이 note JSON을 SELECT 한 번으로 읽었을 뿐, 아무것도 새로 만들지 않았다.",
+      "limitation_that_blocked_982": "job PK라 '최신 1건'만 있다 — 08-09 실행의 diag는 봤지만 07-31~08-08 각각의 diag는 이미 덮어써져 사라졌다. 917이 '어디에 남길지'는 풀었지만 '몇 건 남길지(이력 vs 스냅샷)'는 안 풀었다."
+    }
+  },
+  "section2_minimal_observation_items_for_item14": {
+    "target_clarification": "🔴 미해결 14번의 진짜 대상은 949의 D그룹(383건 — 로컬 성공·프로드 실패)이지 B그룹(82건 — 로컬에서도 marketCap 자체가 안 옴, 우선주/ETN류로 추정)이 아니다. B그룹은 이미 '별개 현상(상품 특성)'으로 관찰돼 있다(949).",
+    "candidate_items": [
+      { "item": "HTTP 상태코드 분포(429/5xx/타임아웃 구분)", "tests_hypothesis": "레이트리밋(429) vs 서버측 오류(5xx) vs 타임아웃(무응답) — 지금은 catch에서 문자열 매칭으로 뭉뚱그려 추측만 함(lensPrecompute.ts:149 reason 분류가 재시도 단계엔 있으나 배치 1단계엔 없음)" },
+      { "item": "요청 수·성공/실패 수(심볼당 1행)", "tests_hypothesis": "실패가 무작위인지 특정 종목군에 고정되는지 — 949가 이미 알아낸 '항상 같은 380여개'를 재확인·정밀화" },
+      { "item": "응답 본문 일부(에러 메시지 앞 200자)", "tests_hypothesis": "야후가 차단 메시지를 주는지, 빈 응답인지, 다른 심볼 데이터를 주는지(엔켐 오염 전례처럼)" },
+      { "item": "소요시간(개별 요청 latency)", "tests_hypothesis": "타임아웃 임박(예산 소진)이 원인인지 — 즉시 실패인지 느리게 실패하는지로 갈림" },
+      { "item": "재시도 횟수·최종 결과", "tests_hypothesis": "이미 diag에 있음(retryAllLen·recovered) — 새로 만들 필요 없음, 다만 '이력'으로 안 쌓일 뿐" },
+      { "item": "실패 종목 목록(전체, 샘플 아님)", "tests_hypothesis": "949의 380목록과 매일 비교해 집합이 고정인지 매일 바뀌는지 — 지금은 diag.retryFailSample이 최대 5건만 남음(코드 확인, lensPrecompute.ts:137)" },
+      { "item": "프로덕션 아웃바운드 IP", "tests_hypothesis": "IP 차단 가설 검증 — 🔴 Vercel 서버리스 함수는 실행마다 IP가 달라질 수 있어(고정 IP 아님) 이 항목 자체의 유효성이 원리적으로 의심스럽다(고정 차단이면 매번 다른 IP인데 왜 같은 380종목만 실패하는지 설명이 안 됨 — 오히려 IP차단 가설을 약화시키는 방향의 관찰)" }
+    ],
+    "candidate_hypotheses_NOT_previously_discarded": [
+      "Vercel 서버 IP대역에 대한 야후 측 차단·레이트리밋(949 미검증 후보 유지, 단 위 IP고정성 문제로 약화됨)",
+      "Vercel 함수 실행시간 예산 안에서 배치가 잘림(949 미검증 후보 유지)",
+      "로컬과 Production의 yahoo-finance2 버전·설정 차이(949 미검증 후보 유지)",
+      "07-30 전후 야후 API 변경(949 미검증 후보 유지)",
+      "🆕 특정 심볼군이 야후 서버 측에서 지역·부하분산 라우팅이 달라 매번 같은 백엔드 샤드로 가고, 그 샤드가 문제(982/983 신규 — 미검증, 그럴듯함 검증 안 함)"
+    ],
+    "hypotheses_explicitly_NOT_to_resurrect_per_step_instruction": [
+      "배치방식 자체의 문제(배치호출이라 실패) — 949 classification A(batchFail_singleSuccess)=0으로 로컬에서 이미 폐기",
+      "심볼이 존재하지 않음(둘 다 무응답) — 949 classification C(bothNoResponse)=0으로 이미 폐기"
+    ]
+  },
+  "section3_storage_design_NOT_IMPLEMENTED": {
+    "section3_1_table_choice": {
+      "optionA_extend_cron_heartbeats": {
+        "what": "PK를 (job, run_at) 또는 (job, id serial)로 바꿔 이력 테이블화",
+        "pro": "코드 재사용 최대(recordHeartbeat 함수 하나만 손대면 됨)",
+        "con": "PK 변경은 마이그레이션(기존 4행 백업 필요) + 이 테이블을 읽는 health 크론의 쿼리(현재 '최신 1건' 가정)도 손봐야 함(order by last_run_at desc limit 1로 바꾸는 정도지만 영향범위)"
+      },
+      "optionB_new_table": {
+        "what": "cron_run_log 같은 신규 이력 전용 테이블, cron_heartbeats는 지금처럼 '최신 스냅샷' 용도로 그대로 둠",
+        "pro": "기존 코드·쿼리 무변경(health 등) — 순수 추가", "con": "쓰기가 2곳(스냅샷+이력)으로 늘어남, 약간의 중복"
+      },
+      "retention_and_pruning": "🔴 이력이 쌓이면 용량이 는다 — 예: 9개 크론×매일 1행×365일 = 연 3,285행(가벼움). 단 'section2의 실패 종목 목록 전체'를 매일 남기면(380종목×문자열) 행당 용량이 커짐 — 요약 통계는 매일, 실패 목록 전체는 N일 보존 후 정리(969·973 선례의 스냅샷-비교-후-정리 패턴 재사용 가능) 식의 이원화가 필요."
+    },
+    "section3_2_cron_code_change_scope_NOT_DONE": {
+      "scope_only": [
+        "lensPrecompute.ts recordHeartbeat 호출부 — insert(이력)로 바꾸거나 병행",
+        "topByMarketCap()의 stage1(배치)에 지금 없는 HTTP상태/에러사유 분류를 stage2(재시도)와 동일 수준으로 추가(lensPrecompute.ts:112-122, 지금은 catch{failedChunks++}뿐)",
+        "🔴 실패 경로(route.ts 최상위 catch, lensPrecompute.ts 내부 throw)에서도 기록이 남게 — 지금은 상류에서 던지면 recordHeartbeat 자체에 도달 못해 아무것도 안 남을 수 있음(982 §1-3 branch D). try/finally 또는 route.ts catch 블록에 최소 1줄 기록 추가가 필요"
+      ],
+      "not_done": "위 전부 범위만 적음 — 실제 코드 변경 0"
+    },
+    "section3_3_failure_isolation_principle": "974에서 쓴 원칙 재확인(코드 안 고침, 원칙만 인용): 재료 조달 실패가 계산을 막지 않듯, 기록 실패가 크론 본체를 막으면 안 된다. email-brief의 heartbeat(`try{...}catch{/* 하트비트 실패는 비치명 */}`)가 이미 이 패턴 — 새 이력 기록도 동일하게 try/catch로 감싸 크론 본연의 작업과 격리해야 한다."
+  },
+  "section4_options_vs_costs": [
+    { "option": "옵션1: Sentry 대시보드 사람이 직접 확인(신규 구축 없음)", "cost": "$0", "effort": "0(사람이 로그인만)", "code_change_scope": "없음", "reversible": "해당없음", "approval_needed": "불필요 — 조회만" },
+    { "option": "옵션2: cron_heartbeats를 이력 테이블로 확장(§3-1 A안)", "cost": "$0(기존 Supabase)", "effort": "중(마이그레이션+쿼리 수정+recordHeartbeat 변경)", "code_change_scope": "lensPrecompute.ts·health/route.ts", "reversible": "어려움(스키마 변경, 롤백 시 이력 유실 가능)", "approval_needed": "필요(마이그레이션)" },
+    { "option": "옵션3: 신규 이력 테이블 추가(§3-1 B안)", "cost": "$0", "effort": "중(신규 테이블+쓰기 로직 추가)", "code_change_scope": "lensPrecompute.ts(+ 다른 8개 크론에 확산 적용 시 각각)", "reversible": "쉬움(테이블 하나 드롭)", "approval_needed": "필요(마이그레이션+코드)" },
+    { "option": "옵션4: Axiom next-axiom SDK 도입", "cost": "$0(무료 500GB/월 티어)", "effort": "중(신규 의존성+계측 코드)", "code_change_scope": "전 크론 route.ts", "reversible": "쉬움(의존성 제거)", "approval_needed": "필요(신규 외부 서비스 도입 자체가 승인사항)" },
+    { "option": "옵션5: Vercel Log Drains", "cost": "🔴 Pro 플랜 $20/월~ + $10/5GB", "effort": "낮음(설정만)", "code_change_scope": "없음", "reversible": "쉬움", "approval_needed": "필요(유료 전환 — 최소비용 원칙과 정면충돌)" },
+    { "option": "옵션6: 실패 경로 기록 보강만(§3-2, 저장구조는 안 바꿈)", "cost": "$0", "effort": "낮음", "code_change_scope": "route.ts catch 블록들", "reversible": "쉬움", "approval_needed": "필요(코드 변경)" }
+  ]
+}
