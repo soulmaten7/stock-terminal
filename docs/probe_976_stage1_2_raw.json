@@ -1,0 +1,3044 @@
+{
+  "step": 976,
+  "universeSize": 604,
+  "missingCache": [],
+  "missingWindow": [
+    "ALAB",
+    "AMRZ",
+    "AXSM",
+    "BTSG",
+    "CLS",
+    "CRWV",
+    "FERG",
+    "FIG",
+    "FLUT",
+    "GEV",
+    "JHX",
+    "LGN",
+    "LLYVA",
+    "MDLN",
+    "Q",
+    "RBRK",
+    "RDDT",
+    "SARO",
+    "SFD",
+    "SHOP",
+    "SN",
+    "SNDK",
+    "SOLV",
+    "SUNB",
+    "SW",
+    "TLN",
+    "ULS",
+    "VG",
+    "VNOM"
+  ],
+  "field_shares": {
+    "summary": {
+      "total": 570,
+      "dist": {
+        "0": 566,
+        "1": 1,
+        "2": 2,
+        "3+": 1
+      },
+      "pct": {
+        "0": 99.3,
+        "1": 0.18,
+        "2": 0.35,
+        "3+": 0.18
+      }
+    },
+    "tierBreakdown_lagGte1": {
+      "sharesDil(1순위)": 4
+    }
+  },
+  "field_debt": {
+    "summary": {
+      "total": 538,
+      "dist": {
+        "0": 521,
+        "1": 5,
+        "2": 8,
+        "3+": 4
+      },
+      "pct": {
+        "0": 96.84,
+        "1": 0.93,
+        "2": 1.49,
+        "3+": 0.74
+      }
+    },
+    "storedTaggedButNoLagData_count": 0,
+    "storedTaggedButNoLagData": []
+  },
+  "field_interestExpense": {
+    "summary": {
+      "total": 403,
+      "dist": {
+        "0": 125,
+        "1": 17,
+        "2": 237,
+        "3+": 24
+      },
+      "pct": {
+        "0": 31.02,
+        "1": 4.22,
+        "2": 58.81,
+        "3+": 5.96
+      }
+    }
+  },
+  "field_nonOperatingAssets": {
+    "summary": {
+      "total": 573,
+      "dist": {
+        "0": 573,
+        "1": 0,
+        "2": 0,
+        "3+": 0
+      },
+      "pct": {
+        "0": 100,
+        "1": 0,
+        "2": 0,
+        "3+": 0
+      }
+    }
+  },
+  "lagGte1_top50": {
+    "shares": [
+      {
+        "symbol": "SJM",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 108400000,
+        "tierOrTag": "sharesDil(1순위)"
+      },
+      {
+        "symbol": "TTWO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 170100000,
+        "tierOrTag": "sharesDil(1순위)"
+      },
+      {
+        "symbol": "VTRS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1206900000,
+        "tierOrTag": "sharesDil(1순위)"
+      },
+      {
+        "symbol": "LEN-B",
+        "targetYear": 2025,
+        "returnedYear": 2024,
+        "lag": 1,
+        "value": 272019000,
+        "tierOrTag": "sharesDil(1순위)"
+      }
+    ],
+    "debt": [
+      {
+        "symbol": "PLTR",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "TOST",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "WSM",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "DT",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "DOCU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "FFIV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "LSCC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "MEDP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "RMBS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "ROIV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 442591000,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "ROKU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "TXRH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "FN",
+        "targetYear": 2025,
+        "returnedYear": 2024,
+        "lag": 1,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "HUBS",
+        "targetYear": 2025,
+        "returnedYear": 2024,
+        "lag": 1,
+        "value": 458184000,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "MNST",
+        "targetYear": 2025,
+        "returnedYear": 2024,
+        "lag": 1,
+        "value": 378200000,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "NBIX",
+        "targetYear": 2025,
+        "returnedYear": 2024,
+        "lag": 1,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "NXT",
+        "targetYear": 2025,
+        "returnedYear": 2024,
+        "lag": 1,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      }
+    ],
+    "interestExpense": [
+      {
+        "symbol": "EMR",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 147000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ETN",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 144000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GME",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 26900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LDOS",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 185000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LHX",
+        "targetYear": 2024,
+        "returnedYear": 2020,
+        "lag": 4,
+        "value": 270000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RMD",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 23989000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TOST",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 12000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TXT",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 142000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "XYZ",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 58100000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ZBRA",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 5000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BSY",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 35056000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CACI",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 83861000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DASH",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 2000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DRI",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 50200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ECHO",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 57170000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FOX",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 349000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "JBL",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 151000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "JCI",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 225000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KLAC",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 296940000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LRCX",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 186462000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LSCC",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 4146000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NOW",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 27000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PG",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 756000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RVMD",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 0,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AAL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2145000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AAPL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3933000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ABT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 637000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ADBE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 113000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ADI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 264641000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AEP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1806900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AKAM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 17709000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ALNY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 121221000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AMAT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 238000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AME",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 81795000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AMKR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 59000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AMZN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3182000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "APD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 177500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "APG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 145000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "APH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 139500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ARMK",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 441262000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ARWR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 18326000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ATO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 137281000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AVTR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 284800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AVY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 119000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AYI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 27900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AZO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 320121000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BBIO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 81289000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BKNG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 897000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BMRN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 17335000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BMY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1166000000,
+        "tierOrTag": null
+      }
+    ],
+    "nonOperatingAssets": []
+  },
+  "lagGte1_fullCounts": {
+    "shares": 4,
+    "debt": 17,
+    "interestExpense": 278,
+    "nonOperatingAssets": 0
+  },
+  "lagGte2_full": {
+    "shares": [
+      {
+        "symbol": "SJM",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 108400000,
+        "tierOrTag": "sharesDil(1순위)"
+      },
+      {
+        "symbol": "TTWO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 170100000,
+        "tierOrTag": "sharesDil(1순위)"
+      },
+      {
+        "symbol": "VTRS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1206900000,
+        "tierOrTag": "sharesDil(1순위)"
+      }
+    ],
+    "debt": [
+      {
+        "symbol": "DOCU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "DT",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "FFIV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "LSCC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "MEDP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "PLTR",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "RMBS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "ROIV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 442591000,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "ROKU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "TOST",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "TXRH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      },
+      {
+        "symbol": "WSM",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 0,
+        "tierOrTag": "combined(LT+CUR+lease)"
+      }
+    ],
+    "interestExpense": [
+      {
+        "symbol": "AAL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2145000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AAPL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3933000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ABT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 637000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ADBE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 113000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ADI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 264641000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AEP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1806900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AKAM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 17709000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ALNY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 121221000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AMAT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 238000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AME",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 81795000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AMKR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 59000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AMZN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3182000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "APD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 177500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "APG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 145000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "APH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 139500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ARMK",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 441262000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ARWR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 18326000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ATO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 137281000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AVTR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 284800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AVY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 119000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AYI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 27900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "AZO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 320121000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BBIO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 81289000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BKNG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 897000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BMRN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 17335000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BMY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1166000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BRKR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 16400000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BSY",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 35056000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "BWXT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 47036000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CACI",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 83861000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CCL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2066000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CDE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 29099000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CEG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 431000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CIEN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 88026000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CMCSA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 4087000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CMS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 643000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CNH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1345000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "COHR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 286872000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "COKE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": -918000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "COO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 105300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CPNG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 48000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 22700000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CRH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 376000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CRL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 136710000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CRS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 54100000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CRWD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 25756000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CSCO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 427000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CTAS",
+        "targetYear": 2024,
+        "returnedYear": 2022,
+        "lag": 2,
+        "value": 111232000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CTSH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 41000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CVNA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 632000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "CVS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2658000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DAR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 259223000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DASH",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 2000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DCI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 19200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DDOG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 6302000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DDS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": -4600000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DELL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1501000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 326781000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DGX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 163000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DHR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 286000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DINO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 190796000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DKNG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2679000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DOCN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 8945000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DOCU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 6844000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DOV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 131305000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DRI",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 50200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DRS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 36000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DTM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 150000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "DXCM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 20300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EBAY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 263000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ECHO",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 57170000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EFX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 241400000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EHC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 143500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EIX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1612000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ELAN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 277000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EMR",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 147000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ENSG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 8087000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EQT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 219660000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ES",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 855441000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ETN",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 144000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ETR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1006406000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EW",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 17600000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EXE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 104000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EXPD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 4800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "EXPE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 245000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "F",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 7613000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FAST",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 10800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FDX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 745000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1124000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FIS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 713000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FISV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1004000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FLEX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 207000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1472000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FOX",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 349000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FSLR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 12965000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FTAI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 161639000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FTI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 122200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "FWONA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 782000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 399000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GDDY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 179000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GGG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 5191000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2578000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GILD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 944000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GKOS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 13633000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GME",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 26900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GOOGL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 308000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "GPC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 64469000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "H",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 145000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HALO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 18762000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HAS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 186300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1943000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HEI-A",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HRL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 73402000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HUBS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3801000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "HWM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 218000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "IDXX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 41581000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "IEX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 51700000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "IFF",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 380000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ILMN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 77000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "INCY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2551000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "INTC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 878000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "IR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 156700000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "IT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 132772000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ITW",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 266000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "J",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 168108000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "JBL",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 151000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "JCI",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 225000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "JKHY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 15073000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "JNJ",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 772000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KDP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 496000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KLAC",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 296940000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KNX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 127100000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 441000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KRYS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 0,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "KVUE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 250000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LDOS",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 185000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LEVI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 45900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LFUS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 39866000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LHX",
+        "targetYear": 2024,
+        "returnedYear": 2020,
+        "lag": 4,
+        "value": 270000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LITE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 35500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LLY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 485900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LMT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 916000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LNG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1141000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LRCX",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 186462000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LSCC",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 4146000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "LYB",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 477000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 575000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MAR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 565000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MAS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 106000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MCHP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 198300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MCK",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 252000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MDGL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 12712000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MDT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 719000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "META",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 446000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MGM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 460293000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MLI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1221000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MMM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 942000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1149000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MRK",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1146000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MRVL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 211700000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MSCI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 186679000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MSFT",
+        "targetYear": 2026,
+        "returnedYear": 2024,
+        "lag": 2,
+        "value": 2935000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MSGS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 22884000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 388000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "MUSA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 98500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NBIX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 4600000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NDSN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 59505000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NET",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 5872000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NFLX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 699826000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 489600000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NOW",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 27000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NRG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 667000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NTAP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 64000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NVDA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 257000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "NVT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 79400000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "OKE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 866000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "OKTA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 8000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ON",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 74800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "P",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 7483000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PAYX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 37300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PCG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2850000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PEN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1739000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PG",
+        "targetYear": 2026,
+        "returnedYear": 2023,
+        "lag": 3,
+        "value": 756000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 573894000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PLTR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 3470000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1526000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PNW",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 331323000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PODD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 36200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PPG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 247000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 177209000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PWR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 186913000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "PYPL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 347000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "QXO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 55666,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RBA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 213800000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RBLX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 40707000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RCL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1402000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "REGN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 73000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RIVN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 220000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RMBS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1490000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RMD",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 23989000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ROIV",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 34778000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ROK",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 135300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ROP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 164700000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RPRX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 187187000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RRX",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 431000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 40100000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RSG",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 508200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "RVMD",
+        "targetYear": 2025,
+        "returnedYear": 2022,
+        "lag": 3,
+        "value": 0,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SANM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 36290000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SGI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 129900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SHW",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 417500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SIRI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 423000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SMCI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 10491000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SMMT",
+        "targetYear": 2024,
+        "returnedYear": 2022,
+        "lag": 2,
+        "value": 4401000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SNA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 49900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SNPS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1178000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SPGI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 334000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SPXC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 27200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "SRE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1309000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "STE",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 144351000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "STLD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 76484000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "STX",
+        "targetYear": 2026,
+        "returnedYear": 2024,
+        "lag": 2,
+        "value": 332000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "T",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 6704000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TDY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 77300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TEAM",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 30147000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TECH",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 11215000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TEL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 80000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TGT",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 502000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "THC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 901000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TKR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 110700000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TMO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1375000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TOST",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 12000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TRU",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 288200000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TSLA",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 156000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TTMI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 48124000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "TXT",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 142000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "U",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 24580000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "UBER",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 633000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "UNP",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1340000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "UPS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 785000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "USFD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 324000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "UTHR",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 59300000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "VLTO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 30000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "VMC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 196100000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "VMI",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 56808000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "VRSK",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 115500000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "VST",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 740000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "VZ",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 5524000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WBD",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 2221000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WCN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 274642000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WDAY",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 114000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WDC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 312000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WEC",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 726900000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WMB",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 1236000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WST",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 9000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "WYNN",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 751509000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "XPO",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 168000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "XYL",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 49000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "XYZ",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 58100000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ZBRA",
+        "targetYear": 2025,
+        "returnedYear": 2021,
+        "lag": 4,
+        "value": 5000000,
+        "tierOrTag": null
+      },
+      {
+        "symbol": "ZS",
+        "targetYear": 2025,
+        "returnedYear": 2023,
+        "lag": 2,
+        "value": 6541000,
+        "tierOrTag": null
+      }
+    ],
+    "nonOperatingAssets": []
+  },
+  "stage2_debtTaggedLag": {
+    "count": 17,
+    "byVerdict": {
+      "value_destroying": 6,
+      "years": 7,
+      "over_cap": 3,
+      "skipped": 1
+    },
+    "symbols": [
+      {
+        "symbol": "PLTR",
+        "lag": 4,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      {
+        "symbol": "TOST",
+        "lag": 4,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      {
+        "symbol": "WSM",
+        "lag": 4,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      {
+        "symbol": "DT",
+        "lag": 3,
+        "verdict": "years",
+        "gapYears": 11
+      },
+      {
+        "symbol": "DOCU",
+        "lag": 2,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      {
+        "symbol": "FFIV",
+        "lag": 2,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      {
+        "symbol": "LSCC",
+        "lag": 2,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      {
+        "symbol": "MEDP",
+        "lag": 2,
+        "verdict": "years",
+        "gapYears": 5
+      },
+      {
+        "symbol": "RMBS",
+        "lag": 2,
+        "verdict": "years",
+        "gapYears": 20
+      },
+      {
+        "symbol": "ROIV",
+        "lag": 2,
+        "verdict": "over_cap",
+        "gapYears": null
+      },
+      {
+        "symbol": "ROKU",
+        "lag": 2,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      {
+        "symbol": "TXRH",
+        "lag": 2,
+        "verdict": "years",
+        "gapYears": 7
+      },
+      {
+        "symbol": "FN",
+        "lag": 1,
+        "verdict": "skipped",
+        "gapYears": null
+      },
+      {
+        "symbol": "HUBS",
+        "lag": 1,
+        "verdict": "value_destroying",
+        "gapYears": null
+      },
+      {
+        "symbol": "MNST",
+        "lag": 1,
+        "verdict": "years",
+        "gapYears": 11
+      },
+      {
+        "symbol": "NBIX",
+        "lag": 1,
+        "verdict": "years",
+        "gapYears": 6
+      },
+      {
+        "symbol": "NXT",
+        "lag": 1,
+        "verdict": "years",
+        "gapYears": 5
+      }
+    ],
+    "note": "revdcf_results.flags.debtBasis 실측 결과 전량 null 저장 — debtLy!=null(=이 배열 포함 자체)을 tagged 등가로 씀"
+  },
+  "debtBasisStoredAlwaysNull": true,
+  "debtNullSymbolsCount": 37,
+  "ieForDebtNullOnly": {
+    "count": 8,
+    "summary": {
+      "total": 8,
+      "dist": {
+        "0": 0,
+        "1": 2,
+        "2": 4,
+        "3+": 2
+      },
+      "pct": {
+        "0": 0,
+        "1": 25,
+        "2": 50,
+        "3+": 25
+      }
+    },
+    "note": "InterestExpense(:381)는 debtLy==null일 때만 debtStatus 분기에 실사용된다 — 이 부분집합만 계산에 실질 영향"
+  }
+}

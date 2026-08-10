@@ -1,0 +1,112 @@
+{
+  "step": 976,
+  "date": "2026-08-10",
+  "purpose": "lib/revdcf/drivers.ts:67 latestYear()가 목표연도 근접성 요구 없이 창 안의 값 있는 첫 연도를 반환하는 것이 revdcf 604종목 전수에 얼마나·어떻게 영향을 주는지 측정. 측정 전용 — drivers.ts 무변경, DB 무변경.",
+  "note": "search = docs/probe_976_search.md. SEC 신규 호출 0건(docs/probe_951_cache 604종목 전량 캐시 보유, missingCache=0). 크론 미호출.",
+  "rawData": "전 종목·항목별 원자료 = docs/probe_976_stage1_2_raw.json (lagGte1 top50 + lagGte2 전수)",
+
+  "universe": { "size": 604, "source": "revdcf_results 최신 as_of(2026-08-09)", "missingCache": 0, "missingWindow_INSUFFICIENT_HISTORY류": 29, "eligible": 575 },
+
+  "stage1_lagDistribution": {
+    "shares": {
+      "eligibleWithValue": 570,
+      "dist": { "0": 566, "1": 1, "2": 2, "3+": 1 },
+      "pct": { "0": 99.30, "1": 0.18, "2": 0.35, "3+": 0.18 },
+      "tierBreakdown_lagGte1": { "sharesDil(1순위)": 4, "SHARES_MORE_fallback": 0, "dei_fallback": 0 },
+      "note": "🔑 lag≥1인 4건 전부 1순위(sharesDil) 자체에서 발생 — STEP975 HGTY(폴백 단계에서 3년 전 값이 채택된 패턴)와 같은 메커니즘은 604종목 표본에서 0건. HGTY는 604 유니버스 밖 종목이었다."
+    },
+    "debt": {
+      "eligibleWithValue": 538,
+      "dist": { "0": 521, "1": 5, "2": 8, "3+": 4 },
+      "pct": { "0": 96.84, "1": 0.93, "2": 1.49, "3+": 0.74 },
+      "debtNullCount": 37,
+      "note": "eligibleWithValue(538) = debtLy!=null인 종목(사실상 이전 969의 'tagged' 등가) — 37종목은 debtLy 자체가 null('none' 또는 'unresolved' 등가)."
+    },
+    "interestExpense": {
+      "raw_total": 403, "raw_dist": { "0": 125, "1": 17, "2": 237, "3+": 24 }, "raw_pct": { "0": 31.02, "1": 4.22, "2": 58.81, "3+": 5.96 },
+      "🔴 scopingCorrection": "이 403건 통계는 표면적으로 크지만 대부분 계산에 영향이 없다. drivers.ts:381의 InterestExpense 조회는 debtLy==null일 때만 flags.debtStatus(zero vs missing) 분기에 쓰인다 — debtLy!=null인 538건에서는 IE 값이 아무 계산에도 안 쓰인다(죽은 조회). 실제 영향권 = debtNull 37건 중 IE 값이 존재하는 8건뿐(나머지 29건은 IE도 없어 자동으로 debtStatus='zero').",
+      "scopedToDebtNull8": { "total": 8, "dist": { "0": 0, "1": 2, "2": 4, "3+": 2 }, "pct": { "0": 0, "1": 25, "2": 50, "3+": 25 } },
+      "note": "🔑 실질 영향권(8건)에서는 100%가 lag≥1이다 — 8건 전부 debtStatus 판정이 창 목표연도보다 낡은 이자비용값을 근거로 내려진다."
+    },
+    "nonOperatingAssets": {
+      "eligibleWithValue": 573, "dist": { "0": 573, "1": 0, "2": 0, "3+": 0 }, "pct": { "0": 100, "1": 0, "2": 0, "3+": 0 },
+      "note": "lag 0건 — 이 항목은 latestYear() 신선도 문제가 없다."
+    }
+  },
+
+  "stage1_3_lagGte1_examples": {
+    "shares_all4": [
+      { "symbol": "SJM", "targetYear": 2025, "returnedYear": 2021, "lag": 4, "value": 108400000 },
+      { "symbol": "TTWO", "targetYear": 2025, "returnedYear": 2023, "lag": 2, "value": 170100000 },
+      { "symbol": "VTRS", "targetYear": 2025, "returnedYear": 2023, "lag": 2, "value": 1206900000 },
+      { "symbol": "LEN-B", "targetYear": 2025, "returnedYear": 2024, "lag": 1, "value": 272019000 }
+    ],
+    "debt_lagGte2_all12": [
+      { "symbol": "DOCU", "lag": 2, "value": 0, "targetYearTagStatus": "확인 — 목표연도에 우리 배열 밖 태그도 없음(진짜 결측)" },
+      { "symbol": "DT", "lag": 3, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "FFIV", "lag": 2, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "LSCC", "lag": 2, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "MEDP", "lag": 2, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "PLTR", "lag": 4, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측(2021년 이후 모든 부채꼴 태그 소멸, 재무제표 본문에서 항목 자체를 뺀 것으로 추정)" },
+      { "symbol": "RMBS", "lag": 2, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "ROIV", "lag": 2, "value": 442591000, "targetYearTagStatus": "🔴 미확정 — 비정형 회계연도(FYE 3월말) 때문에 calYear() 버킷팅으로 2024-03-31 종료분(filed 2024-05-30)이 calYear=2023으로 잡힘. 그 이후(FYE 2025-03) 10-K 데이터가 캐시에 없음 — SEC 제출 자체가 아직 없거나 태그가 바뀐 것으로 추정, 확정 못 함." },
+      { "symbol": "ROKU", "lag": 2, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "TOST", "lag": 4, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" },
+      { "symbol": "TXRH", "lag": 2, "value": 0, "targetYearTagStatus": "🔴 태그 문제(latestYear 문제 아님) — 목표연도(2025)에 `FinanceLeaseLiability`(Current/Noncurrent 미분리 단일합계, $2,700,000)가 존재하나 우리 FIN_LEASE 배열(Noncurrent+Current 분리형만 인식)이 못 잡는다." },
+      { "symbol": "WSM", "lag": 4, "value": 0, "targetYearTagStatus": "확인 — 진짜 결측" }
+    ],
+    "conclusion_2_3": "🔑 debt lag≥2(12건) 중 10건은 목표연도에 SEC 원문 자체에 부채꼴 태그가 전혀 없음(latestYear 문제도 태그 문제도 아니고, 그 값이 여전히 정답일 가능성이 높다). 1건(TXRH)은 태그 문제(우리 배열이 그 회사가 쓰는 합계형 리스 태그를 인식 못함). 1건(ROIV)은 원인 미확정(비정형 FYE+데이터 가용성 의심)."
+  },
+
+  "stage2_debtTaggedLagImpact": {
+    "storedDebtBasisFlag_check": {
+      "🔴 finding": "`revdcf_results.flags.debtBasis`는 최근 5개 as_of(08-05~08-09) 전부에서 604건 중 0건 저장돼 있다 — STEP969가 computeDrivers()의 반환 flags에 debtBasis를 채우는 것은 확인했으나, route.ts가 최종 revdcf_results 행을 구성할 때 이 필드를 revdcf_results.flags에 실어 보내지 않는 것으로 보인다(코드 미변경, 관찰만).",
+      "impact": "2단계 원 설계('debtBasis=tagged인 것만 센다')는 저장값으로는 수행 불가 — 대신 debtLy!=null(=이 스크립트의 debt 배열에 포함된 것 자체)을 'tagged'의 등가로 써서 계속 진행했다."
+    },
+    "count": 17,
+    "byVerdict": { "years": 7, "value_destroying": 6, "over_cap": 3, "skipped": 1 },
+    "note": "16건은 유효 verdict를 가짐(계산 성공), 1건은 skipped(다른 게이트에서 이미 걸러짐 — debt 계산 자체는 됐으나 최종 verdict 산출 전 별도 사유로 스킵된 것으로 추정, 개별 확인 안 함)."
+  },
+
+  "stage3_simulation": {
+    "method": "lag≥1 종목 중 목표연도 값이 확인되는 경우에 한해 그 값으로 교체 시뮬레이션(DB 미저장).",
+    "🔑 keyFinding": "debt lag≥1(17건)·shares lag≥1(4건) 총 21건 중 목표연도에 확인 가능한 대체값이 있는 경우는 **TXRH 1건뿐**(그마저 태그 커버리지 확장이 필요해 latestYear() 수정만으로는 못 얻는다). 나머지 20건은 '바꿀 값 자체가 없음' — SEC 원문에 목표연도 데이터가 없거나(대부분) 원인이 미확정(ROIV)이다.",
+    "implication": "🔴 이건 정책 프레임을 바꾼다 — 대부분의 lag 사례에서 latestYear()를 '목표연도만 요구'하도록 고치면 더 정확한 값을 얻는 게 아니라 그 항목이 결측(skip)으로 바뀔 뿐이다. '낡은 값이라도 쓴다'와 '값이 없으면 계산을 접는다' 사이의 트레이드오프이지, '낡은 값 vs 정확한 값' 사이의 트레이드오프가 아닌 경우가 대다수(20/21)다.",
+    "txrhOnly": {
+      "current": { "debt": 0, "verdict": "years", "gapYears": 7 },
+      "correctedIfFixed": "debt에 $2,700,000(리스부채)을 더하면 D/E가 미세하게 오름 — TXRH 규모(레스토랑체인, 시총 수십억달러대) 대비 $2.7M은 절대금액이 매우 작아 WACC·verdict 변화는 사실상 없을 것으로 추정. 🔴 실제 재계산은 하지 않았다(값의 절대적 미미함으로 우선순위 낮음 판단, 정밀 시뮬레이션은 못 한 것으로 남긴다)."
+    },
+    "sharesLagGte1_4symbols": {
+      "status": "목표연도 대체값 존재 여부 미확인(못 한 것) — SJM·TTWO·VTRS·LEN-B 4건에 대해 목표연도 SEC 원문에 어떤 주식수 태그도 전혀 없는지까지는 debt만큼 깊이 확인하지 않았다."
+    },
+    "verdictTransitions": "0건 — 위 이유로 시뮬레이션할 대상 자체가 사실상 없었다(TXRH도 실행 안 함)."
+  },
+
+  "stage4_prescriptionCandidates_noChoiceMade": [
+    {
+      "candidate": "① 현행 유지 + flags에 lag 기록만 추가",
+      "cost": "코드 변경 최소(computeDrivers 반환값에 lag 필드 추가, 계산 동작은 안 바뀜). 대가: 사용자에게 '몇 년 전 값'인지 안 보이는 문제는 그대로 — 다만 이번 STEP처럼 사후 감사는 가능해진다."
+    },
+    {
+      "candidate": "② lag 상한(N년)을 두고 초과 시 skip",
+      "cost": "🔴 debt·shares 조합 측정 결과, N=2로 잡으면 debt 12건·shares 3건이 skip으로 전환된다(그 중 10건은 진짜 결측이라 skip이 더 정직한 상태일 수 있다). N=1로 더 엄격히 잡으면 debt 17건·shares 4건 skip — TXRH(태그로 해결 가능한 진짜 버그 케이스)까지 함께 skip되어 버린다는 대가가 있다."
+    },
+    {
+      "candidate": "③ 항목별 최신 대신 목표연도 강제(값 없으면 그 항목만 결측 처리)",
+      "cost": "②와 사실상 동일한 결과(값이 없으면 skip)이나, ②는 '몇 년까지 봐줄지'를 조절할 수 있고 ③은 즉시 결측 처리라는 점이 다르다. 대가는 ②의 N=1과 같음."
+    },
+    {
+      "candidate": "④ (신규, 이번 측정에서 드러난 후보) 태그 커버리지 확장 — latestYear()가 아니라 배열 자체를 고친다",
+      "cost": "TXRH류(합계형 FinanceLeaseLiability 미인식) 케이스는 latestYear를 아무리 고쳐도 안 풀린다 — FIN_LEASE 배열에 합계형 태그를 추가해야 한다. 이건 969와 같은 종류의 작업(개별 태그 조사)이라 시간이 든다. 대가: 전수조사 안 하면 몇 건이나 이런 케이스인지 모른다(이번 STEP은 debt lag≥2 12건만 봤다 — 604 전체의 태그 커버리지 전수조사는 범위 밖)."
+    }
+  ],
+
+  "notDoneOrUnresolved": [
+    "shares lag≥1 4건(SJM·TTWO·VTRS·LEN-B)의 목표연도 SEC 원문 진짜결측 여부 — debt만큼 깊이 확인 안 함.",
+    "ROIV의 원인 미확정 — 비정형 FYE(3월) calYear 버킷팅 때문인지, 최신 10-K 자체가 아직 없는지, 확정 못함.",
+    "TXRH 태그 수정 시 실제 D/E·WACC·verdict 변화 정밀 시뮬레이션 — 값이 작아 우선순위를 낮게 보고 실행 안 함.",
+    "InterestExpense 원시 261건(lag≥2) 전수 — 8건(실질 영향권) 밖의 253건은 계산에 영향이 없어 개별 확인 안 함(probe_976_stage1_2_raw.json에 원자료는 있음).",
+    "debt.debtBasis가 revdcf_results.flags에 왜 저장 안 되는지(route.ts의 어느 지점에서 빠지는지) — 발견만 하고 코드 추적은 안 함.",
+    "604종목 전체의 latestYear() 유발 태그-커버리지 전수조사(TXRH류가 몇 건인지) — 이번엔 debt lag≥2 12건만 확인."
+  ]
+}
