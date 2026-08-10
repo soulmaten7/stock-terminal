@@ -1,0 +1,30 @@
+{
+  "asOf": "2026-08-09",
+  "valuationTotal": 1167,
+  "sectorWideExisting": 1127,
+  "newSymbolsCount": 40,
+  "tallyAll": {
+    "spdr": 404,
+    "damodaran": 637,
+    "damodaran-sibling": 5,
+    "yahoo": 26,
+    "unclassified": 95
+  },
+  "tallyNew": {
+    "spdr": 2,
+    "damodaran": 32,
+    "damodaran-sibling": 0,
+    "yahoo": 0,
+    "unclassified": 6
+  },
+  "unclassifiedNew": [
+    "AIXI",
+    "BCYC",
+    "BLTE",
+    "DLNG",
+    "DLY",
+    "DMA"
+  ],
+  "liveNetworkCalls": 0,
+  "note": "resolveSector는 Supabase 테이블 4개 read만 수행 — 외부 네트워크 호출(야후 라이브 API 포함) 0건. STEP952 probe_952_sector_wide_step1.json과 동일 결론."
+}

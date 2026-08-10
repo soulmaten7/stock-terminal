@@ -127,7 +127,22 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 **신선도 상한을 두지 않은 이유**: `us_sector_wide` 자체가 아직 크론화되지 않아 "정상 갱신 주기"가 없다 — 상한을 몇 일로 잡아야 할지 정할 근거가 없는 상태에서 상한부터 걸면 임의값이 된다. 대신 `sector_as_of` 컬럼(2026-08-10 마이그레이션 `20260810_us_sector_relative_sector_as_of.sql`)으로 **얼마나 오래된 섹터를 썼는지 추적 가능하게만** 해두고, 상한 도입 여부는 판정 대기로 남긴다(`docs/STATE.md` 미해결).
 
-**대가 — 신규 종목은 여전히 안 붙는다**: 최신 as_of를 써도 `us_sector_wide`에 아예 없는 종목(신규 편입분)은 여전히 `NO_SECTOR`다. 2026-08-09 실측: `us_valuation`(1,167) − `us_sector_wide`(1,127) = **정확히 40종목**이 섹터표에 없다(`us_valuation`이 매일 자라는데 `us_sector_wide`는 1,127에 멈춰 있어서). 유니버스가 목표(5,497)까지 자라면 이 격차는 계속 커진다 — 처방 후보(①resolveSector 크론 배선 ②주1회 스크립트로 신규만 추가 ③섹터 없이 두고 화면에 명시)는 이번 STEP에서 고르지 않았다.
+**대가 — 신규 종목은 여전히 안 붙는다**: 최신 as_of를 써도 `us_sector_wide`에 아예 없는 종목(신규 편입분)은 여전히 `NO_SECTOR`다. 2026-08-09 실측: `us_valuation`(1,167) − `us_sector_wide`(1,127) = **정확히 40종목**이 섹터표에 없다(`us_valuation`이 매일 자라는데 `us_sector_wide`는 1,127에 멈춰 있어서). 유니버스가 목표(5,497)까지 자라면 이 격차는 계속 커진다. **→ STEP 974에서 처방 ①(resolveSector 크론 배선)을 채택해 해소.**
+
+### `us_sector_wide` 증분 갱신 — 신규 종목 자동 부착 (STEP 974, 2026-08-10)
+
+🔴 **방식 ⓐ 채택(장은태 승인)**: 신규 심볼은 **기존 최신 `sectorAsOf`(as_of를 새로 만들지 않음)에 그대로 append**한다. `computeAndSaveSectorRelative()` 안에서 `sectorAsOf`를 구한 직후 · `sectorRows`를 읽기 직전에 `us_valuation` 심볼 중 `us_sector_wide(as_of=sectorAsOf)`에 없는 것만 골라 `resolveSector()`(무변경, 호출만)로 해석하고 `toResolvedRows()`(무변경, 호출만)로 형태를 맞춰 upsert한다. **기존 심볼은 재계산·재upsert하지 않는다** — 실측(973 이후 상태 대비): 기존 1,127행 fingerprint(as_of·symbol·sector·source·crossCheck 3종·disagree 직렬화 후 MD5) = `ffb271e898ea81300f40f2aa831b78b0`, 증분 실행 전후 완전 동일.
+
+**대가**: "언제 처음 부착됐는지"가 개별 종목 단위로 남지 않는다 — 신규 40종목도 기존과 같은 `sectorAsOf`(2026-08-08)를 갖게 되어, 나중에 "이 종목은 며칠에 처음 분류됐나"를 표에서 직접 알 수 없다. `updated_at`(행 저장 시각)으로 근사할 수는 있으나 정식 이력은 아니다.
+
+**신선도 상한 — 이번에도 안 둔다는 판단 유지**: `docs/probe_974_step2_search.md`(①-A·①-B 검색)에서 Damodaran(연1회 1월)·GICS(연1회 구조검토)·SEC SIC(연1회 6월+제출 이벤트) 원전 3곳과 SPDR(분기 리밸런스)·나스닥(미공개)·개인용 스크리너(미공개) 타 플랫폼 3곳을 대조한 결과, **섹터 분류는 원천적으로 저빈도 개념**이라는 판단이 독립적으로 뒷받침됐다. 상한을 걸 근거(정상 갱신 주기)는 여전히 없다.
+
+🔴 **Cowork 측정 오류 3건 정정**(973 대가 서술·1단계 사전추정이 부정확했던 부분):
+① `us_sector_nasdaq`은 `resolveSector()`의 분류 tier가 아니라 crossCheck 전용 참고값이다 — "나스닥 40건(전부)"은 분류 성공과 무관한 수치였다.
+② 신규 40종목 중 damodaran tier 실제 분류 건수는 **34건이 아니라 32건**이다. `damodaran_industry`를 SQL로 직접 조인해 센 사전 수치(34)는 조인 중복으로 부풀려졌다 — 앞으로는 `resolveSector()`를 통과한 결과만 근거로 쓴다.
+③ STEP 973의 *"①resolveSector를 크론에 배선(야후 호출 발생)"* 서술은 무근거였다. `resolveSector()`는 `damodaran_industry`·`us_sector_nasdaq`·`us_sector_yahoo`·`us_sector_gics` **4개 Supabase 테이블 read만 수행하고 외부 네트워크 호출은 0건**이다(3순위 "야후"도 `us_sector_yahoo` 사전적재 테이블 조회이지 라이브 API가 아니다) — 952 probe(`docs/probe_952_sector_wide_step1.json`)가 이미 같은 결론을 냈던 것을 973이 재확인하지 않고 다시 "비용"으로 서술했다.
+
+**실측(2026-08-09 기준, `docs/probe_974_sector_yield.json`)**: 신규 40종목 출처 = damodaran 32 · spdr 2 · 미분류 6(0 sibling·0 yahoo). 전체(1,167) 야후 필요 = 26건(2.2%, 200건 기준 미달). 증분 적용 후 `us_sector_relative`(as_of=2026-08-09) sector=null: 129 → **95**(기존 미분류 89 + 신규 미분류 6). `us_sector_resolved`(1,021)·`us_sector_wide` 기존 1,127행 불변 확인.
 
 ### ✅ damodaran tier 조사·처방 완료(STEP 952b~955, 2026-08-09) — 원인 규명(952b) → 공용 헬퍼 처방(954) → us_sector_wide 재생성(955)
 

@@ -4,11 +4,12 @@ import { computeDrivers, type DriverResult } from "@/lib/revdcf/drivers";
 import { assembleWacc, creditSpreadFor, computeGapWithSensitivity } from "@/lib/revdcf/compute";
 import { runRevDcf, type RevDcfMarket, type RevDcfVerdict } from "@/lib/revdcf/engine";
 import { REVDCF_DEFAULT_MAX_YEARS } from "./constants";
-import { fetchSectorMap } from "@/lib/sector";
+import { fetchSectorMap, resolveSector } from "@/lib/sector";
 import { computeValuation, VALUATION_SPEC } from "@/lib/valuation";
 import { fetchAllRows } from "@/lib/supabasePaging";
 import { computeSectorRelativeBatch, type ValuationInput, type SectorInput } from "@/lib/sectorRelativeBatch";
 import { SECTOR_RELATIVE_SPEC } from "@/lib/sectorRelative";
+import { toResolvedRows } from "@/lib/sectorCuts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -89,17 +90,48 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
 //   /api/sector/us(945)가 us_sector_resolved에 쓰는 것과 같은 패턴 — 섹터는 시간이 지나도 거의 안 변하므로 "최신 as_of"를 그대로 쓴다.
 //   🔴 신선도 상한(예: N일 이상 지나면 경고)은 이번 STEP에서 의도적으로 두지 않는다 — us_sector_wide 자체가
 //   아직 크론화되지 않아 상한을 걸 "정상 갱신 주기"가 없다. 얼마나 오래된 섹터를 썼는지는 sector_as_of로 남긴다.
-async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number }> {
+async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number; sectorWideAdded: number; sectorWideError: string | null }> {
   const valuationRows = await fetchAllRows<{ symbol: string; per: number | null; pbr: number | null; psr: number | null; ev_ebitda: number | null }>(
     () => sb.from("us_valuation").select("symbol, per, pbr, psr, ev_ebitda").eq("as_of", asOf),
     [{ column: "symbol" }]
   );
-  if (valuationRows.length === 0) return { saved: 0 };
+  if (valuationRows.length === 0) return { saved: 0, sectorWideAdded: 0, sectorWideError: null };
 
   const latestSector = (await sb.from("us_sector_wide").select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle()).data as { as_of: string } | null;
-  if (!latestSector) return { saved: 0 };
+  if (!latestSector) return { saved: 0, sectorWideAdded: 0, sectorWideError: null };
   const sectorAsOf = latestSector.as_of;
 
+  // 🔴 STEP 974 — us_sector_wide 증분 갱신. 방식 ⓐ(장은태 승인): 신규 심볼만 resolveSector에 넣고 기존
+  //   sectorAsOf에 그대로 append한다(새 as_of를 만들지 않는다). 기존 심볼은 재계산·재upsert하지 않는다 —
+  //   섹터는 저빈도 개념(①-A: Damodaran 연1회·GICS 연1회·SEC SIC 연1회+이벤트, ①-B: SPDR 분기·나스닥 미공개
+  //   — `docs/probe_974_step2_search.md`)이라 재계산해도 매일 값이 달라질 이유가 없고, 재upsert 자체가
+  //   백분위를 미세하게 흔들 위험만 만든다. 실패해도 백분위 계산(아래)은 그대로 진행 — try/catch로 격리.
+  let sectorWideAdded = 0;
+  let sectorWideError: string | null = null;
+  try {
+    const existingSectorSymbols = await fetchAllRows<{ symbol: string }>(
+      () => sb.from("us_sector_wide").select("symbol").eq("as_of", sectorAsOf),
+      [{ column: "symbol" }]
+    );
+    const existingSet = new Set(existingSectorSymbols.map((r) => r.symbol));
+    const missingSymbols = valuationRows.map((r) => r.symbol).filter((s) => !existingSet.has(s));
+
+    if (missingSymbols.length > 0) {
+      const resolved = await resolveSector(sb, missingSymbols); // lib/sector.ts 무변경, 호출만 — 외부 네트워크 호출 0건(4개 Supabase 테이블 read만)
+      const newRows = toResolvedRows(sectorAsOf, missingSymbols, resolved); // lib/sectorCuts.ts 무변경, 호출만
+      for (let i = 0; i < newRows.length; i += 1000) {
+        const batch = newRows.slice(i, i + 1000);
+        const { error } = await sb.from("us_sector_wide").upsert(batch, { onConflict: "as_of,symbol" });
+        if (error) throw error;
+      }
+      sectorWideAdded = newRows.length;
+    }
+  } catch (e) {
+    sectorWideAdded = 0;
+    sectorWideError = e instanceof Error ? e.message : String(e);
+  }
+
+  // 증분 갱신 이후에 읽는다 — 신규 심볼이 포함된 상태로 백분위를 계산한다.
   const sectorRows = await fetchAllRows<{ symbol: string; sector: string | null }>(
     () => sb.from("us_sector_wide").select("symbol, sector").eq("as_of", sectorAsOf),
     [{ column: "symbol" }]
@@ -119,7 +151,7 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
 
   let saved = 0;
   for (let i = 0; i < dbRows.length; i += 1000) { const batch = dbRows.slice(i, i + 1000); const { error } = await sb.from("us_sector_relative").upsert(batch, { onConflict: "as_of,symbol" }); if (!error) saved += batch.length; }
-  return { saved };
+  return { saved, sectorWideAdded, sectorWideError };
 }
 
 export async function GET(req: Request) {
@@ -265,6 +297,7 @@ export async function GET(req: Request) {
   }
 
   let valuationSaved = 0, fundamentalsStalest: string | null = null, sectorRelativeSaved = 0;
+  let sectorWideAdded = 0, sectorWideError: string | null = null;
   try {
     await Promise.all(Array.from({ length: 6 }, worker));
     await flush();
@@ -277,6 +310,8 @@ export async function GET(req: Request) {
     // STEP 956 §3-3 — us_valuation 계산 직후. 같은 이유로 finally 안(예산 소진과 무관하게 항상 실행).
     const sr = await computeAndSaveSectorRelative(sb, asOf);
     sectorRelativeSaved = sr.saved;
+    sectorWideAdded = sr.sectorWideAdded;
+    sectorWideError = sr.sectorWideError;
   }
 
   const finished = idx >= todo.length;
@@ -286,5 +321,7 @@ export async function GET(req: Request) {
     revdcfUniverse: todoRevdcf.length, fundamentalsUniverse: fundamentalsUniverseAll.length, fundamentalsSaved, fundamentalsStalest, valuationSaved,
     // STEP 956 §3-3
     sectorRelativeSaved,
+    // STEP 974 §2 — us_sector_wide 증분 갱신 결과
+    sectorWideAdded, sectorWideError,
   });
 }
