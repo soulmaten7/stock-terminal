@@ -1,0 +1,106 @@
+{
+  "step": 982,
+  "scope": "US only — investigation, 0 code changes, 0 DB writes, cron not manually triggered",
+  "section1_freeze_point": {
+    "section1_1_lens_cuts_history": {
+      "note": "lens_cuts는 PK(market,lens_key) upsert라 이력 테이블이 아니다 — 현재 5행이 US 전체이며 as_of가 마지막 성공 갱신일을 가리킬 뿐, '최근 20일치 행'이 원래 존재하지 않는다.",
+      "current_state": { "market": "US", "n": 5, "as_of": "2026-07-30", "lenses": ["assetgrowth", "lowvol", "momentum", "quality", "valuation"] },
+      "kr_one_line_check": { "market": "KR", "as_of": "2026-08-10", "note": "US 단독 원칙에 따라 날짜 한 줄만 확인 — KR은 오늘자로 정상 갱신 중. 더 파지 않음." }
+    },
+    "section1_1_lens_scores_daily_row_counts": {
+      "note": "updated_at 기준 '그날 마지막으로 손댄 행 수' — pass1이 매일 전체(~1000) upsert한다면 이 숫자가 매일 ~1000이어야 하는데 아니다.",
+      "by_date": [
+        { "date": "2026-08-09", "n": 910 },
+        { "date": "2026-08-07", "n": 36 },
+        { "date": "2026-08-06", "n": 57 },
+        { "date": "2026-08-04", "n": 1 },
+        { "date": "2026-08-03", "n": 3 },
+        { "date": "2026-07-30", "n": 16 }
+      ],
+      "missing_dates_zero_rows": ["2026-07-31", "2026-08-01", "2026-08-02", "2026-08-05", "2026-08-08"],
+      "sum_check": "910+36+57+1+3+16 = 1023 = 오늘 lens_scores(US) 전체 행수 — 즉 위 6개 날짜 외엔 US에서 단 한 심볼도 갱신된 적이 없다(11일 중 6일은 0건)."
+    },
+    "section1_2_cron_identity": {
+      "route": "app/api/cron/lens-scores/route.ts",
+      "function": "computeLensScores(1000) → lib/lensPrecompute.ts",
+      "schedule_vercel_json": "30 21 * * * (매일 UTC 21:30)",
+      "maxDuration": 300,
+      "auth": "CRON_SECRET Bearer",
+      "tables_written": ["us_market_cap (topByMarketCap 내부)", "lens_scores", "lens_cuts", "lens_state_changes", "cron_heartbeats"],
+      "tables_read": ["us_market_cap (직전 상위200 메가캡 구성게이트용)", "lens_scores (직전 유니버스 churn용)"]
+    },
+    "section1_3_skip_branches_CODE_CONFIRMED": {
+      "branch_A_cutGateOk": {
+        "location": "lib/lensPrecompute.ts:453",
+        "condition": "cutGateOk = coverageOk && compositionOk (capGateDecision, :53-67)",
+        "coverageOk_threshold": "freshCoverage >= 0.97",
+        "compositionOk_threshold": "직전 상위200 메가캡 중 오늘 fresh 확보 비율 >= 0.95",
+        "effect_when_false": "5개 렌즈 컷 재유도 전체 스킵 — prevCuts 그대로 유지. lens_cuts UPSERT 자체가 호출 안 됨.",
+        "also_sets": "computeLensScoresFor()의 최종 ok = universeOk && pass2Ok && cutGateOk (:510) — 즉 cutGateOk=false면 전체 크론 작업이 ok:false로 보고되고 route.ts가 HTTP 500을 반환한다(lens_scores 자체는 대부분 저장됐어도)."
+      },
+      "branch_B_perLensSampleFloor": {
+        "location": "lib/lensPrecompute.ts:445",
+        "condition": "cutValues[lensKey].length < 30",
+        "effect_when_true": "그 렌즈 하나만 컷 재유도 스킵(다른 렌즈는 영향 없음)",
+        "observed": "이번 관측 대상 아님 — cutGateOk=false가 먼저 걸려 여기까지 도달 여부 자체가 무의미(gate가 앞단)"
+      },
+      "branch_C_upsertError": {
+        "location": "lib/lensPrecompute.ts:456-457",
+        "condition": "sb.from('lens_cuts').upsert(...) 에러",
+        "effect_when_true": "Sentry 캡처만, cuts 갱신 실패로 남음",
+        "observed": "이번 관측 대상 아님(gate가 앞단이라 도달 안 함)"
+      },
+      "branch_D_upstreamThrow": {
+        "note": "topByMarketCap/capGateDecision 이전 단계에서 예외가 던져지면 cut 코드 자체에 도달 못하고 route.ts 최상위 catch가 500 반환 — 이 경우 컷 게이트 메시지(Sentry '[lens-cut-gate]')조차 안 남는다.",
+        "observed_on_2026_08_09": "아니다 — 그날은 정상적으로 §1-3 branch_A(cutGateOk=false)까지 도달했고 명시적으로 Sentry 메시지를 남겼을 것(코드상 확실, Sentry 자체 조회는 이번 STEP 범위 밖)."
+      },
+      "conclusion": "🔴 08-09 실행에서 실제로 발동한 것은 branch_A(cutGateOk=false, freshCoverage=93.04%<97%) — cron_heartbeats.note로 직접 관측(추측 아님)."
+    },
+    "cron_heartbeat_08_09_raw": {
+      "job": "lens-scores", "last_run_at": "2026-08-09T22:30:44.781Z", "ok": false,
+      "market": "US", "freshCoverage": 0.9303649146300637, "coverageOk": false, "compositionOk": false, "compRatio": 0.94,
+      "cutGateOk": false, "computed": 910, "universe": 1000, "batchOk": 5558, "noCapField": 416, "noResponse": 0,
+      "retryAllLen": 416, "retrySetLen": 400, "countHit": true, "timeHit": false, "retryBudgetHit": true
+    }
+  },
+  "section2_2026_07_30_reconstruction": {
+    "section2_1": "lens_scores(US) 07-30 그날 실제 갱신 16건뿐 — 이미 그날부터 붕괴가 시작됐을 가능성(전체 유니버스 upsert가 아니었다는 뜻).",
+    "section2_2_overlap_with_item14": {
+      "us_market_cap_stale_history": "docs/probe_949_mcap_gap.json(08-08 측정) = STALE 380건, staleAsOfDist 전부 2026-07-30 단일 날짜.",
+      "us_market_cap_current_asof_distribution": [
+        { "as_of": "2026-08-09", "n": 5558 }, { "as_of": "2026-08-06", "n": 2 }, { "as_of": "2026-08-05", "n": 1 },
+        { "as_of": "2026-08-04", "n": 1 }, { "as_of": "2026-08-03", "n": 2 }, { "as_of": "2026-08-02", "n": 5 }, { "as_of": "2026-07-30", "n": 338 }
+      ],
+      "note": "949 측정(380) 대비 지금 338 — 42건이 그 사이 회복(08-09 큰 실행에서 재시도 성공). batchOk=5558이 08-09 heartbeat의 batchOk와 정확히 일치 — 같은 실행분임을 교차확인.",
+      "mechanism_link": "🔴 인과 단정 아님, 코드로 확인된 사실만: us_market_cap을 쓰는 topByMarketCap()이 곧 freshCoverage를 만드는 그 함수다(lensPrecompute.ts:98-204) — 13번(lens_cuts 정지)과 14번(us_market_cap 380건 STALE)은 같은 acquisition 함수·같은 실행·같은 날짜(07-30)에서 나온다. 이게 '같은 사건'이라는 강한 정황이지 증명된 인과는 아니다 — us_market_cap 취득이 왜 그 380여 종목에서 계속 실패하는지(원인)는 949도 미확정으로 남겼고 982도 재조사하지 않았다."
+    },
+    "section2_3_vercel_log_limitation": "미해결 16번 그대로 — Hobby 플랜 로그 보존 1시간, 07-30·07-31 등 과거 실행의 원시 로그는 사후 확인 불가. cron_heartbeats(§1-1)와 us_market_cap/lens_scores의 as_of 흔적만으로 재구성했다."
+  },
+  "section3_impact": {
+    "note": "계산만 — DB에 쓰지 않음. lens_scores에 이미 저장된 최신값(대부분 08-09 계산분, 일부는 그 이전 잔존값)을 그대로 재사용해 '오늘 컷을 다시 유도하면'을 시뮬레이션. 야후 재조회 없음.",
+    "cutoffs_frozen_vs_today": [
+      { "lens_key": "momentum", "dir": "high", "frozen_lo": -2.707, "frozen_hi": 34.272, "frozen_n": 974, "today_lo": 0.202, "today_hi": 38.988, "today_n": 1005 },
+      { "lens_key": "lowvol", "dir": "low", "frozen_lo": 27.184, "frozen_hi": 40.896, "frozen_n": 978, "today_lo": 27.63, "today_hi": 42.54, "today_n": 1011 },
+      { "lens_key": "valuation", "dir": "low", "frozen_lo": 18.24, "frozen_hi": 35.1, "frozen_n": 901, "today_lo": 17.8, "today_hi": 35.655, "today_n": 926 },
+      { "lens_key": "quality", "dir": "high", "frozen_lo": 13.909, "frozen_hi": 30.329, "frozen_n": 852, "today_lo": 13.9, "today_hi": 30.415, "today_n": 876 },
+      { "lens_key": "assetgrowth", "dir": "low", "frozen_lo": 2.48, "frozen_hi": 12.125, "frozen_n": 976, "today_lo": 2.532, "today_hi": 12.684, "today_n": 1003 }
+    ],
+    "verdict_flip_by_lens": [
+      { "lens_key": "momentum", "n": 1005, "differ": 69, "differ_pct": 6.9, "full_flip_good_bad": 0 },
+      { "lens_key": "lowvol", "n": 1011, "differ": 39, "differ_pct": 3.9, "full_flip_good_bad": 0 },
+      { "lens_key": "assetgrowth", "n": 1003, "differ": 20, "differ_pct": 2.0, "full_flip_good_bad": 0 },
+      { "lens_key": "valuation", "n": 926, "differ": 16, "differ_pct": 1.7, "full_flip_good_bad": 0 },
+      { "lens_key": "quality", "n": 876, "differ": 4, "differ_pct": 0.5, "full_flip_good_bad": 0 }
+    ],
+    "distinct_symbols_affected_any_lens": 140,
+    "distinct_symbols_affected_pct_of_universe": "140/1023 = 13.7%",
+    "cross_check_with_ff_primary_source": "모멘텀이 5개 중 가장 크게 움직임(6.9%) — Fama-French 원전이 모멘텀만 월 단위(다른 4개는 연 단위)로 재계산하는 것과 방향이 일치(982 §①-A-2)."
+  },
+  "section4_options_no_choice": {
+    "cause_status": "부분 특정 — 08-09 실행에 대해서는 코드+실측으로 완전히 특정(cutGateOk=false ← freshCoverage 93.04%<97%). 07-31~08-08 사이 나머지 날짜들의 개별 원인은 미특정(heartbeat 이력 없음·Vercel 로그 만료).",
+    "candidate_A_lower_coverage_threshold": { "what": "coverageMin(0.97)·compMin(0.95)를 낮춘다", "basis": "없음 — 832 사고 방지용으로 의도적으로 높게 잡은 값(주석 근거), 낮추면 그 가드 자체가 무력화될 위험", "reversible": "쉬움(상수 변경)", "approval": "코드 변경이라 필요" },
+    "candidate_B_fix_us_market_cap_root_cause": { "what": "미해결 14번(us_market_cap 380여건 STALE) 자체를 먼저 해결", "basis": "982가 새로 발견한 강한 정황(같은 함수·같은 날짜) — 이걸 고치면 13번도 같이 풀릴 가능성", "reversible": "해당없음(원인 자체가 미확정이라 '고친다'의 구체안이 아직 없음)", "approval": "원인 규명 STEP이 먼저 필요 — 982 범위 밖" },
+    "candidate_C_manual_recompute_once": { "what": "컷만 수동으로 한 번 재유도(게이트 우회)", "basis": "없음 — 게이트를 우회하는 것 자체가 833이 막으려던 '편향 표본으로 판정 기준을 만드는' 상황 재현 위험", "reversible": "쉬움(값 교체)", "approval": "DB 쓰기 발생 + 크론 우회라 필요" },
+    "candidate_D_leave_as_is_investigate_more": { "what": "현행 유지, 원인 규명(14번)을 먼저 별도 STEP으로", "basis": "981과 같은 결의 판단 — 원인 모른 채 처방 안 고름", "reversible": "해당없음", "approval": "불필요(조사 지속)" }
+  }
+}
