@@ -142,6 +142,17 @@ export const DEBT_TOTAL_SINGLE = ["DebtAndCapitalLeaseObligations", "LongTermDeb
 export const DEBT_KNOWN_TAGS = new Set([...DEBT_LT, ...DEBT_CUR, ...FIN_LEASE, ...DEBT_TOTAL_SINGLE]);
 export const DEBT_KEYWORD_RE = /Debt|Borrowing|Notes|Loan|Lease/i;
 export const DEBT_NOISE_RE = /^(RepaymentsOf|ProceedsFrom|Payments|GainsLosses|GainLoss|Amortization|Interest|Induced|Provision|Impairment|Deferred|Increase|AllowanceFor|RightOfUseAssetObtainedInExchangeFor)|OperatingLease|AvailableForSale|HeldToMaturity|LeaseCost|LesseeOperatingLease|SubleaseIncome|LeaseExpense|LeaseIncome|LeaseRightOfUse|NotesReceivable|LoansReceivable|NotesAndLoansReceivable|LeaseLiabilityUndiscounted|SalesTypeLease|SalesTypeAndDirectFinancingLease|NetInvestmentInLease|LeaseholdImprovements|DebtSecurities|DebtInstrument|AccountsAndNotesReceivable|LineOfCreditFacility|MaturitiesRepaymentsOfPrincipal|LeaseLiabilityPaymentsDue|LeasePrincipalPayments|TradingSecuritiesDebt|LeasePayment|DebtIssuanceCostsIncurredDuring|DebtAndEquitySecurities|LiabilitiesOtherThanLongtermDebt|FinanceLeaseInterest/i;
+// 🔴 STEP 977 §1 — lag 원인 판별(debt 전용). 969의 UNRESOLVED_DEBT 스캔(위 DEBT_KNOWN_TAGS·DEBT_KEYWORD_RE·
+//   DEBT_NOISE_RE)과 정확히 같은 규칙을 "특정 연도"에 재사용하기 위해 별도 함수로 뽑았다 — 🔴 기존
+//   UNRESOLVED_DEBT 스캔 코드(아래 computeDrivers 안)는 건드리지 않는다(계산 경로 불변 보장, 이 함수는 순수 관측용).
+function hasUnresolvedDebtTagAtYear(gaap: Gaap, year: number): boolean {
+  for (const tag of Object.keys(gaap)) {
+    if (DEBT_KNOWN_TAGS.has(tag) || !DEBT_KEYWORD_RE.test(tag) || DEBT_NOISE_RE.test(tag)) continue;
+    const m = annualMap(gaap, tag, "stock");
+    if (m[year] != null) return true;
+  }
+  return false;
+}
 const SHARES_DIL = ["WeightedAverageNumberOfDilutedSharesOutstanding"];
 // STEP 947 §2 — Q1 밸류에이션(PER·PBR) 재료. 역DCF driver와 무관 — 새 축 2개만 추가.
 // 🔴 STEP 963 — 보통주 귀속 순이익을 최우선으로. GAAP EPS 정의(FASB ASC 260) 자체가 이미 "보통주 귀속 순이익÷보통주식수"라
@@ -351,12 +362,15 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   if (!hasAll(years, cashOp)) return { ok: false, skipReason: "MISSING_TAG_OPERATING_CASH", flags: { ...flags, missing: "operatingCash<5yr" }, fundamentals };
 
   // 시장 부분: 주식수(희석→기본→발행→dei)·부채·비영업자산 — 최신연도(창 안에서)
+  // 🔴 STEP 977 — sharesYear를 별도로 뽑아둔다(기존에는 latestYear() 결과를 바로 인덱싱만 하고 버렸다).
+  //   선택 로직·순서·break 조건 전부 그대로 — 어느 값이 채택되는지는 한 글자도 안 바뀐다(2단계 완전대조로 증명).
   const sharesDil = annualMap(gaap, SHARES_DIL[0], "flow", "shares");
   let sharesTag = "WeightedAverageNumberOfDilutedSharesOutstanding";
-  let shares = sharesDil[latestYear(years, sharesDil) ?? -1];
-  if (shares == null) { for (const t of SHARES_MORE) { const m = annualMap(gaap, t, t.startsWith("Weighted") ? "flow" : "stock", "shares"); const v = m[latestYear(years, m) ?? -1]; if (v != null) { shares = v; sharesTag = t; break; } } }
+  let sharesYear: number | null = latestYear(years, sharesDil);
+  let shares = sharesYear != null ? sharesDil[sharesYear] : undefined;
+  if (shares == null) { for (const t of SHARES_MORE) { const m = annualMap(gaap, t, t.startsWith("Weighted") ? "flow" : "stock", "shares"); const y = latestYear(years, m); const v = y != null ? m[y] : undefined; if (v != null) { shares = v; sharesTag = t; sharesYear = y; break; } } }
   const deiSh = annualMap(dei, "EntityCommonStockSharesOutstanding", "stock", "shares");
-  if (shares == null) { shares = deiSh[latestYear(years, deiSh) ?? -1]; sharesTag = "dei:EntityCommonStockSharesOutstanding"; }
+  if (shares == null) { sharesYear = latestYear(years, deiSh); shares = sharesYear != null ? deiSh[sharesYear] : undefined; sharesTag = "dei:EntityCommonStockSharesOutstanding"; }
   const firstY = years[0], lastY = years[years.length - 1];
   if (shares == null || !(shares > 0)) {
     // 🔴 STEP 854 §3 — 멀티클래스 주식(A/B/C 등). companyfacts는 차원(class dimension) 팩트를 제외하므로 통합 주식수 총계가
@@ -406,6 +420,29 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   const nonOpMap = sumMaps(years, nonOpCash, sec);
   const nonOpLy = latestYear(years, nonOpMap);
   const nonOperatingAssets = nonOpLy != null ? nonOpMap[nonOpLy] : (nonOpCash[lastY] ?? 0);
+
+  // 🔴 STEP 977 §1 — inputLag 기록(관측만, 계산값 무변경). latestYear()가 목표연도(lastY)보다
+  //   몇 해 전 값을 반환했는지를 flags에 남긴다. 976 판정 근거: lag≥1 21건 중 목표연도 대체값이
+  //   있는 건 1건뿐이라 상한 도입은 유예한다 — 그래서 이번엔 "기록"까지만 한다.
+  //   🔴 lag이 전부 0이면 flags.inputLag 자체를 안 넣는다(저장 낭비 방지, 976 §1-1 실측상 대부분 0).
+  const lagOf = (y: number | null) => (y == null ? null : lastY - y);
+  const inputLag: Record<string, number> = {};
+  const sharesLag = lagOf(sharesYear); if (sharesLag != null && sharesLag > 0) inputLag.shares = sharesLag;
+  const debtLag = lagOf(debtLy); if (debtLag != null && debtLag > 0) inputLag.debt = debtLag;
+  const ieLag = lagOf(iLy); if (ieLag != null && ieLag > 0) inputLag.interestExpense = ieLag;
+  const nonOpLag = lagOf(nonOpLy); if (nonOpLag != null && nonOpLag > 0) inputLag.nonOperatingAssets = nonOpLag;
+  if (Object.keys(inputLag).length > 0) {
+    flags.inputLag = inputLag;
+    // 🔴 976이 12건에 쓴 방법 그대로: debt만 "태그 있는데 못 잡음(tag_miss)" vs "정말 없음(no_value)"을 가른다
+    //   (기존 UNRESOLVED_DEBT 스캔과 같은 규칙, 위 hasUnresolvedDebtTagAtYear로 재사용). shares·IE·nonOpAssets는
+    //   같은 종류의 스캔 방법이 없다(976이 만들지 않았다·이번에도 새로 만들지 않는다) — "unknown"으로 정직하게 남긴다.
+    const cause: Record<string, "no_value" | "tag_miss" | "unknown"> = {};
+    if (inputLag.debt != null) cause.debt = hasUnresolvedDebtTagAtYear(gaap, lastY) ? "tag_miss" : "no_value";
+    if (inputLag.shares != null) cause.shares = "unknown";
+    if (inputLag.interestExpense != null) cause.interestExpense = "unknown";
+    if (inputLag.nonOperatingAssets != null) cause.nonOperatingAssets = "unknown";
+    flags.inputLagCause = cause;
+  }
 
   // ── driver 계산 (백만 단위 무관 — 비율이라 상쇄) ──────────────────────────
   const nSpan = lastY - firstY; // 4(연속 5년 창이므로 항상 4)

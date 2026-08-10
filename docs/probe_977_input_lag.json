@@ -1,0 +1,122 @@
+{
+  "universe1167": {
+    "checked": 1167,
+    "missingCache": 0
+  },
+  "full1167": {
+    "shares": {
+      "total": 754,
+      "dist": {
+        "0": 749,
+        "1": 1,
+        "2": 2,
+        "3+": 2
+      },
+      "causeCount": {
+        "no_value": 0,
+        "tag_miss": 0,
+        "unknown": 5
+      }
+    },
+    "debt": {
+      "total": 754,
+      "dist": {
+        "0": 721,
+        "1": 11,
+        "2": 9,
+        "3+": 13
+      },
+      "causeCount": {
+        "no_value": 29,
+        "tag_miss": 4,
+        "unknown": 0
+      }
+    },
+    "interestExpense": {
+      "total": 754,
+      "dist": {
+        "0": 395,
+        "1": 23,
+        "2": 303,
+        "3+": 33
+      },
+      "causeCount": {
+        "no_value": 0,
+        "tag_miss": 0,
+        "unknown": 359
+      }
+    },
+    "nonOperatingAssets": {
+      "total": 754,
+      "dist": {
+        "0": 754,
+        "1": 0,
+        "2": 0,
+        "3+": 0
+      },
+      "causeCount": {
+        "no_value": 0,
+        "tag_miss": 0,
+        "unknown": 0
+      }
+    }
+  },
+  "revdcf604": {
+    "shares": {
+      "total": 530,
+      "dist": {
+        "0": 527,
+        "1": 0,
+        "2": 2,
+        "3+": 1
+      },
+      "causeCount": {
+        "no_value": 0,
+        "tag_miss": 0,
+        "unknown": 3
+      }
+    },
+    "debt": {
+      "total": 530,
+      "dist": {
+        "0": 513,
+        "1": 5,
+        "2": 8,
+        "3+": 4
+      },
+      "causeCount": {
+        "no_value": 16,
+        "tag_miss": 1,
+        "unknown": 0
+      }
+    },
+    "interestExpense": {
+      "total": 530,
+      "dist": {
+        "0": 269,
+        "1": 16,
+        "2": 224,
+        "3+": 21
+      },
+      "causeCount": {
+        "no_value": 0,
+        "tag_miss": 0,
+        "unknown": 261
+      }
+    },
+    "nonOperatingAssets": {
+      "total": 530,
+      "dist": {
+        "0": 530,
+        "1": 0,
+        "2": 0,
+        "3+": 0
+      },
+      "causeCount": {
+        "no_value": 0,
+        "tag_miss": 0,
+        "unknown": 0
+      }
+    }
+  }
+}
