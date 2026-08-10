@@ -83,7 +83,10 @@
 16. **정규 크론 실행 응답이 어디에도 저장되지 않음**(00-d) — `BUDGET_MS` 실제 소진 여부·`us_fundamentals` 순환 병목이 처리량인지 예산인지 미측정. Vercel Runtime Logs는 Hobby 플랜 1시간 보존이라 사후 확인도 불가. 처방 후보(판정 없음): ①`cron_heartbeats` 활용 ②응답 DB 적재 ③Sentry 전송.
 17. **`us_fundamentals` 순증 속도 재추정 필요**(970) — 이전 추정 124건/일 → 1개 사이클 관측 40건(1,127→1,167). 최소 1사이클 더 관측 필요, 추세 단정 안 함. → `docs/probe_970_newwindow_live.json` §2-5
 18. **fiscal_year null 197건 — IFRS 135건은 미해결(위 11번), 미국 은행형 19건은 967로 해소**, 잔여(B분류 47건·D분류 7건 등)는 개별 재검토 안 함. → `VALUATION_SPEC.md` 197종목 섹션
-26. **🔴 `us_sector_wide` as_of=2026-08-09에 0행 → `us_sector_relative` 1167/1167 전부 NO_SECTOR**(972 발견) — 08-08은 1038/1127 정상. Q1 API가 최신 as_of만 읽어 지금 플래그를 켜면 전 종목이 미성립으로만 보임. 원인(크론 실행 순서 추정) 미규명, 코드 무접촉 원칙상 미수정. → `docs/probe_972_card_design.json` §0
+26. ✅ **해소(973)** — ~~`us_sector_wide` as_of=2026-08-09에 0행 → `us_sector_relative` 1167/1167 전부 NO_SECTOR`(972 발견)~~ `computeAndSaveSectorRelative()`가 `us_sector_wide`의 **최신 as_of**를 쓰도록 수정, 08-09 복구(null_sector 89→129, +40은 아래 27번). → `docs/VALUATION_SPEC.md` 「us_sector_wide 참조 방식」 절
+27. **`us_sector_wide` 신선도 상한 미설정 — 판정 대기**(973) — 상한을 안 둔 이유(갱신주기 자체가 없음)는 문서화했으나, us_sector_wide가 계속 안 늘어나면 언젠가 상한을 걸어야 할 시점이 온다. 언제·며칠로 걸지는 판정 필요. → `docs/VALUATION_SPEC.md` 같은 절
+28. **신규 종목(+40) 섹터 미부착 — 처방 후보 3개 중 미선택**(973) — `us_valuation`(1,167)이 `us_sector_wide`(1,127)보다 매일 빨리 자라 격차가 계속 커진다. ①resolveSector 크론 배선(야후 호출 발생) ②주1회 스크립트로 신규만 추가 ③섹터 없이 두고 화면에 명시 — 셋 다 미선택. → `docs/VALUATION_SPEC.md` 같은 절
+29. **damodaran_* 7개 테이블 — as_of 무필터 읽기, 지금은 as_of가 1개뿐이라 안전(973 회귀조사, 미수정)** — `app/api/cron/revdcf/route.ts:144-148`·`lib/sector.ts:26,88`이 `damodaran_global_inputs`(`.single()`)·`damodaran_country_tax`(`.single()`)·`damodaran_credit_spread`·`damodaran_beta`·`damodaran_industry`를 as_of 필터 없이 읽는다. 전부 PK에 `as_of`가 있어(`scripts/ingest_damodaran.ts` onConflict 확인) **연차 갱신으로 두 번째 as_of가 생기는 순간** `.single()`은 에러로 죽고 무필터 select는 신구 데이터가 섞인다. 972/973과 같은 병의 잠복형. → 이번엔 손대지 않음
 
 **DoD·완성 기준**
 19. **DoD7(화면 일관성) — "같은 이름"의 정의 자체가 원문에 없음**(923·929) — `years` 배지·육안검증 둘 다 해소됐으나 이 정의 공백 하나가 남아 🔶 미결. → `LENS_COMPLETION_STANDARD.md`

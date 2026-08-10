@@ -84,14 +84,24 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
 }
 
 // STEP 956 §3-3 — 업종 백분위 저장. SEC 호출 0건(us_valuation + us_sector_wide만 읽는다). try/finally로 항상 실행(947 §5-4와 같은 원칙).
+// 🔴 STEP 973 — us_sector_wide는 크론이 매일 만드는 표가 아니다(952·955에서 스크립트로 1회 적재, 08-08 1,127행 이후 갱신 없음).
+//   as_of 일치로 조인하면 오늘 as_of에 해당 행이 없는 날 전부 NO_SECTOR가 된다(08-09 실제 발생, 1,167/1,167).
+//   /api/sector/us(945)가 us_sector_resolved에 쓰는 것과 같은 패턴 — 섹터는 시간이 지나도 거의 안 변하므로 "최신 as_of"를 그대로 쓴다.
+//   🔴 신선도 상한(예: N일 이상 지나면 경고)은 이번 STEP에서 의도적으로 두지 않는다 — us_sector_wide 자체가
+//   아직 크론화되지 않아 상한을 걸 "정상 갱신 주기"가 없다. 얼마나 오래된 섹터를 썼는지는 sector_as_of로 남긴다.
 async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number }> {
   const valuationRows = await fetchAllRows<{ symbol: string; per: number | null; pbr: number | null; psr: number | null; ev_ebitda: number | null }>(
     () => sb.from("us_valuation").select("symbol, per, pbr, psr, ev_ebitda").eq("as_of", asOf),
     [{ column: "symbol" }]
   );
   if (valuationRows.length === 0) return { saved: 0 };
+
+  const latestSector = (await sb.from("us_sector_wide").select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle()).data as { as_of: string } | null;
+  if (!latestSector) return { saved: 0 };
+  const sectorAsOf = latestSector.as_of;
+
   const sectorRows = await fetchAllRows<{ symbol: string; sector: string | null }>(
-    () => sb.from("us_sector_wide").select("symbol, sector").eq("as_of", asOf),
+    () => sb.from("us_sector_wide").select("symbol, sector").eq("as_of", sectorAsOf),
     [{ column: "symbol" }]
   );
 
@@ -100,7 +110,7 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
   const results = computeSectorRelativeBatch(valuations, sectors, SECTOR_RELATIVE_SPEC.minSample);
 
   const dbRows = results.map((r) => ({
-    as_of: asOf, symbol: r.symbol, sector: r.sector,
+    as_of: asOf, symbol: r.symbol, sector: r.sector, sector_as_of: sectorAsOf,
     per_pct: r.perPct, pbr_pct: r.pbrPct, psr_pct: r.psrPct, ev_ebitda_pct: r.evEbitdaPct,
     per_n: r.perN, pbr_n: r.pbrN, psr_n: r.psrN, ev_ebitda_n: r.evEbitdaN,
     unavailable: r.unavailable, min_sample: r.minSample,

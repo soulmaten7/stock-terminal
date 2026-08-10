@@ -117,6 +117,18 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 - `damodaran_industry`: 정규화 매칭 시 **29건(32.2%)**에 실제로 행이 존재(원 보고 53건은 `ticker_norm`이 여러 나라 기업에 중복 매핑돼 부풀려진 JOIN 행수였다 — 서로 다른 심볼 기준으로 세면 29건). 그중 `is_us_listed=true` 행을 가진 것은 **1건뿐**(`RAYA` — 미국 상장 중국기업, `primary_sector="Industrials"`).
 - `us_sector_nasdaq`: 원시 존재 **90건(100%)**이나, `resolveSector`는 나스닥을 분류 tier로 쓰지 않는다(`crossCheck` 전용) — 5순위로 새로 추가할 경우 실제로 쓸 수 있는 건 `NASDAQ_TO_GICS` 매핑 성공분(`Miscellaneous`·결측 제외)뿐이며 그 수는 **79건(87.8%)**이다(원 보고 88건과도 다름, 집계 방식 차이로 추정·미확인).
 
+### `us_sector_wide` 참조 방식 — as_of 일치가 아니라 최신 사용 (STEP 973, 2026-08-10)
+
+🔴 **정의**: `us_sector_relative`(업종 백분위)를 계산할 때 `us_sector_wide`(섹터 배정)는 **그날의 `as_of`와 일치하는 행이 아니라, 그 시점의 최신 `as_of` 행을 그대로 쓴다.** `app/api/cron/revdcf/route.ts`의 `computeAndSaveSectorRelative()`가 `us_sector_wide`를 `order("as_of", desc).limit(1)`로 먼저 조회해 그 `as_of`로 섹터를 읽고, 결과 행에 `us_sector_relative.sector_as_of`로 어느 섹터표를 썼는지 남긴다.
+
+**왜(사고 경위)**: `us_sector_wide`는 크론이 매일 만드는 표가 아니라 STEP 952·955에서 **스크립트로 1회 적재**한 표다(2026-08-08 1,127행 이후 갱신 없음). 그런데 956이 배선한 백분위 계산은 그날의 `as_of`와 **일치**로 `us_sector_wide`를 조인했다 — 08-08은 우연히 일치해 정상 작동했지만, **08-09부터는 `us_sector_wide`에 그 날짜 행이 없어 전 종목이 `sector=null`(NO_SECTOR)로 계산됐다**(1,167/1,167 전부, STEP 972가 Q1 카드 조사 중 발견). "매일 도는 코드가 한 번 만든 표를 날짜로 참조"한 설계 결함이었다.
+
+**선택한 이유**: `app/api/sector/us/route.ts`(STEP 945)가 `us_sector_resolved`에 이미 같은 "최신 as_of" 패턴을 쓰고 있다 — 섹터는 시간이 지나도 거의 안 변하므로, 오늘 날짜와 정확히 일치하는 섹터표가 없어도 어제 것을 쓰는 편이 "아예 안 붙임"보다 낫다는 판단이 이미 화면 쪽에서 내려져 있었다. 같은 방식으로 맞췄다.
+
+**신선도 상한을 두지 않은 이유**: `us_sector_wide` 자체가 아직 크론화되지 않아 "정상 갱신 주기"가 없다 — 상한을 몇 일로 잡아야 할지 정할 근거가 없는 상태에서 상한부터 걸면 임의값이 된다. 대신 `sector_as_of` 컬럼(2026-08-10 마이그레이션 `20260810_us_sector_relative_sector_as_of.sql`)으로 **얼마나 오래된 섹터를 썼는지 추적 가능하게만** 해두고, 상한 도입 여부는 판정 대기로 남긴다(`docs/STATE.md` 미해결).
+
+**대가 — 신규 종목은 여전히 안 붙는다**: 최신 as_of를 써도 `us_sector_wide`에 아예 없는 종목(신규 편입분)은 여전히 `NO_SECTOR`다. 2026-08-09 실측: `us_valuation`(1,167) − `us_sector_wide`(1,127) = **정확히 40종목**이 섹터표에 없다(`us_valuation`이 매일 자라는데 `us_sector_wide`는 1,127에 멈춰 있어서). 유니버스가 목표(5,497)까지 자라면 이 격차는 계속 커진다 — 처방 후보(①resolveSector 크론 배선 ②주1회 스크립트로 신규만 추가 ③섹터 없이 두고 화면에 명시)는 이번 STEP에서 고르지 않았다.
+
 ### ✅ damodaran tier 조사·처방 완료(STEP 952b~955, 2026-08-09) — 원인 규명(952b) → 공용 헬퍼 처방(954) → us_sector_wide 재생성(955)
 
 `docs/probe_952b_damodaran_tier.json` 참조. **원래 가설(ticker_norm 중복=RAYA형)은 틀렸다** — 조사 중 그보다 크고 일반적인 버그를 발견했다. 🔴 **`RAYA` 자체는 STEP 955에서 정상 분류로 확정됐다**(damodaran/Industrials) — 이 절 아래 내용은 원인 규명 과정의 기록으로 남긴다.
