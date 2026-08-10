@@ -9,6 +9,7 @@ import { computeSymbolLenses, flushLensFailures } from "./lensCompute";
 import { toneForKey } from "./lensTones";
 import { loadCuts, stateFromCut, CUT_LENSES, type CutMap } from "./lensCuts";
 import type { LensRead } from "./lenses";
+import { resolveMarketCap } from "./marketCapReconstruct";
 import symbols from "../data/us_symbols.json";
 
 // 렌즈 상태 변화(lens_state_changes) 대상 팩터 7종 — lensTones.ts STATE_SPEC과 동일 키(STEP 764).
@@ -94,6 +95,14 @@ export type CapDiag = {
   retryFailReasons: Record<string, number>; // 재시도 예외를 사유별로 집계(429/timeout·404/no_data·기타) — probe_915_cohort.ts와 같은 분류
   retryFailSample: { symbol: string; reason: string; msg: string }[]; // 최대 5건, 전체 목록 아님
   failedChunks: number; totalChunks: number; // stage1 배치청크 성공/실패(이미 있던 failedChunks를 diag로도 노출)
+  // 🔴 STEP 986 — 시총 재구성 "관측 전용"(§2). freshSet·freshCoverage·capOf·caps 어디에도 반영 안 됨(§3 불변증명 대상).
+  reconstructable?: number;            // marketCap 없는 종목 중 sharesOutstanding×price로 재구성 가능한 건수
+  reconstructableSingleClass?: number; // 그중 단일클래스(us_cik_map CIK 유니크 — 신뢰 가능)
+  reconstructableMultiClass?: number;  // 그중 복수클래스(같은 CIK 심볼 2개 이상 — 신뢰 불가, 985 실측)
+  noPriceEither?: number;              // 재구성도 불가(regularMarketPrice 결측)
+  wouldBeCoverage?: number;            // (freshSet.size + reconstructableSingleClass) / STOCK_SYMS.length — 가상값, 실제 freshCoverage 아님
+  missingFieldNames?: { symbol: string; fields: string[] }[]; // 재구성도 실패한 건 중 상위 몇 종의 가용 필드명(값 아님)
+  reconstructError?: string; // 관측 로직 자체가 실패해도 본체는 계속 돈다(974 원칙) — 실패 사유만 기록
 };
 async function topByMarketCap(topN: number): Promise<{
   symbols: string[]; tradeAmountOf: Map<string, number>; capOf: Map<string, number>; freshSet: Set<string>; diag: CapDiag;
@@ -107,6 +116,8 @@ async function topByMarketCap(topN: number): Promise<{
   const tradeAmountOf = new Map<string, number>();
   const responses: { symbol?: string | null; marketCap?: number | null }[] = [];
   let failedChunks = 0;
+  // 🔴 STEP 986 §2 — marketCap 없는 응답의 원본 객체를 관측용으로만 보관(계산·게이트엔 안 씀). 성공 종목은 안 담아 메모리 절약.
+  const rawBySymbol = new Map<string, Record<string, unknown>>();
 
   // ── Stage 1: 배치(현행 유지·동시성 6) — 응답을 모아 classifyCaps로 ok/noCapField/noResponse 분류(조용히 안 버림) ──
   await mapLimit(chunks, 6, async (grp) => {
@@ -116,6 +127,9 @@ async function topByMarketCap(topN: number): Promise<{
         responses.push({ symbol: q.symbol, marketCap: q.marketCap }); // 동기 push(단일스레드라 race 없음)
         if (q?.symbol && typeof q.regularMarketPrice === "number" && typeof q.regularMarketVolume === "number") {
           tradeAmountOf.set(q.symbol, q.regularMarketPrice * q.regularMarketVolume);
+        }
+        if (q?.symbol && !(typeof q.marketCap === "number" && q.marketCap > 0)) {
+          rawBySymbol.set(q.symbol, q as unknown as Record<string, unknown>);
         }
       }
     } catch { failedChunks++; }
@@ -140,7 +154,7 @@ async function topByMarketCap(topN: number): Promise<{
     try {
       const q = (await yf.quote(sym)) as { marketCap?: number; regularMarketPrice?: number; regularMarketVolume?: number };
       if (typeof q?.marketCap === "number" && q.marketCap > 0) { capOf.set(sym, q.marketCap); freshSet.add(sym); recovered++; }
-      else { retryNoCapField++; } // 응답은 왔으나 marketCap 없음(classifyCaps의 noCapField와 같은 개념, 재시도 단계 버전) — 계측 전용
+      else { retryNoCapField++; if (q) rawBySymbol.set(sym, q as unknown as Record<string, unknown>); } // 응답은 왔으나 marketCap 없음(classifyCaps의 noCapField와 같은 개념, 재시도 단계 버전) — 계측 전용. 재시도의 신선한 응답으로 stage1 원본을 덮어씀(관측용, §2)
       if (typeof q?.regularMarketPrice === "number" && typeof q?.regularMarketVolume === "number" && !tradeAmountOf.has(sym)) tradeAmountOf.set(sym, q.regularMarketPrice * q.regularMarketVolume);
     } catch (e) {
       // 🔴 935 확인대로 즉시반환 경로는 없다 — 여기 도달하면 실제 HTTP 호출이 실패한 것. probe_915_cohort.ts와 같은 분류(재현·비교 가능하도록).
@@ -171,6 +185,46 @@ async function topByMarketCap(topN: number): Promise<{
   //   그쪽이 이 값을 복제해서 쓴다. 여기를 바꾸면 그 파일의 상수도 같이 바꿀 것.
   let fallbackUsed = 0;
   const stillMissing = STOCK_SYMS.filter((s) => !capOf.has(s));
+
+  // 🔴 STEP 986 §2 — 시총 재구성 "관측 전용". stillMissing(오늘 야후가 marketCap을 안 준 종목, 폴백 반영 전)에
+  //   대해 resolveMarketCap()을 시도만 한다. 아래 5개 변수(recon*)는 diag에만 실리고 capOf·freshSet·caps·
+  //   freshCoverage·compRatio·cutGateOk 어디에도 안 들어간다(§3 불변증명 대상 — 985가 만든 순수함수 재사용, 로직 복제 없음).
+  //   예외가 나도 본체는 계속 돈다(974 원칙) — 실패하면 reconstructError만 남고 나머지 필드는 undefined로 비워둔다.
+  let reconstructable = 0, reconstructableSingleClass = 0, reconstructableMultiClass = 0, noPriceEither = 0;
+  let wouldBeCoverage: number | undefined;
+  const missingFieldNames: { symbol: string; fields: string[] }[] = [];
+  let reconstructError: string | undefined;
+  try {
+    // 복수클래스 판별 재료 = us_cik_map(이미 보유, 새 소스 아님·986 §1). 같은 CIK로 2개 이상 심볼이 물리면 복수클래스.
+    const { data: cikRows, error: cikErr } = await sb.from("us_cik_map").select("symbol,cik");
+    if (cikErr) throw cikErr;
+    const symCik = new Map<string, number>();
+    const cikCount = new Map<number, number>();
+    for (const r of (cikRows ?? []) as { symbol: string; cik: number }[]) {
+      symCik.set(r.symbol, r.cik);
+      cikCount.set(r.cik, (cikCount.get(r.cik) ?? 0) + 1);
+    }
+    const isMultiClass = (sym: string): boolean => {
+      const cik = symCik.get(sym);
+      return cik != null && (cikCount.get(cik) ?? 0) > 1;
+    };
+    for (const sym of stillMissing) {
+      const raw = rawBySymbol.get(sym);
+      if (!raw) { noPriceEither++; continue; } // 원본 응답 자체를 못 잡은 경우(이론상 드묾) — 재구성 재료 없음
+      const r = resolveMarketCap(raw);
+      if (r.source === "reconstructed") {
+        reconstructable++;
+        if (isMultiClass(sym)) reconstructableMultiClass++; else reconstructableSingleClass++;
+      } else {
+        noPriceEither++;
+        if (missingFieldNames.length < 10) missingFieldNames.push({ symbol: sym, fields: r.availableFields ?? [] });
+      }
+    }
+    wouldBeCoverage = (freshSet.size + reconstructableSingleClass) / STOCK_SYMS.length;
+  } catch (e) {
+    reconstructError = e instanceof Error ? e.message : String(e);
+  }
+
   if (stillMissing.length) {
     const cutoff = at10(new Date(Date.now() - 7 * 24 * 3600 * 1000));
     for (let i = 0; i < stillMissing.length; i += 500) {
@@ -199,6 +253,9 @@ async function topByMarketCap(topN: number): Promise<{
     retryCallMs: tRetryEnd - t0, upsertMs: tStage2End - tRetryEnd,
     retryNoCapField, retryFailReasons, retryFailSample,
     failedChunks, totalChunks: chunks.length,
+    // 🔴 STEP 986: 관측 전용 — 위 필드들(freshCoverage 포함)의 계산엔 전혀 관여하지 않는다.
+    reconstructable, reconstructableSingleClass, reconstructableMultiClass, noPriceEither,
+    wouldBeCoverage, missingFieldNames, reconstructError,
   };
   return { symbols: caps.slice(0, topN).map((c) => c.sym), tradeAmountOf, capOf, freshSet, diag };
 }
@@ -548,6 +605,10 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
     failedChunks: diag.failedChunks, totalChunks: diag.totalChunks,
     retryCallMs: diag.retryCallMs, upsertMs: diag.upsertMs,
     retryNoCapField: diag.retryNoCapField, retryFailReasons: diag.retryFailReasons, retryFailSample: diag.retryFailSample,
+    // 🔴 STEP 986: 관측 전용 — 위 게이트 판정(coverageOk·compositionOk·cutGateOk)은 diag.freshCoverage 등 기존 값 그대로 쓴다. 아래는 참고용 기록일 뿐.
+    reconstructable: diag.reconstructable, reconstructableSingleClass: diag.reconstructableSingleClass,
+    reconstructableMultiClass: diag.reconstructableMultiClass, noPriceEither: diag.noPriceEither,
+    wouldBeCoverage: diag.wouldBeCoverage, missingFieldNames: diag.missingFieldNames, reconstructError: diag.reconstructError,
   });
   return r;
 }

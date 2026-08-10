@@ -321,9 +321,23 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 - **marketCap이 없는 종목(81건)**: 재구성 성공 20건, 실패 61건(대부분 `regularMarketPrice` 자체가 없음 — 비거래·상장폐지 추정 종목, 984의 프로덕션 결측 349건과는 **다른 집합**).
 - 🔴 **freshCoverage**: 이 환경에서는 재구성 전에도 이미 98.64%로 97% 게이트를 통과한다(재구성 후 98.98%) — **이 검증은 984의 프로덕션 결측(349건, NYSE·Fund류 과대표집)을 재현하지 못했다.** XOM·HD·MCD·CRM·MRK·LOW·TGT(984가 지목한 초대형 실패군) 전부 이 조회에서 `marketCap` 필드가 정상 수신됐다 — **재구성이 실제 프로덕션 문제를 해결하는지는 프로덕션에서만 검증 가능하며, 이번 STEP은 그 검증을 못 했다**(크론 미배선 규칙 때문에 원리적으로 불가능했다 — 재구성이 필요한 상황 자체를 이 환경에서 만들 수 없다).
 
-**배선 설계(구현 안 함, §3)**: `lib/lensPrecompute.ts`의 `topByMarketCap()` stage1(배치, `:112-122`)·stage2(재시도, `:138-156`) 각각에서 `classifyCaps`/개별 `q.marketCap` 접근 지점에 `resolveMarketCap(q)`를 끼우면 된다 — `capOf.set(sym, cap)` 직전 한 지점. 배선 시 예상 변화: `freshCoverage`↑(재구성 성공분만큼) → 97% 게이트를 넘으면 `cutGateOk=true` → `lens_cuts` 갱신 재개 → **982 실측대로 140/1023종목(13.7%)의 판정이 바뀐다.** 🔴 **이건 라이브 화면 변경이므로 장은태 승인 없이 배선하지 않는다.**
+**배선 설계(985 시점 — 구현 안 함)**: `lib/lensPrecompute.ts`의 `topByMarketCap()` stage1(배치, `:112-122`)·stage2(재시도, `:138-156`) 각각에서 `classifyCaps`/개별 `q.marketCap` 접근 지점에 `resolveMarketCap(q)`를 끼우면 된다 — `capOf.set(sym, cap)` 직전 한 지점. 배선 시 예상 변화: `freshCoverage`↑(재구성 성공분만큼) → 97% 게이트를 넘으면 `cutGateOk=true` → `lens_cuts` 갱신 재개 → **982 실측대로 140/1023종목(13.7%)의 판정이 바뀐다.** 🔴 **이건 라이브 화면 변경이므로 장은태 승인 없이 배선하지 않는다.**
 
 상세 = `docs/probe_985_mcap_reconstruction.json`·`docs/probe_985_search.md`·`docs/probe_985_full_universe_output.json`.
+
+### 🔴 정정 + 관측 배선 — 복수클래스 구조적 불일치, 저장 대신 관측만(STEP 986, 2026-08-10)
+
+🔴 **985의 "배선한다" 판정을 정정한다.** 표본 1개(XOM 0.001%)로 낸 판정이었다 — 985의 전수 대조(위)가 곧이어 p90 20%·최대 99.22%를 보여줬고, 원인은 **복수클래스/트래킹주식 구조**다: 야후 `sharesOutstanding`은 조회한 티커의 그 클래스만 세지만, `marketCap`은 회사 전체(전클래스 합산)를 센다 — SEC 체계 자체가 CIK 하나에 여러 클래스 티커를 묶는 방식이라, 클래스 하나의 `shares × price`로는 회사 전체 시총을 복원할 수 없다(원전 확인 = `docs/probe_986_search.md` ①-A).
+
+**복수클래스 판별** — 새 데이터소스 없이 기존 `us_cik_map`으로 충분: 같은 CIK를 공유하는 심볼이 유니버스 안에 2개 이상이면 복수클래스. 985가 지목한 10개 심볼 전부(LBTYA/B/K·GTN/GTN-A·MKC/MKC-V·MOG-A/B·HVT/HVT-A·AGM/AGM-A·LEN/LEN-B·FWONA/FWONK·TAP/TAP-A·GLIBA/GLIBK) 실측 일치 — 덤으로 985가 접미사로 설명 못 했던 FISK·OGCP·ESBA도 같은 CIK(1553079)로 묶여 설명됨. 유니버스 내 88심볼·43CIK(~1.5%).
+
+**이번엔 저장이 아니라 관측만 배선**: `resolveMarketCap()`을 `topByMarketCap()`의 `stillMissing`(오늘 marketCap을 못 받은 종목, 폴백 반영 전) 계산 직후에 **시도만** 하고, `capOf`·`freshSet`·`caps`·`freshCoverage`·`compRatio`·`cutGateOk` 어디에도 반영하지 않는다. 결과는 `reconstructable`·`reconstructableSingleClass`(신뢰 가능)·`reconstructableMultiClass`(신뢰 불가)·`noPriceEither`·`wouldBeCoverage`(가상값)·`missingFieldNames`로 `cron_heartbeats.note`(917 경로 재사용)에만 기록된다. 전체 블록이 try/catch로 격리(974 원칙) — 실패해도 본체 무영향.
+
+**값 불변 증명(§3)**: 야후 실시간 조회 1회(US 5,972종목)로 원시 응답을 캡처해 구코드·신코드 양쪽 계산에 동일하게 먹여 대조 — `capOf`·`freshSet`·`batchOk`·`recovered`·`retryNoCapField`·`freshCoverage`(0.9864367046215673) **전부 완전 일치.** 관측이 아니라 개입이었다면 여기서 걸렸을 것이나 걸리지 않았다.
+
+🔴 **프로덕션 실효성은 이번에도 확인 못 함** — 이 세션 환경은 984의 실제 실패(349건)를 재현하지 못한다(재구성 실패 61건 중 복수클래스는 0건 — 우연히 이번 실행엔 복수클래스 실패 사례가 없었다). 배선 판정(저장까지 갈지)은 **프로덕션에서 며칠 관측한 뒤**로 미룬다.
+
+상세 = `docs/probe_986_reconstruct_observe.json`·`docs/probe_986_search.md`.
 
 ## 검증
 

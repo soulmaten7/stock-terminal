@@ -1,0 +1,52 @@
+{
+  "step": 986,
+  "scope": "wires observation-only logic into lib/lensPrecompute.ts topByMarketCap(). 0 writes to us_market_cap/lens_scores/lens_cuts/lens_state_changes. No screen changes, no verdict changes.",
+  "correction_of_prior_judgment": {
+    "what_was_wrong": "985 이전 판정('재구성 폴백을 배선한다')은 표본 1개(XOM 0.001%)에 근거한 오류였다.",
+    "what_985_full_universe_test_found": "p90 20% · 최대 99.22%(FISK) — 원인은 sharesOutstanding(클래스별)과 marketCap(회사 전체 합산)이 서로 다른 대상을 센다는 구조적 불일치. 복수클래스·트래킹주식에서 재구성은 신뢰 불가.",
+    "this_step_response": "저장(폴백 배선)이 아니라 관측만 배선한다. 저장 안 하므로 게이트·컷·판정 전부 불변(977의 lag 기록과 같은 성격)."
+  },
+  "section1_multi_class_identification": {
+    "section1_1_known_20_from_985": "TAP-A·MKC-V·HVT-A·AGM-A·GTN-A·MOG-B·LEN-B·LBTYB·GLIBA·FWONA 등 985가 지목한 상위 20종목",
+    "section1_1_suffix_heuristic_verdict": "🔴 심볼 접미사만으론 불충분 — 하이픈형(TAP-A)·문자연접형(GOOGL·UAA)·전혀다른티커형(FISK·OGCP·ESBA가 같은 CIK) 세 종류가 섞여 있어 정규식 하나로 안 잡힌다.",
+    "section1_2_cik_method": {
+      "source": "us_cik_map(기보유, 신규 데이터소스 도입 없음)",
+      "test": "985가 지목한 10개 심볼(-A/-B류 접미사)이 전부 같은 CIK를 공유하는 다른 심볼과 짝지어지는지 확인",
+      "result": "10/10 일치(LBTYA/LBTYB/LBTYK·GTN/GTN-A·MKC/MKC-V·MOG-A/MOG-B·HVT/HVT-A·AGM/AGM-A·LEN/LEN-B·FWONA/FWONK·TAP/TAP-A·GLIBA/GLIBK)",
+      "bonus_confirmation": "985 top20의 FISK·OGCP·ESBA(접미사 없어 설명 못 했던 3종목)가 CIK 1553079 하나를 공유 — 986이 985의 미해결 사례까지 추가로 설명함",
+      "false_positive_guard": "전역 us_cik_map(10,432행) 기준 중복 CIK는 3,886심볼이나, 이 중 다수는 우리 추적 유니버스(us_market_cap) 밖의 심볼과의 중복(예: UNM·ASB·BA·JPM처럼 단일클래스인데 우선주 시리즈 등 딴 심볼과 CIK만 같아 오탐 위험) — 유니버스 내 2개 이상 매칭으로 좁히면 88심볼/43CIK로 정확해짐. false positive 구조적으로 불가능(정의상 유니버스 내 실제 2개 이상만 카운트)",
+      "caveat": "PSNY/PSNYW처럼 주식+워런트 조합도 같이 잡힌다 — 좁은 의미의 '복수클래스'는 아니나 같은 이유(단순 shares×price가 회사 전체를 못 담음)로 재구성 신뢰 불가라 함께 묶는 게 오히려 안전한 방향."
+    },
+    "section1_3_universe_count": {
+      "global_us_cik_map_dup": 3886,
+      "universe_restricted_dup_symbols": 88,
+      "universe_restricted_dup_ciks": 43,
+      "pct_of_universe": "88/~5900 ≈ 1.5%"
+    }
+  },
+  "section2_wiring": {
+    "file": "lib/lensPrecompute.ts",
+    "function": "topByMarketCap() — stage1·stage2 원본 응답을 marketCap 결측 건만 rawBySymbol에 보관 → stillMissing 계산 직후(stage3 폴백 전) 관측블록 실행",
+    "new_diag_fields": ["reconstructable", "reconstructableSingleClass", "reconstructableMultiClass", "noPriceEither", "wouldBeCoverage", "missingFieldNames", "reconstructError"],
+    "delivery_path": "기존 recordHeartbeat → cron_heartbeats.note JSON(917 경로 재사용, 새 채널 안 만듦)",
+    "heartbeat_history_limitation": "🔴 job PK 단일이라 최신 1건만 남는다(983 확인 그대로) — 이번엔 이 한계를 안고 간다. PK 변경은 별도 판정 사항(983 옵션2/3). 매일 아침 최신값을 읽으면 됨.",
+    "exception_isolation": "전체 관측블록이 하나의 try/catch로 감싸짐 — 실패 시 reconstructError만 채워지고 capOf·freshSet·caps·기존 diag 필드는 전혀 영향 없음(974 원칙)"
+  },
+  "section3_invariance_proof": {
+    "method": "야후 실시간 조회 1회(US 유니버스 5,972종목, stage1 배치+stage2 재시도)로 원시 응답을 캡처 → 구코드(986 관측블록 없음)와 신코드(986 관측블록 있음)로 각각 capOf·freshSet·batchOk·recovered·retryNoCapField·freshCoverage를 계산 → 대조. 같은 데이터를 두 계산에 먹여 '코드 차이'만 보이게 함(시세가 그새 바뀌는 오염 방지). DB 쓰기 없음(us_market_cap upsert 라인은 이번에 안 건드린 코드라 스크립트가 아예 호출 안 함).",
+    "result": {
+      "capOf_identical": true,
+      "freshSet_identical": true,
+      "batchOk_identical": true,
+      "recovered_identical": true,
+      "retryNoCapField_identical": true,
+      "freshCoverage_identical": true,
+      "freshCoverage_value": 0.9864367046215673
+    },
+    "verdict": "✅ 완전 일치 — 관측이 아니라 개입이었다면 여기서 걸렸을 것이나 걸리지 않았다.",
+    "new_only_fields_this_run": { "reconstructable": 20, "reconstructableSingleClass": 20, "reconstructableMultiClass": 0, "noPriceEither": 61 },
+    "note": "이 세션 환경(984의 실제 프로덕션 문제를 재현 못함, 985와 동일한 한계)에서 나온 값 — 이번 실행엔 복수클래스 실패 사례가 우연히 0건. 프로덕션 실측은 이 STEP 범위 밖(관측 배선 후 다음 크론 실행을 기다려야 함)."
+  },
+  "typecheck_and_tests": { "tsc_noEmit": "clean", "vitest": "367/367 통과(기존과 동일 — 이 STEP에서 새 단위테스트 추가 안 함, §3 스크립트가 검증 역할)" },
+  "hypotheses_and_prior_dropped_candidates_not_resurrected": ["배치방식 자체의 문제(949)", "심볼 부재(949)"]
+}
