@@ -303,10 +303,33 @@ unavailableWhen: ["sector == null", "축 값이 없음(us_valuation.unavailable�
 
 상세 = `docs/probe_970_newwindow_live.json`.
 
+## 🔴 시총(`market_cap`) 취득 경로 — 원시필드 우선·재구성 대안(STEP 985, 2026-08-10, 미배선)
+
+> **분자(공통) 출처**(위 정의 절)의 `us_market_cap.market_cap`이 애초에 **어떻게 채워지는지**를 밝히는 절. STEP984가 원인 미규명으로 남긴 US 크론의 시총 결측(미해결 14번)에 대한 처방 후보 하나를 설계·검증했다 — **크론에 배선하지 않았다.**
+
+**정의**: 시가총액 = 현재가 × 발행주식수(shares outstanding, **시점값** — 가중평균 희석주식수 아님). STEP975가 SEC 원자료로 직접 검증한 "외부는 기말 실제 발행주식수를 쓴다"(`CommonStockSharesOutstanding`, 11/13종목 ±1% 일치)와 같은 개념. 야후 `sharesOutstanding` 필드가 이와 같은 개념인지는 이론이 아니라 실측으로 확인(아래).
+
+**순수함수** — `lib/marketCapReconstruct.ts`의 `resolveMarketCap(quote)`:
+1. 야후 `marketCap` 필드가 있으면 **그대로**(재구성으로 덮지 않음 — 원시필드 우선).
+2. 없고 `sharesOutstanding`·`regularMarketPrice`가 모두 유효(양수)하면 **재구성**(`shares × price`).
+3. 둘 다 없으면 `null` — 응답에 있던 필드명 목록만 반환(값은 안 담음, 다음 규명의 재료).
+
+`source: "field" | "reconstructed" | null`로 어느 경로인지 항상 함께 반환한다(규칙 5-2 ④, 결과에 출처를 실어 보낸다).
+
+**검증(전수 대조, 2026-08-10, 이 세션 환경 — Vercel 프로덕션 아님)**: US 유니버스 5,972종목 전수 조회.
+- **marketCap이 있는 종목(5,891건)에서 재구성값 대조**: 절대상대차 중앙값 **0%**, p90 20%, 최대 99.22%(`FISK`). 상위 20건 전부 **복수클래스 주식**(`TAP-A`·`MKC-V`·`HVT-A`·`AGM-A`·`GTN-A`·`MOG-B`·`LEN-B`류) 또는 트래킹주식(`LBTYB`·`GLIBA`·`FWONA`) — `sharesOutstanding`은 해당 클래스만의 주식수이지만 야후 `marketCap`은 회사 전체(전 클래스 합산) 값이라 구조적으로 어긋난다. XOM 0.001%는 대표적(단일클래스 대형주 대부분이 이 수준) — **복수클래스가 예외를 만든다**.
+- **marketCap이 없는 종목(81건)**: 재구성 성공 20건, 실패 61건(대부분 `regularMarketPrice` 자체가 없음 — 비거래·상장폐지 추정 종목, 984의 프로덕션 결측 349건과는 **다른 집합**).
+- 🔴 **freshCoverage**: 이 환경에서는 재구성 전에도 이미 98.64%로 97% 게이트를 통과한다(재구성 후 98.98%) — **이 검증은 984의 프로덕션 결측(349건, NYSE·Fund류 과대표집)을 재현하지 못했다.** XOM·HD·MCD·CRM·MRK·LOW·TGT(984가 지목한 초대형 실패군) 전부 이 조회에서 `marketCap` 필드가 정상 수신됐다 — **재구성이 실제 프로덕션 문제를 해결하는지는 프로덕션에서만 검증 가능하며, 이번 STEP은 그 검증을 못 했다**(크론 미배선 규칙 때문에 원리적으로 불가능했다 — 재구성이 필요한 상황 자체를 이 환경에서 만들 수 없다).
+
+**배선 설계(구현 안 함, §3)**: `lib/lensPrecompute.ts`의 `topByMarketCap()` stage1(배치, `:112-122`)·stage2(재시도, `:138-156`) 각각에서 `classifyCaps`/개별 `q.marketCap` 접근 지점에 `resolveMarketCap(q)`를 끼우면 된다 — `capOf.set(sym, cap)` 직전 한 지점. 배선 시 예상 변화: `freshCoverage`↑(재구성 성공분만큼) → 97% 게이트를 넘으면 `cutGateOk=true` → `lens_cuts` 갱신 재개 → **982 실측대로 140/1023종목(13.7%)의 판정이 바뀐다.** 🔴 **이건 라이브 화면 변경이므로 장은태 승인 없이 배선하지 않는다.**
+
+상세 = `docs/probe_985_mcap_reconstruction.json`·`docs/probe_985_search.md`·`docs/probe_985_full_universe_output.json`.
+
 ## 검증
 
 - `lib/valuation.test.ts` — `VALUATION_SPEC`의 formula·basis 고정 문자열 회귀 + 4케이스(흑자·무차입/흑자·유차입/적자/자기자본 음수) 손계산 검산 + 미성립 경계 6건.
 - `lib/revdcf/drivers.test.ts` — `fundamentals`(netIncome·equity·revenue·operatingIncome·dna·fiscalYear·sourceTags) 수집이 driver 5년 게이트보다 앞에서 끝나는지, skip 경로에도 실리는지 회귀 고정.
+- `lib/marketCapReconstruct.test.ts`(STEP985, 미배선) — 원시필드 우선(재구성이 덮지 않음)·재구성 성공/실패·0·음수·결측 경계 8케이스.
 - ✅ **STEP 948(2026-08-08) — 실제 종목 기반 검증 완료(재시도 1회 후 성공).** 1차 시도 401 실패의 원인을 호출 없이 확정(`vercel env pull`로 받은 Production 시크릿과 로컬 `.env.local`을 sha256 앞 8자리로만 대조 — 완전 일치, 값은 어디에도 안 남김) → 원인은 1차 시도의 셸 추출이 `.env.local`의 큰따옴표를 안 벗긴 것으로 확정(Production 시크릿 자체는 문제 없었음). 파싱을 고쳐 2차(마지막) 호출 → **200 성공**. `us_fundamentals` 1,003행 적재(`net_income` 855·`equity` 851·`revenue` 855·`operating_income` 837·`dna` 816·`debt`/`non_operating_assets`/`shares` 685 — 뒤 셋은 driver 전체 성공 시에만 채워짐). **비지배지분 혼입 실측 = 48건**(`equity` 851건 중 `StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest` 채택 48건, 5.64%) — "가능성 있음"이 아니라 실측치. `us_valuation` 1,003행(`per` 606·`pbr` 738·`psr` 793·`ev_ebitda` 528). `MISSING_MARKET_DATA`(원문 스펙에 없던 코드 추가 조건, 위 "코드가 스펙보다 넓힌 것" 참조)가 실제로 **131건** 발생 — 이론이 아니라 실전에서 검증됨. 손계산 4종목(A·AAL·ABNB·AIRI, us_valuation에서 조건별 사전순 결정적 선정) **전부 bit-for-bit 일치**(python 독립 재계산 대조 — 10자리 정수 나눗셈의 4자리 소수 정확도는 손 암산으로 보장 불가해 스크립트로 대체, 정신은 동일). `A`(Agilent, CIK 1090872)의 SEC `companyfacts` 원문을 직접 열어 `NetIncomeLoss`·`StockholdersEquity`·`Revenue...`·`OperatingIncomeLoss`·`DepreciationDepletionAndAmortization` 5개 태그의 회계연도·값을 `us_fundamentals`와 대조 — **전부 일치.** `revdcf_results` 2026-08-08 = 604건(08-07과 동일, 감소 없음). 🔴 **§5(야후 상대차) 미실시 — 명령서 전제 오류(2번째 발견)**: `lens_scores`에 야후 원시 PER/PBR이 저장돼 있다는 전제가 틀렸다(테이블에 `valuation_value`/`valuation_state`라는 파생 점수만 있고, 원시 `trailingPE`/`priceToBook`은 `lib/lensCompute.ts`의 즉시계산 값이라 DB 어디에도 저장 안 됨 — grep 3파일 전수 확인). 종목별로 라이브 재조회(수백 건)해야 분포를 낼 수 있는데, 이는 이번 STEP이 승인한 "`/api/cron/revdcf` 1회"를 벗어나는 별도의 대량 라이브 호출이라 임의로 하지 않았다. 상세 = `docs/probe_948_live.json`.
 - 🟡 **STEP 958(2026-08-09) — DoD3(외부 독립 출처 대조) 부분 충족.** 948 §5가 무산된 이유(대조 상대 TTM ≠ 우리 연간)를 해소 — **연도별 배수를 주는 무료 출처**(stockanalysis.com, 회계연도 컬럼마다 그 시점 종가 명시)를 찾아 **5종목**(AAPL·NVDA·AAL·C·AMT, DoD3 요구 "최소 3종목"을 넘김) 대조. macrotrends·gurufocus는 이번 세션 기준 HTTP 403으로 접속 실패, ycharts는 되지만 연도별 히스토리가 유료 — "안 되는 곳"까지 기록.
   - **가격 시점 불일치**(외부=회계연도 말 종가 · 우리=오늘 시총)를 재척도(오늘가격/FY말가격 배율)로 맞춘 뒤 대조. AAPL·NVDA·AMT·AAL은 상대차 대부분 **±1~7%**(EV/EBITDA만 AAL +7.10%·AMT −7.56%로 다른 축보다 큼 — EV 산식 차이로 추정, 미확정). AAPL·NVDA는 SEC `NetIncomeLoss`·`StockholdersEquity`·매출 직접대조로 **분모(재무) 완전 일치** 확인 — 잔차는 분자(가격·주식수 시점) 쪽으로 귀속.

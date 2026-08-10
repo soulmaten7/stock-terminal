@@ -1,0 +1,67 @@
+{
+  "step": 985,
+  "scope": "implementation of a pure function + verification script, NOT wired to any cron. 0 DB writes, 0 cron trigger, 0 env values typed.",
+  "judgment_basis": {
+    "chosen": "sharesOutstanding × regularMarketPrice reconstruction fallback (984 §4 candidate 4)",
+    "dropped_candidates": {
+      "crumb_logging": "984 GitHub #764 근거로 가설 약화(무효crumb=완전실패, 부분성공 아님) — 접음",
+      "ip_range_verification": "breadcrumb에 200 실측, 차단 근거 얇음 — 접음",
+      "concurrency_reproduction_test": "로컬(이 세션 환경) 100% 성공이라 재현 대상 자체가 없음 — 접음"
+    },
+    "root_cause_status": "🔴 미해결 유지 — 이 STEP은 원인 규명이 아니라 증상 완화책(재구성)의 실현가능성 검증"
+  },
+  "section1_pure_function": {
+    "file": "lib/marketCapReconstruct.ts",
+    "signature": "resolveMarketCap(quote: Record<string, unknown>): { marketCap: number|null, source: 'field'|'reconstructed'|null, availableFields?: string[] }",
+    "priority": "field(원시) 우선 → reconstructed(재구성) → null",
+    "invariant": "marketCap이 있으면 재구성값이 달라도 절대 덮지 않는다(단위테스트로 고정)",
+    "null_case_payload": "값은 담지 않고 Object.keys(quote)만 반환 — 다음 규명의 재료(984 §1-2)",
+    "unit_tests": "lib/marketCapReconstruct.test.ts — 8케이스(필드있음/재구성성공/필드우선순위/둘다없음+필드목록/shares=0/shares음수/price결측/marketCap=0또는음수는신뢰안함) 전부 통과"
+  },
+  "section2_full_universe_verification": {
+    "method": "topByMarketCap()과 동일 배치(100)·동시성(6)으로 US 전체 유니버스(5,972종목) 실시간 조회 — us_market_cap에 쓰지 않음(순수 관측). 실행 환경 = 이 세션(Vercel 프로덕션 아님, 984와 동일한 한계).",
+    "section2_1_diff_when_both_present": {
+      "n": 5891,
+      "p50RelDiffPct": 0,
+      "p90RelDiffPct": 20,
+      "maxRelDiffPct": 99.2235,
+      "top20_cause": "🔑 상위 20건 전부 복수클래스(TAP-A·MKC-V·HVT-A·AGM-A·GTN-A·MOG-B·LEN-B)·트래킹주식(LBTYB·GLIBA·FWONA)류 — sharesOutstanding은 해당 클래스만, 야후 marketCap은 회사 전체(전클래스 합산). 구조적 불일치이지 계산 오류 아님.",
+      "xom_representativeness": "XOM(0.001%)은 대표적이다 — 단일클래스 대형주 대부분이 이 수준(중앙값 0%). 예외는 복수클래스에 국한된다.",
+      "top20_detail_ref": "docs/probe_985_full_universe_output.json §section2_1.top20"
+    },
+    "section2_2_recovery_rate_when_missing": {
+      "missingN_this_environment": 81,
+      "reconSuccessN": 20,
+      "reconFailN": 61,
+      "reconFail_reason": "대부분 regularMarketPrice 자체가 없음(비거래·상장폐지 추정) — 984의 프로덕션 결측 349건(NYSE·Fund류 과대표집, 대부분 활발히 거래되는 종목)과 성격이 다른 별개 집합.",
+      "critical_caveat": "🔴 이 81건은 984가 관측한 프로덕션 349건과 겹치는지 이번엔 대조하지 않았다(이 환경에서 349건 대부분이 애초에 marketCap 필드를 정상 수신해 missingN 자체가 안 됨 — 아래 section2_4 참조)."
+    },
+    "section2_3_coverage_gate": {
+      "freshCoverageBefore_thisEnv": 98.64,
+      "freshCoverageAfter_recon_thisEnv": 98.98,
+      "gateThreshold": 97,
+      "passesGateBefore": true,
+      "passesGateAfter": true,
+      "compRatioBefore": 100,
+      "compRatioAfter": 100,
+      "cutGateOkAfter_thisEnv": true,
+      "🔴_critical_honest_limitation": "이 숫자들은 984의 실제 문제(프로덕션 freshCoverage=93.04%)를 전혀 재현하지 못한 상태에서 나온 것이다. 이 환경에서는 애초에 게이트가 통과돼 있어(98.64%>97%) 재구성이 '몇 %p를 회복시켜 게이트를 넘기는지'를 검증할 수 없었다. 🔴 재구성이 프로덕션의 349건 실패를 실제로 회복시키는지는 이 STEP에서 확인 불가 — 크론 미배선 규칙상 원리적으로 프로덕션에서만 관측 가능하다."
+    },
+    "section2_4_flagged_megacaps": {
+      "symbols": ["XOM", "HD", "MCD", "CRM", "MRK", "LOW", "TGT"],
+      "result": "7/7 전부 이 조회에서 marketCap 필드 정상 수신(hasField=true), 재구성값도 0.0001~0.001% 오차로 거의 완벽히 일치.",
+      "interpretation": "984가 지목한 '초대형주도 실패한다'는 관측이 프로덕션 특유 현상임을 재확인 — 이 환경(비-Vercel)에서는 재현되지 않는다."
+    }
+  },
+  "section3_wiring_design_NOT_IMPLEMENTED": {
+    "insertion_point": "lib/lensPrecompute.ts topByMarketCap() — stage1 배치 루프(:112-122)의 classifyCaps 처리 직후, 그리고 stage2 재시도 루프(:138-156)의 개별 q.marketCap 접근 지점. capOf.set(sym, cap) 직전에 resolveMarketCap(q)로 교체.",
+    "predicted_effect_if_wired": {
+      "freshCoverage": "상승(재구성 성공분만큼) — 정확한 수치는 프로덕션 실측 필요, 이 STEP은 예측만 함",
+      "cutGateOk": "97% 게이트를 넘으면 true로 전환 가능",
+      "lens_cuts_update": "재개될 수 있음(cutGateOk=true 조건부)",
+      "verdict_changes_if_cuts_refresh": "982 실측 그대로 재인용 — 140/1023종목(13.7%)이 판정 변경(momentum 6.9%가 최대)"
+    },
+    "approval_note": "🔴 라이브 화면 결과가 바뀌는 변경이므로 장은태 승인 없이 배선하지 않는다. 이번 STEP은 설계·검증만."
+  },
+  "hypotheses_explicitly_NOT_resurrected": ["배치방식 자체의 문제(949 A=0으로 폐기)", "심볼 부재(949 C=0으로 폐기)"]
+}

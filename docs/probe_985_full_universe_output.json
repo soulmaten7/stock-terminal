@@ -1,0 +1,289 @@
+{
+  "universe": 5972,
+  "respondedSymbols": 5972,
+  "failedChunks": 0,
+  "totalChunks": 60,
+  "section2_1": {
+    "bothPresentN": 5891,
+    "p50RelDiffPct": 0,
+    "p90RelDiffPct": 20,
+    "maxRelDiffPct": 99.2235,
+    "top20": [
+      {
+        "symbol": "FISK",
+        "fieldVal": 1458399360,
+        "reconVal": 11323940.209999999,
+        "relDiffPct": 99.2235
+      },
+      {
+        "symbol": "TAP-A",
+        "fieldVal": 7784451584,
+        "reconVal": 107006669.5,
+        "relDiffPct": 98.6254
+      },
+      {
+        "symbol": "OGCP",
+        "fieldVal": 1332434048,
+        "reconVal": 19844863.64,
+        "relDiffPct": 98.5106
+      },
+      {
+        "symbol": "PIII",
+        "fieldVal": 2353078784,
+        "reconVal": 38513435.64,
+        "relDiffPct": 98.3633
+      },
+      {
+        "symbol": "LBTYB",
+        "fieldVal": 4331811840,
+        "reconVal": 164701956.6,
+        "relDiffPct": 96.1979
+      },
+      {
+        "symbol": "MKC-V",
+        "fieldVal": 14203427840,
+        "reconVal": 781693917.66,
+        "relDiffPct": 94.4964
+      },
+      {
+        "symbol": "ESBA",
+        "fieldVal": 1340887680,
+        "reconVal": 78049157.2314,
+        "relDiffPct": 94.1793
+      },
+      {
+        "symbol": "RDIB",
+        "fieldVal": 204455344,
+        "reconVal": 15125310,
+        "relDiffPct": 92.6021
+      },
+      {
+        "symbol": "HVT-A",
+        "fieldVal": 506792832,
+        "reconVal": 39324220,
+        "relDiffPct": 92.2406
+      },
+      {
+        "symbol": "HKIT",
+        "fieldVal": 27335254,
+        "reconVal": 2431574.4,
+        "relDiffPct": 91.1046
+      },
+      {
+        "symbol": "GLIBA",
+        "fieldVal": 981662848,
+        "reconVal": 89813074.80000001,
+        "relDiffPct": 90.8509
+      },
+      {
+        "symbol": "KELYB",
+        "fieldVal": 814811392,
+        "reconVal": 77325121.86,
+        "relDiffPct": 90.5101
+      },
+      {
+        "symbol": "AGM-A",
+        "fieldVal": 1801958400,
+        "reconVal": 171140403.4,
+        "relDiffPct": 90.5025
+      },
+      {
+        "symbol": "FWONA",
+        "fieldVal": 23556569088,
+        "reconVal": 2254199809.68,
+        "relDiffPct": 90.4307
+      },
+      {
+        "symbol": "GTN-A",
+        "fieldVal": 604102144,
+        "reconVal": 58031525.16,
+        "relDiffPct": 90.3938
+      },
+      {
+        "symbol": "UHAL",
+        "fieldVal": 14714848256,
+        "reconVal": 1462919870.1,
+        "relDiffPct": 90.0582
+      },
+      {
+        "symbol": "MOG-B",
+        "fieldVal": 13043770368,
+        "reconVal": 1329501633.8500001,
+        "relDiffPct": 89.8074
+      },
+      {
+        "symbol": "ANDG",
+        "fieldVal": 5588291584,
+        "reconVal": 643423465.4399999,
+        "relDiffPct": 88.4862
+      },
+      {
+        "symbol": "QNT",
+        "fieldVal": 15222654976,
+        "reconVal": 1841315565.45,
+        "relDiffPct": 87.9041
+      },
+      {
+        "symbol": "LEN-B",
+        "fieldVal": 20832612352,
+        "reconVal": 2628052740.7200003,
+        "relDiffPct": 87.3849
+      }
+    ]
+  },
+  "section2_2": {
+    "missingN": 81,
+    "reconSuccessN": 20,
+    "reconFailN": 61,
+    "fieldFreqInFail": {
+      "language": 61,
+      "region": 61,
+      "quoteType": 61,
+      "typeDisp": 61,
+      "quoteSourceName": 61,
+      "triggerable": 61,
+      "customPriceAlertConfidence": 61,
+      "currency": 60,
+      "shortName": 57,
+      "longName": 47,
+      "marketState": 61,
+      "fiftyDayAverage": 60,
+      "fiftyDayAverageChange": 60,
+      "fiftyDayAverageChangePercent": 60,
+      "twoHundredDayAverage": 60,
+      "twoHundredDayAverageChange": 60,
+      "twoHundredDayAverageChangePercent": 60,
+      "netExpenseRatio": 15,
+      "sourceInterval": 61,
+      "exchangeDataDelayedBy": 61,
+      "tradeable": 61,
+      "cryptoTradeable": 61,
+      "corporateActions": 61,
+      "regularMarketTime": 60,
+      "exchange": 61,
+      "messageBoardId": 60,
+      "exchangeTimezoneName": 61,
+      "exchangeTimezoneShortName": 61,
+      "gmtOffSetMilliseconds": 61,
+      "market": 61,
+      "esgPopulated": 61,
+      "regularMarketChangePercent": 60,
+      "regularMarketPrice": 60,
+      "hasPrePostMarketData": 61,
+      "firstTradeDateMilliseconds": 60,
+      "priceHint": 61,
+      "regularMarketChange": 60,
+      "regularMarketDayHigh": 60,
+      "regularMarketDayRange": 60,
+      "regularMarketDayLow": 60,
+      "regularMarketVolume": 60,
+      "regularMarketPreviousClose": 60,
+      "bid": 60,
+      "ask": 60,
+      "bidSize": 60,
+      "askSize": 60,
+      "fullExchangeName": 61,
+      "regularMarketOpen": 60,
+      "averageDailyVolume3Month": 60,
+      "averageDailyVolume10Day": 60,
+      "fiftyTwoWeekLowChange": 60,
+      "fiftyTwoWeekLowChangePercent": 60,
+      "fiftyTwoWeekRange": 60,
+      "fiftyTwoWeekHighChange": 60,
+      "fiftyTwoWeekHighChangePercent": 60,
+      "fiftyTwoWeekLow": 60,
+      "fiftyTwoWeekHigh": 60,
+      "fiftyTwoWeekChangePercent": 60,
+      "dividendDate": 38,
+      "dividendYield": 20,
+      "ytdReturn": 15,
+      "trailingThreeMonthReturns": 15,
+      "trailingThreeMonthNavReturns": 15,
+      "netAssets": 15,
+      "symbol": 61,
+      "financialCurrency": 17,
+      "displayName": 15,
+      "preMarketTime": 20,
+      "preMarketChange": 20,
+      "preMarketChangePercent": 20,
+      "preMarketPrice": 20,
+      "earningsTimestamp": 1,
+      "earningsTimestampStart": 10,
+      "earningsTimestampEnd": 10,
+      "earningsCallTimestampStart": 8,
+      "earningsCallTimestampEnd": 8,
+      "isEarningsDateEstimate": 10,
+      "trailingAnnualDividendRate": 26,
+      "trailingAnnualDividendYield": 26,
+      "epsTrailingTwelveMonths": 7,
+      "epsForward": 3,
+      "epsCurrentYear": 2,
+      "priceEpsCurrentYear": 2,
+      "forwardPE": 3,
+      "dividendRate": 5,
+      "trailingPE": 5,
+      "bookValue": 13,
+      "priceToBook": 13,
+      "ipoExpectedDate": 4,
+      "prevName": 2,
+      "nameChangeDate": 2
+    }
+  },
+  "section2_3": {
+    "freshCoverageBefore": 98.64,
+    "freshCoverageAfter": 98.98,
+    "coverageGateThreshold": 97,
+    "passesCoverageGateBefore": true,
+    "passesCoverageGateAfter": true,
+    "compRatioBefore": 100,
+    "compRatioAfter": 100,
+    "compositionGateThreshold": 95,
+    "passesCompositionGateBefore": true,
+    "passesCompositionGateAfter": true,
+    "cutGateOkAfter": true
+  },
+  "section2_4_megacaps": [
+    {
+      "symbol": "XOM",
+      "hasField": true,
+      "fieldVal": 634342670336,
+      "reconVal": 634342713672.48
+    },
+    {
+      "symbol": "HD",
+      "hasField": true,
+      "fieldVal": 354594619392,
+      "reconVal": 354594634452.84
+    },
+    {
+      "symbol": "MCD",
+      "hasField": true,
+      "fieldVal": 195019653120,
+      "reconVal": 195019648178.32
+    },
+    {
+      "symbol": "CRM",
+      "hasField": true,
+      "fieldVal": 157854056448,
+      "reconVal": 157854060000
+    },
+    {
+      "symbol": "MRK",
+      "hasField": true,
+      "fieldVal": 317570056192,
+      "reconVal": 317570023280.7
+    },
+    {
+      "symbol": "LOW",
+      "hasField": true,
+      "fieldVal": 125233930240,
+      "reconVal": 125233917607.34999
+    },
+    {
+      "symbol": "TGT",
+      "hasField": true,
+      "fieldVal": 67992408064,
+      "reconVal": 67992409466.399994
+    }
+  ]
+}
