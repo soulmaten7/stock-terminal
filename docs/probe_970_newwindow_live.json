@@ -1,0 +1,102 @@
+{
+  "step": 970,
+  "date": "2026-08-10",
+  "purpose": "STEP951(새 창) 첫 정규 크론(2026-08-09 22:45 UTC) 라이브 결과 확인 — STATE.md의 8항목 확인 완료",
+  "note": "조회 전용. 코드·DB·크론 전부 무접촉. 969(부채수정)는 이 크론에 미반영(다음 2026-08-10 22:45 UTC 크론부터).",
+
+  "step1_yearWindowCoverage": {
+    "confirmedByCowork": "as_of=2026-08-09 604행 중 575건 채워짐(08-08은 0건)"
+  },
+
+  "step2_1_yearWindowDistribution": {
+    "byWindow": [
+      { "window": "[2021,2022,2023,2024,2025]", "count": 562, "note": "12월결산 표준" },
+      { "window": "[2022,2023,2024,2025,2026]", "count": 10, "note": "6월결산(MSFT·ADP·BR 포함 확인) — 예측대로 +2년(옛 고정창 [2020..2024] 대비)" },
+      { "window": "[2020,2021,2022,2023,2024]", "count": 3, "symbols": ["LHX", "CTAS", "SMMT"], "note": "옛 고정창과 동일 — 개별 원인 미조사(해당 종목들의 최신 매출 데이터가 2024년까지만 존재해 창이 안 밀린 경우로 추정하나 확인 안 함)" }
+    ],
+    "total": 575,
+    "sixMonthFyeVerification": { "MSFT": "[2022,2023,2024,2025,2026]", "ADP": "[2022,2023,2024,2025,2026]", "BR": "[2022,2023,2024,2025,2026]", "conclusion": "예측대로 6월결산 3종목 전부 창이 +2년 이동됨" },
+    "yearWindowNullCount": 29,
+    "yearWindowNullSymbols": ["SFD","CLS","JHX","AXSM","FIG","SHOP","TLN","FLUT","RDDT","ALAB","CRWV","BTSG","ULS","RBRK","SN","SOLV","GEV","SW","VG","FERG","SNDK","SARO","AMRZ","MDLN","LGN","Q","VNOM","LLYVA","SUNB"],
+    "yearWindowNullVerdict": "전부 skipped/INSUFFICIENT_HISTORY(29/29, 100%) — 창 자체가 안 잡힌 것이지 다른 원인 아님"
+  },
+
+  "step2_1b_skipReasonFullDistribution_20260809": {
+    "value_destroying": 189, "years": 105, "over_cap": 82, "below_one": 61,
+    "skipped_NO_MARGINAL_CAPEX": 51, "skipped_STALE_MARKETCAP": 33, "skipped_INSUFFICIENT_HISTORY": 29,
+    "skipped_MISSING_TAG_OPERATING_INCOME": 17, "skipped_MISSING_TAG_PPE": 13, "skipped_NO_INDUSTRY": 10,
+    "skipped_NOT_APPLICABLE_SECTOR": 6, "skipped_MULTI_CLASS_SHARES": 5, "skipped_MISSING_TAG_OPERATING_CASH": 3,
+    "totalRows": 604
+  },
+
+  "step2_2_fiscalYearDistribution": {
+    "current_us_fundamentals": [
+      { "fiscal_year": 2020, "count": 2 }, { "fiscal_year": 2022, "count": 6 }, { "fiscal_year": 2023, "count": 5 },
+      { "fiscal_year": 2024, "count": 322 }, { "fiscal_year": 2025, "count": 634 }, { "fiscal_year": 2026, "count": 10 },
+      { "fiscal_year": null, "count": 188 }
+    ],
+    "before_pre_step951_snapshot": [
+      { "fiscal_year": 2020, "count": 2 }, { "fiscal_year": 2022, "count": 5 }, { "fiscal_year": 2023, "count": 3 },
+      { "fiscal_year": 2024, "count": 920 }, { "fiscal_year": null, "count": 197 }
+    ],
+    "conclusion": "2024 고정 920건 → 322건(대부분 2025로 이동, 634건) + 2026 10건(6월결산) 신규 등장. 예측대로 2024가 줄고 2025/2026이 늘었다.",
+    "totalRowsNote": "현재 us_fundamentals 총 1,167행(969 보고 시점 1,127행에서 +40 — 969는 upsert만 하므로 신규행 원인 아님, 969 이후 열린 정규크론의 '나머지' 유니버스 자연 회전으로 추정, §2-5 참조)"
+  },
+
+  "step2_3_axisChanges_08_08_vs_08_09": {
+    "method": "동일 symbol 조인, 절대상대차(부호 무시) 중앙값·p90 — percentile_cont, PostgreSQL 직접 계산",
+    "per": { "n": 636, "medianAbsRelDiff": 0.0996, "p90AbsRelDiff": 0.7586 },
+    "pbr": { "n": 818, "medianAbsRelDiff": 0.0493, "p90AbsRelDiff": 0.2877 },
+    "psr": { "n": 888, "medianAbsRelDiff": 0.0345, "p90AbsRelDiff": 0.1909 },
+    "ev_ebitda": { "n": 551, "medianAbsRelDiff": 0.0916, "p90AbsRelDiff": 0.4905 },
+    "note": "🔴 부호 있는 중앙값이 아니라 절대값으로 계산(부호 상쇄 방지 대전제 준수). PER의 p90(75.9%)이 가장 크다 — 순이익이 창 이동에 가장 민감한 항목."
+  },
+
+  "step2_4_rawValueChanges_fiscalYearAdvanced": {
+    "method": "us_fundamentals(현재) vs us_fundamentals_snapshot(tag='pre_step951', before)를 symbol로 조인, fiscal_year가 실제로 올라간 종목만(currentFY > oldFY)",
+    "n_year_advanced": 598,
+    "netIncome": { "medianAbsRelDiff": 0.2632, "p90AbsRelDiff": 1.8434 },
+    "equity": { "medianAbsRelDiff": 0.1187, "p90AbsRelDiff": 0.5645 },
+    "revenue": { "medianAbsRelDiff": 0.0822, "p90AbsRelDiff": 0.3250 },
+    "note": "원시값 자체가 회계연도 이동으로 상당히 크게 바뀐다(순이익 중앙값 26.3%·p90 184%) — 이게 §2-3의 4축 변동의 근본 원인. revenue가 가장 안정적(연간 변동성이 낮은 항목)."
+  },
+
+  "step2_5_dailyNetIncrease": {
+    "previousBaseline": "STEP947 실측 하루 약 124건(us_fundamentals 순증, 1,003→1,127 구간)",
+    "thisCronCycle": {
+      "totalBefore_asOf969Report": 1127,
+      "totalNow": 1167,
+      "netIncrease": 40,
+      "rowsTouchedThisCron": 641,
+      "fetchedAtWindow": ["2026-08-09T23:40:14Z", "2026-08-09T23:42:55Z"],
+      "note": "641건이 이번 크론에서 갱신(재계산)됐으나 net신규는 40건뿐 — 641 중 상당수는 기존 604 revdcf 유니버스의 재계산(신규 행 아님), 순수 신규(나머지 유니버스 회전)는 40건."
+    },
+    "revisedEstimate": "이번 관측(40/사이클, 1일 1사이클 기준)은 이전 124/일보다 낮다 — 표본이 1개 사이클뿐이라 단정 못 함, 이후 며칠 더 관측 필요(추정 아님, 미확정으로 남김)."
+  },
+
+  "step2_6_valueDestroyingTransition": {
+    "netChange": "156 → 189 (+33)",
+    "inTransitions_total": 74,
+    "inTransitions_bySource": { "over_cap": 32, "years": 22, "below_one": 18, "skipped": 2 },
+    "inTransitionSymbols_full": ["A","AA","ABT","ADM","ALGN","AMCR","APTV","ARWR","ATO","AVY","AYI","BDX","BMY","BURL","CACI","CCK","CF","CHTR","CMCSA","CSGP","CSX","CTSH","CYTK","DKNG","DOW","EBAY","EXPD","FCX","GGG","GILD","HSIC","HUBB","IONQ","IQV","KEYS","KMI","LEVI","LFUS","LIN","LSCC","LYB","MLI","MPC","MTD","MUSA","NSC","OC","ODFL","OGE","ON","OTIS","PG","PKG","R","REGN","RIVN","RS","RVTY","SAIA","SCI","SNA","STLD","SWKS","TEL","THC","TRGP","TSCO","VST","WBD","WMB","WMS","WSM","WST","ZM"],
+    "outTransitions_total": 41,
+    "outTransitions_byDestination": { "over_cap": 21, "years": 16, "below_one": 4 },
+    "netReconciliation": "74 in − 41 out = 33 (일치)",
+    "sampleVsFull": {
+      "samplePrediction_951b2": "28.0%(ⓐ 라벨만 변경, 25종목 모집단 기준)",
+      "fullPopulationLabelChangeRate": "171/604 = 28.3%(전수 실측)",
+      "conclusion": "🔑 표본 예측(28.0%)과 전수 실측(28.3%)이 매우 근접 — 951b2의 30종목 표본이 604 전수를 상당히 잘 대표했음을 뜻한다. 단, value_destroying 한 라벨만 보면 +33건(신규진입74−이탈41)이라는 방향성 정보는 라벨변경 비율(%)만으로는 안 보였을 정보다."
+    }
+  },
+
+  "step969_impact_thisCron": {
+    "debtBasisPresence": "0건 — 969는 이 크론(2026-08-09 22:45 UTC) 실행 후에 push됐으므로(969 커밋은 2026-08-10) 부채 3분류 관련 flags(debtBasis 등)가 이 크론 결과에는 전혀 없다. 예상대로다.",
+    "nextCronThatReflects969": "2026-08-10 22:45 UTC(=2026-08-11 07:45 KST) — revdcf_results as_of='2026-08-10'에 반영될 것"
+  },
+
+  "notDone": [
+    "일별 순증 추세(§2-5)는 1개 사이클 관측뿐이라 추세로 단정 못 함",
+    "value_destroying 외 나머지 3개 라벨(years·over_cap·below_one)의 개별 전이 매트릭스는 이번 STEP에서 안 만듦(value_destroying만 명령서가 지목)",
+    "[2020,2021,2022,2023,2024] 창이 유지된 3종목이 왜 안 밀렸는지 개별 원인(매출 데이터 최신연도가 2024까지뿐인지) 확인 안 함"
+  ]
+}
