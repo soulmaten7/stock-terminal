@@ -2,318 +2,102 @@
 # 🚀 Trillion(트릴리언) — STATE (현재 상태 단일 정본)
 
 > **이 파일 = "지금 어디까지 왔나 + 다음 뭐 할까"의 유일한 정본. 매 세션 덮어쓴다(배너 쌓기 금지).**
-> 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md`.
-> 규칙: **현재상태=여기에만 · 이력=CHANGELOG에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC에만.**
+> 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md` · STEP별 요약 = `docs/STEP_LEDGER.md`.
+> 규칙: **현재상태=여기에만 · 이력=CHANGELOG·STEP_LEDGER에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC·VALUATION_SPEC에만.**
+> 🔴 **2026-08-10(STEP971) 재작성** — STEP947~970(2026-08-08~10) 이력이 이 파일에 그대로 쌓여 있었다. 현재 상태만 남기고 STEP별 서술은 CHANGELOG·STEP_LEDGER·REVDCF_SPEC·VALUATION_SPEC·probe로 옮겼다(포인터 유지, 내용 삭제 없음). 재작성 전 원문 = `git show HEAD~1:docs/STATE.md`(커밋 971 이전 어느 커밋이든).
 
-🟢 **STEP 952(2026-08-09) — Q1 ②단계 준비 완료: 섹터 커버리지 확장 + 「업종 대비」 정의 고정.** `resolveSector()`를 `us_valuation` 전체(1,127종목)에 재호출해 `us_sector_wide`(신규 테이블)에 적재 — `us_sector_resolved`(화면용, 1,021)는 무접촉. `lib/sectorRelative.ts` 신설(`SECTOR_RELATIVE_SPEC` = 정의 유일 출처, 백분위 방식·장은태 판정). **섹터표가 둘로 갈렸다** — `us_sector_resolved`(화면용, `/api/sector/us`가 노출) vs `us_sector_wide`(계산용, 화면 무접촉). 통합은 Q1 카드 작업 시 판정. 업종 기준선(백분위 컷 minSample)은 미정 — 표(업종×축 유효표본)만 준비, 내일 새 창 데이터 이후 판정. 상세 = `docs/VALUATION_SPEC.md` 「업종 대비」 절.
+---
 
-🆕 **새 항목 후보(판정 없음, STEP 952b 2026-08-09 — ⓐ 조사 완료·처방 미정) — resolveSector 페이지네이션 비결정성 버그.**
-- ✅ **ⓐ damodaran tier 미매칭 원인 — 조사 완료.** 원래 가설(ticker_norm 중복=RAYA형)은 틀렸다 — **`lib/sector.ts`의 `fetchAll()`(damodaran_industry·us_sector_nasdaq·us_sector_yahoo·us_sector_gics 4개 fetch 전부)이 `.order()` 없이 `.range()`만 쓴다**, PostgreSQL이 순서를 보장 안 해 페이지네이션이 비결정적이다. 실측(5회 연속 `resolveSector()` 동일호출): 미분류 89/89/**95**/89/89로 흔들림(`COUNT(*)`는 6,937로 고정 — 데이터는 안 바뀜). 29건 분류 = **F(페이지네이션 비결정성) 1건(RAYA)** + **B(is_us_listed=false, 설계대로 제외) 28건** + C/D/E 0건. 상세 = `docs/probe_952b_damodaran_tier.json`·`docs/VALUATION_SPEC.md` 「damodaran tier 조사 완료」 절. 🔴 **처방은 미정**(고르지 않음 — 후보 3개는 VALUATION_SPEC.md에).
-- 🔴 **Q0(1,021종목)에도 같은 흔적 확인됨** — `us_sector_resolved`의 `source='yahoo'` 207건 중 **5건**(`PTGX`·`TEAM`·`TIGO`·`WMS`·`WTRG`)이 실제로는 damodaran tier가 잡았어야 정상인데 yahoo까지 내려갔다. 이 5건은 SPDR 494종목 정답지에 없어 "Damodaran vs 진짜 GICS 99.6%(492/494)" 수치가 이 증거로 직접 영향받았는지는 **확인도 반증도 안 됨**. Q0의 "미분류 0건·커버리지 100%" 숫자 자체는 오늘 재확인해도 참이지만, source 라벨(어느 tier가 잡았다는 귀속)의 정확성과 최종 커버리지는 다른 질문이다 — 그 실행이 결정론적이었다는 보장은 없다. 🔴 **Q0 판정 자체는 건드리지 않는다** — 사실만 등재, 판정은 장은태. `docs/LENS_COMPLETION_STANDARD.md` Q0 행에 같은 각주 추가.
-- **ⓑ 나스닥을 5순위로 추가할지** — 미분류 90건 중 나스닥 원시 존재 90건(100%), `NASDAQ_TO_GICS` 매핑 가능 79건(87.8%). Q0의 "나스닥은 교차검증 신호로만" 원칙과 충돌. 🔴 **ⓐ가 조사 완료됐으므로 이제 ⓑ의 필요성 자체를 재판단할 차례** — 페이지네이션을 고치면 damodaran tier의 실제 커버리지가 오를 수 있어(28건은 여전히 남지만) ⓑ의 상대적 이득이 줄어들 수 있다. 판정 대기.
+## ① 최우선 확인 대기
 
-🔴 **STEP 951 적용 직후 확인(최우선 — 🔴 2026-08-10 07:45 KST 크론 이후 최초 세션에서. 2026-08-09 07:45 KST 아님 — 정정, 아래 이유 참조)** — 이 push(`e39595d`, 2026-08-08)로 새 창 코드가 Production에 배포됐다(Vercel 배포 성공 확인 완료). `REVDCF_ENABLED`는 OFF라 화면엔 안 보이지만 크론은 매일 돈다.
-🔴 **정정 이유(Cowork DB 직접 조회, 2026-08-08)**: `2026-08-08 22:45 UTC`(=`2026-08-09 07:45 KST`) 크론은 push·배포(`2026-08-09 06:34 UTC`)보다 **먼저** 돌아 옛 코드로 실행됐다 — `us_fundamentals` 22시대 723행 중 669행(92.5%)이 `fiscal_year=2024`인 것이 증거(`revdcf_results as_of=2026-08-08`도 604행 전부 `flags.yearWindow` 없음, 직접 재확인). **새 창의 첫 실행은 `2026-08-09 22:45 UTC`(=`2026-08-10 07:45 KST`)다** — 그 실행은 `revdcf_results`에 `as_of='2026-08-09'`로 쓰인다(코드가 UTC 캘린더 날짜를 그대로 쓰므로 KST로 보이는 "다음날"과 `as_of`가 어긋난다 — 아래 ①의 `as_of` 값 자체는 그대로 맞다, 확인 시점만 하루 늦춘다).
-다음 세션은 아래 8개를 반드시 확인한다(이 목록이 없으면 다음 세션은 오늘 맥락을 모른다 — 규칙 6):
+- 🔴 **STEP969(부채 3분류) 반영 확인 — 2026-08-11 07:45 KST(=2026-08-10 22:45 UTC) 정규 크론 후.** `revdcf_results as_of='2026-08-10'`에서 `flags.debtBasis`가 채워지는지, `GM` verdict가 예측대로 `below_one`→`years`(gap5)로 바뀌는지 확인한다. 969 push는 970에서 완료(`f8693cc`) — 이 크론이 969 코드로 도는 첫 실행이다. 상세 = `docs/REVDCF_SPEC.md` §10-D·`docs/probe_969_debt_tags.json`.
 
-✅ **STEP 970(2026-08-10) — 8개 전부 확인 완료(2026-08-09 22:45 UTC 크론 라이브 결과).** 항목 아래에 실측값을 그대로 붙인다(목록은 지우지 않는다).
+---
 
-① `revdcf_results` `as_of=2026-08-09`에서 `flags.yearWindow`가 채워졌는지 — 비어 있으면 새 코드가 안 돈 것. 배포부터 재확인할 것.
-　→ **604행 중 575건 채워짐(08-08은 0건). 정상.**
+## ② 확정된 모델 정의 (역DCF·Q1 코어)
 
-② 창 분포: `yearWindow`의 마지막 연도별 종목 수 — 12월결산은 2025, 6월결산은 2026이 나와야 한다.
-　→ `[2021,2022,2023,2024,2025]` 562건(12월결산 표준) · `[2022,2023,2024,2025,2026]` 10건(6월결산 — `MSFT`·`ADP`·`BR` 전부 이 창으로 확인, 예측대로 +2년 이동) · `[2020,2021,2022,2023,2024]` 3건(`LHX`·`CTAS`·`SMMT`, 옛 창과 동일 — 개별 원인 미조사). `yearWindow` 없는 **29건**은 전부 `skipped/INSUFFICIENT_HISTORY`(100%) — 창 자체가 안 잡힌 것이지 다른 원인 아님.
+> 서술은 각 정본 문서에 있다. 여기는 "무엇이 확정됐는가"의 목록과 링크만.
 
-③ verdict 분포를 08-08과 비교(5개 라벨 + skipped 사유별). 🔴 표본 예측은 ⓐ28.0%·ⓑ44.0%였다 — 전수가 크게 다르면 그 자체가 발견이다.
-　→ `value_destroying` 156→189(+33) · `years` 119→105(−14) · `over_cap` 94→82(−12) · `below_one` 65→61(−4) · `INSUFFICIENT_HISTORY` 39→29(−10) · `NO_MARGINAL_CAPEX` 49→51(+2) · `STALE_MARKETCAP` 32→33(+1) · `MISSING_TAG_OPERATING_INCOME` 15→17(+2) · `NOT_APPLICABLE_SECTOR` 4→6(+2) · 나머지(`MISSING_TAG_PPE` 13·`NO_INDUSTRY` 10·`MULTI_CLASS_SHARES` 5·`MISSING_TAG_OPERATING_CASH` 3) 동일. **전수 라벨변경률 = 171/604 = 28.3%** — 표본 예측(28.0%)과 **거의 정확히 일치**(30종목 표본이 604 전수를 잘 대표했음). `value_destroying` 전이: 유입 74건(`over_cap`32·`years`22·`below_one`18·`skipped`2)·유출 41건(`over_cap`21·`years`16·`below_one`4) — 순증 +33 일치. 전이 종목 전수는 `docs/probe_970_newwindow_live.json` §2-6.
+| 정의 | 확정 STEP | 정본 |
+|---|---|---|
+| 회계연도 관측 창 = 종목별 실재 최신 **연속 5개 연도** | 951 | `REVDCF_SPEC.md` §10-A |
+| 제출버전(vintage) = **최신 제출값**(재작성 반영), `flags.restated`로 추적 | 965 | `REVDCF_SPEC.md` §10-B |
+| PER·PBR = **보통주 기준**(`commonEquity`·보통주귀속순이익) | 963 | `REVDCF_SPEC.md` §10-B 인접·`VALUATION_SPEC.md` |
+| 은행형 매출 = 표준 REV 4종 전무 시 **순이자수익+비이자수익** 폴백 | 967 | `REVDCF_SPEC.md` §10-C |
+| 부채 = **확정0 / 확정값 / 모름**(`UNRESOLVED_DEBT`) 3분류 | 969 | `REVDCF_SPEC.md` §10-D |
+| 업종 대비 = **백분위**(`empirical_rank`), `minSample=20` | 952·956 | `VALUATION_SPEC.md` 「업종 대비」 절 |
+| 전체 조회 페이지네이션 = `fetchAllRows()`, 정렬키 **필수**(기본값 없음) | 954 | `lib/supabasePaging.ts`·`docs/probe_954_verify.json` |
+| 섹터 해석 = `resolveSector()` 0~4순위(SPDR→Damodaran→형제→야후→미분류), 3순위=야후 단독 | 940·942 | `lib/sector.ts`·`docs/probe_942_final_resolve.json` |
+| 유니버스(조달 범위) = **거래소 상장 N=2,857** | 867(장은태 승인) | `REVDCF_SPEC.md` §9(A-9⑤)·§11 |
+| 엔진(풀이) = 원전 그대로 — 도미노 오차 0.0000·MIFP 8=8 | 848 | `REVDCF_SPEC.md` §6 |
+| 예측 지평 = 원전대로 **25년**, fade=계단 고정, 터미널=`NOPAT(1+i)/(WACC−i)` | 859 | `REVDCF_SPEC.md` §6-7 |
+| 모델 완성 정의 = **DoD9(라이브 노출) 제외 8항목 닫힘** | 921(장은태 승인) | `LENS_COMPLETION_STANDARD.md` |
 
-④ 커버리지: 계산된 종목 수가 08-08(604 중 몇 건)과 같은지 — 🔴 줄었으면 회귀다. 표본에서는 계산↔skip 전환이 0건이었다.
-　→ **434→437(+3). 커버리지 회귀 없음.**
+**DoD 현황(9항목)**: 1·2·4·5·6·8 = ✅ · 3 = 🅿️(도메인 상한 종결, 903 장은태 승인) · 7 = 🔶(미결, ④ 참조) · 9 = ❌(보류, production 노출 승인 전제·별도 트랙). 상세 표·근거 = `LENS_COMPLETION_STANDARD.md`.
 
-⑤ `us_fundamentals`의 `fiscal_year` 분포 — 2024가 줄고 2025/2026이 늘어야 한다.
-　→ `pre_step951`(before) 2024=920건 → 현재(after) 2024=322·**2025=634**·**2026=10**(6월결산). 예측대로.
+**기능 플래그 현황**: `REVDCF_ENABLED` = Production **OFF**(불변, 노출은 장은태 승인 필요) · `Q1_ENABLED` = 기본 **OFF**(957). 로컬 dev(`localhost:3333`)는 `REVDCF_ENABLED=true`로 기동 중 — 육안 검증용.
 
-⑥ `us_valuation`의 4축(PER·PBR·PSR·EV/EBITDA) 값이 08-08 대비 얼마나 움직였는지.
-　→ 절대상대차(부호 무시) 중앙값/p90 — PER 9.96%/**75.9%**(n=636) · PBR 4.93%/28.8%(n=818) · PSR 3.45%/19.1%(n=888) · EV/EBITDA 9.16%/49.1%(n=551). PER의 p90이 가장 크다(순이익이 창 이동에 가장 민감).
+**Q1 재료 현황**: PER·PBR = 기보유 · EV/EBITDA·PSR = 미보유(SEC 태그 조립 필요) · 역DCF = 604종목(기완성, 자기참조 유니버스 — ④ 참조).
 
-⑦ `fiscal_year`가 올라간 종목에서 `net_income`·`equity`·`revenue`가 실제로 얼마나 바뀌었는지 — `us_fundamentals_snapshot`(tag=`pre_step951`, before) vs `us_fundamentals`(after)로 낸다.
-　→ 598종목(fiscal_year 상승분) 절대상대차 중앙값/p90 — `net_income` **26.3%/184%** · `equity` 11.9%/56.4% · `revenue` 8.2%/32.5%(가장 안정적). 순이익 변동이 압도적으로 커 ⑥의 PER p90을 직접 설명한다.
+---
 
-⑧ `us_fundamentals` 순증 — 08-08 기준 1,127행, 하루 순증 약 124건 실측. 목표 5,497까지 약 35일 추정. 이번 순증을 재고 추정을 갱신한다.
-　→ **1,127→1,167(+40, 이번 크론 1사이클).** 이번 크론에서 641건이 갱신됐으나(604 revdcf 재계산 포함) 순수 신규는 40건뿐 — 이전 추정(124/일)보다 낮다. 🔴 **1개 사이클 관측뿐이라 추세로 단정 못 함(미확정).**
+## ③ 진행 중인 질문 (Q0~Q5, 정본 = `docs/USER_QUESTIONS_2026-08-08.md`)
 
-🔴 **969(부채 3분류) 관련 — 이 크론엔 미반영.** 969 커밋(`f8693cc`)이 이 크론(2026-08-09 22:45 UTC) **실행 후** push됐다 — `debtBasis` 등 969 flags가 이 크론 결과엔 전무(예상대로). **다음 정규 크론(2026-08-10 22:45 UTC = 08-11 07:45 KST)**부터 부채 3분류가 반영되며, `revdcf_results as_of='2026-08-10'`에서 확인해야 한다.
-
-상세 원자료 = `docs/probe_970_newwindow_live.json`.
-
-✅ **`us_fundamentals_snapshot`(tag=`pre_step951`)에 1,127행 확보(2026-08-08, STEP 951 부속).** 옛 창(YS=[2020..2024]) 기준 원시 재무. 내일 비교의 before는 여기서 읽는다. 검증 완료(행수 1,127=1,127 일치·symbol 집합 양방향 차집합 0·결정적 5종목 A·AA·AAL·AAPL·ABBV 전 필드 완전 일치). 🔴 **쓸모가 끝나면 지울 것 — 영구 테이블이 아니다.**
-
-🔴 **위험 — `us_fundamentals`는 symbol PK upsert다.** 내일 크론이 오늘(08-08) 값을 덮어쓴다 — 08-08 `us_valuation`의 근거가 된 재무는 스냅샷 없이는 남지 않는다(위 스냅샷으로 해소).
-
-🟢 **다음에 할 일(STEP 951 보강②·2026-08-08) — YS 고정창 결함 「수정 적용(미검증 라이브)」+ verdict 변동 비율 정정 + 미비교 12종목 확인 완료.** 950이 진단(96.5%가 한 해 누락·NVDA PER 64.7%·AAPL PER 19.5% 과대)한 것을 951에서 장은태 판정대로 **종목별 실재 최신 5개 연도**(`resolveYearWindow()`, 정의 = `docs/REVDCF_SPEC.md` §10-A)로 코드 전환 완료. 표본 30종목 검증 — **30/30 창 해소**, NVDA·AAPL `fiscalYear=2025` PASS(SEC 원문과 정확 일치). 🔴 **verdict 변동 비율 정정(951 보강)**: 원래 950이 낸 42.9%·951이 낸 22.2% 둘 다 판단 근거로 쓰지 말 것 — 951의 before가 `revdcf_results` 저장값과 불일치(AA·ABT·AKAM 확인, 검증 스크립트의 옛 창 재현 결함)했고 950의 after도 표본 14종목 중 `ADM` 1종목이 실제 새 코드값과 어긋났다. **before를 재계산하지 않고 DB 저장값을 그대로 읽는 방식으로 재측정한 정본 = 비교가능 18종목 중 7종목(38.9%) verdict 변동**(상세 = `docs/probe_951b_verify.json`). **951 보강②** — 30종목 중 나머지 12종목(skipped 7 + DB없음 5)도 확인 완료, 30종목 상태 전이표 + 변동률 3종(ⓐ라벨만 28.0%·ⓑ+gap_years 44.0%·ⓒ+skip전환 44.0%, N=25) = 상세 아래 신규 항목 1건 + 기존 00-3에 추가된 증거(아래). 🔴 **다음 정규 크론(07:45 KST)이 돌기 전까지는 DB에 새 창 값이 없다** — 이 커밋이 push되고 배포된 뒤 첫 크론 실행 결과를 봐야 실제 라이브 데이터로 확인된다. `REVDCF_ENABLED`는 여전히 OFF(화면 무변경). 과거 `revdcf_results` 행은 재계산하지 않음(장은태 판정). 상세 = `docs/probe_951_verify.json`(원본+correction+`step951b2_stateTransition`)·`docs/probe_951b_verify.json`·`docs/probe_951c_verify.json`(정본).
-
-🔴 **정정(STEP 951 검수) — revdcf 유니버스 자기참조는 신규 발견이 아니었다.** 951 보강②가 이 구조를 "새 항목 후보"로 별도 등재했으나, 아래 **00-3(2026-08-07)에 이미 있던 문제**였다 — 증거는 00-3 항목에 추가했다(중복 등재 정리, 규칙 ⓪-5 위반 재발 방지).
-
-🆕 **새 항목 후보(판정 없음, 951 보강② 2026-08-08 발견) — STALE_MARKETCAP은 949와 같은 뿌리, 951과는 독립.** skipped 7건 중 4건(`ACM`·`ADI`·`AIT`·`BBY`)이 `us_market_cap` 신선도 게이트(TTL 7일)에 막혀 있다 — `as_of=2026-07-30`로 10일 경과. route.ts 파이프라인을 그대로 재현(참고 계산)해봐도 4건 전부 `fixedCapitalRateMarginal`은 새 창에서 정상 산출되지만 **이 게이트는 시총 신선도만 보고 창은 안 본다** — 창을 고쳐도 이 종목들은 안 살아난다. STEP 949가 진단한 `us_market_cap` 결측/묵음 문제와 동일 원인, 951의 window 수정과는 독립.
-
-🔴 **00-d. 정규 크론 실행의 응답 JSON이 어디에도 저장되지 않는다(2026-08-08 발견, 판정 없음).** 수동 실행 때만(STEP 948) `processed`/`saved`/`finished`/`elapsedMs` 응답을 눈으로 봤고, `vercel.json` 스케줄 실행(`45 22 * * *`)의 같은 응답은 어디에도 남지 않는다. Vercel Runtime Logs는 **Hobby 플랜 1시간 보존**이라 사후 확인도 불가(911 기존 실측). 🔴 **이것이 「크론 예산(`BUDGET_MS=270,000ms`)이 실제로 남는지 미측정」의 근본 원인**이며, `us_fundamentals` 순환 속도(위 ⑧) 처방을 고를 재료 자체가 없게 만들고 있다 — 병목이 처리량인지 예산 소진인지 모르면 "격일로 돌린다"도 "예산을 늘린다"도 근거 없는 선택이 된다. 처방 후보(판정 없음): ① `cron_heartbeats` 테이블 활용(이미 존재, 27일 신설) ② 응답을 DB에 적재 ③ Sentry로 전송.
-
-✅ **00-e. ORDER 없는 페이지네이션 — 처방 적용(2곳)·잔여 28곳 대장 작성(2026-08-09, STEP 954).** STEP 953이 전수 조사(등급 A~D, 30곳)한 것을 이어받아, 장은태 위임으로 **Cowork가 처방 ②(공용 헬퍼)+③(실측으로 흔들린 지점만 이관)을 선택** — 30곳 전체가 아니라 실측으로 흔들린 **2곳만** 이관했다(28곳은 대장만, 이유: 나머지가 안전해서가 아니라 라이브 화면 경로를 건드리게 되기 때문).
-- **`lib/supabasePaging.ts` 신설** — `fetchAllRows(build, orderBy, pageSize?)`. `orderBy`는 **필수 인자·기본값 없음·빈 배열이면 즉시 throw**. `damodaran_industry`는 `UNIQUE(as_of, exchange, ticker)` 확인(현재 as_of 1개뿐이라 `(exchange, ticker)`만으로 전순서 — 🔴 as_of가 늘면 더 이상 고유 전순서가 아니게 됨을 코드·문서에 명시).
-- **`lib/sector.ts` 2곳 이관** — `fetchSectorMap`의 직접 루프 + 옛 로컬 `fetchAll()`(삭제, 4개 호출부 전부 `fetchAllRows`로 교체: damodaran은 `(exchange,ticker)`, nasdaq·yahoo·gics는 각각 `UNIQUE(as_of,symbol)` 확인 후 `symbol` 하나로). **판정 로직(tier 순서·형제매칭·crossCheck)은 diff 0**(직접 확인).
-- **검증**: damodaran_industry(`fetchAllRows`) **20회 반복 — 20/20 정확히 6,937**. `resolveSector()` 전체 **5회 반복 — 미분류 건수 89/89/89/89/89로 완전 고정**(STEP 953의 89/89/95/89/89 흔들림 해소). 🔴 **재현 가능한 최종 미분류 건수 = 89**(952가 보고했던 "90"은 흔들리는 값 중 하나였다 — 89가 안정값).
-- **잔여 28곳** = `docs/probe_954_paging_backlog.json`(테이블·고유키 유무·라이브 화면 여부, 우선순위 없음). 🔴 **`advisor_directory`에 PK·UNIQUE가 전혀 없다** — 별도 데이터 무결성 문제로 등재(처방 없음).
-- 🔴 **`damodaran_industry`가 왜 유독 불안정했는지는 여전히 미확정** — 정렬을 걸어 증상은 사라졌으나 원인을 안 것은 아니다.
-- 상세 = `docs/probe_954_verify.json`(검증)·`docs/probe_954_paging_backlog.json`(28곳 대장).
-
-✅ **STEP 955(2026-08-09) — us_sector_wide 재생성(954 처방 코드로) 완료.** 952가 적재한 1,127행은 954 이전의 비결정적 페이지네이션으로 만들어진 값이었다 — 재적재 전 **3회 반복으로 안정성 확인**(미분류 89/89/89, 전부 동일)한 뒤 같은 `as_of`(2026-08-08)로 upsert(DELETE 없음). 이전 값은 `us_sector_wide_snapshot`(tag=`pre_step954_paging`)에 보존.
-- **변화**: 미분류→분류 1건(`RAYA`, damodaran/Industrials — 952b 조사의 그 종목) · 분류→미분류 0건(회귀 없음) · sector 값 변경 0건 · source만 변경 3건(`WTRG`·`TEAM`·`WMS`, 전부 yahoo→damodaran). **출처 분포(확정): spdr402·damodaran605·sibling5·yahoo26·미분류89.**
-- 🔴 **`us_sector_resolved`(Q0, 1,021, 라이브 화면)에 대한 함의(조사만, 무접촉)** — 위 tier 변경 3종목(`WTRG`·`TEAM`·`WMS`)이 `us_sector_resolved`에도 전부 존재한다 → **3/1,021건이 「Q0 산출물도 같은 문제를 가졌다」의 크기다.** `us_sector_resolved` 재생성 여부 = **판정 대기**(라이브 화면이 읽는 표라 이동 시 별도 승인 필요). Q0 마감 판정 자체는 건드리지 않음.
-- `PTGX`·`TIGO`(952b가 지목한 나머지 2건)는 `us_valuation`(1,127) 유니버스 밖이라 이 재생성 대상 자체가 아니었다 — `us_sector_resolved`에서만 다뤄지는 종목, 그쪽 데이터는 미확인 그대로.
-- 상세 = `docs/probe_955_sector_regen.json`.
-
-✅ **STEP 956(2026-08-09) — Q1 ②단계 완성: 업종 백분위 계산·저장 배선.** `minSample=20` 확정(장은태 판정) → `us_sector_relative`(신규 테이블, `us_valuation`과 분리) → `lib/sectorRelativeBatch.ts`(순수 함수, 유닛테스트 9케이스) → `app/api/cron/revdcf/route.ts` 맨 끝에 추가 배선(diff는 추가분만, SEC 호출 0건·`finally`로 예산소진과 무관하게 항상 실행) → `scripts/backfill_sector_relative.ts`로 `as_of=2026-08-08` 1회 백필 완료.
-- **결과**: `us_sector_relative` 1,127행(섹터 있는 1,038 + 없는 89). `unavailable` 사유별 셀 수(4축×1,127) = `NO_VALUE` 1,189 · `SAMPLE_TOO_SMALL` 182 · `NO_SECTOR` 356.
-- **빈 칸 = 44칸(11업종×4축) 중 5칸**(실측, 예측과 일치): Real Estate 전 축(n=10/17/18/4, 전부 <20) + Financials EV/EBITDA(n=16<20). 나머지 39칸은 전부 계산됨.
-- **손계산 검산**: Industrials PER(n=155) 최저(`CNDT`)·최고(`FTAI`)·중앙근처(`IEX`) 3종목 모두 저장값과 정확히 일치(`0`·`0.9935483870967742`·`0.5096774193548387`). minSample 경계도 실측 일치(Financials EV/EBITDA 16건→전부 null, Utilities EV/EBITDA 29건→전부 계산).
-- 🔴 **화면 무변경**(`app/(routes)`·`components`·`messages` 0줄) · **크론 미호출**(스크립트로만 1회 백필) · **Q1 카드는 여전히 미착수** — 계산·저장까지만 끝났다.
-- 🔴 **Financials EV/EBITDA(16건)는 표본 부족이 아니라 축 불일치일 수 있음(미판정)** — 은행업은 EV(기업가치) 개념 자체가 안 맞을 수 있다. 표시 문구 정할 때 Real Estate(순수 표본부족)와 구분 필요 — Q1 카드 작업 시 재론.
-- 상세 = `docs/VALUATION_SPEC.md` 「파이프라인 완성」 절.
-
-✅ **STEP 957(2026-08-09) — Q1 카드 ① API + 카드 골격, `Q1_ENABLED` 기본 OFF.** `/api/q1/[symbol]`(us_valuation ⋈ us_sector_relative ⋈ us_sector_wide 조회만) + `components/Q1Section.tsx`(4축·백분위·표본수·회계연도) 신설, `page.tsx`에 가드 블록만 추가(diff 10줄). 플래그 OFF 실측 확인(`/api/q1/AAPL` 404 · 페이지 HTML에 실제 렌더 없음 — 메시지 사전 페이로드만 존재, RevDcf와 동일 정상 패턴). valuation 렌즈 철거는 STEP 958로 분리(미착수). 이후 장은태가 로컬에서 `Q1_ENABLED=true`로 육안 확인(`/api/q1/{AAPL,NVDA,AAL,AMT}` 200 확인, `O`는 유니버스 밖 404 — 대조는 STEP 958에서 이어감).
-
-🔴 **STEP 958(2026-08-09) — Q1 모델 결함: PSR-Financials가 minSample로 안 가려진다(판정 대기).** Damodaran 원전 2건(`finsvc.pdf`·`Investment Valuation` c21) 직접 확인 — **Financials 업종은 EV/EBITDA뿐 아니라 PSR도 정의상 미적용**("매출이 재무서비스업엔 측정 가능한 개념이 아니다" 원문 인용). 🔴 **EV/EBITDA-Financials는 CLAUDE.md가 이미 지적한 대로 minSample(20)이 우연히 가려준다(실측 n=16)** — 그런데 **PSR-Financials는 실측 n=61로 임계값을 넘어 그대로 계산·노출된다.** 즉 같은 개념적 결함이 축마다 다르게 「가려짐/노출됨」이 갈리는 것은 minSample이 결함을 걸러내는 장치가 아니라 표본 크기의 우연한 부산물이라는 증거. Real Estate도 비슷하게 얽혀 있다: PER·PBR은 "계산되나 업계는 왜곡됐다고 봄"(P/FFO·NAV 선호, 4개 실무출처)인데 minSample로 가려짐(n=10/17) — 반대로 EV/EBITDA는 "REIT엔 정상 적용"(은행과 달리 부채가 정상 자본구조, 실무출처 확인)인데도 표본부족(n=4)으로 **똑같이** 가려진다. 나머지 9개 업종×4축은 업종별 개별확인 없이 "적용(일반론)"으로만 채웠다(근거 없이 미적용이라 안 적음). 🔴 **`SECTOR_RELATIVE_SPEC`은 바꾸지 않았다 — 판정 대기.** 44칸 표·원전 인용 전문 = `docs/probe_958_external_check.json`. 같은 STEP에서 DoD3(외부 대조)도 stockanalysis.com 5종목 대조로 ❌→🟡 갱신(상세 = `docs/VALUATION_SPEC.md` 검증 절).
-🟢 **정정(STEP 959)**: 위 줄의 "적용(일반론)"·"미적용" 표기는 아래에서 근거를 갖춰 다시 판정됐다.
-
-✅ **STEP 959(2026-08-09) — 업종×축 적용성 전수 조사(44칸), Damodaran 라이브 데이터셋 신규 발견.** 958이 "적용(일반론, 근거없음)"으로 채웠던 나머지 9개 업종을 안(내부 자료)부터 다시 열었다 — `data/sources/text/damodaran_data_update_1_2026.html`(기존 저장본)에서 Damodaran이 **업종별 배수 데이터셋을 별도 발행**한다는 신호를 발견 → `pedata.xls`(PE)·`pbvdata.xls`(PBV)·`vebitda.xls`(EV/EBITDA)·`psdata.xls`(Price/Sales) 4개(우리 4축과 정확히 대응) 신규 확보(`data/sources/damodaran_multiples/`). 이 라이브 데이터로 업종군별 NA 패턴을 직접 집계 — **44칸 = 적용 40 · 조건부 4 · 미적용 0 · 불명 0.**
-- 🔴 **958의 "미적용" 2칸이 더 정밀한 "조건부"로 바뀜.** EV/EBITDA×Financials: 은행·증권 3개 업종군(615개사)만 NA, 보험·자산운용 6개 업종군(558개사)은 실값 계산됨 — `finsvc.pdf`의 "부채=원재료" 논리가 은행에만 해당함을 실측 확인. PSR×Financials: 🔴 **c21 교과서 원문은 "측정 불가"라 명시하나, Damodaran 본인의 라이브 `psdata.xls`(2026-01 갱신)는 Financials 9개 업종군 전부(0/9 NA) 실제 계산해 발행 중** — 원전 텍스트와 원전 저자의 실제 관행이 상충한다는 신규 발견.
-- 🔴 **현재 뚫려 있는 칸(사실 기록)**: PSR×Financials, n=61, minSample 안 가려짐. Q1_ENABLED가 OFF라 화면에는 안 나가 사용자 피해는 없다.
-- Real Estate PSR은 958의 "불명"에서 "적용"으로 확정(라이브 데이터 5개 업종군 전부 NA 없음).
-- 나머지 9개 업종×4축(36칸)은 "근거 없는 일반론"에서 "라이브 데이터 기반 적용"으로 정정 — 개별 업종군 예외 3건(Consumer Discretionary PER 2곳·Consumer Staples PBR 1곳·Materials PER 1곳)은 구조적 신호로 보지 않고 각주 처리.
-- 처방 후보 4개 기록만(제외/표시만가림/조건부표시/대체축), 고르지 않음. `SECTOR_RELATIVE_SPEC` 무변경. 판정 자료 정본 = `docs/SECTOR_AXIS_APPLICABILITY.md` · 원자료 = `docs/probe_959_axis_applicability.json`.
-
-🟡 **STEP 960 §0(2026-08-09) — Damodaran 업종별 4축을 Q1 DoD3 정답지로 쓸 수 있는지 재료만 확인, 0단계에서 멈춤.** 🔴 정정: 959의 "신규 확보"는 정확했다(다운로드·커밋·push 완료) — 위치가 `data/sources/damodaran_multiples/`(신규 디렉토리)라 헷갈렸을 뿐, `data/sources/damodaran/`(기존 8종)에는 원래 없다. 실측: **어휘 완전일치**(94개 업종명, DB `damodaran_industry.industry_group`과 대칭차집합 공집합, 4개 파일 전수 대조) · **중앙값·백분위는 어디에도 없음**(단순평균 또는 가중합산비율뿐, FAQ 전문 확인) · 전부 US·2026-01-05 단일 스냅샷(우리 as_of와 7개월 차). 🔴 **어긋나는 지점(결론 아님)**: 업종 단위 불일치(94↔11) · 집계방식 불일치(종목별 백분위 vs 업종 대표값 1개) · 기준시점 불일치 · **가장 근본적으로 Damodaran 파일이 종목별 값을 안 준다 — Q0/SPDR과 달리 "같은 종류의 것"을 비교하는 게 아니다.** gitignore 선례 3가지 확인(nasdaq=무시·spdr=커밋·**damodaran 원본 8종도 무시였다는 사실을 이번에 처음 확인**) — 판단 안 함. 대조 자체는 다음 지시 후. 상세 = `docs/probe_960_damodaran_multiples_structure.json`.
-
-🟡 **STEP 960 §1(2026-08-09) — 업종 대표값 대조 설계(실행 안 함).** §0의 어긋남 3개를 각각 처리: ① 단위 — 우리 1,127종목을 `damodaran_industry.ticker_norm`으로 재분류(읽기전용, 대조 전용, SPEC 무변경) → **1,005/1,127(89.2%) 매칭, 88/94 업종군에 ≥1종목**(중앙값 7사, Damodaran 자체 표본보다 훨씬 얇음). ② 집계방식 — Damodaran FAQ 원문 그대로 복제(PER=단순평균, 나머지 3축=가중 합산비율) — 음수 자기자본/EBITDA 제외 규칙은 원문에 없어 우리가 임의로 정함(불명 명시). ③ 시점(7개월) — 층A(값 대조, 정확도로 해석 안 함)+층B(순위 대조=Spearman, 중심). 🔴 **이 대조가 검증하는 것 = 계산식 자릿수 정합성·업종 서열 일치·이탈 업종 탐지. 검증 못 하는 것 = 종목별 백분위(원리적으로 불가, Damodaran이 종목별 값을 안 줌).** 🔴 **DoD3(종목 단위 요건)는 이 설계로 못 채운다** — 업종군 단위라 단위 자체가 다름. 대체 경로(판정 없음): 958의 stockanalysis.com 종목대조를 5→N 확장 등. 실행 설계만 하고 안 돌림(SEC·야후 불필요, 이미 저장된 값+로컬 파일만). 상세 = `docs/probe_960_compare_design.json`.
-
-🟡 **STEP 962(2026-08-09) — Q1 4축 정의 정밀화, 판정 재료(SPEC·`lib/valuation.ts` 무변경).** SEC 신규 78건(companyfacts, 150ms 간격·순차·429 없음). **PBR** — 후보ⓑ(우선주·비지배지분 제외) p90 절대상대차 3.21%, 후보ⓒ(유형장부가까지 제외) **12/49 종목이 장부가 음수로 전환**(IT4·Industrials4·HealthCare2·Utilities1·Materials1 — 기술주만이 아니라 M&A영업권 큰 기업 전반). **Citigroup 우선주 17.85B(SEC 재확인, 장은태 제공 수치와 정확 일치)가 958 PBR 잔차 −10.15%의 대부분(−8.56%)을 설명, 남는 −1.72%는 미설명.** **PSR 종목단위 정의는 이번에도 못 찾음**(psdata.xls·variable.htm·c21.pdf 전부 확인, 업종 집계 정의뿐). **EV/EBITDA 현금범위** — Damodaran 정의("Cash and Marketable Securities") 확인, 우리 식과 큰 틀 정합. 🔴 **958의 AAL EV/EBITDA 이상치(+7.10%)는 이 조사로도 설명 안 됨** — AAL은 현금 태그가 하나뿐이라 정의선택 자체가 무의미. **PER 우선주배당** — Citigroup 조정 시 −21.43%→−13.04%(PBR만큼 안 닫힘, 잔차 큼을 숨기지 않음). 상세 = `docs/probe_962_definition_refine.json`. 🔴 **판정 없음 — 축별로 장은태가 고른다.**
-
-✅ **STEP 963(2026-08-09, 장은태 위임→Cowork 판정) — Q1 PER·PBR을 보통주 기준으로 확정·구현·백필 완료.** 착수 전 코드확인으로 역DCF 무영향 재확인(`DriverFundamentals`↔`DriverBundle` 완전분리, `engine.ts`·`compute.ts`가 `dr.fundamentals` 미참조). `NET_INCOME` 배열 재정렬(새 태그 0개) + `commonEquity` 신규 필드(`equity`는 보존, `us_fundamentals`에 3컬럼 추가) — 테스트 7건 신규(332/332 통과). 🔴 **1차 영향측정 시도가 `computeDrivers()`를 그대로 불러 "오늘 기준 최신연도"로 재해석되는 함정에 빠짐**(PER 중앙값 19.5%라는 비현실적 결과로 발견, 미해결0번의 실제 재현) → `annualMap`/`coalesceMap`을 저장된 `fiscal_year`에 고정해 재추출로 정정. **전 유니버스(1,127종목, SEC companyfacts 신규 932건·429 0건) 실측**: PER p90 절대상대차 1.0%(새로 unavailable 3건: APG·FTAI·QXO — 우선주배당 차감 후 보통주귀속 손실 전환, 경제적으로 유효) · PBR p90 0%(새로 unavailable 0건, 예측 1건보다 적음) · **Financials(61종목) p90 8.8% vs 🔴 Utilities(38종목) p90 11.8%로 Financials보다 큼**(규제 유틸리티 VST·NRG·AES·EIX·PCG·D의 전통적 우선주 자본조달, 실측 확인 — 예상과 달랐던 것을 그대로 보고). Citigroup: PER 17.856→19.764(−9.65%)·PBR 1.0856→1.1872(−8.56%) — 장은태 제공 수치와 정확 일치. **적재**: `us_fundamentals_snapshot`(tag=`pre_step963`) 1,127행 선스냅샷 → `us_fundamentals`·`us_valuation`(as_of=2026-08-08) 각 930행 갱신(197행은 fiscal_year 미확보라 무접촉) → `us_sector_relative`(`computeSectorRelativeBatch` 재사용) 1,127행 재계산. **역DCF 무영향 실측 확인**: `revdcf_results` 604행 불변, verdict 분포(skipped170·value_destroying156·years119·over_cap94·below_one65) 및 AAL(value_destroying)·AAPL(over_cap)·NVDA(years·gap5) 개별 확인 전부 백필 전과 동일. 🔴 **화면 무변경**(app/(routes)·components·messages 0줄, `app/api/cron/revdcf/route.ts`만 변경). PSR·EV/EBITDA는 무변경(등재만). 상세 = `docs/probe_963_definition_apply.json`.
-
-✅ **STEP 963 §5-3 신규 항목 — Citigroup Revenues 태그 이중값 → STEP 964가 재료 수집 → STEP 965가 정책 확정(2026-08-09, 장은태 위임→Cowork 판정).** 같은 us-gaap `Revenues` 태그·같은 기간(2024-01-01~2024-12-31)에 SEC가 값을 두 개 갖고 있다: **81,139,000,000**(FY2024 10-K 원본) vs **80,722,000,000**(FY2025 10-K의 전년 비교치). 우리 저장값은 후자와 일치 — STEP958이 "설명 안 됨"으로 남겼던 0.51% 차이의 원인이 **제출 버전(vintage) 문제**였음을 962/963이 확인했다. **결론(965) = 최신 제출값을 그대로 쓴다(현행 유지 확정).** 정본 = `docs/REVDCF_SPEC.md` §10-B.
-🟡 **STEP 964(2026-08-09) — Revenues 하나가 아니라 netIncome·equity·revenue 3축 전체로 재료 확장(조회 전용, 캐시만 사용, SEC 신규호출 0).** 930종목 전량에서 같은 축·같은 연도에 실제로 값이 다른 이중 제출 존재율: netIncome 41/930(4.4%)·equity 45/930(4.8%)·revenue 55/930(5.9%) — 세 축 다 중앙값은 1% 미만(0.5~0.7%)이지만 p90은 축별로 27~32%, max는 최대 1730%(순이익 부호 반전 사례 `CODI`)까지 벌어진다. 🔴 **최대폭 사례(`WDC`·`DD`·`TKO`)는 사업분할·인수 등 회계상 재작성이 원인으로 확인됨**(WDC는 2025-02-21 SanDisk 스핀오프로 FY2024 비교치가 계속영업 기준 재분류 — SEC 10-K·보도자료로 확인) — 단순 오류정정이 아니라 **기업구조 변경의 회계 반영**이 큰 차이의 주 원인. **외부 대조(stockanalysis.com)**: WDC·DD 둘 다 우리가 채택 중인 "최신 제출값"과 정확히 일치 — 최소 2건에서 외부도 같은 정책(재작성 반영)을 쓴다는 근거. Citigroup만 예외적으로 third value($70,613M, 우리 두 값 어느 쪽과도 불일치) — 은행 매출 정의 차이로 추정되나 미확인. 상세 = `docs/probe_964_residuals.json`.
-
-✅ **STEP 965(2026-08-09, 장은태 위임→Cowork 판정) — 제출버전(vintage) 정책 확정: 최신 제출값(재작성 반영) + `flags.restated` 기록.** 처방 ① 현행 유지 + ④ flags 기록 채택(② 원본 제출 고정·③ 둘 다 저장은 채택 안 함, 대가 명시 — REVDCF_SPEC §10-B). **계산 로직 무변경** — `annualMap`의 선택부(`drivers.ts:37`)는 주석만 추가. `detectRestated()` 신규 export + `flags.restated`(재작성 감지 필드명 배열, netIncome·equity·revenue·preferredStock·minorityInterest 5종 — operatingIncome·dna는 재구성경로라 범위 밖) — 테스트 4건 신규(336/336 통과). **값 불변 실측(1,127종목 전량, SEC 신규호출 0)**: 구코드(965 이전) vs 신코드 완전 대조(DriverBundle·market·ok·skipReason·fundamentals 9필드) = **불일치 0건** · 신코드를 pinned-year 방식(963과 동일 방법론)으로 재추출해 `us_fundamentals`(net_income·common_equity·preferred_stock·minority_interest) 대조 = **불일치 0건**. `revdcf_results` 604행 verdict 분포(skipped170·value_destroying156·years119·over_cap94·below_one65) — DB 쓰기 없어 자명하게 불변, ①의 완전일치가 이를 수학적으로 보증. **화면 무변경**(app/(routes)·components·messages 0줄) · **DB 쓰기 0**(이번 STEP은 코드 주석·기록 함수 추가뿐, 백필 없음) · KR 미접촉. 🔴 **Citigroup third value($70,613M)는 이 판정으로도 설명 안 됨 — 여전히 미해결.** 상세 = `docs/probe_965_invariance.json`.
-
-🟡 **STEP 968(2026-08-09) — 잔차 규명①: 재척도 근사 제거 후 정면 대조, 958의 "±1~7%" 재판정.** ①-B stockanalysis.com 재확인 — "FY말 종가를 명시한다"던 958 서술은 과장(방법론 문구 없음)이었으나 Yahoo 독립조회로 실제 FY말 종가와 정확히 일치함은 재확인. 5곳 추가 시도 전부 차단. **가설 검증**: 958의 5종목 재척도 잔차 17/18이 음수(체계적 편향) → 결정적 선정(주식수 변동률 상위5/하위5, 분할종목[`BKNG`·`CRWD`] 제외)으로 10종목 추가, 15종목 전체 재척도 잔차와 주식수 변동률 상관 = **극단희석 포함 r=0.73, 정상범위 10종목만 r=−0.92 — 가설 참(TRUE) 확정.** **재척도 제거 직접구성**(FY말종가[야후15회]×FY희석주식수): 절대상대차 중앙값 **PER 19.83%→0.07%(사실상 해소)**·PBR 17.23%→8.29%·PSR 18.02%→8.34%·EV/EBITDA 15.85%→8.90%(전부 대폭 감소, 부호편향 소멸). Citigroup PER: 958 −21.43%→963 −13.04%→968 **+0.58%**(963 미해결분이 거의 전부 재척도 아티팩트였음 확인). **남는 잔차 2건 개별 규명**: Citigroup PBR(우리 commonEquity기준 +13.64%→총자기자본기준 +3.92%, stockanalysis.com이 총자기자본 기준으로 추정) · `GM` EV/EBITDA(직접구성도 −75.58% — SEC원문 대조로 `debt`=0이 오류임을 발견, 실제 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities`=$131,758,000,000 존재하나 태그union 누락, 조사전용이라 코드 무수정). 🔴 **958의 "±1~7% 통과" 재판정 = 부분 무효** — 방향은 맞았으나 우연히 주식수변동 작은 표본(−0.5%~−8.2%)이었을 뿐, 변동 큰 종목(`GM`·`LUV`·`CROX`·`DVA`·`CARS`)엔 13~27%의 "가짜 오차"가 났을 것. `docs/VALUATION_SPEC.md`·`docs/LENS_COMPLETION_STANDARD.md`(Q1 항목3, DoD3 🟡 유지 — 방법론은 견고해졌으나 잔차 대부분 미규명) 갱신. **코드·DB·SECTOR_RELATIVE_SPEC·VALUATION_SPEC 계산정의 무변경**(조사 전용). 🔴 못한 것 — PBR·PSR·EV/EBITDA 잔여 잔차(~8%) 대부분 미규명 · `HGTY` PER/PBR/PSR 극단이상치 미조사 · `PROP`·`QXO`(극단희석) 직접구성 후에도 −40~−50% 잔차 원인 미확정. 상세 = `docs/probe_968_residual.json`.
-
-✅ **STEP 969(2026-08-10) — 부채 「확정0 / 확정값 / 모름」 3분류 도입(구현·백필 완료, 역DCF 코어 변경).** 968이 발견한 GM `debt=0` 오류(태그 배열 밖)를 규명·확장. **①-B**: stockanalysis.com 1곳만 성공(GM Total Debt FY2024=$129,732M·FY2025=$130,277M) — 나머지 시도 없음(966·968 차단 전례 인용). **①③ 태그 전수조사**: `debt=0` 103종목 캐시 스캔 → 배열 밖 태그 259개(운영리스 공시·매도가능증권·수취채권·현금흐름표 동사형 항목 등 소음 제외 후) → SEC 10-K R-file(us-gaap 공식 Definition) 대조로 확인된 것만 채택: `DEBT_TOTAL_SINGLE`에 `LongTermDebtAndCapitalLeaseObligationsIncludingCurrentMaturities`(GM 태그) 추가·`DEBT_LT`/`DEBT_CUR`에 컨버터블/시니어노트/무담보채/단기차입 등 15종 추가. `SeniorNotes`·`NotesPayable`·`LoansPayableToBank`·`FinanceLeaseLiability`(단일)·`DebtInstrumentCarryingAmount`는 정의 미대조·이중계상위험으로 의도적 제외. **GM 검산**: FY2024 $131,758,000,000 vs 외부 $129,732M(1.56%차, 억지로 안 맞춤) · FY2025 0.99%차. **3분류 구현**: `flags.debtBasis="tagged"|"none"|"unresolved"`, 배열 밖에서도 부채꼴 태그가 발견되면(`unresolved`) `debt=0`으로 채우지 않고 `skipReason="UNRESOLVED_DEBT"`로 skip. 테스트 4건 신규(345/345 통과). 🔴 **백필 중 자체발견·수정한 결함**: 1차 백필이 "`fiscal_year` 확보"만 조건으로 삼아, 실제론 더 앞선 게이트(`NOT_APPLICABLE_SECTOR` 등)에서 이미 탈락해 `shares`·`nonOperatingAssets`도 null이던 191종목(`C`·`BLK`·`DD`·`DE`·`GE`·`HON`·`NKE`·`OXY`·`SLB`·`SHOP`·`STZ`·`URI`·`V`·`VTR` 등)에도 `debt`만 단독 계산해 써 넣는 모순 상태를 만듦 — 스냅샷(`pre_step969`)으로 191건 전부 원상복구·재검증(0건 잔존). **정당한 최종 결과(137건)**: 0→값 20건(GM 포함)·값→다른값 103건(최대 `ORCL` $10.205B→$95.502B +835.8%)·값→0 10건(일부 미규명)·`UNRESOLVED_DEBT` 신규skip 4건(20건 미만, 적재 진행). **revdcf verdict 재계산(ceteris paribus, 434건 중 6건 변화)**: `GM`이 `below_one`→`years`(gap5)로 라벨 자체 변경, `HL`·`USFD`·`VRSK`·`XYL`은 gap 1~2년 이동, `EXPD`는 신규 skip. EV/EBITDA 100건 변화(중앙값 0.76%·p90 11.9%). 🔴 **`revdcf_results`(as_of=2026-08-08)는 건드리지 않음 — 옛 debt 기준(다수 종목 debt=0)으로 남아 있다. 다음 정규 크론이 새 코드로 재계산한다.** `docs/REVDCF_SPEC.md` §10-D 신설(정본) · `docs/VALUATION_SPEC.md`(EV 절 교차참조) 갱신. 🔴 운영리스 자본화는 범위 밖(미판정). 상세 = `docs/probe_969_debt_tags.json`.
-
-🆕 **STEP 964 신규 항목 — `fiscal_year` 미확보 197종목은 Q1 카드가 통째로 빈다(2026-08-09).** `us_fundamentals.fiscal_year` null인 197종목(전부 `unavailable_reason='INSUFFICIENT_HISTORY'`) = `us_valuation` 4축·`us_sector_relative` 4개 백분위 **전부 null**(197/197 교차확인). 원인 분류(캐시 전수, SEC 신규호출 0): **A. us-gaap 매출태그 자체가 없음(IFRS 외국사 등 의심) 135건(68.5%)**(표본 `ASML` — 20-F만 제출, us-gaap 매출태그 0개) · **B. 매출태그는 있으나 10-K 폼으로 안 잡힘(6-K/8-K 전용) 47건(23.9%)**(표본 `AKTX` — 매출값이 8-K 하나뿐) · **C. 매출태그·10-K 둘 다 있으나 매출태그 자체가 10-K로 안 잡힘(은행형) 8건(4.1%)**(표본 `CBSH`·`ABCB`) · **D. 미분류 7건(3.6%)**. 🔴 고치지 않음 — 규모·원인 분류만. 처방 판정 대기.
-
-🟡 **STEP 966(2026-08-09) — CLAUDE.md ①-B(타 플랫폼 실무 조사) 규칙 신설 + 첫 적용으로 A분류(135건) 정밀화.** **1단계**: ⓪-4의 ①검색을 ①-A(문헌)·①-B(타 플랫폼 실무 3곳 실제조회)로 분리(기존 규칙 번호·내용은 안 바꿈). 근거 = 2026-08-09 하루에 Cowork 추론 빗나감 4건(Damodaran multiples 정답지 오판·업종 미적용축 예상빗나감·우선주 Financials최대 예상빗나감[실제 Utilities]·유형장부가 음수 기술주오판[실제 M&A전반]) 전부 "다른 곳은 어떻게 하나"를 안 봐서 생김. **2단계 첫 적용**: ①-B(link_hub analysis 14곳 중 stockanalysis.com·WallStreetZen 성공/8곳 실패) → ASML PER·PBR을 외부는 보여주는데 SEC엔 `ifrs-full`조차 없음(us-gaap도 매출태그 0개) → **③ 실측(197건 전량, SEC신규0)**: A분류135건이 균질하지 않았다 — **52/197(26.4%)은 ifrs-full 네임스페이스 실존**(`BP`·`CX`·`CNQ` 등, `ASML`은 없음 — 같은 IFRS라도 SEC제출방식이 회사마다 갈림) · **25/197(12.7%)은 Revenue·ProfitLossAttributableToOwnersOfParent·EquityAttributableToOwnersOfParent 3종을 20-F/40-F 폼으로 전부 확보**(잠재 최대 52/197, 나머지 27건은 6-K뿐이거나 확장태그) · **145/197(73.6%)은 ifrs-full도 전무**(`ASML`형, 회수경로 원리적으로 막힘). 🔑 **태그우선순위 발견**: `ProfitLoss`(NCI포함 총계) vs `ProfitLossAttributableToOwnersOfParent`(지배주주귀속) 구도가 STEP963의 `NetIncomeLoss` vs `NetIncomeLossAvailableToCommonStockholdersBasic`과 **구조적으로 동일**(BP: 총계$1,295M vs 귀속$55M, NCI가 $1,240M). **② 대조 2종목**: `BP` Revenue 1.70%차·귀속순이익 **0%(정확일치)** · `CX`(CEMEX) Revenue 0.85%차·귀속순이익 **0%(정확일치)**(둘 다 stockanalysis.com 대조). **④ 검수**: ASML은 외부가 보여주는데 SEC엔 없음 → 그들이 SEC를 안 쓴다는 뜻(정본 원칙 "야후 등 2차가공물 미사용"과 충돌, 판정 대상). **선택지 3개(판정 없음)**: ①현행유지 ②ifrs-full 지원추가(확실 25건·잠재 52건 회복, 업종백분위 혼재 문제 미검증) ③SEC밖 소스(CLAUDE.md 정본원칙과 충돌). 🔴 기존 「ADR은 소속국가 탭에서 계산」 정책과 겹치는 부분 있음(재론 안 함). 상세 = `docs/probe_966_ifrs_scope.json`·`docs/VALUATION_SPEC.md`.
-
-✅ **STEP 967(2026-08-09) — 은행형 매출(순이자수익+비이자수익) 폴백 구현·백필 완료: 197건 중 19건 회복.** STEP964의 C분류(은행형, 표본 `CBSH`)에 대한 실제 처방. **정의(①-A) = FDIC 감독매뉴얼·Quarterly Banking Profile**: "Net operating revenue = net interest income + noninterest income." 코드 = `lib/revdcf/drivers.ts`에 `InterestIncomeExpenseNet`+`NoninterestIncome` 폴백(REV 4종이 **완전히 전무**할 때만 시도) — `resolveYearWindow`를 `findContiguousWindow()`로 분리해 재사용, `sumMaps` 기존 함수 재사용, `flags.revenuePath="standard"|"bank"` 기록. 🔴 **섹터 라벨이 아니라 태그 존재로 분기** — STEP963의 업종별 차등 배제 판정(섹터분류 오류가 계산정의 오류로 번짐)과 정합, 이 분기는 섹터 라벨을 아예 안 본다. 🔴 **1차 구현이 930종목 값 불변 검증에서 회귀 3건(`BRBS`·`CBU`·`PRK`) 적발·자체 수정** — 트리거를 "창 실패"로만 두면 REV 데이터가 일부(비연속)만 있는 회사까지 은행형으로 덮어써 fiscalYear가 통째로 바뀜(`BRBS` 2020→2025) → 트리거 조건에 "REV coalesce 0년(완전 전무)"을 추가해 해소, **재검증 930종목 불일치 0건**. **회복 실측**: 19건(전부 미국 지역은행 — `ABCB`·`AFBI`·`AMTB`·`AROW`·`AUB`·`BMRC`·`BPRN`·`CBSH`·`CFBK`·`CLST`·`CMTV`·`CNOB`·`CTBI`·`HFWA`·`MGYR`·`MSBI`·`NEWT`·`PROV`·`TRMK`)에서 fundamentals 확보. `ok:true`(driver 5년 전체통과)는 0건(은행은 이어서 `NOT_APPLICABLE_SECTOR` 게이트에 막힘, 838 패턴) — 하지만 fundamentals는 그 게이트보다 먼저 수집돼 **Q1 카드엔 실질 회복**(`CBSH` 백필 후 실측: PER 15.01·PBR 2.24·PSR 4.82, EV/EBITDA만 `MISSING_MARKET_DATA`). 🔴 **역DCF 영향 0건**(19건 전부 604 자기참조 유니버스 밖, DB 확인) — `revdcf_results` 604행·verdict 분포 불변. **백필 완료**: `us_fundamentals_snapshot`(tag=`pre_step967`) 1,127행 스냅샷 → `us_fundamentals`·`us_valuation`(as_of=2026-08-08) 각 19행 갱신 → `us_sector_relative` 1,127행 재계산. 🔴 **미해결**: ① 1.52% 잔차(SEC 10-K R5.htm 원문 대조 — 대손충당금 차감 가설로 0.5%/0.23%까지 좁혔으나 완전히 안 닫힘) ② 국가별(미국57/미매칭55/캐나다24/기타61) 분류를 damodaran_industry·Nasdaq 스크리너 두 방법 다 재현 못 함 ③ `BPOP`(낡은 REV 잔여로 은행형 전환 안 됨, 발견만) ④ 은행 operatingIncome 태그의 개념 정합성(EV/EBITDA는 다른 게이트로 이미 막혀 있어 당장 영향 없음). 상세 = `docs/probe_967_bank_revenue.json`·`docs/REVDCF_SPEC.md` §10-C.
-
-🆕 **STEP 964 신규 항목 — 963 플래그 미측정분 실측 완료, 963 백필의 불완전성 크기(2026-08-09).** `preferredStockUnknown`(우선주 태그 못 찾음) = 930건 중 **496건(53.3%)** — 그중 363건(73.2%)은 태그 자체가 회사 XBRL facts에 전혀 없음(강한 "우선주 미발행" 신호), 133건(26.8%)은 다른 연도엔 있는데 하필 고정연도(ly)에만 없음(약한 신호). **섹터 분포는 963의 우려(Financials·Utilities 편중)를 반증** — Financials(41.0%)가 12개 섹터 중 오히려 가장 낮고 Materials(70.0%)·Energy(69.0%)가 가장 높다. `commonEquityNciNotSubtracted`(NCI 태그 못 찾아 못 뺌) = **34/930(3.7%)**, Utilities가 10.5%로 최고 — 963이 발견한 "Utilities p90(11.8%) > Financials p90(8.8%)"에 이 미차감분이 일부 기여했을 가능성(인과 미확인). 상세 = `docs/probe_964_residuals.json`.
-
-🟡 **STEP 964(2026-08-09) — 925 vs 930 불일치 규명 완료(버그 아님).** `common_equity`가 채워진 925행 vs `net_income`/`fiscal_year`가 채워진 930행의 5행 차이(`ANDG`·`CNK`·`CQP`·`LGN`·`MDLN`)는 이 5종목이 **963 이전부터 `equity` 자체가 null**이었기 때문(`us_fundamentals_snapshot(tag=pre_step963)` 대조로 확인) — `commonEquity`는 `equity`에서 파생되므로 분모가 없으면 자동 null, 계산 로직 결함이 아니다. STEP963 보고서의 "930행"은 스크립트의 순이익 재계산 성공 건수(`updates.length`)를 가리킨 것으로 표현상 정밀도 문제였다.
-
-🔴 **NVDA 회계연도 라벨 — 표시 문구 판정 필요(2026-08-08, 판정 대기).** 우리는 NVDA를 `fiscal_year=2025`로 라벨하는데(`calYear`의 5월 경계 규칙) NVDA 자신은 FY2026이라 부른다. 값은 SEC 원문과 일치하나 화면에 「2025년 실적」으로 표기하면 사용자가 틀렸다고 볼 수 있다. 표시 문구 판정 필요(장은태) — Q1 카드 작업 시 함께 정한다. 상세 = `docs/VALUATION_SPEC.md` 미해결 6번·`docs/LENS_COMPLETION_STANDARD.md` Q1 항목3.
-🔴 **불일치 기록(2026-08-09, STEP 958 직접측정)**: 이 줄이 쓰인 시점엔 라벨이 `fiscal_year=2025`(NVDA 자체 FY2026)였다는데, **오늘 `us_valuation`(as_of=2026-08-08)을 직접 조회하니 NVDA는 `fundamentals_fiscal_year=2024`(net_income=$72.88B=NVDA 자체 FY2025 실적)로 나온다** — 같은 −1 오프셋 메커니즘이지만 관측된 연도 쌍이 다르다. 원인(크론 실행 시점·연도창 로직 변화 등)은 이번 STEP에서 조사하지 않았다 — 사실만 남긴다.
-
-🔑 **다음에 할 일(STEP 950 후보, 2026-08-08)** — 처방 판정 전에 `LOCAL_OK_PROD_FAIL`을 먼저 가른다(`us_market_cap` 결측 원인 진단, 아래 00-c). 🔴 Production에서 같은 조사를 돌리는 것이 유일한 판별 수단으로 보이나, 그건 크론 수동 실행이므로 **장은태 승인이 필요하다.**
-🔴 **Q1은 ①단계(재료)만 끝났다. 9항목 중 ✅ 0건. 커버리지 18.2%.** 「Q1 완료」라고 쓰지 말 것. 상세 = `docs/LENS_COMPLETION_STANDARD.md` Q1 행.
-
-
-## 🔴🔴 2026-08-08 전환 — **역DCF 단독 진행에서 「질문 Q0~Q5」 체제로** (장은태)
-
-> **다음 세션은 이 절을 먼저 읽는다.** 아래 「HEAD / 배포」·「열려 있는 것」의 STEP 900번대 서술은 **역DCF 내부 이력**이며 여전히 유효하나, **진행 순서의 정본은 더 이상 DoD가 아니라 질문 순서(Q0~Q5)다**(CLAUDE.md 규칙 6 정정).
-
-**무엇이 바뀌었나**
-- **진행 순서 정본 = `docs/USER_QUESTIONS_2026-08-08.md`** — 사용자가 알고 싶은 질문 **Q0~Q5 ＋ 요약층**. 🔴 **모델보다 질문이 먼저다.** *"중요한 건 모델 자체가 아니라 이용자들이 무엇을 원하느냐"*(장은태 2026-08-08).
-- **역DCF는 독립 질문이 아니라 Q1의 최심층 축**으로 재정의됨(`USER_QUESTIONS` §5).
-
-**질문별 확정 현황 (2026-08-08)**
+🔴 **진행 순서 정본 = 질문 순서(Q0~Q5)다, DoD 순번이 아니다**(CLAUDE.md 규칙 6). 역DCF는 독립 질문이 아니라 **Q1의 최심층 축**(원전 *"not as a replacement"*).
 
 | | 질문 | 상태 |
 |:--:|---|---|
-| **Q0** | 뭐 하는 회사인가 | ✅ **확정** — 2-of-2 합의제 · 미분류는 「업종 대비」 줄만 비움 · 🔴 **구현 0** |
-| **Q1** | 내가 비싸게 사는 건가 | ✅ 확정 — C안(배수 ＋ 역DCF 병기) · 🔴 구현 0(역DCF만 기존) |
-| **Q2** | 현금을 돌려주나 | ✅ 확정 — B안(수익률 ＋ 커버) · 🔴 구현 0 |
-| **Q3** | 커지고 있나 | ✅ **확정** — 매출 5년 CAGR 주축 ＋ 감가상각전 영업이익 보조 · 🔴 순이익 CAGR 안 씀 · 구현 0 |
-| **Q4** | 망할 위험은 없나 | ⬜ 미확정 — 🔑 `lensPrecompute.ts:15` 실측: **`fscore`가 이미 7렌즈에 들어가 작동 중**(「식별됨」이 아니라 부분 커버) |
-| **Q5** | 뭔가 바뀌었나 | ⬜ 미확정 — 모델이 아니라 변화 감지 파이프라인(`lens_state_changes` 재사용) |
+| **Q0** | 뭐 하는 회사인가 | 🟡 **부분 완료** — 6단계 중 ①~④ 완결(940·942·943·944), ⑤ 화면표시는 리스트만 완결(945·946)·**카드에 「업종 대비」는 아직 없음**(Q1 카드 대기), ⑥ 테스트 완료(946)·라이브 실측(DoD9)은 판정 보류. 완성기준 9항목 중 ✅3·🟡5·판정보류1 — 마감 시점표 = `LENS_COMPLETION_STANDARD.md` Q0 행 |
+| **Q1** | 내가 비싸게 사는 건가 | 🟡 **①②단계만 완료, ③④ 미착수.** 확정 구성(C안) = 주축 PER·보조 EV/EBITDA·PBR·적자대안 PSR·심층 역DCF, 전 축 「업종 대비」 표시. ①재료(947~965)·②업종백분위(952~956) 완료 — 커버리지 18.2%(DoD 0/9). **착수 전 필요**: 판정 ⓛ(disagree 표시 규칙) + 「기존 7렌즈를 수리할지 Q1~Q4 카드를 신설할지」 판정 |
+| **Q2** | 현금을 돌려주나 | ⬜ 확정(B안 = 수익률+커버) · 구현 0 |
+| **Q3** | 커지고 있나 | ⬜ 확정(매출 5년 CAGR 주축+감가상각전 영업이익 보조) · 구현 0 |
+| **Q4** | 망할 위험은 없나 | ⬜ 미확정 — `fscore`가 이미 7렌즈에 부분 작동 중. 착수 전 CLAUDE.md 규칙3(기존 렌즈 검증 없이 재사용 금지) 적용 — Piotroski 2000 원전 대조 + 결함 실측 필요 |
+| **Q5** | 뭔가 바뀌었나 | ⬜ 미확정 — `lens_state_changes` 재사용(US 2,274행·754종목·18일치 축적, 카드+피드 둘 다 구상) |
 
-🔴 **「확정」 ≠ 「완료」.** 확정 = *무엇을 만들지* 정해짐. 완료 = `LENS_COMPLETION_STANDARD.md` 9항목 ＋ §10 4축 통과. **Q0~Q3 전부 코드 변경 0건.** 🔴 **「완료」는 장은태 확인 후에만 부른다.**
-
-**2026-08-08 신설 규칙 (CLAUDE.md 621 → 683행 · 코드 diff 0)**
-- **규칙 5-1** 「원전이 없는 항목은 정의 고정 ＋ 공개」 — 대체물 = **정의 공개표**
-- **규칙 5-2** 「값이 아니라 식을 만든다 — `y = f(x)`」 — f(정의·기간·미성립)는 고정·공개, x(출처·계열)는 실측 후 개방, **결과에 출처 동봉**
-- **⓪-4 보강** — 번호는 항목명이지 순서가 아님. **실행 순서 = ③자체확인 → ①검색 → ②검증 → ④검수**
-- **⓪-5** 「밖에서 찾기 전에 안을 먼저 연다 — 자체 인벤토리 4곳」(`registry.ts` · `data/sources/` · Supabase · `link_hub`)
-- **⓪-5-B** 「`link_hub`는 검색과 **병행**해 조회」 — 실행 절차 4단계 · **답변에 결과 미기재 = 안 한 것으로 간주**
-
-**2026-08-08 신규 원본 (규칙 ⓪)**
-- `data/sources/nasdaq/nasdaq_screener_20260808.json` — 미국 전 종목 **7,127건** sector·industry·**country**·시총. 🔴 **git 제외** · **Storage 업로드 미완**
-- `data/sources/sec/sec_sic_missing219_20260808.json` — 미매핑 219종목 CIK·SIC 전수(29KB · git 포함)
+🔴 **「확정」≠「완료」.** Q0~Q3은 무엇을 만들지 정해졌을 뿐 코드 변경 0건.
 
 ---
 
-## HEAD / 배포
-- HEAD = **이 커밋(STEP 936 `6854095`)** · 부모(STEP 935 `c97e7ee`) · **push 완료 — origin/main + revdcf-preview 반영(rebase 불필요).** STEP 936 = 계측 ②차 배포(장은태 승인) — `recovered`·재시도 실패사유 분해·타이머 분리를 `lib/lensPrecompute.ts`에 추가(값 계산 0건 변경) · 관측은 다음 US `lens-scores` 크론(21:30 UTC±지터).
-- 🔴🔴 **다음 세션 최우선 필독**: **① 라이브 건 = 917 계측 배포 · 다음 크론 관측 대기**(변화 없음) **② 대기 안건은 3번(`#67` 로그값) 하나만**(908 정본) **③ DoD7 = 여전히 🔶 미결**(929도 판정 안 함) **④ `LENS_COMPLETION_STANDARD.md`는 7렌즈용으로 신설(812)되고 역DCF는 뒤에(857) 얹힌 문서**임을 929가 확인 — DoD7 "같은 이름"(923)·DoD9 "production"(928)·DoD9 "KR"(929, 역DCF는 US전용이라 원리적 충돌) 모호함 3건이 같은 원인. **⑤ 장은태가 답할 질문 3개만 나열**(`docs/DECISION_929_DOD_SCOPE.md`) — 승인된 완성 정의·DoD 판정 칸 전부 불변.
-- ✅ **STEP 929 = 🔴 사실 기록만(권고·판정 0).** 원문 직접 재확인 — Cowork 표와 전부 일치. `git log -S`로 역DCF 행 추가 시점 확인(`1217e1d`·STEP 857·812 신설 3일 뒤). DoD9 "KR·US 각 2종목" vs 현황표 "역DCF(모델·**US 전용**)" 충돌 — Preview에서 KR종목(SK하이닉스)은 뜨나 역DCF 카드는 없음(Cowork 실측, `universeCaveat`와 정합). 🔴 **929 명령 파일이 "DoD7 다섯표면 중 셋 N/A" 출처를 "925"로 지칭했으나 재확인 결과 실제 출처는 901 — 직접 재확인 중 발견·정정.** `docs/DECISION_929_DOD_SCOPE.md` 신설(질문 3개, 답 없음). `LENS_COMPLETION_STANDARD.md`엔 각주 포인터 1줄만(DoD 정의·판정 칸 diff 0, git diff 확인). `DECISION_921_COMPLETION.md`·`DECISION_923_NAMING.md`에 사실 추가(본문 불변). 코드 diff 0.
-- ✅ **STEP 927~928 = `#71`(Preview 500) 원인 확정(927)→수리 완료(928, 장은태 승인 하 env 2단계 조정, `revdcf-preview` 정상 렌더).** 남는 위험 = Preview에 RLS 우회 키 존재. DoD9 판정·완성정의는 그대로.
-- ✅ **STEP 925~926 = brief 라벨조립 진단(925)→B안 승인·`email-brief`만 수정(926).** 72개 조합 전수 중복 7건→0(회귀 0), `daily-brief`·`lib/lensCopy.ts`(924) diff 0. A안(daily-brief 포함 전면통일)은 미채택 대기.
-- ✅ **STEP 921~924 = 안건4 재료완성→승인(921~922) → 종목명 불일치 진단(923) → B안 채택·표시계층 통일·모멘텀중복 조립수정(924).** DoD7은 923에서 재개방(종목명), 924가 화면 증상만 해소(DB는 안 건드림·DoD7 칸 불변). 348/998(34.9%) → 924에서 잔여 0.
-- 🔴 **프로덕션 도메인 = `https://onetrillion.app`**(869부터 저장소에 커밋 · `docs/PROD_ACCESS_ANSWER2_2026-08-02.md`).
-- 866~929(...+#71 원인 확정+#71 수리 완료+**DoD7·9 모호함 공통원인 확인(929)**) 전부 유효 — 상세 CHANGELOG. 927~929는 문서만, 코드 diff 0.
-- **tsc 0 · vitest 182/182**(무변화) · `revdcf_results` = 2026-08-01~05 각 **604** · `us_market_cap` = **5,892**(둘 다 무변경·쓰기 0) · `lens_scores`·`lens_cuts` 쓰기 0.
-- ⚠️ **Vercel = Hobby: 크론 일 1회 한도 · 하루 100 배포.**(904~908 범위 밖 · 🔴 930 확인: "하루 100 배포"는 출처 있음 — STEP 755, 2026-07-18, 웹서치+공식문서+프로브 3중검증. "월 100 빌드분"은 그때 오정보로 정정된 값)
-- 🔴 **역DCF = 피처 플래그 `REVDCF_ENABLED` — Production OFF(불변) · Vercel Preview 스코프는 `true`(897 발견).** 켜는(Production) 조건 = 육안 검증 → **장은태 명시 승인.** 로컬 프리뷰 dev = `localhost:3333`(이미 `REVDCF_ENABLED=true`로 기동 중). 🟢 **928 — `revdcf-preview`가 이제 정상 렌더**(897·898의 "배포검증용 아님" B판정은 그 시점 사실이었으나, 927 원인확정+928 env수리로 지금은 렌더됨 — Cowork 브라우저 육안 확인, §0). 남는 위험 = Preview에 `SUPABASE_SERVICE_ROLE_KEY` 존재(Deployment Protection 의존, 928 승인 기록).
+## ④ 미해결 통합 목록
+
+> 각 항목 = 무엇을 모르는가 · 크기 · 어디서 나왔는가 · 판정 필요 여부. 우선순위 없음 — 판정은 장은태.
+
+**Q1/역DCF 모델**
+1. **PBR·PSR·EV/EBITDA 잔여 잔차 ~8% 미규명**(968) — 재척도 제거 직접구성 후에도 남는 절대상대차 중앙값(PBR 8.29%·PSR 8.34%·EV/EBITDA 8.90%). Citigroup PBR·GM EV/EBITDA 2건만 개별 규명, 나머지 미분해. → `docs/probe_968_residual.json`
+2. **Citigroup PBR 정의 갈림**(968) — 우리(`commonEquity`, 963 정책) 기준 +13.64%인데 총자기자본 기준으로 재계산하면 +3.92%로 좁혀짐. stockanalysis.com이 총자기자본 기준으로 추정(미확정). 963 정책 자체는 유효 — 외부와 정의가 다를 뿐, 판정 대상 아님. → `VALUATION_SPEC.md` STEP968 절
+3. **CBSH 매출 1.52% 잔차 미완결**(967) — 대손충당금 차감 가설로 0.5%/0.23%까지 좁혔으나 완전히 안 닫힘. → `docs/probe_967_bank_revenue.json`
+4. **PSR × Financials가 minSample(20)로 안 가려짐**(958·959, 판정 대기) — Damodaran 교과서 원문은 "매출이 측정 불가 개념"이라 명시하나 실측 n=61로 임계값 초과, 지금 계산·저장됨. `Q1_ENABLED` OFF라 화면 노출은 없음. → `docs/SECTOR_AXIS_APPLICABILITY.md`
+5. **PSR 종목단위 정의 원문 미확보**(958·962·963, 세 번 시도) — Damodaran 자료 전부 업종 집계 정의뿐, 종목단위(총매출/순매출 구분 등) 없음. → `VALUATION_SPEC.md` 미해결 1번
+6. **969 값→0 전환 10건 중 9건 미규명** — `ALKS`만 개별확인(vintage 시점 불일치로 추정), 나머지 9건은 같은 메커니즘 추정만. → `docs/probe_969_debt_tags.json`
+7. **969 정의 미대조로 배제한 태그 6종** — `SeniorNotes`·`ShortTermBankLoansAndNotesPayable`·`NotesPayable`·`LoansPayableToBank`·`FinanceLeaseLiability`(단일)·`DebtInstrumentCarryingAmount`. 이 태그만 있는 종목은 `UNRESOLVED_DEBT`로 skip. → `REVDCF_SPEC.md` §10-D
+8. **운영리스 자본화 — 범위 밖, 미판정**(969 대전제) — 손대지 않음.
+9. **`BPOP`류(낡은 REV 잔여 데이터로 은행형 전환 안 됨)**(967) — 발견만, 처방 없음.
+10. **은행 `operatingIncome` 태그의 개념 정합성**(967) — EV/EBITDA는 다른 게이트(driver5)로 이미 막혀 있어 당장 영향 없음.
+11. **IFRS 외국사 197건 중 A분류(135건) — 선택지 3개 판정 대기**(966) — ①현행유지 ②`ifrs-full` 지원 추가(확실 25건·잠재 52건 회복) ③SEC 밖 소스(CLAUDE.md 정본원칙과 충돌). 🔴 기존 「ADR은 소속국가 탭에서 계산」 정책과 겹침(재론 안 함). → `docs/probe_966_ifrs_scope.json`
+12. **NVDA 회계연도 라벨 표시 문구**(958, 판정 대기) — `fiscal_year=2025`로 저장(calYear 5월 경계 규칙)하나 NVDA 자체표기는 FY2026. 값은 SEC 원문과 일치, 표시 문구만 미정. Q1 카드 작업 시 함께 정한다. → `VALUATION_SPEC.md` 미해결 6번
+
+**인프라·운영**
+13. **`lens_cuts`(US) 07-30부터 정지**(00번) — `lens_scores`(앞단)는 08-07까지 정상 갱신, `lens_cuts`(뒷단)만 정지. 원인 미조사. 모멘텀·밸류·퀄리티·저변동·자산성장 5개 렌즈 판정이 정지된 컷으로 나가고 있다는 뜻. → `docs/DECISION_912_LIVE.md` §10~16
+14. **`us_market_cap` 결측 380건 — `LOCAL_OK_PROD_FAIL`**(949) — 로컬은 정상(383/465 즉시 성공), Production은 8일 연속 실패. 원인 미확정. 처방 후보 A~D 기록만, 미채택. → `docs/probe_949_mcap_gap.json`
+15. **역DCF 유니버스 자기참조 — 신규 편입 경로 없음**(00-3) — `route.ts:28`이 "직전 as_of의 CIK"만 물려받는 구조. 표본 5종목(`AMST`·`ANF`·`AVAH`·`ACRS`·`ACT`)이 8일 전체 `as_of`에 한 번도 없었음 확인. 소스는 보유(`us_market_cap` 5,900) — 편입 경로 자체가 코드에 없음. → `CHANGELOG.md` (83)·`REVDCF_SPEC.md` §10 #76·77
+16. **정규 크론 실행 응답이 어디에도 저장되지 않음**(00-d) — `BUDGET_MS` 실제 소진 여부·`us_fundamentals` 순환 병목이 처리량인지 예산인지 미측정. Vercel Runtime Logs는 Hobby 플랜 1시간 보존이라 사후 확인도 불가. 처방 후보(판정 없음): ①`cron_heartbeats` 활용 ②응답 DB 적재 ③Sentry 전송.
+17. **`us_fundamentals` 순증 속도 재추정 필요**(970) — 이전 추정 124건/일 → 1개 사이클 관측 40건(1,127→1,167). 최소 1사이클 더 관측 필요, 추세 단정 안 함. → `docs/probe_970_newwindow_live.json` §2-5
+18. **fiscal_year null 197건 — IFRS 135건은 미해결(위 11번), 미국 은행형 19건은 967로 해소**, 잔여(B분류 47건·D분류 7건 등)는 개별 재검토 안 함. → `VALUATION_SPEC.md` 197종목 섹션
+
+**DoD·완성 기준**
+19. **DoD7(화면 일관성) — "같은 이름"의 정의 자체가 원문에 없음**(923·929) — `years` 배지·육안검증 둘 다 해소됐으나 이 정의 공백 하나가 남아 🔶 미결. → `LENS_COMPLETION_STANDARD.md`
+20. **DoD9(라이브 노출) — "KR·US 각 2종목" 원문이 US 전용 모델과 원리적으로 충돌**(929) — `docs/DECISION_929_DOD_SCOPE.md`(질문만, 답 없음).
+21. **866~867 잔여**(재개는 장은태 지시 후) — Russell 3기준(최저주가$1·최저시총$30M·float5%) 우리 유니버스에서 몇 개 자르는지 미측정 · OTC 티어(OTCQX/QB/PINK/OTCID) 라벨 신뢰도 미규명(PINK 66.0% < OTCID 77.0% 역전 관찰) · ICC 정본 미선택(604기준 0.198 vs 전수기준 0.165) · skipped 89사(15%) 전수 규명(회수가능 vs 원리적 불가).
+22. **Q0 disagree 266건 — 방향 판정 없음**(942) — `crossCheck.disagree=true` 목록만 저장, 판단 안 함.
+23. **`us_sector_resolved`(Q0, 라이브 화면) 재생성 여부 — 판정 대기**(955) — `us_sector_wide`(계산용)와 페이지네이션 비결정성 버그를 공유했을 가능성(3/1,021건 확인), 라이브 화면이 읽는 표라 이동 시 별도 승인 필요.
+24. **damodaran tier ⓑ 나스닥 5순위 추가 여부 — 판정 대기**(952b) — ⓐ(페이지네이션 원인)가 954로 해소돼 ⓑ의 상대적 이득이 줄었을 수 있음.
+
+**🅿️ 배경(모델 완성 후, ⑤ 참조)**
+25. **GICS 라이선스 유료화 선결 조건**·**「양방향」 유사투자자문업 규제** — ⑤ 참조.
 
 ---
 
-# 🔴 지금 하는 일 = **역DCF 하나를 원전 수준으로**
-
-정본 설계 = **`docs/REVDCF_SPEC.md`** · 완성 기준 = `docs/LENS_COMPLETION_STANDARD.md` DoD 9항목 · 원본 = `data/sources/`
-
-## 🟢 확립된 것
-
-| | 상태 |
-|---|---|
-| **엔진(풀이)** | ✅ **원전 그대로** — 도미노 주당가치 **오차 0.0000** · MIFP **8=8** · 잔여가치 비중 N=5/8/25 **86.3/80.1/59.3% 소수점 일치** · T8 오라클 3케이스 일치 |
-| **예측 지평** | ✅ 원전대로 **25년**(T8 `C31` LOOKUP) · over_cap=원전 `"25+"` · `explained_pct`=25년가치÷주가(C33) |
-| **fade·터미널** | ✅ 계단 고정 · `NOPAT(1+i)/(WACC−i)` |
-| **원전에 유니버스 없음** | ✅ **튜토리얼 전 8편** `universe`·`liquidity`·`volume`·`screening`·`market cap` **전부 0건**(08-02 재확인 · `Screen`/`portfolio`/`float` 히트는 전부 Squarespace CSS·이미지 파일명). 원전은 **단일 종목 분석서** |
-| **모집단 상한(공식)** | ✅ SEC 공식 통계 확보 — CY2025 미국 소재 거래소 상장 **3,714**(비셸 3,692) · 직전 4분기 **3,600**(비셸 3,589). 원본 = `data/sources/sec/sec_reporting_issuers_20260630.xlsx` |
-| **전수 계산(866)** | ✅ 컷 없이 **N=3,354** 실행 — 산출 364 / 판정불가 1,688 / 입력부족 1,302 |
-| 🟢 **유니버스 = 거래소 상장(조달 범위) 확정** | ✅ **867 · 2026-08-02 장은태 승인** — 조달 범위 **N=2,857**(NYSE·NYSE American·NYSE Arca·Nasdaq·CBOE). **"컷"이 아니라 "조달 범위"**(판정 배제 규칙 아님). 근거 = 866C·866D 실측 비용(OTC 넣어도 산출 +8뿐·micro 산출률 하락) + FTSE Russell §5.6.1/§5.7.1(유일하게 이유를 서술하는 1차 출처) + 제품 구조(A-5). Russell 나머지 기준·FALR·OTC 티어는 미채택. Damodaran 반대 입장은 기각 아니라 병기(`REVDCF_SPEC` A-9 ⑤) |
-
-🔑 **"풀이를 이해 못 한 것"이 아니다.** 재현이 소수점까지 되는데 결과가 안 나오면 **범위 문제**다(CLAUDE.md ⓪-3).
-
-## 🔴 열려 있는 것
-
-### 1) 유니버스 = **A층 종료** (866~867 완료 · 2026-08-02 장은태 승인 · 아래 실측 원장 보존)
-
-🔴 **A-7의 "정식 종료(616/604)"와 다르다.** A-7은 **물려받은 시작 목록 1,000 안에서**의 종료였다(모집단 자체를 실측한 적 없음 — 08-02에 재개방된 이유). **이번 종료는 모집단을 실제로 잰 뒤의 종료**다: SEC 전수(company_tickers_exchange 10,432) → 사다리 3,354 → 거래소상장 **N=2,857**로 확정. 아래는 그 실측 과정 전체(866~866D)의 원장 — 삭제하지 않고 보존한다.
-
-🔑 **정본 = `docs/REVDCF_SPEC.md` §9(A-9 ⑤)·§11 실측원장** — 모집단 사다리(8,017→3,354→거래소상장2,857)·"OTC 산출0" 원인규명(866B: 시총결격 0/486)·OTC포함 시 변화(866C: 산출364→372·판정불가+125·micro산출률 3.3%→2.7%)·OTC 티어교차(866D: 공시형결격 OTCQX37.5%→OTCID77.0% 계단식)·외부3주체(NC/Morningstar/Damodaran) 표 전부 그곳에 숫자·출처·날짜와 함께 있다(886 정리).
-
-- 🔴 `droppedBy`는 배타적이지 않다(reit·spac는 SIC금융컷 부분집합) — 배타합산 수치는 SPEC §11 참조.
-- 🔴 **미결정**: 우리는 **거래소 기준**(SEC 통계)인가 **상장 여부 기준**(Damodaran)인가. **정한 적이 없다.**
-- 🔴 **정정(866B)**: NC 제외사유로 적었던 "OTC"·"주식구조 복잡"은 원본에 없다(원문 유일 제외서술 = "no revenue"). `MULTI_CLASS_SHARES` 5사도 같은 사유로 철회.
-- **결정 원칙**: 컷은 **전수 분포를 본 뒤에** 정한다. "계산 못 함"과 "계산했는데 감춤"을 뒤섞지 않는다.
-
-### 2) DoD 현황 — **1·2·4·5·6·8 ✅ / 3 🅿️ / 7 🔶(미결) / 9 ❌(보류)**
-
-~~903(2026-08-05 장은태 승인) — DoD 9항목 중 7·9를 제외한 7개가 전부 닫혔다. 7·9는 `REVDCF_ENABLED` Production ON이 전제. "모델 완성" = "7개 닫힘"인지 "9개 전부"인지는 판정하지 않고 장은태 결정 대기로 남긴다(903은 이걸 판정하지 않음).~~ 🟢 **921(장은태 승인) — "모델 완성" = DoD9 제외 8항목 닫힘으로 확정.** DoD9은 별도 "노출" 트랙(production 노출 승인 필요, 보류 유지). 🔴 **DoD7은 노출과 무관 — 921·929 확인**: `boardBadge.years` 판단 하나만 남았던 걸 922가 권고·923이 승인했으나, 923이 같은 시점에 종목명 불일치를 새로 발견해 🔶 미결 유지(아래 표).
-
-| # | 항목 | 상태 |
-|---|---|---|
-| 1 | 원전 대조표 | ✅ (857·859 · 추가물 행에 `universe`·`liquidity` 반영) |
-| 2 | 입력 검증 | ✅ (862 · D&A 결측 21.7%→**11.4%**) |
-| 3 | 값 검증 | 🅿️ **903 종결**(장은태 승인 2026-08-05) — 도메인 상한(863·864 · 8곳 소진) · 재현가능 동시점 개별 대조는 영구 0건 · 승인조건(화면 고지) = `RevDcfMethod.verificationCaveat` 신설로 충족 · `docs/DECISION_902_DOD3.md` |
-| 4 | 컷·분포 | ✅ (891 · 890 조건부 승인 충족 — 모집단을 실제표본604/목표치2,857/7렌즈표본 세 구분으로 문서화. 불리한 사실 = 604 중 86사 시총 스테일) |
-| 5 | 경계 처리 | ✅ **897 상향**(895의 🔶를 재판정 — 896의 코드 교정을 독립 재확인[코드 재열람+테스트 169/169 재실행+라이브 데이터]. 🔴 불리한 사실 = `RevDcfSection` 클라이언트fetch 구조상 curl로 최종 DOM 미확인·브라우저 도구 없음·신규 코드 4종은 오늘 DB 행 0건이라 유닛테스트로만 확인) — 적자 78사는 865로 지지 |
-| 6 | 주장 정합 | ✅ (889 · 888 감사 위반5+보류3 전부 처리 · 불리한 사실 = 라이브 미검증) |
-| 7 | 화면 일관성 | 🔶 **901** — 다섯 표면 범위 확정(카드·목록=있음 / 변화피드·이메일·브리핑=N/A). ~~`years` 배지 비대칭 미판정 + 브라우저 육안 미검증 두 사유로 유지~~ 🟢 **둘 다 해소**(`years`=922 권고→923 승인 · 육안=924·928 Cowork 확인). 🔴 **현재 미결 사유는 하나** — "같은 이름"의 정의 자체가 원문에 없음(923 발견·929 원인규명) |
-| 8 | 테스트 | ✅ **900** — 스킵사유 12종+경계3종 항목별 채점, 미커버 8건 보강(182/182). 커버리지 도구 없어 %아닌 항목유무 판정. 유닛테스트만(통합·E2E는 플래그OFF라 불가) |
-| 9 | 라이브 실측 | ❌ ~~블록 — 플래그 OFF~~ 🔴 **사유 갱신(928·929)**: Preview는 이제 정상 렌더(928) — "플래그 OFF"는 더 이상 정확하지 않다. 남은 문제는 DoD9 "KR·US 각 2종목"이 US 전용 모델과 원리적으로 충돌한다는 것(929, `docs/DECISION_929_DOD_SCOPE.md`) |
-
-**전수 vs 604 (두 분모 병기 · 866C 열 = OTC 시총 조달 반영)**
-
-| | 604 | 전수 3,354(866B) | 전수 3,354(866C·OTC 반영) |
-|---|---|---|---|
-| 산출 (a) | 177 | 364 | **372** |
-| 산출률 (a)÷N | 29.3% | 10.9% | **11.1%** |
-| 산출률 (a)÷((a)+(b)) | 34.4% | 17.7% | — |
-| GAP 중앙 (p25/p75) | 11년 (6/17) | 8년 (4/15) | **8년**(4/14.25·불변) |
-| 업종 ICC(860 정의·5사+) | 0.198 (기록 0.195) | 0.165 (31업종 296사) | **0.177** |
-| micro 버킷 산출률(N기준) | — | 3.3%(n884) | **2.7%**(OTC 편입으로 분모↑·희석) |
-
-시총 구간별 산출률(866B 기준) **(a)÷N** — mega 44.2%(n43) · large 28.1%(n537) · mid 17.4%(n671) · small 6.8%(n701) · micro 3.3%(n884) · **no-mcap n518(산출 0)**.
-🔴 ICC는 **정의 차이**였다 — 0.195 vs 0.267은 불일치가 아니라 **최소 업종 크기 5 필터 + 업종 출처**의 차이(866B 규명).
-
-### 3) 미측정 (🔴 "완료" 선언 금지 대상 · 유니버스 확정과 무관하게 남음)
-- ~~OTC 486의 시총 조달 가능 여부~~ → ✅ **866C 해결**: 야후가 446/486(91.8%) 커버. 조달만 안 됐던 것 확인
-- ~~`insufficientCause` 순서 의존 재분류~~ → ✅ **866C 해결**: 동시 결격 3칸 실측 — **우리 조달만 113 / 회사 공시만 889 / 둘 다 167**(1,302 전원 재평가). 866B의 `246/1,001/55`는 `supersededBy`로 정정 표시(파일은 안 지움)
-- ~~SEC 전체 제출사 실값~~ → ✅ **해결(08-02)**: SEC 공식 통계로 대체. `frames` 4,998은 **하한이 아니라 다른 모집단**(OTC·외국·ADR 포함)이었음 — 정정 완료
-- 🔴 **Russell 3기준(최저주가 $1.00·최저시총 $30M·float 5%) 미측정** — 우리 거래소상장 2,857(또는 전수 3,354)에서 몇 개를 자르는지 안 쟀다. **재기 전에는 채택 금지**(867 §금지 5)
-- 🔴 **OTC 티어(OTCQX/QB/PINK/OTCID) 라벨 신뢰도 미규명** — 866D에서 **PINK 공시형결격 66.0% < OTCID 77.0%로 역전**(직관과 다름). 야후 `fullExchangeName` 라벨이 최신인지, PINK 내부에 하위구간이 섞여 있는지 확인 안 됨. 유니버스는 이미 거래소 상장으로 확정돼(867) OTC 자체가 조달 범위 밖이라 채택 여부와는 무관 — 순수 기록용
-- 🔴 **ICC 정본 미선택** — 원전 관찰 대조가 604 기준(0.198)과 전수 기준(0.165)에서 다르게 나오는데 어느 쪽을 정본으로 볼지 미정. 0.195(기록값)↔0.198(재계산)의 0.003 차이 원인도 추정 없이 사실만 기록된 상태(866B)
-- 🔴 **skipped 89사(15%) 전수 규명** — 회수 가능 vs 원리적 불가
-
-## 🔴 세션 중 시정한 것 (2026-08-02~05) — 🔑 정본 = `docs/CHANGELOG.md`(886 정리) · **930 압축**: 866~877 개별 STEP 서술(정정·driver1 3중검증·driver4/5 원전식 실측·T7 직접개봉 등, 원래 10줄)을 한 줄로 축약 — 전체 서술은 CHANGELOG의 해당 STEP 항목에 그대로 있음(삭제 아님, 포인터만 남김).
-- 866~877: 유니버스 실측·정정(866~867) → 방향 재정렬(870) → driver1(871~873)·driver4/5(874~876) 원전식 실측·③판정 → T7 직접개봉·driver3/6 첫 반영(877). 상세 = `docs/CHANGELOG.md` 해당 STEP.
-- 878~904: `docs/CHANGELOG.md` (24)~(49) 그대로 — driver5/6/인플레 ③판정 확정, 세율순효과 실측, 문서정본화, 대조표 재분류(887), 표면 전수 감사(888), 표면 교정+DoD6 ✅(889), DoD4 전제 실측+판정서(890), 시총신선도 실측+DoD4 ✅ 적용(891), 원인·인과분해+처방판정 B(892), 처방 B 적용·크론 코드 변경(893), retryBudgetHit 관측 연결+상호주석 완성(894), 스킵사유 3자대조+DoD5 🔶유지 판정(895), 스킵사유 오표시 교정+MISSING_TAG 3분기(896), revdcf-preview 정체 규명+DoD5 ✅ 상향(897), Cowork 육안검증·방법론 표 가독성 수정(898), lossMaking 판정 불일치 주장 재확인·재현 안 됨·공유 헬퍼 강화(899), DoD8 테스트 보강·✅ 판정(900), DoD7 표면 범위 판정·🔶 유지(901), 보류 위반 기록·DoD3 결정서(902), DoD3 종결·🅿️ 도메인 상한(903), **§10 미결 33건 전수 감사(904)**.
-
----
-
-## ▶ 다음 — 🔴 장은태 지시 후에만
-
-### ✅ **0. Q0 — 「리스트 부분 완료」 (2026-08-08 장은태 확정 · ⓐ)**
-
-🔴 **「완료」가 아니다.** 6단계 ①~⑥ 전부 진행됐고 화면(리스트 섹터 라벨·필터·출처 안내)까지 나갔으나, **완성 기준 9항목 중 ✅ 3 · 🟡 5 · 판정보류 1**이다.
-🔑 **남은 항목의 마감 시점이 `docs/LENS_COMPLETION_STANDARD.md` Q0 행 위의 표에 못 박혀 있다 — Q1 카드 착수 전 그 표를 먼저 읽을 것.**
-요약: **1·4·6 = Q1 카드에 「업종 대비」가 붙을 때** · **2 = 판정 ⓛ 확정 시** · **3 = 원리적 미검증으로 고정(재시도 안 함)** · **9 = 판정 보류 유지(929 선례)**.
-
-### 🔴 **0-A. 다음 = Q1 「내가 비싸게 사는 건가」 (미착수)**
-
-**확정 구성**(`docs/USER_QUESTIONS_2026-08-08.md` §Q Q1 · C안): 주축 **PER** · 보조 **EV/EBITDA**·**PBR** · 적자대안 **PSR** · 심층 **역DCF**(기완성) · 🔴 **전 축을 「업종 대비」로 표시**.
-🔴 **착수 전 필요**: 판정 **ⓛ**(`disagree` 표시 규칙) · 🔴 **「기존 7렌즈를 수리할지 Q1~Q4 카드를 신설할지」**(결함 ⑤ = 판정 33% 실측 완료 → 규칙 3 ②의 전제는 충족).
-🔴 **재료 현황**: PER·PBR = 기보유(`lensCompute`) · **EV/EBITDA·PSR = 미보유**(SEC 태그 0 · 컬럼 조립 필요) · 역DCF = 604종목.
-
-### ~~0-old. Q0 구현 6단계~~ (전부 진행 완료 — 아래는 이력)
-
-> 🔴 **Cowork이 명령서를 쓰고 Claude Code가 실행한다.** 명령서 작성 시 **⓪-4 4×3**(순서 ③→①→②→④) ＋ **⓪-5-B**(link_hub 병행 조회) 필수.
-
-| # | 단계 | 완료 조건 |
-|:--:|---|---|
-| **①** | **섹터 해석 함수 신설** — 규칙 5-2: 출처 목록을 **파라미터로** 받고 `{ 섹터, 출처, 합의여부 }` 반환 | ✅ **완료(940)** — `lib/sector.ts`에 `resolveSector(sb, targets, opts?)` 신설: 0순위(SPDR)~4순위(미분류) 「2-of-2 합의제」 전부 구현, 반환에 `source`(+ 3순위만 `agreed:true`) 포함. **기존 `fetchSectorMap`(industryGroup 모드, 938)은 완전 불변**(diff 0·유닛테스트 3건 회귀 그대로). 🔴 **940 자체 실측으로 형제(2순위) 매칭 결함 발견·수정** — 초안이 무관한 회사를 오매칭(`ASML`(반도체)→`ASMB`[Assembly Biosciences, 전혀 다른 회사]) 35건 산출 → 원인 규명 후 "원본 티커에 구두점 있을 때만 뿌리패턴 시도 + 구두점 없는 불규칙 3쌍(GOOG/GOOGL·FOX/FOXA·NWS/NWSA)은 명시 등재"로 수정, 5건(정확도 3/3)으로 정상화. 실측 리포트(`docs/probe_940_sector_resolve.json`, 대상=lens_scores US 1,021): 0순위 498·1순위 311·2순위 5·3순위 137·**미분류 70**·**커버리지 93.1%**. 0순위 제외 채점(SPDR 정답지 대비): 1순위 **99.6%**(487/489)·2순위 **100%**(3/3)·3순위 **100%**(3/3, 표본작음). 테스트 196/196(신규 11) |
-| **②** | **13곳 복붙 정리** — `damodaran_industry` 조회 블록이 13개 파일에 중복(`route.ts` · `compute_revdcf_all.ts` · `probe_851·866·866c·871·874·876·878·879·906×2·909`) | 🟡 **부분 완료(938)** — 실제 **운영·재실행 경로는 2곳뿐**(`route.ts`·`compute_revdcf_all.ts`), 둘 다 `fetchSectorMap` 경유로 교체 완료(로직 변경 0·`git diff` 육안 확인·테스트 185/185, `route.branches.test.ts`의 `NO_INDUSTRY` 회귀 포함). 나머지 **11곳은 1회성 조사 기록(probe_\*)이라 의도적으로 미접촉**(고치면 과거 STEP 결과의 재현성이 깨짐) — 🔴 "13곳"이라는 표현 자체가 부정확했음, `CLAUDE.md` 규칙 5-2 §1 표현 정정은 939 이후 별도 판정 |
-| **③** | **나스닥 스크리너 적재** — 테이블 신설 ＋ 갱신 경로. Storage 원본 업로드 포함 | ✅ **완결(939~942)**. 939: Storage 업로드·SPDR 정답지 발견(일치율 99.6%). 940: `us_sector_nasdaq`·`us_sector_gics` 신설·적재. 941: 야후를 3번째 출처로 취득(`us_sector_yahoo`, 성공 1,020/1,021)·조합별 정확도 실측(야후 단독 95.8% > 나스닥∩SIC 95.3%). **942(장은태 A안 구현)** — `lib/sector.ts` `resolveSector` **3순위를 나스닥∩SIC 합의에서 야후 단독으로 교체**, `SectorResolution`에 `crossCheck:{nasdaq,sic,yahoo,disagree}` 신설(사실만 기록, 판정 안 함). 실측(`docs/probe_942_final_resolve.json`): 0/1/2순위 498/311/5(941과 정확히 일치) · **3순위(야후) 207 · 미분류 0 · 커버리지 100.0%**. 0순위 제외 채점(SPDR 대비): 1순위 99.6%·2순위 100%·3순위 100%(표본작음, 정본은 941의 전구간 95.8%). `disagree=true` **266건**(전건 목록 저장, 방향 판정 없음). 섹터별 종목 수 하위 6개: Utilities43·RealEstate49·CommServices50·ConsStaples53·Energy57·Materials61(④ 직접 입력 재료). `ASML`→Information Technology(정답)·`ARCC`→Financials로 실제 해소 확인. 테스트 200/200. **이 단계는 여기서 완결 — 남은 것 없음** |
-| **④** | **섹터 내 컷 계산** — p30/p70. 🔴 **표본 확보 섹터만**(하위 6개 26~48종목) | ✅ **완결(943~944)**. 943: `sector_cuts` 신설·78개(섹터×지표) 컷 산출·skip10건·부트스트랩(시드943·1,000회)·결함⑤ 실측 크기(momentum20.1%~quality33.8%). **944(장은태 A·ⓚ 확정 구현)**: `sector_cuts`에 `applied`·`exclude_reason`·`width_over_iqr` 컬럼 추가 — **IQR 대비 1.0 초과 7건 제외 · 71/78(91%) 적용**(임계값은 `scripts/refresh_sector.ts`의 `EXCLUDE_THRESHOLD` 상수 하나로 관리). `us_sector_resolved` 신설(`resolveSector` 캐시, 정본 아님) · `scripts/refresh_sector.ts`(수동, 크론 미등록, 2회 실행 재현성 확인). 검증(`docs/probe_944_persist.json`): **영속화 정합 1,021종목 중 불일치 0건** · 제외표기 943과 일치(true) · **「업종 대비 표시 불가」 = 320/6,560(4.9%)**, 전부 제외조합 소속(미분류 0건). 테스트 215/215. **이 단계는 여기서 완결 — 남은 것 없음** |
-| **⑤** | **화면 표시** — 「업종 대비」 줄 ＋ **「미분류」는 그 줄만 비움** · 출처 표기(규칙 5-2 ④) · 🔴 §7 ⓕ **야후 어휘 충돌 해소** 선행 | 🟡 **부분 완료(945~946) — 리스트 쪽 완결(전체목록+요약화면).** ⓕ→ⓐ 확정(GICS명 통일, 장은태) 구현: `lib/sectorLabel.ts` 신설(야후·KR·GICS 3어휘 통일, 신규 messages 키 0개) → `EtfLensClient.tsx` 전환(동작 동일) · `/api/sector/us` 신규 · `ExploreClient.tsx` US 거래대금 **전체목록**에 섹터 필터 칩 + 행별 라벨 + 출처 안내(945, 신규 키 1개) → **946: 요약화면(홈 첫 화면 「오늘 거래가 많았던 종목」 5줄)에도 같은 라벨 확장**, `amountRankingParts`를 `lib/sectorLabel.ts`로 이전해 전체목록·요약화면이 동일 함수 공유(복붙 아님, 새 키 0개·`sectorSourceNote` 재사용). 테스트 273/273. **🔴 라이브 화면 변경 — 배포됨·장은태 육안 확인 대기(완료 아님).** **🔴 남은 것 = 「각 카드에 업종 대비」**(sector_cuts 계산은 943/944에서 끝났으나 화면 소비처 0건 — Q1~Q4 카드 자체가 아직 없어 범위 밖) |
-| **⑥** | **테스트 ＋ 라이브 실측** | DoD 8·9. **946**: `lib/sector.test.ts`+`sectorCuts.test.ts`+`sectorLabel.test.ts`+`route.test.ts` 4파일 91건 통과(DoD8 ✅ 상향, 근거=`docs/probe_946_q0_dod.json`). 🔴 **Q0 완료 판정 = 장은태 확인 대기** — DoD9(라이브 실측)은 US 전용 구조라 "KR·US 각 2종목" 원문과 원리적으로 안 맞아(929 선례) 판정 보류로 남김, 요약화면 신규 라벨의 브라우저 육안 확인도 아직 없음(도구 부재) |
-
-🔴 **⑤ 착수 전 판정 필요**: §7 **ⓕ**(섹터 어휘 충돌, 미판정) · **기존 7렌즈를 수리할지 Q1~Q4 카드를 새로 만들지**(944 신설 — 화면 설계 방향 자체가 아직 안 정해짐). ~~ⓖ~~(모집단) · ~~ⓚ~~(섹터컷 적용, IQR1.0) **둘 다 해소**(2026-08-08 장은태). ⓛ(disagree 표시 규칙)은 §7에서 이미 "⑤ 화면 단계" 소관으로 지정돼 있어 별도 착수-전 항목 아님(⑤ 안에서 함께 정함).
-
-### 🔴 **0-1. Q4 착수 조건 (미착수)**
-`fscore`가 **이미 작동 중**이므로 CLAUDE.md 규칙 3이 걸린다 — *"기존 렌즈를 검증 없이 가져가지 않는다."* **① Piotroski 2000 원전과 현행 구현 대조 ② 결함 실측**이 재사용의 전제. 밸류 렌즈에서 결함 6건이 나온 것과 같은 작업.
-
-
-🔴🔴 **00. 라이브 이상징후(912→936) — 역DCF 밖.** 🔴 **2026-08-07 장은태: "실사용자 없어" — 「실사용자 노출 중이라 최우선」 전제는 정정됨. 긴급도 하향, 추적은 계속.** 🔴 **모멘텀 감사 ⑤ 영향 서술 추가: 컷 정지는 「US 7렌즈 판정 전체가 8일 된 컷으로 내려지고 있다」는 뜻이다(모멘텀·밸류·퀄리티·저변동·자산성장 5종 전부 — `lens_cuts` 사용 렌즈).** `lens_cuts`(US)가 `as_of` 기준 **07-30부터 정지**(KR은 08-06 갱신·문제 없음). 917 계측(A안①단계) → 932~935로 원인이 "예산(시간·개수)"에서 "취득실패 가능성"으로 재조준(934: A안②단계=RETRY_MAX 증액 **산술상 불가**·935: "재시도성공 0건"이 코드 항등식으로 도출됨). **936(장은태 승인 2026-08-07) — 계측 ②차 배포**: `recovered`·재시도 실패사유 분해(429/no_data/기타)·`noCapField`/`noResponse` 길이·재시도-DB저장 타이머 분리·실패표본(≤5)을 `cron_heartbeats.note`에 추가, 값 계산 0건 변경(`git diff` 육안 확인). **관측 대상 = 다음 US `lens-scores` 크론(21:30 UTC±지터).** **A안②단계(증액)는 6개 STEP 연속 미판정 — 장은태 승인 사항**, `RETRY_MAX`·`RETRY_MS`·게이트·임계값·`maxDuration` 전부 불변. A·B·C·D 선택지 병기 유지. 🅿️ 930의 `send_later` 예약(22:45 UTC·`trig_016oNSwKrTa9qSSGQXQDXGqo`)은 소모됨. **937(2026-08-07 관측·판정 0) — `recovered=0` 직접 관측 확정, 원인 축 4번째 전환**: `retryFailReasons:{}`·`retryFailSample:[]`(예외 0건)·`retryNoCapField:400`(재시도 400건 전부 정상 응답이나 `marketCap` 필드 없음)·`noResponse:0`·`failedChunks:0/60` — **취득이 "실패"한 게 아니라 정상 응답에 필드가 없었다**(912~934 "예산문제"→935 "취득실패가능성"→937 "취득은 실패 아님", 원인은 여전히 미확정). 935가 밝힌 `stage2Ms` 타이머 오염도 해소: 순수 재시도 5,703ms(14.3ms/건)+upsert 7,377ms=13,080ms(`stage2Ms`와 일치) — 933/934의 34.5ms/건은 오염값이었음. `compositionOk:false`(`compRatio:0.93`<0.95)도 최초로 수치 관측 — 커버리지뿐 아니라 구성 게이트도 미달. 934 "불가"(상한 93.30%) 판정 불변, A안②단계 미판정 유지. 표본 20종목×7렌즈=140칸 `probe_936_baseline.json` 대비 전부 동일(936 성공기준 충족). 상세 = `docs/DECISION_912_LIVE.md` §10~§16 · `docs/REVDCF_SPEC.md` §11.
-🔴 **추가 실측(STEP 949, 2026-08-08)**: `lens_scores` US는 **08-07까지 정상 갱신**(1,021행) — `lens_cuts`만 07-30에 멈췄다. **같은 파이프라인의 앞단(lens_scores)은 돌고 뒷단(lens_cuts)만 정지한 것으로 확인**(원인은 미조사). 🔴 `lens_state_changes`의 `fscore` 마지막 변화가 **07-28**로 `lens_cuts` 정지일(07-30)보다도 이르다 — 미조사.
-🔴 **STEP 953 검증 — 「알 수 없음」(확인 범위 내에서는 설명 안 됨).** `lib/lensPrecompute.ts`의 `lens_cuts` 계산 경로(`cutValues`→`cutRows`→upsert)에 직접 닿는 order-less DB 페이지네이션을 찾지 못했다 — US 유니버스는 `STOCK_SYMS`(파일 기반), KR 유니버스는 `topKrByMarketCap()`(이미 `.order("market_cap",...)` 있음). 단 이 확인은 `lensPrecompute.ts` 직접 경로에 한정됐고, 912~937이 이미 다른 원인(취득실패 가능성→정상응답에 필드없음, 원인 미확정 유지)으로 조사 중이던 전체 체인을 재검증하지는 않았다.
-
-🔴 **00-1b. 교차참조(STEP 948, 2026-08-08) — Q1 밸류에이션 크론 실측 중 발견된 미해결 2건, 이 항목과 날짜가 겹친다.** 🔴 **어느 것도 이번에 고치지 않았다 — 기록만.** 고칠지·어느 순서로 고칠지는 장은태 판정.
-- `us_market_cap`도 일부 종목이 **2026-07-30에서 멈춰 있다**(표본 7종목 확인 — `ACM`·`ADI`·`AIT`·`APA`·`AZO`·`BBY`·`BDX`, 전부 S&P 500). 위 00번의 `lens_cuts` 정지와 **같은 날짜다. 같은 원인인지는 미확인.**
-- `revdcf` 크론의 유니버스 `as_of` 필터 누락(`STEP 947 4-1` 미준수) — `us_market_cap` 최신 `as_of` 조인만 지정됐는데 구현은 `as_of` 무관 전체 조인(5,890 vs 5,497, 차이 393건). 상세 = `docs/probe_948_live.json`의 `cowork_crosscheck` · `docs/VALUATION_SPEC.md` 「아직 못 푼 것 5개」 ④·⑤.
-
-🔴 **00-1c. `us_market_cap` 결측 진단(STEP 949, 2026-08-08) — 원인 진단만, 처방 없음.** 상세 = `docs/probe_949_mcap_gap.json`.
-- **0단계 실측**: `STOCK_SYMS` 5,974 = OK **5,509**(최신 as_of 2026-08-07) + STALE **380**(전부 단일 날짜 **2026-07-30**, 흩어져 있지 않음) + ABSENT **85**(us_market_cap에 행 자체 없음). 배경의 "예상"치(394/71)와 합(465)은 같으나 분해는 다름(380/85) — 차이 14건은 us_market_cap 전체 5,903행 중 type≠stock(ETF 등) 14행이 이전 대략 계산에 섞였을 가능성으로 보이나 **재귀인은 하지 않았다.**
-- **1단계 야후 직접 조회(465건, `lib/lensPrecompute.ts`와 동일 방식 — 배치100·동시성6→개별재시도·동시성6, 대조군 OK사전순100건 동반)**: **A(배치실패·단건성공) 0** · **B(배치·단건 모두 응답하나 marketCap 없음) 82** · **C(배치·단건 모두 무응답) 0** · **D(배치에서 바로 성공) 383**. 대조군 100건은 **전부 D**. 🔴 **AZO·BBY·BDX·ADI·APA 5종목 전부 오늘은 D**(배치에서 바로 marketCap 수신 — 예: AZO 51,054,120,960).
-- **B 82건 관찰(결론 아님)**: 다수가 단일 접미문자 우선주류 표기(`AFGB`·`AFGC`·`AFGD`·`AFGE`·`DUKB`·`KMPB`·`MLPB` 등) 또는 알려진 상품·변동성 ETN 티커(`DGP`·`DGZ`·`DJP`·`DZZ`·`VXX`·`VXZ` 등)를 포함한다.
-- **3단계 타임라인(사실만)**: `us_market_cap` 마지막 성공 **08-07** · `lens_cuts` US **07-30 정지**(5행) · `lens_scores` US **08-07 갱신**(1,021행) · `lens_state_changes` US 렌즈별 마지막 변화일 — momentum·lowvol·technical·valuation **08-07** / quality **07-31** / assetgrowth **07-29** / fscore **07-28**(`lens_cuts` 정지일보다도 이르다).
-- 🔴 **죽은 가설(다시 세우지 말 것)**: 알파벳 편중·`us_symbols.json` 누락(배경에서 이미 폐기) — 이번 실측으로 **배치방식 특정 문제(A=0)·심볼 완전부재(C=0)도 폐기.**
-- 🔴 **미해결**: 왜 383건(D)이 8일 넘게 Production 파이프라인에서만 반복 실패했는지(오늘 직접 조회는 전부 성공) — **일시적 실패라는 뜻은 확인됐으나 그 일시성이 왜 8일씩 이어졌는지는 모른다.**
-
-**00-c. `us_market_cap` 결측 380건(type=stock) — 진단 완료, 처방 미정.**
-🔴 **미해결 핵심 = `LOCAL_OK_PROD_FAIL`**: 로컬 정상(5.1초·383/465 즉시 성공) / Production 8일 실패. 원인 미확정.
-🔴 **STEP 953 검증 — 이 버그로 설명되지 않는다.** `STOCK_SYMS`(이 진단의 대상 유니버스)는 `data/us_symbols.json` 파일에서 온다(`lib/lensPrecompute.ts:20`) — DB 페이지네이션과 무관함을 코드 직접 열람으로 확인. `LOCAL_OK_PROD_FAIL`은 여전히 미해결이다.
-🔴 처방 후보 A~D는 STEP 949 보고에 기록됨. **어느 것도 채택되지 않았다.** 상세 = `docs/probe_949_mcap_gap.json`의 `open_question`(`LOCAL_OK_PROD_FAIL`).
-
-🔴 **00-2. 방향 재검토(2026-08-07) — 압축.** 모델 우주 63개 재조사 + 렌즈 감사 2건. 요지: 실사용 1위=배수(리포트 97%·P/B56%·P/E51%·CFA 1,980명) · **7렌즈 중 5가 수요 20위 밖** · **`financials` 0행·`macro_indicators` 0행**(렌즈 재무=야후 매요청 호출) · **EV/EBITDA는 SEC 태그 추가 0** · KR은 DART 배치적재 0건. 전문 = `CHANGELOG` (82) · `MODEL_UNIVERSE_63`·`MODEL_BUILD_ORDER`·`VALUE_LENS_DEFECT_AUDIT`·`LENS_AUDIT_02_MOMENTUM`.
-
-🔴 **00-3. 해자 주장 정정 + 유니버스 자기참조(2026-08-07) — 압축.** ① `revdcf_results` **6일 연속 604 무증감**, 원인=`route.ts:28` *"유니버스=직전 as_of의 CIK"* — **신규 편입 경로 없음**(소스는 보유: `us_market_cap` 5,900). ② New Constructs가 **2,748사** 체계 커버 → *"분포 주는 곳 없다"* **철회**. 남는 차별화 = **무료 · 원전 대조 가능 · 한국(확장 시)**. 전문 = `CHANGELOG` (83) · `REVDCF_SPEC` §10 #76·#77.
-🔴 **951 보강②(2026-08-08) 추가 증거**: 표본 30종목 중 5건(`AMST`·`ANF`·`AVAH`·`ACRS`·`ACT`)이 `revdcf_results`의 2026-08-01~08-08 전체 8개 `as_of` 어디에도 없음(count=0 직접 확인). 🔴 **2026-08-07에 이미 등재된 문제이며 신규 발견이 아니다.**
-🔴 **STEP 953 검증 — 이 미편입은 페이지네이션 비결정성으로 설명되지 않는다.** `route.ts:92`의 읽기(`revdcf_results`, 직전 as_of) 자체가 604<1000(단일 페이지, 경계 없음). 8일치(2026-08-01~08-08) 전수 대조 — 매일 정확히 604행·604 distinct CIK, day1↔day8 CIK 집합 차집합 양방향 0(완전 무변동). 원인은 그대로 **자기참조 유니버스 설계**(위 ①)다 — 새로운 원인이 발견된 게 아니다.
-
-🔴🔴 **00-4. 🇺🇸🔒 전면 US 단독 — 한국 관련 전부 동결 (2026-08-08 장은태 확정 · 최상위).** *"한국시장 기준으로 된 모든 내용은 싹 다 미뤄. 언어권도 US 탭도 US만. US 완성 후 차선이 한국어·한국."* **정본 = `CLAUDE.md` 「🇺🇸🔒 전면 US 단독」.** 🔴 **동결이지 제거가 아니다** — `ACTIVE_MARKETS=["KR","US"]`·KR 크론 3개·`messages/ko.json`·KR 렌즈 976종목은 **그대로 둔다. 끄지 말 것.** ⛔ **신규 착수 금지**: KR 대상 기능·수리·데이터 소스·조사 · `ko` 신규 문구 품질작업 · KR 전용 화면. 🅿️ **미루는 것(기록만)**: DART 배치 적재 · `fs_div` 연결/개별 · 표준계정 미사용률 · 26개 양식 · IFRS 18(2027) · 지주회사 중복상장 · KR 우선주 처리 · KR 경쟁조사(`dcfkr.com` 기록만). 🔴 **판정·감사·문서도 US 기준으로만** — 7렌즈 감사·모델 선정·커버리지 판정에서 **KR 수치를 결론에 넣지 않는다.** 🔴 **주의**: `messages.test.ts`가 ko·en 패리티를 강제하므로 새 키는 테스트 최소 형태만 채우고 **테스트를 끄지 말 것.** ✅ **US 완성 후 확장 1순위 = 한국(확정).**
-
-🔴🔴 **00-5. 🔑 사용자 질문 정본 신설 — 「모델보다 질문이 먼저」(2026-08-08 · 판정 대기).** **정본 = `docs/USER_QUESTIONS_2026-08-08.md`.** 장은태 지적: *"중요한 건 모델 자체가 아니라 이용자들이 무엇을 원하느냐야."* Cowork이 모델→사용자 순서로 거꾸로 가던 것을 뒤집었고, **Cowork이 낸 「수요 증거」가 실은 도구 사용률이었음**(PER 76%는 도구지 원하는 것이 아님)을 인정·정정. **근거 3소스 원문 확인**: ① **Simply Wall St 자사 모델 GitHub 공개** 5축(Value·Future·Past·Health·Dividends&Buybacks + Management는 점수 제외 · 🔴 **기술적 분석 축 없음**) ② **AAII 설문(2022-04)** — 살 때 Value **77%**/Dividends **73%**/Growth **69%**, 지표 PER 76%·배당수익률 74%·**PBR 36%**, 🔑 **팔 때 「펀더멘털 변화」 60%(1위·애널하향 21%의 3배)** ③ Stock Analysis 탭 구조. **→ 질문 정본 = Q0 뭐 하는 회사(나머지의 전제) · Q1 비싸게 사는 건가 · Q2 현금 돌려주나 · Q3 커지고 있나 · Q4 망할 위험 없나 · Q5 뭔가 바뀌었나(=단기축) + 요약층(세는 것까지만 ＋ 엇갈림 한 줄).** 🔴 **철회 4건**: *"타이밍"*(질문 아님→Q5 재료) · *"뭘 놓치고 있나"*(우리가 알 수 없음→요약층 한 줄) · **역DCF=독립 질문**(→**Q1의 축**. 원전 *"uses DCF machinery differently, not as a replacement"* · SWS도 DCF를 Value 축 안 체크로) · *"앞으로 어떻게 될까"*(**원천 불가** — 애널 추정 유료+남의 말). 🔴 **역DCF 「N년」 표현 폐기 방향(실측)**: years 117건 중 밴드≤1년 **4건(3.4%)** · 중앙 GAP 9년 vs **중앙 밴드 8년** · 밴드≥10년 **38.5%** → 단일 숫자는 허위 정밀성. **대안은 이미 코드에 있음**(`expectationLevel` 3분류·`rankLine` 분포순위)이나 헤드라인이 여전히 숫자. 🔴 **새 빈칸: 「편하게」의 기준이 없다** — 정확성 기준(DoD 9항목)만 있고 **읽힘 기준 부재**(현행 카드 설명 6줄). ✅ **ⓐ 질문 확정 완료(2026-08-08 장은태) — Q0~Q5 + 요약층, 형태까지**: Q0=별도카드 아님·각 카드에 「업종 대비」로 녹임 ＋ **리스트 섹터 분류**(실측 매핑 802/1,021=78.6%·섹터별 26~141 → **목록은 지금 가능, 섹터 내 컷은 상위5개만 안정 → 604 확대 후**) · Q1~Q4=카드 · **Q5=카드(종목)＋피드(홈) 둘 다**(`lens_state_changes` US 2,274행·754종목·18일치 축적 → `where symbol=?`만 하면 됨. 🔴 단 「우리 판정 변화」만 담기고 US 컷 정지 영향·18일치뿐). ✅ **ⓒ Q1 구성 = C안 확정(2026-08-08)** — **배수 ＋ 역DCF 병기**(주축 PER · 보조 EV/EBITDA·PBR · 적자대안 PSR · 심층 역DCF · 전 축 「업종 대비」). 근거: 원전의 배수 부정은 *혼자 쓸 때*이고 모부신 자신이 *"배수는 DCF의 축약인데 동인을 가린다"*고 씀 → 드러내면 한 쌍 · 정체성(여러 시각·판단은 당신) · **이 조합만 만드는 문장**(*"PER은 업종 평균보다 낮은데 시장 기대는 상위 5%"*). 🔴 **남은 판정 대기 ⓑ「편하게」기준 ⓓ요약층 한계선 ⓔ역DCF 헤드라인 3분류 전환.** 🅿️ **모델 완성 후로 미룸(장은태 명시)**: 선순환 구조 · **유입 경로(저장소에 정의된 적 없음 — 최대 빈칸)** · 광고·수익화.
+## ⑤ 🅿️ 배경 (역DCF 밖 · 모델 완성 후 논의) · 정체성 · 워크플로우
 
 🅿️ **수익화 사전조사(2026-08-09 대화) — 🔴 판정 없음, 모델 완성 후 논의.**
 🔴 **최종 목적지(장은태): 모든 국가의 모든 종목을 우리가 만들거나 분석한 모델로, 무료 또는 최소 비용으로, 누구나 이해하기 쉽게 접근할 수 있게 하는 것. 🔴 그 본체는 「미국 시장 기준 모델의 완성」이다 — 미국이 덜 된 채 나라를 늘리면 결함이 나라 수만큼 복제된다(2026-08-09 Q1 하나에서 결함 4건 발생이 근거).**
@@ -330,33 +114,19 @@
 
 🔴 위 넷 중 어느 것도 지금 실행하지 않는다. Q0~Q5 완성이 먼저다.
 
-0. 🔑 **지금 하는 일 = 원전 그대로 구현**(CLAUDE.md 🚫 창작 금지). 진행 기준은 **DoD 순번이 아니라 원전 대조표의 차이 9행**(887 재분류 후 현재 4행)이다. 🔴 **DoD 9항목은 "완성 판정 기준"이지 작업 순서가 아니다.** 섞지 말 것. 대조표 정본 = `docs/LENS_COMPLETION_STANDARD.md` §1(행 수 **20** = 동일 8 + 값만차이 3 + 차이 4 + 제품전제 1 + 우리 추가물 4·검증사례는 DoD로 이관)
+🔴🔴 **🇺🇸🔒 전면 US 단독 — 한국 관련 전부 동결(2026-08-08 장은태 확정, 정본 = `CLAUDE.md`).** 동결이지 제거가 아니다 — `ACTIVE_MARKETS=["KR","US"]`·KR 크론 3개·`messages/ko.json`·KR 렌즈 976종목은 그대로 둔다(끄지 말 것). 신규 착수 금지: KR 대상 기능·수리·데이터소스·조사·`ko` 신규 문구·KR 전용 화면. US 완성 후 확장 1순위 = 한국(확정).
 
-1. ✅ **차이 9행 전부 판정 완료(2026-08-03 887 기준)** — driver1·driver3·driver4·driver5·driver6·인플레·모집단·데이터출처·검증사례 9행 전부 장은태 판정을 받았고, 887이 그 판정에 맞춰 대조표를 재분류했다(driver3·6·인플레→동일식값만차이, 모집단→제품전제, 데이터출처→차이 잔류, 검증사례→DoD 이관). 대조표 현재 구성 = **차이 4행**(driver1·4·5·데이터출처). 상세 = `LENS_COMPLETION_STANDARD.md` §1.
-1-1. ✅ **888 감사 → 889 교정 완료 — DoD 6 = ✅** — `docs/AUDIT_888_REVDCF_SURFACE.md`(처리결과 반영판). 위반 5건·보류 3건 전부 처리(보류 0건). 🔴 불리한 사실: 라이브 미검증(플래그 OFF) — DoD 7·9는 별개로 여전히 블록.
-1-2. ✅ **DoD4 판정서 제출(890) → 적용(891) — DoD4 = ✅.** "모집단=2,857"은 목표치, 실제 표본=604(자기참조 고정) — `LENS_COMPLETION_STANDARD.md` "4) 컷·분포"에 반영 완료. 불리한 사실 = 604 중 86사(14.2%) 시총 스테일(891 결함 판정).
-1-3. ✅ **신선도 원인·인과분해·처방판정(892)** — 원인은 부분확정(재시도예산 병목 여부는 진단이 죽어 있어 미확정 · 배열위치 무관 · 나이상한 무한 확정). fresh 대조군이 stale군보다 가격을 더 움직였는데 GAP 이동은 동일해 **891의 그룹차가 신선도 인과라는 근거 약화**. 처방 = **B(7일 TTL 필터)** — 적용은 893.
-2~6-3. ✅ **driver1·3·4·5·6·인플레·7/8/9행 전부 판정 완료(장은태 승인, 각 STEP 871~887)** — 근거·대가·불리한사실·재검토조건은 전부 `LENS_COMPLETION_STANDARD.md` §1 각 절(정본, 한 글자도 안 고치고 887에서 재분류 이동됨). 요지만: driver1=현행유지(과거CAGR) · driver3=현행유지(한계세율·세율순효과 실측완료) · driver4=현행유지(수준형·단기차입금 혼입은 미측정) · **driver5=원전식 marginal 채택(880·모델이 실제로 바뀐 유일한 행)** · driver6=현행유지(업종조립·차이 대부분이 시점) · 인플레=현행유지(`expected_inflation`) · 7행=제품전제 이동 · 8행=차이 잔류(제약표시) · 9행=DoD 값검증으로 이관. `DECISION_884_TABLE_STRUCTURE.md`(887 적용) 참조.
-
-7. ✅ **DoD 5·8 판정 완료** — DoD5 = ✅(895→897, 897의 재판정으로 상향) · DoD8 = ✅(900, 항목별 채점+미커버 8건 보강). ✅ **DoD 4는 890→891로 해소**(890 판정서·891 적용, 조건부 승인 충족).
-
-8. ✅ **DoD 3 = 903에서 해소(2026-08-05 장은태 승인) — 🅿️ 도메인 상한 종결.** `docs/DECISION_902_DOD3.md` 권고안 그대로 승인. 승인 조건(화면에 "외부 검증 없음" 고지) = `RevDcfMethod.verificationCaveat` 신설로 충족.
-
-9. ✅ **§10 미결 목록 전수 감사 완료(904)** — 76항목(77행) 전부 재확인. 결과: ✅해소11·⛔무효4·↗이관2·🔴미해소18(보류3·인프라확충후1·원리적불가3·**지금가능11**). `docs/AUDIT_904_OPEN_ITEMS.md`.
-9-1. ✅ **"지금 가능" 11건 재확인·분류·권고 순서서 완료(905)** — 904가 얕게 처리했다고 밝힌 3건(#17·37·43) 코드 재확인, **판정 불변**(결정형·지금가능). 11건 성격 분류(계산2=#42·46 · 관측1=#67 · 화면3=#29·40·41 · 문서2=#32·36 · 결정3=#17·37·43), 되돌림 가능성, **DoD7 보류 해당 여부 확정(#29·40·41 = 아니오**, 단일표면 캐비어트/코드상수 리팩터라 표면 간 정합과 무관), **판정 재개방 여부 표시(#46=875 driver4 재검토 조건 그 자체 · #42=driver1 재개방 가능성)**. `docs/DECISION_905_NEXT.md` 신설 — 권고 순서 1개(측정 프로브→저비용 정리→결정형 일괄→화면 정리) + 11건 전부 "안 하면 모델이 틀리는 것" 0건·"있으면 더 좋은 것" 또는 "재개방 가능한 정밀화"로 분류(#40만 잠재적 구조 위험). 🔴 **순서·우선순위는 STATE에 적지 않음 — 장은태 결정 대기.**
-
-10. 🅿️ **인프라 미확정**(모델과 무관·장은태만 가능): ~~브라우저 육안 2단계 미실행~~ **✅ 완료로 확인**(`DECISION_921_COMPLETION.md:138`에 897·898 1차+919·920 2차로 이미 완료 기록돼 있었음 — 928 발견·정리) · ~~Vercel 플랜 모순~~ **✅ 911 해소**(Hobby=100개·1일1회, 9≤100) · ~~`/api/revdcf` 외부 호출 이력(Vercel 로그 403)~~ **✅ 927·928 해소 — 403은 MCP 한정이었다**(Cowork이 인증된 브라우저로 Deployments·Runtime Logs·Environment Variables·Deployment Protection 전부 접근 확인). 남은 제약 = **MCP 채널 403 불변**(913)·**로그 보존 1시간**(911) · `toms-projects` 스코프 접근 권한(동일 브라우저 채널로 해소·별도 항목 유지 불필요하나 기록 보존) · FTSE Russell 1차 문서 원본 미저장(rule ⓪ 갭)
-
-11. 🅿️ **866~867 잔여**(원전 구현과 무관·재개는 장은태 지시 후): Russell 3기준 측정 여부 · OTC 티어 라벨 신뢰도(904 감사로 §10 #38·39가 이 목록으로 정식 이관 확인) · ICC 정본 선택 · skipped 전수 규명
-
-- 🅿️ 보류: **DoD9(라이브 실측·노출 트랙, 921 분리)** — production 노출 승인 필요. 🔴 **DoD7은 여기서 뺀다**(921 정정 — 노출과 무관). `boardBadge.years` 판단은 922 권고(현행유지)가 923에서 승인됨 — 🔴 **그러나 DoD7은 여전히 🔶 미결**: 923이 실측 발견한 종목명 불일치(목록="Mo"/"Hst" vs 상세="Altria Group, Inc." 등)의 **화면 증상은 924가 B안(표시 계층 통일)으로 해소**했으나(348/348 잔여 0), `lens_scores.name` 자체는 여전히 티커이고 DoD7의 "같은 이름" 정의 자체가 미확정이라 **판정 칸은 924도 바꾸지 않았다** — `docs/DECISION_923_NAMING.md`(923 진단)·924 채택 기록. 베타 · 국가탭 확대 · 7렌즈 깊이 확장 — **모델 완성 전 재개 금지**
-- 🔴 **923~924 경계 기록**: DoD7 종목명 문제는 **"7렌즈 깊이 확장"이 아니다** — 역DCF 완성의 필요조건(승인된 정의: DoD9 제외 8항목)이라 진단·수리 둘 다 범위 안이다. 923은 진단만(코드 diff 0), 924는 장은태 승인(B안 채택)을 받아 실제 화면 코드를 고쳤다 — **다음 STEP 착수 전 이 경계를 다시 확인할 것**: 7렌즈 라이브 화면을 고치는 작업은 이번처럼 매번 별도 승인 필요(899·901 위반 전례 재확인).
-  🔴 **902 기록 — 이 보류를 899·901이 어겼다**: 899(DoD7 영역·`lossMaking` 표면 일치 조사)·901(DoD7 판정 그 자체)이 "재개 금지" 항목에서 진행됐다(CLAUDE.md:60의 위반 재현·`docs/LENS_DEV_PLAYBOOK.md` §0 신규 11번). **되돌리지 않음** — 901 판정은 🔶 유지라 상태 불변, 899의 `lib/revdcf/lossMaking.ts`는 중복 제거일 뿐이라 무해. 두 STEP의 판정문에 "보류 중 수행됨" 표시를 남겼다(`LENS_COMPLETION_STANDARD.md`·`CHANGELOG.md`). **다음 세션은 STEP을 제안하기 전에 이 보류 목록부터 다시 읽을 것.**
+- **활성 시장 = KR·US뿐**(JP/CN(HK)/VN/GB 파킹 — `lib/activeMarkets.ts`). **7렌즈 = 유지·수정만**(깊이확장은 역DCF 완성 뒤). 판정 = 분포 유도 컷(`lens_cuts` p30/p70·RSI 30/70·F-Score 3/7만 고정). 미착수: JP/CN/VN/GB 렌즈 선계산·대화형 LLM·푸시/앱스토어.
+- 사업자 **원트릴리언**(대표 장은태·210-39-33812) · **"종목을 보는 눈을, 누구에게나."**(무기·직시·자립·멍거 톤·예측·추천 안 함) · 5면·i18n ko·en 패리티.
+- 🗂️ **문서 구조**: `docs/`에 `INDEX.md`(전체 카탈로그, 상태표기 4종) 존재 — 새 세션은 이 STATE 다음 필요시 그쪽을 본다. STEP 명령서는 이동 금지(참조·실행 관례).
+- **Cowork=두뇌**(설계·문서·Supabase MCP·실행 안 함) / **Claude Code=손**(STEP 실행·빌드·git). 세션 종료 = STATE 덮어쓰기+CHANGELOG+push.
 
 ---
 
-## 🅿️ 배경 (역DCF 밖 · 변경 없음) · 정체성 · 워크플로우
-- **활성 시장 = KR·US뿐**(799·JP/CN(HK)/VN/GB 파킹 — `lib/activeMarkets.ts`). **7렌즈 = 유지·수정만**(812~830 완료·깊이확장은 역DCF 완성 뒤). 판정 = 분포 유도 컷(`lens_cuts` p30/p70·RSI 30/70·F-Score 3/7만 고정). `us_market_cap`은 `data/us_symbols.json` 기준(🔴 이 파일은 매일 자동갱신돼 총량이 매번 다름 — 890·891 실측: 당시 최근 9일 6,771~6,783 · **930 재확인**: `us_market_cap` 현재 행수 = 5,892[HEAD 절과 통일, 930 DB 직접조회] · 두 숫자는 서로 다른 테이블/파일이라 혼동 금지 · 고정 숫자로 적지 않는다). 미착수: JP/CN/VN/GB 렌즈 선계산·대화형 LLM·푸시/앱스토어.
-- 사업자 **원트릴리언**(대표 장은태·210-39-33812) · **"종목을 보는 눈을, 누구에게나."**(무기·직시·자립·멍거 톤·예측·추천 안 함) · 5면·i18n ko·en 패리티.
-- 🗂️ **문서 구조(2026-08-08 정리)**: `docs/` 비-STEP **97개** + `_archive/` **16개** + STEP 명령서 884개. **`INDEX.md`에 상태 표기 4종**(`[최신]`/🅿️동결/🗄️아카이브/구표기) · **KR·CN·VN 주제 문서 7건에 🅿️ 동결 배너**(신규 착수 금지·수치를 결론에 넣지 말 것). 🔴 **STEP 명령서는 이동 금지**(참조 924건+실행 관례). 상세 = `CHANGELOG` (88).
-- **Cowork=두뇌**(설계·문서·Supabase MCP·실행 안 함) / **Claude Code=손**(STEP 실행·빌드·git). 세션 종료 = STATE 덮어쓰기+CHANGELOG+push.
+## ⑥ 다음에 할 일
+
+🔴 **장은태 지시 후에만 착수한다.** 순서·우선순위는 이 STATE에 적지 않는다(장은태 결정 대기, 905 원칙).
+
+- **Q1 착수 준비**: 판정 ⓛ(disagree 표시 규칙) · 「기존 7렌즈 수리 vs Q1~Q4 카드 신설」 판정 · EV/EBITDA·PSR SEC 태그 조립.
+- **① 최우선 확인 대기**(위 참조) — 2026-08-11 07:45 KST 크론 후 969 반영 확인.
+- ④ 미해결 목록 중 장은태가 판정 우선순위를 정하는 항목부터.
