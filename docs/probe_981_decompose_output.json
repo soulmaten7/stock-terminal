@@ -1,0 +1,371 @@
+{
+  "matchedN": 510,
+  "p50Ratio": 1.1170021281551608,
+  "p90Ratio": 1.8459478426023812,
+  "top20": [
+    {
+      "symbol": "TWLO",
+      "secPer": 1082.3431218301116,
+      "marketCap": 36619997184,
+      "yahooPer": 33.56,
+      "ratio": 32.25,
+      "fyNi": 33834000,
+      "ttmNi": 1217019000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 35.97,
+      "observedRatio": 32.25,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "LITE",
+      "secPer": 2673.9469244787647,
+      "marketCap": 69255225344,
+      "yahooPer": 156.17,
+      "ratio": 17.12,
+      "fyNi": 25900000,
+      "ttmNi": 180800000,
+      "ttmQuarterEnds": [
+        "2026-03-28",
+        "2025-12-27",
+        "2025-09-27",
+        "2025-03-29"
+      ],
+      "predictedRatio": 6.98,
+      "observedRatio": 17.12,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "LSCC",
+      "secPer": 5988.390516212711,
+      "marketCap": 18468196352,
+      "yahooPer": 520.12,
+      "ratio": 11.51,
+      "fyNi": 3084000,
+      "ttmNi": 46883000,
+      "ttmQuarterEnds": [
+        "2026-07-04",
+        "2026-04-04",
+        "2025-09-27",
+        "2025-06-28"
+      ],
+      "predictedRatio": 15.2,
+      "observedRatio": 11.51,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "CSGP",
+      "secPer": 1750.4536868571429,
+      "marketCap": 12253175808,
+      "yahooPer": 168,
+      "ratio": 10.42,
+      "fyNi": 7000000,
+      "ttmNi": 33100000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 4.73,
+      "observedRatio": 10.42,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "FANG",
+      "secPer": 31.796446608695653,
+      "marketCap": 52654915584,
+      "yahooPer": 284.91,
+      "ratio": 8.96,
+      "fyNi": 1656000000,
+      "ttmNi": 3602000000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 2.18,
+      "observedRatio": 0.11,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "FIS",
+      "secPer": 57.74016469109948,
+      "marketCap": 22056742912,
+      "yahooPer": 6.57,
+      "ratio": 8.79,
+      "fyNi": 382000000,
+      "ttmNi": 3372000000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-12-31",
+        "2025-09-30"
+      ],
+      "predictedRatio": 8.83,
+      "observedRatio": 8.79,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "TEL",
+      "secPer": 34.00130070792617,
+      "marketCap": 62630395904,
+      "yahooPer": 169.01,
+      "ratio": 4.97,
+      "fyNi": 1842000000,
+      "ttmNi": 2991000000,
+      "ttmQuarterEnds": [
+        "2026-06-26",
+        "2026-03-27",
+        "2025-12-26",
+        "2025-06-27"
+      ],
+      "predictedRatio": 1.62,
+      "observedRatio": 0.2,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "ON",
+      "secPer": 261.16058763636363,
+      "marketCap": 31600431104,
+      "yahooPer": 53.05,
+      "ratio": 4.92,
+      "fyNi": 121000000,
+      "ttmNi": 618700000,
+      "ttmQuarterEnds": [
+        "2026-07-03",
+        "2026-04-03",
+        "2025-10-03",
+        "2025-07-04"
+      ],
+      "predictedRatio": 5.11,
+      "observedRatio": 4.92,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "BMRN",
+      "secPer": 35.40242542153791,
+      "marketCap": 12351941632,
+      "yahooPer": 172.46,
+      "ratio": 4.87,
+      "fyNi": 348901000,
+      "ttmNi": 360077000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 1.03,
+      "observedRatio": 0.21,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "A",
+      "secPer": 31.639745326170377,
+      "marketCap": 41226588160,
+      "yahooPer": 147.44,
+      "ratio": 4.66,
+      "fyNi": 1303000000,
+      "ttmNi": 1195000000,
+      "ttmQuarterEnds": [
+        "2026-04-30",
+        "2026-01-31",
+        "2025-07-31",
+        "2025-04-30"
+      ],
+      "predictedRatio": 0.92,
+      "observedRatio": 0.21,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "DLR",
+      "secPer": 57.58080502261676,
+      "marketCap": 73004687360,
+      "yahooPer": 245.32,
+      "ratio": 4.26,
+      "fyNi": 1267865000,
+      "ttmNi": 1348492000,
+      "ttmQuarterEnds": [
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30",
+        "2025-03-31"
+      ],
+      "predictedRatio": 1.06,
+      "observedRatio": 0.23,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "ROKU",
+      "secPer": 257.1771462975747,
+      "marketCap": 22724429824,
+      "yahooPer": 64.88,
+      "ratio": 3.96,
+      "fyNi": 88361000,
+      "ttmNi": 285231000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 3.23,
+      "observedRatio": 3.96,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "XYZ",
+      "secPer": 36.352249404887736,
+      "marketCap": 47462805504,
+      "yahooPer": 141.07,
+      "ratio": 3.88,
+      "fyNi": 1305636000,
+      "ttmNi": 779838000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 0.6,
+      "observedRatio": 0.26,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "TPR",
+      "secPer": 179.06103336244541,
+      "marketCap": 32803981312,
+      "yahooPer": 49.5,
+      "ratio": 3.62,
+      "fyNi": 183200000,
+      "ttmNi": 1383200000,
+      "ttmQuarterEnds": [
+        "2026-03-28",
+        "2025-12-27",
+        "2025-09-27",
+        "2025-03-29"
+      ],
+      "predictedRatio": 7.55,
+      "observedRatio": 3.62,
+      "cause": "unknown"
+    },
+    {
+      "symbol": "VTR",
+      "secPer": 590.1035675329316,
+      "marketCap": 47888674816,
+      "yahooPer": 169.75,
+      "ratio": 3.48,
+      "fyNi": 81153000,
+      "ttmNi": 260793000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 3.21,
+      "observedRatio": 3.48,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "CIEN",
+      "secPer": 473.29300257828083,
+      "marketCap": 58375012352,
+      "yahooPer": 137.01,
+      "ratio": 3.45,
+      "fyNi": 123338000,
+      "ttmNi": 427780000,
+      "ttmQuarterEnds": [
+        "2026-05-02",
+        "2026-01-31",
+        "2025-08-02",
+        "2025-05-03"
+      ],
+      "predictedRatio": 3.47,
+      "observedRatio": 3.45,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "DINO",
+      "secPer": 25.214954592334493,
+      "marketCap": 14473383936,
+      "yahooPer": 7.76,
+      "ratio": 3.25,
+      "fyNi": 574000000,
+      "ttmNi": 2133000000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 3.72,
+      "observedRatio": 3.25,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "HUBS",
+      "secPer": 234.65148134434014,
+      "marketCap": 10773084160,
+      "yahooPer": 74.63,
+      "ratio": 3.14,
+      "fyNi": 45911000,
+      "ttmNi": 89170000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2026-03-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 1.94,
+      "observedRatio": 3.14,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "MCHP",
+      "secPer": 387.0994101010101,
+      "marketCap": 45987409920,
+      "yahooPer": 124.54,
+      "ratio": 3.11,
+      "fyNi": 118800000,
+      "ttmNi": 204400000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2025-12-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 1.72,
+      "observedRatio": 3.11,
+      "cause": "ttm_fy_timing"
+    },
+    {
+      "symbol": "UHAL-B",
+      "secPer": 155.26088345683766,
+      "marketCap": 12906526720,
+      "yahooPer": 471.57,
+      "ratio": 3.04,
+      "fyNi": 83128000,
+      "ttmNi": 407778000,
+      "ttmQuarterEnds": [
+        "2026-06-30",
+        "2025-12-31",
+        "2025-09-30",
+        "2025-06-30"
+      ],
+      "predictedRatio": 4.91,
+      "observedRatio": 0.33,
+      "cause": "unknown"
+    }
+  ],
+  "causeCounts": {
+    "ttm_fy_timing": 10,
+    "unknown": 10
+  }
+}

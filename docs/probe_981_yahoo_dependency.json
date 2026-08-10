@@ -1,0 +1,97 @@
+{
+  "step": 981,
+  "scope": "US only — investigation, 0 code changes, 0 DB writes",
+  "section1_field_inventory": {
+    "yahoo_fields_used_by_lensCompute": {
+      "quote": ["trailingPE (lensCompute.ts:144)", "priceToBook (lensCompute.ts:146)", "marketCap (lensCompute.ts:151-152)", "regularMarketChangePercent (lensCompute.ts:150)"],
+      "fundamentalsTimeSeries_annual": ["totalRevenue", "grossProfit", "costOfRevenue", "netIncome", "totalAssets", "currentAssets", "currentLiabilities", "longTermDebt", "operatingCashFlow", "ordinarySharesNumber", "stockholdersEquity/commonStockEquity"],
+      "note_shared_use": "fundamentalsTimeSeries(=d.financials)는 valuation 폴백(pe/pb) 외에도 quality·assetgrowth·fscore가 공유해서 쓴다(lenses.ts:69,251,327-373). valuation 렌즈만 떼어내도 이 fetch 자체는 없앨 수 없다."
+    },
+    "section1_2_fallback_branch": {
+      "location": "lib/lensCompute.ts:233-243",
+      "us_path_priority1": "quote.trailingPE (peBasis='ttm')",
+      "us_path_fallback": "pe==null이면 perFrom(marketCap, latestAnnualNetIncome) 시도 (peBasis='annual') — market 분기 없음, 조건은 pe==null 하나뿐",
+      "isKrPreferred_guard": "US 종목에는 적용 안 됨(6자리 KR코드 정규식 전용) — US는 폴백이 항상 열려 있음"
+    },
+    "section1_3_peBasis_distribution_LIVE_MEASURED": {
+      "universe": "lens_scores market=US, 1023종목(오늘 기준)",
+      "method": "yf.quote(symbol) 실시간 재조회 — lensCompute.ts:144와 동일 필드(trailingPE)만 읽음, DB 쓰기 없음",
+      "trailingPE_available_ttm": 913,
+      "trailingPE_null_fallback_triggered": 110,
+      "quote_errored": 0,
+      "fallback_rate_pct": 10.75,
+      "note": "폴백이 실제로 값을 만드는지(재무 순이익 존재)는 별도 — 여기 110은 '폴백 분기 진입' 수, 최종 na 여부는 미측정"
+    },
+    "section1_4_surface_inventory": {
+      "code_component_touchpoints": [
+        "app/[locale]/stock/[symbol]/StockLensClient.tsx (5개소 — 카드 렌더·PER 기준 문구·컷 표시)",
+        "components/today/TodayClient.tsx (LensKey 타입 유니온 1개소 — 상태변화 피드)",
+        "components/explore/ExploreClient.tsx (LensKey 타입 유니온 1개소 — 스크리닝)",
+        "lib/eightK.ts (2개소 — 8-K 항목→렌즈 태깅. item 3.02는 valuation이 유일한 연결 렌즈)",
+        "app/api/lens/route.ts (percentile 주입 — RPC lens_percentiles의 value_pctl 컬럼)"
+      ],
+      "db_read_touchpoints_valuation_value_or_state": [
+        "app/api/explore/lens-top/route.ts",
+        "app/api/krx/ranking/route.ts",
+        "app/api/watchlist/quotes/route.ts",
+        "app/api/yahoo/us-list/route.ts",
+        "app/api/yahoo/gb-list/route.ts (파킹 시장이지만 SELECT 절엔 존재)",
+        "app/api/yahoo/cn-list/route.ts (〃)",
+        "app/api/yahoo/vn-list/route.ts (〃)",
+        "app/api/yahoo/jp-list/route.ts (〃)"
+      ],
+      "db_columns": ["lens_scores.valuation_value", "lens_scores.valuation_state"],
+      "db_function": "lens_percentiles RPC (029/041 migrations) — value_pctl 컬럼",
+      "test_files_for_THIS_lens_ie_7lens_valuation_not_Q1": ["lib/lenses.charac.test.ts (다수 describe·snapshot)", "lib/lensDenominator.test.ts (1줄, 백테스트 레퍼런스 라벨)"],
+      "terminology_warning": "코드베이스에 '밸류(valuation)'가 두 개 존재 — (a) lib/lenses.ts의 야후 기반 7렌즈 valuation(이 STEP의 대상) (b) lib/valuation.ts의 SEC 기반 Q1 4축 엔진(per/pbr/psr/ev_ebitda). lib/valuation.test.ts·lib/sectorCuts.test.ts·lib/sectorRelativeBatch.test.ts·app/api/q1/[symbol]/route.test.ts는 (b) 소속이라 이 STEP의 제거 대상 밖.",
+      "972_cited_count": "6곳(구두 언급) — 981 실측 재검산 결과 코드 컴포넌트 5 + DB읽기 라우트 8 + DB컬럼 2 + DB함수 1 + 테스트 2 = 최소 18개 파일/객체. 972의 '6곳'은 화면 표시 지점만 셌을 가능성(재현 안 됨 — 972 자체 산출근거 미기록)."
+    }
+  },
+  "section2_divergence": {
+    "denominator_methodology_note": "|a-b|/denominator는 분모 선택에 따라 순위가 크게 갈린다(실측: TWLO는 SEC분모 96.9% vs yahoo분모 3125%) — 방향 무관 대칭지표인 ratio=max/min을 정본으로 채택.",
+    "section2_1": {
+      "matchedN": 510,
+      "ratio_p50": 1.117,
+      "ratio_p90": 1.846,
+      "ratio_p99": 8.445,
+      "within_20pct_n": 315,
+      "within_20pct_pct": 61.8,
+      "within_50pct_n": 418,
+      "within_50pct_pct": 82.0,
+      "over_2x_n": 43,
+      "over_2x_pct": 8.4,
+      "AMT_case_972": { "yahoo_per": 27.87, "sec_per": 35.65, "ratio": 1.279, "percentile_in_population": 70.9, "verdict": "예외 아님 — 상위 30% 안에 들지만 극단(2x+, 상위 8.4%) 근처는 아님. 평범하지만 중앙값보다는 확실히 크다." }
+    },
+    "section2_2_top20_cause_classification": {
+      "method": "predictedRatio = TTM_NI/FY_NI(같은 marketCap이 분자에서 상쇄된다고 가정) vs observedRatio = secPer/yahooPer. 둘이 2배 이내로 맞으면 'TTM/FY 시점차'로 분류, 벗어나면 '불명'.",
+      "TTM_reconstruction_source": "docs/probe_951_cache/{symbol}.json(SEC companyfacts 로컬 캐시, 1,167종목) — 최근 이산 4개 분기 합산. 태그 우선순위는 drivers.ts NET_INCOME과 동일(연도별 아니라 분기-end별 폴백으로 981이 새로 구현 — coalesceMap과 같은 철학).",
+      "cause_counts": { "ttm_fy_timing": 10, "unknown": 10 },
+      "preferred_stock_bucket": "US에는 우리 코드의 우선주 특례(isKrPreferred)가 구조적으로 없음(KR 6자리 코드 전용) — 이 분류축은 US 조사 범위에서 원천 배제, 판정 불필요.",
+      "restatement_bucket": "SEC 파이프라인은 이미 '최신 filed 값'을 쓰므로(coalesceMap) 재작성 자체가 잔차 원인일 가능성은 낮음 — 별도 태그 비교 실측은 안 함(미측정).",
+      "top20_detail_ref": "scripts/probe_981_decompose.ts 실행 결과 = docs/probe_981_decompose_output.json"
+    },
+    "section2_3_verdict_simulation": {
+      "caveat": "lens_cuts(US·valuation) as_of=2026-07-30로 정지 상태(미해결 13번, docs/STATE.md:80) — 오늘 화면에 실제로 걸려 있는 그 컷을 그대로 시뮬레이션에 씀. 컷이 최신화되면 숫자가 바뀔 수 있다.",
+      "cutoffs_used": { "lo": 18.24, "hi": 35.1, "as_of": "2026-07-30" },
+      "matchedN": 510,
+      "verdict_differs_n": 103,
+      "verdict_differs_pct": 20.2,
+      "full_flip_cheap_to_rich_or_reverse_n": 4,
+      "full_flip_symbols": [
+        { "symbol": "APO", "yahoo_per": 45.51, "sec_per": 16.38, "yahoo_state": "rich", "sec_state": "cheap" },
+        { "symbol": "VLO", "yahoo_per": 12.44, "sec_per": 36.69, "yahoo_state": "cheap", "sec_state": "rich" },
+        { "symbol": "GPN", "yahoo_per": 40.82, "sec_per": 16.28, "yahoo_state": "rich", "sec_state": "cheap" },
+        { "symbol": "FIS", "yahoo_per": 6.57, "sec_per": 57.74, "yahoo_state": "cheap", "sec_state": "rich" }
+      ],
+      "db_writes": "없음 — 전부 SELECT 계산, verdict/state 컬럼 미변경"
+    }
+  },
+  "section3_removal_fallout": {
+    "section3_1_affected_list": "section1_4_surface_inventory와 동일 목록 — 제거 시 손대야 하는 대상은 지금 밸류 렌즈가 이미 닿아 있는 곳 전부(중복 기재 생략).",
+    "section3_2_market_branch_point": {
+      "question": "US만 내리고 다른 시장은 그대로 두는 것이 기술적으로 가능한 구조인가",
+      "finding": "없다. LENSES 배열(lib/lenses/registry.ts)·LENS_KEYS(lensPrecompute.ts)·CUT_LENSES(lensCuts.ts)가 전부 시장 구분 없는 단일 상수 배열이다. computeSymbolLenses(symbol, locale, cuts)는 market 파라미터 자체를 안 받는다. computeLensScoresFor(universe, market)의 market은 loadCuts(market) 즉 '판정 기준값'에만 쓰이지, '어느 렌즈를 계산할지'엔 안 쓰인다. lensCopy.ts의 LENS_COPY.valuation도 ko/en 통틀어 시장 무관 단일 객체 — KR·US가 같은 문구를 공유한다.",
+      "implication": "US만 끄려면 지금 없는 새 분기(LENSES 필터링 또는 market 파라미터 전파)를 코드에 새로 만들어야 한다. '끄는' 작업 자체가 최소 1개 이상 새 조건문을 요구 — 순수 삭제가 아니다."
+    }
+  }
+}
