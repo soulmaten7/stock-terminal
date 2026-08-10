@@ -1,0 +1,129 @@
+{
+  "step": 978,
+  "date": "2026-08-10",
+  "purpose": "Q1 축 구성 — 4축 병렬 vs 업종별 대표 배수 하나. 조사 전용, 코드·DB·화면 무접촉.",
+  "note": "972가 이미 확보한 것은 재조사하지 않고 인용만 함(docs/Q1_CARD_DESIGN.md §2·§3). 이번 STEP은 그 결론의 전후맥락·반대증거·자체데이터를 보강한다.",
+
+  "stage_1A_original": {
+    "already_had_from_972": {
+      "relval_slide177_179_quote": "\"In financial services: … Price to book ratios dominate.\" / \"Use the multiple that seems to make the most sense for that sector, given how value is measured and created.\" / 표: Cyclical Manufacturing→PE·High Tech/High Growth→PEG·High Growth/No Earnings→PS·VS·Heavy Infrastructure→VEBITDA·REIT→P/CF·Financial Services→PBV·Retailing→PS·VS",
+      "note": "972는 이 결론 문장만 인용했다 — 전후맥락(슬라이드 176)은 이번에 새로 확인."
+    },
+    "newlyConfirmed_slide176_fullContext": {
+      "quote": "\"Since there can be only one final estimate of value, there are three choices at this stage: • Use a simple average of the valuations obtained using a number of different multiples • Use a weighted average of the valuations obtained using a number of different multiples • Choose one of the multiples and base your valuation on that multiple\" 이어서: \"Picking one Multiple — This is usually the best way to approach this issue.\"",
+      "location": "relval.pdf slide 176 (177-179 바로 앞)",
+      "answersQuestion1": "🔑 (a) 분석가의 최종 판단 단계에서 나오는 권고다 — 「여러 배수로 낸 값을 하나의 최종 추정치로 합치는 3가지 방법」중 명시적으로 「하나 고르기」를 '보통 가장 좋은 방법'이라고 선택한 것. 특정 수업 예제·업종 이론 한정이 아니라 일반 방법론 지침이다.",
+      "howOneIsChosen_slide177": "① 편향에 맞춰 고르기(가장 유리한 값이 나오는 배수 선택 — 명시적으로 나쁜 예로 제시) ② 그 섹터에서 펀더멘털 대비 R² 최고인 배수(회귀) ③ 그 섹터의 가치측정·창출 방식에 가장 부합하는 배수(개념적 판단, 178-179 표로 이어짐)",
+      "conclusion": "🔴 972의 '업종마다 하나만 고른다' 해석은 **틀리지 않았다 — 오히려 더 강하게 확인됐다.** Damodaran은 '여러 배수 평균/가중평균'을 명시적으로 검토했고 그걸 제치고 '하나 고르기'를 택했다."
+    },
+    "search2_oppositeDirection": {
+      "found": true,
+      "source": "🔑 우리 저장소 자산(A-0) — docs/USER_QUESTIONS_2026-08-08.md §Q Q1 확정 근거 1번(장은태 2026-08-08 기존 인용) + §5(역DCF 위치 재정의) 189-197행",
+      "quote_Q1section": "\"원전이 배수를 부정하는 건 「혼자 쓸 때」다. 모부신 자신이 '모든 것은 DCF이고 배수는 그 축약인데 동인을 가린다'고 쓴다 → 가린 것을 드러내면 배수와 역DCF는 충돌이 아니라 한 쌍.\"",
+      "originalSourceVerified": "Mauboussin, 'Everything Is a DCF Model'(Counterpoint Global Insights/Morgan Stanley) — 직접 원문 대조(marcellus.in 미러 경유, PDF 원본은 403 차단): \"valuation using multiples does not avoid the drivers of long-term cash flows but rather obscures them… You have to earn the right to use a multiple… Another effective way to use the model is to ask what you have to believe about the value drivers to justify today's price.\"",
+      "🔴 criticalNuance": "이 원전은 '여러 개의 서로 다른 배수(PER·PBR·PSR·EV/EBITDA)를 나란히 보여줘라'는 말이 아니다. 요지는 '배수(단수, 어떤 배수든) 하나는 암묵적 DCF의 축약이니, 그 배수를 쓰려면 명시적 역DCF(우리 심층 축)와 짝지어라'다 — Q1의 '배수+역DCF' 병기 구조(C안 자체)를 정당화하는 근거이지, '4개의 다른 배수를 동시에 나열하는 것'을 정당화하는 근거가 아니다.",
+      "implication": "🔴 2026-08-08 C안 확정 당시 인용된 이 근거는 **Q1의 '배수+역DCF' 조합**을 정당화한다(972가 다룬 문제와 다른 층위). Damodaran의 '하나만 고른다'는 **'4개 배수 중 무엇을 대표로 삼을지'**를 다룬다. **둘은 서로 다른 질문에 답하고 있어 직접 충돌하지 않는다** — 972가 'A-A가 서로 다른 결론'이라 정리한 것은 두 원전이 애초에 다른 질문에 답한다는 사실을 놓친 것일 수 있다."
+    },
+    "search3_sectorMappingCoverage": {
+      "damodaranTable_categories": ["Cyclical Manufacturing", "High Tech High Growth", "High Growth No Earnings", "Heavy Infrastructure", "REIT", "Financial Services", "Retailing"],
+      "ourGICS11": ["Communication Services", "Consumer Discretionary", "Consumer Staples", "Energy", "Financials", "Health Care", "Industrials", "Information Technology", "Materials", "Real Estate", "Utilities"],
+      "overlap": "직접 대응 = Financial Services→Financials · REIT→Real Estate · Retailing→Consumer Discretionary(부분) 정도뿐. 나머지(Cyclical Manufacturing·High Tech High Growth·High Growth No Earnings·Heavy Infrastructure)는 GICS 11개 중 어디에도 명시적으로 안 걸린다(예: Heavy Infrastructure가 Industrials·Utilities·Energy 중 어디인지 원전이 특정 안 함).",
+      "🔴 conclusion": "**11개 GICS 섹터 전부에 대응하는 목록은 원전에 없다.** 3~4개 섹터만 직접 대응되고 나머지 7~8개 섹터는 우리가 판단해서 채워야 한다 — 이건 CLAUDE.md 창작 금지 규칙 3항(\"원전에 없는 산출물을 추가하지 않는다\")에 걸린다. 채우려면 별도 조사·판정이 필요(이번 STEP 범위 밖)."
+    },
+    "search4_percentileMethod": {
+      "found_in_relval": false,
+      "evidence": "relval.pdf 전문(47페이지, pdftotext) grep 'percentile' → 0건.",
+      "whatItRecommendsInstead": "\"What is the median for this multiple? … The median for this multiple is often a more reliable comparison point.\"(slide 142) + \"Multiples have skewed distributions: The averages are seldom good indicators of typical multiples\"(slide 179 인접) — 🔑 **원전은 명시적으로 '중앙값'을 권장하고 '평균'을 경계한다. 백분위는 언급조차 없다.**",
+      "🔴 ourChoiceBasis": "STEP 952(백분위 채택)가 이 사실(원전=중앙값 권장, 백분위 언급 없음)을 검토했는지 확인 필요 — `docs/VALUATION_SPEC.md`의 '업종 대비' 정의공개표(규칙 5-1)를 재확인해야 한다(이번 STEP에서 직접 대조는 안 함, 아래 미조사 참조)."
+    }
+  },
+
+  "stage_1B_platforms": {
+    "target": "최소 3곳, 은행·리츠·유틸리티 종목 실조회",
+    "results": [
+      {
+        "platform": "stockanalysis.com", "symbol": "JPM(은행)", "status": "성공",
+        "findings": "PER·PBR·PSR 표시, EV/EBITDA='n/a'(은행 구조적 제외). 업종 대비 비교 없음(이 페이지 자체엔)."
+      },
+      {
+        "platform": "stockanalysis.com", "symbol": "O(리츠, Realty Income)", "status": "성공",
+        "findings": "PER·PBR·PSR·EV/EBITDA 4개 전부 표시 + 별도 'Price/FFO' 지표가 PE보다 상단에 배치. 업종비교 없음."
+      },
+      {
+        "platform": "stockanalysis.com", "symbol": "DUK(유틸리티)", "status": "성공",
+        "findings": "PER·PBR·PSR·EV/EBITDA 전부 표시, 빠진 것 없음. 업종비교 없음."
+      },
+      {
+        "platform": "wallstreetzen.com", "symbol": "JPM(은행)", "status": "성공",
+        "findings": "PER·PBR·PSR·PEG 표시, EV/EBITDA 없음(은행). 업종비교=**평균**(\"Industry\"·\"Market\" 평균과 병기). PER이 헤드라인."
+      },
+      {
+        "platform": "marketbeat.com", "symbol": "JPM(은행)", "status": "성공",
+        "findings": "PER·PBR·PSR·PEG 표시, EV/EBITDA 없음(은행). 업종비교=**평균**(시장평균·섹터평균 둘 다 문장으로). PER 헤드라인. 🔑 **배수 간 상충 신호를 설명하는 문구 없음**(PBR='reasonably valued'·PEG='could be overvalued'를 각각 독립 서술만)."
+      }
+    ],
+    "synthesis": {
+      "bankEvEbitdaExclusion": "3곳 전부(stockanalysis·WallStreetZen·MarketBeat) JPM에서 EV/EBITDA 부재 — 실측 일치. 우리 SECTOR_AXIS_APPLICABILITY.md의 'Financials EV/EBITDA 조건부(은행류만 미적용)' 판정과 정합.",
+      "reitFfoAddition": "🔴 REIT는 '하나만'이 아니라 '4개 + FFO 1개 추가(총 5개)'다 — 972·Damodaran의 '업종당 하나' 원칙을 문자 그대로 따르는 플랫폼은 이번에도 0곳.",
+      "sectorComparisonMethod": "확인된 곳 전부 **평균**(백분위 0곳, 중앙값도 0곳 — Damodaran의 '중앙값 권장'과도 실무는 다르다는 뜻).",
+      "headlineHierarchy": "3곳 다 명시적 대표 지정은 없으나 배치 순서로 사실상 PER(REIT는 P/FFO)이 최상단·최우선.",
+      "conflictExplanation": "0/3 — 축간 불일치를 설명하는 곳 없음(972의 3곳 관찰과 동일 방향, 이번 3곳도 동일)."
+    },
+    "blocked": "이번엔 추가 차단 시도 안 함(966·968·969·972가 이미 GuruFocus·SimplyWallSt·Roic.ai·AlphaSpread·SeekingAlpha·Macrotrends·Zacks·Morningstar 차단을 반복 확인했음 — 같은 시도 반복 안 함, A-0 재사용)."
+  },
+
+  "stage3_ownData": {
+    "asOf": "2026-08-09",
+    "cell44_status": {
+      "method": "us_sector_relative, 섹터별 max(per_n/pbr_n/psr_n/ev_ebitda_n), minSample=20 기준 성립 여부",
+      "raw": {
+        "Communication Services": {"per_n": 28, "pbr_n": 41, "psr_n": 45, "ev_ebitda_n": 29},
+        "Consumer Discretionary": {"per_n": 74, "pbr_n": 85, "psr_n": 98, "ev_ebitda_n": 75},
+        "Consumer Staples": {"per_n": 41, "pbr_n": 45, "psr_n": 49, "ev_ebitda_n": 34},
+        "Energy": {"per_n": 35, "pbr_n": 39, "psr_n": 42, "ev_ebitda_n": 29},
+        "Financials": {"per_n": 72, "pbr_n": 79, "psr_n": 81, "ev_ebitda_n": 17},
+        "Health Care": {"per_n": 81, "pbr_n": 133, "psr_n": 152, "ev_ebitda_n": 84},
+        "Industrials": {"per_n": 159, "pbr_n": 170, "psr_n": 179, "ev_ebitda_n": 141},
+        "Information Technology": {"per_n": 99, "pbr_n": 143, "psr_n": 152, "ev_ebitda_n": 103},
+        "Materials": {"per_n": 35, "pbr_n": 46, "psr_n": 46, "ev_ebitda_n": 37},
+        "Real Estate": {"per_n": 13, "pbr_n": 20, "psr_n": 21, "ev_ebitda_n": 4},
+        "Utilities": {"per_n": 35, "pbr_n": 37, "psr_n": 37, "ev_ebitda_n": 30}
+      },
+      "cellsSucceeding_ge20": 41,
+      "cellsFailing_lt20": 3,
+      "failingCells": ["Financials × EV/EBITDA(n=17)", "Real Estate × PER(n=13)", "Real Estate × EV/EBITDA(n=4)"],
+      "🔴 changeFromPriorNote": "STEP 지시문의 '956의 5칸 빈다'는 08-08 기준 — 974(us_sector_wide 신규 40종목 부착) 이후 08-09 기준으로 재계산하니 **3칸만 빔**(개선). 표본이 자라며 자연히 좁혀짐."
+    },
+    "stage3_2_originalMappingCheck": {
+      "financials": {
+        "damodaranRecommends": "PBV(=PBR)",
+        "ourSample": "n=79(성립, minSample 20 이상)",
+        "match": "✅ 일치 — 원전이 지정한 축이 우리 데이터로도 성립한다."
+      },
+      "realEstate": {
+        "damodaranRecommends": "P/CF(Price/Cash Flow)",
+        "ourSuccessfulAxes": "PBR(n=20)·PSR(n=21)만 성립 — PER·EV/EBITDA는 표본 미달",
+        "🔴 mismatch": "**우리가 지금 성립시키는 축(PBR·PSR)은 원전이 REIT에 지정한 축(P/CF)이 아니다.** P/CF는 우리 4축에 아예 없다(신규 데이터 파이프라인 필요). 실무(①-B, stockanalysis.com O)는 또 다른 지표(P/FFO)를 쓴다 — 원전·실무·우리 데이터 셋이 REIT에서 삼자 불일치."
+      }
+    },
+    "stage3_3_axisDisagreement": {
+      "method": "us_sector_relative(as_of=2026-08-09), 종목별 4축 백분위 중 max-min spread. 지금까지 측정된 적 없음(신규).",
+      "byAxisCount": [
+        {"n_axes_available": 2, "symbols": 164, "median_spread_pp": 16.4, "p90_spread_pp": 67.1},
+        {"n_axes_available": 3, "symbols": 246, "median_spread_pp": 32.1, "p90_spread_pp": 71.2},
+        {"n_axes_available": 4, "symbols": 465, "median_spread_pp": 31.6, "p90_spread_pp": 62.3}
+      ],
+      "🔑 headline": "4축 전부 성립하는 465종목에서 **중앙값 스프레드 31.6%p, 상위10% 스프레드 62.3%p** — 972가 AAPL 하나로 보였던 '52%↔97%'(45%p 차) 같은 큰 갈림이 예외가 아니라 흔한 패턴이다(중앙값 자체가 30%p대)."
+    }
+  },
+
+  "stage4_options_noChoiceMade": "본문은 docs/Q1_AXIS_DECISION.md §4 참조(중복 방지)",
+
+  "notDoneOrUnresolved": [
+    "STEP 952(백분위 채택 판정)가 '원전=중앙값 권장'을 검토했는지 직접 대조 안 함(VALUATION_SPEC.md 원문 재확인 필요)",
+    "REIT용 P/CF 또는 P/FFO 데이터 파이프라인 존재 여부(us_fundamentals에 관련 태그가 있는지) 미확인",
+    "나머지 7~8개 GICS 섹터에 대한 대표배수 매핑을 만들 경우의 구체적 근거 조사 — 이번엔 '원전에 없다'는 사실만 확인, 대안 조사는 범위 밖",
+    "차단된 7곳(GuruFocus 등)은 이번에도 재시도 안 함(A-0 재사용 원칙)",
+    "축간 갈림 31.6%p가 섹터별로 다른지(예: Financials가 다른 섹터보다 더 갈리는지)는 안 봄 — 전체 집계만"
+  ]
+}
