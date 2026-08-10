@@ -1,0 +1,82 @@
+{
+  "step": 988,
+  "scope": "investigation only — 0 code, 0 DB writes, no cron trigger, lensPrecompute.ts untouched (986 wiring kept).",
+  "section1_reproduce_cowork_numbers": {
+    "chunk_distribution": {
+      "claimed": "349건이 60개 청크에 균등 분산(평균 5.6건, 통째 실패 청크 0)",
+      "reproduced": { "sum": 334, "chunks": 60, "avg": 5.5667, "max": 16, "min": 1, "chunks_with_zero_stale": 0, "whole_chunk_failure": false },
+      "note": "sum=334(349 중 STOCK_SYMS 밖 15건 제외) — Cowork의 '349건'은 어림 표현으로 보임, 정확 대상은 334건",
+      "match": true
+    },
+    "stock_syms_split": { "claimed": "334/15", "reproduced": { "in_stock_syms": 334, "not_in_stock_syms": 15, "outside_list": ["AFBI", "AXIA", "BNZI", "EA", "ELSE", "FCT", "GV", "KVAC", "LPRO", "LSH", "ORLA", "PSTV", "SKYT", "TOI", "VSEE"] }, "match": true },
+    "asof_fixed_338": { "claimed": "as_of 07-30 338건 고정", "reproduced": { "2026-07-30": 338, "2026-08-02": 5, "2026-08-03": 2, "2026-08-04": 1, "2026-08-05": 1, "2026-08-06": 2, "sum": 349 }, "match": true },
+    "verdict": "✅ 4개 수치 전부 독립 재현 성공(987과 달리 이번엔 불일치 없음)."
+  },
+  "section1_2_how_987_queried": {
+    "answer": "🔑 배치. `scripts/probe_987_stale349_query.ts:25,29` — 100개씩 청크(`chunks.push(syms.slice(i,i+100))`) · `mapLimit(chunks, 6, ...)` 동시성 6. lensPrecompute.ts의 stage1과 동일 파라미터(배치100·동시성6), 949 전례와도 동일.",
+    "single_item_hypothesis": "🔴 987은 단건 조회가 아니었다 — 따라서 '단건이었다면 배치가설 부활' 조건은 트리거되지 않는다. 배치방식 가설은 949의 폐기 그대로 유지.",
+    "residual_caveat": "🔴 단, 987은 349건만 따로 4개 청크로 묶었다(격리) — 프로덕션의 실제 60개 청크(각 청크에 실패종목 평균5.6개 + 성공종목 ~94개가 섞임, §1 재현 참조)와는 청크 구성 자체가 다르다. §1의 '균등분산·0건짜리 청크 없음' 결과가 이미 '이웃 종목 조합이 원인이 아님'을 강하게 시사하므로 이 차이가 결정적일 가능성은 낮다고 판단하나, 프로덕션과 완전히 동일한 청크 구성으로 재조회하는 것 자체는 이번 STEP에서 하지 않았다(미실시로 명시)."
+  },
+  "section1_3_asof_history_check": "🔴 확인 불가 — us_market_cap은 symbol PK 단일행이라 이력이 없다(986·983에서 이미 확인된 구조 그대로). '11일 내내 같은 집합'이라는 것은 as_of가 07-30에 그대로 멈춰 있다는 정황 증거일 뿐, 매일 재확인한 기록은 없다(원리적으로 만들 수도 없다 — 스냅샷 테이블이므로).",
+  "section2_request_differences": {
+    "2_1_crumb_instance_sharing": {
+      "code_fact": "concurrency=6은 mapLimit의 JS 비동기 동시성(Promise.all 워커)이지 별도 프로세스·Lambda 인스턴스가 아니다 — 단일 Node 이벤트루프 안에서 전부 실행된다. `new YahooFinance()`는 lensPrecompute.ts:17에서 모듈당 1회만 생성.",
+      "conclusion": "🔴 프로덕션의 한 크론 실행(21:30 UTC 1회) 안에서는 crumb이 정확히 1회만 획득되고 60개 청크+재시도 전부에서 공유된다 — 984에서 이미 확인된 것과 동일, 크론 내부에서는 '여러 인스턴스'가 생기지 않는다."
+    },
+    "2_2_user_agent_headers": {
+      "code_fact": "코드 어디에도 커스텀 User-Agent 설정 없음(lensCompute.ts·lensPrecompute.ts·YahooFinance 생성 옵션 grep 전수 확인) — 런타임 기본값(Node/undici)에 의존.",
+      "verifiable_without_deploy": false,
+      "reason": "로컬·이 세션의 fetch 구현과 Vercel 서버리스 런타임의 fetch 구현이 실제로 동일한 UA를 내는지는 Vercel의 실제 아웃바운드 요청을 봐야 하는데 접근 수단이 없다(983에서 이미 Vercel 로그·get_project MCP 403 확인)."
+    },
+    "2_3_order_timing_retry": {
+      "RETRY_MAX": 400, "RETRY_MS": 40000,
+      "code_fact": "08-09 heartbeat 실측: `timeHit=false`(40초 예산 안 씀) · `countHit=true`(416건이 400 상한 초과해 16건은 재시도 대상에서 아예 제외됨, 상한 자체가 걸림). 청크는 STOCK_SYMS 배열 순서 그대로(파일 순서) — 로컬·프로드 동일 코드라 순서 자체는 같다.",
+      "verifiable_without_deploy": true,
+      "note": "이미 있는 heartbeat 데이터로 확인됨 — 실행시간 예산 소진은 원인이 아니다(984의 후보 중 하나를 이걸로 기각)."
+    },
+    "2_4_time_of_day": {
+      "hypothesis": "프로덕션 크론은 21:30 UTC(미 동부 오후 5:30·장마감 직후) 실행, 우리 조회는 임의 시각 — 야후가 장마감 직후 특정 유형 증권(저유동성 CEF 등)의 최종 정산 전 marketCap을 일시적으로 비울 가능성",
+      "verification_method_without_deploy": "우리도 미 동부 장마감 직후(21:30 UTC 부근) 같은 349건을 재조회하면 시각 요인만 분리해서 볼 수 있다 — 이번 STEP에서는 시간이 맞지 않아 실시 안 함(다음 기회에 가능, 배포 불필요한 검증법이 있다는 것만 기록)"
+    }
+  },
+  "section3_surviving_hypotheses": {
+    "killed_with_reason": [
+      { "hypothesis": "청크 단위 통째 실패", "reason": "§1 재현: 60개 청크 전부 최소 1건 이상 stale 포함, 0건짜리·100건짜리 청크 없음 — 균등분산 확정", "source": "이번 STEP §1" },
+      { "hypothesis": "배치방식 자체 문제(949)", "reason": "987이 이미 배치(100·동시성6)로 조회해 100% 성공 — 단건이 아니었으므로 되살아나지 않음", "source": "이번 STEP §1-2" },
+      { "hypothesis": "심볼 부재(949)", "reason": "987이 이미 해당 심볼 전부 존재·응답함을 확인", "source": "987" },
+      { "hypothesis": "yahoo-finance2 버전/설정 차이(984)", "reason": "package-lock.json이 정확히 3.15.4로 고정 — npm ci 기반 Vercel 빌드도 동일 버전 설치가 보장됨(코드로 확인, 배포 불필요)", "source": "이번 STEP §2 A-0" },
+      { "hypothesis": "실행시간 예산 소진(984)", "reason": "08-09 heartbeat timeHit=false — 40초 재시도 예산을 다 안 씀. 전체 stage1+2+3도 300초 한도에 한참 못 미침(~150초)", "source": "이번 STEP §2-3, 기존 heartbeat 재사용" },
+      { "hypothesis": "Next.js fetch 캐싱(988 신규 제기 후 즉시 기각)", "reason": "라우트가 force-dynamic + Next16 공식문서 'Request-time API 감지 시 매 요청 fetch' + yahoo-finance2가 cache 옵션 명시 안 함 → 캐싱 적용 안 되는 게 정상", "source": "이번 STEP ①-A-1" },
+      { "hypothesis": "웜인스턴스 간 crumb/queue 상태 누수(988 신규 제기 후 부분 기각)", "reason": "yahoo-finance2 4.0.0이 정확히 이 버그를 수정했으나(우리는 미적용), Vercel Hobby는 '몇 분'만 웜 유지(Scale-to-One 14일은 Pro전용) — 매일 콜드스타트라 '여러 날 지속'을 설명 못함. 같은 실행 내 다른 메커니즘일 가능성은 남되 확률적 요인 아님이 전제와 안 맞아 약함", "source": "이번 STEP ①-A-2·A-3" }
+    ],
+    "surviving": [
+      {
+        "hypothesis": "IP대역/네트워크경로 × 증권유형(저유동성 CEF·소형주) 상호작용 — Vercel 출처에서만 특정 증권군에 marketCap이 선택적으로 빠짐",
+        "why_deterministic_fits": "종목별 고정 실패(11일 동일 338건)는 '요청하는 곳(Vercel IP/경로)'과 '요청 대상(그 종목의 데이터 서빙 방식)'의 조합이 매번 같은 결과를 내야 설명된다 — 확률적 요인이면 매일 다른 부분집합이 실패해야 하는데 안 그렇다.",
+        "verifiable_without_prod_deploy": false,
+        "reason": "Vercel의 실제 아웃바운드 IP·요청 헤더·CDN 라우팅은 배포된 상태에서만 관측 가능(983에서 이미 Vercel MCP 403·로그 1시간 제한 확인)"
+      },
+      {
+        "hypothesis": "실행 시각(21:30 UTC, 미 장마감 직후) 요인",
+        "why_deterministic_fits": "매일 같은 시각에 도는 크론이라 '결정적'이라는 관측과 형식적으로는 부합(매일 같은 조건)",
+        "verifiable_without_prod_deploy": true,
+        "method": "우리도 21:30 UTC 부근에 같은 349건을 재조회 — 배포 불필요, 시간만 맞추면 됨(이번 STEP에서는 미실시)"
+      },
+      {
+        "hypothesis": "야후 서버측 07-30 전후 변경(984 유지) — 정황: yahoo-finance2 라이브러리가 07-11·08-07·08-09에 crumb 관련 릴리스를 연달아 냄(활발한 대응 중이라는 정황일 뿐, 우리 버전엔 영향 없어야 정상)",
+        "verifiable_without_prod_deploy": false,
+        "reason": "야후측 API 변경이력은 비공개 — 라이브러리 릴리스 타이밍이 간접 정황일 뿐 직접 증거 아님"
+      }
+    ],
+    "explicitly_not_resurrected": ["배치방식(949 폐기 유지, 1-2에서 재확인)", "심볼부재(949 폐기 유지)"]
+  },
+  "section4_universe_angle_PROPOSAL_ONLY": {
+    "coverage_from_987": { "sector_wide": "61/349=17.5%", "us_fundamentals": "69/349=19.8%", "revdcf_universe": "37/349=10.6%" },
+    "interpretation": "349건 대부분이 섹터분류·SEC펀더멘털·revdcf 유니버스 어디에도 얇게만 걸침 — 우리가 이미 '깊이있게 다루지 못하는' 종목군과 겹친다.",
+    "if_excluded_from_universe": {
+      "calc": "universe 5972 - 334(STOCK_SYMS 내 결측분) = 5638, fresh 그대로 5558 → coverage = 5558/5638 = 98.58%",
+      "gate97": "통과",
+      "🔴_scope_note": "data/us_symbols.json은 수정 금지 파일이고 유니버스 변경은 867 장은태 승인 사항이다. 이건 계산만 — 제안이며 실행하지 않는다."
+    }
+  }
+}
