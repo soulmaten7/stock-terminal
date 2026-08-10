@@ -1,0 +1,84 @@
+{
+  "step": 984,
+  "scope": "investigation only — 0 code, 0 DB writes, no cron manually triggered, no env var typed",
+  "judgment_basis_from_user": {
+    "supabaseKey_error": "vercel-preview 전용, 이번 STEP 범위 밖 — 다루지 않음",
+    "composition_vs_coverage_correction": "🔴 Cowork이 이전에 'composition(94.0%)과 coverage(93.0%)를 별개로 고쳐야 한다'고 한 것은 코드 미확인 오류였다. capGateDecision(lensPrecompute.ts:53-67)을 다시 읽으면 compositionOk는 freshSet(coverage와 같은 원천)에서 파생된다(priorTopSyms.filter(s=>freshSet.has(s))) — freshSet이 곧 marketCap 취득 성공 집합이므로 둘은 같은 실패의 다른 측정치일 뿐, 별개 원인이 아니다. 정정 기록.",
+    "single_root": "13번·14번의 단일 근본 = 야후 시총 취득에서 marketCap 필드가 빠지는 것(topByMarketCap의 batchOk/noCapField 분류가 이미 이걸 측정하고 있었다)."
+  },
+  "section1_symbol_identity": {
+    "section1_1_latest_diag_from_heartbeat": {
+      "note": "983이 이미 확인한 한계 그대로 — cron_heartbeats.note는 job PK 단일이라 08-09 실행분 1건뿐. 개별 실패 심볼 목록은 diag에 없다(noCapField=416은 카운트만, retryFailSample은 최대 5건인데 실제로는 0건[예외가 없어 채워질 일이 없었음]).",
+      "diag_08_09": {
+        "freshCoverage": 0.9303649146300637, "noCapField": 416, "noResponse": 0, "retryAllLen": 416, "retrySetLen": 400,
+        "recovered": 0, "retryNoCapField": 400, "retryFailReasons": {}, "retryFailSample": [],
+        "interpretation": "🔴 noResponse=0·retryFailReasons={}(빈 객체)·recovered=0/400 — 전부 200 응답을 받았고 예외가 0건인데 marketCap 필드만 없다. 네트워크 실패·타임아웃·레이트리밋 예외가 아니라 '성공한 응답에서 특정 필드만 비는' 현상이다."
+      }
+    },
+    "section1_2_overlap_with_949_B_group": {
+      "method": "us_market_cap의 오늘(2026-08-10) as_of<2026-08-09(=STALE 349건) 목록을 949의 B그룹(82건, 로컬에서도 marketCap 자체가 없던 것)과 대조",
+      "result": { "current_stale_n": 349, "overlap_with_B_group_82": 0, "overlap_with_949_full_STALE_380": 335, "newly_stale_not_in_949_list": 14, "recovered_since_949": 45 },
+      "conclusion": "🔴 완전히 다른 집합이다. 지금 결측인 349종목 중 단 하나도 949의 B그룹(로컬에서도 애초에 marketCap이 없는 것)이 아니다. 88%(335/380)가 949 측정 시점과 겹쳐 지속적·고정적 실패임을 재확인. 45건 자연회복, 14건 신규(유니버스 변동 또는 재실패)."
+    },
+    "section1_3_common_attributes_MAIN_FINDING": {
+      "exchange": {
+        "stale_distribution": { "NYSE": 291, "Nasdaq": 57, "null": 1 },
+        "universe_distribution": { "Nasdaq": 3395, "NYSE": 2474, "null": 35, "OTC": 2, "CBOE": 1 },
+        "rates": { "stale_NYSE_pct": 83.4, "universe_NYSE_pct": 42.2, "overrepresentation_factor": "약 2.0배" },
+        "verdict": "🔑 뚜렷한 패턴 — NYSE 상장 종목이 실패군에서 약 2배 과대표집."
+      },
+      "symbol_length": {
+        "stale_distribution": { "1": 2, "2": 27, "3": 296, "4": 23, "5": 1 },
+        "universe_distribution": { "1": 21, "2": 246, "3": 1880, "4": 3699, "5": 60, "6": 1 },
+        "rates": { "stale_3char_pct": 84.8, "universe_3char_pct": 31.8 },
+        "verdict": "🔑 3글자 심볼이 84.8%(대부분 NYSE 전통 표기 관행) — exchange 발견과 사실상 같은 신호(3글자=NYSE 관행)로 보이며 독립적인 신규 요인은 아닐 가능성."
+      },
+      "title_keyword": {
+        "stale": { "fund_pct": 22.9, "trust_pct": 9.5 },
+        "universe": { "fund_pct": 3.1, "trust_pct": 3.5 },
+        "verdict": "🔑 'Fund' 포함 종목명이 7.4배, 'Trust'가 2.7배 과대표집 — 폐쇄형펀드(CEF)류가 유의미하게 많다."
+      },
+      "symbol_special_chars": { "has_dot_or_hyphen_in_stale": 0, "verdict": "패턴 없음 — 배제." },
+      "market_cap_size": {
+        "stale_median": 863775552, "fresh_median": 704371104, "stale_max": 834621538304,
+        "verdict": "🔴 패턴 안 보임 — 오히려 stale 쪽 중앙값이 fresh보다 약간 높다. 결정적으로 XOM(6,343억)·HD·MCD·CRM·MRK·LOW·TGT 같은 초대형 우량주도 stale 목록에 있다 — 소형·저유동성 종목만의 문제가 아니다."
+      },
+      "honest_summary": "🔴 exchange(NYSE)·title(Fund/Trust)에서 실측 가능한 패턴을 찾았으나(공통점이 있다), 이 패턴이 전체를 설명하지 못한다 — 초대형 우량주(NYSE 상장이지만 CEF와 무관)도 다수 포함. '안 보인다'고 하기엔 신호가 있고, '설명됐다'고 하기엔 예외가 너무 크다(XOM 등). 억지로 하나의 이야기로 합치지 않는다."
+    }
+  },
+  "section2_direct_yahoo_test": {
+    "section2_1_live_call_from_this_session": {
+      "method": "이 세션 환경(Vercel 프로덕션도 아니고 사용자의 로컬 PC도 아닌, 이번 조사를 실행 중인 네트워크 origin)에서 yahoo-finance2 3.15.4로 yf.quote() 직접 호출 — DB 미접촉, 크론 미호출.",
+      "symbols_tested": 20,
+      "result": "20/20 marketCap·regularMarketPrice·sharesOutstanding 전부 정상 수신(0 실패) — XOM·HD·MCD·CRM·MRK 등 초대형주와 GAB·NCV·JFR·HQH·BST 등 CEF 전부 성공.",
+      "conclusion": "949의 'LOCAL_OK' 재확인 — 다만 정확히는 'Vercel 프로덕션이 아닌 곳에서는 OK'라고 부르는 것이 더 정확하다(로컬 PC와 이 세션 환경 둘 다 Vercel이 아니라는 공통점만 확인됨)."
+    },
+    "section2_2_alternative_reconstruction": {
+      "sharesOutstanding_present": true, "regularMarketPrice_present": true,
+      "sample_check_XOM": { "sharesOutstanding": 4144947162, "regularMarketPrice": 153.04, "reconstructed": 634342713673, "reported_marketCap": 634342670336, "diff_pct": 0.0000068 },
+      "conclusion": "🔑 대안 경로가 산술적으로 실현 가능함을 확인(구현 안 함) — sharesOutstanding × regularMarketPrice가 실제 marketCap과 0.001% 이내로 일치."
+    },
+    "section2_3_crumb_hypothesis_MAIN_FINDING": {
+      "code_confirmed_mechanism": "yahoo-finance2의 quote()는 needsCrumb:true(quote.js:131 확인). getCrumb.js의 crumb·promise는 **모듈 레벨 변수**(let crumb=null, let promise=null, 프로세스 생애주기 동안 공유) — 서버리스 콜드스타트마다 재획득 필요, 획득 과정이 최대 3단계 순차 fetch(finance.yahoo.com/quote/AAPL → v1/test/getcrumb → 실제 quote 요청)를 거친다. 라이브 디버그 호출로 실제 요청 URL에 crumb 파라미터가 붙는 것을 직접 확인(?symbols=XOM%2CGAB&crumb=%2Fx7jieWx1Kl) — STEP 문서가 언급한 Sentry breadcrumb 패턴과 정확히 일치.",
+      "why_this_is_structurally_plausible": "동시성 6·60청크의 단일 프로세스 실행에서 crumb 획득이 얽히거나(promise 단일화로 레이스는 방지되는 것으로 보이나), 콜드스타트마다 이 3단계 핸드셰이크가 매번 반복돼야 하는 것 자체가 실패 지점을 늘린다.",
+      "why_this_is_WEAKENED_by_evidence": "🔴 ①-A-2(GitHub #764)에 따르면 crumb 무효/만료의 실제 증상은 '완전 실패(요청 거부·예외)'이지 '일부 필드만 빠지는 부분 성공'이 아니다. 우리 관측(noResponse=0·retryFailReasons={}·예외 0건)은 이 패턴과 맞지 않는다 — crumb 자체가 완전히 깨졌다면 416건 전부(또는 배치 전체)가 예외로 잡혔어야 하는데 그렇지 않다.",
+      "verdict": "🔴 구조적으로 존재하는 취약점(모듈레벨 crumb 캐시·콜드스타트마다 3단계 핸드셰이크)이지만, 관측된 증상(부분 필드 결측·예외 0건)과 완전히 들어맞지는 않는다 — '유력 후보 중 하나'이지 '확정된 원인'이 아니다."
+    }
+  },
+  "section3_local_vs_prod_differences_CODE_VERIFIED_ONLY": {
+    "region": "코드에 preferredRegion 지정 없음(app/api/cron/lens-scores/route.ts·lib/lensPrecompute.ts 확인) — Vercel 프로젝트 기본 리전(iad1로 추정, Sentry breadcrumb 근거) 사용. 🔴 Vercel 프로젝트 설정 직접조회는 get_project MCP 호출 시도 → 403(권한없음, 실측)으로 확인 불가.",
+    "concurrency": "코드에 환경분기 없음 — concurrency=6 고정(topByMarketCap 내부), 로컬 실행이든 프로덕션이든 같은 상수.",
+    "batch_size": "코드에 환경분기 없음 — 100심볼/청크 고정.",
+    "crumb_acquisition_path": "코드에 환경분기 없음 — 동일 라이브러리·동일 흐름. 단 콜드스타트 빈도는 실행환경에 따라 다름(서버리스는 매 크론 실행마다 콜드스타트 가능성이 높고, 로컬/이 세션은 프로세스가 이미 warm한 상태에서 반복 호출 가능 — 이건 코드가 아니라 '실행 방식의 차이'로, 코드로는 확인 불가·추정만).",
+    "headers_useragent": "코드에서 커스텀 User-Agent를 설정하는 부분 없음(lensPrecompute.ts·yahoo-finance2 옵션 확인) — 라이브러리 기본값 사용, 로컬/프로드 동일.",
+    "outbound_IP": "🔴 확인 불가 — Vercel 서버리스 함수의 아웃바운드 IP는 코드로 알 수 없고(고정 IP 아님, 983·982에서 이미 다룬 논점), 이번에도 직접조회 수단 없음(추정만).",
+    "honest_summary": "🔴 코드로 확인 가능한 차이는 사실상 없다(리전 미지정·동시성 고정·배치크기 고정·헤더 커스텀 없음) — 진짜 차이는 '코드'가 아니라 '실행 환경'(서버리스 콜드스타트·데이터센터 IP대역·Yahoo 쪽 세션/부하분산)에 있을 가능성이 크다는 것이 이번 조사의 결론이다. 이건 추정이라고 명시한다."
+  },
+  "section4_options_no_choice": [
+    { "hypothesis": "크럼/세션 획득 실패 또는 저하(콜드스타트 3단계 핸드셰이크 취약점)", "verification_method": "프로덕션에서 crumb 값 자체를 로그로 남겨 실패 심볼과 상관관계 확인(§3 관측인프라 필요, 983 연계)", "implementation_scope": "lensPrecompute.ts에 crumb 값 로깅 1줄 추가", "reversible": "쉬움", "approval": "필요(코드변경)" },
+    { "hypothesis": "Vercel 데이터센터 IP대역에 대한 야후측 선택적 필드 축소(완전차단 아님, ①-B 방증)", "verification_method": "프록시/다른 리전에서 같은 배치 재현 시도 — 단 이건 비용·복잡도 문제(984 범위 밖)", "implementation_scope": "해당없음(검증 자체가 인프라 변경 필요)", "reversible": "해당없음", "approval": "필요(신규 인프라)" },
+    { "hypothesis": "고부하 시 야후 서버측 선택적 스로틀링(비싼 필드부터 생략)", "verification_method": "동시성을 낮춰(6→2) 같은 심볼군 재현 테스트", "implementation_scope": "lensPrecompute.ts concurrency 상수 임시 변경(테스트용, 실제 배포 여부는 별도판정)", "reversible": "쉬움", "approval": "필요(설정변경+검증실행)" },
+    { "hypothesis": "대안 경로: sharesOutstanding×regularMarketPrice로 marketCap 재구성(원인 규명과 무관, 증상 완화책)", "verification_method": "이미 §2-2로 산술 실현가능성 확인됨(0.001% 오차)", "implementation_scope": "topByMarketCap의 noCapField 처리 분기에 재구성 폴백 추가", "reversible": "쉬움(폴백 제거만 하면 됨)", "approval": "필요(코드변경, 원인 모른 채 증상만 덮는 것이라는 점 명시 필요)" }
+  ],
+  "hypotheses_explicitly_NOT_resurrected": ["배치방식 자체의 문제(949 A=0으로 폐기)", "심볼 부재(949 C=0으로 폐기)"]
+}
