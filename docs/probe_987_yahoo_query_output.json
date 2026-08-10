@@ -1,0 +1,3620 @@
+{
+  "stale349": {
+    "n": 349,
+    "responded": 346,
+    "noResponse": 3,
+    "hasMarketCap": 346,
+    "noMarketCapCount": 0,
+    "reconstructableAmongNoMcap": 0,
+    "noReconEither": 0,
+    "failedChunks": 0,
+    "totalChunks": 4,
+    "rows": [
+      {
+        "symbol": "AAP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AEC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AEO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AFB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AFBI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AGD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AGO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AHT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AIB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AIT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AIV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AMBO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AMC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AMG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AMH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AMS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AOD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ARAI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ARL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ASA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ASIC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ASR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ASTI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AVBP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AVD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AVK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AVX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AXIA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AZO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "B",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BBW",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BBY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BDL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BGB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BGH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BHK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BHV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BKD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BKE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BLX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BME",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BNZI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BOE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BOX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BRC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BSL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BST",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BTO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BTZ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BUI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BVN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "BWG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CABO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CAG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CBL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CCU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CEE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CET",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CHW",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CIG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CIK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CLX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CMC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CMP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "COO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CPB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CRF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CRM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CRS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CSV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CVV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CXM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CYD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "CYN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DAC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DAL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DAR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DBL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DCI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DDS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DHT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DHY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DIT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DOX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DRD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DSS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "DY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EBF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ECC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EDD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EDF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EDN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EDSA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EDU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EFT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ELSE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EMD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EML",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EMO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EOT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ERH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ESE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ESP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ETY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EVG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EVV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EXG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "EYE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FCT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FLR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FLY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FNV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FOF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FRA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "FTF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GAB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GAIN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GAP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GDL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GDO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GFI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GGN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GGZ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GIS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GLO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GLQ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GLU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GOF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GRX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GSL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GSM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GTN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GUT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HEI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HEQ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HHS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HIO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HLX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HMY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HPQ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HQH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HQL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HRL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "HST",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IBN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ICL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IDT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IGA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IGC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IHD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IHT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IIF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IMO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IOT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "IQI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ITT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JCE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JFR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JHI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JOF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JQC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "JRS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KAI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KBH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KEN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KFY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KMX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KOF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "KSS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LBRDK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LEE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LGI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LND",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LOW",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LPRO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LSH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SSP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "STK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SVM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SWZ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TAL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TCX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TDS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TEO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TFX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TGT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "THM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TOI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TOL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TRP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TRT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TRX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TTC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "TYG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "UAN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "UEC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "UFI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "UGP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "URG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "USA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "UTF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "UUU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VGZ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VHC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VIV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VKQ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VLT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VMO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VOC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VPV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "VSEE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WDC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WDS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WEA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WEN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WIW",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WMK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WWW",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "WYY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "XOM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "YRD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ZBIO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "LTM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MANU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MCD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MCY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MDT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MGF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MGN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MHD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MIN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MMD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MOV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MRK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MRX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MSB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MSM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MUJ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MWG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MXC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "MYI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NAC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NAK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NAN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NAT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NAZ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NBB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NBH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NBN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NCA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NCT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NCV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NEA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NGL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NGS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NHI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NHS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NIO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NMI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NMT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NNY",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NOK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NOMD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NRP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NUE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NUS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "NXP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ODC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "OLN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ORC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ORLA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "P",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PAA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PBH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PBM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PCM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PCN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PCQ",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PDT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PED",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PFL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PGC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PGP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PHI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PHK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PHM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PLG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PML",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PMO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PMT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PNI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "POM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PPL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PPT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PVH",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "PZG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RCG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RFI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RGC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RGS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RGT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RIG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RMCO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "RYN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SFL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SID",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SIF",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SIG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SJT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SKK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SKYT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SNX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SNYR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SOR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SPG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SSD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "SSL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "GV",
+        "responded": false,
+        "hasMarketCap": false,
+        "hasShares": false,
+        "hasPrice": false,
+        "reconSource": null
+      },
+      {
+        "symbol": "KVAC",
+        "responded": false,
+        "hasMarketCap": false,
+        "hasShares": false,
+        "hasPrice": false,
+        "reconSource": null
+      },
+      {
+        "symbol": "PSTV",
+        "responded": false,
+        "hasMarketCap": false,
+        "hasShares": false,
+        "hasPrice": false,
+        "reconSource": null
+      }
+    ]
+  },
+  "control100": {
+    "n": 100,
+    "responded": 100,
+    "noResponse": 0,
+    "hasMarketCap": 100,
+    "noMarketCapCount": 0,
+    "reconstructableAmongNoMcap": 0,
+    "noReconEither": 0,
+    "failedChunks": 0,
+    "totalChunks": 1,
+    "rows": [
+      {
+        "symbol": "A",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AACB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AACG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AACI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AACO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AACP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAME",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAMI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAOI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAON",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAPG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAPL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AARD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AAUC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABAT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABBV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABCB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABCL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABEO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABEV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABLV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABNB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABOS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABSI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABTC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABTS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABUS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABVC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABVX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ABX",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACAA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACAD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACCL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACCO",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACCS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACDC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACEL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACET",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACFN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACGC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACGL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACHC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACHR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACHV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACI",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACIC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACIU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACIW",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACLS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACMR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACNB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACNT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACOG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACON",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACRE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACRS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACRV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACTG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACTU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACU",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACVA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ACXP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "AD",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADAC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADAG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADAM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADBE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADC",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADCT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADEA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADGM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADIG",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADIL",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADM",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADMA",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADNT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADP",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADPT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADSE",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADSK",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADT",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADTN",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADUR",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADUS",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADV",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      },
+      {
+        "symbol": "ADVB",
+        "responded": true,
+        "hasMarketCap": true,
+        "hasShares": true,
+        "hasPrice": true,
+        "reconSource": "field"
+      }
+    ]
+  }
+}

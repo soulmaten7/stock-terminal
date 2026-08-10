@@ -1,0 +1,68 @@
+{
+  "step": 987,
+  "scope": "investigation only — 0 code, 0 DB writes, no cron trigger. lensPrecompute.ts untouched (986 wiring kept as-is).",
+  "correction_of_prior_judgment": {
+    "what_was_wrong": "986이 '회수량은 프로덕션에서만 관측 가능하다'고 판단해 관측만 배선하고 며칠 기다리기로 했다.",
+    "why_wrong": "프로덕션에서 실패한 정확한 종목 목록(349개 심볼명)이 us_market_cap.as_of<2026-08-09에 이미 남아 있었다 — 그 목록으로 지금 바로 야후를 재조회하면 되는 문제였다. 기다릴 필요가 없었다.",
+    "corrected_by": "장은태 지적"
+  },
+  "section1_reproduce_cowork_numbers": {
+    "note": "🔴 재현 시도 — 5개 중 4개 정확히 일치, 1개(복수클래스 48/300) 불일치. 원인 규명함(아래).",
+    "stale_total": { "claimed": 349, "reproduced": 349, "match": true },
+    "cik_matched": { "claimed": 348, "reproduced": 348, "match": true },
+    "multi_class_split": {
+      "claimed": { "multi_class": 48, "single_class": 300 },
+      "reproduced_with_986_precise_method": { "multi_class": 4, "single_class": 344 },
+      "reproduced_with_global_cik_dup_method": { "multi_class": 48, "single_class": 300 },
+      "match": "부분 — Cowork이 986 자신이 확립한 '유니버스 내로 좁힌 정확한 정의'가 아니라 '전역 us_cik_map 중복' 정의(986이 '오탐 위험'으로 명시적으로 배제한 정의)를 썼다.",
+      "verdict": "🔴 986의 방법론을 986 자신이 다음 STEP에서 안 지켰다 — 정정하고 정확한 정의(유니버스 내 2개 이상)로 계속 진행한다: 복수클래스 4건 · 단일클래스 344건(348 중)."
+    },
+    "gate_math": { "universe": 5972, "threshold_97pct": 5793, "fresh_today": 5558, "shortfall": 235, "match": true },
+    "as_of_distribution": { "claimed": "07-30 338건·08-02~06 11건", "reproduced": { "2026-07-30": 338, "2026-08-02": 5, "2026-08-03": 2, "2026-08-04": 1, "2026-08-05": 1, "2026-08-06": 2 }, "sum_check": 349, "match": true }
+  },
+  "section1_2_asof_reason": "08-02~06 11건은 그 이후(08-07~08-08) 다시 실패로 돌아간 것으로 보임(재추적 안 함, as_of 분포만 기록 — 그 사이 재성공했다가 재실패한 것인지, 07-30과 별개로 새로 걸린 것인지는 미조사)",
+  "section1_3_attributes_of_349": {
+    "exchange": { "NYSE": 291, "Nasdaq": 57, "null": 1 },
+    "exchange_note": "984와 완전히 동일 수치 — 349건 자체가 그 사이 안 바뀜(당연, 프로덕션 크론이 이 종목들을 회복 못 시킴)",
+    "title_fund": 80, "title_trust": 33,
+    "us_sector_wide_matched": 61, "us_sector_wide_pct": "17.5%",
+    "us_fundamentals_matched": 69, "us_fundamentals_pct": "19.8%",
+    "revdcf_universe_matched": 37, "revdcf_universe_pct": "10.6%",
+    "interpretation": "984의 NYSE 2배·Fund 7.4배 패턴이 그대로 성립(같은 349건이므로 당연). 새 발견 = 이 349건 대부분이 우리 다른 파이프라인(섹터·펀더멘털·revdcf)에도 얇게만 걸쳐 있다 — CEF·트러스트류가 SEC XBRL 완비도·revdcf 5년게이트를 통과 못 하는 경향과 일치."
+  },
+  "section2_direct_yahoo_query": {
+    "method": "349종목 + 대조군100종목(fresh 상위 사전순 100, 949 선례) — topByMarketCap stage1과 동일 배치(100)·동시성(6). 429 없음, 청크실패 0.",
+    "control100": { "n": 100, "responded": 100, "noResponse": 0, "hasMarketCap": 100, "verdict": "조회 환경 정상 확인(949 전례와 동일 절차) — 이 결과를 신뢰할 수 있다." },
+    "stale349": {
+      "n": 349, "responded": 346, "noResponse": 3,
+      "noResponse_symbols": ["GV", "KVAC", "PSTV"],
+      "noResponse_note": "982/984 분석에서 '949 목록에 없던 신규 stale'로 이미 분류됐던 것과 겹침(GV·KVAC·PSTV) — 최근 상장변경/거래정지 추정, 확정 안 함",
+      "hasMarketCap": 346,
+      "hasMarketCap_pct_of_responded": "346/346 = 100%",
+      "noMarketCapCount": 0,
+      "reconstructableAmongNoMcap": 0,
+      "verdict_2_2": "🔑 marketCap이 오는 종목 = 346/349(99.1%, 응답한 것 중엔 100%). 대부분 온다 — 종목 문제가 아니라 프로덕션 환경 문제다. 984의 LOCAL_OK_PROD_FAIL이 정확히 그 349개 심볼로 재확인됐다(985/986은 다른/더 넓은 임의 표본으로 간접 확인했을 뿐, 이번이 최초의 직접·정확 재현).",
+      "verdict_2_3": "🔴 235건 기준 자체가 무의미해졌다 — 재구성 가능 건수가 0건이라, 235건은커녕 1건도 못 채운다. 이 349건 문제에 재구성 처방은 애초에 적용 대상이 아니다(마켓캡이 '없어서' 재구성하는 게 아니라, 있는 데이터를 프로덕션이 '못 받아오는' 문제이기 때문)."
+    }
+  },
+  "section3_coverage_scenarios_CALC_ONLY": {
+    "note": "이 STEP의 핵심 결론이 여기 반영된다 — 재구성은 이 349건 문제에서 커버리지를 전혀 개선하지 못한다(재구성 가능 0건이므로).",
+    "scenario_a_current": { "freshCoverage": "5558/5972 = 93.04%", "gate97": "미달", "compRatio": "94.0%(984 실측)", "gate95": "미달", "cutGateOk": false },
+    "scenario_b_single_class_reconstruction_only": { "freshCoverage": "5558+0 = 5558/5972 = 93.04%(변화 없음)", "gate97": "여전히 미달", "reason": "reconstructableAmongNoMcap=0 — 이 349건 중 재구성 가능한 건이 0건이라 더할 게 없다" },
+    "scenario_c_full_reconstruction_including_multiclass": { "freshCoverage": "93.04%(변화 없음, 같은 이유)", "note": "🔴 참고용으로만 계산 — 985가 밝힌 구조적 불일치(p90 20%) 때문에 값이 틀리는 문제 이전에, 애초에 재구성 대상 자체가 없어 논의가 무의미하다. 채택 후보 아님." },
+    "counterfactual_if_prod_matched_this_environment": {
+      "freshCoverage_if_346_recovered_directly": "(5558+346)/5972 = 5904/5972 = 98.86%",
+      "note": "이건 '재구성'이 아니라 '프로덕션이 이 환경처럼 정상 응답했다면'이라는 반사실적 계산 — LOCAL_OK_PROD_FAIL 진단을 재확인하는 참고 수치일 뿐, 우리가 만들 수 있는 처방이 아니다."
+    }
+  },
+  "section4_options_no_choice": {
+    "branch_taken": "2-2가 '대부분 온다'로 갈렸으므로 — 재구성 계열 후보(985/986)는 이 349건 문제의 답이 아니다.",
+    "candidate_A_investigate_prod_specific_cause": { "what": "984가 이미 나열한 프로덕션 특이 가설(crumb 콜드스타트·IP대역·리전·헤더차이) 중 하나를 실제로 검증", "requires": "프로덕션 내부 관측(986이 배선한 diag를 며칠 쌓아 확인, 또는 Sentry 대시보드 직접 확인 — 983이 이미 지목) — 이 STEP 범위 밖", "reversible": "해당없음(조사)", "approval": "불필요(조사 지속)" },
+    "candidate_B_exclude_thin_coverage_symbols_from_universe": {
+      "what": "이 349건 대부분(80.2%가 us_fundamentals도 없고 82.5%가 섹터분류도 없음)이 다른 파이프라인에서도 얇게만 커버되는 CEF/트러스트류 — 유니버스에서 아예 뺀다면 게이트가 저절로 열릴 수 있다",
+      "🔴_scope_note": "data/us_symbols.json은 수정 금지 파일이며, 유니버스 변경은 867 장은태 승인 사항이다. 제안만 하고 실행하지 않는다.",
+      "reversible": "쉬움(목록 되돌리기)", "approval": "필요(867 승인 + 파일 수정 금지 해제)"
+    },
+    "hypotheses_explicitly_NOT_resurrected": ["배치방식 자체의 문제(949 A=0)", "심볼 부재(949 C=0)"]
+  }
+}
