@@ -1,0 +1,211 @@
+{
+  "step": 975,
+  "date": "2026-08-10",
+  "purpose": "Q1 4축(PER·PBR·PSR·EV/EBITDA) 잔차 중 968 direct construction 후에도 남는 8%대 잔차의 원인 규명. 조사 전용 — 코드·DB·SPEC 계산 정의 무변경.",
+  "note": "search = docs/probe_975_search.md. 야후 신규 호출 0건(968의 15종목 FY말 종가·시총 재사용). SEC는 docs/probe_951_cache의 기존 캐시만 사용 — 새 SEC 호출 0건(캐시가 15종목 전부 보유해 불필요했음).",
+
+  "stage1_independentReproduction": {
+    "method": "docs/probe_968_residual.json step3_directConstruction.companyDetail 15종목, 축별 잔차(residual) - mcapGapPct = 갭 차감 후 값. 절대값의 중앙값을 재계산.",
+    "reproduced": true,
+    "results": {
+      "pbr": { "claimed": 0.08, "reproduced": 0.08, "n": 14, "match": true },
+      "psr": { "claimed": 0.16, "reproduced": 0.16, "n": 15, "match": true },
+      "evEbitda": { "claimed": 6.82, "reproduced": 6.82, "n": 11, "match": true }
+    },
+    "conclusion": "🔑 재현됨 — 1단계에서 멈추지 않고 진행.",
+    "exceptionsFullEnumeration_gtAbs1pct": {
+      "method": "축별로 |residual - mcapGapPct| > 1%인 종목 전수 나열(Cowork 사전관측과 대조)",
+      "pbr_n3": [
+        { "symbol": "C", "value": 10.28 },
+        { "symbol": "QXO", "value": 5.39 },
+        { "symbol": "HGTY", "value": 318.27 }
+      ],
+      "psr_n3": [
+        { "symbol": "C", "value": -12.89, "note": "🔴 Cowork 사전관측 목록에 없었음 — 전수 나열 결과 새로 추가" },
+        { "symbol": "GM", "value": 11.70 },
+        { "symbol": "HGTY", "value": 115.45 }
+      ],
+      "evEbitda_n9_of_11": [
+        { "symbol": "AAL", "value": -6.82 }, { "symbol": "AMT", "value": -9.06 }, { "symbol": "GM", "value": -89.05 },
+        { "symbol": "LUV", "value": 2.12 }, { "symbol": "CROX", "value": -5.75 }, { "symbol": "DVA", "value": -22.71 },
+        { "symbol": "CARS", "value": -1.19 }, { "symbol": "HGTY", "value": -29.01 }, { "symbol": "BRCC", "value": -15.13 }
+      ],
+      "evEbitda_note": "🔴 Cowork 사전관측 목록은 PBR·PSR만 다뤘고 EV/EBITDA 예외는 언급 없었음 — 실제로는 11종목 중 9종목이 1% 초과(AAPL·NVDA만 미만). EV/EBITDA는 시총 갭만으로 설명되는 비중이 PBR·PSR보다 훨씬 작다(4단계에서 원인 계속 추적)."
+    }
+  },
+
+  "stage2_mcapGapIdentity": {
+    "keyInsight": "968의 direct construction은 ours·ext 양쪽에 같은 FY말 종가(price)를 쓴다(ext의 'Last Close Price'가 Yahoo FY말 종가와 일치함을 968이 이미 확인). price가 공통이므로 mcapGapPct = (fyMarketCap_ours - fyMarketCap_ext)/fyMarketCap_ext ×100 = (ourShares - extImpliedShares)/extImpliedShares ×100 — 즉 mcapGapPct는 그 자체로 이미 '우리 주식수 대비 외부 내재 주식수의 격차 %'다. price를 몰라도 shares만으로 검증 가능.",
+    "ourSharesThatFY_determination": {
+      "method": "SEC companyfacts us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding의 CY2024-frame(10-K) 값. AAPL로 방법 검증: 968의 fyMarketCap_ours(3,509,809,856,602)가 SEC CY2024 값(15,408,095,000)×Yahoo FY말종가($227.79)와 정확히 일치(966,357,338,602의 반올림 오차 범위 내) — 방법 확정.",
+      "rollForwardWarning": "🔴 968(2026-08-09) 이후 하루 만에 라이브 us_fundamentals.fiscal_year가 AAL·AAPL·DVA·GM·LUV·NVDA·QXO 7종목에서 2024→2025로 전진(951 창 갱신의 일상적 진행). 이 7종목은 라이브 DB 대신 SEC 캐시의 CY2024 값을 직접 사용 — 968이 실제로 쓴 값과 동일함을 AAPL로 검증했으므로 나머지 6종목도 같은 방식 신뢰.",
+      "unchangedSymbols_8": ["AMT", "BRCC", "CARS", "CODX", "CROX", "HGTY(예외, 아래 참조)", "PROP"],
+      "rolledForward_needSecCache_7": ["AAL", "AAPL", "DVA", "GM", "LUV", "NVDA", "QXO"],
+      "ourSharesThatFY": {
+        "AAPL": 15408095000, "NVDA": 24804000000, "AAL": 721300000, "C": 1940100000, "AMT": 468120000,
+        "GM": 1129000000, "LUV": 643000000, "CROX": 59832000, "DVA": 87274000, "CARS": 67387000,
+        "PROP": 15453502, "QXO": 204000000, "HGTY": 82327000, "BRCC": 71107562, "CODX": 1011179
+      }
+    },
+    "secPeriodEndShares_2_1": {
+      "method": "SEC companyfacts에서 각 종목의 WeightedAverageNumberOfDilutedSharesOutstanding CY2024 duration의 정확한 end 날짜를 앵커로 삼아, us-gaap:CommonStockSharesOutstanding(우선) → us-gaap:CommonStockSharesIssued → dei:EntityCommonStockSharesOutstanding 순으로 그 날짜(±75일 이내 최근접) instant 값을 찾는다.",
+      "multiClassCheck": "15종목 중 dei:EntityCommonStockSharesOutstanding이 클래스 축(dimension)으로 갈라져 companyfacts 비노출로 보이는 종목 = HGTY 1건(아래 참조). 나머지 14종목은 단일값 존재, 다중클래스 신호 없음.",
+      "bySymbol": {
+        "AAPL": { "tagUsed": "CommonStockSharesOutstanding", "value": 15116786000, "asOf": "2024-09-28", "daysFromAnchor": 0 },
+        "NVDA": { "tagUsed": "CommonStockSharesOutstanding", "value": 24477000000, "asOf": "2025-01-26", "daysFromAnchor": 0 },
+        "AAL": { "tagUsed": "CommonStockSharesOutstanding", "value": 657566166, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "C": { "tagUsed": "dei:EntityCommonStockSharesOutstanding(CommonStockSharesOutstanding 없음, Issued는 3,099,719,006로 자사주 포함이라 부적합)", "value": 1884479551, "asOf": "2025-01-31", "daysFromAnchor": 31 },
+        "AMT": { "tagUsed": "CommonStockSharesOutstanding", "value": 467384000, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "GM": { "tagUsed": "CommonStockSharesOutstanding", "value": 995000000, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "LUV": { "tagUsed": "dei:EntityCommonStockSharesOutstanding(CommonStockSharesOutstanding 없음, Issued는 888,111,634로 자사주 포함이라 부적합)", "value": 592661084, "asOf": "2025-02-05", "daysFromAnchor": 36 },
+        "CROX": { "tagUsed": "CommonStockSharesOutstanding", "value": 56500000, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "DVA": { "tagUsed": "CommonStockSharesOutstanding", "value": 80536000, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "CARS": { "tagUsed": "CommonStockSharesOutstanding", "value": 64391000, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "PROP": { "tagUsed": "CommonStockSharesOutstanding", "value": 23045209, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "QXO": { "tagUsed": "CommonStockSharesOutstanding", "value": 409400000, "asOf": "2024-12-31", "daysFromAnchor": 0 },
+        "HGTY": { "tagUsed": "CommonStockSharesOutstanding", "value": 345210737, "asOf": "2024-12-31", "daysFromAnchor": 0, "note": "🔴 dei 태그 자체가 없음(EntityPublicFloat만 존재) — 다중클래스 차원 배제 가능성. 아래 4-2에서 이 345,210,737이 실제로는 시장이 반영하는 유통주식수가 아님을 확인." },
+        "BRCC": { "tagUsed": null, "value": null, "note": "us-gaap·dei 3개 후보 태그 모두 이 앵커 근방(±75일)에 값 없음 — 미확보." },
+        "CODX": { "tagUsed": "CommonStockSharesOutstanding", "value": 1101785, "asOf": "2024-12-31", "daysFromAnchor": 0, "note": "CY2022→CY2023→CY2024 WAD 값이 31.5M→29.3M→1.0M로 급감 — 액면병합(reverse split) 추정, 미검증(과제 범위 밖)." }
+      }
+    },
+    "extImpliedSharesComparison_2_2": {
+      "method": "extImpliedShares = ourSharesThatFY / (1 + mcapGapPct/100). SEC 기말 발행주식수(2-1)와 비교, ±1% 이내를 '일치'로 판정.",
+      "results": [
+        { "symbol": "AAPL", "extImplied": 15113010891, "secPeriodEnd": 15116786000, "diffPct": -0.025, "match": true },
+        { "symbol": "NVDA", "extImplied": 24474004343, "secPeriodEnd": 24477000000, "diffPct": -0.012, "match": true },
+        { "symbol": "AAL", "extImplied": 657610756, "secPeriodEnd": 657566166, "diffPct": 0.007, "match": true },
+        { "symbol": "C", "extImplied": 1876886912, "secPeriodEnd": 1884479551, "diffPct": -0.403, "match": true, "note": "dei 31일 오프셋 감안" },
+        { "symbol": "AMT", "extImplied": 467371164, "secPeriodEnd": 467384000, "diffPct": -0.003, "match": true },
+        { "symbol": "GM", "extImplied": 994977875, "secPeriodEnd": 995000000, "diffPct": -0.002, "match": true },
+        { "symbol": "LUV", "extImplied": 593269072, "secPeriodEnd": 592661084, "diffPct": 0.103, "match": true, "note": "dei 36일 오프셋 감안" },
+        { "symbol": "CROX", "extImplied": 56498583, "secPeriodEnd": 56500000, "diffPct": -0.003, "match": true },
+        { "symbol": "DVA", "extImplied": 80529942, "secPeriodEnd": 80536000, "diffPct": -0.008, "match": true },
+        { "symbol": "CARS", "extImplied": 64405199, "secPeriodEnd": 64391000, "diffPct": 0.022, "match": true },
+        { "symbol": "PROP", "extImplied": 25868213, "secPeriodEnd": 23045209, "diffPct": 12.25, "match": false, "note": "968이 이미 '극단 희석 종목, 미확정'으로 플래그한 종목 — 불일치 방향도 그대로 재확인" },
+        { "symbol": "QXO", "extImplied": 409474509, "secPeriodEnd": 409400000, "diffPct": 0.018, "match": true, "note": "🔑 mcapGapPct -50.18%라는 극단값도 순전히 주식수(기말발행 vs FY가중평균희석) 차이로 설명됨" },
+        { "symbol": "HGTY", "extImplied": 90051290, "secPeriodEnd": 345210737, "diffPct": -73.91, "match": false, "note": "🔴 핵심 발견 — 외부 내재 주식수(약 9,005만)가 SEC CommonStockSharesOutstanding(3억4,521만)과 전혀 안 맞는다. 오히려 우리(968) 82,327,000(FY2021 값, 아래 4-2 참조)에 훨씬 가깝다 — 4-2 참조." },
+        { "symbol": "BRCC", "extImplied": null, "secPeriodEnd": null, "match": null },
+        { "symbol": "CODX", "extImplied": 1111027, "secPeriodEnd": 1101785, "diffPct": 0.839, "match": true }
+      ],
+      "matchCount": "11/13 테스트가능(BRCC 미확보) — PROP·HGTY만 불일치",
+      "conclusion": "🔑 '외부는 기말 실제 발행주식수를 쓴다'는 968의 추론이 11/13종목에서 ±1% 이내로 직접 확인됨(dei 사용 2종목은 시점오프셋 감안). PROP·HGTY는 별도 원인(아래)."
+    },
+    "ourVsSecPeriodEnd_2_3": {
+      "method": "(ourSharesThatFY - secPeriodEnd)/secPeriodEnd ×100 vs mcapGapPct 비교 — 같으면 갭의 정체가 shares 차이로 확정.",
+      "conclusion": "2-2와 수학적으로 동치(둘 다 같은 두 숫자의 비율 검증) — 11/13 일치로 이미 확정. 반복 계산 생략."
+    }
+  },
+
+  "stage3_recomputeWithPeriodEndShares": {
+    "method": "fyMarketCap_new = fyMarketCap_ours × (secPeriodEndShares / ourSharesThatFY)(같은 야후 FY말종가를 유지한 채 분자의 주식수만 교체 — 재호출 없음). new_axis_residual = new_mktcapComponent + diff_axis(1단계에서 낸, 시총과 무관한 정의차이 성분). BRCC 제외(주식수 미확보).",
+      "newMktcapComponent_pctByStock": {
+        "AAPL": 0.019, "NVDA": -0.002, "AAL": 0.008, "C": 0.397, "AMT": 0.003, "GM": 0.003, "LUV": -0.092,
+        "CROX": 0.004, "DVA": 0.001, "CARS": -0.003, "PROP": -10.91, "QXO": -0.018, "HGTY": 283.33, "CODX": -0.836
+      },
+    "pbr_n13_excl_AAL_BRCC": {
+      "medianBefore": 8.29, "medianAfter": 0.053,
+      "detail": [
+        { "symbol": "AAPL", "before": 1.93, "after": 0.02 }, { "symbol": "NVDA", "before": 1.33, "after": -0.01 },
+        { "symbol": "C", "before": 13.64, "after": 10.68, "note": "거의 안 움직임 — shares 문제 아님, §4-3 참조" },
+        { "symbol": "AMT", "before": 0.14, "after": -0.02 }, { "symbol": "GM", "before": 13.52, "after": 0.05 },
+        { "symbol": "LUV", "before": 8.22, "after": -0.25 }, { "symbol": "CROX", "before": 5.93, "after": 0.03 },
+        { "symbol": "DVA", "before": 8.36, "after": -0.01 }, { "symbol": "CARS", "before": 4.73, "after": 0.09 },
+        { "symbol": "PROP", "before": -40.39, "after": -11.04, "note": "개선되나 미해결(968 플래그 유지)" },
+        { "symbol": "QXO", "before": -44.79, "after": 5.37, "note": "🔑 극적 개선(−44.79%→+5.37%)이나 완전 0은 아님 — 잔여 5.37%는 별도 정의차이(미규명, 신규 미해결 항목)" },
+        { "symbol": "HGTY", "before": 309.69, "after": 601.6, "note": "🔴 오히려 악화 — §4-2 참조, shares 교체가 답이 아님" },
+        { "symbol": "CODX", "before": -8.20, "after": -0.05 }
+      ]
+    },
+    "psr_n14_excl_BRCC": {
+      "medianBefore": 8.34, "medianAfter": 0.112,
+      "detail": [
+        { "symbol": "AAPL", "before": 1.88, "after": -0.03 }, { "symbol": "NVDA", "before": 1.34, "after": 0.00 },
+        { "symbol": "AAL", "before": 10.43, "after": 0.74 }, { "symbol": "C", "before": -9.53, "after": -12.49, "note": "shares 문제 아님(vintage 문제, 967 CBSH류와 유사)" },
+        { "symbol": "AMT", "before": 0.21, "after": 0.05 }, { "symbol": "GM", "before": 25.17, "after": 11.70, "note": "shares로 절반 이상 개선되나 잔여(revenue 정의차이 추정) 남음" },
+        { "symbol": "LUV", "before": 7.75, "after": -0.72 }, { "symbol": "CROX", "before": 5.80, "after": -0.10 },
+        { "symbol": "DVA", "before": 8.34, "after": -0.03 }, { "symbol": "CARS", "before": 4.77, "after": 0.13 },
+        { "symbol": "PROP", "before": -40.42, "after": -11.07 }, { "symbol": "QXO", "before": -50.17, "after": -0.01, "note": "완전 수렴" },
+        { "symbol": "HGTY", "before": 106.87, "after": 398.78, "note": "🔴 악화 — §4-2(revenue 정의차이가 진짜 원인)" },
+        { "symbol": "CODX", "before": -8.20, "after": -0.05 }
+      ]
+    },
+    "evEbitda_note": "EV/EBITDA는 EV=marketCap+debt-nonOperatingAssets 구조라 shares 교체 효과가 marketCap 성분에만 희석되어 들어간다 — 968이 원시 EV 값을 보존하지 않아 이 STEP에서 정밀 재계산은 안 함(4단계에서 debt·nonOpAssets 성분만 별도로 본다).",
+    "per_n11_excl_null": {
+      "medianBefore": 0.07, "medianAfter": 3.99,
+      "hypothesisCheck": "🔑 예상대로 커짐(0.07%→3.99%, 약 57배) — PER은 원래 가중평균희석주식수를 쓰는 EPS 구조와 우리 계산이 우연이 아니라 구조적으로 일치했었다는 뜻. 기말발행주식수로 바꾸면 그 구조적 일치가 깨진다.",
+      "detail": [
+        { "symbol": "AAPL", "before": -0.07, "after": -1.96 }, { "symbol": "NVDA", "before": 0.06, "after": -1.28 },
+        { "symbol": "AAL", "before": 5.70, "after": -3.99 }, { "symbol": "C", "before": 0.58, "after": -2.38 },
+        { "symbol": "AMT", "before": 0.06, "after": -0.10 }, { "symbol": "GM", "before": 0.07, "after": -13.40 },
+        { "symbol": "LUV", "before": 0.75, "after": -7.72 }, { "symbol": "CROX", "before": -0.03, "after": -5.93 },
+        { "symbol": "DVA", "before": -0.01, "after": -8.38 }, { "symbol": "CARS", "before": 0.68, "after": -3.96 },
+        { "symbol": "HGTY", "before": -89.49, "after": 202.4 }
+      ],
+      "conclusion": "🔴 예상과 정확히 일치 — 안 커지지 않았으므로 '어딘가 잘못 짠 것'은 아니다."
+    }
+  },
+
+  "stage4_decomposition": {
+    "evEbitdaRemainder_4_1": {
+      "scope": "GM은 968에서 이미 분해 완료(debt 태그 누락, 969에서 코드 수정) — 재론하지 않음.",
+      "gmNewObservation_notInScope": "🔴 새로 드러난 것(4-1 범위 밖, 재분석 안 함) — us_fundamentals 라이브 조회 결과 GM.debt=0으로 다시 나타남. GM의 fiscal_year가 968 이후(08-09→08-10) 2024→2025로 전진했는데, FY2025 시점에도 969가 고친 태그 union이 값을 못 찾는 것으로 추정되나 이번 STEP에서 원인 조사는 하지 않았다(범위 밖).",
+      "componentCheck_DVA_BRCC_AMT_HGTY": {
+        "method": "us_fundamentals(라이브)의 debt·non_operating_assets·operating_income·dna를 직접 조회해 GM처럼 태그가 완전히 빠진(0으로 저장된) 패턴인지 확인.",
+        "AMT": { "debt": 36501800000, "nonOperatingAssets": 2108200000, "operatingIncome": 4516500000, "dna": 2028800000, "pattern": "GM 패턴 아님(debt 0 아님) — REIT 대형 부채 규모로 값 자체는 그럴듯함. evEbitda 잔차(-9.06%, 갭차감후)의 원인은 미규명." },
+        "BRCC": { "debt": 65087000, "nonOperatingAssets": 6810000, "operatingIncome": 3848000, "dna": 10057000, "pattern": "GM 패턴 아님 — 소형주 값 자체는 그럴듯함. 미규명." },
+        "DVA": { "debt": 10273189000, "nonOperatingAssets": 782050000, "operatingIncome": 2043615000, "dna": 708252000, "pattern": "GM 패턴 아님 — DVA는 2020년 이후 대규모 자사주매입으로 자기자본잠식(-651M)과 함께 레버리지가 큰 회사, 값 자체는 그럴듯함. 미규명." },
+        "HGTY": { "debt": 106552000, "nonOperatingAssets": 306802000, "operatingIncome": 66418000, "dna": 38905000, "pattern": "GM 패턴 아님 — 다만 4-2에서 HGTY의 operatingIncome·revenue 자체가 Up-C 연결 범위 문제를 갖고 있어(아래) EV/EBITDA 잔차(-29.01%, 갭차감후)도 그 연장선일 가능성이 높음(미확정)." },
+        "conclusion": "🔴 4종목 다 GM처럼 태그가 '완전히 없어서 0'인 패턴은 아니다(debt·nonOpAssets·operatingIncome·dna 전부 0이 아닌 값 보유). 잔차의 원인은 GM과 다른 종류(정의 차이 또는 미규명)로 추정되나, EV 성분(mktcap vs debt/nonOpAssets)을 정밀 분해할 원시 EV 숫자가 968 산출물에 남아있지 않아 이 STEP에서 정확한 비중 분해는 완료하지 못했다(못 한 것)."
+      }
+    },
+
+    "hgtyAnomaly_4_2": {
+      "investigated": true,
+      "summary": "🔑 HGTY의 극단 잔차(PER -89.49%·PBR +309.69%·PSR +106.87%)는 시총(분자) 문제가 아니라 세 가지 분모(재무) 정의 문제의 조합으로 설명된다 — Up-C(합자회사) 지배구조.",
+      "finding1_staleShares": {
+        "what": "us_fundamentals.shares = 82,327,000 — 이건 FY2024 값이 아니라 FY2021(2021-01-01~2021-12-31) 값이다.",
+        "evidence": "SEC 캐시에서 HGTY의 WeightedAverageNumberOfDilutedSharesOutstanding·WeightedAverageNumberOfSharesOutstandingBasic 두 태그 모두 CY2020·CY2021 값만 존재하고 CY2022 이후 값이 전혀 없다(회사가 이후 다른 태그로 전환한 것으로 추정).",
+        "rootCause": "lib/revdcf/drivers.ts:67 `latestYear(years, m)`가 배열 `years`를 최신순으로 순회하며 맵 `m`에 값이 있는 '첫 연도'를 반환한다 — 목표연도(2024/2025)와의 근접성을 요구하지 않는다. HGTY의 SHARES_MORE 폴백 1순위(WeightedAverageNumberOfSharesOutstandingBasic)가 `years` 배열(예: [2021~2025]) 중 유일하게 값이 있는 2021년을 찾아내 채택하고 `break`한다 — 2순위(CommonStockSharesOutstanding, FY2024 값 345,210,737 보유)로 넘어가지 못한다.",
+        "codeLocation": "lib/revdcf/drivers.ts:67(latestYear 함수) · :357(SHARES_MORE 순회 루프) — 🔴 이 STEP은 조사 전용, 코드 무변경. 발견만 기록.",
+        "productionImpact": "🔴 이 `shares` 필드는 PER·PBR·PSR·EV/EBITDA 계산(computeValuation)에는 안 쓰인다(전부 us_market_cap의 라이브 시가총액을 직접 씀) — production 밸류에이션 값 자체는 영향 없음. 🔴 단 `app/api/cron/revdcf/route.ts:255` `sharePrice = mcap / dr.market.shares`에서 역DCF의 주가 입력값 계산에 쓰인다 — HGTY는 현재 604종목 유니버스 밖이라 오늘 당장 영향은 없으나, 같은 `latestYear()` 메커니즘이 유니버스 안 다른 종목에도 잠재할 수 있다(전수 스캔 안 함, 새로 드러난 것)."
+      },
+      "finding2_wrongShareCount_notTheFix": {
+        "what": "🔴 CommonStockSharesOutstanding(345,210,737)로 단순 교체하는 것은 답이 아니다.",
+        "evidence": "3단계 재계산에서 345,210,737을 쓰면 PBR 잔차가 309.69%→601.6%로, PSR이 106.87%→398.78%로 오히려 악화된다. 반면 외부 내재 주식수(90,051,290, mcapGapPct=-8.58%에서 역산)는 오히려 우리(버그난) 82,327,000에 훨씬 가깝다(9.4% 차이) — 345,210,737과는 73.9% 차이.",
+        "hypothesis": "HGTY(Hagerty)는 Up-C 구조(SPAC 합병으로 상장) — dei:EntityCommonStockSharesOutstanding 자체가 companyfacts에 없다(EntityPublicFloat만 존재), 이는 STEP854·969에서 이미 확인된 '클래스/차원별 사실은 companyfacts에서 제외된다'는 것과 같은 패턴으로 추정된다. `CommonStockSharesOutstanding`(345,210,737)은 등록된 보통주 전체(퍼블릭 Class A + 창업자/LLC 지분 관련 Class V 등 합산으로 추정)이고, 시장이 실제로 값을 매기는 유통주식(플로트)은 그보다 훨씬 작은 약 8,200만~9,000만 선일 가능성이 높다 — 우연히 우리(버그난) 82,327,000이 그 범위에 가까웠다.",
+        "confidence": "추정 — SEC companyfacts API의 차원(dimension) 제외 특성상 Class A/V 개별 수치를 이 데이터만으로 분리 확인하지 못했다(미확정)."
+      },
+      "finding3_revenueBasisGap": {
+        "what": "us_fundamentals.revenue = 548,631,000(RevenueFromContractWithCustomerExcludingAssessedTax) — FY2024 10-K에는 이보다 훨씬 큰 `Revenues`(총매출) = 1,200,038,000이 별도로 존재한다.",
+        "hypothesis": "Hagerty는 보험 언더라이팅(보험료수익, ASC 944 적용 대상이라 '고객과의 계약' ASC 606 매출에서 제외)과 회원/멤버십 서비스(ASC 606 적용)를 함께 하는 회사다 — `RevenueFromContractWithCustomerExcludingAssessedTax`는 정의상 보험료수익을 뺀 나머지만 잡는다. 차이(약 6.5억)가 보험료수익 규모와 크기가 맞는다(미확정, 직접 항목별 대조는 안 함).",
+        "impact": "외부가 `Revenues`(총계, 1.2B)를 쓴다면 PSR_ext는 우리(549M 기준)의 약 45.7%(=549/1200) 수준이어야 한다 — 우리 PSR이 외부보다 약 2.19배 커야 하고, 관측된 psr 잔차(+106.87%, ≈2.07배)와 방향·크기가 거의 일치한다."
+      },
+      "finding4_equityConsolidationGap": {
+        "what": "us_fundamentals.common_equity = equity = 150,322,000(StockholdersEquity, 모회사 귀속분만) — FY2024 10-K에는 비지배지분 포함 연결 총자본 `StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest` = 523,506,000이 별도로 존재한다.",
+        "impact": "외부가 연결 총자본(523.5M)을 쓴다면 우리 PBR(150.3M 기준)은 외부의 약 3.48배여야 한다 — 관측된 pbr 잔차(+309.69%, ≈4.10배)와 방향은 일치, 크기는 다소 차이(다른 요인 혼재 가능성, 완전 확정 아님)."
+      },
+      "finding5_netIncomeAttributionGap": {
+        "what": "us_fundamentals.net_income = 78,303,000(`ProfitLoss`, 비지배지분 포함 연결 총순이익) — FY2024 10-K에 `NetIncomeLossAttributableToNoncontrollingInterest` = 61,286,000이 별도 존재. 회계항등식상 모회사(보통주) 귀속분 ≈ 78,303,000-61,286,000 = 17,017,000(🔴 직접 태그된 값이 아니라 항등식으로 도출한 값 — 확인 태그 없음).",
+        "impact": "외부가 모회사 귀속 순이익(약 17M)을 쓴다면 우리 PER(78.3M 기준)은 외부의 약 21.7%(=17/78.3) — 즉 우리 PER이 외부보다 훨씬 작아야 한다. 관측된 per 잔차(-89.49%, 우리가 외부의 약 10.5%)와 방향은 일치, 정확한 배율까지는 못 맞춤(다른 요인 혼재 가능성)."
+      },
+      "overallConclusion": "🔑 HGTY 3축(PER·PBR·PSR)의 큰 잔차는 shares 문제(단순 기말발행주식수 교체)로는 해소되지 않고, Up-C 연결구조에서 오는 세 가지 서로 다른 '모회사 귀속분 vs 연결 총계' 정의 차이(순이익·자기자본·매출)로 방향·대략적 크기가 설명된다. 정확한 배율까지 완전히 맞추지는 못했다(미확정 다수) — '우리 계산 결함'이 아니라 '대조 기준(외부가 어느 귀속기준을 쓰는지 불명)의 문제'에 가깝다."
+    },
+
+    "citigroupPbr_4_3": {
+      "isSameAsUnresolvedItem2": true,
+      "evidence": "1단계에서 재계산한 C의 diff_pbr(mcapGap 차감 후) = 10.28%(원본과 동일 방법), 3단계에서 shares를 기말발행 기준(dei, 31일 오프셋)으로 바꿔도 10.68%로 거의 안 움직인다 — shares/시점 문제가 아님을 재확인. 968 §4의 recheck(commonEquity 대신 totalStockholdersEquity(208,598,000,000) 사용 시 13.64%→3.92%로 좁혀짐)가 이미 같은 결론을 냈다.",
+      "action": "새 항목 신설하지 않음 — `docs/STATE.md` 미해결 2번(Citigroup PBR 정의 갈림)에 이번 재확인 사실만 추가."
+    }
+  },
+
+  "notDoneOrUnresolved": [
+    "BRCC의 SEC 기말발행주식수 미확보(3개 후보 태그 전부 앵커 근방 값 없음) — 2·3단계 테스트에서 제외됨.",
+    "PROP의 shares 교체 후에도 남는 -10.91%(PBR)·-11.07%(PSR) 잔차 — 968이 이미 '극단희석, 미확정'으로 플래그한 것과 동일선상, 추가 규명 안 함.",
+    "QXO PBR의 shares 교체 후 남는 잔여 5.37% — 새로 드러난 미해결(원인 미규명).",
+    "GM·CBSH류 PSR의 shares 교체 후 남는 잔여(GM 11.70%) — revenue 정의차이로 추정하나 항목별 대조 안 함(미확정).",
+    "HGTY의 정확한 배율(방향은 맞으나 완전히는 안 맞음) — 모회사귀속 순이익 17,017,000은 직접 태그값이 아니라 항등식 추정, Class A/V 정확한 유통주식수 미확정.",
+    "GM.debt=0 재발(FY2025 시점) — 969 수정이 새 회계연도에서도 유효한지 확인 안 함, 이 STEP 범위 밖.",
+    "EV/EBITDA(DVA·BRCC·AMT·HGTY)의 시총성분 vs 부채·현금성분 정밀 분해 — 968 산출물에 원시 EV 값이 안 남아있어 완료 못 함.",
+    "`latestYear()` 폴백이 HGTY 외 다른 종목에도 같은 문제를 일으키는지 — 전수 스캔 안 함(15종목 표본에서는 HGTY 1건만 확인)."
+  ]
+}

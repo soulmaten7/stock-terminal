@@ -63,8 +63,8 @@
 > 각 항목 = 무엇을 모르는가 · 크기 · 어디서 나왔는가 · 판정 필요 여부. 우선순위 없음 — 판정은 장은태.
 
 **Q1/역DCF 모델**
-1. **PBR·PSR·EV/EBITDA 잔여 잔차 ~8% 미규명**(968) — 재척도 제거 직접구성 후에도 남는 절대상대차 중앙값(PBR 8.29%·PSR 8.34%·EV/EBITDA 8.90%). Citigroup PBR·GM EV/EBITDA 2건만 개별 규명, 나머지 미분해. → `docs/probe_968_residual.json`
-2. **Citigroup PBR 정의 갈림**(968) — 우리(`commonEquity`, 963 정책) 기준 +13.64%인데 총자기자본 기준으로 재계산하면 +3.92%로 좁혀짐. stockanalysis.com이 총자기자본 기준으로 추정(미확정). 963 정책 자체는 유효 — 외부와 정의가 다를 뿐, 판정 대상 아님. → `VALUATION_SPEC.md` STEP968 절
+1. ✅ **해소(975) — 「PBR·PSR·EV/EBITDA 잔여 잔차 ~8%」는 우리 모델 오차가 아니라 968 대조 방법(FY 가중평균희석주식수로 시총 구성)의 결함이었다.** 외부는 SEC 기말 실제 발행주식수를 쓴다는 것을 13종목 중 11종목에서 ±1% 이내로 직접 확인, 대조 방법을 기말발행주식수로 교체하니 PBR 중앙값 8.29%→0.053%·PSR 8.34%→0.112%로 수렴(PER은 예상대로 0.07%→3.99%로 커져 방법 정합성을 재확인). **정본 대조 방법(968 newBaseline) 갱신**: 이제부터는 "FY말종가×FY말 실제 발행주식수"가 정본. 잔여 예외(C·QXO·PROP·HGTY 등)는 아래 30~32번으로 개별 등재. → `docs/probe_975_residual_decomposition.json`
+2. **Citigroup PBR 정의 갈림**(968, 975 재확인) — 우리(`commonEquity`, 963 정책) 기준 +13.64%인데 총자기자본 기준으로 재계산하면 +3.92%로 좁혀짐. stockanalysis.com이 총자기자본 기준으로 추정(미확정). 963 정책 자체는 유효 — 외부와 정의가 다를 뿐, 판정 대상 아님. 🔴 **975: shares를 기말발행 기준으로 바꿔도 10.28%→10.68%로 거의 안 움직임 — shares 문제가 아니라 이 항목(equity 정의)과 같은 건임을 재확인.** → `VALUATION_SPEC.md` STEP968·975 절
 3. **CBSH 매출 1.52% 잔차 미완결**(967) — 대손충당금 차감 가설로 0.5%/0.23%까지 좁혔으나 완전히 안 닫힘. → `docs/probe_967_bank_revenue.json`
 4. **PSR × Financials가 minSample(20)로 안 가려짐**(958·959, 판정 대기) — Damodaran 교과서 원문은 "매출이 측정 불가 개념"이라 명시하나 실측 n=61로 임계값 초과, 지금 계산·저장됨. `Q1_ENABLED` OFF라 화면 노출은 없음. → `docs/SECTOR_AXIS_APPLICABILITY.md`
 5. **PSR 종목단위 정의 원문 미확보**(958·962·963, 세 번 시도) — Damodaran 자료 전부 업종 집계 정의뿐, 종목단위(총매출/순매출 구분 등) 없음. → `VALUATION_SPEC.md` 미해결 1번
@@ -87,6 +87,10 @@
 27. **`us_sector_wide` 신선도 상한 미설정 — 판정 대기**(973, 974에서 재검토했으나 미도입 유지) — 상한을 안 둔 이유(원전·타플랫폼 대조로 저빈도 개념임을 재확인·`docs/probe_974_step2_search.md`)는 문서화했으나, 언젠가 걸어야 할 시점이 온다면 SPDR 소스는 "분기"라는 구체적 기준이 이미 검색으로 확보돼 있다. 언제·며칠로 걸지는 여전히 판정 필요. → `docs/VALUATION_SPEC.md` 같은 절
 28. ✅ **해소(974)** — ~~신규 종목(+40) 섹터 미부착 — 처방 후보 3개 중 미선택(973)~~ 처방 ①(resolveSector 증분 크론 배선, 방식 ⓐ=기존 as_of에 append) 채택·구현. 신규 40종목(damodaran 32·spdr 2·미분류 6) 자동 부착 확인, 기존 1,127행 fingerprint 불변(MD5 `ffb271e898ea81300f40f2aa831b78b0`) 확인. `us_sector_relative`(08-09) null_sector 129→95. → `docs/VALUATION_SPEC.md` 「us_sector_wide 증분 갱신」 절
 29. **damodaran_* 7개 테이블 — as_of 무필터 읽기, 지금은 as_of가 1개뿐이라 안전(973 회귀조사, 미수정)** — `app/api/cron/revdcf/route.ts:144-148`·`lib/sector.ts:26,88`이 `damodaran_global_inputs`(`.single()`)·`damodaran_country_tax`(`.single()`)·`damodaran_credit_spread`·`damodaran_beta`·`damodaran_industry`를 as_of 필터 없이 읽는다. 전부 PK에 `as_of`가 있어(`scripts/ingest_damodaran.ts` onConflict 확인) **연차 갱신으로 두 번째 as_of가 생기는 순간** `.single()`은 에러로 죽고 무필터 select는 신구 데이터가 섞인다. 972/973과 같은 병의 잠복형. → 이번엔 손대지 않음
+30. **QXO PBR 잔여 5.37%·PROP PBR/PSR 잔여 −11%대**(975) — 968 direct construction에서 mktcap 성분을 기말발행주식수로 교체해도 남는 잔차. QXO는 극적 개선(−44.79%→+5.37%)됐으나 완전히는 안 닫힘, PROP은 968이 이미 "극단희석·미확정"으로 플래그한 것과 동일선상. 원인 미규명. → `docs/probe_975_residual_decomposition.json`
+31. **HGTY(Hagerty) Up-C 정의차이 3건 — 방향·대략 크기만 설명, 정확한 배율 미확정**(975) — revenue(ASC606 매출 vs 총계), equity(모회사귀속 vs 연결총자본), net_income(연결총액 vs 모회사귀속분— 후자는 항등식 도출값이라 직접 태그 확인 안 됨) 3가지가 각각 PSR·PBR·PER 잔차 방향과 대체로 맞으나 정확히는 안 맞는다. Class A/V 정확한 유통주식수도 미확정. → `docs/probe_975_residual_decomposition.json` §4-2
+32. 🔴 **`lib/revdcf/drivers.ts:67` `latestYear()`가 목표연도 근접성 없이 "5년 창 안에 값 있는 첫 연도"를 반환 — HGTY의 `shares` 필드가 FY2024 대신 FY2021(3년 전) 값을 쓰게 만듦**(975 발견, 코드 무변경). production PER·PBR·PSR·EV/EBITDA는 `us_market_cap`(라이브)만 써서 무영향이나, 역DCF `sharePrice = mcap/dr.market.shares`(`route.ts:255`)에는 영향(HGTY는 현재 604종목 밖이라 오늘은 무해). **15종목 표본에서 HGTY 1건만 확인 — 604종목·1,167종목 전수 스캔 안 함**, 다른 종목에도 잠재할 수 있음. → `docs/probe_975_residual_decomposition.json` §4-2 finding1
+33. **GM.debt이 라이브 조회에서 다시 0으로 관측됨**(975 발견, 조사 안 함) — 969가 FY2024 기준으로 고쳤는데 GM의 `fiscal_year`가 08-09→08-10 사이 2024→2025로 전진(951 창 갱신)하며 재발한 것으로 추정, 확인 안 함. → 이번엔 손대지 않음
 
 **DoD·완성 기준**
 19. **DoD7(화면 일관성) — "같은 이름"의 정의 자체가 원문에 없음**(923·929) — `years` 배지·육안검증 둘 다 해소됐으나 이 정의 공백 하나가 남아 🔶 미결. → `LENS_COMPLETION_STANDARD.md`
