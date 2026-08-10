@@ -1,0 +1,100 @@
+{
+  "step": 979,
+  "date": "2026-08-10",
+  "purpose": "업종 대비 계산방식 백분위→중앙값 대비 전환의 사전 실측(교체는 안 함). DB 쓰기 0, 계산 정의 무변경, 재계산만.",
+  "note": "search = docs/probe_979_search.md. ①-A-2(음수 처리)가 이 STEP의 성패였다 — 찾았다(ⓐ).",
+
+  "answerFront_1A2_negativeHandling": {
+    "verdict": "ⓐ 원전에 처리 규칙이 있다",
+    "sources": [
+      "Investment Valuation 2nd ed. ch19.pdf(Book Value Multiples) — \"price to book ratios cannot be computed\" for negative equity, 5,903개사 표본 중 728개사 실측 수치 공개",
+      "data/sources/damodaran_multiples/pedata.xls FAQ — \"% of Money-losing firms... PE ratios that are not meaningful\", Current PE는 \"averaged across all money-making firms\"만",
+      "웹검색(Damodaran 'Multiples: First Principles' 논문 + textbook 인용) — \"With every multiple, there are firms for which the multiple cannot be computed... this same issue applies to firm value to EBITDA multiples... revenue multiples[PSR]는 가장 덜 편향적\""
+    ],
+    "rule": "분모가 음수/무의미하면 그 기업을 표본에서 뺀다(계산하지 않는다). 원전 스스로 이게 표본선택편향(부실기업이 체계적으로 빠짐)임을 인정하고, 고치지 않고 받아들인다.",
+    "ourCodeAlreadyMatches": "lib/valuation.ts 확인 완료 — PER(NEGATIVE_EARNINGS)·PBR(NEGATIVE_EQUITY)·PSR(NEGATIVE_REVENUE)·EV/EBITDA(NEGATIVE_EBITDA) 전부 이미 '계산 안 함(null)'으로 구현돼 있다(963 이전부터). 🔑 백분위→중앙값 전환과 무관하게 이미 원전과 일치 — 새로 지어낼 규칙이 없다. 음수 제외는 sector-relative 계산 이전 단계(computeValuation)에서 이미 끝나 있어, 이 전환의 영향권 밖이다."
+  },
+
+  "stage1A_other": {
+    "comparisonFormat_ratioVsDiffVsResidual": {
+      "found": false,
+      "note": "relval.pdf 47p 전문 검색(\"times the\"·\"percent higher/lower\"·\"regression residual\") 0건 — 정성적 서술(\"relative to\")만 있고 숫자 비교 예시는 이미지/차트(pdftotext로 미추출). 못 찾음으로 남긴다 — 배율이냐 %차이냐는 원전이 안 정해준다."
+    },
+    "minSampleLowerBound": {
+      "found": false,
+      "note": "ch19.pdf가 5,903개사 전수를 쓰고, relval.pdf slide 142는 \"Number of firms... Law of large numbers?\"라고만 정성적으로 언급 — 숫자 하한 없음."
+    }
+  },
+
+  "stage1B_platforms": {
+    "reused_from_978": ["stockanalysis.com", "WallStreetZen", "MarketBeat"],
+    "newFinding": "3곳 다 배율·%차이를 명시적으로 계산해 보여주지 않는다 — 원시값 두 개(\"35.81x vs 31.6x\")를 병기하고 독자가 암산하게 한다. 이상치 절삭(winsorize) 방법론 문서는 3곳 다 못 찾음."
+  },
+
+  "stage3_ownData": {
+    "asOf": "2026-08-09",
+    "step3_1_medians44cells": {
+      "Communication Services": {"n_per": 28, "med_per": 27.51, "n_pbr": 41, "med_pbr": 2.83, "n_psr": 45, "med_psr": 1.80, "n_ev": 29, "med_ev": 12.75},
+      "Consumer Discretionary": {"n_per": 74, "med_per": 28.03, "n_pbr": 85, "med_pbr": 4.43, "n_psr": 98, "med_psr": 1.84, "n_ev": 75, "med_ev": 16.03},
+      "Consumer Staples": {"n_per": 41, "med_per": 26.92, "n_pbr": 45, "med_pbr": 4.68, "n_psr": 49, "med_psr": 2.02, "n_ev": 34, "med_ev": 15.50},
+      "Energy": {"n_per": 35, "med_per": 20.71, "n_pbr": 39, "med_pbr": 2.54, "n_psr": 42, "med_psr": 2.69, "n_ev": 29, "med_ev": 10.98},
+      "Financials": {"n_per": 72, "med_per": 17.91, "n_pbr": 79, "med_pbr": 1.72, "n_psr": 81, "med_psr": 4.59, "n_ev": 17, "med_ev": 17.19},
+      "Health Care": {"n_per": 81, "med_per": 31.00, "n_pbr": 133, "med_pbr": 4.73, "n_psr": 152, "med_psr": 5.24, "n_ev": 84, "med_ev": 19.16},
+      "Industrials": {"n_per": 159, "med_per": 32.66, "n_pbr": 170, "med_pbr": 5.33, "n_psr": 179, "med_psr": 3.11, "n_ev": 141, "med_ev": 17.63},
+      "Information Technology": {"n_per": 99, "med_per": 48.14, "n_pbr": 143, "med_pbr": 7.94, "n_psr": 152, "med_psr": 7.80, "n_ev": 103, "med_ev": 37.72},
+      "Materials": {"n_per": 35, "med_per": 28.98, "n_pbr": 46, "med_pbr": 3.14, "n_psr": 46, "med_psr": 1.85, "n_ev": 37, "med_ev": 16.39},
+      "Real Estate": {"n_per": 13, "med_per": 57.58, "n_pbr": 20, "med_pbr": 1.58, "n_psr": 21, "med_psr": 3.92, "n_ev": 4, "med_ev": 24.99},
+      "Utilities": {"n_per": 35, "med_per": 20.99, "n_pbr": 37, "med_pbr": 2.20, "n_psr": 37, "med_psr": 3.22, "n_ev": 30, "med_ev": 13.41}
+    },
+    "step3_2_noRatioClassification": {
+      "no_ratio_negative": "0건 — 음수는 이미 us_valuation 단계(computeValuation)에서 null로 걸러져 있어, sector-relative 재료에 애초에 없다. 이 STEP에서 새로 배제할 게 없다.",
+      "no_ratio_zero_or_negative_median": "0건 — 44칸 전부 median > 0(양수 필터링된 모집단이라 중앙값도 항상 양수).",
+      "conclusion": "🔑 '배율을 못 내는 사례'가 사실상 없다 — 있는 값은 전부 배율로 바뀐다."
+    },
+    "step3_3_coverageComparison": {
+      "totalSymbolAxisPairsWithValue": 2995,
+      "percentile_withMinSample20": { "coverage": 2961, "blocked": 34, "blockedCells": ["Real Estate×PER(13)", "Real Estate×EV/EBITDA(4)", "Financials×EV/EBITDA(17)"] },
+      "medianRatio_withMinSample20": { "coverage": 2961, "note": "minSample은 방법(백분위 vs 중앙값비율)과 독립된 별개 게이트다 — 그대로 두면 커버리지는 안 바뀐다." },
+      "medianRatio_noMinSample": { "coverage": 2995, "gained": 34, "reason": "①-A-3에서 원전에 하한 근거를 못 찾음 — 중앙값은 표본이 작아도(n=4까지 실측) 산출 자체는 된다. 하한을 없애면 34개 심볼×축 쌍이 새로 값을 받는다." }
+    },
+    "step3_4_rankPreservation": {
+      "method": "Real Estate×PBR(n=20) 전수로 percentile 순위 vs (value/median) 순위 대조",
+      "result": "20/20 완전 일치",
+      "explanation": "수학적으로 당연하다 — 같은 모집단에 대해 percentile도 value/median도 둘 다 원시값의 단조증가 변환이라, 같은 값 집합이면 순위가 항상 같다. 불일치가 날 이유가 원리적으로 없다(음수 혼입도 이미 양쪽 다 배제된 동일 모집단이라 원인이 될 수 없음)."
+    },
+    "step3_5_realEstateDeepDive": {
+      "PBR": { "n": 20, "status": "minSample 정확히 충족(문턱)", "median": 1.58 },
+      "PER": {
+        "n": 13, "status": "미달(중앙값 방식으로 전환하면 계산은 됨)", "median": 57.58,
+        "extremeMembers": [{"symbol": "CTO", "per": 316.0, "ratioToMedian": 5.49}, {"symbol": "VTR", "per": 590.1, "ratioToMedian": 10.25}, {"symbol": "CSGP", "per": 1750.5, "ratioToMedian": 30.41}],
+        "note": "🔴 REIT의 GAAP 감가상각이 순이익을 왜곡한다는 SECTOR_AXIS_APPLICABILITY.md의 기존 서술이 숫자로 확인됨 — 상위 3종목이 중앙값의 5.5~30배. CSGP(CoStar Group)는 실물 부동산 보유가 아니라 부동산 데이터/분석 기업으로 GICS Real Estate에 편입돼 있어 이질적 구성 신호일 수 있음(단정 안 함)."
+      },
+      "EV_EBITDA": {
+        "n": 4, "status": "심각한 미달", "median": 24.99,
+        "members": [{"symbol": "AMT", "value": 17.54}, {"symbol": "CBRE", "value": 21.63}, {"symbol": "CSGP", "value": 60.34}, {"symbol": "ASPS", "value": 28.34}],
+        "note": "🔴 4개사 중 1개(CSGP)가 중앙값을 크게 끌어올린다 — n=4에서 중앙값 자체의 대표성이 약하다(①-A-3에서 확인된 '하한 없음'이 실무적으로 왜 위험한지 보여주는 사례)."
+      }
+    }
+  },
+
+  "stage4_conclusion": {
+    "verdict": "ⓐ — 원전(negative 처리)은 이미 우리 코드와 일치해 새 규칙이 필요 없다. 단 다른 미결(배율 형태·minSample 하한)은 952와 같은 '원전 없음 — 우리가 정의 고정' 트랙으로 넘어간다.",
+    "whatIsClearForNextStep": [
+      "음수 처리 — 이미 해결됨, 손댈 것 없음",
+      "중앙값 자체 계산 — Postgres percentile_cont(0.5)로 검증 완료, 44칸 전부 산출 확인",
+      "순위 보존 — 100% 확인, 전환 시 사용자 체감 순서는 안 바뀜(단 절대 숫자 표현이 %/배율로 바뀜)"
+    ],
+    "whatStillNeedsJudgment": [
+      "표시 형태(배율 vs %차이) — 원전·실무 둘 다 답 없음, 우리가 고정해야 함",
+      "minSample 하한 유지 여부 — 원전 근거 없음, 유지하면 커버리지 2961로 그대로, 없애면 2995(+34)",
+      "Real Estate EV/EBITDA처럼 n이 극히 작을 때(4개) 중앙값 표시를 그대로 노출할지 별도 경고를 붙일지"
+    ]
+  },
+
+  "notDoneOrUnresolved": [
+    "배율 표시 형태(x배 vs %차이)를 정하기 위한 추가 실무조사 — 이번엔 못 정함(원전·3플랫폼 다 답 없음)",
+    "PSR·EV/EBITDA의 pbvdata.xls급 상세 textbook 챕터(ch18·ch20)는 EV/EBITDA만 웹검색 요약으로 확인, PSR은 직접 원문 대조 안 함(972·975의 기존 조사로 대체)",
+    "CSGP의 GICS Real Estate 편입이 실제로 이례적인지(부동산 서비스업 vs 보유업) 확인 안 함 — 추측만 기록",
+    "34개 신규 커버리지(minSample 제거 시)가 화면에 어떻게 표시될지(신뢰도 경고 등)는 화면 문제라 이번 STEP 범위 밖"
+  ]
+}
