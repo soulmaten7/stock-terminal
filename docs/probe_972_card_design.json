@@ -1,0 +1,166 @@
+{
+  "step": 972,
+  "purpose": "Q1 카드 표시 설계 재료 수집 — 판정하지 않음",
+  "preconditions": {
+    "envLocalGitignored": true,
+    "q1EnabledAtStart": "true (이미 켜져 있었음 — 이번 STEP에서 켠 것 아님, 이전 STEP의 잔여 상태로 추정, 원인 미조사)",
+    "q1EnabledAtEnd": "false (조사 종료 후 원복)",
+    "devServerPort": 3333,
+    "prodQ1Flag": "OFF (변경 없음, .env.local은 로컬 전용/gitignore 대상이라 Production 무영향)"
+  },
+  "stage1_selfCheck": {
+    "criticalFinding_sectorRegression": {
+      "summary": "as_of=2026-08-09(최신, API가 항상 읽는 날짜)에서 us_sector_wide가 0행 → us_sector_relative 1167/1167 전부 sector=null·전축 NO_SECTOR. 08-08은 1038/1127 정상.",
+      "evidence": {
+        "us_sector_wide_by_asof": [{"as_of": "2026-08-08", "count": 1127, "has_sector": 1038}],
+        "us_sector_wide_2026_08_09_rows": 0,
+        "us_sector_relative_by_asof": [
+          {"as_of": "2026-08-09", "total": 1167, "has_sector": 0},
+          {"as_of": "2026-08-08", "total": 1127, "has_sector": 1038}
+        ],
+        "rootCauseHypothesis": "app/api/cron/revdcf/route.ts §3-3이 us_sector_wide를 eq('as_of', asOf)로 조회 — 08-09에 us_sector_wide 자체가 아직 안 채워진 상태에서 sector_relative가 먼저(혹은 단독으로) 돈 것으로 추정. 크론 실행 순서/타이밍 미확인(코드 미접촉·판정 안 함)."
+      },
+      "impact": "현재(2026-08-10 시점 최신 as_of) Q1_ENABLED를 켜면 모든 US 종목 카드가 예외없이 '업종을 확정하지 못했습니다' 미성립 문구만 보인다. 이는 STEP972가 원래 관찰하려던 '축마다 답이 갈림' 등의 정상 사례를 오늘 날짜로는 재현 불가능하게 만듦.",
+      "action": "코드·DB 무접촉 원칙에 따라 수정하지 않음. 08-08(정상) 스냅샷을 DB 직접 조회로 재구성해 1단계 관찰 대체. 별도 STEP에서 원인 규명 필요(미해결 목록에 추가)."
+    },
+    "sixSymbolsCardText": {
+      "asOfUsed": "2026-08-08 (정상 스냅샷, DB 직접 조회 — API 라이브 응답은 2026-08-09라 전부 NO_SECTOR)",
+      "AAPL": {
+        "sector": "Information Technology", "sectorSource": "spdr", "fiscalYear": 2024, "perBasis": "annual",
+        "per": {"value": 48.78, "pct": 0.5161290322580645, "n": 93, "unavailable": null},
+        "pbr": {"value": 80.29, "pct": 0.9712230215827338, "n": 139, "unavailable": null},
+        "psr": {"value": 11.69, "pct": 0.5945945945945946, "n": 148, "unavailable": null},
+        "evEbitda": {"value": 34.20, "pct": 0.48484848484848486, "n": 99, "unavailable": null},
+        "headlineText_ko": "이 업종 93개 중 비싼 쪽 52%",
+        "note": "PER 52% vs PBR 97% — 축마다 크게 갈림(스텝이 예고한 대로)"
+      },
+      "AMT": {
+        "sector": "Real Estate", "sectorSource": "spdr", "fiscalYear": 2024, "perBasis": "annual",
+        "per": {"value": 35.65, "pct": null, "n": 10, "unavailable": "SAMPLE_TOO_SMALL"},
+        "pbr": {"value": 23.77, "pct": null, "n": 17, "unavailable": "SAMPLE_TOO_SMALL"},
+        "psr": {"value": 7.94, "pct": null, "n": 18, "unavailable": "SAMPLE_TOO_SMALL"},
+        "evEbitda": {"value": 17.54, "pct": null, "n": 4, "unavailable": "SAMPLE_TOO_SMALL"},
+        "headlineText_ko": "비교할 종목이 20개 미만입니다. (4축 전부)",
+        "note": "값은 4축 다 있는데 표본 20 미만이라 전부 미성립 — '미성립 문구 반복'이 그대로 재현됨"
+      },
+      "AAL": {
+        "sector": "Industrials", "sectorSource": "damodaran", "fiscalYear": 2024, "perBasis": "annual",
+        "per": {"value": 12.47, "pct": 0.046052631578947366, "n": 152, "unavailable": null},
+        "pbr": {"value": null, "pct": null, "n": 159, "unavailable": "NO_VALUE"},
+        "psr": {"value": 0.19, "pct": 0.011764705882352941, "n": 170, "unavailable": null},
+        "evEbitda": {"value": 8.34, "pct": 0.06060606060606061, "n": 132, "unavailable": null},
+        "headlineText_ko": "이 업종 152개 중 비싼 쪽 5%",
+        "note": "자본잠식으로 PBR만 값 자체가 null → NO_VALUE. 나머지 3축은 극단적으로 싼 쪽(4~6%ile)"
+      },
+      "C": {
+        "sector": "Financials", "sectorSource": "spdr", "fiscalYear": 2024, "perBasis": "annual",
+        "per": {"value": 19.76, "pct": 0.6142857142857143, "n": 70, "unavailable": null},
+        "pbr": {"value": 1.19, "pct": 0.2727272727272727, "n": 77, "unavailable": null},
+        "psr": {"value": 2.81, "pct": 0.2911392405063291, "n": 79, "unavailable": null},
+        "evEbitda": {"value": null, "pct": null, "n": 16, "unavailable": "SAMPLE_TOO_SMALL"},
+        "headlineText_ko": "이 업종 70개 중 비싼 쪽 61%",
+        "note": "STEP963에서 보통주 기준으로 확정된 PER/PBR — 963/968에서 외부(stockanalysis) 대비 PER −13.04%→+0.58%, PBR −10.15%→−1.72%로 개선된 바로 그 값"
+      },
+      "CBSH": {
+        "sector": "Financials", "sectorSource": "damodaran", "fiscalYear": 2025, "perBasis": "annual",
+        "per": {"value": 15.01, "pct": 0.38571428571428573, "n": 70, "unavailable": null},
+        "pbr": {"value": 2.24, "pct": 0.6493506493506493, "n": 77, "unavailable": null},
+        "psr": {"value": 4.82, "pct": 0.4936708860759494, "n": 79, "unavailable": null},
+        "evEbitda": {"value": null, "pct": null, "n": 16, "unavailable": "SAMPLE_TOO_SMALL"},
+        "headlineText_ko": "이 업종 70개 중 비싼 쪽 39%",
+        "note": "STEP967 은행형 매출 폴백(순이자수익+비이자수익)으로 살아난 PSR=4.82 포함. 카드 문구에는 '은행이라 매출 정의가 다르다'는 설명이 없음(문제⑤ 사례)"
+      },
+      "CRON_미분류": {
+        "sector": null, "sectorSource": null, "fiscalYear": 2024, "perBasis": "annual",
+        "per": {"value": 27.80, "pct": null, "n": null, "unavailable": "NO_SECTOR"},
+        "pbr": {"value": 1.07, "pct": null, "n": null, "unavailable": "NO_SECTOR"},
+        "note": "Cronos Group(CRON) — 08-08 정상 스냅샷에서도 sector=null인 종목. 오늘의 전역 장애와 별개로 상시 존재하는 개별 미분류 사례."
+      }
+    },
+    "sixProblems_asObserved": {
+      "①_duplicatePER": {
+        "found": true,
+        "evidence": "같은 종목상세 페이지, 같은 순간: 7렌즈 '밸류' 카드 = lens_scores.valuation_value(AAPL 08-09 기준 35.97, 야후 trailingPE=TTM) · Q1 카드 = us_valuation.per(AAPL 08-08 기준 48.78, SEC 10-K FY2024 annual) · Q1 카드가 오늘(08-09) 새로 계산하면 40.82(FY2025 annual). 세 값이 전부 다르고 서로 참조가 없다.",
+        "sourceCode": "lib/lensCompute.ts:144(trailingPE 1순위) vs app/api/q1/[symbol]/route.ts(us_valuation.per, annual 고정)"
+      },
+      "②_repeatedUnavailableText": {
+        "found": true,
+        "evidence": "AMT: 4축 전부 unavailable='SAMPLE_TOO_SMALL' → 화면에 '비교할 종목이 20개 미만입니다.'가 4번 반복(헤드라인 1회 + 축별 3~4회, unavailableText() 함수가 동일 문자열을 코드마다 재호출)"
+      },
+      "③_rawSourceCode": {
+        "found": true,
+        "evidence": "sectorSourceNote: '{sector} 업종 · 출처: {source}' — source 자리에 DB 원값 그대로: 'spdr' 또는 'damodaran'. 사용자가 이게 무슨 뜻인지 알 방법이 카드 안에 없음(006 스탭에서 화면 공개 정책은 있었으나 사람이 읽는 설명으로 매핑하는 로직은 미구현)."
+      },
+      "④_fiscalYearLabelDrift": {
+        "found": true,
+        "evidence": "AAPL fiscalYearNote: 08-08 스냅샷='2024년 실적 기준' → 08-09 라이브='2025년 실적 기준'(resolveYearWindow 최신창 갱신, STEP951). 하루 사이 라벨이 바뀜 — 사용자가 어제 본 화면과 오늘 화면을 비교하면 기준연도 자체가 달라 보임."
+      },
+      "⑤_noExplanationForAxisDivergence": {
+        "found": true,
+        "evidence": "AAPL PER 52%ile vs PBR 97%ile(45%p 차이), CBSH는 은행형 매출 폴백 적용 종목인데 카드에 '이 종목은 은행이라 매출 정의가 다르다'는 언급이 전혀 없음. UI에 축간 불일치에 대한 설명 필드 자체가 없음(Q1Section.tsx에 그런 텍스트 슬롯 없음)."
+      },
+      "⑥_cardPosition": {
+        "found": true,
+        "evidence": "app/[locale]/stock/[symbol]/page.tsx:176-186 — <StockLensClient>(7렌즈 그리드+종합요약+공시+뉴스 등 1400줄 컴포넌트 전체) 렌더 후에 Q1Section, 그 다음에 RevDcfSection. 페이지 최상단이 아니라 7렌즈 전체 콘텐츠 블록 아래."
+      }
+    }
+  },
+  "stage2_platformSurvey_1B": {
+    "linkHubQuery": {
+      "neededData_oneLine": "여러 밸류에이션 배수(PER·PBR·PSR·EV/EBITDA)를 업종대비로 어떻게 제시하는가 — 헤드라인/미성립표기/출처/회계연도/축갈림 설명/위치",
+      "categoryFilter": "country=US AND category IN ('analysis','research')",
+      "candidatesFound": ["Stock Analysis", "WallStreetZen", "GuruFocus", "Simply Wall St", "Macrotrends", "Finbox", "Roic.ai", "Koyfin", "MarketBeat", "Seeking Alpha", "Zacks", "AlphaSpread", "Value Line", "YCharts", "TIKR", "Wisesheets"],
+      "actuallyFetched": true
+    },
+    "results": {
+      "stockanalysis.com": {
+        "status": "성공", "url": "https://stockanalysis.com/stocks/aapl/statistics/",
+        "headline": "없음 — PE(35.94)·Forward PE(34.26)·PEG(3.15) 등 다수를 동등 나열",
+        "sectorComparison": "이 페이지 자체엔 없음(절대값만)",
+        "missingValue": "\"n/a\"",
+        "period": "\"last 12 months\"로 TTM 명시",
+        "source": "사람이 읽는 문장 — \"Financial statistics are provided by S&P Global Market Intelligence\" + 최종갱신일 \"Last updated: Aug 10, 2026\"",
+        "position": "중단(Total Valuation~Margins 섹션)"
+      },
+      "wallstreetzen.com": {
+        "status": "성공", "url": "https://www.wallstreetzen.com/stocks/us/nasdaq/aapl",
+        "headline": "P/E 35.81x·P/B 42.53x·P/S 8.91x·PEG 4.35 병렬 표시 — 명시적 단일 헤드라인은 없으나 P/E가 가장 먼저 옴",
+        "sectorComparison": "\"P/E vs Industry\": 35.81x vs Consumer Electronics 31.6x — 배율 병기(백분위 아님)",
+        "missingValue": "\"N/A\"",
+        "period": "TTM + \"Updated Aug 7, 2026\"",
+        "source": "DCF 모델 기반임을 명시(\"based on Discounted Cash Flow (DCF) modelling\")하나 3rd-party 데이터 제공자명은 미확인",
+        "position": "헤드라인 상단 + 업종비교 중단 + 랭킹 하단, 여러 섹션에 분산"
+      },
+      "marketbeat.com": {
+        "status": "성공", "url": "https://www.marketbeat.com/stocks/NASDAQ/AAPL/",
+        "headline": "P/E 35.93 대표, 문장형 비교(\"시장평균 42.86보다 낮음\", \"Technology 섹터평균 68.48보다 낮음\") — PBR·PSR·PEG·P/CF도 병기하되 P/E가 서술의 중심",
+        "sectorComparison": "업종 평균값과 문장으로 병기(백분위 아님) — \"below the Technology sector average of 68.48\"",
+        "missingValue": "미관찰(이번 조회에서 결측 사례 없음)",
+        "period": "\"as of 8/7/2026\" 가격기준일 명시, 배수 자체의 TTM/연간 여부는 불명확",
+        "source": "제공처 명시 안 보임(이번 조회 범위 내)",
+        "position": "페이지 상단부(Key Valuation Multiples 섹션)"
+      },
+      "blocked": [
+        {"site": "gurufocus.com", "http": 403},
+        {"site": "simplywall.st", "http": 403, "urls": ["/valuation 페이지"]},
+        {"site": "roic.ai", "http": 403},
+        {"site": "alphaspread.com", "http": 403},
+        {"site": "seekingalpha.com", "http": 403},
+        {"site": "macrotrends.net", "http": 403},
+        {"site": "zacks.com", "note": "봇 탐지 페이지 반환(차단)"}
+      ]
+    }
+  },
+  "stage3_literature_1A": {
+    "checkedFirst": "data/sources/damodaran_multiples/*.xls (pbvdata·pedata·psdata·vebitda — 원자료 값 파일, 서술 없음) · data/sources/damodaran_pdfs/{c21,finsvc}.pdf",
+    "dataSourcesResult": "못 찾음 — c21.pdf(Valuing Financial Service Firms)·finsvc.pdf 전문 검색(disagree/inconsistent/conflicting/which multiple 등)에 0건 매치. '여러 배수가 갈릴 때 어떻게 보여주는가'를 다루는 파일이 data/sources/에 없음.",
+    "externalCheck": {
+      "source": "Aswath Damodaran, 'Relative Valuation' (pages.stern.nyu.edu/~adamodar/pdfiles/execval/relval.pdf), slide 177-179",
+      "found": true,
+      "quote_177": "In retailing: revenue multiple most common. In financial services: Price to book ratios dominate. In technology: PEG ratios were invented in this sector.",
+      "quote_178_179": "\"As a general rule of thumb, the following table provides a way of picking a multiple for a sector\" — 표: Cyclical Manufacturing→PE, High Tech/High Growth→PEG, High Growth/No Earnings→PS·VS, Heavy Infrastructure→VEBITDA, REIT→P/CF, Financial Services→PBV, Retailing→PS·VS. 결론 슬라이드 177: \"Use the multiple that seems to make the most sense for that sector, given how value is measured and created.\"",
+      "implication": "Damodaran 본인의 입장은 '여러 배수를 다 보여주고 갈림을 설명'이 아니라 '업종마다 배수를 하나만 고른다'다. 우리 Q1 카드의 4축 병렬 설계 자체가 원전의 실제 관행과 다른 방향이라는 뜻 — 판정 재료로 무겁게 반영해야 함."
+    }
+  },
+  "stage4_options": "본문은 docs/Q1_CARD_DESIGN.md §4 참조 (JSON 중복 방지)"
+}
