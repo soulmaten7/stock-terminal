@@ -1,5 +1,7 @@
 // STEP 969 §4 — 영향 실측(메모리 계산만, DB 쓰기 0). 구코드(969 이전) vs 신코드 전체 대조 +
 // EV/EBITDA 변화 + revdcf verdict 변화(604 유니버스, 실제 WACC 파이프라인 재구성) 전수.
+// 🔴 STEP 990: 아래 /tmp import가 Vercel 빌드 환경엔 없어 977~989 전체 배포가 깨졌었다(빌드시점 타입체크 실패).
+//   tsconfig.json exclude에 이 파일을 추가해 빌드 대상에서 뺐다 — 실행하려면 구코드 추출부터 다시 할 것.
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import fs from "node:fs";

@@ -1,5 +1,7 @@
 // STEP 967 §4 — 값 불변 확인(930종목) + 회복 실측(197종목). 실패하면 멈춘다.
 // 🔴 DB에 쓰지 않는다. 메모리 비교만. SEC 신규 호출 0(docs/probe_951_cache 재사용).
+// 🔴 STEP 990: 아래 /tmp import가 Vercel 빌드 환경엔 없어 977~989 전체 배포가 깨졌었다(빌드시점 타입체크 실패).
+//   tsconfig.json exclude에 이 파일을 추가해 빌드 대상에서 뺐다 — 실행하려면 구코드 추출부터 다시 할 것.
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import fs from "node:fs";

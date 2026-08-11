@@ -41,6 +41,9 @@
     ".next-verify/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "scripts/probe_965_invariance.ts",
+    "scripts/probe_967_invariance.ts",
+    "scripts/probe_969_impact.ts"
   ]
 }

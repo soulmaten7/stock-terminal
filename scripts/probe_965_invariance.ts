@@ -4,6 +4,8 @@
 //   같은 캐시 파일 1,127개에 대해 computeDrivers()를 각각 돌리고 DriverBundle·market·fundamentals를 대조한다.
 //   (구코드 파일은 이 스크립트 실행 직전에 `git show HEAD:lib/revdcf/drivers.ts > /tmp/step965_old/drivers_old.ts`로 추출)
 // 추가로 신코드 결과를 us_fundamentals DB 저장값과도 대조한다(캐시-DB 정합성 재확인).
+// 🔴 STEP 990: 아래 /tmp import가 Vercel 빌드 환경엔 없어 977~989 전체 배포가 깨졌었다(빌드시점 타입체크 실패).
+//   tsconfig.json exclude에 이 파일을 추가해 빌드 대상에서 뺐다 — 실행하려면 §3-1 재현 절차(같은 git show 추출)부터 다시 할 것.
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import fs from "node:fs";
