@@ -1,5 +1,5 @@
-<!-- 2026-08-12 STEP 997 신설 -->
-# 🗂️ 데이터 소스 카탈로그 ① — 이미 쓰는 5개 기관
+<!-- 2026-08-12 STEP 997 신설 · STEP998 ②단계 추가 -->
+# 🗂️ 데이터 소스 카탈로그 — ① 이미 쓰는 5개 기관 + ② 3라운드 전수 조사
 
 > **이 문서가 정본이다.** `docs/data_source_catalog.xlsx`는 같은 내용의 사본(필터·정렬용)이며, 갱신은 이 md 파일을 먼저 고치고 그다음 xlsx를 다시 낸다.
 > 🔴 조사·문서 전용 STEP(997)의 산출물 — 코드 0줄·DB 쓰기 0·크론 미호출.
@@ -260,6 +260,235 @@
 🔴 **①-B(동종 US 서비스 3곳)**: 위 §1-B(Simply Wall St·stockanalysis.com·Finbox) + 보충(GeminIQ·OpenBB).
 🔴 US 한정 — 전부 준수(Damodaran 지역변형·비US SPDR 상품은 조사 범위에서 명시적으로 제외).
 
-## 다음 단계(②단계, 이번 STEP 범위 밖 — 기록만)
+---
+---
 
-새 기관(FRED·Treasury·Polygon·FMP 등)은 이 문서 다음 STEP(②단계) 대상. 판정 없음.
+<!-- STEP998 신설 -->
+# 🗂️ ② 3라운드 전수 조사 + 카테고리 분류 + 슬롯 매핑 (STEP 998, 2026-08-12)
+
+> 🔴 조사·문서 전용 — 코드 0줄·DB 쓰기 0·크론 미호출. 유료 가입·API 키 발급·결제 전부 안 함. **개별 문제로 빠지지 않고 발견은 전부 등재만 한다**(장은태 지시 — 997 직후 나스닥 시총 검증으로 샜다가 되돌린 전례).
+
+## 라운드별 신규 발견 수 · 수렴 판정 (맨 앞)
+
+| 라운드 | 각도 | 조사 대상 | 신규 발견 | R1 대비 비율 |
+|---|---|---|--:|--:|
+| **R1** | 기관 중심("누가 주는가") | 27개 기관(공공6·거래소4·분류4·상용API9·기관급4) | **27**(기준) | — |
+| **R2** | 데이터 중심 역방향("이 값을 어디서 받나", 16개 값별 검색) | — | **29** | 107.4% |
+| **R3** | 타자 역추적("동종서비스는 뭘 쓰나" + 비교글 + OSS 의존목록) | — | **28** | 103.7% |
+| **R4** | 규제/구조 기록 중심("규제 때문에 존재하는 데이터") | 13F·내부자거래·CAT·DTCC·주정부 등기소·Form15 등 8건 | **3** | **11.1%** |
+
+**🔴 수렴 판정: 종결(장은태 판단 필요 — 아래 근거 그대로 보고).** R4의 원시 비율(11.1%)은 10% 규칙을 형식상 살짝 넘는다. 그러나:
+- R4에서 찾은 3개(SEC Form 13F 데이터셋·SEC 내부자거래 데이터셋·델라웨어주 법인등기소) **전부 우리 16개 슬롯 중 어디에도 안 들어간다** — 13F·내부자거래는 소유구조 데이터(밸류에이션 슬롯 아님), 델라웨어는 유료라야 쓸만한 필드(active/dissolved)가 나온다.
+- R2(29)·R3(28)에서 R4(3)로 **한 자릿수 배 감소**했다 — 각도를 3번 바꿔도 계속 비슷한 규모(28~29)가 나오다가 4번째 각도에서 급격히 줄어든 것은 탐색 공간이 실제로 좁아지고 있다는 신호다.
+- 🔴 **정직하게 남긴다**: 이건 "라운드 5를 안 해도 된다"는 뜻이 아니라 "이 4개 각도로는 더 안 나온다"는 뜻이다. 다섯 번째로 전혀 다른 각도(예: 학술 데이터베이스·오픈데이터 포털·AI 에이전트 전용 신생 서비스군)를 쓰면 또 몇 개가 나올 수 있다. **이번엔 여기서 멈춘다 — 장은태 판정 대기.**
+
+**누적 카탈로그 규모**: 997의 5개(SEC·Yahoo·Nasdaq·Damodaran·SPDR) + 998의 87개(R1 27 + R2 29 + R3 28 + R4 3) = **총 92개 기관/소스**.
+
+---
+
+## R1 — 기관 중심 조사 (27개 기관)
+
+### R1a. 공공/무료(정부 인접) 6개
+
+| 기관 | 핵심 데이터셋 | 정의 | 형식 | 인증 | 갱신 | 비용 | 슬롯 |
+|---|---|---|---|---|---|---|---|
+| **FRED** | `DGS3MO/DGS2/DGS10/DGS30`(국채수익률) · `BAMLC0A1CAAA~BBB`(IG 등급별 스프레드) · `BAMLH0A1HYBB~HYC`(HY 등급별) · `BAA10Y`(Baa-10Y스프레드) | 재무부 CMT 곡선 재발행("Market Yield... at N Constant Maturity") · ICE BofA OAS(시총가중 등급별 지수) | JSON/CSV/XML | 무료키 필요 | **매일** | 무료 | 무위험수익률·신용스프레드 |
+| **US Treasury**(fiscaldata·home.treasury.gov) | Daily Par Yield Curve Rates(1개월~30년) | CMT 원천(FRED가 재발행하는 바로 그 곡선), NY Fed 오후3:30 지표호가 기반 | CSV/XML | 불필요 | 매일 | 무료 | 무위험수익률(원천) |
+| **BLS** | CPI·PPI·고용 시계열(Public API v2) | 조사 기반 공식 통계 | JSON | 무료키(없어도 25콜/일) | 월별 | 무료 | 해당없음(거시, 16슬롯 밖) |
+| **BEA** | NIPA Table 1.14(법인세전이익·법인세·세후이익, 국민계정 집계) | 거시 집계, **기업단위 아님** | JSON/XML | 무료키 | 분기 | 무료 | 법인세율(약한 대리, 집계치) |
+| **FINRA** | Reg SHO 일별 공매도량 · 공매도잔고(월2회) · Threshold List(상환실패 지속종목) | 미명시 세부 | Flat file/CSV | 대부분 불필요 | 일/월2회 | 무료(비상업 조건) | 상장상태/폐지위험(약한 대리) |
+| **CFTC** | Commitments of Traders(COT, 선물 포지션) | 상품선물 롱숏 포지션(국채·주가지수선물 포함) | JSON/CSV/XML(Socrata) | 불필요(토큰 선택) | 주별(금) | 무료 | 해당없음(선물시장 구조, 16슬롯 밖) |
+
+### R1b. 거래소 4개
+
+| 기관 | 핵심 데이터셋 | 정의 | 무료 여부 | 슬롯 |
+|---|---|---|---|---|
+| **NYSE** | Security Master·TAQ 이력·실시간 피드 | 문서화됨(스펙PDF) | ❌ 전부 유료/기업계약 | 종목마스터·주가(전부 유료라 실사용 불가) |
+| **Cboe** | 옵션 레퍼런스데이터(무료 CSV) · DataShop(유료, 14일 체험) | 미명시 | 🟡 옵션 종목목록만 무료 | 종목마스터(옵션 한정) |
+| **OTC Markets** | Security Master·실시간시세·OTC Disclosure API | 미명시(문서 접근 실패, 미검증) | ❌ 전부 유료로 보임(무료API 확인 안 됨) | 종목마스터·상장상태(현재 나스닥 파생 데이터보다 권위 있으나 접근 불가) |
+| **IEX(거래소)** | HIST(과거 틱데이터) 무료 · TOPS/DEEP(실시간)은 계약 필요 | 🔴 **IEX Cloud(무료 개발자API)는 2024-08-31 종료 확정** — 후속업체는 IEX와 무관 | 🟡 과거 틱데이터만 무료 | 주가(과거 틱, 일상 파이프라인엔 안 맞음) |
+
+### R1c. 지수/분류 4개 — 핵심 질문: "무료 전체시장 GICS 경로가 있는가"
+
+**답 = 없다.** MSCI·S&P DJI 둘 다 GICS **분류체계(정의)는 무료 공개**하지만 **종목별 매핑("GICS Direct")은 라이선스 상품**이라고 명시(재배포 시 "사전 서면동의 필요" 원문 확인). FTSE Russell의 ICB도 체계는 무료지만 종목별 매핑은 라이선스. Morningstar는 개별 종목 페이지에서 무료로 보이나 대량조회는 ToS 위반(재배포 금지) + Morningstar연계 ETF(ILCB 등)도 커버리지가 SPDR과 비슷한 규모(~530종목)라 확장 이득 없음.
+
+| 기관 | 체계(무료) | 종목별 매핑(유료여부) | 슬롯 |
+|---|---|---|---|
+| **MSCI**(GICS 공동소유) | 방법론 PDF 무료 | ❌ GICS Direct 라이선스 | 섹터분류(체계 참고만) |
+| **S&P DJI**(GICS 공동소유) | 지수 방법론 PDF 무료 | ❌ 라이선스, 무료 구성종목 목록도 공식으로는 없음(위키·Barchart 등 비공식 미러만 존재) | 섹터분류(체계 참고만) |
+| **FTSE Russell** | ICB 구조 정의 XLSX 무료(11산업/20슈퍼섹터/45섹터/173서브섹터) | ❌ 종목별 라이선스 필요 | 섹터분류(다른 체계, 대체재 아님) |
+| **Morningstar** | 개별종목 페이지 무료(대량조회 ToS 위반) | 🟡 Morningstar연계 ETF로 근사 가능하나 SPDR과 커버리지 동급 | 섹터분류(SPDR과 대체 관계, 확장 아님) |
+
+### R1d. 상용 API 9개 — 전부 SEC 원문 벤더 정규화(재분류), 우리 원칙과 충돌
+
+| 기관 | 무료tier(정확한 한도) | 재무데이터 원문추적성 | 슬롯 |
+|---|---|---|---|
+| **Polygon.io/Massive** | 5콜/분, EOD만, 2년치 | 🟡 `include_sources=true`로 부분 추적(정규화+출처표기) | 전체(유료전환 필요) |
+| **Financial Modeling Prep** | 250콜/일 | ❌ 미확인(공식문서 접근 실패) | 전체 |
+| **Alpha Vantage** | 25콜/일 | ❌ "GAAP/IFRS로 정규화" 자인 | 전체 |
+| **Tiingo** | 1,000콜/일(가격), 재무는 Dow30 한정 | ❌ 미공개 서드파티 | 가격 위주 |
+| **Intrinio** | 사실상 없음(2주 체험뿐) | 🟡 as-reported 엔드포인트=원문+출처링크(가장 추적성 좋음) | 전체(비쌈) |
+| **EODHD** | 20콜/일 | ❌ 미명시, GICS 4단계 필드 명시 보유(9곳 중 유일) | 섹터분류(GICS 필드 있음, 출처 신뢰도 별도 확인 필요) |
+| **Twelve Data** | 8콜/분·800/일, 완전재무는 $329/월 | ❌ 미확인 | 전체 |
+| **Finnhub** | 60콜/분이나 **비상업용 한정** | 🟢 `financials-reported`=원문 태그명+출처filing 보존(사실상 SEC 재서빙) | 전체(단 상업이용 불가) |
+| **Nasdaq Data Link(구Quandl)** | 무료 WIKI는 **2018-03 영구중단** | ❌ Sharadar=정규화, 유료 | 사실상 무료 대안 없음 |
+
+### R1e. 기관급 4개 — 전부 접근 불가(비용), 카탈로그 완전성 목적으로만 기록
+
+| 기관 | 고유 카테고리 | 비용 |
+|---|---|---|
+| **LSEG/Refinitiv** | I/B/E/S 컨센서스 추정치(방법론 공개: SmartEstimate=이상치 제외+최신성 가중+애널리스트 트랙레코드) | ~$1,500-3,000/월 플랫폼 + 데이터 별도 |
+| **Bloomberg** | BEst 컨센서스(방법론 비공개) | ~$24,000-30,000/년/좌석 |
+| **FactSet** | Revere 택소노미(7,000+ 세분류, GICS보다 깊음) | 계약별(비공개) |
+| **S&P Capital IQ** | Visible Alpha(200+ 브로커·100만+ 컨센서스 라인아이템, 포함기준 문서화) | $12,000~$300,000+/계약 |
+
+🔑 **컨센서스 성장률(역DCF 층5의 구멍)은 이 4곳이 유일한 제도권 소스이나 전부 유료** — 무료 경로는 여전히 없음(994 이전부터 미해결 확정 유지).
+
+---
+
+## R2 — 데이터 중심 역방향 검색 신규 발견 (29개)
+
+> 997·R1에 없던 곳만. "이 값을 누가 주는가"로 검색해 나온 것.
+
+| 값 | 신규 발견 | 핵심 한줄 |
+|---|---|---|
+| 시가총액/주가/배당 | stooq.com·Marketstack·Finviz·macrotrends.net·Wisesheets·Financial Datasets·Eulerpool·DTCC·Databento·sec-api.io | 🔴 **발행주식수의 free 이력 시계열**은 SEC DERA 벌크(우리가 이미 씀)가 사실상 최선 — 대부분 스냅샷 1건뿐 |
+| 순이익/자기자본/매출/부채 | xbrl.us·edgartools(OSS)·OpenBB·SimFin·WSJ(FactSet소싱)·Simply Wall St·stockanalysis.com·오픈소스 XBRL 파서군 | 🟢 **edgartools**(OSS, MIT)가 `get_raw_data()`로 SEC 원문 그대로 접근 — 우리 원칙과 완전히 부합(단, SEC를 대체가 아니라 같은 소스에 접근하는 다른 클라이언트) |
+| 업종배수/베타/ERP/세율/신용스프레드 | Siblis Research·Yardeni Research·FullRatio·GuruFocus·CSIMarket·Fernandez(IESE 서베이)·Duke CFO Survey(Graham&Harvey)·Tax Foundation·IRS | 🟢 **Duke CFO Survey = 분기 갱신 ERP**(Damodaran 연1회보다 빠름, 단 서베이 정의라 시장내재치와 다른 개념) · 🟢 **FRED ICE BofA OAS = 매일 등급별 신용스프레드**(위 R1a에 이미 기재, 가장 강한 발견) |
+| 섹터분류/상장폐지위험/종목마스터 | OpenFIGI·GLEIF | 🟢 **OpenFIGI**(Bloomberg 무료 공개, 티커/CUSIP/ISIN↔FIGI 매핑, CIK 필드는 없음) · **GLEIF**(LEI, 무료 ISIN-LEI 매핑) |
+
+---
+
+## R3 — 동종서비스 역추적 신규 발견 (28개)
+
+> stockanalysis.com·Simply Wall St·Finbox·Koyfin·GuruFocus·Wisesheets·macrotrends 자체 출처공개페이지 + 비교글 + OSS 의존목록(OpenBB·pandas-datareader).
+
+**🔑 가장 많이 반복된 이름 = S&P Global Market Intelligence**(stockanalysis.com·Simply Wall St·Finbox 3곳 전부가 펀더멘털 벤더로 지목) — S&P Capital IQ(추정치)·S&P DJI(지수)와는 별개 사업부. **결론: 동종 서비스 대다수가 SEC 원문이 아니라 이 벤더를 거친다** — 997의 결론("SEC원문+Damodaran 조합이 드물다")을 재확인.
+
+| 그룹 | 신규 발견 |
+|---|---|
+| 동종서비스 자체 공개 소스 | S&P Global Market Intelligence·Fiscal AI·Nasdaq UTP·Hiive·TipRanks·Quartr·BlueMatrix·ICE Market Data·QuoteMedia(CSI)·True FX·Trading Economics·Koyfin |
+| 비교글 발견 | Calcbench·Daloopa·FinancialData.Net |
+| OSS 의존목록 발견(OpenBB·pandas-datareader) | EconDB·Ken French Data Library·Bank of Canada·World Bank·Eurostat·OECD·Benzinga·Biztoc·Deribit·TMX Group·Tradier·Seeking Alpha |
+
+🔴 **macrotrends.net은 출처를 전혀 공개하지 않는다**(ToS에 "various third-party providers"뿐) — 역추적 실패, 그 자체로 기록.
+
+---
+
+## R4 — 규제/구조 기록 신규 발견 (3개)
+
+> "규제 때문에 존재하는 데이터"라는 4번째 각도. 13F·내부자거래·CAT·DTCC·주정부 등기소·Form15 등 8건 조사.
+
+| 소스 | 무엇 | 슬롯 매핑 |
+|---|---|---|
+| **SEC Form 13F 데이터셋** | 분기별 기관투자자 보유내역 전체 벌크(무료) | ❌ 16슬롯 밖(소유구조 데이터) |
+| **SEC 내부자거래 데이터셋**(Form3/4/5 벌크) | 분기별 내부자거래 전체 벌크(무료) | ❌ 16슬롯 밖(소유구조 데이터) |
+| **델라웨어주 법인등기소** | 법인 존재확인(무료) / 상태(active·dissolved, $10~20 유료) | 🟡 상장상태/폐지위험 — 핵심 필드가 유료라 실사용 어려움 |
+
+🔴 **부정적 발견 2건도 기록**: CAT(통합감사추적)는 규제기관 전용, 공개 경로 전혀 없음(공식 확인) · SEC는 DEF14A 임원보수 구조화 데이터셋을 발행하지 않음(XBRL 의무 대상이 아님, 공식 확인).
+
+---
+
+## 카테고리 분류
+
+🔴 "무엇을 주는가"가 아니라 **"어느 자리에 넣을 수 있는가"**로 나눈다. 같은 카테고리 = 서로 대체 가능. 정의가 다르면 카테고리를 쪼갠다(예: 시가총액을 계산기준별로 3분할 — 975에서 실측된 8.29% 차이 근거).
+
+| # | 카테고리 | 대표 소스 | 핵심 정의 |
+|---|---|---|---|
+| 1 | 시가총액·기말발행주식수 기준 | (우리 정본, SEC 주식수×종가로 직접 조립) | 975 정본 — 외부 대조 시 이 기준 |
+| 2 | 시가총액·가중평균희석주식수 기준 | 일부 벤더(구체 미확인) | 975에서 8.29% 차이 확인 — 다른 카테고리 |
+| 3 | 시가총액·계산기준 미명시(벤더 사전계산) | Yahoo(quote/quoteSummary)·Nasdaq스크리너/quote·FMP·Alpha Vantage·EODHD·Wisesheets 등 | 위 1·2 중 어느 쪽인지 불명 — 검증 없이 신뢰 불가 |
+| 4 | 발행주식수·SEC원문 태그(시점 명시) | SEC `dei:EntityCommonStockSharesOutstanding` | 우리 정본 |
+| 5 | 발행주식수·이력 시계열(free) | SEC DERA 벌크(FSDS) | 유일한 free 다년 시계열 |
+| 6 | 발행주식수·벤더 스냅샷(시점 불명) | Yahoo defaultKeyStatistics·Alpha Vantage OVERVIEW·Finviz 등 | 현재값만, 이력 없음 |
+| 7 | 주가·비조정 종가 | 각 거래소·벤더 | — |
+| 8 | 주가·배당/분할조정 종가 | stooq·Tiingo·EODHD·Yahoo chart 등 | 조정방식 대부분 미명시 |
+| 9 | 재무제표·SEC원문 태그(추적가능) | SEC companyfacts/벌크ZIP/FSDS·edgartools·xbrl.us·오픈소스 XBRL파서군 | 우리 정본 — 태그명 보존 |
+| 10 | 재무제표·벤더 정규화(추적불가) | FMP·Alpha Vantage·Tiingo·EODHD·SimFin·WSJ 등 대다수 | 재분류 규칙 비공개 |
+| 11 | 재무제표·벤더 정규화+출처표기(부분추적) | Polygon(`include_sources`)·Wisesheets(XBRL인용)·Intrinio(as-reported) | 정규화하되 원문 링크 제공 |
+| 12 | 섹터분류·GICS(라이선스, 무료경로 없음) | MSCI/S&P DJI GICS Direct | 무료 아님 |
+| 13 | 섹터분류·GICS 근사(ETF보유 역산, S&P500 한정) | SPDR 11섹터 ETF(정본)·Morningstar연계ETF(대체재, 커버리지 동급) | ~500~530종목 상한 |
+| 14 | 섹터분류·비GICS 자체체계(서로 대체 불가) | 나스닥(12개)·야후(11개,GICS 1:1대응)·SEC SIC·Damodaran(94개)·ICB(FTSE, 45섹터)·Morningstar(11개) | 체계가 달라 섞으면 안 됨 |
+| 15 | 업종 집계배수·연1회 학술 | Damodaran(pedata·pbvdata·psdata·vebitda 등) | 우리 정본 |
+| 16 | 업종 집계배수·반기 이상(부분무료) | Siblis Research(반기)·Yardeni(주간, 차트뿐)·stockanalysis.com(주기미상) | 문서화된 방법론은 Siblis뿐 |
+| 17 | 업종 베타·연1회 학술(대체 소스 없음 확인) | Damodaran betas.xls | R1~R4 전체에서 무료 대체재 못 찾음 |
+| 18 | ERP·연1회 시장내재 | Damodaran(histimpl.xls 포함) | 시장가격 역산 |
+| 19 | ERP·분기 서베이(다른 정의) | Duke CFO Survey(Graham&Harvey) | 실무자 기대치, 시장내재와 다른 개념 — 대체재 아니라 병기용 |
+| 20 | 무위험수익률·매일 국채수익률 | FRED DGS10·Treasury.gov 원천 | 같은 CMT곡선, 상호 대체 가능 |
+| 21 | 무위험수익률·연1회 학술 스칼라 | Damodaran wacc.xls 상단값 | 현재 정본, 갱신빈도 낮음 |
+| 22 | 법인세율·연방 고정 | IRS(21%, 2018~) | 입법 전까지 불변 |
+| 23 | 법인세율·주별 | Tax Foundation(연1회, 입법과 동주기) | Damodaran countrytaxrates와 별도 층위 |
+| 24 | 법인세율·업종별 실효세율 | Damodaran taxrate.xls | 현재 정본 |
+| 25 | 신용스프레드·매일 등급별 | FRED ICE BofA OAS(IG AAA~BBB, HY BB~CCC) | 🔑 R2 최대 발견 |
+| 26 | 신용스프레드·연1회 학술(등급→스프레드 룩업) | Damodaran ratings.xls | 현재 정본, 종목별 부채비용 산출 가능(997 발견) |
+| 27 | 배당·이벤트 캘린더 | 나스닥 dividends calendar(현재 사용) | — |
+| 28 | 배당·개별종목 이력 | Tiingo·EODHD·FMP·Polygon 등 다수 | 상용 API 대부분 보유 |
+| 29 | 상장상태/폐지위험·거래소 자체신고(공식정의) | 나스닥 Financial Status 플래그(997 발견, 미사용) | D/E/Q 코드 공식 정의 있음 |
+| 30 | 상장상태/폐지위험·SEC 공식(구조화 검색) | SEC Form 25(거래소 상장폐지)·Form 15(등록말소, R4 발견) | 서로 다른 시점 신호(15가 더 이를 수 있음) |
+| 31 | 종목마스터·SEC 공식(CIK 중심) | company_tickers_exchange.json(현재 정본) | — |
+| 32 | 종목마스터·거래소 심볼 디렉터리 | 나스닥 심볼디렉터리(현재 정본) | — |
+| 33 | 종목마스터·글로벌 식별자 매핑(CIK 없음) | OpenFIGI(티커/CUSIP/ISIN↔FIGI)·GLEIF(ISIN↔LEI) | CIK 브릿지는 티커 조인 필요(미검증) |
+
+**카테고리 총 33개.**
+
+---
+
+## 슬롯 매핑
+
+우리 공식의 변수 자리 20개. 각 자리 = 지금 쓰는 소스+우선순위 · 자격있는 다른 후보(카테고리 번호) · 요구정밀도 · 검증방법.
+
+| # | 슬롯 | 지금 쓰는 소스(우선순위) | 자격있는 후보(카테고리#) | 요구정밀도 | 검증방법 |
+|---|---|---|---|---|---|
+| 1 | 시가총액 | Yahoo 배치조회(정본, us_market_cap) | 카테고리3 전부(Nasdaq스크리너 등) — 전부 계산기준 미명시라 **검증 없이 못 씀** | 값 자체가 답(Q1 분모) | 카테고리1(기말발행×종가)과 대조해야 신뢰 가능 |
+| 2 | 발행주식수 | SEC XBRL 태그(역DCF), Yahoo 부수값(밸류) | 카테고리4(SEC 정본)·5(이력, 미사용) | 값 자체가 답 | 카테고리4와 직접 대조 |
+| 3 | 주가 | us_stock_perf(야후계열, 표시용) | 카테고리7·8 다수 | 값 자체가 답(역DCF sharePrice) | 거래소 종가와 대조 |
+| 4 | 순이익 | SEC companyfacts(정본) | 카테고리9(edgartools 등, 같은 원문) | 값 자체가 답 | 이미 원문 — 검증 불요 |
+| 5 | 자기자본(보통주) | SEC companyfacts(963 정책) | 카테고리9 | 값 자체가 답 | 원문 |
+| 6 | 매출 | SEC companyfacts | 카테고리9 | 값 자체가 답 | 원문 |
+| 7 | 영업이익 | SEC companyfacts(폴백 포함) | 카테고리9 | 값 자체가 답 | 원문 |
+| 8 | D&A | SEC companyfacts | 카테고리9 | 값 자체가 답 | 원문 |
+| 9 | 부채 | SEC companyfacts(969 3분류) | 카테고리9 | 값 자체가 답 | 원문 |
+| 10 | 비영업자산/현금 | SEC companyfacts | 카테고리9 | 값 자체가 답 | 원문 |
+| 11 | 세율 | Damodaran countrytaxrates(한계세율, US행) | 카테고리22(IRS 연방)·23(주별)·24(업종실효) | **순위만 필요할 수 있음**(WACC 구성요소) | IRS 21%와 국가한계세율 정합 대조 |
+| 12 | 자본지출률 | 원전 T5 방식(내부 계산) | 🔴 **후보 1개뿐**(원전 계산 방식 자체가 유일 정의, 외부 소스 대체 불가) | 값 자체가 답 | 원전 대조표 |
+| 13 | 운전자본률 | 원전 T4 방식(내부 계산) | 🔴 **후보 1개뿐**(동일 사유) | 값 자체가 답 | 원전 대조표 |
+| 14 | 무위험수익률 | Damodaran wacc.xls 상단값(연1회) | **카테고리20(FRED/Treasury 매일)** — 🔑 갱신빈도 개선 후보 | 값 자체가 답(WACC) | FRED DGS10과 직접 대조(당일 대조 가능) |
+| 15 | ERP | Damodaran wacc.xls 상단값(연1회) | 카테고리19(Duke서베이, 분기·다른정의) | 값 자체가 답(WACC) | Duke서베이와 정의 차이 공개 후 병기 |
+| 16 | 베타 | Damodaran betas.xls(업종, 연1회) | 🔴 **후보 1개뿐**(R1~R4 전체에서 무료 대체 못 찾음) | 값 자체가 답이나 업종 대표값이라 개별종목은 근사 | 대체 소스 없어 검증 불가(원전 신뢰 외 방법 없음) |
+| 17 | 신용스프레드 | Damodaran ratings.xls/wacc.xls(연1회) | **카테고리25(FRED ICE BofA OAS, 매일)** — 🔑 최대 발견, 갱신빈도 개선 후보 | 값 자체가 답(부채비용) | FRED와 등급별 직접 대조 |
+| 18 | 섹터분류 | resolveSector() 0~4순위(SPDR→Damodaran→형제→야후→미분류) | 카테고리14(비GICS 다수) 전부 이미 후보에 포함됨 | **순위/그룹핑만 필요**(업종 대비용) | 기존 3중 대조 체계 유지 |
+| 19 | 업종배수 | Damodaran pedata/pbvdata/psdata/vebitda(연1회) | 카테고리16(Siblis 등, 반기) | **순위/비교만 필요**(업종 대비 분자) | Siblis와 방향성 대조 가능 |
+| 20 | 업종베타 | Damodaran betas.xls | 🔴 **후보 1개뿐**(=16과 동일 소스, 슬롯만 다름) | 순위만 필요(WACC 구성요소 산출용) | 검증 불가(원전 신뢰) |
+
+**슬롯 총 20개. 🔴 후보가 1개뿐인 슬롯 = 3개: #12(자본지출률) · #13(운전자본률) · #16/#20(업종베타, 실질 1소스 2슬롯).** 이 3~4곳은 원전(Expectations Investing 계산방식)·Damodaran 외에 대체 검증 수단이 이번 92개 소스 전수 조사에서도 안 나왔다 — 원전 자체가 유일한 정의이거나(12·13), 무료 시장에 업종베타 대체재가 실제로 없다는 것(16·20)이 92개 소스 규모의 조사로 재확인된 것.
+
+---
+
+## 즉시 이득 통합 목록 (997 + 998, 판단만 · 고치지 않음)
+
+| # | 발견 | 어느 슬롯 | 예상 이득 | 선결 조건 |
+|---|---|---|---|---|
+| 1(997) | Yahoo/Nasdaq 시총 대체경로 | #1 시가총액 | 미해결14번(LOCAL_OK_PROD_FAIL) 우회 가능성 | 계산기준 검증(카테고리1·2·3 구분) 먼저 |
+| 2(997) | Damodaran `ratings.xls`(종목별 부채비용) | #17 신용스프레드 | 업종평균 대신 종목별 이자보상배율 기반 부채비용 | 원전대조표 |
+| 3(997) | Damodaran `fundgrEB.xls`(EBIT 성장률) | 역DCF 성장경로(층5, 범위 밖 슬롯) | "가장 큰 구멍"의 비컨센서스 대안 | 원전대조표 |
+| 4(997) | Damodaran `histimpl.xls`(내재ERP) | #15 ERP | — | 원전대조표, 카테고리18 내부 갱신 |
+| 5(997) | 나스닥 Financial Status 플래그 | 상장상태/폐지위험(범위 밖 슬롯) | 상폐위험 조기신호 | 코드 없음, 데이터 이미 우리 유니버스 갱신 스크립트가 지나감 |
+| 6(997) | SPDR 전 상품군(섹터ETF 외) | #18 섹터분류 | 산업(서브섹터) 근사 가능성 | 라이선스 문구 법무검토(997에서 이미 등재) |
+| 7(998,R2) | 🔑 **FRED ICE BofA OAS(등급별 매일 신용스프레드)** | #17 신용스프레드 | Damodaran 연1회→매일 갱신으로 정밀도 개선 가능 | 카테고리25↔26 정의 일치 확인(다른 방법론일 수 있음) |
+| 8(998,R2) | 🔑 **FRED/Treasury 매일 국채수익률** | #14 무위험수익률 | Damodaran 연1회→매일 | 카테고리20↔21 정의 일치 확인 |
+| 9(998,R2) | Duke CFO Survey(분기 ERP) | #15 ERP | 서베이 기반 병기용(대체 아님) | 정의 차이(서베이 vs 시장내재) 화면 공개 필요 |
+| 10(998,R2) | edgartools(OSS, SEC 원문 그대로 재접근) | #4~#10 재무제표 전체 | 코드 대안(현재 route.ts 자체 파서 유지 이유 재확인용) | 이득이 아니라 "현재 방식이 최선"이라는 대조 자료 |
+| 11(998,R2) | OpenFIGI(무료 식별자 매핑) | #33(종목마스터, 슬롯 밖) | CIK-티커 매핑 교차검증 | CIK 필드 없음 — 티커 조인 검증 필요 |
+| 12(998,R3) | S&P Global Market Intelligence가 동종서비스 대다수의 실제 소스 | (참고, 슬롯 없음) | 우리 "SEC원문+Damodaran" 조합이 여전히 드문 조합임을 재확인 | 판단 대상 아님(정보) |
+
+🔴 **판단만, 실행 안 함.** 12건 전부 원전대조표·정의검증 등 **선결 조건이 있다** — 이번 STEP에서 어느 것도 고치지 않았다.
+
+---
+
+## 3중 규칙 (998)
+
+🔴 **①-A(각 라운드 자체가 3중 이상 각도)**: R1(기관 27개 공식문서)·R2(16개 값별 역방향 검색)·R3(동종서비스 7곳 자체공개+비교글+OSS의존목록 3갈래)·R4(규제기록 8건). **①-B는 R3 자체가 담당**(동종 US 서비스 역추적). US 한정 — 전부 준수(Damodaran 지역변형·해외 규제기록 등 명시 제외).
+
+## 다음 단계
+
+새 관점(라운드5, 각도 미정) 착수는 이번 STEP 범위 밖 — 장은태 판정 대기.
