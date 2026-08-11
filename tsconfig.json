@@ -44,6 +44,7 @@
     "node_modules",
     "scripts/probe_965_invariance.ts",
     "scripts/probe_967_invariance.ts",
-    "scripts/probe_969_impact.ts"
+    "scripts/probe_969_impact.ts",
+    "scripts/probe_967_bank_revenue.ts"
   ]
 }

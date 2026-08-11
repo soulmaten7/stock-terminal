@@ -1,5 +1,8 @@
 // STEP 967 §2 — 은행형 매출(순이자수익+비이자수익) 폴백의 회복 규모 실측. 코드 변경 전, 값이 있는지 먼저 잰다.
 // 🔴 조회 전용: DB 무변경. SEC 신규 호출 0(docs/probe_951_cache 197건 전량 이미 존재).
+// 🔴 STEP 990 §5: 아래 data/sources/nasdaq/... 는 .gitignore:75로 제외된 파일(정본=Supabase Storage 버킷 sources) —
+//   git이 안 쫓는 파일이라 Vercel 빌드 환경엔 없어 977~990 전체 배포가 깨졌었다. tsconfig.json exclude로 빌드 대상에서 뺐다.
+//   재실행하려면 Supabase Storage sources 버킷에서 같은 파일을 받아 로컬에 두고 돌릴 것.
 import dotenv from "dotenv";
 dotenv.config({ path: ".env.local" });
 import fs from "node:fs";

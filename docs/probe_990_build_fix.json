@@ -50,7 +50,7 @@
       "probe_969_impact.ts_committed": "2026-08-10 00:08:44 (commit f8693cc, STEP969)",
       "last_known_good_commit": "a532b31 (STEP964, 바로 직전 커밋)"
     },
-    "🔴_correction_of_background": "배경 서술("977 이후")보다 범위가 크다 — probe_965_invariance.ts가 STEP965 커밋 시점부터 이미 이 문제를 갖고 있었으므로, **STEP965 커밋(e67a6e0) 이후 모든 배포가 깨져 있었다.** 977은 Vercel 대시보드에서 확인 당시 최신 실패 빌드였을 뿐, 그게 '처음 깨진 지점'은 아니다. 영향범위 = STEP965~989(973·974·975·976·977·978·979·980·981~989 전부) 코드 미반영.",
+    "correction_of_background": "배경 서술('977 이후')보다 범위가 크다 — probe_965_invariance.ts가 STEP965 커밋 시점부터 이미 이 문제를 갖고 있었으므로, STEP965 커밋(e67a6e0) 이후 모든 배포가 깨져 있었다. 977은 Vercel 대시보드에서 확인 당시 최신 실패 빌드였을 뿐, 그게 '처음 깨진 지점'은 아니다. 영향범위 = STEP965~989(973·974·975·976·977·978·979·980·981~989 전부) 코드 미반영.",
     "db_direct_confirmation": {
       "cron_heartbeats_lens_scores": "2026-08-10 22:30 UTC 실행분의 note.freshCoverage=0.9303649146300637 — STEP982가 관측한 08-09 값과 완전 동일값(같은 옛 코드가 매일 반복 산출). 986이 추가한 필드(reconstructable 등)가 note에 전혀 없음 — 986 미반영의 직접 증거.",
       "us_sector_relative_2026_08_10": "1,247행 전부 sector=null·sector_as_of=null(직접 SQL 확인) — 973 결함이 아니라 973 자체가 미반영이라 그 이전 코드의 알려진 결함(as_of 불일치로 섹터 매칭 실패)이 그대로 재현된 것."
@@ -58,7 +58,51 @@
   },
   "section5_procedural_failure": "🔴 STEP977부터 989까지 매 STEP이 push 후 Vercel 배포 상태를 한 번도 확인하지 않았다 — 'push 성공 = 배포 성공'을 암묵 가정. 이번 사고의 진짜 원인은 코드 버그 자체가 아니라 이 확인 절차 부재다.",
   "section_rule_proposal_NOT_APPLIED": {
+    "note": "🔴 STEP990 1차 턴에서의 상태 — 아래 section6이 이 제안을 실제로 적용한 2차 턴(장은태의 §5 지시) 기록이다. 이 절은 1차 턴 기록으로 그대로 둔다(수정 없이 보존).",
     "candidate_locations": ["CLAUDE.md 절대 규칙(신설 후보) — '저장소 밖 절대경로(/tmp 등)를 import에 쓰지 않는다. 구코드 대조는 저장소 안에 커밋해서 보존한다(977 선례)'", "docs/COMMIT_GATES.md — 커밋 전 체크리스트에 'grep -rn \"from \\\"/\" scripts/ 결과 0건' 항목 추가 후보", "docs/COMMIT_GATES.md 또는 신규 항목 — 'push 후 Vercel 배포 Ready 확인'을 커밋 게이트가 아니라 push-후-게이트로 별도 신설"],
     "🔴_not_applied": "제안만 함. CLAUDE.md·COMMIT_GATES.md 실제 수정은 장은태 판정 후."
+  },
+  "section6_2nd_turn_4th_file_and_full_recovery": {
+    "trigger": "1차 턴에서 push 후 배포확인을 시도했으나 Vercel MCP 403 → gh api로 우회 확인하니 실제로는 Error. 장은태가 STEP990 §5로 전수 복구 지시.",
+    "deployment_check_channel_confirmed": {
+      "vercel_mcp": "여전히 403(list_deployments·get_deployment·get_runtime_errors 전부)",
+      "working_alternative_1": "gh api repos/soulmaten7/stock-terminal/commits/<sha>/status — Vercel 컨텍스트의 state(success/failure) 확인 가능",
+      "working_alternative_2": "gh api repos/soulmaten7/stock-terminal/commits/<sha>/check-runs — GitHub Actions 'verify' job(main·revdcf-preview 각각) 확인 가능",
+      "working_alternative_3": "npx vercel inspect <deploymentId> --logs — 실제 빌드 로그 원문(Vercel CLI, MCP 아님)"
+    },
+    "4th_file_found": {
+      "file": "scripts/probe_967_bank_revenue.ts:8",
+      "reference": "import nasdaqData from \"../data/sources/nasdaq/nasdaq_screener_20260808.json\"",
+      "why_broken": ".gitignore:75가 data/sources/nasdaq/ 전체를 제외(주석: 정본은 Supabase Storage 버킷 sources, 846의 damodaran xls 제외와 같은 관례) — 상대경로라 1차 턴의 grep(절대경로만 찾음)이 못 잡았다.",
+      "committed_at": "9443c06 (STEP967, probe_965보다 늦고 probe_969보다 이름)"
+    },
+    "clean_clone_build_loop": {
+      "method": "git clone(작업트리 복사 아님 — gitignore 파일이 안 따라옴) → npm ci → npm run build. 실패하면 고치고 다시 clone(효율을 위해 수정된 tsconfig.json·probe_967_bank_revenue.ts 2개 파일만 클론에 덮어써 재빌드 — 커밋 전 워킹트리 내용과 동일하므로 결과는 진짜 재클론과 같음).",
+      "round1": { "result": "FAIL", "error": "scripts/probe_967_bank_revenue.ts:8:24 Cannot find module '../data/sources/nasdaq/nasdaq_screener_20260808.json'" },
+      "round2_after_fix": { "result": "PASS", "npm_run_build_exit": 0, "tsc_noEmit_exit": 0, "vitest": "34 files / 367 tests 전부 통과" },
+      "total_rounds_to_pass": 2,
+      "meaning": "1차 턴에서 고친 3개(965/967/969) 외에 딱 1개(967-bank-revenue)가 더 있었고, 그 이상은 없다 — 2회차에서 클린 통과했다는 것 자체가 증거."
+    },
+    "static_scan_cross_check": {
+      "absolute_path_scan": { "pattern": "grep -rnE \"(from|require\\()\\s*['\\\"]/ 로 시작\" *.ts/*.tsx", "found": 3, "list": ["probe_965_invariance.ts", "probe_967_invariance.ts", "probe_969_impact.ts"] },
+      "relative_path_untracked_scan": {
+        "method": "모든 .ts/.tsx의 상대경로 import(456건)를 파싱해 각각 git ls-files 목록과 대조(확장자 후보·index 파일 후보 포함)",
+        "checked": 456,
+        "found_untracked": 1,
+        "list": ["scripts/probe_967_bank_revenue.ts -> ../data/sources/nasdaq/nasdaq_screener_20260808.json"]
+      },
+      "combined_result": "절대경로 스캔(3) + 상대경로-미추적 스캔(1) = 정확히 4개, build-loop가 찾은 4개와 100% 일치. 🔑 두 스캔을 **따로** 돌려야 전수가 잡힌다 — 절대경로 스캔만으론 4번째를 놓친다(1차 턴에서 실제로 놓쳤던 것과 정확히 같은 실패 패턴). 정적 색출이 build-loop를 놓친 사례는 없었다(반대로 build-loop가 정적색출보다 느리지만 둘이 서로를 검증)."
+    },
+    "fix_applied_4th": {
+      "tsconfig_exclude_addition": "scripts/probe_967_bank_revenue.ts",
+      "header_comment_added": true,
+      "file_deleted": false,
+      "gitignore_policy_unchanged": "data/sources/nasdaq/ 제외 정책(846 이래)은 그대로 둠 — 데이터파일을 커밋하는 방향은 검토하지 않고 스크립트 쪽을 빌드 대상에서 뺐다(지시대로)."
+    },
+    "rules_actually_applied_this_turn": {
+      "CLAUDE_md_diff_summary": "'절대 규칙' 목록 끝에 새 불릿 1개 추가(기존 번호·내용 무변경) — 'git이 추적하지 않는 파일을 소스에서 참조하지 않는다', 이유(로컬통과=무증명)와 5개 실물사례(977·965·967·969·967-bank-revenue) 인용, 38시간·25STEP 미배포 결과 명시.",
+      "COMMIT_GATES_md_diff_summary": "게이트 7(미추적 파일 참조 검사 — 절대경로 grep 명령 + git ls-files 대조 방법 명시, 재현가능)·게이트 8(push 후 verify CI + Vercel 배포 확인 — gh api 명령 3종 명시, 미확인시 미완료 취급, 982의 Sentry 11일무대응과 같은 뿌리라는 근거 포함) 신규 추가 — 기존 게이트 1~6 무변경.",
+      "note": "🔴 1차 턴에선 '제안만'이었으나 이번 §5 지시로 실제 문서 수정을 적용했다 — diff 전문은 STEP 커밋 자체(git show)로 확인 가능."
+    }
   }
 }

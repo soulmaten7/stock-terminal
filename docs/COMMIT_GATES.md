@@ -31,6 +31,30 @@
 - [ ] `git add -A` 후 **제외할 것만** `git reset --`로 뺐는가? (경로를 열거해 나열하지 않았는가 — 878·884 두 번 결함)
 - [ ] `git status --porcelain`의 `??`(untracked)가 **0**인가?
 
+### 7. 미추적 파일 참조 게이트 (2026-08-11 STEP 990 신설, 출처: 977·965·967·969·967-bank-revenue 5건 연쇄 사고)
+- [ ] 커밋 전, 아래 두 명령을 돌려 **결과가 둘 다 빈 목록인가?**(재현 가능한 검사 — 그대로 실행)
+  ```bash
+  # ① 절대경로(/tmp 등)로 import하는 소스가 있는가
+  grep -rnE "(from|require\()\s*['\"]/[^'\"]" --include="*.ts" --include="*.tsx" . | grep -v node_modules
+
+  # ② 상대경로 import가 git 미추적(또는 gitignore) 파일을 가리키는가 — 결과가 나오면 각 파일을 git check-ignore -v로 재확인
+  #   (전수 자동화 스크립트 없음 — STEP990이 쓴 1회성 python 대조 스크립트를 재사용하거나 새로 작성)
+  ```
+- [ ] `git ls-files`에 없는 파일을 참조하는 게 발견되면, 그 파일을 커밋하거나(정책상 허용될 때만) 참조하는 스크립트를 `tsconfig.json`의 `exclude`에 **정확한 파일명으로**(글롭·디렉토리 금지) 추가한다. 스크립트는 삭제하지 않는다.
+
+### 8. 배포 확인 게이트 (2026-08-11 STEP 990 신설 — Cowork의 절차 결함을 막는 게이트)
+- [ ] push 후, 아래 두 가지를 **둘 다** 확인하기 전까지 그 STEP을 완료로 보지 않는다.
+  ```bash
+  # GitHub Actions "verify"(vitest·tsc) 결과
+  gh api repos/<owner>/<repo>/commits/<sha>/status
+  gh api repos/<owner>/<repo>/commits/<sha>/check-runs
+
+  # Vercel 배포 상태(Vercel MCP가 403으로 막힐 수 있다 — 이 경로로 우회)
+  npx vercel inspect <deploymentId> --logs
+  ```
+- [ ] 보고에 "배포 Ready 확인" 줄이 없으면 **미완료로 취급한다.**
+- 🔴 **왜 이 게이트가 필요한가**: 이 프로젝트엔 이미 GitHub Actions "verify" CI가 있었고, STEP965~989 내내 `main`·`revdcf-preview` 양쪽에서 **이미 빨간불이었다** — 그런데 38시간·25개 STEP 동안 아무도 그 결과를 열어보지 않았다(990 발견). "push 성공 = 배포 성공"이라는 암묵 가정이 원인이었다. 이는 STEP982가 지적한 "health 크론이 11일간 Sentry에 stale 알림을 올렸으나 대응이 0건"과 **같은 뿌리의 절차 결함**이다 — 감시 장치는 이미 있었는데 아무도 보지 않았다.
+
 ---
 
 🔑 **이 문서를 커밋 직전 매번 훑는다.** 위반이 발견되면 커밋을 멈추고 고친 뒤 다시 이 체크리스트를 돈다.
