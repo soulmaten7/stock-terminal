@@ -1,0 +1,249 @@
+{
+  "step": 999,
+  "title": "FRED/Treasury vs Damodaran 정의 대조(카테고리 20↔21, 25↔26)",
+  "date": "2026-08-12",
+  "invariants": {
+    "dbWrites": 0,
+    "cronTriggered": false,
+    "replaced": false,
+    "libModified": false,
+    "pushed": false,
+    "note": "조사·대조·계산 전용 — damodaran_* 테이블 무변경, lib/revdcf/* 무수정"
+  },
+  "section1_1_riskFreeDefinition": {
+    "damodaran": {
+      "method": "10년물 미국 국채 수익률(\"10-year Treasury bond rate\") — 원문 확인(WebSearch, riskfree.pdf 등 다수 damodaran 문서 일치)",
+      "quote": "Damodaran recommends using the ten-year Treasury bond rate as the appropriate risk-free rate for valuation purposes, as in valuation, the durations tend to be much longer",
+      "timing": "point-in-time(당해 갱신 시점 현재값), 정상화(30년 평균) 아님 — 원문 확인",
+      "storedValue": "wacc.xls D9 = 'Long Term Treasury bond rate = 3.95%'(직접 개봉 확인, data/sources/damodaran/wacc.xls Industry Averages 시트 A9/D9)",
+      "asOf": "2026-01-05(damodaran_global_inputs.as_of)"
+    },
+    "fred": {
+      "series": "DGS10 — Market Yield on U.S. Treasury Securities at 10-Year Constant Maturity",
+      "matchesDamodaranDefinition": true,
+      "note": "만기(10년)·개념(현재 시장수익률) 전부 일치 — 같은 것을 잰다. Treasury.gov 원천을 FRED가 재발행"
+    },
+    "verdict": "✅ 정확히 대응 — 대체 가능(정의 층위에서)"
+  },
+  "section1_2_creditSpreadDefinition_LEAD": {
+    "headline": "🟡 부분적으로만 대응 가능 — 직접 대체 불가, 조건부 하이브리드만 가능",
+    "damodaran_std_dev_method": {
+      "source": "wacc.xls 'Cost of Debt Lookup Table (based on std dev in stock prices)' — 개봉 확인",
+      "method": "5년 주가수익률 표준편차 구간(std_dev_lo~hi) → 해당 구간의 고정 스프레드",
+      "quote": "This is estimated by adding a default spread to the riskfree rate. To estimate the default spread, we use the standard deviation in stock prices over the last 5 years.",
+      "axis": "주가 변동성(회사 고유), 신용등급 문자 아님"
+    },
+    "damodaran_ratings_xls_method": {
+      "source": "ratings.xls(997 발견, 999에서 개봉 확인) — 별도 데이터셋",
+      "method": "이자보상배율(EBIT/이자비용) 구간 → 합성등급(Moody's/S&P 병기, 예 'A2/A'·'Baa2/BBB') → 스프레드",
+      "quote": "the link between interest coverage ratios and ratings developed by looking at all rated companies in the United States... based on an analysis of rated companies in the U.S. and market bond trades",
+      "axis": "이자보상배율(회사 고유), 신용등급 문자 있음(Moody's/S&P 병기)"
+    },
+    "keyDiscovery": "🔑 wacc.xls의 std_dev 밴드별 스프레드 값이 ratings.xls의 특정 등급 스프레드 값과 정확히 일치한다(같은 마스터 테이블을 재사용) — 값 대조로 확인:",
+    "bridgeTable": [
+      {
+        "stdDevBand": "0~0.3",
+        "spread": 0.005506,
+        "impliedRating": "미확인(ratings.xls 상위행 미열람, A2/A보다 우량 — 추정만)"
+      },
+      {
+        "stdDevBand": "0.30001~0.45",
+        "spread": 0.008872,
+        "impliedRating": "A3/A-"
+      },
+      {
+        "stdDevBand": "0.45001~0.65",
+        "spread": 0.011113,
+        "impliedRating": "Baa2/BBB"
+      },
+      {
+        "stdDevBand": "0.650001~0.8",
+        "spread": 0.018395,
+        "impliedRating": "Ba2/BB"
+      },
+      {
+        "stdDevBand": "0.800001~0.9",
+        "spread": 0.032098,
+        "impliedRating": "B2/B"
+      },
+      {
+        "stdDevBand": "0.900001~1.0",
+        "spread": 0.050899,
+        "impliedRating": "B3/B-"
+      },
+      {
+        "stdDevBand": "1.000001~10",
+        "spread": 0.0885,
+        "impliedRating": "Caa/CCC(ratings.xls 행22 'Caa/CCC' D22=0.0885와 정확 일치)"
+      }
+    ],
+    "whyNotDirectSwap": [
+      "① 등급 세분화 손실 — Damodaran은 Moody's/S&P 노치(Ba1/BB+·Ba2/BB·B1/B+·B2/B 등 20여 단계)까지 구분하나 FRED ICE BofA OAS는 대분류 7개(AAA·AA·A·BBB·BB·B·CCC이하)뿐 — 병합 시 정보 손실",
+      "② 개념 차이 — Damodaran 스프레드는 '이자보상배율/주가변동성으로 추정한 합성등급'의 모델 산출값(실제 채권 시장데이터로 캘리브레이션되었으나 개별 기업은 대리변수로 적용). FRED OAS는 '그 등급의 실제 거래 채권'의 시장관측 지수 — 같은 것을 다른 방법으로 재는 게 아니라 '모델 추정 vs 실제 관측'의 차이",
+      "③ 모집단 차이 — FRED 지수 구성종목은 실제 회사채가 활발히 거래되는 기업(대형·우량 위주)뿐이다. 우리 유니버스(5,893개, 소형주 다수)의 대다수는 실제 거래 회사채가 없어 어차피 FRED 지수의 모집단에 속하지 않는다 — Damodaran의 합성등급 방식(회사채 유무와 무관하게 전 기업에 적용 가능)이 이 점에서 오히려 우리 유니버스에 더 적합할 수 있음",
+      "④ 브릿지 자체가 간접적 — 값 일치로 등급을 역추정했을 뿐, 공식 문서가 '이 std_dev 밴드 = 이 등급'이라고 명시하지 않음(우리가 재구성한 매핑)"
+    ],
+    "conditionalHybrid": "🟡 가능한 형태 — Damodaran의 등급 '배정' 로직(이자보상배율→합성등급, ratings.xls)은 유지하되 마지막 '등급→스프레드값' 조회만 FRED 실시간값으로 교체하는 하이브리드는 원리적으로 가능. 단 등급 노치 손실(①)과 모집단 차이(③) 문제는 하이브리드로도 안 풀림."
+  },
+  "section2_valueComparison": {
+    "riskFree": {
+      "damodaran_asOf_2026_01_05": 0.0395,
+      "fred_DGS10_2026_08_07": 0.0465,
+      "deltaBp": 70,
+      "note": "🔴 부수 발견 — Damodaran의 as_of(2026-01-05) 당일 실제 DGS10은 4.15~4.19%대였다(FRED 1년 시계열 조회 확인) — 저장값 3.95%와 그 시점에도 이미 ~20bp 차이가 있었다. 원인 미상(Damodaran의 실제 pull 시점이 as_of 라벨과 다를 수 있음·반올림·별도 방법 — 미조사, 판정 필요 항목으로 등재)"
+    },
+    "creditSpread_byBridgedRating": {
+      "note": "1-2의 간접 브릿지(std_dev밴드→등급→FRED버킷)를 적용한 경우만 대조. bp 단위",
+      "table": [
+        {
+          "impliedRating": "A(A3/A- 근사)",
+          "damodaran": 0.8872,
+          "fred_A": 0.65,
+          "deltaBp": -24
+        },
+        {
+          "impliedRating": "BBB(Baa2/BBB)",
+          "damodaran": 1.1113,
+          "fred_BBB": 0.97,
+          "deltaBp": -14
+        },
+        {
+          "impliedRating": "BB(Ba2/BB)",
+          "damodaran": 1.8395,
+          "fred_BB": 1.59,
+          "deltaBp": -25
+        },
+        {
+          "impliedRating": "B(B2/B)",
+          "damodaran": 3.2098,
+          "fred_B": 2.88,
+          "deltaBp": -33
+        },
+        {
+          "impliedRating": "CCC이하(Caa/CCC)",
+          "damodaran": 8.85,
+          "fred_CCC": 10.14,
+          "deltaBp": 129
+        }
+      ],
+      "pattern": "투자등급~하위투자등급에서는 Damodaran이 FRED보다 14~33bp 높게(보수적으로) 추정하나, 최하단(CCC)에서는 반대로 FRED가 129bp 더 높다(실제 시장 스트레스가 모델추정보다 훨씬 넓게 벌어짐) — 균일한 편향이 아니라 등급마다 방향이 다름"
+    }
+  },
+  "section2_3_waccVerdictImpact": {
+    "method": "scripts/probe_999_riskfree_impact.ts — DB에서 이미 저장된 revdcf_results 20건(고부채~무차입·대형~소형·verdict 4종 혼합)을 읽어 riskFree만 3.95%→4.65%로 교체, assembleWacc()·runRevDcf() 재계산. DB 쓰기 0.",
+    "sampleSize": 20,
+    "reconstructionCheck": "저장된 wacc를 creditSpread 역산으로 재현 — 20/20 오차 0bp(방법 정확성 검증)",
+    "waccDeltaBp": {
+      "avg": 63.5,
+      "min": 55.3,
+      "max": 70.0
+    },
+    "verdictChanged": {
+      "count": 13,
+      "total": 20,
+      "pct": 65
+    },
+    "verdictChangedBreakdown": {
+      "kindFlip(카테고리 자체 전환)": 1,
+      "kindFlipExample": "CDNS: years(23년) → over_cap(25년 지평 밖으로 밀림) — WACC 70bp 상승만으로 판정 카테고리가 바뀜",
+      "sameKindValueShift(같은 카테고리 내 연수/설명율 변화)": 12,
+      "sameKindExample": "다수가 gap_years +1~+2년 이동(예 AAL 2→3·CMG 5→7·TDG 4→6)",
+      "unchanged": 7,
+      "unchangedNote": "value_destroying·below_one 등 이미 극단에 있는 verdict는 70bp로는 안 흔들림"
+    },
+    "conclusion": "🔴 차이가 미미하지 않다 — 65%가 verdict 표현이 바뀌고, 5%(1/20)는 카테고리 자체가 바뀐다. 848이 이미 확인한 'GAP은 WACC에 극도로 민감(±1%p→below_one/15년)' 사실과 정합 — 70bp는 그 민감도 범위 안에 있다."
+  },
+  "section3_annualCostOfStaleness_LEAD": {
+    "headline": "🔴 연 1회 값을 쓰는 것의 대가 = 78bp(무위험수익률 1년 변동폭)",
+    "method": "FRED DGS10 지난 1년(2025-08-01~2026-08-07) 일별 시계열 실측",
+    "min": {
+      "date": "2025-10-22",
+      "value": 0.0397
+    },
+    "max": {
+      "date": "2026-07-31",
+      "value": 0.0475
+    },
+    "rangeBp": 78,
+    "comparisonCreditSpread": {
+      "note": "BBB OAS 같은 기간 변동폭 = 24bp(참고, 무위험수익률보다 훨씬 안정적)"
+    },
+    "verdict": "78bp는 §2-3에서 실측한 WACC영향(avg 63.5bp)과 같은 자릿수다 — 즉 '연중 아무 때나' 갱신을 놓치면 오늘 관측한 것과 비슷하거나 더 큰 verdict 왜곡이 상시 존재할 수 있다는 뜻. 연1회 갱신의 대가는 작지 않다."
+  },
+  "section4_options_noJudgment": {
+    "note": "🔴 판정은 장은태. 여기는 후보와 대가만.",
+    "options": [
+      {
+        "id": "A. 무위험수익률만 FRED DGS10 매일 교체",
+        "sourceFidelity": "원전과 정의 완전 일치(1-1) — 원전 이탈 아님, 원전이 쓰는 바로 그 시리즈를 더 자주 받는 것뿐",
+        "scope": "damodaran_global_inputs.riskfree_rate를 FRED 조회로 대체(또는 병행 저장) — WACC 조립 코드(assembleWacc) 무변경, 재료 주입만 바뀜(y=f(x)의 x 교체)",
+        "cadence": "매일(또는 크론 주기에 맞춰)",
+        "reversible": "쉬움(값 소스 하나 교체)",
+        "liveVerdictImpact": "이번 실측(20건 표본): 65% verdict 표현 변화·5% 카테고리 전환 — 604종목 전체로 확장 시 유사 비율 예상(미실측)"
+      },
+      {
+        "id": "B. 신용스프레드도 FRED로 교체(하이브리드 — 등급배정은 Damodaran, 값조회는 FRED)",
+        "sourceFidelity": "원전 이탈 — Damodaran은 자기 스프레드표를 쓰지 FRED를 참조하지 않음(1-2에서 확인)",
+        "scope": "등급노치 손실(20여단계→7단계) 처리 로직 신규 필요 + 모집단 차이(③) 리스크 존재",
+        "cadence": "매일",
+        "reversible": "중간(등급 매핑 로직이 새로 생김)",
+        "liveVerdictImpact": "미실측(등급 노치 손실 처리 방식에 따라 결과가 달라져 이번 STEP 범위에서 계산 불가)"
+      },
+      {
+        "id": "C. 현행 유지(Damodaran 연1회)",
+        "sourceFidelity": "원전 그대로",
+        "scope": "변경 없음",
+        "cadence": "연1회(1월)",
+        "reversible": "해당없음",
+        "liveVerdictImpact": "0(기준선)"
+      },
+      {
+        "id": "D. 둘 다 FRED 매일 갱신 + Damodaran 연1회 값은 대조용으로만 보존",
+        "sourceFidelity": "riskfree는 A와 동일(원전과 정의 일치) · creditSpread는 B와 동일(원전 이탈)",
+        "scope": "A+B 결합, 대조 로그 추가",
+        "cadence": "매일",
+        "reversible": "중간",
+        "liveVerdictImpact": "A와 유사하거나 더 큼(미실측)"
+      }
+    ]
+  },
+  "researchA_officialDocs": {
+    "note": "①-A 3회 — Damodaran 방법론 원문 + FRED/Treasury 정의 문서",
+    "source1": {
+      "what": "wacc.xls 직접 개봉(로컬 저장본)",
+      "finding": "'Long Term Treasury bond rate'·'Cost of Debt Lookup Table (based on std dev in stock prices)' 원문 확인"
+    },
+    "source2": {
+      "what": "ratings.xls 직접 개봉(다운로드)",
+      "finding": "이자보상배율→합성등급(Moody's/S&P)→스프레드 테이블, wacc.xls와 스프레드값 공유 확인"
+    },
+    "source3": {
+      "what": "Damodaran variable.htm(공식 용어정의 페이지) + WebSearch(riskfree.pdf 등)",
+      "finding": "'10-year Treasury bond rate' 컨벤션 확인, 'default spread = std dev in stock prices' 확인"
+    },
+    "source4": {
+      "what": "FRED 공식 시리즈 설명(DGS10·BAMLC0A*·BAMLH0A* 시리즈명 자체가 정의)",
+      "finding": "10년 CMT 국채수익률, ICE BofA 등급별 OAS(시총가중 지수)"
+    }
+  },
+  "researchB_comparableServices": {
+    "note": "①-B 3회 — US 한정",
+    "source1": {
+      "what": "New Constructs WACC 방법론(웹서치)",
+      "finding": "무위험수익률로 5년 제로쿠폰 국채 STRIPS 사용 — Damodaran(10년)과도 다른 제3의 컨벤션. 업계에 단일 표준이 없음을 보여줌"
+    },
+    "source2": {
+      "what": "DeepViews WACC 계산기(웹서치)",
+      "finding": "FRED(실시간 10년 국채) + Damodaran(ERP) + SEC EDGAR XBRL을 조합 — 우리가 검토 중인 'FRED 무위험수익률 + Damodaran ERP' 조합과 동일한 패턴이 실제로 쓰이고 있음을 확인"
+    },
+    "source3": {
+      "what": "Damodaran 자신의 synthetic rating 방법론 설명 페이지(웹서치)",
+      "finding": "'실제 등급기업·시장 채권거래 분석 기반' — 합성등급 스프레드가 시장 데이터로 캘리브레이션된 것이지 임의 추정이 아님을 확인, 단 적용은 대리변수(이자보상배율)를 통함"
+    }
+  },
+  "conclusion": {
+    "riskFree": "✅ 정의 일치, 교체 시 원전 이탈 아님 — 65% verdict 표현 변화·5% 카테고리 전환(20건 표본), 연변동폭 78bp로 갱신빈도 대가 실증",
+    "creditSpread": "🟡 부분적 대응만 가능 — 등급노치 손실·모집단 차이로 완전 대체 불가, 하이브리드는 원리적으로 가능하나 추가 설계 필요",
+    "pushStatus": "🔴 push 안 함 — 커밋만"
+  }
+}
