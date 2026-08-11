@@ -1541,6 +1541,39 @@ flags.inputLagCause = { shares?: "unknown", debt?: "no_value"|"tag_miss", intere
 
 **재검토 조건(다음 STEP 판정 기준)**: 몇 사이클(최소 2~3회 정규 크론) 뒤 같은 종목의 `flags.inputLag`을 다시 재고, ① 같은 종목이 계속 같은 lag을 유지/증가하면(=태그가 영구히 사라진 신호) 그때 상한 도입을 검토 ② lag이 줄거나 0으로 돌아오면(=제출 시차였을 뿐) 현행 유지가 맞다는 근거가 쌓인다. 상세 원자료 = `docs/probe_977_invariance.json`(2단계)·`docs/probe_977_input_lag.json`(3단계).
 
+### §10-F. SEC 취득 throttle 경쟁조건 — 발견(STEP 993)·수정(STEP 994, 2026-08-11, 배포 대기)
+
+**발견(993)**: `app/api/cron/revdcf/route.ts`의 전역 throttle(`lastCall` 변수를 6워커 클로저가 공유)이 **check-then-act 경쟁조건**이었다. `lastCall` 갱신이 `setTimeout` 대기 *이후*에만 일어나는데 `Promise.all(Array.from({length:6}, worker))`가 6워커를 동기적으로(첫 await까지) 실행하므로, 첫 호출자만 즉시 통과하고 나머지 5개는 **같은 시각 기준**으로 동일한 대기시간을 계산해 130ms마다 최대 6건이 1~3ms 내로 뭉쳐 발행됐다. 실측(17건 표본, pool6): 평균 22.76건/s — **SEC 공식 상한 10건/s(`sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data` 직접 확인: "Current max request rate: 10 requests/second")의 2.3배.** 지금까지 429가 안 나온 것은 운이며 근거로 쓸 수 없다.
+
+**수정(994)**: `nextAt` 변수로 "다음 발행 시각을 동기 구간(await 이전)에서 즉시 예약"하는 방식으로 교체 — check-then-act가 구조적으로 불가능해진다.
+```
+let nextAt = 0;
+const throttle = async () => {
+  const myTurn = Math.max(nextAt, Date.now());
+  nextAt = myTurn + 130;
+  const w = myTurn - Date.now();
+  if (w > 0) await new Promise((r) => setTimeout(r, w));
+};
+```
+간격 130ms(7.7req/s)·워커 6개는 그대로 유지 — **간격을 줄이거나 동시성을 올리지 않는다**(994는 상한 준수 복구가 목적, 처리량 확대가 목적이 아니다).
+
+**실측 검증(994, 66건 표본·초대형주 AAPL·MSFT·AMZN·NVDA·META·GOOGL 포함)**:
+
+| | wall time | 처리율 | 발행 간격(avg/median/p90/max) | 뭉침(gap<20ms) |
+|---|---|---|---|---|
+| 수정 전 | 6,363ms | 10.37건/s | 79/130/146/362ms | 30/65(46%) |
+| 수정 후 | 8,701ms | 7.59건/s | 130/130/131/159ms | 0/65 |
+
+수정 후 최초 10건 발행 시각: `1,131,260,391,521,651,781,912,1042,1172ms` — 매번 정확히 ~130ms 간격. 🔑 **의도한 직렬화가 실측으로 확인됨.**
+
+🔴 **값 불변(994, 20개 CIK 딥비교)**: 동일 CIK를 OLD/NEW throttle 각각으로 실제 재조회 → `computeDrivers()` 전체 산출물을 키정렬 JSON 직렬화 비교 — **20/20 완전 일치, 불일치 0건.** throttle은 fetch() 호출 "전" 대기시간만 바꿀 뿐 데이터 흐름에 개입하지 않는다는 구조적 사실이 실측으로도 확인됨.
+
+🔴 **대가(처리량 하락은 의도된 것)**: 66건 표본 기준 10.37건/s→7.59건/s(약 27% 하락)는 **성능 저하가 아니라 SEC 상한 준수를 위해 의도적으로 되돌린 것**이다. 이 되돌림으로 **커버리지 순증 속도(993이 발견한 40건/일)가 더 느려질 수 있다** — throttle 버그가 우연히 순증에 유리하게 작용했을 가능성을 배제할 수 없기 때문. 이 대가는 993 선택지 B(SEC 공식 벌크 파일 `companyfacts.zip`, 1.4GB·매일 갱신·SEC 자체 권고)로만 상쇄 가능하다 — throttle 수정 단독으로는 커버리지 문제를 풀지 못한다.
+
+🔴 **미확인 채로 남는 것**: 993이 지적한 "로컬 재현(수백~수천 건 가능 예측) vs 실측(40건/일)" 간극은 이번 STEP으로도 안 닫혔다 — throttle을 고쳐도 여전히 프로덕션 관측 수단이 0건(revdcf 하트비트 없음)이라, 실제 배포 후 40건/일이 어떻게 바뀌는지는 배포해야만 알 수 있다.
+
+원자료 = `docs/probe_993_coverage_bottleneck.json`(발견)·`docs/probe_994_throttle_fix.json`(수정·검증). **배포(push) 여부는 장은태 판정 대기 — 994는 로컬 커밋까지만.**
+
 | # | 항목 | 어떻게 풀리나 |
 |---|---|---|
 | 1 | 🔶 ~~✅ 유니버스 N=623 확정~~ → **재개방(A-9)** — 616/604로 정정됐고, 그마저 **물려받은 1,000 안에서의 값**이다 | STEP 838 → 842 → **866 재확정** |

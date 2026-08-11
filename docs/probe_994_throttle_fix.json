@@ -1,0 +1,236 @@
+{
+  "step": 994,
+  "title": "throttle 경쟁조건 수정(선택지 A)",
+  "date": "2026-08-11",
+  "invariants": {
+    "dbWrites": 0,
+    "cronTriggered": false,
+    "pushed": false,
+    "scopeOfCodeChange": "app/api/cron/revdcf/route.ts의 throttle 함수만(lib/revdcf/drivers.ts 무변경)",
+    "computedValuesChanged": false
+  },
+  "tripleCheckRule": {
+    "skipped": true,
+    "reason": "993에서 ①-A(SEC 공식 10 req/s·User-Agent 필수)·①-B(동종 3곳) 이미 확보, 994는 993 사실을 근거로 한 구현 STEP"
+  },
+  "section1_fix": {
+    "before": "let lastCall = 0;\nconst throttle = async () => { const w = lastCall + 130 - Date.now(); if (w > 0) await new Promise((r) => setTimeout(r, w)); lastCall = Date.now(); };",
+    "after": "let nextAt = 0;\nconst throttle = async () => {\n  const myTurn = Math.max(nextAt, Date.now());\n  nextAt = myTurn + 130;\n  const w = myTurn - Date.now();\n  if (w > 0) await new Promise((r) => setTimeout(r, w));\n};",
+    "mechanism": "다음 발행 시각(nextAt)을 동기 구간(await 이전)에서 즉시 예약. 여러 워커가 '동시에' 진입해도 JS 단일스레드 특성상 한 번에 하나씩만 이 동기 블록을 실행하므로 각자 서로 다른, 유일한 myTurn 슬롯을 받는다 — check-then-act 경쟁조건이 구조적으로 불가능해짐.",
+    "unchanged": [
+      "간격 130ms(7.7req/s, SEC 상한 10의 77%) 그대로",
+      "워커 수 6 그대로",
+      "lib/revdcf/drivers.ts 무변경",
+      "fetchDrivers·processOne·computeDrivers·WACC·엔진 로직 전부 무변경"
+    ]
+  },
+  "section2_timingMeasurement": {
+    "method": "scripts/probe_994_throttle_timing.ts — 993과 동일 방법론(실제 SEC 호출, pool6, DB쓰기0), 표본을 66건으로 확대(초대형주 6종 AAPL·MSFT·AMZN·NVDA·META·GOOGL 필수 포함)",
+    "sampleSize": 66,
+    "before_oldThrottle": {
+      "wallMs": 6363,
+      "okCount": 66,
+      "impliedThroughputItemsPerSec": 10.372465818010372,
+      "issuanceGapStats": {
+        "n": 65,
+        "avg": 79,
+        "median": 130,
+        "p90": 146,
+        "max": 362
+      },
+      "note": "🔴 66건 규모에서는 22.76건/s(993의 17건 소표본)보다 낮은 10.37건/s로 관측됨 — 초대형주가 섞여 워커 처리시간이 길어지며 부분적으로 자연 분산됐기 때문. 그러나 gaps<20ms가 65건 중 30건(46%), 최소간격 0ms로 뭉침 패턴은 그대로 확인됨 — 버그가 사라진 게 아니라 표본 이질성이 극단치를 완화한 것."
+    },
+    "after_newThrottle": {
+      "wallMs": 8701,
+      "okCount": 66,
+      "impliedThroughputItemsPerSec": 7.585335018963337,
+      "issuanceGapStats": {
+        "n": 65,
+        "avg": 130,
+        "median": 130,
+        "p90": 131,
+        "max": 159
+      },
+      "note": "🔑 평균·중앙값·p90 전부 130ms 부근(129~131)에 수렴, 최소간격 105ms(0ms 뭉침 0건) — 의도한 직렬화가 실측으로 확인됨. 처리율 7.59건/s ≈ 의도한 7.7건/s."
+    },
+    "megacapNote": "🆕 발견 — Node fetch()는 gzip 자동압축해제를 쓴다. AAPL 실제 전송바이트(content-length, 압축) = 271,819바이트(≈265KB)로, 993에서 curl(비압축)로 잰 3,789,099바이트의 약 1/14. fetchMs도 26~251ms로 993이 우려한 '1.3초대 파싱'보다 훨씬 작았다(parseMs 최대 191ms, AMZN) — 993의 '초대형주 표본편향' 우려가 부분적으로 완화됨(전부 해소는 아님, 아래 미측정 참조).",
+    "megacapTimingDetail": {
+      "old": [
+        {
+          "kind": "megacap",
+          "cik": 320193,
+          "sym": "AAPL",
+          "ok": true,
+          "contentLength": 271819,
+          "throttleWaitMs": 67,
+          "fetchMs": 37,
+          "jsonParseMs": 42,
+          "computeMs": 2,
+          "totalMs": 148,
+          "issuedAtMs": 1220
+        },
+        {
+          "kind": "megacap",
+          "cik": 1326801,
+          "sym": "META",
+          "ok": true,
+          "contentLength": 182771,
+          "throttleWaitMs": 11,
+          "fetchMs": 39,
+          "jsonParseMs": 36,
+          "computeMs": 2,
+          "totalMs": 88,
+          "issuedAtMs": 1351
+        },
+        {
+          "kind": "megacap",
+          "cik": 789019,
+          "sym": "MSFT",
+          "ok": true,
+          "contentLength": 335289,
+          "throttleWaitMs": 20,
+          "fetchMs": 208,
+          "jsonParseMs": 104,
+          "computeMs": 2,
+          "totalMs": 334,
+          "issuedAtMs": 1220
+        },
+        {
+          "kind": "megacap",
+          "cik": 1652044,
+          "sym": "GOOGL",
+          "ok": true,
+          "contentLength": 196729,
+          "throttleWaitMs": 99,
+          "fetchMs": 53,
+          "jsonParseMs": 35,
+          "computeMs": 1,
+          "totalMs": 188,
+          "issuedAtMs": 1481
+        },
+        {
+          "kind": "megacap",
+          "cik": 1018724,
+          "sym": "AMZN",
+          "ok": true,
+          "contentLength": 316420,
+          "throttleWaitMs": 3,
+          "fetchMs": 222,
+          "jsonParseMs": 157,
+          "computeMs": 2,
+          "totalMs": 384,
+          "issuedAtMs": 1221
+        },
+        {
+          "kind": "megacap",
+          "cik": 1045810,
+          "sym": "NVDA",
+          "ok": true,
+          "contentLength": 290222,
+          "throttleWaitMs": 50,
+          "fetchMs": 251,
+          "jsonParseMs": 55,
+          "computeMs": 3,
+          "totalMs": 359,
+          "issuedAtMs": 1351
+        }
+      ],
+      "new": [
+        {
+          "kind": "megacap",
+          "cik": 320193,
+          "sym": "AAPL",
+          "ok": true,
+          "contentLength": 271819,
+          "throttleWaitMs": 599,
+          "fetchMs": 55,
+          "jsonParseMs": 50,
+          "computeMs": 2,
+          "totalMs": 706,
+          "issuedAtMs": 2212
+        },
+        {
+          "kind": "megacap",
+          "cik": 789019,
+          "sym": "MSFT",
+          "ok": true,
+          "contentLength": 335289,
+          "throttleWaitMs": 721,
+          "fetchMs": 26,
+          "jsonParseMs": 184,
+          "computeMs": 1,
+          "totalMs": 932,
+          "issuedAtMs": 2342
+        },
+        {
+          "kind": "megacap",
+          "cik": 1045810,
+          "sym": "NVDA",
+          "ok": true,
+          "contentLength": 290222,
+          "throttleWaitMs": 720,
+          "fetchMs": 31,
+          "jsonParseMs": 49,
+          "computeMs": 2,
+          "totalMs": 802,
+          "issuedAtMs": 2602
+        },
+        {
+          "kind": "megacap",
+          "cik": 1018724,
+          "sym": "AMZN",
+          "ok": true,
+          "contentLength": 316420,
+          "throttleWaitMs": 725,
+          "fetchMs": 82,
+          "jsonParseMs": 191,
+          "computeMs": 2,
+          "totalMs": 1000,
+          "issuedAtMs": 2472
+        },
+        {
+          "kind": "megacap",
+          "cik": 1326801,
+          "sym": "META",
+          "ok": true,
+          "contentLength": 182771,
+          "throttleWaitMs": 734,
+          "fetchMs": 25,
+          "jsonParseMs": 36,
+          "computeMs": 1,
+          "totalMs": 796,
+          "issuedAtMs": 2747
+        },
+        {
+          "kind": "megacap",
+          "cik": 1652044,
+          "sym": "GOOGL",
+          "ok": true,
+          "contentLength": 196729,
+          "throttleWaitMs": 710,
+          "fetchMs": 23,
+          "jsonParseMs": 30,
+          "computeMs": 1,
+          "totalMs": 764,
+          "issuedAtMs": 2863
+        }
+      ]
+    }
+  },
+  "section3_valueInvariance": {
+    "method": "scripts/probe_994_invariance.ts — 동일 20개 CIK를 OLD/NEW throttle 각각으로 실제 SEC 재조회 → computeDrivers() 전체 산출물(JSON.stringify, 키정렬)을 바이트 비교(965·967·977 pinned·깊은비교 방법론 재사용)",
+    "sampleSize": 20,
+    "mismatchCount": 0,
+    "verdict": "완전 일치 — 값 불변 확인",
+    "coverage": "ok=true 다수 + skip 사유 다양(INSUFFICIENT_HISTORY·MISSING_TAG_PPE) 골고루 포함 — 성공/실패 양쪽 경로 모두 검증"
+  },
+  "section4_cleanCloneBuild": {
+    "note": "990 사고 재발 방지 — 로컬 작업트리가 아니라 git clone에서 검증. 결과는 커밋 메시지·보고에 기록(이 필드는 실행 후 채움)"
+  },
+  "conclusion": {
+    "fixConfirmed": "발행 타이밍이 의도한 130ms 간격으로 완전히 정상화됨(gap avg/median/p90 = 130ms, 뭉침 0건)",
+    "valueInvarianceConfirmed": "20/20 완전 일치 — 계산 결과 무변화",
+    "throughputTradeoff": "🔴 처리율이 (66건 표본 기준) 10.37건/s → 7.59건/s로 27% 하락 — 이는 성능 저하가 아니라 SEC 상한 준수를 위해 의도적으로 되돌린 것. 604+rest 처리 시간이 늘어나 커버리지 순증 속도가 더 느려질 수 있다 — 993 선택지 B(벌크파일)로 상쇄가 필요함을 REVDCF_SPEC.md에 명시.",
+    "pushStatus": "🔴 push하지 않음 — 커밋까지만, 배포는 장은태 판정 대기"
+  }
+}

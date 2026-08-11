@@ -208,8 +208,18 @@ export async function GET(req: Request) {
   const todoRest: (Universe & { kind: "rest" })[] = restSorted.map((u) => ({ ...u, kind: "rest" as const }));
   const todo: ((Universe & { kind: "revdcf" }) | (Universe & { kind: "rest" }))[] = [...todoRevdcf, ...todoRest];
 
-  let lastCall = 0;
-  const throttle = async () => { const w = lastCall + 130 - Date.now(); if (w > 0) await new Promise((r) => setTimeout(r, w)); lastCall = Date.now(); };
+  // 🔴 STEP 994 — 이전 throttle(lastCall 변수)은 check-then-act 경쟁조건이었다(993 실측: pool6에서
+  //   130ms마다 최대 6건이 1~3ms 내로 뭉쳐 발행 → 평균 22.76건/s, SEC 공식 상한 10건/s의 2.3배).
+  //   원인 = lastCall 갱신이 setTimeout 대기 "이후"에만 일어나, 6워커가 동기적으로 같은 시각을 기준으로
+  //   동일한 대기시간을 계산했기 때문. 아래는 "다음 발행 시각(nextAt)을 먼저 원자적으로 예약하고, 그
+  //   이후에 대기"하는 방식 — nextAt 갱신이 await 이전(동기 구간)에서 끝나 경쟁조건이 원리적으로 불가능.
+  let nextAt = 0;
+  const throttle = async () => {
+    const myTurn = Math.max(nextAt, Date.now());
+    nextAt = myTurn + 130; // 자리부터 예약(동기) — 그다음에 대기(비동기)
+    const w = myTurn - Date.now();
+    if (w > 0) await new Promise((r) => setTimeout(r, w));
+  };
   const wall = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<T>((_, rej) => setTimeout(() => rej(new Error("wall")), ms))]);
   const gnum = (v: RevDcfVerdict) => (v.kind === "years" ? v.gap : v.kind === "below_one" ? 0 : v.kind === "over_cap" ? 100 : null);
 
