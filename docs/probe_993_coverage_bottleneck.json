@@ -1,0 +1,831 @@
+{
+  "step": 993,
+  "title": "Q1 커버리지 병목 규명",
+  "date": "2026-08-11",
+  "invariants": {
+    "dbWrites": 0,
+    "cronTriggered": false,
+    "codeChanges": "읽기·계측만, app/api/cron/revdcf/route.ts 원본 무변경",
+    "krTouched": false
+  },
+  "tripleCheckRule": {
+    "note": "이번 STEP은 ①-A 3회 + ①-B 3회만 명시 요구됨(전체 3중 규칙 생략 아님, STEP 지정 범위)"
+  },
+  "section1_funnel_reproduction": {
+    "claimed": {
+      "universe": 5972,
+      "marketCap": 5907,
+      "fundamentals": 1247,
+      "fiscalYear": 1031,
+      "perComputed": 707
+    },
+    "reproduced_exact": {
+      "marketCap_us_market_cap_rows": 5907,
+      "fundamentals_us_fundamentals_rows": 1247,
+      "fiscalYear_notNull": 1031,
+      "perComputed_latest_asOf": 707,
+      "match": "4/5 정확히 재현(오차 0)"
+    },
+    "universe_5972_NOT_REPRODUCED": {
+      "status": "🔴 미재현 — 4개의 서로 다른 구성으로 시도했으나 전부 불일치",
+      "attempts": [
+        {
+          "method": "mcap∩cik_map(symbol upper() 조인, 코드의 fundamentalsUniverseAll과 동일 로직)",
+          "result": 5893
+        },
+        {
+          "method": "mcap∩cik_map(구두점 제거 정규화 조인)",
+          "result": 5893,
+          "note": "punctuation normalization으로도 변화 없음(대소문자·구두점 충돌 없음 확인됨)"
+        },
+        {
+          "method": "mcap∩cik_map(distinct CIK 기준, symbol 아닌 cik로 dedup)",
+          "result": 5848
+        },
+        {
+          "method": "route.ts의 todo.length 그대로 재현(revdcf 604 + restCandidates, CIK 매칭)",
+          "result": 5848,
+          "note": "revdcf 604개 CIK 전부 fundamentalsUniverseAll 안에 포함(overlap=604/604) 확인"
+        }
+      ],
+      "closest": 5893,
+      "gap": "5972 - 5893 = 79(1.3%)",
+      "judgment": "🔴 5개 중 4개(마켓캡·재무·fiscalYear·PER)는 정확히 재현되고 그 백분율(98.9%·20.9%·17.3%·11.8%)도 분모=5,972로 정확히 일치한다 — Cowork이 실제로 이 값을 base로 썼다는 뜻이다. 그런데 5,972 자체를 만드는 정확한 조인 로직을 4가지 시도로도 못 찾았다. 규칙대로면 여기서 멈춰야 하나, 이 STEP의 핵심(2단계, 순증 40건의 원인)은 이 분모값과 무관하게 조사 가능하다고 판단해 계속했다 — 이 판단 자체를 판정 필요 항목으로 남긴다."
+    }
+  },
+  "section1_2_breakdown": {
+    "bucket_A_marketCapButNoFundamentals_4660": {
+      "note": "5,907(mcap) - 1,247(fundamentals) = 4,660 — 이 그룹의 실체를 조회",
+      "distribution": {
+        "NEVER_ATTEMPTED_no_us_fundamentals_row": 4660,
+        "explanation": "🔑 4,660건 전부가 us_fundamentals에 행 자체가 없다 — CIK 결측도 실패 재시도도 아니라 '한 번도 도달 못함'이다. CIK 없음(mcap_no_cik=14건)은 이 4,660과 겹치지 않는 별개 소수 그룹."
+      },
+      "attemptedAndSkipped_within_1247": {
+        "HAS_ROW_NO_REASON_success": 784,
+        "INSUFFICIENT_HISTORY": 317,
+        "NOT_APPLICABLE_SECTOR": 56,
+        "MISSING_TAG_PPE": 47,
+        "MISSING_TAG_OPERATING_INCOME": 29,
+        "MISSING_TAG_OPERATING_CASH": 7,
+        "MULTI_CLASS_SHARES": 5,
+        "UNRESOLVED_DEBT": 2,
+        "total": 1247
+      }
+    },
+    "bucket_B_fundamentalsButNoFiscalYear_216": {
+      "note": "1,247 - 1,031 = 216",
+      "reasonBreakdown": "216건 전부 unavailable_reason='INSUFFICIENT_HISTORY'(317건 중 216이 fiscal_year null, 101은 fiscal_year 있음에도 이 사유 — dr.fundamentals은 skip 경로에도 실림)",
+      "comparisonToKnown197": "🔴 정확한 대조 불가 — 기존 197건(966, IFRS 135건 등)은 us_fundamentals가 더 작았던 시점(1,127~1,167행) 스냅샷이라 심볼 목록을 다시 저장해두지 않아 직접 대조 불가. 오늘 216건은 그 197건보다 19건 많고, 전부 INSUFFICIENT_HISTORY(us-gaap 태그 부재 — IFRS 필터사 패턴과 정합)라는 점에서 '같은 성격의 집합이 커진 것'으로는 보이나 '정확히 같은 집합+19건 추가'인지는 미확인.",
+      "verdict": "미측정으로 등재"
+    },
+    "bucket_C_fiscalYearButNoPER_324": {
+      "note": "1,031 - 707 = 324",
+      "distribution": {
+        "NET_INCOME_NEGATIVE": 280,
+        "PER_NULL_BUT_POSITIVE_NET_INCOME": 44
+      },
+      "negativeCheck": "🔴 979에서 확인된 원전 근거(ch19.pdf: PBR류는 계산 불가) — 정확히는 PER의 정책(NEGATIVE_EARNINGS 상류 제외)이며 979는 PBR 원전 근거였으나 같은 valuation.ts NEGATIVE_* 4종 정책이 PER에도 동일 적용된다(lib/valuation.ts 직접 확인). 280건(86.4%)은 정상 제외 — 결측 아님.",
+      "44건_원인": "전부 us_valuation.market_cap = null. computeAndSaveValuation()이 그 시점 us_market_cap 최신 as_of 스냅샷과 symbol이 안 맞은 것(마켓캡 자체가 없는 게 아니라 조인 실패) — 결측과 다른 별개의 소규모 이슈.",
+      "verdict": "324 = 280(정상 제외, 결측 아님) + 44(marketCap 조인 실패, 별개 소규모 이슈) — 과대진단 방지 완료"
+    }
+  },
+  "section2_1_codeTrace": {
+    "file": "app/api/cron/revdcf/route.ts",
+    "flow": [
+      "todoRevdcf(604, 매일 전량 — done set은 '오늘 as_of' 기준이라 첫 실행마다 항상 비어있음) + todoRest(restCandidates, fetched_at 오름차순 — NEVER=1970 기준이라 미수집 종목이 항상 최우선)",
+      "전역 throttle(lastCall 변수, 6워커 클로저 공유) — 130ms 간격을 '의도'하나 §2-3에서 경쟁조건 확인",
+      "워커풀 6개, 각 while(idx<todo.length && Date.now()-t0<BUDGET_MS(270000))",
+      "revdcf kind: fetchDrivers → computeDrivers → WACC(assembleWacc) → computeGapWithSensitivity(3회 runRevDcf: base/wacc-1/wacc+1) → 저장행 조립. 실패해도(HTTP 에러·skip 사유) revdcfRow는 skip_reason과 함께 항상 생성됨(row 자체는 실패해도 남음).",
+      "rest kind: fetchDrivers만 → us_fundamentals upsert만(revdcf_results 안 씀)",
+      "buffer>=40이면 즉시 flush, 워커풀 종료 후 최종 flush 1회 더",
+      "finally 블록: computeAndSaveValuation·computeAndSaveSectorRelative — SEC 호출 0건(DB만), BUDGET_MS와 무관하게 항상 실행"
+    ]
+  },
+  "section2_2_heartbeat": {
+    "query": "select * from cron_heartbeats",
+    "result_jobs": [
+      "jp-disclosures",
+      "lens-scores",
+      "email-brief",
+      "kr-lens-scores"
+    ],
+    "revdcf_present": false,
+    "confirmation": "🔴 STEP983의 'revdcf 관측 완전 0' 재확인 — 이번에도 revdcf 행이 없다. 이 규명을 막는 요인 그대로."
+  },
+  "section2_3_theCoreQuestion": {
+    "headline": "🔴 부분 설명 — 확정된 코드 버그는 찾았으나(스로틀 경쟁조건), 그 버그만으로 로컬 재현치와 프로덕션 실측치(40건/일) 사이의 격차를 전부 닫지 못했다. 남는 격차는 '설명 못 함'으로 남긴다.",
+    "confirmedBug": {
+      "name": "전역 throttle의 check-then-act 경쟁조건 — 동시성 6에서 130ms 간격이 실제로 지켜지지 않는다",
+      "mechanism": "lastCall 갱신이 setTimeout 대기 '이후'에만 일어난다. Promise.all(Array.from({length:6}, worker))가 6개 worker를 전부 동기적으로(첫 await까지) 실행하므로, w<=0인 첫 호출자(worker0)만 즉시 통과하고 나머지 5개는 전부 '같은 시각 기준'으로 w≈130을 계산해 동시에 130ms 타이머에 걸린다 — 130ms마다 최대 6건이 한꺼번에(1~3ms 이내) 발행되는 파형이 나온다.",
+      "empiricalEvidence": {
+        "test": "동일 17개 CIK를 phase1(순차)과 phase2(pool6)로 각각 실제 SEC 호출",
+        "phase1_sequential": {
+          "wallMs": 3523,
+          "okCount": 17,
+          "failCount": 0,
+          "throttleWaitMs": {
+            "n": 17,
+            "avg": 39,
+            "median": 41,
+            "p90": 89,
+            "max": 103
+          },
+          "fetchMs": {
+            "n": 17,
+            "avg": 117,
+            "median": 47,
+            "p90": 355,
+            "max": 373
+          },
+          "jsonParseMs": {
+            "n": 17,
+            "avg": 49,
+            "median": 39,
+            "p90": 136,
+            "max": 198
+          },
+          "computeMs": {
+            "n": 17,
+            "avg": 2,
+            "median": 2,
+            "p90": 6,
+            "max": 6
+          },
+          "totalMs": {
+            "n": 17,
+            "avg": 207,
+            "median": 112,
+            "p90": 491,
+            "max": 622
+          },
+          "byteSize": {
+            "n": 17,
+            "avg": 154630,
+            "median": 142540,
+            "p90": 349449,
+            "max": 534598
+          },
+          "impliedThroughputItemsPerSec": 4.825432869713312
+        },
+        "phase2_pool6": {
+          "wallMs": 747,
+          "okCount": 17,
+          "failCount": 0,
+          "issuedAtMsGaps": {
+            "n": 16,
+            "avg": 43,
+            "median": 1,
+            "p90": 137,
+            "max": 138
+          },
+          "impliedThroughputItemsPerSec": 22.757697456492636
+        },
+        "issuanceTimeline_phase2": "0ms:1건, 132ms:6건(3ms이내), 271ms:1건, 409ms:4건, 546ms:4건, 682ms:1건 — 130ms 간격이 아니라 '130ms마다 뭉텅이'",
+        "impliedRate": "phase2 평균 처리율 22.76건/s — 의도한 7.7건/s의 약 3배, SEC 공식 상한 10건/s의 약 2.3배"
+      },
+      "secOfficialLimit": "10 requests/second(아래 ①-A 확인) — 이 버그로 순간 발행률이 상한을 넘는 것은 코드 사실로 확정됨"
+    },
+    "whyNotFullyExplained": {
+      "revdcf604_skip_reason_check": "as_of=2026-08-10 revdcf_results의 skip_reason 분포에 HTTP_429·EX(예외)·wall(타임아웃) 계열이 0건 — 전부 정상적 데이터사유(INSUFFICIENT_HISTORY·MISSING_TAG_*·NO_MARGINAL_CAPEX 등)뿐. 즉 최근 실행에서 SEC가 604건 처리 중 눈에 띄게 차단한 증거가 없다.",
+      "localExtrapolationVsReality": "phase2 실측(22.76건/s)을 그대로 604건에 적용하면 약 26.5초 — 남는 243초로 rest를 처리하면 수백~수천 건이 가능한 계산이 나오나, 실제 관측은 40건/일(이틀 80건)뿐이다. 이 계산과 실측 사이의 간극을 이 STEP에서 못 닫았다.",
+      "discoveredSizeGap": {
+        "note": "표본 17건의 companyfacts.json 평균 154,630바이트·최대 534,598바이트(JPM)였으나, revdcf 604 유니버스에 실제로 포함된 초대형주(AAPL·MSFT·AMZN·NVDA·META·GOOGL 전부 604 안에 있음, DB로 확인)의 실제 파일 크기를 직접 재보니:",
+        "AAPL": {
+          "cik": 320193,
+          "bytes": 3789099,
+          "downloadTimeSec": 0.64
+        },
+        "MSFT": {
+          "cik": 789019,
+          "bytes": 4881196,
+          "downloadTimeSec": 1.15
+        },
+        "comparisonToSample": "표본 평균 대비 25~31배, 표본 최대 대비 7~9배 — 표본의 jsonParseMs(평균49ms/154KB)를 단순 비례하면 MSFT급 파일 하나의 파싱만 약 1.3초. 604개 중 이런 초대형주가 몇 개나 섞여 있는지는 세지 않았다(미측정) — 하지만 최소 6개(AAPL·MSFT·AMZN·NVDA·META·GOOGL) 존재가 확인됐고, 표본이 이 부류를 충분히 대표하지 못했다는 것은 확정."
+      },
+      "otherUnmeasured": [
+        "downstream WACC+DCF엔진(assembleWacc·computeGapWithSensitivity 3회 runRevDcf) 계산시간 — computeDrivers만 쟀고(평균 2ms) 이건 안 쟀다(추론상 순수 산술이라 작을 것으로 예상하나 미측정)",
+        "루프 시작 전 참조데이터 로딩(damodaran 4개 테이블·mcap 5,907행·cik_map 10,432행·fund_fetched 1,247행 전체 페이지네이션 읽기) 소요시간 — 로컬에서 실제로 안 쟀다",
+        "Vercel 서버리스 환경의 CPU/네트워크 특성이 이 로컬 측정과 실제로 얼마나 다른지"
+      ]
+    },
+    "conclusion": "🔴 이 STEP에서 확정한 것: throttle 경쟁조건은 실재하는 코드 버그이며 SEC 공식 상한을 코드 사실로 위반한다. 이 STEP에서 확정 못한 것: 이 버그(또는 다른 요인)가 실제 프로덕션에서 40건/일이라는 정확한 숫자를 만들어내는 인과 메커니즘 — 로컬 재현은 그보다 훨씬 빠른 처리를 예측하고, 그 예측과 실측의 간극을 메울 프로덕션 관측 수단이 없다(§2-2)."
+  },
+  "section2_4_localRun": {
+    "method": "scripts/probe_993_timing.ts — route.ts 코드를 실행하지 않고 동일 로직(throttle·wall·computeDrivers)을 별도 스크립트로 재현, DB 쓰기 0. 실행: npx tsx scripts/probe_993_timing.ts",
+    "sample": "17개 실제 CIK(revdcf 6 + rest 미수집 heavy 5 + light 6), SEC 실호출·throttle 130ms 준수",
+    "http429Encountered": false,
+    "results": "section2_3_theCoreQuestion.confirmedBug.empiricalEvidence 참조(중복 방지)",
+    "rawData": {
+      "phase1_sequential_perItem": [
+        {
+          "kind": "revdcf",
+          "cik": 1800,
+          "sym": "ABT",
+          "ok": true,
+          "contentLength": 242891,
+          "throttleWaitMs": 0,
+          "fetchMs": 171,
+          "jsonParseMs": 72,
+          "computeMs": 6,
+          "totalMs": 249,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 0
+        },
+        {
+          "kind": "revdcf",
+          "cik": 2488,
+          "sym": "AMD",
+          "ok": true,
+          "contentLength": 273018,
+          "throttleWaitMs": 0,
+          "fetchMs": 36,
+          "jsonParseMs": 42,
+          "computeMs": 6,
+          "totalMs": 84,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 249
+        },
+        {
+          "kind": "revdcf",
+          "cik": 2969,
+          "sym": "APD",
+          "ok": true,
+          "contentLength": null,
+          "throttleWaitMs": 48,
+          "fetchMs": 373,
+          "jsonParseMs": 198,
+          "computeMs": 3,
+          "totalMs": 622,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 381
+        },
+        {
+          "kind": "revdcf",
+          "cik": 3570,
+          "sym": "LNG",
+          "ok": true,
+          "contentLength": 236436,
+          "throttleWaitMs": 0,
+          "fetchMs": 27,
+          "jsonParseMs": 39,
+          "computeMs": 2,
+          "totalMs": 68,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 955
+        },
+        {
+          "kind": "revdcf",
+          "cik": 4127,
+          "sym": "SWKS",
+          "ok": true,
+          "contentLength": null,
+          "throttleWaitMs": 64,
+          "fetchMs": 355,
+          "jsonParseMs": 51,
+          "computeMs": 2,
+          "totalMs": 472,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 1087
+        },
+        {
+          "kind": "revdcf",
+          "cik": 4281,
+          "sym": "HWM",
+          "ok": true,
+          "contentLength": 349449,
+          "throttleWaitMs": 0,
+          "fetchMs": 47,
+          "jsonParseMs": 51,
+          "computeMs": 2,
+          "totalMs": 100,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 1495
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 1046179,
+          "sym": "TSM",
+          "ok": true,
+          "contentLength": 46345,
+          "throttleWaitMs": 32,
+          "fetchMs": 107,
+          "jsonParseMs": 9,
+          "computeMs": 0,
+          "totalMs": 148,
+          "driverOk": false,
+          "skipReason": "INSUFFICIENT_HISTORY",
+          "issuedAtMs": 1627
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 1181412,
+          "sym": "SPCX",
+          "ok": true,
+          "contentLength": 17070,
+          "throttleWaitMs": 16,
+          "fetchMs": 54,
+          "jsonParseMs": 1,
+          "computeMs": 0,
+          "totalMs": 71,
+          "driverOk": false,
+          "skipReason": "INSUFFICIENT_HISTORY",
+          "issuedAtMs": 1759
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 1067983,
+          "sym": "BRK-B",
+          "ok": true,
+          "contentLength": null,
+          "throttleWaitMs": 77,
+          "fetchMs": 339,
+          "jsonParseMs": 73,
+          "computeMs": 2,
+          "totalMs": 491,
+          "driverOk": false,
+          "skipReason": "MISSING_TAG_PPE",
+          "issuedAtMs": 1891
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 2120882,
+          "sym": "SKHY",
+          "ok": true,
+          "contentLength": 313,
+          "throttleWaitMs": 0,
+          "fetchMs": 27,
+          "jsonParseMs": 0,
+          "computeMs": 0,
+          "totalMs": 27,
+          "driverOk": false,
+          "skipReason": "INSUFFICIENT_HISTORY",
+          "issuedAtMs": 2305
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 19617,
+          "sym": "JPM",
+          "ok": true,
+          "contentLength": 534598,
+          "throttleWaitMs": 103,
+          "fetchMs": 249,
+          "jsonParseMs": 136,
+          "computeMs": 1,
+          "totalMs": 489,
+          "driverOk": false,
+          "skipReason": "MISSING_TAG_PPE",
+          "issuedAtMs": 2436
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1020710,
+          "sym": "DXPE",
+          "ok": true,
+          "contentLength": 213335,
+          "throttleWaitMs": 0,
+          "fetchMs": 56,
+          "jsonParseMs": 30,
+          "computeMs": 2,
+          "totalMs": 88,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 2822
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1565687,
+          "sym": "INTA",
+          "ok": true,
+          "contentLength": 72991,
+          "throttleWaitMs": 44,
+          "fetchMs": 32,
+          "jsonParseMs": 9,
+          "computeMs": 2,
+          "totalMs": 87,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 2954
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1693256,
+          "sym": "WTTR",
+          "ok": true,
+          "contentLength": 142540,
+          "throttleWaitMs": 89,
+          "fetchMs": 24,
+          "jsonParseMs": 24,
+          "computeMs": 1,
+          "totalMs": 138,
+          "driverOk": false,
+          "skipReason": "MULTI_CLASS_SHARES",
+          "issuedAtMs": 3086
+        },
+        {
+          "kind": "rest_light",
+          "cik": 98677,
+          "sym": "TR",
+          "ok": true,
+          "contentLength": 211087,
+          "throttleWaitMs": 83,
+          "fetchMs": 26,
+          "jsonParseMs": 63,
+          "computeMs": 2,
+          "totalMs": 174,
+          "driverOk": false,
+          "skipReason": "UNRESOLVED_DEBT",
+          "issuedAtMs": 3218
+        },
+        {
+          "kind": "rest_light",
+          "cik": 827876,
+          "sym": "CLSK",
+          "ok": true,
+          "contentLength": 200363,
+          "throttleWaitMs": 41,
+          "fetchMs": 33,
+          "jsonParseMs": 27,
+          "computeMs": 1,
+          "totalMs": 102,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 3350
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1819790,
+          "sym": "TARS",
+          "ok": true,
+          "contentLength": 88270,
+          "throttleWaitMs": 71,
+          "fetchMs": 26,
+          "jsonParseMs": 14,
+          "computeMs": 1,
+          "totalMs": 112,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 3482
+        }
+      ],
+      "phase2_pool6_perItem": [
+        {
+          "kind": "revdcf",
+          "cik": 1800,
+          "sym": "ABT",
+          "ok": true,
+          "contentLength": 242891,
+          "throttleWaitMs": 0,
+          "fetchMs": 41,
+          "jsonParseMs": 50,
+          "computeMs": 2,
+          "totalMs": 93,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 0
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 1046179,
+          "sym": "TSM",
+          "ok": true,
+          "contentLength": 46345,
+          "throttleWaitMs": 42,
+          "fetchMs": 101,
+          "jsonParseMs": 35,
+          "computeMs": 0,
+          "totalMs": 178,
+          "driverOk": false,
+          "skipReason": "INSUFFICIENT_HISTORY",
+          "issuedAtMs": 135
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 1181412,
+          "sym": "SPCX",
+          "ok": true,
+          "contentLength": 17070,
+          "throttleWaitMs": 0,
+          "fetchMs": 37,
+          "jsonParseMs": 1,
+          "computeMs": 0,
+          "totalMs": 38,
+          "driverOk": false,
+          "skipReason": "INSUFFICIENT_HISTORY",
+          "issuedAtMs": 271
+        },
+        {
+          "kind": "revdcf",
+          "cik": 3570,
+          "sym": "LNG",
+          "ok": true,
+          "contentLength": 236436,
+          "throttleWaitMs": 133,
+          "fetchMs": 115,
+          "jsonParseMs": 110,
+          "computeMs": 2,
+          "totalMs": 360,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 133
+        },
+        {
+          "kind": "revdcf",
+          "cik": 2488,
+          "sym": "AMD",
+          "ok": true,
+          "contentLength": 273018,
+          "throttleWaitMs": 132,
+          "fetchMs": 30,
+          "jsonParseMs": 215,
+          "computeMs": 2,
+          "totalMs": 379,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 132
+        },
+        {
+          "kind": "revdcf",
+          "cik": 4281,
+          "sym": "HWM",
+          "ok": true,
+          "contentLength": 349449,
+          "throttleWaitMs": 134,
+          "fetchMs": 103,
+          "jsonParseMs": 170,
+          "computeMs": 2,
+          "totalMs": 409,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 134
+        },
+        {
+          "kind": "revdcf",
+          "cik": 2969,
+          "sym": "APD",
+          "ok": true,
+          "contentLength": 377028,
+          "throttleWaitMs": 132,
+          "fetchMs": 105,
+          "jsonParseMs": 200,
+          "computeMs": 2,
+          "totalMs": 439,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 132
+        },
+        {
+          "kind": "revdcf",
+          "cik": 4127,
+          "sym": "SWKS",
+          "ok": true,
+          "contentLength": 229023,
+          "throttleWaitMs": 134,
+          "fetchMs": 142,
+          "jsonParseMs": 180,
+          "computeMs": 1,
+          "totalMs": 457,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 134
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 2120882,
+          "sym": "SKHY",
+          "ok": true,
+          "contentLength": 313,
+          "throttleWaitMs": 49,
+          "fetchMs": 54,
+          "jsonParseMs": 0,
+          "computeMs": 0,
+          "totalMs": 103,
+          "driverOk": false,
+          "skipReason": "INSUFFICIENT_HISTORY",
+          "issuedAtMs": 409
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 1067983,
+          "sym": "BRK-B",
+          "ok": true,
+          "contentLength": 197882,
+          "throttleWaitMs": 100,
+          "fetchMs": 31,
+          "jsonParseMs": 93,
+          "computeMs": 1,
+          "totalMs": 225,
+          "driverOk": false,
+          "skipReason": "MISSING_TAG_PPE",
+          "issuedAtMs": 409
+        },
+        {
+          "kind": "rest_heavy",
+          "cik": 19617,
+          "sym": "JPM",
+          "ok": true,
+          "contentLength": 534598,
+          "throttleWaitMs": 30,
+          "fetchMs": 76,
+          "jsonParseMs": 139,
+          "computeMs": 1,
+          "totalMs": 246,
+          "driverOk": false,
+          "skipReason": "MISSING_TAG_PPE",
+          "issuedAtMs": 409
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1020710,
+          "sym": "DXPE",
+          "ok": true,
+          "contentLength": 213335,
+          "throttleWaitMs": 0,
+          "fetchMs": 31,
+          "jsonParseMs": 203,
+          "computeMs": 2,
+          "totalMs": 236,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 409
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1565687,
+          "sym": "INTA",
+          "ok": true,
+          "contentLength": 72991,
+          "throttleWaitMs": 107,
+          "fetchMs": 80,
+          "jsonParseMs": 24,
+          "computeMs": 1,
+          "totalMs": 212,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 546
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1693256,
+          "sym": "WTTR",
+          "ok": true,
+          "contentLength": 142540,
+          "throttleWaitMs": 89,
+          "fetchMs": 80,
+          "jsonParseMs": 41,
+          "computeMs": 1,
+          "totalMs": 211,
+          "driverOk": false,
+          "skipReason": "MULTI_CLASS_SHARES",
+          "issuedAtMs": 546
+        },
+        {
+          "kind": "rest_light",
+          "cik": 827876,
+          "sym": "CLSK",
+          "ok": true,
+          "contentLength": 200363,
+          "throttleWaitMs": 12,
+          "fetchMs": 80,
+          "jsonParseMs": 55,
+          "computeMs": 1,
+          "totalMs": 148,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 546
+        },
+        {
+          "kind": "rest_light",
+          "cik": 98677,
+          "sym": "TR",
+          "ok": true,
+          "contentLength": 211087,
+          "throttleWaitMs": 83,
+          "fetchMs": 41,
+          "jsonParseMs": 111,
+          "computeMs": 2,
+          "totalMs": 237,
+          "driverOk": false,
+          "skipReason": "UNRESOLVED_DEBT",
+          "issuedAtMs": 546
+        },
+        {
+          "kind": "rest_light",
+          "cik": 1819790,
+          "sym": "TARS",
+          "ok": true,
+          "contentLength": 88270,
+          "throttleWaitMs": 57,
+          "fetchMs": 50,
+          "jsonParseMs": 15,
+          "computeMs": 0,
+          "totalMs": 122,
+          "driverOk": true,
+          "skipReason": null,
+          "issuedAtMs": 682
+        }
+      ]
+    },
+    "megacapSizeCheck": {
+      "AAPL_cik320193_bytes": 3789099,
+      "AAPL_downloadTimeSec": 0.640833,
+      "MSFT_cik789019_bytes": 4881196,
+      "MSFT_downloadTimeSec": 1.151237,
+      "method": "curl -s -A UA -o file -w size_download,time_total (2026-08-11)"
+    }
+  },
+  "section3_options_noJudgment": {
+    "note": "🔴 판정은 장은태. 여기는 후보와 대가만.",
+    "options": [
+      {
+        "id": "A. throttle을 진짜 큐/세마포어로 고쳐 130ms를 실제로 보장",
+        "scope": "route.ts의 throttle 함수 하나 교체(작음)",
+        "secRiskChange": "순간발행 최대6건→상한이하로 낮아짐, 단 목표 rate 자체가 7.7/s로 SEC 10/s 아래라 안전마진 확보",
+        "maxDurationConstraint": "무관(같은 270s 예산 안에서 더 '고르게' 쓰게 될 뿐, 처리량이 늘지는 보장 안 됨)",
+        "reversible": "쉬움(함수 단위 교체)",
+        "approvalNeeded": "코드 변경 — 필요"
+      },
+      {
+        "id": "B. SEC 공식 벌크 파일(companyfacts.zip) 전환",
+        "scope": "큼 — 수집 아키텍처 자체를 '건별 API 호출'에서 '일괄 파일 파싱'으로 재설계",
+        "secRiskChange": "요청 1건으로 전 종목 커버 — 레이트리밋 리스크 사실상 소멸(①-A 확인: SEC 자신도 1,000+ 기업이면 이 방식을 권고)",
+        "maxDurationConstraint": "🔴 파일 크기 1,401,391,579바이트(≈1.4GB, 직접 헤더 확인) — Vercel 서버리스 함수의 메모리·/tmp 디스크 한도(플랜별 상이)를 초과할 가능성이 큰 제약. 300초 안에 다운로드+압축해제+5,972개 JSON 파싱이 가능한지 별도 검증 필요.",
+        "reversible": "어려움(파이프라인 재설계)",
+        "approvalNeeded": "필요 — 큰 설계 변경"
+      },
+      {
+        "id": "C. SEC 「Financial Statement Data Sets」(분기별 구조화 CSV) 병행",
+        "scope": "중 — companyfacts.json과 다른 스키마(4개 CSV: sub·num·pre·tag)라 매핑 재작업 필요",
+        "secRiskChange": "B와 동일하게 벌크라 리스크 낮음",
+        "maxDurationConstraint": "분기 1회 갱신이라 일일 크론 예산과 무관하게 별도 배치로 처리 가능(제약 낮음)",
+        "reversible": "중간(신규 파이프라인, 기존과 병행 가능)",
+        "approvalNeeded": "필요 — 신규 데이터 경로"
+      },
+      {
+        "id": "D. 동시성 축소 또는 throttle 간격 확대(즉시 완화)",
+        "scope": "매우 작음(상수 값 변경)",
+        "secRiskChange": "낮아짐(발행률 자체가 내려감)",
+        "maxDurationConstraint": "처리량 저하 — 604+rest 처리에 필요한 시간이 늘어나 오히려 rest 몫이 더 줄 위험",
+        "reversible": "매우 쉬움",
+        "approvalNeeded": "필요 — 값 변경도 코드 변경"
+      }
+    ]
+  },
+  "researchA_secOfficialPolicy": {
+    "note": "🔴 ①-A 3회 — 서로 다른 출처(SEC 공식페이지 2곳 직접 curl·제3자 요약 1곳), primary source 우선",
+    "source1_direct": {
+      "url": "https://www.sec.gov/search-filings/edgar-search-assistance/accessing-edgar-data",
+      "method": "curl -A '<UA>' 직접 fetch(WebFetch는 403 — 아래 fetchTool403 참조)",
+      "quote": "Current max request rate: 10 requests/second. / SEC reserves the right to limit request rates... / The SEC does not allow botnets or automated tools to crawl the site... / Please declare your user agent in request headers"
+    },
+    "source2_direct": {
+      "url": "https://www.sec.gov/search-filings/edgar-application-programming-interfaces",
+      "method": "curl 직접 fetch",
+      "quote": "The most efficient means to fetch large amounts of API data is the bulk archive ZIP files, which are recompiled nightly. / submission.zip: https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip"
+    },
+    "source3_thirdParty_aggregated": {
+      "method": "WebSearch(복수 3rd-party 블로그 종합)",
+      "finding": "10 req/s 초과 시 SEC가 해당 IP를 '요청률이 임계값 아래로 10분간 유지될 때까지' 차단할 수 있다는 서술(1차 출처 페이지에는 이 '10분' 구체 수치가 없어 3rd-party로만 확인 — 미검증 표시)"
+    },
+    "bulkFile_directVerification": {
+      "url": "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip",
+      "method": "curl -I 직접 헤더 확인(2026-08-11 실측)",
+      "httpStatus": 200,
+      "contentLength": 1401391579,
+      "contentLengthReadable": "≈1.4GB",
+      "lastModified": "2026-08-11 04:32:10 GMT(오늘 새벽 — 매일 밤 3시경(ET) 재생성 서술과 정합)",
+      "altUrl_dataSecGov_403": "https://data.sec.gov/archives/edgar/daily-index/xbrl/companyfacts.zip 는 403 — www.sec.gov 경로만 유효"
+    },
+    "fetchTool403_note": "🔴 WebFetch 도구는 sec.gov에 403(도구 자체 UA가 SEC 정책과 안 맞는 것으로 추정) — curl로 우회해 직접 원문 확인함(둘 다 원문 그대로, 요약이 아님)"
+  },
+  "researchB_comparableServices": {
+    "note": "🔴 ①-B 3곳 — US 종목·US 서비스로 한정, 전부 SEC XBRL 전수 수집 실제 사례",
+    "service1": {
+      "name": "edgartools(Python 오픈소스 라이브러리, dgunning/edgartools)",
+      "method": "SEC 벌크 API(download_edgar_data()) 사용 — 건별 크롤링 지양, 필터 후 타겟 수집 권장",
+      "timing": "company facts 전체: 2~3분(참고 — 우리는 5,972개 대상으로 118일 추정)",
+      "cadence": "온디맨드(벌크 메타데이터 1회 + 증분)"
+    },
+    "service2": {
+      "name": "HansjoergW/sec-financial-statement-data-set(Python 오픈소스)",
+      "method": "SEC 「Financial Statement Data Sets」(분기별 CSV 4종) 다운로드 후 SQLite 색인",
+      "coverage": "2010년 이후 제출 50만 건 이상 색인",
+      "cadence": "분기별(SEC 자체 발행 주기)"
+    },
+    "service3": {
+      "name": "vladosht/fundamental-data(GPLv3, companyfacts.zip 처리 스크립트·Kaggle 데이터셋 공개)",
+      "method": "companyfacts.zip(전체) 1회 다운로드 후 로컬 파싱 — 건별 API 호출 0건",
+      "cadence": "SEC의 nightly 재생성 주기를 그대로 따름(원하면 매일 재다운로드 가능)"
+    },
+    "commonPattern": "🔑 3곳 전부 '건별 API 루프'가 아니라 'SEC가 이미 만들어 둔 벌크 파일을 통째로 받는다'는 같은 접근을 쓴다. 우리 route.ts는 지금 유일하게 건별 루프 방식이다."
+  },
+  "conclusion_forReport": {
+    "leadFinding": "2-3 부분 설명 — throttle 경쟁조건은 코드 사실로 확정(SEC 상한을 실제로 넘는 발행 패턴), 40건/일이라는 정확한 크기까지는 로컬 재현만으로 못 닫음",
+    "secondFinding": "SEC가 공식적으로 권고하는 벌크 파일(companyfacts.zip, 1.4GB, 매일 밤 갱신)이 존재하며, 비교 대상 3곳 전부 이미 그 방식을 쓴다 — 건별 루프 자체가 이 문제의 구조적 원인일 수 있다는 방향은 확인됐다"
+  }
+}
