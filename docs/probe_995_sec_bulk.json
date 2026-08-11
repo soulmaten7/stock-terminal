@@ -1,0 +1,350 @@
+{
+  "step": 995,
+  "title": "SEC 벌크 파일(companyfacts.zip) 도입 타당성 검증(선택지 B)",
+  "date": "2026-08-11",
+  "invariants": {
+    "dbWrites": 0,
+    "cronTriggered": false,
+    "loaded": false,
+    "pushed": false,
+    "note": "조사·검증 전용 — 적재는 이번에 하지 않음. lib/revdcf/drivers.ts·크론 코드 무변경"
+  },
+  "tripleCheckRule": {
+    "skipped": true,
+    "reason": "993에서 ①-A(SEC 공식 권고·벌크 존재)·①-B(동종 3곳 전부 벌크) 이미 확보"
+  },
+  "section1_preCheck": {
+    "diskSpace": {
+      "available": "12GB(df -h 실측)",
+      "verdict": "1.4GB 압축파일 자체는 여유 있음. 🔴 전체 압축해제(§1-3에서 실측 19.2GB)는 불가능 — 그래서 전체 해제 안 하고 Range로 부분접근"
+    },
+    "headCheck": {
+      "contentLength": 1401391579,
+      "contentLengthGB": 1.401,
+      "lastModified": "Tue, 11 Aug 2026 04:32:10 GMT",
+      "acceptRanges": "bytes(Range 요청 지원 확인)"
+    },
+    "randomAccessFeasibility": {
+      "method": "ZIP 포맷 직접 파싱(EOCD→중앙디렉터리→개별 로컬헤더+DEFLATE), scripts/probe_995_bulk_zip.ts. 외부 zip 라이브러리 미사용(원격 Range 읽기에 맞는 라이브러리 부재)",
+      "verdict": "✅ 가능 — 전체 다운로드 0바이트로 중앙디렉터리(엔트리 목록+크기)를 먼저 확보, 이후 필요한 엔트리만 개별 Range 요청",
+      "entryCount": 20200,
+      "uncompressedTotalGB": 19.2,
+      "uncompressedAvgBytes": 950663,
+      "uncompressedMaxBytes": 9240150,
+      "compressedAvgBytes": 69212,
+      "namingConvention": "CIK{10자리 zero-padded}.json — route.ts의 SEC API URL 생성 로직과 동일 패턴, 재사용 가능",
+      "totalBandwidthUsedThisStep": "약 17MB(EOCD 64KB + 중앙디렉터리 1.78MB + compare 20건 ≈1.4MB + fy-sample 200건 ≈13.8MB) — 전체 1.4GB의 1.2%만 사용"
+    }
+  },
+  "section2_valueComparison_LEAD": {
+    "headline": "✅ 벌크와 API가 완전히 같은 값을 낸다 — 20/20 일치, 불일치 0건",
+    "method": "us_fundamentals에 이미 값이 있는 20개 심볼(megacap·bank·IFRS스킵·최근IPO 등 다양) 선정 → 벌크 zip에서 Range로 해당 CIK 추출 → computeDrivers() 실행 → docs/probe_951_cache의 API캐시로 만든 computeDrivers() 결과와 키정렬 JSON 딥비교",
+    "sampleSize": 20,
+    "mismatchCount": 0,
+    "results": [
+      {
+        "sym": "A",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "AKO-B",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "INSUFFICIENT_HISTORY",
+        "apiOk": false,
+        "apiSkipReason": "INSUFFICIENT_HISTORY"
+      },
+      {
+        "sym": "AMTB",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "NOT_APPLICABLE_SECTOR",
+        "apiOk": false,
+        "apiSkipReason": "NOT_APPLICABLE_SECTOR"
+      },
+      {
+        "sym": "AAPL",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "BLDR",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "CART",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "MISSING_TAG_PPE",
+        "apiOk": false,
+        "apiSkipReason": "MISSING_TAG_PPE"
+      },
+      {
+        "sym": "CLNE",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "CBSH",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "NOT_APPLICABLE_SECTOR",
+        "apiOk": false,
+        "apiSkipReason": "NOT_APPLICABLE_SECTOR"
+      },
+      {
+        "sym": "BPOP",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "INSUFFICIENT_HISTORY",
+        "apiOk": false,
+        "apiSkipReason": "INSUFFICIENT_HISTORY"
+      },
+      {
+        "sym": "CYTK",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "EA",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "FFIV",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "HCA",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "KMI",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "LYG",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "INSUFFICIENT_HISTORY",
+        "apiOk": false,
+        "apiSkipReason": "INSUFFICIENT_HISTORY"
+      },
+      {
+        "sym": "MUSA",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "MSFT",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "RDDT",
+        "match": true,
+        "bulkOk": false,
+        "bulkSkipReason": "INSUFFICIENT_HISTORY",
+        "apiOk": false,
+        "apiSkipReason": "INSUFFICIENT_HISTORY"
+      },
+      {
+        "sym": "STE",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      },
+      {
+        "sym": "UHS",
+        "match": true,
+        "bulkOk": true,
+        "bulkSkipReason": null,
+        "apiOk": true,
+        "apiSkipReason": null
+      }
+    ],
+    "diversityCoverage": {
+      "megacap": [
+        "AAPL",
+        "MSFT"
+      ],
+      "bank": [
+        "CBSH",
+        "BPOP"
+      ],
+      "ifrsForeignFiler": [
+        "LYG(Lloyds)"
+      ],
+      "recentIpoInsufficientHistory": [
+        "RDDT"
+      ],
+      "restatedFlagCases": "🔴 미충족 — revdcf_results.flags.restated/debtBasis가 DB에 비어있어(STATE.md 미해결 35번, 967 기존 결함) 이 기준으로 선별 불가했음. 대신 이용 가능한 다양성 축(업종·규모·skip사유)으로 대체",
+      "debtCategoryCases": "🔴 동일 사유로 미충족"
+    },
+    "note": "🔴 20건 fetchEntry 호출은 throttle 없이 순차 실행(가벼운 정적파일 Range 요청 20건 — companyfacts API 동적엔드포인트가 아님, 그러나 다음 실행 시엔 일관성 위해 throttle 권장)"
+  },
+  "section3_coverage": {
+    "headline_3_3": {
+      "currentUsFundamentalsRows": 1247,
+      "projectedIfBulkLoaded": 5740,
+      "multiple": 4.6,
+      "jpmInBulk": true
+    },
+    "coverage_vs_full_cik_map_10432": {
+      "totalCikMapRows": 10432,
+      "coveredInBulk": 9154,
+      "notCoveredInBulk": 1278,
+      "notCoveredSample": [
+        "CYATY",
+        "KXIAY",
+        "RTNTF",
+        "SMERY",
+        "DTEGY",
+        "IBN",
+        "IFNNY",
+        "MGCLY",
+        "TKOMY",
+        "SNHIY",
+        "BAESY",
+        "GWLIF",
+        "EONGY",
+        "LSEGY",
+        "GALDY",
+        "SMTOY",
+        "JHPCY",
+        "SCMWY",
+        "BMWKY",
+        "CSLLY",
+        "UNVGY",
+        "DLMAY",
+        "RSHGY",
+        "FSNUY",
+        "KBGGY",
+        "CHLSY",
+        "GELHY",
+        "MTNOY",
+        "HKHHY",
+        "EDPFY",
+        "SCRNY",
+        "TELNY",
+        "SOAGY",
+        "ARNNY",
+        "TRMOY",
+        "DSEEY",
+        "WTKWY",
+        "BAWAY",
+        "PUGBY",
+        "LNTCY",
+        "TMTNY",
+        "BLMOY",
+        "YARIY",
+        "VARRY",
+        "BZLFY",
+        "CONE",
+        "DLAKY",
+        "OBICY",
+        "MINBY",
+        "SPIIY"
+      ]
+    },
+    "coverage_vs_operational_universe": {
+      "note": "993의 '유니버스 5,972' 근사치(mcap∩cik join, 993에서 4가지 방법으로도 정확히 5,972를 재현 못했음 — 최근접 5,893을 그대로 사용)",
+      "fundUniverseTotal": 5893,
+      "fundUniverseCoveredInBulk": 5740,
+      "fundUniverseCoveragePct": 97.4,
+      "neverAttemptedTotal": 4646,
+      "neverAttemptedCoveredInBulk": 4493,
+      "neverAttemptedCoveragePct": 96.71,
+      "currentUsFundamentalsRows": 1247,
+      "projectedTotalIfBulkLoaded": 5740,
+      "multipleOfCurrent": 4.6,
+      "jpmInBulk": true
+    },
+    "fiscalYearSample_notFullScan": {
+      "candidatePoolSize": 4493,
+      "sampleSize": 200,
+      "fiscalYearResolvedCount": 124,
+      "fiscalYearResolvedPct": 62,
+      "driverOkCount": 62,
+      "driverOkPct": 31,
+      "skipReasons": {
+        "MISSING_TAG_PPE": 15,
+        "NOT_APPLICABLE_SECTOR": 14,
+        "INSUFFICIENT_HISTORY": 101,
+        "MISSING_TAG_OPERATING_INCOME": 6,
+        "MULTI_CLASS_SHARES": 2
+      },
+      "projectedFiscalYearResolvedInFullCandidatePool": 2786
+    }
+  },
+  "section4_loadingDesign_NOT_EXECUTED": {
+    "note": "🔴 설계만 — 아무것도 실행하지 않음",
+    "4_1_loadMethod": {
+      "approach": "스크립트 1회 실행(크론 아님) — scripts/probe_995_bulk_zip.ts의 fetchEntry() 로직 재사용, 신규 적재 스크립트(예: scripts/load_bulk_fundamentals.ts)로 fund_universe(5,893건) 순회 → computeDrivers() → us_fundamentals upsert",
+      "batchSize": "40건(기존 route.ts flushFund와 동일 관례)",
+      "estimatedTime": "🔴 정확한 실측 안 함(설계만) — §2/§3 표본 처리 속도(200건에 약 13.8MB 다운로드+파싱, throttle 130ms 포함)로 거칠게 추정하면 fund_universe 5,893건 순차 처리 시 대략 15~25분대(추정치, 실측 아님)",
+      "supabaseWriteVolume": "us_fundamentals upsert 최대 5,740행(현재 1,247 → 예상 5,740, 순증 약 4,493행) — 행당 크기 작음(수치+flags), 부담 적음"
+    },
+    "4_2_overwriteVsPreserve": {
+      "risk": "벌크는 SEC 03시(ET) 스냅샷 — 오늘 크론이 이미 갱신한 종목을 벌크로 되돌리면 '더 최신인데 되돌리는' 역행 가능",
+      "precedent": "969 백필 사고(191종목 오염 전례) — 스냅샷 선행 없이 백필하면 재현 불가능한 손실 위험",
+      "requirement": "🔴 적재 전 us_fundamentals 전체를 별도 백업(테이블 스냅샷 또는 덤프)한 뒤에만 upsert 진행 — 필수, 판정 대상 아니라 전제조건"
+    },
+    "4_3_cronRoleAfterLoad_optionsOnly": [
+      "(a) 크론을 벌크 방식으로 완전 전환 — 매일 벌크에서 필요 CIK만 재추출, SEC 건별 API 호출 폐지",
+      "(b) revdcf 604(우선순위 유니버스)만 건별 API 유지, rest 확장분은 주기적 벌크 배치로 대체",
+      "(c) 혼합 — 평소엔 벌크 배치, 실패/결측만 건별 API로 보완"
+    ],
+    "4_4_refreshCadence_optionsOnly": {
+      "frequency": "미판정 — 매일(최신성 최대) vs 주1회(비용 절감) 트레이드오프만 기록",
+      "whereToRun": "로컬 스크립트(반자동 1회성) 권장. Vercel 크론은 제외(지시 사항 — maxDuration/디스크 제약 명확). GitHub Actions 등 별도 스케줄 자동화는 이번 STEP 범위 밖, 판정 필요"
+    }
+  },
+  "conclusion": {
+    "valueMatch": "20/20 완전 일치 — 벌크 도입에 값 정합성 문제 없음",
+    "coverageGain": "4.6배(1,247→5740), never-attempted 96.71% 커버, JPM 포함 확인",
+    "fiscalYearSampleEstimate": "표본 기준 62%(124/200) — 전체 후보군(4493건)에 적용하면 약 2786건 신규 fiscal_year 확정 추정(표본 기준, 전수 아님)",
+    "notReproducedUniverseNumber": "993의 정확한 '5,972' 유니버스 구성은 여전히 미재현(최근접 5,893 사용) — 995의 결론에 실질적 영향은 없음(비율 지표 위주라 분모 오차가 결론을 바꾸지 않음)",
+    "recommendation_NONE": "🔴 판정은 장은태. 이 STEP은 조사·검증만 하고 도입 여부·적재 여부를 결정하지 않는다."
+  }
+}
