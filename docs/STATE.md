@@ -145,8 +145,8 @@
 61. **Q1 야후 PER 판정 ⓐ(현행 유지)의 선결 질문 — "KR도 지나가는 코드 경로를 읽고 확인하는 것이 US 단독 규칙 위반인가"** — 정해지지 않으면 Q1 ④(야후 밸류 렌즈 제거)를 실행할 수 없다. → `docs/Q1_YAHOO_REMOVAL.md` §판정
 
 **절차 결함(991 신규 등재 — 이번 사고의 본체)**
-62. 🔴 **GitHub Actions "verify" CI가 38시간·25개 STEP 동안 main·revdcf-preview 양쪽에서 빨간불이었으나 아무도 결과를 보지 않았다(990 발견)** — 🔴 **저장소가 Public이라 `github.com/soulmaten7/stock-terminal/actions`는 로그인 없이 누구나 볼 수 있었다**(991 재확인) — Sentry(로그인 필요)와 달리 접근 장벽이 아예 없었는데도 38시간 동안 안 봤다는 점이 절차결함의 성격을 더 분명히 한다. COMMIT_GATES 게이트 8이 Cowork 쪽(push 후 확인)은 막지만, **크론이 매일 올리는 알림을 누가 언제 보는가**는 여전히 미정. 판정 필요. → `docs/probe_990_build_fix.json`
-63. 🔴 **Sentry health가 11일간 매일 `lens_cuts` stale(최대 276.6h)을 Error·High로 올렸으나 전부 Unassigned, 대응 0건(982 발견)** — 62번과 **같은 뿌리**다: 감시 장치는 이미 충분히 있고 정확히 작동했다. 보는 절차가 없었다. 판정 필요. → `docs/LENS_CUTS_FREEZE_982.md`
+62. ✅ **처방 확정(992, 판정일 2026-08-11)** — 🔴 **GitHub Actions "verify" CI가 38시간·25개 STEP 동안 main·revdcf-preview 양쪽에서 빨간불이었으나 아무도 결과를 보지 않았다(990 발견)** — 🔴 **저장소가 Public이라 `github.com/soulmaten7/stock-terminal/actions`는 로그인 없이 누구나 볼 수 있었다**(991 재확인) — Sentry(로그인 필요)와 달리 접근 장벽이 아예 없었는데도 38시간 동안 안 봤다는 점이 절차결함의 성격을 더 분명히 한다. **처방** = 매일 08:00 KST 신선도 점검(`trig_01SyGJuDEYUBT9xkm1JUSPa8`) + 일요일 08:00 KST 주간 요약(`trig_018ZvkjCwYWeYtzpC4nPZhr9`, Cowork 예약·Vercel 크론 아님) + `COMMIT_GATES.md` 게이트 9(신선도 점검 등록 게이트, 범위 밖 실패 방지). 🔴 **남는 것**: 예약 자체가 꺼지거나 실패하면 주간 요약이 잡지만, **주간 요약이 꺼지면 잡을 것이 없다** — 매일 점검 → 주간 요약 → ? 사슬의 마지막 고리가 비어 있다(이번에 처방하지 않음). → `docs/probe_990_build_fix.json`·`docs/CRON_OBSERVABILITY.md` §5
+63. ✅ **처방 확정(992, 판정일 2026-08-11)** — 🔴 **Sentry health가 11일간 매일 `lens_cuts` stale(최대 276.6h)을 Error·High로 올렸으나 전부 Unassigned, 대응 0건(982 발견)** — 62번과 **같은 뿌리**다: 감시 장치는 이미 충분히 있고 정확히 작동했다. 보는 절차가 없었다. **처방** = 62번과 동일(매일 점검 + 주간 요약 + 게이트 9) — `lens_cuts`는 매일 점검 표(`docs/CRON_OBSERVABILITY.md` §5-2)에 49h 임계로 명시 등재. 🔴 남는 구멍도 62번과 동일. → `docs/LENS_CUTS_FREEZE_982.md`·`docs/CRON_OBSERVABILITY.md` §5
 
 **DoD·완성 기준**
 19. **DoD7(화면 일관성) — "같은 이름"의 정의 자체가 원문에 없음**(923·929) — `years` 배지·육안검증 둘 다 해소됐으나 이 정의 공백 하나가 남아 🔶 미결. → `LENS_COMPLETION_STANDARD.md`
@@ -193,5 +193,5 @@
 
 - **Q1 착수 준비**: 판정 ⓛ(disagree 표시 규칙) · 판정 ⓜ(축 구성 A~D) · 판정 ⓞ(배율 표시 형태·백분위 대조군 제거 시점) · 선결질문(61번, KR 공유코드 열람이 US단독 위반인가) · 「기존 7렌즈 수리 vs Q1~Q4 카드 신설」 판정 · EV/EBITDA·PSR SEC 태그 조립.
 - **① 최우선 확인 대기**(위 참조) — 2026-08-12 06:30/07:45 KST 크론 후 확인 항목 ①~⑬.
-- **절차 결함 판정**(62·63번) — 크론이 매일 올리는 알림(GitHub Actions verify·Sentry health)을 누가 언제 보는가.
+- ✅ **절차 결함 처방 확정**(62·63번, 992) — 매일 점검+주간 요약+게이트 9. 남는 것 = 주간 요약 자체가 꺼지는 경우의 마지막 고리(미처방).
 - ④ 미해결 목록 중 장은태가 판정 우선순위를 정하는 항목부터.
