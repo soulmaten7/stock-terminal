@@ -188,6 +188,7 @@
 - **활성 시장 = KR·US뿐**(JP/CN(HK)/VN/GB 파킹 — `lib/activeMarkets.ts`). **7렌즈 = 유지·수정만**(깊이확장은 역DCF 완성 뒤). 판정 = 분포 유도 컷(`lens_cuts` p30/p70·RSI 30/70·F-Score 3/7만 고정). 미착수: JP/CN/VN/GB 렌즈 선계산·대화형 LLM·푸시/앱스토어.
 - 사업자 **원트릴리언**(대표 장은태·210-39-33812) · **"종목을 보는 눈을, 누구에게나."**(무기·직시·자립·멍거 톤·예측·추천 안 함) · 5면·i18n ko·en 패리티.
 - 🗂️ **문서 구조**: `docs/`에 `INDEX.md`(전체 카탈로그, 상태표기 4종) 존재 — 새 세션은 이 STATE 다음 필요시 그쪽을 본다. STEP 명령서는 이동 금지(참조·실행 관례).
+- 📚 **데이터 소스 카탈로그①(STEP997, 2026-08-12)** = `docs/DATA_SOURCE_CATALOG.md`(정본)·`docs/data_source_catalog.xlsx`(사본) — 이미 쓰는 5개 기관(SEC·Yahoo·Nasdaq·Damodaran·SPDR)의 전체 엔드포인트/데이터셋 전수(SEC 13·Yahoo 25+·Nasdaq 24·Damodaran 약30·SPDR 5제품군), 각각 필드·정의·형식·레이트리밋·우리 사용여부·공식변수 자리 후보. **즉시 이득 판정 3건**: ① SEC `frames` API는 993 병목(순증40건/일) 대체 **불가**(STEP838~840에서 개별판정 부적합 이미 확정 + 995~996 벌크ZIP이 이미 해결) ② Financial Statement Data Sets(분기CSV)도 태그조립 대체 불필요(스키마 다름·갱신 더 느림) ③ 나스닥 스크리너 `marketCap`(이미 `us_sector_nasdaq.market_cap`로 부분 적재됨)·야후 `quoteSummary`(v7/quote와 별도 코드경로)가 미해결14번(LOCAL_OK_PROD_FAIL) 우회 후보(미검증). Damodaran 신규발견 4건(`ratings.xls`=종목별부채비용·`fundgrEB.xls`=성장경로층5 후보·`histimpl.xls`=내재ERP·`vebitda.xls`=EV/EBITDA배수) — 원전대조표 전 판정 안 함. ②단계(FRED·Treasury 등 신규 기관)는 범위 밖.
 - **Cowork=두뇌**(설계·문서·Supabase MCP·실행 안 함) / **Claude Code=손**(STEP 실행·빌드·git). 세션 종료 = STATE 덮어쓰기+CHANGELOG+push.
 
 ---
