@@ -1574,6 +1574,29 @@ const throttle = async () => {
 
 원자료 = `docs/probe_993_coverage_bottleneck.json`(발견)·`docs/probe_994_throttle_fix.json`(수정·검증). **배포(push) 여부는 장은태 판정 대기 — 994는 로컬 커밋까지만.**
 
+### §10-G. `us_fundamentals` 조달 경로 이원화 — SEC 벌크(companyfacts.zip) 도입(STEP 995 검증 → STEP 996 1차 적재, 2026-08-11)
+
+**배경**: §10-F가 throttle 버그를 고쳤지만(994), 993이 지목한 진짜 병목(4,660건 `NEVER_ATTEMPTED` — CIK당 개별 SEC API 호출로는 하루 40건씩만 순증)은 throttle 수정만으로 안 풀렸다. SEC가 공식 권고하는 벌크 파일(`companyfacts.zip`, 매일 03시 ET 갱신, 전체 XBRL 필러 스냅샷)을 도입 경로로 995가 검증했다.
+
+**Range 부분접근 방식(995 실증, 996 재사용)**: 1.4GB 파일을 통째로 받거나 압축해제(실측 19.2GB, 로컬 디스크 12GB로 불가능)하지 않고, ZIP 포맷을 직접 파싱해 **필요한 CIK만** HTTP Range로 뽑는다.
+1. 꼬리 64KB를 Range로 받아 EOCD(End Of Central Directory) 시그니처(`0x06054b50`)를 찾는다.
+2. EOCD가 가리키는 중앙 디렉터리(전체, 995 실측 1.78MB)를 한 번에 Range로 받아 20,200개 엔트리(이름·압축크기·원본크기·로컬헤더 오프셋)를 파싱한다 — **이 단계까지 개별 파일 데이터는 0바이트.**
+3. 필요한 CIK(`CIK{10자리 zero-padded}.json` — `route.ts`의 SEC API URL 생성 로직과 동일 패턴)의 로컬헤더 오프셋으로 Range 요청 1회 → DEFLATE 압축 해제(`zlib.inflateRawSync`) → `computeDrivers()` 그대로 적용.
+
+**값 일치(995, 20개 CIK 딥비교) → 1차 적재로 재확인(996, 4,493건 규모)**: 벌크에서 뽑은 데이터를 API로 받던 것과 **완전히 같은 함수**(`computeDrivers()`)에 넣으므로, 데이터 자체가 같으면 산출값도 같다 — 995가 20/20 완전 일치로 이를 증명했다.
+
+**1차 적재(996) — 신규만, 기존 불가침**:
+- 대상: `fund_universe`(mcap∩cik) 중 `us_fundamentals`에 없던 4,646건 → 벌크에 있는 4,493건(153건은 벌크에도 없음, XBRL 비제출 추정)을 추출·계산 후 **`upsert(..., {onConflict:'symbol', ignoreDuplicates:true})`로 삽입** — Postgres `ON CONFLICT DO NOTHING`이라 **기존 행을 원리적으로 건드릴 수 없는** 방식을 선택(단순 `insert()`는 배치 내 1건 충돌만으로 전체 배치가 실패해 오히려 부분성공 파악이 어려움).
+- **결과**: `us_fundamentals` 1,247→**5,740행**(4.6배), `fiscal_year` 확정 1,031→**3,752행**(995의 표본추정 62%와 실측 60.6%가 거의 일치). **JPM 포함 확인**(fiscal_year=2025).
+- **969 백필 사고(191종목 오염) 재발 방지 절차 실행**: 적재 전 `us_fundamentals_snapshot`(tag=`pre_step996`, 1,247행, 951·963·967·969와 동일 관례) + 전체 컬럼 md5 지문(파일) 이중 확보 → 적재 후 **기존 1,247행 지문 0건 변경** 확인.
+- **파생 테이블(`us_valuation`·`us_sector_relative`·`revdcf_results`·`lens_*`) 미접촉** — 코드에 write 호출 자체가 없음(스크립트 전문 = `scripts/probe_996_bulk_load.ts`). 다음 정규 크론(revdcf 22:45 UTC)이 확장된 `us_fundamentals`를 읽어 파생 테이블을 채운다.
+
+**다음 크론 영향(계산만, 미실행)**: `us_valuation` 예상 행수 **3,752**(시총+fiscal_year 둘 다 있는 교집합) · rest 잔여 **4,646→153건**(벌크에도 없는 것만 남음) · `us_sector_relative`의 `minSample=20` 경계 — Real Estate PER(현재 n=13)·Financials EV/EBITDA(현재 n=17)가 전체 성장률(3.64배) 비례 적용 시 20을 넘을 가능성(**예측, 실측 아님** — EV/EBITDA는 태그 커버리지가 더 낮아 비례보다 느릴 수 있음).
+
+**남은 것(판정 필요)**: 기존 1,247행의 값 자체 갱신 여부(벌크가 더 최신일 수 있음, 995의 "다르면 이득" 원칙과 이어지는 별도 판정) · 크론의 벌크 전환 여부(993 §4 선택지 3안) · 갱신 주기 · 벌크에 없는 잔여 153건의 개별 사유 규명.
+
+원자료 = `docs/probe_995_sec_bulk.json`(검증)·`docs/probe_996_bulk_load.json`(1차 적재).
+
 | # | 항목 | 어떻게 풀리나 |
 |---|---|---|
 | 1 | 🔶 ~~✅ 유니버스 N=623 확정~~ → **재개방(A-9)** — 616/604로 정정됐고, 그마저 **물려받은 1,000 안에서의 값**이다 | STEP 838 → 842 → **866 재확정** |
