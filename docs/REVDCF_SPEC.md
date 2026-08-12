@@ -1098,8 +1098,24 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 **WACC 조립** (다모다란 완성 Cost of Capital 열 미사용·§12): `Ke=rf+β_relever×ERP · β_relever=β_u_cash×[1+(1−t)D/E] · atCoD=(rf+spread)(1−t) · WACC=Ke·E/(D+E)+atCoD·D/(D+E)`. 재료 전부 `damodaran_*` DB(값 코드에 안 박음).
 - 🟢 **검산 통과**: 94 업종에서 우리 조립 vs 다모다란 완성 WACC **차이 중앙 0.08%p**(p10 −0.05·p90 +0.25) — 세율 정의 차(우리 marginal 0.2563 vs 그들 eff_tax)뿐. **조립 로직 정확.**
-- **rf 소스 결정**: `damodaran_global_inputs.riskfree_rate`(ERP와 같은 연 스냅샷 = 내부정합). FRED(매일)는 ERP와 짝 안 맞아 보류(일간 rf 변형은 후속).
+- **rf 소스 결정**: `damodaran_global_inputs.riskfree_rate`(ERP와 같은 연 스냅샷 = 내부정합). FRED(매일)는 ERP와 짝 안 맞아 보류(일간 rf 변형은 후속). 🔴 **이 "후속"이 STEP999·1000이다(§10-E 참조).**
 - **D/E = 기업별**(부채÷시총·업종평균 아님) · spread = 주가 std → `damodaran_credit_spread` 밴드.
+
+### 🔶 C-8 §10-E rf 소스 후속 조사 — FRED DGS10 vs Damodaran (STEP 999·1000)
+
+🔴 **정의 대조(999)**: Damodaran의 무위험수익률 정의("10-year Treasury bond rate", `variable.htm` 원문 확인)와 FRED `DGS10`(10-Year Treasury Constant Maturity Rate)은 **완전히 같은 지표** — 대체 시 원전 이탈이 아니다. 신용스프레드(`wacc.xls`/`ratings.xls`의 공유 마스터 스프레드표)는 FRED(등급문자 축)와 (a)등급노치 손실 (b)모델추정 vs 시장관측 개념차 (c)모집단 불일치(FRED는 실채권거래기업만) 3중 문제로 직접대체 불가 — **이번 STEP에서 건드리지 않는다.**
+
+🔴 **조달 경로(무키)**: `https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=...&coed=...` — API 키 불필요, curl과 Node `fetch()` 양쪽에서 재확인(999·1000). 인증 JSON API(`api.stlouisfed.org`)는 키가 필요해 쓰지 않는다. 비거래일은 CSV에 `.`로 표기 — 역순 탐색으로 최근 값을 자동 취득(`lib/revdcf/riskfree.ts` `fetchFredDGS10()` 구현·검증 완료).
+
+🔴 **604 전수 영향 측정(1000, 계산만·DB쓰기0)** — 999의 20종목 표본(카테고리 전환 5%)을 계산가능 440종목 전수로 확장: **전환 6.4%(28/440)** — 표본보다 1.4%p 높다(985·998의 소표본 함정과 같은 방향이나 이번엔 자릿수 차이는 아님). WACC델타 median 68.2bp·p90 70.0bp(1년 rf변동폭 78bp 안쪽). 전이 매트릭스: `years→over_cap` 12 · `below_one→years` 13 · `below_one→over_cap` 1 · `over_cap→value_destroying` 2.
+
+🔴 **이론적 정합성 검산**: "고부채가 더 크게 움직여야 한다"는 두 갈래로 갈린다 — **① WACC델타(bp) 자체는 부채가 클수록 오히려 작아진다**(Q1 69.85bp→Q4 64bp). 산식으로 설명됨: WACC델타=70bp×equityWeight+52bp×debtWeight(52bp=70bp×(1−세율), 이자비용 세금공제로 부채비용 쪽은 rf변화의 70%만 받음) — 부채가 클수록 equityWeight가 줄어 평균이 52bp 바닥 쪽으로 끌려간다. **버그 아님.** **② 그러나 카테고리 전환률은 Q4(최고부채)가 8.2%로 4분위 중 최고**(Q1 7.3%·Q2 5.5%·Q3 4.5%·Q4 8.2%, 비단조) — 레버리지가 verdict 경계 근접도를 증폭시키는 별도 메커니즘으로 추정되나, 경계 근접도 자체는 이번 STEP에서 직접 재지 않아 **정량적 원인은 미규명**으로 남긴다.
+
+🔴 **구현(미배선)**: `lib/revdcf/riskfree.ts` — 순수함수 `resolveRiskFree({source,damodaranValue,damodaranAsOf,fred})`(y=f(x) 원칙 §5-2 그대로 — 계산 공식은 `assembleWacc` 그대로, 값의 출처만 스왑 가능) + 부수효과함수 `fetchFredDGS10()`. **`app/api/cron/revdcf/route.ts`는 이 파일을 import하지 않는다** — 크론 배선 없음. `flags.riskfreeSource: 'damodaran'|'fred'` 필드 설계만(route.ts에는 아직 추가 안 함).
+
+🔴 **값 불변 증명(§3-4)**: `resolveRiskFree(source='damodaran')` 경유로 계산가능 440종목 전부 재계산 → DB 저장값과 **완전 일치**(재현오차 0bp·WACC불일치 0건·verdict불일치 0건). 교체 메커니즘 자체가 기존 값에 부작용을 만들지 않음을 증명.
+
+**판정 대기**: riskfree를 FRED로 교체할지(선택지 A) vs 현행 유지(연1회 Damodaran 스냅샷, ERP와의 내부정합 우선·선택지 B) — 장은태 판정. FRED 채택 시에도 §2-2(어느 날짜 값을 쓸지)·§2-3(무응답 시 폴백)은 별도 확정 필요. 원자료 = `docs/probe_1000_riskfree_fred.json`.
 
 **재료 배선 결정**:
 | 재료 | 결정 | 커버리지(604) | 근거 |

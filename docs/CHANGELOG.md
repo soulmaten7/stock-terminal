@@ -1,5 +1,29 @@
-<!-- 2026-08-10 -->
+<!-- 2026-08-12 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-12 — 🟩 **STEP 1000: riskfree FRED 교체 — 604 전수 영향측정 + 구현(미배선)**
+
+> **성격**: 계산·조사·구현(미배선) — **DB 쓰기 0 · 크론 미호출 · 크론 배선 0 · `damodaran_*` 테이블 무접촉(SELECT만) · KR 무접촉 · `app/(routes)`·`components`·`messages` diff 0.** 🔴 push 안 함 — 커밋만, 배선·배포는 장은태 승인 후.
+
+🔴 **971~999 원장 공백 발견** — `docs/STEP_LEDGER.md`가 970에서 멈춰 있었고 971~999(29개 STEP)가 기록 안 된 채였다. 이번 STEP 범위 밖이라 소급 기록하지 않음, 발견만 남김.
+
+**§1 604 전수 영향 측정** — 999의 20종목 표본(카테고리 전환 5%)을 계산가능 440종목 전수로 확장(`scripts/probe_1000_riskfree_604.ts`, reverse-derive creditSpread from 저장 WACC 재현오차 0bp, riskFree만 Damodaran 3.95%↔FRED 4.65% 교체). **전환 6.4%(28/440)** — 표본보다 1.4%p 높음(985·998의 소표본 함정과 같은 방향이나 자릿수 차이는 아님). WACC델타 median 68.2bp·p90 70.0bp. 전이 매트릭스: `years→over_cap` 12·`below_one→years` 13·`below_one→over_cap` 1·`over_cap→value_destroying` 2.
+
+🔑 **이론적 정합성 검산 이원화** — ① WACC델타(bp)는 부채가 클수록 오히려 작아진다(Q1 69.85bp→Q4 64bp) — 산식(70bp×equityWeight+52bp×debtWeight, 52bp=70bp×(1−세율)·이자비용 세금공제)으로 완전히 설명됨, 버그 아님. ② 그러나 카테고리 전환률은 Q4(최고부채)가 8.2%로 4분위 중 최고(비단조) — 레버리지가 verdict 경계 근접도를 증폭시키는 것으로 추정되나 경계근접도 자체는 재지 않아 정량적 원인은 미규명.
+
+**§2 FRED 조달 경로(설계만)** — 무키 CSV(`fredgraph.csv?id=DGS10`) 999·1000 두 세션에서 재확인(curl+Node fetch 둘 다). 인증 JSON API는 키 필요해 미사용(신규 발급 안 함). 날짜선택(당일/전일/평균)·무응답 폴백(damodaran 복귀/직전 FRED 재사용/skip) 옵션만 제시 — 판정 안 함.
+
+**§3 구현(미배선)** — `lib/revdcf/riskfree.ts` 신설: 순수함수 `resolveRiskFree({source,damodaranValue,damodaranAsOf,fred})`(y=f(x) 원칙 — 계산식은 `assembleWacc` 그대로, 값의 출처만 스왑) + 부수효과함수 `fetchFredDGS10()`. **`app/api/cron/revdcf/route.ts`는 이 파일을 import하지 않는다**(grep 재확인) — 크론 배선 없음. `flags.riskfreeSource` 필드는 타입 설계만.
+
+**§3-4 값 불변 증명** — `resolveRiskFree(source='damodaran')` 경유로 440종목 전부 재계산 → DB 저장값과 **완전 일치**(재현오차 0bp·WACC불일치 0건·verdict불일치 0건) — 교체 메커니즘 자체가 부작용을 만들지 않음을 증명. FRED 1회 실측(2026-08-10 4.72%, 999시점 4.65%와 5거래일 7bp차·예상범위 내).
+
+**§4 클린클론 빌드** — `git clone`(로컬)→`npm ci`→`npm run build`(성공)→`tsc --noEmit`(0 errors)→`vitest run`(34파일/367테스트 전부 통과).
+
+**§5 문서** — `docs/probe_1000_riskfree_fred.json` 신설(원자료 전체) · `docs/REVDCF_SPEC.md` §10-E 신설(정의대조·조달경로·604측정·이론검산·구현·값불변 정리 — STEP849의 "일간 rf변형은 후속" 기록이 이 STEP임을 교차링크) · `docs/STATE.md` 69번 신규(67·68은 999가 이미 기록, 604스케일 확인만 추가) + 헤더 날짜 갱신 · `docs/STEP_LEDGER.md`(971~999 공백 기록 + 1000행).
+
+**못 한 것** — §2-2 날짜선택·§2-3 폴백 판정 안 함(옵션만) · 카테고리전환 비단조성의 정량 원인(경계근접도) 미측정 · riskfreeSource='fred' 실제값(4.72%)으로 604전수 재계산은 안 함(999값 4.65% 재사용만) · 971~999 원장공백은 발견만(백필 안 함).
+
+**판정 필요** — A(FRED로 riskfree 교체 배선) vs B(현행 유지, ERP와의 내부정합 우선) vs 날짜선택·폴백 선결 후 A. 판정 전까지 배선하지 않는다.
 
 ## 2026-08-10 (141) — 🟩 **STEP 970: 새 창 라이브 검증 + 수익화 사전조사 기록**
 

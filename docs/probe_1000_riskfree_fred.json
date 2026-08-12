@@ -1,0 +1,154 @@
+{
+  "step": 1000,
+  "title": "riskfree를 FRED DGS10으로 교체 — 604 전수 영향 측정 + 구현(미배선)",
+  "invariants": {
+    "dbWrites": 0,
+    "cronInvoked": false,
+    "cronWired": false,
+    "damodaranTablesModified": false,
+    "krTouched": false,
+    "appRoutesComponentsMessagesDiff": 0,
+    "envVarsTyped": false,
+    "apiKeyIssued": false
+  },
+  "section1_604_universe_measurement": {
+    "method": "scripts/probe_1000_riskfree_604.ts — 999의 20종목 표본을 604 전수(계산가능 440건)로 확장. reverse-derive creditSpread from stored WACC(0bp 재현오차), riskFree만 Damodaran(3.95%)↔FRED(4.65%, 999 시점값 재사용 — 일관성 위해 고정) 교체해 WACC·verdict 재계산.",
+    "universeAsOf": "2026-08-11",
+    "totalRows": 604,
+    "computable": 440,
+    "skippedNoRevenue": 0,
+    "analyzed": 440,
+    "reconstructionCheck": { "maxErrorBp": 0, "errorsOver1bp": 0 },
+    "waccDeltaBpStats": {
+      "n": 440, "median": 68.21385143361572, "p90": 69.99948866573347, "max": 70.00000000000006, "min": 55.34582249801433, "avg": 67.50331370869058
+    },
+    "kindChanged": { "count": 28, "total": 440, "pct": 6.4 },
+    "transitionMatrix": {
+      "years→over_cap": 12, "below_one→years": 13, "below_one→over_cap": 1, "over_cap→value_destroying": 2
+    },
+    "comparisonToStep999Sample": {
+      "sampleN": 20, "sampleKindChangedPct": 5, "fullN": 440, "fullKindChangedPct": 6.4,
+      "verdict": "999의 20종목 표본(5%)은 방향은 맞았으나 과소추정 — 전수(6.4%)가 1.4%p 높다. 985·998의 소표본 함정과 같은 성격(과소추정), 다만 이번엔 정도가 작다(1.4%p, 자릿수 차이 아님)."
+    },
+    "bySector": {
+      "Health Care": { "n": 73, "kindChanged": 1, "avgWaccDeltaBp": 67.82 },
+      "Materials": { "n": 27, "kindChanged": 1, "avgWaccDeltaBp": 66.91 },
+      "Energy": { "n": 16, "kindChanged": 1, "avgWaccDeltaBp": 66.4 },
+      "Information Technology": { "n": 93, "kindChanged": 3, "avgWaccDeltaBp": 68.84 },
+      "Industrials": { "n": 101, "kindChanged": 7, "avgWaccDeltaBp": 67.85 },
+      "Consumer Staples": { "n": 25, "kindChanged": 3, "avgWaccDeltaBp": 67.05 },
+      "Communication Services": { "n": 17, "kindChanged": 1, "avgWaccDeltaBp": 65.99 },
+      "Consumer Discretionary": { "n": 56, "kindChanged": 7, "avgWaccDeltaBp": 67.16 },
+      "Financials": { "n": 12, "kindChanged": 2, "avgWaccDeltaBp": 66.43 },
+      "Utilities": { "n": 19, "kindChanged": 2, "avgWaccDeltaBp": 63.27 },
+      "Real Estate": { "n": 1, "kindChanged": 0, "avgWaccDeltaBp": 68.68 }
+    },
+    "byDebtQuartile": [
+      { "label": "Q1(최저부채)", "n": 110, "deRatioRange": [0, 0.02987399831370749], "avgWaccDeltaBp": 69.85, "kindChangedPct": 7.3 },
+      { "label": "Q2", "n": 110, "deRatioRange": [0.030718149962848055, 0.11056422113963764], "avgWaccDeltaBp": 68.84, "kindChangedPct": 5.5 },
+      { "label": "Q3", "n": 110, "deRatioRange": [0.11142356888850782, 0.2521306452267213], "avgWaccDeltaBp": 67.32, "kindChangedPct": 4.5 },
+      { "label": "Q4(최고부채)", "n": 110, "deRatioRange": [0.25262641087779913, 4.458463306381361], "avgWaccDeltaBp": 64, "kindChangedPct": 8.2 }
+    ],
+    "theoreticalSanityCheck": {
+      "claim": "고부채 종목이 더 크게 움직이는 게 이론상 맞다 — 그렇지 않으면 계산이 잘못된 것이다(STEP1000 지시문)",
+      "finding": "두 지표가 반대 방향으로 갈린다 — 둘 다 이론과 정합적이며 서로 다른 메커니즘을 반영한다.",
+      "waccDeltaBp_shrinks_with_debt": {
+        "observed": "Q1 69.85bp(70bp 상한 근접) → Q4 64bp(70bp와 52bp 사이)",
+        "explanation": "WACC델타 = 70bp×equityWeight + 52bp×debtWeight (52bp = 70bp×(1−taxRate), taxRate≈0.2563 平均 → 세후부채비용은 리스크프리 변화의 70%만 받는다 — 이자비용 세금공제 때문). 부채(D/E)가 커질수록 equityWeight가 줄고 debtWeight가 늘어 평균 델타가 70bp 쪽에서 52bp 바닥 쪽으로 끌려간다. Q1(거의무부채)→70bp 근접, Q4(최고부채)→64bp(바닥 쪽으로 이동) — 산식과 정확히 일치, 버그 아님."
+      },
+      "kindChangedPct_rises_at_highest_debt": {
+        "observed": "Q1 7.3% → Q2 5.5% → Q3 4.5% → Q4 8.2%(비단조, Q4가 최고)",
+        "explanation": "카테고리 전환은 WACC델타의 '크기'가 아니라 verdict 경계까지의 '거리'에 좌우된다. 고부채(Q4) 종목은 레버리지가 밸류에이션 결과를 증폭시켜(작은 WACC 변화도 GAP 계산의 분모에 큰 영향) 경계 근처에 몰려 있을 수 있다 — bp델타가 작아도 flip률은 높을 수 있다는 뜻. 이 메커니즘은 이번 측정만으로는 완전히 규명되지 않았고(부채구간별 경계 근접도를 직접 재지는 않음), '버그가 아니다'까지만 확인됨 — 왜 Q4가 Q3보다 높은지의 정량적 원인은 미규명."
+      },
+      "verdict": "계산 오류 아님 — 두 지표 모두 산식·메커니즘으로 설명 가능. 다만 kindChangedPct 비단조성의 정량적 원인(경계 근접도)은 이번 STEP에서 추가로 재지 않았다 — 미측정으로 남김."
+    }
+  },
+  "section2_fred_procurement_design": {
+    "access_method": {
+      "decision_input_only": true,
+      "no_key_path": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=YYYY-MM-DD&coed=YYYY-MM-DD — API 키 불필요, 999·1000 두 세션에서 curl과 Node fetch() 둘 다로 재확인",
+      "keyed_path": "FRED 인증 JSON API(https://api.stlouisfed.org/fred/series/observations)는 무료지만 등록 키 필요 — 이 경로는 쓰지 않음(무키 CSV로 충분), 새 키 발급 안 함(CLAUDE.md 환경변수 규칙)"
+    },
+    "date_selection": {
+      "decided": false,
+      "note": "판정 대상 — Damodaran의 시점 관행(연 1회, 매년 1월 초 스냅샷 as_of)과 FRED(일별 갱신)는 근본적으로 다른 캐던스라 '어느 날짜값을 쓸지'는 단순 매핑이 아니다.",
+      "options": [
+        "당일(cron 실행일) 최신 관측치 — 가장 최신이지만 매일 크론 실행 시각에 따라 '전일 종가'와 '금일 아직 미확정' 경계가 모호할 수 있음(999·1000에서 실측한 fredgraph.csv는 마지막 non-'.' 값을 취하므로 자동으로 최근 거래일 값을 반환 — 이 문제는 실질적으로 이미 해소됨)",
+        "전일 종가(trading day close) — 당일 개장 전 실행되는 배치에 더 안전한 관례적 선택",
+        "주간/월간 평균 — 일별 변동성을 완화하지만 원전(Damodaran)의 스냅샷 개념과 더 멀어짐"
+      ],
+      "weekend_holiday_handling": "fredgraph.csv는 비거래일에 값 대신 '.'을 반환한다 — riskfree.ts의 fetchFredDGS10()이 뒤에서부터 역순 탐색해 non-'.' 값을 자동으로 찾으므로 별도 캘린더 로직 없이 이미 처리됨(구현·검증 완료, §3 참조)."
+    },
+    "fallback_options_not_decided": [
+      "FRED 무응답 시 Damodaran 저장값으로 되돌림(riskfreeSource='damodaran' 강제) — 가장 보수적, 계산 지속성 보장",
+      "FRED 무응답 시 직전에 성공적으로 가져온 FRED 값을 재사용(별도 캐시 필요, staleness 추적 필요)",
+      "FRED 무응답 시 해당 종목/사이클 계산을 skip — 데이터 부재를 침묵 처리하지 않는다는 원칙과는 부합하나 커버리지 하락"
+    ]
+  },
+  "section3_implementation_not_wired": {
+    "usage_sites_grep": {
+      "live_production_path": ["app/api/cron/revdcf/route.ts:179-180 (읽기)", "app/api/cron/revdcf/route.ts:267 (assembleWacc 전달)"],
+      "write_path_unaffected": ["scripts/ingest_damodaran.ts:143,146 (damodaran_global_inputs에 값을 쓰는 경로 — riskfree 소스 자체를 바꾸는 것과 무관, 무접촉)"],
+      "test_mocks_unaffected": ["app/api/cron/revdcf/route.test.ts", "app/api/cron/revdcf/route.branches.test.ts", "lib/revdcf/compute.test.ts"],
+      "pure_function_definition": ["lib/revdcf/compute.ts (assembleWacc — riskFree를 그대로 입력받음, 무변경)"],
+      "historical_nonwired_probes_untouched": [
+        "scripts/probe_885_taxrate.ts", "scripts/probe_851_inflation.ts", "scripts/probe_951c_verify.ts",
+        "scripts/probe_866c_otc_supply.ts", "scripts/probe_883_i_eq_rf.ts", "scripts/probe_849_analyze.ts",
+        "scripts/probe_881_wacc.ts", "scripts/probe_906_growth_fit.ts", "scripts/probe_969_impact.ts",
+        "scripts/probe_866_universe.ts", "scripts/probe_906_wc_debt.ts", "scripts/probe_879_driver5_d.ts",
+        "scripts/probe_871_driver1_sources.ts", "scripts/probe_882_inflation.ts", "scripts/probe_878_driver5.ts",
+        "scripts/probe_876_wc_tags.ts", "scripts/probe_909_wc_sign.ts", "scripts/compute_revdcf_all.ts",
+        "scripts/probe_874_wc.ts"
+      ]
+    },
+    "new_files_created": {
+      "lib/revdcf/riskfree.ts": "순수함수 resolveRiskFree({source,damodaranValue,damodaranAsOf,fred}) + 부수효과함수 fetchFredDGS10(). route.ts는 이 파일을 import하지 않는다(배선 없음) — grep으로 재확인 필요.",
+      "scripts/probe_1000_riskfree_604.ts": "§1 604전수 측정 스크립트",
+      "scripts/probe_1000_riskfree_fred.ts": "§3-4 값불변증명 + FRED 1회 실측 스크립트"
+    },
+    "flags_riskfreeSource_design": {
+      "decided_shape": "flags.riskfreeSource: 'damodaran' | 'fred', 실제 사용값과 as_of를 함께 기록",
+      "status": "타입 설계만 — route.ts의 flags 객체에는 아직 추가하지 않음(배선 금지 범위에 포함). resolveRiskFree()의 반환 타입 RiskFreeResolution={value,source,asOf}가 이 필드를 그대로 채울 수 있는 형태로 이미 준비돼 있다."
+    }
+  },
+  "section3_4_value_invariance_proof": {
+    "method": "resolveRiskFree({source:'damodaran', damodaranValue, damodaranAsOf}) 경유로 riskFree를 얻어 440건 전부 WACC·verdict 재계산, DB 저장값과 대조",
+    "result": {
+      "universeAsOf": "2026-08-11", "computable": 440, "checked": 440, "skippedNoRevenue": 0,
+      "maxWaccErrorBp": 0, "waccMismatchOver1bp": 0, "verdictMismatch": 0,
+      "conclusion": "완전 일치(440/440) — 새 resolveRiskFree() 경유 로직이 source='damodaran'일 때 기존 프로덕션과 값 차이를 전혀 만들지 않는다. 교체 메커니즘 자체는 안전."
+    },
+    "resolverIdentityCheck": { "resolved_value": 0.0395, "damodaran_stored_value": 0.0395, "resolverIdentical": true }
+  },
+  "fred_live_fetch_202608": {
+    "value": 0.0472, "asOf": "2026-08-10",
+    "note": "999(2026-08-07 실측 4.65%)와 다른 값 — 5거래일 사이 7bp 변동, 예상 범위 내(999의 1년 변동폭 78bp와 정합). §1의 604전수 측정은 999와의 직접비교를 위해 999의 시점값(4.65%)을 그대로 재사용했다 — 이 실측(4.72%)은 fetchFredDGS10() 함수가 실제로 동작함을 보여주는 별도 검증일 뿐, §1 결과에 반영되지 않았다."
+  },
+  "cleanCloneBuild": {
+    "method": "git clone (local) → npm ci → npm run build → tsc --noEmit → vitest run, 새로 만든 3개 파일만 add",
+    "result": { "build": "success", "tsc": "0 errors", "vitest": "34 test files / 367 tests, 전부 통과" }
+  },
+  "notDone": [
+    "§2-2 날짜 선택(당일/전일/평균) — 판정 미결, 옵션만 제시",
+    "§2-3 fallback 방식 — 판정 미결, 옵션만 제시",
+    "카테고리 전환 비단조성(Q4 kindChangedPct 최고인 이유)의 정량적 메커니즘 — '버그 아님'까지만 확인, 경계근접도 직접 측정 안 함",
+    "STEP_LEDGER.md 971~999 구간이 비어 있음(이번 STEP에서 발견, 백필하지 않음 — 범위 밖)",
+    "신용스프레드는 이번 STEP 지시대로 건드리지 않음(999에서 이미 구조적 문제로 기각)"
+  ],
+  "unmeasured": [
+    "FRED riskfree 교체를 실제 배선했을 때 크론 실행시간·SEC 요청횟수에 미치는 영향(추가 HTTP 호출 1회/사이클이지만 실측 안 함)",
+    "riskfreeSource='fred' 실제 값으로 604 전수를 재계산한 결과와 §1(999 시점값 재사용)의 미세한 차이(4.65% vs 4.72% — 7bp 차이가 결과를 흔들 가능성은 낮으나 확인 안 함)"
+  ],
+  "newlyDiscovered": [
+    "STEP849(REVDCF_SPEC.md:1101)가 이미 'FRED(매일)는 ERP와 짝 안 맞아 보류(일간 rf 변형은 후속)'이라 기록해 두었다 — STEP1000은 이 '후속'을 실행한 것이며, 방향 전환이 아니라 예정된 후속 조사다.",
+    "WACC델타가 부채수준에 따라 축소되는 정확한 산식(70bp×equityWeight+52bp×debtWeight, 52bp=70bp×(1−taxRate))을 도출 — 향후 민감도 설명에 재사용 가능",
+    "STEP_LEDGER.md에 971~999 구간 누락 발견(이 STEP 범위 밖, 기록만)"
+  ],
+  "needsJudgment": [
+    "선택지 A: riskfree를 FRED로 교체 배선 — 604전수 영향(6.4% 카테고리 전환, 999 대비 1.4%p 과소추정됐던 소표본 확인됨)을 근거로 장은태 판정",
+    "선택지 B: 현행 유지(Damodaran 연1회 스냅샷) — ERP와의 내부정합성(STEP849 근거) 유지",
+    "선택지 C: §2-2 날짜 선택 방식 확정 후 A 진행",
+    "선택지 D: §2-3 fallback 방식 확정 후 A 진행",
+    "판정 없이는 배선하지 않는다(STEP1000 지시 그대로 유지)"
+  ]
+}
