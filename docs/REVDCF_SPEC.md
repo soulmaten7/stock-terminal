@@ -1105,6 +1105,8 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 🔴 **정의 대조(999)**: Damodaran의 무위험수익률 정의("10-year Treasury bond rate", `variable.htm` 원문 확인)와 FRED `DGS10`(10-Year Treasury Constant Maturity Rate)은 **완전히 같은 지표** — 대체 시 원전 이탈이 아니다. 신용스프레드(`wacc.xls`/`ratings.xls`의 공유 마스터 스프레드표)는 FRED(등급문자 축)와 (a)등급노치 손실 (b)모델추정 vs 시장관측 개념차 (c)모집단 불일치(FRED는 실채권거래기업만) 3중 문제로 직접대체 불가 — **이번 STEP에서 건드리지 않는다.**
 
+🔴 **정정(1002, 1001 발견) — 위 "완전 일치"는 정의 문구 층위에서만 맞고, 값 층위에서는 틀렸다.** 999는 "10-year Treasury bond rate"라는 문구가 같다는 것만 대조했다. 그러나 1001이 `ERPbymonth.xlsx`를 직접 열어보니 Damodaran은 raw Treasury(`T.Bond Rate`)와 별도로 **자체조정 "$ Riskfree Rate" 계열**(산식 미공개)을 갖고 있고, 그가 **실제로 wacc.xls·ERP 계산에 쓰는 값은 후자**다 — 우리 저장값(0.0395)이 정확히 이 "$ Riskfree Rate"와 일치하고 raw Treasury/FRED(≈0.0418~0.047대)와는 다르다. **FRED DGS10은 정의는 같은 말을 쓰지만 Damodaran이 실제로 쓰는 계열이 아니므로, #14 슬롯의 후보 자격 자체가 없다** — 짝 제약(1001의 선택지A 철회 사유) 이전에 이미 부적격이었다. 상세 = `docs/DATA_SOURCE_CATALOG.md` 카테고리20·슬롯#14(1002 정정) · `docs/probe_1001_erp_pair.json`.
+
 🔴 **조달 경로(무키)**: `https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd=...&coed=...` — API 키 불필요, curl과 Node `fetch()` 양쪽에서 재확인(999·1000). 인증 JSON API(`api.stlouisfed.org`)는 키가 필요해 쓰지 않는다. 비거래일은 CSV에 `.`로 표기 — 역순 탐색으로 최근 값을 자동 취득(`lib/revdcf/riskfree.ts` `fetchFredDGS10()` 구현·검증 완료).
 
 🔴 **604 전수 영향 측정(1000, 계산만·DB쓰기0)** — 999의 20종목 표본(카테고리 전환 5%)을 계산가능 440종목 전수로 확장: **전환 6.4%(28/440)** — 표본보다 1.4%p 높다(985·998의 소표본 함정과 같은 방향이나 이번엔 자릿수 차이는 아님). WACC델타 median 68.2bp·p90 70.0bp(1년 rf변동폭 78bp 안쪽). 전이 매트릭스: `years→over_cap` 12 · `below_one→years` 13 · `below_one→over_cap` 1 · `over_cap→value_destroying` 2.
