@@ -15,15 +15,25 @@ export type SectorMap = {
   source: "damodaran";
 };
 
+// STEP 973이 us_sector_wide에 쓴 패턴 그대로(order desc·limit 1·maybeSingle) — 973/954 둘 다 이 모양을 썼다.
+// 🔴 STEP1004 — 이전엔 이 파일 아래쪽(resolveSector 구간)에서만 쓰던 사설(module-private) 함수였다. damodaran_*
+//   테이블의 .single()/무필터 select를 전부 "최신 as_of로 먼저 좁힌다" 방식으로 통일하기 위해 export해서
+//   route.ts·page.tsx·compute_revdcf_all.ts가 새 패턴을 만들지 않고 이 함수를 그대로 재사용하게 한다.
+export async function latestAsOf(sb: SupabaseClient, table: string): Promise<string | null> {
+  const { data } = await sb.from(table).select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle();
+  return (data as { as_of: string } | null)?.as_of ?? null;
+}
+
 export async function fetchSectorMap(
   sb: SupabaseClient,
   opts: { field: "industryGroup"; source: "damodaran" }
 ): Promise<SectorMap> {
-  // STEP 954 — damodaran_industry는 UNIQUE(as_of, exchange, ticker). 이 함수 호출은 as_of로 안 거르므로
-  // (테이블 전체가 현재 as_of 1개뿐이라 (exchange, ticker)만으로 전순서) 🔴 as_of가 2개 이상이 되면
-  // (exchange, ticker)만으로는 더 이상 고유 전순서가 아니게 된다 — 그때는 as_of를 orderBy 맨 앞에 추가할 것.
+  // STEP 954 주석의 지시대로 처리(STEP1004) — as_of가 늘어 (exchange, ticker)만으로 전순서가 안 되는 문제를
+  // 최신 as_of로 먼저 좁혀서 해소한다. industryAsOf가 null(빈 테이블)이면 필터 없이 그대로 두어도 결과가
+  // 어차피 빈 배열이라 안전하다(§3-3 0-as_of 케이스).
+  const industryAsOf = await latestAsOf(sb, "damodaran_industry");
   const rows = await fetchAllRows<{ ticker_norm: string; industry_group: string }>(
-    () => sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true),
+    () => (industryAsOf ? sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("as_of", industryAsOf).eq("is_us_listed", true) : sb.from("damodaran_industry").select("ticker_norm, industry_group").eq("is_us_listed", true)),
     [{ column: "exchange", nullsFirst: true }, { column: "ticker" }]
   );
   const byTicker = new Map(rows.map((r) => [r.ticker_norm, r.industry_group]));
@@ -59,11 +69,6 @@ const NASDAQ_TO_GICS: Record<string, string> = {
 
 const SIC_CONSENSUS_THRESHOLD = 0.7;
 
-async function latestAsOf(sb: SupabaseClient, table: string): Promise<string | null> {
-  const { data } = await sb.from(table).select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle();
-  return (data as { as_of: string } | null)?.as_of ?? null;
-}
-
 /**
  * Q0 섹터 해석기 — 대상 티커별 섹터를 0~4순위로 해석한다.
  * 🔴 942(장은태 A안): 3순위 = 야후 assetProfile 단독(SPDR 정답지 대비 95.8%, 나스닥∩SIC 95.3%보다 높음 — 941 실측).
@@ -82,10 +87,10 @@ export async function resolveSector(
   const targetNormToOriginal = new Map(targets.map((t) => [norm(t), t]));
 
   // ── crossCheck 재료 준비(모든 tier의 채택 결과에 동봉) — 나스닥·SIC·야후를 미리 전부 읽는다 ──
-  // STEP 954 — damodaran_industry UNIQUE(as_of, exchange, ticker), 이 fetch는 as_of로 안 거름(테이블이
-  // as_of 1개뿐이라 (exchange,ticker)만으로 전순서 — as_of가 늘면 orderBy 맨 앞에 추가할 것, fetchSectorMap과 동일 사유).
+  // STEP 954 주석의 지시대로 처리(STEP1004) — fetchSectorMap과 동일 사유, 최신 as_of로 먼저 좁힌다.
+  const damodaranIndustryAsOf = await latestAsOf(sb, "damodaran_industry");
   const damo = await fetchAllRows<{ ticker_norm: string; primary_sector: string | null; sic_code: string | null }>(
-    () => sb.from("damodaran_industry").select("ticker_norm, primary_sector, sic_code").eq("is_us_listed", true),
+    () => (damodaranIndustryAsOf ? sb.from("damodaran_industry").select("ticker_norm, primary_sector, sic_code").eq("as_of", damodaranIndustryAsOf).eq("is_us_listed", true) : sb.from("damodaran_industry").select("ticker_norm, primary_sector, sic_code").eq("is_us_listed", true)),
     [{ column: "exchange", nullsFirst: true }, { column: "ticker" }]
   );
   const damoByNorm = new Map(damo.map((r) => [r.ticker_norm, r]));

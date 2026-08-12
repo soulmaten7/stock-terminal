@@ -1145,6 +1145,22 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 🔴 **스키마 설계(구현 안 함, 승인 후 별도 판정)**: 옵션1(같은 테이블에 `riskfree_erp_source`·`riskfree_erp_month` 컬럼 추가, 항상 1행 유지·UPDATE로만 갱신 — `.single()` 안 깨짐·route.ts 무수정 가능) vs 옵션2(별도 테이블, route.ts 코드 변경 필요 — 이번 STEP의 route.ts 무수정 원칙과 충돌). 조달 배치 위치(ingest_damodaran.ts 통합 vs 별도 스크립트)도 미결 — 1002 원칙(파일마다 갱신주기가 다르다)에 비추면 별도 스크립트가 원칙적으로 더 맞으나 고르지 않음. 원자료 = `docs/probe_1003_erp_monthly.json`.
 
+### 🟢 C-8 §10-H `.single()` 파손 방지 — damodaran_* 조회 방식 수정 (STEP 1004, 배선 완료)
+
+🔴 **1003이 찾아낸 파손 경로가 실제로 고쳐졌다.** `damodaran_global_inputs`는 현재 정확히 1행이고 `route.ts:179`가 `.select("*").single()`로 읽는다 — 1003(선택지C, ERPbymonth.xlsx 월간 페어)이 실제 배선되면 새 as_of가 INSERT되며 2행이 되고, 다음 크론에서 `.single()`이 에러를 던져 **revdcf 크론 전체가 죽는다.** 이 STEP은 적재보다 먼저 이 파손을 막는다.
+
+🔴 **1-1 첫 관문 결과 — 12개 읽기 지점, 4개 파일**: ⓐ `.single()`/`.maybeSingle()`(new as_of 삽입 시 즉시 에러) 6곳 — `route.ts`(global_inputs·country_tax) · `page.tsx`(tax_rate·country_tax, try/catch로 감싸져 소프트 실패) · `compute_revdcf_all.ts`(global_inputs·country_tax, 죽은 스크립트). ⓑ as_of 무필터 select(신구 데이터 조용히 섞임) 6곳 — `route.ts`(credit_spread·beta) · `lib/sector.ts`(damodaran_industry ×2, STEP954 주석이 이미 경고해 둔 자리) · `compute_revdcf_all.ts`(credit_spread·beta). `damodaran_wacc`·`capex`·`working_capital`은 ingest만 되고 어디서도 안 읽혀 위험 자체가 없음(새로 확인됨).
+
+🔴 **수정 — 새 패턴 발명 안 함**: `lib/sector.ts`의 module-private `latestAsOf(sb, table)`(973/954가 이미 쓰던 `order(desc).limit(1).maybeSingle()` 모양)를 export해서 12곳 전부 재사용. `damodaran_industry`는 STEP954 주석의 지시("as_of가 늘면 orderBy 맨 앞에 as_of를 추가할 것")대로 처리.
+
+🔴 **as_of 추적 위치 — flags가 아니라 응답**: §2-2는 "어느 as_of를 썼는지 응답이나 flags에 남긴다"고 했으나, `revdcf_results.flags`는 DB에 저장되는 값이라 바꾸면 §3-1의 값불변 요구와 충돌한다. 대신 크론의 JSON 응답(비영속)에 `damodaranTableAsOf: {globalInputs, countryTax, creditSpread, beta}`를 추가 — `revdcf_results`에 저장되는 어떤 필드도 안 바뀐다.
+
+🔴 **값 불변 증명(§3, 핵심)**: 604 유니버스 중 계산가능 440종목 전부 구코드(bare `.single()`/무필터) vs 신코드(latestAsOf) 재계산 대조 — **WACC 불일치 0건·verdict 불일치 0건**(현재 각 테이블이 1 as_of뿐이라 당연한 결과, 요구사항 그대로 충족). 2행 시뮬레이션(DB 미접촉, 단위테스트) — 신코드는 입력 순서와 무관하게 최신 as_of를 정확히 고르고, 같은 2행 조건에서 구코드 패턴(bare `.single()`)이라면 실제로 throw했을 것임을 나란히 확인. 신규 단위테스트 5건(0/1/2 as_of + 구신 대조) 추가, 기존 34개 테스트 파일 전부 통과(372/372).
+
+🔴 **검증 스크립트 자체의 버그를 자체 발견**: 1차 실행에서 `computable=0`으로 나와 조사 — 원인은 검증 스크립트 자신의 select에 존재하지 않는 컬럼(`revdcf_results.industry`)을 넣어 PostgREST가 에러를 반환했는데 `(data ?? [])` 패턴이 그 에러를 삼켜 빈 배열로 조용히 진행된 것이었다(프로덕션 코드의 버그 아님). error 체크 추가로 즉시 발견·수정.
+
+**STATE.md 미해결 29번 ✅ 해소** — 973이 등재하고 손대지 않았던 잠복 리스크가, 1003이 구체적 파손 경로로 확정한 시점에 실제로 고쳐졌다. 원자료 = `docs/probe_1004_damodaran_single.json`. 🔴 **DB 쓰기 0 · 배포(push)는 장은태 승인 후.**
+
 **재료 배선 결정**:
 | 재료 | 결정 | 커버리지(604) | 근거 |
 |---|---|---|---|

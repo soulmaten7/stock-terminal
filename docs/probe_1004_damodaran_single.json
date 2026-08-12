@@ -1,0 +1,113 @@
+{
+  "step": 1004,
+  "title": "damodaran_* 조회 방식 수정(.single() 파손 방지) — 동작 불변",
+  "invariants": {
+    "dbWrites": 0,
+    "damodaranTableDataModified": false,
+    "driversEngineComputeModified": false,
+    "cronManuallyRun": false,
+    "krTouched": false,
+    "appRoutesComponentsMessagesDiff": "route.ts·page.tsx만 변경(둘 다 이미 존재하던 라우트/페이지의 읽기 방식 수정, 신규 화면 없음)",
+    "threeRuleSkipped": "명시 — 원인이 1003에서 코드로 확정됐고 조사할 여지가 없음"
+  },
+
+  "section1_exhaustive_discovery": {
+    "method": "grep -rn 'damodaran_(global_inputs|country_tax|credit_spread|beta|industry|tax_rate|wacc|capex|working_capital)' app/ lib/ scripts/ (테스트·구 probe 스크립트 제외)",
+    "1-2_classification": {
+      "a_single_maybeSingle_6_sites": [
+        { "file": "app/api/cron/revdcf/route.ts", "line": 179, "table": "damodaran_global_inputs", "method": ".single()", "liveCron": true, "failureMode": "크론 전체 500/throw" },
+        { "file": "app/api/cron/revdcf/route.ts", "line": 181, "table": "damodaran_country_tax", "method": ".single()", "liveCron": true, "failureMode": "크론 전체 500/throw" },
+        { "file": "app/[locale]/revdcf/page.tsx", "line": 26, "table": "damodaran_tax_rate", "method": ".maybeSingle()", "liveCron": false, "note": "라이브 페이지(방법론 페이지), try/catch로 감싸져 있어 에러 시 fallback('—') 표시로 넘어감 — 소프트 실패" },
+        { "file": "app/[locale]/revdcf/page.tsx", "line": 27, "table": "damodaran_country_tax", "method": ".maybeSingle()", "liveCron": false, "note": "위와 동일, 소프트 실패" },
+        { "file": "scripts/compute_revdcf_all.ts", "line": 28, "table": "damodaran_global_inputs", "method": ".single()", "liveCron": false, "note": "STEP850 수동 배치 스크립트 — /tmp/847_ciks.json 의존이라 오늘은 실행 자체가 불가능(사실상 죽은 스크립트), 그래도 패턴 일관성을 위해 수정" },
+        { "file": "scripts/compute_revdcf_all.ts", "line": 30, "table": "damodaran_country_tax", "method": ".single()", "liveCron": false, "note": "위와 동일" }
+      ],
+      "b_unfiltered_select_6_sites": [
+        { "file": "app/api/cron/revdcf/route.ts", "line": 182, "table": "damodaran_credit_spread", "liveCron": true, "failureMode": "신구 as_of 뒤섞인 스프레드 밴드 배열 — 조용히 틀림, 에러조차 안 남" },
+        { "file": "app/api/cron/revdcf/route.ts", "line": 183, "table": "damodaran_beta", "liveCron": true, "failureMode": "Map 구성 시 같은 industry의 신구 값 중 배열 마지막 것이 임의로 채택됨 — as_of 순서 보장 없음" },
+        { "file": "lib/sector.ts", "line": 26, "table": "damodaran_industry", "liveCron": true, "failureMode": "STEP954 주석이 이미 경고: (exchange,ticker)만으로는 as_of 2개 이상 시 전순서가 깨짐" },
+        { "file": "lib/sector.ts", "line": 88, "table": "damodaran_industry", "liveCron": true, "failureMode": "위와 동일(resolveSector의 crossCheck 준비 구간)" },
+        { "file": "scripts/compute_revdcf_all.ts", "line": 31, "table": "damodaran_credit_spread", "liveCron": false, "note": "죽은 스크립트, 패턴 일관성 수정" },
+        { "file": "scripts/compute_revdcf_all.ts", "line": 32, "table": "damodaran_beta", "liveCron": false, "note": "죽은 스크립트, 패턴 일관성 수정" }
+      ],
+      "c_already_safe_reference": "us_sector_gics·us_sector_nasdaq·us_sector_yahoo·us_sector_wide는 이미 latestAsOf 스타일 패턴으로 안전(lib/sector.ts 자신의 resolveSector 안, route.ts:100의 us_sector_wide) — 이 STEP이 재사용한 패턴의 출처",
+      "unused_tables_no_read_site": ["damodaran_wacc", "damodaran_tax_rate(page.tsx 1곳 제외 없음)", "damodaran_capex", "damodaran_working_capital 는 damodaran_tax_rate만 읽히고 wacc/capex/working_capital은 ingest만 되고 어디서도 select되지 않음 — 읽기 위험 자체가 없음(기록만)"]
+    },
+    "total": "ⓐ 6건 + ⓑ 6건 = 12건, 4개 파일(route.ts·page.tsx·lib/sector.ts·compute_revdcf_all.ts)"
+  },
+
+  "section2_fix": {
+    "2-1_pattern_reused": "lib/sector.ts의 module-private latestAsOf(sb, table) 함수를 export해서 재사용(973/954가 이미 쓰던 order(desc).limit(1).maybeSingle() 모양 그대로 — 새 패턴 발명 안 함). route.ts·page.tsx·compute_revdcf_all.ts가 이 함수를 import.",
+    "2-2_asOf_tracking": {
+      "decision": "revdcf_results.flags에는 추가하지 않았다(§3-1 값불변 요구와 충돌 — flags가 DB에 저장되는 값이라 바뀌면 '결과가 바뀐다'). 대신 크론의 HTTP JSON 응답(비영속)에 damodaranTableAsOf: {globalInputs, countryTax, creditSpread, beta} 추가.",
+      "precedent": "973의 sector_as_of는 DB 컬럼이라 문제없이 저장했지만, 이번엔 값불변 제약이 있어 응답으로만 남김 — '응답이나 flags'(§2-2 문구)의 '응답' 쪽 선택"
+    },
+    "2-3_damodaran_industry": "STEP954 주석의 지시(\"as_of가 늘면 orderBy 맨 앞에 as_of를 추가할 것\")대로 처리 — latestAsOf로 먼저 as_of를 구하고 eq()로 좁힌 뒤 기존 (exchange,ticker) 정렬을 그대로 사용(전순서 복원)"
+  },
+
+  "section3_value_invariance": {
+    "3-1_604_universe": {
+      "method": "scripts/probe_1004_value_invariance.ts — 구코드(bare single/무필터) vs 신코드(latestAsOf) 양쪽으로 참조재료를 읽고, 604 유니버스 중 계산가능 440종목 전부 WACC·verdict 재계산 대조",
+      "step1_materials_match": { "globalInputs": true, "countryTax": true, "creditSpread": true, "beta": true, "asOfUsed": { "globalInputs": "2026-01-05", "countryTax": "2026-01-05", "creditSpread": "2026-01-05", "beta": "2026-01-05" } },
+      "step2_604_recompute": { "computable": 440, "checked": 440, "skippedNoRevenue": 0, "waccMismatch": 0, "verdictMismatch": 0 },
+      "conclusion": "불일치 0건 — 요구사항 충족(하나라도 있었으면 여기서 멈춰야 했음)",
+      "selfCaughtBug": "1차 실행에서 computable=0으로 나와 조사 — 원인은 스크립트 자신의 select에 존재하지 않는 컬럼(revdcf_results.industry)을 넣어 PostgREST 42703 에러가 났는데 (data ?? []) 패턴이 에러를 삼켜 빈 배열로 조용히 진행된 것. error 체크를 추가해 즉시 발견·수정 후 재실행 — route.ts 등 실제 프로덕션 코드의 버그가 아니라 이 검증 스크립트 자체의 실수였음을 명시"
+    },
+    "3-2_two_row_simulation": {
+      "method": "DB에 쓰지 않고 lib/sector.test.ts에 단위테스트로 시뮬레이션 — mockTableWithRows()가 order(desc).limit(1).maybeSingle()의 서버측 정렬 계약을 흉내낸 스텁",
+      "case_2_as_of_forward_order": "[{as_of:2026-01-05},{as_of:2026-08-01}] 입력 → latestAsOf가 2026-08-01(최신) 반환, 2026-01-05 아님을 확인",
+      "case_2_as_of_reverse_order": "입력 순서를 뒤집어도(최신이 배열 앞) 동일하게 2026-08-01 반환 — 배열 순서에 의존하지 않음 확인",
+      "legacy_comparison": "동일한 2행 입력에 대해 legacySingle()(실제 supabase-js .single()의 '0행 또는 2행+ 면 throw' 계약을 흉내낸 최소 스텁)을 호출하면 실제로 throw함을 확인 — 신코드(latestAsOf로 먼저 좁힌 뒤 단일 필터)는 같은 2행 상황에서도 정상 동작함을 나란히 확인",
+      "conclusion": "신코드가 최신 행을 고른다(순서 무관) + 구코드 패턴이라면 실제로 에러가 났을 것이다 — 둘 다 확인 완료"
+    },
+    "3-3_unit_tests": {
+      "file": "lib/sector.test.ts",
+      "newTests": [
+        "0 as_of(빈 테이블) → null 반환(에러 아님)",
+        "1 as_of(현재 실제 상태와 동일 모양) → 그 값 그대로 반환",
+        "2 as_of(정방향) → 최신값 선택",
+        "2 as_of(역방향) → 여전히 최신값 선택",
+        "대조군 — 구코드 패턴은 2행에서 throw함을 확인 + 신코드는 안전함을 나란히 확인"
+      ],
+      "existingTestsUpdated": [
+        "lib/sector.test.ts의 fetchSectorMap용 mockSb()에 limit()·maybeSingle() 추가(fetchSectorMap이 이제 latestAsOf를 먼저 호출)",
+        "app/api/cron/revdcf/route.test.ts의 maybeSingle 스텁을 damodaran_* 4테이블까지 확장",
+        "app/api/cron/revdcf/route.branches.test.ts 동일"
+      ],
+      "fullSuiteResult": "34 test files / 372 tests(367 기존 + 5 신규) 전부 통과"
+    }
+  },
+
+  "section4_clean_clone_build": { "build": "success", "tsc": "0 errors", "vitest": "34 test files / 372 tests 전부 통과" },
+
+  "filesChanged": {
+    "lib/sector.ts": "latestAsOf export + damodaran_industry 2곳(fetchSectorMap·resolveSector) as_of 필터 추가",
+    "app/api/cron/revdcf/route.ts": "damodaran_global_inputs·country_tax·credit_spread·beta 4곳 latestAsOf 기반 전환 + damodaranTableAsOf를 JSON 응답에 추가(flags는 무변경)",
+    "app/[locale]/revdcf/page.tsx": "damodaran_tax_rate·country_tax 2곳 latestAsOf 기반 전환",
+    "scripts/compute_revdcf_all.ts": "동일 4곳 전환(패턴 일관성, 스크립트 자체는 오늘 실행 불가능한 죽은 코드)",
+    "lib/sector.test.ts": "mockSb 확장 + latestAsOf 신규 5개 테스트",
+    "app/api/cron/revdcf/route.test.ts": "maybeSingle 스텁 확장",
+    "app/api/cron/revdcf/route.branches.test.ts": "maybeSingle 스텁 확장",
+    "scripts/probe_1004_value_invariance.ts": "신규 — §3-1 검증 스크립트",
+    "lib/revdcf/drivers.ts": "무수정(확인됨)",
+    "lib/revdcf/engine.ts": "무수정(확인됨)",
+    "lib/revdcf/compute.ts": "무수정(확인됨)"
+  },
+
+  "notDone": [
+    "damodaran_wacc·damodaran_capex·damodaran_working_capital은 애초에 읽는 곳이 없어 이번 STEP의 수정 대상이 아니었음(위험 자체가 없어서 손대지 않음, 존재를 기록만)",
+    "compute_revdcf_all.ts는 이미 죽은 스크립트라 실제 실행 검증은 안 함(tsc·문법 확인만)"
+  ],
+  "unmeasured": [
+    "damodaranTableAsOf 응답 필드가 실제 프로덕션 모니터링/알림 파이프라인에서 소비되는지(현재는 아무도 안 봄, 향후 973류 신선도 점검에 활용 가능하다는 정도만)"
+  ],
+  "newlyDiscovered": [
+    "app/[locale]/revdcf/page.tsx도 같은 취약 패턴을 갖고 있었다(973 등재 당시엔 route.ts·lib/sector.ts만 지목됨) — try/catch로 감싸져 있어 크론처럼 전체가 죽지는 않지만(소프트 실패), 그래도 부정확한 표시(fallback '—')로 빠질 수 있었음",
+    "scripts/compute_revdcf_all.ts도 같은 패턴 — 단 /tmp/847_ciks.json 의존으로 오늘은 실행 자체가 불가능한 사실상 죽은 스크립트",
+    "damodaran_wacc·capex·working_capital 3개 테이블은 ingest만 되고 어디서도 읽히지 않는다(위험 없음, 기존에 알려지지 않았던 사실)",
+    "검증 스크립트 자신의 버그(존재하지 않는 컬럼 select) — error 체크 누락이 결과를 조용히 왜곡할 수 있다는 것을 다시 확인(1000·1004 두 STEP에서 각기 다른 형태로 자체 발견)"
+  ],
+  "needsJudgment": [
+    "없음 — 이 STEP은 배포까지 완결됨(단 배포 자체의 최종 push는 장은태 승인 후)"
+  ]
+}

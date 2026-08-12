@@ -4,7 +4,7 @@ import { computeDrivers, type DriverResult } from "@/lib/revdcf/drivers";
 import { assembleWacc, creditSpreadFor, computeGapWithSensitivity } from "@/lib/revdcf/compute";
 import { runRevDcf, type RevDcfMarket, type RevDcfVerdict } from "@/lib/revdcf/engine";
 import { REVDCF_DEFAULT_MAX_YEARS } from "./constants";
-import { fetchSectorMap, resolveSector } from "@/lib/sector";
+import { fetchSectorMap, resolveSector, latestAsOf } from "@/lib/sector";
 import { computeValuation, VALUATION_SPEC } from "@/lib/valuation";
 import { fetchAllRows } from "@/lib/supabasePaging";
 import { computeSectorRelativeBatch, type ValuationInput, type SectorInput } from "@/lib/sectorRelativeBatch";
@@ -175,12 +175,35 @@ export async function GET(req: Request) {
   else { for (let from = 0; ; from += 1000) { const { data } = await sb.from("revdcf_results").select("cik").eq("as_of", asOf).range(from, from + 999); const c = (data ?? []) as { cik: number }[]; for (const r of c) done.add(r.cik); if (c.length < 1000) break; } }
   const todoRevdcf: (Universe & { kind: "revdcf" })[] = univ.filter((u) => !done.has(u.cik)).map((u) => ({ ...u, kind: "revdcf" as const }));
 
-  // 참조 데이터
-  const gi = (await sb.from("damodaran_global_inputs").select("*").single()).data as { as_of: string; riskfree_rate: number; erp: number; expected_inflation: number };
+  // 참조 데이터 — STEP1004: damodaran_* 4개 테이블 전부 "최신 as_of로 먼저 좁힌 뒤 조회"로 전환.
+  // 🔴 왜: damodaran_global_inputs·damodaran_country_tax는 .single()로 읽혔는데, 이 테이블들이 지금 1개
+  //   as_of만 갖고 있어서 우연히 안전했을 뿐이다 — ERPbymonth.xlsx 월간 갱신(1001·1003)이 배선되면 as_of가
+  //   2개 이상이 되고 그 순간 .single()이 에러를 던져 크론 전체가 죽는다(1003 발견). damodaran_credit_spread·
+  //   damodaran_beta는 as_of 필터가 아예 없어서 신구 as_of가 섞인다(조용히 틀림, 에러조차 안 남). 973이
+  //   us_sector_wide에 쓴 패턴(latestAsOf, lib/sector.ts에서 export)을 그대로 재사용 — 새 패턴 발명 안 함.
+  const giAsOf = await latestAsOf(sb, "damodaran_global_inputs");
+  if (!giAsOf) throw new Error("damodaran_global_inputs: as_of 없음(빈 테이블) — ingest_damodaran.ts 미실행 의심");
+  const gi = (await sb.from("damodaran_global_inputs").select("*").eq("as_of", giAsOf).single()).data as { as_of: string; riskfree_rate: number; erp: number; expected_inflation: number };
   const rf = +gi.riskfree_rate, erp = +gi.erp, inflation = +gi.expected_inflation, damoAsOf = gi.as_of;
-  const usTax = +(await sb.from("damodaran_country_tax").select("marginal_rate").eq("country", "United States of America").single()).data!.marginal_rate;
-  const spreads = (await sb.from("damodaran_credit_spread").select("*")).data as { std_dev_lo: number; std_dev_hi: number | null; spread: number }[];
-  const betaByInd = new Map(((await sb.from("damodaran_beta").select("industry, unlevered_beta_cash_adj, std_dev_equity")).data as { industry: string; unlevered_beta_cash_adj: number; std_dev_equity: number }[]).map((b) => [b.industry, b]));
+
+  const countryTaxAsOf = await latestAsOf(sb, "damodaran_country_tax");
+  if (!countryTaxAsOf) throw new Error("damodaran_country_tax: as_of 없음(빈 테이블)");
+  const usTax = +(await sb.from("damodaran_country_tax").select("marginal_rate").eq("as_of", countryTaxAsOf).eq("country", "United States of America").single()).data!.marginal_rate;
+
+  const creditSpreadAsOf = await latestAsOf(sb, "damodaran_credit_spread");
+  const spreads = creditSpreadAsOf
+    ? ((await sb.from("damodaran_credit_spread").select("*").eq("as_of", creditSpreadAsOf)).data as { std_dev_lo: number; std_dev_hi: number | null; spread: number }[])
+    : [];
+
+  const betaAsOf = await latestAsOf(sb, "damodaran_beta");
+  const betaByInd = new Map(
+    (betaAsOf
+      ? ((await sb.from("damodaran_beta").select("industry, unlevered_beta_cash_adj, std_dev_equity").eq("as_of", betaAsOf)).data as { industry: string; unlevered_beta_cash_adj: number; std_dev_equity: number }[])
+      : []
+    ).map((b) => [b.industry, b])
+  );
+  // 🔴 §2-2 — 4개 테이블 각각 어느 as_of를 썼는지 기록(973이 sector_as_of를 남긴 것과 같은 이유). flags에 동봉.
+  const damodaranTableAsOf = { globalInputs: giAsOf, countryTax: countryTaxAsOf, creditSpread: creditSpreadAsOf, beta: betaAsOf };
   const { byTicker: indByT } = await fetchSectorMap(sb, { field: "industryGroup", source: "damodaran" });
   const mcapRows: { symbol: string; market_cap: number; as_of: string }[] = [];
   for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_market_cap").select("symbol, market_cap, as_of").range(f, f + 999); const c = (data ?? []) as typeof mcapRows; mcapRows.push(...c); if (c.length < 1000) break; }
@@ -336,5 +359,7 @@ export async function GET(req: Request) {
     sectorRelativeSaved,
     // STEP 974 §2 — us_sector_wide 증분 갱신 결과
     sectorWideAdded, sectorWideError,
+    // STEP1004 §2-2 — damodaran_* 4개 테이블 각각 어느 as_of를 읽었는지(응답에만 남김 · revdcf_results.flags는 무변경 · §3-1 값불변 유지)
+    damodaranTableAsOf,
   });
 }

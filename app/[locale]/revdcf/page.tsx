@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { revdcfEnabled } from "@/lib/revdcf/flag";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { latestAsOf } from "@/lib/sector";
 
 // STEP 853 §4 — 역DCF 방법론 페이지 (차이 원장 공개 · 빌린 권위 금지). ko/en · 다크.
 // 🔴 STEP 854: 플래그 OFF면 404(장은태 육안 승인 전 미노출).
@@ -23,8 +24,17 @@ async function loadLedgerFigures() {
     if (!asOfRow?.as_of) return fallback;
     const { count: wcHas } = await sb.from("revdcf_results").select("symbol", { count: "exact", head: true }).eq("as_of", asOfRow.as_of).not("working_capital_rate", "is", null);
     const { count: wcNeg } = await sb.from("revdcf_results").select("symbol", { count: "exact", head: true }).eq("as_of", asOfRow.as_of).not("working_capital_rate", "is", null).lt("working_capital_rate", 0);
-    const taxRow = (await sb.from("damodaran_tax_rate").select("eff_money,eff_agg").eq("industry", "Total Market (without financials)").maybeSingle()).data as { eff_money: number; eff_agg: number } | null;
-    const taxCountry = (await sb.from("damodaran_country_tax").select("marginal_rate").eq("country", "United States of America").maybeSingle()).data as { marginal_rate: number } | null;
+    // STEP1004 — .maybeSingle()이 .eq(industry/country)만으로 걸려 있었다(as_of 무필터). as_of가 늘면
+    // 그 필터에 2행이 걸려 maybeSingle()이 에러를 던진다(try/catch로 잡혀 fallback 표시로 넘어가긴 하나,
+    // 최신 as_of로 먼저 좁히는 게 맞다 — route.ts와 같은 패턴, lib/sector.ts의 latestAsOf 재사용).
+    const taxRateAsOf = await latestAsOf(sb, "damodaran_tax_rate");
+    const taxRow = taxRateAsOf
+      ? ((await sb.from("damodaran_tax_rate").select("eff_money,eff_agg").eq("as_of", taxRateAsOf).eq("industry", "Total Market (without financials)").maybeSingle()).data as { eff_money: number; eff_agg: number } | null)
+      : null;
+    const countryTaxAsOf = await latestAsOf(sb, "damodaran_country_tax");
+    const taxCountry = countryTaxAsOf
+      ? ((await sb.from("damodaran_country_tax").select("marginal_rate").eq("as_of", countryTaxAsOf).eq("country", "United States of America").maybeSingle()).data as { marginal_rate: number } | null)
+      : null;
     return {
       wcPct: wcHas ? String(Math.round((1000 * (wcNeg ?? 0)) / wcHas) / 10) : "—",
       wcTotal: wcHas != null ? String(wcHas) : "—",

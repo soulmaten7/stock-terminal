@@ -2,17 +2,21 @@
 // NO_INDUSTRY 회귀는 이 파일이 아니라 app/api/cron/revdcf/route.branches.test.ts:97(수정하지 않음)로 확인한다.
 import { describe, it, expect } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { fetchSectorMap, resolveSector } from "./sector";
+import { fetchSectorMap, resolveSector, latestAsOf } from "./sector";
 
 // STEP 954 — fetchSectorMap이 이제 fetchAllRows(내부에서 .order()를 건 뒤 .range())를 쓴다 —
 // 이 mock의 검증 대상(입력→출력 동등·페이징 경계·빈 결과)은 그대로이고, .order()가 체인에 없어서
 // 나던 "q.order is not a function"만 고친다(다른 어설션은 무변경).
+// STEP1004 — fetchSectorMap이 이제 먼저 latestAsOf()를 호출한다(.select("as_of").order().limit().maybeSingle()).
+// .limit()·.maybeSingle()을 추가해 고정 as_of 스텁을 반환 — eq()는 여전히 no-op이라 이후 .range() 결과(pages)는 무변경.
 function mockSb(pages: { ticker_norm: string; industry_group: string }[][]) {
   let call = 0;
   const chain = {
     select: () => chain,
     eq: () => chain,
     order: () => chain,
+    limit: () => chain,
+    maybeSingle: async () => ({ data: { as_of: "2026-08-01" } }),
     range: async () => {
       const data = pages[call] ?? [];
       call++;
@@ -224,5 +228,71 @@ describe("resolveSector", () => {
     const m = await resolveSector(sb, ["AGI"]);
     expect(m.get("AGI")?.source).toBe("yahoo");
     expect(m.get("AGI")?.crossCheck.nasdaq).toBeNull();
+  });
+});
+
+// ────────────────────────────────────────────────────────────────
+// STEP1004 §3-3 — latestAsOf() 단위테스트: 0 as_of(빈 테이블) · 1 as_of(현재 실제 상태) · 2 as_of(시뮬레이션).
+// 973/954가 쓰던 이 패턴을 export해서 damodaran_* 4개 테이블 + damodaran_industry 조회에 재사용했다
+// (route.ts·page.tsx·compute_revdcf_all.ts·lib/sector.ts 자신) — 그 재사용의 근거가 되는 함수 자체를 검증한다.
+// ────────────────────────────────────────────────────────────────
+describe("latestAsOf (STEP1004)", () => {
+  // 실제 Postgres의 order(desc).limit(1)이 서버에서 정렬해 클라이언트로 "이미 가장 최신 1행"만 내려주므로,
+  // 이 모의 함수도 같은 계약(정렬된 결과의 첫 행)을 흉내낸다 — 클라이언트 코드(latestAsOf)가 그 결과를
+  // 있는 그대로 신뢰하고 반환하는지만 본다(Postgres의 정렬 자체를 재검증하는 게 아니다).
+  function mockTableWithRows(rows: { as_of: string }[]) {
+    const sorted = [...rows].sort((a, b) => (a.as_of < b.as_of ? 1 : a.as_of > b.as_of ? -1 : 0));
+    const chain = {
+      select: () => chain,
+      order: () => chain,
+      limit: () => chain,
+      maybeSingle: async () => ({ data: sorted[0] ?? null }),
+    };
+    return { from: () => chain } as unknown as SupabaseClient;
+  }
+
+  it("0 as_of(빈 테이블) → null 반환(에러를 던지지 않는다)", async () => {
+    const sb = mockTableWithRows([]);
+    const r = await latestAsOf(sb, "damodaran_global_inputs");
+    expect(r).toBeNull();
+  });
+
+  it("1 as_of(현재 실제 damodaran_global_inputs 상태와 동일 모양) → 그 값을 그대로 반환", async () => {
+    const sb = mockTableWithRows([{ as_of: "2026-01-05" }]);
+    const r = await latestAsOf(sb, "damodaran_global_inputs");
+    expect(r).toBe("2026-01-05");
+  });
+
+  it("2 as_of(시뮬레이션 — ERPbymonth 월간 갱신이 배선됐다고 가정) → 더 최신(큰) as_of를 고른다, 오래된 쪽 아님", async () => {
+    const sb = mockTableWithRows([{ as_of: "2026-01-05" }, { as_of: "2026-08-01" }]);
+    const r = await latestAsOf(sb, "damodaran_global_inputs");
+    expect(r).toBe("2026-08-01");
+    expect(r).not.toBe("2026-01-05");
+  });
+
+  it("2 as_of, 입력 순서를 뒤집어도(오래된 것이 배열 뒤에 와도) 여전히 최신을 고른다", async () => {
+    const sb = mockTableWithRows([{ as_of: "2026-08-01" }, { as_of: "2026-01-05" }]);
+    const r = await latestAsOf(sb, "damodaran_global_inputs");
+    expect(r).toBe("2026-08-01");
+  });
+
+  it("🔴 대조군 — 구코드 패턴(.select('*').single(), as_of 필터 없음)은 2행이 있으면 던진다(신코드가 왜 필요한지의 증거)", async () => {
+    // 실제 supabase-js의 .single()은 0행 또는 2행+ 이면 에러를 던진다(PostgrestError, "multiple (or no) rows returned").
+    // 이 STEP은 그 계약을 재구현하지 않고, 같은 실패조건을 흉내낸 최소 스텁으로 "2행이면 던진다"만 보인다.
+    function legacySingle(rows: { as_of: string }[]) {
+      if (rows.length !== 1) throw new Error(`PostgrestError: multiple (or no) rows returned (got ${rows.length})`);
+      return rows[0];
+    }
+    // 1003이 찾아낸 정확한 시나리오: ERPbymonth 월간 갱신으로 2번째 as_of 행이 생겼다고 가정
+    const twoRows = [{ as_of: "2026-01-05" }, { as_of: "2026-08-01" }];
+    expect(() => legacySingle(twoRows)).toThrow(/multiple/);
+
+    // 신코드는 latestAsOf로 먼저 좁히므로 같은 2행 상황에서도 안전하게 값을 얻는다
+    const sb = mockTableWithRows(twoRows);
+    const asOf = await latestAsOf(sb, "damodaran_global_inputs");
+    expect(asOf).toBe("2026-08-01");
+    // 그 as_of로 필터한 뒤에는 정확히 1행만 남으므로(as_of가 PK 성격) .single()도 안전해진다
+    const filtered = twoRows.filter((r) => r.as_of === asOf);
+    expect(() => legacySingle(filtered)).not.toThrow();
   });
 });

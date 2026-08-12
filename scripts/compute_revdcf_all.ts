@@ -7,7 +7,7 @@ import { createAdminClient } from "../lib/supabase/admin";
 import { computeDrivers } from "../lib/revdcf/drivers";
 import { assembleWacc, creditSpreadFor, computeGapWithSensitivity } from "../lib/revdcf/compute";
 import type { RevDcfMarket, RevDcfVerdict } from "../lib/revdcf/engine";
-import { fetchSectorMap } from "../lib/sector";
+import { fetchSectorMap, latestAsOf } from "../lib/sector";
 
 const UA = process.env.SEC_USER_AGENT || "Trillion Research admin@onetrillion.app";
 const BATCH = Number(process.argv[2] || 60);
@@ -24,12 +24,22 @@ async function main() {
   const surv = JSON.parse(fs.readFileSync("docs/probe_survivors.json", "utf8")) as { cik: number; symbol: string }[];
   const symByCik = new Map(surv.map((s) => [s.cik, s.symbol]));
 
-  // 참조 데이터 (DB · 값 코드에 안 박음)
-  const gi = (await sb.from("damodaran_global_inputs").select("*").single()).data as { as_of: string; riskfree_rate: number; erp: number; expected_inflation: number };
+  // 참조 데이터 (DB · 값 코드에 안 박음) — STEP1004: route.ts와 동일하게 최신 as_of로 먼저 좁힘(패턴 통일)
+  const giAsOf = await latestAsOf(sb, "damodaran_global_inputs");
+  if (!giAsOf) throw new Error("damodaran_global_inputs: as_of 없음(빈 테이블)");
+  const gi = (await sb.from("damodaran_global_inputs").select("*").eq("as_of", giAsOf).single()).data as { as_of: string; riskfree_rate: number; erp: number; expected_inflation: number };
   const rf = Number(gi.riskfree_rate), erp = Number(gi.erp), inflation = Number(gi.expected_inflation), damoAsOf = gi.as_of;
-  const usTax = Number((await sb.from("damodaran_country_tax").select("marginal_rate").eq("country", "United States of America").single()).data!.marginal_rate);
-  const spreads = (await sb.from("damodaran_credit_spread").select("*")).data as { std_dev_lo: number; std_dev_hi: number | null; spread: number }[];
-  const betaRows = (await sb.from("damodaran_beta").select("industry, unlevered_beta_cash_adj, std_dev_equity")).data as { industry: string; unlevered_beta_cash_adj: number; std_dev_equity: number }[];
+  const countryTaxAsOf = await latestAsOf(sb, "damodaran_country_tax");
+  if (!countryTaxAsOf) throw new Error("damodaran_country_tax: as_of 없음(빈 테이블)");
+  const usTax = Number((await sb.from("damodaran_country_tax").select("marginal_rate").eq("as_of", countryTaxAsOf).eq("country", "United States of America").single()).data!.marginal_rate);
+  const creditSpreadAsOf = await latestAsOf(sb, "damodaran_credit_spread");
+  const spreads = creditSpreadAsOf
+    ? ((await sb.from("damodaran_credit_spread").select("*").eq("as_of", creditSpreadAsOf)).data as { std_dev_lo: number; std_dev_hi: number | null; spread: number }[])
+    : [];
+  const betaAsOf = await latestAsOf(sb, "damodaran_beta");
+  const betaRows = betaAsOf
+    ? ((await sb.from("damodaran_beta").select("industry, unlevered_beta_cash_adj, std_dev_equity").eq("as_of", betaAsOf)).data as { industry: string; unlevered_beta_cash_adj: number; std_dev_equity: number }[])
+    : [];
   const betaByInd = new Map(betaRows.map((b) => [b.industry, b]));
   const { byTicker: indByTicker } = await fetchSectorMap(sb, { field: "industryGroup", source: "damodaran" });
   const mcapRows: { symbol: string; market_cap: number }[] = [];

@@ -30,7 +30,10 @@ function makeSupabaseMock() {
     c.eq = () => c;
     c.order = () => c;
     c.limit = () => c;
-    c.maybeSingle = async () => (table === "revdcf_results" ? { data: { as_of: "2026-08-01" } } : { data: null });
+    // STEP1004 — route.ts가 이제 damodaran_global_inputs/country_tax/credit_spread/beta 각각에 대해
+    // 먼저 latestAsOf()(.select("as_of")...maybeSingle())를 호출한다 — 4개 테이블 전부 스텁 as_of를 준다.
+    const AS_OF_TABLES = new Set(["revdcf_results", "damodaran_global_inputs", "damodaran_country_tax", "damodaran_credit_spread", "damodaran_beta"]);
+    c.maybeSingle = async () => (AS_OF_TABLES.has(table) ? { data: { as_of: "2026-08-01" } } : { data: null });
     c.single = async () => {
       if (table === "damodaran_global_inputs") return { data: { as_of: "2026-08-01", riskfree_rate: 0.04, erp: 0.045, expected_inflation: 0.02 } };
       if (table === "damodaran_country_tax") return { data: { marginal_rate: 0.2563 } };
