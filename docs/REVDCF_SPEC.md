@@ -1133,6 +1133,18 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 **선택지 C(권고, 판정 대기)**: 선택지A(rf만 FRED)는 철회 — ERP와 짝이 안 맞는다. 대신 **ERPbymonth.xlsx를 매월 짝으로 수집**하는 안(선택지C)이 원전 원칙에 부합하고, 실측상으로도 방향이 맞다(5.9%<6.4%). 조달 배치 위치(`ingest_damodaran.ts` 통합 vs 별도 스크립트)는 미결. 원자료 = `docs/probe_1001_erp_pair.json`.
 
+### 🔶 C-8 §10-G 선택지C 구현·검증(적재는 승인 후) — STEP 1003
+
+🔴 **정정(1001의 "$ Riskfree Rate 산식 미공개" 기록 철회)**: 산식이 공개돼 있다. Damodaran, *"Sovereign Ratings, Default Risk and Markets: The Moody's Downgrade Aftermath!"*(Musings on Markets, 2025-06) — 2025-05-16 Moody's가 미국을 Aaa→Aa1로 강등한 뒤, raw T.Bond rate에 이제 디폴트 스프레드가 섞여 있다고 보고 이를 빼낸 값이 "$ Riskfree Rate"다: `$ Riskfree Rate = T.Bond rate − 해당등급 디폴트스프레드`(공개 예시 2025-05-30: 4.41%−0.40%=4.01%). 2025년 중반 이전 행이 빈 것도, 오프셋이 월마다 변하는 것도 이 설명과 정확히 일치한다.
+
+🔴 **1002가 놓친 진짜 의존관계**: 1003 명령서 자체가 "세율·신용스프레드·업종베타는 wacc.xls에서 온다"고 전제했으나 코드 확인 결과 틀렸다 — 셋 다 별도 테이블(`damodaran_country_tax`·`damodaran_credit_spread`·`damodaran_beta`)에서 오고 이미 독립된 as_of를 갖는다. **진짜 걸리는 것은 둘**: ① `damodaran_global_inputs` 한 행에 `expected_inflation`(route.ts가 실제로 읽는 필드)이 riskfree_rate·erp와 공존 — rf·erp만 갱신하면 그 행의 as_of가 3필드 중 무엇을 대표하는지 모호해진다. ② 🔴 **더 시급함 — 현재 이 테이블은 정확히 1행이고 `route.ts:179`가 `.select("*").single()`로 읽는다.** 새 as_of로 naive upsert하면 충돌 없이 INSERT돼 2행이 되고, 다음 크론에서 `.single()`이 에러를 던져 revdcf 크론 전체가 깨진다. **적재 설계는 이 파손을 반드시 피해야 한다.**
+
+🔴 **604 전수 재확인(오늘 기준 최신월)**: 1001과 같은 값(2026-08, HTTP Last-Modified 불변 확인) — 전환 **5.9%(26/440)**, WACC델타 median 54.6bp, 재현 확인. 부채4분위 재확인 — WACC델타는 Q1(55.8bp)→Q4(51.48bp) 단조감소하는데 카테고리전환율은 Q4(7.3%)가 최고(비단조) — **1000이 mismatched(rf만 교체) 방식에서 본 역전 패턴이 paired(짝 맞춘) 교체에서도 재현됨** — WACC/verdict 경계 구조 자체의 특징이라는 증거가 더 강해졌다(정량 원인은 여전히 미규명).
+
+🔴 **구현(미배선·미적재)**: `lib/revdcf/erpMonthly.ts` — 순수함수 `parseErpMonthly(buffer)`·`latestPairedRow()`·`findRowForMonth()`. 파싱 명세 = 시트 "Historical ERP"·열D "$ Riskfree Rate"·열K "ERP (T12m) with adj riskfree rate"(우리 저장값과 유일하게 정확 일치하는 조합 — 단 Damodaran 자신의 요약 시트가 더 눈에 띄게 보여주는 조합은 raw T.Bond Rate+plain ERP(T12m)로 **다르다**, 새로 드러남). **구현 중 자체 발견·수정한 버그**: 이 파일은 Excel **1904 날짜체계**(Mac Excel, `Workbook.WBProps.date1904=true`)로 저장돼 있어 1900체계 공식을 그대로 쓰면 날짜가 정확히 1,462일 어긋난다 — date1904 플래그를 워크북에서 직접 읽어 조건부 보정하도록 수정, §5-2 값불변증명 스크립트가 이 버그를 실행 즉시 잡아냈다(1차 실행 rfMatch/erpMatch 둘 다 false → 수정 후 true). 값불변증명: 새 파서로 2026-01 행을 읽으면 DB 저장값과 완전 일치(rf=0.0395·erp=0.0446 둘 다 정확 일치).
+
+🔴 **스키마 설계(구현 안 함, 승인 후 별도 판정)**: 옵션1(같은 테이블에 `riskfree_erp_source`·`riskfree_erp_month` 컬럼 추가, 항상 1행 유지·UPDATE로만 갱신 — `.single()` 안 깨짐·route.ts 무수정 가능) vs 옵션2(별도 테이블, route.ts 코드 변경 필요 — 이번 STEP의 route.ts 무수정 원칙과 충돌). 조달 배치 위치(ingest_damodaran.ts 통합 vs 별도 스크립트)도 미결 — 1002 원칙(파일마다 갱신주기가 다르다)에 비추면 별도 스크립트가 원칙적으로 더 맞으나 고르지 않음. 원자료 = `docs/probe_1003_erp_monthly.json`.
+
 **재료 배선 결정**:
 | 재료 | 결정 | 커버리지(604) | 근거 |
 |---|---|---|---|

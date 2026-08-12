@@ -196,7 +196,7 @@
 |---|---|---|---|
 | `histretSP.xls` | 주식/국채/T-bill/부동산 연간수익률(1928~) | 실현 수익률 시계열 | 무위험수익률·ERP의 역사적 기초자료(현재 wacc.xls 상단값의 원천 추정) |
 | `histimpl.xls` | 🔴 **정정(1002, 1001 발견 반영) — 연간뿐, "월별 갱신 포함"은 오류였다.** 내재 ERP 시계열(1960~, 연 1행 추가·연 1회 갱신). S&P500 DDM/DCF 역산 내재 ERP — **역사적(realized) ERP가 아니라 시장 내재치** | ~~ERP 대안(자주 갱신)~~ — **아래 `ERPbymonth.xlsx`가 진짜 월간 파일**(1001 발견, 998이 놓쳤던 별도 파일) |
-| 🔑 **`ERPbymonth.xlsx`**(1001 발견, `/pc/implprem/ERPbymonth.xlsx`) | rf·ERP **월간** 페어 시계열(2008-09~, 매월 1행) — `T.Bond Rate`(raw)와 `$ Riskfree Rate`(Damodaran 자체조정 계열, 산식 미공개) 두 rf가 같은 행에, ERP 5변형도 같은 행에 | 우리 저장값(rf=0.0395·erp=0.0446, as_of 2026-01)이 이 파일 2026-01행의 `$ Riskfree Rate`·`ERP(T12m)with adj riskfree rate`와 정확 일치 — **Damodaran이 실제로 쓰는 값의 원천이 이것** | 🔑 **#14/#15 즉시이득 최우선 후보**(아래 즉시이득표 1번 참조) |
+| 🔑 **`ERPbymonth.xlsx`**(1001 발견, `/pc/implprem/ERPbymonth.xlsx`) | rf·ERP **월간** 페어 시계열(2008-09~, 매월 1행) — `T.Bond Rate`(raw)와 `$ Riskfree Rate`(Damodaran 자체조정 계열) 두 rf가 같은 행에, ERP 5변형도 같은 행에. 🔴 **정정(1003) — 산식은 공개돼 있다.** `$ Riskfree Rate = T.Bond rate − 해당등급 디폴트스프레드`(Moody's 2025-05-16 미국 Aaa→Aa1 강등에 대한 Damodaran의 대응, "Sovereign Ratings, Default Risk and Markets" 2025-06 블로그 원문 확인) | 우리 저장값(rf=0.0395·erp=0.0446, as_of 2026-01)이 이 파일 2026-01행의 `$ Riskfree Rate`·`ERP(T12m)with adj riskfree rate`와 정확 일치 — **Damodaran이 실제로 쓰는 값의 원천이 이것**. 단 Damodaran 자신의 요약시트는 raw T.Bond Rate+plain ERP(T12m) 조합을 더 눈에 띄게 제시(1003 발견, 다른 조합) | 🔑 **#14/#15 즉시이득 최우선 후보 — 1003에서 구현 완료(미배선)**(아래 즉시이득표 1번 참조) |
 | `ctryprem.xlsx`(+연중 복수판) | 국가별 디폴트스프레드·ERP·컨트리리스크프리미엄(150여개국) | 국가신용등급 기반 | 🅿️ 파킹(비US 확장용, 지금 안 씀) |
 | `ratings.xls` | 신용등급대별 이자보상배율 구간·스프레드(대형/소형 별도표) | 🔑 다모다란 자신의 WACC 모델이 쓰는 "합성등급" 룩업테이블 | 🔑 **종목별 부채비용 산출 후보** — 현재 업종평균 WACC 대신 기업별 이자보상배율로 개별 신용스프레드 추정 가능 |
 | `mktcaprisk.xlsx` | 시총 구간별 베타·변동성 | 규모 10분위 | 미사용(대안 분류축) |
@@ -417,7 +417,7 @@
 | 17 | 업종 베타·연1회 학술(대체 소스 없음 확인) | Damodaran betas.xls | R1~R4 전체에서 무료 대체재 못 찾음 |
 | 18 | ERP·연1회 시장내재 | 🔴 **정정(1002) — `histimpl.xls`(연간)와 `ERPbymonth.xlsx`(월간, 1001 발견)는 서로 다른 파일이다.** Damodaran | 시장가격 역산. 우리가 실제로 쓰는 값(wacc.xls 상단)은 `ERPbymonth.xlsx`의 페어드 계열과 일치 |
 | 19 | ERP·분기 서베이(다른 정의) | Duke CFO Survey(Graham&Harvey) | 실무자 기대치, 시장내재와 다른 개념 — 대체재 아니라 병기용 |
-| 20 | 무위험수익률·매일 국채수익률(raw Treasury) | FRED DGS10·Treasury.gov 원천 | 🔴 **정정(1002) — STEP999의 "완전 일치" 판정은 값 층위에서 오류였다.** 999는 정의 문구("10-year Treasury bond rate")만 대조해 일치를 확인했으나, **Damodaran이 실제로 ERP와 짝지어 쓰는 값은 raw Treasury가 아니라 별도의 자체조정 "$ Riskfree Rate" 계열**임을 1001이 발견했다(`ERPbymonth.xlsx` 직접 개봉, 산식 미공개). 우리 저장값 3.95%는 raw Treasury(FRED·`T.Bond Rate`≈4.18%)가 아니라 "$ Riskfree Rate"(0.0395)와 정확 일치 — **정의는 같은 말을 써도 실제 계열이 다르다.** 🔴 **결론: 카테고리20(raw Treasury, FRED 포함)은 #14 슬롯의 후보 부적격.** 유일한 유효 후보는 `ERPbymonth.xlsx`의 "$ Riskfree Rate"(카테고리18 내부, 짝인 ERP와 함께) — `docs/probe_999_fred_damodaran.json`(원 판정, 정정 대상)·`docs/probe_1001_erp_pair.json`(정정 근거) |
+| 20 | 무위험수익률·매일 국채수익률(raw Treasury) | FRED DGS10·Treasury.gov 원천 | 🔴 **정정(1002) — STEP999의 "완전 일치" 판정은 값 층위에서 오류였다.** 999는 정의 문구("10-year Treasury bond rate")만 대조해 일치를 확인했으나, **Damodaran이 실제로 ERP와 짝지어 쓰는 값은 raw Treasury가 아니라 별도의 자체조정 "$ Riskfree Rate" 계열**임을 1001이 발견했다(`ERPbymonth.xlsx` 직접 개봉). 산식은 1003에서 확인됨 — `T.Bond rate − 해당등급 디폴트스프레드`(2025-05 Moody's 미국 신용등급 강등 대응, Damodaran 블로그 원문). 우리 저장값 3.95%는 raw Treasury(FRED·`T.Bond Rate`≈4.18%)가 아니라 "$ Riskfree Rate"(0.0395)와 정확 일치 — **정의는 같은 말을 써도 실제 계열이 다르다.** 🔴 **결론: 카테고리20(raw Treasury, FRED 포함)은 #14 슬롯의 후보 부적격.** 유일한 유효 후보는 `ERPbymonth.xlsx`의 "$ Riskfree Rate"(카테고리18 내부, 짝인 ERP와 함께) — `docs/probe_999_fred_damodaran.json`(원 판정, 정정 대상)·`docs/probe_1001_erp_pair.json`(정정 근거) |
 | 21 | 무위험수익률·연1회 학술 스칼라 | Damodaran wacc.xls 상단값 | 현재 정본이나 🔴 **실질 정체(1001) — 2026-01-05 이후 7개월+ 미갱신**(HTTP Last-Modified 실측), "연1회"라는 서술과 달리 사실상 갱신이 멈춰 있다. 🔴 **STEP999 부수발견의 정체 해소(1001)**: as_of(2026-01-05) 당일 실제 raw DGS10은 4.15~4.19%대였는데 저장값은 3.95% — 그 괴리는 "원인 미상"이 아니라 **Damodaran의 "$ Riskfree Rate" 계열이 raw Treasury와 원래 다른 숫자이기 때문**이었다(1001에서 완전 해소, 판정 불필요 상태로 전환) |
 | 22 | 법인세율·연방 고정 | IRS(21%, 2018~) | 입법 전까지 불변 |
 | 23 | 법인세율·주별 | Tax Foundation(연1회, 입법과 동주기) | Damodaran countrytaxrates와 별도 층위 |
@@ -523,7 +523,7 @@
 
 | # | 발견 | 어느 슬롯 | 예상 이득 | 선결 조건(의존관계 포함) | 실행 난이도 | 라이브 영향 | 승인 필요 |
 |---|---|---|---|---|---|---|---|
-| **1(1001, 최우선 — 장은태 지시)** | 🔑 **Damodaran `ERPbymonth.xlsx` 월간 rf·ERP 페어 도입** | **riskfree + ERP(짝)** | **7개월 정체 → 월 1회 갱신** | **조달 배치 위치(`ingest_damodaran.ts` 통합 vs 분리) 판정** — 짝 제약(의존관계#1)은 이미 충족됨(같은 파일·같은 행에서 rf·ERP를 함께 취득하므로), 남은 건 "어디에 코드를 붙이느냐"뿐. 날짜선택(§2-2)·폴백(§2-3)은 부차 | 중 | **카테고리 전환 5.9%(26/440) 실측**(1001 604전수) | **예** |
+| **1(1001, 최우선 — 장은태 지시)** | 🔑 **Damodaran `ERPbymonth.xlsx` 월간 rf·ERP 페어 도입** | **riskfree + ERP(짝)** | **7개월 정체 → 월 1회 갱신** | 🟢 **상태(1003): 구현 완료·적재 대기.** `lib/revdcf/erpMonthly.ts`(순수함수, 값불변증명 통과) 구현·클린클론빌드 통과. 남은 선결 — 조달 배치 위치(`ingest_damodaran.ts` 통합 vs 분리, 미결) · 스키마 설계(같은 행 `expected_inflation` 공존 문제 + `damodaran_global_inputs`가 현재 정확히 1행이고 `.single()`로 읽혀 새 as_of를 naive 삽입하면 크론이 깨지는 위험 — 1003이 발견, 컬럼추가안 vs 별도테이블안 미결) · 날짜선택(§2-2)·폴백(§2-3) | 중 | **카테고리 전환 5.9%(26/440) 재확인**(1003, 오늘 기준 최신월도 동일값) | **예** |
 | 2(997) | Yahoo/Nasdaq 시총 대체경로 | #1 시가총액 | 미해결14번(LOCAL_OK_PROD_FAIL) 우회 가능성 | 계산기준 검증(카테고리1·2·3 구분) 먼저 + **의존관계#2**(자기자본·매출과 같은 주식수 기준이어야 함) | 중 | 있음(us_market_cap) | 필요 |
 | 3(997) | Damodaran `ratings.xls`(종목별 부채비용) | #17 신용스프레드 | 업종평균 대신 종목별 이자보상배율 기반 부채비용 | 원전대조표 | 중 | 있음(WACC) | 필요 |
 | 4(997) | Damodaran `fundgrEB.xls`(EBIT 성장률) | 역DCF 성장경로(층5, 범위 밖 슬롯) | "가장 큰 구멍"의 비컨센서스 대안 | 원전대조표 | 중 | 있음(GAP) | 필요 |
@@ -607,7 +607,7 @@
 | 969 | 부채 — 「확정0/확정값/모름」 3분류 | 기각(무조건0) → 채택(3분류) | GM 사례에서 진짜 부채인데 배열 밖 태그라 0으로 오계산되던 것 발단 | GM검산 137건 변화·verdict 6건 변화 — 유효(단 백필 중 191종목 오염사고 있었음) |
 | 993-994 | SEC throttle — 공유변수 vs 사전예약(nextAt) | 기각(공유변수, 경쟁조건 있음) → 채택(사전예약) | 실측 22.76req/s로 SEC 공식상한(10req/s)의 2.3배 찍고 있었음 | 값불변 20/20 검증 — 유효(배포는 승인대기 상태로 문서종료) |
 | 995-996 | SEC 벌크파일 재도입(838 뒤집음) | 부분채택(Range 부분추출) | 838 전제(N=623) 무효화, 벌크 통째 다운로드는 19.2GB라 불가하나 Range 파싱은 가능 | 20건 딥비교 완전일치·4,493건 1차적재 — 유효 |
-| 999-1001 | 무위험수익률 소스 — FRED만 교체 → 짝 필요 발견 → ERPbymonth.xlsx 페어 권고 | 선택지A 철회 → 선택지C 권고(판정 대기) | rf만 바꾸면 ERP와 짝이 안 맞음(849가 이미 경고). ERPbymonth.xlsx가 짝을 제공 | Damodaran의 "$ Riskfree Rate" 산식 미규명 — 확인 필요 |
+| 999-1003 | 무위험수익률 소스 — FRED만 교체 → 짝 필요 발견 → ERPbymonth.xlsx 페어 구현 | 선택지A 철회 → 선택지C 구현완료(적재 대기) | rf만 바꾸면 ERP와 짝이 안 맞음(849가 이미 경고). ERPbymonth.xlsx가 짝을 제공 | Damodaran의 "$ Riskfree Rate" 산식 — 1003에서 확인됨(2025-05 Moody's 미국 신용등급 강등 대응, T.Bond rate−디폴트스프레드) |
 | (반복) | 원전 3층 값불일치(T5 계산값·책 서술값·T8 리터럴) — T8을 원전으로 채택 | 채택=T8(출력 검증가능) | 책 서술값(p.92) 미보유라 판정 불가 | 책 원본 미확보 상태 지속 — 확인 필요 |
 | (§9표) | 탈락후보 5건(Zacks Rank·REV6·시계열SUE/PEAD·HOLT복제·Damodaran동시역산) | 전부 기각 | 각각: 비공개모델·유료+한국55%·약한신호×약해지는신호·대조값자체가유료비공개·가정증가 | 개별 실측 기반 — 유효(재론 안 됨) |
 

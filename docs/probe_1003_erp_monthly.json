@@ -1,0 +1,177 @@
+{
+  "step": 1003,
+  "title": "ERPbymonth.xlsx 월간 페어 도입 — 구현·검증까지, DB 적재·배포는 승인 후",
+  "invariants": {
+    "dbWrites": 0,
+    "cronInvoked": false,
+    "cronWired": false,
+    "driversEngineComputeModified": false,
+    "revdcfResultsUsValuationUsSectorRelativeLensTablesModified": false,
+    "krTouched": false,
+    "appRoutesComponentsMessagesDiff": 0,
+    "envVarsTyped": false
+  },
+
+  "section1_dependency_check_FIRST_GATE": {
+    "instruction": "1002가 만든 슬롯 간 의존관계 목록을 먼저 읽고, rf+ERP 짝 외에 이번 변경에 걸리는 다른 의존관계가 있는지 확인한다",
+    "method": "app/api/cron/revdcf/route.ts:179-183 코드 직접 확인(세율·신용스프레드·업종베타가 실제로 wacc.xls에서 오는지) + damodaran_global_inputs 실제 행 수 직접 조회",
+    "finding_1_STEP1002_premise_partially_wrong": {
+      "claim": "STEP1003 명령서 §3-3은 '세율·신용스프레드·업종베타는 계속 wacc.xls에서 온다'고 전제했다",
+      "reality": "코드 확인 결과 틀렸다. 세율은 damodaran_country_tax(countrytaxrates.xls, 별도 테이블·별도 as_of), 신용스프레드는 damodaran_credit_spread(scripts/ingest_damodaran_step847.ts가 별도로 채움, 별도 as_of), 업종베타는 damodaran_beta(betas.xls, 별도 테이블·별도 as_of) — 셋 다 wacc.xls의 damodaran_global_inputs 행과 무관한 별도 테이블이고, 이미 각자 독립된 as_of를 갖고 있다. route.ts의 세 쿼리(179-183행)는 as_of로 필터하지도 않는다(테이블당 사실상 최신 1세대만 존재한다고 암묵 가정).",
+      "consequence": "rf·ERP 소스를 바꿔도 세율·신용스프레드·업종베타와의 시점 어긋남은 '새로 생기는' 문제가 아니다 — 이미 원래부터 각자 독립이었다. 1002가 문서화한 dependency#5(rf/ERP↔신용스프레드, 같은 as_of)는 '같은 테이블 join'이 아니라 '우연히 같은 날 마지막으로 갱신됐다'는 뜻이었음을 이번에 정확히 확인."
+    },
+    "finding_2_REAL_new_dependency_expected_inflation": {
+      "claim": "진짜 새로 걸리는 것은 세율·신용스프레드·업종베타가 아니라 expected_inflation이다",
+      "detail": "damodaran_global_inputs 테이블 자체가 { as_of, riskfree_rate, erp, global_default_spread, marginal_tax_rate_used, expected_inflation } 5개 필드를 **한 행**에 담는다(scripts/ingest_damodaran.ts:143). route.ts는 이 중 riskfree_rate·erp·expected_inflation 3개만 실제로 읽는다(179-180행) — global_default_spread·marginal_tax_rate_used는 어디에서도 안 쓰인다(전체 코드베이스 grep 확인, 죽은 필드).",
+      "problem": "rf·erp만 ERPbymonth.xlsx로 갱신하고 expected_inflation은 계속 wacc.xls에서 온다면, 그 행의 as_of 하나가 3개 필드 중 2개(rf·erp)만 대표하고 1개(inflation)는 대표하지 못하게 된다.",
+      "is_this_a_pair_constraint_like_rf_ERP": "아니다(ⓐ 아님) — Damodaran이 expected_inflation을 riskfree_rate로부터 산술적으로 역산하는 관계가 아니다(ERP처럼 '~로부터 유도된 값'이 아니라 별도의 거시 가정). 다만 §7-STEP883 기록(REVDCF_SPEC.md)에 따르면 '다모다란의 문자 그대로의 권고는 영구성장률=무위험이자율(rf) 자체이지 기대인플레가 아니다'라고 이미 밝혀져 있다 — 즉 우리 모델은 원래도 expected_inflation을 rf의 대리값으로 쓰고 있을 뿐, Damodaran의 진짜 권고와 이미 다르다(883에서 도미노 앵커 보존을 위해 의도적으로 채택). 이 STEP은 그 기존 결정을 재론하지 않는다 — 다만 as_of 표시 설계(§5-3)에서 inflation의 출처를 rf·erp와 분리해 표기해야 함을 발견했다."
+    },
+    "finding_3_CRITICAL_single_row_breakage_risk": {
+      "severity": "🔴 이 STEP의 실질적 첫 관문 — 1-2가 요구한 '같은 일이 다른 축에서 반복되지 않게' 항목",
+      "current_state": "damodaran_global_inputs는 현재 정확히 1행(as_of=2026-01-05) — DB 직접 SELECT로 확인",
+      "read_pattern": "app/api/cron/revdcf/route.ts:179 — `sb.from('damodaran_global_inputs').select('*').single()`. Supabase `.single()`은 결과가 정확히 1행이 아니면(0행이든 2행+든) 에러를 던진다.",
+      "risk": "월간 갱신을 naive하게 `upsert([...], {onConflict:'as_of'})`로 새 as_of(예: 2026-08)를 넣으면, 기존 as_of(2026-01-05)와 충돌하지 않으므로 UPDATE가 아니라 INSERT가 일어나 테이블이 2행이 된다. 그러면 다음 크론 실행에서 route.ts의 `.single()`이 **에러를 던져 revdcf 크론 전체가 깨진다.**",
+      "consequence": "적재 설계(§5-3)는 반드시 이 문제를 피해야 한다 — '항상 정확히 1행'을 유지하거나, route.ts의 읽기 쿼리 자체를 바꿔야 한다(이번 STEP 범위 밖 — route.ts 무수정 원칙과 충돌하므로 이번엔 설계만, 구현 안 함).",
+      "verified_by": "직접 DB SELECT(1002·1003 두 세션에서 재확인, 행 수=1)"
+    },
+    "conclusion_1_1": "YES, 다른 의존관계가 걸린다 — 단 STEP1003 명령서가 예상한 것(세율·신용스프레드·업종베타)은 틀렸고, 실제로 걸리는 것은 ① damodaran_global_inputs 한 행 안에 공존하는 expected_inflation의 출처 분리 필요, ② 훨씬 더 시급하게 — 새 as_of를 그대로 upsert하면 `.single()` 읽기가 깨진다(설계 단계에서 반드시 피해야 함)."
+  },
+
+  "section2_parsing_spec": {
+    "file": "https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx",
+    "sheet": "Historical ERP",
+    "headerRow": 1,
+    "dataRowsFrom": 2,
+    "columns": {
+      "A_1": "Start of month (Excel date serial)",
+      "C_3": "T.Bond Rate (float, raw — 짝 아님, 참고용)",
+      "D_4": "$ Riskfree Rate (float) — 우리가 쓸 rf",
+      "K_11": "ERP (T12m) with adj riskfree rate (float) — 우리가 쓸 ERP"
+    },
+    "2-1_column_confirmed_via_header_string_match": "파서(lib/revdcf/erpMonthly.ts)가 실행 시점에 헤더 문자열을 대조해 위치가 어긋나면 즉시 예외를 던진다(파일 구조 변경 방어)",
+    "2-2_latest_month_and_gap": {
+      "latestMonth": "2026-08-01",
+      "storedAsOf": "2026-01-05",
+      "gapMonths": 7,
+      "note": "1001·1003 둘 다 같은 latest month(2026-08) — HTTP Last-Modified가 2026-08-01로 불변 확인, 그 사이 새 달이 발행되지 않았다"
+    },
+    "2-3_why_T12m_adj_variant": {
+      "empirical_basis": "저장값(rf=0.0395, erp=0.0446)이 5개 ERP 변형 중 오직 'ERP(T12m) with adj riskfree rate' 한 열과만 정확히 일치한다(나머지 4개 — T12m plain·Smoothed·Normalized·Net Cash Yield — 전부 다른 값)",
+      "damodaran_own_headline_is_DIFFERENT": "🔴 새로 드러난 것 — Damodaran 자신의 요약 시트('Last 12 months data')는 이 조합이 아니라 raw T.Bond Rate + ERP(T12m)(plain) 조합을 더 눈에 띄게 제시한다(2026-01행: 그 시트의 ERP=0.0423=plain T12m, rf=0.0418=raw — 우리가 쓰는 0.0446/0.0395 조합과 다름). 즉 우리(정확히는 wacc.xls를 통한 기존 관행)가 이미 Damodaran의 '헤드라인' 숫자가 아니라 '보조' 변형을 채택하고 있었다.",
+      "recommendation_not_a_decision": "이번 STEP은 어느 쪽이 옳은지 판정하지 않는다 — 기존 저장값과의 연속성(같은 조합 유지)을 위해 'adj riskfree rate' 변형을 그대로 쓰는 것을 전제로 파서를 만들었다. 다른 조합으로 바꾸는 것은 '갱신'이 아니라 '재정의'이므로 별도 판정 대상."
+    }
+  },
+
+  "section3_procurement_placement_no_choice": {
+    "current_code": "scripts/ingest_damodaran.ts — 8개 파일(FILES 배열)을 한 번의 실행에서 전부 파싱해 as_of 하나로 묶어 8개 테이블에 upsert(damodaran_global_inputs 포함, wacc.xls에서 riskfree_rate·erp·기타 3개 필드 전부 파싱)",
+    "optionA_integrate": {
+      "description": "ingest_damodaran.ts의 FILES 배열에 ERPbymonth.xlsx 추가, global_inputs 블록에서 riskfree_rate·erp만 이 파일에서 파싱하도록 교체",
+      "pros": "기존 as_of 해석·Storage 업로드·검산 흐름 재사용, 실행 지점 하나",
+      "cons": "🔴 1002 원칙(파일마다 갱신주기가 다르다)과 스크립트 구조가 안 맞는다 — 이 스크립트를 실행하는 '주기' 자체가 하나뿐인데, 안에 월간 파일과 연간 파일이 같이 있으면 '월 1회 돌려야 rf·ERP가 최신인데, 그러면 나머지 7개 연간 파일도 매달 재파싱·재적재된다'는 낭비가 생기거나, 반대로 '연 1회만 돌리면 rf·ERP가 다시 7개월 묵는다'는 원래 문제가 재발한다."
+    },
+    "optionB_separate": {
+      "description": "새 스크립트(예: scripts/ingest_erp_monthly.ts)로 ERPbymonth.xlsx만 별도 처리, damodaran_global_inputs의 riskfree_rate·erp 필드만 갱신",
+      "pros": "월간·연간 실행 주기를 코드 구조로 분리 — 1002 원칙과 정합. 나머지 7개 파일 재파싱 없이 rf·ERP만 자주 갱신 가능",
+      "cons": "같은 테이블(damodaran_global_inputs)에 두 스크립트가 쓰기 경쟁 가능(조율 필요) — §5-3 스키마 설계가 이 문제를 실제로 해결해야 함. Storage 업로드·검산 로직 일부 중복 발생"
+    },
+    "judgment_material_not_a_choice": "실측된 사실(wacc.xls 7개월 정체 vs ERPbymonth.xlsx 월1회, 1001·1002·1003 세 세션에서 일관되게 확인)에 비추면 옵션B가 원칙적으로 더 맞다 — 하지만 이건 판단 재료이지 선택이 아니다. 고르지 않는다."
+  },
+
+  "section4_impact_remeasurement": {
+    "method": "scripts/probe_1003_erp_monthly_604.ts — 1001과 동일 방법론(짝으로 함께 교체), 이번엔 latest month를 오늘(2026-08-13경) 기준으로 재확인 후 사용 + 섹터·부채4분위 분해 추가",
+    "latestMonthUsedTHISRUN": "2026-08-01",
+    "note_identical_to_1001": "1001이 쓴 값(rf=0.0452, erp=0.0445, 2026-08 행)과 완전히 동일하다 — HTTP Last-Modified가 그 사이 안 바뀌어(2026-08-01 그대로) 새 달이 발행되지 않았기 때문. '다시 쟀다'는 것은 재현성 확인이지 새 숫자가 아니다.",
+    "universeAsOf": "2026-08-11",
+    "computable": 440,
+    "analyzed": 440,
+    "reconstructionCheck": { "maxErrorBp": 0, "errorsOver1bp": 0 },
+    "waccDeltaBpStats": { "n": 440, "median": 54.626378085578935, "p90": 55.910990796997076, "max": 56.672291613152346, "min": 44.78040230682434, "avg": 54.092657079437195 },
+    "kindChanged": { "count": 26, "total": 440, "pct": 5.9 },
+    "comparisonToStep1001": { "step1001_pct": 5.9, "thisRun_pct": 5.9, "sameMonth": true, "reproduced": true },
+    "transitionMatrix": { "years→over_cap": 11, "below_one→years": 13, "over_cap→value_destroying": 2 },
+    "bySector": {
+      "Health Care": {"n":73,"kindChanged":1,"avgWaccDeltaBp":54.32}, "Materials": {"n":27,"kindChanged":0,"avgWaccDeltaBp":53.68},
+      "Energy": {"n":16,"kindChanged":1,"avgWaccDeltaBp":53.51}, "Information Technology": {"n":93,"kindChanged":3,"avgWaccDeltaBp":54.83},
+      "Industrials": {"n":101,"kindChanged":7,"avgWaccDeltaBp":54.36}, "Consumer Staples": {"n":25,"kindChanged":2,"avgWaccDeltaBp":53.96},
+      "Communication Services": {"n":17,"kindChanged":1,"avgWaccDeltaBp":53.09}, "Consumer Discretionary": {"n":56,"kindChanged":7,"avgWaccDeltaBp":53.83},
+      "Financials": {"n":12,"kindChanged":2,"avgWaccDeltaBp":53.79}, "Utilities": {"n":19,"kindChanged":2,"avgWaccDeltaBp":51.27},
+      "Real Estate": {"n":1,"kindChanged":0,"avgWaccDeltaBp":55.08}
+    },
+    "byDebtQuartile": [
+      { "label": "Q1(최저부채)", "n": 110, "avgWaccDeltaBp": 55.8, "kindChangedPct": 6.4 },
+      { "label": "Q2", "n": 110, "avgWaccDeltaBp": 55.12, "kindChangedPct": 5.5 },
+      { "label": "Q3", "n": 110, "avgWaccDeltaBp": 53.97, "kindChangedPct": 4.5 },
+      { "label": "Q4(최고부채)", "n": 110, "avgWaccDeltaBp": 51.48, "kindChangedPct": 7.3 }
+    ],
+    "section4_3_debt_quartile_pattern_check": {
+      "step1000_finding": "고부채일수록 WACC델타(bp)는 작아지는데 카테고리전환율은 최고 — 비단조·원인미규명",
+      "this_run_confirms": true,
+      "detail": "WACC델타 Q1(55.8bp)→Q4(51.48bp) 단조감소(부채가 클수록 세후부채비용 쪽 비중이 늘어 리스크프리 변화의 70%만 받는 산식으로 여전히 설명됨) — 그러나 카테고리전환율은 Q1 6.4%·Q2 5.5%·Q3 4.5%·Q4 **7.3%**로 다시 비단조(Q4가 최고). paired(짝을 맞춘) 교체에서도 같은 역전 패턴이 재현됨 — 이는 1000이 관찰한 패턴이 mismatched(rf만 교체) 방식의 아티팩트가 아니라 WACC/verdict 경계 구조 자체의 특징임을 시사한다(더 강한 증거). 정량적 원인(경계 근접도)은 이번에도 직접 측정하지 않아 미규명으로 유지."
+    }
+  },
+
+  "section5_implementation": {
+    "5-1_new_files_not_wired": {
+      "lib/revdcf/erpMonthly.ts": "순수함수 parseErpMonthly(buffer)·latestPairedRow(rows)·findRowForMonth(rows,month). route.ts·ingest_damodaran.ts 어디서도 import 안 함(grep 재확인).",
+      "scripts/probe_1003_erp_monthly_604.ts": "§4 604전수 측정",
+      "scripts/probe_1003_value_invariance.ts": "§5-2 값불변증명 + 최신월 확인"
+    },
+    "5-1_bug_found_and_fixed_during_implementation": {
+      "what": "xlsx(SheetJS) 라이브러리로 이 파일을 파싱하면 날짜가 정확히 1,462일(1900/1904 엑셀 날짜체계 오프셋) 어긋났다(2026-08-01→2022-07-31로 잘못 읽힘)",
+      "root_cause": "이 워크북은 Excel 1904 날짜체계로 저장돼 있다(`Workbook.WBProps.date1904 === true`, Mac Excel 레거시 — histimpl.xls의 'Microsoft Macintosh Excel' 메타데이터와 정합). openpyxl(Python)은 이 플래그를 자동 보정하지만, 이번에 쓴 xlsx.read() 호출은(cellDates:true를 켜도) 보정하지 않았다.",
+      "fix": "date1904 플래그를 워크북에서 직접 읽어 조건부로 1,462일을 보정하는 방식으로 수정(하드코딩 아님 — 플래그가 false가 되면 자동으로 보정 안 함)",
+      "caught_by": "§5-2 값불변증명 스크립트 — 1차 실행에서 rfMatch/erpMatch가 둘 다 false로 나와 즉시 발견, 수정 후 재실행해 true 확인. 이 STEP이 스스로 요구한 검증 절차가 실제로 실수를 잡은 사례."
+    },
+    "5-2_value_invariance_proof": {
+      "method": "parseErpMonthly()로 로컬 ERPbymonth.xlsx를 읽어 2026-01 행을 추출 → damodaran_global_inputs 저장값과 직접 대조(DB SELECT만, 쓰기 없음)",
+      "result": { "storedAsOf": "2026-01-05", "storedRf": 0.0395, "storedErp": 0.0446, "parsedRf": 0.03949999999999999, "parsedErp": 0.0446, "rfMatch": true, "erpMatch": true },
+      "conclusion": "새 파서가 기존 저장값을 정확히 재현 — 파서 자체는 신뢰 가능(위 날짜버그 수정 후)"
+    },
+    "5-3_schema_design_not_implemented": {
+      "problem_recap": "damodaran_global_inputs 한 행에 riskfree_rate·erp(월간 갱신 후보)와 expected_inflation·global_default_spread·marginal_tax_rate_used(여전히 wacc.xls, 연간)가 공존 — 단일 as_of 컬럼으로는 이 둘의 다른 시점을 동시에 표현 못 함. 게다가 as_of를 그대로 새 값으로 바꾸면 `.single()` 읽기가 깨진다(§1 finding_3).",
+      "option1_add_columns_keep_single_row": {
+        "description": "테이블에 riskfree_erp_source('damodaran_annual'|'damodaran_monthly')·riskfree_erp_month(ERPbymonth.xlsx 원본 월) 컬럼 추가. 기존 as_of는 wacc.xls 유래 필드(inflation 등)의 시점을 계속 대표. 갱신 시 새 행을 INSERT하지 않고 같은 as_of 행을 UPDATE(riskfree_rate·erp·riskfree_erp_source·riskfree_erp_month만 갱신) — 항상 정확히 1행 유지, route.ts의 `.single()` 안 깨짐, route.ts 코드 자체는 무수정 가능(추가 컬럼을 안 읽어도 기존 쿼리 그대로 동작)",
+        "migration_needed": "damodaran_global_inputs에 컬럼 2개 추가(ALTER TABLE) — 이번 STEP에서 마이그레이션 파일 작성 안 함(설계만, §5-3 지시가 '설계한다'이지 '구현한다'가 아님)"
+      },
+      "option2_separate_table": {
+        "description": "damodaran_riskfree_erp_monthly(자체 as_of/month PK)로 rf·ERP만 분리, route.ts가 두 테이블을 조인/우선순위 로직으로 읽도록 수정",
+        "cons": "route.ts 코드 변경이 필요 — 이번 STEP의 'route.ts 무수정' 원칙과 정면충돌(route.ts를 건드리는 순간 그 자체가 '배선'이 됨). 다음 승인 STEP으로 미뤄야 함"
+      },
+      "decision": "고르지 않음(§5-3은 설계만 지시) — 옵션1이 route.ts 무수정 제약과 가장 잘 맞는다는 점만 기록, 최종 선택은 배선 승인 시 별도 판정"
+    }
+  },
+
+  "section6_clean_clone_build": { "build": "success", "tsc": "0 errors", "vitest": "34 test files / 367 tests, 전부 통과" },
+
+  "found_this_step_correcting_1001": {
+    "dollar_riskfree_rate_formula_now_published": {
+      "step1001_said": "산식 미공개",
+      "correction": "공개돼 있다(2026-08-13 재확인, 3번규칙 요구사항). Damodaran, 'Sovereign Ratings, Default Risk and Markets: The Moody's Downgrade Aftermath!'(Musings on Markets, 2025-06) — Moody's가 2025-05-16 미국을 Aaa→Aa1로 강등한 뒤, raw T.Bond rate에 디폴트 스프레드가 섞여 있다고 보고 이를 다시 빼낸 값이 '$ Riskfree Rate'다: `$ Riskfree Rate = T.Bond rate − 해당등급 디폴트스프레드`(그의 공개 예시 2025-05-30: 4.41%−0.40%=4.01%). 2025년 중반 이전 행이 빈 이유 = 그 전까지 미국이 Aaa라 조정이 불필요했기 때문 — 우리가 관찰한 '월별로 변동하는 오프셋'과 '2025년 중반부터 시작' 패턴 둘 다 이 설명과 정확히 일치한다.",
+      "sources": ["https://aswathdamodaran.blogspot.com/2025/06/sovereign-ratings-default-risk-and.html", "https://aswathdamodaran.substack.com/p/a-moodys-ratings-downgrade-for-the"]
+    }
+  },
+
+  "notDone": [
+    "적재(DB 쓰기) — 승인 후",
+    "route.ts 배선 — 승인 후",
+    "§3(조달 배치 위치)·§5-3(스키마 설계) 판정 — 재료만",
+    "expected_inflation의 출처를 별도로 갱신할지 여부 판정 — 이번엔 문제만 발견"
+  ],
+  "unmeasured": [
+    "옵션1 스키마(컬럼 추가)를 실제 적용했을 때 다른 코드(예: 관리자 화면 등)가 damodaran_global_inputs 전체 컬럼을 select하는 곳이 더 있는지 전수 확인 안 함(route.ts만 확인)",
+    "카테고리전환 비단조성(Q4 최고)의 정량적 원인 — 여전히 미측정"
+  ],
+  "newlyDiscovered": [
+    "STEP1003 명령서 자체의 전제(세율·신용스프레드·업종베타가 wacc.xls에서 온다) 일부 오류 — 실제로는 각자 독립 테이블",
+    "진짜 새 의존관계는 expected_inflation(같은 행 공존)과 damodaran_global_inputs의 .single() 읽기 취약점(새 as_of 행 추가 시 크론 전체 파손)",
+    "xlsx 라이브러리의 Excel 1904 날짜체계 처리 버그(자체 발견·수정)",
+    "$ Riskfree Rate 산식이 실제로 공개돼 있음(1001의 '미공개' 기록 정정) — 2025-05 Moody's 미국 신용등급 강등에 대한 Damodaran의 대응",
+    "Damodaran 자신의 '헤드라인' ERP 조합(raw Treasury + plain T12m)이 우리가 쓰는 조합(adj-riskfree 변형)과 다르다"
+  ],
+  "needsJudgment": [
+    "§3: 조달 배치 위치(ingest_damodaran.ts 통합 vs 별도 스크립트)",
+    "§5-3: 스키마 설계(옵션1 컬럼추가 vs 옵션2 별도테이블)",
+    "배선·배포 여부(카테고리 전환 5.9%, 26/440 실측 기반)",
+    "expected_inflation을 rf·erp와 별도로 다룰지, 아니면 그대로 wacc.xls 유지할지"
+  ]
+}
