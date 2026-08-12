@@ -1117,6 +1117,20 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 **판정 대기**: riskfree를 FRED로 교체할지(선택지 A) vs 현행 유지(연1회 Damodaran 스냅샷, ERP와의 내부정합 우선·선택지 B) — 장은태 판정. FRED 채택 시에도 §2-2(어느 날짜 값을 쓸지)·§2-3(무응답 시 폴백)은 별도 확정 필요. 원자료 = `docs/probe_1000_riskfree_fred.json`.
 
+🔴 **선택지 A 철회(STEP1001) — rf만 바꾸면 ERP와 짝이 안 맞는다는 것을 놓쳤었다.** 위 1101행(STEP849)이 이미 "FRED는 ERP와 짝 안 맞아 보류"라고 기록해 뒀는데, 999·1000이 이 기록을 놓치고 rf만 FRED로 교체하는 선택지A를 만들었다. Damodaran ERP는 그의 riskfree와 짝으로 역산된 **내재값**이라, rf만 바꾸면 `Ke=rf+β×ERP`가 서로 다른 시점 가정을 섞는다.
+
+### 🔶 C-8 §10-F rf·ERP 짝 교체 검토 — ERPbymonth.xlsx (STEP 1001)
+
+🔴 **histimpl.xls는 연간, 진짜 월간 파일은 별도로 있다**: `https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx` — 998의 카탈로그가 놓쳤던 파일. 'Historical ERP' 시트(월별, 2008-09~2026-08)에 `T.Bond Rate`·`$ Riskfree Rate`(별도 계열, 산식 미상)·ERP 5변형이 **전부 같은 행에** 존재. HTTP `Last-Modified: 2026-08-01`로 월 1회 갱신 확인(대조: `wacc.xls`는 오늘(2026-08-12) 재다운로드해도 여전히 `Last-Modified: 2026-01-12`, 값도 0.0395/0.0446 그대로 — **7개월 이상 정체**).
+
+🔴 **999의 20bp 괴리가 이 STEP에서 완전히 설명됐다**: 저장값(riskfree=0.0395, erp=0.0446, as_of 2026-01-05)이 ERPbymonth.xlsx 2026-01 행의 `$ Riskfree Rate`(0.0395)·`ERP(T12m) with adj riskfree rate`(0.0446)와 **정확히 일치** — `scripts/ingest_damodaran.ts:143`이 `wacc.xls`에서 파싱하는 두 값이 바로 이 계열이다. 999가 FRED DGS10(raw T.Bond Rate 쪽에 가까움, 4.15~4.19%)과 비교해 발견한 20bp 괴리는 데이터 오염이 아니라 **Damodaran 자신이 raw와 "$" 두 rf 계열을 따로 갖고 있기 때문**이었다. `$ Riskfree Rate`의 정확한 산식(trailing 평균 아님, 상수 스프레드도 아님 — 직접 계산 대조로 배제)은 미규명으로 남는다.
+
+🔴 **604 전수 측정(paired vs mismatched)**: `scripts/probe_1001_erp_pair_604.ts`. rf·ERP를 ERPbymonth.xlsx 2026-08 행에서 짝으로 취득(rf=0.0452·erp=0.0445)해 교체하면 **전환 5.9%(26/440)** — 1000의 mismatched 재현치 6.4%(28/440, 완전 재현 확인)보다 낮다. 방향은 가설과 일치하나 **효과 크기는 작다**(−0.5%p). 🔴 **메커니즘은 가설과 다르다** — ERP는 거의 안 움직였다(0.0446→0.0445, −1bp). 개선의 실체는 "ERP가 rf 상승을 상쇄해서"가 아니라 **"Damodaran의 `$ Riskfree Rate` 자체가 raw Treasury(FRED, +70bp)보다 완만하게(+57bp) 움직여서"**다. WACC델타 median도 68.2bp→54.6bp로 줄었다.
+
+🔴 **3중 규칙**: ①-A(Damodaran ERP2022Formatted.pdf) — *"The riskfree rate chosen in computing the premium has to be consistent with the riskfree rate used to compute expected returns... Using equity risk premiums that are very different from the implied premium will introduce a market view"* — rf·ERP 짝 사용은 Damodaran 자신의 명시적 원칙. 단 "$" 계열이 뭘 조정한 것인지는 이 논문에 없음(각주71은 타 실무자 관행 설명일 뿐, 본인 관행 아니라고 명시). ①-B — Kroll은 ERP·rf를 명명된 짝으로 발표(정규화된 rf도 별도 계열로 운용, 유사한 설계사상) · Morningstar는 만기(duration) 매칭(시점 매칭과는 다른 축) · Bloomberg는 반례로 rf=실시간·프리미엄=구식 스냅샷을 섞어 쓰는 사례 확인(999·1000의 mismatched와 동일 안티패턴).
+
+**선택지 C(권고, 판정 대기)**: 선택지A(rf만 FRED)는 철회 — ERP와 짝이 안 맞는다. 대신 **ERPbymonth.xlsx를 매월 짝으로 수집**하는 안(선택지C)이 원전 원칙에 부합하고, 실측상으로도 방향이 맞다(5.9%<6.4%). 조달 배치 위치(`ingest_damodaran.ts` 통합 vs 별도 스크립트)는 미결. 원자료 = `docs/probe_1001_erp_pair.json`.
+
 **재료 배선 결정**:
 | 재료 | 결정 | 커버리지(604) | 근거 |
 |---|---|---|---|

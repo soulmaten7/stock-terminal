@@ -156,9 +156,13 @@
 | `capex.xls` | 업종별 CapEx·감가상각·**Net CapEx/Sales**·Sales/Invested Capital | driver 5 대조 |
 | `wcdata.xls` | 업종별 매출채권/재고/매입채무/**Non-cash WC/Sales** | driver 4 대조 (🔴 폴백 사용 금지 — 정의 불일치) |
 | `totalbeta.xls` | 총베타(비분산 투자자용) | 미검토 |
+| `histimpl.xls`(113KB) | 내재 ERP **연간** 시계열(1960~2025) — Year·T.Bond Rate·Implied ERP(FCFE) 등 19컬럼 | ERP 대안(연간, 998이 처음 등재) — **STEP1001 확인: 실제로는 연1회 갱신**(998의 "월별 갱신 포함" 서술은 부정확했음) |
+| `ERPbymonth.xlsx`(47KB, https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx) | 내재 ERP **월간** 시계열(2008-09~) — `Start of month`·`T.Bond Rate`·`$ Riskfree Rate`(별도 계열, 산식 미상)·ERP 5변형이 같은 행에 짝으로 존재 | 🔑 **STEP1001 신규 발견 — 998의 카탈로그가 놓쳤던 진짜 월간 파일.** `damodaran_global_inputs`(riskfree=0.0395·erp=0.0446, as_of 2026-01-05)가 이 파일 2026-01행의 `$ Riskfree Rate`·`ERP(T12m) with adj riskfree rate`와 정확 일치 — 우리 저장값의 실제 원천이 이것임을 역추적으로 확인. HTTP `Last-Modified` 월1회 갱신 확인(대조: `wacc.xls`는 2026-01-12 이후 정체) |
 
 🔴 **알려진 내부 불일치**: `countrytaxrates.xls` US 한계세율 **25.63%** vs `wacc.xls`·`betas.xls` 입력 **25.00%**.
 → 결정: `countrytaxrates.xls` 채택 + **WACC은 직접 조립**(그의 완성 `Cost of Capital` 열 사용 금지). 상세 = `docs/REVDCF_SPEC.md` §12.
+
+🔴 **`wacc.xls`의 리스크프리·ERP 값(상단 입력)은 갱신 주기가 다른 xls들과 다르다(STEP1001)**: 2026-08-12 재다운로드해도 `Long Term Treasury bond rate`·`Risk Premium to Use for Equity` 값이 여전히 2026-01-05 그대로다(Last-Modified도 2026-01-12에서 정체) — Damodaran이 이 두 셀만 따로, 불규칙하게(연1회 정도) 업데이트하는 것으로 보인다. `ERPbymonth.xlsx`는 매월 갱신되므로 이 두 값만큼은 그쪽을 보는 것이 더 최신이다. 상세 = `docs/REVDCF_SPEC.md` §10-F.
 
 ---
 

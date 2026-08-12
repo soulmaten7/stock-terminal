@@ -1,0 +1,139 @@
+{
+  "step": 1001,
+  "title": "Damodaran 월간 내재 ERP(ERPbymonth.xlsx) 도입 검토 + STEP_LEDGER 복구",
+  "background": "REVDCF_SPEC.md:1101(STEP849)에 'FRED는 ERP와 짝 안 맞아 보류(일간 rf변형은 후속)'가 이미 기록돼 있었다. 999·1000이 이 기록을 놓치고 rf만 FRED로 교체하는 선택지A를 만들었다 — Damodaran ERP는 그의 riskfree와 짝으로 역산된 내재값이라, rf만 바꾸면 Ke=rf+β×ERP가 서로 다른 시점 가정을 섞게 된다. 이 STEP은 선택지A를 철회하고, 998이 발견한 histimpl.xls(및 실제로는 그보다 더 적합한 ERPbymonth.xlsx)를 조사한다.",
+  "invariants": { "codeChanges": 0, "dbWrites": 0, "cronInvoked": false, "cronWired": false, "damodaranTablesModified": false, "krTouched": false, "appRoutesComponentsMessagesDiff": 0, "envVarsTyped": false },
+
+  "section1_histimpl_structure": {
+    "1-1_columns": {
+      "histimpl_xls": {
+        "url": "https://pages.stern.nyu.edu/~adamodar/pc/datasets/histimpl.xls",
+        "sheet": "Historical Impl Premiums",
+        "granularity": "연간(1960~2025, 66행)",
+        "columns": ["Year","Earnings Yield","Dividend Yield","S&P 500","Earnings*","Dividends*","Dividends + Buybacks","Change in Earnings","Change in Dividends","T.Bill Rate","T.Bond Rate","Bond-Bill","Smoothed Growth","Implied Premium (DDM)","Analyst Growth Estimate","Implied ERP (FCFE)","Implied ERP with risk adjusted riskfree rate","Implied Premium (FCFE with sustainable Payout)","ERP/Riskfree Rate"],
+        "lastRow": "Year=2025 (row 72)",
+        "internal_dateUpdatedCell": "43834 = 2020-01-04 (스테일 라벨, 실제 데이터는 2025까지 있음 — 이 셀 자체를 갱신주기 근거로 쓰면 안 됨)"
+      },
+      "ERPbymonth_xlsx": {
+        "url": "https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx",
+        "note": "🔴 998 카탈로그가 histimpl.xls만 기재했으나, 실제 월간-갱신 파일은 이것과 별도의 이 파일이다 — 998이 놓친 파일, 1001에서 처음 확인",
+        "sheets": ["Historical ERP (217행, 2008-09~2026-08)", "ERP in last 12 months (chartsheet)", "Last 12 months data (19행)"],
+        "historicalERP_columns": ["Start of month","S&P 500","T.Bond Rate","$ Riskfree Rate","Ten-year average CF","CF (Trailing 12 month)","Normalized CF","Expected growth rate","ERP (T12m with sustainable payout)","ERP (T12m)","ERP (T12m) with adj riskfree rate","ERP (Smoothed)","ERP (Normalized)","ERP (Net Cash Yield)","ERP (Covid Adjusted)","Expected Return","Notes"],
+        "granularity": "월간(매월 1일자 행 하나)"
+      }
+    },
+    "1-2_paired_in_same_row": {
+      "answer": true,
+      "evidence": "ERPbymonth.xlsx 'Historical ERP' 시트의 각 행(월)에 'T.Bond Rate'·'$ Riskfree Rate' 두 종류의 rf와 5종류의 ERP 변형이 전부 같은 행에 나란히 존재한다. 2026-01 행(row210): T.Bond Rate=0.0418·$ Riskfree Rate=0.0395·ERP(T12m)with adj riskfree rate=0.0446.",
+      "conclusion": "①-2가 이 STEP의 핵심 질문이었다 — YES, 짝으로 있다. C안이 성립한다."
+    },
+    "1-3_update_cadence": {
+      "answer": "월 1회, 매월 초(전월 종가 반영) — HTTP Last-Modified 헤더로 실측 확인",
+      "ERPbymonth_lastModified": "2026-08-01 (curl -I 재확인, 최신 행 Start of month=2026-08-01과 정합)",
+      "waccxls_lastModified_forContrast": "2026-01-12 (내부 'Date updated' 셀도 2026-01-05) — ERPbymonth보다 약 7개월 stale",
+      "histimpl_xls_cadence": "연 1회(연말~1월초, 직전 완결연도 1개 행 추가) — 998 카탈로그의 '연도별,월별갱신 포함' 서술은 부정확했다. 진짜 월간 파일은 ERPbymonth.xlsx다."
+    },
+    "1-4_stored_value_match": {
+      "stored_damodaran_global_inputs": { "as_of": "2026-01-05", "riskfree_rate": 0.0395, "erp": 0.0446 },
+      "match_found": true,
+      "exact_match_row": "ERPbymonth.xlsx 'Historical ERP' 2026-01 행: $ Riskfree Rate=0.0395(정확 일치) · ERP(T12m) with adj riskfree rate=0.0446(정확 일치)",
+      "ingestion_source_confirmed": "scripts/ingest_damodaran.ts:143 — riskfree_rate=find(/Long Term Treasury/i), erp=find(/Risk Premium to Use/i), 둘 다 wacc.xls에서 파싱. 프레시 재다운로드한 wacc.xls(2026-08-12 확인)도 여전히 0.0395/0.0446 그대로 — Damodaran이 wacc.xls를 1월 이후 갱신하지 않았다.",
+      "step999_20bp_gap_explained": "999가 발견한 '저장값3.95% vs 당일실제DGS10 4.15~4.19%'의 20bp 괴리는 데이터 오염이나 stale 이슈가 아니라, Damodaran 자신이 raw T.Bond Rate(0.0418, 우리가 FRED DGS10과 비교했던 값에 가까움)와 별도로 산출하는 '$ Riskfree Rate'(0.0395, 우리 저장값과 정확 일치) 두 계열을 갖고 있기 때문이다. wacc.xls는 후자를 쓴다. 20bp 괴리의 정체는 완전히 규명됐다.",
+      "unresolved_subquestion": "'$ Riskfree Rate'가 정확히 어떤 산식으로 T.Bond Rate에서 조정되는지는 미규명 — 단순 trailing-12개월 평균이 아님(직접 계산해 대조: trailing12avg=0.0424 ≠ 0.0395). 상수 스프레드도 아님(月별 오프셋이 −23~−40bp로 변동). Damodaran의 공개 방법론 문서(ERP2022Formatted.pdf)에서도 이 두 번째 계열에 대한 설명은 찾지 못함(①-A 참조) — '정확한 산식 미상'으로 남긴다."
+    }
+  },
+
+  "section2_impact_measurement": {
+    "method": "scripts/probe_1001_erp_pair_604.ts — 604 유니버스중 계산가능 440종목, STEP1000의 reverse-derive creditSpread 재사용, riskFree와 ERP를 함께 교체(paired)한 경우 vs 999/1000처럼 rf만 교체(mismatched, ERP 불변)한 경우를 나란히 계산.",
+    "universeAsOf": "2026-08-11",
+    "computable": 440,
+    "analyzed": 440,
+    "reconstructionCheck": { "maxErrorBp": 0, "errorsOver1bp": 0 },
+    "inputs": {
+      "old_2026_01_stored": { "riskFree": 0.0395, "erp": 0.0446 },
+      "new_paired_2026_08_ERPbymonth": { "riskFree": 0.0452, "erp": 0.0445, "note": "같은 행(2026-08)에서 짝으로 취득 — $ Riskfree Rate·ERP(T12m) with adj riskfree rate" },
+      "reference_1000_mismatched": { "riskFree": 0.0465, "erp": 0.0446, "note": "999·1000 재현 — rf만 FRED raw로 교체, ERP는 정적 유지(짝 안 맞음)" }
+    },
+    "2-2_headline_comparison": {
+      "step1000_reported_pct": 6.4,
+      "thisRun_mismatched_replication_pct": 6.4,
+      "thisRun_paired_pct": 5.9,
+      "verdict": "짝을 맞추면 6.4%→5.9%로 낮아진다 — 방향은 STEP1001의 가설(짝이 맞으면 상쇄되어 전환율이 낮아진다)과 일치한다. 🔴 단, 효과 크기는 작다(−0.5%p, 28건→26건) — '완전히 상쇄' 수준이 아니라 '부분적으로 낮아짐' 수준이다."
+    },
+    "waccDeltaPairedBpStats": { "n": 440, "median": 54.626378085578935, "p90": 55.910990796997076, "max": 56.672291613152346, "min": 44.78040230682434, "avg": 54.092657079437195 },
+    "waccDeltaMismatchedBpStats": { "n": 440, "median": 68.21385143361572, "p90": 69.99948866573347, "max": 70.00000000000006, "min": 55.34582249801433, "avg": 67.50331370869058 },
+    "kindChangedPaired": { "count": 26, "total": 440, "pct": 5.9 },
+    "kindChangedMismatchedReplication": { "count": 28, "total": 440, "pct": 6.4, "note": "1000이 보고한 6.4%(28/440)와 정확히 재현됨 — 방법론 일관성 확인" },
+    "transitionMatrixPaired": { "years→over_cap": 11, "below_one→years": 13, "over_cap→value_destroying": 2 },
+    "transitionMatrixMismatchedReplication": { "years→over_cap": 12, "below_one→years": 13, "below_one→over_cap": 1, "over_cap→value_destroying": 2 },
+    "mechanism_honesty_check": {
+      "claim_being_tested": "짝을 맞추면 rf 상승과 ERP 하락이 서로 상쇄되어 WACC 변화가 크게 줄어든다",
+      "actual_mechanism": "ERP는 거의 움직이지 않았다(0.0446→0.0445, −1bp) — '상쇄'라고 부를 만한 움직임이 아니다. WACC델타가 줄어든 진짜 이유는 rf 자체가 덜 움직였기 때문이다: mismatched는 rf를 FRED raw(0.0465)로 바꿔 +70bp 이동시켰지만, paired는 Damodaran 자신의 '$ Riskfree Rate' 계열로 바꿔 +57bp만 이동했다(0.0395→0.0452). 즉 짝을 맞춘 효과의 대부분은 'ERP가 rf 상승을 상쇄해서'가 아니라 'Damodaran의 $ Riskfree Rate 자체가 raw Treasury보다 완만하게 움직여서'다.",
+      "2-3_check": "상쇄되지 않고 오히려 커지지는 않았다(5.9%<6.4%, 방향은 가설과 일치) — 그러나 '짝이 맞아서 상쇄된다'는 원래 가설의 인과 스토리는 정확하지 않다. 실측 결과와 최초 가설의 메커니즘 설명이 어긋나는 부분을 숨기지 않고 그대로 보고한다."
+    }
+  },
+
+  "section3_procurement_path": {
+    "3-1_access": {
+      "url": "https://pages.stern.nyu.edu/~adamodar/pc/implprem/ERPbymonth.xlsx",
+      "format": "xlsx (Microsoft Excel 2007+, openpyxl로 파싱 확인)",
+      "size": "47,245 bytes",
+      "auth": "불필요(공개 URL, 200 OK, User-Agent 헤더만 필요)"
+    },
+    "3-2_update_detection": {
+      "method": "HTTP Last-Modified 헤더 — 실측 확인(2026-08-01), 파일 내용의 최신 'Start of month' 행 날짜와 정합",
+      "alternative": "행 개수 증가(max_row) 비교도 가능하나 Last-Modified가 더 직접적",
+      "confidence": "높음 — wacc.xls(2026-01-12)와의 대조로 서로 다른 갱신 시점을 정확히 구분해냄"
+    },
+    "3-3_ingestion_placement_options_no_implementation": [
+      "옵션A: scripts/ingest_damodaran.ts의 FILES 배열에 ERPbymonth.xlsx 추가 — 기존 xls 파싱 패턴(XLSX.read)과 다른 확장자(xlsx vs xls)이나 라이브러리(xlsx 패키지)는 이미 양쪽 다 지원. 기존 wacc.xls의 riskfree_rate/erp find()를 이 파일의 'Historical ERP' 시트 최신행 파싱으로 교체하는 형태. 장점: 기존 배치·Storage 업로드·as_of 로직 재사용. 단점: wacc.xls는 계속 다른 용도(Global Default Spread 등)로 쓰이므로 두 파일을 부분적으로만 교체하는 코드가 필요해짐(단순 치환이 아님).",
+      "옵션B: 별도 스크립트(scripts/ingest_damodaran_erp_monthly.ts)로 분리 — 월간 갱신 주기가 다른 xls들(연1회)과 다르므로 독립 실행/독립 크론이 더 정확한 모델. 장점: 갱신주기 불일치를 코드 구조로 표현. 단점: damodaran_global_inputs 테이블에 두 스크립트가 쓰기 경쟁(같은 as_of PK) 가능성 — 컬럼 분리 또는 병합 전략 필요.",
+      "결정하지 않음 — 장은태 판정 대상"
+    ]
+  },
+
+  "section4_step_ledger_recovery": {
+    "gap_found": "docs/STEP_LEDGER.md가 STEP970에서 멈춰 있었고 971~1000(30개 STEP)이 기록되지 않았다 — 970 이후 아무도 원장을 보지 않았다.",
+    "incident_classification": "Sentry health 11일 무대응(982)·verify CI 38시간 무대응(990)과 같은 종류의 절차 결함 — 감시·기록 장치는 있었는데 보는/쓰는 절차가 없었다.",
+    "recovery_method": "git log의 STEP별 커밋 메시지 전체 body(사실상 각 STEP의 자체 보고문)를 1차 근거로, docs/probe_*.json의 purpose/note/scope 필드와 STATE.md·VALUATION_SPEC.md·REVDCF_SPEC.md·Q1_AXIS_DECISION.md의 STEP 인용 문단으로 교차확인.",
+    "coverage": "971~999 전체(29개 STEP) 복구 완료 — 커밋 없이는 한 줄도 쓰지 않음. 971만 근거가 얕음(커밋 메시지 외 STATE.md의 짧은 인용 하나뿐, 정직하게 표시)",
+    "outcome_distribution": { "성공": 28, "부분": 1, "note": "988이 유일한 🟡(커밋 메시지 자체가 '부분 성공, 원인 미확정 유지'라고 명시)" },
+    "location": "docs/STEP_LEDGER.md '## 971~1000 (1001에서 복구)' 섹션"
+  },
+
+  "search_discipline": {
+    "①-A_damodaran_methodology": {
+      "source": "ERP2022Formatted.pdf (Damodaran, 'Equity Risk Premiums: Determinants, Estimation and Implications')",
+      "finding1_riskfree_input": "Damodaran의 계산 예시들은 spot 10-year T-Bond rate(당일 관측치)를 그대로 쓴다(예: 'T.Bond rate on 1/1/10 = 3.84%'). 스무딩·평균 없음.",
+      "finding2_dual_rate_not_his_own_practice": "그는 raw T.Bond rate 외에 별도의 '정규화된' 무위험수익률을 자신이 쓴다고 설명하지 않는다 — 오히려 각주71에서 '단기 T-bill + term structure spread로 정규화된 장기금리를 쓰는 것은 다른 실무자들의 관행'이라고 타인 관행으로 서술한다. 🔴 즉 ERPbymonth.xlsx의 '$ Riskfree Rate' 컬럼이 무엇을 조정한 것인지는 이 논문만으로는 완전히 설명되지 않는다 — 미규명으로 남김.",
+      "finding3_matched_pair_rule": "🔑 핵심 확인 — 'The riskfree rate chosen in computing the premium has to be consistent with the riskfree rate used to compute expected returns... Using equity risk premiums that are very different from the implied premium will introduce a market view into individual company valuations.' rf와 ERP를 같은 시점에서 짝으로 써야 한다는 것이 Damodaran 자신의 명시적 원칙이다."
+    },
+    "①-B_comparable_services": {
+      "kroll": "ERP·rf를 명명된 짝으로 발표(예: 'ERP 5.5%는 정규화된 rf 3.5%와 함께 쓴다'). rf 자체도 '정규화된 3.5% 또는 스팟 20년 국채 중 높은 쪽' — 우리가 발견한 Damodaran의 이중 rf 계열과 유사한 설계 사상(스팟만 쓰지 않음).",
+      "morningstar": "ERP는 자체 장기데이터셋(SBBI)에서, rf는 만기(duration) 매칭으로 짝을 맞춤(시점 매칭이 아니라 만기 매칭) — Damodaran과는 다른 매칭 축.",
+      "bloomberg_counterexample": "WACC 함수가 rf는 실시간 스팟으로, CRP(프리미엄)는 별도의 덜 자주 갱신되는 스냅샷으로 섞어 쓰는 사례 확인 — 정확히 999·1000의 rf단독교체(mismatched)와 같은 안티패턴. Damodaran이 경고하는 실수의 실례가 실제로 업계에 존재함을 확인."
+    }
+  },
+
+  "notDone": [
+    "§2-2 날짜선택(당일/전일/평균)·§2-3 폴백 — 1000에서 이미 옵션만 제시, 이번에도 판정 안 함",
+    "'$ Riskfree Rate'가 T.Bond Rate에서 정확히 어떤 산식으로 조정되는지 — 미규명",
+    "옵션A/B(ingest_damodaran.ts 통합 vs 분리) 중 선택 — 구현 안 함, 대가만 제시"
+  ],
+  "unmeasured": [
+    "ERPbymonth.xlsx를 실제로 매월 자동 수집했을 때 wacc.xls 기반 다른 값(Global Default Spread 등)과의 정합성 — 이번엔 riskfree/erp만 다뤘음",
+    "paired 교체를 실제 배선했을 때 크론 실행시간 영향(추가 파일 다운로드 1개/사이클)"
+  ],
+  "newlyDiscovered": [
+    "998의 데이터소스 카탈로그가 histimpl.xls(연간)만 기재하고 실제 월간 파일(ERPbymonth.xlsx)을 놓쳤다 — 카탈로그 자체도 완전하지 않았다는 사례",
+    "999가 미규명으로 남겼던 '저장값 3.95% vs 당일 실제 DGS10 4.15~4.19%'의 20bp 괴리가 완전히 설명됨(Damodaran의 두 rf 계열 중 어느 쪽을 쓰느냐의 문제였다, 데이터 품질 문제 아님)",
+    "wacc.xls가 2026-01-05 이후 7개월 이상 갱신되지 않았음을 오늘(2026-08-12) 재다운로드로 직접 확인 — 우리 ingestion이 매달 자동 최신화되려면 wacc.xls가 아니라 ERPbymonth.xlsx를 봐야 한다는 것이 이 STEP의 실질적 결론",
+    "'짝을 맞추면 상쇄된다'는 최초 가설의 인과 메커니즘이 실측과 정확히 일치하지 않음(ERP는 거의 안 움직였고, 개선은 주로 rf 자체가 덜 움직였기 때문) — 방향은 맞았으나 설명은 정정 필요"
+  ],
+  "needsJudgment": [
+    "선택지 C(ERPbymonth.xlsx 월간 페어 도입) — 604전수 전환율 5.9%(vs 현행 방치 시 계속 벌어지는 stale 격차) 근거로 장은태 판정",
+    "STEP1000의 선택지 A(rf만 FRED)는 이 STEP 근거로 철회 권고 — 짝이 안 맞는 mismatched 방식이므로",
+    "ingestion 배치 위치(§3-3 옵션A vs B) — C안 채택 시 후속 판정 필요",
+    "날짜선택(§2-2)·폴백(§2-3) — C안 채택 시 선결 필요"
+  ]
+}
