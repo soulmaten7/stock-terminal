@@ -1161,6 +1161,22 @@ N년에서 N+1년으로 갈 때 가치 증분은:
 
 **STATE.md 미해결 29번 ✅ 해소** — 973이 등재하고 손대지 않았던 잠복 리스크가, 1003이 구체적 파손 경로로 확정한 시점에 실제로 고쳐졌다. 원자료 = `docs/probe_1004_damodaran_single.json`. 🔴 **DB 쓰기 0 · 배포(push)는 장은태 승인 후.**
 
+### 🟢 C-8 §10-I 월간 페어 적재 완료 (STEP 1005, DB 쓰기 발생·크론 반영 대기)
+
+🔴 **판정(3건, 1003 선결조건 해소) — 실제 적용됨**: ① 조달 배치 = 별도 스크립트(`scripts/ingest_erp_monthly.ts`, 갱신주기가 다르다는 1002 원칙) ② 스키마 = `damodaran_global_inputs`에 새 행 INSERT(별도 테이블 아님 — 1004로 최신 as_of 조회가 안전해져 가능해짐) ③ `expected_inflation` = ERPbymonth.xlsx에 없음을 재확인(17개 컬럼 전수 — "Expected growth rate"는 S&P500 DDM 내부 성장률 가정이지 거시 인플레와 다른 개념), 직전 행 값을 그대로 복사.
+
+🔴 **출처 혼재 — 한 행 안에서 두 파일**: 새 행(`as_of=2026-08-01`)의 `riskfree_rate`·`erp`는 `ERPbymonth.xlsx` 2026-08월에서, `global_default_spread`·`marginal_tax_rate_used`·`expected_inflation`은 `wacc.xls`(as_of=2026-01-05) 그대로 복사돼 왔다 — 같은 행인데 필드마다 실제 유효 시점이 다르다. **출처 기록 방식은 문서화만(옵션C)로 결정** — 스키마 컬럼 추가(옵션A, 규칙5-2④에 가장 부합하나 마이그레이션 필요)·note 필드(옵션B, 옵션A와 같은 비용) 대신, "새 행 추가만"이라는 이번 STEP 범위와 정확히 일치하는 옵션을 택했다. 🔴 **재고 권고 — 이 패턴이 반복되면(다른 테이블도 필드별 출처가 갈리면) 옵션A를 다시 검토할 것.**
+
+🔴 **적재 순서**: 스냅샷(파일 기반 JSON, `docs/probe_1005_pre_snapshot.json`, tag=`pre_step1005` — 969류 전용 `_snapshot` 테이블 대신, 1행짜리 테이블에 1행 INSERT뿐이라 전용 테이블 신설이 비례하지 않는다고 판단) → INSERT → 검증. 기존 행(as_of=2026-01-05) 지문 불변 확인, 새 행 rf·erp 정확 일치 확인, 행수 1→2.
+
+🔴 **헤드라인 검증 — 실제 프로덕션 2행 상태에서 처음 확인됨**: `lib/sector.ts`의 `latestAsOf()`(route.ts가 실제로 호출하는 그 함수)를 라이브 DB에 직접 호출 — `latestAsOf(damodaran_global_inputs) = "2026-08-01"`(새 행을 정확히 골랐다, 옛 행 아님). 1004의 수정이 단위테스트(mock)에서만이 아니라 **실제 프로덕션 데이터의 2행 상태에서** 처음으로 검증됐다. 구코드(bare `.single()`)였다면 이 순간 PostgrestError를 던졌을 것.
+
+🔴 **604 영향 재측정 — 라이브 로드값 그대로**: `riskfree_rate`·`erp`를 하드코딩하지 않고 방금 적재된 행에서 직접 읽어 재계산 — 전환 **5.9%(26/440)**, 1003과 완전 동일(같은 2026-08 월, HTTP Last-Modified 불변 — 새 숫자가 아니라 "실제 적재값으로 재현된다"는 확인). 전이 매트릭스: `years→over_cap` 11·`below_one→years` 13·`over_cap→value_destroying` 2.
+
+🔴 **다음 정규 크론 예측**: `revdcf_results` 604종목 중 약 26건의 verdict가 바뀔 것으로 예측된다. **단, `revdcfEnabled()`가 기본 OFF**(`REVDCF_ENABLED` 미설정 시)라 이 STEP만으로는 사용자 화면이 즉시 바뀌지 않는다 — 데이터 갱신과 화면 노출은 별개 승인 사항.
+
+**1004에서 새로 드러난 것 3건(1005가 이어받아 등재)** — STATE.md ④ 참조: ① `page.tsx`가 973 조사범위 밖이었음(전수 조사가 실제로는 부분이었다) ② `COMMIT_GATES.md` 게이트7이 런타임 `fs.readFileSync`(import 아님)는 못 잡는다는 구조적 맹점 ③ `damodaran_capex`·`damodaran_working_capital`이 998의 "후보 1개뿐인 슬롯"(#12·#13)과 이름이 겹치는 우려 — **확인 완료, 근거 없음**: 두 테이블 모두 STEP846(registry 확정) 시점부터 "폴백 금지·대조용만"으로 이미 정책이 못박혀 있었고, `wcdata.xls`는 STEP844에서 정량 대조까지 됐다(Damodaran 업종 중앙값 14.52% vs 우리 계산 1.86%, 8배 차이 — 이자부 부채 포함 여부의 정의 불일치). #12·#13의 "원리적 단일" 분류(1002)는 유효하게 유지된다. 원자료 = `docs/probe_1005_erp_load.json`.
+
 **재료 배선 결정**:
 | 재료 | 결정 | 커버리지(604) | 근거 |
 |---|---|---|---|
