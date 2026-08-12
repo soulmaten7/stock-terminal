@@ -1,6 +1,46 @@
 <!-- 2026-08-12 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-12 — 🟩 **STEP 1002: 카탈로그 완성 — 슬롯 간 의존관계 + 과거 판정 흡수 + 검수**
+
+> **성격**: 조사·문서 전용 — **코드 0줄 · DB 쓰기 0 · 크론 미호출 · KR 무접촉.** 🔴 개별 문제 실행 0건(998·999·1000에서 두 번 이탈했던 것 재발 방지 — 이번엔 등재만).
+
+**§1 슬롯 간 의존관계(신규, 6건)** — ⓐ짝제약 1건(#14 무위험수익률 ↔ #15 ERP, Damodaran 내재 ERP가 rf로 역산됨). ⓑ동일소스 2건(#1 시가총액 ↔ #5/#6 자기자본·매출 — 975 실측 PBR 8.29%·PSR 8.34% 잔차가 주식수 기준 불일치였고 **프로덕션엔 아직 처방이 안 배선돼 잔차가 남아있을 가능성** / #11 세율 ↔ #16 베타 — unlever 세율(25.00%)과 relever 세율(25.63%) 0.63%p 불일치, 미측정). ⓒ시점제약 3건(#1 시총 ↔ #4~10 재무제표 TTM/FY차 — 981 실측 상위20 괴리 중 10건 / #14·#15 ↔ #17 신용스프레드 — DB 직접조회로 같은 as_of 배치 확인 / #18 섹터분류 ↔ #1·#4~10 — 973·974에서 이미 처방완료). 검사했으나 제약 아닌 것 2건도 기록.
+
+**§3 슬롯 재분류** — #16(베타)·#20(업종베타)이 `app/api/cron/revdcf/route.ts` 코드 확인 결과 **동일 소스·동일 계산역할의 중복 등재**였음을 발견(#20 폐기, #16으로 병합). 998의 "후보 1개뿐인 슬롯 3~4개"를 재산정 — **원리적 단일 2개**(#12 자본지출률·#13 운전자본률, 원전 계산방식 자체가 정의라 SPOF 아님) vs **실질적 단일(진짜 SPOF) 1개**(#16 베타, Damodaran `betas.xls`). 슬롯#19(업종배수)도 998이 "Damodaran pedata 등 사용중"이라 적었으나 코드 확인 결과 **비어 있었다**(`lib/valuation.ts`·`drivers.ts`엔 정의 근거 인용뿐, 실제 계산은 STEP980 자체 sectorMedianRelative만 사용) — 정정.
+
+**§2 과거 판정 흡수** — 지시된 8개 문서 중 **3개 전수 완료**(`REVDCF_SPEC.md` 2071줄·`VALUATION_SPEC.md` 403줄·`DECISION_*.md`+`AUDIT_*.md` 16개 파일, 서브에이전트 활용) 약 52건 수집. **5개는 미조사**(`LENS_COMPLETION_STANDARD.md`·`CHANGELOG.md`·`STEP_LEDGER.md`·`STATE.md`·`LOCALE_SOURCE_PLAYBOOK.md`) — 정직히 표시. 🔑 **전제 변화 5건 식별**: 838(SEC bulk, 유니버스 N=623→5,893)·849(FRED 후속 예고→150+STEP 지연)·**985→986(시총재구성 배선 판정이 표본1건에서 하루~이틀 만에 전수대조로 뒤집힘, 가장 빠른 사례)**·934→935→937(시총취득 실패 원인가설 3회 연속반증)·952b(RAYA 섹터미분류 원인 — 같은 STEP 안에서 전제 자체가 틀렸음 발견). 대조군으로 873(무료 성장컨센서스 소스 없음 — 998이 92개소스 조사 후에도 재확인, 여전히 유효)도 기록.
+
+🔴 **부수 발견 — 위임한 서브에이전트가 재귀적으로 하위 에이전트를 만들다 멈춤**(스스로 "2개 배경 에이전트를 기다리는 중"이라고 보고, 실제로는 그런 하위 에이전트가 존재하지 않았음). `SendMessage`로 재개시켜("하위 에이전트 만들지 말고 직접 grep/Read만 하라") 직접 보고를 받아냄 — 다음에 위임할 때는 "직접 조사만 하라"를 프롬프트에 명시해야 한다는 교훈.
+
+**§4 즉시이득 목록** — 998의 12건 + 1001의 paired-ERP안 + 시총-주식수기준 정합 발견 = **14건**으로 확장, 전부 상태태그(완료/철회/대기) 명시, 우선순위 안 매김(905 원칙). **FRED riskfree 건(8번)은 지시대로 "ERP와 짝 제약 있음 — 1001에서 ERPbymonth.xlsx 검토 중"으로 상태 표시**, 4번(histimpl.xls)은 13번(ERPbymonth.xlsx)으로 대체돼 폐기.
+
+**§5 완료조건** — 카탈로그 자체가 "완성"인지 판단할 6개 조건 신설(각 항목 현재 상태 함께 표시 — 지금은 3/6 조건만 ✅, 나머지는 🟡·⬜). `docs/DATA_SOURCE_CATALOG.md`(의존관계·과거판정·완료조건 절 신설) · `docs/data_source_catalog.xlsx`(33시트 재생성).
+
+**못 한 것** — 5개 문서 미조사 · 20개(실질19) 슬롯 전부의 일괄 코드 재검증은 안 함(#19·#20만 검증) · §1-3(라운드5 착수 여부)는 998처럼 여전히 미판정.
+
+**코드 0줄 · DB 쓰기 0 · 크론 미호출 · KR 무접촉 · app/(routes)·components·messages·lib diff 0 · 유료 가입·API 키 발급 0건.** push 안 함, 커밋만.
+
+## 2026-08-12 — 🟩 **STEP 1001: Damodaran 월간 내재 ERP(ERPbymonth.xlsx) 검토 + STEP_LEDGER 971~999 복구**
+
+> **성격**: 조사·문서 전용 — **코드 0줄(신규 순수함수 1개 제외) · DB 쓰기 0 · 크론 미호출·미배선 · KR 무접촉.**
+
+**선택지A(rf만 FRED) 철회** — `REVDCF_SPEC.md:1101`(STEP849 "FRED는 ERP와 짝 안 맞아 보류")를 999·1000이 놓쳤음을 발견. Damodaran ERP는 rf로 역산된 내재값이라 rf만 바꾸면 내적 모순.
+
+**998이 놓친 진짜 월간 파일 발견** — `ERPbymonth.xlsx`(histimpl.xls는 연간일 뿐). 'Historical ERP' 시트에 `T.Bond Rate`·`$ Riskfree Rate`(별도 계열)·ERP 5변형이 같은 행에 짝으로 존재. **999의 20bp 괴리 완전 해소**: 저장값(rf=0.0395·erp=0.0446, as_of 2026-01-05)이 이 파일 2026-01행의 `$ Riskfree Rate`·`ERP(T12m) with adj riskfree rate`와 정확 일치 — `ingest_damodaran.ts`가 `wacc.xls`에서 파싱하는 값의 실제 원천이 이것이었다. `wacc.xls`는 오늘(08-12) 재다운로드해도 여전히 01-05 값 그대로(7개월+ 정체, HTTP Last-Modified로 실증) vs `ERPbymonth.xlsx`는 Last-Modified 08-01(월1회 갱신 확인).
+
+**604전수(paired vs mismatched)**: rf·ERP를 2026-08행에서 짝으로 교체 → 전환 **5.9%(26/440)**, 1000의 mismatched 재현치 **6.4%(28/440, 완전 재현)**보다 낮음 — 방향은 가설과 일치하나 효과크기는 작음(−0.5%p). 🔴 메커니즘은 가설과 다름 — ERP는 거의 안 움직임(−1bp), 개선의 실체는 "상쇄"가 아니라 "`$ Riskfree Rate` 자체가 raw Treasury보다 완만히 움직여서"(+57bp vs +70bp).
+
+**①-A**(Damodaran ERP2022Formatted.pdf) — "rf와 ERP는 같은 시점으로 일관돼야 한다" 명시 원칙 확인, 단 "$" 계열의 정확한 산식은 미규명. **①-B**(Kroll 명명된 짝·Morningstar 만기매칭·Bloomberg는 mismatched 반례 확인).
+
+**STEP_LEDGER.md 971~999(29개 STEP) 복구 완료** — 970 이후 아무도 원장을 보지 않았음(Sentry 11일·verify CI 38시간과 같은 절차 결함). `git log`의 STEP별 커밋 메시지(각 STEP의 자체 보고문) 근거, 지어낸 내용 없음. 971만 근거 얕음(정직히 표시).
+
+**문서** — `docs/probe_1001_erp_pair.json` 신설 · `docs/REVDCF_SPEC.md` §10-F 신설 · `data/sources/README.md`(ERPbymonth.xlsx·histimpl.xls 카탈로그 추가) · `docs/STATE.md` 70번 신규 · `docs/STEP_LEDGER.md`(971~1000 복구).
+
+**못 한 것** — "$ Riskfree Rate" 정확한 산식 미규명 · 조달 배치 위치(통합 vs 분리) 판정 안 함 · 날짜선택·폴백은 1000에 이어 여전히 옵션만.
+
+**DB 쓰기 0 · 크론 미호출 · 크론 배선 0 · `damodaran_*` 테이블 무접촉(SELECT만) · KR 무접촉 · app/(routes)·components·messages diff 0.** push 안 함, 커밋만.
+
 ## 2026-08-12 — 🟩 **STEP 1000: riskfree FRED 교체 — 604 전수 영향측정 + 구현(미배선)**
 
 > **성격**: 계산·조사·구현(미배선) — **DB 쓰기 0 · 크론 미호출 · 크론 배선 0 · `damodaran_*` 테이블 무접촉(SELECT만) · KR 무접촉 · `app/(routes)`·`components`·`messages` diff 0.** 🔴 push 안 함 — 커밋만, 배선·배포는 장은태 승인 후.
