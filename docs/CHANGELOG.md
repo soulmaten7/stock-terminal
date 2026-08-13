@@ -1,5 +1,42 @@
-<!-- 2026-08-13 -->
+<!-- 2026-08-14 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-14 — 🟩 **STEP 1015: 답변 가능성 지도(`ANSWERABILITY_MAP.md`) 성립 조건 코드 전수 대조(읽기 전용)**
+
+> **성격**: 조사 전용 — **코드 diff 0 · DB 쓰기 0 · LLM 배선 0.** 출력 쪽 정본(`docs/ANSWERABILITY_MAP.md`, 2026-08-13 초안)의 A~H 8개 항목이 "언제 이 질문에 답해도 되는가"를 서술한 성립 조건을, 1011이 슬롯 20개에 했던 것과 같은 방식으로 코드(API+컴포넌트)와 전수 대조했다.
+
+🔑 **⓪-4 판정 — 혼합(두 번째 갈래 확인불가 + 세 번째 갈래 불일치, 첫 번째 갈래 0건).** `조건확정 0 / 확인불가 2(E·F) / 불일치 6(A·B·C·D·G·H)` — **8개 전부에서 초안이 최소 한 곳 코드와 달랐다.**
+
+**공통 패턴(가장 큰 발견)**: `docs/CRON_OBSERVABILITY.md`의 신선도 임계값(`lens_cuts` 49h·`us_market_cap`/`lens_scores` 30h)은 **`health` 크론 전용 모니터링·알림 값**이고, 실제 사용자에게 값을 내보내는 서빙 API(`/api/lens`·`/api/watchlist/quotes`)는 **그 값을 전혀 참조하지 않는다.**
+- **E(7렌즈)**: `/api/lens`(`lib/lensCompute.ts`)는 `lens_cuts`의 `as_of`를 응답에 담지도 않고 신선도 게이트도 없다 — US `lens_cuts`가 2026-07-30부터 15일 묵은 지금도 **그 낡은 컷 기준으로 계속 정상 판정을 내보내고 있다.** 49h 게이트는 `app/api/cron/health/route.ts:86-96`에만 존재(감시용 별개 결과 배열).
+- **G(시총·주가)**: `app/api/watchlist/quotes/route.ts`도 게이트 없이 값을 항상 반환, 대신 `asOf`를 별도 필드로 "정직 공개"할 뿐(STEP829 §7). 🔴 그 코드 주석 자체가 "25h"라 적어 `CRON_OBSERVABILITY.md`의 "30h"와 **문서 간 숫자도 다르다.**
+
+**나머지 불일치 6건 요약**:
+- **A(역DCF)**: 초안 "`skip_reason IS NULL`이 성립조건"이 틀렸다 — `verdict='skipped'`도 섹션이 그대로 렌더된다(헤드라인만 바뀜, `RevDcfSection.tsx:126`).
+- **B(WACC 민감도)**: "세 값 모두 non-null 게이트"는 없다 — null이면 그냥 `"—"`(널-세이프 렌더, 게이트 아님).
+- **C(밸류에이션 배수)**: 화면의 `unavailable`은 D의 테이블(`us_sector_relative`)에서 온다. `us_valuation.unavailable`의 세부 사유 11종(`lib/valuation.ts` — NEGATIVE_EARNINGS 등)은 **계산만 되고 API가 select 안 해 화면에 절대 안 뜬다.**
+- **D(업종 대비)**: 필요값 칸의 컬럼명 3개(`per_rel`·`per_med`·`sector_as_of`)가 **존재하지 않는다**(실제: `per_pct`·컬럼없음·`as_of`). 게이트 로직(`sector IS NOT NULL AND n>=20`) 자체는 코드와 정확히 일치.
+- **H(섹터 분류)**: 필요값이 **잘못된 테이블**(`us_sector_wide`)을 지목 — 실제 라이브 화면은 `us_sector_resolved`(`app/api/sector/us/route.ts`)를 쓴다. 그 라우트는 `disagree`·`cross_*` 컬럼을 **select조차 안 해**, "disagree면 반드시 함께 말한다"는 한계 고지가 구현 자체가 없다.
+
+**§2-2 중복·불일치**: 역DCF `verdict`/`gapYears`가 `/api/revdcf`와 `/api/q1/[symbol]` 두 독립 경로에서 각자 별도의 "최신 as_of" 쿼리로 서빙된다(`route.ts:27` vs `q1/route.ts:57`) — 실제 값 분기 관측은 없으나 구조적 경합 여지 기록. 신선도 임계값 자체도 문서 간(25h vs 30h) 다르다(위 G 참조).
+
+**F(재무 원문 수치)**: `us_fundamentals`를 읽는 코드가 revdcf/Q1 배치 계산 내부(`app/api/cron/revdcf/route.ts`·`lib/valuation.ts`·`lib/revdcf/drivers.ts`) 3곳뿐 — **사용자에게 원문값을 돌려주는 API·컴포넌트가 0건.** "조건이 다르다"가 아니라 **"질문에 답하는 기능 자체가 없다."**
+
+🔴 **판정 요청 6건**(고르지 않음, `docs/probe_1015_answerability_audit.md` §4): 신선도 게이트 실제 도입 여부(E·G) · 임계값 정본 정리(49h·30h vs 25h) · C의 세부 unavailable 11종 노출 여부 · H의 disagree·cross_* 노출 여부 · F를 별도 API로 만들지 §3(답하지 않는 영역)으로 옮길지 · A/C의 독립 as_of 조회 통합 여부.
+
+**문서 반영** — `docs/ANSWERABILITY_MAP.md` A~H 8개 항목 전부 갱신(취소선 보존, `파일:줄번호` 근거 기입) + §4 완료조건 1·2 ✅·3 🟡부분·6 신규 미결 6건 추가(§3은 미변경) · `docs/probe_1015_answerability_audit.md`(항목별 근거표·중복검사·판정요청·오늘밤관측).
+
+🔴 **게이트7 신규 발견**: `docs/ANSWERABILITY_MAP.md` 자체가 이 STEP 착수 시점까지 **한 번도 git에 커밋된 적이 없었다** — 1014가 `docs/step_orders/`에서 발견한 것과 정확히 같은 패턴. 이번 커밋에 편입해 보존.
+
+오늘 밤 관측(§2-7) — 작업 시각 15:25 UTC, `us-perf`(22:00 UTC)·`revdcf`(22:45 UTC) 둘 다 미도래. `cron_heartbeats` 4행 그대로, `us_market_cap_nasdaq` 0행 그대로 — 1014 시점과 변화 없음.
+
+**못 한 것** — 오늘 밤 관측(미도래) · A의 `skipKeyFor()` 내부 사유별 매핑 전수 대조 · G/H의 실제 클라이언트 컴포넌트 렌더 확인(API 응답까지만 추적) · D의 `us_sector_relative` 08-10 정지 상태 재조회(DB 쓰기 0 원칙상 범위 밖 판단).
+
+**철회·정정한 것** — A~H 8개 항목 전부에서 초안의 성립조건·필요값·한계고지 중 최소 하나씩 정정(상세 = probe 문서 §1 각 항목).
+
+**미측정** — §4 판정요청 6건(장은태) · A/C 독립 as_of 조회의 실제 경합 관측(재현 시도 안 함) · D의 08-10 정지가 실제 화면에 어떻게 보이는지.
+
+🔴 **규칙 신설·§3 확정·LLM 배선은 이 STEP에서 하지 않는다. 표를 채우는 것까지다.**
 
 ## 2026-08-13 — 🟩 **STEP 1014: Damodaran 엑셀→DB 적재 경로 원본 전수 대조(읽기 전용)**
 
