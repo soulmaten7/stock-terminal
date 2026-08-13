@@ -1,6 +1,41 @@
 <!-- 2026-08-13 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-13 — 🟩 **STEP 1014: Damodaran 엑셀→DB 적재 경로 원본 전수 대조(읽기 전용)**
+
+> **성격**: 조사 전용 — **코드 diff 0 · DB 쓰기 0 · data/sources/** 원본 수정/재다운로드 0.** 1011이 "엑셀 파싱 코드 자체 재검증 — DB값·소비지점만 대조했다"고 남긴 미완 항목을 이어받아, WACC 관련 슬롯(#11~#17)을 먹이는 9개 `damodaran_*` 테이블 48,850행을 **원본 엑셀과 표본 없이 전수** 대조했다.
+
+🔑 **⓪-4 판정 — 첫 번째 갈래(전부 일치, 적재 경로 건전).** 9개 테이블 전수 대조 결과 **실데이터 불일치 0건**. 대조 과정에서 나온 편차 3건은 전부 **이 STEP의 감사 스크립트(Python) 자체의 재구현 결함**이었음을 추적해 확인 — 프로덕션 TS 코드는 처음부터 정확했다.
+
+**대조 결과(9개 테이블)**: `damodaran_wacc`(94)·`beta`(94)·`capex`(94)·`working_capital`(94)·`tax_rate`(96)·`country_tax`(229)·`credit_spread`(7)·`global_inputs`(2) 전부 0건 불일치. `damodaran_industry`(48,144행, 집계지문 방식 — 원전 지시대로 표본추출 안 함)는 9/11 섹터 완전일치, 2섹터(Consumer Staples·Materials) ±1건이 났으나 원본 직접 열람으로 완전 해명(아래).
+
+**96 vs 94 미스터리(tax_rate) 해명**: 메인 스크립트(`ingest_damodaran.ts:88`)가 `/^Total/i` 업종명을 만나면 `break`로 건너뛰지만, 보조 스크립트(`ingest_damodaran_step847.ts:20`)가 **같은 파일을 재스캔해 그 Total 행만 별도 적재** — "Total Market"·"Total Market (without financials)" 2행. 첫 가설("총계 행이 섞였나")과 정확히 일치, taxrate.xls 행103-104를 직접 열어 6개 필드 전부 DB와 일치 확인.
+
+**감사 중 자체발견·정정 3건(전부 프로덕션 코드 무결 — 감사 스크립트 결함)**:
+- `damodaran_tax_rate` 3개 업종(Chemical (Diversified) 등)에서 `eff_money`/`cash_money` 6개 값이 불일치로 나왔다가, xlrd가 엑셀 `#DIV/0!` 오류셀의 내부 오류코드(7)를 원시 숫자로 반환한다는 것을 발견 — 셀 타입 검사(`ctype==5`)로 수정 후 0건으로 정정. DB는 처음부터 정확히 null이었다.
+- `damodaran_capex`/`working_capital` 최초 수기 발췌본이 94행에 못 미쳐(87/90) "누락"으로 의심했으나, **`string_agg`가 `||` 연결 중 NULL 필드를 만나면 그 행을 결과에서 통째로 제외**하는 SQL 동작 때문 — 원본 엑셀을 직접 열어 해당 7개+4개 업종의 셀이 문자 그대로 `"NA"`(금융업 특성상 지표 미제공)임을 확인, 결측 아닌 정상 동작.
+- `damodaran_industry` 48,144행 중 2섹터 ±1건 — 원인은 raw `Exchange:Ticker` 필드가 완전 공백(`""`)이면 스킵되고(`ingest_damodaran.ts:70`), `"-"`처럼 콜론 없는 비공백값은 그대로 티커로 채택되는(`:71-74`) 세부 분기를 이 STEP의 Python 재구현이 놓쳐서 13개 상장폐지·SPAC 잔여 shell 법인의 대표 생존자가 갈렸을 뿐 — DB 조회로 실제 생존자(Collier Creek Holdings, ticker=`"-"`)를 직접 확인, revdcf 유니버스(활성 상장사)엔 애초에 존재할 수 없어 하류 영향 0.
+
+**특별 확인 4항목**: 백분율표기(변환 없음, 소수 그대로)·부호(자본지출률·운전자본률 음수값 다수, 원본과 정확히 일치)·**1904버그 재발 여부**(`taxrate.xls`·`wacc.xls`·`betas.xls`·`capex.xls`·`wcdata.xls`·`countrytaxrates.xls`·`indname.xls` 7개 파일 전부 `date1904=false` — 지금 재발 없음, 단 코드에 이 파일들용 1904 방어 분기 자체가 없다는 사실만 기록)·업종명 정규화(구두점·대소문자로 합쳐진 업종 없음).
+
+**버전 대조**: 7개 파일 전부 자기표기 "Date updated"=2026-01-05=DB `as_of` 일치, `ERPbymonth.xlsx`도 최신 유효월 2026-08-01=DB 두 번째 `global_inputs` 행 일치. **적재 정체(원본이 DB보다 새 버전) 0건.**
+
+**하류 영향**: 0건(불일치가 없었으므로 `revdcf_results` 604건 중 재계산 필요 행 없음).
+
+🔴 **게이트7 신규 발견(문서 보강만, 판단 대상 아님)**: `data/sources/damodaran/`(9개 원본 파일) 전체가 `.gitignore:57`로 미추적 — 3개 ingest 스크립트가 상대경로로 참조하나 프로덕션 빌드 경로 밖(1회성 CLI 스크립트, STEP990이 이미 구분한 두 번째 범주)이라 고치지 않고 기록만. 별도로 **`docs/step_orders/`(STEP1006~1014 명령서 10개)가 한 번도 git에 커밋된 적이 없었음을 발견** — CLAUDE.md의 "실행 후 파일은 삭제하지 말 것, 프로젝트 아카이브 역할" 원칙에 따라 이번 커밋에 그대로(수정 없이) 편입해 보존.
+
+**문서** — `docs/probe_1014_damodaran_ingest_audit.md`(매핑표·행수대조·값대조 전수·버전대조·하류영향·게이트7) · `docs/STEP_LEDGER.md` 1014 등재. **카탈로그 변경 없음**(불일치 확정 0건이므로 정정할 것이 없음).
+
+오늘 밤 관측(§2-7) — 작업 시각 2026-08-13T14:50Z, `us-perf`(22:00 UTC)·`revdcf`(22:45 UTC) 둘 다 미도래. `cron_heartbeats` 4행(email-brief·jp-disclosures·kr-lens-scores·lens-scores) 그대로, `us_market_cap_nasdaq` 0행 그대로 — 1013 시점과 변화 없음.
+
+**못 한 것** — 오늘 밤 관측(미도래, 다음 세션 이월) · `indname.xls`의 "By industry"·"By geography" 시트는 적재 코드가 안 쓰므로 대조 대상 밖.
+
+**철회·정정한 것** — 위 "감사 중 자체발견·정정 3건" 참조. 전부 감사 스크립트 자체 결함이었고 프로덕션 데이터는 최초부터 정확했다.
+
+**미측정** — `indname.xls`의 "Date updated" 라벨 부재가 원본 설계인지 이 스냅샷의 우연인지 · 1904버그가 다른 파일에서 향후 재발할 가능성(방어 로직 없음, 판정은 장은태 몫).
+
+🔴 **불일치를 발견하지 못했으므로 고칠 것도 없다. 적재 수정·재적재 논의 자체가 이번엔 발생하지 않는다.**
+
 ## 2026-08-13 — 🟩 **STEP 1013: 나스닥 시총 재수집을 매일 갱신으로 배선(`_TEMPLATE.md` 두 번째 적용)**
 
 > **성격**: 코드 작성 — 오랜만에 값 계산에 손대는 STEP이라 §5 값 불변 증명이 DoD 핵심. 🔴 **폴백 배선·게이트 변경은 이 STEP에서 하지 않는다**(장은태 판정: "재수집 배선 먼저"). `us_market_cap`·`capOf`·`freshSet`·게이트 어디에도 나스닥 값을 안 섞는다.
