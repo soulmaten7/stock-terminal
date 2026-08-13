@@ -1,6 +1,28 @@
 <!-- 2026-08-13 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-13 — 🟩 **STEP 1007: 로컬 무재현 실패 2건을 프로덕션에서 직접 관측(계측 배선)**
+
+> **성격**: 계측 배선 · 값 불변 — **`revdcf_results` 계산 로직 0줄 변경(구조적 diff로 증명) · DB 쓰기 0(배포 자체는) · 크론 수동 실행 0.**
+
+STEP1006이 낸 결론(로컬 무재현)을 프로덕션에서만 얻을 수 있는 값으로 좁힌다. 원인은 고치지 않는다 — 취득 경로 교체는 08-13 실측(<0.3B 구간 절대차 중앙값 11.8%·p90 223%)으로 계산기준 혼입 위험이 이미 확인됐다.
+
+**W1 — `revdcf` 크론에 `recordHeartbeat` 배선(P2 확정용)**: `lib/lensPrecompute.ts`의 기존 `recordHeartbeat`를 export만 추가해 재사용(새 패턴 발명 안 함, 1004 원칙). `app/api/cron/revdcf/route.ts`의 `computeAndSaveValuation`·`computeAndSaveSectorRelative`에 1006 P2 로컬 프로브와 **같은 이름·같은 경계**로 6구간(`1_valuation재료_3종_read`~`6_sectorRelative_행조립`) 타이밍을 심고, 프로덕션에만 있는 upsert 구간(`2b`·`4c`·`6b`)을 추가로 기록. `loopMs`(SEC 워커 루프)·`budgetExhausted`(BUDGET_MS 소진이 루프 종료 사유였는지)도 heartbeat note에 싣는다. `computeAndSaveSectorRelative`를 try/catch로 감싸 `sectorRelativeError`(message+stack 500자)를 기록한 뒤 **다시 던진다**(833 "조용히 안 버린다" 원칙) — `recordHeartbeat` 자체는 내부 try/catch로 격리(917 §2)돼 계측 실패가 크론을 죽이지 않는다. 🔴 **`processOne`·`fetchDrivers`·`computeDrivers`·`assembleWacc`·`runRevDcf` 등 `revdcf_results` 산출 경로는 diff 0줄**(`git diff -U0` 헝크 위치로 구조적 증명) — 배포 전 스냅샷(604건 md5 `471fae4393a033a635061090da94bf6c`, as_of=2026-08-12)과 배포 직후(크론 미실행 상태) 스냅샷이 동일함을 확인.
+
+**W2 — `app/api/diag/yahoo/route.ts` 신설(P1 확정용)**: 크론 아님(vercel.json 무접촉, Vercel 크론 슬롯 미사용) · `Authorization: Bearer CRON_SECRET` 필수 · DB 쓰기 0 · 동시성 1·200ms 간격. 기본 12종목(1006 로컬성공 5 `HD·LOW·TGT·MU·CRM` + 양쪽성공 3 `AAPL·MSFT·NVDA` + 양쪽실패(이중결측) 4 `GV·KVAC·PSTV·USA`) 또는 `?symbols=` 최대 50개. marketCap·regularMarketPrice·sharesOutstanding의 **존재 여부**(값 아님)·quoteType·exchange·fullExchangeName·marketState·전체 필드명 배열을 반환. 응답 상단에 `VERCEL_REGION`·`VERCEL_ENV`·실행 시각.
+
+🔑 **W2 실측 결과 — 환경 차이가 확정됐다.** `https://onetrillion.app/api/diag/yahoo`(정식 프로덕션 도메인) 1회 호출(2026-08-13T11:42:58Z, `vercelRegion=iad1`·`vercelEnv=production`) — **`HD`·`LOW`·`TGT`·`MU`·`CRM` 5종목 전부 `marketCap: false`**. 이 5종목은 1006에서 **오늘 로컬로는 전부 완전 데이터**였던 바로 그 대조군이라, STEP1007 §2 W2가 명시한 확정 기준("프로덕션에서 결측이면 환경 차이 확정")을 충족한다. 대조군 `AAPL`·`MSFT`·`NVDA`는 프로덕션에서도 정상(`marketCap: true`) — 야후 전면 차단이 아니라 **특정 종목군만** 결측. `fields` 배열 비교 결과 결측군엔 `marketCap`·`sharesOutstanding`·`longName`·`impliedSharesOutstanding` 키 자체가 없다(null이 아니라 응답 객체 구성 자체가 다름). `GV`·`KVAC`·`PSTV`는 응답이 통째로 빔(`fields: []`) — 987·1006에 이은 **세 번째 독립 재현**. 🔴 `USA`는 명령서가 "이중결측"군으로 분류했으나 실측은 GV·KVAC·PSTV와 다르고 HD군과 같은 모양(가격은 오되 시총만 결측) — 분류와 실측이 어긋난 사실만 기록, 원인은 미조사. → `docs/probe_1007_yahoo_prod.md`(원문 전체 + 대조표).
+
+**DB 행수 변화 0 확인**(배포 전후 동일): `us_valuation` 15,101(2026-08-12)·`us_sector_relative` 3,541(2026-08-10)·`us_sector_wide` 5,167(2026-08-08)·`us_market_cap` 5,911(2026-08-12)·`revdcf_results` 7,248(2026-08-12)·`cron_heartbeats` 4행(revdcf는 다음 정규 크론 22:45 UTC 이후 5번째 행으로 등장 예정).
+
+**문서** — `docs/CRON_OBSERVABILITY.md` §5-2에 `cron_heartbeats.job='revdcf'` 30h 임계·note 필드 목록 추가(게이트9) · `docs/probe_1007_yahoo_prod.md`(프로덕션 응답 원문 + 1006 로컬 대조표) · `docs/STEP_LEDGER.md` 1007 등재.
+
+**못 한 것** — W1의 실효(어디서 잘리는지)는 **다음 정규 크론(22:45 UTC) 이후에만** `cron_heartbeats`에서 확인 가능(크론 수동실행 금지 범위) · W2의 프로덕션 응답은 이 STEP 내에서 1회 호출로 확인(반복관측 아님) · `computeAndSaveValuation`이 던지는 예외는 이번에도 계측 대상 밖(STEP 지시가 `computeAndSaveSectorRelative`만 명시).
+
+🔴 **판정(취득 경로 변경·`BUDGET_MS` 조정·게이트 임계 조정)은 STEP 1008로 이관 — 이 STEP에서 고르지 않았다.**
+
+**`BUDGET_MS`·`maxDuration`·워커 수·게이트 임계(97%/95%)·취득 경로 불변 · `revdcf_results`·`us_market_cap`·`lens_scores`·`lens_cuts` 쓰기 금지 준수 · `data/us_symbols.json`·`.github/workflows/**`·`vercel.json` 무접촉 · `REVDCF_ENABLED` Production OFF 유지 · 7렌즈 라이브 화면 무접촉 · API 키 발급·유료가입 0건 · KR 전면 동결.**
+
 ## 2026-08-13 — 🟩 **STEP 1006: 멈춘 파이프라인 2개의 원인 확정 시도(조사 전용)**
 
 > **성격**: 조사 전용 — **코드 0줄 · DB 쓰기 0 · 크론 미호출.** ERPbymonth 작업(1000~1005)과 무관한 새 조사 스레드 — `docs/STATE.md` 미해결 13·14·16번(US market-cap 373건 07-30 정지 · revdcf sector-relative 3일째 미갱신 · revdcf 크론 관측수단 부재).
