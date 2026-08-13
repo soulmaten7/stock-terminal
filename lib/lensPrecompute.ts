@@ -265,7 +265,8 @@ function at10(d: Date = new Date()): string { return d.toISOString().slice(0, 10
 // 🔴 STEP 917 §0: cron_heartbeats.note(기존 컬럼·스키마 변경 없음)에 계측 JSON 기록.
 //   894가 console.log에 붙인 값은 Hobby 런타임 로그 보존 1시간이라 8 STEP 동안 한 번도 못 읽혔다(911·915·916) —
 //   보존기간이 긴 채널(테이블)로 옮긴다. 실패해도 파이프라인은 계속(계측이 라이브를 세우면 안 됨).
-async function recordHeartbeat(
+// 🔴 STEP 1007: export만 추가(동작 무변경) — revdcf 크론이 같은 패턴을 재사용(1004의 "새 패턴 발명 안 함" 원칙).
+export async function recordHeartbeat(
   sb: ReturnType<typeof createAdminClient>, job: string, ok: boolean, note: Record<string, unknown>,
 ): Promise<void> {
   try {

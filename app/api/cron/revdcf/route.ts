@@ -10,6 +10,8 @@ import { fetchAllRows } from "@/lib/supabasePaging";
 import { computeSectorRelativeBatch, type ValuationInput, type SectorInput } from "@/lib/sectorRelativeBatch";
 import { SECTOR_RELATIVE_SPEC } from "@/lib/sectorRelative";
 import { toResolvedRows } from "@/lib/sectorCuts";
+// STEP1007 — 917이 만든 heartbeat 패턴 재사용(새 패턴 발명 안 함, 1004 원칙). export만 추가된 것, 함수 자체는 무변경.
+import { recordHeartbeat } from "@/lib/lensPrecompute";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,10 +51,12 @@ function fundamentalsRow(u: Universe, dr: DriverResult, unavailableReason: strin
 }
 
 // STEP 947 §5-4 — us_valuation 전량 계산. SEC 호출 0건(us_fundamentals + us_market_cap + us_stock_perf만 읽는다). try/finally로 항상 실행.
-async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number; stalestFetchedAt: string | null }> {
+// STEP1007 — 계산 로직 무변경. `timings`에 1006 P2 로컬 프로브와 같은 이름·같은 경계로 구간을 기록(로컬↔프로덕션 직접 대조 목적).
+async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>, asOf: string, timings: Record<string, number>): Promise<{ saved: number; stalestFetchedAt: string | null }> {
+  const s1 = Date.now();
   const fundRows: { symbol: string; cik: number; fiscal_year: number | null; net_income: number | null; equity: number | null; common_equity: number | null; revenue: number | null; operating_income: number | null; dna: number | null; debt: number | null; non_operating_assets: number | null; fetched_at: string }[] = [];
   for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_fundamentals").select("symbol,cik,fiscal_year,net_income,equity,common_equity,revenue,operating_income,dna,debt,non_operating_assets,fetched_at").range(f, f + 999); const c = (data ?? []) as typeof fundRows; fundRows.push(...c); if (c.length < 1000) break; }
-  if (fundRows.length === 0) return { saved: 0, stalestFetchedAt: null };
+  if (fundRows.length === 0) { timings["1_valuation재료_3종_read"] = Date.now() - s1; return { saved: 0, stalestFetchedAt: null }; }
 
   const mcapLatest = (await sb.from("us_market_cap").select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle()).data as { as_of: string } | null;
   const mcapRows: { symbol: string; market_cap: number }[] = [];
@@ -64,7 +68,9 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
   const priceRows: { symbol: string; price: number | null }[] = [];
   for (let f = 0; ; f += 1000) { const { data } = await sb.from("us_stock_perf").select("symbol, price").range(f, f + 999); const c = (data ?? []) as typeof priceRows; priceRows.push(...c); if (c.length < 1000) break; }
   const priceBySym = new Map(priceRows.map((r) => [r.symbol.toUpperCase(), r.price]));
+  timings["1_valuation재료_3종_read"] = Date.now() - s1;
 
+  const s2 = Date.now();
   const rows = fundRows.map((f) => {
     const marketCap = mcapBySym.get(f.symbol.toUpperCase()) ?? null;
     // STEP 963 — PBR 분모를 보통주 장부가(common_equity)로. equity(총자기자본)는 us_fundamentals에 그대로 남아 대조용으로 쓸 수 있다.
@@ -77,9 +83,12 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
       unavailable: v.unavailable,
     };
   });
+  timings["2_valuation_행조립"] = Date.now() - s2;
 
+  const s2b = Date.now();
   let saved = 0;
   for (let i = 0; i < rows.length; i += 1000) { const batch = rows.slice(i, i + 1000); const { error } = await sb.from("us_valuation").upsert(batch, { onConflict: "as_of,symbol" }); if (!error) saved += batch.length; }
+  timings["2b_valuation_upsert"] = Date.now() - s2b; // 🔴 1006 프로브엔 없던 구간(그쪽은 upsert 생략) — 여기만 프로덕션 실측용 추가
   const stalestFetchedAt = fundRows.reduce<string | null>((min, r) => (min == null || r.fetched_at < min ? r.fetched_at : min), null);
   return { saved, stalestFetchedAt };
 }
@@ -90,14 +99,17 @@ async function computeAndSaveValuation(sb: ReturnType<typeof createAdminClient>,
 //   /api/sector/us(945)가 us_sector_resolved에 쓰는 것과 같은 패턴 — 섹터는 시간이 지나도 거의 안 변하므로 "최신 as_of"를 그대로 쓴다.
 //   🔴 신선도 상한(예: N일 이상 지나면 경고)은 이번 STEP에서 의도적으로 두지 않는다 — us_sector_wide 자체가
 //   아직 크론화되지 않아 상한을 걸 "정상 갱신 주기"가 없다. 얼마나 오래된 섹터를 썼는지는 sector_as_of로 남긴다.
-async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminClient>, asOf: string): Promise<{ saved: number; sectorWideAdded: number; sectorWideError: string | null }> {
+// STEP1007 — 계산 로직 무변경. `timings`에 1006 P2 로컬 프로브와 같은 이름·같은 경계로 구간을 기록.
+async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminClient>, asOf: string, timings: Record<string, number>): Promise<{ saved: number; sectorWideAdded: number; sectorWideError: string | null }> {
+  const s3 = Date.now();
   const valuationRows = await fetchAllRows<{ symbol: string; per: number | null; pbr: number | null; psr: number | null; ev_ebitda: number | null }>(
     () => sb.from("us_valuation").select("symbol, per, pbr, psr, ev_ebitda").eq("as_of", asOf),
     [{ column: "symbol" }]
   );
-  if (valuationRows.length === 0) return { saved: 0, sectorWideAdded: 0, sectorWideError: null };
+  if (valuationRows.length === 0) { timings["3_usvaluation_read_plus_sectorwide_asof"] = Date.now() - s3; return { saved: 0, sectorWideAdded: 0, sectorWideError: null }; }
 
   const latestSector = (await sb.from("us_sector_wide").select("as_of").order("as_of", { ascending: false }).limit(1).maybeSingle()).data as { as_of: string } | null;
+  timings["3_usvaluation_read_plus_sectorwide_asof"] = Date.now() - s3;
   if (!latestSector) return { saved: 0, sectorWideAdded: 0, sectorWideError: null };
   const sectorAsOf = latestSector.as_of;
 
@@ -108,16 +120,21 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
   //   백분위를 미세하게 흔들 위험만 만든다. 실패해도 백분위 계산(아래)은 그대로 진행 — try/catch로 격리.
   let sectorWideAdded = 0;
   let sectorWideError: string | null = null;
-  try {
-    const existingSectorSymbols = await fetchAllRows<{ symbol: string }>(
-      () => sb.from("us_sector_wide").select("symbol").eq("as_of", sectorAsOf),
-      [{ column: "symbol" }]
-    );
-    const existingSet = new Set(existingSectorSymbols.map((r) => r.symbol));
-    const missingSymbols = valuationRows.map((r) => r.symbol).filter((s) => !existingSet.has(s));
+  const s4a = Date.now();
+  const existingSectorSymbols = await fetchAllRows<{ symbol: string }>(
+    () => sb.from("us_sector_wide").select("symbol").eq("as_of", sectorAsOf),
+    [{ column: "symbol" }]
+  );
+  const existingSet = new Set(existingSectorSymbols.map((r) => r.symbol));
+  const missingSymbols = valuationRows.map((r) => r.symbol).filter((s) => !existingSet.has(s));
+  timings["4a_missingSymbols_산출"] = Date.now() - s4a;
 
+  const s4b = Date.now();
+  try {
     if (missingSymbols.length > 0) {
       const resolved = await resolveSector(sb, missingSymbols); // lib/sector.ts 무변경, 호출만 — 외부 네트워크 호출 0건(4개 Supabase 테이블 read만)
+      timings["4b_resolveSector_호출"] = Date.now() - s4b;
+      const s4c = Date.now();
       const newRows = toResolvedRows(sectorAsOf, missingSymbols, resolved); // lib/sectorCuts.ts 무변경, 호출만
       for (let i = 0; i < newRows.length; i += 1000) {
         const batch = newRows.slice(i, i + 1000);
@@ -125,6 +142,9 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
         if (error) throw error;
       }
       sectorWideAdded = newRows.length;
+      timings["4c_sectorWide_upsert"] = Date.now() - s4c; // 🔴 1006 프로브엔 없던 구간(그쪽은 upsert 생략)
+    } else {
+      timings["4b_resolveSector_호출"] = Date.now() - s4b;
     }
   } catch (e) {
     sectorWideAdded = 0;
@@ -132,6 +152,7 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
   }
 
   // 증분 갱신 이후에 읽는다 — 신규 심볼이 포함된 상태로 백분위를 계산한다.
+  const s5 = Date.now();
   const sectorRows = await fetchAllRows<{ symbol: string; sector: string | null }>(
     () => sb.from("us_sector_wide").select("symbol, sector").eq("as_of", sectorAsOf),
     [{ column: "symbol" }]
@@ -140,7 +161,9 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
   const valuations: ValuationInput[] = valuationRows.map((r) => ({ symbol: r.symbol, per: r.per, pbr: r.pbr, psr: r.psr, evEbitda: r.ev_ebitda }));
   const sectors: SectorInput[] = sectorRows.map((r) => ({ symbol: r.symbol, sector: r.sector }));
   const results = computeSectorRelativeBatch(valuations, sectors, SECTOR_RELATIVE_SPEC.minSample);
+  timings["5_sectorRows_read_plus_batch계산"] = Date.now() - s5;
 
+  const s6 = Date.now();
   const dbRows = results.map((r) => ({
     as_of: asOf, symbol: r.symbol, sector: r.sector, sector_as_of: sectorAsOf,
     per_pct: r.perPct, pbr_pct: r.pbrPct, psr_pct: r.psrPct, ev_ebitda_pct: r.evEbitdaPct,
@@ -151,9 +174,12 @@ async function computeAndSaveSectorRelative(sb: ReturnType<typeof createAdminCli
     unavailable: r.unavailable, min_sample: r.minSample,
     updated_at: new Date().toISOString(),
   }));
+  timings["6_sectorRelative_행조립"] = Date.now() - s6;
 
+  const s6b = Date.now();
   let saved = 0;
   for (let i = 0; i < dbRows.length; i += 1000) { const batch = dbRows.slice(i, i + 1000); const { error } = await sb.from("us_sector_relative").upsert(batch, { onConflict: "as_of,symbol" }); if (!error) saved += batch.length; }
+  timings["6b_sectorRelative_upsert"] = Date.now() - s6b; // 🔴 1006 프로브엔 없던 구간(그쪽은 upsert 생략)
   return { saved, sectorWideAdded, sectorWideError };
 }
 
@@ -334,20 +360,45 @@ export async function GET(req: Request) {
 
   let valuationSaved = 0, fundamentalsStalest: string | null = null, sectorRelativeSaved = 0;
   let sectorWideAdded = 0, sectorWideError: string | null = null;
+  // STEP1007 — 미해결 13·14·16번(1006이 로컬에서 확정 못한 것) 관측용. 계산 로직 무변경, 계측만 추가.
+  let loopMs = 0, budgetExhausted = false;
+  let sectorRelativeError: string | null = null;
+  const finallyTimings: Record<string, number> = {};
   try {
+    const tLoop0 = Date.now();
     await Promise.all(Array.from({ length: 6 }, worker));
     await flush();
     await flushFund();
+    loopMs = Date.now() - tLoop0;
+    budgetExhausted = idx < todo.length; // 루프가 전량 소진 전에 멈췄다면 시간예산이 사유
   } finally {
+    const tFinally0 = Date.now();
     // §5-4 — 예산이 소진돼 위 루프가 중단됐어도 valuation 계산은 반드시 돈다(SEC 호출 0건).
-    const v = await computeAndSaveValuation(sb, asOf);
+    const v = await computeAndSaveValuation(sb, asOf, finallyTimings);
     valuationSaved = v.saved;
     fundamentalsStalest = v.stalestFetchedAt;
     // STEP 956 §3-3 — us_valuation 계산 직후. 같은 이유로 finally 안(예산 소진과 무관하게 항상 실행).
-    const sr = await computeAndSaveSectorRelative(sb, asOf);
-    sectorRelativeSaved = sr.saved;
-    sectorWideAdded = sr.sectorWideAdded;
-    sectorWideError = sr.sectorWideError;
+    // STEP1007 — 🔴 833 원칙(조용히 안 버린다): 예외를 삼키지 않고 기록한 뒤 다시 던진다.
+    //   recordHeartbeat 자체는 내부에서 try/catch로 격리돼 있어(917 §2) 계측 실패가 크론을 죽이지 않는다.
+    try {
+      const sr = await computeAndSaveSectorRelative(sb, asOf, finallyTimings);
+      sectorRelativeSaved = sr.saved;
+      sectorWideAdded = sr.sectorWideAdded;
+      sectorWideError = sr.sectorWideError;
+    } catch (e) {
+      sectorRelativeError = e instanceof Error ? `${e.message}\n${(e.stack ?? "").slice(0, 500)}` : String(e);
+      throw e;
+    } finally {
+      const finallyTotalMs = Date.now() - tFinally0;
+      const routeMs = Date.now() - t0;
+      await recordHeartbeat(sb, "revdcf", !sectorRelativeError, {
+        processed: idx, finished: idx >= todo.length, elapsedMs: Date.now() - t0,
+        valuationSaved, sectorRelativeSaved, sectorWideAdded, sectorWideError,
+        loopMs, budgetExhausted,
+        finallyMs: finallyTimings, finallyTotalMs, routeMs,
+        sectorRelativeError,
+      });
+    }
   }
 
   const finished = idx >= todo.length;

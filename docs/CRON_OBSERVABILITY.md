@@ -149,6 +149,8 @@ STEP982가 08-09 실행의 `freshCoverage=93.04%`를 어떻게 읽어냈는지�
 | `us_fundamentals` | 별도 수집 파이프라인(비정기, 970: 순증 ≈124건/일 추정치 미확정) | 순증 건수 정체 여부 | 관찰만(임계 미설정 — 970 자체가 추정 단계) | 정보 |
 | `cron_heartbeats` | 전 크론 공통 | `job`별 `last_run_at` 나이 | 각 크론 스케줄 + 여유(예: lens-scores는 30h) | 경고 |
 
+🔴 **`cron_heartbeats.job='revdcf'` 신설(STEP1007, 2026-08-13)** — §1-2가 "관측 완전 0"이라 적었던 바로 그 크론이 이제 heartbeat를 쓴다(스케줄 22:45 UTC, 다른 22시대 크론과 같은 여유로 **30h** 임계). `note`에 `processed`·`finished`·`elapsedMs`·`valuationSaved`·`sectorRelativeSaved`·`sectorWideAdded`·`sectorWideError`·`loopMs`(SEC 워커 루프)·`budgetExhausted`(BUDGET_MS 소진이 루프 종료 사유였는지)·`finallyMs`(1006 P2와 같은 이름의 6구간)·`finallyTotalMs`·`routeMs`·`sectorRelativeError`(예외 시 message+stack 앞 500자)를 싣는다. 계산 로직(`revdcf_results` 산출 경로)은 무변경 — 계측만 추가.
+
 🔴 **`us_sector_relative` 행 보완(992 정정, 2026-08-11)** — 나이만으로는 08-10 사고(1,247행 전부 `sector=null`, 973 미배포)를 못 잡는다. 행은 제때 생겼고 **내용만 비어 있었기 때문**이다. 그래서 나이에 `sector=null` 비율 조건을 더했다. 🔴 **이번엔 방향이 반대였다** — 이 값은 **Cowork 예약 프롬프트(사본)에 이미 반영돼 있었고, 이 문서(정본)가 그걸 뒤늦게 따라간 것**이다. 위에서 "정본을 먼저 고치고 사본이 따라간다"고 못박은 순서와 어긋난 사례를 그대로 남긴다 — **앞으로는 이 문서를 먼저 고치는 순서를 지킨다.**
 
 ### 5-3. 주간 요약이 보는 3개 — "빠진 날 찾기"
