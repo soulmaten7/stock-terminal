@@ -1,6 +1,34 @@
 <!-- 2026-08-13 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-13 — 🟩 **STEP 1010: 프로덕션에서 `quoteSummary`가 프로파일 블록을 주는가 — 야후 축 종결**
+
+> **성격**: 조사 + 진단 엔드포인트 확장 — **`app/api/diag/yahoo/route.ts` 외 코드 diff 0 · DB 쓰기 0 · 크론 수동 실행 0.** 슬롯20개 코드대조를 세 번째로 STEP1011로 연기(장은태 지시 — 이번이 야후 축 마지막, 결과 무관하게 다음은 1011 고정).
+
+1009가 티커길이·거래소 둘 다 원인일 수 없다고 판단한 뒤 낸 예측 — "빠지는 4개 필드(marketCap·sharesOutstanding·impliedSharesOutstanding·longName)는 전부 회사 프로파일 계열, 살아있는 건 전부 시세/세션 계열" → **프로덕션 `quote`는 프로파일 블록을 안 붙인다는 가설**을 `quoteSummary`(다른 야후 엔드포인트, 같은 야후 계열이라 계열혼합 위험 없음)로 시험했다.
+
+**진단 엔드포인트 확장(이 파일만 수정)**: `?mode=quote|summary|both` 추가. `summary` 모드는 `yf.quoteSummary(symbol, {modules:[price,defaultKeyStatistics,summaryDetail,quoteType]}, {validateResult:false})` 단일 호출로 모듈별 존재여부+값+수신키를 반환 — 833 원칙대로 "모듈 결측"과 "호출 자체 실패(callError)"를 구분. `quote` 모드에 `symbol`·`currency`·`region`·`language`·`market`·`typeDisp`·`exchangeTimezoneName` **값** 반환 추가(1009가 존재여부만 확인했던 필드 — 이 엔드포인트를 그렇게 설계한 것도 Cowork 자신이었다는 정정 포함).
+
+🔑 **3-2 판정 — "summary도 똑같이 없다"**: 환경차이 코호트 284건 전수(+대조군 20건) 프로덕션 시험 — `quoteSummary`의 `price.marketCap`·`defaultKeyStatistics.sharesOutstanding`·`price.longName`·`summaryDetail.marketCap` **전부 0/284**로 `quote()`와 완전히 같은 결측. **회복 가능한 경로가 아니다** — 예상 커버리지는 그대로 93.77%(97% 게이트에 3.23%p 부족). 단 **모듈 자체는 283~284/284로 거의 전부 붙어 온다**(호출 자체 실패 0건) — 모듈 껍데기는 오되 안의 프로파일 값만 `null`. 대조군 20건은 marketCap 계열 전부 정상이나 `longName`은 절반만(10/20, 1008과 동일 비율 재확인).
+
+🔑 **§3 값 비교로 "다른 시장 레코드" 가설이 사실상 닫힘**: `currency` 284/284 USD · `region` 284/284 US · `language` 284/284 en-US · `market` 284/284 us_market · `symbol` 284/284 요청과 일치(바꿔치기 0건) — 1009가 확정 신호로 지목했던 필드 전부가 로컬과 같은 미국 시장 레코드를 가리킨다.
+
+**4분면 세 번째 재현**(1008·1009·1010, 약 40분에 걸쳐 3회 호출 전부 284/20 동일 — 안정 상태 재확정). 리전 7회 전부 `iad1`, 드리프트 없음(3번째 확인).
+
+🔴 **부수 발견(범위 밖, 검증 미비)**: 배포 직후 스모크테스트(HD·AAPL·GV 3건)에서 `GV`(이중결측 86건 소속, `quote()`는 항상 완전 결측)가 `quoteSummary`로는 marketCap·longName·sharesOutstanding을 전부 받았다 — 표본 1건뿐이고 이 STEP의 선언된 범위(284+20) 밖이라 판정에 넣지 않고 다음 STEP 이후 판단사항으로 남김.
+
+`revdcf` heartbeat(1007 W1)는 크론 예정 시각(22:45 UTC) 미도래 — 4행 그대로 확인.
+
+**문서** — `docs/probe_1010_quotesummary_prod.md` · `docs/STEP_LEDGER.md` 1010 등재.
+
+**못 한 것** — 이중결측(86) 그룹 `quoteSummary` 전수 시험(범위 밖) · `SWZ`(284건 중 유일 ETF)의 `defaultKeyStatistics` 결측 원인 · `EVV` 1건 불일치 원인(여전히 미규명, 지시대로 안 팜).
+
+**철회·정정한 것** — 1009의 "부분 판정"을 이번 값 비교로 강한 "같은 레코드" 쪽으로 정정(완전 확정은 장은태 판정 사항).
+
+**미측정** — 프로파일 데이터가 프로덕션에서 왜 안 오는지(원인 자체) · 야후 밖 대안 소스 실측(다음 단계) · `GV` 부수발견의 재현성.
+
+🔴 **판정(취득 경로·`BUDGET_MS`·게이트 임계)은 장은태가 한다 — 이 STEP에서 고르지 않았다. 다음은 STEP 1011(슬롯20개 코드대조)로 고정.**
+
 ## 2026-08-13 — 🟩 **STEP 1009: 결측 응답이 "같은 레코드인가 다른 레코드인가" — 부분 판정**
 
 > **성격**: 조사 전용 — **코드 diff 0 · DB 쓰기 0 · 크론 수동 실행 0.** 슬롯20개 코드대조는 STEP1010으로 두 번째 연기(장은태 지시 — 야후 축이 이미 받아둔 데이터로 거의 끝나는 지점이라 먼저 마무리).
