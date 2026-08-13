@@ -1,6 +1,37 @@
 <!-- 2026-08-13 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-13 — 🟩 **STEP 1013: 나스닥 시총 재수집을 매일 갱신으로 배선(`_TEMPLATE.md` 두 번째 적용)**
+
+> **성격**: 코드 작성 — 오랜만에 값 계산에 손대는 STEP이라 §5 값 불변 증명이 DoD 핵심. 🔴 **폴백 배선·게이트 변경은 이 STEP에서 하지 않는다**(장은태 판정: "재수집 배선 먼저"). `us_market_cap`·`capOf`·`freshSet`·게이트 어디에도 나스닥 값을 안 섞는다.
+
+1012가 실측한 나스닥 스크리너 `marketCap`(환경차이 284 중 73.2% 커버, 97% 게이트 통과 가능하지만 소형·중형주 20%대 값 괴리 있음)을 매일 재수집 가능한 구조로 배선했다. **값 자체는 아직 아무 계산에도 안 들어간다** — 순수 적재만.
+
+**배선 위치**: Vercel Hobby 크론 9개가 이미 상한이라 새 크론을 못 만든다. `lens-scores`(게이트·컷 오염 위험)·`revdcf`(`finally` 블록이 이미 잘리고 있어 부하 추가 금지) 둘 다 제외하고 **`us-perf`(22:00 UTC)**에 `computeUsPerf()` 완료 후 붙였다(라우트가 얇고 성격이 같은 야후 시세 파이프라인).
+
+**신규**:
+- `supabase/migrations/20260813_us_market_cap_nasdaq.sql` — `us_market_cap_nasdaq(as_of, symbol, market_cap, updated_at)`, PK `(as_of,symbol)`. `us_market_cap`(야후)과 완전 별도 테이블(808 부분컬럼 NULL덮기 회피). 라이브 적용 완료, 적용 직후 0행 확인.
+- `lib/nasdaqMarketCap.ts` — `fetchNasdaqMarketCap()`. 좌표는 `lib/revdcf/registry.ts:91-100`(939/940이 이미 확정) 재사용, 새 엔드포인트 발명 안 함. 라이브 호출(무키·UA 명시·타임아웃 20초), `data.rows`가 배열 아니면 예외(형식변경을 조용히 안 넘김, 833 원칙), `totalRows`·`savedRows`·`emptyCap` 각각 집계.
+- `app/api/cron/us-perf/route.ts` — `computeUsPerf()` 이후 나스닥 취득 호출, **try/catch 완전 격리**(974 원칙 — 실패해도 본체 응답·`us_stock_perf` 갱신 그대로). 실패 사유 3종 분류(936 원칙, 빈 catch 금지). **`us-perf` 최초 heartbeat 신설**(`perfMs`·`nasdaqMs`·`routeMs`·`nasdaqRows`·`nasdaqSaved`·`nasdaqEmptyCap`·`nasdaqError`·`budgetLeftMs`, `recordHeartbeat` 재사용).
+
+🔴 **D-1 지연 명시**: `lens-scores`(21:30 UTC)가 `us-perf`(22:00 UTC)보다 먼저 돈다 — 나스닥 값을 나중에 폴백으로 쓰더라도 그날 `lens-scores` 기준으로는 항상 하루 전 값이다.
+
+**§5 값 불변 증명(배포 전 스냅샷)**: `us_market_cap` 5,911행(최신 08-12, `as_of='2026-07-30'` 296건) · `us_sector_nasdaq` 7,127행(08-08 단일) · `us_stock_perf` 6,383행 · `lens_scores` US 1,035/KR 978 · `lens_cuts` US 5행(`as_of`=07-30) · `revdcf_results` 604건 md5 `471fae4393a033a635061090da94bf6c` · `us_market_cap_nasdaq`(신규) 0행. **게이트9** — `docs/CRON_OBSERVABILITY.md` §5-2에 `us_market_cap_nasdaq`(30h)·`cron_heartbeats.job='us-perf'`(30h) 2건 추가.
+
+**보호 파일 diff 0 확인**: `lib/lensPrecompute.ts`·`scripts/ingest_us_sector.ts`·`vercel.json` 전부 `git diff --stat` 빈 결과.
+
+**문서** — `docs/probe_1013_nasdaq_ingest.md`(배선 이유·D-1 지연·⓪-4 확인목록) · `docs/DATA_SOURCE_CATALOG.md`·`docs/data_source_catalog.xlsx` §3-3 후보1에 "매일 갱신 배선됨(1013)" 추가(md·xlsx 동시) · `docs/STEP_LEDGER.md` 1013 등재.
+
+`revdcf` heartbeat(1007 W1)는 크론 예정 시각(22:45 UTC) 미도래 — 4행 그대로 확인. `us-perf`(22:00 UTC)도 이 STEP 작업 시각(13:xx UTC)보다 늦어 **첫 실행 확인은 미도래** — 다음 세션 이후로 남긴다.
+
+**못 한 것** — 첫 실행 확인(§4, 22:00 UTC 미도래) · `revdcf` heartbeat 실측값 · 배포 후 §5 재확인(별도 커밋 예정).
+
+**철회·정정한 것** — 없음.
+
+**미측정** — ⓪-4 네 갈래 중 어느 것으로 판정될지(며칠 쌓인 뒤에만 가능) · 나스닥 라이브 API가 1012의 로컬 실측과 같은 응답을 주는지.
+
+🔴 **폴백 배선·게이트 변경은 이 STEP에서 하지 않는다. 며칠 쌓인 뒤 ⓪-4로 재판정하며, 판정은 장은태가 한다.**
+
 ## 2026-08-13 — 🟩 **STEP 1012: 야후 밖 시가총액 후보(나스닥 스크리너) 실측 — `_TEMPLATE.md` 첫 적용**
 
 > **성격**: 조사 전용 — **코드 diff 0 · DB 쓰기 0 · 새 네트워크 호출 0**(Supabase `select`만, 이미 DB에 있는 `us_sector_nasdaq.market_cap` 재사용). 이 STEP부터 명령서에 ⓪ 전제 점검(직전 STEP 원문 인용·건드리는 슬롯·금지사항·반증조건·3번 생각)이 도입돼 그대로 적용.
