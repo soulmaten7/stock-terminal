@@ -1,5 +1,25 @@
-<!-- 2026-08-12 -->
+<!-- 2026-08-13 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-13 — 🟩 **STEP 1006: 멈춘 파이프라인 2개의 원인 확정 시도(조사 전용)**
+
+> **성격**: 조사 전용 — **코드 0줄 · DB 쓰기 0 · 크론 미호출.** ERPbymonth 작업(1000~1005)과 무관한 새 조사 스레드 — `docs/STATE.md` 미해결 13·14·16번(US market-cap 373건 07-30 정지 · revdcf sector-relative 3일째 미갱신 · revdcf 크론 관측수단 부재).
+
+**P1 — 야후 엔드포인트별 응답 비교(373건 계열, 오늘 기준 390건 전수 + 길이분포 매칭 대조군 390건)**: `yf.quote()`·`yf.chart()`·`yf.quoteSummary()` 3경로 재조회(`scripts/probe_1006_yahoo_endpoints.ts`, `nextAt` 원자적 스로틀 200ms·동시성2, STEP994 함정 재발방지). 🔑 **304/390(77.9%)이 quote()에서 marketCap을 정상 수신** — HD·LOW·TGT·MU·CRM 5개 대형주 전부 완전 데이터(원문 첨부) — "영구 결측"이 아니라는 강한 반증이나, "07-30 그 시점에 무엇이 있었는지"의 직접 증거는 아니다(오늘·독립조회 ≠ production·그날 재현). quoteSummary()는 quote() 대비 딱 1건(`ELSE`)만 추가 회복 — 97% 게이트를 열 별도 경로가 못 됨. 진짜 이중결측 85건(21.8%)은 우선주(AFGB·AFGC·WAFDP 등)·레버리지/인버스 ETN(DGP·DGZ·VXX 등)·`GV`·`KVAC`·`PSTV`(STEP987이 이미 확인한 3건과 정확히 재현 — 두 독립조사의 교차검증) 위주. exchange 분포: target이 NYSE American+NYSEArca+Cboe US 합산 14.4% vs control 4.4%로 "실시간 시세 라이선스" 가설과 방향은 일치하나 양쪽 다 NYQ(NYSE)가 최대비중이라 완전설명은 아님(부분신호로만 기록).
+
+**P2 — revdcf `finally` 블록(밸류에이션+섹터상대) 구간별 계측(로컬·읽기전용·`upsert()` 0회)**: `scripts/probe_1006_finally_timing.ts`로 `route.ts`의 6개 구간(재료3종read·행조립·`us_valuation`전량read·`missingSymbols`산출·`resolveSector(613건)`실제호출·섹터상대 조립)을 재현 — **누적 5,447ms(5.4s)**, 예외 0건. `BUDGET_MS=270,000` 소진 후 남는 예산(300s−270s=30s)의 18%뿐. 🔴 **로컬 무재현이 production을 대변하지 않는다** — 이 STEP의 지시대로 세 가지 환경차이를 명시: ① Supabase 왕복(RTT)이 로컬≠Vercel ② 콜드스타트가 이 재현엔 없음 ③ 실제 크론은 SEC 워커루프(최대 270초)가 리소스를 소모한 **직후**에 이 블록에 진입하는데, 이 재현은 그 소모 없이 "깨끗한 상태"에서만 쟀다. 가설ⓐ(예산초과)·ⓑ(내부예외) 둘 다 확정도 기각도 하지 않음.
+
+**DB 행수 변화 0 확인**(실행 전후 동일 스냅샷): `us_valuation` 15,101행(최신 2026-08-12)·`us_sector_relative` 3,541행(최신 2026-08-10)·`us_sector_wide` 5,167행(최신 2026-08-08)·`us_market_cap` 5,911행(최신 2026-08-12).
+
+**부수 — `STEP_LEDGER.md` 1003~1005 공백 발견·즉시 자체복구**(971~999와 같은 패턴 — CHANGELOG.md엔 3개 STEP 전부 있었으나 이 원장엔 없었음).
+
+**문서** — `docs/probe_1006_yahoo_endpoints.md`(HD·LOW·TGT·MU·CRM 원문 응답 첨부) · `docs/probe_1006_finally_timing.md` · `docs/STATE.md` 14번에 78% 관측 추가(성격 변경 아님, 기존 미규명 상태 유지) · `docs/STEP_LEDGER.md`(1003~1006 등재).
+
+**못 한 것** — Vercel 실제 환경에서의 재현(크론 수동실행 금지 범위) · quoteSummary() 9건 개별 예외 사유 미진단 · `resolveSector` 내부 4단계(SPDR·나스닥·SIC·야후) 개별 소요시간 미분해.
+
+🔴 **판정(P1 결과로 취득 경로를 바꿀지, P2 결과로 `BUDGET_MS`를 내릴지)은 STEP 1007로 이관 — 이 STEP에서 고르지 않았다.**
+
+**코드 0줄 · DB 쓰기 0 · 크론 미호출 · `data/us_symbols.json`·`.github/workflows/**`·`vercel.json` 무접촉 · `REVDCF_ENABLED` Production OFF 유지 · 게이트 임계·`BUDGET_MS`·`maxDuration` 불변 · API 키 발급·유료가입 0건 · KR 전부 동결.**
 
 ## 2026-08-12 — 🟩 **STEP 1002: 카탈로그 완성 — 슬롯 간 의존관계 + 과거 판정 흡수 + 검수**
 
