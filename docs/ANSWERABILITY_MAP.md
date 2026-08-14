@@ -5,6 +5,7 @@
 > 🔴 검증되지 않은 행을 LLM에 넘기거나 제품 문구의 근거로 쓰지 않는다.
 > 🟢 **2026-08-13 STEP 1015 — A~H 8개 항목 전수 코드 대조 완료.** 결과 = `조건확정 0 / 확인불가 2(E·F) / 불일치 6(A·B·C·D·G·H)` — 8개 전부에서 초안이 최소 한 군데 코드와 달랐다(상세 = `docs/probe_1015_answerability_audit.md`). 🔴 **공통 패턴**: `docs/CRON_OBSERVABILITY.md`의 신선도 임계값(49h·30h)은 `health` 크론 전용 모니터링 값이며, 실제 서빙 API 어디도 그 값을 게이트로 쓰지 않는다 — E·G는 지금 낡은 값을 성립인 것처럼 계속 내보내고 있다.
 > 🔴 **2026-08-14(UTC 08-13) STEP 1016 — 게이트를 문자대로 적용했을 때의 영향을 두 시점(최악·최선)으로 전수 실측.** 8개 중 6개가 최악 시점(15:47Z)에 100%(또는 그에 준함) 불성립 — 단 A·B·C·G(`us_market_cap`)는 **날짜절삭 아티팩트**(크론 성공 직후엔 0%로 해소)이고, **E(15일 묵은 `lens_cuts`)·H(갱신 크론 자체가 없는 `us_sector_resolved`)는 진짜 정체.** 🔴🔴 **가장 큰 발견 — D(업종 대비)는 게이트 유무와 무관하게 지금 이미 100% 실패 중이다**: `us_valuation`의 최신 as_of로 `us_sector_relative`를 조회하는데 그 as_of엔 `us_sector_relative` 행이 0건이라 **모든 종목이 항상 NO_SECTOR로 나간다**(조회 키 버그, 상세 = `docs/probe_1016_serving_gate_impact.md`).
+> 🟢 **2026-08-14 STEP 1017 — 어젯밤(08-13 21:30~22:45 UTC) 크론 실행 결과 확인.** `revdcf`는 `revdcf_results`(604행)·`us_valuation`(5,820행)까지 완료했으나 **heartbeat가 기록되지 않았다** — 코드상 `finally`가 보장돼야 하는데도 안 돌았다는 정황(`app/api/cron/revdcf/route.ts:374-399`), Vercel 로그는 403으로 미확인. `us-perf`의 나스닥 폴백은 **20초 timeout으로 실패**(로컬 1회 재현도 동일 결과 — egress 전용설 근거 약화). `us_market_cap`은 1008의 "296건 고정" 서술과 달리 **287로 9건 회복**을 확인(고정 아님). 상세 = `docs/probe_1017_cron_failure_causes.md`.
 
 ---
 
@@ -91,6 +92,7 @@
 | 한계 고지 | 🔴 **슬롯 #19 한계**: 업종 배수의 외부 벤치마크가 없다. 이 비교는 **우리 유니버스 안의 중앙값 대비**이지 시장 전체 기준이 아니다. 🔴 이 문구를 빼지 않는다 |
 | 근거 | ✅ `supabase/migrations/20260809_us_sector_relative.sql:6-19` · `lib/sectorRelativeBatch.ts:70,91,98,103` · `lib/sectorRelative.ts:47` — 상세 = `docs/probe_1015_answerability_audit.md` §1-D |
 | 🔴🔴 현재 상태(1016) — **게이트와 무관하게 이미 100% 실패 중** | `app/api/q1/[symbol]/route.ts`가 `us_sector_relative`를 조회할 때 쓰는 `as_of`는 **`us_valuation`의 최신 as_of(2026-08-12)를 그대로 재사용**하는데, `us_sector_relative`는 **2026-08-10에서 멈춰 있어** `as_of='2026-08-12'`로 **0행 매치**(직접 실측: `SELECT count(*) FROM us_sector_relative WHERE as_of=(SELECT max(as_of) FROM us_valuation)` → 0). 코드는 이를 `NO_SECTOR`로 우아하게 처리하지만, **지금 이 순간 모든 종목의 업종 대비가 "섹터 없음"으로 나가고 있다.** 이건 신선도 게이트를 도입하고 말고의 문제가 아니라 **조회 키 자체가 잘못 조합된 기존 버그**다. 상세 = `docs/probe_1016_serving_gate_impact.md` §0·§2 |
+| 🔴 현재 상태(1017 추가) | `us_sector_relative`가 **08-10에서 4일째 정지**(1016 관측 대비 하루 더 경과, 상태 불변). 어젯밤(08-13 22:45 UTC) `revdcf` 크론이 `revdcf_results`(604행)·`us_valuation`(5,820행)은 완료했으나 **heartbeat 자체가 기록되지 않았다** — `computeAndSaveSectorRelative`(`app/api/cron/revdcf/route.ts:384`) 단계에서 함수가 완주하지 못했다는 정황증거(로그 미확보라 확정은 아님). 즉 D의 정지는 **일회성이 아니라 매일 밤 같은 지점에서 반복되는 중일 가능성**이 있다. 상세 = `docs/probe_1017_cron_failure_causes.md` §1-1 |
 
 ### E. 7렌즈
 | 항목 | 내용 |
@@ -125,6 +127,7 @@
 | 근거 | ✅ `app/api/watchlist/quotes/route.ts:127,136-140` vs `docs/CRON_OBSERVABILITY.md:146-147`(숫자 불일치, 25h vs 30h) — 상세 = `docs/probe_1015_answerability_audit.md` §1-G |
 | 🔴 현재 상태 | **373건이 2026-07-30 이후 갱신 없음**(296건 고정) — 게이트가 없어 이 373건도 차단 없이 그대로 응답에 나간다(1015 확인). `asOf`만 07-30으로 정직하게 찍힘 |
 | 🔴 현재 상태(1016 재실측) | `us_market_cap` 5,911건 전부가 30h 게이트 적용 시 **5,911/5,911(100%) 불성립** — 단 대부분(5,601건)은 **날짜절삭 아티팩트**(어제 08-12 정상 갱신, 오늘 밤 성공하면 해소). **진짜 정체는 310건(5.2%)**(`as_of` 그룹: 07-30 296·08-02~08-11 사이 흩어진 14건). `us_stock_perf`는 심볼별 실시각 `updated_at`이라 아티팩트 없이 **419/6,383(6.6%)**이 진짜 30h 초과 — 상세 = `docs/probe_1016_serving_gate_impact.md` §2 |
+| 🔴 현재 상태(1017 추가) | 어젯밤 크론 정상 갱신 확인 — `us_market_cap` 08-13에 5,611건 신규(전체 5,913건). 🔑 **1008의 "296건 고정" 서술이 어긋남을 확인** — 07-30 고정 코호트가 296→**287로 9건 회복**, 반면 08-02~08-11 사이 14건은 전혀 안 움직임(고정 서브그룹과 움직이는 서브그룹이 섞여 있음). `us-perf`의 나스닥 시총 폴백은 어젯밤도 **20초 timeout으로 실패**(`nasdaqRows:0`) — 로컬 1회 재현도 동일하게 20,008ms에서 timeout, "Vercel egress 전용 문제" 단정 근거는 약해짐. 상세 = `docs/probe_1017_cron_failure_causes.md` §1-2·§1-3·§1-4 |
 
 ### H. 섹터 분류
 | 항목 | 내용 |
