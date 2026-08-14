@@ -393,6 +393,25 @@
 
 ---
 
+## 🟢 유니버스 종류 구성 (신규, STEP1021, 2026-08-14)
+
+🔴 **커버리지 게이트(97%)의 분모(`data/us_symbols.json` "stock" 5,976건)에 무엇이 들어 있는지 한 번도 검증된 적이 없었다** — STEP1021이 최초로 이름 패턴(1차) + `lens_scores`/`revdcf_results` 편입 여부(교차확인)로 전수 분류했다.
+
+| 종류 | 건수 | 비율 | 판별 근거 |
+|---|---|---|---|
+| COMMON(잔여) | 5,124 | 85.7% | 패턴 불일치 → 보통주 추정 |
+| CEF_TRUST(펀드·신탁 명칭) | 320 | 5.4% | 🔴 이름 패턴 추정 — **7건은 REIT 오분류로 확인됨**(아래 참조), 나머지 313건은 `lens_scores`·`revdcf_results` 어디에도 없어(교차검증) 진짜 CEF·신탁일 가능성 높음 |
+| ADR | 306 | 5.1% | 이름:American Depositary Shares/ADS/ADR(철자변형 "Depository"는 미포착) |
+| SPAC | 217 | 3.6% | 이름:Acquisition Corp + Ordinary/Class 주식 |
+| 로열티트러스트 | 9 | 0.2% | 이름:Royalty Trust/Units of Beneficial Interest |
+| 우선주·워런트·라이트 | 0 | 0% | `scripts/refresh_us_symbols.ts`의 `EXCLUDE_NAME` 정규식이 이미 걸러냄(확인됨, 정상 동작) |
+
+🔴🔴 **분류 방법의 결함을 발견·정정**: "CEF_TRUST" 320건 중 7건이 `lens_scores`에 있어 "CEF가 모델 대상에 섞였다"를 기대했으나, 직접 확인 결과 **7건 전부 REIT**(`FRT`·`EQR`·`CPT`·`AMH`·`NTRS`·`ESS`·`DLR` — REIT는 "Trust"·"Common Shares of Beneficial Interest"라는 CEF와 같은 법적 표기를 쓰지만 실제로는 10-K/10-Q를 내는 정상 운영회사다). **`revdcf_results`(604건)엔 CEF·신탁·SPAC이 단 0건**(모델이 이미 이들을 올바르게 배제 중 — 새 결함 아님, 정상 동작 확인).
+
+**가상 커버리지(🔴 채택 안 함, 참고용)**: CEF/신탁·로열티트러스트 제외 시 결합 커버리지 96.95%→**98.39%**(97% 게이트를 넘김) — 단 **분모를 줄이면 커버리지가 오르는 건 산술적으로 당연**하며, 이게 개선인지 눈속임인지는 "빠진 종목이 정말 모델 대상이 아닌가"로만 판정된다. **판정은 장은태 몫, 유니버스는 이 STEP에서 바꾸지 않았다.** 상세 = `docs/probe_1021_universe_composition.md`.
+
+---
+
 ## 카테고리 분류
 
 🔴 "무엇을 주는가"가 아니라 **"어느 자리에 넣을 수 있는가"**로 나눈다. 같은 카테고리 = 서로 대체 가능. 정의가 다르면 카테고리를 쪼갠다(예: 시가총액을 계산기준별로 3분할 — 975에서 실측된 8.29% 차이 근거).
