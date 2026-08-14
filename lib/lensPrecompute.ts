@@ -50,15 +50,15 @@ export function classifyCaps(
   return { capOf, noCapField: missing.filter((s) => inResponse.has(s)), noResponse: missing.filter((s) => !inResponse.has(s)) };
 }
 
-// §2: 취득 게이트 — 커버리지(fresh 확보율) + 구성(직전 상위 200 메가캡이 오늘 fresh 확보됐나). 편향 표본으로 컷 만드는 것 차단.
-// 🔴 STEP 1025 W2 — 장은태 판정(2026-08-14): 게이트를 "급락 탐지"로 재정의한 새 산식을 관측 필드로만 추가한다.
-//   기존 4개 필드(coverageOk·compositionOk·compRatio·cutGateOk)의 계산은 한 글자도 바꾸지 않는다(833 값 잠금 테스트 대상).
-//   opts에 priorCoverage를 안 넘기면(기존 호출부·KR 전부) priorCoverage=null·priorSource="none"으로 부트스트랩과 동일하게 계산될 뿐,
-//   반환에 필드가 늘어도 구조분해로 옛 4개만 꺼내 쓰는 기존 코드·테스트엔 영향 없다.
+// §2: 취득 게이트 — 커버리지(fresh 확보율, "급락 탐지" 산식) + 구성(직전 상위 200 메가캡이 오늘 fresh 확보됐나). 편향 표본으로 컷 만드는 것 차단.
+// 🔴 STEP 1031 — 장은태 승인(2026-08-14): STEP1025가 관측 필드로만 배선했던 새 산식을 실제 판정(coverageOk)으로 전환한다.
+//   구 산식(freshCoverage>=고정 97%)은 폐기 — 커버리지 회복 경로가 전부 소진돼(1017~1024: 야후 93.9%·SEC조립 96.95%·
+//   나스닥 접근불가·유니버스정리 96.91%) 97% 자체가 19일째 못 넘는 임계였다(REVDCF_SPEC.md §10-J).
+//   🔴 compositionOk(메가캡 95%)는 이 STEP에서 한 글자도 안 바꾼다 — 여전히 진짜 안전장치.
 export function capGateDecision(
   freshCoverage: number, priorTopSyms: string[], freshSet: Set<string>,
   opts: {
-    coverageMin?: number; compMin?: number;
+    compMin?: number;
     priorCoverage?: number | null; priorSource?: "history" | "heartbeat" | "none";
     absFloor?: number; dropLimit?: number;
   } = {},
@@ -66,17 +66,17 @@ export function capGateDecision(
   coverageOk: boolean; compositionOk: boolean; compRatio: number; cutGateOk: boolean;
   newCoverageOk: boolean; newCutGateOk: boolean; priorCoverage: number | null; priorSource: "history" | "heartbeat" | "none"; coverageDrop: number | null;
 } {
-  const coverageMin = opts.coverageMin ?? 0.97; // 정상 ~98.6%(프로브 실측)·여유 1.6pp
-  const compMin = opts.compMin ?? 0.95;         // 메가캡은 하루새 안 사라짐 → 95% 미만이면 취득 사고(832: ~0%)
-  const coverageOk = freshCoverage >= coverageMin;
+  const compMin = opts.compMin ?? 0.95; // 메가캡은 하루새 안 사라짐 → 95% 미만이면 취득 사고(832: ~0%)
   let compositionOk = true, compRatio = 1;
   if (priorTopSyms.length >= 100) { // 부트스트랩(기록 부족)이면 구성 게이트 스킵
     const present = priorTopSyms.filter((s) => freshSet.has(s)).length;
     compRatio = present / priorTopSyms.length;
     compositionOk = compRatio >= compMin;
   }
-  // 🔴 STEP 1025 — 새 산식(관측 전용, cutGateOk 실제 판정엔 관여 안 함).
+  // 🔴 STEP 1025 설계 → STEP 1031 전환 — "급락 탐지" 산식(장은태 2026-08-14).
   //   ABS_FLOOR = 절대 하한(서서히 나빠지는 걸 막는다). DROP_LIMIT = 전일 대비 낙폭 상한(832형 급락 — 98.6%→~0% — 을 잡는다).
+  //   🔴 opts.absFloor를 명시적으로 넘기면(예: KR — 아래 computeKrLensScores 호출부) 그 값이 절대 하한이 된다 —
+  //   KR은 priorCoverage를 채우지 않아(fetchPriorCoverage 미호출) 항상 이 절대 하한만으로 판정된다(부트스트랩 경로 고정).
   const ABS_FLOOR = opts.absFloor ?? 0.85;
   const DROP_LIMIT = opts.dropLimit ?? 0.03;
   const priorCoverage = opts.priorCoverage ?? null;
@@ -84,6 +84,9 @@ export function capGateDecision(
   const coverageDrop = priorCoverage != null ? priorCoverage - freshCoverage : null;
   const newCoverageOk = freshCoverage >= ABS_FLOOR && (priorCoverage == null || freshCoverage >= priorCoverage - DROP_LIMIT);
   const newCutGateOk = newCoverageOk && compositionOk;
+  // 🔴 STEP 1031 — coverageOk·cutGateOk가 이제 newCoverageOk·newCutGateOk와 같은 산식을 쓴다(전환).
+  //   두 쌍이 항상 일치해야 정상 — 어긋나면 그 자체가 이상 신호(자체 검증, §1-2).
+  const coverageOk = newCoverageOk;
   return { coverageOk, compositionOk, compRatio, cutGateOk: coverageOk && compositionOk, newCoverageOk, newCutGateOk, priorCoverage, priorSource, coverageDrop };
 }
 
@@ -477,13 +480,17 @@ export async function computeLensScoresFor(
   market: string,
   // 🔴 STEP 833 §2·§3: cutGateOk=false면 컷 재유도·프루닝 금지(편향 표본으로 판정 기준 안 만듦)·전날 컷 유지·ok:false.
   //   skipChangeDiff=true면 pass2가 상태는 재매핑하되 lens_state_changes diff는 기록 안 함(정상화 실행의 기준선 이동을 '종목 변화'로 오기록 방지).
-  opts: { concurrency?: number; tradeAmountOf?: Map<string, number>; expected?: number; cutGateOk?: boolean; skipChangeDiff?: boolean } = {}
-): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean; cutsUpdated: boolean; changeDiffRecorded: boolean; warning?: string; loopMs: number; pass2Ms: number; pruneMs: number; totalMs: number }> {
+  //   🔴 STEP 1031 §0-B/§1-3: pruneEnabled=false면 canPrune 자체를 4중 게이트와 별개로 차단(컷 게이트 전환과 프루닝 활성화를
+  //   분리 — 컷 재유도는 되돌릴 수 있지만 행 삭제는 되돌리기 어렵다). 🔴 opts에 안 넘기면 기본 true(KR 등 기존 호출부 완전 불변) —
+  //   되돌리는 법: 아래 US 호출부(computeLensScores)의 pruneEnabled:false 한 줄을 지우면 다음 실행부터 즉시 복원.
+  opts: { concurrency?: number; tradeAmountOf?: Map<string, number>; expected?: number; cutGateOk?: boolean; skipChangeDiff?: boolean; pruneEnabled?: boolean } = {}
+): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean; cutsUpdated: boolean; changeDiffRecorded: boolean; warning?: string; loopMs: number; pass2Ms: number; pruneMs: number; totalMs: number; pruneBlockedByFlag: boolean }> {
   const tFn0 = Date.now(); // 🔴 STEP 917 §1: 렌즈계산 함수 단계별 elapsed — 계측 전용
   const concurrency = opts.concurrency ?? 6;
   const tradeAmountOf = opts.tradeAmountOf;
   const cutGateOk = opts.cutGateOk !== false;      // STEP 833 §2: 기본 통과(KR 등 무전달 경로 불변)
   const skipChangeDiff = opts.skipChangeDiff === true; // STEP 833 §3
+  const pruneEnabled = opts.pruneEnabled !== false; // 🔴 STEP 1031: 기본 true(KR 등 무전달 경로 불변) — US만 명시적으로 false 전달
   const at = new Date().toISOString();
   const changeDate = at.slice(0, 10); // 크론 실행일(UTC date) — KR/US 통일, 표시 로케일화는 읽기 쪽(스펙)
   const sb = createAdminClient(); // RLS 우회(쓰기·kr_stock_snapshot 읽기)
@@ -499,7 +506,7 @@ export async function computeLensScoresFor(
   if (universe.length === 0) {
     Sentry.captureMessage(`[lens-universe-empty] ${market} 유니버스 0 → 계산·프루닝 전면 중단(성공 아님)`, "error");
     const zeroMs = Date.now() - tFn0;
-    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, cutGateOk, cutsUpdated: false, changeDiffRecorded: false, warning: "universe-empty", loopMs: zeroMs, pass2Ms: 0, pruneMs: 0, totalMs: zeroMs };
+    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, cutGateOk, cutsUpdated: false, changeDiffRecorded: false, warning: "universe-empty", loopMs: zeroMs, pass2Ms: 0, pruneMs: 0, totalMs: zeroMs, pruneBlockedByFlag: !pruneEnabled };
   }
   if (!universeOk) {
     Sentry.captureMessage(
@@ -615,8 +622,9 @@ export async function computeLensScoresFor(
   // 🔴 STEP 806 §3: 저장 성공률이 낮으면(부분 실행) 프루닝이 정상 행을 대량 삭제할 수 있음 → 성공률 ≥80%일 때만.
   // 🔴 STEP 828 §2: 위 성공률 + 유니버스 하한(universeOk) + pass2 성공(pass2Ok) 3중 게이트를 모두 통과해야 프루닝.
   // 🔴 STEP 833 §2: 취득 게이트(cutGateOk)까지 4중 게이트를 모두 통과해야 프루닝(편향 유니버스로 정상 행 삭제 방지).
+  // 🔴 STEP 1031 §0-B/§1-3: pruneEnabled 명시적 차단 — 4중 게이트를 전부 통과해도 이 플래그가 false면 삭제 안 함.
   const successRate = saved / universe.length;
-  const canPrune = successRate >= 0.8 && universeOk && pass2Ok && cutGateOk;
+  const canPrune = pruneEnabled && successRate >= 0.8 && universeOk && pass2Ok && cutGateOk;
   let pruned = false;
   if (canPrune) {
     try {
@@ -626,8 +634,8 @@ export async function computeLensScoresFor(
       Sentry.captureException(e, { tags: { pipeline: "lens_scores_prune", market } });
     }
   } else {
-    // 조용히 넘어가지 않는다 — 프루닝 건너뜀을 경고(부분 실행·유니버스 붕괴·pass2 실패·취득 게이트 실패 감지).
-    const reason = !cutGateOk ? "취득 게이트 실패" : !universeOk ? "유니버스 붕괴" : !pass2Ok ? "pass2 실패" : `성공률 ${(successRate * 100).toFixed(0)}%<80%`;
+    // 조용히 넘어가지 않는다 — 프루닝 건너뜀을 경고(부분 실행·유니버스 붕괴·pass2 실패·취득 게이트 실패·명시적 차단 감지).
+    const reason = !pruneEnabled ? "명시적 차단(pruneEnabled=false, STEP1031)" : !cutGateOk ? "취득 게이트 실패" : !universeOk ? "유니버스 붕괴" : !pass2Ok ? "pass2 실패" : `성공률 ${(successRate * 100).toFixed(0)}%<80%`;
     Sentry.captureMessage(
       `[lens-prune-skip] ${market} ${reason} → 프루닝 건너뜀(대량 삭제 방지·저장 ${saved}/${universe.length})`,
       "warning"
@@ -635,11 +643,11 @@ export async function computeLensScoresFor(
     console.warn(`  ...프루닝 건너뜀(${reason} · ${saved}/${universe.length})`);
   }
 
-  const warning = !cutGateOk ? "cut-gate-failed" : !universeOk ? "universe-collapse" : !pass2Ok ? "pass2-failed" : successRate < 0.8 ? "low-success" : undefined;
+  const warning = !pruneEnabled ? undefined : !cutGateOk ? "cut-gate-failed" : !universeOk ? "universe-collapse" : !pass2Ok ? "pass2-failed" : successRate < 0.8 ? "low-success" : undefined;
   const tEnd = Date.now(); // 🔴 STEP 917 §1: prune 경계 · totalMs = 함수 전체
   return {
     ok: universeOk && pass2Ok && cutGateOk, computed: saved, universe: universe.length, at, pruned, universeOk, pass2Ok, cutGateOk, cutsUpdated, changeDiffRecorded, warning,
-    loopMs: tLoopEnd - tFn0, pass2Ms: tPass2End - tLoopEnd, pruneMs: tEnd - tPass2End, totalMs: tEnd - tFn0,
+    loopMs: tLoopEnd - tFn0, pass2Ms: tPass2End - tLoopEnd, pruneMs: tEnd - tPass2End, totalMs: tEnd - tFn0, pruneBlockedByFlag: !pruneEnabled,
   };
 }
 
@@ -664,10 +672,14 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   const { churn, skipChangeDiff } = churnDecision(universe, priorSet);
 
   // 🔴 STEP 894: diag.retryBudgetHit·diag.retryAttempted를 로그에 추가(같은 이유 — 계산되고 버려지던 값).
-  console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk} · 🔴신규산식(관측) newCutGateOk ${newCutGateOk}(전일 ${priorCoverage != null ? (priorCoverage * 100).toFixed(1) + "%" : "null"}·출처 ${priorSource}) · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}/${diag.retryAttempted} · 재시도한도초과 ${diag.retryBudgetHit}`);
+  // 🔴 STEP 1031: cutGateOk가 이제 새 산식(급락 탐지)의 실제 판정값 — newCutGateOk는 같은 산식을 독립 계산한 것이라
+  //   항상 cutGateOk와 일치해야 한다(불일치 = 이상 신호, self-check). 로그에 둘 다 남겨 매일 눈으로 대조 가능하게 한다.
+  console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk}(self-check newCutGateOk ${newCutGateOk} ${cutGateOk === newCutGateOk ? "일치" : "🔴불일치"})(전일 ${priorCoverage != null ? (priorCoverage * 100).toFixed(1) + "%" : "null"}·출처 ${priorSource}) · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}/${diag.retryAttempted} · 재시도한도초과 ${diag.retryBudgetHit}`);
   if (!cutGateOk) Sentry.captureMessage(`[us-cut-gate] 취득 게이트 실패(커버 ${(diag.freshCoverage * 100).toFixed(1)}%·구성 ${(compRatio * 100).toFixed(1)}%) → 컷 재유도·프루닝 금지`, "error");
+  if (cutGateOk !== newCutGateOk) Sentry.captureMessage(`[us-cut-gate-mismatch] cutGateOk(${cutGateOk}) ≠ newCutGateOk(${newCutGateOk}) — 같은 산식의 독립 계산인데 어긋남(STEP1031 self-check 실패)`, "error");
 
-  const r = await computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+  // 🔴 STEP 1031 §0-B: 프루닝은 이번엔 US에서만 명시적으로 안 켠다(컷 게이트 전환과 분리된 별도 판정, §0-B). 되돌리는 법 = 이 줄 삭제.
+  const r = await computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff, pruneEnabled: false });
 
   // 🔴 STEP 1025 W3 — 프루닝 가상 영향(계산만, 실제 삭제는 절대 안 함). cutGateOk가 true였다면 나머지 3중 게이트로 프루닝됐을지.
   const successRate = r.universe > 0 ? r.computed / r.universe : 0;
@@ -701,9 +713,13 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
     reconstructable: diag.reconstructable, reconstructableSingleClass: diag.reconstructableSingleClass,
     reconstructableMultiClass: diag.reconstructableMultiClass, noPriceEither: diag.noPriceEither,
     wouldBeCoverage: diag.wouldBeCoverage, missingFieldNames: diag.missingFieldNames, reconstructError: diag.reconstructError,
-    // 🔴 STEP 1025 — 새 게이트 산식 관측 필드. cutGateOk(위, 실제 판정)는 불변 — 아래는 옆에 나란히 기록만 한다.
+    // 🔴 STEP 1025 신설 → STEP 1031: cutGateOk(위)가 이제 이 산식으로 계산된다 — newCoverageOk·newCutGateOk는
+    //   self-check용 독립 재계산(cutGateOk와 항상 같아야 정상). coverageDrop=null이면 부트스트랩(전일 값 없음).
     newCoverageOk, newCutGateOk, priorCoverage, priorSource, coverageDrop,
     universeOk: r.universeOk, pass2Ok: r.pass2Ok, pruned: r.pruned,
+    // 🔴 STEP 1031 §1-3: 프루닝은 이번 실행에서 명시적으로 차단됐다(pruneBlockedByFlag=true) — canPrune의 4중 게이트를
+    //   전부 통과해도 이 플래그 때문에 안 지워진다. true가 아니면 차단이 안 걸린 것 — 즉시 보고 대상.
+    pruneBlockedByFlag: r.pruneBlockedByFlag,
     successRate, wouldPrune, wouldPruneRows: pruneObs?.wouldPruneRows ?? null, wouldPruneSample: pruneObs?.sample ?? [],
   });
   return r;
@@ -747,7 +763,10 @@ export async function computeKrLensScores(topN = 1000, concurrency = 6) {
   const acqMs = Date.now() - tAcq0; // 🔴 STEP 917 §1: KR은 벌크 단일읽기라 단계 분해 불필요(US Stage1/2/3 구조 없음) — 전체만
   // §2 커버리지 게이트: KR 시총은 우리 DB(kr_stock_snapshot·KRX 벌크)라 정상 100%(실측) → 95% 임계(5pp 여유·kr-perf 부분실패 감지).
   //   구성 게이트(직전 상위 N 유지)는 KR엔 미적용 — US 배치 quote 결측 양상이 없다(벌크 읽기). priorTopSyms=[]로 스킵.
-  const { coverageOk, cutGateOk } = capGateDecision(coverage, [], new Set(), { coverageMin: 0.95 });
+  // 🔴 STEP 1031 — coverageMin(구 산식 전용 파라미터, 폐기)을 absFloor로 교체. KR은 priorCoverage를 안 넘기므로
+  //   (fetchPriorCoverage 미호출) 항상 bootstrap 경로(priorCoverage=null)를 타 절대 하한만 비교 — 결과는 구 산식(freshCoverage>=0.95)과
+  //   수치상 완전히 동일하다(KR 전면 동결 — 이 STEP이 KR 판정을 바꾸지 않는다는 증거).
+  const { coverageOk, cutGateOk } = capGateDecision(coverage, [], new Set(), { absFloor: 0.95 });
   // §3 전환/정상화 diff 스킵 — 직전 lens_scores KR 유니버스 대비 churn(전환일 대량 교체 → 스킵·813 §3 원리).
   const { data: priorUni } = await sb.from("lens_scores").select("symbol").eq("market", "KR");
   const priorSet = new Set(((priorUni ?? []) as { symbol: string }[]).map((r) => r.symbol));

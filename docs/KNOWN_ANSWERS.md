@@ -53,9 +53,19 @@
 - 재검토 조건: 없음(전수 실측이라 표본 재조사 불필요 — 단 유니버스 재정의 자체는 장은태 판정 대기).
 
 ## Q. 커버리지 게이트(97%)를 지금 넘길 방법이 있는가
-- 답: **없다, 분자·분모 둘 다 소진됐다.** 분자(시총 취득): 야후 93.9%·나스닥 접근불가·SEC 조립 96.95%(엄격 95.96%)·조회창 확장 실질 +1건. 분모(유니버스 정리): SIC로 정확히 제외해도 96.91%(하락). 남은 레버 = 게이트 임계 자체(2026-08-14 장은태가 "급락 탐지"로 재정의, 드라이런 중).
-- 확정: STEP1017~1024(분자·분모)·STEP1025(재정의) · 근거: `docs/DATA_SOURCE_CATALOG.md` §0-A · `docs/probe_1025_gate_redefinition.md`.
-- 재검토 조건: 새 시총 데이터 소스가 발견되거나(현재 5개 경로 전부 소진), 게이트 재정의가 장은태 승인을 받으면.
+- 답: **없다, 분자·분모 둘 다 소진됐다** — 그래서 2026-08-14 장은태 승인으로 **게이트 자체를 재정의해 실전환**했다(고정 97%→절대 하한 85%+낙폭 상한 3%p). 97%는 애초에 "정상 실측치(98.6%)+여유"였을 뿐(STEP833), 그 실측치가 소진돼 무의미해졌다.
+- 확정: STEP1017~1024(분자·분모 소진)·STEP1025(재정의 드라이런)·**STEP1031(실전환, 2026-08-14)** · 근거: `docs/probe_1031_gate_activation.md`.
+- 재검토 조건: 오늘 밤(08-14 21:30 UTC) 첫 실행에서 `lens_cuts` US가 08-14로 갱신되는지·판정 변화가 예상(11.3%)과 맞는지 확인되면 확정.
+
+## Q. 커버리지 게이트 산식은 무엇인가
+- 답: `freshCoverage >= ABS_FLOOR(0.85) && (priorCoverage==null || freshCoverage >= priorCoverage - DROP_LIMIT(0.03))`("급락 탐지" — 절대 하한 + 전일 대비 낙폭 상한). `compositionOk`(메가캡 상위 200 중 95% fresh 확보)는 별개 AND 조건, 무변경. KR은 `absFloor:0.95`만 넘기고 `priorCoverage`는 항상 없어 절대 비교만 함(구 산식과 수치 동일).
+- 확정: STEP1025(설계, 관측 전용)→STEP1031(실전환, 2026-08-14 장은태 승인) · 근거: `lib/lensPrecompute.ts` `capGateDecision` · `docs/probe_1031_gate_activation.md`.
+- 재검토 조건: `ABS_FLOOR`/`DROP_LIMIT` 상수 자체를 바꾸는 결정이 나오거나, self-check(`coverageOk`==`newCoverageOk`)가 어긋나는 사례가 관측되면.
+
+## Q. 프루닝(오래된 lens_scores 행 삭제)은 지금 켜져 있는가
+- 답: **US는 명시적으로 꺼져 있다**(`pruneEnabled:false`, STEP1031) — 컷 게이트는 열었지만 되돌리기 어려운 행 삭제는 별도 판정으로 분리했다. **KR은 원래대로 켜져 있다**(무변경, 이 STEP의 영향 밖). `cron_heartbeats.job='lens-scores'.note.pruneBlockedByFlag`로 매일 확인 가능(`true`=정상 차단).
+- 확정: STEP1031(2026-08-14) · 근거: `docs/probe_1031_gate_activation.md` §1-3.
+- 재검토 조건: 프루닝 활성화가 별도 STEP으로 장은태 승인을 받으면(`pruneEnabled:false` 한 줄 삭제로 즉시 복원).
 
 ## Q. `us_sector_relative`가 정지하면 업종 대비(D)가 어떻게 실패하는가
 - 답: `us_valuation`의 최신 `as_of`로 `us_sector_relative`를 조회하는데, `us_sector_relative` 자체가 최근 갱신을 멈추면 그 `as_of`에 0행 매치 → **전 종목이 `NO_SECTOR`로 표시**(신선도 게이트가 있어서가 아니라 조회 키가 안 맞아서). 서빙 API(`/api/lens`·`/api/watchlist/quotes`)는 신선도 임계값을 아예 안 본다 — `docs/CRON_OBSERVABILITY.md`의 49h/30h는 `health` 크론 전용 모니터링 값일 뿐.

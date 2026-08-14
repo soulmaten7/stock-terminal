@@ -1,6 +1,40 @@
 <!-- 2026-08-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-14 — 🟥 **STEP 1031: 커버리지 게이트를 실제로 전환한다(🔴 게이트 전환 승인, 2026-08-14 장은태 · 라이브 판정값 변경)**
+
+> **성격**: STEP1025가 관측 필드로만 배선했던 새 게이트 산식("급락 탐지" — 절대 하한 85% + 전일 대비 낙폭 상한 3%p)을 **실제 판정으로 전환**했다. 사용자 화면에 보이는 7렌즈 판정 컷이 19일 만에 바뀔 수 있다. **프루닝은 이번엔 안 켰다**(§0-B — 컷 재유도는 되돌릴 수 있지만 행 삭제는 되돌리기 어려워, 되돌릴 수 없는 변경은 한 번에 하나씩).
+
+**켤 근거 3가지(전부 1일 관측)**: 새 산식 통과(85% 하한 ✅·낙폭 +0.13%p ✅·구성 96% ✅) · 프루닝 영향 63행(6.08%, 1026 기준 "100행 이하" 아래) · 컷 교체 시 판정 변화 117/1,036(11.3%, STEP1025 W4). 커버리지 회복 경로는 전부 소진됐다(1017~1024: 야후 93.9%·SEC조립 96.95%·나스닥 접근불가·유니버스정리 96.91%로 악화) — 게이트를 바꾸는 것 외에 컷을 여는 길이 없었다.
+
+**⓪-1b**: `docs/KNOWN_ANSWERS.md`에 "게이트 임계" 관련 1건("97% 못 넘는다"는 이미 확정, "게이트 임계 자체가 남은 레버")만 존재 — 이 STEP이 그 레버를 실제로 당김. **STEP833 원 판정 근거 재확인**(`CHANGELOG.md:4890-4899`) — 97%는 이론적 임계가 아니라 "정상 실측치(98.6%)+여유 1.6pp"였던 경험값(`lensPrecompute.ts:69` 주석, 이번에 삭제). 그 실측치 자체가 소진돼 무의미해졌다는 것이 재정의의 근거.
+
+**1-1(완료)**: 롤백 재료 확보 — `lens_cuts` US 5행(as_of=2026-07-30, momentum/lowvol/valuation/quality/assetgrowth lo·hi·n 원문 그대로) + `lens_scores` US 1,036행의 7축 `*_state` 분포(momentum flat403·up325·down289·null19 등) 전부 `docs/probe_1031_gate_activation.md`에 기록 — `lens_cuts`는 upsert라 오늘 밤 크론이 돌면 07-30 값이 사라지므로 이 백업이 유일한 대조군.
+
+**1-2(완료) — 산식 전환**(`lib/lensPrecompute.ts` `capGateDecision`): `coverageMin`(구 산식 전용 파라미터) 삭제 → `coverageOk = newCoverageOk`(절대 하한+낙폭 상한)로 교체. **`compositionOk`는 한 글자도 안 바꿈**. `newCoverageOk`·`newCutGateOk`는 그대로 둬 이제 `coverageOk`·`cutGateOk`와 항상 같아야 하는 self-check가 됨(`[us-cut-gate-mismatch]` Sentry 캡처 신설). **KR 호출부 1줄**(`{coverageMin:0.95}`→`{absFloor:0.95}`) — KR은 `priorCoverage`를 안 넘겨 항상 부트스트랩(절대 비교)이라 **수치상 구 산식과 완전히 동일**(KR 전면 동결 코드 레벨 보존).
+
+**1-3(완료) — 프루닝 명시적 차단**: `computeLensScoresFor`에 `pruneEnabled?: boolean`(기본 `true`, 기존 호출부 전부 무전달로 완전 불변) 추가 — `canPrune = pruneEnabled && (기존 4중 게이트)`, 기존 조건식은 그대로 두고 `pruneEnabled &&`만 앞에 붙임. `computeLensScores`(US)에서만 `pruneEnabled:false` 명시 전달 — **KR은 안 건드려 완전 무영향**. 🔴 **설계 판단(명시 기록)**: STEP 텍스트가 예시로 든 "모듈 전역 상수"(`PRUNE_ENABLED=false`) 대신 **호출부별 opt-in 파라미터**를 택함 — 전역 상수였다면 `canPrune`이 US·KR 공유 함수 안에 있어 KR 프루닝도 하루 동안 collateral로 막혔을 것(§0-B가 걱정한 "같이 켜진다" 문제의 반대 방향 위험). 반환값에 `pruneBlockedByFlag: !pruneEnabled` 추가, US heartbeat(`note`)에 배선 — `true`가 정상.
+
+**1-4(완료) — 833 테스트 보존+확장**(`lib/lensUniverseGate.test.ts`): 기존 11개 `it()` **전부 보존**(구조·문자열 그대로), 기대값 변경은 **1개뿐**("커버리지<97%면 실패" — 95%가 구산식은 실패·신산식(85% 절대하한, 부트스트랩)은 통과, 이유 주석 명시). 나머지 10개는 무수정 재확인 통과(coverageOk 산식과 무관하거나 구·신 양쪽에서 같은 값). KR 테스트 1개는 파라미터명만 `coverageMin`→`absFloor`(값·기대값 불변). **신규 6개**(`§2b`): 절대 하한 경계(85.0%/84.9%) · 낙폭 상한 경계(90%→87%/86.9%) · 절대하한 통과해도 낙폭 크면 실패(832형 재현) · `priorCoverage=null` 부트스트랩 · self-check 일치(coverageOk↔newCoverageOk·cutGateOk↔newCutGateOk, 4시나리오) · 새 산식 통과해도 `compositionOk=false`면 여전히 차단.
+
+**1-5(완료) — 배포 직전 값 불변 확인**: `lens_cuts` US `as_of` 07-30 그대로(1,036행) · `revdcf_results`·`us_valuation`·`us_sector_relative` 08-14 그대로 · 보호 파일(`app/api/cron/revdcf/route.ts`·`data/us_symbols.json`·`vercel.json`) diff 0 — 배포 자체로는 아무 값도 안 바뀜(크론이 돌아야 바뀐다).
+
+**1-6 — 배포 시각 대조**: `lens-scores` 스케줄 = `vercel.json` `"30 21 * * *"` = **21:30 UTC**. 배포는 그보다 충분히 앞서 완료(아래 게이트 8 참조) — 오늘 밤이 실전환 후 첫 실행.
+
+문서 갱신(정본 먼저·게이트 9): `docs/CRON_OBSERVABILITY.md` §5-2에 `pruneBlockedByFlag` 관측 항목 + 점검 규칙 갱신("이제부터 `cutGateOk≠newCutGateOk`는 경고 대상") 추가 · `docs/REVDCF_SPEC.md` §10-J에 전환 기록 추가 · `docs/KNOWN_ANSWERS.md` 3항목(기존 "97% 넘길 방법" 갱신 + 신규 "게이트 산식은 무엇인가"·"프루닝은 켜져 있는가").
+
+tsc 0 · vitest **378/378**(372+6신규, 기존 372 중 1개만 기대값 변경).
+
+**못 한 것**: 실제 게이트 전환 후 첫 크론 실행 결과(오늘 밤 21:30 UTC) — 미도래. 프루닝을 켰을 때 실제 삭제 행수(오늘은 차단, 시뮬레이션값만 존재).
+
+**철회·정정**: 없음(STEP1025 드라이런의 그대로 실전환, 기존 결론 안 뒤집음).
+
+**미측정**: 오늘 밤 실행 후 `lens_cuts` 갱신 여부·판정 변화율(예상 11.3%와 대조)·`pruneBlockedByFlag` 실제값·`cutGateOk`/`newCutGateOk` self-check 일치 여부 — ⓪-4 매트릭스 4행("프루닝이 돌아 행이 지워졌다"→차단 실패, 최우선 보고) 포함 전부 미도래.
+
+🔴 **게이트 전환 승인(장은태, 2026-08-14). 프루닝 활성화·`BUDGET_MS` 조정·D 조회 키 수정은 전부 다음 판정이다.**
+
+---
+
 ## 2026-08-14 — 🟥 **STEP 1030: `revdcf`를 지금 1회 실행해 `stage`를 확정한다(🔴 크론 수동 실행 승인, 2026-08-14 장은태)**
 
 > **성격**: 이 STEP만의 단일 예외로 프로덕션 `revdcf` 크론을 수동 1회 호출했다(`email-brief`·`lens-scores`·`us-perf`·`daily-brief`는 여전히 절대 금지). **프로덕션 코드 diff 0 · `app/api/cron/revdcf/route.ts` diff 0** — 실행+관측 전용, 신규 파일은 `scripts/probe_1030_revdcf_manual_run.ts`(호출 스크립트, `CRON_SECRET` VALUE 무출력) 하나뿐. **DB 쓰기는 수동 호출 자체가 정상 크론과 동일한 write 경로로 유발한 것**(코드가 새로 쓴 게 아니라 기존 write 코드가 평소처럼 실행된 결과).
