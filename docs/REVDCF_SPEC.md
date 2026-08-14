@@ -1792,6 +1792,28 @@ const throttle = async () => {
 
 ---
 
+### §10-K. `revdcf`가 어디서 죽는지 첫 실측(STEP1030, 2026-08-14 — 장은태 승인 크론 수동 실행 1회)
+
+🔴 **크론 수동 실행 승인(장은태, 2026-08-14).** `revdcf`는 892부터 heartbeat를 배선했지만(§10-J 상단) 실행 자체가 관측된 적이 없었다 — 08-14 10:37 UTC에 프로덕션 `https://onetrillion.app/api/cron/revdcf`를 1회 수동 호출해 이 공백을 처음 메웠다(`scripts/probe_1030_revdcf_manual_run.ts`, 실행 후 미커밋 임시 스크립트로 두지 않고 이 STEP의 산출물로 커밋).
+
+**클라이언트 관측 = 실패.** `fetch()`가 301,299ms에 `TypeError: fetch failed`로 죽었다 — HTTP 상태를 못 받았다. `maxDuration=300s`를 막 넘긴 시점이라 Vercel 플랫폼이 함수를 강제 종료하며 커넥션을 끊은 것으로 해석된다(직접 증명은 불가 — 플랫폼 내부 로그 접근 불가는 `KNOWN_ANSWERS.md` Q1 그대로).
+
+🔴 **서버 관측 = 클라이언트 실패보다 훨씬 더 진행돼 있었다.** DB를 직접 열어보니:
+- `cron_heartbeats.job='revdcf'`에 **최초로 행이 생겼다** — `stage:"valuation_done"`, `elapsedMsAtStage:286187`, `maxDurationRemainingMs:13813`, `budgetExhausted:true`, `valuationSaved:5820`.
+- 그런데 `us_sector_relative`는 **08-14 as_of로 4,000행이 실제로 기록됐다**(10:42:16.136~149 UTC, `valuation_done` 기록 10:42:08.675보다 7.46초 뒤). 그중 3,212행(80.3%)이 `sector` 값을 가짐 — 08-10 배치가 4,000행 전부 `sector IS NULL`(100%)이던 것과 대조적으로 **극적으로 개선**된 결과다.
+- `us_sector_wide`는 as_of=2026-08-08에 5,820행 그대로(전후 동일) — 이번 실행의 `sectorWideAdded`는 사실상 0(신규 편입 심볼이 없었다는 뜻, 안정적 유니버스와 부합).
+- `us_valuation` 08-14=5,820행(전과 동일 규모) · `us_fundamentals` 총 5,820행(전과 동일 — 루프가 `processed:1311`을 "처리"했다고 보고했지만 순증행은 0) · `revdcf_results` 08-14=604행.
+
+**코드 대조로 원인 확정 — `app/api/cron/revdcf/route.ts:103-184`, `:361-427`.** `computeAndSaveSectorRelative()`는 (1) `us_sector_wide` 증분 append 단계(:121-152, missing 심볼 0건이라 upsert 자체가 안 돎) → (2) `us_sector_relative` 배치 upsert(:179-183, 이게 4,000행 기록의 실체)까지 **끝까지 실행되고 정상 반환(:183)**했다. 호출부(:403-406)가 반환값을 `sectorRelativeSaved`/`sectorWideAdded`/`sectorWideError`에 대입한 **바로 다음 줄**(:409)이 `stageHeartbeat("sector_relative_done", ...)` — 새 DB 왕복 1회 — 인데, 이게 기록되지 못한 채 죽었다. 🔑 **`stage` 필드는 "마지막으로 성공한 단계"의 하한이지 상한이 아니다** — 이번 관측에서 실제로는 `us_sector_relative` 본 작업(비용이 큰 4,000행 upsert)까지 전부 끝났는데, 그 사실을 기록하는 진단용 heartbeat 한 번이 못 붙어 `stage`가 한 단계 뒤처져 보였다. STEP1018 설계(§10-J 상단 comment 인용 "함수가 강제 종료되면 finally조차 안 돈다")가 예견한 것보다 더 세밀한 경계 — **데이터 작업과 그걸 기록하는 heartbeat 사이의 간극에서도 죽을 수 있다.**
+
+🔴 **⓪-4(반증 조건표)에 없던 조합.** STEP1030 명령서의 표는 "stage=X → X까지만 진행"을 전제했으나, 실측은 "stage=valuation_done인데 sector_relative의 실제 작업(양쪽 서브스텝)은 완료"였다 — 표에 없는 조합으로 이 절에 그대로 기록한다.
+
+**미결정 사항(장은태 판정 대기, 근거만 첨부·선택 안 함)**: `BUDGET_MS`(270s) 상향 조정 여부 · 게이트 재정의(§10-J STEP1025) 전환 여부 · 프루닝 분리 실행 여부 · D축(업종 대비) 조회 버그(§10-J 상단, `us_sector_relative` 최신 `as_of` 불일치로 `NO_SECTOR` 전량 표시) 수정 여부 — 오늘 밤 08-14 22:45 UTC 정규 크론이 두 번째 관측이며, 이 STEP은 두 번째 수동 호출을 하지 않았다(1회 관측으로 핵심 질문에 이미 답이 나왔고, 정규 크론이 STEP 자신이 말한 "두 번째 관측"이라 판단 — `docs/probe_1030_revdcf_manual_run.md` §1-7).
+
+상세 원장 = `docs/probe_1030_revdcf_manual_run.md`.
+
+---
+
 ## §12. 🔴 값 분류 원장 — A/B/C (2026-08-01 · 장은태 지적으로 신설)
 
 > **왜 이게 필요한가**: 설계문서에 숫자를 그냥 적어두면, 코드를 짤 때 `const TAX = 0.2563`으로 박힌다. 그게 "하드코딩된 쓰레기"다.

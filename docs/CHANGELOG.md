@@ -1,6 +1,46 @@
 <!-- 2026-08-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-14 — 🟥 **STEP 1030: `revdcf`를 지금 1회 실행해 `stage`를 확정한다(🔴 크론 수동 실행 승인, 2026-08-14 장은태)**
+
+> **성격**: 이 STEP만의 단일 예외로 프로덕션 `revdcf` 크론을 수동 1회 호출했다(`email-brief`·`lens-scores`·`us-perf`·`daily-brief`는 여전히 절대 금지). **프로덕션 코드 diff 0 · `app/api/cron/revdcf/route.ts` diff 0** — 실행+관측 전용, 신규 파일은 `scripts/probe_1030_revdcf_manual_run.ts`(호출 스크립트, `CRON_SECRET` VALUE 무출력) 하나뿐. **DB 쓰기는 수동 호출 자체가 정상 크론과 동일한 write 경로로 유발한 것**(코드가 새로 쓴 게 아니라 기존 write 코드가 평소처럼 실행된 결과).
+
+**§1-1 전 스냅샷**: `revdcf_results` 08-13/604행(md5=`eed86c91e70827ed482fa45e5f2ad967`) · `us_valuation` 08-13/5,820 · `us_sector_relative` 08-10/1,247행(**100% `sector IS NULL`**) · `us_sector_wide` 08-08/5,820 · `us_fundamentals` 5,820 · `cron_heartbeats(job='revdcf')` **0행**(892 배선 이후 한 번도 안 생김).
+
+`https://onetrillion.app/api/cron/revdcf`를 10:37:19Z에 호출. **클라이언트 관측 = 실패** — `fetch()`가 301,299ms(`maxDuration=300s`를 1.3초 넘긴 지점)에 `TypeError: fetch failed`, HTTP 상태 자체를 못 받았다(Vercel 플랫폼 강제종료로 해석되나 직접 증명 불가 — 플랫폼 로그 접근 채널 없음, `KNOWN_ANSWERS.md` Q1과 동일 제약). 명령서 지시대로 **즉시 재시도하지 않고** DB부터 확인했다.
+
+🔑 **서버 관측 = 클라이언트 실패보다 훨씬 진행돼 있었다.** `cron_heartbeats`에 `revdcf` **최초 행**이 생겼다 — `stage:"valuation_done"`·`elapsedMsAtStage:286187`·`maxDurationRemainingMs:13813`·`budgetExhausted:true`·`valuationSaved:5820`. **그런데** `us_sector_relative`가 08-14 `as_of`로 **4,000행 신규 기록**됐고(10:42:16.136~149, `valuation_done` 기록 10:42:08.675보다 7.46초 뒤) **80.3%(3,212/4,000)가 `sector` 값을 가진다** — 08-10 배치(100% null)와 대조적으로 극적 개선이다. `us_sector_wide`는 08-08에 5,820행 그대로(전후 동일 — 신규 편입 심볼 없음, `sectorWideAdded`≈0 추정). `us_valuation` 08-14=5,820(순증 0) · `us_fundamentals` 5,820(순증 0, `processed:1311` 보고에도 불구) · `revdcf_results` 08-14=604행.
+
+**코드 대조로 원인 확정**(`app/api/cron/revdcf/route.ts:103-184,361-427`, grep 후 `Read`로 직접 확인) — `computeAndSaveSectorRelative()`가 (1) `us_sector_wide` 증분 append 단계(`:121-152`, missing 0건이라 upsert 자체 스킵) (2) `us_sector_relative` 배치 upsert(`:179-183`, 4,000행 기록의 실체)까지 **끝까지 실행되고 정상 반환**(`:183`)했다. 호출부(`:403-406`)가 반환값을 대입한 **바로 다음 줄**(`:409` `stageHeartbeat("sector_relative_done", ...)`, 새 DB 왕복 1회)이 기록되지 못한 채 죽었다.
+
+🔑 **`stage` 필드는 "마지막으로 성공한 단계"의 하한이지 상한이 아니다.** 비용이 큰 실제 데이터 작업(4,000행 upsert)까지 전부 끝났는데, 그 사실을 기록하는 진단용 heartbeat 호출 한 번이 못 붙어 `stage`가 한 단계 뒤처져 보였다 — STEP1018 설계("함수가 강제 종료되면 finally조차 안 돈다")가 예견한 것보다 더 세밀한 경계로, **데이터 작업과 그걸 기록하는 heartbeat 사이의 간극에서도 죽을 수 있다**는 새 사실이다. 🔴 **⓪-4 반증조건표에 없던 조합**("stage=X → X까지만 진행" 이분법에 안 맞음)이라 강제로 기존 칸에 끼워 넣지 않고 `docs/probe_1030_revdcf_manual_run.md`·`docs/REVDCF_SPEC.md` §10-K에 그대로 기록했다.
+
+**재시도 판단**: "최대 2회·즉시 재시도 금지·사유 먼저 기록" 규칙과 STEP1030 자신의 "오늘 밤 22:45 UTC 정규 크론이 두 번째 관측" 문구를 근거로 **두 번째 수동 호출은 하지 않았다** — 1회 관측으로 핵심 질문(stage가 어디서 멈추는가, heartbeat 계측의 한계인지 실제 종료 지점인지)에 이미 명확한 답이 나왔고, 정규 크론이 예정된 두 번째 관측을 겸한다.
+
+**문서 갱신(정본 먼저·게이트 9)**: `docs/REVDCF_SPEC.md` §10-K 신설 · `docs/KNOWN_ANSWERS.md` 2항목 갱신(`cron_heartbeats` 진단 항목에 revdcf 첫 행 반영 · `us_sector_relative` 정지 항목에 08-14 갱신 반영) + 신규 1항목("`revdcf`가 정규 실행 시 어디서 죽는가") · `docs/probe_1030_revdcf_manual_run.md`(신규, ⓪-4 판정+전후 대조표+코드 대조+판정 요청 4건 근거만).
+
+tsc 0 · vitest 전량 통과(코드 diff 0 = probe 스크립트 1개 추가뿐, 기존 스위트 영향 없음).
+
+**못 한 것**: `fetch failed`가 정확히 `maxDuration` 강제종료 때문인지 플랫폼 로그로 직접 확인 못 함(추정) · `sectorWideAdded` 실제 값(heartbeat 미기록, 행수 불변으로부터 추론).
+
+**철회·정정**: 없음(신규 관측, 이전 발언 안 뒤집음) — `KNOWN_ANSWERS.md` 2항목은 정정이 아니라 최신화(값 자체가 오늘 실행으로 바뀜).
+
+**미측정**: 정규 크론(22:45 UTC)에서 같은 지점 재현 여부 · `BUDGET_MS` 조정·게이트 전환·프루닝 분리·D축 `NO_SECTOR` 버그 수정 4건 전부 근거만 첨부, 장은태 판정 대기.
+
+🔴 **크론 수동 실행 승인(장은태, 2026-08-14). 판정은 장은태가 한다. 이 STEP은 `stage`를 확정하는 것까지다.**
+
+---
+
+## 2026-08-14 — ⬜ **STEP 1026: 미실행(시간 게이트)**
+
+> **성격**: 명령서 자체가 "2026-08-14 22:45 UTC 이후 실행"으로 시간 게이트를 명시(그 전엔 값이 없다는 이유). 요청 시점(약 08:18 UTC)이 그 전이라 **실행하지 않고 사용자에게 그대로 안내** — 코드·문서·DB 변경 0, 워크어라운드 시도 안 함(CLAUDE.md "근거 없는 숫자 만들기 금지" 원칙 — 값을 억지로 만들어내지 않는다).
+
+`docs/step_orders/STEP1026.md`는 미실행 상태로 저장소에 남아 있다(이 STEP만의 커밋은 없음 — 이후 STEP 커밋에 함께 포함됨).
+
+**못 한 것**: 시간 게이트 해제 후 재실행(STEP1030이 같은 질문을 장은태 승인 예외로 대체 수행).
+
+---
+
 ## 2026-08-14 — 🟩 **STEP 1028: 잃어버린 답을 되찾고, 다시 잃지 않게 색인한다(조사+문서)**
 
 > **성격**: STEP1027이 발견한 "Vercel 로그 접근을 892→907→911→913→933→1017, 여섯 번 조사했다"는 문제를 직접 풀고, 재발 방지 장치를 만든다. **프로덕션 코드 diff 0 · DB 쓰기 0 · `app/api/cron/revdcf/route.ts` diff 0.**

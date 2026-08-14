@@ -13,9 +13,14 @@
 - 재검토 조건: Claude Code 세션에 브라우저 도구가 생기거나, MCP 인증 스코프가 프로젝트팀으로 바뀌면.
 
 ## Q. `cron_heartbeats.note`로 크론 실행 진단을 볼 수 있는가
-- 답: **예, 그러나 그 크론이 heartbeat를 실제로 쓴 적이 있어야 한다.** `lens-scores`/`kr-lens-scores`는 매일 채워진다(917 배선). `revdcf`는 STEP1007이 배선했으나 **한 번도 행이 생긴 적이 없다**(1028 재확인, 2026-08-14 기준 0행) — 함수가 heartbeat 도달 전에 죽는다는 뜻.
-- 확정: STEP932·933(2026-08-06, lens-scores 첫 실측) · 근거: `docs/REVDCF_SPEC.md:2142-2143`. 🔴 **STEP1027이 933을 "Vercel 로그 문제의 답"으로 묶은 것은 부정확**(933은 lens-scores 얘기지 revdcf·Vercel 로그와 무관) — 1028에서 정정.
-- 재검토 조건: `revdcf` heartbeat 행이 처음 생기면(1026이 오늘 밤 확인 예정).
+- 답: **예, 그러나 그 크론이 heartbeat를 실제로 쓴 적이 있어야 한다.** `lens-scores`/`kr-lens-scores`는 매일 채워진다(917 배선). `revdcf`는 STEP1007이 배선했고 **1030(2026-08-14 수동 1회 호출)에서 첫 행이 생겼다** — `stage:"valuation_done"`. 🔴 단 `stage`는 하한이다: 실제로는 그다음 단계(`us_sector_relative` 계산·저장)까지 끝났는데 그 사실을 적는 heartbeat 한 번만 못 붙어 한 단계 뒤처져 보였다(1030).
+- 확정: STEP932·933(2026-08-06, lens-scores 첫 실측)·**STEP1030(2026-08-14, revdcf 첫 행)** · 근거: `docs/REVDCF_SPEC.md` §10-K · `docs/probe_1030_revdcf_manual_run.md`. 🔴 **STEP1027이 933을 "Vercel 로그 문제의 답"으로 묶은 것은 부정확**(933은 lens-scores 얘기지 revdcf·Vercel 로그와 무관) — 1028에서 정정.
+- 재검토 조건: 오늘 밤(08-14 22:45 UTC) 정규 크론에서 `stage`가 다시 관측되면(재현성 확인).
+
+## Q. `revdcf`가 정규 실행 시 어디서 죽는가(`maxDuration=300s` 대비 진행도)
+- 답: 08-14 수동 1회 관측 — SEC 루프(`loop_done`)와 `us_valuation` 저장(`valuation_done`, 286.2s 지점·잔여 13.8s)까지 heartbeat로 확인됐고, 이어지는 `computeAndSaveSectorRelative()`는 **DB 직접 대조로 완료가 확인**(08-14 `us_sector_relative` 4,000행 신규·80.3% sector 해소)됐으나 그 사실을 적는 heartbeat(`sector_relative_done`)는 못 붙고 죽었다. `us_sector_wide`·`us_fundamentals`·`us_valuation`은 순증행 없음(기존 유니버스 재갱신만).
+- 확정: STEP1030(2026-08-14) · 근거: `docs/REVDCF_SPEC.md` §10-K · `docs/probe_1030_revdcf_manual_run.md` · 코드 `app/api/cron/revdcf/route.ts:103-184,361-427`.
+- 재검토 조건: 08-14 22:45 UTC 정규 크론에서 같은 지점(`stage=valuation_done` + sector_relative 완료)이 재현되면 확정, 다른 지점이면 재조사.
 
 ## Q. `revdcf`는 SEC `frames`를 쓰는가
 - 답: **아니오, 한 번도 쓴 적 없다.** `companyfacts`(창 없는 전체 이력)만 쓴다(`app/api/cron/revdcf/route.ts:278-281`). "6분기 조회창 결함"(1021~1022)은 프로덕션이 아니라 조사 프로브 스크립트 안에서만 존재했다.
@@ -55,7 +60,7 @@
 ## Q. `us_sector_relative`가 정지하면 업종 대비(D)가 어떻게 실패하는가
 - 답: `us_valuation`의 최신 `as_of`로 `us_sector_relative`를 조회하는데, `us_sector_relative` 자체가 최근 갱신을 멈추면 그 `as_of`에 0행 매치 → **전 종목이 `NO_SECTOR`로 표시**(신선도 게이트가 있어서가 아니라 조회 키가 안 맞아서). 서빙 API(`/api/lens`·`/api/watchlist/quotes`)는 신선도 임계값을 아예 안 본다 — `docs/CRON_OBSERVABILITY.md`의 49h/30h는 `health` 크론 전용 모니터링 값일 뿐.
 - 확정: STEP1016(2026-08-14) · 근거: `docs/probe_1016_serving_gate_impact.md` §0·§2.
-- 재검토 조건: `us_sector_relative`가 매일 정상 갱신되기 시작하면(현재 6일째 정지, 2026-08-10부터).
+- 재검토 조건: `us_sector_relative`가 매일 정상 갱신되기 시작하면 재검토 — 🔴 **08-14 수동 실행(1030)에서 6일 만에 08-14 as_of로 4,000행 갱신됨(80.3% sector 해소)**. 단 이건 STEP1030의 **수동** 호출 결과이고 정규 크론(22:45 UTC)이 매일 이 지점까지 도달하는지는 아직 미확인 — "매일 정상 갱신"으로 판정하려면 오늘 밤 정규 실행을 봐야 한다.
 
 ---
 
