@@ -5,7 +5,7 @@
 
 `lib/lensPrecompute.ts`의 `capGateDecision`에서 `coverageOk`(따라서 `cutGateOk`)의 계산식을 **고정 97% 임계 → "급락 탐지"(절대 하한 85% + 전일 대비 낙폭 상한 3%p)로 교체**했다. `compositionOk`(메가캡 95%)는 무변경. **프루닝은 이번엔 US에서만 명시적으로 안 켰다**(`pruneEnabled:false`, §1-3) — KR은 완전히 무영향.
 
-**배포 시각 vs 21:30 UTC**: 아래 "배포 시각 대조" 절 참조(커밋·push·Vercel Ready 확인 후 기록).
+**배포 시각 vs 21:30 UTC**: 배포 Ready 11:25 UTC, 크론까지 약 10시간 5분 여유 — 오늘 밤이 확실히 새 코드로 돈다(상세 "배포 시각 대조" 절).
 
 ---
 
@@ -107,7 +107,7 @@ tsc 0 · vitest **378/378**(372+6신규, 기존 372 중 1개는 기대값 변경
 
 `lens-scores` 크론 스케줄 확인: `vercel.json:20-22` → `"path": "/api/cron/lens-scores", "schedule": "30 21 * * *"` = **21:30 UTC**.
 
-(커밋·push·Vercel Ready 확인 시각 → 아래 채움)
+**실측**: 커밋 `e337b0d` → push(11:23 UTC) → Vercel 배포 생성 `2026-08-14 11:23:22 UTC` → Ready 확인 `2026-08-14 11:25 UTC`(빌드 ~2분). **21:30 UTC까지 약 10시간 5분 여유** — 1020이 겪은 "배포가 크론보다 늦어 구코드로 첫 실행됨" 함정과 정반대로 충분히 앞섬. 오늘 밤 21:30 UTC 실행이 확실히 이 STEP의 코드로 돈다.
 
 ---
 
