@@ -102,6 +102,7 @@
 | 파일 | 용도 | 언제 읽나 |
 |------|------|-----------|
 | 🔴 **`docs/REVDCF_SPEC.md`** | **[모델 단일 정본]** 역DCF·PIE 설계 — 용어집·A~D 층·결정 이력·**정정 기록**·미결·실측 원장·값 분류(A/B/C) | **모델 관련 작업 전 반드시** · 결정·수치 생길 때마다 즉시 갱신 |
+| 🔑 **`docs/KNOWN_ANSWERS.md`**(STEP1028 신설) | **[중복조사 방지 색인]** 이미 확정된 질문·답·근거 STEP·재검토 조건을 3줄 이내로 — Vercel 로그 접근 등 같은 조사를 6번 반복한 전례 방지용 | **새 STEP 착수 전 반드시**(`_TEMPLATE.md` ⓪-1b가 강제) |
 | 🔴 **`data/sources/README.md`** | **[원본 보관소 색인]** 원전 스프레드시트 T3~T10 · 다모다란 8종 · 원문 HTML · 학술 · **외부 유니버스 발췌** · 미저장 목록 | 규칙 ⓪·⓪-3 대조 시 **매번** |
 | 🔴 **`lib/revdcf/registry.ts`** | **[코드형 원장]** 원전 변수 : 우리 값 : **차이 사유** 13행 + **`OUR_ADDITIONS`**(원전에 없는 것: sensitivity·distribution·**universe·liquidity**) | 드라이버·유니버스 손대기 전 |
 | `docs/LENS_COMPLETION_STANDARD.md` | **[완성 기준]** DoD 9항목 + §10 깊이 4축 — 역DCF 현황 표 포함 | "완성" 선언 전 |
