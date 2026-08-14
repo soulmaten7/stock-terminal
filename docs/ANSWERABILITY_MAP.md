@@ -113,8 +113,8 @@
 | 필요값 | `us_fundamentals.revenue`·`net_income`·`equity`·`operating_income`·`dna`·`debt`·`non_operating_assets`·`shares`·`fiscal_year`·`source_tags`·`unavailable_reason` |
 | 성립 조건 | 🔴 **정정 — 그 이전에, 이 질문에 답하는 API·컴포넌트가 존재하지 않는다.** `us_fundamentals`를 읽는 코드는 3곳뿐이며 전부 내부 배치 계산용(`app/api/cron/revdcf/route.ts`·`lib/valuation.ts`·`lib/revdcf/drivers.ts`) — 사용자 요청에 원문값을 돌려주는 GET 라우트가 0건. 컬럼 자체는 전부 존재(`supabase/migrations/20260808_us_fundamentals.sql:4-20`)하나 **저장만 되고 서빙되지 않는다** |
 | 불성립 시 | 🟡 확인불가(서빙 코드가 없어 판정 자체가 없음) |
-| 한계 고지 | 🟡 **SEC 제출 원문 기반**(벤더 정규화 아님, i18n 상세 미대조). 🔴 **`shares`는 `source_tags`에 태그 기록이 없다**(STEP1011 실측·1015 재확인) — 단 F 전체가 서빙되지 않는다는 더 근본적 사실 위에 얹힌 지엽 사항 |
-| 근거 | 🟡 **확인불가(기능 자체 없음)** — `grep -rln "us_fundamentals" app/ lib/ components/` 결과 3개 내부 파일만, 서빙 라우트 0건. 상세 = `docs/probe_1015_answerability_audit.md` §1-F |
+| 한계 고지 | 🟡 **SEC 제출 원문 기반**(벤더 정규화 아님, i18n 상세 미대조). 🔴 **`shares`는 `source_tags`에 태그 기록이 없다**(STEP1011 실측·1015 재확인) — 단 F 전체가 서빙되지 않는다는 더 근본적 사실 위에 얹힌 지엽 사항. 🔴 **STEP1022 추가 — 주식수 시점(freshness) 문제**: 이 세션의 조사에서 쓴 SEC `frames` 6분기 조회창은 **이미 채워진 값 중 7.07%(322/4,557)가 실제로는 더 최신 주식수를 놔두고 며칠~몇 달 더 낡은 값을 쓰고 있음**을 드러냈다(중앙값 49일). 결측 보완 목적으로 조회창을 넓힐 경우엔 **17/18건이 5년 이상 낡은 값**이라 커버리지와 정확도가 상충한다 — 상세 = `docs/probe_1022_sec_window_audit.md` |
+| 근거 | 🟡 **확인불가(기능 자체 없음)** — `grep -rln "us_fundamentals" app/ lib/ components/` 결과 3개 내부 파일만, 서빙 라우트 0건. 상세 = `docs/probe_1015_answerability_audit.md` §1-F · 주식수 시점 문제 = `docs/probe_1022_sec_window_audit.md` |
 
 ### G. 시가총액 · 주가 · 수익률
 | 항목 | 내용 |
