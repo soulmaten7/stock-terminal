@@ -1,6 +1,40 @@
 <!-- 2026-08-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-14 — 🟥 **STEP 1025: 새 게이트 산식을 드라이런으로 배선(판정 불변·컷 안 열림)**
+
+> **성격**: 🔴 이 STEP부터 **프로덕션 코드를 실제로 바꿨다**(1015~1024는 조사·문서 전용). 장은태 판정(2026-08-14, 커버리지 게이트를 "급락 탐지"로 재정의: 절대 하한 85% + 전일 대비 낙폭 상한 3%p)의 드라이런 — 새 산식이 무엇을 판정할지 **관측 필드로만** 배선하고, 실제 `cutGateOk`·프루닝 실행은 손대지 않았다.
+
+**왜 바로 안 열었나(0-A)**: `lib/lensPrecompute.ts`의 `canPrune = successRate>=0.8 && universeOk && pass2Ok && cutGateOk` — 게이트를 열면 **18일째 막혀 있던 프루닝이 처음으로 실행**된다(STEP833이 이 조건을 넣은 이유가 정확히 "편향 유니버스로 정상 행 삭제 방지"였다). 게이트 전환과 프루닝 활성화는 다른 결정인데 코드가 하나로 묶여 있어, 이 STEP은 새 산식이 뭘 판정하는지·통과 시 프루닝이 몇 행을 지울지·컷 교체 시 판정이 얼마나 바뀔지를 **먼저 재고 문서화**했다.
+
+**W1(완료)**: `us_coverage_history` 마이그레이션 작성+라이브 적용(`as_of`+`market` 복합키, 이력 누적, RLS enable+anon/authenticated revoke — 기존 `us_market_cap_nasdaq` 관례 재사용). `computeLensScores`(US)·`computeKrLensScores`(KR) 양쪽에 적재 배선(try/catch 내장, 917 §2 원칙 — 적재 실패가 크론을 안 죽인다). KR도 같은 테이블에 `market='KR'`로 적재하되 US 판정에는 안 씀.
+
+**W2(완료)**: `capGateDecision`에 `newCoverageOk`·`newCutGateOk`·`priorCoverage`·`priorSource`·`coverageDrop` 5개 필드 추가 — 🔴 **기존 4개 필드(`coverageOk`·`compositionOk`·`compRatio`·`cutGateOk`)의 계산은 한 글자도 안 바꿨다**(STEP833 값 잠금 테스트 11/11 무수정 통과로 증명). `priorCoverage`는 `us_coverage_history`(직전 as_of) → 없으면 `cron_heartbeats.note`(heartbeat 덮어쓰기 전에 읽음) → 둘 다 없으면 `null`(부트스트랩, 절대 하한만) 순으로 조달. `fetchPriorCoverage()`·`recordCoverageHistory()`·`pruneImpact()` 3개 신규 헬퍼 추가.
+
+**W3(배선 완료, 실측 미도래)**: `pruneImpact()` — 실제 prune 쿼리와 동일 조건(`market='US' AND updated_at<at`)으로 몇 행이 지워질지만 세고 DELETE는 절대 안 한다. `wouldPrune`(cutGateOk 항 제외한 나머지 3중 게이트)·`wouldPruneRows`·`wouldPruneSample`(최대 10건, "유니버스이탈"/"계산실패(유니버스잔류)" 구분)을 heartbeat에 추가. 🔴 이 STEP 시점엔 실측치 없음 — `computeLensScores`는 크론에서만 호출되고, 직접 호출하면 `us_market_cap`을 실제로 갱신해 값 불변 증명이 깨진다. 오늘 밤 21:30 UTC 정규 실행부터 숫자가 쌓인다.
+
+**W4(완료, 가상 계산)**: `scripts/probe_1025_cut_swap.ts`(신규, DB 쓰기 0) — `topByMarketCap()`을 다시 안 부르고(값 불변 증명 보호) `lens_scores.*_value`(pass1이 `cutGateOk`와 무관하게 매일 갱신하는 원시값)를 읽어 오늘자 p30/p70 컷을 재계산, 07-30 컷과 나란히 놓고 `stateFromCut()`(프로덕션 함수 재사용)으로 축별 state 변화를 셌다. 🔑 **결과 — 우려보다 작다**: momentum 3.54%(36/1017)·lowvol 5.28%(54/1023)·valuation 0.96%(9/936)·quality 0.34%(3/888)·assetgrowth 1.97%(20/1015), 축 무관 전체 **117/1036(11.3%)**. 컷 자체가 18일간 거의 안 움직였다(momentum hi 34.27→37.17 등 완만한 우측 이동, 시장 완만한 랠리와 정합).
+
+**1-4(완료, 전수)**: STEP1024가 자기신고한 SIC "0000"(플레이스홀더) 버그의 전체 범위 — `scripts/probe_1025_sic0000.ts`(신규, DB 쓰기 0)로 5,976건 재조회(1024는 mismatch 서브셋만 직렬화해 전수 원시값이 없었음). **17건**(CEF_TRUST 11건 + COMMON 6건) — 1024가 우연히 발견한 11건과 정확히 일치하는 하위집합. 🔴 **1024의 결론(96.95%→96.91%, 분모 축 닫힘)은 불변** — 이 17건은 어느 라벨이든 exclude 후보(SIC 6726/6770)가 아니라 시나리오 계산에 영향 없음. `docs/probe_1024_universe_sic.md`에 취소선 정정 반영.
+
+**W5(미도래)**: 07:30:49Z 확인, `cron_heartbeats` 여전히 5개 job뿐(`revdcf` 부재), 22:45 UTC까지 약 15.2시간. `lens-scores`(21:30 UTC, 오늘 밤 이 STEP의 새 코드로 첫 실행)도 미도래 — 마지막 저장값(08-13 22:25, freshCoverage 93.89%·compositionOk true)으로 예상 계산만: ABS_FLOOR(85%) 여유 있게 통과, DROP_LIMIT(3%p) 통과 가능성 높음 → **예상 `newCutGateOk`=true**(확정 아님, 오늘 밤 실행 후 확정).
+
+**값 불변 증명**: 배포 전후 `lens_cuts` US `as_of`=2026-07-30 · `lens_scores` US 1,036/KR 978 · `us_market_cap` 5,913(07-30 코호트 287) · `us_valuation` 20,921 · `us_sector_relative` 3,541 · `us_stock_perf` 6,385 · `revdcf_results` 604행 md5 지문(`cc3373939717964ad3b79b846955364c`) **전부 동일**. `us_coverage_history` 0행(신설, 아직 크론 미실행). 보호 파일(`app/api/cron/revdcf/route.ts`·`data/us_symbols.json`·`vercel.json`) diff 0.
+
+**문서 갱신**: `docs/CRON_OBSERVABILITY.md` §5-2에 `us_coverage_history` 행 + 새 관측 필드 설명 추가(게이트 9) · `docs/ANSWERABILITY_MAP.md` §E 현재 상태에 드라이런 배선 사실 추가(§3 미변경) · `docs/probe_1024_universe_sic.md` SIC "0000" 전수 결과로 취소선 정정. 부수 — `docs/step_orders/_TEMPLATE.md`에 세션 내 미커밋 상태로 있던 개선(게이트 9에 "정본 먼저·사본 나중" 순서 규칙 신설, `revdcf` `stage` 필드 전례 인용)을 함께 커밋(1022·1024와 같은 패턴 — 이번 세션에 내가 직접 수정하지 않음, 이 STEP과 직접 맞물려 있어 편입).
+
+문서 = `docs/probe_1025_gate_redefinition.md`. tsc 0 · vitest 372/372(`lib/lensUniverseGate.test.ts` 11/11 무수정 통과 포함).
+
+**못 한 것**: W3·W5 실측치(오늘 밤 정규 실행 전까지 불가).
+
+**철회·정정**: 없음(이 STEP 자체 발견은 전부 관측이었다) — 단 `docs/probe_1024_universe_sic.md`의 SIC "0000" 미측정 부분을 정정.
+
+**미측정**: 오늘 밤 실행 후 `newCutGateOk` 실제값·프루닝 가상 삭제 실측치·SPAC 6770 미배정 15건 원인(1024 이월).
+
+🔴 **실제 게이트 전환·프루닝 분리·상수(0.85/0.03) 확정은 전부 장은태 판정이다. 이 STEP은 새 산식이 무엇을 판정할지 보여주는 것까지다.**
+
+---
+
 ## 2026-08-14 — 🟩 **STEP 1024: 유니버스 분류를 SEC SIC 정본으로 재판별(읽기 전용·배선 0)**
 
 > **성격**: 조사 전용 — **DB 쓰기 0 · `app/api/cron/revdcf/route.ts` diff 0 · `data/us_symbols.json` diff 0**(W1 관측 보호). 1023이 분자(시가총액 취득) 경로를 전부 소진했다고 확정한 뒤, 남은 유일한 커버리지 경로인 **분모(유니버스 재정의)**를 다루기 전에 먼저 1021의 이름패턴 분류를 SEC SIC 정본으로 재검증했다.

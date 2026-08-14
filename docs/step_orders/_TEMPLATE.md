@@ -81,7 +81,11 @@
 ## 4. 커밋 전 게이트
 - 게이트 7: git 미추적 파일 참조 검사 — 🔴 런타임 `fs.readFileSync('/tmp/...')`도 잡을 것
 - 게이트 8: push 후 **Vercel 배포 성공 + GitHub Actions verify 초록을 눈으로 확인**하기 전까지 미완료
-- 게이트 9: 새 테이블·크론·heartbeat job이 생겼으면 `docs/CRON_OBSERVABILITY.md` §5 신선도 목록에 추가
+- 게이트 9: 새 테이블·크론·heartbeat job·관측 필드가 생겼으면 `docs/CRON_OBSERVABILITY.md` §5 신선도 목록에 추가
+  🔴 **순서 규칙 — 정본 먼저, 사본 나중.** `docs/CRON_OBSERVABILITY.md`가 **정본**이고 Cowork 예약 프롬프트(매일 아침 점검·주간 요약)는 **사본**이다.
+  1. STEP 명령서로 **정본을 먼저** 고친다
+  2. STEP이 끝난 뒤에 Cowork가 **사본을 정본에 맞춘다**
+  🔴 **전례(내 실수, 1025에서 발각)**: `revdcf` heartbeat의 `stage` 필드를 Cowork가 예약 프롬프트(사본)에 먼저 넣고 정본은 뒤늦게 STEP으로 따라갔다. 사본이 앞서면 정본이 뒤처지고, "둘이 다르면 문서가 옳다"는 규칙 자체가 무의미해진다.
 - `docs/CHANGELOG.md` 항목 · `docs/STEP_LEDGER.md` 등재
 
 ## 5. DoD

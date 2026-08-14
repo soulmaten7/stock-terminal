@@ -51,10 +51,21 @@ export function classifyCaps(
 }
 
 // §2: 취득 게이트 — 커버리지(fresh 확보율) + 구성(직전 상위 200 메가캡이 오늘 fresh 확보됐나). 편향 표본으로 컷 만드는 것 차단.
+// 🔴 STEP 1025 W2 — 장은태 판정(2026-08-14): 게이트를 "급락 탐지"로 재정의한 새 산식을 관측 필드로만 추가한다.
+//   기존 4개 필드(coverageOk·compositionOk·compRatio·cutGateOk)의 계산은 한 글자도 바꾸지 않는다(833 값 잠금 테스트 대상).
+//   opts에 priorCoverage를 안 넘기면(기존 호출부·KR 전부) priorCoverage=null·priorSource="none"으로 부트스트랩과 동일하게 계산될 뿐,
+//   반환에 필드가 늘어도 구조분해로 옛 4개만 꺼내 쓰는 기존 코드·테스트엔 영향 없다.
 export function capGateDecision(
   freshCoverage: number, priorTopSyms: string[], freshSet: Set<string>,
-  opts: { coverageMin?: number; compMin?: number } = {},
-): { coverageOk: boolean; compositionOk: boolean; compRatio: number; cutGateOk: boolean } {
+  opts: {
+    coverageMin?: number; compMin?: number;
+    priorCoverage?: number | null; priorSource?: "history" | "heartbeat" | "none";
+    absFloor?: number; dropLimit?: number;
+  } = {},
+): {
+  coverageOk: boolean; compositionOk: boolean; compRatio: number; cutGateOk: boolean;
+  newCoverageOk: boolean; newCutGateOk: boolean; priorCoverage: number | null; priorSource: "history" | "heartbeat" | "none"; coverageDrop: number | null;
+} {
   const coverageMin = opts.coverageMin ?? 0.97; // 정상 ~98.6%(프로브 실측)·여유 1.6pp
   const compMin = opts.compMin ?? 0.95;         // 메가캡은 하루새 안 사라짐 → 95% 미만이면 취득 사고(832: ~0%)
   const coverageOk = freshCoverage >= coverageMin;
@@ -64,7 +75,16 @@ export function capGateDecision(
     compRatio = present / priorTopSyms.length;
     compositionOk = compRatio >= compMin;
   }
-  return { coverageOk, compositionOk, compRatio, cutGateOk: coverageOk && compositionOk };
+  // 🔴 STEP 1025 — 새 산식(관측 전용, cutGateOk 실제 판정엔 관여 안 함).
+  //   ABS_FLOOR = 절대 하한(서서히 나빠지는 걸 막는다). DROP_LIMIT = 전일 대비 낙폭 상한(832형 급락 — 98.6%→~0% — 을 잡는다).
+  const ABS_FLOOR = opts.absFloor ?? 0.85;
+  const DROP_LIMIT = opts.dropLimit ?? 0.03;
+  const priorCoverage = opts.priorCoverage ?? null;
+  const priorSource = opts.priorSource ?? "none";
+  const coverageDrop = priorCoverage != null ? priorCoverage - freshCoverage : null;
+  const newCoverageOk = freshCoverage >= ABS_FLOOR && (priorCoverage == null || freshCoverage >= priorCoverage - DROP_LIMIT);
+  const newCutGateOk = newCoverageOk && compositionOk;
+  return { coverageOk, compositionOk, compRatio, cutGateOk: coverageOk && compositionOk, newCoverageOk, newCutGateOk, priorCoverage, priorSource, coverageDrop };
 }
 
 // §3: 정상화 churn — 오늘 유니버스가 직전 유니버스 대비 크게 바뀌면(정상화로 202 복귀 등) 변화 diff 미기록.
@@ -272,6 +292,59 @@ export async function recordHeartbeat(
   try {
     await sb.from("cron_heartbeats").upsert({ job, last_run_at: new Date().toISOString(), ok, note: JSON.stringify(note) });
   } catch { /* 계측 실패가 파이프라인을 죽이면 안 됨 */ }
+}
+
+// 🔴 STEP 1025 W2 — 새 게이트 산식의 "전일 대비 낙폭" 재료. us_coverage_history의 직전 as_of(오늘 것 제외) 우선,
+//   없으면 cron_heartbeats.note의 freshCoverage로 폴백(이번 실행이 heartbeat를 덮어쓰기 전에 호출해야 "어제" 값을 얻는다),
+//   둘 다 없으면 null(부트스트랩 — capGateDecision이 절대 하한만 적용).
+async function fetchPriorCoverage(
+  sb: ReturnType<typeof createAdminClient>, market: string, jobName: string, todayAsOf10: string,
+): Promise<{ priorCoverage: number | null; priorSource: "history" | "heartbeat" | "none" }> {
+  try {
+    const { data } = await sb
+      .from("us_coverage_history").select("fresh_coverage")
+      .eq("market", market).lt("as_of", todayAsOf10)
+      .order("as_of", { ascending: false }).limit(1).maybeSingle();
+    const v = (data as { fresh_coverage: number | null } | null)?.fresh_coverage;
+    if (typeof v === "number") return { priorCoverage: v, priorSource: "history" };
+  } catch { /* 이력 조회 실패 — 폴백으로 진행 */ }
+  try {
+    const { data } = await sb.from("cron_heartbeats").select("note").eq("job", jobName).maybeSingle();
+    const raw = (data as { note: string | null } | null)?.note;
+    const note = raw ? (JSON.parse(raw) as { freshCoverage?: number }) : null;
+    if (note && typeof note.freshCoverage === "number") return { priorCoverage: note.freshCoverage, priorSource: "heartbeat" };
+  } catch { /* 폴백도 실패 — 부트스트랩으로 진행 */ }
+  return { priorCoverage: null, priorSource: "none" };
+}
+
+// 🔴 STEP 1025 W1 — 커버리지 이력 적재(관측 전용, try/catch 격리 — 917 §2 원칙과 동일하게 적재 실패가 크론을 죽이지 않는다).
+async function recordCoverageHistory(
+  sb: ReturnType<typeof createAdminClient>, market: string, asOf10: string,
+  freshCoverage: number, compRatio: number, total: number, freshCount: number,
+): Promise<void> {
+  try {
+    await sb.from("us_coverage_history").upsert(
+      { as_of: asOf10, market, fresh_coverage: freshCoverage, comp_ratio: compRatio, total, fresh_count: freshCount, updated_at: new Date().toISOString() },
+      { onConflict: "as_of,market" },
+    );
+  } catch { /* 적재 실패가 크론을 죽이면 안 됨 */ }
+}
+
+// 🔴 STEP 1025 W3 — 프루닝 가상 영향(계산만, 실제 삭제 없음). 실제 prune 쿼리(computeLensScoresFor 내부 §833)와 동일 조건
+//   (market·updated_at < at)으로 몇 행이 지워질지만 센다 — DELETE는 절대 실행하지 않는다.
+async function pruneImpact(
+  sb: ReturnType<typeof createAdminClient>, market: string, at: string, universeSet: Set<string>,
+): Promise<{ wouldPruneRows: number; sample: { symbol: string; updatedAt: string; reason: string }[] }> {
+  const { count } = await sb.from("lens_scores").select("symbol", { count: "exact", head: true }).eq("market", market).lt("updated_at", at);
+  const { data } = await sb
+    .from("lens_scores").select("symbol, updated_at")
+    .eq("market", market).lt("updated_at", at)
+    .order("updated_at", { ascending: true }).limit(10);
+  const sample = ((data ?? []) as { symbol: string; updated_at: string }[]).map((r) => ({
+    symbol: r.symbol, updatedAt: r.updated_at,
+    reason: universeSet.has(r.symbol) ? "계산실패(유니버스잔류)" : "유니버스이탈",
+  }));
+  return { wouldPruneRows: count ?? 0, sample };
 }
 
 function pick(lenses: LensRead[], key: string) {
@@ -579,7 +652,11 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   // §2 취득 게이트(순수 판정 재사용) — 직전 상위 200 메가캡 티어는 us_market_cap서 유도(상수 티커 배열 금지).
   const { data: priorTop } = await sb.from("us_market_cap").select("symbol").order("market_cap", { ascending: false }).limit(200);
   const priorTopSyms = ((priorTop ?? []) as { symbol: string }[]).map((r) => r.symbol);
-  const { coverageOk, compositionOk, compRatio, cutGateOk } = capGateDecision(diag.freshCoverage, priorTopSyms, freshSet);
+  // 🔴 STEP 1025 W2 — 새 산식 재료(관측 전용). recordHeartbeat보다 먼저 읽어야 "어제" 값을 얻는다(이번 실행이 덮어쓰기 전).
+  const todayAsOf10 = at10();
+  const { priorCoverage, priorSource } = await fetchPriorCoverage(sb, "US", "lens-scores", todayAsOf10);
+  const { coverageOk, compositionOk, compRatio, cutGateOk, newCoverageOk, newCutGateOk, coverageDrop } =
+    capGateDecision(diag.freshCoverage, priorTopSyms, freshSet, { priorCoverage, priorSource });
 
   // §3 정상화 diff 스킵(순수 판정 재사용) — 직전 lens_scores US 유니버스 대비 churn.
   const { data: priorUni } = await sb.from("lens_scores").select("symbol").eq("market", "US");
@@ -587,10 +664,24 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   const { churn, skipChangeDiff } = churnDecision(universe, priorSet);
 
   // 🔴 STEP 894: diag.retryBudgetHit·diag.retryAttempted를 로그에 추가(같은 이유 — 계산되고 버려지던 값).
-  console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}/${diag.retryAttempted} · 재시도한도초과 ${diag.retryBudgetHit}`);
+  console.log(`[computeLensScores US] fresh커버 ${(diag.freshCoverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · 구성 ${(compRatio * 100).toFixed(1)}%(게이트 ${compositionOk}) · cutGateOk ${cutGateOk} · 🔴신규산식(관측) newCutGateOk ${newCutGateOk}(전일 ${priorCoverage != null ? (priorCoverage * 100).toFixed(1) + "%" : "null"}·출처 ${priorSource}) · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 폴백 ${diag.fallbackUsed} · 재시도복구 ${diag.recovered}/${diag.retryAttempted} · 재시도한도초과 ${diag.retryBudgetHit}`);
   if (!cutGateOk) Sentry.captureMessage(`[us-cut-gate] 취득 게이트 실패(커버 ${(diag.freshCoverage * 100).toFixed(1)}%·구성 ${(compRatio * 100).toFixed(1)}%) → 컷 재유도·프루닝 금지`, "error");
 
   const r = await computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+
+  // 🔴 STEP 1025 W3 — 프루닝 가상 영향(계산만, 실제 삭제는 절대 안 함). cutGateOk가 true였다면 나머지 3중 게이트로 프루닝됐을지.
+  const successRate = r.universe > 0 ? r.computed / r.universe : 0;
+  const wouldPrune = successRate >= 0.8 && r.universeOk && r.pass2Ok;
+  let pruneObs: { wouldPruneRows: number; sample: { symbol: string; updatedAt: string; reason: string }[] } | null = null;
+  try {
+    pruneObs = await pruneImpact(sb, "US", r.at, new Set(universe));
+  } catch (e) {
+    Sentry.captureException(e, { tags: { pipeline: "prune_impact_observe", market: "US" } });
+  }
+
+  // 🔴 STEP 1025 W1 — 커버리지 이력 적재(관측 전용, try/catch 내장).
+  await recordCoverageHistory(sb, "US", todayAsOf10, diag.freshCoverage, compRatio, r.universe, freshSet.size);
+
   // 🔴 STEP 917 §0/§1: 894 console.log는 8 STEP 동안 못 읽혔다(Hobby 보존 1시간) — cron_heartbeats.note에 장기 보존.
   //   §2: 계측 실패가 파이프라인을 죽이지 않도록 recordHeartbeat 내부에서 try/catch, 여기선 결과를 기다리지 않고 그대로 반환.
   await recordHeartbeat(sb, "lens-scores", r.ok, {
@@ -610,6 +701,10 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
     reconstructable: diag.reconstructable, reconstructableSingleClass: diag.reconstructableSingleClass,
     reconstructableMultiClass: diag.reconstructableMultiClass, noPriceEither: diag.noPriceEither,
     wouldBeCoverage: diag.wouldBeCoverage, missingFieldNames: diag.missingFieldNames, reconstructError: diag.reconstructError,
+    // 🔴 STEP 1025 — 새 게이트 산식 관측 필드. cutGateOk(위, 실제 판정)는 불변 — 아래는 옆에 나란히 기록만 한다.
+    newCoverageOk, newCutGateOk, priorCoverage, priorSource, coverageDrop,
+    universeOk: r.universeOk, pass2Ok: r.pass2Ok, pruned: r.pruned,
+    successRate, wouldPrune, wouldPruneRows: pruneObs?.wouldPruneRows ?? null, wouldPruneSample: pruneObs?.sample ?? [],
   });
   return r;
 }
@@ -660,6 +755,9 @@ export async function computeKrLensScores(topN = 1000, concurrency = 6) {
   console.log(`[computeKrLensScores] 시총커버 ${(coverage * 100).toFixed(1)}%(게이트 ${coverageOk}) · cutGateOk ${cutGateOk} · churn ${(churn * 100).toFixed(1)}%(diff스킵 ${skipChangeDiff}) · 유니버스 ${universe.length}`);
   if (!cutGateOk) Sentry.captureMessage(`[kr-cut-gate] KR 시총 확보율 ${(coverage * 100).toFixed(1)}%<95% → 컷 재유도·프루닝 금지`, "error");
   const r = await computeLensScoresFor(universe, "KR", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff });
+  // 🔴 STEP 1025 W1 — KR도 같은 이력 테이블에 적재(market 컬럼으로 구분). 🔴 이 값을 US 판정(newCutGateOk)엔 쓰지 않는다
+  //   (전면 US 단독 원칙은 판정에 적용 — KR은 적재만, US capGateDecision 호출부는 KR 값을 전혀 참조하지 않는다).
+  await recordCoverageHistory(sb, "KR", at10(), coverage, 1, r.universe, universe.length);
   // 🔴 STEP 917 §2 §0: KR 경로도 US와 동일 계측(요구사항) — 부수적으로 kr-lens-scores 자체의 "오늘 도는가" 관측 수단도 생김
   //   (kr-perf는 별개 라우트라 이 STEP 범위 밖 — 이 하트비트가 커버하지 않는다).
   await recordHeartbeat(sb, "kr-lens-scores", r.ok, {

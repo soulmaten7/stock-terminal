@@ -106,6 +106,7 @@
 | 근거 | ✅ `app/api/lens/route.ts:88` · `lib/lensCuts.ts:65-73` · `app/api/cron/health/route.ts:86-96` — 상세 = `docs/probe_1015_answerability_audit.md` §1-E |
 | 🔴 현재 상태 | **US `lens_cuts`가 2026-07-30 정지(15일)** — 게이트가 없어 이 항목은 "불성립"이 아니라 **"낡은 컷으로 계속 성립 판정을 내고 있다"**(1015 확인) |
 | 🔴 현재 상태(1016 정량화) | `lens_cuts` 나이 **정밀 재실측 351.8시간**(임계 49h의 **7.18배**, ⓪-1 초안의 "≈361h"는 1016에서 재실측해 정정). 49h 게이트를 문자대로 적용하면 **컷의존 5개 렌즈(momentum·lowvol·valuation·quality·assetgrowth) × US 유니버스 1,035종목 = 1,035/1,035(100%) 불성립.** 나머지 2렌즈(technical·fscore)는 컷을 안 써 영향 없음. 오늘 밤 갱신 여부는 `freshCoverage≥97%` 게이트(984)가 07-30부터 계속 막혀온 이력 때문에 **불확실** — 상세 = `docs/probe_1016_serving_gate_impact.md` §2 |
+| 🔴 현재 상태(1025 추가) | 🔑 **장은태 판정(2026-08-14) — 게이트를 "급락 탐지"로 재정의**(절대 하한 85% + 전일 대비 낙폭 상한 3%p). `lib/lensPrecompute.ts`의 `capGateDecision`에 **관측 필드로만** 드라이런 배선(`newCoverageOk`·`newCutGateOk`·`priorCoverage`·`priorSource`·`coverageDrop`) — **실제 판정(`cutGateOk`, 위 351.8시간 정지)은 이 STEP에서 안 바뀐다.** 새 산식이 실제로 통과했을 경우의 프루닝 영향(`wouldPrune` 등)도 배선만 하고 오늘 밤 21:30 UTC 정규 실행 전까지는 실측치가 없다. 상세 = `docs/probe_1025_gate_redefinition.md` |
 
 ### F. 재무 원문 수치
 | 항목 | 내용 |

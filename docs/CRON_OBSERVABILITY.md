@@ -149,6 +149,7 @@ STEP982가 08-09 실행의 `freshCoverage=93.04%`를 어떻게 읽어냈는지�
 | `us_fundamentals` | 별도 수집 파이프라인(비정기, 970: 순증 ≈124건/일 추정치 미확정) | 순증 건수 정체 여부 | 관찰만(임계 미설정 — 970 자체가 추정 단계) | 정보 |
 | `us_market_cap_nasdaq`(STEP1013 신설) | us-perf(22:00) 부속 | 최신 `as_of` 나이 + 행수(줄면 경고) | 나이 **30h** | 경고 |
 | `cron_heartbeats` | 전 크론 공통 | `job`별 `last_run_at` 나이 | 각 크론 스케줄 + 여유(예: lens-scores는 30h) | 경고 |
+| `us_coverage_history`(STEP1025 신설) | lens-scores(US 21:30·KR도 같은 테이블에 적재) | 최신 `as_of`(market='US') 나이 | 30h(다른 21:30~22:00대 크론과 같은 여유) | 경고 |
 
 🔴 **`cron_heartbeats.job='revdcf'` 신설(STEP1007, 2026-08-13)** — §1-2가 "관측 완전 0"이라 적었던 바로 그 크론이 이제 heartbeat를 쓴다(스케줄 22:45 UTC, 다른 22시대 크론과 같은 여유로 **30h** 임계). `note`에 `processed`·`finished`·`elapsedMs`·`valuationSaved`·`sectorRelativeSaved`·`sectorWideAdded`·`sectorWideError`·`loopMs`(SEC 워커 루프)·`budgetExhausted`(BUDGET_MS 소진이 루프 종료 사유였는지)·`finallyMs`(1006 P2와 같은 이름의 6구간)·`finallyTotalMs`·`routeMs`·`sectorRelativeError`(예외 시 message+stack 앞 500자)를 싣는다. 계산 로직(`revdcf_results` 산출 경로)은 무변경 — 계측만 추가.
 
@@ -157,6 +158,8 @@ STEP982가 08-09 실행의 `freshCoverage=93.04%`를 어떻게 읽어냈는지�
 🔴 **`cron_heartbeats.job='us-perf'` + `us_market_cap_nasdaq` 신설(STEP1013, 2026-08-13)** — us-perf(22:00 UTC)에 나스닥 시총 매일 재수집을 배선(1012가 실측한 야후 밖 시총 후보). `us_market_cap_nasdaq`(as_of·symbol 복합키, 이력 누적 — `us_market_cap`처럼 symbol 단일 PK로 덮어쓰지 않는다)에 매일 새 `as_of` 행이 쌓인다 — **30h** 임계(다른 22시대 크론과 같은 여유). `us-perf`는 지금까지 heartbeat가 없던 크론이라 이번이 최초 도입 — `note`에 `perfMs`·`nasdaqMs`·`routeMs`·`nasdaqRows`(원본 응답 행수)·`nasdaqSaved`(적재 행수)·`nasdaqEmptyCap`(marketCap 빈 행수)·`nasdaqError`(사유별)·`budgetLeftMs`를 싣는다. 🔴 **격리 원칙** — 나스닥 취득 실패는 `nasdaqError`에만 기록되고 `us-perf` 본체(`computeUsPerf`) 응답·`us_stock_perf` 갱신에는 영향을 주지 않는다(974 원칙, try/catch 완전 분리). 🔴 **D-1 지연** — us-perf가 22:00 UTC에 도는데 lens-scores(21:30 UTC)가 그 전에 이미 끝나므로, 나스닥 값을 나중에 폴백으로 쓰더라도 항상 그날 lens-scores 실행 기준으로는 하루 전(D-1) 값이다.
 
 🔴 **`us_sector_relative` 행 보완(992 정정, 2026-08-11)** — 나이만으로는 08-10 사고(1,247행 전부 `sector=null`, 973 미배포)를 못 잡는다. 행은 제때 생겼고 **내용만 비어 있었기 때문**이다. 그래서 나이에 `sector=null` 비율 조건을 더했다. 🔴 **이번엔 방향이 반대였다** — 이 값은 **Cowork 예약 프롬프트(사본)에 이미 반영돼 있었고, 이 문서(정본)가 그걸 뒤늦게 따라간 것**이다. 위에서 "정본을 먼저 고치고 사본이 따라간다"고 못박은 순서와 어긋난 사례를 그대로 남긴다 — **앞으로는 이 문서를 먼저 고치는 순서를 지킨다.**
+
+🔴 **`us_coverage_history` 신설 + `cron_heartbeats.job='lens-scores'` 새 관측 필드(STEP1025, 2026-08-14)** — 장은태 판정(게이트를 "급락 탐지"로 재정의)의 드라이런. `us_coverage_history`(as_of·market 복합키, 이력 누적)에 매일 밤 `fresh_coverage`·`comp_ratio`·`total`·`fresh_count`를 US·KR 둘 다 적재(market 컬럼 구분, try/catch 격리 — 적재 실패가 크론을 안 죽인다). `cron_heartbeats.job='lens-scores'`의 `note`에 새 필드 추가: `newCoverageOk`·`newCutGateOk`(관측 전용 — **실제 판정 `cutGateOk`는 그대로**)·`priorCoverage`·`priorSource`(history/heartbeat/none)·`coverageDrop`·`successRate`·`wouldPrune`·`wouldPruneRows`·`wouldPruneSample`·`universeOk`·`pass2Ok`·`pruned`. 🔴 **점검 규칙 — 지금은 `newCutGateOk`가 `cutGateOk`와 달라도 경고하지 않는다**(둘이 갈리는 것 자체가 이 STEP의 관측 대상이지 이상이 아니다). 실제 게이트 전환 여부는 장은태 판정(1025 §0-A). 계산 로직(`capGateDecision`의 기존 4개 필드·`canPrune`·실제 프루닝 실행)은 전부 무변경 — 833 값 잠금 테스트로 증명됨.
 
 ### 5-3. 주간 요약이 보는 3개 — "빠진 날 찾기"
 
