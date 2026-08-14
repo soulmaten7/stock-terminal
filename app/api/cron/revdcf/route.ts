@@ -364,6 +364,21 @@ export async function GET(req: Request) {
   let loopMs = 0, budgetExhausted = false;
   let sectorRelativeError: string | null = null;
   const finallyTimings: Record<string, number> = {};
+  // STEP1018 — 1007이 heartbeat를 finally 맨 끝(기존 stage 4)에만 둔 설계 오류 수정.
+  //   함수가 강제 종료되면 finally조차 안 돈다 — "죽는 지점을 재려는 계측이 죽는 지점 뒤에 있었다"(1017 이후 진단).
+  //   같은 job='revdcf' 행을 stage가 끝날 때마다 upsert로 덮어써, 마지막으로 성공한 stage가 남게 한다.
+  //   계산 로직·upsert 대상·BUDGET_MS·maxDuration 전부 무변경 — 계측 위치만 추가.
+  const heartbeatCallMs: Record<string, number> = {};
+  const stageHeartbeat = async (stage: string, extra: Record<string, unknown>) => {
+    const hb0 = Date.now();
+    const elapsedMsAtStage = Date.now() - t0;
+    await recordHeartbeat(sb, "revdcf", false, {
+      stage, elapsedMsAtStage, maxDurationRemainingMs: maxDuration * 1000 - elapsedMsAtStage,
+      heartbeatCallMs: { ...heartbeatCallMs },
+      ...extra,
+    });
+    heartbeatCallMs[stage] = Date.now() - hb0; // 이 계측 호출 자체의 소요시간(다음 stage의 note에 실린다)
+  };
   try {
     const tLoop0 = Date.now();
     await Promise.all(Array.from({ length: 6 }, worker));
@@ -373,10 +388,14 @@ export async function GET(req: Request) {
     budgetExhausted = idx < todo.length; // 루프가 전량 소진 전에 멈췄다면 시간예산이 사유
   } finally {
     const tFinally0 = Date.now();
+    // STEP1018 stage 1 — SEC 워커 루프 종료 직후, finally 진입 시점.
+    await stageHeartbeat("loop_done", { processed: idx, finished: idx >= todo.length, loopMs, budgetExhausted });
     // §5-4 — 예산이 소진돼 위 루프가 중단됐어도 valuation 계산은 반드시 돈다(SEC 호출 0건).
     const v = await computeAndSaveValuation(sb, asOf, finallyTimings);
     valuationSaved = v.saved;
     fundamentalsStalest = v.stalestFetchedAt;
+    // STEP1018 stage 2 — computeAndSaveValuation 반환 직후.
+    await stageHeartbeat("valuation_done", { processed: idx, finished: idx >= todo.length, loopMs, budgetExhausted, valuationSaved, fundamentalsStalest });
     // STEP 956 §3-3 — us_valuation 계산 직후. 같은 이유로 finally 안(예산 소진과 무관하게 항상 실행).
     // STEP1007 — 🔴 833 원칙(조용히 안 버린다): 예외를 삼키지 않고 기록한 뒤 다시 던진다.
     //   recordHeartbeat 자체는 내부에서 try/catch로 격리돼 있어(917 §2) 계측 실패가 크론을 죽이지 않는다.
@@ -385,13 +404,19 @@ export async function GET(req: Request) {
       sectorRelativeSaved = sr.saved;
       sectorWideAdded = sr.sectorWideAdded;
       sectorWideError = sr.sectorWideError;
+      // STEP1018 stage 3 — computeAndSaveSectorRelative 반환 직후(성공 시에만 — 예외면 catch로 빠져 stage 3을 안 남긴다,
+      //   이후 stage 4(complete)의 sectorRelativeError로 실패가 드러난다).
+      await stageHeartbeat("sector_relative_done", { processed: idx, finished: idx >= todo.length, loopMs, budgetExhausted, valuationSaved, sectorRelativeSaved, sectorWideAdded, sectorWideError });
     } catch (e) {
       sectorRelativeError = e instanceof Error ? `${e.message}\n${(e.stack ?? "").slice(0, 500)}` : String(e);
       throw e;
     } finally {
       const finallyTotalMs = Date.now() - tFinally0;
       const routeMs = Date.now() - t0;
+      // STEP1018 stage 4 — 기존 위치(현행 heartbeat). stage:"complete" 추가, 기존 필드 전부 유지.
       await recordHeartbeat(sb, "revdcf", !sectorRelativeError, {
+        stage: "complete", elapsedMsAtStage: routeMs, maxDurationRemainingMs: maxDuration * 1000 - routeMs,
+        heartbeatCallMs: { ...heartbeatCallMs },
         processed: idx, finished: idx >= todo.length, elapsedMs: Date.now() - t0,
         valuationSaved, sectorRelativeSaved, sectorWideAdded, sectorWideError,
         loopMs, budgetExhausted,

@@ -1,6 +1,32 @@
 <!-- 2026-08-14 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-14 — 🟨 **STEP 1018: 죽는 지점을 죽기 전에 기록한다 + 나스닥 호출 방식 재탐색(계측·취득 방식만·값 불변)**
+
+> **성격**: 코드 작성 — 1017이 둘 다 "확정 불가/예상 밖"으로 끝난 것을 이어받아, **다음 크론이 스스로 답하게** 만드는 계측을 심었다. 값 계산은 한 줄도 안 바꿈 — §값 불변 증명이 DoD 핵심.
+
+**W1 — `revdcf` 단계별 heartbeat**: 1007의 설계 오류(heartbeat가 `finally` 맨 끝에만 있어 함수가 강제 종료되면 죽는 지점을 못 잰다, 1017이 heartbeat 완전 부재로 이 문제를 실측)를 고쳤다. `app/api/cron/revdcf/route.ts`에 `stageHeartbeat()` 헬퍼를 신설, 같은 `job='revdcf'` 행을 stage마다 upsert로 덮어써 **마지막으로 성공한 stage가 남게** 했다: `loop_done`(SEC 루프 종료) → `valuation_done`(`computeAndSaveValuation` 반환) → `sector_relative_done`(`computeAndSaveSectorRelative` 성공 반환) → `complete`(기존 위치). 각 stage에 `elapsedMsAtStage`·`maxDurationRemainingMs`·`heartbeatCallMs`(계측 자체의 소요시간) 추가, **기존 note 필드는 전부 유지.** 계산 로직·upsert 대상·`BUDGET_MS`(270,000)·`maxDuration`(300) 전부 무변경.
+
+**W2 — 나스닥 호출 방식 재탐색(로컬 5회, 전부 실패)**: `scripts/probe_1018_nasdaq_call.ts`(신규 프로브, 프로덕션 코드 아님)로 5가지 방식(대조군·timeout 60초·`tableonly=true`·페이지네이션·거래소 분할)을 1회씩, 10초 이상 간격으로 시도 — **전부 timeout 실패.** 🔑 **timeout을 60초로 늘려도 정확히 60,002ms에서 그대로 timeout**됐다는 것은 응답이 느린 게 아니라 **연결 자체가 완결되지 않는 상태**임을 강하게 시사한다. 쿼리 파라미터 조합 문제도 아님(전부 동일하게 실패). ⓪-4 W2 두 번째 갈래("나스닥 API 자체가 현재 응답하지 않는다") — **성공이 0건이라 교체 판정(2회 재현 규칙)이 발동조차 안 함, `lib/nasdaqMarketCap.ts` 무수정.** 총 호출 5회(7회 이내 준수).
+
+**2-3 "296건 고정" 정정**: 1017이 밝힌 296→287 회복을 반영해 `docs/ANSWERABILITY_MAP.md`·`docs/probe_1015_answerability_audit.md`의 해당 서술을 취소선 정정. 🔴 **`docs/DATA_SOURCE_CATALOG.md`(md·xlsx)는 검색 결과 해당 서술 자체가 없어 정정 대상이 아니었음을 확인**(변경 0). `CHANGELOG.md`·`STEP_LEDGER.md`는 이력 로그 원칙상 손대지 않음. 회복 속도는 2일치 관측뿐이라 추정하지 않음.
+
+**게이트9**: `docs/CRON_OBSERVABILITY.md` §5-2에 `cron_heartbeats.job='revdcf'`의 `stage` 필드 설명 + "**`stage`가 `complete`가 아니면 경고**" 점검 규칙 추가.
+
+**§값 불변 증명(배포 전 스냅샷)**: `revdcf_results` 604행(md5 `8457c543b1bd188bc441944dfd45eda2`) · `us_valuation` 5,820행 · `us_market_cap` 5,913행(07-30 코호트 287) · `us_stock_perf` 6,385행 · `lens_scores` US 1,036/KR 978 · `lens_cuts` US as_of 07-30(불변) · `us_sector_relative` as_of 08-10(불변 — 아직 안 풀린 게 정상) · `us_market_cap_nasdaq` 0행. **보호 파일 diff 0**: `lib/lensPrecompute.ts`·`scripts/ingest_us_sector.ts`·`vercel.json`·`data/us_symbols.json`.
+
+**문서**: `docs/probe_1018_stage_heartbeat_and_nasdaq.md`(⓪-4 W1 4갈래 표·W2 결과표·2-3 정정 목록) · `docs/CRON_OBSERVABILITY.md` §5-2 · `docs/ANSWERABILITY_MAP.md`·`docs/probe_1015_answerability_audit.md`(296→287 정정).
+
+tsc 0(주의: 로컬에만 있던 gitignored 미추적 파일 `scripts/_probe_B_flows.ts`가 무관한 pre-existing 컴파일 에러를 냈으나, 그 파일을 빼면 0·CI는 클린 클론이라 애초에 이 파일이 없음) · vitest 372/372(`--no-file-parallelism`, 병렬 워커 자원경합으로 두 차례 플레이키 발생 후 확인).
+
+**못 한 것** — W1 실제 관측(내일 08-14 22:45 UTC 크론 필요) · W2 나스닥 실패의 지속성 여부(반복 호출 금지).
+
+**철회·정정한 것** — "296건 고정" 서술(위 2-3 참조).
+
+**미측정** — `BUDGET_MS` 조정·나스닥 폴백 배선·게이트 도입·D 조회 키 수정(전부 장은태) · W1 4갈래 중 어느 것이 맞을지(내일 밤 필요).
+
+🔴 **`BUDGET_MS`·나스닥 폴백 배선·게이트 도입·D 조회 키 수정은 전부 장은태 판정이다. 내일 밤 크론이 W1의 답을 낸다. 그때까지 `revdcf`를 다시 건드리지 않는다.**
+
 ## 2026-08-14 — 🟩 **STEP 1017: 어젯밤 크론이 남긴 두 실패의 종료 사유 확정(읽기 전용)**
 
 > **성격**: 조사 전용 — **코드 diff 0 · DB 쓰기 0.** 1016 배선 이후 처음 맞은 실제 야간 크론(21:30/22:00/22:45 UTC)의 결과 두 가지(`revdcf` heartbeat 부재·나스닥 20초 timeout)의 종료 사유를 Vercel 로그·코드 정황·로컬 재현으로 확정 시도.
