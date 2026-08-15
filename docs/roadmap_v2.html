@@ -155,7 +155,7 @@ footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);color:v
   <div class="tracker">
     <div class="tk done">WHY</div>
     <div class="tk done">HOW</div>
-    <div class="tk wait">WHAT</div>
+    <div class="tk done">WHAT</div>
     <div class="tk wait">만드는 절차</div>
     <div class="tk wait">무엇을 먼저</div>
     <div class="tk wait">완성의 정의</div>
@@ -325,7 +325,34 @@ footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);color:v
     <div class="t">Caveats에는 <strong>「부족분을 채우려면 무엇이 필요한지」까지</strong> 쓴다</div>
   </blockquote>
 
-  <h3>H-2. 재료를 찾는 절차 — 7단계</h3>
+  <h3>H-2. 재료를 찾는 절차 — 카탈로그가 먼저다</h3>
+  <blockquote>
+    <div class="q">실제 순서는 ③ → ①(A·B) → ② → ④ — 자체 인벤토리를 먼저 열고 그다음 밖을 검색한다.
+      표를 위에서부터 읽어 ①검색부터 시작하면 <strong>이미 가진 자료를 밖에서 다시 찾게 된다.</strong></div>
+    <div class="a">— CLAUDE.md 3중 규칙</div>
+    <div class="t">DATA_SOURCE_CATALOG가 존재하는 이유가 정확히 이것 — "필요할 때마다 새로 찾는 사후 대응이 반복됐다"</div>
+  </blockquote>
+  <div class="steps">
+    <div class="step"><div class="num">1</div><div><div class="what">필요한 것을 정의한다</div><div class="doc">①정체(이름표 말고 기능적 정의) · ②목적 · ③필수 속성 · <strong>정밀도</strong>(값 자체가 답인가, 순위만 필요한가)</div></div><div class="fail">답지(모델 SPEC)에서 나온다</div></div>
+    <div class="step"><div class="num">2</div><div><div class="what">카탈로그 슬롯 표를 먼저 연다</div><div class="doc">이미 있는 슬롯인가 · 후보 카테고리가 있나 · <strong>의존관계(짝 제약)가 걸려 있나</strong></div></div><div class="fail">없으면 4번으로</div></div>
+    <div class="step"><div class="num">3</div><div><div class="what">코드와 대조한다</div><div class="doc">카탈로그가 실제 코드와 갈라져 있을 수 있다 — 슬롯 #19·#20·#14에 전례</div></div><div class="fail">갈라졌으면 <strong>카탈로그를 먼저 고친다</strong></div></div>
+    <div class="step"><div class="num">4</div><div><div class="what">밖에서 찾는다</div><div class="doc">§3 발견절차 7단계 + 폴백 사다리 (아래)</div></div><div class="fail">막히면 H-4</div></div>
+    <div class="step last"><div class="num">5</div><div><div class="what">카탈로그에 등재한다</div><div class="doc">슬롯 · 카테고리 · 스키마 7칸</div></div><div class="fail">그때그때 — 몰아서 금지</div></div>
+  </div>
+
+  <h3 style="font-size:14px;color:var(--tx2)">카탈로그 구조 — 3층</h3>
+  <div class="grid g3">
+    <div class="card"><div class="src">기관별 엔드포인트</div><div class="def">SEC · 야후 · 나스닥 · Damodaran · SPDR — <strong>공급 기준</strong></div></div>
+    <div class="card"><div class="src">카테고리 25종</div><div class="def">같은 성격의 데이터끼리 묶음 — 대체 후보군</div></div>
+    <div class="card" style="border-color:#3a5a72;background:linear-gradient(180deg,#14202a,var(--panel))">
+      <div class="src">슬롯 20개</div><div class="def"><strong>우리가 실제로 필요로 하는 값 — 역인덱스</strong></div></div>
+  </div>
+  <p class="note" style="margin-top:14px"><strong>대체재 판정을 좌우하는 두 가지가 슬롯 표에 있습니다.</strong><br>
+    <strong>정밀도</strong> — "값 자체가 답"(무위험수익률·ERP·베타)과 "순위/그룹핑만 필요"(섹터분류·업종배수)는 대체 기준이 다릅니다. 순위만 필요하면 값이 달라도 순서가 보존되면 됩니다.<br>
+    <strong>의존관계</strong> — <span class="hi">짝으로 움직이는 값이 있습니다.</span> rf만 바꾸면 ERP와 안 맞고, 세율은 베타 releveraging과 얽히며, 신용스프레드는 rf/ERP와 같은 as_of 배치에서 갱신됩니다. <strong>값 하나씩만 보면 안 됩니다.</strong><br>
+    <strong>카탈로그는 지도지 영토가 아닙니다</strong> — 슬롯 #19는 외부 소스로 적혀 있었으나 실제로는 자체 계산, #20은 #16의 중복 등재, #14는 옛 소스로 남아 있던 것을 코드 대조로 발견했습니다.</p>
+
+  <h3 style="font-size:14px;color:var(--tx2)">밖에서 찾을 때 — 발견 절차 7단계</h3>
   <div class="steps">
     <div class="step"><div class="num">1</div><div><div class="what">개념 정의 먼저</div><div class="doc">검색 전에 「무엇을 찾는지」를 못 박는다 — 안 그러면 헛짚는다</div></div><div class="fail">—</div></div>
     <div class="step"><div class="num">2</div><div><div class="what">신뢰 순 검색</div><div class="doc">규제기관·거래소 공식 &gt; 공식 지정 사이트 &gt; 상업 애그리게이터 &gt; 뉴스 · client 라이브러리 소스코드를 엔드포인트 소스로 역이용</div></div><div class="fail">—</div></div>
@@ -400,10 +427,87 @@ footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);color:v
      <strong>원전은 두 층이다</strong> — 현상의 원전(효과가 실재한다고 밝힌 문헌)과 계산 사양의 출처(숫자를 어떻게 내는지의 관행). 둘을 구분해 밝힌다.</p>
 </section>
 
-<section class="pending">
-  <div class="shead"><h2>WHAT</h2><span class="badge wait">확정 대기</span></div>
+<section>
+  <div class="shead"><h2>WHAT</h2><span class="badge ok">확정 2026-08-15</span></div>
   <div class="stitle">무엇을 내놓는가</div>
-  <div class="ph">HOW 확정 후</div>
+
+  <p class="lead"><strong>WHAT = 사람들이 실제로 원하는 정보.</strong>
+     그 정보를 내놓기까지 <strong>세 단계</strong>가 있고, <span class="hi">앞 단계가 틀리면 뒤 단계가 전부 헛돕니다.</span></p>
+
+  <h3>W-1. 세 단계</h3>
+  <div class="steps">
+    <div class="step"><div class="num">①</div><div><div class="what">어떤 정보를 원하는가 — 질문 모델</div><div class="doc">현재 Q0~Q5(2026-08-08 확정)</div></div><div class="fail">재검토 필요 (W-2)</div></div>
+    <div class="step"><div class="num">②</div><div><div class="what">그 질문에 답하는 모델</div><div class="doc">한 번에 하나씩 — 완성 후 다음</div></div><div class="fail">진행 중</div></div>
+    <div class="step last"><div class="num">③</div><div><div class="what">자체 AI</div><div class="doc">②를 만들며 쓴 <strong>모든 것</strong>(카탈로그·모델·계산 과정)을 기반으로 답한다</div></div><div class="fail">최종</div></div>
+  </div>
+  <p class="note">③이 가능한 이유 — 일반 LLM이 못 주는 깊이는 <strong>어떤 데이터에서 어떤 답이 나오는지를 우리가 정확히 아는 상태</strong>에서만 나옵니다. 그래서 ②를 하나씩 완성하는 것이 ③의 전제입니다.
+     <span class="hi">③은 새 모델을 만드는 것이 아니라, 완성된 모델들 위에서 답하는 것입니다</span>(창작 금지와 정합).</p>
+
+  <div class="fix" style="margin-top:20px">
+    <div class="fh">명칭에서 「전망」을 뺀다</div>
+    <div class="fitem">
+      <div class="old">구본 WHAT — "(최종) Trillion AI <strong>전망</strong>"</div>
+      <div class="new"><strong>「자체 AI」/「Trillion AI」</strong>(수식어 없음) — "전망"은 3기둥의 직시("비예측")·규칙 7("「오른다」 단정 X")과 정면 충돌한다</div>
+    </div>
+  </div>
+  <p class="note">하지 않을 일을 문서에 적어두면 나중에 그것이 근거로 인용됩니다.</p>
+
+  <h3>W-2. ①단계가 재검토 대상인 이유</h3>
+  <p>현재 질문 모델 = <strong>Q0 뭐 하는 회사인가 · Q1 비싸게 사는 건가 · Q2 현금 돌려주나 · Q3 커지고 있나 · Q4 망할 위험 없나 · Q5 뭔가 바뀌었나</strong>(2026-08-08 확정).</p>
+  <p>그 근거 셋의 실제 상태:</p>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:170px">근거</th><th>문서가 스스로 적은 한계</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td class="m">AAII 설문<br><span style="color:var(--tx3);font-weight:400;font-size:12.5px">Value 77%·Dividends 73%·Growth 69%·매도1위 60%</span></td>
+        <td><span class="hi">자기 회원(적극 투자자) 편중 · 2022-04로 4년 전 · 표본 크기 미기재</span><br><span style="color:var(--tx3);font-size:12.5px">USER_QUESTIONS §8, 표 행</span></td></tr>
+      <tr><td class="m">Stock Analysis<br><span style="color:var(--tx3);font-weight:400;font-size:12.5px">탭 구조</span></td>
+        <td><span class="hi">정보 분류지 수요 순위가 아님</span><br><span style="color:var(--tx3);font-size:12.5px">USER_QUESTIONS §8</span></td></tr>
+      <tr><td class="m">SWS<br><span style="color:var(--tx3);font-weight:400;font-size:12.5px">유료 상품 = 드러난 수요</span></td>
+        <td>명확한 근거는 이것 하나뿐</td></tr>
+    </tbody>
+  </table></div>
+
+  <blockquote>
+    <div class="q">"「없다」는 조사 부족의 결과일 수 있다. AAII 부재는 이 판정의 근거에서 뺀다."</div>
+    <div class="a">— LENS_DISPOSITION_2026-08-08.md §2</div>
+  </blockquote>
+
+  <p><strong>같은 병이 2026-08-15 하루에 세 번 확인됐습니다</strong> — LENS_ROADMAP의 "후보 소진"(팩터 한 계층만 보고 선언) · 카탈로그의 97% 전제(9곳) · 파킹 원장의 "렌더 제거됨"(실제는 라이브).
+     <span class="hi">전제가 낡았는데 그 위에서 계속 짓는 것.</span> Q시리즈도 4년 된 설문 위에 세워져 있습니다.</p>
+  <p class="note">재검토는 곁가지가 아니라 <strong>본선의 첫 단계</strong>입니다. 다만 "틀렸다"가 아니라 "근거를 다시 실측한다"이며, 결과가 같을 수도 있습니다.</p>
+
+  <h3>W-3. 지금 내놓고 있는 것</h3>
+  <p class="lead"><strong>US 상장 종목</strong>에 대해, 다섯 면으로:</p>
+  <div class="conds">
+    <div class="cond">
+      <div class="cn">1</div>
+      <div><div class="ch">오늘 <code>/</code></div><div class="cd">변화 다이제스트</div></div>
+    </div>
+    <div class="cond">
+      <div class="cn">2</div>
+      <div><div class="ch">탐색 <code>/explore</code></div><div class="cd">종목 찾기</div></div>
+    </div>
+    <div class="cond">
+      <div class="cn">3</div>
+      <div><div class="ch">종목상세 <code>/stock/[symbol]</code></div><div class="cd"><span class="hi">질문에 답하는 자리</span></div></div>
+    </div>
+    <div class="cond">
+      <div class="cn">4</div>
+      <div><div class="ch">관심 <code>/favorites</code></div><div class="cd">담아둔 종목</div></div>
+    </div>
+    <div class="cond">
+      <div class="cn">5</div>
+      <div><div class="ch">마이 <code>/mypage</code></div><div class="cd">내 계정</div></div>
+    </div>
+  </div>
+
+  <div class="fix" style="margin-top:20px">
+    <div class="fh">구본 WHAT → V2</div>
+    <div class="fitem">
+      <div class="old">"한·미 금융정보 허브 + 리딩방 검증 디렉토리"</div>
+      <div class="new"><strong>둘 다 무효</strong> — KR은 전면 동결, 리딩방·유사투자자문 검증은 2026-08-15에 제거됐다(<code>spinoff/advisor-directory/</code>로 분리 보관)</div>
+    </div>
+  </div>
 </section>
 
 <section class="pending">
