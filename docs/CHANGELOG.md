@@ -1,6 +1,45 @@
 <!-- 2026-08-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-15 — 🔵 **STEP 1033: 모델 로스터 조사(조사 전용 · 코드 diff 0 · DB 쓰기 0 · 판정 금지)**
+
+> **성격**: *"세상에 존재하는 주식 모델 리스트를 먼저 만든다"*(장은태 지시). 리스트와 원전 확보 상태·수요 근거·제작 가능성까지만 낸다. **순위·선정·판정은 전부 장은태.**
+
+🔑 **맨 앞에 놓을 발견 — 같은 조사가 이미 2026-08-07에 4건 존재했다.** `docs/MODEL_UNIVERSE_63_2026-08-07.md`(63개 모델 우주 × 재현비용)·`docs/MARKET_MODEL_USAGE_TOP20_2026-08-07.md`(애널리스트 리포트 2,263건·CFA 1,980명 등 학술 서베이)·`docs/MODEL_BUILD_ORDER_2026-08-07.md`(관문 7개)·`docs/MODEL_DEMAND_SURVEY_2026-08-07.md`(리테일 플랫폼 채택 수요조사) — 전부 `docs/INDEX.md:110-113`에 이미 등재돼 있었는데 **이 STEP(1033)의 명령서 자신의 ⓪-1b 표에 인용되지 않았다.** `docs/STEP_LEDGER.md:51`에도 "모델 재조사 3차"로 기록됐으나, 그 산출물의 중심 질문(`CLAUDE.md:43` 문장을 어떻게 고칠지)이 판정된 흔적이 `docs/STATE.md`에 없었다 — 2026-08-08의 "모델→질문" 전환은 그 질문에 대한 답이 아니라 다른 질문으로 옮겨간 것이었다. **08-07 조사 4건을 대체하지 않고 보완하는 방향으로 이번 조사를 재설계**했다.
+
+**계층 스캔(하한 5개, 여섯 번째는 못 찾음)**: ① 학술 팩터(`LENS_ROADMAP.md` 인용만, 재조사 안 함) ② 밸류에이션 모델(역DCF·DCF·상대가치·DDM·잔여이익/EVA·AlphaSpread) ③ 재무건전성·부도예측(Piotroski·Altman Z·Beneish M·Ohlson O) ④ 플랫폼 자체 모델(14개 — SWS Snowflake·Morningstar 3종·Zacks·Seeking Alpha Quant·Validea·WallStreetZen·IBD CAN SLIM·ChartMill·Value Line·YCharts·Finbox·TIKR·Koyfin·Wisesheets) ⑤ 주주환원·성장(Simply Safe Dividends·Sure Dividend·DRIP Investing·Shareholder Yield·로드맵 탈락/보류 3건 재검토). **여섯 번째 계층 후보를 검토했으나 명확히 구분되는 새 계층은 못 찾음** — 기술 종합 스코어는 이미 ④에, 학술 모멘텀·기술 팩터는 이미 ①에 있다.
+
+**⓪-1b**: 위 4건 + `docs/KNOWN_ANSWERS.md`(중복 없음 확인) + `LENS_ROADMAP.md`(7채용·3보조·2탈락·1보류) + `USER_QUESTIONS_2026-08-08.md`(Q0~Q5·AAII 근거) + `Q1_CARD_DESIGN.md` §2(16곳 후보·10곳 시도·3곳 성공·7곳 차단) + `LENS_DISPOSITION_2026-08-08.md` §2(🔴 "AAII 부재를 근거로 쓰면 안 된다" — 이번 조사에서도 지켰다) + `Q1_AXIS_DECISION.md`(relval.pdf 슬라이드 176) 전부 실제로 읽음.
+
+**저장소 자체 확인(밖에서 찾기 전에)**: `data/sources/` 인벤토리 — Damodaran multiples 4종·Morningstar Quant 방법론 PDF(이미 보유, 재활용)·Expectations Investing T3~T10 이미 있었고, **relval.pdf(상대가치 원전)는 인용만 되고 실제 저장은 안 돼 있었음**(이번에 공개접근 확인만, 저장은 범위 밖) 발견.
+
+**병렬 조사 5갈래**(배경 에이전트, 웹서치+WebFetch, robots.txt/봇탐지 즉시중단 원칙 준수 — 우회 시도 0건):
+- **미시도 6플랫폼**(1026·972가 남겨둔 공백): Finbox(Fair Value 블렌드, 부분공개)·Koyfin(모델 없음, 순수 데이터)·Value Line(Timeliness/Safety Rank, 1965년부터·Fischer Black 1973 학술검증·부분공개)·YCharts(Y-Rating, 부분공개)·TIKR(사용자 구성형 밸류에이션 빌더)·Wisesheets(모델 없음).
+- **재무건전성 원전**: Altman Z(1968, 유료 초록+본인 무료 회고논문에 공식 재수록)·Beneish M(1999, 유료+워킹페이퍼 사본 403 차단·임계값 -1.78/-2.22 출처 간 불일치 발견)·Ohlson O(1980, 유료+2차 재현으로만 확인).
+- **밸류에이션 모델**: Damodaran DCF·상대가치(relval.pdf 공개접근 HTTP200 확인)·DDM/Gordon(1959, 유료)·잔여이익(Ohlson 1995, 유료)·EVA(블랙박스, 조정방식 비공개)·AlphaSpread(전 페이지 403 차단).
+- **플랫폼 자체 모델 블랙박스 심층**: SWS Snowflake(부분공개, 5축 중 2축만 세부공개)·Morningstar 3종(Star=전면공개·Moat=부분·Quant=이미보유)·Zacks(부분, 결합가중치 비공개)·Seeking Alpha Quant(부분, 실격규칙까지는 공개)·**Validea Magic Formula(전면공개 — Greenblatt 원 공식 그대로 재현 확인, 아래 재검토의 핵심 근거)**·WallStreetZen(블랙박스)·IBD CAN SLIM(전면공개, 책 출판)·ChartMill(부분).
+- **주주환원/성장 + 탈락·보류 재검토**: Simply Safe Dividends(부분공개)·Dividend King/Aristocrat/Achiever(업계 관행, 3갈래 정본 각각 확인)·Shareholder Yield(Priest 2005→Faber 2015 계보 확인).
+
+**🔴 로드맵 탈락·보류 3건 재검토(재판정 없음, 데이터 쪽 변화만 확인)**: Shareholder Yield·Accruals는 **자체 백테스트 근거**(신호 자체가 약함/HML 재포장)라 데이터를 바꿔도 원 사유가 안 바뀜 — 확인 후 종결. Magic Formula는 **데이터 재료 부재**가 사유였는데, SEC us-gaap 택사노미에 여전히 전용 EBIT·투하자본 태그가 없음을 재확인(변화 없음) — 단 Validea가 Greenblatt의 공식 자체는 공개함(조달 방법은 비공개).
+
+**`link_hub` 병행 조회(⓪-5-B)**: US 139개 전 카테고리(10개) 전수 SQL 조회, 웹검색과 병행. 신규 발견 다수(Validea·IBD CAN SLIM·Simply Safe Dividends·Sure Dividend·DRIP Investing — 이 중 다수가 08-07 조사가 훑지 않은 `news`·`ipo` 카테고리에 있었음) — **"0건이면 병행 의무가 형식"이라는 ⓪-4 조건은 성립하지 않았다.**
+
+**차단된 곳 전수**(우회 시도 0건, 전부 대체 경로 시도 후 기록): Zacks(403)·WallStreetZen(403)·ChartMill(403, 1개 페이지만)·TIKR(403, 지원문서 1개)·YCharts(405)·**AlphaSpread(전 페이지 403 — 원전 확인 불가로 명시)**·Value Line(SSL 인증서 오류)·Beneish 워킹페이퍼 사본(403).
+
+**⓪-4 반증 조건 실측**: ① 팩터 밖 원전 확보 가능 모델 **12개 이상**(5개 기준 초과) → **"강력 후보 소진"은 팩터 계층 한정 판단이었음이 확증됨** ③ "수요 상위 대부분 블랙박스"는 🔴 **표에 없는 조합** — 완전공개(CAN SLIM·Magic Formula·Morningstar Star·Damodaran DCF/상대가치)와 부분공개가 섞여 있어 "대부분"은 부정확, 완전 블랙박스는 EVA·AlphaSpread 정도뿐 ④ link_hub 신규 발견 다수 → 병행 의무 실효.
+
+산출물 = `docs/MODEL_ROSTER.md`(신설). `docs/INDEX.md`에 등재(08-07 4건 바로 위, "같이 읽는다" 명시) · `docs/LENS_ROADMAP.md`에 원문 보존 + 한 줄 추가("강력 후보 소진은 팩터 계층 한정 판단이었다") · `docs/STATE.md` §⑥에 판정 대기 표시(08-07 4건과 함께).
+
+**못 한 것**: Stockopedia StockRank·Montier C-Score·CFROI/HOLT(08-07이 이미 소진 확인, 재조사 안 함) · Beneish 임계값 정본 미확정.
+
+**철회·정정**: 없음(신규 발견, 기존 결론 안 뒤집음) — STEP1033 명령서 자체의 파일명 인용 오타 정정(`LENS_DISPOSITION.md`→`LENS_DISPOSITION_2026-08-08.md`).
+
+**미측정**: KR 재현 가능성(US 단독 원칙상 범위 밖) · 08-07 조사가 이미 "못 잰 것"으로 남긴 항목(2026년 현재 사용률 등, 재조사 범위 밖).
+
+🔴 **이 STEP은 판정을 내지 않는다. `docs/MODEL_ROSTER.md` + 08-07 문서 4건 = 전부 판정 대기, 순위·선정 = 장은태.**
+
+---
+
 ## 2026-08-15 — 🟥 **STEP 1032: 프루닝을 켠다(🔴 되돌릴 수 없는 삭제 · 장은태 승인 완료) + 기록·정정 3건**
 
 > **성격**: STEP1031이 "되돌릴 수 없는 변경은 한 번에 하나씩"이라며 미뤄둔 축 — US `lens_scores`에서 76행을 실제로 삭제한다. **그냥 켜지 않고 삭제 상한(`PRUNE_MAX_ROWS=100`)을 같이 넣었다** — 4중 게이트(STEP833)는 전부 "계산이 잘 됐는가"만 보고 "몇 행을 지우는가"는 안 봤다(1031이 커버리지 게이트에 넣은 낙폭 상한 3%p의 대칭짝이 프루닝엔 없었다).
