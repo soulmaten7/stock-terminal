@@ -651,9 +651,37 @@ tr.hl td.m{color:#ffb3b3}
   <p class="note"><strong>9개 중 진짜 탈락은 2개뿐이고, 둘 다 사유가 ③(정직) 하나로 수렴한다.</strong> 나머지 7개는 표시 설계나 사업 조건 문제였지 모델 자격 문제가 아니었다.<br>
      관문이 일곱일 때 실제로 걸러낸 것은 둘이고, <span class="hi">다섯은 정당한 후보를 잘못 잘라냈다.</span> 그중에 <strong>사용률 4위(DCF)</strong>가 있다. 층이 섞인 관문이 많을수록 엉뚱한 것을 자른다.</p>
 
-  <h3>F-4. 순위 — 확정 대기</h3>
-  <p>통과 목록이 7개 늘었으므로 구 순위표(§3-B 12개)는 <strong>재정렬해야 한다.</strong> 그리고 관문 ①의 판정에는 <strong>개인 수요 실측</strong>이 선행한다(W-2-2).</p>
-  <div class="ph">개인 수요 실측 후</div>
+  <h3>F-4. 순위 — 관문 3개로 재정렬 (STEP1037 실측 기반)</h3>
+  <p class="note">판정이 아니다. 관문 통과 여부와 재료 상태를 나란히 놓은 것까지다. <strong>무엇을 먼저 만들지는 장은태.</strong><br>입력 = <code>docs/probe_1037_retail_demand.md</code>(방법 A·B·C 교차, 세 방법이 <strong>수렴</strong>).</p>
+  <div class="tbl"><table>
+    <thead><tr><th>정보</th><th style="width:150px">① 원하는가</th><th style="width:90px">② 정확한가</th><th style="width:150px">③ 정직한가</th><th style="width:110px">재료</th><th style="width:100px">우리 현황</th></tr></thead>
+    <tbody>
+      <tr><td class="m">배수(PER·PBR·PSR·EV/EBITDA)</td><td><span class="hi">최상위</span>(A+B+C 수렴)</td><td><span class="b b0">가정 0</span></td><td><span class="b b0">통과</span></td><td><code>us_valuation</code></td><td>있음</td></tr>
+      <tr><td class="m">재무건전성(F-Score형)</td><td>✅</td><td><span class="b b0">통과</span></td><td>원전(Piotroski 2000)</td><td>✅</td><td>있음</td></tr>
+      <tr><td class="m">최근 변화(모멘텀·기술)</td><td>펀드매니저 87%·개인 55%</td><td><span class="b b0">통과</span></td><td>원전</td><td>✅</td><td>있음</td></tr>
+      <tr><td class="m">업종 대비 위치</td><td><span class="b b1">직접 수요 미측정</span></td><td><span class="b b0">통과</span></td><td>✅</td><td><code>us_sector_relative</code></td><td>있음</td></tr>
+      <tr><td class="m">배당(수익률·성장·지속성)</td><td>AAII 73%</td><td><span class="b b0">통과</span></td><td>✅</td><td><span class="hi"><code>dividends</code> 60행뿐</span>(1,977종목 중)</td><td><span class="b b3">재료 갭</span></td></tr>
+      <tr><td class="m">시장 내재 기대(역DCF)</td><td><span class="b b1">간접</span>(적정가 수요의 변환)</td><td><span class="b b1">가정 3</span></td><td><span class="b b0">통과</span></td><td><code>revdcf_results</code></td><td>있음·화면 OFF</td></tr>
+      <tr><td class="m">부도 위험(Altman Z류)</td><td><span class="b b1">중간</span></td><td><span class="b b0">통과</span></td><td>원전·계수 공개</td><td>SEC 태그로 조립 가능</td><td>없음</td></tr>
+      <tr class="hl"><td class="m">적정주가/내재가치</td><td><span class="hi">수요 1위</span></td><td><span class="b b3">탈락</span> — 우리가 값을 매김</td><td>—</td><td>—</td><td><span class="b b3">만들지 않는다</span></td></tr>
+      <tr class="hl"><td class="m">애널리스트 목표주가</td><td>4~5위</td><td><span class="b b3">탈락</span></td><td><span class="b b3">탈락</span> — 남의 판단, 검산 불가</td><td>—</td><td><span class="b b3">만들지 않는다</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h4 style="font-size:13.5px;color:var(--tx2);margin-top:18px">F-4-1. 이 표가 말하는 것 셋</h4>
+  <p><strong>① 수요 1위(적정주가)는 관문 ②에서 탈락하는데, 그 자리를 「시장 내재 기대」가 대신한다.</strong><br>
+     F-1-1 그대로다 — "차이는 계산이 아니라 문장". "우리가 매긴 적정가"는 못 주지만 "이 주가가 가정하는 성장률"은 준다. 같은 수요에 정직하게 답하는 형태이며, <span class="hi">무료로 완전공개하는 곳이 드물어 차별화가 가장 큰 자리</span>이기도 하다.</p>
+  <p><strong>② 상위 네 개가 전부 「이미 있는 것」이다.</strong><br>
+     배수·재무건전성·최근 변화·업종 대비 — 넷 다 7렌즈나 <code>us_valuation</code>으로 존재한다. <span class="hi">그러면 MODEL_BUILD_ORDER §3-2가 2026-08-07에 제기하고 아직 판정되지 않은 질문이 다시 정면으로 온다</span> — "새 모델 1개를 골라야 한다는 전제 자체가 성립하지 않았을 수 있다. 골라야 했던 게 아니라 이미 있는 것 중 사용률 1위를 제대로 만들었어야 했다." <strong>판정 = 장은태.</strong></p>
+  <p><strong>③ 수요가 측정된 적 없는데 아무도 안 주는 것이 하나 있다 — 「방법론 공개」.</strong><br>
+     <code>probe_1037</code> 방법 C(역방향)의 발견. 아무도 "계산 방법을 알고 싶냐"고 물은 적이 없어 수요 수치가 없고, 그래서 어느 순위표에도 오르지 않는다. 그러나 <strong>HOW 조건 3·창작금지 규칙과 직결</strong>되고 완전공개하는 곳은 소수다.</p>
+  <p class="note">이것은 「정보」가 아니라 「모든 정보에 붙는 표시 방식」이므로 순위표의 행이 아니다. MODEL_BUILD_ORDER §3-3("차별화는 모델이 아니라 정직함에서 나온다")이 추론이었는데, 이번에 역방향 실측으로 뒷받침됐다.</p>
+
+  <h4 style="font-size:13.5px;color:var(--tx2);margin-top:18px">F-4-2. 새로 드러난 것 둘 — 판정 대기</h4>
+  <p><strong>㉠ <code>dividends</code> 60행.</strong> AAII 수요 73%(배수 다음 2위)인데 재료가 1,977종목 중 <span class="hi">60행</span>뿐이다. 관문 ①②③은 전부 통과인데 재료에서 막힌다 — HOW H-4(막혔을 때) 대상이다.<br>
+     <strong>㉡ Q0~Q5에 안 붙는 축이 있다.</strong> "정보를 어디서·어떻게 얻는가"(출처 신뢰도·표시 방식)는 현재 질문 여섯 중 어디에도 안 붙는다. W-2-1이 예고한 그룹핑 재설계의 첫 실물 근거다.</p>
+
+  <p class="note" style="margin-top:14px">🔎 <strong>개인 수요 실측 조사 완료(STEP1037, 2026-08-15)</strong> — 3방법(개인직접·드러난선호·역방향) 교차 결과 = <code>docs/probe_1037_retail_demand.md</code>. 판정 없음, F-4의 입력으로만 존재.</p>
 </section>
 
 <section class="pending">
