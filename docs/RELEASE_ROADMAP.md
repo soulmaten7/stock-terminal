@@ -1,6 +1,8 @@
 <!-- 2026-07-11 -->
 # 🚀 RELEASE ROADMAP — 1·2·3차 출시 로드맵
 
+> 🅿️ **동결 — 2026-08-08 「🇺🇸🔒 전면 US 단독」 규칙**(`CLAUDE.md`). 이 문서는 **"1차 출시 = 한국 완결" 전제로 짜인 KR 시장 주제**라 신규 착수 대상이 아니다. **내용은 유효하며 삭제·이동하지 않았다.** 🔴 **판정·감사·출시 순서 결정에서 이 문서를 결론에 넣지 말 것 — 현행 순서는 `docs/ROADMAP_V2.md`(WHY~완성의 정의 확정) + `docs/BUILD_SEQUENCE.md`.** ✅ US 완성 후 확장 1순위(한국)에서 재개(2026-08-15 STEP1039 확인).
+>
 > **확정: 2026-07-11.** 근거: `KR_COMPLETENESS_AUDIT` + 5개국 뎁스 감사(이 세션) + 경쟁 아이덴티티 조사.
 > 관련: `docs/LAUNCH_PLAYBOOK.md`(출시 전 QA 체크리스트) · `docs/AD_MONETIZATION_PLAYBOOK.md` · `docs/BRAND_IDENTITY.md`.
 

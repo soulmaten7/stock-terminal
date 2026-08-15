@@ -201,11 +201,10 @@ tr.hl td.m{color:#ffb3b3}
     <table>
       <thead><tr><th style="width:26px">#</th><th style="width:220px">남은 판정 대기 항목</th><th>무엇이 걸려있는가</th><th style="width:150px">위치</th></tr></thead>
       <tbody>
-        <tr><td class="m">1</td><td>완성 기준 항목9 KR·US 표기</td><td>원문 "KR·US 각 2종목"이 <code>CLAUDE.md</code> 🇺🇸🔒 US 단독 정책과 충돌 — US 기준으로 고쳐야 한다</td><td>완성의 정의 C-3 ㉠</td></tr>
-        <tr><td class="m">2</td><td>G7(자동화)의 소속</td><td>관문(모델 자격)인지 사업 조건(수익 모델)인지 — 매일 안 도는 모델은 사실상 못 쓴다는 반론 있음</td><td>무엇을 먼저 F-2 · 수익 모델 M-2</td></tr>
-        <tr><td class="m">3</td><td>커버리지·자동화 구체 임계값</td><td>몇 %·며칠이어야 T2·T3(트래픽)·T1(재방문)을 켤 수 있는지 — 아직 숫자 없음</td><td>수익 모델 M-4</td></tr>
-        <tr><td class="m">4</td><td><code>BRAND_IDENTITY</code> §33 재작성 여부</td><td>STEP1038 실측 — §33의 5곳이 트래픽 규모 근거로 뽑힌 목록이 아님(Validea는 최소 후보 대비 1/75~1/800 규모). 결론이 틀린 게 아니라 표본이 임의였다는 것</td><td>수익 모델 M-4</td></tr>
-        <tr><td class="m">5</td><td>Q시리즈(Q0~Q5) 재검토</td><td>원하는 정보 목록이 먼저이고 질문 모델은 그 그룹핑이라는 점이 확인됨(W-2-1) — 목록을 다시 실측하고 그룹핑을 다시 하는 작업 자체는 착수 전</td><td>WHAT W-2·W-2-1</td></tr>
+        <tr><td class="m">1</td><td>G7(자동화)의 소속</td><td>관문(모델 자격)인지 사업 조건(수익 모델)인지 — 매일 안 도는 모델은 사실상 못 쓴다는 반론 있음</td><td>무엇을 먼저 F-2 · 수익 모델 M-2</td></tr>
+        <tr><td class="m">2</td><td>커버리지·자동화 구체 임계값</td><td>몇 %·며칠이어야 T2·T3(트래픽)·T1(재방문)을 켤 수 있는지 — 아직 숫자 없음</td><td>수익 모델 M-4</td></tr>
+        <tr><td class="m">3</td><td><code>BRAND_IDENTITY</code> §33 재작성 여부</td><td>STEP1038 실측 — §33의 5곳이 트래픽 규모 근거로 뽑힌 목록이 아님(Validea는 최소 후보 대비 1/75~1/800 규모). 결론이 틀린 게 아니라 표본이 임의였다는 것</td><td>수익 모델 M-4</td></tr>
+        <tr><td class="m">4</td><td>Q시리즈(Q0~Q5) 재검토</td><td>원하는 정보 목록이 먼저이고 질문 모델은 그 그룹핑이라는 점이 확인됨(W-2-1) — 목록을 다시 실측하고 그룹핑을 다시 하는 작업 자체는 착수 전</td><td>WHAT W-2·W-2-1</td></tr>
       </tbody>
     </table>
   </div>
@@ -716,7 +715,7 @@ tr.hl td.m{color:#ffb3b3}
       <tr><td class="m">6</td><td class="m">주장 정합</td><td>검증 범위·실패 모드·적용 조건이 공개 문서와 무모순</td></tr>
       <tr><td class="m">7</td><td class="m">화면 일관성</td><td>카드·목록·변화 피드·이메일·브리핑에서 <strong>같은 이름·판정·단위</strong></td></tr>
       <tr><td class="m">8</td><td class="m">테스트</td><td>참조값 유닛테스트 + 경계 케이스(<span class="hi">스냅샷 금지·값 검증</span>)</td></tr>
-      <tr class="hl"><td class="m">9</td><td class="m">라이브 실측</td><td>아래 C-3 참조 — <span class="hi">판정 대기 항목</span></td></tr>
+      <tr><td class="m">9</td><td class="m">라이브 실측</td><td>US 2종목(2026-08-15 STEP1039 정정 — 아래 C-3 참조)</td></tr>
     </tbody>
   </table></div>
   <p class="note">원전이 없는 항목은 1번을 「정의 공개표」로 대체합니다(창작금지 규칙 5-1) — 항목·우리 정의·왜 이렇게 정했나·다른 관행·성립 안 하는 경우.</p>
@@ -725,17 +724,17 @@ tr.hl td.m{color:#ffb3b3}
   <div class="grid g4">
     <div class="card"><div class="src">① 구성요소 분해</div><div class="def">항등식으로 쪼개지는가</div></div>
     <div class="card"><div class="src">② 시계열</div><div class="def">이력이 있는가</div></div>
-    <div class="card"><div class="src">③ 분포 내 위치</div><div class="def">표본 수·순위가 화면에 노출되는가</div></div>
+    <div class="card"><div class="src">③ 분포 내 위치</div><div class="def"><span class="hi">실제 분포 값</span> — min·p30·중앙·p70·max를 DB로 집계했는가. 노출 여부가 아니라 값을 갖췄는가</div></div>
     <div class="card"><div class="src">④ 판정 이력</div><div class="def">언제 바뀌었는가</div></div>
   </div>
   <p class="note">성립 안 하는 축은 「성립 안 함」이라고 씁니다. 억지로 만들지 않습니다.</p>
 
   <h3>C-3. 항목 9(라이브 실측) — 두 가지 정정</h3>
   <div class="fix">
-    <div class="fh">㉠ US 단독 정책과의 충돌</div>
+    <div class="fh">㉠ US 단독 정책과의 충돌 — 판정 사항이 아니었다(2026-08-15 STEP1039 정정 완료)</div>
     <div class="fitem">
       <div class="old">원문 "KR·US 각 2종목"</div>
-      <div class="new"><code>CLAUDE.md</code> 🇺🇸🔒 US 단독 정책과 충돌합니다. 실제로 Q0에서 "구조적 불일치"로 판정 보류된 전례가 있습니다. <strong>US 기준으로 고쳐야 한다 — 판정 대기.</strong></div>
+      <div class="new"><strong>US 2종목</strong>입니다. <code>CLAUDE.md:31</code>이 이미 정본입니다("무조건 언어권도 US 탭도 US만 만드는 거야", 2026-08-08). Q0에서 이것을 "구조적 불일치·판정 보류"로 남긴 것은 US 단독 전환 전후의 낡은 처리였고, <strong>정본(<code>LENS_COMPLETION_STANDARD.md</code>)의 문구를 고쳐 그 보류를 해제했습니다</strong>(Q0·Q1 DoD9 재판정 포함).</div>
     </div>
   </div>
 
@@ -758,14 +757,15 @@ tr.hl td.m{color:#ffb3b3}
   <div class="tbl"><table>
     <thead><tr><th style="width:50px">#</th><th style="width:190px">계층</th><th style="width:130px">성격</th><th>상태</th></tr></thead>
     <tbody>
-      <tr><td class="m">T1</td><td class="m"><strong>AI 구독</strong></td><td>기둥·정기결제</td><td>최대·장기. WHAT ③(자체 AI)이 여기</td></tr>
-      <tr><td class="m">T2</td><td class="m"><strong>증권사 어필리에이트</strong></td><td>성과형(계좌개설당)</td><td>큼·확장형. <strong>투자권유 아님으로 설계</strong></td></tr>
-      <tr><td class="m">T3</td><td class="m">디스플레이·스폰서 슬롯</td><td>브릿지</td><td>트래픽 비례</td></tr>
-      <tr><td class="m">T4</td><td class="m">데이터 라이선싱</td><td>B2B</td><td>후순위</td></tr>
+      <tr><td class="m">T1</td><td class="m"><strong>AI 구독</strong></td><td>기둥·정기결제</td><td><strong>최대·장기</strong>. WHAT ③(자체 AI)이 여기</td></tr>
+      <tr><td class="m">T2</td><td class="m"><strong>증권사 어필리에이트</strong></td><td>성과형(계좌개설당)</td><td><strong>큼·확장형</strong>. <strong>투자권유 아님으로 설계</strong></td></tr>
+      <tr><td class="m">T3</td><td class="m">디스플레이·스폰서 슬롯</td><td>브릿지</td><td><strong>중</strong> · 트래픽 비례</td></tr>
+      <tr><td class="m">T4</td><td class="m">데이터 라이선싱</td><td>B2B</td><td><strong>중·장기</strong> · 후순위</td></tr>
       <tr class="hl"><td class="m" style="text-decoration:line-through;color:var(--tx4)">T5</td><td class="m" style="text-decoration:line-through;color:var(--tx4)">리딩방·투자자문 게재</td><td>—</td><td><span class="b b3">2026-08-15 제거</span> <code>spinoff/advisor-directory/</code></td></tr>
     </tbody>
   </table></div>
-  <p class="note">T5는 규제 리스크로 강등돼 있다가 이날 완전히 제거됐습니다. 코드·DB·i18n 전부.</p>
+  <p class="note">T5는 규제 리스크로 강등돼 있다가 이날 완전히 제거됐습니다. 코드·DB·i18n 전부.<br>
+     <span class="hi">규모 서열은 T1 &gt; T2 &gt; T3 = T4 &gt; T5</span>(원문 <code>AD_MONETIZATION_PLAYBOOK</code> §1의 명시 등급).</p>
 
   <h3>M-2. 커버리지와 자동화가 여기로 온 이유</h3>
   <p>F-2에서 구 관문 G3(커버리지)·G7(자동화)을 이 층으로 보냈습니다. 출처가 각각 "수익화되려면 트래픽이 있어야 한다"·"해자는 자동화 + 분포"로 <strong>둘 다 사업 논리</strong>이기 때문입니다.</p>

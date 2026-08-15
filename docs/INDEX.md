@@ -67,7 +67,7 @@
 | `docs/BRAND_IDENTITY.md` | **[최신]** 브랜드 정체성 — 3기둥(무기·직시·자립)·멍거 목소리·§0 외부 슬로건 "종목을 보는 눈을, 누구에게나" | 브랜드·카피·정체성 결정 전 |
 | `docs/VOICE_GUIDE.md` | 카피 보이스 — "원어민 전문가처럼"(번역·AI조어 금지) | 노출 카피 작성 시 |
 | `docs/LENS_COPY.md` | 렌즈 겉면 카피(언어별 원본) — `lib/lensCopy.ts` 소스 | 렌즈 라벨·설명 문구 편집 시 |
-| `docs/LOGO_PROMPT.md` | 로고 생성 프롬프트(Claude SVG 디자인용) | 로고·파비콘 작업 시 |
+| `docs/LOGO_PROMPT.md` | 로고 생성 프롬프트(Claude SVG 디자인용). 🅿️ **타깃 문구가 KR 전제**(2026-08-15 STEP1039 정정 표시, 시각 모티프·톤은 무효 아님) | 로고·파비콘 작업 시 |
 | `docs/LAUNCH_INFO.md` | 출시 정보 — 푸터 사업자정보·연락처(원트릴리언 210-39-33812) | 푸터·메타·법적 표기 채울 때 |
 
 ---
@@ -82,7 +82,7 @@
 | `docs/PRODUCT_SPEC_V3.md` | [보존] V3 — Stock Terminal 초기 스펙 | V3 히스토리 참고 |
 | 🔴🔑 **`docs/ROADMAP_V2.md`**(2026-08-15 착수, 갱신 중 · 사실관계 검증 완료) | **[개정 중 — WHY·HOW 층 정본]** 마스터 로드맵 전면 개정, 장은태와 층별로 확정하며 하강(WHY✅·HOW✅ 확정·WHAT/절차/순서/완성/수익모델은 확정 대기). WHY = 문제·현인 앵커(멍거·버핏·파인만, `BRAND_IDENTITY.md`와 대조 확인)·구본 §1 오류 정정. HOW = 조건 3(정확·단순·왜)의 실행 방법(`LOCALE_SOURCE_PLAYBOOK.md` §2·§3·§4·§11·`AD_MONETIZATION_PLAYBOOK.md` §1·`BRAND_IDENTITY.md` §4·창작금지 규칙 5-1 대조 — 대체로 정확, 사소한 불일치 2건·부분 불일치 1건 발견·목록 보고, 문서 미수정). 사본 = `docs/roadmap_v2.html` | **WHY·HOW 확인 시 이 문서가 `ROADMAP.md` §1보다 우선** |
 | `docs/ROADMAP.md` | 🔴 **개정 중 — WHY 층은 위 V2가 정본.** 마스터 로드맵(구본, 2026-07-18 정지) — 무엇을/어떤 순서로(Phase 단일 기준), KR중심·6개국탭 전제로 이력 보존 | STATE 다음(WHY 이외 순서 확인) |
-| `docs/RELEASE_ROADMAP.md` | **[최신·핵심]** 1·2·3차 출시 로드맵 — 국가셋(KR·US·JP·GB·홍콩·VN)·차수별 범위·광고 활성화 시점 | 출시 계획·차수 결정 시 |
+| 🅿️ `docs/RELEASE_ROADMAP.md` | ~~[최신·핵심]~~ 🔴 **동결(2026-08-15 STEP1039 확인)** — 1·2·3차 출시 로드맵, "1차=한국 완결" 전제라 US 단독 규칙과 충돌. 내용은 유효, 결론에 넣지 말 것 | 히스토리 참고만 — 현행 순서는 `ROADMAP_V2.md`+`BUILD_SEQUENCE.md` |
 | `docs/SITE_MAP_V7.md` | SITE MAP V7 — 네이버 증권 구조 복제 spec | IA·메뉴 구조 작업 시 |
 | `docs/_archive/TOSS_ANALYSIS_AND_IA.md` | 토스증권 전체 분석 + 새 IA(토스식 개편 spec) | IA 개편 참고 |
 | 🅿️ `docs/NAVER_STOCK_PAGE_ANALYSIS.md` | 네이버 종목 페이지 디테일 분석 + Gap(V6) | 종목 페이지 디테일 보강 시 |
@@ -130,7 +130,7 @@
 | `docs/AI_LENS_TECHNIQUE_MAP.md` | 주식 분석 기법 정밀 매핑표(결정론/LLM·오픈소스·라이선스) | 기법 구현 근거 조사 |
 | `docs/_archive/AI_BRIEFING_SPEC.md` | AI 브리핑 레이어(R1~R3) — LLM=글 읽어 사실로(비예측) | 브리핑 층 작업 시 |
 | `docs/EVENT_LAYER_SPEC.md` | 이벤트(공시) 사실 레이어 — "세 번째 시계"(US 완성형) | 이벤트/공시 층 작업 시 |
-| `docs/ETF_LENS_PLAN.md` | ETF/ETN/REIT "상품 구성" 상세 설계 | ETF 상품 구성 작업 시 |
+| `docs/ETF_LENS_PLAN.md` | ETF/ETN/REIT "상품 구성" 상세 설계(US·KR 데이터소스 혼재 — 🅿️ §1의 KR ETF 항목만 동결, US ETF 항목은 유효) | ETF 상품 구성 작업 시 |
 
 ---
 
@@ -183,7 +183,7 @@
 |------|------|-----------|
 | `docs/BUSINESS_STRATEGY.md` | 비즈니스 전략서 [보존·V3, 결정 로그는 최신 누적] — 수익모델·AI전략·핵심 결정 | 사업 전략·결정 이력 참조 |
 | `docs/AD_MONETIZATION_PLAYBOOK.md` | **[최신]** 광고·수익화 런북(전 언어권)·슬롯 인벤토리·어필리에이트·합법성 원장 | 광고·수익화 작업 전 |
-| `docs/LAUNCH_PLAYBOOK.md` | **[최신]** 한국탭 완성→공개 로드맵 + 출시 전 검수 체크리스트(규제 조사) | 출시 준비·검수 시 |
+| 🅿️ `docs/LAUNCH_PLAYBOOK.md` | ~~[최신]~~ 🔴 **동결(2026-08-15 STEP1039 확인)** — 제목·목적 자체가 "한국탭 완성→공개"로 US 단독 규칙과 충돌. 내용은 유효, 결론에 넣지 말 것(규제 조사 부분은 국가 무관 참고 가능) | 히스토리 참고만 — 현행 출시 순서는 `ROADMAP_V2.md`+`BUILD_SEQUENCE.md` |
 | `docs/BUSINESS_CLAIM_SPEC.md` | 🔴 [이력] 리딩방·업체 클레임/관리 설계 — 2026-08-15 STEP1035로 기능 자체 삭제(`spinoff/advisor-directory/`로 이전). 설계 이력으로만 보존 | (작업 대상 아님 — 참고용) |
 | `docs/_archive/ROOM_VERIFICATION_SPEC.md` | [이력] 리딩방 검증 설계(금감원 등록·신고 뱃지 · 정체성 프레임=[이력]→BRAND_IDENTITY) — 2026-08-15 STEP1035로 기능 삭제 | (작업 대상 아님 — 참고용) |
 | `spinoff/advisor-directory/README.md` | 🆕 리딩방·유사투자자문 검증 디렉토리 — 본체 삭제 후 분리 보관된 코드의 안내(무엇/왜/DB의존성/복원절차/법적주의사항). DB 스키마 원문은 형제 파일 `spinoff/advisor-directory/schema.sql` | 이 기능을 타 플랫폼에서 재사용하려 할 때 |
@@ -224,7 +224,7 @@
 | `docs/US_UNIVERSE_DIAGNOSIS_2026-07.md` · `UNIVERSE_DEFINITION_MEASUREMENT_2026-07.md` | US 유니버스 진단·정의 측정 | 모집단 변경 전 |
 | 🅿️ `docs/FREE_DATA_PROBE_2026-07.md` | 무료 데이터 소스 정찰 | 새 소스 검토 시 |
 | 🅿️ `docs/TIER3_LLM_I18N_DESIGN.md` | LLM 생성물 i18n 설계 | ko 재개 시 |
-| `docs/ABOUT_REWRITE_DRAFT.md` · `docs/BETA_INVITE.md` | About 초안 · 베타 초대 문안 | 카피 작업 시 |
+| `docs/ABOUT_REWRITE_DRAFT.md` · `docs/BETA_INVITE.md` | About 초안 · 베타 초대 문안. 🅿️ **ABOUT_REWRITE_DRAFT §5("6개 시장")는 US 단독 규칙 이전 문구**(2026-08-15 STEP1039 정정 표시) — 실사용 전 다시 확인 | 카피 작업 시 |
 | `docs/_archive/LENS_7_COMPLETED.md` | 🗄️ 7렌즈 완료 기록 | 히스토리 |
 
 ---
