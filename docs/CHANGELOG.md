@@ -1,13 +1,39 @@
 <!-- 2026-08-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-15 — 🔵 **STEP1042: Q1을 켜기 위해 실제로 남은 판정만 추린다 + 정정 1건**
+
+> 코드 diff 0 · Production 무접촉(`Q1_ENABLED`·`REVDCF_ENABLED` 변경 0) · 화면 변경 0. 로컬 dev를 `Q1_ENABLED=true` 프로세스 환경변수 오버라이드(파일 미수정)로 잠시 기동해 API 레벨만 관찰 후 종료.
+
+**① 미결 판정 두 방법으로 수집**: 문서(`STATE.md`·`USER_QUESTIONS`§7·`Q1_AXIS_DECISION`·`Q1_YAHOO_REMOVAL`·`SECTOR_AXIS_APPLICABILITY`)에서 9건(ⓛ·ⓜ·ⓞ·선결질문·7렌즈vs신설·조건부4칸 3종·0층화면표시), 코드·DB 직접 조회에서 6건(sectorSource 침묵·정본값 미서빙·PSR×Financials 규모·NO_VALUE 미분리·축구성 이미구현·revdcf 미배치) — **차집합이 이 STEP의 실수확**: `sectorSource`(us_sector_wide as_of 08-08 vs us_valuation 08-14, 6일 뒤처짐)·정본값(median-relative) 미서빙·PSR×Financials 규모(61→405건, 6.6배)는 어느 문서에도 이 형태로 없었다.
+
+**② 🔑 재정의 대조**: ⓜ(축구성 A~D) = **①해소** — `components/Q1Section.tsx:56-81`(STEP957)이 이미 선택지 C(헤드라인 PER 승격+4축 병렬)를 구현. 「7렌즈 수리 vs Q1~Q4 신설」 = **①해소** — `probe_1041` 순위표가 이미 혼합 실행 중(재무건전성·최근변화=7렌즈 재사용, 배수+역DCF=Q1 신설). 0층(이익상태) 화면표시 = **①해소**(이번 STEP 자체가 답) — 오늘 API 실측(AAOI·AAME)으로 헤드라인이 PER 종속이라 적자면 자동 안전문구 확인. ⓛ·ⓞ·선결질문 = **③그대로**. 조건부4칸·sectorSource = **③그대로(정책)+④신규(규모·존재 자체)**.
+
+**③ 켜기 전 필수/켠 뒤 가능 — 기준 먼저 명시 후 분류**: 기준 = "안 정하면 틀리거나 오해를 부르는 값이 나가는가". **필수 2건**: ① 조건부4칸(PSR×Financials **405건**, 08-09의 61건 대비 6.6배 — STEP996 SEC 벌크적재 결과) 화면처리 판정, `SECTOR_AXIS_APPLICABILITY` 처방③이 최소변경안으로 이미 있음 ② `sectorSource` 침묵 버그 — 표본 4종목(AAPL·AAOI·AAME·CTO) 전부 null 확인, "출처를 밝힌다"는 원칙이 100% 침묵 중. **나중 3건**: ⓛ(sector값 자체는 이미 최선, §7 "정답에 경고 안 단다" 기존 방향)·ⓞ(percentile이 틀린 값 아님, 대조군 유지가 이미 결정됨)·선결질문(Q1_ENABLED와 무관한 별도 트랙, 982가 이미 ⓐ판정).
+
+**④ C-1 9항목 대조** — Q1: 확실한 통과 3개(값검증·컷분포·테스트) · 미완 2개(입력검증=ⓛ대기·라이브실측=육안검증전) · 부분 3개(원전대조표·경계처리·주장정합=sectorSource모순) · 해당없음 1개(화면일관성). 🔑 "완성"이 아니라 "노출 직전 상태".
+
+**⑤ 오늘 DB 실측 + 로컬 API 관찰**: 4축 성립률(PER 1,391·PBR 2,187·PSR 2,337·EV/EBITDA 961, 모집단 4,000) · PER NO_VALUE(1,821) 사유분해 — NEGATIVE_EARNINGS 55.4%(1,008)·MISSING_NET_INCOME 38.9%(708)·MISSING_MARKET_CAP 5.8%(105), 적자가 결측보다 흔함. 대표 4종목 API 실관찰 — AAPL(PER 48.9%ile·PBR 97.8%ile, 48.9%p 격차로 Q1_AXIS_DECISION §3 실측 재확인) · AAOI(적자, PER/EV-EBITDA 안전문구·PBR 86.2%ile/PSR 88.9%ile은 정상표시 — 헤드라인·grid 인상차 육안검증 재료로 기록) · AAME(적자+Financials, PBR/PSR 1.6%ile 정상동작) · CTO(Real Estate, PER 319.6x/95.8%ile — Q1_AXIS_DECISION §5 인용 "316x"와 사실상 일치 재확인, EV/EBITDA SAMPLE_TOO_SMALL n=19<20 게이트 실동작).
+
+**⑥ 최소 승인 세트(1-5)**: 조건부4칸 처리방식 선택 · sectorSource 수정방식 선택 · (선택) ⓛ·ⓞ 지금 정할지 미룰지 재확인 — 셋 다 서로 독립(측정 가능한 의존 없음, 미측정으로 명시).
+
+**⑦ 정정 1건(2-1)**: `CHANGELOG.md`(STEP1041행)·`STEP_LEDGER`(1041행)의 "실제 종목상세 페이지에 렌더링 중"이 사실이 아님을 정정 — `page.tsx:178`의 `{q1Enabled() && (…)}` 서버 가드로 `Q1_ENABLED=false`면 클라에 전혀 안 내려감. "배선 완료 상태로 피처 플래그 뒤에서 대기 중(화면 노출 0)"으로 수정.
+
+산출물 = `docs/probe_1042_q1_gate.md`. `STATE.md:73`·#4(91행)·⑥"다음에 할 일"(211행) 갱신, `ROADMAP_V2.md` F-4-4 신설 + `roadmap_v2.html` 동기화.
+
+**게이트**: 게이트7·9 해당없음(코드·DB 무변경). **못 한 것**: 브라우저 실렌더 확인(API 레벨까지만, 도구 제약) · disagree 266건 오늘 재실측(08-08 인용만, 필수 아니라 우선순위 안 둠). **철회·정정**: 위 ⑦ + ⓛ을 처음엔 필수로 가늠했다가 §7 원문 재확인 후 나중으로 재분류(과정 중 정정). **미측정**: 최소 승인 세트 3항목 간 실제 의존관계(둘 다 "화면 정책" 판정이라 DB로 잴 성격 아님) · sectorSource 버그의 원인 크론 특정(증상만 확인).
+
+🔴 **판정 금지는 "아직 안 함"·"미측정"뿐. 최소 승인 세트·필수/나중 분류는 도출 결과이며 실행은 전부 장은태.**
+
+---
+
 ## 2026-08-15 — 🔵 **STEP1041: 모델 선정 — 63개 우주에 새 기준(관문3+0층+오늘재료+이용가치)을 걸어 순위 도출**
 
 > 코드 diff 0(문서 전용). 63개를 새로 찾지 않음(재료는 `MODEL_UNIVERSE_63`·`MODEL_ROSTER`·`MODEL_BUILD_ORDER`·`MARKET_MODEL_USAGE_TOP20` 그대로). DB 읽기는 오늘 재료 실측을 위해 함(Supabase MCP).
 
 **① 정보↔모델 매핑(1-1)**: `probe_1040`의 0층·1층·시간축 각 칸에 63개 후보를 붙임. 0층(업종·이익상태)엔 **후보 0개**(계산모델이 아니라 분류·상태값). 어느 칸에도 안 붙는 모델 22개(팩터포트폴리오류·기술보조지표·추정치기반·위험성과지표·옵션 등) — 🔑 저변동성·자산성장(현 7렌즈 소속)도 여기 포함, probe_1040의 수요확정 7항목에 원래 없었다는 관찰과 일치. Beneish M-Score는 "구조에 빠진 칸일 수 있음"으로 판정보류.
 
-**② 🔑 네 축 적용(1-2)**: 관문3(정보칸 상속)+0층적용성(신규축)+재료(오늘 실측)+이용가치. **핵심 발견 — 08-07엔 없던 태그 2개가 오늘 채워짐**: `us_fundamentals.net_income`(64.6%)·`equity`(64.0%) — Assets·Liabilities는 오늘도 컬럼 자체 없음. 이 덕에 EV/EBITDA·P/E·P/B·PSR이 `us_valuation`에 **이미 완성**돼 있고, `app/api/q1/[symbol]/route.ts`+`components/Q1Section.tsx`(STEP956·957)가 **이미 배선까지 완료**해 실제 종목상세 페이지에 렌더링 중임을 발견 — 막고 있는 건 `Q1_ENABLED="false"`(기본OFF 피처플래그) 하나.
+**② 🔑 네 축 적용(1-2)**: 관문3(정보칸 상속)+0층적용성(신규축)+재료(오늘 실측)+이용가치. **핵심 발견 — 08-07엔 없던 태그 2개가 오늘 채워짐**: `us_fundamentals.net_income`(64.6%)·`equity`(64.0%) — Assets·Liabilities는 오늘도 컬럼 자체 없음. 이 덕에 EV/EBITDA·P/E·P/B·PSR이 `us_valuation`에 **이미 완성**돼 있고, `app/api/q1/[symbol]/route.ts`+`components/Q1Section.tsx`(STEP956·957)가 **배선 완료 상태로 피처 플래그 뒤에서 대기 중(화면 노출 0)**임을 발견 — `page.tsx:178`이 `{q1Enabled() && (…)}` 가드 안에 두고 있어 `Q1_ENABLED="false"`(기본OFF)인 지금은 서버 분기라 클라로 전혀 안 내려간다(🔴 2026-08-15 STEP1042 정정 — "렌더링 중"은 사실이 아니었다).
 
 **③ 순위 도출(1-3)**: 정렬규칙(관문3→완성여부→재료→이용가치→동점허용)을 먼저 명시 후 적용 — 1~3위 EV/EBITDA·P/E·P/B(이미완성) · 4위 P/S·EV/Sales(부분) · 5위 역DCF(이미완성, REVDCF_ENABLED=false 대기) · 6위 재무건전성 · 7위 최근변화(둘다 7렌즈 기완성) · 8위 배당(재료갭 dividends60행) · 9~11위 부도위험·DuPont·Graham(미구축, Assets/Liabilities 부재).
 

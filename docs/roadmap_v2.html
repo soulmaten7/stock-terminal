@@ -742,6 +742,17 @@ tr.hl td.m{color:#ffb3b3}
   </table></div>
   <p class="note"><strong>F-4-1②("새 모델 찾기가 아니라 1위를 제대로 만들기")가 사실로 확인됐다.</strong> 1·2·3·5·6·7위는 전부 이미 코드로 존재한다(<code>app/api/q1/[symbol]/route.ts</code>+<code>components/Q1Section.tsx</code>, STEP956·957 · 7렌즈). <span class="hi">"제대로"의 실체는 계산이 아니라 승인이다</span> — 막고 있는 것은 <code>Q1_ENABLED="false"</code>(피처 플래그, 기본 OFF) 하나이고, 켜는 조건은 <code>lib/q1/flag.ts</code> 주석 그대로 "장은태 육안 검증·승인 후"다.</p>
   <p class="note"><span class="hi">선행 층(모델 순위표에서 뺀 것)</span>: <code>financials</code> 테이블(오늘도 0행, MODEL_UNIVERSE_63 §3-1은 8~11위에만 유효하게 축소됨 — 1~7위는 별개 파이프라인 us_fundamentals가 이미 채웠다) · 0층(업종·이익상태, probe_1040) — <strong>0층이 모델보다 선행</strong>이며 P/E(이익상태 43.4%)·재무건전성(업종·Financials 70.9%)이 가장 강하게 흔들린다.</p>
+
+  <h3 style="margin-top:28px">F-4-4. ✅ Q1 켜기 — 최소 승인 세트 도출 완료 (2026-08-15 STEP1042)</h3>
+  <blockquote>
+    <div class="q">정본 = docs/probe_1042_q1_gate.md. STATE.md:73이 걸어둔 "착수 전 필요" 5건 중 3건(ⓜ 축구성·「7렌즈 수리 vs Q1~Q4 신설」·0층 화면표시)은 재정의로 이미 해소됐다(좌표 있음).</div>
+    <div class="t">켜기 전 진짜 필수는 2건뿐. Production Q1_ENABLED·REVDCF_ENABLED 무변경, 화면 변경 0.</div>
+  </blockquote>
+  <div class="grid g3">
+    <div class="card"><div class="src">✅ 이미 해소</div><div class="def">ⓜ 축구성(코드가 이미 헤드라인 승격+4축 병렬 구현) · 7렌즈vs신설(이미 혼합 실행 중) · 0층 화면표시(적자면 자동 안전문구, API 실측 확인)</div></div>
+    <div class="card" style="border-color:#4a2529;background:linear-gradient(180deg,#241619,var(--panel))"><div class="src">🔴 켜기 전 필수(2건)</div><div class="def">① 조건부 4칸(PSR×Financials 405건, 08-09 대비 6.6배) 화면처리 판정 ② sectorSource 침묵 버그(us_sector_wide가 us_valuation보다 6일 뒤처져 출처표시 100% 비어나감)</div></div>
+    <div class="card"><div class="src">🟡 켠 뒤 가능</div><div class="def">ⓛ disagree 표시 · ⓞ 배율 표시형태(정본 median-relative 미서빙 확인) · 선결질문(KR 공유코드, Q1_ENABLED와 무관)</div></div>
+  </div>
 </section>
 
 <section>
