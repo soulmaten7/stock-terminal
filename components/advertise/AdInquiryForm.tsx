@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import SelectDropdown from '@/components/toolbox/SelectDropdown';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 const SLOT_OPTIONS = [
   // value = 서버로 전송되는 값(번역 금지) · label = 표시용 ko.json 키
   { value: 'broker', label: 'optBroker' },
-  { value: 'room', label: 'optRoom' },
   { value: 'feed', label: 'optFeed' },
   { value: 'other', label: 'optOther' },
 ];
@@ -23,8 +22,7 @@ function Field({ label, value, onChange, placeholder, type = 'text' }: { label: 
 
 export default function AdInquiryForm({ defaultSlot = 'other' }: { defaultSlot?: string }) {
   const t = useTranslations('Advertise');
-  const locale = useLocale();
-  const slotOptions = locale === 'en' ? SLOT_OPTIONS.filter((o) => o.value !== 'room') : SLOT_OPTIONS;
+  const slotOptions = SLOT_OPTIONS;
   const [slot, setSlot] = useState(defaultSlot);
   const [company, setCompany] = useState('');
   const [contactName, setContactName] = useState('');

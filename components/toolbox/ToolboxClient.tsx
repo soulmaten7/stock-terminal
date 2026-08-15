@@ -5,7 +5,6 @@ import { useTranslations, useLocale } from 'next-intl';
 import LinkCard, { type LinkItem } from './LinkCard';
 import AdSlotRow from './AdSlotRow';
 import YoutubeRanking, { type YtChannel } from './YoutubeRanking';
-import AdvisorDirectory from './AdvisorDirectory';
 import BrokerRanking from './BrokerRanking';
 import MarketBoard from './MarketBoard';
 import UsMarketBoard from './UsMarketBoard';
@@ -47,14 +46,14 @@ const TOP_LABEL_KEYS: Record<TopTab, string> = { market: 'top.market', info: 'to
 
 // "정보" 하위탭 순서 — 우리 정보(피드) 먼저, 외부·거래처(증권사·차트·거래소·커뮤니티·유튜브)는 구분선 뒤.
 // 증권사=참조 디렉토리로 강등(트래픽 낮음). 수익은 종목 리스트 인리스트 광고로(설계: docs/AD_MONETIZATION_PLAYBOOK).
-const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'room', 'chart', 'exchange', 'community', 'youtube'];
+const INFO_ORDER = ['news', 'disclosure', 'research', 'analysis', 'macro', 'etf', 'ipo', 'broker', 'chart', 'exchange', 'community', 'youtube'];
 // 하위탭 짧은 라벨(최소 UI). 없는 건 카테고리 라벨(DB)로 폴백 — 폴백은 번역 대상 아님.
 const INFO_LABEL_KEYS: Record<string, string> = {
   news: 'info.news', disclosure: 'info.disclosure', research: 'info.research', analysis: 'info.analysis', macro: 'info.macro', etf: 'info.etf', ipo: 'info.ipo',
-  broker: 'info.broker', room: 'info.room', chart: 'info.chart', exchange: 'info.exchange', community: 'info.community', youtube: 'info.youtube',
+  broker: 'info.broker', chart: 'info.chart', exchange: 'info.exchange', community: 'info.community', youtube: 'info.youtube',
 };
 // 외부·거래처 하위탭 — 구분선 뒤로(곁가지 표시)
-const INFO_EXTERNAL = new Set(['broker', 'room', 'chart', 'exchange', 'community', 'youtube']);
+const INFO_EXTERNAL = new Set(['broker', 'chart', 'exchange', 'community', 'youtube']);
 // 유효 slug 전체(로컬스토리지 복원 검증용)
 const ALL_SLUGS = ['market', ...INFO_ORDER];
 
@@ -208,7 +207,6 @@ export default function ToolboxClient({
   const infoSubs = INFO_ORDER.map((slug) => {
     if (slug === 'broker') return { slug, label: t(INFO_LABEL_KEYS.broker) }; // 증권사 = 전 국가 참조 디렉토리(항상)
     if (slug === 'youtube') return country === 'KR' ? { slug, label: t(INFO_LABEL_KEYS.youtube) } : null;
-    if (slug === 'room') return country === 'KR' ? { slug, label: t(INFO_LABEL_KEYS.room) } : null; // 유사투자자문사 = KR 전용
     const c = categories.find((cat) => cat.slug === slug);
     const hasLinks = !!c && c.links.some((l) => l.country === country);
     const show = (FEED_TABS.includes(slug) && feedSupports(slug, country)) || hasLinks;
@@ -335,12 +333,6 @@ export default function ToolboxClient({
             <YoutubeRanking channels={youtubeChannels} />
           ) : (
             <Placeholder emoji="🇺🇸" title={t('youtubeComingSoon')} />
-          )
-        ) : activeTab === 'room' ? (
-          country === 'KR' ? (
-            <AdvisorDirectory isLoggedIn={isLoggedIn} />
-          ) : (
-            <Placeholder emoji="🇺🇸" title={t('roomComingSoon')} />
           )
         ) : FEED_TABS.includes(activeTab) && feedSupports(activeTab, country) ? (
           <div>

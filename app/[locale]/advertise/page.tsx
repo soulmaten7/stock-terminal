@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import AdInquiryForm from "@/components/advertise/AdInquiryForm";
-import { getTranslations, getLocale } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,14 +9,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: locale === "en" ? "Advertising · Inquiries" : "광고 안내·문의" };
 }
 
-const RULES = ["rule1", "rule2", "rule3", "rule4"];
+const RULES = ["rule1", "rule3", "rule4"];
 
 export default async function AdvertisePage({ searchParams }: { searchParams: Promise<{ slot?: string }> }) {
   const t = await getTranslations('Advertise');
-  const locale = await getLocale();
-  const hasRoom = locale !== "en"; // 리딩방(유사투자자문)은 한국어권만 — en엔 없음
-  const rules = hasRoom ? RULES : RULES.filter((r) => r !== "rule2"); // rule2 = 유사투자자문 규칙
-  const validSlots = hasRoom ? ["broker", "room", "feed", "other"] : ["broker", "feed", "other"];
+  const rules = RULES;
+  const validSlots = ["broker", "feed", "other"];
   const sp = await searchParams;
   const slot = validSlots.includes(sp.slot ?? "") ? (sp.slot as string) : "other";
   return (

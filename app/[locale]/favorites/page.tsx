@@ -9,7 +9,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 // 관심 = 종목만(STEP 767b 필드 대전환) — 링크·리딩방 즐겨찾기 섹션은 정보탭/검증 파킹과 함께 렌더 제거.
-// FavoritesClient·RoomFavoritesClient 컴포넌트 코드는 보존(docs/PARKED_FIELD_SURFACES.md 복원 절차 참고).
+// FavoritesClient(링크) 컴포넌트 코드는 보존(docs/PARKED_FIELD_SURFACES.md 복원 절차 참고).
+// RoomFavoritesClient(리딩방)는 2026-08-15 STEP1035로 spinoff/advisor-directory/로 이전 후 본체에서 삭제됨.
 export default async function FavoritesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale); // 정적 렌더 유지

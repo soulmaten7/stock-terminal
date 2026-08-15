@@ -5,7 +5,7 @@ import { Mail } from 'lucide-react';
 
 type Inquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
 
-const SLOT_LABEL: Record<string, string> = { broker: '증권사', room: '리딩방', other: '기타' };
+const SLOT_LABEL: Record<string, string> = { broker: '증권사', other: '기타' };
 const STATUS: { key: string; label: string }[] = [
   { key: 'new', label: '신규' },
   { key: 'contacted', label: '연락함' },
@@ -18,10 +18,6 @@ const TEMPLATES: Record<string, { subject: string; body: (company: string) => st
   broker: {
     subject: '[트릴리언] 증권사 광고 문의 회신',
     body: (c) => `안녕하세요, ${c} 담당자님.\n트릴리언 광고 문의 주셔서 감사합니다.\n\n문의하신 '증권사 슬롯'은 종목·상품 탭의 증권사 리스트 상단/중간에 노출됩니다. 주식 정보를 찾는 사용자에게 계좌개설·이벤트를 노출할 수 있습니다.\n\n노출 위치·기간·단가는 협의 후 안내드리겠습니다. 희망 조건을 회신해 주세요.\n\n감사합니다.\n트릴리언 드림\n${CONTACT}`,
-  },
-  room: {
-    subject: '[트릴리언] 리딩방 게재 문의 회신',
-    body: (c) => `안녕하세요, ${c} 담당자님.\n트릴리언 리딩방 게재 문의 주셔서 감사합니다.\n\n리딩방 게재는 '유사투자자문 신고 + 운영자 인증'을 마친 곳만 가능합니다.\n- 인증 업체당 채널 1개: 무료 게재\n- 추가 채널: 1개당 월 5만원\n\n인증 절차와 게재 방법을 안내드리겠습니다. 사업자등록번호와 채널 정보를 회신해 주세요.\n\n※ 게재는 '노출'이며 안전·수익을 보증하지 않습니다.\n\n감사합니다.\n트릴리언 드림\n${CONTACT}`,
   },
   other: {
     subject: '[트릴리언] 광고 문의 회신',
