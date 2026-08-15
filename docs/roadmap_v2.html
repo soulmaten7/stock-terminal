@@ -37,6 +37,8 @@ h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:10px}
 .tk.done{border-color:#2f5a3c;background:var(--greenbg);color:var(--green);font-weight:620}
 .tk.done::before{content:"✓ ";}
 .tk.wait::before{content:"○ ";}
+.tk.partial{border-color:#4a3d1a;background:var(--amberbg);color:var(--amber);font-weight:620}
+.tk.partial::before{content:"◐ ";}
 
 /* 섹션 */
 section{margin-top:52px;padding-top:34px;border-top:1px solid var(--line)}
@@ -48,6 +50,7 @@ section.pending{opacity:.42}
 }
 .badge.ok{background:var(--greenbg);color:var(--green);border:1px solid #2f5a3c}
 .badge.wait{background:#20242c;color:var(--tx4);border:1px solid var(--line)}
+.badge.partial{background:var(--amberbg);color:var(--amber);border:1px solid #4a3d1a}
 .stitle{color:var(--tx3);font-size:13.5px;margin-bottom:24px}
 
 h3{font-size:16px;font-weight:650;margin:32px 0 12px;color:var(--tx)}
@@ -189,7 +192,7 @@ tr.hl td.m{color:#ffb3b3}
     <div class="tk done">HOW</div>
     <div class="tk done">WHAT</div>
     <div class="tk wait">만드는 절차</div>
-    <div class="tk wait">무엇을 먼저</div>
+    <div class="tk partial">무엇을 먼저</div>
     <div class="tk wait">완성의 정의</div>
     <div class="tk wait">수익 모델</div>
   </div>
@@ -508,6 +511,23 @@ tr.hl td.m{color:#ffb3b3}
      <span class="hi">전제가 낡았는데 그 위에서 계속 짓는 것.</span> Q시리즈도 4년 된 설문 위에 세워져 있습니다.</p>
   <p class="note">재검토는 곁가지가 아니라 <strong>본선의 첫 단계</strong>입니다. 다만 "틀렸다"가 아니라 "근거를 다시 실측한다"이며, 결과가 같을 수도 있습니다.</p>
 
+  <h3 style="font-size:14px;color:var(--tx2)">W-2-1. 순서가 뒤집혀 있었다 (2026-08-15 정정)</h3>
+  <p><strong>원하는 정보 목록이 먼저 있고, 그것을 사람이 묻는 형태로 묶은 것이 질문 모델입니다.</strong> Q시리즈는 정보의 <strong>그룹핑</strong>이지 원천이 아닙니다. 그동안 Q시리즈를 원천으로 놓고 거기서 정보를 도출해 왔습니다.</p>
+  <p class="note"><span class="hi">그래서 재검토의 성격도 바뀝니다</span> — "질문이 틀렸나"가 아니라 <strong>"정보 목록을 다시 실측하고, 그 결과로 그룹핑을 다시 하는 것"</strong>입니다.</p>
+
+  <h3 style="font-size:14px;color:var(--tx2)">W-2-2. 수요 증거의 실제 상태 — 전문가와 개인은 다르다</h3>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:170px">조사</th><th style="width:230px">표본</th><th>무엇을 쟀나</th></tr></thead>
+    <tbody>
+      <tr><td class="m">MARKET_MODEL_USAGE_TOP20</td><td>애널리스트 리포트 2,263건 · CFA 1,980명 · 펀드매니저 692명</td><td><span class="hi">전문가가 무엇을 쓰는가</span></td></tr>
+      <tr><td class="m">MODEL_DEMAND_SURVEY</td><td>리테일 플랫폼 페이지</td><td><span class="b b1">간접</span> 플랫폼이 무엇을 파는가(수요의 간접 증거)</td></tr>
+      <tr><td class="m">AAII 2022-04</td><td>표본 크기 미기재 · 자기 회원 편중 · 4년 전</td><td>개인이 무엇을 쓰는가</td></tr>
+      <tr><td class="m">AAII 2019</td><td>개인 1,565표</td><td>개인 — <strong>기술적 분석 사용만</strong></td></tr>
+    </tbody>
+  </table></div>
+  <p><strong>우리 타깃은 개인입니다</strong>(WHY: "대체로 많은 사람들이 보는 법을 모르거나 어렵게 생각한다"). <span class="hi">전문가는 이미 볼 줄 알아서 우리 타깃이 아닙니다.</span> 그런데 가장 두꺼운 증거가 전문가 쪽입니다.</p>
+  <p class="note"><strong>전문가 사용률을 개인 수요의 대리값으로 쓰면 타깃이 어긋납니다.</strong> 다만 전문가가 쓰는 모델은 <strong>검증됐을 가능성이 높다</strong>는 별개 가치가 있으므로, 두 증거를 <strong>다른 열로 나눠서</strong> 씁니다 — 섞으면 LENS_ROADMAP이 통계 유의성 하나로 채용을 정했던 것과 같은 병이 됩니다.</p>
+
   <h3>W-3. 지금 내놓고 있는 것</h3>
   <p class="lead"><strong>US 상장 종목</strong>에 대해, 다섯 면으로:</p>
   <div class="conds">
@@ -548,10 +568,77 @@ tr.hl td.m{color:#ffb3b3}
   <div class="ph">WHAT 확정 후</div>
 </section>
 
-<section class="pending">
-  <div class="shead"><h2>무엇을 먼저 만드는가</h2><span class="badge wait">확정 대기</span></div>
+<section>
+  <div class="shead"><h2>무엇을 먼저 만드는가</h2><span class="badge partial">관문 확정 · 순위 대기</span></div>
   <div class="stitle">순서와 그 기준 — 관문 분류는 갈아엎기로 판정됨</div>
-  <div class="ph">절차 확정 후</div>
+
+  <h3>F-1. 모델의 자격 — 관문 셋 (순서가 의미를 갖는다)</h3>
+  <p class="note">구 관문 7개(G1~G7)는 폐기한다(2026-08-15 장은태 판정: "분류 방식 자체가 문제, 싹 다 갈아엎어야 한다"). 폐기 사유는 F-2.</p>
+  <div class="conds">
+    <div class="cond">
+      <div class="cn">1</div>
+      <div>
+        <div class="ch">사람들이 원하는 정보인가</div>
+        <div class="cd">없으면 <span class="hi">만들 이유가 없다</span> — 아무리 정확해도 아무도 안 본다</div>
+      </div>
+    </div>
+    <div class="cond">
+      <div class="cn">2</div>
+      <div>
+        <div class="ch">정확한가</div>
+        <div class="cd">계산이 맞는가, 검산할 수 있는가. 없으면 <span class="hi">만들면 안 된다</span> — 틀린 것을 가르치면 안 가르치느니만 못하다(WHY 조건 1)</div>
+      </div>
+    </div>
+    <div class="cond">
+      <div class="cn">3</div>
+      <div>
+        <div class="ch">정직한가</div>
+        <div class="cd">계산 방법을 밝힐 수 있는가(원전이 있거나, 없으면 정의를 고정·공개할 수 있는가). 없으면 <span class="hi">만들 수 없다</span> — <strong>블랙박스는 여기서 탈락한다.</strong> 밝힐 수 없으면 정직할 방법이 없다</div>
+      </div>
+    </div>
+  </div>
+  <div class="seq">셋이 각각 다른 종류의 부정이다 — 이유 없음 / 하면 안 됨 / 할 수 없음. 그래서 순서가 바뀌면 안 된다.</div>
+  <p class="note">①이 먼저인 것이 WHY·WHAT과 정합한다 — WHY가 "보는 법을 모른다"이니 어떤 정보인지가 출발점이고, WHAT 정의 자체가 "사람들이 실제로 원하는 정보"다.<br>
+     <span class="hi">「원하는 답」이 아니라 「원하는 정보」다.</span> 답이라 쓰면 질문 모델(Q시리즈)이 확정돼야 판정할 수 있게 되지만, 정보는 수요 실측으로 직접 물을 수 있다 — 질문 모델에 종속되지 않는다.</p>
+
+  <h3>F-2. 구 관문 7개가 왜 무너졌나</h3>
+  <p>층위가 다른 셋이 한 줄에 섞여 있었습니다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:140px">구 관문</th><th>실제로 무엇인가</th><th style="width:140px">어디로</th></tr></thead>
+    <tbody>
+      <tr><td class="m">G2 증명 가능</td><td>모델의 속성</td><td>→ 관문 ②③</td></tr>
+      <tr><td class="m">G1 방향 번역</td><td><span class="hi">우리가 하는 일</span>(모델의 속성 아님)</td><td>→ HOW 조건 2</td></tr>
+      <tr><td class="m">G5 법적</td><td><span class="hi">표시 설계</span>(보여주는 방식을 바꾸면 해결)</td><td>→ 표시 설계</td></tr>
+      <tr><td class="m">G6 값 안 매김</td><td><span class="hi">표시 설계</span> · 원문("추천하지 않는다")의 과잉 확대</td><td>→ HOW H-5·H-7</td></tr>
+      <tr><td class="m">G4 무료</td><td><span class="hi">조달 절차</span> · CLAUDE.md 규칙 3("비용은 이유가 아니다")과 충돌</td><td>→ HOW H-4</td></tr>
+      <tr><td class="m">G3 커버리지</td><td>사업 논리("수익화되려면 트래픽")</td><td>→ 수익 모델 층</td></tr>
+      <tr><td class="m">G7 자동화</td><td>사업 논리("해자는 자동화")</td><td>→ 수익 모델 층 · 판정 대기</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">가장 근본은 「제품 논리」와 「사업 논리」가 섞인 것이다. G3·G7은 "이 모델이 좋은 답을 주는가"가 아니라 "이걸로 돈을 벌 수 있는가"를 묻는다. 둘 다 정당하지만 같은 관문에 놓으면 안 된다.<br>
+     그리고 관문(입구)과 완성 기준 9항목(출구)이 섞여 있었다. <strong>"어설픈 다수 금지"</strong>를 막는 것은 관문 개수가 아니라 <strong>9항목</strong>이다.</p>
+
+  <h3>F-3. 검증 — 구 탈락 9개를 새 관문으로 재심사</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>모델</th><th style="width:160px">구 탈락 사유</th><th style="width:230px">새 관문</th></tr></thead>
+    <tbody>
+      <tr><td class="m">DCF(정방향) 사용률 4위</td><td>G6 값 매김</td><td><span class="b b0">통과</span> 값 표시는 설계 문제</td></tr>
+      <tr><td class="m">Altman Z</td><td>G5·G6 부도 예측</td><td><span class="b b0">통과</span> 원전·계수 공개</td></tr>
+      <tr><td class="m">Magic Formula</td><td>G6 순위=추천</td><td><span class="b b0">통과</span> 방법 완전 공개</td></tr>
+      <tr><td class="m">Beneish M</td><td>G5 명예훼손</td><td><span class="b b0">통과</span> 표시 설계로 해결</td></tr>
+      <tr><td class="m">SOTP</td><td>G3·G7 수작업</td><td><span class="b b0">통과</span> 자동화는 사업 조건</td></tr>
+      <tr><td class="m">잔여이익/EVA</td><td>G6</td><td><span class="b b1">부분</span> 학술 원전판 통과 / 상용 조정방식은 ③ 탈락</td></tr>
+      <tr><td class="m">Owner Earnings·EPV</td><td>G2 정의 갈림</td><td><span class="b b1">부분</span> 우리가 정의 고정·공개하면 통과</td></tr>
+      <tr class="hl"><td class="m">애널리스트 목표주가</td><td>G2·G4·G6</td><td><span class="b b3">탈락 — ③</span> 남의 판단이라 검산 불가</td></tr>
+      <tr class="hl"><td class="m">퀀트 종합 랭킹</td><td>G2·G6</td><td><span class="b b3">탈락 — ③</span> 가중치 비공개</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><strong>9개 중 진짜 탈락은 2개뿐이고, 둘 다 사유가 ③(정직) 하나로 수렴한다.</strong> 나머지 7개는 표시 설계나 사업 조건 문제였지 모델 자격 문제가 아니었다.<br>
+     관문이 일곱일 때 실제로 걸러낸 것은 둘이고, <span class="hi">다섯은 정당한 후보를 잘못 잘라냈다.</span> 그중에 <strong>사용률 4위(DCF)</strong>가 있다. 층이 섞인 관문이 많을수록 엉뚱한 것을 자른다.</p>
+
+  <h3>F-4. 순위 — 확정 대기</h3>
+  <p>통과 목록이 7개 늘었으므로 구 순위표(§3-B 12개)는 <strong>재정렬해야 한다.</strong> 그리고 관문 ①의 판정에는 <strong>개인 수요 실측</strong>이 선행한다(W-2-2).</p>
+  <div class="ph">개인 수요 실측 후</div>
 </section>
 
 <section class="pending">
