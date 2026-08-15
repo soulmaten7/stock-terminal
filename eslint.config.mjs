@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // STEP1035: 트릴리언 본체 빌드 제외 — 분리 보관 코드
+    "spinoff/**",
   ]),
 ]);
 
