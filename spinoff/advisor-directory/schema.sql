@@ -7,7 +7,14 @@
 -- (복원 좌표 = 이 파일이 커밋된 해시. `supabase/migrations/`의 DROP 마이그레이션이
 --  그 다음 커밋에서 이 해시를 인용한다).
 --
--- 🔴 데이터는 덤프하지 않았다 — 두 가지 이유:
+-- 🔴 2026-08-15(같은 날 후속 리뷰) — `link_previews`(§10) 추가. 최초 13개 테이블+뷰를
+--   DROP할 때 이름 패턴(advisor|room|leading|business_claim|member|listing|link)에
+--   `link_previews`가 걸리지 않아 놓쳤다(패턴에 "link"가 있는데도 "business_link*"만
+--   매칭되고 "link_previews"는 매칭 안 됨 — 정규식이 아니라 이름 자체를 훑는 역방향
+--   점검에서 발견, `docs/probe_1036_orphan_tables.md` 참고). 아래 §1~9는 최초 DROP
+--   대상, §10은 이번에 추가로 DROP한 것 — 시점은 다르지만 같은 "리딩방 전용" 클러스터다.
+--
+-- 🔴 데이터는 덤프하지 않았다 — 세 가지 이유:
 --   ① `fss_advisors`(금감원 파인 원장 캐시, 삭제 시점 1,847행)에는 대표자명·이메일·전화번호가
 --      들어 있다. 이건 원 소유자(금융감독원)가 이미 공개한 정보이긴 하지만, 개인 식별정보를
 --      우리 저장소(git)에 평문으로 영구 보존하는 것은 불필요한 위험이다. 이 데이터는
@@ -22,9 +29,15 @@
 --       room_likes·room_reviews·room_submissions·leading_room_votes·business_claims·
 --       business_members. 나머지 3개 — leading_rooms(카탈로그 성격, user_id 없음)·
 --       business_listing·business_links(biz_no로 키, 개인 소유 아님) — 는 그 목록에 없었다.)
+--   ③ `link_previews`(삭제 시점 1,005행)는 URL·OG 메타데이터(제목·이미지·설명·사이트명)
+--      캐시일 뿐 개인정보·사용자 데이터가 전혀 없다(컬럼: url·og_title·og_image·
+--      og_description·site_name·status·fetched_at — user_id류 컬럼 자체가 없음).
+--      `lib/og.ts`(이 spinoff의 `lib/` 참고)의 `fetchOg()`로 대상 URL을 다시 크롤하면
+--      **언제든 재생성 가능**한 캐시라 원본이 아니다.
 --
 -- 재구축 방법: 이 파일을 새 Postgres/Supabase 프로젝트에 그대로 실행하면 스키마가 복원된다.
 -- 그 다음 `scripts/import-fss-advisors.ts`를 돌리면 `fss_advisors`가 다시 채워진다.
+-- `link_previews`는 `/api/link-preview`가 실제 요청이 들어올 때마다 lazy하게 다시 채운다.
 -- 나머지 12개 테이블은 애초에 데이터가 없었으므로 빈 채로 시작해도 손실이 없다.
 
 -- ============================================================
@@ -367,6 +380,23 @@ UNION ALL
   WHERE s.status = 'public'::text AND s.homepage IS NOT NULL AND btrim(s.homepage) <> ''::text;
 
 REVOKE INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON public.advisor_directory FROM anon, authenticated;
+
+-- ============================================================
+-- 10) link_previews — OG 링크 프리뷰 캐시(advisor 채널 링크 전용, 삭제 시점 1,005행)
+--     🔴 §1~9와 별도 라운드(같은 날 후속 리뷰)에 DROP됐다 — 위 헤더 참고.
+--     RLS는 켜져 있으나 정책 0개(service_role 전용, room_reports와 같은 패턴).
+--     FK 없음(다른 테이블이 이 테이블을 참조하지 않고, 이 테이블도 다른 테이블을 참조 안 함).
+-- ============================================================
+CREATE TABLE public.link_previews (
+  url             TEXT PRIMARY KEY,
+  og_title        TEXT,
+  og_image        TEXT,
+  og_description  TEXT,
+  site_name       TEXT,
+  status          TEXT NOT NULL DEFAULT 'ok',
+  fetched_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+ALTER TABLE public.link_previews ENABLE ROW LEVEL SECURITY;
 
 -- ============================================================
 -- 알려진 잔여 연결(다른 기능 쪽에서 참조하던 것 — 참고용, 이 스키마 자체엔 포함 안 됨)
