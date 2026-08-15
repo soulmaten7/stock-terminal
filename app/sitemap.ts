@@ -48,7 +48,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/explore", priority: 0.8, freq: "daily" }, // 현행 5면(탐색) — /coin(숨김) 대체(STEP 795 §12)
     { path: "/about", priority: 0.5, freq: "monthly" },
     { path: "/advertise", priority: 0.4, freq: "monthly" },
-    { path: "/business", priority: 0.4, freq: "monthly" },
     { path: "/terms", priority: 0.3, freq: "monthly" },
     { path: "/privacy", priority: 0.3, freq: "monthly" },
   ];
