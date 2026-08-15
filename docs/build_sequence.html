@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제작 순서 정본 — 무엇을, 어떤 순서로</title>
+<style>
+:root{
+  --bg:#0e1014; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+  --tx:#e8eaf0; --tx2:#9aa3b2; --tx3:#6b7383;
+  --red:#ff6b6b; --redbg:#2a1618; --amber:#ffc251; --amberbg:#2a2113;
+  --green:#5fd68a; --greenbg:#132618; --blue:#5cc8ff; --bluebg:#0f2430; --purple:#b18cff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
+  line-height:1.65; -webkit-font-smoothing:antialiased; padding:0 0 80px;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{padding:44px 0 28px;border-bottom:1px solid var(--line);margin-bottom:34px}
+h1{font-size:27px;font-weight:700;letter-spacing:-.02em}
+.sub{color:var(--tx2);font-size:14px;margin-top:9px}
+.disclaim{
+  margin-top:16px;padding:11px 15px;background:var(--redbg);
+  border-left:3px solid var(--red);border-radius:0 6px 6px 0;font-size:13.5px;color:#ffc9c9
+}
+.verify{
+  margin-top:10px;padding:11px 15px;background:var(--greenbg);
+  border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:13px;color:#bfe9cf
+}
+h2{
+  font-size:19px;font-weight:660;margin:44px 0 16px;letter-spacing:-.01em;
+  display:flex;align-items:baseline;gap:11px
+}
+h2 .n{
+  font-size:12px;color:var(--tx3);font-weight:600;font-variant-numeric:tabular-nums;
+  border:1px solid var(--line);border-radius:5px;padding:2px 7px;flex:none
+}
+h3{font-size:15px;font-weight:620;margin:26px 0 11px;color:var(--tx)}
+p{color:var(--tx2);font-size:14px;margin:10px 0}
+.note{font-size:13px;color:var(--tx3);margin-top:11px}
+em{color:var(--tx);font-style:italic}
+strong{color:var(--tx);font-weight:640}
+code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  background:#252a34;padding:1.5px 5px;border-radius:4px;color:#cbd3e0
+}
+
+/* 히어로 — 막힌 판정 */
+.hero{
+  background:linear-gradient(160deg,#2a1618 0%,#1a1216 100%);
+  border:1px solid #4a2529;border-radius:12px;padding:24px 26px;margin-bottom:8px
+}
+.hero .lbl{
+  font-size:11.5px;font-weight:700;letter-spacing:.09em;color:var(--red);
+  text-transform:uppercase;margin-bottom:15px
+}
+.blockgrid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.block{background:#1c1418;border:1px solid #43242a;border-radius:9px;padding:16px 18px}
+.block .tag{
+  display:inline-block;font-size:11px;font-weight:700;color:#0e1014;background:var(--red);
+  border-radius:4px;padding:2px 7px;margin-bottom:9px
+}
+.block h4{font-size:15px;font-weight:640;margin-bottom:7px;line-height:1.45}
+.block p{font-size:13px;color:#c9a9ac;margin:0}
+.block .dep{
+  margin-top:10px;padding-top:9px;border-top:1px solid #3a2126;
+  font-size:12px;color:#a08488
+}
+
+/* 카드 그리드 */
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:16px 17px}
+.card .when{font-size:11.5px;color:var(--tx3);font-variant-numeric:tabular-nums;margin-bottom:7px}
+.card .src{font-size:12px;color:var(--blue);font-family:ui-monospace,monospace;margin-bottom:9px}
+.card .def{font-size:13.5px;color:var(--tx);line-height:1.55}
+
+/* 절차 스텝 */
+.steps{display:flex;flex-direction:column;gap:9px}
+.step{
+  display:grid;grid-template-columns:44px 1fr 250px;gap:16px;align-items:start;
+  background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 17px
+}
+.step .num{
+  width:30px;height:30px;border-radius:50%;background:var(--panel2);border:1px solid #3a4150;
+  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--blue)
+}
+.step .what{font-size:14px;font-weight:600;color:var(--tx)}
+.step .doc{font-size:12px;color:var(--tx3);font-family:ui-monospace,monospace;margin-top:5px;line-height:1.5}
+.step .fail{font-size:12.5px;color:#d8b48a;background:var(--amberbg);border-radius:6px;padding:8px 11px;line-height:1.5}
+.step.last{border-color:#3d5a44;background:linear-gradient(180deg,#151d18,var(--panel))}
+
+/* 관문 배지 */
+.gates{display:grid;grid-template-columns:repeat(7,1fr);gap:9px}
+.gate{
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+  padding:13px 11px;text-align:center
+}
+.gate .gid{font-size:15px;font-weight:750;color:var(--blue);margin-bottom:6px}
+.gate .gt{font-size:12px;color:var(--tx2);line-height:1.4}
+.gate.key{border-color:#3a5a72;background:linear-gradient(180deg,#14202a,var(--panel))}
+.gate.key .gid{color:#8ad9ff}
+
+/* 표 */
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+th{
+  text-align:left;font-weight:640;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--tx3);padding:9px 11px;border-bottom:1px solid var(--line);white-space:nowrap
+}
+td{padding:10px 11px;border-bottom:1px solid #21252e;color:var(--tx2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.n{font-variant-numeric:tabular-nums;color:var(--tx3);width:44px;text-align:center}
+td.m{color:var(--tx);font-weight:600}
+.tbl{background:var(--panel);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+tr.hl td{background:#241a1c}
+tr.hl td.m{color:#ffb3b3}
+
+/* 뱃지 */
+.b{display:inline-block;font-size:11px;font-weight:650;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.b0{background:var(--greenbg);color:var(--green);border:1px solid #2a4a33}
+.b1{background:var(--amberbg);color:var(--amber);border:1px solid #4a3d1a}
+.b3{background:var(--redbg);color:var(--red);border:1px solid #4a2529}
+.bn{background:#22262f;color:var(--tx3);border:1px solid var(--line)}
+.bok{background:var(--bluebg);color:var(--blue);border:1px solid #23485c}
+
+/* 상태 타일 */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 15px}
+.tile .k{font-size:12px;color:var(--tx3);margin-bottom:6px}
+.tile .v{font-size:15px;font-weight:640;color:var(--tx);line-height:1.4}
+.tile .x{font-size:12px;color:var(--tx3);margin-top:5px}
+.tile.on{border-color:#2f5a3c}.tile.on .v{color:var(--green)}
+.tile.off{border-color:#5a2f32}.tile.off .v{color:var(--red)}
+
+/* 위계 */
+.hier{display:flex;flex-direction:column;gap:7px}
+.lay{
+  display:grid;grid-template-columns:78px 1fr 300px;gap:14px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:11px 15px
+}
+.lay .lk{font-size:12px;font-weight:650;color:var(--purple)}
+.lay .lf{font-size:12.5px;color:var(--tx2);font-family:ui-monospace,monospace}
+.lay .lq{font-size:13px;color:var(--tx3)}
+
+footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:var(--tx3);font-size:13px}
+
+@media(max-width:900px){
+  .g3,.g4,.tiles{grid-template-columns:1fr 1fr}
+  .gates{grid-template-columns:repeat(4,1fr)}
+  .blockgrid{grid-template-columns:1fr}
+  .step,.lay{grid-template-columns:1fr;gap:9px}
+  .step .num{margin-bottom:2px}
+}
+@media(max-width:560px){
+  .g3,.g4,.tiles,.gates{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>제작 순서 정본 — 무엇을, 어떤 순서로 만드는가</h1>
+  <div class="sub">2026-08-15 · 기존 문서 통합 + 공백 표시 · <code>docs/BUILD_SEQUENCE.md</code></div>
+  <div class="disclaim">
+    이 문서는 <strong>새 결정을 만들지 않는다.</strong> 흩어져 있던 순서 규칙을 한곳에 모으고,
+    비어 있는 칸을 <strong>비었다고 표시</strong>한 것이 전부다. 판정은 장은태.
+  </div>
+  <div class="verify">
+    ✅ <strong>사실관계 검증 완료(2026-08-15, Claude Code)</strong> — DB 실측치·카탈로그 소스 수·문서 인용 전부 원본 대조, 일치 확인.
+    오류 2건 정정: SPEC 줄수(2,117→2,176, 시점 스냅샷 갱신) · 소표본 오판 횟수(6회→5회, 오기 정정).
+    파일명 인용(날짜 접미사 누락 3건)도 정정.
+  </div>
+</header>
+
+<!-- 히어로 -->
+<h2><span class="n">§6</span>지금 막혀 있는 것 — 이 둘이 먼저다</h2>
+<div class="hero">
+  <div class="lbl">미해결 · 장은태만 채울 수 있는 칸</div>
+  <div class="blockgrid">
+    <div class="block">
+      <span class="tag">판정 A</span>
+      <h4>제품 정의의 우선순위</h4>
+      <p>정의가 <strong>셋 병존</strong>한다 — 기법 나열(07-03) · 정직한 배수(08-07) · 질문 답변(08-08).
+         셋 다 살아 있고 순위가 없다.</p>
+      <div class="dep">→ 걸려 있는 것: 그 아래 모든 화면 결정</div>
+    </div>
+    <div class="block">
+      <span class="tag">판정 B</span>
+      <h4>「새 모델 1개를 고른다」 vs 「이미 있는 것 중 1위를 제대로 만든다」</h4>
+      <p><code>MODEL_BUILD_ORDER</code> §3-2가 <em>"07-30의 전제 자체가 성립하지 않았을 수 있다"</em>고
+         제기 → <strong>2026-08-07 이후 미판정</strong></p>
+      <div class="dep">→ 걸려 있는 것: 다음에 착수할 대상 전부</div>
+    </div>
+  </div>
+</div>
+<p class="note">C~F(역DCF 위치 · ROADMAP 재작성 · 7렌즈 거취 · Q1 착수 4건)는 전부 A·B 아래에 달려 있다. 전체 목록은 맨 아래.</p>
+
+<!-- 제품 정의 -->
+<h2><span class="n">§1</span>우리가 만드는 것 — 정의가 셋 병존한다</h2>
+<div class="grid g3">
+  <div class="card">
+    <div class="when">2026-07-03</div>
+    <div class="src">LENS_ROADMAP.md</div>
+    <div class="def">검증된 프로 기법들이 이 종목을 <strong>각각 어떻게 읽는지</strong> + 각 기법이
+      <strong>얼마나 믿을 만한지</strong>. 판단은 사용자.</div>
+  </div>
+  <div class="card">
+    <div class="when">2026-08-07</div>
+    <div class="src">MODEL_BUILD_ORDER_2026-08-07.md §3-3</div>
+    <div class="def">차별화는 모델이 아니라 <strong>정직함</strong>에서 나온다. 같은 배수를 주되
+      <strong>어느 이익·어느 회계연도·왜 결측인지</strong>를 밝힌다.</div>
+  </div>
+  <div class="card">
+    <div class="when">2026-08-08</div>
+    <div class="src">USER_QUESTIONS_2026-08-08.md</div>
+    <div class="def">사람들이 실제로 묻는 <strong>질문(Q0~Q5)</strong>에 답한다.
+      AAII — Value 77% · Dividends 73% · Growth 69% · 매도 1위 60%.</div>
+  </div>
+</div>
+<p class="note">셋은 서로 모순되지 않지만 <strong>우선순위가 없다.</strong> 그래서 축 구성이냐 표시 방법이냐 렌즈 거취냐가 매번 처음부터 논쟁된다.</p>
+
+<h3>변하지 않는 것 (LOCK — 재론 대상 아님)</h3>
+<div class="grid g4">
+  <div class="card"><div class="def">예측하지 않는다</div></div>
+  <div class="card"><div class="def">추천하지 않는다 · 값을 매기지 않는다</div></div>
+  <div class="card"><div class="def">원전 그대로 구현한다 — <strong>새 모델을 만들지 않는다</strong></div></div>
+  <div class="card"><div class="def">못 잰 것은 <strong>못 쟀다고 쓴다</strong></div></div>
+</div>
+
+<!-- 절차 -->
+<h2><span class="n">§2</span>만드는 절차 — 한 번에 하나씩</h2>
+<p>장은태 규칙(2026-08-15): <em>"한번에 몰아서 만든 게 7렌즈이고, 그렇게 하니 제대로 완성된 게 아니어서,
+   다시 검색한 후 <strong>1개씩 만들고 완성 후 다음 거</strong>를 만든다."</em></p>
+<div class="steps">
+  <div class="step">
+    <div class="num">1</div>
+    <div><div class="what">무엇을 만들지 고른다</div>
+      <div class="doc">관문 7개 통과 + 실사용 순위 · MODEL_ROSTER · MODEL_UNIVERSE_63 · MODEL_BUILD_ORDER</div></div>
+    <div class="fail">관문 탈락이면 <strong>목록에서 뺀다</strong></div>
+  </div>
+  <div class="step">
+    <div class="num">2</div>
+    <div><div class="what">공식을 원전에서 확보한다 — 저자·연도·문헌</div>
+      <div class="doc">모델별 SPEC (예: REVDCF_SPEC.md) · 밖에서 찾기 전에 저장소를 먼저 뒤진다</div></div>
+    <div class="fail">원전이 없으면 <strong>정의 공개표</strong>로 대체. 추측해서 채우지 않는다</div>
+  </div>
+  <div class="step">
+    <div class="num">3</div>
+    <div><div class="what">재료를 카탈로그에서 대입한다</div>
+      <div class="doc">DATA_SOURCE_CATALOG.md — 92소스</div></div>
+    <div class="fail">없으면 4단계로</div>
+  </div>
+  <div class="step">
+    <div class="num">4</div>
+    <div><div class="what">없는 재료는 조합해서 만든다 — 조립만, 창작 금지</div>
+      <div class="doc">원전이 "이 값이 필요하다"고 요구한 것을 재료로 만들면 조립 / 원전에 없는 새 지표를 만들면 창작</div></div>
+    <div class="fail">조립도 안 되면 <strong>"못 답한다"고 명시</strong></div>
+  </div>
+  <div class="step">
+    <div class="num">5</div>
+    <div><div class="what">만든다</div><div class="doc">코드</div></div>
+    <div class="fail">—</div>
+  </div>
+  <div class="step last">
+    <div class="num">6</div>
+    <div><div class="what">완성 기준 9항목으로 검증한다</div>
+      <div class="doc">LENS_COMPLETION_STANDARD.md — 원전대조 · 입력검증 · 값검증 · 컷분포 · 경계처리 · 주장정합 · 화면일관 · 테스트 · 라이브실측</div></div>
+    <div class="fail">통과 못 하면 <strong>"완성"이 아니다 — 다음으로 넘어가지 않는다</strong></div>
+  </div>
+</div>
+<p class="note">현재 9/9 통과한 모델은 <strong>0개</strong>다.</p>
+
+<!-- 관문 -->
+<h2><span class="n">§3-A</span>관문 7개 — 전부 통과해야 후보</h2>
+<div class="gates">
+  <div class="gate"><div class="gid">G1</div><div class="gt">방향으로<br>번역되는가</div></div>
+  <div class="gate key"><div class="gid">G2</div><div class="gt">정확성을<br>증명할 수 있는가</div></div>
+  <div class="gate"><div class="gid">G3</div><div class="gt">커버리지가<br>나오는가</div></div>
+  <div class="gate"><div class="gid">G4</div><div class="gt">무료 데이터로<br>되는가</div></div>
+  <div class="gate"><div class="gid">G5</div><div class="gt">법적으로<br>가능한가</div></div>
+  <div class="gate"><div class="gid">G6</div><div class="gt">값을 매기지<br>않는가</div></div>
+  <div class="gate"><div class="gid">G7</div><div class="gt">매일 자동으로<br>도는가</div></div>
+</div>
+<p class="note"><strong>G2는 "원전이 있는가"가 아니라 "증명 가능한가"다.</strong> 원전 대조는 증명 수단 중 하나지 목적이 아니다.
+   가정이 적을수록 증명이 쉽다. 출처는 전부 장은태 발언.</p>
+
+<!-- 순위 -->
+<h2><span class="n">§3-B</span>통과한 것 — 실사용 순위</h2>
+<div class="tbl"><table>
+<thead><tr><th class="n">#</th><th>모델</th><th>실사용 근거</th><th>가정</th><th>우리 상태</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="m">P/E</td><td>CFA "가장 널리 쓰이는 배수" · 은행 51%</td><td><span class="b b0">0</span></td><td>밸류 렌즈로 존재 · 결함 실측됨</td></tr>
+<tr><td class="n">2</td><td class="m">P/B</td><td>은행 리포트 56%</td><td><span class="b b0">0</span></td><td>밸류 렌즈로 존재</td></tr>
+<tr><td class="n">3</td><td class="m">EV/EBITDA</td><td>CFA "EV 배수 압도적 1위"</td><td><span class="b b0">0</span></td><td><span class="b bok">1,451건</span></td></tr>
+<tr><td class="n">4</td><td class="m">추세·이동평균</td><td>펀드매니저 87% · 개인 55%</td><td><span class="b b0">0</span></td><td>기술 렌즈 (등급 reference)</td></tr>
+<tr><td class="n">5</td><td class="m">배당 (수익률·성장·지속성)</td><td>DDM 15% · 개인 수요 큼</td><td><span class="b b0">0</span></td><td><span class="b b3">없음</span> Q2 대응축</td></tr>
+<tr><td class="n">6</td><td class="m">PSR · P/CF 보조 배수</td><td>배수군 전체 97%</td><td><span class="b b0">0</span></td><td><span class="b bok">3,554건</span></td></tr>
+<tr><td class="n">7</td><td class="m">PEG</td><td>배수 하위 항목</td><td><span class="b b1">0~1</span></td><td><span class="b bn">없음</span></td></tr>
+<tr><td class="n">8</td><td class="m">자산가치 (장부가·순유동자산)</td><td>CFA 3대 접근의 하나</td><td><span class="b b0">0</span></td><td><span class="b bn">없음</span></td></tr>
+<tr><td class="n">9</td><td class="m">재무건전성 점수 (F-Score형)</td><td>스크리너 널리 탑재</td><td><span class="b b0">0</span></td><td>F스코어 렌즈로 존재</td></tr>
+<tr><td class="n">10</td><td class="m">그레이엄 넘버 / 안전마진</td><td>리테일 계산기 다수</td><td><span class="b b1">1</span></td><td><span class="b bn">없음</span></td></tr>
+<tr><td class="n">11</td><td class="m">팩터 위치</td><td>기관 자산배분 표준</td><td><span class="b b0">0</span></td><td>종목 렌즈 아닌 <strong>포트폴리오 기법</strong></td></tr>
+<tr class="hl"><td class="n">12</td><td class="m">역DCF</td><td>사용률 16위 · 서베이 미집계</td><td><span class="b b3">3</span></td><td>SPEC 2,176줄(2026-08-15 실측) · 엔진 가동 · 604종목 — <strong>G3 미달</strong></td></tr>
+</tbody></table></div>
+<p class="note"><strong>1~8위가 전부 가정 0인데, 우리가 가장 많이 투자한 것은 가정 3개짜리 12위다.</strong> 이것이 판정 B·C다.</p>
+
+<!-- 금지 -->
+<h2><span class="n">§3-C</span>만들면 안 되는 것 — 사용률이 높아도</h2>
+<div class="tbl"><table>
+<thead><tr><th>사용률</th><th>모델</th><th>탈락 관문</th><th>사유</th></tr></thead>
+<tbody>
+<tr><td class="n">4위</td><td class="m">DCF (정방향)</td><td><span class="b b3">G6</span></td><td>우리가 적정주가를 매기는 행위</td></tr>
+<tr><td class="n">5위</td><td class="m">애널리스트 목표주가</td><td><span class="b b3">G2·G4·G6</span></td><td>남의 예측 재판매 + 데이터도 유료</td></tr>
+<tr><td class="n">9위</td><td class="m">SOTP (사업부 합산)</td><td><span class="b b3">G3·G7</span></td><td>사업부 분해가 수작업 · 자동화 불가</td></tr>
+<tr><td class="n">12위</td><td class="m">잔여이익 / EVA</td><td><span class="b b3">G6</span></td><td>값을 매김 + 자본비용 가정 필요</td></tr>
+<tr><td class="n">13위</td><td class="m">퀀트 종합 랭킹</td><td><span class="b b3">G2·G6</span></td><td>proprietary 명시 · 순위 = 사실상 추천</td></tr>
+<tr><td class="n">19위</td><td class="m">Altman Z-Score</td><td><span class="b b3">G5·G6</span></td><td>부도 <strong>예측</strong>물</td></tr>
+<tr><td class="n">—</td><td class="m">Magic Formula</td><td><span class="b b3">G6</span></td><td>순위 = 종목 추천</td></tr>
+<tr><td class="n">—</td><td class="m">Beneish M-Score</td><td><span class="b b3">G5</span></td><td>분식 예측 + 명예훼손 위험</td></tr>
+<tr><td class="n">—</td><td class="m">Owner Earnings · EPV</td><td><span class="b b3">G2·G6</span></td><td>정의가 서술적이라 구현마다 갈림</td></tr>
+</tbody></table></div>
+
+<!-- 현황 -->
+<h2><span class="n">§5</span>지금 어디인가 <span style="font-size:12px;color:var(--tx3);font-weight:400">2026-08-15 실측</span></h2>
+<div class="tiles">
+  <div class="tile off"><div class="k">역DCF 엔진</div><div class="v">가동 · 화면 OFF</div><div class="x">604종목 · REVDCF_ENABLED OFF</div></div>
+  <div class="tile on"><div class="k">Q1 재료</div><div class="v">5,820행</div><div class="x">per 2,067 · pbr 3,279 · psr 3,554 · ev 1,451</div></div>
+  <div class="tile off"><div class="k">Q1 화면</div><div class="v">미착수</div><div class="x">Q1_ENABLED OFF</div></div>
+  <div class="tile"><div class="k">7렌즈</div><div class="v">라이브 · 1,039행</div><div class="x">원전 있는 것 3 / 7</div></div>
+  <div class="tile on"><div class="k">취득 게이트</div><div class="v">재정의 완료</div><div class="x">STEP1031 · 19일 정지 해소</div></div>
+  <div class="tile on"><div class="k">프루닝</div><div class="v">재활성 + 100행 상한</div><div class="x">STEP1032 · 첫 실행 08-15 21:30 UTC</div></div>
+  <div class="tile on"><div class="k">카탈로그</div><div class="v">92소스</div><div class="x">조달 지도 완성</div></div>
+  <div class="tile on"><div class="k">모델 로스터</div><div class="v">63개 우주 · 5계층</div><div class="x">08-07 4건 + STEP1033</div></div>
+</div>
+<p class="note"><strong>ROADMAP.md가 낡았다</strong> — "현재 위치"가 2026-07-18에 멈춰 있고 Phase 1~5가
+   <strong>한국 중심 + 6개국 탭 전제</strong>로 쓰여 있다. 지금은 <strong>US 단독 전면 전환</strong>이다. (판정 D)</p>
+
+<!-- 미해결 전체 -->
+<h2><span class="n">§6</span>미해결 판정 — 전체</h2>
+<div class="tbl"><table>
+<thead><tr><th class="n">#</th><th>판정</th><th>왜 막혀 있나</th><th>걸려 있는 것</th></tr></thead>
+<tbody>
+<tr class="hl"><td class="n">A</td><td class="m">제품 정의 우선순위</td><td>§1의 셋이 다 살아 있고 순위가 없다</td><td>그 아래 모든 화면 결정</td></tr>
+<tr class="hl"><td class="n">B</td><td class="m">새 모델 고르기 vs 1위를 제대로 만들기</td><td>08-07에 제기 → 이후 미판정</td><td>다음에 착수할 대상 전부</td></tr>
+<tr><td class="n">C</td><td class="m">역DCF의 위치</td><td>12위 · G3 미달인데 최대 투자분</td><td>REVDCF_ENABLED 켤지</td></tr>
+<tr><td class="n">D</td><td class="m">ROADMAP.md 재작성 여부</td><td>KR 중심 · 6개국 탭 전제가 US 단독과 충돌</td><td>사업 순서 전체</td></tr>
+<tr><td class="n">E</td><td class="m">7렌즈 거취</td><td>LENS_DISPOSITION §4 네 안 — A·B에 종속</td><td>화면 표면 6곳</td></tr>
+<tr><td class="n">F</td><td class="m">Q1 착수 전 4건</td><td>ⓛ 표시규칙 · ⓜ 축구성 · ⓞ 배율표시 · 선결질문 61</td><td>Q1 카드</td></tr>
+</tbody></table></div>
+
+<!-- 위계 -->
+<h2><span class="n">§7</span>문서 위계 — 무엇이 무엇의 정본인가</h2>
+<div class="hier">
+  <div class="lay"><div class="lk">목적</div><div class="lf">USER_QUESTIONS_2026-08-08.md</div><div class="lq">사람들이 무엇을 묻는가</div></div>
+  <div class="lay"><div class="lk">후보</div><div class="lf">MODEL_UNIVERSE_63_2026-08-07.md · MODEL_ROSTER.md</div><div class="lq">세상에 어떤 모델이 있는가</div></div>
+  <div class="lay"><div class="lk">순서</div><div class="lf">MODEL_BUILD_ORDER_2026-08-07.md · BUILD_SEQUENCE.md</div><div class="lq">무엇을 먼저 만드는가</div></div>
+  <div class="lay"><div class="lk">답지</div><div class="lf">모델별 SPEC (REVDCF_SPEC.md 등)</div><div class="lq">무엇을 넣는가</div></div>
+  <div class="lay"><div class="lk">조달</div><div class="lf">DATA_SOURCE_CATALOG.md</div><div class="lq">어디서 가져오는가</div></div>
+  <div class="lay"><div class="lk">출력</div><div class="lf">ANSWERABILITY_MAP.md</div><div class="lq">무엇을 답할 수 있는가</div></div>
+  <div class="lay"><div class="lk">완성</div><div class="lf">LENS_COMPLETION_STANDARD.md</div><div class="lq">끝났다고 말할 수 있는가</div></div>
+  <div class="lay"><div class="lk">현황</div><div class="lf">STATE.md</div><div class="lq">지금 어디인가</div></div>
+</div>
+
+<!-- 실수 -->
+<h2><span class="n">§8</span>반복된 실수 — 다시 하지 않기 위해 남긴다</h2>
+<div class="tbl"><table>
+<thead><tr><th class="n">#</th><th>실수</th><th>기록</th></tr></thead>
+<tbody>
+<tr><td class="n">1</td><td class="m">한 계층만 보고 "후보 소진" 선언</td><td>LENS_ROADMAP(07-03)이 팩터만 훑고 닫음 → 역DCF·배수·건전성 모델이 시야 밖. STEP1033이 12개 이상 재발견</td></tr>
+<tr><td class="n">2</td><td class="m">관문 없이 "원전 대조 가능성"만으로 모델 선정</td><td>MODEL_BUILD_ORDER §5가 자기 실수로 기록 — <em>"사용률 1위가 「원전이라 부를 저작이 없다」는 이유로 밀려났다"</em></td></tr>
+<tr class="hl"><td class="n">3</td><td class="m">같은 실수 반복 (2026-08-15)</td><td>Cowork이 §3-B를 안 읽고 <em>"원전이 책 한 권으로 명확하니 역DCF"</em>를 추천. <strong>2번과 같은 병.</strong> 철회함</td></tr>
+<tr><td class="n">4</td><td class="m">기존 조사를 안 찾고 재조사</td><td>STEP1033 명령서가 ⓪-1b를 규칙으로 걸어놓고 정작 08-07 조사 4건을 빠뜨림 (INDEX에 등재돼 있었음)</td></tr>
+<tr><td class="n">5</td><td class="m">소표본 오판 5회(원문 "6회"는 오기)</td><td>_TEMPLATE.md:64가 명시하는 수는 다섯(985 XOM 1종목·998 5종목·999 20종목·1007 USA 수기분류·1015 초안 8/8) — "6번"은 같은 파일 다른 줄(:23)의 Vercel 로그 중복조사 횟수와 혼동. 표본 상한을 걸 때 전수 비용을 안 적음 → 템플릿 ⓪-5에 규칙 신설</td></tr>
+</tbody></table></div>
+<p class="note"><strong>공통 원인: 이미 있는 답을 안 찾고 새로 만든다.</strong> 그래서 KNOWN_ANSWERS.md와 ⓪-1b가 생겼다.</p>
+
+<footer>
+  이 문서는 판정이 아니다. §6의 여섯 칸 = 장은태. · <code>docs/BUILD_SEQUENCE.md</code>
+</footer>
+
+</div>
+</body>
+</html>
