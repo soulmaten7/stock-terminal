@@ -27,10 +27,6 @@ h1{font-size:30px;font-weight:700;letter-spacing:-.02em;margin-top:10px}
   margin-top:18px;padding:12px 16px;background:var(--amberbg);
   border-left:3px solid var(--amber);border-radius:0 6px 6px 0;font-size:13.5px;color:#e5cd9a
 }
-.verify{
-  margin-top:10px;padding:12px 16px;background:var(--greenbg);
-  border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:13px;color:#bfe9cf
-}
 
 /* 진행 트래커 */
 .tracker{display:flex;flex-wrap:wrap;gap:7px;margin:26px 0 8px}
@@ -156,13 +152,9 @@ footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);color:v
     <strong>작성 중입니다.</strong> 확정된 층만 채워져 있고 나머지는 비어 있습니다.
     구본 <code>docs/ROADMAP.md</code>는 지우지 않고 이력으로 보존합니다.
   </div>
-  <div class="verify">
-    ✅ <strong>사실관계 검증 완료(2026-08-15, Claude Code)</strong> — 인용 5건(멍거 3·버핏 1·파인만 1)은 <code>BRAND_IDENTITY.md</code>의 기존 「현인 앵커」와 완전 일치, 슬로건·"보는 눈" 프레이밍·구본 비판 인용 2건 전부 원본 대조 확인.
-    오류 1건 정정: "§8 로드맵 원문 보존 원칙"은 저장소에 해당 조항이 없어 인용 정정.
-  </div>
   <div class="tracker">
     <div class="tk done">WHY</div>
-    <div class="tk wait">HOW</div>
+    <div class="tk done">HOW</div>
     <div class="tk wait">WHAT</div>
     <div class="tk wait">만드는 절차</div>
     <div class="tk wait">무엇을 먼저</div>
@@ -276,10 +268,136 @@ footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);color:v
   </p>
 </section>
 
-<section class="pending">
-  <div class="shead"><h2>HOW</h2><span class="badge wait">확정 대기</span></div>
-  <div class="stitle">어떻게 하는가</div>
-  <div class="ph">다음 대화에서 확정합니다</div>
+<section>
+  <div class="shead"><h2>HOW</h2><span class="badge ok">확정 2026-08-15</span></div>
+  <div class="stitle">어떻게 하는가 — WHY의 조건 셋을 어떻게 달성하는가</div>
+
+  <p class="lead">조건마다 <strong>세상의 표준이 이미 있습니다.</strong> 우리는 그걸 원전으로 삼습니다 — 창작하지 않습니다.</p>
+
+  <h3>H-1. 조건별 방법</h3>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:80px">WHY 조건</th><th>방법</th><th style="width:30%">원전</th></tr></thead>
+    <tbody>
+      <tr><td class="rule">1. 정확</td>
+        <td>원전 그대로 구현한다. 원전이 없으면 <strong>정의를 고정·공개하고, 원자료에서 직접 계산하고, 손계산으로 검산한다.</strong> 재료마다 <strong>직접 관측 / 받아온 값 / 파생 조립</strong> 중 무엇인지 표시하고, 파생이면 원본과 대조한다</td>
+        <td>창작금지 규칙 5-1<br><strong>Datasheets for Datasets</strong><br><span style="font-size:12px;color:var(--tx3)">Gebru et al., arXiv:1803.09010</span></td></tr>
+      <tr><td class="rule">2. 단순</td>
+        <td><strong>SEC Plain English를 그대로 적용한다</strong></td>
+        <td><strong>SEC Rule 421(b)(d)</strong><br>A Plain English Handbook</td></tr>
+      <tr><td class="rule">3. 왜 그런지</td>
+        <td><strong>모델마다 Model Card, 데이터마다 Datasheet</strong></td>
+        <td><strong>Model Cards for Model Reporting</strong><br><span style="font-size:12px;color:var(--tx3)">Mitchell et al., arXiv:1810.03993</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="seq">1 → 2 → 3 은 순서다. 계산이 먼저다 — 표현은 그 다음 문제다.</div>
+
+  <h3>조건 2의 실제 규칙 — SEC Plain English</h3>
+  <div class="grid g3">
+    <div class="card"><div class="src">문장</div><div class="def">짧게 · 능동태 · 강한 동사 · <strong>인칭대명사</strong> · 구체어 · 군더더기 제거 · 긍정문 · if-then · 병렬 구조</div></div>
+    <div class="card"><div class="src">어휘</div><div class="def">"definite, concrete, everyday words" · 법률·고도기술 용어 제거 · <strong>정의어·약어 최소화</strong> · 용어집에 의존하지 않는다 · 다중부정 금지</div></div>
+    <div class="card"><div class="src">구성</div><div class="def">서술적 헤더 · 복잡한 건 표로 · 여백 · 행 길이 32~64자 · 그래프는 축척대로</div></div>
+  </div>
+  <div class="fix" style="margin-top:14px">
+    <div class="fh">재작성 5패턴 — 핸드북 실례</div>
+    <div class="fitem">
+      <div class="old">"The proxies solicited hereby … <strong>may be revoked</strong>, subject to the procedures described herein"</div>
+      <div class="new"><strong>"You may revoke your proxy"</strong> … "by following the directions <strong>on page 10</strong>"</div>
+    </div>
+    <div class="fitem">
+      <div class="old">"…intended to assist <strong>investors</strong> in understanding the costs…"</div>
+      <div class="new">"…the fees and expenses that <strong>you</strong> may pay…"</div>
+    </div>
+    <div class="fitem">
+      <div class="old">패턴 요약</div>
+      <div class="new">수동태→능동태 · <em>herein/foregoing</em>→구체적 위치 · <strong>3인칭→2인칭</strong> · 추상 명사구→구체 동사 · 다중부정 제거</div>
+    </div>
+  </div>
+
+  <h3>조건 3의 실제 규칙 — Model Card 9섹션</h3>
+  <p>Model Details(개발주체·<strong>날짜·버전</strong>·유형·원전·라이선스·문의처) · <strong>Intended Use</strong>(주 용도·주 사용자·<span class="hi">out-of-scope</span>) ·
+     Factors · Metrics(<strong>판정 임계값</strong>) · Evaluation Data · Training Data · Quantitative Analyses · Ethical Considerations · <span class="hi">Caveats and Recommendations</span></p>
+  <blockquote>
+    <div class="q">"Not suitable for emotion detection; smiles were annotated based on physical appearance, and not underlying emotions."</div>
+    <div class="t">out-of-scope에는 <strong>「왜 부적합한지」까지</strong> 쓴다</div>
+  </blockquote>
+  <blockquote>
+    <div class="q">"An ideal evaluation dataset would additionally include annotations for …"</div>
+    <div class="t">Caveats에는 <strong>「부족분을 채우려면 무엇이 필요한지」까지</strong> 쓴다</div>
+  </blockquote>
+
+  <h3>H-2. 재료를 찾는 절차 — 7단계</h3>
+  <div class="steps">
+    <div class="step"><div class="num">1</div><div><div class="what">개념 정의 먼저</div><div class="doc">검색 전에 「무엇을 찾는지」를 못 박는다 — 안 그러면 헛짚는다</div></div><div class="fail">—</div></div>
+    <div class="step"><div class="num">2</div><div><div class="what">신뢰 순 검색</div><div class="doc">규제기관·거래소 공식 &gt; 공식 지정 사이트 &gt; 상업 애그리게이터 &gt; 뉴스 · client 라이브러리 소스코드를 엔드포인트 소스로 역이용</div></div><div class="fail">—</div></div>
+    <div class="step"><div class="num">3</div><div><div class="what">도달성 프로브</div><div class="doc">로컬 ≠ 프로덕션 — 반드시 실제 배포 환경에서 확인</div></div><div class="fail">로컬만 되면 실효 없음</div></div>
+    <div class="step"><div class="num">4</div><div><div class="what">응답 구조·필수 속성 검증</div><div class="doc">③ 필수 속성을 실제로 만족하는가</div></div><div class="fail">하나라도 빠지면 동등물 아님</div></div>
+    <div class="step"><div class="num">5</div><div><div class="what">폴백 사다리</div><div class="doc">공식 API → 서버렌더 스크랩 → 애그리게이터(원문 귀속) → 대체 지표</div></div><div class="fail">각 단계 실패 사유를 기록한다</div></div>
+    <div class="step"><div class="num">6</div><div><div class="what">인간 확정</div><div class="doc">소스가 둘 이상이거나 ToS·품질이 애매하면 대화로 확정</div></div><div class="fail">—</div></div>
+    <div class="step last"><div class="num">7</div><div><div class="what">기록</div><div class="doc">§2 스키마 7칸으로</div></div><div class="fail">그때그때 — <strong>몰아서 금지</strong></div></div>
+  </div>
+
+  <h3>H-3. 기록 방식 — 스키마 7칸</h3>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:150px">칸</th><th>내용</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td class="m">① 정체(무엇을 재나)</td><td>기능적 정의. <strong>이름표 금지</strong> — "PER"이 아니라 "이익 대비 가격"</td></tr>
+      <tr><td class="m">② 목적</td><td>이 값으로 무엇을 하나</td></tr>
+      <tr class="hl"><td class="m">③ 필수 속성</td><td><strong>하나라도 빠지면 동등물이 아니다 → 폴백.</strong> 유료 대체 판정의 기준</td></tr>
+      <tr><td class="m">④ 인스턴스</td><td>실제 소스·엔드포인트·키 필요 여부</td></tr>
+      <tr class="hl"><td class="m">⑤ 시도(구체)</td><td><strong>실제 검색어·URL·방법</strong></td></tr>
+      <tr><td class="m">⑥ 결과</td><td>됨/안 됨 + <strong>왜</strong></td></tr>
+      <tr><td class="m">⑦ 추상 교훈(조건부)</td><td>다른 곳에 전이될 규칙. "이 조건에선…"</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">"①을 정확히 쓰는 순간 그 「무엇」을 그대로 검색·판단할 수 있다. ④(이름표)만 남기면 전이 안 된다."</p>
+
+  <h3>H-4. 막혔을 때</h3>
+  <p><strong>트리거는 둘 다 충족돼야 합니다</strong> — 방법·게이트를 다 동원했는데도 안 됨 <strong>그리고</strong> 억지로 채우면 가짜·유령 데이터가 됨.
+     대원칙은 하나입니다: <span class="hi">가짜로 채우지 않는다.</span></p>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:110px">경로</th><th>무엇</th><th style="width:38%">남기는 것</th></tr></thead>
+    <tbody>
+      <tr><td class="m">(a) 진행</td><td>된다</td><td>스키마 7칸</td></tr>
+      <tr><td class="m">(b) 보류</td><td><strong>배선 보존, 스위치만 OFF</strong></td><td>왜 보류 · 깔아둔 배선 · <strong>활성화 체크리스트(복원 좌표를 커밋 해시로)</strong> · 비용 · <strong>재사용 범위</strong></td></tr>
+      <tr class="hl"><td class="m">(c) 기준 변경</td><td>그게 없어도 되게 <strong>요구 수준을 낮춤</strong></td><td><strong>기준의 근거가 무효화됐음을 실측으로 보이고, 낮춘 사실·사유를 기록하고, 판정을 받는다. 셋이 없으면 금지</strong></td></tr>
+      <tr><td class="m">(d) 미답 등재</td><td>"못 답한다"를 명시</td><td>ANSWERABILITY_MAP</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><strong>파킹 사유는 둘이다</strong> — 막혀서 / 안 하기로 해서(제품 방향 축소).
+     <strong>파킹하면 뒤의 파이프라인도 멈춘다</strong> — 배선은 보존하되 크론은 중지한다.
+     어느 경로든 <strong>실패 원장에 「조건부 교훈」으로 올려 다음 조사의 게이트로 만든다.</strong></p>
+
+  <h3>H-5. 이것을 가능하게 하는 구조</h3>
+  <div class="slogan" style="background:linear-gradient(160deg,#1d1a14,#17150f);border-color:#43391f">
+    <div class="main" style="color:#f0dfae">종목에 대해 팔 게 없다</div>
+    <div class="sm">계좌 개설과 구독은 팔지만, 그건 어느 종목을 고르든 똑같다</div>
+  </div>
+  <p>우리는 파는 게 있습니다 — <strong>T1 AI 구독 · T2 증권사 어필리에이트</strong>가 진짜 두 파이입니다.
+     <span class="hi">그러니 "팔 게 없다"는 부정확합니다.</span> 정확히는 <strong>어느 종목을 사라는 것을 안 팝니다</strong> — 종목 판정에 편향될 인센티브가 구조적으로 없습니다.
+     T5(리딩방 게재)를 2026-07-10에 중심축에서 내린 것이 이 원칙의 실행 기록입니다.</p>
+  <p class="note">멍거 "Show me the incentive and I will show you the outcome"을 <strong>우리 자신에게</strong> 적용한 결과입니다.
+     어디에 편향될 수 있고 어디엔 없는지를 스스로 밝히는 것 — Model Card의 out-of-scope와 같은 구조입니다.</p>
+
+  <h3>H-6. 가드레일 — 무장하되 벼린다</h3>
+  <blockquote>
+    <div class="q">불은 태우기도 한다. "개인을 무장시킨다"가 "도박꾼을 부추긴다"로 기울면, 우리는 우리가 해독제이려던 바로 그것이 된다.</div>
+  </blockquote>
+  <p>약한 신호를 숨기지 않는다 · 불확실성을 드러낸다 · 과장·확신하지 않는다 · <strong>능력을 팔되 의존을 팔지 않는다.</strong></p>
+
+  <h3>H-7. 창작의 경계 — 「기만 금지」</h3>
+  <p>금지 대상은 "새로 만드는 것"이 아니라 원문이 지목한 <strong>"어설프게 혹은 기만하면서"</strong>입니다.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>층위</th><th style="width:180px">판정</th></tr></thead>
+    <tbody>
+      <tr><td>세상에 없는 모델을 <strong>발명</strong></td><td><span class="b b3">금지</span></td></tr>
+      <tr><td>원전 있는 모델에 <strong>원전에 없는 항목 추가</strong></td><td><span class="b b3">금지</span></td></tr>
+      <tr><td><strong>원전 없는 항목의 정의를 우리가 정함</strong></td><td><span class="b b0">허용</span> 규칙 5-1의 5단계를 전부 지키면</td></tr>
+      <tr><td><strong>유료 값을 무료 재료로 조립</strong></td><td><span class="b b0">허용</span> 조합 방법이 공개돼 있고 원본과 대조하면</td></tr>
+      <tr class="hl"><td><strong>결측을 채우고 실측인 척</strong></td><td><span class="b b3">절대 금지</span></td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><strong>판별 셋</strong>: 사용자가 이게 무엇인지 알 수 있는가(공개) · 우리가 이 값을 책임질 수 있는가(검산) · 원본인 척하는가(기만).<br>
+     <strong>원전은 두 층이다</strong> — 현상의 원전(효과가 실재한다고 밝힌 문헌)과 계산 사양의 출처(숫자를 어떻게 내는지의 관행). 둘을 구분해 밝힌다.</p>
 </section>
 
 <section class="pending">
