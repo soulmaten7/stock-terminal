@@ -1,6 +1,22 @@
 <!-- 2026-08-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-15 — 🔴 **STEP1035 후속 ③: link_previews DROP + 역방향 전수 점검(probe 1036)**
+
+> 리뷰 중 세 번째 누락 발견(파일 3개·테이블 13개 DROP·`lib/nts.ts`에 이어). `link_previews`(OG 링크 프리뷰 캐시, 1,005행)가 이름 패턴(`advisor|room|leading|business_claim|member|listing|link`)에 안 걸려 최초 DB 정리에서 빠져 있었다.
+
+**①link_previews 처리**: 본체 참조 0곳(다중 패턴 재확인) · spinoff 2개 라우트(`link-preview`·`admin/crawl-previews`)에서만 사용 확인 · 컬럼에 개인정보 없음(url·og_title·og_image·og_description·site_name·status·fetched_at, `user_id`류 컬럼 자체 없음) 확인. `spinoff/advisor-directory/schema.sql` §10에 `CREATE TABLE`+RLS 원문 추가(격리 스키마 재구축 검증 완료) → **커밋① `b0bf663`**. 데이터는 미덤프(`lib/og.ts`의 `fetchOg()`로 재크롤 가능한 캐시라 원본 아님). `supabase/migrations/20260815b_drop_link_previews.sql` 적용(Supabase MCP) → **커밋② `d1c4815`**(①을 복원좌표로 인용). 🔴 **`link_hub`(492행, 본체 5곳에서 사용 중인 완전히 다른 테이블)는 무접촉 확인** — DROP 후 재조회로 `link_hub`·`link_hub_favorites`·`link_hub_clicks` 전부 변화 없음 확인.
+
+**②역방향 전수 점검**: 이름 패턴이 세 번 연속 누락을 낸 것을 반성해, 이번엔 방향을 뒤집었다 — `public` 스키마의 테이블·뷰 **80개 전체**를 `pg_catalog`로 나열하고, 각각을 본체 코드(`app`·`lib`·`components`·`scripts`·`supabase`, `spinoff/` 제외)에서 grep해 참조 파일 수를 셌다. **결과: 본체 참조 0곳인 오브젝트는 `ai_view_cache` 1개뿐**(0행, 과거 "AI 종합 보기" 기능 — `app/api/ai-view/route.ts`가 이미 사라진 상태로 테이블만 남음, 리딩방과 무관). 곁다리로 `public` 함수 9개도 확인 — 새로 발견된 리딩방 관련 함수는 없음. **판정하지 않음** — 삭제 여부는 이 문서 범위 밖. 산출물: `docs/probe_1036_orphan_tables.md`(전체 인벤토리 표 + 0-참조 상세).
+
+검증: vitest 384/384(코드 변경 없음, 문서·DB만).
+
+**못 한 것**: 참조 1건짜리 12개 오브젝트의 그 1건이 실제 살아있는 코드인지는 확인 안 함(0건 기준만 충족 확인). **철회·정정**: 없음.
+
+🔴 **link_hub는 절대 건드리지 않았다 — 지시대로 확인·보존.**
+
+---
+
 ## 2026-08-15 — 🔴 **STEP1035 후속 ①: 리딩방 DB 완전 삭제(13개 테이블 + 뷰, 되돌릴 수 없는 삭제)**
 
 > STEP1035(코드/i18n 삭제)가 "DB는 별도 판정 대상"으로 남겨뒀던 것의 실행. 장은태 판정(2026-08-15): 되돌릴 수 없는 삭제 진행. 별도 `docs/step_orders/` 파일 없이 채팅으로 직접 지시받아 수행.
