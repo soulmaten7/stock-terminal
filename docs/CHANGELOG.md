@@ -1,6 +1,42 @@
 <!-- 2026-08-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-15 — 🔴 **STEP1035 후속 ①: 리딩방 DB 완전 삭제(13개 테이블 + 뷰, 되돌릴 수 없는 삭제)**
+
+> STEP1035(코드/i18n 삭제)가 "DB는 별도 판정 대상"으로 남겨뒀던 것의 실행. 장은태 판정(2026-08-15): 되돌릴 수 없는 삭제 진행. 별도 `docs/step_orders/` 파일 없이 채팅으로 직접 지시받아 수행.
+
+**①조사**: `pg_class`·`information_schema.columns`·`pg_policies`·`pg_constraint`·`pg_indexes`·`pg_proc`·`information_schema.triggers`를 `advisor|room|leading|business_claim|business_member|business_listing|business_link` 이름 패턴으로 Supabase 프로덕션(`ccbwxcszdoyjxvckedfp`)에서 직접 전수 조회했다. 결과: **13개 테이블 + 1개 뷰**(`fss_advisors`·`leading_rooms`·`leading_room_votes`·`room_favorites`·`room_likes`·`room_reports`·`room_submissions`·`room_reviews`·`room_review_reports`·`business_claims`·`business_members`·`business_listing`·`business_links`·`advisor_directory`) + 함수 2개(`increment_room_view`·`update_leading_room_vote_count`) + 트리거 1개. 행 수: `fss_advisors` 1,847행, **나머지 12개 전부 0행**. FK 확인 — `leading_rooms.fss_biz_no → fss_advisors`·`leading_room_votes.room_id → leading_rooms`(내부 체인만, 외부 테이블 참조 없음). 코드 grep으로 **`app/api/account/delete/route.ts` 딱 하나만** 이 테이블들을 참조함을 확인(`USER_OWNED_TABLES` 배열의 9개 항목) — 이게 유일한 "다른 기능 참조" 발견이었다. `platform_discussions`/`products`(상품 리뷰까지 포괄하는 별개 기능, 0행·미사용)는 이름 패턴 밖이라 범위에서 뺐다 — 단 그 트리거 함수(`update_target_discussion_count`)가 `target_type='room'`일 때 `leading_rooms`를 참조하는 도달 불가능한 분기를 갖고 있음을 기록만 해뒀다(`schema.sql` 하단 주석).
+
+**②스키마 보관**: `spinoff/advisor-directory/schema.sql` 신설 — 13개 테이블 + 뷰 + 함수 + 트리거의 `CREATE` 문 전체를 `pg_catalog`/`information_schema` 직접 조회로 뽑아 저장(추정 재구성이 아니라 실제 DDL). 🔴 **데이터는 덤프하지 않았다**: `fss_advisors`는 대표자명·이메일·전화 등 개인정보를 담고 있고 `scripts/import-fss-advisors.ts`로 금감원에서 언제든 재수집 가능하다(잃어버리면 안 되는 유일한 사본이 아님) — 나머지 12개는 삭제 시점 전부 0행이라 애초에 보관할 데이터가 없었다. 두 이유 모두 `schema.sql` 헤더에 명시.
+
+**③검증 → 커밋①**: 같은 라이브 DB 안에 완전히 격리된 스키마(`verify_1036`)를 만들고 `schema.sql`을 스키마명만 바꿔 그대로 실행 — **13 tables·27 indexes·21 policies·2 functions·3 triggers·1 view 전부 원본과 정확히 일치**하며 에러 0건으로 재구축됐다. 검증 후 `verify_1036`을 DROP하고 `public.fss_advisors`가 여전히 1,847행임을 재확인해 `public` 스키마 무접촉을 증명했다. **커밋① = `d950208`**("feat(spinoff): 리딩방 DB 스키마 보관").
+
+**④삭제 → 커밋②**: 먼저 `app/api/account/delete/route.ts`의 `USER_OWNED_TABLES`에서 위 9개 항목을 제거했다 — 이걸 먼저 안 하면 테이블 DROP 이후 회원탈퇴가 첫 번째 삭제 대상 테이블에서 "relation does not exist"로 **전체 실패**했을 것이다(리딩방을 한 번도 안 쓴 사용자의 탈퇴까지 막혔을 것). 남은 8개(`watchlist`·`link_hub_*`·`discussions`·`platform_discussions` 등)는 무변경. Supabase MCP `apply_migration`으로 `supabase/migrations/20260815_drop_advisor_directory.sql` 적용 — 뷰 → 자식 테이블(`leading_room_votes`·`room_review_reports`) → `leading_rooms` → 나머지 → 부모(`fss_advisors`) 순서로 DROP, 함수 2개도 별도 DROP(테이블과 함께 자동 삭제되는 트리거와 달리 함수는 명시적 DROP 필요). 적용 직후 재조회로 해당 이름 패턴 오브젝트가 **0개**임을 확인. `kr_stock_snapshot`(2,776행)·`kr_etp_snapshot`(1,550행) 무변경 확인 — **리딩방과 다른 KR 시장 데이터는 전혀 손대지 않았다.** **커밋② = `1abe1d1`**(메시지에 커밋①`d950208`을 복원 좌표로 명시).
+
+검증: tsc(격리 빌드, 삭제된 라우트 참조 0건 — 이 부분은 STEP1035에서 이미 삭제됐던 코드라 이번엔 DB만의 문제)·vitest 384/384 통과.
+
+**못 한 것**: `schema.sql`을 완전히 별도의 Supabase 프로젝트에서 검증하지 않고 같은 프로젝트의 격리 스키마로 검증했다(별도 프로젝트 생성은 비용·범위 밖으로 판단).
+
+**철회·정정**: 없음.
+
+🔴 **장은태 판정(2026-08-15): 되돌릴 수 없는 삭제 실행 완료.** 커밋① `d950208` · 커밋② `1abe1d1`.
+
+---
+
+## 2026-08-15 — 🅿️ **STEP1035 후속 ②: 약관·개인정보처리방침 정리 보류 기록**
+
+> 장은태 판정(2026-08-15): 약관·개인정보처리방침 정리는 **모델 완성 후로 미룬다** — 법률 검토가 먼저 있어야 한다.
+
+`docs/PARKED_TERMS_PRIVACY_ACTIVATION.md` 신설(`docs/LOCALE_SOURCE_PLAYBOOK.md` §11 보류 기능 프로토콜 형식). **① 왜 보류** — 위 판정 그대로. **② 현재 불일치 실측** — `terms/page.tsx:8·14·36`·`privacy/page.tsx:10·19` 원문을 다시 열어 그대로 인용(시행일 2026-07-11); STEP1035로 기능은 삭제됐고 이번 세션의 STEP1035 후속①로 DB(`fss_advisors` 1,847행 등 13개 테이블)도 완전히 DROP됐음을 병기(복원 좌표 커밋 `d950208`·삭제 커밋 `1abe1d1`). **③ 지금 미루는 것이 안전한 이유** — `privacy`가 실제보다 **많이** 수집한다고 적힌 과다 고지라 이용자에게 불리한 방향이 아니고, 리딩방 관련 사용자 데이터 9개 테이블이 삭제 시점 전부 0행이었다는 실측과 정합한다(파기할 개인정보 자체가 없었다); `fss_advisors`는 애초 이용자 개인정보가 아니라 금감원이 이미 공개한 원장의 캐시였다. **④ 재개 시 조사할 것** — 약관 변경 고지 의무(전자상거래법·약관규제법) · 개인정보처리방침 변경 절차(개인정보보호법) · 서비스 축소가 "불리한 변경"에 해당하는지 · `room_favorites`류가 개인정보에 해당했는지(과거 성격 판단, 현재 처리 중인 데이터에 대한 것 아님) · 타 플랫폼의 서비스 종료 시 약관 처리 실무. **⑤ 재개 조건** — 모델 완성 + 법률 자문, 둘 다. **⑥** 문서 상단·하단 두 곳에 "이 문서는 법률 자문이 아니다"를 명시.
+
+**약관 파일은 한 글자도 고치지 않았다** — `git diff --stat`으로 `terms/page.tsx`·`privacy/page.tsx` 0건 확인. `docs/INDEX.md`에 등재.
+
+**못 한 것**: 없음(문서 신설이 이번 작업 범위 전체). **철회·정정**: 없음.
+
+🔴 **이 문서 자체가 법률 자문이 아니며, 재개 전 변호사 검토가 필수다.**
+
+---
+
 ## 2026-08-15 — 🔴 **STEP 1035: 리딩방·유사투자자문 분리 보관 후 삭제(되돌릴 수 없는 삭제)**
 
 > **장은태 판정(2026-08-15)**: *"리딩방 검증은 다른 플랫폼이나 다르게 이용할 가치가 있어 보여서 미뤄둔 거였어. 그런데 이게 이렇게 섞이게 됐으니 확실히 넘어가자. 우리 플랫폼에서 사용 안 할 거야. 단 이건 다른 플랫폼으로 다르게 이용할 수 있을 것 같으니 파일과 내용을 따로 정리해서 폴더로 넣어두자. 그리고 우리 플랫폼에서는 리딩방 관련 내용을 삭제, 없애버려."* **우리 플랫폼 미사용 확정, spinoff 분리 후 삭제.**
