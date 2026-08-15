@@ -1,5 +1,41 @@
-<!-- 2026-08-14 -->
+<!-- 2026-08-15 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-15 — 🟥 **STEP 1032: 프루닝을 켠다(🔴 되돌릴 수 없는 삭제 · 장은태 승인 완료) + 기록·정정 3건**
+
+> **성격**: STEP1031이 "되돌릴 수 없는 변경은 한 번에 하나씩"이라며 미뤄둔 축 — US `lens_scores`에서 76행을 실제로 삭제한다. **그냥 켜지 않고 삭제 상한(`PRUNE_MAX_ROWS=100`)을 같이 넣었다** — 4중 게이트(STEP833)는 전부 "계산이 잘 됐는가"만 보고 "몇 행을 지우는가"는 안 봤다(1031이 커버리지 게이트에 넣은 낙폭 상한 3%p의 대칭짝이 프루닝엔 없었다).
+
+**0-A(1031 성공 실측) + 0-B(정정 3건)는 이 STEP의 명령서 자체가 이미 확정해 옴** — 08-14 21:30 UTC `lens-scores`가 새 코드로 실행돼 `lens_cuts` US `as_of`가 07-30→**08-14로 19일 만에 갱신**됐고(`coverageOk`·`cutGateOk`·`newCoverageOk`·`newCutGateOk` 전부 true, self-check 일치), 그 사이 두 가지 예측이 실측과 달랐던 것을 이 STEP이 정정·기록한다: ① 1031이 적은 "프루닝 63행"은 **실측 76행**(집계 오류) ② STEP1025 W4의 "판정 변화 11.3%" 예측은 **실측 6.2%**(원인 미규명, 장은태 판정 = 기록만).
+
+**⓪-1b**: `docs/KNOWN_ANSWERS.md`에 "프루닝은 지금 켜져 있는가" 1건만 존재(갱신 대상). **STEP833 `canPrune` 원 근거 재확인**(코드 주석) — STEP806 §3(저장 성공률≥80%) · STEP828 §2(유니버스 하한+pass2 성공) · STEP833 §2(취득 게이트) 4중 게이트 전부 "계산 품질"만 본다는 것을 확인, 이번에 더하는 5번째(삭제 상한)가 그 취지와 안 어긋남을 확인. **STEP1026("100행 이하" 기준) 원문 확인**(`docs/step_orders/STEP1026.md:58-63`) — 근거 = 기존 `churnDecision` 10% 임계를 유니버스 1,000에 대입한 유비추론(어젯밤 churn 6.3%), STEP1026 자신이 "판단 보조일 뿐 판정이 아니다"라고 명시.
+
+**1-1(완료) — 삭제될 76행 전수 백업**: 프로덕션과 동일 조건(`market='US' AND updated_at < '2026-08-14 21:37:06.131+00'`, 963행이 공유하는 이 타임스탬프가 이번 실행의 `at`)으로 76행을 직접 조회해 symbol·name·price·7축 state·updated_at 전부 `docs/probe_1032_prune_activation.md`에 원문 그대로 기록. 현재 유니버스(`us_market_cap` 상위 1,000, `pruneImpact()`와 동일 판별)와 대조해 사유 분류 — **유니버스이탈 27건 · 계산실패(유니버스잔류) 49건**.
+
+**1-2(완료) — 프루닝 활성화**: `computeLensScores`(US) 호출부의 `pruneEnabled: false`→`true`. 파라미터 구조(1031의 opt-in 설계)는 그대로 남김. 1031의 차단 주석을 "1032에서 해제됨"으로 갱신, `pruneBlockedByFlag`는 이제 `false`가 정상값.
+
+**1-2b(완료) — 삭제 상한 신설**: STEP833의 판정 함수 패턴을 따라 순수 함수 `pruneDecision(lib/lensPrecompute.ts)`으로 분리(값 잠금 테스트 대상) — `gate4`(STEP833 4중 게이트, 한 글자도 안 바꿈) + `pruneEnabled` + `rowsToPrune > maxRows(기본 100)`이면 `aborted`로 전량 중단(일부만 안 지움). `computeLensScoresFor`는 `pruneEnabled && gate4`일 때만 COUNT 쿼리로 지울 행수를 확인 후 `pruneDecision()`에 넘긴다. 상한 초과 시 `[lens-prune-abort]` Sentry error(833의 게이트 실패와 같은 급). heartbeat에 `pruneAborted`·`pruneRowsAttempted` 신규. 🔴 **PRUNE_MAX_ROWS=100의 근거는 2일 관측뿐**(08-13 63행·08-14 76행, 하루 만에 +20.6%) — STEP1026 자신이 "판단 보조일 뿐"이라 명시한 기준을 그대로 사용, 문서에 명시. **US·KR 공용 설계**(`pruneEnabled`와 달리 시장을 안 가림 — 4중 게이트와 같은 급의 공유 안전장치라는 판단) — KR 실측 프루닝 대상은 **항상 0행**(978행 전부가 단일 `updated_at` 공유)이라 사실상 KR엔 영향 없음, `computeKrLensScores`·`topKrByMarketCap` 코드는 이 STEP에서 한 줄도 안 건드림(git diff로 확인).
+
+**1-3(완료) — 테스트 보존+확장**: 833의 11개 + 1031의 6개, **총 17개 `it()` 전부 보존**(무수정). 새 `§4 pruneDecision` 블록에 6개 추가 — 상한 경계(100→지움/101→중단) · `maxRows` 오버라이드 · `pruneEnabled=false`는 상한과 무관하게 차단(aborted=false로 사유 구분) · 4중 게이트(cutGateOk·universeOk·pass2Ok·successRate) 각각 실패 시 상한과 무관하게 차단 · 기본값 100 확인.
+
+**1-4(완료) — 정정·기록 3건**: `docs/STATE.md:62` Q1 재료 현황을 실측(PER 2,067·PBR 3,279·**PSR 3,554·EV/EBITDA 1,451**, `as_of=2026-08-14`·5,820행)으로 교체, `STATE.md:210` "Q1 착수 준비"에서 완료된 "EV/EBITDA·PSR SEC 태그 조립" 항목 제거, 47번 항목에 "정지 해소" 갱신 문단 추가. `docs/probe_1031_gate_activation.md`에 "63행"→**76행** 정정 블록(원문 보존, 위에 정정만 얹음) + §0-A 성공 표 추가. `docs/REVDCF_SPEC.md` §10-J에 W4 괴리(예측 11.3% vs 실측 6.2%, 검산 08-13 106건/08-14 169건/차분 63건=6.1%로 heartbeat `churn` 0.062 부합) 기록 — **상쇄 가설은 미검증으로 명시, 장은태 판정(기록만·규명 안 함)** 함께 기록.
+
+**1-5(완료) — 값 불변 + KR 무영향**: 배포 직전 `lens_scores` US 1,039행·`lens_cuts` US `as_of` 08-14·`revdcf_results`/`us_valuation`/`us_sector_relative` 08-14·`lens_cuts` KR `as_of` 08-13 전부 확인. 보호 파일(`route.ts`·`us_symbols.json`·`vercel.json`) diff 0. **KR 무영향 실측**: `lens_scores` market='KR' 978행 전부 단일 `updated_at` 공유 → 오늘 지울 행수 0(신설 상한이 걸릴 여지 자체가 없음).
+
+**1-6 — 배포 시각 대조**: `lens-scores` 스케줄 21:30 UTC — 배포는 그 전에 완료(게이트 8 참조).
+
+문서 갱신(정본 먼저·게이트 9): `docs/CRON_OBSERVABILITY.md` §5-2에 `pruneAborted`·`pruneRowsAttempted` 관측 항목 추가 · `docs/REVDCF_SPEC.md` §10-J · `docs/KNOWN_ANSWERS.md` 2항목(기존 갱신 1 + 신규 1 "프루닝은 언제 몇 행을 지우는가").
+
+tsc 0 · vitest **384/384**(378+6신규, 기존 378개 전부 무수정 재확인 통과).
+
+**못 한 것**: 오늘 밤(08-15 21:30 UTC) 실제 프루닝 실행 결과 — 미도래. `pruneAborted`가 실제로 걸리는 경우는 아직 관측된 적 없음(항상 76 이하).
+
+**철회·정정**: `docs/probe_1031_gate_activation.md`의 "63행"·"11.3%"를 이 STEP에서 정정(원문 보존, 정정 블록 추가).
+
+**미측정**: 오늘 밤 실행 후 실제 `pruned`·`lens_scores` 행수 변화·`pruneAborted` 값 — ⓪-4 매트릭스 전부 미도래. W4 괴리의 진짜 원인(의도적 미측정 — 장은태 판정).
+
+🔴 **프루닝 활성화 승인(장은태, 2026-08-15). 다음은 Q1이다 — 「기존 7렌즈 수리 vs Q1~Q4 카드 신설」 판정 자료. 곁가지 STEP을 새로 만들지 않는다.**
+
+---
 
 ## 2026-08-14 — 🟥 **STEP 1031: 커버리지 게이트를 실제로 전환한다(🔴 게이트 전환 승인, 2026-08-14 장은태 · 라이브 판정값 변경)**
 

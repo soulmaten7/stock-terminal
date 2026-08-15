@@ -63,9 +63,14 @@
 - 재검토 조건: `ABS_FLOOR`/`DROP_LIMIT` 상수 자체를 바꾸는 결정이 나오거나, self-check(`coverageOk`==`newCoverageOk`)가 어긋나는 사례가 관측되면.
 
 ## Q. 프루닝(오래된 lens_scores 행 삭제)은 지금 켜져 있는가
-- 답: **US는 명시적으로 꺼져 있다**(`pruneEnabled:false`, STEP1031) — 컷 게이트는 열었지만 되돌리기 어려운 행 삭제는 별도 판정으로 분리했다. **KR은 원래대로 켜져 있다**(무변경, 이 STEP의 영향 밖). `cron_heartbeats.job='lens-scores'.note.pruneBlockedByFlag`로 매일 확인 가능(`true`=정상 차단).
-- 확정: STEP1031(2026-08-14) · 근거: `docs/probe_1031_gate_activation.md` §1-3.
-- 재검토 조건: 프루닝 활성화가 별도 STEP으로 장은태 승인을 받으면(`pruneEnabled:false` 한 줄 삭제로 즉시 복원).
+- 답: **US·KR 둘 다 켜져 있다**(STEP1032, 2026-08-15). 1031이 US만 `pruneEnabled:false`로 하루 껐던 것을 1032가 다시 `true`로 켰다 — 대신 삭제 상한(아래 Q)이 새 안전장치로 붙었다. `cron_heartbeats.job='lens-scores'.note.pruneBlockedByFlag`는 이제 `false`가 정상.
+- 확정: STEP1031(끔, 2026-08-14)→STEP1032(다시 켬+상한 신설, 2026-08-15) · 근거: `docs/probe_1032_prune_activation.md`.
+- 재검토 조건: `pruneBlockedByFlag=true`가 다시 나오면(누가 의도적으로 껐거나 배선이 깨진 것) 재확인.
+
+## Q. 프루닝은 언제 몇 행을 지우는가(삭제 상한)
+- 답: STEP833의 4중 게이트(저장 성공률≥80%·유니버스 하한·pass2 성공·취득 게이트 통과)를 전부 통과하고 `pruneEnabled=true`여도, 지울 행 수가 `PRUNE_MAX_ROWS`(기본 100)를 넘으면 **전량 중단**(일부만 안 지움). 순수 함수 `pruneDecision`(`lib/lensPrecompute.ts`)으로 분리돼 있어 값 잠금 테스트 대상. 근거는 **2일 관측뿐**(08-13 63행·08-14 76행) — 1026이 세운 기준을 그대로 씀.
+- 확정: STEP1032(2026-08-15) · 근거: `docs/probe_1032_prune_activation.md` §1-2b.
+- 재검토 조건: 실제 삭제 행수가 100에 근접하거나 넘는 날이 관측되면(현재 2일 관측으로는 76이 최대) 상한 재검토.
 
 ## Q. `us_sector_relative`가 정지하면 업종 대비(D)가 어떻게 실패하는가
 - 답: `us_valuation`의 최신 `as_of`로 `us_sector_relative`를 조회하는데, `us_sector_relative` 자체가 최근 갱신을 멈추면 그 `as_of`에 0행 매치 → **전 종목이 `NO_SECTOR`로 표시**(신선도 게이트가 있어서가 아니라 조회 키가 안 맞아서). 서빙 API(`/api/lens`·`/api/watchlist/quotes`)는 신선도 임계값을 아예 안 본다 — `docs/CRON_OBSERVABILITY.md`의 49h/30h는 `health` 크론 전용 모니터링 값일 뿐.

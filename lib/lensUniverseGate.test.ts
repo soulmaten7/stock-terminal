@@ -4,8 +4,10 @@
 //   전일 대비 낙폭 상한 3%p)로 전환됐다. 기존 11개 케이스는 지우지 않고 보존 — 값이 바뀐 것은 한 케이스뿐(아래 표시),
 //   나머지 10개는 이 STEP과 무관하게 그대로 통과한다(구 산식·신 산식 양쪽에서 같은 결과가 나오는 값들이라서).
 //   새 산식 전용 케이스는 "§2b 새 산식(STEP1031)" 블록에 추가했다.
+// 🔴 STEP 1032(2026-08-15, 장은태 승인) — 프루닝 활성화 + 삭제 상한(pruneDecision, §4b) 신설. 833·1031의
+//   기존 17개 케이스는 지우지 않고 그대로 보존 — 이 STEP은 pruneDecision 전용 새 블록만 추가한다.
 import { describe, it, expect } from "vitest";
-import { classifyCaps, capGateDecision, churnDecision } from "./lensPrecompute";
+import { classifyCaps, capGateDecision, churnDecision, pruneDecision } from "./lensPrecompute";
 
 describe("§1 classifyCaps — 결측을 조용히 안 버린다", () => {
   it("cap 있음→capOf · 응답엔 있으나 cap 없음/0→noCapField · 응답에 없음→noResponse", () => {
@@ -131,5 +133,44 @@ describe("§3 churnDecision — 정상화(구성 대폭 변화) 시 diff 스킵"
   });
   it("직전 유니버스 없음(부트스트랩)이면 churn 0·기록", () => {
     expect(churnDecision(universe, new Set()).skipChangeDiff).toBe(false);
+  });
+});
+
+// 🔴 STEP 1032 신규 — 프루닝 판정(4중 게이트 + 삭제 상한). ok={...}는 4중 게이트가 전부 통과하는 기준 입력.
+describe("§4 pruneDecision — 프루닝 활성화 + 삭제 상한(STEP1032)", () => {
+  const ok = { pruneEnabled: true, successRate: 0.95, universeOk: true, pass2Ok: true, cutGateOk: true };
+
+  it("상한 경계: 정확히 100행이면 지운다(shouldPrune) · 101행이면 중단(aborted)", () => {
+    const at100 = pruneDecision({ ...ok, rowsToPrune: 100 });
+    expect(at100.shouldPrune).toBe(true);
+    expect(at100.aborted).toBe(false);
+    const at101 = pruneDecision({ ...ok, rowsToPrune: 101 });
+    expect(at101.shouldPrune).toBe(false);
+    expect(at101.aborted).toBe(true);
+  });
+  it("maxRows 오버라이드: 상한을 10으로 낮추면 11행도 중단된다", () => {
+    const g = pruneDecision({ ...ok, rowsToPrune: 11, maxRows: 10 });
+    expect(g.aborted).toBe(true);
+    expect(g.shouldPrune).toBe(false);
+  });
+  it("pruneEnabled=false면 상한과 무관하게 차단(0행이어도 안 지운다, aborted도 아님 — 명시적 차단과 상한 초과는 다른 사유)", () => {
+    const g = pruneDecision({ ...ok, pruneEnabled: false, rowsToPrune: 0 });
+    expect(g.shouldPrune).toBe(false);
+    expect(g.aborted).toBe(false); // 상한을 넘어서 막힌 게 아니라 애초에 대상이 아니었다 — 사유를 구분해야 diff 없이 원인 추적 가능
+  });
+  it("4중 게이트(STEP833) 실패 시 상한과 무관하게 차단 — cutGateOk=false", () => {
+    const g = pruneDecision({ ...ok, cutGateOk: false, rowsToPrune: 1 }); // 1행이라도 게이트 실패면 안 지움
+    expect(g.gate4).toBe(false);
+    expect(g.shouldPrune).toBe(false);
+    expect(g.aborted).toBe(false);
+  });
+  it("4중 게이트(STEP833) 실패 시 상한과 무관하게 차단 — universeOk=false·pass2Ok=false·successRate<0.8 각각", () => {
+    expect(pruneDecision({ ...ok, universeOk: false, rowsToPrune: 1 }).shouldPrune).toBe(false);
+    expect(pruneDecision({ ...ok, pass2Ok: false, rowsToPrune: 1 }).shouldPrune).toBe(false);
+    expect(pruneDecision({ ...ok, successRate: 0.79, rowsToPrune: 1 }).shouldPrune).toBe(false);
+  });
+  it("maxRows 미지정이면 기본값 100(프로덕션과 동일 상수)", () => {
+    expect(pruneDecision({ ...ok, rowsToPrune: 100 }).shouldPrune).toBe(true);
+    expect(pruneDecision({ ...ok, rowsToPrune: 100 }).aborted).toBe(false);
   });
 });

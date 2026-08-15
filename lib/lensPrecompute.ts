@@ -99,6 +99,22 @@ export function churnDecision(
   return { churn, skipChangeDiff: churn > threshold };
 }
 
+// §4: 프루닝 판정(순수 함수, 값 잠금 테스트 대상) — STEP833의 4중 게이트(이번 계산이 잘 됐는가) +
+// 🔴 STEP1032 §1-2b의 삭제 상한(몇 행을 지우는가, 4중 게이트엔 없던 축). US·KR 공용 — 4중 게이트와 같은 급의 공유 안전장치라
+//   pruneEnabled(호출부별 opt-in, 1031)와 달리 시장을 가리지 않는다. 근거 = 2일 관측(08-13 63행·08-14 76행)
+//   + KR 실측 0행(모든 KR 행이 매일 같은 updated_at 하나로 갱신 — 상한이 사실상 걸릴 일이 없다).
+export function pruneDecision(opts: {
+  pruneEnabled: boolean; successRate: number; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean;
+  rowsToPrune: number; maxRows?: number;
+}): { shouldPrune: boolean; aborted: boolean; gate4: boolean } {
+  const maxRows = opts.maxRows ?? 100;
+  const gate4 = opts.successRate >= 0.8 && opts.universeOk && opts.pass2Ok && opts.cutGateOk; // STEP833 4중 게이트, 한 글자도 안 바꿈
+  const eligible = opts.pruneEnabled && gate4;
+  const aborted = eligible && opts.rowsToPrune > maxRows;
+  const shouldPrune = eligible && !aborted;
+  return { shouldPrune, aborted, gate4 };
+}
+
 // 🔴 STEP 833 §1: 시총 상위 N 유니버스 — 결측을 조용히 버리지 않는 3단 취득(배치→개별 재시도→최근값 폴백).
 //   832 진단: 배치 `yf.quote(100)`가 marketCap을 안 주면 `marketCap>0` 필터가 로그 없이 심볼을 버려 초대형주 202개가
 //   유니버스에서 조용히 빠졌다(개수 가드는 1000·996으로 통과). 개별 quote는 같은 심볼을 잘 준다(us_stock_perf 실측).
@@ -480,11 +496,13 @@ export async function computeLensScoresFor(
   market: string,
   // 🔴 STEP 833 §2·§3: cutGateOk=false면 컷 재유도·프루닝 금지(편향 표본으로 판정 기준 안 만듦)·전날 컷 유지·ok:false.
   //   skipChangeDiff=true면 pass2가 상태는 재매핑하되 lens_state_changes diff는 기록 안 함(정상화 실행의 기준선 이동을 '종목 변화'로 오기록 방지).
-  //   🔴 STEP 1031 §0-B/§1-3: pruneEnabled=false면 canPrune 자체를 4중 게이트와 별개로 차단(컷 게이트 전환과 프루닝 활성화를
-  //   분리 — 컷 재유도는 되돌릴 수 있지만 행 삭제는 되돌리기 어렵다). 🔴 opts에 안 넘기면 기본 true(KR 등 기존 호출부 완전 불변) —
-  //   되돌리는 법: 아래 US 호출부(computeLensScores)의 pruneEnabled:false 한 줄을 지우면 다음 실행부터 즉시 복원.
+  //   🔴 STEP 1031 §0-B/§1-3 → STEP 1032에서 US도 다시 true로 켜짐: pruneEnabled=false면 canPrune 자체를 게이트와
+  //   별개로 차단한다(컷 게이트 전환과 프루닝 활성화를 분리 — 컷 재유도는 되돌릴 수 있지만 행 삭제는 되돌리기 어렵다).
+  //   opts에 안 넘기면 기본 true(KR 등 기존 호출부 완전 불변). 되돌리는 법: 아래 US 호출부(computeLensScores)의
+  //   pruneEnabled를 다시 false로. 🔴 STEP 1032 §1-2b: pruneEnabled·4중 게이트를 전부 통과해도 지울 행 수가
+  //   PRUNE_MAX_ROWS(100, 아래 본문)를 넘으면 전량 중단 — 이 상한은 US·KR 공용(4중 게이트와 같은 급의 공유 안전장치).
   opts: { concurrency?: number; tradeAmountOf?: Map<string, number>; expected?: number; cutGateOk?: boolean; skipChangeDiff?: boolean; pruneEnabled?: boolean } = {}
-): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean; cutsUpdated: boolean; changeDiffRecorded: boolean; warning?: string; loopMs: number; pass2Ms: number; pruneMs: number; totalMs: number; pruneBlockedByFlag: boolean }> {
+): Promise<{ ok: boolean; computed: number; universe: number; at: string; pruned: boolean; universeOk: boolean; pass2Ok: boolean; cutGateOk: boolean; cutsUpdated: boolean; changeDiffRecorded: boolean; warning?: string; loopMs: number; pass2Ms: number; pruneMs: number; totalMs: number; pruneBlockedByFlag: boolean; pruneAborted: boolean; pruneRowsAttempted: number }> {
   const tFn0 = Date.now(); // 🔴 STEP 917 §1: 렌즈계산 함수 단계별 elapsed — 계측 전용
   const concurrency = opts.concurrency ?? 6;
   const tradeAmountOf = opts.tradeAmountOf;
@@ -506,7 +524,7 @@ export async function computeLensScoresFor(
   if (universe.length === 0) {
     Sentry.captureMessage(`[lens-universe-empty] ${market} 유니버스 0 → 계산·프루닝 전면 중단(성공 아님)`, "error");
     const zeroMs = Date.now() - tFn0;
-    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, cutGateOk, cutsUpdated: false, changeDiffRecorded: false, warning: "universe-empty", loopMs: zeroMs, pass2Ms: 0, pruneMs: 0, totalMs: zeroMs, pruneBlockedByFlag: !pruneEnabled };
+    return { ok: false, computed: 0, universe: 0, at, pruned: false, universeOk: false, pass2Ok: false, cutGateOk, cutsUpdated: false, changeDiffRecorded: false, warning: "universe-empty", loopMs: zeroMs, pass2Ms: 0, pruneMs: 0, totalMs: zeroMs, pruneBlockedByFlag: !pruneEnabled, pruneAborted: false, pruneRowsAttempted: 0 };
   }
   if (!universeOk) {
     Sentry.captureMessage(
@@ -622,11 +640,31 @@ export async function computeLensScoresFor(
   // 🔴 STEP 806 §3: 저장 성공률이 낮으면(부분 실행) 프루닝이 정상 행을 대량 삭제할 수 있음 → 성공률 ≥80%일 때만.
   // 🔴 STEP 828 §2: 위 성공률 + 유니버스 하한(universeOk) + pass2 성공(pass2Ok) 3중 게이트를 모두 통과해야 프루닝.
   // 🔴 STEP 833 §2: 취득 게이트(cutGateOk)까지 4중 게이트를 모두 통과해야 프루닝(편향 유니버스로 정상 행 삭제 방지).
-  // 🔴 STEP 1031 §0-B/§1-3: pruneEnabled 명시적 차단 — 4중 게이트를 전부 통과해도 이 플래그가 false면 삭제 안 함.
+  // 🔴 STEP 1031 §0-B/§1-3 → STEP 1032에서 해제됨: pruneEnabled는 되돌리기용 opt-in 스위치로 그대로 남긴다(기본 true).
+  //   1031이 US에서 false로 잠시 껐던 것을 1032가 다시 true로 켠다 — 파라미터 구조 자체는 유효한 설계라 유지.
   const successRate = saved / universe.length;
-  const canPrune = pruneEnabled && successRate >= 0.8 && universeOk && pass2Ok && cutGateOk;
+  // 🔴 STEP 1032 §1-2b: 지울 행 수는 pruneDecision(§4)의 gate4가 참일 때만 조회한다 — 다른 이유로 이미 차단이면
+  //   COUNT 쿼리 자체가 불필요(4중 게이트는 STEP833 그대로, 한 글자도 안 바꿈).
+  let pruneRowsAttempted = 0;
+  const gate4Probe = successRate >= 0.8 && universeOk && pass2Ok && cutGateOk;
+  if (pruneEnabled && gate4Probe) {
+    const { count } = await sb.from("lens_scores").select("symbol", { count: "exact", head: true }).eq("market", market).lt("updated_at", at);
+    pruneRowsAttempted = count ?? 0;
+  }
+  // 근거(PRUNE_MAX_ROWS 기본 100) = 2일 관측(08-13 63행·08-14 76행, docs/probe_1032_prune_activation.md) —
+  //   1026이 세운 기준을 그대로 사용. 1031이 커버리지 게이트에 넣은 낙폭 상한(3%p)의 대칭짝이 프루닝엔 없었던 것을 메운다
+  //   (유니버스 파일이 잘못 바뀌면 4중 게이트를 전부 통과한 채 수백 행이 지워질 수 있다 — 832형 사고의 프루닝 판).
+  const decision = pruneDecision({ pruneEnabled, successRate, universeOk, pass2Ok, cutGateOk, rowsToPrune: pruneRowsAttempted });
   let pruned = false;
-  if (canPrune) {
+  const pruneAborted = decision.aborted;
+  if (decision.aborted) {
+    // 상한 초과 — 일부만 지우지 않는다(어느 행을 남길지 고를 근거가 없다). 전량 중단.
+    Sentry.captureMessage(
+      `[lens-prune-abort] ${market} 삭제 상한 초과(${pruneRowsAttempted}행) → 프루닝 전량 중단(833의 게이트 실패와 같은 급)`,
+      "error"
+    );
+    console.warn(`  ...프루닝 상한 초과로 전량 중단(${pruneRowsAttempted}행)`);
+  } else if (decision.shouldPrune) {
     try {
       await sb.from("lens_scores").delete().eq("market", market).lt("updated_at", at);
       pruned = true;
@@ -635,7 +673,7 @@ export async function computeLensScoresFor(
     }
   } else {
     // 조용히 넘어가지 않는다 — 프루닝 건너뜀을 경고(부분 실행·유니버스 붕괴·pass2 실패·취득 게이트 실패·명시적 차단 감지).
-    const reason = !pruneEnabled ? "명시적 차단(pruneEnabled=false, STEP1031)" : !cutGateOk ? "취득 게이트 실패" : !universeOk ? "유니버스 붕괴" : !pass2Ok ? "pass2 실패" : `성공률 ${(successRate * 100).toFixed(0)}%<80%`;
+    const reason = !pruneEnabled ? "명시적 차단(pruneEnabled=false)" : !cutGateOk ? "취득 게이트 실패" : !universeOk ? "유니버스 붕괴" : !pass2Ok ? "pass2 실패" : `성공률 ${(successRate * 100).toFixed(0)}%<80%`;
     Sentry.captureMessage(
       `[lens-prune-skip] ${market} ${reason} → 프루닝 건너뜀(대량 삭제 방지·저장 ${saved}/${universe.length})`,
       "warning"
@@ -643,11 +681,12 @@ export async function computeLensScoresFor(
     console.warn(`  ...프루닝 건너뜀(${reason} · ${saved}/${universe.length})`);
   }
 
-  const warning = !pruneEnabled ? undefined : !cutGateOk ? "cut-gate-failed" : !universeOk ? "universe-collapse" : !pass2Ok ? "pass2-failed" : successRate < 0.8 ? "low-success" : undefined;
+  const warning = !pruneEnabled ? undefined : pruneAborted ? "prune-aborted" : !cutGateOk ? "cut-gate-failed" : !universeOk ? "universe-collapse" : !pass2Ok ? "pass2-failed" : successRate < 0.8 ? "low-success" : undefined;
   const tEnd = Date.now(); // 🔴 STEP 917 §1: prune 경계 · totalMs = 함수 전체
   return {
     ok: universeOk && pass2Ok && cutGateOk, computed: saved, universe: universe.length, at, pruned, universeOk, pass2Ok, cutGateOk, cutsUpdated, changeDiffRecorded, warning,
-    loopMs: tLoopEnd - tFn0, pass2Ms: tPass2End - tLoopEnd, pruneMs: tEnd - tPass2End, totalMs: tEnd - tFn0, pruneBlockedByFlag: !pruneEnabled,
+    loopMs: tLoopEnd - tFn0, pass2Ms: tPass2End - tLoopEnd, pruneMs: tEnd - tPass2End, totalMs: tEnd - tFn0,
+    pruneBlockedByFlag: !pruneEnabled, pruneAborted, pruneRowsAttempted,
   };
 }
 
@@ -678,8 +717,9 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
   if (!cutGateOk) Sentry.captureMessage(`[us-cut-gate] 취득 게이트 실패(커버 ${(diag.freshCoverage * 100).toFixed(1)}%·구성 ${(compRatio * 100).toFixed(1)}%) → 컷 재유도·프루닝 금지`, "error");
   if (cutGateOk !== newCutGateOk) Sentry.captureMessage(`[us-cut-gate-mismatch] cutGateOk(${cutGateOk}) ≠ newCutGateOk(${newCutGateOk}) — 같은 산식의 독립 계산인데 어긋남(STEP1031 self-check 실패)`, "error");
 
-  // 🔴 STEP 1031 §0-B: 프루닝은 이번엔 US에서만 명시적으로 안 켠다(컷 게이트 전환과 분리된 별도 판정, §0-B). 되돌리는 법 = 이 줄 삭제.
-  const r = await computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff, pruneEnabled: false });
+  // 🔴 STEP 1031 §0-B에서 US만 명시적으로 껐던 것을 STEP 1032가 다시 켠다(장은태 승인, 2026-08-15) —
+  //   대신 삭제 상한(PRUNE_MAX_ROWS=100, computeLensScoresFor 안)이 새 안전장치로 붙었다. 되돌리는 법 = 아래를 false로.
+  const r = await computeLensScoresFor(universe, "US", { concurrency, tradeAmountOf, cutGateOk, skipChangeDiff, pruneEnabled: true });
 
   // 🔴 STEP 1025 W3 — 프루닝 가상 영향(계산만, 실제 삭제는 절대 안 함). cutGateOk가 true였다면 나머지 3중 게이트로 프루닝됐을지.
   const successRate = r.universe > 0 ? r.computed / r.universe : 0;
@@ -717,9 +757,9 @@ export async function computeLensScores(topN = 1000, concurrency = 6) {
     //   self-check용 독립 재계산(cutGateOk와 항상 같아야 정상). coverageDrop=null이면 부트스트랩(전일 값 없음).
     newCoverageOk, newCutGateOk, priorCoverage, priorSource, coverageDrop,
     universeOk: r.universeOk, pass2Ok: r.pass2Ok, pruned: r.pruned,
-    // 🔴 STEP 1031 §1-3: 프루닝은 이번 실행에서 명시적으로 차단됐다(pruneBlockedByFlag=true) — canPrune의 4중 게이트를
-    //   전부 통과해도 이 플래그 때문에 안 지워진다. true가 아니면 차단이 안 걸린 것 — 즉시 보고 대상.
-    pruneBlockedByFlag: r.pruneBlockedByFlag,
+    // 🔴 STEP 1031 §1-3 → STEP 1032: pruneEnabled가 이제 true라 pruneBlockedByFlag는 정상적으로 false가 나와야 한다.
+    //   pruneAborted=true면 삭제 상한(100행) 초과로 전량 중단된 것 — pruneRowsAttempted가 그 시도 행수.
+    pruneBlockedByFlag: r.pruneBlockedByFlag, pruneAborted: r.pruneAborted, pruneRowsAttempted: r.pruneRowsAttempted,
     successRate, wouldPrune, wouldPruneRows: pruneObs?.wouldPruneRows ?? null, wouldPruneSample: pruneObs?.sample ?? [],
   });
   return r;
