@@ -139,6 +139,38 @@ footer{margin-top:58px;padding-top:24px;border-top:1px solid var(--line);color:v
   .cond{grid-template-columns:1fr;gap:10px}
   h1{font-size:24px} .shead h2{font-size:21px} .slogan .main{font-size:20px}
 }
+
+/* --- HOW·WHAT 섹션이 쓰는 클래스 (2026-08-15 보완) --- */
+.grid{display:grid;gap:14px}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:16px 17px}
+.card .when{font-size:11.5px;color:var(--tx3);font-variant-numeric:tabular-nums;margin-bottom:7px}
+.card .src{font-size:12px;color:var(--blue);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-bottom:9px}
+.card .def{font-size:13.5px;color:var(--tx);line-height:1.55}
+.steps{display:flex;flex-direction:column;gap:9px}
+.step{display:grid;grid-template-columns:44px 1fr 250px;gap:16px;align-items:start;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:14px 17px}
+.step .num{width:30px;height:30px;border-radius:50%;background:var(--panel2);border:1px solid #3a4150;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--blue);flex:none}
+.step .what{font-size:14px;font-weight:600;color:var(--tx)}
+.step .doc{font-size:12px;color:var(--tx3);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;margin-top:5px;line-height:1.5}
+.step .fail{font-size:12.5px;color:#d8b48a;background:var(--amberbg);border-radius:6px;padding:8px 11px;line-height:1.5}
+.step.last{border-color:#3d5a44;background:linear-gradient(180deg,#151d18,var(--panel))}
+.b{display:inline-block;font-size:11px;font-weight:650;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.b0{background:var(--greenbg);color:var(--green);border:1px solid #2a4a33}
+.b1{background:var(--amberbg);color:var(--amber);border:1px solid #4a3d1a}
+.b3{background:var(--redbg);color:var(--red);border:1px solid #4a2529}
+.bn{background:#22262f;color:var(--tx3);border:1px solid var(--line)}
+.bok{background:var(--bluebg);color:var(--blue);border:1px solid #23485c}
+.note{font-size:13px;color:var(--tx3);margin-top:11px;line-height:1.6}
+td.m{color:var(--tx);font-weight:600}
+td.n{font-variant-numeric:tabular-nums;color:var(--tx3);width:44px;text-align:center}
+tr.hl td{background:#241a1c}
+tr.hl td.m{color:#ffb3b3}
+@media(max-width:900px){
+  .g3,.g4{grid-template-columns:1fr 1fr}
+  .step{grid-template-columns:1fr;gap:9px}
+}
+@media(max-width:560px){ .g3,.g4{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
