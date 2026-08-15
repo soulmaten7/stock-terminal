@@ -27,6 +27,8 @@
 
 **미측정**: DB 삭제 여부(별도 판정) · `app/[locale]/terms/page.tsx`·`privacy/page.tsx`의 약관 개정 여부(시행일 있는 법률문서라 이 STEP 범위 밖으로 판단, 판단보류) · `lib/constants/bannedWords.ts`의 `'리딩방'`류 단어 존치 여부(공용 금칙어 목록이라 애매, 판단보류).
 
+**게이트8(배포 후 육안 확인) 중 발견·수정**: `curl https://onetrillion.app/business` → 404(정상). 다만 `app/sitemap.ts`가 삭제된 `/business`를 여전히 색인 대상으로 광고 중이었음 — 발견 즉시 제거, 재배포+CI 재확인. **커밋③ = `fca39a1`**.
+
 🔴 **장은태 판정(2026-08-15): 우리 플랫폼 미사용 확정, spinoff 분리 후 삭제. KR 주식 데이터·크론(`kr-perf`·`kr-etp`·`kr-lens-scores`)은 리딩방과 다른 것이라 전혀 손대지 않았다(git diff 확인) — 리딩방은 동결이 아니라 삭제, KR 시장 데이터는 기존 정책대로 동결 유지.**
 
 ---
