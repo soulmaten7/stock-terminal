@@ -21,7 +21,7 @@
 ## 세션 시작 시 읽는 순서 (요약)
 1. **`docs/STATE.md`** — 현재 상태 단일 정본(HEAD·현재 상태·다음 할 일 · 덮어쓰기 · 세션 시작 최우선)
 2. **`docs/SYSTEM_MAP.md`** — 아키텍처·6개국 파이프라인·크론·테이블·함정(필요할 때)
-3. **`docs/ROADMAP.md`** — 무엇을/어떤 순서로(Phase 단일 기준)
+3. **`docs/ROADMAP.md`** — 무엇을/어떤 순서로(Phase 단일 기준) · 🔴 **개정 중 — WHY 층은 `docs/ROADMAP_V2.md`가 정본**(2026-08-15~)
 4. 목적별 심화 문서(PLAYBOOK류) → 이 INDEX에서 카테고리로 검색
 
 ---
@@ -80,7 +80,8 @@
 | `docs/_archive/PRODUCT_SPEC_V6.md` | [보존] V6 — 정체성 5결정(정보+토론+신뢰) | V6 히스토리 참고 |
 | `docs/_archive/PRODUCT_SPEC_V4.md` | [보존] V4 — 2창(한국·미국)·토스카드·Trustpilot 평가 | V4 히스토리 참고 |
 | `docs/PRODUCT_SPEC_V3.md` | [보존] V3 — Stock Terminal 초기 스펙 | V3 히스토리 참고 |
-| `docs/ROADMAP.md` | **[최신]** 마스터 로드맵 — 무엇을/어떤 순서로(Phase 단일 기준) | STATE 다음(순서 확인) |
+| 🔴🔑 **`docs/ROADMAP_V2.md`**(2026-08-15 착수 · 사실관계 검증 완료) | **[개정 중 — WHY 층 정본]** 마스터 로드맵 전면 개정, 장은태와 층별로 확정하며 하강(WHY✅확정·HOW/WHAT/절차/순서/완성/수익모델은 확정 대기). WHY = 문제·현인 앵커(멍거·버핏·파인만, `BRAND_IDENTITY.md`와 대조 확인)·구본 §1 오류 정정. 사본 = `docs/roadmap_v2.html` | **WHY(왜 만드는가) 확인 시 이 문서가 `ROADMAP.md` §1보다 우선** |
+| `docs/ROADMAP.md` | 🔴 **개정 중 — WHY 층은 위 V2가 정본.** 마스터 로드맵(구본, 2026-07-18 정지) — 무엇을/어떤 순서로(Phase 단일 기준), KR중심·6개국탭 전제로 이력 보존 | STATE 다음(WHY 이외 순서 확인) |
 | `docs/RELEASE_ROADMAP.md` | **[최신·핵심]** 1·2·3차 출시 로드맵 — 국가셋(KR·US·JP·GB·홍콩·VN)·차수별 범위·광고 활성화 시점 | 출시 계획·차수 결정 시 |
 | `docs/SITE_MAP_V7.md` | SITE MAP V7 — 네이버 증권 구조 복제 spec | IA·메뉴 구조 작업 시 |
 | `docs/_archive/TOSS_ANALYSIS_AND_IA.md` | 토스증권 전체 분석 + 새 IA(토스식 개편 spec) | IA 개편 참고 |
