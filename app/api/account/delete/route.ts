@@ -12,15 +12,12 @@ export const dynamic = "force-dynamic";
 
 // public 스키마에서 user_id류 컬럼을 가진 테이블 전수(2026-07-19 정보스키마 조회로 확인 — STEP 762).
 // feedback은 제외: 콘텐츠 자체는 개인정보가 아니라 삭제 대신 user_id만 null로 익명화(아래 별도 처리).
+// 🔴 2026-08-15 STEP1035 후속: 리딩방·유사투자자문 관련 9개(room_reports·room_review_reports·
+//   room_favorites·room_likes·room_reviews·room_submissions·leading_room_votes·business_claims·
+//   business_members)는 테이블 자체가 DROP돼 제거됨(DROP 전 전부 0행 — 삭제할 데이터가 없었음).
+//   DROP 전 스키마 백업 = spinoff/advisor-directory/schema.sql.
 const USER_OWNED_TABLES: { table: string; column: string }[] = [
   { table: "watchlist", column: "user_id" },
-  { table: "room_reports", column: "reporter_user_id" },
-  { table: "room_review_reports", column: "reporter_user_id" },
-  { table: "room_favorites", column: "user_id" },
-  { table: "room_likes", column: "user_id" },
-  { table: "room_reviews", column: "user_id" },
-  { table: "room_submissions", column: "user_id" },
-  { table: "leading_room_votes", column: "user_id" },
   { table: "link_hub_favorites", column: "user_id" },
   { table: "link_hub_clicks", column: "user_id" },
   { table: "discussions", column: "user_id" },
@@ -28,8 +25,6 @@ const USER_OWNED_TABLES: { table: string; column: string }[] = [
   { table: "discussion_likes", column: "user_id" },
   { table: "platform_discussions", column: "user_id" },
   { table: "platform_discussion_likes", column: "user_id" },
-  { table: "business_claims", column: "user_id" },
-  { table: "business_members", column: "user_id" },
 ];
 
 export async function POST() {
