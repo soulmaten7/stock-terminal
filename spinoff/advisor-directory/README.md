@@ -18,9 +18,11 @@
 
 배경: 2026-07-30 이후 트릴리언은 **US 시장 단독 개발**로 피벗했고(`CLAUDE.md` "🇺🇸🔒 전면 US 단독"), 리딩방·유사투자자문은 **한국 시장에 특유한 규제 개념**(자본시장법상 유사투자자문업)이라 US 제품 방향과 무관하다. 또한 `docs/AD_MONETIZATION_PLAYBOOK.md` §1은 이미 T5(리딩방/투자자문 게재)를 "규제 리스크·파이 작게"로 분류했고, §5 KR 판정은 "표시의무 강제 UI 전까지 보류"였다 — 즉 이 기능은 수익 모델에서도 이미 우선순위가 낮았다.
 
-## ③ DB 의존성 (⚠️ 이번 라운드에서 트릴리언 쪽 DB는 삭제하지 않았다 — 아래는 실측 스냅샷)
+## ③ DB 의존성
 
-이 폴더의 코드가 참조하는 Supabase(`ccbwxcszdoyjxvckedfp`) 테이블/뷰, 2026-08-15 실측 행 수:
+🔴 **2026-08-15 후속 STEP으로 아래 테이블/뷰는 트릴리언 프로덕션 DB에서 DROP됐다.** 스키마(CREATE TABLE/VIEW/INDEX/RLS/트리거/함수 원문)는 [`schema.sql`](./schema.sql)에 그대로 보관돼 있다 — `schema.sql`을 그대로 실행하면 스키마가 복원된다(격리된 스키마에서 실제로 재구축해 검증 완료, `schema.sql` 헤더 참고). **데이터는 덤프하지 않았다** — 이유는 `schema.sql` 헤더 주석 참고(요약: `fss_advisors`는 개인정보를 담고 있고 금감원에서 재수집 가능·나머지 12개 테이블은 삭제 시점 전부 0행이라 보관할 데이터가 없었음).
+
+DROP 직전(2026-08-15) 실측 행 수:
 
 | 이름 | 종류 | 행 수 | 비고 |
 |---|---|---|---|
@@ -36,11 +38,11 @@
 | `link_previews` | 테이블 | 1,005 | OG 링크 프리뷰 캐시(advisor 채널 링크 전용, `/api/link-preview`가 lazy 크롤 후 upsert). |
 | `advisor_directory` | 뷰(SECURITY DEFINER) | — | `fss_advisors` + `room_likes`/`room_reports`/`room_favorites`/`room_submissions` 조인. 로그아웃 방문자에게도 공개 디렉토리를 서빙하기 위해 DEFINER로 유지되고 있었다(`supabase/migrations/20260712_harden_definer_views_grants.sql`). |
 
-**정의(스키마)는 `supabase/migrations/021_fss_advisors.sql`에 있다.** `advisor_directory` 뷰 자체의 `CREATE VIEW` 문은 git에 커밋된 마이그레이션 파일로 남아있지 않고(Supabase MCP로 직접 적용된 것으로 추정), 위 표의 뷰 정의는 2026-08-15 `pg_get_viewdef()`로 라이브 조회한 스냅샷이다 — 다른 플랫폼에서 재사용하려면 이 README의 정의를 참고해 다시 작성해야 한다.
+**원래 정의(마이그레이션)는 `supabase/migrations/019_platform_directory.sql`·`021_fss_advisors.sql`·`023_leading_room_votes.sql`·`024_room_view_increment.sql`·`025_channel_follower.sql`에 흩어져 있었다** — 이 마이그레이션 파일들은 git 이력이라 삭제하지 않고 그대로 둔다. `advisor_directory` 뷰 자체의 `CREATE VIEW` 문은 그중 어디에도 커밋된 적이 없어(Supabase MCP로 직접 적용된 것으로 추정) `schema.sql`이 유일한 원문 기록이다.
 
-또한 아래는 **이번 STEP에서 이미 죽어 있던(코드 미참조·0행) V6 시절 레거시 스키마**다 — 리딩방 기능의 더 이전 버전(별점·후기 방식) 잔재이며, 이 spinoff와 직접 관련은 없지만 같은 도메인이라 기록만 남긴다: `leading_rooms`·`leading_room_votes`·`platform_discussions`·`platform_discussion_likes`·`platform_discussion_reports`·`room_reviews`·`room_review_reports`·`products`(마이그레이션 `019_platform_directory.sql`·`023_leading_room_votes.sql`).
+DROP된 13개 테이블 + 1개 뷰 전체(`fss_advisors`·`leading_rooms`·`leading_room_votes`·`room_favorites`·`room_likes`·`room_reports`·`room_submissions`·`room_reviews`·`room_review_reports`·`business_claims`·`business_members`·`business_listing`·`business_links`·`advisor_directory`)의 완전한 DDL은 `schema.sql`에 있다 — 그중 `leading_rooms`·`leading_room_votes`·`room_reviews`·`room_review_reports`는 **이번 STEP 이전에 이미 죽어 있던(코드 미참조·0행) V6 시절 레거시**였지만, 이 스키마 클러스터 안에 있고(FK로 `fss_advisors`와 연결) 다른 살아있는 기능이 참조하지 않아 함께 DROP했다.
 
-🔴 **트릴리언의 Supabase 프로젝트에서 위 테이블/뷰는 전부 그대로 남아 있다** — 이번 STEP은 DB를 건드리지 않았다(코드/문서만). DB를 지울지는 **별도 판정 대상**이다.
+🔴 **범위 밖으로 남긴 것**: `platform_discussions`·`platform_discussion_likes`·`platform_discussion_reports`·`products`(마이그레이션 `019_platform_directory.sql`)는 리딩방 전용이 아니라 **상품(ETF 등) 리뷰까지 포괄하는 별개의(여전히 0행·미사용이지만 다른 도메인) 기능**이라 DROP하지 않았다. `public.update_target_discussion_count()` 함수가 `target_type='room'`일 때 `leading_rooms`를 참조하는 분기를 갖고 있었으나, `platform_discussions` 자체가 도달 불가능한 죽은 코드라 `leading_rooms` DROP 이후에도 실행될 길이 없다(상세: `schema.sql` 맨 아래 주석).
 
 ## ④ 외부 의존성
 
