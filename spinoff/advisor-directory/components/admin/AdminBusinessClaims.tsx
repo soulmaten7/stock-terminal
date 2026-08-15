@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { formatBizNo, formatPhone } from '@/lib/utils/format';
+import { formatPhone } from '@/lib/utils/format';
+import { formatBizNo } from '../../lib/format-biz-no'; // 본체 lib/utils/format.ts에서 이관됨(STEP1035) — @/lib/utils/format 아님
 
 type BizClaim = { id: string; biz_no: string; company_name: string; representative: string | null; contact: string | null; nts_valid: string | null; start_dt: string | null; doc_signed: string | null; status: string; created_at: string };
 

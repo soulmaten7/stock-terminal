@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import { formatBizNo, formatPhone } from '@/lib/utils/format';
+import { formatPhone } from '@/lib/utils/format';
+import { formatBizNo } from '../../lib/format-biz-no'; // 본체 lib/utils/format.ts에서 이관됨(STEP1035) — @/lib/utils/format 아님
 
 type Fss = { biz_no: string; company_name: string; representative: string | null; phone: string | null; valid_from: string | null; valid_to: string | null; address: string | null };
 

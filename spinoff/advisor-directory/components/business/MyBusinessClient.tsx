@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { formatBizNo } from '@/lib/utils/format';
+import { formatBizNo } from '../../lib/format-biz-no'; // 본체 lib/utils/format.ts에서 이관됨(STEP1035) — @/lib/utils/format 아님
 import { ShieldCheck, Trash2, ExternalLink, Plus, UserPlus, X, Siren } from 'lucide-react';
 
 type Link = { id: string; type: string; url: string; label: string | null; status: string; is_paid?: boolean };

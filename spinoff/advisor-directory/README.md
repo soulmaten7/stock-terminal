@@ -27,7 +27,7 @@ DROP 직전(2026-08-15) 실측 행 수:
 | 이름 | 종류 | 행 수 | 비고 |
 |---|---|---|---|
 | `fss_advisors` | 테이블 | 1,847 | 금감원 파인(FINE) 원장 캐시. `biz_no` PK. |
-| `room_favorites` | 테이블 | 2 | 사용자 즐겨찾기(관심도 집계에 사용). |
+| `room_favorites` | 테이블 | **0**(🔴 아래 참고) | 사용자 즐겨찾기(관심도 집계에 사용). |
 | `room_likes` | 테이블 | 0 | |
 | `room_reports` | 테이블 | 0 | 사용자 신고. |
 | `room_submissions` | 테이블 | 0 | 사용자가 직접 등록한 미인증 채널. |
@@ -35,8 +35,12 @@ DROP 직전(2026-08-15) 실측 행 수:
 | `business_members` | 테이블 | 0 | 인증된 업체 담당자(owner/manager). |
 | `business_listing` | 테이블 | 0 | 업체 소개(intro) 텍스트. |
 | `business_links` | 테이블 | 0 | 업체가 등록한 채널 링크. |
-| `link_previews` | 테이블 | 1,005 | OG 링크 프리뷰 캐시(advisor 채널 링크 전용, `/api/link-preview`가 lazy 크롤 후 upsert). |
+| `link_previews` | 테이블 | 1,005 | OG 링크 프리뷰 캐시(advisor 채널 링크 전용, `/api/link-preview`가 lazy 크롤 후 upsert). 🔴 **DROP 대상에서 빠졌다** — 아래 참고. |
 | `advisor_directory` | 뷰(SECURITY DEFINER) | — | `fss_advisors` + `room_likes`/`room_reports`/`room_favorites`/`room_submissions` 조인. 로그아웃 방문자에게도 공개 디렉토리를 서빙하기 위해 DEFINER로 유지되고 있었다(`supabase/migrations/20260712_harden_definer_views_grants.sql`). |
+
+🔴 **`room_favorites` 행 수 정정(이 리뷰에서 발견)**: 위 표는 한때 이 README에 "2행"으로 적혀 있었다 — STEP1035 §1-1 전수조사(코드 삭제 이전, 2026-08-15) 시점 관측값이었다. 이후 같은 날 §1-5 재확인·그리고 훨씬 나중 DB DROP 직전 재확인 모두 **0행**으로 일관되게 나왔다(`docs/probe_1035_advisor_spinoff.md` §1-5 표·`docs/CHANGELOG.md` 참고 — 둘 다 처음부터 0행으로 기록돼 있었다. 이 README만 옛 값을 그대로 두고 있었다). **DROP은 0행 상태에서 실행됐으므로 DROP 자체가 사용자 데이터를 파기한 것은 아니다.** 다만 🔴 **한 시점(§1-1)에 실사용자 즐겨찾기 2건이 관측됐고, 그 데이터는 어느 시점에도 별도로 덤프·백업된 적이 없다** — DROP 이전에 이미 사라졌다(가장 유력한 경로: `AdvisorDirectory`가 그때까지 라이브였으므로 실사용자의 즐겨찾기 해제, 또는 계정 탈퇴 시 `/api/account/delete`의 자동 정리 — 둘 다 정상적인 사용자 자신의 조작이지 우리가 관리자 권한으로 지운 게 아니다. 확정할 수는 없다). 즉 그 2건의 상태는 **DROP과 무관하게, DROP 이전에 이미 기록 없이 사라졌다.** 자세한 내용은 `docs/PARKED_TERMS_PRIVACY_ACTIVATION.md`에도 남겨뒀다.
+
+🔴 **`link_previews`가 DROP 대상에서 빠졌다(이 리뷰에서 발견, 아직 미조치)**: `lib/og.ts`(OG 스크레이퍼, 이번에 이 폴더로 이관됨)를 조사하다 발견 — `link_previews` 테이블(1,005행, advisor 채널 링크 OG 캐시 전용)은 이름에 `advisor`/`room`/`leading`/`business_*` 패턴이 없어서 DB 정리 때 조회 범위에 안 걸렸다. **아직 트릴리언 프로덕션 DB에 그대로 남아 있다** — 삭제 여부는 별도 판정 대상.
 
 **원래 정의(마이그레이션)는 `supabase/migrations/019_platform_directory.sql`·`021_fss_advisors.sql`·`023_leading_room_votes.sql`·`024_room_view_increment.sql`·`025_channel_follower.sql`에 흩어져 있었다** — 이 마이그레이션 파일들은 git 이력이라 삭제하지 않고 그대로 둔다. `advisor_directory` 뷰 자체의 `CREATE VIEW` 문은 그중 어디에도 커밋된 적이 없어(Supabase MCP로 직접 적용된 것으로 추정) `schema.sql`이 유일한 원문 기록이다.
 
@@ -46,9 +50,28 @@ DROP된 13개 테이블 + 1개 뷰 전체(`fss_advisors`·`leading_rooms`·`lead
 
 ## ④ 외부 의존성
 
+### 전제
+
+🔴 이 코드는 **Next.js App Router + Supabase**를 전제로 짜여 있다 — `app/[locale]/...` App Router 파일 규칙(`page.tsx`·`route.ts`)·Supabase Auth(`auth.uid()` RLS)·Supabase Postgres(RLS·SECURITY DEFINER 뷰·트리거)를 그대로 쓴다. 다른 프레임워크(Pages Router·Remix 등)나 다른 백엔드(Firebase 등)로 재구현하려면 라우팅·인증·DB 접근 계층을 전부 새로 짜야 한다.
+
+### 폴더 밖 코드 import — 다른 플랫폼에서 재구현하거나 대체해야 하는 것
+
+이 spinoff 안의 파일들이 `@/`로 참조하는 것 중, **이 폴더 밖(트릴리언 본체)에만 있고 이 폴더 안으로는 이관되지 않은** 모듈. `lib/nts.ts`·`lib/og.ts`는 이번 리뷰(2026-08-15)에서 리딩방 전용임을 확인해 이 폴더 안으로 이관했으므로 **더 이상 외부 의존이 아니다**(§⑤ 참고).
+
+| import | 무엇을 하는 모듈인가 |
+|---|---|
+| `@/i18n/navigation` | next-intl 로케일 인지 라우팅 헬퍼(`redirect`·`Link` 등, ko/en 프리픽스 자동 처리). 트릴리언의 다국어 라우팅 설정에 묶여 있다 — 새 플랫폼이 다국어가 아니면 그냥 `next/navigation`으로 대체 가능. |
+| `@/lib/clientCache` | 클라이언트 사이드 메모리 캐시(`getCache`/`setCache`) — `AdvisorDirectory.tsx`가 목록·상세 조회 결과를 잠깐 캐싱하는 데 씀. 범용 유틸이라 `localStorage`/`Map` 기반으로 몇 줄이면 재구현 가능. |
+| `@/lib/supabase/admin` | 서비스 롤(service_role) 키로 만든 Supabase 관리자 클라이언트 — RLS를 우회해 서버(API 라우트)에서 전체 데이터를 읽고 쓸 때 쓴다. `SUPABASE_SERVICE_ROLE_KEY` 환경변수가 필요하다. |
+| `@/lib/supabase/server` | 요청 쿠키 기반 Supabase 서버 클라이언트 — 로그인한 사용자 세션으로 RLS가 적용된 채 쿼리할 때(`auth.getUser()` 등) 쓴다. |
+| `@/lib/utils/format` | 범용 포맷 유틸(`formatPhone` 등 — 이 spinoff에서는 `formatPhone`만 씀). `formatBizNo`는 원래 같은 파일에 있었으나 STEP1035에서 이 spinoff 전용으로 확인돼 `lib/format-biz-no.ts`(이 폴더 안)로 이미 이관돼 있다. |
+
+### 외부 서비스·API
+
 - **금융감독원 '파인(FINE)' 유사투자자문업자 신고현황** — `lib/fss.ts`의 `importFssAdvisors()`가 파인 사이트를 페이지네이션(174페이지 순회)으로 수집해 `fss_advisors`에 upsert. 공식 API가 아니라 **페이지 순회 방식**(비공식) — 파인 사이트 구조가 바뀌면 깨질 수 있다.
 - 수집을 트리거하던 크론(`app/api/cron/fss-advisors/route.ts`, `Bearer ${CRON_SECRET}` 인증)은 **2026-07-27(STEP794 §5)에 이미 스케줄이 중지**되어 있었다(`vercel.json`에서 제거됨, 라우트 파일만 존재) — 즉 `fss_advisors`는 이 STEP 이전부터 이미 갱신이 멈춰 있었다.
-- 국세청 사업자등록 진위확인(업체 클레임 시 `nts_valid` 검증) — `app/api/business/claim` 계열 경로에서 사용되던 것으로 보이나, 실제 외부 API 연동 코드는 이 spinoff 범위 밖(별도 확인 필요 — 클레임 승인 큐에 `nts_valid` 컬럼만 존재하고 이 spinoff 코드 안에서 국세청 API를 직접 호출하는 부분은 발견되지 않음. 관리자가 수기로 확인했을 가능성).
+- **국세청 사업자등록정보 진위확인(data.go.kr odcloud)** — `lib/nts.ts`의 `verifyBusiness()`가 업체 클레임 심사(`nts_valid` 검증)에 쓴다. 🔴 **환경변수 `DATA_GO_KR_KEY`(국세청 API 일반 인증키) 필요** — 없으면 조용히 `'unverified'`를 반환할 뿐 에러는 안 낸다(차단하지 않고 관리자 수기 검토로 넘어가는 설계). data.go.kr에서 발급받아야 한다.
+- **OG 메타태그 스크레이핑**(`lib/og.ts`) — 업체가 등록한 채널 링크(텔레그램·카카오·유튜브 등)의 미리보기(제목·이미지·설명)를 서버에서 직접 fetch해 파싱한다. 외부 API가 아니라 **대상 URL에 직접 HTTP 요청**을 보내는 방식이라, 사설 IP·localhost 등은 `isBlockedHost()`로 차단해 SSRF를 막는다. `link_previews` 테이블에 upsert.
 
 ## ⑤ 복원 방법
 
@@ -60,8 +83,9 @@ DROP된 13개 테이블 + 1개 뷰 전체(`fss_advisors`·`leading_rooms`·`lead
    - `app/[locale]/advertise/page.tsx` · `components/advertise/AdInquiryForm.tsx`의 `room` 슬롯 옵션(`hasRoom`/`rule2`/`optRoom`).
    - `app/[locale]/admin/page.tsx`의 `claims`/`reports` 탭 구성(이 spinoff의 `AdminBusinessClaims`/`AdminReports`/`AdminFssLookup`을 다시 배선).
 4. `spinoff/advisor-directory/i18n-keys.json`에 삭제 당시(ko/en) 문구가 그대로 들어 있다 — 새 플랫폼의 i18n 파일에 병합.
-5. DB 스키마는 ③의 표를 참고해 새로 만든다(원본 Supabase 프로젝트를 그대로 재사용할 수 없다면).
+5. DB 스키마는 `schema.sql`을 그대로 실행해 만든다(③ 참고 — 격리 스키마에서 재구축 검증 완료).
 6. Supabase Storage 버킷 `business-docs`(업체 클레임 서류 서명 URL 발급에 쓰이던 것, `app/[locale]/admin/page.tsx`에서 `admin.storage.from('business-docs').createSignedUrl(...)` 참고 — 이 spinoff 코드 밖에 있던 로직이므로 새로 구성 필요)도 별도로 준비해야 한다.
+7. ④의 "폴더 밖 코드 import" 표에 있는 5개 모듈을 새 플랫폼에서 재구현하거나 새 프로젝트의 동등한 모듈로 경로를 바꿔 연결한다. `DATA_GO_KR_KEY`·`SUPABASE_SERVICE_ROLE_KEY` 등 환경변수도 새로 발급·설정해야 한다.
 
 ## ⑥ 법적 주의사항
 
