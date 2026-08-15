@@ -1,6 +1,36 @@
 <!-- 2026-08-15 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-15 — 🔴 **STEP 1035: 리딩방·유사투자자문 분리 보관 후 삭제(되돌릴 수 없는 삭제)**
+
+> **장은태 판정(2026-08-15)**: *"리딩방 검증은 다른 플랫폼이나 다르게 이용할 가치가 있어 보여서 미뤄둔 거였어. 그런데 이게 이렇게 섞이게 됐으니 확실히 넘어가자. 우리 플랫폼에서 사용 안 할 거야. 단 이건 다른 플랫폼으로 다르게 이용할 수 있을 것 같으니 파일과 내용을 따로 정리해서 폴더로 넣어두자. 그리고 우리 플랫폼에서는 리딩방 관련 내용을 삭제, 없애버려."* **우리 플랫폼 미사용 확정, spinoff 분리 후 삭제.**
+
+**순서(지시대로)**: 조사 → 분리 보관(커밋①) → 검증 → 삭제(커밋②). DB는 이번 라운드에서 손대지 않았다.
+
+**🔴 최우선 발견**: `docs/PARKED_FIELD_SURFACES.md`가 "리딩방·유사투자자문 조회는 렌더 진입점이 제거된 파킹 상태"라 기록해 두었으나, 재조사 결과 `components/toolbox/AdvisorDirectory.tsx`는 삭제 직전까지 `ToolboxClient.tsx`의 `activeTab==='room'` 분기로 **실제 KR 로케일에서 라이브 렌더링 중**이었다 — 파킹된 적이 없었다. 문서의 이전 기록은 부정확했다(정정 완료).
+
+**§1-1 전수조사**: 지시된 10개 검색어로 시작했으나, 이름에 도메인 키워드가 없는 배선 파일(`components/business/BusinessHub.tsx`·`BusinessClaimClient.tsx`, `scripts/import-fss-advisors.ts`)은 검색어 매칭이 안 돼 처음엔 놓쳤다 — 삭제 후 빈 디렉토리 확인·tsc 에러로 사후 발견해 spinoff에 뒤늦게 추가한 뒤 삭제했다. Supabase 읽기전용 조회로 DB 실측: `fss_advisors` 1,847행·`room_favorites` 2→0행(자연변동, 세션 중 쓰기는 SELECT뿐)·`business_claims/members/listing/links` 전부 0행·V6 시절 레거시 스키마(leading_rooms 등 8종) 전부 죽어있음 확인. `advisor_directory`(DEFINER 뷰)는 `CREATE VIEW` 문이 git에 커밋된 적이 없어 `pg_get_viewdef()`로 라이브 조회한 정의를 README에 유일한 기록으로 남겼다.
+
+**§1-2/1-3 저장·검증**: `spinoff/advisor-directory/`에 코드 24개 파일(원경로 보존) + `i18n-keys.json` + `README.md`(무엇/왜/DB의존성[실측 행수 표]/외부의존성/복원절차/법적주의사항 6섹션). `tsconfig.json`·`eslint.config.mjs`에 `spinoff/**` 제외 추가(본체 빌드·린트 영향 0). 파일수/이름 diff 완전 일치·tsc·vitest 384/384 확인 후 **커밋① = `07c821d`**.
+
+**§1-4 삭제**: 전체 삭제 22개 파일(AdvisorDirectory·RoomFavoritesClient·MyBusinessClient·BusinessHub·BusinessClaimClient·관리자 3종[AdminReports·AdminBusinessClaims·AdminFssLookup]·`app/[locale]/business/page.tsx`·API 라우트 12개·`lib/fss.ts`·`scripts/import-fss-advisors.ts`) + 부수 정리 2건(`AdminTabs.tsx` — 이 삭제로 유일한 사용처를 잃어 고아화되어 함께 삭제, `lib/utils/format.ts`의 `formatBizNo()` — 유일 호출자 삭제로 고아화되어 spinoff로 이전) + 공유 파일 6개 부분 삭제(`ToolboxClient.tsx`의 room 탭 배선·`AdminAdInquiries.tsx`의 room 광고문의 템플릿·`advertise/page.tsx`+`AdInquiryForm.tsx`의 room 슬롯·`admin/page.tsx`의 claims/reports 탭 제거[광고문의만 남아 단일 큐가 됨]·`Footer.tsx`의 `disclaimer2` 블록) + `messages/{ko,en}.json` 22항목(`Advisor`·`Business` 네임스페이스 전체 + 조각 키). 검증: `NEXT_DIST_DIR=.next-verify npx next build` 컴파일 성공 + `.next-verify/types/validator.ts`에서 삭제된 라우트 참조 0건(직접 grep) + vitest 384/384(i18n 패리티 포함). 🔴 참고(오탐 아님): 살아있는 dev 서버(포트 3333)가 쓰는 `.next/types/validator.ts`는 2026-08-11 스냅샷이라 `npx tsc --noEmit` 단독 실행 시 옛 라우트 참조 에러가 뜬다 — dev 서버는 규칙상 건드리지 않았고, 격리 빌드(`.next-verify`)가 진짜 신호다. `scripts/_probe_B_flows.ts`·`probe_1018_nasdaq_call.ts`의 중복 함수 에러 2건은 이 STEP과 무관한 기존 이슈(git stash로 대조 확인). **커밋② = `821baf8`**(메시지에 커밋①`07c821d`를 복원 좌표로 명시).
+
+**§1-5 DB(읽기 전용, 이번 라운드 미터치)**: `fss_advisors`·`room_favorites`·`business_*`·`room_*`·`advisor_directory` 뷰·V6 레거시 테이블 8종 전부 그대로 남아 있다. **삭제 여부는 별도 판정 대상.**
+
+**§1-6 문서 정리**: `docs/ROADMAP.md` 최상단 배너 교체(기존 배너와 병합, 배너 누적 방지) · `docs/PARKED_FIELD_SURFACES.md`의 "검증(유사투자자문 조회)"·"즐겨찾기(리딩방)" 행 갱신(취소선+정정, 실제로는 라이브였다는 사실도 함께 기록) — 지시 범위를 넘어 "마이페이지 '내 신고' 목록" 행도 함께 갱신(이 삭제로 그 행의 "API·i18n 키 보존됨" 서술이 직접 거짓이 됐기 때문) · `docs/AD_MONETIZATION_PLAYBOOK.md` §1 T5 행 취소선·§7 재개조건을 "재개 없이 종료"로 갱신 · `docs/INDEX.md`에 `spinoff/advisor-directory/README.md` 신규 등재 + `docs/BUSINESS_CLAIM_SPEC.md`·`docs/_archive/ROOM_VERIFICATION_SPEC.md`를 [이력]로 표기.
+
+**문서**: `docs/probe_1035_advisor_spinoff.md`(⓪-4 매트릭스·§1-1 전수조사 분류표·발견된 갭 상세 전부 기록).
+
+**못 한 것**: `room_likes`/`room_reports`/`room_submissions` DB 재확인은 census 시점(0행) 이후 다시 조회하지 않았다.
+
+**철회·정정**: `docs/PARKED_FIELD_SURFACES.md`의 "렌더 진입점 제거됨" 서술이 사실이 아니었음을 정정(라이브 렌더 중이었음).
+
+**미측정**: DB 삭제 여부(별도 판정) · `app/[locale]/terms/page.tsx`·`privacy/page.tsx`의 약관 개정 여부(시행일 있는 법률문서라 이 STEP 범위 밖으로 판단, 판단보류) · `lib/constants/bannedWords.ts`의 `'리딩방'`류 단어 존치 여부(공용 금칙어 목록이라 애매, 판단보류).
+
+🔴 **장은태 판정(2026-08-15): 우리 플랫폼 미사용 확정, spinoff 분리 후 삭제. KR 주식 데이터·크론(`kr-perf`·`kr-etp`·`kr-lens-scores`)은 리딩방과 다른 것이라 전혀 손대지 않았다(git diff 확인) — 리딩방은 동결이 아니라 삭제, KR 시장 데이터는 기존 정책대로 동결 유지.**
+
+---
+
 ## 2026-08-15 — 🔵 **STEP 1034: 카탈로그 갱신(문서 전용 · 코드 diff 0 · 판정 금지)**
 
 > **성격**: `docs/DATA_SOURCE_CATALOG.md` 최종수정이 2026-08-14 05:54(반영 마지막 STEP=1024)에 멈춰 있었고, STEP1031이 커버리지 게이트 산식을 고정 97%→절대 하한 85%+낙폭 상한 3%p로 바꾸면서 카탈로그의 "97% 게이트" 전제가 6곳 이상에서 무효화됐다. **판정 없이 문서만 현재 코드·현재 게이트와 일치시켰다.**

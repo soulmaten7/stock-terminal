@@ -182,8 +182,9 @@
 | `docs/BUSINESS_STRATEGY.md` | 비즈니스 전략서 [보존·V3, 결정 로그는 최신 누적] — 수익모델·AI전략·핵심 결정 | 사업 전략·결정 이력 참조 |
 | `docs/AD_MONETIZATION_PLAYBOOK.md` | **[최신]** 광고·수익화 런북(전 언어권)·슬롯 인벤토리·어필리에이트·합법성 원장 | 광고·수익화 작업 전 |
 | `docs/LAUNCH_PLAYBOOK.md` | **[최신]** 한국탭 완성→공개 로드맵 + 출시 전 검수 체크리스트(규제 조사) | 출시 준비·검수 시 |
-| `docs/BUSINESS_CLAIM_SPEC.md` | 리딩방·업체 클레임/관리 설계(Phase 2 수익화 토대) | 업체 claim 기능 작업 시 |
-| `docs/_archive/ROOM_VERIFICATION_SPEC.md` | 리딩방 검증 설계(금감원 등록·신고 뱃지 · 정체성 프레임=[이력]→BRAND_IDENTITY) | 리딩방 검증 작업 시 |
+| `docs/BUSINESS_CLAIM_SPEC.md` | 🔴 [이력] 리딩방·업체 클레임/관리 설계 — 2026-08-15 STEP1035로 기능 자체 삭제(`spinoff/advisor-directory/`로 이전). 설계 이력으로만 보존 | (작업 대상 아님 — 참고용) |
+| `docs/_archive/ROOM_VERIFICATION_SPEC.md` | [이력] 리딩방 검증 설계(금감원 등록·신고 뱃지 · 정체성 프레임=[이력]→BRAND_IDENTITY) — 2026-08-15 STEP1035로 기능 삭제 | (작업 대상 아님 — 참고용) |
+| `spinoff/advisor-directory/README.md` | 🆕 리딩방·유사투자자문 검증 디렉토리 — 본체 삭제 후 분리 보관된 코드의 안내(무엇/왜/DB의존성/복원절차/법적주의사항) | 이 기능을 타 플랫폼에서 재사용하려 할 때 |
 
 ---
 
