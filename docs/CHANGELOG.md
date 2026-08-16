@@ -1,6 +1,24 @@
 <!-- 2026-08-16 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-16 — 🔵 **STEP1052: 배수 칸 역할 확정 · Model Card 원문 확보 · Beneish 재료**
+
+> 장은태 지적 둘(2026-08-15): ①"리테일 플랫폼이 PER을 헤드라인으로 쓰는 이유가 있을 거 아냐?" ⑤"Model Card 9섹션 형식을 그렇게 잡았다면 이유가 있을 거 아냐?" 둘 다 저장소에 근거가 없었다 — 이번 STEP이 축 A(원문)와 축 B(실무)를 실제로 채웠다. 🔵 코드·DB 쓰기 0·화면 변경 0.
+>
+> **1-1 축 B(리테일 헤드라인의 왜)**: 하한 5곳(기존 3곳 재확인+신규 Robinhood·Simply Wall St) 도움말 페이지 직접 조회 — **3/5는 "설명 없음"**(Stock Analysis·WallStreetZen·MarketBeat), Robinhood만 부분 설명("주식수 차이를 통제해 apples-to-apples 비교"). 문헌 축(CFA Institute·Corporate Finance Institute 원문)에서 *"simplicity in use and ease in communication"*·*"standardizes stocks of different prices and earnings levels"* 확인 — 반증 조건 부분 충족(정확한 단어 "검산 가능성"은 없었으나 "단순성+정규화" 개념은 겹침), 동시에 "대부분의 플랫폼은 이유를 스스로 밝히지 않는다"는 사실도 그대로 보고.
+>
+> **1-2 축 C(양쪽 약점, 같은 깊이)**: PER의 기존 약점(Real Estate n=13, CTO 316x·VTR 590x·CSGP 1750x)에 대칭으로 EV/EBITDA·P/B·PSR 약점을 Damodaran 원문 직접 인용으로 확보(`vebitda.pdf`·`finfirm09.pdf`·`intangibles.pdf`·`revmult.pdf`, `data/sources/damodaran_pdfs/`에 신규 저장) — EV/EBITDA는 자본집약도 미통제+금융업 EV 개념 자체가 안 맞는 이유(*"debt for a financial service firm is more akin to raw material than to a source of capital"*), P/B는 무형자산 과소계상(*"the biggest assets for these firms are off the books"*), PSR은 수익성·레버리지 이중 미반영. 오늘 DB 실측(업종 중앙값 10배 초과 건수, n≥20 모집단): **P/E 57건 · EV/EBITDA 30건 · P/B 108건 · PSR 318건(최다)** — EV/EBITDA는 건수는 적으나 개별 최대사례(DDOG 768배)가 4축 중 가장 극단적. 한쪽 약점만 모으지 않았다는 것을 수치로 증명.
+>
+> **1-3 배수 칸 역할 확정**: 동점 4개를 **순위가 아니라 역할**로 갈랐다 — P/E=전달축·EV/EBITDA=정밀판단축·P/B=업종특화축·PSR=적자대안축. `STATE.md:73` 기존 C안(주축 PER+보조 EV/EBITDA·PBR+적자대안 PSR)과 **독립적으로 개념 수렴**(교차검증) — 단 C안이 뭉뚱그린 "보조"를 이번엔 근거와 함께 갈랐다(정밀화이지 정정 아님).
+>
+> **1-4 축 A(Model Card 원문)**: Mitchell et al.(2018), arXiv:1810.03993v2 원문 확보·직접 읽음(요약 재인용 아님). 9섹션(Model Details·Intended Use·Factors·Metrics·Evaluation Data·Training Data·Quantitative Analyses·Ethical Considerations·Caveats and Recommendations) 각각의 원문 목적을 직접 인용으로 정리.
+>
+> **1-5 Layer C 빈칸 처방**: 「모델버전·날짜·문의처」=옮기면 되는 것(`us_valuation.as_of`/`lens_cuts.as_of`+`contact@onetrillion.app`, 전부 이미 존재) · 「주 사용자」=새로 정할 것(원문상 WHY와 그 반대 둘 다 필요) · 「Ethical Considerations」=부분 대응(H-6 가드레일은 회사 차원, 모델별 개별 서술은 없음 — "규칙 7"의 정확한 좌표는 이번에도 특정 못 함, 미확보) · 「Training Data」=원리적 해당 없음 재확인(학습이 아니라 원전 산식 결정론 계산, 대안인 "입력 데이터 출처"는 Evaluation Data와 중복).
+>
+> **1-6 Beneish M-Score 종결**: ①(원전 확보)은 부분("통과로 보이나"가 아니라 유료+워킹페이퍼 403+임계값 출처 간 불일치, `MODEL_ROSTER` 기존 기록 재확인). ②재현 — `us_fundamentals` 컬럼 대조 결과 **8개 변수 중 SGI 1개만 재현 가능**, 나머지 7개(DSRI·GMI·AQI·DEPI·SGAI·LVGI·TATA)는 매출채권·COGS·총자산·PP&E·SG&A·영업현금흐름 등 원자료 자체가 없음(Altman Z와 같은 결함, 더 넓게). ③사용률 — `MARKET_MODEL_USAGE_TOP20`이 이미 "개인 투자자 담론 중심, 전문가 리포트 실측 근거 0"으로 기록. **판정: 칸 신설 불필요, WHAT 구조 무변경.**
+>
+> `ROADMAP_V2.md` F-4-3(배수 역할)·W-2-3(Layer C) 갱신 + `roadmap_v2.html` 동기화(html.parser·태그균형 재검증) · `STATE.md` 반영. 문서 = `docs/probe_1052_axis_role_and_layerC.md`. 게이트7·9 해당없음(코드·DB 변경 0). 못 한 것 = "규칙 7" 정확한 원문 좌표(미확보) · Investopedia 정본 페이지 직접 접근(미러로 대체). 철회·정정 = 없음(신규 도출, 기존 결론과 독립적으로 수렴). 미측정 = Beneish 임계값 정본(재조사 안 함, 기존 미확정 유지) · 근접영-분모 데이터아티팩트의 개별 종목 식별.
+
 ## 2026-08-16 — 🟠 **STEP1051: 미사용 8개 처분 · `products` 귀속 · 「동결」의 정확한 정의**
 
 > `probe_1049`가 인벤토리에서 멈췄던 처분을 끝냈다. Cowork 실측(`kr_stock_snapshot` 참조 10곳 — 홈·검색·사이트맵·관심목록·`/explore`)에 따라 **KR 크론 3개는 판정거리가 아니라 이미 답이 있는 것**이었고, 이번 STEP은 그 대신 「동결」이 무엇을 뜻하는지 문서에 못박았다.
