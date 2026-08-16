@@ -513,7 +513,17 @@ tr.hl td.m{color:#ffb3b3}
   <p class="note">하지 않을 일을 문서에 적어두면 나중에 그것이 근거로 인용됩니다.</p>
 
   <h3>W-2. ①단계가 재검토 대상인 이유</h3>
-  <p>현재 질문 모델 = <strong>Q0 뭐 하는 회사인가 · Q1 비싸게 사는 건가 · Q2 현금 돌려주나 · Q3 커지고 있나 · Q4 망할 위험 없나 · Q5 뭔가 바뀌었나</strong>(2026-08-08 확정).</p>
+  <p>옛 질문 모델(2026-08-08 확정, 이제 역사 기록) = <em>"뭐 하는 회사인가 · 비싸게 사는 건가 · 현금 돌려주나 · 커지고 있나 · 망할 위험 없나 · 뭔가 바뀌었나"</em> — 번호(Q0~Q5)로 불렸으나 그 번호 자체가 옛 그릇이라 2026-08-16 STEP1053으로 폐기했다.</p>
+  <p>🔴 <strong>질문 층 정본(2026-08-16 STEP1053 확정)</strong> — 번호 없이 문장으로만 부른다:</p>
+  <ul>
+    <li><em>"지금 사면, 이 회사 몫에 비해 비싸게 사는 걸까?"</em>(배수+시장내재기대 병합)</li>
+    <li><em>"이 회사, 재정 상태가 좋아지고 있을까 나빠지고 있을까?"</em>(재무건전성 — 🔑 <strong>신규</strong>, MODEL_DEMAND_SURVEY #7이 2026-08-07에 이미 수요를 확인했으나 다음날 6문항 확정에서 누락됐던 것을 복원)</li>
+    <li><em>"사업 자체가 커지고 있을까?"</em>(성장)</li>
+    <li><em>"현금을 얼마나, 얼마나 오래 나눠주고 있을까?"</em>(배당 — 🔴 US 재료 0건)</li>
+    <li><em>"이 회사가 망할 위험이 있을까?"</em>(부도위험 — 🔴 재료 미구축)</li>
+    <li><em>"최근에 뭐가 바뀌었을까?"</em>(최근변화)</li>
+  </ul>
+  <p>업종·이익상태는 질문이 아니라 <strong>전제</strong>로 재확인. 5/6은 옛 문구가 개념상 유효했음이 재확인됐고(근거만 "물려받음"에서 "도출"로), 1개(재무건전성)는 실제 재검토의 실질이었다. 상세=<code>probe_1053_question_set.md</code></p>
   <p>그 근거 셋의 실제 상태:</p>
   <div class="tbl"><table>
     <thead><tr><th style="width:170px">근거</th><th>문서가 스스로 적은 한계</th></tr></thead>
@@ -573,12 +583,12 @@ tr.hl td.m{color:#ffb3b3}
     <div class="t">최종 승인 = 장은태.</div>
   </blockquote>
   <div class="grid g4">
-    <div class="card"><div class="src">0층(전제)</div><div class="def"><strong>업종</strong>(Q0, 이미 "카드 아님·각 카드에 녹임"으로 형태 확정) · <strong>이익상태</strong>(<span class="hi">신규</span> — Q0~Q5 어디에도 카드 없던 전제, Q0 근거 서술에 섞여 있다가 분리됨)</div></div>
-    <div class="card"><div class="src">1층(정보, 순서 없음)</div><div class="def">배수 · 재무건전성 · 시장내재기대(역DCF) · 배당(재료갭) · 부도위험(미구축) — Q1·Q2·Q4와 대응. <span class="hi">🔴 정정(STEP1041): "측정된 상호 의존 0건"이 아니라 미측정 — 측정 방법 자체를 못 찾았다</span></div></div>
+    <div class="card"><div class="src">0층(전제)</div><div class="def"><strong>업종</strong>("뭐 하는 회사인가", 이미 "카드 아님·각 카드에 녹임"으로 형태 확정, STEP1053 독립재도출로 재확인) · <strong>이익상태</strong>(<span class="hi">신규 발견 당시엔</span> 옛 6문항 어디에도 카드 없던 전제, 업종 근거 서술에 섞여 있다가 분리 — STEP1053이 질문 아닌 전제로 재확인)</div></div>
+    <div class="card"><div class="src">1층(정보, 순서 없음)</div><div class="def">배수 · 재무건전성 · 시장내재기대(역DCF) · 배당(재료갭) · 부도위험(미구축) — 질문 문장 대응은 위 W-2 정본 참조. <span class="hi">🔴 재무건전성은 STEP1053에서 독립 질문으로 복원됨(옛 6문항엔 부도위험에 뭉쳐 있었음)</span>. 🔴 정정(STEP1041): "측정된 상호 의존 0건"이 아니라 미측정 — 측정 방법 자체를 못 찾았다</div></div>
     <div class="card"><div class="src">시간축(단기·가격)</div><div class="def">최근변화(모멘텀·기술) — Q5와 대응. "값의 차분"이라 1층의 파생이 아니라 가격 시계열에 먼저 의존, 업종 영향은 받음(19~44%)</div></div>
     <div class="card"><div class="src">시간축(장기·펀더멘털, <span class="hi">복원 STEP1045</span>)</div><div class="def">성장(매출5년CAGR+D&A전영업이익) — Q3과 대응. 최근변화와 상관 r=-0.10, 독립된 두 번째 시간축</div></div>
   </div>
-  <p class="note" style="margin-top:14px"><strong>업종대비위치는 독립 항목이 아니다</strong> — 업종(0층)을 1층 각 항목에 적용한 표시형식. 실측(업종→배수 등 의존도 15~71%)·Q0 기존 결정(카드 아님)·실무 4곳 조사(Stock Analysis·WallStreetZen·MarketBeat·Robinhood — 전부 업종비교를 독립 카드로 안 둠)가 <span class="hi">셋 다 같은 방향</span>이었다.<br>
+  <p class="note" style="margin-top:14px"><strong>업종대비위치는 독립 항목이 아니다</strong> — 업종(0층)을 1층 각 항목에 적용한 표시형식. 실측(업종→배수 등 의존도 15~71%)·"뭐 하는 회사인가" 기존 결정(카드 아님)·실무 4곳 조사(Stock Analysis·WallStreetZen·MarketBeat·Robinhood — 전부 업종비교를 독립 카드로 안 둠)가 <span class="hi">셋 다 같은 방향</span>이었다.<br>
     <strong>방법론 공개는 Layer C</strong>(모든 항목에 공통, 8번째 정보 아님) — <code>probe_1037</code>이 "Q0~Q5 밖"이라 확인한 것의 정체를 Model Card 9섹션으로 구체화. <code>lensCopy.ts</code>가 9섹션 중 5개는 채우고 3개는 빈칸(모델 버전·날짜·문의처 / 주 사용자 / Ethical Considerations), 1개는 원리적으로 해당 없음(Training Data).</p>
   <p class="note">✅ <span class="hi">2026-08-16 STEP1052</span> — 원문(Mitchell et al. 2018, arXiv:1810.03993) 확보 완료, 빈칸 처방. "모델버전·날짜·문의처"=옮기면 되는 것(us_valuation.as_of/lens_cuts.as_of+contact@onetrillion.app, 이미 존재) · "주 사용자"=새로 정할 것 · "Ethical Considerations"=부분 대응(H-6 가드레일은 회사차원, 모델별 서술은 없음) · "Training Data"=원리적 해당없음 재확인(학습이 아니라 결정론 계산). 상세=<code>probe_1052_axis_role_and_layerC.md</code></p>
   <p class="note"><span class="hi">근거 없음 — 판정 필요로 남긴 것 3건</span>: 업종→시장내재기대(섹터 컷 표본 부족, 11개 섹터 중 1개만 존재) · 배당→이익상태(payout_ratio 전부 NULL) · 부도위험의 업종 의존(모델 미구축).</p>
