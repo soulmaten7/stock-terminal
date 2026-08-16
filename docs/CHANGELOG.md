@@ -1,6 +1,24 @@
 <!-- 2026-08-16 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-16 — 🟠 **STEP1048: KR 파일럿 — 데이터 이관 + 코드 파킹 + DB 제거 완료**
+
+> 장은태 판정(2026-08-15): *"KR은 추후에 사용을 해야 할 수도 있으니 데이터인 거면, 이건 KR 데이터를 모아둔 곳으로 옮겨두고 우린 US를 계속 진행하는 게 맞아."* STEP1047의 NO-GO(`dividends`가 KR 모아보기 '배당' 탭에 실사용 중)를 코드 파킹으로 끊은 뒤 이관·DB 제거를 완료했다.
+>
+> **1-1 데이터 이관**: `spinoff/kr-pilot-2026-06-25/`에 11개 테이블(`stocks`27행·`dividends`60행 실데이터 + 나머지 9개는 빈 배열로 존재 기록) + `schema.sql`(DDL 원문, `information_schema` 직접 조회로 재구성) + `README.md`(무엇·왜·이관vs삭제 구분·복원방법·데이터한계·재사용 시 확인할 것). 행수 Python assert로 DB 실측(27·60)과 일치 검증 후에만 다음 단계 진행.
+>
+> **1-2 코드 파킹**: `IpoFeed`가 `dividends`/`stocks`를 안 쓰는지 코드로 먼저 확인(38.co.kr 직접 스크래핑, DB 호출 0건) 후 `components/toolbox/OfferingsFeed.tsx`의 배당 분기만 파킹 — 🔴 **토글 UI는 유지**(US에서는 "공모주·배당" 라벨이 여전히 사실이라 공유 i18n 키를 안 건드림), '배당' 선택 시 새 번역 키 `Feed.offerings.dividendPaused`(ko/en)로 사유를 밝히는 문구를 보여준다(가짜 채움 없음). `DividendFeed.tsx`·`app/api/dividend/feed/route.ts` **파일 삭제 없음**(import만 제거, git diff에 안 잡힘). `docs/PARKED_KR_DIVIDEND_ACTIVATION.md` 신설(활성화 체크리스트 포함). US 컴포넌트 diff 0(`git diff --stat` 확인).
+>
+> **1-3 DB 제거**: DROP 직전 재실측(27·60·나머지9개=0, 덤프와 일치) 후 `supabase/migrations/20260816_drop_kr_pilot_schema.sql`(뷰→FK 10개→`stocks` 순, 의존 역순) 적용. DROP 후 `information_schema` 재조회로 11개 테이블·뷰 전부 소멸 확인.
+>
+> **1-4 양방향 검증**: 코드→DB 고아 참조 = `app/api/dividend/feed/route.ts:12`의 `.from("dividends")` 1건만(의도된 파킹 — 테이블 없어져 에러지만 catch가 `{items:[],error}` 200 우아 반환, 로컬 curl로 재현 확인). tsc clean·vitest 384/384 통과(ko/en 키 패리티 포함)·`npm run build` 성공. `us_valuation`(32,561)·`us_fundamentals`(5,820)·`us_market_cap`(5,917)·`kr_stock_snapshot`(2,776) 전부 before/after 완전 불변.
+>
+> 🔑 **1-4 육안 확인 단계에서 발견**: `components/toolbox/ToolboxClient.tsx`(STEP1047이 "KR 모아보기 화면"이라 지칭)를 **`app/` 어디서도 import하지 않는다** — `components/toolbox/*` 26개 파일 전체가 현재 어떤 페이지 라우트에서도 도달 불가능한 고아 코드로 보인다(홈은 `TodayClient`, `/explore`는 `ExploreClient`가 대체). 홈페이지 실제 SSR HTML(script 태그 제외)에 "공모주"·"배당" 문자열 0건(유일한 잔존은 메타 description 마케팅 카피). 임시 라우트(커밋 전 삭제)로 `OfferingsFeed`/`UsOfferingsFeed`를 직접 마운트해 정상 렌더 확인(크래시 없음, `/api/ipo/feed` 실데이터 반환, `dividendPaused` 번역 정상 로드). 🔴 **STEP1047의 "완전한 실사용 체인" 진단은 컴포넌트 간 내부 합성만 확인했을 뿐 최상위 진입점의 도달 가능성은 검증하지 않았다**(C-3 ㉡ 사례) — 파킹·DROP 실행 자체는 안전했으나(오히려 더 명백히 안전), "라이브 화면 영향" 근거 서술은 과장이었을 가능성. 확정은 못 함(미측정).
+>
+> **1-5 문서 정정 전수**: `MODEL_UNIVERSE_63_2026-08-07.md` §3-1 전면 철회(원문 `<details>` 보존) · `ROADMAP_V2.md` F-4/F-4-2/F-4-3(순위표 7위 "0.46%"→"0%(US 재료 0건)")/F-5(⑬을 ⑬-a 성장·⑬-b 배당·부도위험으로 분리) · `roadmap_v2.html` 4곳 동기화(html.parser·태그 균형 재검증) · `probe_1039_kr_premise_sweep.md`에 "데이터 스키마 축 누락" 정정 신설 · `_TEMPLATE.md` ⓪-5 §2에 근거⑤ 한 줄 추가 · `SYSTEM_MAP.md` §5(11개 테이블 목록 제거, "64개"→오늘 실측 "69개") · `STATE.md`(완료 갱신 + 고아 코드 발견 기록).
+>
+> 문서 = `docs/probe_1048_kr_pilot_parked.md`. 게이트7(절대경로·미추적 참조) — 기존 965/967/969의 `/tmp` import 3건은 무관(코드diff0, 범위밖). 게이트9 해당 없음(신규 테이블·크론 없음, DROP만). 못 한 것 = 브라우저 실제 시각 렌더(도구 부재, 임시 라우트+HTML 파싱으로 대체 확인). 철회·정정 = STEP1047·1048의 "라이브 화면 영향" 근거를 §5에 정정 기록(실행 결과는 불변). 미측정 = `components/toolbox/*`가 100% 도달 불가능한지(이론상 이번 검색이 못 잡는 경로 가능성). 🔴 **판정 금지 — `components/toolbox/*` 향후 처리는 장은태 판정 대상, 이 STEP은 착수 안 함.**
+
 ## 2026-08-16 — 🟠 **STEP1047: KR 파일럿 스키마 제거 — Phase A에서 NO-GO (실사용 참조 발견, Phase B 미실행)**
 
 > 🔴 **코드·DB 변경 0건.** 장은태 판정 *"KR은 지금 빼는 게 맞아"*(2026-08-15)를 받아 2026-06-25 KR 파일럿 스키마(`stocks` 27행 + `stock_id` 참조 10개, 총 11개 — 주문서의 "12개"는 `financials` 중복계산으로 정정) 제거를 2단계(Phase A 증명 → Phase B 실행)로 설계했으나, **Phase A(증명)에서 `dividends`(60행)가 `stocks`와 조인돼 실사용 중임을 발견해 Phase B 전부를 실행하지 않았다.**

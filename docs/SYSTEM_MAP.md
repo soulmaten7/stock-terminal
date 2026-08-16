@@ -40,13 +40,14 @@
 - **인증(전 크론 공통)**: `if (!process.env.CRON_SECRET || auth !== \`Bearer ${CRON_SECRET}\`) return 401` — env 미설정 시 `Bearer undefined`로 통과하던 버그 봉인(STEP 793).
 - ⚠️ **Vercel Hobby 플랜 = 크론 일 1회 한도.** 더 촘촘한 스케줄(`*/3` 등)을 넣으면 **배포 전체가 조용히 거부**됨(07-18 실증). 빈도(daily-only) 제약이지 카운트 제약 아님(07-23 REST API 전수 확인).
 
-## 5. DB 테이블 (64개 · 그룹)
-- **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot` · `stock_prices` · `stocks`
-- **렌즈/재무**: `lens_scores`(값 `*_value`+상태 `*_state`) · **`lens_cuts`**(판정 컷 · PK `market,lens_key` · `lo`/`hi`=p30/p70·`n`·`as_of`·`method` — 크론 2-pass가 upsert·STEP 802/805) · `lens_state_changes`(오늘/탐색 변화 피드 · pass2 최종 상태로 diff) · `quant_factors` · 🔴 **`financials`(2026-08-07 실측 **0행** · 쓰는 코드 **0건** = 죽은 테이블. 렌즈 재무는 매 요청 야후 `fundamentalsTimeSeries` 호출)** · 🔴 **`dividends`(60행)** · `short_credit` · `supply_demand` · `insider_trades`
+## 5. DB 테이블 (69개 · 2026-08-16 실측 · 그룹)
+> 🔴 **2026-08-16 STEP1048**: `stocks`·`ai_analysis`·`disclosures`·`dividends`·`financials`·`insider_trades`·`news`·`quant_factors`·`short_credit`·`stock_prices`·`supply_demand`(11개) + 뷰 `stock_snapshot_v` DROP — 2026-06-25 시딩된 KR 전용 파일럿 스키마였다(US 무관). 데이터는 `spinoff/kr-pilot-2026-06-25/`로 이관 보존. 상세 = `docs/probe_1047_kr_pilot_removal.md`·`docs/probe_1048_kr_pilot_parked.md`. 아래 목록에서 이 11개+뷰는 전부 제거했다 — 남은 `jp_disclosures` 등은 이름이 비슷해도 별개의 살아있는 테이블이다.
+- **시세/성과**: `kr_stock_snapshot` · `{us,jp,cn,vn,gb}_stock_perf` · `kr_etp_snapshot`
+- **렌즈/재무**: `lens_scores`(값 `*_value`+상태 `*_state`) · **`lens_cuts`**(판정 컷 · PK `market,lens_key` · `lo`/`hi`=p30/p70·`n`·`as_of`·`method` — 크론 2-pass가 upsert·STEP 802/805) · `lens_state_changes`(오늘/탐색 변화 피드 · pass2 최종 상태로 diff). 렌즈 재무는 매 요청 야후 `fundamentalsTimeSeries` 호출(별도 재무 원자료 테이블 없음).
 - **🆕 역DCF(모델 트랙 838~850)**: `damodaran_{industry,tax_rate,country_tax,wacc,beta,capex,working_capital,global_inputs,credit_spread}`(846/847 재료·`as_of` 연1회) · **`revdcf_results`**(850 전종목 GAP · PK `as_of,cik` · 매일 쌓음 · verdict/gap 3점(WACC±1%p)/flags jsonb/skip_reason). 파이프라인 = `lib/revdcf/{engine,compute,drivers,registry}.ts` + `scripts/compute_revdcf_all.ts`. **🟢 853 화면 배선**: `components/RevDcfSection.tsx`(종목페이지·US 자체게이트) + `app/[locale]/revdcf`(방법론) + `/api/revdcf`(서빙) + **`/api/cron/revdcf`**(일일 배치·동시성6·270s예산·resumable·유니버스=직전 as_of·22:45). 컬럼 852 추가: `fixed_capital_rate_{level,marginal}`·`verdict_marginal`·`gap_years_marginal`. 원본 xls = Storage `sources`. **🔴 854 플래그 OFF**: 위 화면 배선은 전부 `REVDCF_ENABLED`(§7 env) 뒤 — 기본 미노출. 854 §2 추가: `components/RevDcfBadge.tsx`(보드 배지 순수표시) + `/api/revdcf/batch`(심볼 배치 verdict·플래그 OFF면 `enabled:false`) + `UsMarketBoard.tsx` 최소침습 컬럼(플래그 OFF면 미렌더). 854 §3: `skip_reason=MULTI_CLASS_SHARES`(멀티클래스 5사 V·STZ·FWONA·WMG·COKE=companyfacts 차원팩트 제외로 통합 주식수 부재·강제합산 금지 → 정직 건너뛰기·`drivers.ts`).
 - **종목명**: `cn_names` · `gb_names` · `jp_names` · `vn_names` (KR·US는 스냅샷/시드에 내장)
-- **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · `ai_view_cache` · `ai_analysis` · **`daily_brief`**(한 입 브리핑 — market별 PK·text_ko/text_en·source_facts jsonb·STEP 778)
-- **공시/뉴스**: `disclosures` · `jp_disclosures` · `news` · `dart_corp_codes` · 🔴 **`macro_indicators`(2026-08-07 실측 **0행** = 죽은 테이블)**
+- **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · `ai_view_cache` · **`daily_brief`**(한 입 브리핑 — market별 PK·text_ko/text_en·source_facts jsonb·STEP 778)
+- **공시/뉴스**: `jp_disclosures` · `dart_corp_codes` · 🔴 **`macro_indicators`(2026-08-07 실측 **0행** = 죽은 테이블)**
 - **링크/큐레이션**: `link_hub`(KR 140·US 139) · `link_hub_clicks` · `link_hub_favorites` · `link_previews`
 - **유사투자자문/리딩방**: `fss_advisors`(1,847) · `leading_rooms` · `leading_room_votes` · `room_*`(favorites·likes·reports·reviews·submissions)
 - **광고/업체**: `ad_inquiries` · `business_*`(claims·links·listing·members) · `brokers` · `products` · `banned_words`

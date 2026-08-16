@@ -431,7 +431,8 @@
     },
     "offerings": {
       "ipo": "공모주",
-      "dividend": "배당"
+      "dividend": "배당",
+      "dividendPaused": "국내 배당 데이터 정비로 잠시 제공을 중단했습니다."
     },
     "broker": {
       "title": "증권사",
