@@ -187,6 +187,16 @@ tr.hl td.m{color:#ffb3b3}
     🔴 <strong>적용 범위 = US 상장 종목 분석</strong>(2026-08-16 STEP1049 명시). 장은태: "이 모델을 만드는 과정을 US 종목에 대해 분석할 때로 정의를 내려야겠다. 다른 국가 탭을 만들 때는 우리의 이 로드맵을 분석해서 그에 맞춰 데이터를 넣어 사용하면 된다." 이 로드맵의 모든 판정·순위·재료 실측은 US 상장 종목 분석 범위다 — KR/JP/CN/VN/GB는 별도 트랙. 국가탭 절차 = <code>CLAUDE.md</code> 배너 룰②(엔진 보편·어댑터만 나라별) + <code>COUNTRY_TAB_PLAYBOOK.md</code> §0-2.
   </div>
   <div class="building">
+    🔑 <strong>「동결」「파킹」「제거」구분</strong>(2026-08-16 STEP1051) — 오늘 이 혼선이 반복됐다(KR 크론을 끌 뻔한 판단 오류).
+    <div class="tbl" style="margin-top:8px"><table><thead><tr><th>낱말</th><th>뜻</th><th>지금 해당하는 것</th><th>화면</th></tr></thead><tbody>
+      <tr><td class="m">동결(KR)</td><td>새 작업 안 함. 기존 화면·크론·데이터는 그대로 돈다</td><td>kr_stock_snapshot 계열 · KR크론3개(kr-perf·kr-etp·kr-lens-scores) · KR보드</td><td><span class="hi">라이브</span></td></tr>
+      <tr><td class="m">파킹(타국·기능)</td><td>배선보존·스위치OFF·활성화체크리스트</td><td>JP/CN/VN/GB 9개 · Q1 · 역DCF · KR배당탭 · 구보드/정보탭/유튜브</td><td>안 나감</td></tr>
+      <tr><td class="m">제거</td><td>데이터보존 후 DB·코드에서 없앰</td><td>KR파일럿11개(1048)·리딩방(1035)·미사용7개(1051)</td><td>없음</td></tr>
+    </tbody></table></div>
+    <p style="margin-top:8px">🔴 <strong>KR이 「동결」인데 라이브인 이유</strong>: kr_stock_snapshot을 읽는 코드가 10곳 — lib/todayChanges.ts(홈)·search·sitemap·watchlist/quotes·ExploreClient.tsx(market==='KR'일때 krx/ranking 호출). <strong>그러므로 KR 크론 3개는 유지가 답</strong> — 끄면 홈·검색·사이트맵·관심목록·탐색이 전부 깨진다.<br>
+    <strong>범위와의 관계</strong>: "US 상장 종목 분석"은 새로 만드는 모델의 적용 대상이 US라는 뜻이지 화면에서 KR을 내린다는 뜻이 아니다. 범위와 동결은 서로 다른 축이다. 상세=<code>probe_1051_unused_disposal.md</code></p>
+  </div>
+  <div class="building">
     <strong>작성 중입니다.</strong> 7개 층 중 5개 확정(WHY·HOW·WHAT·무엇을 먼저·완성의 정의) · 1개 구조만 확정(수익 모델, 값 판정 대기) · 1개 대기(만드는 절차).
     구본 <code>docs/ROADMAP.md</code>는 지우지 않고 이력으로 보존합니다.
   </div>

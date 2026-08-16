@@ -6,6 +6,7 @@
 > 🔴 조사·문서 전용 STEP(997)의 산출물 — 코드 0줄·DB 쓰기 0·크론 미호출.
 > 범위 = **①단계, 이미 쓰는 5개 기관만**(SEC·Yahoo Finance·Nasdaq Trader·Damodaran·SPDR/State Street). 새 기관(FRED·Treasury·Polygon·FMP 등)은 ②단계 — 이 문서 범위 밖.
 > 🔑 **4층(우리 DB 테이블) = `docs/probe_1049_table_inventory.md` §1-2.** H-2-1의 3층(기관 엔드포인트→카테고리 25→슬롯 20) 아래에 "슬롯이 실제로 어느 테이블에 떨어지는가"를 더한 역인덱스 — 이 카탈로그 자체는 3층까지만 다루고, 4층은 STEP1049 산출물에 둔다(테이블은 DB 실측 산출물이라 조사 문서가 아니라 인벤토리 문서에 속함).
+> 🔴 **2026-08-16 STEP1051**: 4층의 "카탈로그 밖(45개)" 목록 중 7개(`ai_view_cache`·`banned_words`·`macro_indicators`·`discussion_reports`·`platform_discussion_reports`·`us_sector_relative_snapshot`·`products`)가 DB에서 DROP됐다 — 전부 20슬롯과 연결이 없던 테이블이라 슬롯→테이블 역인덱스 자체는 무변경. 데이터는 `spinoff/unused-tables-2026-08-16/`으로 이관. 상세 = `docs/probe_1051_unused_disposal.md`.
 
 ## 왜 이 카탈로그인가 (장은태 지적, 원문 근거)
 

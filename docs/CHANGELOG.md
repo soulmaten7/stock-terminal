@@ -1,6 +1,20 @@
 <!-- 2026-08-16 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-16 — 🟠 **STEP1051: 미사용 8개 처분 · `products` 귀속 · 「동결」의 정확한 정의**
+
+> `probe_1049`가 인벤토리에서 멈췄던 처분을 끝냈다. Cowork 실측(`kr_stock_snapshot` 참조 10곳 — 홈·검색·사이트맵·관심목록·`/explore`)에 따라 **KR 크론 3개는 판정거리가 아니라 이미 답이 있는 것**이었고, 이번 STEP은 그 대신 「동결」이 무엇을 뜻하는지 문서에 못박았다.
+>
+> **Phase A 재확인**: `probe_1049`가 「미사용」으로 판정한 8개를 두 방법(정방향 이름검색+역방향 코드대조)으로 다시 확인했다 — 오늘 두 번(`AdvisorDirectory`·`dividends`) 재확인 없이 틀렸던 전례가 있어 그대로 믿지 않았다. 🔴 **결과: 8건 중 6건은 참조 0 확정, 1건(`products`)은 내용 대조로 귀속이 정해졌으며, 2건(`damodaran_capex`·`damodaran_working_capital`)은 반증 조건이 실제로 걸려 처분에서 제외됐다** — 읽기 코드는 0이지만 `scripts/ingest_damodaran.ts`가 매년 능동적으로 write하는 STEP846 정책상 대조 전용 테이블이었다(`probe_1049`가 "코드 참조 0"을 읽기만 확인하고 쓰기는 안 봤던 결함).
+>
+> **`products`(10행) 귀속**: 이름이 아니라 데이터 내용을 직접 열어 판정 — KODEX 200·TIGER 200 등 전량 **한국 상장 ETF**, `created_at`이 10행 전부 2026-06-24 단일 타임스탬프로 `spinoff/kr-pilot-2026-06-25/`(2026-06-25)와 같은 시딩 패턴(하루 전) — **귀속 = KR**로 확정. 이전 조사의 "products" 코드 매치는 SPDR 다운로드 URL 경로 문자열의 우연한 부분일치였음을 재확인.
+>
+> **Phase B 처분**: 확정 7개(`ai_view_cache`·`banned_words`·`macro_indicators`·`discussion_reports`·`platform_discussion_reports`·`us_sector_relative_snapshot`·`products`)를 `spinoff/unused-tables-2026-08-16/`(DDL+데이터, `us_sector_relative_snapshot` 2,294행·`products` 10행 실데이터 + 나머지 5개는 존재 기록용 빈 배열)로 이관 보존 후 `supabase/migrations/20260816b_drop_unused_tables.sql`로 DROP. 테이블 수 69→**62개**. `us_*`·`kr_stock_snapshot`·`discussions`·`platform_discussions`·제외된 damodaran 2종 행수 before/after 완전 불변. 로컬 실측(홈·`/explore`·KR검색·`/api/krx/ranking`) 전부 200+실데이터 확인 — KR 크론 무접촉 상태에서 정상 작동.
+>
+> 🔑 **「동결/파킹/제거」 정의 못박기**: `ROADMAP_V2.md` 범위 절 바로 아래에 3낱말 표 + KR 크론 유지 근거(`kr_stock_snapshot` 참조 10곳) + "범위(US 상장 종목 분석)는 화면에서 KR을 내린다는 뜻이 아니다"를 한 문단으로 명시. `roadmap_v2.html` 동기화.
+>
+> 문서 = `docs/probe_1051_unused_disposal.md`. `DATA_SOURCE_CATALOG.md`(4층 갱신) · `SYSTEM_MAP.md`(테이블 목록·개수 정정, STEP1035 잔여 스테일도 함께 정리) · `STATE.md` 반영. 게이트7·9 통과. 못 한 것 = discussion_reports/platform_discussion_reports의 트리거 함수 정리(테이블만 처분, 함수는 vestigial하게 남김 — 범위 밖). 철회·정정 = `probe_1049`의 damodaran 2종 "미사용" 판정·`products` "불명" 판정. 미측정 = 없음(반증 조건 전부 확인 완료).
+
 ## 2026-08-16 — 🟠 **STEP1050: `sectorSource` 조인 키 수정 + 기록 신뢰 복구**
 
 > 판정이 필요 없는 버그 하나를 끝냈다 — `probe_1042`가 "켜기 전 필수 2건" 중 하나로 올린 `sectorSource` 침묵은 판정이 아니라 조인 규약 불일치였다. 🔵 화면 노출 0(`Q1_ENABLED` OFF 유지) · DB 쓰기 0 · 플래그 무접촉.
