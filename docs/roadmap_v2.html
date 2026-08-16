@@ -207,6 +207,7 @@ tr.hl td.m{color:#ffb3b3}
       </tbody>
     </table>
   </div>
+  <p class="note" style="margin-top:10px">🔑 <span class="hi">Q1/모델 선정 관련 판정 대기(14건)는 F-5(2026-08-16 STEP1046)에 한 장으로 모아뒀다</span> — 이 표는 그보다 앞서 등재된 별도 항목(수익모델 층)만 남긴 것.</p>
 </header>
 
 <section>
@@ -749,20 +750,24 @@ tr.hl td.m{color:#ffb3b3}
     <div class="t">선택지가 아니라 도출 결과. 최종 승인 = 장은태.</div>
   </blockquote>
   <p class="note">정렬 규칙: ①관문3 전부 통과 → ②이미 구현·승인 대기인 것 최우선 → ③재료 비용 → ④이용가치 → ⑤동점은 동점.</p>
+  <blockquote>
+    <div class="q">🔴 2026-08-16 STEP1046 재산출 — 재료를 「보유종목수/오늘유니버스(us_valuation 최신as_of distinct=5,820)=%」로 통일해 오늘 DB로 다시 쟀다.</div>
+    <div class="t">문서 인용이 아니라 재측정. 정본 = docs/probe_1046_material_and_decisions.md.</div>
+  </blockquote>
   <div class="tbl"><table>
-    <thead><tr><th style="width:60px">순위</th><th style="width:220px">모델</th><th>상태</th></tr></thead>
+    <thead><tr><th style="width:50px">순위</th><th style="width:200px">모델</th><th style="width:130px">재료(오늘,%)</th><th>상태</th></tr></thead>
     <tbody>
-      <tr class="hl"><td class="m">1~3</td><td class="m">EV/EBITDA · P/E · P/B</td><td><span class="b b0">이미 완성·배선됨</span> Q1Section, Q1_ENABLED=false 승인 대기</td></tr>
-      <tr><td class="m">4</td><td class="m">P/S·EV/Sales</td><td><span class="b b1">부분 구현</span> 컬럼은 있음, 조합만 남음</td></tr>
-      <tr class="hl"><td class="m">5</td><td class="m">시장내재기대(역DCF)</td><td><span class="b b0">이미 완성</span> revdcf_results, REVDCF_ENABLED=false 승인 대기</td></tr>
-      <tr><td class="m">6</td><td class="m">재무건전성(Piotroski F-Score 단독 — <span class="hi">🔴 STEP1044 정정, GP/A는 다른 질문</span>)</td><td><span class="b b0">이미 구현</span> 7렌즈</td></tr>
-      <tr><td class="m">7</td><td class="m">최근변화(모멘텀+기술)</td><td><span class="b b0">이미 구현</span> 7렌즈</td></tr>
-      <tr><td class="m">8</td><td class="m">배당</td><td><span class="b b3">재료 갭</span> dividends 60/1,977행</td></tr>
-      <tr class="hl"><td class="m">8.5(복원)</td><td class="m">성장(매출5년CAGR+D&A전영업이익)</td><td><span class="b b1">재료 완성·화면 미착수</span> revdcf_results.sales_growth·drivers.ts 기계산 — 배당(재료갭)·9~11위(미구축)와 다른 별도 범주, <span class="hi">STEP1045</span></td></tr>
-      <tr><td class="m">9~11</td><td class="m">부도위험 · DuPont · Graham Number</td><td><span class="b b3">미구축</span> Assets·Liabilities 전용 컬럼 오늘도 없음</td></tr>
+      <tr class="hl"><td class="m">1(동점4개·<span class="hi">PSR승격</span>)</td><td class="m">EV/EBITDA·P/E·P/B·<strong>PSR</strong></td><td>24.9%·35.5%·56.4%·<strong>61.1%</strong></td><td><span class="b b0">이미 완성·배선됨</span> Q1Section, Q1_ENABLED=false 승인 대기 — PSR이 기존엔 "부분구현"으로 잘못 묶여 있었다</td></tr>
+      <tr><td class="m">2(별도)</td><td class="m">EV/Sales</td><td>미측정</td><td><span class="b b1">부분 구현</span> PSR과 분리 — 조합만 남음</td></tr>
+      <tr class="hl"><td class="m">3</td><td class="m">시장내재기대(역DCF)</td><td>10.4%(604/5,820)</td><td><span class="b b0">이미 완성</span> revdcf_results, REVDCF_ENABLED=false 승인 대기</td></tr>
+      <tr><td class="m">4</td><td class="m">재무건전성(Piotroski F-Score 단독 — <span class="hi">부분일치·조건부</span>)</td><td>12.7%(741/5,820)</td><td><span class="b b0">이미 구현</span> 7렌즈</td></tr>
+      <tr><td class="m">5</td><td class="m">최근변화(모멘텀+기술)</td><td>17.5%/17.6%</td><td><span class="b b0">이미 구현</span> 7렌즈</td></tr>
+      <tr class="hl"><td class="m">6(<span class="hi">순서상승</span>)</td><td class="m">성장(매출5년CAGR+D&A전영업이익)</td><td><strong>7.7%</strong>(446/5,820)</td><td><span class="b b1">재료 있음·화면 미착수</span> "이미 완성"은 과장이었음(정정)</td></tr>
+      <tr class="hl"><td class="m">7(<span class="hi">순서하락</span>)</td><td class="m">배당</td><td><strong>0.46%</strong>(27/5,820)</td><td><span class="b b3">재료갭 아니라 파이프라인 부재</span> 60행=종목27개, 2026-06-25 1회시드 후 52일 정체</td></tr>
+      <tr><td class="m">8~10</td><td class="m">부도위험 · DuPont · Graham Number</td><td>0%</td><td><span class="b b3">미구축</span> Assets·Liabilities 전용 컬럼 오늘도 없음</td></tr>
     </tbody>
   </table></div>
-  <p class="note"><strong>F-4-1②("새 모델 찾기가 아니라 1위를 제대로 만들기")가 사실로 확인됐다.</strong> 1·2·3·5·6·7위는 전부 이미 코드로 존재한다(<code>app/api/q1/[symbol]/route.ts</code>+<code>components/Q1Section.tsx</code>, STEP956·957 · 7렌즈). <span class="hi">"제대로"의 실체는 계산이 아니라 승인이다</span> — 막고 있는 것은 <code>Q1_ENABLED="false"</code>(피처 플래그, 기본 OFF) 하나이고, 켜는 조건은 <code>lib/q1/flag.ts</code> 주석 그대로 "장은태 육안 검증·승인 후"다.</p>
+  <p class="note"><strong>F-4-1②("새 모델 찾기가 아니라 1위를 제대로 만들기")가 사실로 확인됐다.</strong> 1·3·4·5위는 전부 이미 코드로 존재한다(<code>app/api/q1/[symbol]/route.ts</code>+<code>components/Q1Section.tsx</code>, STEP956·957 · 7렌즈). <span class="hi">"제대로"의 실체는 계산이 아니라 승인이다</span> — 막고 있는 것은 <code>Q1_ENABLED="false"</code>(피처 플래그, 기본 OFF) 하나이고, 켜는 조건은 <code>lib/q1/flag.ts</code> 주석 그대로 "장은태 육안 검증·승인 후"다.</p>
   <p class="note"><span class="hi">선행 층(모델 순위표에서 뺀 것)</span>: <code>financials</code> 테이블(오늘도 0행, MODEL_UNIVERSE_63 §3-1은 8~11위에만 유효하게 축소됨 — 1~7위는 별개 파이프라인 us_fundamentals가 이미 채웠다) · 0층(업종·이익상태, probe_1040) — <strong>0층이 모델보다 선행</strong>이며 P/E(이익상태 43.4%)·재무건전성(업종·Financials 70.9%)이 가장 강하게 흔들린다.</p>
 
   <h3 style="margin-top:28px">F-4-4. ✅ Q1 켜기 — 최소 승인 세트 도출 완료 (2026-08-15 STEP1042)</h3>
@@ -775,6 +780,31 @@ tr.hl td.m{color:#ffb3b3}
     <div class="card" style="border-color:#4a2529;background:linear-gradient(180deg,#241619,var(--panel))"><div class="src">🔴 켜기 전 필수(2건)</div><div class="def">① 조건부 4칸(PSR×Financials 405건, 08-09 대비 6.6배) 화면처리 판정 ② sectorSource 침묵 버그(us_sector_wide가 us_valuation보다 6일 뒤처져 출처표시 100% 비어나감 — <span class="hi">🔴 STEP1044 진단 정정: 처방은 이미 안 갈린다, computeAndSaveSectorRelative()는 이미 최신as_of 패턴을 쓰고 Q1 route.ts만 정확일치라 문제 — 조인 키 교체가 답</span>)</div></div>
     <div class="card"><div class="src">🟡 켠 뒤 가능</div><div class="def">ⓛ disagree 표시 · ⓞ 배율 표시형태(정본 median-relative 미서빙 확인) · 선결질문(KR 공유코드, Q1_ENABLED와 무관)</div></div>
   </div>
+
+  <h3 style="margin-top:28px">F-5. 🔑 판정 대기 한 장 (2026-08-16 STEP1046)</h3>
+  <blockquote>
+    <div class="q">정본 = docs/probe_1046_material_and_decisions.md. 흩어져 있던 판정 대기를 모은 것 — 이 STEP은 하나도 판정하지 않았다.</div>
+    <div class="t">14건, 10건을 넘어 그 자체가 보고 대상. 의존 순서: 1층(①~③, Q1 켜기 전 필수·서로 전제) → 2층(④, 1층 이후 게이트) → 나머지는 독립.</div>
+  </blockquote>
+  <div class="tbl"><table>
+    <thead><tr><th style="width:30px">#</th><th>판정 질문</th><th style="width:170px">좌표</th><th style="width:110px">의존</th></tr></thead>
+    <tbody>
+      <tr><td class="m">①</td><td>배수 4축 동점(EV/EBITDA·P/E·P/B·PSR)을 하나로 좁힐지, 4개 다 보여줄지</td><td><code>probe_1046</code> 1-1</td><td>1층(②의 전제)</td></tr>
+      <tr><td class="m">②</td><td>조건부 4칸(PSR×Financials 446건, 오늘 재측정) 화면 처리 방식</td><td>SECTOR_AXIS_APPLICABILITY·probe_1042·1046</td><td>1층(①에 종속)</td></tr>
+      <tr><td class="m">③</td><td>sectorSource 침묵 버그 — 조인 키 교체 방식</td><td>probe_1042·1044</td><td>1층</td></tr>
+      <tr class="hl"><td class="m">④</td><td>Q1_ENABLED 승인(육안 검증)</td><td>lib/q1/flag.ts</td><td>2층(①②③ 이후)</td></tr>
+      <tr><td class="m">⑤</td><td>REVDCF_ENABLED 승인(육안 검증)</td><td>STATE.md:60</td><td>독립</td></tr>
+      <tr><td class="m">⑥</td><td>ⓛ disagree 표시 규칙</td><td>USER_QUESTIONS§7</td><td>독립("켠 뒤 가능")</td></tr>
+      <tr><td class="m">⑦</td><td>ⓞ 배율 표시형태·백분위 대조군 제거 시점</td><td>Q1_AXIS_DECISION§6</td><td>독립("켠 뒤 가능")</td></tr>
+      <tr><td class="m">⑧</td><td>Piotroski 조건부 적용 범위(전종목 유지 vs 고B/M 한정 표시)</td><td>probe_1044(원전표본발견)</td><td>독립</td></tr>
+      <tr><td class="m">⑨</td><td>부도위험(Altman Z) 착수 여부</td><td>probe_1043·1044</td><td>독립(착수시 태그확보는 후속)</td></tr>
+      <tr><td class="m">⑩</td><td>Beneish M-Score 칸 신설 여부</td><td>probe_1043·1045</td><td>독립</td></tr>
+      <tr><td class="m">⑪</td><td>저변동성·자산성장(CMA) 처분</td><td>probe_1043·1045</td><td>독립</td></tr>
+      <tr><td class="m">⑫</td><td>G7(자동화)의 소속 — 관문 vs 사업 조건</td><td>M-2(기존)</td><td>독립</td></tr>
+      <tr class="hl"><td class="m">⑬</td><td><span class="hi">신규</span> 성장·배당·부도위험 재료부족 3건의 H-4 경로 — 배당은 활성 파이프라인 자체가 없음(52일 정체)</td><td>probe_1046 1-2</td><td>독립</td></tr>
+      <tr class="hl"><td class="m">⑭</td><td><span class="hi">신규</span> 성장카드·역DCF카드 반대방향 표시(162/446=36.3%) — C-1 항목6 위반 후보, 설명 문구 필요 여부</td><td>probe_1046 1-3</td><td>독립</td></tr>
+    </tbody>
+  </table></div>
 </section>
 
 <section>
