@@ -1,0 +1,1413 @@
+{
+  "processed": 5742,
+  "jsonErrors": 0,
+  "noReferenceYear": 2136,
+  "top200": [
+    {
+      "tag": "Assets",
+      "n": 4982,
+      "pct": 86.8
+    },
+    {
+      "tag": "NetCashProvidedByUsedInFinancingActivities",
+      "n": 4974,
+      "pct": 86.6
+    },
+    {
+      "tag": "NetCashProvidedByUsedInOperatingActivities",
+      "n": 4972,
+      "pct": 86.6
+    },
+    {
+      "tag": "LiabilitiesAndStockholdersEquity",
+      "n": 4970,
+      "pct": 86.6
+    },
+    {
+      "tag": "NetIncomeLoss",
+      "n": 4954,
+      "pct": 86.3
+    },
+    {
+      "tag": "NetCashProvidedByUsedInInvestingActivities",
+      "n": 4906,
+      "pct": 85.4
+    },
+    {
+      "tag": "StockholdersEquity",
+      "n": 4887,
+      "pct": 85.1
+    },
+    {
+      "tag": "RetainedEarningsAccumulatedDeficit",
+      "n": 4873,
+      "pct": 84.9
+    },
+    {
+      "tag": "EarningsPerShareBasic",
+      "n": 4720,
+      "pct": 82.2
+    },
+    {
+      "tag": "WeightedAverageNumberOfSharesOutstandingBasic",
+      "n": 4710,
+      "pct": 82
+    },
+    {
+      "tag": "EarningsPerShareDiluted",
+      "n": 4707,
+      "pct": 82
+    },
+    {
+      "tag": "CashAndCashEquivalentsAtCarryingValue",
+      "n": 4690,
+      "pct": 81.7
+    },
+    {
+      "tag": "WeightedAverageNumberOfDilutedSharesOutstanding",
+      "n": 4689,
+      "pct": 81.7
+    },
+    {
+      "tag": "IncomeTaxExpenseBenefit",
+      "n": 4558,
+      "pct": 79.4
+    },
+    {
+      "tag": "Liabilities",
+      "n": 4503,
+      "pct": 78.4
+    },
+    {
+      "tag": "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents",
+      "n": 4408,
+      "pct": 76.8
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate",
+      "n": 4332,
+      "pct": 75.4
+    },
+    {
+      "tag": "PropertyPlantAndEquipmentNet",
+      "n": 4329,
+      "pct": 75.4
+    },
+    {
+      "tag": "OperatingLeaseRightOfUseAsset",
+      "n": 4327,
+      "pct": 75.4
+    },
+    {
+      "tag": "OperatingIncomeLoss",
+      "n": 4297,
+      "pct": 74.8
+    },
+    {
+      "tag": "OperatingLeaseLiability",
+      "n": 4272,
+      "pct": 74.4
+    },
+    {
+      "tag": "ShareBasedCompensation",
+      "n": 4272,
+      "pct": 74.4
+    },
+    {
+      "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest",
+      "n": 4226,
+      "pct": 73.6
+    },
+    {
+      "tag": "CommonStockSharesIssued",
+      "n": 4218,
+      "pct": 73.5
+    },
+    {
+      "tag": "AssetsCurrent",
+      "n": 4209,
+      "pct": 73.3
+    },
+    {
+      "tag": "LiabilitiesCurrent",
+      "n": 4204,
+      "pct": 73.2
+    },
+    {
+      "tag": "CommonStockSharesAuthorized",
+      "n": 4197,
+      "pct": 73.1
+    },
+    {
+      "tag": "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect",
+      "n": 4191,
+      "pct": 73
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDue",
+      "n": 4186,
+      "pct": 72.9
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateContinuingOperations",
+      "n": 4177,
+      "pct": 72.7
+    },
+    {
+      "tag": "CommonStockValue",
+      "n": 4156,
+      "pct": 72.4
+    },
+    {
+      "tag": "NumberOfReportableSegments",
+      "n": 4155,
+      "pct": 72.4
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths",
+      "n": 4133,
+      "pct": 72
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearTwo",
+      "n": 4121,
+      "pct": 71.8
+    },
+    {
+      "tag": "DeferredTaxAssetsValuationAllowance",
+      "n": 4111,
+      "pct": 71.6
+    },
+    {
+      "tag": "AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
+      "n": 4102,
+      "pct": 71.4
+    },
+    {
+      "tag": "CommonStockParOrStatedValuePerShare",
+      "n": 4100,
+      "pct": 71.4
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
+      "n": 4099,
+      "pct": 71.4
+    },
+    {
+      "tag": "CommonStockSharesOutstanding",
+      "n": 4029,
+      "pct": 70.2
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
+      "n": 4020,
+      "pct": 70
+    },
+    {
+      "tag": "InterestPaidNet",
+      "n": 4013,
+      "pct": 69.9
+    },
+    {
+      "tag": "OperatingLeaseWeightedAverageDiscountRatePercent",
+      "n": 3980,
+      "pct": 69.3
+    },
+    {
+      "tag": "ComprehensiveIncomeNetOfTax",
+      "n": 3953,
+      "pct": 68.8
+    },
+    {
+      "tag": "PaymentsToAcquirePropertyPlantAndEquipment",
+      "n": 3950,
+      "pct": 68.8
+    },
+    {
+      "tag": "IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate",
+      "n": 3912,
+      "pct": 68.1
+    },
+    {
+      "tag": "AccumulatedOtherComprehensiveIncomeLossNetOfTax",
+      "n": 3885,
+      "pct": 67.7
+    },
+    {
+      "tag": "PropertyPlantAndEquipmentGross",
+      "n": 3884,
+      "pct": 67.6
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
+      "n": 3849,
+      "pct": 67
+    },
+    {
+      "tag": "DeferredTaxAssetsGross",
+      "n": 3841,
+      "pct": 66.9
+    },
+    {
+      "tag": "StockIssuedDuringPeriodValueNewIssues",
+      "n": 3821,
+      "pct": 66.5
+    },
+    {
+      "tag": "DeferredIncomeTaxExpenseBenefit",
+      "n": 3807,
+      "pct": 66.3
+    },
+    {
+      "tag": "IncomeTaxesPaidNet",
+      "n": 3713,
+      "pct": 64.7
+    },
+    {
+      "tag": "AllocatedShareBasedCompensationExpense",
+      "n": 3687,
+      "pct": 64.2
+    },
+    {
+      "tag": "OperatingLeaseLiabilityCurrent",
+      "n": 3675,
+      "pct": 64
+    },
+    {
+      "tag": "OperatingLeaseLiabilityNoncurrent",
+      "n": 3664,
+      "pct": 63.8
+    },
+    {
+      "tag": "Depreciation",
+      "n": 3612,
+      "pct": 62.9
+    },
+    {
+      "tag": "PreferredStockSharesAuthorized",
+      "n": 3611,
+      "pct": 62.9
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearFive",
+      "n": 3603,
+      "pct": 62.7
+    },
+    {
+      "tag": "AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShareAmount",
+      "n": 3571,
+      "pct": 62.2
+    },
+    {
+      "tag": "DeferredTaxAssetsNet",
+      "n": 3570,
+      "pct": 62.2
+    },
+    {
+      "tag": "AccountsPayableCurrent",
+      "n": 3500,
+      "pct": 61
+    },
+    {
+      "tag": "OperatingLeasePayments",
+      "n": 3494,
+      "pct": 60.8
+    },
+    {
+      "tag": "DeferredTaxAssetsOperatingLossCarryforwards",
+      "n": 3492,
+      "pct": 60.8
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateReconciliationStateAndLocalIncomeTaxes",
+      "n": 3470,
+      "pct": 60.4
+    },
+    {
+      "tag": "InterestExpense",
+      "n": 3454,
+      "pct": 60.2
+    },
+    {
+      "tag": "ProfitLoss",
+      "n": 3450,
+      "pct": 60.1
+    },
+    {
+      "tag": "RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability",
+      "n": 3447,
+      "pct": 60
+    },
+    {
+      "tag": "CurrentIncomeTaxExpenseBenefit",
+      "n": 3447,
+      "pct": 60
+    },
+    {
+      "tag": "AdditionalPaidInCapital",
+      "n": 3443,
+      "pct": 60
+    },
+    {
+      "tag": "UnrecognizedTaxBenefits",
+      "n": 3427,
+      "pct": 59.7
+    },
+    {
+      "tag": "DeferredIncomeTaxLiabilities",
+      "n": 3405,
+      "pct": 59.3
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueAfterYearFive",
+      "n": 3390,
+      "pct": 59
+    },
+    {
+      "tag": "ProceedsFromIssuanceOfCommonStock",
+      "n": 3376,
+      "pct": 58.8
+    },
+    {
+      "tag": "NumberOfOperatingSegments",
+      "n": 3375,
+      "pct": 58.8
+    },
+    {
+      "tag": "OperatingLeaseCost",
+      "n": 3370,
+      "pct": 58.7
+    },
+    {
+      "tag": "AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue",
+      "n": 3357,
+      "pct": 58.5
+    },
+    {
+      "tag": "OtherAssetsNoncurrent",
+      "n": 3343,
+      "pct": 58.2
+    },
+    {
+      "tag": "AmortizationOfIntangibleAssets",
+      "n": 3340,
+      "pct": 58.2
+    },
+    {
+      "tag": "DeferredTaxAssetsLiabilitiesNet",
+      "n": 3320,
+      "pct": 57.8
+    },
+    {
+      "tag": "OtherNonoperatingIncomeExpense",
+      "n": 3308,
+      "pct": 57.6
+    },
+    {
+      "tag": "PreferredStockParOrStatedValuePerShare",
+      "n": 3301,
+      "pct": 57.5
+    },
+    {
+      "tag": "IncomeTaxReconciliationStateAndLocalIncomeTaxes",
+      "n": 3274,
+      "pct": 57
+    },
+    {
+      "tag": "DeferredTaxAssetsOther",
+      "n": 3273,
+      "pct": 57
+    },
+    {
+      "tag": "CurrentFederalTaxExpenseBenefit",
+      "n": 3262,
+      "pct": 56.8
+    },
+    {
+      "tag": "DeferredFederalIncomeTaxExpenseBenefit",
+      "n": 3238,
+      "pct": 56.4
+    },
+    {
+      "tag": "AccountsReceivableNetCurrent",
+      "n": 3212,
+      "pct": 55.9
+    },
+    {
+      "tag": "IncomeTaxReconciliationChangeInDeferredTaxAssetsValuationAllowance",
+      "n": 3203,
+      "pct": 55.8
+    },
+    {
+      "tag": "Goodwill",
+      "n": 3202,
+      "pct": 55.8
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear",
+      "n": 3188,
+      "pct": 55.5
+    },
+    {
+      "tag": "IncreaseDecreaseInAccountsReceivable",
+      "n": 3181,
+      "pct": 55.4
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsAccumulatedAmortization",
+      "n": 3156,
+      "pct": 55
+    },
+    {
+      "tag": "DepreciationDepletionAndAmortization",
+      "n": 3147,
+      "pct": 54.8
+    },
+    {
+      "tag": "CurrentStateAndLocalTaxExpenseBenefit",
+      "n": 3144,
+      "pct": 54.8
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsNet",
+      "n": 3131,
+      "pct": 54.5
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingNumber",
+      "n": 3110,
+      "pct": 54.2
+    },
+    {
+      "tag": "LongTermDebt",
+      "n": 3105,
+      "pct": 54.1
+    },
+    {
+      "tag": "PreferredStockSharesIssued",
+      "n": 3103,
+      "pct": 54
+    },
+    {
+      "tag": "PaymentsForRepurchaseOfCommonStock",
+      "n": 3101,
+      "pct": 54
+    },
+    {
+      "tag": "Revenues",
+      "n": 3061,
+      "pct": 53.3
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsAmortizationExpenseNextTwelveMonths",
+      "n": 3017,
+      "pct": 52.5
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateReconciliationChangeInDeferredTaxAssetsValuationAllowance",
+      "n": 3014,
+      "pct": 52.5
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsAmortizationExpenseYearTwo",
+      "n": 3007,
+      "pct": 52.4
+    },
+    {
+      "tag": "GeneralAndAdministrativeExpense",
+      "n": 2993,
+      "pct": 52.1
+    },
+    {
+      "tag": "StockIssuedDuringPeriodSharesStockOptionsExercised",
+      "n": 2988,
+      "pct": 52
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsAmortizationExpenseYearThree",
+      "n": 2986,
+      "pct": 52
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDueInTwoYears",
+      "n": 2976,
+      "pct": 51.8
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingWeightedAverageExercisePrice",
+      "n": 2976,
+      "pct": 51.8
+    },
+    {
+      "tag": "CashAndCashEquivalentsPeriodIncreaseDecrease",
+      "n": 2975,
+      "pct": 51.8
+    },
+    {
+      "tag": "DeferredTaxLiabilities",
+      "n": 2975,
+      "pct": 51.8
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateReconciliationOtherAdjustments",
+      "n": 2965,
+      "pct": 51.6
+    },
+    {
+      "tag": "DeferredStateAndLocalIncomeTaxExpenseBenefit",
+      "n": 2954,
+      "pct": 51.4
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDueCurrent",
+      "n": 2948,
+      "pct": 51.3
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDueInThreeYears",
+      "n": 2946,
+      "pct": 51.3
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsAmortizationExpenseYearFour",
+      "n": 2944,
+      "pct": 51.3
+    },
+    {
+      "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "n": 2941,
+      "pct": 51.2
+    },
+    {
+      "tag": "PreferredStockSharesOutstanding",
+      "n": 2924,
+      "pct": 50.9
+    },
+    {
+      "tag": "OtherLiabilitiesNoncurrent",
+      "n": 2910,
+      "pct": 50.7
+    },
+    {
+      "tag": "NetIncomeLossAvailableToCommonStockholdersBasic",
+      "n": 2877,
+      "pct": 50.1
+    },
+    {
+      "tag": "IncomeTaxReconciliationOtherAdjustments",
+      "n": 2873,
+      "pct": 50
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDueInFourYears",
+      "n": 2869,
+      "pct": 50
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDue",
+      "n": 2839,
+      "pct": 49.4
+    },
+    {
+      "tag": "OperatingExpenses",
+      "n": 2838,
+      "pct": 49.4
+    },
+    {
+      "tag": "PrepaidExpenseAndOtherAssetsCurrent",
+      "n": 2830,
+      "pct": 49.3
+    },
+    {
+      "tag": "AccruedLiabilitiesCurrent",
+      "n": 2830,
+      "pct": 49.3
+    },
+    {
+      "tag": "IntangibleAssetsNetExcludingGoodwill",
+      "n": 2824,
+      "pct": 49.2
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsAmortizationExpenseYearFive",
+      "n": 2823,
+      "pct": 49.2
+    },
+    {
+      "tag": "ProceedsFromStockOptionsExercised",
+      "n": 2800,
+      "pct": 48.8
+    },
+    {
+      "tag": "IncreaseDecreaseInPrepaidDeferredExpenseAndOtherAssets",
+      "n": 2754,
+      "pct": 48
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriodGross",
+      "n": 2752,
+      "pct": 47.9
+    },
+    {
+      "tag": "PaymentsToAcquireBusinessesNetOfCashAcquired",
+      "n": 2713,
+      "pct": 47.2
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDueInFiveYears",
+      "n": 2705,
+      "pct": 47.1
+    },
+    {
+      "tag": "FiniteLivedIntangibleAssetsGross",
+      "n": 2690,
+      "pct": 46.8
+    },
+    {
+      "tag": "LeaseCost",
+      "n": 2687,
+      "pct": 46.8
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementsByShareBasedPaymentAwardOptionsGrantsInPeriodWeightedAverageExercisePrice",
+      "n": 2672,
+      "pct": 46.5
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementsByShareBasedPaymentAwardOptionsExercisesInPeriodWeightedAverageExercisePrice",
+      "n": 2671,
+      "pct": 46.5
+    },
+    {
+      "tag": "DeferredTaxLiabilitiesPropertyPlantAndEquipment",
+      "n": 2657,
+      "pct": 46.3
+    },
+    {
+      "tag": "NonoperatingIncomeExpense",
+      "n": 2638,
+      "pct": 45.9
+    },
+    {
+      "tag": "GoodwillImpairmentLoss",
+      "n": 2614,
+      "pct": 45.5
+    },
+    {
+      "tag": "StockIssuedDuringPeriodValueStockOptionsExercised",
+      "n": 2613,
+      "pct": 45.5
+    },
+    {
+      "tag": "InventoryNet",
+      "n": 2587,
+      "pct": 45.1
+    },
+    {
+      "tag": "StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest",
+      "n": 2587,
+      "pct": 45.1
+    },
+    {
+      "tag": "OperatingLeasesFutureMinimumPaymentsDueThereafter",
+      "n": 2581,
+      "pct": 44.9
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingIntrinsicValue",
+      "n": 2575,
+      "pct": 44.8
+    },
+    {
+      "tag": "DeferredTaxLiabilitiesOther",
+      "n": 2574,
+      "pct": 44.8
+    },
+    {
+      "tag": "PreferredStockValue",
+      "n": 2553,
+      "pct": 44.5
+    },
+    {
+      "tag": "IncreaseDecreaseInAccountsPayable",
+      "n": 2549,
+      "pct": 44.4
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsExercisableNumber",
+      "n": 2541,
+      "pct": 44.3
+    },
+    {
+      "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic",
+      "n": 2534,
+      "pct": 44.1
+    },
+    {
+      "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo",
+      "n": 2514,
+      "pct": 43.8
+    },
+    {
+      "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths",
+      "n": 2506,
+      "pct": 43.6
+    },
+    {
+      "tag": "InvestmentIncomeInterest",
+      "n": 2490,
+      "pct": 43.4
+    },
+    {
+      "tag": "IncreaseDecreaseInInventories",
+      "n": 2488,
+      "pct": 43.3
+    },
+    {
+      "tag": "OtherComprehensiveIncomeLossNetOfTax",
+      "n": 2487,
+      "pct": 43.3
+    },
+    {
+      "tag": "OtherAccruedLiabilitiesCurrent",
+      "n": 2480,
+      "pct": 43.2
+    },
+    {
+      "tag": "ValuationAllowanceDeferredTaxAssetChangeInAmount",
+      "n": 2478,
+      "pct": 43.2
+    },
+    {
+      "tag": "GrossProfit",
+      "n": 2472,
+      "pct": 43.1
+    },
+    {
+      "tag": "GainsLossesOnExtinguishmentOfDebt",
+      "n": 2466,
+      "pct": 42.9
+    },
+    {
+      "tag": "ProceedsFromSaleOfPropertyPlantAndEquipment",
+      "n": 2456,
+      "pct": 42.8
+    },
+    {
+      "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree",
+      "n": 2451,
+      "pct": 42.7
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsExercisableWeightedAverageExercisePrice",
+      "n": 2445,
+      "pct": 42.6
+    },
+    {
+      "tag": "AllowanceForDoubtfulAccountsReceivableCurrent",
+      "n": 2438,
+      "pct": 42.5
+    },
+    {
+      "tag": "LongTermDebtNoncurrent",
+      "n": 2433,
+      "pct": 42.4
+    },
+    {
+      "tag": "AssetImpairmentCharges",
+      "n": 2427,
+      "pct": 42.3
+    },
+    {
+      "tag": "ProvisionForDoubtfulAccounts",
+      "n": 2423,
+      "pct": 42.2
+    },
+    {
+      "tag": "EmployeeRelatedLiabilitiesCurrent",
+      "n": 2419,
+      "pct": 42.1
+    },
+    {
+      "tag": "ResearchAndDevelopmentExpense",
+      "n": 2403,
+      "pct": 41.8
+    },
+    {
+      "tag": "GainLossOnSaleOfPropertyPlantEquipment",
+      "n": 2384,
+      "pct": 41.5
+    },
+    {
+      "tag": "IncomeTaxesPaid",
+      "n": 2378,
+      "pct": 41.4
+    },
+    {
+      "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour",
+      "n": 2353,
+      "pct": 41
+    },
+    {
+      "tag": "DeferredIncomeTaxLiabilitiesNet",
+      "n": 2352,
+      "pct": 41
+    },
+    {
+      "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesForeign",
+      "n": 2345,
+      "pct": 40.8
+    },
+    {
+      "tag": "CurrentForeignTaxExpenseBenefit",
+      "n": 2336,
+      "pct": 40.7
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsExpectedDividendRate",
+      "n": 2330,
+      "pct": 40.6
+    },
+    {
+      "tag": "UnrecognizedTaxBenefitsIncreasesResultingFromCurrentPeriodTaxPositions",
+      "n": 2327,
+      "pct": 40.5
+    },
+    {
+      "tag": "PaymentsOfStockIssuanceCosts",
+      "n": 2326,
+      "pct": 40.5
+    },
+    {
+      "tag": "AdditionalPaidInCapitalCommonStock",
+      "n": 2304,
+      "pct": 40.1
+    },
+    {
+      "tag": "ContractWithCustomerLiabilityCurrent",
+      "n": 2292,
+      "pct": 39.9
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriodWeightedAverageGrantDateFairValue",
+      "n": 2284,
+      "pct": 39.8
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsRiskFreeInterestRate",
+      "n": 2279,
+      "pct": 39.7
+    },
+    {
+      "tag": "LongTermDebtCurrent",
+      "n": 2252,
+      "pct": 39.2
+    },
+    {
+      "tag": "SharebasedCompensationArrangementBySharebasedPaymentAwardOptionsExercisableIntrinsicValue1",
+      "n": 2234,
+      "pct": 38.9
+    },
+    {
+      "tag": "OtherAssetsCurrent",
+      "n": 2230,
+      "pct": 38.8
+    },
+    {
+      "tag": "UnrecognizedTaxBenefitsIncreasesResultingFromPriorPeriodTaxPositions",
+      "n": 2213,
+      "pct": 38.5
+    },
+    {
+      "tag": "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments",
+      "n": 2206,
+      "pct": 38.4
+    },
+    {
+      "tag": "DeferredIncomeTaxAssetsNet",
+      "n": 2189,
+      "pct": 38.1
+    },
+    {
+      "tag": "DeferredForeignIncomeTaxExpenseBenefit",
+      "n": 2184,
+      "pct": 38
+    },
+    {
+      "tag": "GoodwillAcquiredDuringPeriod",
+      "n": 2183,
+      "pct": 38
+    },
+    {
+      "tag": "DeferredTaxAssetsTaxDeferredExpenseCompensationAndBenefitsShareBasedCompensationCost",
+      "n": 2177,
+      "pct": 37.9
+    },
+    {
+      "tag": "LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive",
+      "n": 2176,
+      "pct": 37.9
+    },
+    {
+      "tag": "InterestPaid",
+      "n": 2172,
+      "pct": 37.8
+    },
+    {
+      "tag": "RepaymentsOfLongTermDebt",
+      "n": 2168,
+      "pct": 37.8
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardFairValueAssumptionsExpectedVolatilityRate",
+      "n": 2167,
+      "pct": 37.7
+    },
+    {
+      "tag": "IncomeTaxPaidFederalAfterRefundReceived",
+      "n": 2164,
+      "pct": 37.7
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsExercisesInPeriodTotalIntrinsicValue",
+      "n": 2141,
+      "pct": 37.3
+    },
+    {
+      "tag": "PaymentsOfDebtIssuanceCosts",
+      "n": 2137,
+      "pct": 37.2
+    },
+    {
+      "tag": "OtherComprehensiveIncomeLossForeignCurrencyTransactionAndTranslationAdjustmentNetOfTax",
+      "n": 2131,
+      "pct": 37.1
+    },
+    {
+      "tag": "PrepaidExpenseCurrent",
+      "n": 2122,
+      "pct": 37
+    },
+    {
+      "tag": "DepreciationAndAmortization",
+      "n": 2120,
+      "pct": 36.9
+    },
+    {
+      "tag": "ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsForfeituresInPeriod",
+      "n": 2112,
+      "pct": 36.8
+    },
+    {
+      "tag": "StockIssuedDuringPeriodValueShareBasedCompensation",
+      "n": 2108,
+      "pct": 36.7
+    }
+  ],
+  "driversTsTagCount": 85,
+  "deadTags": [
+    "CostOfSales",
+    "CostOfOperatingRevenues",
+    "CostOfRevenues",
+    "DepreciationAmortizationAndDepletion"
+  ],
+  "missingHighFreqCandidates": [
+    {
+      "tag": "Assets",
+      "n": 4982,
+      "pct": 86.8
+    },
+    {
+      "tag": "NetCashProvidedByUsedInFinancingActivities",
+      "n": 4974,
+      "pct": 86.6
+    },
+    {
+      "tag": "NetCashProvidedByUsedInOperatingActivities",
+      "n": 4972,
+      "pct": 86.6
+    },
+    {
+      "tag": "LiabilitiesAndStockholdersEquity",
+      "n": 4970,
+      "pct": 86.6
+    },
+    {
+      "tag": "NetCashProvidedByUsedInInvestingActivities",
+      "n": 4906,
+      "pct": 85.4
+    },
+    {
+      "tag": "RetainedEarningsAccumulatedDeficit",
+      "n": 4873,
+      "pct": 84.9
+    },
+    {
+      "tag": "EarningsPerShareBasic",
+      "n": 4720,
+      "pct": 82.2
+    },
+    {
+      "tag": "EarningsPerShareDiluted",
+      "n": 4707,
+      "pct": 82
+    },
+    {
+      "tag": "IncomeTaxExpenseBenefit",
+      "n": 4558,
+      "pct": 79.4
+    },
+    {
+      "tag": "Liabilities",
+      "n": 4503,
+      "pct": 78.4
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate",
+      "n": 4332,
+      "pct": 75.4
+    },
+    {
+      "tag": "OperatingLeaseRightOfUseAsset",
+      "n": 4327,
+      "pct": 75.4
+    },
+    {
+      "tag": "OperatingLeaseLiability",
+      "n": 4272,
+      "pct": 74.4
+    },
+    {
+      "tag": "ShareBasedCompensation",
+      "n": 4272,
+      "pct": 74.4
+    },
+    {
+      "tag": "CommonStockSharesIssued",
+      "n": 4218,
+      "pct": 73.5
+    },
+    {
+      "tag": "CommonStockSharesAuthorized",
+      "n": 4197,
+      "pct": 73.1
+    },
+    {
+      "tag": "CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect",
+      "n": 4191,
+      "pct": 73
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDue",
+      "n": 4186,
+      "pct": 72.9
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateContinuingOperations",
+      "n": 4177,
+      "pct": 72.7
+    },
+    {
+      "tag": "CommonStockValue",
+      "n": 4156,
+      "pct": 72.4
+    },
+    {
+      "tag": "NumberOfReportableSegments",
+      "n": 4155,
+      "pct": 72.4
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths",
+      "n": 4133,
+      "pct": 72
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearTwo",
+      "n": 4121,
+      "pct": 71.8
+    },
+    {
+      "tag": "DeferredTaxAssetsValuationAllowance",
+      "n": 4111,
+      "pct": 71.6
+    },
+    {
+      "tag": "AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment",
+      "n": 4102,
+      "pct": 71.4
+    },
+    {
+      "tag": "CommonStockParOrStatedValuePerShare",
+      "n": 4100,
+      "pct": 71.4
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityUndiscountedExcessAmount",
+      "n": 4099,
+      "pct": 71.4
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearThree",
+      "n": 4020,
+      "pct": 70
+    },
+    {
+      "tag": "InterestPaidNet",
+      "n": 4013,
+      "pct": 69.9
+    },
+    {
+      "tag": "OperatingLeaseWeightedAverageDiscountRatePercent",
+      "n": 3980,
+      "pct": 69.3
+    },
+    {
+      "tag": "ComprehensiveIncomeNetOfTax",
+      "n": 3953,
+      "pct": 68.8
+    },
+    {
+      "tag": "IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate",
+      "n": 3912,
+      "pct": 68.1
+    },
+    {
+      "tag": "AccumulatedOtherComprehensiveIncomeLossNetOfTax",
+      "n": 3885,
+      "pct": 67.7
+    },
+    {
+      "tag": "PropertyPlantAndEquipmentGross",
+      "n": 3884,
+      "pct": 67.6
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearFour",
+      "n": 3849,
+      "pct": 67
+    },
+    {
+      "tag": "DeferredTaxAssetsGross",
+      "n": 3841,
+      "pct": 66.9
+    },
+    {
+      "tag": "StockIssuedDuringPeriodValueNewIssues",
+      "n": 3821,
+      "pct": 66.5
+    },
+    {
+      "tag": "DeferredIncomeTaxExpenseBenefit",
+      "n": 3807,
+      "pct": 66.3
+    },
+    {
+      "tag": "IncomeTaxesPaidNet",
+      "n": 3713,
+      "pct": 64.7
+    },
+    {
+      "tag": "AllocatedShareBasedCompensationExpense",
+      "n": 3687,
+      "pct": 64.2
+    },
+    {
+      "tag": "OperatingLeaseLiabilityCurrent",
+      "n": 3675,
+      "pct": 64
+    },
+    {
+      "tag": "OperatingLeaseLiabilityNoncurrent",
+      "n": 3664,
+      "pct": 63.8
+    },
+    {
+      "tag": "PreferredStockSharesAuthorized",
+      "n": 3611,
+      "pct": 62.9
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueYearFive",
+      "n": 3603,
+      "pct": 62.7
+    },
+    {
+      "tag": "AntidilutiveSecuritiesExcludedFromComputationOfEarningsPerShareAmount",
+      "n": 3571,
+      "pct": 62.2
+    },
+    {
+      "tag": "DeferredTaxAssetsNet",
+      "n": 3570,
+      "pct": 62.2
+    },
+    {
+      "tag": "AccountsPayableCurrent",
+      "n": 3500,
+      "pct": 61
+    },
+    {
+      "tag": "OperatingLeasePayments",
+      "n": 3494,
+      "pct": 60.8
+    },
+    {
+      "tag": "DeferredTaxAssetsOperatingLossCarryforwards",
+      "n": 3492,
+      "pct": 60.8
+    },
+    {
+      "tag": "EffectiveIncomeTaxRateReconciliationStateAndLocalIncomeTaxes",
+      "n": 3470,
+      "pct": 60.4
+    },
+    {
+      "tag": "RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability",
+      "n": 3447,
+      "pct": 60
+    },
+    {
+      "tag": "CurrentIncomeTaxExpenseBenefit",
+      "n": 3447,
+      "pct": 60
+    },
+    {
+      "tag": "AdditionalPaidInCapital",
+      "n": 3443,
+      "pct": 60
+    },
+    {
+      "tag": "UnrecognizedTaxBenefits",
+      "n": 3427,
+      "pct": 59.7
+    },
+    {
+      "tag": "DeferredIncomeTaxLiabilities",
+      "n": 3405,
+      "pct": 59.3
+    },
+    {
+      "tag": "LesseeOperatingLeaseLiabilityPaymentsDueAfterYearFive",
+      "n": 3390,
+      "pct": 59
+    },
+    {
+      "tag": "ProceedsFromIssuanceOfCommonStock",
+      "n": 3376,
+      "pct": 58.8
+    },
+    {
+      "tag": "NumberOfOperatingSegments",
+      "n": 3375,
+      "pct": 58.8
+    },
+    {
+      "tag": "OperatingLeaseCost",
+      "n": 3370,
+      "pct": 58.7
+    },
+    {
+      "tag": "AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue",
+      "n": 3357,
+      "pct": 58.5
+    }
+  ],
+  "candidateFreq": {
+    "Assets": 4982,
+    "Liabilities": 4503,
+    "LiabilitiesAndStockholdersEquity": 4970,
+    "RetainedEarnings": 0,
+    "RetainedEarningsAccumulatedDeficit": 4873,
+    "NetCashProvidedByUsedInOperatingActivities": 4972,
+    "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations": 2058,
+    "PaymentsOfDividends": 1420,
+    "PaymentsOfDividendsCommonStock": 1354,
+    "CommonStockDividendsPerShareDeclared": 1781,
+    "CommonStockDividendsPerShareCashPaid": 1228
+  },
+  "coverage": {
+    "assets": {
+      "any": 4238,
+      "latest": 4236,
+      "consec2": 4134,
+      "fallback": 632
+    },
+    "liab": {
+      "any": 3784,
+      "latest": 3729,
+      "consec2": 3677,
+      "fallback": 609
+    },
+    "liabSE": {
+      "any": 4227,
+      "latest": 4225,
+      "consec2": 4122,
+      "fallback": 621
+    },
+    "re_accDef_only": {
+      "any": 4146,
+      "latest": 4120,
+      "consec2": 4030,
+      "fallback": 623
+    },
+    "re_coalesced": {
+      "any": 4146,
+      "latest": 4120,
+      "consec2": 4030,
+      "fallback": 623
+    },
+    "cfo": {
+      "any": 4152,
+      "latest": 4151,
+      "consec2": 4036,
+      "fallback": 547
+    },
+    "divPaid": {
+      "any": 1962,
+      "latest": 1603,
+      "consec2": 1870,
+      "fallback": 221
+    },
+    "divDeclared": {
+      "any": 1423,
+      "latest": 1076,
+      "consec2": 1326,
+      "fallback": 159
+    },
+    "divCashPaidPS": {
+      "any": 886,
+      "latest": 494,
+      "consec2": 810,
+      "fallback": 92
+    }
+  },
+  "piotroski": {
+    "signal": {
+      "roa": 3602,
+      "cfo": 3604,
+      "droa": 3584,
+      "accrual": 3602,
+      "dlever": 2314,
+      "dliquid": 3074,
+      "eqoffer": 3426,
+      "dmargin": 1862,
+      "dturn": 3548
+    },
+    "all9": 1166,
+    "refYearBase": 3606
+  },
+  "altman": {
+    "manuZ": 1276,
+    "nonManuZpp": 1072,
+    "unclassified": 159,
+    "sectorMissing": 159
+  },
+  "dividends": {
+    "yieldEligible": 1829,
+    "streakEligible": 1619,
+    "ddmEligible": 1739,
+    "zeroOrNoDataExcluded": 1777
+  },
+  "assetGrowthEligible": 3596
+}

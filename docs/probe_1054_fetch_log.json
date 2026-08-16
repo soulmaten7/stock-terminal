@@ -1,0 +1,320 @@
+{
+  "total": 428,
+  "fetched": 350,
+  "errors": [
+    {
+      "symbol": "AIO",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "AYA",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "BCX",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "BDJ",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "BGY",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "BSTZ",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "BTQ",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "CAF",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "CBAT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "CUVL",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "EAD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "EEA",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "FMN",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "GAM",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "GDV",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "HYT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "IAE",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "IAF",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "IDE",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "IGD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "IGR",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "ISD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "JGH",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "JMM",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "JRI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "KNRX",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "KTF",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MAKO",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MARPS",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MCI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MFM",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MGF",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MHD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MIN",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MMD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MPV",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "MTR",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "NAD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "NCV",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "NHS",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "NNY",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "NPCT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "OZK",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PAI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PBT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PCM",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PCQ",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PGP",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PGZ",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PHK",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PIM",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PML",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PNI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PPT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PRT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "PVL",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "QQQX",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "RCS",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "RFI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "RGT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "RMT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "SBI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "SBR",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "SCD",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "SCZM",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "SDHY",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "SJT",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "TDF",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "TEI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "TGE",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "THQ",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "VCRE",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "VGI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "VOC",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "WDI",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "WEA",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "WIA",
+      "err": "HTTP_404"
+    },
+    {
+      "symbol": "WIW",
+      "err": "HTTP_404"
+    }
+  ],
+  "rateLimited": false,
+  "totalSec": 211.752
+}
