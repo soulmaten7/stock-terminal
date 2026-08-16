@@ -781,7 +781,7 @@ tr.hl td.m{color:#ffb3b3}
   </blockquote>
   <div class="grid g3">
     <div class="card"><div class="src">✅ 이미 해소</div><div class="def">ⓜ 축구성(코드가 이미 헤드라인 승격+4축 병렬 구현) · 7렌즈vs신설(이미 혼합 실행 중) · 0층 화면표시(적자면 자동 안전문구, API 실측 확인)</div></div>
-    <div class="card" style="border-color:#4a2529;background:linear-gradient(180deg,#241619,var(--panel))"><div class="src">🔴 켜기 전 필수(2건)</div><div class="def">① 조건부 4칸(PSR×Financials 405건, 08-09 대비 6.6배) 화면처리 판정 ② sectorSource 침묵 버그(us_sector_wide가 us_valuation보다 6일 뒤처져 출처표시 100% 비어나감 — <span class="hi">🔴 STEP1044 진단 정정: 처방은 이미 안 갈린다, computeAndSaveSectorRelative()는 이미 최신as_of 패턴을 쓰고 Q1 route.ts만 정확일치라 문제 — 조인 키 교체가 답</span>)</div></div>
+    <div class="card" style="border-color:#4a2529;background:linear-gradient(180deg,#241619,var(--panel))"><div class="src">🔑 켜기 전 필수(2건 → <span class="hi">1건</span>, STEP1050)</div><div class="def">① 조건부 4칸(PSR×Financials 405건, 08-09 대비 6.6배) 화면처리 판정 — 장은태 판정 대기 · <s>② sectorSource 침묵 버그(us_sector_wide가 us_valuation보다 6일 뒤처져 출처표시 100% 비어나감)</s> ✅ <span class="hi">2026-08-16 STEP1050 해소</span> — lib/sector.ts의 기존 latestAsOf() 헬퍼를 route.ts가 재사용하도록 수정, 표본 4종목(AAPL·AAOI·AAME·CTO) 전부 sectorSource에 실제값 실림을 로컬 real DB로 검증(scripts/verify_step1050_sector_source.ts). 상세=probe_1050_sector_source_fix.md</div></div>
     <div class="card"><div class="src">🟡 켠 뒤 가능</div><div class="def">ⓛ disagree 표시 · ⓞ 배율 표시형태(정본 median-relative 미서빙 확인) · 선결질문(KR 공유코드, Q1_ENABLED와 무관)</div></div>
   </div>
 
@@ -795,7 +795,7 @@ tr.hl td.m{color:#ffb3b3}
     <tbody>
       <tr><td class="m">①</td><td>배수 4축 동점(EV/EBITDA·P/E·P/B·PSR)을 하나로 좁힐지, 4개 다 보여줄지</td><td><code>probe_1046</code> 1-1</td><td>1층(②의 전제)</td></tr>
       <tr><td class="m">②</td><td>조건부 4칸(PSR×Financials 446건, 오늘 재측정) 화면 처리 방식</td><td>SECTOR_AXIS_APPLICABILITY·probe_1042·1046</td><td>1층(①에 종속)</td></tr>
-      <tr><td class="m">③</td><td>sectorSource 침묵 버그 — 조인 키 교체 방식</td><td>probe_1042·1044</td><td>1층</td></tr>
+      <tr><td class="m"><s>③</s></td><td>✅ <span class="hi">해소(STEP1050)</span> — <s>sectorSource 침묵 버그 — 조인 키 교체 방식</s> 수정+실측검증 완료</td><td>probe_1042·1044·1050</td><td>—</td></tr>
       <tr class="hl"><td class="m">④</td><td>Q1_ENABLED 승인(육안 검증)</td><td>lib/q1/flag.ts</td><td>2층(①②③ 이후)</td></tr>
       <tr><td class="m">⑤</td><td>REVDCF_ENABLED 승인(육안 검증)</td><td>STATE.md:60</td><td>독립</td></tr>
       <tr><td class="m">⑥</td><td>ⓛ disagree 표시 규칙</td><td>USER_QUESTIONS§7</td><td>독립("켠 뒤 가능")</td></tr>

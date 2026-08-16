@@ -65,7 +65,7 @@ describe("GET /api/q1/[symbol]", () => {
         us_sector_relative: [
           { sector: "Industrials", per_pct: 0.5096774193548387, pbr_pct: 0.4, psr_pct: 0.3, ev_ebitda_pct: 0.2, per_n: 155, pbr_n: 159, psr_n: 170, ev_ebitda_n: 133, unavailable: {} },
         ],
-        us_sector_wide: [{ source: "damodaran" }],
+        us_sector_wide: [{ as_of: "2026-08-08" }, { source: "damodaran" }],
         revdcf_results: [
           { as_of: "2026-08-08" },
           { verdict: "years", gap_years: 9, flags: { yearWindow: [2021, 2022, 2023, 2024, 2025] } },
@@ -96,6 +96,51 @@ describe("GET /api/q1/[symbol]", () => {
     const { GET } = await import("./route");
     const res = await GET(new Request("http://x/api/q1/ZZZZ"), { params: Promise.resolve({ symbol: "ZZZZ" }) });
     expect(res.status).toBe(404);
+  });
+
+  it("STEP1050 회귀방지 — us_sector_wide의 as_of가 us_valuation보다 뒤처져 있어도(정확일치가 아니라 최신 1건 규약) sectorSource가 채워진다", async () => {
+    process.env.Q1_ENABLED = "true";
+    createAdminClient.mockReturnValue(
+      makeSupabaseMock({
+        // us_valuation은 오늘(2026-08-15)까지 매일 갱신되지만 us_sector_wide는 1회 적재 후 증분
+        // append(973/974 설계) — as_of가 2026-08-08에 고정돼 있다. 두 as_of가 다른 게 정상 상태다.
+        us_valuation: [
+          { as_of: "2026-08-15" },
+          { per: 30, pbr: 5, psr: 4, ev_ebitda: 20, per_basis: "ttm", fundamentals_fiscal_year: 2025 },
+        ],
+        us_sector_relative: [
+          { sector: "Technology", per_pct: 0.7, pbr_pct: 0.6, psr_pct: 0.5, ev_ebitda_pct: 0.4, per_n: 100, pbr_n: 100, psr_n: 100, ev_ebitda_n: 100, unavailable: {} },
+        ],
+        // 1번째 호출 = latestAsOf(sb, "us_sector_wide") → us_sector_wide 자신의 최신 as_of(2026-08-08, us_valuation과 다름).
+        // 2번째 호출 = 그 as_of로 실제 행 조회.
+        us_sector_wide: [{ as_of: "2026-08-08" }, { source: "damodaran" }],
+        revdcf_results: [null],
+      })
+    );
+    const { GET } = await import("./route");
+    const res = await GET(new Request("http://x/api/q1/AAPL"), { params: Promise.resolve({ symbol: "AAPL" }) });
+    const body = await res.json();
+    expect(body.asOf).toBe("2026-08-15"); // us_valuation 기준(응답 자체의 as_of는 불변)
+    expect(body.sectorSource).toBe("damodaran"); // 🔴 as_of가 어긋나도 sectorSource가 null이 아니다 — 이게 이 STEP의 수정 대상
+  });
+
+  it("us_sector_wide 자체가 비어 있으면(latestAsOf가 null) sectorSource는 null — 조인 실패가 아니라 데이터 부재로 정직하게 표시", async () => {
+    process.env.Q1_ENABLED = "true";
+    createAdminClient.mockReturnValue(
+      makeSupabaseMock({
+        us_valuation: [
+          { as_of: "2026-08-15" },
+          { per: 30, pbr: 5, psr: 4, ev_ebitda: 20, per_basis: "ttm", fundamentals_fiscal_year: 2025 },
+        ],
+        us_sector_relative: [null],
+        us_sector_wide: [null], // latestAsOf 호출 자체가 null → 두 번째 조회는 아예 안 나간다
+        revdcf_results: [null],
+      })
+    );
+    const { GET } = await import("./route");
+    const res = await GET(new Request("http://x/api/q1/AAPL"), { params: Promise.resolve({ symbol: "AAPL" }) });
+    const body = await res.json();
+    expect(body.sectorSource).toBeNull();
   });
 
   it("us_sector_relative 행이 없으면(아직 배선 전 as_of) 4축 전부 NO_SECTOR로 표시된다", async () => {

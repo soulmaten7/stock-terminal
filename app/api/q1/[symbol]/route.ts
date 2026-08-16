@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { q1Enabled } from "@/lib/q1/flag";
+import { latestAsOf } from "@/lib/sector";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,7 +40,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ symbol:
     per_n: number | null; pbr_n: number | null; psr_n: number | null; ev_ebitda_n: number | null; unavailable: Partial<Record<Axis, string>>;
   } | null;
 
-  const wideRow = (await sb.from("us_sector_wide").select("source").eq("as_of", asOf).eq("symbol", symbol).maybeSingle()).data as { source: string | null } | null;
+  // 🔴 STEP1050 — us_sector_wide는 us_valuation의 asOf와 다른 규약이다(973/974: 크론이 매일 만드는 표가
+  //   아니라 1회 적재 후 증분 append, as_of가 고정돼 있다). 크론(app/api/cron/revdcf/route.ts:111)과
+  //   같은 "최신 as_of" 규약으로 맞춘다 — lib/sector.ts의 latestAsOf()(STEP1004가 이 재사용을 의도해 export).
+  const wideAsOf = await latestAsOf(sb, "us_sector_wide");
+  const wideRow = wideAsOf
+    ? (await sb.from("us_sector_wide").select("source").eq("as_of", wideAsOf).eq("symbol", symbol).maybeSingle()).data as { source: string | null } | null
+    : null;
 
   // 🔴 relRow가 없으면(아직 그 as_of로 STEP 956 배선이 안 돈 경우) "섹터 대비 위치 미확정"으로 취급 —
   //   NO_SECTOR가 가장 가까운 뜻이지만 원인은 다르다(계산 안 됨 vs 섹터 없음). 코드로만 구분, 화면 문구는 동일.

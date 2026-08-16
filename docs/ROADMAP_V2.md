@@ -432,6 +432,8 @@ F-1-1 그대로다 — *"차이는 계산이 아니라 문장"*. *"우리가 매
 > **정본 = `docs/probe_1042_q1_gate.md`.** `STATE.md:73`이 걸어둔 "착수 전 필요" 5건 중 3건(ⓜ 축구성·「7렌즈 수리 vs Q1~Q4 신설」·0층 화면표시)은 재정의로 이미 해소됐다(좌표 있음). **켜기 전 진짜 필수는 2건**: ① 조건부 4칸(PSR×Financials, 오늘 실측 405건 — 08-09 대비 6.6배) 화면 처리 판정 ② `sectorSource` 침묵 버그(`us_sector_wide`가 `us_valuation`보다 6일 뒤처져 출처 표시가 100% 비어 나감, 오늘 코드·API 실측으로 확인). ⓛ(disagree)·ⓞ(배율 표시형태)·선결질문(KR 공유코드)은 **켠 뒤 가능**으로 재분류(승인을 막지 않음). Production `Q1_ENABLED`·`REVDCF_ENABLED` 무변경, 화면 변경 0.
 >
 > 🔴 **2026-08-16 STEP1044 진단 정정**: "신선도(6일 뒤처짐)"가 문제의 정확한 표현이 아니었다. `app/api/cron/revdcf/route.ts`의 `computeAndSaveSectorRelative()`(같은 파일)는 `us_sector_wide`를 이미 **"최신 as_of" 조회**(STEP973·974 설계 — 저빈도 개념이라 신선도 상한을 의도적으로 안 둠)로 정확히 처리한다. 문제는 `app/api/q1/[symbol]/route.ts`만 **`us_valuation`과 정확일치 `as_of`로 조회**해 어긋나는 것 — **처방은 "신선도 정책 판정"이 아니라 "같은 코드베이스의 기존 정답 패턴을 따르는 조인 키 교체"로 이미 갈려 있다**(`docs/probe_1044_roadmap_audit.md` 씨앗ⓑ).
+>
+> ✅ **2026-08-16 STEP1050 — ② 해소.** `app/api/q1/[symbol]/route.ts`가 `lib/sector.ts`의 기존 export 함수 `latestAsOf()`(STEP1004가 이 재사용을 의도해 만든 헬퍼)를 그대로 재사용해 `us_sector_wide`를 크론과 같은 "최신 as_of" 규약으로 조회하도록 수정. 표본 4종목(AAPL·AAOI·AAME·CTO) 전부 `sectorSource`에 실제 값이 실림을 로컬에서 직접 검증(`scripts/verify_step1050_sector_source.ts`, real DB — AAPL="spdr", AAOI/AAME/CTO="damodaran"). 회귀 방지 유닛테스트 2건 추가. **🔑 켜기 전 필수 2건 → 1건**(①조건부 4칸만 남음, 장은태 판정 대기). 상세 = `docs/probe_1050_sector_source_fix.md`.
 
 ## F-5. 🔑 판정 대기 한 장 (2026-08-16 STEP1046)
 
@@ -441,8 +443,8 @@ F-1-1 그대로다 — *"차이는 계산이 아니라 문장"*. *"우리가 매
 |:--:|---|---|---|
 | ① | 배수 4축 동점(EV/EBITDA·P/E·P/B·PSR)을 하나로 좁힐지, 4개 다 보여줄지 | `probe_1046` 1-1 | 1층(②의 전제) |
 | ② | 조건부 4칸(PSR×Financials 446건, 오늘 재측정) 화면 처리 방식 | `SECTOR_AXIS_APPLICABILITY`·`probe_1042`·`1046` | 1층(①에 종속) |
-| ③ | `sectorSource` 침묵 버그 — 조인 키 교체 방식 | `probe_1042`·`1044` | 1층 |
-| ④ | `Q1_ENABLED` 승인(육안 검증) | `lib/q1/flag.ts` | 2층(①②③ 이후) |
+| ~~③~~ | ✅ **해소(STEP1050)** — ~~`sectorSource` 침묵 버그 — 조인 키 교체 방식~~ 수정 완료·실측 검증 완료(4종목 전부 값 실림) | `probe_1042`·`1044`·`1050` | — |
+| ④ | `Q1_ENABLED` 승인(육안 검증) | `lib/q1/flag.ts` | 2층(①② 이후) |
 | ⑤ | `REVDCF_ENABLED` 승인(육안 검증) | `STATE.md:60` | 독립 |
 | ⑥ | ⓛ disagree 표시 규칙 | `USER_QUESTIONS`§7 | 독립("켠 뒤 가능") |
 | ⑦ | ⓞ 배율 표시형태·백분위 대조군 제거 시점 | `Q1_AXIS_DECISION`§6 | 독립("켠 뒤 가능") |
