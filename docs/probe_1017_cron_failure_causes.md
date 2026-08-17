@@ -177,3 +177,106 @@ const TIMEOUT_MS = 20_000;
 - 1-5의 선택지 중 무엇을 채택할지 — 전부 장은태 판정.
 
 🔴 **`BUDGET_MS`·timeout·게이트·D 조회 키 수정은 전부 장은태 판정이다. 이 STEP은 사유를 확정하는 것까지다 — A는 확정하지 못했고, B는 예상과 다른 방향으로 부분 확정했다.**
+
+---
+
+## 2026-08-16 US 연쇄 실패 (STEP1058, 2026-08-17 조회 · 읽기 전용 · DB 쓰기 0)
+
+> 🔴 이 절은 위 08-13 조사와 **별개 사건**이다. 08-13 조사(B)와 같은 에러가 다시 나온 지점(§2)만 서로 참조한다. 기존 절은 지우지 않았다.
+> **조회 시각**: 2026-08-17 13:2x~15:43 UTC(작업 전반) · DB 시각 `now()=2026-08-17 15:43:45 UTC` 실측 기준.
+
+### ⓪-4 판정 요약
+
+- **전제① (세 실패 + 배수 27% 급락이 하나의 원인) = 🔴 절반만 맞다.** `us-perf`(나스닥)는 **무관·독립**이다(§2). `lens-scores`(야후 시총 배치)는 배수 결측과 **실제 인과관계가 확인됐다**(§4 — 100% 재현). `revdcf`의 "예산소진(processed 1561)"은 배수 결측과 **무관**하다(§3) — **세 증상 중 둘은 무관, 하나(lens-scores)만 진짜 원인이다.**
+- **전제② (코드 배포가 원인) = 틀렸다.** `lib/valuation.ts`는 2026-08-14~18 구간 커밋 0건, `app/api/cron/revdcf/route.ts`도 마지막 수정이 08-14 10:03 KST(실패 이틀 전)다(§1). **코드는 안 바뀌었다** — 5분 검증 통과, 나머지 조사 진행.
+- **규모 불일치(4,259 vs 552) = 🔴 완전히 설명된다.** `processed:1561`은 이 결측과 무관한 별개 지표였다 — 진짜 원인은 `us_market_cap`의 **단일-최신-`as_of` 정확일치 조인**이다(§4). PER 552·PBR 902·PSR 966·EV/EBITDA 406건 **전부(100%, 예외 0건)** `us_market_cap.as_of < 2026-08-16`(그 심볼의 시총이 어젯밤 갱신되지 않음)로 설명된다.
+
+### §1. 코드 배포 배제(⓪-4 전제②, 5분 확인)
+
+```
+git log --oneline --since=2026-08-14 --until=2026-08-17 -- lib/ app/api/cron/
+```
+`lib/valuation.ts` 변경 0건. `app/api/cron/revdcf/route.ts` 마지막 변경 = `1f7dfac`(2026-08-14T10:03:00+09:00, 나스닥 호출 방식 재탐색 — 이 조사 대상인 나스닥 코드 자체와는 무관, `us-perf`가 아니라 `revdcf`쪽 나스닥 실험). 08-15에 있었던 커밋(`5621f6e`·`821baf8`·`d94ad2c`)은 각각 lens pruning(US)·리딩방 spinoff 삭제 — **셋 다 `lib/valuation.ts`·`us_valuation` 계산 경로를 건드리지 않는다**(파일 목록 직접 대조). ⓪-4 전제② **기각**.
+
+### §2. `us-perf` 나스닥 0행 — 전파 경로 없음(독립 확인)
+
+- `app/api/cron/us-perf/route.ts:41` — `nasdaqRows=0`이면 upsert 루프가 0회 순회(`us_market_cap_nasdaq`에 그날 행이 아예 안 생긴다. 기존 값을 덮지도, 지우지도 않는다).
+- 🔴 **전수 grep(`us_market_cap_nasdaq`) — 참조하는 파일이 `app/api/cron/us-perf/route.ts` 자기 자신 하나뿐이다.** `lib/valuation.ts`·`lensPrecompute.ts`·`revdcf/route.ts` 어디도 이 테이블을 읽지 않는다 — **write-only, 소비처 0개.** 나스닥 실패는 그 실패로 끝나고 아무 데도 전파되지 않는다.
+- 🔴 **08-13(probe_1017 B)과 동일 에러 문자열 재확인** — DB에서 직접 조회:
+  ```json
+  {"nasdaqMs":20005,"nasdaqRows":0,"nasdaqSaved":0,"nasdaqEmptyCap":0,
+   "nasdaqError":"rate_limited_or_timeout: The operation was aborted due to timeout"}
+  ```
+  08-13 관측(`nasdaqMs:20003`, 동일 에러 문자열)과 **byte 일치**(3ms 차는 실행 오버헤드 수준). **3일 이상 반복되는 상시 결함이다 — 1회 사고가 아니다.**
+
+### §3. `lens-scores`(US) 분모 확정
+
+`chunks = STOCK_SYMS(5,975종목, `data/us_symbols.json` type=stock 실측) / 100 = 60청크` — **`failedChunks 18/60`과 정확히 맞아떨어진다.** `batchOk 3952`·`noResponse 1800`·`noCapField` 등은 **1000짜리 "계산 유니버스"가 아니라 5,975짜리 "시총 랭킹용 전수 조회"의 분모다** — `topByMarketCap()`이 상위 1,000을 뽑기 전에 전 종목 시총을 먼저 훑어야 하기 때문(`lensPrecompute.ts:146~230`). `retryAllLen 2026`(`noCapField+noResponse`, 반올림 오차 내 일치) 중 `RETRY_MAX=400`만 개별 재시도(`retryBudgetHit:true`·`countHit:true`·`timeHit:false` — **건수 상한에 걸렸지, 시간이 모자란 게 아니었다**), `recovered:163`. **capOf 최종 크기 = batchOk(3,952) + recovered(163) = 4,115** — `us_coverage_history`의 08-16 `fresh_count:4115`와 정확히 일치(교차 검증 완료).
+🔴 **`us-perf`와 같은 상류인가 — 아니다.** `lens-scores`는 야후 `yf.quote()` 배치(`lensPrecompute.ts:164`), `us-perf`는 나스닥 스크리너 API(`lib/nasdaqMarketCap.ts`) — **서로 다른 벤더, 다른 실패 시그니처**(청크 30% 실패+개별 noResponse 대량 vs 단일 20초 timeout). 같은 밤에 둘 다 무너졌으나 **⓪-4가 요구한 대로 독립 조사로 쪼갠다** — "연쇄가 아니라 동시 발생".
+
+### §4. 🔴 `revdcf` 배수 결측의 진짜 원인 — `us_market_cap` 단일-`as_of` 정확일치 (이 조사의 핵심)
+
+`computeAndSaveValuation()`(`app/api/cron/revdcf/route.ts:59~98`)의 구조를 코드로 확정:
+```ts
+const mcapLatest = ...select("as_of").order("as_of",{ascending:false}).limit(1)...   // :65 — 테이블 전체에서 "가장 최근" 날짜 하나
+if (mcapLatest) { ... .eq("as_of", mcapLatest.as_of) ... }                          // :67 — 그 날짜와 "정확히 같은" 행만
+```
+`us_market_cap`은 **symbol 단일 PK 누적 캐시**(`onConflict:"symbol"`, `lensPrecompute.ts:217`) — 갱신 실패 심볼은 **옛 `as_of`를 가진 채 그대로 남는다**(892/893에서 이미 문서화된 성질). 08-16 밤 `us_market_cap`을 직접 조회:
+
+| as_of | 행수 |
+|---|---:|
+| **2026-08-16** | **4,115**(§3의 성공분과 일치) |
+| 2026-08-15 | 1,519 |
+| 2026-08-13~08-02(산발) | 22 |
+| 2026-07-30 | 266 |
+
+`mcapLatest.as_of = '2026-08-16'`이 선택되고, `.eq("as_of","2026-08-16")` 필터가 **정확히 4,115종목만** 통과시킨다 — **나머지(1,519+22+266=1,807종목)는 시총 자체는 있는데도 이 조인에서 완전히 배제된다**("오래된 값을 쓴다"가 아니라 "아예 없는 것처럼 처리된다"). `computeValuation()`(`lib/valuation.ts:65~66`)은 `marketCap==null`이면 **PER·PBR·PSR·EV/EBITDA 넷을 한 번에 `MISSING_MARKET_CAP`으로 꽂는다.**
+
+🔴 **전수 대조(정방향+역방향, ⓪-5②)** — `us_valuation` 08-15 vs 08-16, 값 있음→null 전환 종목을 `us_market_cap.as_of`와 교차:
+
+| 지표 | 결측 증가 | `as_of<08-16`(stale) 겹침 |
+|---|---:|---:|
+| PER | 552 | **552/552 (100%)** |
+| PBR | 902 | **902/902 (100%)** |
+| PSR | 966 | **966/966 (100%)** |
+| EV/EBITDA | 406 | **406/406 (100%)** |
+
+**예외 0건.** 네 지표 결측 증가분 **2,826건 전부**가 `us_market_cap` 갱신 실패로 정확히 설명된다. 지표마다 규모가 다른 이유는 각 지표의 08-15 "유효값 보유 종목" 모집단 크기가 달라서다(시총을 잃은 ~1,807종목 중 실제로 08-15에 유효 PER을 갖고 있었던 것은 552개뿐이었고, 나머지는 애초에 다른 사유로 결측이었다 — H-7이 요구하는 원인별 분기가 여기서 실증된다).
+
+🔴 **"processed 1561"은 이 결측과 무관하다.** `computeAndSaveValuation`은 `revdcf` 메인 루프(SEC 원자료 수집, 604/1,561종목 대상)와 **완전히 분리된 함수**로, `us_fundamentals`(전량 축적 캐시) + `us_market_cap`만 읽어 **5,820종목 전량**을 매번 다시 계산한다(`route.ts:62,239`) — 메인 루프가 몇 종목을 처리했는지와 무관하다. **`us_market_cap`은 `us-perf`도 `revdcf`도 아니라 `lens-scores`(US)가 쓴다**(`lensPrecompute.ts:217` upsert 하나뿐, 전수 grep 확인) — 즉 **`lens-scores`의 야후 배치 실패 → `us_market_cap` 부분 갱신 실패 → (20분 뒤 실행되는 별개 크론인) `revdcf`의 `computeAndSaveValuation`이 그 갭을 그대로 받아 배수 결측으로 반영**하는 **진짜 연쇄**다. `us-perf`(나스닥)는 이 연쇄에 들어 있지 않다.
+
+**부수 발견 — 알파벳 초반 쏠림**: 결측 552종목의 시가총액 분포는 최소 $389만~최대 **$2.83조**(AMZN — PER 552종목에 08-15 유효값을 가졌던 최상위 시총주)까지 걸쳐 있어 **소형주 편향이 아니다.** 대신 첫 글자 분포가 **A 135·B 108·C 202·D 70·E 37 = 552(100%)**로 **F 이후 글자가 전혀 없다.** `STOCK_SYMS`가 알파벳순이고 청크가 그 순서를 100개씩 자르므로, **18개 실패 청크가 알파벳 앞쪽(A~E 구간)에 몰려 있었다**는 뜻이다 — 🔴 **왜 앞쪽 청크가 몰려 실패했는지(레이트리밋 워밍업·연결 초기 문제 등)는 미측정**(반복 재현 금지 원칙상 조사 안 함).
+
+**섹터 공백과의 관계 — 무관**: PER 결측 552종목 중 `us_sector_relative`의 `sector IS NULL`과 겹치는 것은 **17건(3.1%)뿐** — 섹터 없음 1,135건 문제와는 **다른 원인의 다른 문제**다.
+
+### §5. 🔴 2-2 — 08-17 US 크론 실행 여부 = **확정 불가(시각 미도래, 이전과 다른 사유)**
+
+`vercel.json`(읽기 전용 확인) — US 크론 스케줄: `lens-scores` 21:30 UTC · `us-perf` 22:00 UTC · `revdcf` 22:45 UTC(전부 매일 1회). **DB 조회 시각 = 2026-08-17 15:43:45 UTC**(`now()` 직접 확인) — **오늘(08-17)의 US 크론 예정 시각이 아직 안 왔다.** `cron_heartbeats`가 08-16 22:1x~23:1x에서 멈춰 있는 것은 "실행이 안 됐다"가 아니라 **"다음 실행이 아직 안 왔다"**(정상 대기 상태)다. 🔴 **08-17 실행이 성공하는지는 이 STEP이 답할 수 없다** — 21:30 UTC 이후 재확인 필요. (probe_1017 A의 "로그 접근 막힘"과는 **다른 종류의 미확정**임을 구분해 적는다.)
+
+**Vercel 로그 재시도(2회, 3회 상한 안에서 포기)**: ① MCP `get_runtime_logs` — probe_1017과 동일하게 이 세션에서도 시도하지 않음(기존 403 기록을 신뢰, 반복 안 함). ② **CLI로 새 경로 시도** — `npx vercel inspect <deployment-url> --logs`는 **빌드 로그만** 보여준다(런타임 함수 로그 아님, 08-16 13:48 UTC 배포분으로 직접 확인). `npx vercel logs <url>`는 공식 도움말 자체가 **"from now and for 5 minutes at most"**라 **과거(08-16) 로그는 원리적으로 조회 불가**하다는 것을 이번에 새로 확인했다. 🔴 **결론은 probe_1017과 같다(로그 미확인)나, 이번엔 "왜 불가능한지"가 구조적으로 확정됐다** — MCP는 권한 문제, CLI는 애초에 과거 시점을 지원하지 않는 도구다.
+
+### §6. 🔴 2-7 — 결측의 화면 표기 여부
+
+`us_valuation`을 참조하는 코드는 전수 4개뿐(`app/api/q1/[symbol]/route.ts`·`app/api/cron/revdcf/route.ts`·`lib/sectorRelativeBatch.ts`·`lib/sectorRelative.ts`) — **다른 화면·이메일·브리핑 어디에도 안 쓰인다**(전수 grep 확인). 7렌즈 "밸류" 카드는 `lensCompute.ts`가 매 요청 야후에서 직접 계산하는 **완전히 별개 경로**라 이 사고와 무관하다.
+
+`Q1_ENABLED` — **프로덕션 Vercel 환경변수 목록에 이 키 자체가 없다**(`vercel env ls production` 직접 확인, 44개 변수 전수 스캔). 코드가 `=== "true"`로만 켜지므로 **미설정 = OFF**다. 🔴 **지금은 이 결측이 실제 사용자에게 노출되지 않는다** — WHY 층 인용(⓪-1a)의 *"지금 화면에 나가는 배수가 27% 결측"*은 **DB 상태 서술로는 맞지만 "화면에 나가는 중"이라는 표현은 부정확하다** — Q1 화면 자체가 꺼져 있다.
+
+UI(`components/Q1Section.tsx:43~47`)는 `unavailable` 사유를 `NO_SECTOR`/`NO_VALUE`/`SAMPLE_TOO_SMALL` 세 갈래로 나눠 각각 다른 문구를 낸다(H-7 취지에 맞게 결측을 결측으로 표기). 단 `us_sector_relative.unavailable->>'per'`를 직접 조회하면 이번 552종목 **전부 `"NO_VALUE"`**로 뭉뚱그려져 있다 — `computeValuation`이 남긴 구체적 사유(`MISSING_MARKET_CAP`)는 `computeSectorRelativeBatch` 단계에서 **소실**된다(값이 null이라는 사실만 넘어가고 "왜 null인지"는 안 넘어감). 🔴 **문구 자체가 오귀속 소지가 있다** — `messages/ko.json:950`(`noValue`): *"이 종목은 이 지표를 낼 수 없습니다(적자·자본잠식 등)."* AMZN·AVGO·BRK-A/B·AMD처럼 **압도적으로 흑자인 초대형주**가 이 552종목에 들어 있는데, 이 문구는 "그 회사의 재무상태" 탓으로 읽힌다 — 실제 사유는 **우리 파이프라인이 어젯밤 그 회사의 시가총액을 못 받아온 것**이다. 🔴 **Q1이 꺼져 있어 실제로 이 문구가 노출된 적은 없다** — 가정형 관측으로 남긴다(판정·수정 없음).
+
+### 못 한 것 / 철회·정정한 것 / 미측정으로 남은 것(이 절 한정)
+
+**못 한 것**
+- 왜 하필 알파벳 A~E 구간 청크가 몰려 실패했는지(레이트리밋 워밍업·연결 초기화 등 후보만 나열, 검증 안 함 — 반복 재현 금지)
+- Vercel 런타임 로그 원문(MCP·CLI 둘 다 구조적으로 불가 확인, 원문 자체는 여전히 미확보)
+- 08-17 US 크론 실제 성공 여부(스케줄 시각 미도래)
+
+**철회·정정한 것**
+- ⓪-1a WHY 조건1 인용의 *"지금 화면에 나가는 배수가 27% 결측"* — **DB 상태는 맞으나 "화면에 나가는 중"은 부정확**하다(Q1_ENABLED가 프로덕션에 아예 설정돼 있지 않아 OFF). §6에서 정정.
+- 이 STEP 서두(⓪-1)가 `LENS_AUDIT_03_LOWVOL.md` 결함③을 "기억"이라 표시했던 것 — pull 후 원문 대조 결과 **인용이 정확했다**(정정 불필요, 그대로 확인됨).
+
+**미측정으로 남은 것**
+- `us_market_cap` 갱신 실패의 상류 원인(야후 자체 문제 vs 우리 쪽 레이트리밋/동시성) — 반복 호출 금지 원칙상 조사 안 함
+- 08-17 이후 이 실패가 재발하는지(연속 관측 필요, 이 STEP은 1개 야간의 스냅샷)
+- `computeSectorRelativeBatch`가 `MISSING_MARKET_CAP` 등 구체 사유를 왜 보존하지 않고 `NO_VALUE`로 뭉뚱그리는지의 설계 의도(코드는 확인, "왜 이렇게 설계됐는지"의 히스토리는 미조사)
+
+🔴 **재실행·수정 여부는 전부 장은태 판정이다. 이 절은 원인을 확정하는 것까지다 — ⓪-4 전제①은 부분 기각(나스닥 무관·야후 유관)·전제②는 기각(코드 배포 아님)·규모 불일치는 완전히 설명됐다.**
