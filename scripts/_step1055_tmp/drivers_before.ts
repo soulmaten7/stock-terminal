@@ -1,4 +1,9 @@
 /**
+ * 🔴 STEP 1055 §2-4 불변 검증용 스냅샷 — `git show HEAD:lib/revdcf/drivers.ts`(STEP1055 이전, 죽은 태그 4개
+ * 제거 전·새 필드 7개 배선 전)를 그대로 추출했다. `scripts/probe_1055_invariance.ts`가 import한다.
+ * 977의 선례(`scripts/_step977_tmp/drivers_old.ts`)와 같은 방식 — 정리(삭제)하면 이 스냅샷을 import하는
+ * 검증 스크립트가 `npm run build`를 깨뜨린다(980 복구 이력) — 수정·삭제하지 말 것(비교 기준 스냅샷).
+ *
  * 역DCF driver 산출 (STEP 850) — SEC companyfacts 원자료 → driver 1~5 + 시작값 + 시장 부분(부채·비영업·주식수).
  *
  * 🔴 정의는 REVDCF_SPEC §B-4/§12 A(고정): driver 4·5 = 수준형 · 매출 = 항등식 선택 · 세율 = 한계세율.
@@ -103,8 +108,7 @@ const REV = ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", 
 //   (전부 미국 지역은행). 변형 태그는 발견되지 않아 추가하지 않는다(규칙 5-2 ③ 실측 선행 — 쓰이지 않는 파라미터 금지).
 const REV_BANK_NII = ["InterestIncomeExpenseNet"];
 const REV_BANK_NONINT = ["NoninterestIncome"];
-// STEP 1055 §2-3 — 죽은 태그 3개 제거(probe_1054 §2-2: 5,742종목 전수에서 출현 0건). 살아있는 4개는 그대로.
-const COST = ["CostOfRevenue", "CostOfGoodsAndServicesSold", "CostOfGoodsSold", "CostOfServices"];
+const COST = ["CostOfRevenue", "CostOfGoodsAndServicesSold", "CostOfGoodsSold", "CostOfServices", "CostOfSales", "CostOfOperatingRevenues", "CostOfRevenues"];
 const PRETAX = ["IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest", "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments", "IncomeLossFromContinuingOperationsBeforeIncomeTaxesDomestic"];
 const INTEREST = ["InterestExpense", "InterestExpenseNonoperating", "InterestExpenseDebt", "InterestIncomeExpenseNet"];
 const PPE = ["PropertyPlantAndEquipmentNet", "PropertyPlantAndEquipmentAndFinanceLeaseRightOfUseAssetAfterAccumulatedDepreciationAndAmortization", "PropertyPlantAndEquipmentExcludingLessorAssetUnderOperatingLeaseAfterAccumulatedDepreciation", "PropertyPlantAndEquipmentOtherNet", "PublicUtilitiesPropertyPlantAndEquipmentNet"]; // 852: GM 등 리스제공자 변형 추가
@@ -117,8 +121,7 @@ const OTHINV = ["PaymentsForProceedsFromOtherInvestingActivities"];
 const ACQ = ["PaymentsToAcquireBusinessesNetOfCashAcquired"];
 // 🔴 862: D&A 회수. 합계 태그(4종·우선순위) → 없으면 분리(감가 Depreciation + 무형 AmortizationOfIntangibleAssets 둘 다) 합산 → 없으면 결측.
 //   합계와 분리를 union으로 섞으면 이중계상/누락 → 분리 처리. DepreciationNonproduction(부분값)·단독 Depreciation(무형 누락 위험)은 미사용.
-// STEP 1055 §2-3 — 죽은 태그 1개 제거(probe_1054 §2-2: 5,742종목 전수에서 출현 0건).
-const DNA_TOTAL = ["DepreciationDepletionAndAmortization", "DepreciationAndAmortization", "DepreciationAmortizationAndAccretionNet"];
+const DNA_TOTAL = ["DepreciationDepletionAndAmortization", "DepreciationAndAmortization", "DepreciationAmortizationAndDepletion", "DepreciationAmortizationAndAccretionNet"];
 const DEPR_ONLY = ["Depreciation"];
 const AMORT_ONLY = ["AmortizationOfIntangibleAssets"];
 const SHARES_MORE = ["WeightedAverageNumberOfSharesOutstandingBasic", "CommonStockSharesOutstanding"]; // 852 폴백
@@ -166,16 +169,6 @@ export const EQUITY = ["StockholdersEquity", "StockholdersEquityIncludingPortion
 // STEP 963 — 보통주 장부가(commonEquity) 계산용. EQUITY(총자기자본)에서 이 둘을 뺀다(Damodaran pbv.pdf: 보통주 시총엔 보통주 장부가).
 export const PREFERRED = ["PreferredStockValue", "PreferredStockValueOutstanding"];
 export const NCI = ["MinorityInterest"];
-// STEP 1055 §2-2 — probe_1054 실측 재료 다섯(+배당 축 확장) 병기. 963의 commonEquity 방식과 동일: 기존 배열에
-//   끼우지 않고 새 상수·새 필드로만 추가한다(기존 driver 계산 경로 무접촉). 단위는 매 호출에서 명시 전달한다
-//   (⓪-3b: 금액=USD·주당=USD/shares·기본값에 기대지 않는다).
-const TOTAL_ASSETS = ["Assets"];
-const TOTAL_LIABILITIES = ["Liabilities"];
-const LIABILITIES_AND_EQUITY = ["LiabilitiesAndStockholdersEquity"]; // 재구성 경로(73.6%) — Assets−Equity 재구성은 소비처가 정한다(이 STEP은 저장까지)
-const RETAINED_EARNINGS = ["RetainedEarningsAccumulatedDeficit"]; // bare `RetainedEarnings`는 5,742종목 전수에서 0건(probe_1054 §2-3) — coalesce 불필요
-const CASH_FROM_OPS = ["NetCashProvidedByUsedInOperatingActivities", "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations"];
-const DIVIDENDS_PAID = ["PaymentsOfDividends", "PaymentsOfDividendsCommonStock"]; // 지급기준(현금) — 선언기준과 섞지 않는다(probe_1054: 서로 다른 종목을 담음)
-const DIVIDENDS_DECLARED_PER_SHARE = ["CommonStockDividendsPerShareDeclared"]; // 선언기준·주당 — 단위 USD/shares(probe_1054_analysis.ts 실측 확인)
 
 const REL = 0.01; // 항등식 허용오차
 
@@ -200,14 +193,6 @@ export interface DriverFundamentals {
   operatingIncome: number | null;
   dna: number | null;
   fiscalYear: number | null;
-  // STEP 1055 §2-2 — probe_1054 실측 재료 다섯(+배당 축 확장). 값이 없으면 null(0으로 채우지 않는다 — H-7).
-  totalAssets: number | null;
-  totalLiabilities: number | null;
-  liabilitiesAndEquity: number | null; // 재구성 경로(Assets−Equity) — 어느 쪽을 쓸지는 소비처가 정한다
-  retainedEarnings: number | null;
-  cashFromOps: number | null;
-  dividendsPaid: number | null; // 지급기준(현금)
-  dividendsDeclaredPerShare: number | null; // 선언기준·주당(단위 USD/shares)
   sourceTags: Record<string, string>;
 }
 export type DriverResult =
@@ -352,37 +337,7 @@ export function computeDrivers(gaap: Gaap, dei: Gaap): DriverResult {
   }
   flags.restated = restated;
 
-  // STEP 1055 §2-2 — 새 필드 7개. 기존 fundamentals 수집과 같은 자리(5년 창 게이트보다 앞) — skip 경로에도 실린다.
-  //   기존 필드들과 같은 패턴(최신연도 ly 단일 시점 · coalesceMap → sourceTags 기록) 그대로 재사용, 새 계산 로직 없음.
-  const assetsCo = coalesceMap(gaap, TOTAL_ASSETS, "stock", "USD");
-  const liabCo = coalesceMap(gaap, TOTAL_LIABILITIES, "stock", "USD");
-  const liabEqCo = coalesceMap(gaap, LIABILITIES_AND_EQUITY, "stock", "USD");
-  const reCo = coalesceMap(gaap, RETAINED_EARNINGS, "stock", "USD");
-  const cfoCo = coalesceMap(gaap, CASH_FROM_OPS, "flow", "USD");
-  const divPaidCo = coalesceMap(gaap, DIVIDENDS_PAID, "flow", "USD");
-  const divDeclCo = coalesceMap(gaap, DIVIDENDS_DECLARED_PER_SHARE, "flow", "USD/shares");
-  const fTotalAssets: number | null = ly != null ? assetsCo.vals[ly] ?? null : null;
-  if (fTotalAssets != null && ly != null) sourceTags.totalAssets = assetsCo.tagAt[ly];
-  const fTotalLiabilities: number | null = ly != null ? liabCo.vals[ly] ?? null : null;
-  if (fTotalLiabilities != null && ly != null) sourceTags.totalLiabilities = liabCo.tagAt[ly];
-  const fLiabilitiesAndEquity: number | null = ly != null ? liabEqCo.vals[ly] ?? null : null;
-  if (fLiabilitiesAndEquity != null && ly != null) sourceTags.liabilitiesAndEquity = liabEqCo.tagAt[ly];
-  const fRetainedEarnings: number | null = ly != null ? reCo.vals[ly] ?? null : null;
-  if (fRetainedEarnings != null && ly != null) sourceTags.retainedEarnings = reCo.tagAt[ly];
-  const fCashFromOps: number | null = ly != null ? cfoCo.vals[ly] ?? null : null;
-  if (fCashFromOps != null && ly != null) sourceTags.cashFromOps = cfoCo.tagAt[ly];
-  const fDividendsPaid: number | null = ly != null ? divPaidCo.vals[ly] ?? null : null;
-  if (fDividendsPaid != null && ly != null) sourceTags.dividendsPaid = divPaidCo.tagAt[ly];
-  const fDividendsDeclaredPerShare: number | null = ly != null ? divDeclCo.vals[ly] ?? null : null;
-  if (fDividendsDeclaredPerShare != null && ly != null) sourceTags.dividendsDeclaredPerShare = divDeclCo.tagAt[ly];
-
-  const fundamentals: DriverFundamentals = {
-    netIncome: fNetIncome, equity: fEquity, commonEquity: fCommonEquity, preferredStock: fPreferredStock, minorityInterest: fMinorityInterest,
-    revenue: fRevenue, operatingIncome: fOperatingIncome, dna: fDna, fiscalYear: ly,
-    totalAssets: fTotalAssets, totalLiabilities: fTotalLiabilities, liabilitiesAndEquity: fLiabilitiesAndEquity, retainedEarnings: fRetainedEarnings,
-    cashFromOps: fCashFromOps, dividendsPaid: fDividendsPaid, dividendsDeclaredPerShare: fDividendsDeclaredPerShare,
-    sourceTags,
-  };
+  const fundamentals: DriverFundamentals = { netIncome: fNetIncome, equity: fEquity, commonEquity: fCommonEquity, preferredStock: fPreferredStock, minorityInterest: fMinorityInterest, revenue: fRevenue, operatingIncome: fOperatingIncome, dna: fDna, fiscalYear: ly, sourceTags };
 
   // ── STEP 951 §3-1 — 창 게이트. 기존 skipReason("INSUFFICIENT_HISTORY") 그대로 재사용, 새 사유는 flags.windowReason에만. ──
   if (window.years == null) return { ok: false, skipReason: "INSUFFICIENT_HISTORY", flags: { ...flags, missing: "revenue<5yr", windowReason: window.reason, latestAvailable: window.latestAvailable }, fundamentals };

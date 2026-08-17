@@ -43,6 +43,10 @@ function fundamentalsRow(u: Universe, dr: DriverResult, unavailableReason: strin
     net_income: f.netIncome, equity: f.equity, revenue: f.revenue, operating_income: f.operatingIncome, dna: f.dna,
     // STEP 963 — 보통주 장부가·우선주·비지배지분(PBR 재계산 재료). equity는 그대로 총자기자본.
     common_equity: f.commonEquity, preferred_stock: f.preferredStock, minority_interest: f.minorityInterest,
+    // STEP 1055 §2-5 — probe_1054 실측 재료 다섯(+배당 축 확장). 기존 컬럼 쓰기 경로는 그대로, 새 필드만 추가.
+    total_assets: f.totalAssets, total_liabilities: f.totalLiabilities, liabilities_and_equity: f.liabilitiesAndEquity,
+    retained_earnings: f.retainedEarnings, cash_from_ops: f.cashFromOps, dividends_paid: f.dividendsPaid,
+    dividends_declared_per_share: f.dividendsDeclaredPerShare,
     debt: market ? market.debt : null, non_operating_assets: market ? market.nonOperatingAssets : null, shares: market ? market.shares : null,
     source_tags: f.sourceTags,
     unavailable_reason: unavailableReason,

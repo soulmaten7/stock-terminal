@@ -1,5 +1,21 @@
-<!-- 2026-08-16 -->
+<!-- 2026-08-17 -->
 # Trillion(트릴리언) — 변경 이력
+
+## 2026-08-17 — 🟠 **STEP1055: 재료 다섯 배선 + 죽은 태그 정리 + 실패 기록**
+
+> STEP1054가 실측으로 근거를 만든 것만 배선한다(새 판단 없음). 화면 변경 0·`REVDCF_ENABLED`·`Q1_ENABLED` 무접촉·크론 수동 실행 없음.
+>
+> **2-1 실패 기록**: `CLAUDE.md` ⓪-5-B에 2026-08-16 실제 사례 5건(문서를 안 열어서 틀린 것들 — WHY조건2 임의재정의·이미 구현된 걸 "30초 판정"으로 오판·이미 켜진 플래그를 "켜서 보자"고 제안·자산성장 재료 없음 오판·SEC 비용모델 0.1초/건 오기)을 08-09 4건 블록 바로 아래 추가(기존 블록 불변).
+>
+> **2-2 새 필드 7개**: `lib/revdcf/drivers.ts`에 `DriverFundamentals` 병기(963의 `commonEquity` 방식 그대로, 기존 배열 무접촉) — `totalAssets`(`Assets`)·`totalLiabilities`(`Liabilities`)·`liabilitiesAndEquity`(`LiabilitiesAndStockholdersEquity`, 재구성 경로 병기·어느 쪽을 쓸지는 미정)·`retainedEarnings`(`RetainedEarningsAccumulatedDeficit`, bare `RetainedEarnings` 0건이라 coalesce 불필요)·`cashFromOps`(`NetCashProvidedByUsedInOperatingActivities`→`...ContinuingOperations`)·`dividendsPaid`(`PaymentsOfDividends`→`PaymentsOfDividendsCommonStock`)·`dividendsDeclaredPerShare`(`CommonStockDividendsPerShareDeclared`, 단위 `USD/shares` 명시 전달). 값 없으면 `null`(H-7)·`sourceTags` 기록·5년 창 게이트보다 앞에서 수집(skip 경로에도 실림)·기존 driver 계산 경로·게이트 문자열·순서 전부 무접촉.
+>
+> **2-3 죽은 태그 4개 제거**: `COST` 배열에서 `CostOfSales`·`CostOfOperatingRevenues`·`CostOfRevenues`, `DNA_TOTAL` 배열에서 `DepreciationAmortizationAndDepletion` 제거(probe_1054 §2-2: 5,742종목 전수에서 출현 0건).
+>
+> **2-4 불변 검증(전수 604건)**: `scripts/probe_1055_invariance.ts`(977 선례 방식 — `git show HEAD`로 STEP1055 이전 `drivers.ts` 스냅샷을 `scripts/_step1055_tmp/drivers_before.ts`에 추출해 동적 import)로 `revdcf_results` 최신 as_of(2026-08-16) 604건 전량을 로컬 캐시(SEC 신규 호출 0)로 재계산·대조 — `verdict`·`gap_years`·`gap_wacc_minus1`·`gap_wacc_plus1`·`sales_growth`·`operating_margin`·`fixed_capital_rate_marginal`·`wacc` **8필드 × 604건, 불일치 0건**(`docs/probe_1055_invariance.json`). ⓪-4 전제①·② 둘 다 성립 확인.
+>
+> **2-5 DB·크론·문서**: `us_fundamentals`에 nullable 컬럼 7개 추가(`total_assets`·`total_liabilities`·`liabilities_and_equity`·`retained_earnings`·`cash_from_ops`·`dividends_paid`·`dividends_declared_per_share`, `supabase/migrations/20260817_us_fundamentals_step1055_fields.sql`, MCP `apply_migration`으로 라이브 적용·컬럼 존재 실측 확인). `app/api/cron/revdcf/route.ts`의 `fundamentalsRow`에 새 필드 쓰기 배선(기존 컬럼 쓰기 경로 무접촉). `docs/ROADMAP_V2.md` F-5 ⑬-b(부도위험 "0%/컬럼 없음" 주장 — 실측 73.8%/65.9%(재구성 73.6%)로 정정, 배당은 여전히 DB 완전삭제로 부재)·⑪(자산성장 "재료 없음" 주장 — 태그 공급 73.8%는 낮지만 그 안에서 연속 2년 확보율 99.7%로 정정)를 취소선+정정사유+`probe_1054` 좌표로 갱신.
+>
+> 문서 = `docs/step_orders/STEP1055.md`(명령서)+`docs/probe_1054_tag_supply.md`(근거). 게이트7(git 미추적 파일 참조 0건, `scripts/_step1055_tmp/drivers_before.ts` 커밋 포함) · 게이트8(push 후 CI·Vercel 확인 — 아래 참조) · 게이트9(`docs/CRON_OBSERVABILITY.md` §5 `us_fundamentals` 행에 신규 컬럼 7개 주석 추가, 신선도 판정 단위는 행 그대로). tsc 0 · vitest 386/386 · `npm run build` 성공 · 화면 변경 0 · 플래그 무접촉. 못 한 것 = 없음(범위 내 전부 실행). 철회·정정 = 없음(STEP1054 실측을 그대로 배선). 미측정으로 남은 것 = Piotroski⑤⑧ 병목 배열 확장 여부·Altman 섹터 근사 SIC 교체 여부·총부채 어느 경로(직접/재구성) 사용 여부 — 전부 다음 STEP에서 장은태 판정 대상. 🔴 **판정은 장은태가 한다. 이 STEP은 숫자를 배선하는 것까지다.**
 
 ## 2026-08-16 — 🔵 **STEP1054: 재료 다섯의 공급 실측 — Piotroski/Altman/배당 병목 확정**
 

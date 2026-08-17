@@ -146,7 +146,7 @@ STEP982가 08-09 실행의 `freshCoverage=93.04%`를 어떻게 읽어냈는지�
 | `us_market_cap` | lens-scores(US)(21:30) | 최신 `as_of` 나이 + `freshCoverage` | 나이 30h / `freshCoverage<97%`(984 게이트 기준 그대로) | 경고 |
 | `lens_scores` | lens-scores(US)(21:30) | `updated_at` 나이 | 30h | 경고 |
 | `lens_cuts` | lens-scores(US)(21:30) 부속 | 나이 | **49h**(STEP828 기존값, 그대로) | 경고 |
-| `us_fundamentals` | 별도 수집 파이프라인(비정기, 970: 순증 ≈124건/일 추정치 미확정) | 순증 건수 정체 여부 | 관찰만(임계 미설정 — 970 자체가 추정 단계) | 정보 |
+| `us_fundamentals` | 별도 수집 파이프라인(비정기, 970: 순증 ≈124건/일 추정치 미확정) | 순증 건수 정체 여부. 🔴 **STEP1055(2026-08-16)로 컬럼 7개 추가**(`total_assets`·`total_liabilities`·`liabilities_and_equity`·`retained_earnings`·`cash_from_ops`·`dividends_paid`·`dividends_declared_per_share`, 전부 nullable) — 신선도 판정 대상은 여전히 이 표의 `fetched_at`(행 단위) 하나뿐, 새 컬럼별 개별 신선도는 이 절의 점검 범위 밖(값 계산·표시는 후속 STEP) | 관찰만(임계 미설정 — 970 자체가 추정 단계) | 정보 |
 | `us_market_cap_nasdaq`(STEP1013 신설) | us-perf(22:00) 부속 | 최신 `as_of` 나이 + 행수(줄면 경고) | 나이 **30h** | 경고 |
 | `cron_heartbeats` | 전 크론 공통 | `job`별 `last_run_at` 나이 | 각 크론 스케줄 + 여유(예: lens-scores는 30h) | 경고 |
 | `us_coverage_history`(STEP1025 신설) | lens-scores(US 21:30·KR도 같은 테이블에 적재) | 최신 `as_of`(market='US') 나이 | 30h(다른 21:30~22:00대 크론과 같은 여유) | 경고 |
