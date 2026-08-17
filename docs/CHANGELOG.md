@@ -1,6 +1,24 @@
 <!-- 2026-08-17 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-17 — 🔵 **STEP1057: 렌즈 전수감사 ③ 저변동성 + 앞선 감사 결함 11건 생존 확인**
+
+> 읽기 전용(코드 diff 0·DB 쓰기 0·화면 변경 0). `LENS_AUDIT_02_MOMENTUM_2026-08-07.md`(②모멘텀) 다음 순서. 판정은 안 함 — 결함을 실측으로 뜯는 데까지.
+>
+> **⓪-4② 반증조건 판명 = 틀렸다**: `LENS_DISPOSITION_2026-08-08.md` §3이 저변동을 "원전 없음"으로 적었으나, `docs/STEP_801_COMMAND.md`·`STEP_824_COMMAND.md`(2026-08-01~03경, LENS_DISPOSITION보다 먼저)가 이미 BAB(Frazzini-Pedersen)를 기각하고 **Baker-Bradley-Wurgler(2011)를 원전으로 확정**해 놓았고, 라이브 `lib/lensCopy.ts`의 `lowvol.note`에 그 원전 대조(5년 월별 총변동성·5분위 vs 우리 1년 일별·3분위)가 이미 문장으로 공개돼 있었다. 원문 PDF를 직접 취득(`pages.stern.nyu.edu/~jwurgler/papers/faj-benchmarks.pdf`)해 방법론(60개월 월별 표준편차·5분위·top-1,000·최소 24개월)을 재확인 — `data/sources/academic/baker_bradley_wurgler_2011_low_volatility_anomaly.pdf` 저장, `data/sources/README.md` 등재.
+>
+> **2-1 코드완독**: `realizedVol`(단순수익률·표본표준편차 n−1·√252 연율화·최소 120개 수익률·분산0→null) 정확. 🔴 **신규 발견 — 배당 미조정**: `realizedVol`이 raw종가(`d.closes`)를 쓰는데, 이건 원리상 "수익률" 계산이라 플레이북#30("모멘텀·수익률만 배당조정")의 적용 대상 후보인데도 **판정된 적이 없다.** `volState()`(25/45% 절대컷) 데드코드 확인(export+테스트되나 라이브 호출 0건).
+>
+> **2-2 원전대조표**: 7행 중 6행(변동성측정·창길이·분위·유니버스·최소데이터 성격·포트폴리오vs개별종목)은 이미 화면에 공개돼 있음을 확인. 새로 드러난 차이는 **배당 처리 1행뿐**.
+>
+> **2-3 DB전수실측**(as_of 2026-08-17, 최신 US 배치 08-16 22:24 UTC): `lens_scores` US 1,039행·`lowvol_value` 비결측 1,026. 🔴 **신규 발견 — 스테일 극단치**: max=2416.71%(`QH`, 종가 $4.53, `updated_at` 10일 정지)가 전체 분포를 오염 — 신선(≤3일) 부분집합만 보면 max=199.39·p99≈97로 온건. 🔴 **신규 발견 — 어제(08-16) US 취득 심각 실패**: `cron_heartbeats`(job=lens-scores) freshCoverage 68.8%(전일 94.2%에서 급락)·successRate 24.2%(242/1000)·coverageOk/cutGateOk 둘 다 false → `lens_cuts` US(lowvol·momentum·valuation 등)가 08-15 값에 2일째 정지, 프루닝은 안전 차단(정상 동작). `lens_state_changes` 07-20~08-07 창을 재조회해 `LENS_DISPOSITION` §1의 lowvol 256건/148종목을 **정확히 재현**(독립 검증). 표본 3종목(AAPL·TSLA·NVDA) 손계산 검산 — DB값과 차이 0~0.02%(`scripts/probe_1057_lowvol_handcalc.ts`, `docs/probe_1057_lowvol_handcalc.json`).
+>
+> **2-4 앞선 결함 11건 생존 확인**: **①밸류 6건·②모멘텀 5건 전부 코드 한 글자도 안 바뀐 채 그대로**(모멘텀 결함⑤만 "상태 변경" — 당시 8일 정체 자체는 풀렸으나 어제 다른 계기로 같은 증상 재발).
+>
+> **2-5**: `docs/LENS_AUDIT_03_LOWVOL.md` 신규(요약표→🟢잘된것→원전대조표→코드완독→DB실측→11건생존→못잰것). `docs/LENS_DISPOSITION_2026-08-08.md`의 "②는 끝났고 ①이 남았다"를 취소선+정정(②는 7렌즈 중 아직 3개뿐)으로 고침 — 문서 나머지는 무접촉.
+>
+> 게이트7(미추적 파일 참조 0건). 게이트9 해당없음(신규 테이블·크론 없음). 브랜치 규약(STEP1056 §2-7) 그대로 적용 — `main`에 직접 push. tsc 0·vitest 386/386·코드 diff 0·DB 쓰기 0·화면 변경 0. 못 한 것 = 배당 미조정이 판정을 몇 건 뒤집는지 정량화(원리상 가능하나 범위 밖)·08-16 취득 실패 근본 원인(여러 렌즈 공통이라 저변동 단독 범위 밖). 철회·정정 = `LENS_DISPOSITION` "②는 끝났다" 정정(위). 미측정 = `lens_scores` 스테일 정리 정책·`realizedVol` 배당조정 여부·`volState()` 데드코드 처리 — 전부 장은태 판정 대상. 🔴 **판정은 장은태가 한다. 이 STEP은 결함을 놓는 것까지다.**
+
 ## 2026-08-17 — 🔵 **STEP1056: 정본↔표시본 갈림 대조 + 정본 반영 + 브랜치 규약 신설**
 
 > 문서 전용(코드 diff 0·DB 쓰기 0·화면 변경 0). `docs/ROADMAP_V2.md`(정본)와 `Downloads/roadmap_v2_2.html`(표시본)이 갈려 있던 것을 전수 양방향 대조하고, 결함은 정본에 반영·확정 결과는 이관·판정 대기는 등재했다. 판정은 하지 않는다.

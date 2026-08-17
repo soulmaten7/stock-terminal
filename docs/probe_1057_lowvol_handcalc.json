@@ -1,0 +1,32 @@
+{
+  "measuredAt": "2026-08-17T14:10:29.811Z",
+  "results": [
+    {
+      "symbol": "AAPL",
+      "barsCount": 276,
+      "handVol": 24.95,
+      "dbVol": 24.95,
+      "dbState": "calm",
+      "dbUpdatedAt": "2026-08-16T22:24:41.555+00:00",
+      "diffPct": 0.01
+    },
+    {
+      "symbol": "TSLA",
+      "barsCount": 276,
+      "handVol": 46.32,
+      "dbVol": 46.33,
+      "dbState": "jumpy",
+      "dbUpdatedAt": "2026-08-16T22:24:41.555+00:00",
+      "diffPct": 0.02
+    },
+    {
+      "symbol": "NVDA",
+      "barsCount": 276,
+      "handVol": 36.74,
+      "dbVol": 36.74,
+      "dbState": "mid",
+      "dbUpdatedAt": "2026-08-16T22:24:41.555+00:00",
+      "diffPct": 0
+    }
+  ]
+}
