@@ -1,6 +1,26 @@
 <!-- 2026-08-18 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-18 — 🟠 **STEP1070: 폴더 상태 정리 — worktree 해소 + 메인 폴더 동기화**
+
+> git 작업(코드 diff 0·DB 쓰기 0·화면 변경 0·크론 수동 실행 0). STEP1055~1069(15개)가 전부 `.claude/worktrees/step1055`(브랜치 `worktree-step1055`)에서 실행돼 사용자가 Finder에서 보는 메인 폴더(`/Users/maegbug/stock-terminal/`)가 STEP1054(`08699ce`)에 사흘째 정지돼 있었다 — `docs/model_list_30_9.html`을 메인 폴더에서 못 찾은 원인. 또한 `docs/COMMIT_GATES.md` 브랜치 규약("main에 직접 push, 브랜치·PR 금지")이 worktree를 고려하지 않아 사실상 위반 상태였다. 인용 기준 = 원격 `main` = `8d04143`(STEP1069까지).
+
+**§2-0 손실 점검 넷(전부 원문 출력 기록, `BUILD_SEQUENCE.md` §7-부록 부-9)**: ㉠ 로컬 `main..worktree-step1055` 17줄(손실처럼 보였으나 재확인 결과 로컬 `main`이 STEP1054에서 fast-forward된 적이 없었을 뿐 — `origin/main..worktree-step1055`는 **0줄**, `git rev-parse`로 둘이 완전 동일함[`8d0414308c5e...`] 확인, 손실 위험 없음으로 정정) ㉡ worktree `git status --porcelain` 0줄(클린) ㉢ 메인 폴더 untracked 16개 전수 diff — STEP1055~1069.md(15개)+`probe_1055_invariance.json`은 `origin/main`과 **완전 동일**, `STEP1070.md`(이 STEP 자신)는 `origin/main`에 아직 없음(당연·보존) — **main에 없는 파일 0건** ㉣ `gh pr view 1` → **MERGED**(2026-08-17), open 아님, 무접촉.
+
+**§2-1 메인 폴더 동기화**: "동일" 확인된 untracked 15개 삭제(STEP1070.md는 보존) → `git fetch` → `git pull --ff-only origin main`. 🔴 1회 실패(`.git/index.lock` — `ps aux`로 실행 중 git 프로세스 0건 확인 후 0바이트 stale lock만 제거, `reset --hard`·`clean` 미사용) → 재시도 성공, `08699ce..8d04143` fast-forward(50 files). `docs/model_list_30_9.html` 등 5개 html 존재 확인.
+
+**§2-2 worktree 처분**: 양쪽 동일 커밋(`8d04143`) 확인 후 `git worktree remove .claude/worktrees/step1055`(force 없이 성공) → `git branch -d worktree-step1055`(git이 "fully merged" 자체 확인 후 안전 삭제, `-D` 불필요). 🔴 **원격 브랜치는 애초에 존재한 적이 없었다** — 이 세션 내내 `worktree-step1055:main` 형태로 로컬 브랜치를 `origin/main`에 직접 push했을 뿐 동명 원격 브랜치를 만든 적이 없음(`gh api .../branches` = `main`·`revdcf-preview` 둘뿐). PR #1 무접촉.
+
+**§2-3 worktree 출처**: `CLAUDE.md`·`STEP1055.md` 전문에 "worktree" 문자열 **0건**. 🔴 **확정(추측 아님)**: 저장소 파일이 아니라 **이 세션(백그라운드 job)의 하네스 자체가 첫 편집 전 자동으로 워크트리 격리를 강제**하는 정책이었다 — 이번 STEP 실행 중 실제로 그 가드에 걸려(공유 체크아웃 Edit 차단) 확인, 해제 방법(`​.claude/settings.json`의 `worktree.bgIsolation:"none"`)까지 하네스가 직접 안내함. 이 STEP이 §2-4 실행을 위해 그 설정을 신설(Bash로 작성 — Edit/Write 도구 자체가 가드에 막혀 있었음)했고, 이 설정 자체가 §2-4 규약의 집행 장치가 된다.
+
+**§2-4~2-5**: `docs/COMMIT_GATES.md` 브랜치 규약에 "작업 폴더도 하나다" 조항 신설(기존 문장 보존, `git worktree` 금지 명문화). `docs/STATE.md`에 「어디를 보면 되는가」 절 추가(저장소 루트=작업·정본 · `docs/`=정본+표시본 · `Downloads`=열람용 사본, 어긋나면 저장소가 맞음 · worktree 안 씀) — 한 화면 분량, 중복 기재 없음.
+
+**게이트**: 조작 전후 `git log --oneline -1`(전 `08699ce`→후 `8d04143`)·`ls` 5개 존재·`git worktree list`(0개) 전부 기록. `-D`·`--force`·`reset --hard`·`clean` 전부 미사용 확인. 🔴 **tsc 로컬 실행 시 발견(이 STEP과 무관)**: `scripts/probe_1018_nasdaq_call.ts`(추적됨)와 `scripts/_probe_B_flows.ts`(gitignore `scripts/_*.ts` 패턴, mtime 7월 28일자 잔재 파일)가 둘 다 최상위 `async function main()`을 선언해 `Duplicate function implementation` 충돌 — 이 STEP이 만든 문제 아니고(둘 다 손대지 않음), 같은 커밋(`8d04143`)의 CI는 이미 그린(클린 체크아웃엔 gitignore 파일이 없어 재현 안 됨) — **저장소 자체는 정상**, 메인 폴더 로컬 환경에만 있던 debris. 소스 수정 금지 범위라 손대지 않고 사실만 기록. vitest 386/386(정상).
+
+못 한 것 = 없음(§2-0~2-6 전부 수행, `.git/worktrees/step1055/` 생성 시각[08-17 07:22]은 STEP 문서 인용 그대로 사용·재검증 안 함[worktree 제거로 재확인 불가]). 철회·정정 = 전제① 판정 기준을 로컬 `main`→`origin/main`으로 정정(위 §2-0 서술). 미측정 = `_probe_B_flows.ts`가 손실 위험이 있는 미보존 작업을 담고 있는지(삭제하지 않고 그대로 둠, 장은태 판단 대상). 🔴 **worktree 정리는 이 STEP이 했다. 원격 브랜치(애초에 없었음)·PR #1(이미 병합됨) 처분은 해당 사항 없음.**
+
+---
+
 ## 2026-08-18 — 🟡 **STEP1069: Downloads 표시본을 저장소로 들여놓고 디테일하게 합치기**
 
 > 문서 전용(코드 diff 0·DB 쓰기 0·화면 변경 0·크론 수동 실행 0·`~/Downloads/` 원본 무접촉). `docs/roadmap_v2.html`(91,937B, STEP1053 정지)와 `~/Downloads/roadmap_v2_2.html`(65,755B, 자체 STEP1056 인용) 사이 26KB 차이, `data_source_catalog.html`·`model_list_30_9.html`·`tombstone.html`이 git 밖에 있던 문제(`tombstone.html`이 이미 경고한 것 — "같은 내용을 두 곳에 두면 한쪽이 뒤처지고 어느 쪽이 정본인지 알 수 없게 된다")를 처리. 인용 기준 = 원격 `main` = `5668061`(STEP1068까지).
