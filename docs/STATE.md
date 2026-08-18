@@ -1,4 +1,4 @@
-<!-- 2026-08-18 -->
+<!-- 2026-08-19 -->
 # 🚀 Trillion(트릴리언) — STATE (현재 상태 단일 정본)
 
 > **이 파일 = "지금 어디까지 왔나 + 다음 뭐 할까"의 유일한 정본. 매 세션 덮어쓴다(배너 쌓기 금지).**
@@ -6,7 +6,12 @@
 > 규칙: **현재상태=여기에만 · 이력=CHANGELOG·STEP_LEDGER에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC·VALUATION_SPEC에만.**
 > 🔴 **2026-08-11(STEP991) 재정리** — STEP974~990(2026-08-10~11) 사이 각 STEP이 미해결 목록의 자기 항목만 조각조각 갱신해, STEP971 재작성 이후 다시 흩어진 상태였다. 현재 상태만 남기고 STEP별 서술은 CHANGELOG·STEP_LEDGER·REVDCF_SPEC·VALUATION_SPEC·probe로 보냈다(포인터 유지, 내용 삭제 없음). 이전 재작성 = STEP971(2026-08-10). 재정리 전 원문 = `git show HEAD~1:docs/STATE.md`.
 
-> 🔴 **어디를 보면 되는가**(2026-08-18 STEP1070) — **저장소 루트**(`/Users/maegbug/stock-terminal/`)가 작업·정본 자리다. Finder에서 여기를 본다. **`docs/`**엔 문서 정본(`.md`)과 표시본(`.html`)이 함께 있다. **`~/Downloads/`**는 열람용 사본이고, 어긋나면 저장소가 맞다(표시본 위계 상세 = `docs/BUILD_SEQUENCE.md` §7). **worktree는 쓰지 않는다**(`docs/COMMIT_GATES.md` 브랜치 규약 — "작업 폴더도 하나다").
+> 🔴 **어디를 보면 되는가**(2026-08-18 STEP1070, 2026-08-19 STEP1071 이어씀) — **저장소 루트**(`/Users/maegbug/stock-terminal/`)가 작업·정본 자리다. Finder에서 여기를 본다. **`docs/`**엔 문서 정본(`.md`)과 표시본(`.html`)이 함께 있다. **`~/Downloads/`**는 열람용 사본이고, 어긋나면 저장소가 맞다(표시본 위계 상세 = `docs/BUILD_SEQUENCE.md` §7). **worktree는 쓰지 않는다**(`docs/COMMIT_GATES.md` 브랜치 규약 — "작업 폴더도 하나다").
+> **문서를 고칠 때**: 저장소 `docs/`의 **그 파일을 덮어쓴다.** 새 파일·새 버전 사본을 만들지 않는다(`/preferences.md` — "중복 파일이 쌓이는 것이 문제").
+> **이전 버전이 필요하면**: `git log --oneline -- <경로>` → `git show <해시>:<경로>`
+> **표시본(html)**: `docs/`에 둔다. `~/Downloads/`는 열람용 사본이며 어긋나면 저장소가 맞다.
+> 🔴 **판정 대기로 남긴 물음** — *"`~/Downloads/`의 현재본 5개(`model_list_30_9.html`·`roadmap_v2_2.html`·`build_sequence.html`·`data_source_catalog.html`·`tombstone.html`)를 계속 둘 것인가"*: 저장소에 있으므로 중복이지만 브라우저 열람에 쓰일 수 있다. **정하지 않는다**(STEP1071).
+> ✅ **STEP1071(2026-08-19)** — `~/Downloads/_to_delete/2026-08-16_roadmap_drafts/`(초안 26개, 반영 검증 완료) 삭제 완료. 상세 = `docs/BUILD_SEQUENCE.md` §7-부록 부-10.
 
 ---
 

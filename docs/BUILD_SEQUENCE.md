@@ -449,6 +449,25 @@
 
 🔴 **철회·정정한 것**: 없음(이 STEP 자신은 §2·§7·§9 등 기존 서술을 정정하지 않음 — 반영 2건은 "정정"이 아니라 "누락 보충").
 
+### 부-10-삭제. §2-8 삭제 실행 기록(게이트8 통과 후, 2026-08-19)
+
+**조건 넷 재확인**: ㉠ §2-7 삼자대조 통과(사유 없는 미반영 0건, 커밋 `cf33314`) ㉡ 반영분 `main` push + CI 그린 확인(`gh run list` → `cf33314` success · Vercel Production success, deployment id 5966105541) ㉢ 삭제 대상 전체 목록(26개 경로·크기) — 아래 코드블록 ㉣ 대상은 `_to_delete/` 폴더 전체뿐, `docs/` 및 `~/Downloads/` 현재본 5개 무접촉.
+
+```
+삭제 전 ~/Downloads/_to_delete/2026-08-16_roadmap_drafts/ (26개, total 2000)
+dup_1.html 55750 · dup_2.html 58693 · dup_3.html 62229 · dup_4.html 64152 · dup_5.html 31460
+dup_6.html 36318 · dup_7.html 46505 · dup_8.html 48195 · dup_9.html 50631 · dup_10.html 54003
+dup_11.html 64421 · dup_12.html 57628
+model_list_30.html 15855 · _30_1 15917 · _30_2 15285 · _30_3 17147 · _30_4 18527 · _30_5 18160
+_30_6 18233 · _30_7 21900 · _30_8 25343 · _30_9 26851
+roadmap_v2.html 15394 · roadmap_v2_1.html 27536 · roadmap_v2_2_1.html 53113 · roadmap_v2_2_1__2.html 54749
+
+삭제 후 ~/Downloads/_to_delete/: 디렉토리 자체 없음(rm -rf 성공, exit 0)
+삭제 전후 ~/Downloads/ 전체 ls -la 대조: _to_delete/ 한 줄만 사라짐.
+현재본 5개(build_sequence.html·data_source_catalog.html·model_list_30_9.html·roadmap_v2_2.html·tombstone.html)
+및 그 외 개인 파일(사진·영수증 등) 전부 삭제 전후 동일 — 무접촉 확인.
+```
+
 🔴 **판정은 장은태가 한다. 이 STEP은 살릴 것을 넣고 중복을 지우는 것까지다. `~/Downloads/` 현재본 5개 존치 여부·`_probe_B_flows.ts` 처분은 판정 대기.**
 
 ---
