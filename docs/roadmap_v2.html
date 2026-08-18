@@ -602,16 +602,32 @@ tr.hl td.m{color:#ffb3b3}
     <thead><tr><th style="width:120px">1층 칸</th><th style="width:220px">최종 모델</th><th>비고</th></tr></thead>
     <tbody>
       <tr class="hl"><td class="m">배수</td><td class="m"><span class="b b1">동점 4개(순위아님)</span> · ✅ <span class="hi">STEP1052 역할도출</span></td><td>P/E=<strong>전달축</strong>(단순성·소통용이성, CFA·CFI) · EV/EBITDA=<strong>정밀판단축</strong>(전문가1위나 근접영EBITDA서 최극단768배) · P/B=<strong>업종특화축</strong>(은행표본편향, 108건) · PSR=<strong>적자대안축</strong>(개별근거없음, 최다318건). 같은 질문의 다른 분모라 칸은 안 갈리나 역할은 갈린다. 🔑 STATE.md 기존 "C안"과 독립적으로 개념 수렴(교차검증, 단 정밀화). 상세=probe_1052_axis_role_and_layerC.md</td></tr>
-      <tr><td class="m">재무건전성</td><td class="m"><span class="b b1">Piotroski F-Score</span> 단독(<span class="hi">부분 일치·조건부</span>)</td><td>Novy-Marx GP/A(수익률 예측 팩터)·DuPont(설명 도구)은 ①에서 다른 질문으로 판정돼 후보 아님. 🔴 STEP1044 정정 — Piotroski도 "일치"가 아니라 부분일치: 원전(2000) 표본은 고B/M 가치주 최상위5분위, 우리는 전 종목 적용(LENS_DEV_PLAYBOOK #48). 최종 선택은 안 바뀜</td></tr>
+      <tr><td class="m">재무건전성</td><td class="m"><span class="b b1">Piotroski F-Score</span> 단독(<s>부분 일치·조건부, STEP1044</s> 🔴 <span class="hi">STEP1056 정정 — 조건이 둘</span>)</td><td>Novy-Marx GP/A(수익률 예측 팩터)·DuPont(설명 도구)은 ①에서 다른 질문으로 판정돼 후보 아님. 조건①(표본) 원전(2000) 표본은 고B/M 가치주 최상위5분위, 우리는 전 종목 적용(LENS_DEV_PLAYBOOK #48). 🔴 조건②(산출가능범위, STEP1056 추가) — 9신호 전부 성립하는 종목은 기준연도 보유 3,606건 중 <strong>32.3%</strong>뿐(probe_1054 §2-5). 병목=⑤Δ레버리지64.2%·⑧Δ마진51.6%(나머지7신호는85%+). 부분합산은 H-7 위반이라 32.3% 바깥은 F-Score를 낼 수 없다. 최종 선택은 안 바뀜</td></tr>
       <tr><td class="m">시장내재기대</td><td class="m"><span class="b b0">역DCF</span> 단독</td><td>경쟁 후보 없음</td></tr>
       <tr><td class="m">배당</td><td class="m"><span class="b b0">배당수익률 + 연속증가연수</span></td><td>같은 질문의 두 하위축(보완, 동점 아님). 총주주환원수익률=저장소 기존판정(STEP551)으로 이미 탈락, DDM=적정주가류(다른 칸)</td></tr>
-      <tr><td class="m">부도위험</td><td class="m"><span class="b b0">Altman Z-Score</span></td><td>🔴 지금 만들 수 없음(Assets·Liabilities 컬럼 부재). Ohlson O-Score는 ③(사용률 근거 없음)에서 밀림</td></tr>
+      <tr><td class="m">부도위험</td><td class="m"><span class="b b0">Altman Z-Score</span></td><td><s>🔴 지금 만들 수 없음(Assets·Liabilities 컬럼 부재)</s> 🔴 <span class="hi">STEP1056 정정</span>: 실측 Assets 73.8%·Liabilities 65.9%(재구성경로 LiabilitiesAndStockholdersEquity 73.6%) → <strong>Z+Z″ 65.1%로 만들 수 있다.</strong> 단 섹터 근사는 GICS 유사 라벨(원전 SIC 2000–3999 이진분류 아님) — probe_1054 §2-5. Ohlson O-Score는 ③(사용률 근거 없음)에서 밀림</td></tr>
       <tr><td class="m">최근변화</td><td class="m"><span class="b b0">모멘텀12-1 + 기술(RSI+MA200)</span></td><td>이미 보유. MACD·볼린저밴드·OBV·IBD RS는 ③ 개별 근거 없음으로 후순위</td></tr>
       <tr class="hl"><td class="m">성장(복원 <span class="hi">STEP1045</span>)</td><td class="m"><span class="b b0">매출5년CAGR + D&A전영업이익CAGR</span></td><td>원전 없음, 정의 공개표로 대체(USER_QUESTIONS§Q). 재료는 이미 완성(revdcf_results.sales_growth·drivers.ts), 화면만 미착수. 경쟁 후보 0개(22개 전수 재검토+GP/A·CMA 재판정 결과)</td></tr>
     </tbody>
   </table></div>
-  <p class="note"><span class="hi">구조 잔여 3건(판정 재료만, 미판정)</span>: Beneish M-Score("회계조작 탐지" — 어느 칸과도 다른 세 번째 질문, 칸 신설 여부) · 저변동성·자산성장(원전이 "포트폴리오 기법"이라 명시하는 것을 우리가 종목별 백분위로 변형해 라이브 서빙 중, 처분 미정) · 0층(업종·이익상태, 모델 아님 — 후보 0개 재확인).</p>
+  <p class="note"><span class="hi">구조 잔여 3건(판정 재료만, 미판정)</span>: Beneish M-Score("회계조작 탐지" — 어느 칸과도 다른 세 번째 질문, 칸 신설 여부) · 저변동성·자산성장(원전이 "포트폴리오 기법"이라 명시하는 것을 우리가 종목별 백분위로 변형해 라이브 서빙 중, <s>처분 미정</s> 🔴 <span class="hi">STEP1056 정정</span> — 자산성장은 실측 <strong>99.7%</strong>[기준연도 보유 종목 중 연속2년 Assets 확보율]로 재료가 병목이 아님이 확인됨(probe_1054 §2-5). "재료가 없어 못 만든다"는 서술은 틀렸다 — 처분 판정의 재료는 생겼으나 판정 자체는 여전히 미정) · 0층(업종·이익상태, 모델 아님 — 후보 0개 재확인).</p>
   <p class="note"><span class="hi">✅ 해소(2026-08-16 STEP1045)</span>: <s>판정 필요 — Q3이 이 구조 어디에도 없다</s> → <strong>Q3 복원 완료</strong>(정본 = docs/probe_1045_growth_restore.md). 신설이 아니라 복원이었다. quality(GP/A)의 Q3 편입 제안(LENS_DISPOSITION§4)은 원문 직접 재확인 결과 <strong>불일치로 확정</strong>(SWS "Past Performance"는 수익성 수준 지표이지 성장률이 아니고, 원문 자체가 "GP/A≠ROA" 캐비어트를 이미 달아뒀음) — 반영하지 않았다. 남은 것은 "화면 착수 시점"뿐(F-4-3 참조).</p>
+
+  <h3 style="font-size:14px;color:var(--tx2)">W-2-5. 🔴 표시본(Downloads/roadmap_v2_2.html)에만 있던 확정 결과 이관 (2026-08-17 STEP1056 · 2026-08-18 STEP1069 재동기화)</h3>
+  <blockquote>
+    <div class="q">아래는 새로 판정한 것이 아니다 — 표시본에 이미 확정돼 있던 내용을 정본으로 옮긴 것뿐이다. 정본에 없었던 것이 문제였다(게이트 9 "정본 먼저" 취지).</div>
+  </blockquote>
+  <p><strong>탈락 — 공통으로 쓰이지만 만들지 않기로 한 셋</strong><br>
+  PEG·피터린치 밸류("성장 속도 대비 비싼가?") — 조합이 원리적으로 불가능. 유료인 것은 P/E가 아니라 분모의 미래 성장률. 과거 성장률을 넣으면 피터린치의 PEG가 아니고, 역DCF 함의 성장률을 넣으면 P/E도 성장률도 주가에서 나와 순환.<br>
+  애널리스트 목표주가·컨센서스("전문가들은 얼마로 보나?") — 남의 판단이고 검산 불가(관문③). 유료인 것이 데이터가 아니라 사람의 판단이라 어떤 조합으로도 유도되지 않음.<br>
+  퀀트 종합 랭킹("좋은 주식이야, 나쁜 주식이야?" · 5곳 채택 · 유료 가중합 1위) — 가중합은 정보를 더하지 않고 줄인다. 5곳 전원 비공개(연$2,995 최상위까지 확인, 전부 "proprietary" 한 단어). 축을 그대로 주면 사용자가 자기 가중치로 스스로 만든다.</p>
+  <p><strong>그 앞에서 이미 걸러진 것들 — 탈락 셋과 성격이 다르다</strong><br>
+  🔴 탈락 셋은 원리적으로 조합 불가(순환·검산불가·정보손실)해서 뺐고, 아래는 22개 후보 중 플랫폼 채택이 소수·제한적·1곳·0곳이라 공통 모델로 보기 어려워 걸러진 것 — 원리적 불가가 아니라 수요 미확인: Magic Formula(Greenblatt) · Residual Income · EVA · EPV(Greenwald) · Net-Net · 청산가치 · Beneish M-Score(🔴 우리 재료로는 8변수 중 SGI 하나만 재현 가능) · CFROI(HOLT, 🔴 UBS 기관 전용·리테일 채택 0) · 추정치 개정 · 어닝 서프라이즈(Zacks Rank 핵심 입력) · Rule of 40(SaaS 한정).</p>
+  <p><strong>판정 해소 둘 — 판정으로 없어진 게 아니라 물음 자체가 틀렸던 것</strong><br>
+  DCF 기본값 — 이전 기록("역DCF 함의값은 현재 주가와 같아져 무의미")은 출력을 가격으로 착각한 거짓 문장(단위가 다름). 역DCF의 출력은 가격이 아니라 <strong>연(年)</strong>(engine.ts:166 verdict.gap). 드라이버 일곱은 전부 5년 실적에서 나오고(drivers.ts:448), WACC는 다모다란 구성요소 조립, 잔여성장 i는 expected_inflation(2026-08-03 확정, registry.ts:262)이라 입력창 자체가 없다. 남은 것은 표시 방법 셋 — ⑴WACC 3점(±1%p) 표시방식 ⑵숫자 안 나오는 판정 넷을 이용자 말로 옮기기 ⑶REVDCF_ENABLED를 언제 켤지(flag.ts:3 — 육안 검증·승인 후).<br>
+  모멘텀 일관성 — 이전 기록("저변동성·자산성장을 뺐으면 모멘텀도 빼거나 셋 다 넣거나")은 일관성 문제가 아니라 재료 문제였다. 저변동성·자산성장을 뺀 이유는 계산이 아니라 주장("사면 초과수익")에 걸린 것이고, 모멘텀은 성장 질문의 재료(사실 서술, 예측 아님), 변동성은 이미 "부품"으로 판정, 자산성장은 재료(Assets 태그) 문제였다 — 🔴 STEP1054·1055·1056으로 그 재료가 99.7%임이 확인됨. 팩터냐 아니냐로 줄을 그은 것 자체가 "못 만드는 것"과 "안 쓰기로 한 것"을 같은 칸에 놓은 오류였다.</p>
+  <p><strong>극단치 원칙 — 값을 자르지 않는다</strong><br>
+  winsorize(상하위 절단)는 관문②(우리가 값을 매기지 않는가) 정면 위반. 자르는 건 둘뿐 — 수학적으로 정의되지 않을 때(분모≤0)와 원전이 그 업종을 표본에서 뺐을 때. 그 외 극단치는 그대로 주고 왜 극단인지 문장을 붙인다. 🔴 축B(실무) 미실시 — 극단치 원칙은 우리 관문에서 연역한 것이고, 다른 플랫폼이 실제로 어떻게 처리하는지는 재지 않음(표시본 자체가 밝힌 한계, 그대로 이관).</p>
 
   <h3>W-3. 지금 내놓고 있는 것</h3>
   <p class="lead"><strong>US 상장 종목</strong>에 대해, 다섯 면으로:</p>
@@ -645,11 +661,170 @@ tr.hl td.m{color:#ffb3b3}
       <div class="new"><strong>둘 다 무효</strong> — KR은 전면 동결, 리딩방·유사투자자문 검증은 2026-08-15에 제거됐다(<code>spinoff/advisor-directory/</code>로 분리 보관)</div>
     </div>
   </div>
+
+  <h3 style="font-size:14px;color:var(--tx2)">표시본 전용 WHAT 재구성 (2026-08-17 Downloads/roadmap_v2_2.html 이관 · 2026-08-18 STEP1069)</h3>
+  <blockquote>
+    <div class="q">🔴 아래는 정본(ROADMAP_V2.md W-1~W-3)에 대응하는 절이 없는 <strong>표시본 전용 콘텐츠</strong>다. 판정하지 않는다 — 그대로 옮긴 것뿐이다.</div>
+    <div class="t">질문 개수(여덟 vs 정본 여섯)·배수+역DCF 병합/분리·DCF정방향 신설·DDM 소속 등은 ROADMAP_V2.md F-5 &#9358;~&#9362;로 이미 판정 대기 등재됨(위 F-5 표 참조, STEP1056). 여기서는 그 갈림이 왜 생겼는지의 원문 근거·상세 서술을 그대로 보존한다.</div>
+  </blockquote>
+  <h3>사용자가 보는 질문 — 여덟 <span style="font-size:12px;color:var(--tx3);font-weight:400">🔴 정본(W-2)은 여섯 · 갈림은 <code>ROADMAP_V2.md</code> F-5 ⑮~⑰ 판정 대기로 등재(STEP1056, 2026-08-17)</span></h3>
+  <p>유료·무료 플랫폼이 실제로 화면에 싣는 모델 30개를 조사해 <strong>2곳 이상이 공통으로 쓰는 22개</strong>를 추리고,
+  관문 3개로 걸러 <strong>지금 만들 수 있는 도구 열둘</strong>을 확정했다. 그 열둘이 답하는 질문이 아래 여덟이다.</p>
+
+  <div class="conds">
+    <div class="cond"><div class="cn">1</div><div>
+      <div class="ch">지금 사면, 이 회사 몫에 비해 비싸게 사는 걸까?</div>
+      <div class="cd"><strong>P/E · P/B · P/S · EV/EBITDA</strong>(업종 대비로 나란히) <strong>+ 역DCF</strong>.
+      전달축은 P/E(단순성), 정밀판단축은 EV/EBITDA(자본구조 중립), 업종특화축은 P/B, 적자 대안은 P/S.
+      <br>🔑 <strong>배수와 역DCF는 한 질문이다</strong>(2026-08-17 확정) — 역DCF 원전 공저자 Mauboussin: <em>“배수는 가치평가 과정의 축약이며 제대로 된 DCF 모델의 핵심 가정을 한 숫자로 압축한 것”</em>, 그리고 <em>“배수는 투자 규모나 그 투자가 충분한 수익을 낼지에 대해 아무런 직접적 통찰을 주지 않는다 — 이것이 배수가 놓치는 핵심”</em>. <strong>배수는 압축본, 역DCF는 그 압축이 버린 것을 채운다.</strong> 실무 2/2도 한 칸(Simply Wall St · StockAnalysis).
+      <br>🔴 <strong>값은 합치지 않는다</strong> — 순위상관 0.23~0.46으로 서로 다른 정보를 담고 있어, 평균 내면 그 차이가 사라진다(탈락시킨 「퀀트 종합 랭킹」과 같은 실패).
+      <br>🔴 <strong>커버리지가 다르다</strong> — 배수는 2,592종목, 역DCF는 「N년」이 나오는 게 107종목. <strong>질문을 가르는 이유가 아니라 한 칸 안에서 밝힐 것.</strong></div>
+    </div></div>
+    
+    
+    <div class="cond"><div class="cn">2</div><div>
+      <div class="ch">재무가 좋아지고 있나, 나빠지고 있나?</div>
+      <div class="cd"><strong>Piotroski F-Score</strong> — 9개 신호의 <em>전년 대비 변화</em>. 수준이 아니라 방향을 본다.</div>
+    </div></div>
+    <div class="cond"><div class="cn">3</div><div>
+      <div class="ch">망할 위험은 없나?</div>
+      <div class="cd"><strong>Altman Z-Score</strong> — 재무비율로 2년 내 부도 가능성을 구간으로. 제조업은 5변수 <strong>Z</strong>(1968), 비제조업은 저자가 매출÷자산을 뺀 4변수 <strong>Z″</strong>(1995).</div>
+    </div></div>
+    <div class="cond"><div class="cn">4</div><div>
+      <div class="ch">얼마를, 얼마나 오래 나눠주나?</div>
+      <div class="cd"><strong>배당수익률 + 연속 증가 연수</strong> — 얼마나(수익률)와 얼마나 오래(연속 증가)는 서로 보완하는 두 하위축이다. 🔴 <strong>DDM은 2026-08-17에 이 칸에서 뺐다</strong> — 배당 질문의 답이 아니라 <strong>DCF의 변형</strong>이다(Simply Wall St 공개 저장소가 Valuation 안 Intrinsic Valuation에 둔다). 보류 항목으로 이동.
+      🔴 <strong>2026-08-17 STEP1056 발견</strong> — 정본(<code>ROADMAP_V2.md:307</code>)은 <em>"DDM은 적정주가류로 판정(다른 칸)"</em>이라 배당 칸의 최종 모델을 배당수익률+연속증가연수 <strong>둘로만</strong>확정해 놓았다. 이 카드가 DDM을 셋째 축으로 넣은 것과 갈린다 — <code>ROADMAP_V2.md</code> F-5 ⑲ 판정 대기(어느 쪽이 맞는지 여기서 정하지 않는다).</div>
+    </div></div>
+    <div class="cond"><div class="cn">5</div><div>
+      <div class="ch">사업 자체가 커지고 있나?</div>
+      <div class="cd"><strong>매출 5년 CAGR(주축) + 감가상각전 영업이익 CAGR(보조)</strong> — 원전 없음, 정의 공개표로 대체. 재료는 이미 완성(<code>revdcf_results.sales_growth</code> 기적재). <br>🔴 <strong>2026-08-17 복원</strong> — 이 질문이 표시본에서 빠져 있었다. <code>ROADMAP_V2.md</code> W-2 정본에는 있다(STEP1045가 한 번 잃었다가 복원한 항목인데 <strong>표시본에서 두 번째로 잃었다</strong>).</div>
+    </div></div>
+    <div class="cond"><div class="cn">6</div><div>
+      <div class="ch">최근에 뭐가 바뀌었나?</div>
+      <div class="cd"><strong>이동평균 · RSI · 모멘텀(12-1)</strong> — 가격의 변화. 사업 규모의 변화(성장)와는 상관 <code>r = −0.10</code>으로 독립이다.</div>
+    </div></div>
+  </div>
+
+  <div class="note"><strong>전제 둘 — 질문이 아니라 갈림이다.</strong>
+  <em>어느 업종인가</em>(위 답을 전부 “무엇과 비교해 읽을지” 정한다 · 의존 실측 15~71%) ·
+  <em>지금 흑자인가 적자인가</em>(적자면 1번이 <strong>43.4%에서 원리적으로 성립하지 않는다</strong>).
+  둘 다 카드가 아니라 모든 답에 조건으로 붙는다.</div>
+
+  <h3>도구 — 모델 일곱</h3>
+  <p>여러 입력을 구조적으로 결합해 판단 가능한 출력을 낸다. 원전이 그 구조를 정당화하므로
+  <strong>원전 대조표</strong>가 붙는다 — 논문 정의 · 우리 구현 · <span class="hi">차이</span> · 차이의 영향.</p>
+  <div class="tbl"><table>
+    <tr><th>모델</th><th>원전</th><th>대조표에 들어갈 차이</th><th>재료</th></tr>
+    <tr><td class="rule">DCF (정방향)</td><td class="src">Williams(1938) 이후 표준 재무이론 · CFA 커리큘럼</td><td>가정을 우리가 정하지 않는다. 기본값의 근거를 밝힌다</td><td><span class="b b0">완성</span></td></tr>
+    <tr><td class="rule">역DCF</td><td class="src">Rappaport &amp; Mauboussin, Expectations Investing — 저장소 보유</td><td>값을 매기지 않고 주가에 내포된 가정을 역산</td><td><span class="b b0">완성</span> 8,456행</td></tr>
+    <tr><td class="rule">Piotroski F-Score</td><td class="src">Piotroski(2000), JAR 38 — 정본 PDF 확보·원문 재확인</td><td><strong>원전 표본 = 1976–96 고 B/M 최상위 5분위 14,043 firm-year.</strong> 논문 본인이 효과 편중을 명시 — 소형·중형, 저회전, 애널리스트 미커버에 집중되고 대형주는 “weak or marginally significant”(고 B/M의 59.1%가 시총 하위 1/3, 37.8%만 커버·평균 3.15명). <strong>9개 시험은 어느 회사에나 산술적으로 성립하고, 표본에 걸리는 건 “높으면 초과수익”이라는 주장뿐</strong> — 우리는 그 주장을 안 하므로 전 종목 계산 + 원전 표본 명시. 백테스트 t=0.70이라 “건전성 해석만, 수익 신호 아님”으로 축소한 것도 함께</td><td>태그 2줄<br><span class="b b3">실측 32.3%</span><br><small>병목 둘 — ⑤Δ레버리지 64.2% · ⑧Δ마진 51.6%</small></td></tr>
+    <tr><td class="rule">Altman Z-Score</td><td class="src">Altman(1968), Journal of Finance + 저자 본인 확장 Z′(1983)·Z″(1995)</td><td><strong>원전 표본 = 미국 제조업 66개(파산 33·정상 33), 자산 $25M 미만, 1960년대.</strong> 좁은 건 맞지만 <strong>Altman 본인이 답을 내놨다</strong> — Z″(1995)는 X₅(매출÷자산)를 통째로 뺐고, 뺀 이유가 정확히 우리 문제(“X₅가 산업 부문 차이에 특히 민감 — 소매·서비스 대 제조업”). <code>Z″ = 3.25 + 6.56X₁ + 3.26X₂ + 6.72X₃ + 1.05X₄</code>. <strong>업종에 따라 판을 갈아 쓰는 것이 원전 이탈이 아니라 원전 준수다</strong>(버핏이 “(c) must be a guess”라 직접 써서 근사가 원전 준수였던 것과 같은 모양). 제조업 Z · 비제조업 Z″, 어느 판인지 밝힌다</td><td>태그 3줄<br><span class="b b0">실측 65.1%</span><br><small>Z 35.4% + Z″ 29.7% · 섹터 미상 4.4%</small></td></tr>
+    <tr><td class="rule">DDM</td><td class="src">Gordon(1959) 성장모형</td><td>배당 없는 회사에서 원리적으로 미성립. 영구성장률 가정이 결과를 지배</td><td>태그 1줄<br><span class="b b0">실측 48.2%</span></td></tr>
+    <tr><td class="rule">그레이엄 넘버</td><td class="src">Graham, The Intelligent Investor</td><td>√(22.5×EPS×BPS)의 22.5가 어디서 왔는지(P/E 15 × P/B 1.5)</td><td><span class="b b3">주식수 39.8%</span></td></tr>
+    <tr><td class="rule">Owner Earnings</td><td class="src">Buffett, 1986 주주서한 부록</td><td><strong>버핏 본인이 “(c) must be a guess”라 명시</strong> — 근사가 원전 이탈이 아니라 원전 준수다. 어떤 근사(Greenwald 방식)를 골랐는지와 asset-light에서 무너진다는 것을 밝힌다</td><td><span class="b b3">7.7% · 실질 5.5%</span></td></tr>
+  </table></div>
+
+  <h3>도구 — 지표 일곱</h3>
+  <p>계산 구조랄 게 없는 나눗셈이다. 원전이 없으니 <strong>정의 공개표</strong>가 붙는다 — 무엇으로 나눴나 · 성립 안 하는 경우 · 극단치 처리.
+  전수로 겹치므로 <span class="hi">차별화가 아니라 입장권</span>이고, 우리 자리는 숫자가 아니라 <strong>놓는 방식</strong>에 있다.</p>
+  <div class="tbl"><table>
+    <tr><th>지표</th><th>계산</th><th>정의 공개표에 밝힐 것</th><th>재료</th></tr>
+    <tr><td class="rule">P/E</td><td class="src">주가 ÷ 주당순이익</td><td>EPS를 최근 4분기로 잡았나 직전 회계연도로 잡았나 · <strong>적자 43.4%에서 미성립</strong> · <strong>극단치 최다(8.9%가 100배 초과, 최대 195,503배)</strong></td><td><span class="b b0">2,068</span></td></tr>
+    <tr><td class="rule">P/B</td><td class="src">주가 ÷ 주당순자산</td><td>자기자본을 보통주만으로 잡았나 · 무형자산 집약 업종에서 장부가 과소계상 · <strong>극단치는 드물지만(0.8%) 최대 735만 배</strong></td><td><span class="b b0">3,283</span></td></tr>
+    <tr><td class="rule">P/S</td><td class="src">주가 ÷ 주당매출</td><td>매출 정의(은행 이자수익 처리) · <strong>Financials 405종목이 「이견 있는 값」</strong> — 원전 텍스트는 측정 불가라 하나 Damodaran 본인은 발행 중</td><td><span class="b b0">3,558</span></td></tr>
+    <tr><td class="rule">EV/EBITDA</td><td class="src">(시총+부채−현금−소수지분) ÷ (영업이익+감가상각)</td><td><strong>EV 조립 방식</strong>(어느 부채, 어느 현금) · <strong>근접영 EBITDA에서 폭주 — 최대 19,124배</strong> · 은행에는 EV 개념 자체가 안 맞는다</td><td><span class="b b0">1,452</span></td></tr>
+    <tr><td class="rule">배당수익률 · 이력</td><td class="src">연간 배당 ÷ 주가 · 연속 증가 연수</td><td>선언 기준인가 지급 기준인가 · 특별배당 포함 여부 · 연속 증가 판정 기준 · 🔴 <strong>실측이 「섞지 않는다」를 정당화했다</strong> — 지급기준(34.2%)·선언기준(24.8%)·지급기준 주당(15.4%)이 <strong>서로 다른 종목을 담는다</strong></td><td>태그 1줄<br><span class="b b0">실측 50.7%</span><br><small>연속 증가 연수 44.9%</small></td></tr>
+    <tr><td class="rule">이동평균 · 추세</td><td class="src">N일 종가 평균 대비 현재가</td><td>기간을 왜 200일로 잡았나 · 단순평균인가 지수평균인가 · 상장 200일 미만 처리</td><td><span class="b b0">보유</span></td></tr>
+    <tr><td class="rule">RSI · MACD</td><td class="src">Wilder(1978) 정의식</td><td>기간(14일)의 근거 · <strong>자체 검증 등급이 “참고용”</strong>(RSI 유의 손실, 200일선이 모멘텀을 흡수)이라는 사실을 함께</td><td><span class="b b0">보유</span></td></tr>
+  </table></div>
+
+  <div class="note"><strong>극단치 원칙 — 우리는 값을 자르지 않는다.</strong> winsorize(상하위 절단)는 관문 ②(<em>우리가 값을 매기지 않는가</em>)의 정면 위반이다. 자르는 건 둘뿐 — <strong>수학적으로 정의되지 않을 때</strong>(분모 ≤ 0)와 <strong>원전이 그 업종을 표본에서 뺐을 때</strong>. 그 외 극단치는 그대로 주고 왜 극단인지 문장을 붙인다(F-1-1: 모델을 자르는 것이 아니라 문장을 자른다).
+  <br>㉠ <strong>P/E 8.9%</strong> — 적자면 음수라 해석이 없다. 값은 표시하되 “적자 — 해당 없음”으로 넘기고 순위에서 제외. 우리가 자르는 게 아니라 나눗셈이 성립을 안 한다.
+  <br>㉡ <strong>EV/EBITDA 19,124배</strong> — EBITDA가 <em>양수인데</em> 0에 가까운 경우라 수학적으로는 정상이다. 그대로 주고 “EBITDA가 매출의 0.x%라 배수가 발산” 한 줄을 붙인다. 정렬 상위가 극단치로 도배되는 건 별개 문제 → <strong>기본 정렬을 배수 절대값이 아니라 업종 내 백분위로</strong>.
+  <br>㉢ <strong>PSR × Financials 405종목</strong> — 성격이 다르다. 값이 극단인 게 아니라 금융업의 ‘매출’이 이자수익 총액이라 <strong>정의 자체가 다르다</strong>. 0층 전제가 이미 업종이니 거기서 갈린다 — 전 종목 비교에서 빼고 업종 내 비교만. 값을 자르는 게 아니라 <strong>비교 범위를 밝히는 것</strong>.</div>
+
+  <h3>재료를 여는 법 — 태그 다섯 줄</h3>
+  <p>막힌 것들이 <strong>같은 원인</strong>이다. SEC 표준 태그를 안 뽑고 있을 뿐이고,
+  크론이 이미 <code>companyfacts</code>를 매일 부르므로 <span class="hi">응답 안에 이미 들어 있는 것을 안 꺼내고 있는 것</span>이다.
+  <strong>새 소스도, 새 파이프라인도, 새 비용도 없다.</strong></p>
+  <div class="tbl"><table>
+    <tr><th>추가할 태그</th><th>여는 것</th><th>실측 공급<br><small>2026-08-16 · n=5,742</small></th></tr>
+    <tr><td class="rule"><code>NetCashProvidedByUsedInOperatingActivities</code><br><small>+ <code>…ContinuingOperations</code></small></td><td>Piotroski 2신호 완성 · 발생액(이익의 질)</td><td><span class="b b0">72.3%</span></td></tr>
+    <tr><td class="rule"><code>Assets</code></td><td>Piotroski(ROA) · <strong>Altman 5변수 중 넷의 분모</strong> · 자산성장</td><td><span class="b b0">73.8%</span></td></tr>
+    <tr><td class="rule"><code>Liabilities</code></td><td>Altman 4번째 변수</td><td><span class="b b0">65.9%</span><br><small>🔴 <code>LiabilitiesAndStockholdersEquity</code> 재구성 경로가 <strong>73.6%</strong>로 7.7%p 더 넓다</small></td></tr>
+    <tr><td class="rule"><code>RetainedEarningsAccumulatedDeficit</code></td><td>Altman 2번째 변수 · 🔴 <strong>2026-08-16 정정</strong> — 여기 <code>RetainedEarnings</code>라 적혀 있었으나 <strong>그 이름의 태그는 아예 존재하지 않는다</strong>(1,167종목 선행 스캔). 이름으로 찾았으면 “재료 없음”으로 오판했을 자리다</td><td><span class="b b0">72.2%</span></td></tr>
+    <tr><td class="rule"><code>PaymentsOfDividends</code> 계열<br><small>🔴 세 축을 섞지 않는다</small></td><td>배당수익률 · 연속 증가 연수 · DDM</td><td>지급기준 <strong>34.2%</strong><br>선언기준 24.8%<br>지급·주당 15.4%</td></tr>
+  </table></div>
+  <div class="note"><strong>이 다섯이 여는 것</strong> — Altman · DDM · 배당수익률 · Piotroski 완성.
+  <strong>태그로 안 되는 둘</strong> — Owner Earnings(자본지출률이 역DCF를 돌린 446종목에만 있고, 그중 28%가 asset-light라 실질 5.5%)와 그레이엄 넘버(주식수 39.8%). 이 둘은 파이프라인 확장이라 성격이 다르다.
+  <strong>✅ 커버리지 실측 완료</strong>(2026-08-16 STEP1054) — 모집단 5,820 중 <strong>5,742건(98.66%) SEC 원자료 확보</strong>. 위 백분율이 그 실측치다. 종전에 적어둔 <em>“자기자본 64.0%를 보면 총자산도 그 언저리일 것”</em>이라는 <strong>추정은 실측 73.8%로 대체됐다.</strong>
+  <br>🔴 <strong>분모가 두 겹이다</strong> — 태그 공급률은 5,742 기준이지만, 모델 성립률(F-Score·Altman·배당)은 <strong>전년 대비 비교가 가능한 3,606건</strong>(기준연도 보유)이 분모다. REV 창을 못 잡은 2,136건(37.2%)은 t/t−1 비교 자체가 성립하지 않는다.
+  <br>🔴 <strong>낙관 편향 하나를 밝힌다</strong> — 그 2,136건을 「자체 최신연도」로 대체해 셌기 때문에, 최신FY·연속2년 수치는 파이프라인이 실제로 쓸 수 있는 값보다 <strong>다소 낙관적</strong>이다.
+  <br><br>🔴 <strong>이름으로 찾지 않은 것이 값을 했다.</strong> STEP1054는 태그를 <code>grep</code>하지 않고 <code>us-gaap</code> 키를 <strong>전부 나열한 뒤 거르는</strong> 방식(「전수의 조건」 ③)을 썼고, 선행 1,167종목 스캔에서 곧바로 <code>RetainedEarnings</code>가 <strong>실재하지 않는 이름</strong>임이 드러났다. 이름 검색으로 갔다면 “Altman 재료 없음”이라는 <strong>틀린 결론</strong>이 나왔을 것이다 — 패턴 검색은 자기 자신의 누락을 증명할 수 없다는 규칙의 실증 사례.</div>
+
+  <h3>탈락 — 안 쓰기로 한 것</h3>
+  <div class="fix">
+    <div class="fh">공통으로 쓰이지만 우리는 만들지 않는다</div>
+    <div class="fitem">
+      <div class="old">PEG · 피터린치 밸류 — “성장 속도 대비 비싼가?”</div>
+      <div class="new"><strong>조합이 원리적으로 불가능하다.</strong> 유료인 것은 P/E가 아니라 분모의 미래 성장률이다. 과거 성장률을 넣으면 피터린치의 PEG가 아니고, 역DCF 함의 성장률을 넣으면 <strong>P/E도 주가에서, 성장률도 주가에서 나와 순환한다.</strong></div>
+    </div>
+    <div class="fitem">
+      <div class="old">애널리스트 목표주가 · 컨센서스 — “전문가들은 얼마로 보나?”</div>
+      <div class="new"><strong>남의 판단이고 검산이 불가능하다</strong>(관문 ③). 유료인 것이 데이터가 아니라 사람의 판단이라 어떤 조합으로도 유도되지 않는다.</div>
+    </div>
+    <div class="fitem">
+      <div class="old">퀀트 종합 랭킹 — “그래서 좋은 주식이야, 나쁜 주식이야?” · 5곳 채택 · 유료 가중합 1위</div>
+      <div class="new"><strong>가중합은 정보를 더하지 않고 줄인다.</strong> 여러 숫자를 등급 하나로 만들면 정보가 압축돼 사라지고 그 자리에 <strong>임의의 가중치</strong>가 들어간다. 5곳 전원 비공개인 건 “왜 이 가중치냐”에 답이 없기 때문일 가능성이 높다(연 $2,995 최상위까지 확인, 전부 “proprietary” 한 단어). 축을 그대로 주면 사용자가 자기 가중치로 스스로 만든다 — <strong>돈이 가장 많이 몰리는 자리를 비워두는 선택이다.</strong></div>
+    </div>
+  </div>
+
+  <div class="note"><strong>그 앞에서 이미 걸러진 여덟</strong> — 플랫폼 채택이 「소수 · 제한적 · 1곳 · 0곳」이라 공통 모델로 보기 어려웠던 것들이다. 탈락 셋과 달리 <strong>원리적으로 못 만드는 게 아니라 수요가 확인되지 않은 것</strong>이라 성격이 다르다.
+  <br>Magic Formula(Greenblatt) · Residual Income · EVA · EPV(Greenwald) · Net-Net · 청산가치
+  <br><strong>Beneish M-Score</strong> — 🔴 우리 재료로는 8변수 중 하나(SGI)만 재현 가능 · <strong>CFROI(HOLT)</strong> — 🔴 UBS 기관 전용, 리테일 채택 0
+  <br>추정치 개정 · 어닝 서프라이즈(Zacks Rank의 핵심 입력) · Rule of 40(SaaS 한정)</div>
+
+  <div class="note"><strong>🔑 실측이 새로 만든 판정 셋</strong>(2026-08-16 STEP1054 · <code>probe_1054_tag_supply.md</code>)
+  <br><strong>㉠ Piotroski 32.3%를 받아들일 것인가.</strong> 9신호 중 일곱은 85%+인데 <strong>⑤Δ레버리지(64.2%)·⑧Δ마진(51.6%)</strong> 둘이 전부 성립률을 3분의 1로 끌어내린다. 부분 합산은 H-7 위반이라 <strong>32.3% 바깥은 F-Score를 낼 수 없다.</strong> 다만 병목 둘은 태그 부재가 아니라 <code>DEBT_LT</code>·COGS 계열 <strong>배열이 좁은 것</strong>이라 STEP969가 부채에 했던 배열 확장으로 올릴 여지가 있다 — 확장할지, 32.3%로 갈지, 접을지.
+  <br><strong>㉡ 자산성장을 살릴 것인가.</strong> <span class="b b0">99.7%</span> — 기준연도 보유 종목의 거의 전부가 계산된다. <strong>“재료가 없어 못 만든다”는 서술이 실측으로 뒤집혔다.</strong> F-5 ⑪의 마지막 걸림돌이 사라졌다.
+  <br><strong>㉢ Altman 섹터 근사를 그대로 둘 것인가.</strong> 65.1%는 <code>us_sector_wide.sector</code>(GICS 유사 라벨)를 제조/비제조로 <strong>연구자가 근사</strong>한 것이고, 원전의 SIC 2000–3999 이진분류가 아니다. 실제 SIC로 바꾸려면 SEC <code>submissions</code> 5,742건 추가 조회가 든다.</div>
+
+  <h3>정리된 것 다섯 — 판정 대기 없음</h3>
+  <div class="note">판정 대기 ①②는 <strong>판정으로 없어진 게 아니라, 물음 자체가 틀렸던 것으로 판명돼</strong> 없어졌다. 두 카드 안에 무엇이 어떻게 틀려 있었는지 남긴다. 남은 둘(Piotroski 표본 범위 · Altman 표본 범위)은 <strong>판정 대기가 아니라 재료 대기</strong>다 — 태그 다섯을 넣고 커버리지를 실측해야 판정할 수 있다.</div>
+  <div class="grid g3">
+    <div class="card"><div class="m">정리 — 적정주가</div><div class="def">모델이 아니라 <strong>출력</strong>이다. DCF와 같은 것이므로 합친다. 남은 건 <strong>이름</strong> — “적정주가”라 부르면 주어가 우리가 되고, “당신의 가정으로 계산하기”라 부르면 사용자가 된다.</div></div>
+    <div class="card"><div class="m">정리 — 재무건전성 스코어</div><div class="def">모델이 아니라 <strong>묶음 이름</strong>이다. Piotroski는 “좋아지고 있나”에, Altman은 “망할 위험”에 답하는 <strong>다른 질문</strong>이므로 갈라진 채로 둔다.</div></div>
+    <div class="card"><div class="m">정리 — 베타 · 변동성</div><div class="def">“모델이 아니라 <strong>부품</strong>”으로 판정된 바 있다(역DCF 안에서만 의미). 질문이 아니라 <strong>계산 내역</strong>으로 공개한다.</div></div>
+    <div class="card"><div class="m">정리 — DCF 기본값 <span class="b b0">확정</span></div><div class="def"><strong>기본값을 우리가 정하지 않는다 — 주가가 입력이다.</strong> 역DCF의 출력은 가격이 아니라 <strong>연(年)</strong>이다(<code>engine.ts:166</code> <code>verdict.gap</code>). 드라이버 일곱은 전부 5년 실적에서 나오고(<code>drivers.ts:448</code> 매출 CAGR·평균마진), WACC는 다모다란 구성요소 조립, 잔여성장 <code>i</code>는 <code>expected_inflation</code>으로 2026-08-03 확정(<code>registry.ts:262</code>). <strong>입력창 자체가 없다.</strong> 나오는 문장은 “시장은 이 회사가 지금 속도를 8년간 유지한다고 값을 매기고 있다” — 주어가 시장이다.
+      <br><br><strong>이전 기록 정정</strong> — 이 자리에 “역DCF 함의값은 현재 주가와 같아져 무의미”라 적혀 있었다. 출력을 가격으로 착각한 <strong>거짓 문장</strong>이었다. 단위가 다르다.
+      <br><br><strong>남은 것은 표시 방법 셋</strong> — ⑴ WACC 3점(±1%p)을 세 숫자로 줄지 범위로 줄지(<code>compute.ts:5</code>: ±1%p면 판정이 below_one↔15년으로 흔들림) ⑵ 숫자가 안 나오는 판정 넷(below_one·over_cap·value_destroying·invalid)을 이용자 말로 옮기기 ⑶ <code>REVDCF_ENABLED</code>를 언제 켤지(<code>flag.ts:3</code> — 육안 검증·승인 후).</div></div>
+    <div class="card"><div class="m">정리 — 모멘텀 일관성 <span class="b b0">확정</span></div><div class="def"><strong>일관성 문제가 아니라 재료 문제였다.</strong> 저변동성·자산성장을 뺀 이유는 계산이 아니라 <strong>주장</strong>(“사면 초과수익”)에 걸린 것이다. F-1-1대로 모델이 아니라 문장을 자르면 셋의 자리가 이미 갈려 있다 — <strong>모멘텀</strong>은 질문 7의 재료(“지난 12개월 이렇게 움직였다”는 사실이지 예측이 아님·가격만 필요·보유), <strong>변동성</strong>은 이미 “부품”으로 판정(계산 내역으로 공개·가격만 필요·보유), <strong>자산성장</strong>은 뺀 게 아니라 <code>Assets</code> 태그가 없어 <strong>못 만드는 것</strong>.
+      <br><br><strong>이전 기록 정정</strong> — “셋 다 빼거나 셋 다 넣거나”로 적혀 있었다. 팩터냐 아니냐로 줄을 그은 것이고, 못 만드는 것과 안 쓰기로 한 것을 같은 칸에 놓은 <strong>기존 오류의 재발</strong>이다.
+      <br><br><strong>남은 판정 하나</strong> — 태그 추가 후 자산성장을 살릴지.</div></div>
+  </div>
+
+  <div class="note"><strong>근거</strong> — 플랫폼 조사는 <code>MODEL_DEMAND_SURVEY</code>·<code>probe_1038</code>, 칸별 모델은 <code>probe_1043</code>, 배수 역할은 <code>probe_1052</code>, 질문 문구는 <code>probe_1053</code>,
+  극단치·커버리지는 <strong>2026-08-16 DB 실측</strong>. 역DCF 구조는 <code>lib/revdcf/engine.ts</code>·<code>drivers.ts</code>·<code>registry.ts</code> 코드 직접 대조,
+  Piotroski·Altman 원전 표본은 <strong>원논문 PDF 재확인</strong>(2026-08-16).
+  <br>✅ <strong>층 구분 — 폐기 확정(2026-08-17 장은태).</strong> 「모델 / 지표 / 부품」이라는 층을 쓰지 않는다. 이용자가 보는 축은 <strong>질문 여섯</strong>이고, 그 아래에 답하는 것을 붙인다.
+  <br>🔴 <strong>폐기 이유 — 이미 세 체계가 있었고 그 위에 네 번째를 만든 것이었다.</strong> ① 판별 기준 <em>“다른 모델 안에서만 의미”</em>(<code>MODEL_BUILD_ORDER:51</code>·<code>MARKET_MODEL_USAGE_TOP20:38</code>·<code>MODEL_UNIVERSE_63:142</code>) ② 성격 분류(포트폴리오 기법 / 부품 / 포트폴리오 지표, <code>probe_1041:69·71</code>) ③ 주제별 계층 ①~⑤ + 완결성 확인(<code>MODEL_ROSTER.md:29–41</code> — <em>“여섯 번째 계층은 못 찾았다”</em>).
+  <br>🔴 <strong>그 층 구분이 실제로 오분류를 만들었다</strong> — <em>“베타·변동성 = 부품”</em>이라 묶었으나 <strong>베타는 부품이 맞고 변동성은 라이브 렌즈</strong>다(<code>LENS_ROADMAP:18</code>·<code>LENS_DEV_PLAYBOOK:49·67·89</code> — 저변동 렌즈가 화면 문구·임계 40%·감사 기록까지 갖고 서빙 중). <strong>없던 판정을 하나 발명한 것이었다.</strong>
+  <br>🔑 <strong>얻으려던 것은 층이 아니라 규칙이었다</strong> — <em>“원전이 있으면 원전 대조표, 없으면 정의 공개표”</em>. 그 규칙은 각 항목에 붙이면 되고 층 이름이 필요 없다.
+  <br>🔴 <strong>밝혀둘 한계</strong> — ㉠
+  ㉡ 원본 조사가 밝힌 한계 — <em>“직접적인 수요 순위는 측정하지 못했다. 공급 측 관찰이지 수요 자체가 아니다.”</em>
+  <br>🔴 <strong>축 B(실무) 미실시</strong> — 극단치 원칙은 우리 관문에서 연역한 것이고, 다른 플랫폼이 실제로 어떻게 처리하는지는 재지 않았다.
+  <br>🔴 <strong>2026-08-17 STEP1056 — 정본↔표시본 전수 양방향 대조 완료.</strong> 이 페이지가 표시본, <code>docs/ROADMAP_V2.md</code>가 정본이다. 갈림 다섯(질문 개수·배수+역DCF 병합/분리·DCF정방향 신설·층 구분·성장 질문 유무 — 성장은 이미 복원 완료)에 더해 <strong>DDM의 소속(배당 칸 vs 적정주가류, 질문 6 카드 참조)</strong>이 새로 발견돼 <code>ROADMAP_V2.md</code> F-5 ⑮~⑲로 등재됐다. 판정은 장은태가 한다 — 이 페이지도 정본도 어느 쪽이 맞는지 스스로 정하지 않는다.
+  <br>🔴 <strong>2026-08-17 STEP1056 정정</strong> — 여기 <em>"이 절이 정본이다(2026-08-16 장은태 판정)"</em>이라 적혀 있었으나, <strong>정본은 <code>docs/ROADMAP_V2.md</code> 하나뿐이다.</strong> 이 페이지는 그 정본을 읽기 좋게 보여주는 <strong>표시본</strong>이다(정본 먼저·표시본 나중, 게이트 9). 같은 내용을 담고 있던 별도 「층별 정리」 문서를 은퇴시킨 것은 여전히 유효하다 — <strong>정본을 둘로 두지 않는다는 원칙 자체는 살아 있고, 그 정본이 이 HTML이 아니라 <code>ROADMAP_V2.md</code>라는 것만 바뀌었다.</strong></div>
+</section>
+
+<section class="pending">
+
 </section>
 
 <section class="pending">
   <div class="shead"><h2>만드는 절차</h2><span class="badge wait">확정 대기</span></div>
   <div class="stitle">모델 하나를 어떤 단계로 만드는가</div>
+  <p class="note">🔴 <span class="hi">정본 포인터(2026-08-18 STEP1065)</span> — 이 층의 정본은 <code>docs/BUILD_SEQUENCE.md</code>다(§7 문서 위계가 이미 명시). 이 로드맵의 "확정 대기"는 그 문서가 없다는 뜻이 아니라, 그 문서 §6의 미해결 판정(A~F)이 안 채워졌다는 뜻이다. 상세(A·B 생존 확인·종속표·관문7개 폐기 파급)는 <code>docs/BUILD_SEQUENCE.md</code> §6-부록. 이 줄은 사실 기록이며 절차 내용을 채우지 않는다(그건 판정).</p>
   <div class="ph">WHAT 확정 후</div>
 </section>
 
@@ -829,8 +1004,14 @@ tr.hl td.m{color:#ffb3b3}
       <tr class="hl"><td class="m">⑬-a</td><td><span class="hi">신규</span> 성장 재료부족(7.7%, 있는데 부족)의 H-4 경로</td><td>probe_1046 1-2</td><td>독립</td></tr>
       <tr class="hl"><td class="m">⑬-b</td><td><span class="hi">신규</span> 배당·부도위험(아예 없음, US 재료 0건)의 H-4 경로 — 2026-08-16 STEP1048로 옛 배당 재료(KR 파일럿)가 DB에서 완전히 제거돼 "부족"이 아니라 "부재"로 확정. 부도위험은 애초부터 0%</td><td>probe_1046 1-2·probe_1047·probe_1048</td><td>독립</td></tr>
       <tr class="hl"><td class="m">⑭</td><td><span class="hi">신규</span> 성장카드·역DCF카드 반대방향 표시(162/446=36.3%) — C-1 항목6 위반 후보, 설명 문구 필요 여부</td><td>probe_1046 1-3</td><td>독립</td></tr>
+      <tr class="hl"><td class="m">⑮</td><td><span class="hi">신규(STEP1056)</span> 질문 개수 자체(정본↔표시본 갈림) — 정본(W-2): 여섯. 표시본(성장 복원 후): 여덟. 어느 쪽이 맞는지 정하지 않음 — ⑯⑰의 결과일 뿐 자체 독립 판정 아닐 수 있음</td><td>STEP1056.md §1</td><td>⑯⑰에 종속</td></tr>
+      <tr class="hl"><td class="m">⑯</td><td><span class="hi">신규(STEP1056)</span> 배수+시장내재기대 병합 vs 분리 — 정본: "지금 사면 비싸게 사는 걸까" 하나(병합). 표시본: "지금 이 가격, 비싼가"(배수)와 "이 가격은 무엇을 기대하고 있나"(역DCF) 분리된 두 질문 카드</td><td>STEP1056.md §1</td><td>독립(⑮에 영향)</td></tr>
+      <tr class="hl"><td class="m">⑰</td><td><span class="hi">신규(STEP1056)</span> "내 가정으로 계산하면 얼마인가?"(DCF 정방향) 질문 신설 여부 — 정본엔 없음. 표시본은 질문3번으로 이미 올려두고 W-2-4 "정리—적정주가"와 연결(이름 문제로 봄: "적정주가"=주어가 우리, "당신의 가정으로 계산하기"=사용자)</td><td>STEP1056.md §1</td><td>독립(⑮에 영향)</td></tr>
+      <tr class="hl"><td class="m">⑱</td><td><span class="hi">신규(STEP1056)</span> 층 구분(모델/지표/부품) 신설 여부 — 정본엔 구분 자체 없음(0건). 표시본은 모델일곱/지표일곱/부품으로 전부 나눔. 🔴 근거 상태 — 층 구분은 2026-08-16 세션 도출이며 원전 대조 미실시. 근거 있는 것은 베타의 "부품" 판정(probe_1041) 하나뿐. 나머지 열셋은 2026-08-16 대화가 근거이고 원전 대조 미실시(H-7 규칙5-1 5단계 이행 여부도 판정 대상)</td><td>STEP1056.md §1·§2-5</td><td>독립</td></tr>
+      <tr class="hl"><td class="m">⑲</td><td><span class="hi">신규(STEP1056)</span> DDM의 소속 — 배당 칸 vs 적정주가류. 정본 W-2-4 배당 행: "DDM은 적정주가류로 판정(다른 칸)" — 배당 칸 최종모델은 배당수익률+연속증가연수뿐, DDM 명시 제외. 표시본: 질문6번 카드가 "배당수익률+연속증가연수+DDM"으로 DDM을 배당 답의 세번째 축으로 명시 포함하면서도, 별도 "도구—모델일곱" 표에서는 DDM을 다른 층("모델")으로 분류 — 표시본 내부에서도 층 구분과 질문 카드 구성이 완전히 정합하지는 않음</td><td>ROADMAP_V2.md:307(정본) vs Downloads/roadmap_v2_2.html 질문6카드·모델표(표시본)</td><td>독립</td></tr>
     </tbody>
   </table></div>
+  <p class="note">🔴 <span class="hi">STEP1069 재동기화</span> — 위 ⑮~⑲는 2026-08-17 STEP1056이 이미 확정한 판정 대기 항목이나 이 표시본(docs/roadmap_v2.html)에는 누락돼 있었다(마지막 커밋 STEP1053, `docs/ROADMAP_V2.md`는 STEP1056에서 이미 갱신됨) — 이 STEP이 새로 만든 항목이 아니라 정본에 이미 있던 것을 표시본에 뒤늦게 반영한 것뿐이다.</p>
 </section>
 
 <section>

@@ -1,6 +1,28 @@
 <!-- 2026-08-18 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-18 — 🟡 **STEP1069: Downloads 표시본을 저장소로 들여놓고 디테일하게 합치기**
+
+> 문서 전용(코드 diff 0·DB 쓰기 0·화면 변경 0·크론 수동 실행 0·`~/Downloads/` 원본 무접촉). `docs/roadmap_v2.html`(91,937B, STEP1053 정지)와 `~/Downloads/roadmap_v2_2.html`(65,755B, 자체 STEP1056 인용) 사이 26KB 차이, `data_source_catalog.html`·`model_list_30_9.html`·`tombstone.html`이 git 밖에 있던 문제(`tombstone.html`이 이미 경고한 것 — "같은 내용을 두 곳에 두면 한쪽이 뒤처지고 어느 쪽이 정본인지 알 수 없게 된다")를 처리. 인용 기준 = 원격 `main` = `5668061`(STEP1068까지).
+
+**⓪-1b `ls` 전수**: `docs/*.html` 2개(`build_sequence.html` STEP1033·`roadmap_v2.html` STEP1053) ↔ `~/Downloads/*.html` 5개(위 둘 + `data_source_catalog.html`[STEP1002]·`model_list_30_9.html`[STEP1055]·`tombstone.html`) 전수 확인. `model_list_30_9_1.html` 등 번호 붙은 사본 **없음**(전수 확인). `git log --all --diff-filter=A -- '*model_list*'` **0건 재확인** — `model_list_30_9.html`은 저장소에 한 번도 들어온 적 없던 파일.
+
+**2-1~2-3 전수 매핑·4분류·문장 diff**: `build_sequence.html`은 A(docs)=B(Downloads) 헤딩 완전 동일이나 문장 diff 결과 **A가 이미 STEP1065가 발견한 정정 반영판**, B는 그 직전 초안(신규 작업 불필요, 재확인만). `roadmap_v2.html`은 ①양쪽동일(WHY·HOW 21헤딩) ②A만(W-1~M-4 기술 상세 전체) ③B만(WHAT 재구성 6헤딩 — "질문8"·"도구모델7"·"도구지표7"·"재료여는법"·"탈락"·"정리된것다섯") ④내용다름(W-2-4 3건 정정+F-5 5행) 넷으로 갈림. 🔴 **26KB 정체 확정** — "저장소가 크다"가 아니라 A는 F/C/M 기술층 보유·B는 그 층을 비우고 WHAT만 재구성(서로 다른 것을 채우고 비웠다). 자기지시적 정본 주장 재확인 — Downloads 사본 안에 STEP1056이 이미 정정한 문구("이 절이 정본이다" 취소선+정정)가 그대로 보존돼 있어 **신규 결함 0건**.
+
+**2-4 합치기**: `docs/roadmap_v2.html`에 ④(3건 정정: 재무건전성 조건둘·부도위험 65.1%·자산성장 99.7%)를 취소선+정정+좌표로 반영, F-5 ⑮~⑲ 5행 추가, STEP1065 정본 포인터 1행 추가, ③(WHAT 재구성 6헤딩)을 요약 없이 원문 그대로 이관("표시본 전용, md 대응 없음" 명시 라벨). `build_sequence.html`은 이미 정답이라 변경 없음.
+
+**2-5 `model_list_30_9.html` 신규 등재 + 재료 5건**: `docs/model_list_30_9.html`로 이름 불변 등재. 원문 좌표에서 문장 그대로 반영 — ①배수커버리지27%급락 원인 확정(STEP1058, `us_market_cap` 단일-as_of 조인, 상류=lens-scores 야후 배치 실패, 08-17 밤 자연복구) ②Piotroski 32.3% 전제 변경(라이브 71.9%, SEC단독은 32.3%, 부분합산 코드에 없음) ③자산성장 처분(⑦감사 완료·신규결함0·CGS2008 원문미확보·손계산구조적불가·"못쓴다"아니라"어느질문에도안붙는다") ④Past performance 갱신(수준3:변화5:사건형1·SWS는성장3:수익성3·ROE/ROA가실무지표·GP/A0곳) ⑤7렌즈 재사용판정 신규절(결함16건·사용차단0건·WHAT실제편입은셋뿐). 미판정 표기 유지, 판정A 미반영.
+
+**2-5b**: `data_source_catalog.html`·`tombstone.html` 이름·내용 불변 등재. 카탈로그 정합 목록(고치지 않음) — html은 STEP1002 스냅샷, md는 STEP1051까지 최소 49 STEP 격차(§0-A 시총커버리지·유니버스SIC재판별·STEP1034재대조 등 html에 없음).
+
+**2-6~2-7**: `BUILD_SEQUENCE.md` §7에 표시본 행 신설 + Downloads 사본 지위 기록. `model_list_30_9.html` ↔ `ROADMAP_V2.md` W-2 정합 목록(고치지 않음) — 🔑 **패턴 발견**: model_list_30_9.html이 F-5 ⑮~⑲ 네 항목(질문개수·병합·층구분·DDM)에 "2026-08-17 장은태" 딱지를 달고 이미 확정된 것처럼 서술하나, **이 확정이 `ROADMAP_V2.md` F-5 표에 한 번도 반영되지 않았다** — 정본 규칙("정본에 판정 기록 없으면 미판정")대로면 여전히 미판정. 어느 서술이 맞는지 이 STEP은 정하지 않음, 둘 다 판정 대상으로 남김.
+
+**2-8 검증3·검수3**: 축A(md 9개소 근거 확인)·축B(STEP1056 방법 재사용 확인)·축C(㉠Downloads전용 6건·㉡Downloads가 더 큰 STEP인용 1건·㉢DB실측이 더 정확 0건). 손실대조(절 수 46→53=+7, ③ 전량 이관 확인)·미판정 유지 9건(F-5 5행+부-7 4건)·숫자 확정은 전부 기존 STEP 재인용(이 STEP이 새로 잰 것 아님, 명시). 🔴 못 거친 축 — `data_source_catalog.html`↔`.md`의 문장 단위 전수 diff(108KB↔120KB)는 헤딩+최근절 유무 확인까지만, 완전 대조 안 함.
+
+산출물 = `docs/BUILD_SEQUENCE.md` §7-부록 신규(기존 §0~§8 보존) + `docs/roadmap_v2.html` 갱신 + `docs/{model_list_30_9,data_source_catalog,tombstone}.html` 신규 등재. `~/Downloads/` 원본 5개 전부 무접촉 확인(mtime 불변). 새 md 정본 미신설. 판정 A 미반영. tsc 0·vitest 386/386(코드 변경 없음). 🔴 **판정은 장은태가 한다 — 이 STEP은 자리를 바로잡고 합치는 것까지다.**
+
+---
+
 ## 2026-08-18 — 🔵 **STEP1068: 「돈을 잘 버는가」 후보 모델 전수 심사 (`BUILD_SEQUENCE §2` ①②③단계)**
 
 > 읽기 전용(코드 diff 0·DB 쓰기 0·화면 변경 0·크론 수동 실행 0·외부 신규 취득 없음, 신규 데이터는 DB 조인 조회·공개 웹페이지 라이브 확인뿐). 2026-08-18 장은태 지적으로 착수 — STEP1067이 `BUILD_SEQUENCE §2`의 ①(실무 세기)만 하고 ②(원전에서 공식 확보)·③(카탈로그 재료 대입)을 건너뛴 채 "GP/A 하나"로 후보를 좁혀 질문을 던졌음을 바로잡는다. 인용 기준 = 원격 `main` = `c38d137`(STEP1067까지).
