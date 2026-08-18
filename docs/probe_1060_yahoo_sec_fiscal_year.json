@@ -1,0 +1,4728 @@
+{
+  "meta": {
+    "step": 1060,
+    "startedAt": "2026-08-18T04:44:13.037Z",
+    "finishedAt": "2026-08-18T04:47:46.876Z",
+    "durationMs": 213839,
+    "calls": 175,
+    "ok": 175,
+    "fail": 0,
+    "failReasons": {},
+    "poolSize": 1000,
+    "sampleCap": 200,
+    "forcedSymbols": [
+      "AAPL",
+      "MSFT",
+      "KO"
+    ]
+  },
+  "results": [
+    {
+      "symbol": "AAPL",
+      "tier": "unknown",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 416161000000,
+        "total_assets": 359241000000,
+        "fetched_at": "2026-08-17T23:38:36.378+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 9,
+        "latestRevenue": 416161000000,
+        "latestTotalAssets": 359241000000,
+        "latestGrossProfit": 195201000000,
+        "latestGrossProfitComputed": 195201000000
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "tier": "unknown",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2026,
+        "revenue": 331839000000,
+        "total_assets": 758376000000,
+        "fetched_at": "2026-08-17T23:38:45.004+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 6,
+        "latestRevenue": 331839000000,
+        "latestTotalAssets": 758376000000,
+        "latestGrossProfit": 225465000000,
+        "latestGrossProfitComputed": 225465000000
+      }
+    },
+    {
+      "symbol": "KO",
+      "tier": "unknown",
+      "sector": "Consumer Staples",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 47941000000,
+        "total_assets": 104816000000,
+        "fetched_at": "2026-08-17T23:38:06.918+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 47941000000,
+        "latestTotalAssets": 104816000000,
+        "latestGrossProfit": 29544000000,
+        "latestGrossProfitComputed": 29544000000
+      }
+    },
+    {
+      "symbol": "AXP",
+      "tier": "mega",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 41304000000,
+        "total_assets": 300052000000,
+        "fetched_at": "2026-08-17T23:41:40.946+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 72230000000,
+        "latestTotalAssets": 300052000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ABBV",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 61160000000,
+        "total_assets": 133960000000,
+        "fetched_at": "2026-08-17T23:39:52.022+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 61160000000,
+        "latestTotalAssets": 133960000000,
+        "latestGrossProfit": 42956000000,
+        "latestGrossProfitComputed": 42956000000
+      }
+    },
+    {
+      "symbol": "BAC",
+      "tier": "mega",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 113097000000,
+        "total_assets": 3411738000000,
+        "fetched_at": "2026-08-17T23:41:28.013+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 113097000000,
+        "latestTotalAssets": 3411738000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "AMAT",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 28368000000,
+        "total_assets": 36299000000,
+        "fetched_at": "2026-08-17T23:38:04.462+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 10,
+        "latestRevenue": 28368000000,
+        "latestTotalAssets": 36299000000,
+        "latestGrossProfit": 13808000000,
+        "latestGrossProfitComputed": 13808000000
+      }
+    },
+    {
+      "symbol": "AMD",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 34639000000,
+        "total_assets": 76926000000,
+        "fetched_at": "2026-08-17T23:38:03.195+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 34639000000,
+        "latestTotalAssets": 76926000000,
+        "latestGrossProfit": 17152000000,
+        "latestGrossProfitComputed": 17152000000
+      }
+    },
+    {
+      "symbol": "AMZN",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 716924000000,
+        "total_assets": 818042000000,
+        "fetched_at": "2026-08-17T23:39:08.22+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 716924000000,
+        "latestTotalAssets": 818042000000,
+        "latestGrossProfit": 360510000000,
+        "latestGrossProfitComputed": 360510000000
+      }
+    },
+    {
+      "symbol": "ANET",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 9005700000,
+        "total_assets": 19448600000,
+        "fetched_at": "2026-08-17T23:39:56.998+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 9005700000,
+        "latestTotalAssets": 19448600000,
+        "latestGrossProfit": 5768700000,
+        "latestGrossProfitComputed": 5768700000
+      }
+    },
+    {
+      "symbol": "APH",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 23094700000,
+        "total_assets": 36236900000,
+        "fetched_at": "2026-08-17T23:38:48.333+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 23094700000,
+        "latestTotalAssets": 36236900000,
+        "latestGrossProfit": 8517700000,
+        "latestGrossProfitComputed": 8517700000
+      }
+    },
+    {
+      "symbol": "AVGO",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 63887000000,
+        "total_assets": 171092000000,
+        "fetched_at": "2026-08-17T23:40:04.208+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 10,
+        "latestRevenue": 63887000000,
+        "latestTotalAssets": 171092000000,
+        "latestGrossProfit": 43294000000,
+        "latestGrossProfitComputed": 43294000000
+      }
+    },
+    {
+      "symbol": "C",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 85225000000,
+        "total_assets": 2657202000000,
+        "fetched_at": "2026-08-17T23:41:01.562+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 85213000000,
+        "latestTotalAssets": 2657202000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "CRWD",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4812005000,
+        "total_assets": 11086684000,
+        "fetched_at": "2026-08-17T23:39:50.893+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 4812005000,
+        "latestTotalAssets": 11086684000,
+        "latestGrossProfit": 3593076000,
+        "latestGrossProfitComputed": 3593076000
+      }
+    },
+    {
+      "symbol": "LIN",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 33986000000,
+        "total_assets": 86817000000,
+        "fetched_at": "2026-08-17T23:40:03.673+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 33986000000,
+        "latestTotalAssets": 86817000000,
+        "latestGrossProfit": 16597000000,
+        "latestGrossProfitComputed": 16597000000
+      }
+    },
+    {
+      "symbol": "NVDA",
+      "tier": "mega",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 215938000000,
+        "total_assets": 206803000000,
+        "fetched_at": "2026-08-17T23:39:14.378+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 215938000000,
+        "latestTotalAssets": 206803000000,
+        "latestGrossProfit": 153463000000,
+        "latestGrossProfitComputed": 153463000000
+      }
+    },
+    {
+      "symbol": "OMC",
+      "tier": "large",
+      "sector": "Communication Services",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 17271900000,
+        "total_assets": 54415300000,
+        "fetched_at": "2026-08-17T23:38:08.318+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 17271900000,
+        "latestTotalAssets": 54415300000,
+        "latestGrossProfit": 1467100000,
+        "latestGrossProfitComputed": 1467100000
+      }
+    },
+    {
+      "symbol": "DKNG",
+      "tier": "large",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 6054525000,
+        "total_assets": 4530784000,
+        "fetched_at": "2026-08-17T23:40:10.232+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 6054525000,
+        "latestTotalAssets": 4530784000,
+        "latestGrossProfit": 2497578000,
+        "latestGrossProfitComputed": 2497578000
+      }
+    },
+    {
+      "symbol": "DLTR",
+      "tier": "large",
+      "sector": "Consumer Staples",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 19395700000,
+        "total_assets": 13466200000,
+        "fetched_at": "2026-08-17T23:39:04.787+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 19411800000,
+        "latestTotalAssets": 13466200000,
+        "latestGrossProfit": 7066800000,
+        "latestGrossProfitComputed": 7066800000
+      }
+    },
+    {
+      "symbol": "EQT",
+      "tier": "large",
+      "sector": "Energy",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 8644211000,
+        "total_assets": 41792874000,
+        "fetched_at": "2026-08-17T23:38:09.21+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 8353217000,
+        "latestTotalAssets": 41792874000,
+        "latestGrossProfit": 3832041000,
+        "latestGrossProfitComputed": 3832041000
+      }
+    },
+    {
+      "symbol": "AFG",
+      "tier": "large",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 8174000000,
+        "total_assets": 32642000000,
+        "fetched_at": "2026-08-17T23:41:16.521+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 8118000000,
+        "latestTotalAssets": 32642000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ONC",
+      "tier": "large",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 5343033000,
+        "total_assets": 8188573000,
+        "fetched_at": "2026-08-17T23:40:00.529+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 5343033000,
+        "latestTotalAssets": 8188573000,
+        "latestGrossProfit": 4674493000,
+        "latestGrossProfitComputed": 4674493000
+      }
+    },
+    {
+      "symbol": "DOV",
+      "tier": "large",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 8092571000,
+        "total_assets": 13422423000,
+        "fetched_at": "2026-08-17T23:38:08.391+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 8092571000,
+        "latestTotalAssets": 13422423000,
+        "latestGrossProfit": 3218169000,
+        "latestGrossProfitComputed": 3218169000
+      }
+    },
+    {
+      "symbol": "FLEX",
+      "tier": "large",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 27914000000,
+        "total_assets": 22060000000,
+        "fetched_at": "2026-08-17T23:38:53.76+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 27914000000,
+        "latestTotalAssets": 22060000000,
+        "latestGrossProfit": 2567000000,
+        "latestGrossProfitComputed": 2567000000
+      }
+    },
+    {
+      "symbol": "DOW",
+      "tier": "large",
+      "sector": "Materials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 39968000000,
+        "total_assets": 58538000000,
+        "fetched_at": "2026-08-17T23:40:05.426+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 39968000000,
+        "latestTotalAssets": 58538000000,
+        "latestGrossProfit": 2533000000,
+        "latestGrossProfitComputed": 2533000000
+      }
+    },
+    {
+      "symbol": "AHR",
+      "tier": "large",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2094506000,
+        "total_assets": 5426226000,
+        "fetched_at": "2026-08-17T23:41:45.65+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2260123000,
+        "latestTotalAssets": 5426226000,
+        "latestGrossProfit": 466592000,
+        "latestGrossProfitComputed": 466592000
+      }
+    },
+    {
+      "symbol": "D",
+      "tier": "large",
+      "sector": "Utilities",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 16523000000,
+        "total_assets": 115857000000,
+        "fetched_at": "2026-08-17T23:38:39.697+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 16506000000,
+        "latestTotalAssets": 115857000000,
+        "latestGrossProfit": 8091000000,
+        "latestGrossProfitComputed": 8091000000
+      }
+    },
+    {
+      "symbol": "ACN",
+      "tier": "large",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 69672977000,
+        "total_assets": 65394897000,
+        "fetched_at": "2026-08-17T23:39:46.43+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 8,
+        "latestRevenue": 69672977000,
+        "latestTotalAssets": 65394897000,
+        "latestGrossProfit": 22235401000,
+        "latestGrossProfitComputed": 22235401000
+      }
+    },
+    {
+      "symbol": "DPZ",
+      "tier": "large",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4939994000,
+        "total_assets": 1716459000,
+        "fetched_at": "2026-08-17T23:39:35.197+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 4939994000,
+        "latestTotalAssets": 1716459000,
+        "latestGrossProfit": 1973560000,
+        "latestGrossProfitComputed": 1973560000
+      }
+    },
+    {
+      "symbol": "FANG",
+      "tier": "large",
+      "sector": "Energy",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 15026000000,
+        "total_assets": 71059000000,
+        "fetched_at": "2026-08-17T23:39:51.948+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 14929000000,
+        "latestTotalAssets": 71059000000,
+        "latestGrossProfit": 5221000000,
+        "latestGrossProfitComputed": 5221000000
+      }
+    },
+    {
+      "symbol": "AFL",
+      "tier": "large",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 17164000000,
+        "total_assets": 116470000000,
+        "fetched_at": "2026-08-17T23:41:16.613+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 17355000000,
+        "latestTotalAssets": 116470000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "RVTY",
+      "tier": "large",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2856051000,
+        "total_assets": 12168411000,
+        "fetched_at": "2026-08-17T23:38:09.01+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2856051000,
+        "latestTotalAssets": 12168411000,
+        "latestGrossProfit": 1564365000,
+        "latestGrossProfitComputed": 1564365000
+      }
+    },
+    {
+      "symbol": "EME",
+      "tier": "large",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 16986422000,
+        "total_assets": 9291399000,
+        "fetched_at": "2026-08-17T23:38:30.343+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 16986422000,
+        "latestTotalAssets": 9291399000,
+        "latestGrossProfit": 3282988000,
+        "latestGrossProfitComputed": 3282988000
+      }
+    },
+    {
+      "symbol": "GLW",
+      "tier": "large",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 15629000000,
+        "total_assets": 30976000000,
+        "fetched_at": "2026-08-17T23:38:07.451+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 15629000000,
+        "latestTotalAssets": 30976000000,
+        "latestGrossProfit": 5621000000,
+        "latestGrossProfitComputed": 5621000000
+      }
+    },
+    {
+      "symbol": "FCX",
+      "tier": "large",
+      "sector": "Materials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 25915000000,
+        "total_assets": 58167000000,
+        "fetched_at": "2026-08-17T23:38:49.468+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 25915000000,
+        "latestTotalAssets": 58167000000,
+        "latestGrossProfit": 7297000000,
+        "latestGrossProfitComputed": 7297000000
+      }
+    },
+    {
+      "symbol": "AMH",
+      "tier": "large",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2020,
+        "revenue": 1182836000,
+        "total_assets": 9593625000,
+        "fetched_at": "2026-08-17T23:41:35.91+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1850234000,
+        "latestTotalAssets": 13242120000,
+        "latestGrossProfit": 1051472000,
+        "latestGrossProfitComputed": 1051472000
+      }
+    },
+    {
+      "symbol": "NEE",
+      "tier": "large",
+      "sector": "Utilities",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 25800000000,
+        "total_assets": 212721000000,
+        "fetched_at": "2026-08-17T23:38:41.909+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 27412000000,
+        "latestTotalAssets": 212721000000,
+        "latestGrossProfit": 17069000000,
+        "latestGrossProfitComputed": 17069000000
+      }
+    },
+    {
+      "symbol": "ADBE",
+      "tier": "large",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 23769000000,
+        "total_assets": 29496000000,
+        "fetched_at": "2026-08-17T23:38:45.933+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 11,
+        "latestRevenue": 23769000000,
+        "latestTotalAssets": 29496000000,
+        "latestGrossProfit": 21218000000,
+        "latestGrossProfitComputed": 21218000000
+      }
+    },
+    {
+      "symbol": "DRI",
+      "tier": "large",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 13210900000,
+        "total_assets": 12862400000,
+        "fetched_at": "2026-08-17T23:39:05.739+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 5,
+        "latestRevenue": 13210900000,
+        "latestTotalAssets": 12862400000,
+        "latestGrossProfit": 2862500000,
+        "latestGrossProfitComputed": 2862500000
+      }
+    },
+    {
+      "symbol": "AGNC",
+      "tier": "large",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2019,
+        "revenue": 771000000,
+        "total_assets": 113082000000,
+        "fetched_at": "2026-08-17T23:41:34.942+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1797000000,
+        "latestTotalAssets": 115077000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FAST",
+      "tier": "large",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 8200500000,
+        "total_assets": 5052900000,
+        "fetched_at": "2026-08-17T23:38:47.173+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 8200500000,
+        "latestTotalAssets": 5052900000,
+        "latestGrossProfit": 3691200000,
+        "latestGrossProfitComputed": 3691200000
+      }
+    },
+    {
+      "symbol": "KEYS",
+      "tier": "large",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 5375000000,
+        "total_assets": 11301000000,
+        "fetched_at": "2026-08-17T23:39:57.258+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 10,
+        "latestRevenue": 5375000000,
+        "latestTotalAssets": 11301000000,
+        "latestGrossProfit": 3337000000,
+        "latestGrossProfitComputed": 3337000000
+      }
+    },
+    {
+      "symbol": "AVB",
+      "tier": "large",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 7042000,
+        "total_assets": 22192137000,
+        "fetched_at": "2026-08-17T23:41:25.974+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 3040725000,
+        "latestTotalAssets": 22192137000,
+        "latestGrossProfit": 1919811000,
+        "latestGrossProfitComputed": 1919811000
+      }
+    },
+    {
+      "symbol": "VST",
+      "tier": "large",
+      "sector": "Utilities",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 17586000000,
+        "total_assets": 41550000000,
+        "fetched_at": "2026-08-17T23:40:02.608+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 17738000000,
+        "latestTotalAssets": 41550000000,
+        "latestGrossProfit": 5834000000,
+        "latestGrossProfitComputed": 5834000000
+      }
+    },
+    {
+      "symbol": "ADI",
+      "tier": "large",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 11019707000,
+        "total_assets": 47992712000,
+        "fetched_at": "2026-08-17T23:38:04.383+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 10,
+        "latestRevenue": 11019707000,
+        "latestTotalAssets": 47992712000,
+        "latestGrossProfit": 6773478000,
+        "latestGrossProfitComputed": 6773478000
+      }
+    },
+    {
+      "symbol": "EBAY",
+      "tier": "large",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 11100000000,
+        "total_assets": 17610000000,
+        "fetched_at": "2026-08-17T23:39:19.094+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 11100000000,
+        "latestTotalAssets": 17610000000,
+        "latestGrossProfit": 7931000000,
+        "latestGrossProfitComputed": 7931000000
+      }
+    },
+    {
+      "symbol": "AIG",
+      "tier": "large",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 26775000000,
+        "total_assets": 161254000000,
+        "fetched_at": "2026-08-17T23:41:18.338+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 26774000000,
+        "latestTotalAssets": 161254000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "HII",
+      "tier": "large",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 12484000000,
+        "total_assets": 12749000000,
+        "fetched_at": "2026-08-17T23:39:49.43+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 12484000000,
+        "latestTotalAssets": 12749000000,
+        "latestGrossProfit": 1585000000,
+        "latestGrossProfitComputed": 1585000000
+      }
+    },
+    {
+      "symbol": "VSAT",
+      "tier": "large",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4640280000,
+        "total_assets": 15226596000,
+        "fetched_at": "2026-08-17T23:38:46.059+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 4640280000,
+        "latestTotalAssets": 15226596000,
+        "latestGrossProfit": 1533221000,
+        "latestGrossProfitComputed": 1533221000
+      }
+    },
+    {
+      "symbol": "DLR",
+      "tier": "large",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 6112692000,
+        "total_assets": 49410468000,
+        "fetched_at": "2026-08-17T23:41:12.275+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 6112692000,
+        "latestTotalAssets": 49410468000,
+        "latestGrossProfit": 3385955000,
+        "latestGrossProfitComputed": 3385955000
+      }
+    },
+    {
+      "symbol": "ADM",
+      "tier": "large",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 80269000000,
+        "total_assets": 52389000000,
+        "fetched_at": "2026-08-17T23:38:04.537+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 80269000000,
+        "latestTotalAssets": 52389000000,
+        "latestGrossProfit": 5033000000,
+        "latestGrossProfitComputed": 5033000000
+      }
+    },
+    {
+      "symbol": "FIVE",
+      "tier": "large",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4764147000,
+        "total_assets": 4937019000,
+        "fetched_at": "2026-08-17T23:39:31.548+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 4764147000,
+        "latestTotalAssets": 4937019000,
+        "latestGrossProfit": 1714686000,
+        "latestGrossProfitComputed": 1714686000
+      }
+    },
+    {
+      "symbol": "AIZ",
+      "tier": "large",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 12814300000,
+        "total_assets": 36289600000,
+        "fetched_at": "2026-08-17T23:41:35.993+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 12814300000,
+        "latestTotalAssets": 36289600000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "HWM",
+      "tier": "large",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 8252000000,
+        "total_assets": 11179000000,
+        "fetched_at": "2026-08-17T23:38:03.883+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 8252000000,
+        "latestTotalAssets": 11179000000,
+        "latestGrossProfit": 2820000000,
+        "latestGrossProfitComputed": 2820000000
+      }
+    },
+    {
+      "symbol": "ZS",
+      "tier": "large",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2673115000,
+        "total_assets": 6419888000,
+        "fetched_at": "2026-08-17T23:40:03.888+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 7,
+        "latestRevenue": 2673115000,
+        "latestTotalAssets": 6419888000,
+        "latestGrossProfit": 2054937000,
+        "latestGrossProfitComputed": 2054937000
+      }
+    },
+    {
+      "symbol": "ADP",
+      "tier": "large",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2026,
+        "revenue": 21947400000,
+        "total_assets": 63193300000,
+        "fetched_at": "2026-08-17T23:38:04.93+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 6,
+        "latestRevenue": 21947400000,
+        "latestTotalAssets": 63193300000,
+        "latestGrossProfit": 10187200000,
+        "latestGrossProfitComputed": 10187200000
+      }
+    },
+    {
+      "symbol": "AAP",
+      "tier": "mid",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 8601000000,
+        "total_assets": 11826000000,
+        "fetched_at": "2026-08-17T23:41:30.038+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 8601000000,
+        "latestTotalAssets": 11826000000,
+        "latestGrossProfit": 3733000000,
+        "latestGrossProfitComputed": 3733000000
+      }
+    },
+    {
+      "symbol": "FIZZ",
+      "tier": "mid",
+      "sector": "Consumer Staples",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1180552000,
+        "total_assets": 851647000,
+        "fetched_at": "2026-08-17T23:41:03.783+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 4,
+        "latestRevenue": 1180552000,
+        "latestTotalAssets": 851647000,
+        "latestGrossProfit": 437262000,
+        "latestGrossProfitComputed": 437262000
+      }
+    },
+    {
+      "symbol": "BTU",
+      "tier": "mid",
+      "sector": "Energy",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 3861500000,
+        "total_assets": 5807200000,
+        "fetched_at": "2026-08-17T23:41:45.474+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 3861500000,
+        "latestTotalAssets": 5807200000,
+        "latestGrossProfit": 526600000,
+        "latestGrossProfitComputed": 526600000
+      }
+    },
+    {
+      "symbol": "AGO",
+      "tier": "mid",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 0,
+        "total_assets": 12176000000,
+        "fetched_at": "2026-08-17T23:41:31.682+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1025000000,
+        "latestTotalAssets": 12176000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ADMA",
+      "tier": "mid",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 510173000,
+        "total_assets": 624242000,
+        "fetched_at": "2026-08-17T23:41:15.279+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 510173000,
+        "latestTotalAssets": 624242000,
+        "latestGrossProfit": 292765000,
+        "latestGrossProfitComputed": 292765000
+      }
+    },
+    {
+      "symbol": "AGCO",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 10082000000,
+        "total_assets": 11927800000,
+        "fetched_at": "2026-08-17T23:41:43.691+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 10082000000,
+        "latestTotalAssets": 11927800000,
+        "latestGrossProfit": 2566800000,
+        "latestGrossProfitComputed": 2566800000
+      }
+    },
+    {
+      "symbol": "AGYS",
+      "tier": "mid",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 319312000,
+        "total_assets": 481528000,
+        "fetched_at": "2026-08-17T23:41:45.825+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 319312000,
+        "latestTotalAssets": 481528000,
+        "latestGrossProfit": 199923000,
+        "latestGrossProfitComputed": 199923000
+      }
+    },
+    {
+      "symbol": "AVNT",
+      "tier": "mid",
+      "sector": "Materials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 3260200000,
+        "total_assets": 6025600000,
+        "fetched_at": "2026-08-17T23:41:26.43+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 3260200000,
+        "latestTotalAssets": 6025600000,
+        "latestGrossProfit": 1015600000,
+        "latestGrossProfitComputed": 1015600000
+      }
+    },
+    {
+      "symbol": "ADC",
+      "tier": "mid",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 718398000,
+        "total_assets": 9797612000,
+        "fetched_at": "2026-08-17T23:41:34.973+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 718398000,
+        "latestTotalAssets": 9797612000,
+        "latestGrossProfit": 630251000,
+        "latestGrossProfitComputed": 630251000
+      }
+    },
+    {
+      "symbol": "ABCB",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1207958000,
+        "total_assets": 27515879000,
+        "fetched_at": "2026-08-17T23:40:52.61+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1173684000,
+        "latestTotalAssets": 27515879000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "AEO",
+      "tier": "mid",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 5547236000,
+        "total_assets": 4009680000,
+        "fetched_at": "2026-08-17T23:41:30.318+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 5547236000,
+        "latestTotalAssets": 4009680000,
+        "latestGrossProfit": 2025321000,
+        "latestGrossProfitComputed": 2025321000
+      }
+    },
+    {
+      "symbol": "AMG",
+      "tier": "mid",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2074400000,
+        "total_assets": 9207400000,
+        "fetched_at": "2026-08-17T23:41:36.199+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2074400000,
+        "latestTotalAssets": 9207400000,
+        "latestGrossProfit": 1054600000,
+        "latestGrossProfitComputed": 1054600000
+      }
+    },
+    {
+      "symbol": "ADPT",
+      "tier": "mid",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 276976000,
+        "total_assets": 512736000,
+        "fetched_at": "2026-08-17T23:41:40.873+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 276976000,
+        "latestTotalAssets": 512736000,
+        "latestGrossProfit": 205617000,
+        "latestGrossProfitComputed": 205617000
+      }
+    },
+    {
+      "symbol": "AGX",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 944606000,
+        "total_assets": 1186354000,
+        "fetched_at": "2026-08-17T23:41:44.726+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 944606000,
+        "latestTotalAssets": 1186354000,
+        "latestGrossProfit": 193678000,
+        "latestGrossProfitComputed": 193678000
+      }
+    },
+    {
+      "symbol": "AVPT",
+      "tier": "mid",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 419497000,
+        "total_assets": 789181000,
+        "fetched_at": "2026-08-17T23:41:26.008+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 419497000,
+        "latestTotalAssets": 789181000,
+        "latestGrossProfit": 310696000,
+        "latestGrossProfitComputed": 310696000
+      }
+    },
+    {
+      "symbol": "ARE",
+      "tier": "mid",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 3026556000,
+        "total_assets": 34081835000,
+        "fetched_at": "2026-08-17T23:41:34.897+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2945175000,
+        "latestTotalAssets": 34081835000,
+        "latestGrossProfit": 2022570000,
+        "latestGrossProfitComputed": 2022570000
+      }
+    },
+    {
+      "symbol": "ACM",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 16139622000,
+        "total_assets": 12200249000,
+        "fetched_at": "2026-08-17T23:38:54.809+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 9,
+        "latestRevenue": 16139622000,
+        "latestTotalAssets": 12200249000,
+        "latestGrossProfit": 1216713000,
+        "latestGrossProfitComputed": 1216713000
+      }
+    },
+    {
+      "symbol": "CZR",
+      "tier": "mid",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 11486000000,
+        "total_assets": 31639000000,
+        "fetched_at": "2026-08-17T23:41:09.938+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 11486000000,
+        "latestTotalAssets": 31639000000,
+        "latestGrossProfit": 5743000000,
+        "latestGrossProfitComputed": 5743000000
+      }
+    },
+    {
+      "symbol": "APAM",
+      "tier": "mid",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1196688000,
+        "total_assets": 1577292000,
+        "fetched_at": "2026-08-17T23:41:19.963+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1196688000,
+        "latestTotalAssets": 1577292000,
+        "latestGrossProfit": 547109000,
+        "latestGrossProfitComputed": 547109000
+      }
+    },
+    {
+      "symbol": "ATAI",
+      "tier": "mid",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4089000,
+        "total_assets": 292723000,
+        "fetched_at": "2026-08-17T23:41:57.437+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 4089000,
+        "latestTotalAssets": 292723000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "AIR",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 3308000000,
+        "total_assets": 3355900000,
+        "fetched_at": "2026-08-17T23:41:16.64+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 5,
+        "latestRevenue": 3308000000,
+        "latestTotalAssets": 3355900000,
+        "latestGrossProfit": 622000000,
+        "latestGrossProfitComputed": 622000000
+      }
+    },
+    {
+      "symbol": "AVT",
+      "tier": "mid",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2026,
+        "revenue": 27632683000,
+        "total_assets": 15425393000,
+        "fetched_at": "2026-08-17T23:41:30.405+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 6,
+        "latestRevenue": null,
+        "latestTotalAssets": null,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FCPT",
+      "tier": "mid",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 31484000,
+        "total_assets": 2920726000,
+        "fetched_at": "2026-08-17T23:41:08.92+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 294132000,
+        "latestTotalAssets": 2920726000,
+        "latestGrossProfit": 251131000,
+        "latestGrossProfitComputed": 251131000
+      }
+    },
+    {
+      "symbol": "ADEA",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 443386000,
+        "total_assets": 1039303000,
+        "fetched_at": "2026-08-17T23:40:52.763+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 443386000,
+        "latestTotalAssets": 1039303000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "LEVI",
+      "tier": "mid",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 6282000000,
+        "total_assets": 6848800000,
+        "fetched_at": "2026-08-17T23:38:25.978+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 11,
+        "latestRevenue": 6282000000,
+        "latestTotalAssets": 6848800000,
+        "latestGrossProfit": 3877800000,
+        "latestGrossProfitComputed": 3877800000
+      }
+    },
+    {
+      "symbol": "AX",
+      "tier": "mid",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 65789000,
+        "total_assets": 24783078000,
+        "fetched_at": "2026-08-17T23:41:39.702+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 6,
+        "latestRevenue": 1241773000,
+        "latestTotalAssets": 24783078000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "DOCS",
+      "tier": "mid",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 644863000,
+        "total_assets": 1123687000,
+        "fetched_at": "2026-08-17T23:41:00.571+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 644863000,
+        "latestTotalAssets": 1123687000,
+        "latestGrossProfit": 574537000,
+        "latestGrossProfitComputed": 574537000
+      }
+    },
+    {
+      "symbol": "AOS",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 3830200000,
+        "total_assets": 3142800000,
+        "fetched_at": "2026-08-17T23:41:20.071+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 3830200000,
+        "latestTotalAssets": 3142800000,
+        "latestGrossProfit": 1487400000,
+        "latestGrossProfitComputed": 1487400000
+      }
+    },
+    {
+      "symbol": "BELFA",
+      "tier": "mid",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 675455000,
+        "total_assets": 935200000,
+        "fetched_at": "2026-08-17T23:41:43.778+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 675455000,
+        "latestTotalAssets": 935200000,
+        "latestGrossProfit": 264418000,
+        "latestGrossProfitComputed": 264418000
+      }
+    },
+    {
+      "symbol": "ALMS",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 24050000,
+        "total_assets": 411940000,
+        "fetched_at": "2026-08-17T23:40:45.704+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 24050000,
+        "latestTotalAssets": 411940000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "AXS",
+      "tier": "mid",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 6563678000,
+        "total_assets": 34461926000,
+        "fetched_at": "2026-08-17T23:41:40.8+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 6425956000,
+        "latestTotalAssets": 34461926000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ARCB",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4010158000,
+        "total_assets": 2452662000,
+        "fetched_at": "2026-08-17T23:41:33.933+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 4010158000,
+        "latestTotalAssets": 2452662000,
+        "latestGrossProfit": 275256000,
+        "latestGrossProfitComputed": 275256000
+      }
+    },
+    {
+      "symbol": "BOX",
+      "tier": "mid",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1177253000,
+        "total_assets": 1546060000,
+        "fetched_at": "2026-08-17T23:41:42.642+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 1177253000,
+        "latestTotalAssets": 1546060000,
+        "latestGrossProfit": 932606000,
+        "latestGrossProfitComputed": 932606000
+      }
+    },
+    {
+      "symbol": "APLD",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 611311000,
+        "total_assets": 9929312000,
+        "fetched_at": "2026-08-17T23:40:53.708+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 5,
+        "latestRevenue": 144193000,
+        "latestTotalAssets": 1870090000,
+        "latestGrossProfit": 42742000,
+        "latestGrossProfitComputed": 42742000
+      }
+    },
+    {
+      "symbol": "FLG",
+      "tier": "mid",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2022,
+        "revenue": 27000000,
+        "total_assets": 90144000000,
+        "fetched_at": "2026-08-17T23:41:07.958+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2062000000,
+        "latestTotalAssets": 87512000000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ATMU",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1764300000,
+        "total_assets": 1350700000,
+        "fetched_at": "2026-08-17T23:41:58.411+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1764300000,
+        "latestTotalAssets": 1350700000,
+        "latestGrossProfit": 498300000,
+        "latestGrossProfitComputed": 498300000
+      }
+    },
+    {
+      "symbol": "DLB",
+      "tier": "mid",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1349130000,
+        "total_assets": 3227760000,
+        "fetched_at": "2026-08-17T23:41:11.342+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 9,
+        "latestRevenue": 1349130000,
+        "latestTotalAssets": 3227760000,
+        "latestGrossProfit": 1188998000,
+        "latestGrossProfitComputed": 1188998000
+      }
+    },
+    {
+      "symbol": "APLE",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1412386000,
+        "total_assets": 4902178000,
+        "fetched_at": "2026-08-17T23:40:54.837+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1412386000,
+        "latestTotalAssets": 4902178000,
+        "latestGrossProfit": 475332000,
+        "latestGrossProfitComputed": 475332000
+      }
+    },
+    {
+      "symbol": "AVAV",
+      "tier": "mid",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1976845000,
+        "total_assets": 5716742000,
+        "fetched_at": "2026-08-17T23:41:24.99+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 4,
+        "latestRevenue": 1976845000,
+        "latestTotalAssets": 5716742000,
+        "latestGrossProfit": 500642000,
+        "latestGrossProfitComputed": 500642000
+      }
+    },
+    {
+      "symbol": "APPF",
+      "tier": "mid",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 950822000,
+        "total_assets": 688967000,
+        "fetched_at": "2026-08-17T23:40:55.053+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 950822000,
+        "latestTotalAssets": 688967000,
+        "latestGrossProfit": 605481000,
+        "latestGrossProfitComputed": 605481000
+      }
+    },
+    {
+      "symbol": "LILA",
+      "tier": "small",
+      "sector": "Communication Services",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4442200000,
+        "total_assets": 12225900000,
+        "fetched_at": "2026-08-17T23:41:04.905+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 4442200000,
+        "latestTotalAssets": 12225900000,
+        "latestGrossProfit": 2997700000,
+        "latestGrossProfitComputed": 2997700000
+      }
+    },
+    {
+      "symbol": "BBW",
+      "tier": "small",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 529832000,
+        "total_assets": 345453000,
+        "fetched_at": "2026-08-17T23:41:12.441+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 529832000,
+        "latestTotalAssets": 345453000,
+        "latestGrossProfit": 295629000,
+        "latestGrossProfitComputed": 295629000
+      }
+    },
+    {
+      "symbol": "AVO",
+      "tier": "small",
+      "sector": "Consumer Staples",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1391200000,
+        "total_assets": 983000000,
+        "fetched_at": "2026-08-17T23:41:26.018+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 10,
+        "latestRevenue": 1391200000,
+        "latestTotalAssets": 983000000,
+        "latestGrossProfit": 160700000,
+        "latestGrossProfitComputed": 160700000
+      }
+    },
+    {
+      "symbol": "ANIP",
+      "tier": "small",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 883366000,
+        "total_assets": 1440377000,
+        "fetched_at": "2026-08-17T23:41:18.631+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 883366000,
+        "latestTotalAssets": 1440377000,
+        "latestGrossProfit": 542056000,
+        "latestGrossProfitComputed": 542056000
+      }
+    },
+    {
+      "symbol": "DLX",
+      "tier": "small",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2133200000,
+        "total_assets": 2863600000,
+        "fetched_at": "2026-08-17T23:41:12.934+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2133200000,
+        "latestTotalAssets": 2863600000,
+        "latestGrossProfit": 1130700000,
+        "latestGrossProfitComputed": 1130700000
+      }
+    },
+    {
+      "symbol": "AIP",
+      "tier": "small",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 70579000,
+        "total_assets": 115031000,
+        "fetched_at": "2026-08-17T23:41:15.632+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 70579000,
+        "latestTotalAssets": 115031000,
+        "latestGrossProfit": 63684000,
+        "latestGrossProfitComputed": 63684000
+      }
+    },
+    {
+      "symbol": "CTO",
+      "tier": "small",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 149545000,
+        "total_assets": 1263902000,
+        "fetched_at": "2026-08-17T23:41:11.152+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 149545000,
+        "latestTotalAssets": 1263902000,
+        "latestGrossProfit": 111622000,
+        "latestGrossProfitComputed": 111622000
+      }
+    },
+    {
+      "symbol": "AESI",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1095310000,
+        "total_assets": 2228428000,
+        "fetched_at": "2026-08-17T23:40:52.699+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1095310000,
+        "latestTotalAssets": 2228428000,
+        "latestGrossProfit": 150667000,
+        "latestGrossProfitComputed": 150667000
+      }
+    },
+    {
+      "symbol": "MGPI",
+      "tier": "small",
+      "sector": "Consumer Staples",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 536375000,
+        "total_assets": 1235864000,
+        "fetched_at": "2026-08-17T23:41:12.974+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 536375000,
+        "latestTotalAssets": 1235864000,
+        "latestGrossProfit": 199409000,
+        "latestGrossProfitComputed": 199409000
+      }
+    },
+    {
+      "symbol": "AORT",
+      "tier": "small",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 441330000,
+        "total_assets": 884796000,
+        "fetched_at": "2026-08-17T23:41:18.854+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 441330000,
+        "latestTotalAssets": 884796000,
+        "latestGrossProfit": 284227000,
+        "latestGrossProfitComputed": 284227000
+      }
+    },
+    {
+      "symbol": "AOSL",
+      "tier": "small",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 696162000,
+        "total_assets": 1034303000,
+        "fetched_at": "2026-08-17T23:41:20.517+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 6,
+        "latestRevenue": 696162000,
+        "latestTotalAssets": 1034303000,
+        "latestGrossProfit": 161004000,
+        "latestGrossProfitComputed": 161004000
+      }
+    },
+    {
+      "symbol": "FVR",
+      "tier": "small",
+      "sector": "Real Estate",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 67115000,
+        "total_assets": 854443000,
+        "fetched_at": "2026-08-17T23:40:57.574+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 66876000,
+        "latestTotalAssets": 854443000,
+        "latestGrossProfit": 57135000,
+        "latestGrossProfitComputed": 57135000
+      }
+    },
+    {
+      "symbol": "AEVA",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 18079000,
+        "total_assets": 179701000,
+        "fetched_at": "2026-08-17T23:40:52.633+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 18079000,
+        "latestTotalAssets": 179701000,
+        "latestGrossProfit": -660000,
+        "latestGrossProfitComputed": -660000
+      }
+    },
+    {
+      "symbol": "AVIR",
+      "tier": "small",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2021,
+        "revenue": 351367000,
+        "total_assets": 772892000,
+        "fetched_at": "2026-08-17T23:41:25.997+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 315218000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "APEI",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 648862000,
+        "total_assets": 521418000,
+        "fetched_at": "2026-08-17T23:40:54.884+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 648862000,
+        "latestTotalAssets": 521418000,
+        "latestGrossProfit": 351842000,
+        "latestGrossProfitComputed": 351842000
+      }
+    },
+    {
+      "symbol": "EVH",
+      "tier": "small",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1876229000,
+        "total_assets": 1899236000,
+        "fetched_at": "2026-08-17T23:41:10.126+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1876229000,
+        "latestTotalAssets": 1899236000,
+        "latestGrossProfit": 399883000,
+        "latestGrossProfitComputed": 399883000
+      }
+    },
+    {
+      "symbol": "APOG",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1404733000,
+        "total_assets": 1122345000,
+        "fetched_at": "2026-08-17T23:40:56.557+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 2,
+        "latestRevenue": 1404733000,
+        "latestTotalAssets": 1122345000,
+        "latestGrossProfit": 319474000,
+        "latestGrossProfitComputed": 319474000
+      }
+    },
+    {
+      "symbol": "LYEL",
+      "tier": "small",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 36000,
+        "total_assets": 340052000,
+        "fetched_at": "2026-08-17T23:41:06.396+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 36000,
+        "latestTotalAssets": 340052000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ASMB",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 72303000,
+        "total_assets": 257590000,
+        "fetched_at": "2026-08-17T23:40:55.566+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 72303000,
+        "latestTotalAssets": 257590000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ASPI",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 23849000,
+        "total_assets": 498020000,
+        "fetched_at": "2026-08-17T23:40:55.223+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 23849000,
+        "latestTotalAssets": 498020000,
+        "latestGrossProfit": 3405000,
+        "latestGrossProfitComputed": 3405000
+      }
+    },
+    {
+      "symbol": "ASPN",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 271103000,
+        "total_assets": 406679000,
+        "fetched_at": "2026-08-17T23:40:56.605+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 271103000,
+        "latestTotalAssets": 406679000,
+        "latestGrossProfit": 45998000,
+        "latestGrossProfitComputed": 45998000
+      }
+    },
+    {
+      "symbol": "ASST",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2024,
+        "revenue": 3650000,
+        "total_assets": 28197000,
+        "fetched_at": "2026-08-17T23:40:56.581+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 3,
+        "yearList": [
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 745527000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ASTH",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 3181769000,
+        "total_assets": 2218661000,
+        "fetched_at": "2026-08-17T23:40:56.809+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 3181769000,
+        "latestTotalAssets": 2218661000,
+        "latestGrossProfit": 341530000,
+        "latestGrossProfitComputed": 341530000
+      }
+    },
+    {
+      "symbol": "AVR",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1913000,
+        "total_assets": 22997000,
+        "fetched_at": "2026-08-17T23:41:25.753+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": null,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "BZH",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2371555000,
+        "total_assets": 2609708000,
+        "fetched_at": "2026-08-17T23:40:58.451+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 9,
+        "latestRevenue": 2371555000,
+        "latestTotalAssets": 2609708000,
+        "latestGrossProfit": 337514000,
+        "latestGrossProfitComputed": 337514000
+      }
+    },
+    {
+      "symbol": "CLVT",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2455200000,
+        "total_assets": 11069400000,
+        "fetched_at": "2026-08-17T23:41:01.434+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2455200000,
+        "latestTotalAssets": 11069400000,
+        "latestGrossProfit": 1621600000,
+        "latestGrossProfitComputed": 1621600000
+      }
+    },
+    {
+      "symbol": "CMP",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1243900000,
+        "total_assets": 1519400000,
+        "fetched_at": "2026-08-17T23:41:06.303+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 9,
+        "latestRevenue": 1243900000,
+        "latestTotalAssets": 1519400000,
+        "latestGrossProfit": 190700000,
+        "latestGrossProfitComputed": 190700000
+      }
+    },
+    {
+      "symbol": "ERII",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 134987000,
+        "total_assets": 231514000,
+        "fetched_at": "2026-08-17T23:41:16.279+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 134987000,
+        "latestTotalAssets": 231514000,
+        "latestGrossProfit": 87931000,
+        "latestGrossProfitComputed": 87931000
+      }
+    },
+    {
+      "symbol": "FIP",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 502520000,
+        "total_assets": 5748661000,
+        "fetched_at": "2026-08-17T23:41:23.213+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 502520000,
+        "latestTotalAssets": 5748661000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FISI",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 244941000,
+        "total_assets": 6274140000,
+        "fetched_at": "2026-08-17T23:41:27.3+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 243539000,
+        "latestTotalAssets": 6274140000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FISK",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 766787000,
+        "total_assets": 4468961000,
+        "fetched_at": "2026-08-17T23:41:24.281+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 768270000,
+        "latestTotalAssets": 4468961000,
+        "latestGrossProfit": 403253000,
+        "latestGrossProfitComputed": 403253000
+      }
+    },
+    {
+      "symbol": "FRD",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2024,
+        "revenue": 444600000,
+        "total_assets": 226822000,
+        "fetched_at": "2026-08-17T23:41:24.478+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 646913000,
+        "latestTotalAssets": 336810000,
+        "latestGrossProfit": 86495000,
+        "latestGrossProfitComputed": 86495000
+      }
+    },
+    {
+      "symbol": "LE",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1335146000,
+        "total_assets": 751066000,
+        "fetched_at": "2026-08-17T23:41:17.569+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 1335146000,
+        "latestTotalAssets": 751066000,
+        "latestGrossProfit": 650170000,
+        "latestGrossProfitComputed": 650170000
+      }
+    },
+    {
+      "symbol": "LEGH",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 164567000,
+        "total_assets": 580337000,
+        "fetched_at": "2026-08-17T23:41:17.606+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 164567000,
+        "latestTotalAssets": 580337000,
+        "latestGrossProfit": 78015000,
+        "latestGrossProfitComputed": 78015000
+      }
+    },
+    {
+      "symbol": "LILAK",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4442200000,
+        "total_assets": 12225900000,
+        "fetched_at": "2026-08-17T23:41:04.923+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 4442200000,
+        "latestTotalAssets": 12225900000,
+        "latestGrossProfit": 2997700000,
+        "latestGrossProfitComputed": 2997700000
+      }
+    },
+    {
+      "symbol": "LYTS",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 573377000,
+        "total_assets": 396362000,
+        "fetched_at": "2026-08-17T23:41:07.668+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 6,
+        "latestRevenue": 573377000,
+        "latestTotalAssets": 396362000,
+        "latestGrossProfit": 141780000,
+        "latestGrossProfitComputed": 141780000
+      }
+    },
+    {
+      "symbol": "LZ",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 756043000,
+        "total_assets": 511522000,
+        "fetched_at": "2026-08-17T23:41:07.627+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 756043000,
+        "latestTotalAssets": 511522000,
+        "latestGrossProfit": 498083000,
+        "latestGrossProfitComputed": 498083000
+      }
+    },
+    {
+      "symbol": "SENS",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 35257000,
+        "total_assets": 126269000,
+        "fetched_at": "2026-08-17T23:40:51.612+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 35257000,
+        "latestTotalAssets": 126269000,
+        "latestGrossProfit": 15763000,
+        "latestGrossProfitComputed": 15763000
+      }
+    },
+    {
+      "symbol": "ZUMZ",
+      "tier": "small",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 929057000,
+        "total_assets": 644171000,
+        "fetched_at": "2026-08-17T23:41:21.666+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 929057000,
+        "latestTotalAssets": 644171000,
+        "latestGrossProfit": 332535000,
+        "latestGrossProfitComputed": 332535000
+      }
+    },
+    {
+      "symbol": "DLPN",
+      "tier": "micro",
+      "sector": "Communication Services",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 56699389,
+        "total_assets": 58330160,
+        "fetched_at": "2026-08-17T23:41:11.371+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 56699389,
+        "latestTotalAssets": 58330160,
+        "latestGrossProfit": 54429515,
+        "latestGrossProfitComputed": 54429515
+      }
+    },
+    {
+      "symbol": "AKA",
+      "tier": "micro",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 600208000,
+        "total_assets": 397382000,
+        "fetched_at": "2026-08-17T23:41:14.131+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 600208000,
+        "latestTotalAssets": 397382000,
+        "latestGrossProfit": 344059000,
+        "latestGrossProfitComputed": 344059000
+      }
+    },
+    {
+      "symbol": "MGRX",
+      "tier": "micro",
+      "sector": "Consumer Staples",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 456021,
+        "total_assets": 16089573,
+        "fetched_at": "2026-08-17T23:41:12.795+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 456021,
+        "latestTotalAssets": 16089573,
+        "latestGrossProfit": 250386,
+        "latestGrossProfitComputed": 250386
+      }
+    },
+    {
+      "symbol": "FLD",
+      "tier": "micro",
+      "sector": "Financials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 31793673,
+        "total_assets": 153467654,
+        "fetched_at": "2026-08-17T23:41:05.093+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 31793673,
+        "latestTotalAssets": 153467654,
+        "latestGrossProfit": -15585149,
+        "latestGrossProfitComputed": -15585149
+      }
+    },
+    {
+      "symbol": "AIRS",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 151818000,
+        "total_assets": 187304000,
+        "fetched_at": "2026-08-17T23:41:08.935+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 151818000,
+        "latestTotalAssets": 187304000,
+        "latestGrossProfit": 90128000,
+        "latestGrossProfitComputed": 90128000
+      }
+    },
+    {
+      "symbol": "AIRT",
+      "tier": "micro",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 327090000,
+        "total_assets": 409123000,
+        "fetched_at": "2026-08-17T23:41:12.399+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 327090000,
+        "latestTotalAssets": 409123000,
+        "latestGrossProfit": 61943000,
+        "latestGrossProfitComputed": 61943000
+      }
+    },
+    {
+      "symbol": "AISP",
+      "tier": "micro",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 15321349,
+        "total_assets": 19475330,
+        "fetched_at": "2026-08-17T23:41:11.029+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 15321349,
+        "latestTotalAssets": 19475330,
+        "latestGrossProfit": 7697766,
+        "latestGrossProfitComputed": 7697766
+      }
+    },
+    {
+      "symbol": "ANNA",
+      "tier": "micro",
+      "sector": "Utilities",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 25035737,
+        "total_assets": 101296320,
+        "fetched_at": "2026-08-17T23:41:18.512+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 25035737,
+        "latestTotalAssets": 101296320,
+        "latestGrossProfit": 15906781,
+        "latestGrossProfitComputed": 15906781
+      }
+    },
+    {
+      "symbol": "ACH",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 2762032000,
+        "total_assets": 2451761000,
+        "fetched_at": "2026-08-17T23:41:21.464+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 2762032000,
+        "latestTotalAssets": 2451761000,
+        "latestGrossProfit": 1289299000,
+        "latestGrossProfitComputed": 1289299000
+      }
+    },
+    {
+      "symbol": "AOUT",
+      "tier": "micro",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 190536000,
+        "total_assets": 226620000,
+        "fetched_at": "2026-08-17T23:41:19.839+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 4,
+        "latestRevenue": 190536000,
+        "latestTotalAssets": 226620000,
+        "latestGrossProfit": 85194000,
+        "latestGrossProfitComputed": 85194000
+      }
+    },
+    {
+      "symbol": "AIXC",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2022,
+        "revenue": 4983556,
+        "total_assets": 19083491,
+        "fetched_at": "2026-08-17T23:41:14.078+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 31279846,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "DLHC",
+      "tier": "micro",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 344497000,
+        "total_assets": 290663000,
+        "fetched_at": "2026-08-17T23:41:10.148+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 9,
+        "latestRevenue": 344497000,
+        "latestTotalAssets": 290663000,
+        "latestGrossProfit": 65164000,
+        "latestGrossProfitComputed": 65164000
+      }
+    },
+    {
+      "symbol": "ANY",
+      "tier": "micro",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 11181000,
+        "total_assets": 25120000,
+        "fetched_at": "2026-08-17T23:41:19.589+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 11181000,
+        "latestTotalAssets": 25120000,
+        "latestGrossProfit": 2627000,
+        "latestGrossProfitComputed": 2627000
+      }
+    },
+    {
+      "symbol": "ADGM",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 0,
+        "total_assets": 43253000,
+        "fetched_at": "2026-08-17T23:40:52.38+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 43253000,
+        "latestGrossProfit": -684000,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "CTNT",
+      "tier": "micro",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1288536,
+        "total_assets": 11858464,
+        "fetched_at": "2026-08-17T23:41:09.076+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 1288536,
+        "latestTotalAssets": 11858464,
+        "latestGrossProfit": 166775,
+        "latestGrossProfitComputed": 166775
+      }
+    },
+    {
+      "symbol": "ANIK",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 112819000,
+        "total_assets": 190270000,
+        "fetched_at": "2026-08-17T23:41:18.823+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 112819000,
+        "latestTotalAssets": 190270000,
+        "latestGrossProfit": 63807000,
+        "latestGrossProfitComputed": 63807000
+      }
+    },
+    {
+      "symbol": "FJET",
+      "tier": "micro",
+      "sector": "Industrials",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 0,
+        "total_assets": 28386884,
+        "fetched_at": "2026-08-17T23:41:03.288+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 3,
+        "yearList": [
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 28386884,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "AVNW",
+      "tier": "micro",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 434606000,
+        "total_assets": 633296000,
+        "fetched_at": "2026-08-17T23:41:28.346+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 6,
+        "latestRevenue": 434606000,
+        "latestTotalAssets": 633296000,
+        "latestGrossProfit": 139436000,
+        "latestGrossProfitComputed": 139436000
+      }
+    },
+    {
+      "symbol": "AERT",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 70014000,
+        "total_assets": 41894000,
+        "fetched_at": "2026-08-17T23:40:52.68+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 3,
+        "latestRevenue": 70014000,
+        "latestTotalAssets": 41894000,
+        "latestGrossProfit": 17299000,
+        "latestGrossProfitComputed": 17299000
+      }
+    },
+    {
+      "symbol": "DLTH",
+      "tier": "micro",
+      "sector": "Consumer Discretionary",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 565184000,
+        "total_assets": 402609000,
+        "fetched_at": "2026-08-17T23:41:14.195+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "latestYear": 2026,
+        "latestMonth": 1,
+        "latestRevenue": 565184000,
+        "latestTotalAssets": 402609000,
+        "latestGrossProfit": 301614000,
+        "latestGrossProfitComputed": 301614000
+      }
+    },
+    {
+      "symbol": "ANIX",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2024,
+        "revenue": 210000,
+        "total_assets": 21591000,
+        "fetched_at": "2026-08-17T23:41:18.593+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 10,
+        "latestRevenue": null,
+        "latestTotalAssets": 16080000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FCUV",
+      "tier": "micro",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 255023,
+        "total_assets": 8885514,
+        "fetched_at": "2026-08-17T23:41:09.106+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 255023,
+        "latestTotalAssets": 8885514,
+        "latestGrossProfit": -35252,
+        "latestGrossProfitComputed": -35252
+      }
+    },
+    {
+      "symbol": "AEYE",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 40311000,
+        "total_assets": 32230000,
+        "fetched_at": "2026-08-17T23:40:53.28+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 40311000,
+        "latestTotalAssets": 32230000,
+        "latestGrossProfit": 31556000,
+        "latestGrossProfitComputed": 31556000
+      }
+    },
+    {
+      "symbol": "ANVS",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 0,
+        "total_assets": 21081625,
+        "fetched_at": "2026-08-17T23:41:18.602+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 21081625,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FKWL",
+      "tier": "micro",
+      "sector": "Information Technology",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 46086901,
+        "total_assets": 51330030,
+        "fetched_at": "2026-08-17T23:41:04.945+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 6,
+        "latestRevenue": 46086901,
+        "latestTotalAssets": 51330030,
+        "latestGrossProfit": 7915069,
+        "latestGrossProfitComputed": 7915069
+      }
+    },
+    {
+      "symbol": "AFCG",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 24563601,
+        "total_assets": 275594747,
+        "fetched_at": "2026-08-17T23:40:54.735+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 13702458,
+        "latestTotalAssets": 275594747,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "APYX",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 52844000,
+        "total_assets": 66840000,
+        "fetched_at": "2026-08-17T23:41:21.823+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 52844000,
+        "latestTotalAssets": 66840000,
+        "latestGrossProfit": 33044000,
+        "latestGrossProfitComputed": 33044000
+      }
+    },
+    {
+      "symbol": "ALLR",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 320000,
+        "total_assets": 18258000,
+        "fetched_at": "2026-08-17T23:40:42.678+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 320000,
+        "latestTotalAssets": 18258000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "AQB",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2023,
+        "revenue": 2472659,
+        "total_assets": 187551428,
+        "fetched_at": "2026-08-17T23:41:21.478+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": null,
+        "latestTotalAssets": 10343593,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ASPS",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 170975000,
+        "total_assets": 139801000,
+        "fetched_at": "2026-08-17T23:40:56.636+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 170975000,
+        "latestTotalAssets": 139801000,
+        "latestGrossProfit": 48910000,
+        "latestGrossProfitComputed": 48910000
+      }
+    },
+    {
+      "symbol": "ELUT",
+      "tier": "micro",
+      "sector": "Health Care",
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 12293000,
+        "total_assets": 62350000,
+        "fetched_at": "2026-08-17T23:41:02.807+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 12293000,
+        "latestTotalAssets": 62350000,
+        "latestGrossProfit": 6596000,
+        "latestGrossProfitComputed": 6596000
+      }
+    },
+    {
+      "symbol": "ASRV",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 14634000,
+        "total_assets": 1453813000,
+        "fetched_at": "2026-08-17T23:40:57.663+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 59252000,
+        "latestTotalAssets": 1453813000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "ASTC",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 1049000,
+        "total_assets": 26989000,
+        "fetched_at": "2026-08-17T23:40:57.378+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 6,
+        "latestRevenue": 1049000,
+        "latestTotalAssets": 26989000,
+        "latestGrossProfit": 475000,
+        "latestGrossProfitComputed": 475000
+      }
+    },
+    {
+      "symbol": "BZAI",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 38632000,
+        "total_assets": 102211000,
+        "fetched_at": "2026-08-17T23:40:57.7+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 4,
+        "yearList": [
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 38632000,
+        "latestTotalAssets": 102211000,
+        "latestGrossProfit": 6194000,
+        "latestGrossProfitComputed": 6194000
+      }
+    },
+    {
+      "symbol": "CABR",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 4215,
+        "total_assets": 2326818,
+        "fetched_at": "2026-08-17T23:40:59.38+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 3,
+        "yearList": [
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 4215,
+        "latestTotalAssets": 2326818,
+        "latestGrossProfit": 2342,
+        "latestGrossProfitComputed": 2342
+      }
+    },
+    {
+      "symbol": "CIA",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 255616000,
+        "total_assets": 1754760000,
+        "fetched_at": "2026-08-17T23:41:06.228+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 255616000,
+        "latestTotalAssets": 1754760000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "CLST",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 11148000,
+        "total_assets": 282927000,
+        "fetched_at": "2026-08-17T23:40:59.747+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 11046000,
+        "latestTotalAssets": 282927000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FINW",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 130666000,
+        "total_assets": 977135000,
+        "fetched_at": "2026-08-17T23:41:23.24+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 129366000,
+        "latestTotalAssets": 977135000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    },
+    {
+      "symbol": "FIRY",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2025,
+        "revenue": 104496000,
+        "total_assets": 293455000,
+        "fetched_at": "2026-08-17T23:41:23.253+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 104496000,
+        "latestTotalAssets": 293455000,
+        "latestGrossProfit": 91446000,
+        "latestGrossProfitComputed": 91446000
+      }
+    },
+    {
+      "symbol": "LCNB",
+      "tier": "micro",
+      "sector": null,
+      "sec": {
+        "fiscal_year": 2013,
+        "revenue": 6445000,
+        "total_assets": 932338000,
+        "fetched_at": "2026-08-17T23:41:17.65+00:00"
+      },
+      "yahoo": {
+        "yearListCount": 5,
+        "yearList": [
+          2021,
+          2022,
+          2023,
+          2024,
+          2025
+        ],
+        "latestYear": 2025,
+        "latestMonth": 12,
+        "latestRevenue": 91997000,
+        "latestTotalAssets": 2240769000,
+        "latestGrossProfit": null,
+        "latestGrossProfitComputed": null
+      }
+    }
+  ]
+}

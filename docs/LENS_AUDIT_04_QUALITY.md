@@ -18,7 +18,7 @@
 | 🟢 | `decomposition.source`("direct"/"computed") | **화면에 실제로 렌더됨**(`StockLensClient.tsx:244`) — F-1③ 정직 요건 충족, 우려가 기각됨 |
 | 🟢 | 금융사 처리 | 원전도 제외(SIC=6) · 우리는 매출총이익 미보고로 자연 제외(명시적 필터 아님) — **이미 화면에 공개된 한계**(`lensCopy.ts` note), DB로 정량 확인(아래) |
 | 🔴 | 재무 출처 | **①밸류 결함 2와 동일 계열 재현** — 100% 야후(`fundamentalsTimeSeries`), SEC(`edgar.ts`) 무접촉 |
-| 🟡 | 손계산 3종목 중 2종목(MSFT·KO)에서 공식 출처 대비 소수점 이상 편차 관측 — 원인 미확정 | |
+| 🟡 | ~~손계산 3종목 중 2종목(MSFT·KO)에서 공식 출처 대비 소수점 이상 편차 관측 — 원인 미확정~~ → 🔴 **STEP1060 정정(§4·§6 참조): 원인 = 손계산이 구(舊) 회계연도 수동수치를 씀. 야후 실배선은 정상(SEC와 값까지 완전 일치).** | |
 | — | 앞선 결함 15건 생존 | **15/15 그대로 또는 상태변경**(고쳐진 것 0건) — §5 |
 
 ---
@@ -91,7 +91,22 @@ rows = raw.map((r) => ({ totalRevenue: r.totalRevenue, grossProfit: r.grossProfi
 - 로컬 캐시(`find ... fundamentalsTimeSeries`)도 **0건** — ③ 감사(BBW)·①-A 축이 늘 쓰던 "이미 가진 캐시"가 이 렌즈엔 없다.
 - 이 STEP은 "재무 데이터를 새로 취득하지 않는다"를 명시적으로 금지한다 — **광범위 재취득으로 이 공백을 메우지 않았다.**
 
+🔴 **STEP1060 정정(2026-08-18, ⓪-4③)** — 위 "구조적으로 불가능"은 **분자 두 필드(`grossProfit`·`costOfRevenue`)에 한정해서만 맞다.** `us_fundamentals`에 SEC의 `revenue`·`total_assets` 컬럼이 **이미 존재**한다(STEP1055가 추가) — **분모(총자산)와 매출은 재취득 0으로 대조 가능**했고, STEP1060이 실제로 대조했다(§2-3 결과는 아래에 별도 절로 추가). 좁혀진 결론: "전수 대조가 전부 불가능"이 아니라 **"grossProfit·costOfRevenue 두 필드만 비교 불가(야후 원시값 미저장) — revenue·totalAssets는 대조 가능"**. 근거: `docs/probe_1060_yahoo_sec_fiscal_year.json`(175종목 층화표본).
+
 🔴 **이 자체가 하나의 실측 결과다** — `revdcf`/Q1 파이프라인(`us_fundamentals`)은 원시 입력을 DB에 영구 저장해 사후 감사가 가능하지만, **7렌즈 퀄리티(그리고 밸류·F-스코어·자산성장 전부)는 매 요청 야후 호출 결과를 저장하지 않아 사후 검증 인프라 자체가 없다.** ①밸류 감사도 같은 문제를 겪었을 가능성이 높다(그때는 이 문장으로 명시되지 않았다).
+
+### §4-1. 🔴 STEP1060 추가 — revenue·total_assets 전수 대조 실측(재취득 0)
+
+`us_fundamentals`(SEC)에 `revenue`·`total_assets`가 있는 전 종목(2026-08-18 기준 3,762종목 중 `total_assets`는 STEP1055 신규 필드라 최신 크론분 1,025종목만 채워짐) 중 시가총액 5티어×섹터로 층화한 175종목을 **야후 실조회**(이 STEP의 유일한 예외, §2-0 상한 200 준수)와 대조했다.
+
+| 대조 축 | 일치(±2% 이내) | 불일치 | 비고 |
+|---|---:|---:|---|
+| `revenue` | 146/175(83.4%) | 18/175 | |
+| `total_assets` | 163/175(93.1%) | 10/175 | |
+| `fiscal_year`(연도 번호 그대로 비교) | 142/175(81.1%) | 33/175 | 🔴 아래 참조 — 불일치 33건 중 **23건은 값이 완전 일치하는 라벨 컨벤션 아티팩트**(1월 등 비12월 결산사는 SEC의 회계연도 넘버링과 원자료 캘린더연도가 어긋남 — 코드는 `financials[length-1]`로 **배열 위치**만 쓰므로 이 라벨 문제 자체와 무관), **5건은 오히려 SEC(`us_fundamentals`)측이 옛 연도에 멈춘 반대 방향 사례**(AGNC FY2019·AMH FY2020·LCNB FY2013·FLG FY2022·FRD — REIT/금융 소형주), 5건은 야후 매출 결측으로 비교 불가. **야후가 SEC보다 뒤처진 확정 사례 = 0/175.** |
+| `grossProfit`(야후 direct) vs `revenue−costOfRevenue`(야후 내부 계산) | 138/138(100%) | 0 | 두 필드가 존재하면 **항상 정확히 일치** — `direct`/`computed` 갈래 구분은 커버리지 문제일 뿐 정확도 문제가 아님 |
+
+원자료: `docs/probe_1060_yahoo_sec_fiscal_year.json`(호출 175건·성공 175·실패 0·소요 213.8초·2026-08-18T04:44:13Z~04:47:46Z UTC). 상세는 `docs/LENS_DEV_PLAYBOOK.md` 문제해결 로그(신규 행)·`docs/STEP_LEDGER.md` STEP1060 참조.
 
 ---
 
@@ -120,7 +135,19 @@ rows = raw.map((r) => ({ totalRevenue: r.totalRevenue, grossProfit: r.grossProfi
 
 🔑 **AAPL은 사실상 완전 일치** — 산식·연도 선택("최신연도")이 정확함을 실증. **MSFT는 1.59%p, KO는 0.39%p 차이** — 방향은 같으나 소수점 이상 벌어진다.
 
-🔴 **원인 미확정으로 남긴다** — 후보 셋(㉠야후 `costOfRevenue`가 공식 10-K의 "Cost of revenue" 라인과 다르게 재분류됐을 가능성 ㉡회계연도 시차(야후가 최신연도로 아직 안 갱신) ㉢`direct`/`computed` 중 어느 경로였는지) 중 **어느 것인지는 §4의 제약(재취득 금지)상 이 STEP에서 가리지 못한다.** MSFT는 공식 1차 출처(IR 보도자료) 대비 편차라 **가장 신뢰도 높은 반증 후보**다 — 판정 재료로 남긴다.
+~~🔴 **원인 미확정으로 남긴다** — 후보 셋(㉠야후 `costOfRevenue`가 공식 10-K의 "Cost of revenue" 라인과 다르게 재분류됐을 가능성 ㉡회계연도 시차(야후가 최신연도로 아직 안 갱신) ㉢`direct`/`computed` 중 어느 경로였는지) 중 **어느 것인지는 §4의 제약(재취득 금지)상 이 STEP에서 가리지 못한다.** MSFT는 공식 1차 출처(IR 보도자료) 대비 편차라 **가장 신뢰도 높은 반증 후보**다 — 판정 재료로 남긴다.~~
+
+🔴 **STEP1060 정정(2026-08-18) — 원인 확정: ㉡회계연도 시차, 단 "야후가 안 갱신"이 아니라 "이 문서(STEP1059)의 손계산이 구(舊) 연도 수동수치를 씀".**
+
+`us_fundamentals`(SEC, `fetched_at` 2026-08-17 23:38, 어젯밤 신선)과 야후 실조회(2026-08-18, `docs/probe_1060_yahoo_sec_fiscal_year.json`)를 대조한 결과:
+
+| 종목 | SEC(`us_fundamentals`) | 야후 실조회(오늘) | STEP1059 §6 손계산이 쓴 값 | 일치? |
+|---|---|---|---|:--:|
+| **AAPL** | FY2025·매출 416,161M·총자산 359,241M | FY2025·매출 416,161M·총자산 359,241M | FY2025·매출 416,161M·총자산 359,241M | ✅ **셋 다 일치** |
+| **MSFT** | FY2026·매출 331,839M·총자산 758,376M | FY2026·매출 331,839M·총자산 758,376M | 🔴 **FY2025**·매출 281,724M·총자산 619,003M | SEC=야후(완전 일치), **손계산만 구연도** |
+| **KO** | FY2025·매출 47,941M·총자산 104,816M | FY2025·매출 47,941M·총자산 104,816M | 🔴 **FY2024**·총자산 100,549M | SEC=야후(완전 일치), **손계산만 구연도** |
+
+**결론**: 야후 `fundamentalsTimeSeries`는 이 시점 세 종목 전부 SEC의 최신 회계연도와 **값까지 완전 일치**했다 — 7렌즈 프로덕션 코드의 야후 배선은 정상이다. STEP1059 §6이 관측한 MSFT 1.59%p·KO 0.39%p 편차는 **야후 실배선의 결함이 아니라, 그 STEP의 손계산이 수동으로 가져온 재무제표 수치 자체가 최신 회계연도가 아니었기 때문**이다. ㉠(벤더 재분류)·㉢(direct/computed 갈래) 후보는 §4-1의 grossProfit 대 계산값 138/138 완전 일치 실측으로 사실상 배제된다(두 값이 다를 이유가 없음이 확인됨). 근거: Cowork Supabase MCP 직접 조회(2026-08-18)·`docs/probe_1060_yahoo_sec_fiscal_year.json`.
 
 ---
 
@@ -160,17 +187,20 @@ rows = raw.map((r) => ({ totalRevenue: r.totalRevenue, grossProfit: r.grossProfi
 ## 못 한 것 / 철회·정정한 것 / 미측정으로 남은 것
 
 **못 한 것**
-- §4 — 야후 `grossProfit`(벤더) vs `totalRevenue−costOfRevenue`(계산) **전수 대조**: 저장되는 캐시가 없고, 이 STEP이 재무 데이터 재취득을 금지해 **구조적으로 불가능**.
-- MA·V·MCO·MSCI 등 47종목의 **실제 SIC 코드**(GICS "Financials" 라벨과 원전의 SIC=6 기준이 정확히 겹치는지) — 새로 조회하지 않았다.
-- MSFT·KO 손계산 편차(1.59%p·0.39%p)의 **정확한 원인**(벤더 재분류/연도시차/direct·computed 갈래 중 어느 것인지).
+- ~~§4 — 야후 `grossProfit`(벤더) vs `totalRevenue−costOfRevenue`(계산) **전수 대조**: 저장되는 캐시가 없고, 이 STEP이 재무 데이터 재취득을 금지해 **구조적으로 불가능**.~~ → 🔴 **STEP1060이 좁혀 실행**: `grossProfit`/`costOfRevenue` 자체(야후 원시값 미저장)는 여전히 못 함이지만, `revenue`·`total_assets`는 SEC(`us_fundamentals`)로 175종목 대조 완료(§4-1). 야후 내부 `grossProfit` vs 계산값은 138/138 완전 일치.
+- MA·V·MCO·MSCI 등 47종목의 **실제 SIC 코드**(GICS "Financials" 라벨과 원전의 SIC=6 기준이 정확히 겹치는지) — 새로 조회하지 않았다. **STEP1060 범위 밖(별건).**
+- ~~MSFT·KO 손계산 편차(1.59%p·0.39%p)의 **정확한 원인**(벤더 재분류/연도시차/direct·computed 갈래 중 어느 것인지).~~ → 🔴 **STEP1060이 확정**(§6 정정): 원인 = 손계산이 구연도 수동수치를 씀. 야후 실배선은 SEC와 완전 일치.
+- STEP1060 자체가 못 한 것: 175종목 표본에서 「연도 라벨 불일치·값도 다른」5건(AGNC·AMH·LCNB·FLG·FRD)이 **왜 `us_fundamentals`(SEC 파이프라인)에서 옛 연도에 멈췄는지**의 근본 원인 — 이 STEP은 7렌즈(야후) 입력을 감사하는 것이지 revdcf/SEC 파이프라인 버그를 진단하는 것이 아니라 범위 밖으로 남겼다.
 
 **철회·정정한 것**
-- 없음. `LENS_AUDIT_03_LOWVOL.md`·`docs/probe_1017_cron_failure_causes.md`의 직전 인용은 원문 재확인 결과 **전부 정확했다**(정정 불필요).
+- 🔴 **STEP1060(2026-08-18)** — §4 "구조적으로 불가능"을 "grossProfit·costOfRevenue 두 필드만 불가능, revenue·total_assets는 대조 가능"으로 좁힘. §6 "원인 미확정"을 "원인=손계산 구연도 사용, 야후 배선 정상"으로 확정. 근거·좌표는 §4-1·§6 정정 문단.
+- `LENS_AUDIT_03_LOWVOL.md`·`docs/probe_1017_cron_failure_causes.md`의 직전 인용은 원문 재확인 결과 **전부 정확했다**(정정 불필요, STEP1059 시점 기준 유지).
 
 **미측정으로 남은 것**
 - 47종목(금융사 non-na)의 SIC 코드 기반 재분류 여부.
 - `decomposition.source`("direct"/"computed") 값 자체의 전 종목 분포(direct가 몇 %, computed가 몇 %인지) — 저장 안 됨.
-- 손계산 3종목 중 2건의 편차 원인.
+- ~~손계산 3종목 중 2건의 편차 원인.~~ → STEP1060이 확정(위 참조).
 - Ball, Gerakos, Linnainmaa, Nikolaev(2015/2016) 계열의 "영업이익성 기준이 더 낫다"는 후속 비판 논문 자체는 원문 미확보(`lensCopy.ts` note가 이미 요약 인용 중이라 이 STEP에서 별도 확보 안 함 — 판정 필요시 별건).
+- 🔴 **STEP1060이 남긴 것**: `us_fundamentals`(SEC)에서 AGNC(FY2019)·AMH(FY2020)·LCNB(FY2013)·FLG(FY2022) 등 REIT·소형 금융주가 왜 옛 연도에 멈춰 있는지(revdcf 파이프라인 쪽 원인) — 미조사. F-score/asset-growth/quality-fallback 4개 렌즈에 대한 §2-5 코드 경로별 전파 분석(자산성장의 `nonConsecutive()` 가드가 실제로 무엇을 막는지 포함)은 `docs/LENS_DEV_PLAYBOOK.md` 문제해결 로그(STEP1060 행)에 별도 기록.
 
 🔴 **판정은 장은태가 한다. 이 문서는 결함을 놓는 것까지다.**
