@@ -387,7 +387,7 @@
     <table>
       <thead><tr><th>H-4 (b) 형식</th><th>내용</th></tr></thead>
       <tbody>
-        <tr><td><b>① 왜 보류</b></td><td>실무 <b>1/3</b>(Simply Wall St 조정 불가 · StockAnalysis DCF 자체 없음 · Alpha Spread만 계산기) · 입력창이 생기면 <b>「기본값을 뭐로 하나」가 되살아남</b>(역DCF는 입력이 없어서 그 문제가 없었다) · 역DCF와 정보 중복 · 🔴 <b>Alpha Spread 실물 미확인</b></td></tr>
+        <tr><td><b>① 왜 보류</b></td><td>실무 <b>1/3</b>(Simply Wall St 조정 불가 · StockAnalysis DCF 자체 없음 · Alpha Spread만 계산기) · 입력창이 생기면 <b>「기본값을 뭐로 하나」가 되살아남</b>(역DCF는 입력이 없어서 그 문제가 없었다) · 역DCF와 정보 중복 · 🔴 <b>Alpha Spread 실물 미확인</b><br>🔴 <b>2026-08-18 STEP1071 반영</b>(`_to_delete/2026-08-16_roadmap_drafts/dup_11.html` — 로드맵 초안 계보) — <b>초안은 표본을 「조사한 8곳 전부」로 서술</b>: <i>"조사한 8곳 전부 '우리가 계산한 값' 형태이고 Simply Wall St조차 입력값 조정이 막혀 있다. 이 형태는 아무도 하지 않는다."</i> 위 「1/3」과 표본 크기가 다르다(3곳 vs 8곳) — <b>어느 쪽이 최종 조사 범위인지 미판정</b>, 양쪽 병기</td></tr>
         <tr><td><b>② 깔아둔 배선</b></td><td><code>lib/revdcf/engine.ts</code>가 연차별 주당가치 수열을 이미 산출 — <b>계산은 재사용 가능</b>. 🔴 단 <b>입력 폼·API 파라미터·기본값·설명은 전부 미구현</b>(<code>/api/revdcf</code>는 <code>symbol</code> 하나만 받는다)</td></tr>
         <tr><td><b>③ 활성화 체크리스트</b></td><td>DoD9(역DCF 라이브 US 2종목 육안) 통과 → 화면에서 <b>“내 가정을 넣어보고 싶다”는 필요가 실제로 생기는지</b> 확인 → Alpha Spread 실물 조사 → 기본값 판정</td></tr>
         <tr><td><b>④ 비용·노력</b></td><td>계산 0 · 화면·기본값·설명 있음. <b>🔴 “비용 0”은 틀렸다</b> — 재료 열의 <i>“✅ 완성”</i>은 <b>재료 상태</b>였지 기능 완성이 아니었다</td></tr>
@@ -398,6 +398,7 @@
     <b>실무</b>: Simply Wall St <b>공개 모델 저장소</b>(GitHub) — DDM은 <b>Valuation 섹션 안</b> DCF 4변형 중 하나(<i>“2단계 DCF를 쓸 수 없을 때의 대안 · 이익의 상당 부분을 꾸준히 배당으로 내는 회사에 적합”</i>). <b>Dividend 섹션은 별개</b>(수익률·지급 이력, 적정가 추정 아님). Finbox도 DCF·비교기업과 함께 하나의 Fair Value로 혼합 — 🔴 <b>단 배치는 미확인(1/2)</b><br>
     <b>원전</b>: Gordon(1959) <code>Value = 예상 주당배당 ÷ (할인율 − 영구성장률)</code> — <b>주가 자체를 산정</b>. 분모의 영구성장률은 관측 불가<br>
     <b>전문가</b>: 사용률 10위 · 리포트 2,263건 중 stand-alone 94건 · 은행 SOTP의 15%</p>
+    <p style="margin-top:12px">🔴 <b>2026-08-18 STEP1071 반영</b>(`_to_delete/2026-08-16_roadmap_drafts/model_list_30_4.html` 원모델17 · `model_list_30_6.html` — model_list 계보) — <b>시나리오 밸류에이션(비관·기본·낙관 세 가정으로 각각 값)도 같은 자리에서 이미 🔵흡수 판정됐다</b>: <i>"시나리오 밸류에이션(원 17번) — DCF에 포함됩니다. 사용자가 성장률을 5%·8%·12%로 넣어보는 것과 Bear/Base/Bull은 같은 일이고, 세 개를 미리 정해주는 저쪽보다 낫다."</i> 정본(<code>ROADMAP_V2.md</code>)·현재 WHAT 어디에도 이 흡수 판정 자체가 기록돼 있지 않았음(반영 전 확인 — 없어서 이 STEP이 추가) · 판정은 가-2와 같은 2026-08-17이나 별도 좌표로 남은 적이 없었음</p>
     <p style="margin-top:10px">🔴 <b>로드맵 어긋남 — F-3 재심사에서 DDM이 빠졌다.</b> DDM의 기존 탈락 근거는 <code>MODEL_DEMAND_SURVEY:92</code>의 <i>“①에서 탈락(값을 매김)”</i>인데 <b>그 관문 7개는 F-2에서 폐기됐다.</b> F-3이 구 탈락 9개를 새 관문으로 재심사하면서 <b>같은 사유(「값 매김」)의 DCF 정방향은 ✅ 통과</b>시켰으나 <b>DDM은 9개 목록에 없다.</b> <code>probe_1043:240</code>도 이 재배치를 <b>미측정</b>으로 남겨뒀다.<br>
     🔑 <b>결론은 정본과 같되 근거가 교체된다</b> — <s>“값을 매기니까”</s>(폐기된 관문) → <b>“DCF류이고 가정 입력이 결과를 지배하니까”</b>(실무·원전).</p>
     <table style="display:none"><tbody>
