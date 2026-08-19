@@ -342,7 +342,7 @@
   <tbody>
     <tr><td class="name g">「지금 사면 비싸게 사는 걸까」(배수+역DCF 병합)</td><td class="src">정본 W-2 첫 질문 = “(배수+시장내재기대 병합)”, <b>STEP1053 2026-08-16 확정</b></td><td class="st g">구조 확정</td><td class="add">Q1 트랙 — <code>Q1_ENABLED</code> OFF · 조건부 4칸 화면처리 · <code>sectorSource</code> 버그</td></tr>
     <tr><td class="name g">재무건전성(F스코어 단독)</td><td class="src"><code>CLAUDE.md:81</code> 규칙3 재사용 심사 통과 · <code>LENS_DISPOSITION §8-1·§8-3</code></td><td class="st g">구조 확정</td><td class="add">9/9 충돌(§7-4 C#9) · 71.9%↔32.3% 전제 재정리 — 둘 다 장은태 판정</td></tr>
-    <tr><td class="name g">최근변화(모멘텀 + 기술, 한 칸)</td><td class="src">위와 동일 규칙3</td><td class="st g">구조 확정</td><td class="add">고칠 것 3건 — #7 <code>avg(r1,r3)</code> 창작(<code>lenses.ts:176</code>) · #9 <code>adjUsed</code> 미노출(<code>lensCompute.ts:129~130</code>) · #15 <code>pos52</code> 가드(<code>lenses.ts:201~204</code>)</td></tr>
+    <tr><td class="name g">최근변화(모멘텀 + 기술, 한 칸)</td><td class="src">위와 동일 규칙3</td><td class="st g">구조 확정</td><td class="add"><s>고칠 것 3건 — #7 <code>avg(r1,r3)</code> 창작(<code>lenses.ts:176</code>) · #9 <code>adjUsed</code> 미노출(<code>lensCompute.ts:129~130</code>) · #15 <code>pos52</code> 가드(<code>lenses.ts:201~204</code>)</s> 🟢 <b>2026-08-19 STEP1083 — 3건 전부 수정 완료</b>(커밋 <code>7191521</code>·<code>142c06a</code>·<code>e148b56</code>). 9항목 검증 = 4/9 완전통과 + 4항목 부분(원전대조·값검증·화면일관성·라이브실측) — <b>9/9 아님, 억지로 ✅ 안 붙임</b></td></tr>
   </tbody>
 </table>
 <p class="caption">🔴 <b>넷 다 「구조 확정」이고 「완성 승인」은 0개다</b> — <code>BUILD_SEQUENCE.md:106</code> “현재 9/9 통과한 모델은 0개다.” 무엇을 먼저 완성할지는 여기서 정하지 않는다 — 순서 판정은 장은태.</p>
@@ -567,7 +567,7 @@
   <div class="ditem">
     <h4>마. 🔴 신규 — 7렌즈 재사용 판정 <span style="font-size:12px;font-weight:400;color:var(--muted)">2026-08-18 STEP1064·1066 · CLAUDE.md 규칙3의 종착</span></h4>
     <p class="ask"><code>CLAUDE.md</code> 규칙3 — 기존 7렌즈를 검증 없이 가져가지 않는다: ①확정된 질문에 답하는지 확인 ②결함을 실측으로 뜯은 뒤에만 재사용. 감사 ①~⑦(밸류·모멘텀·저변동·퀄리티·기술·F스코어·자산성장) 완결.</p>
-    <p>결함 <b>16건</b>(18→16 정정 — 근거 둘: ①③저변동 자신이 "결함 아님"이라 명시한 항목이 이후 집계에 그대로 포함됐던 것 · ②⑤·⑦이 "같은 뿌리"라 밝힌 것을 이후 문서가 단순 합산했던 것). 화면영향 A(라이브 노출)13건·B(잠재)3건·C(병기)2건. H-7(공개/검산/기만)로 가르면 <b>표기해소 8·고쳐야 6·인프라 3</b>. 🔴 <b>사용 차단 0건.</b> 🔴 <b>고쳐진 것 0건.</b></p>
+    <p>결함 <b>16건</b>(18→16 정정 — 근거 둘: ①③저변동 자신이 "결함 아님"이라 명시한 항목이 이후 집계에 그대로 포함됐던 것 · ②⑤·⑦이 "같은 뿌리"라 밝힌 것을 이후 문서가 단순 합산했던 것). 화면영향 A(라이브 노출)13건·B(잠재)3건·C(병기)2건. H-7(공개/검산/기만)로 가르면 <b>표기해소 8·고쳐야 6·인프라 3</b>. 🔴 <b>사용 차단 0건.</b> <s>🔴 고쳐진 것 0건.</s> 🟢 <b>2026-08-19 STEP1083 — 모멘텀·기술 4건 수정</b>(#7 `avg(r1,r3)` 창작 제거·#9 `adjUsed` 노출·#10 FF문구 정정·#15 `pos52` 가드, 커밋 <code>7191521</code>·<code>142c06a</code>·<code>e148b56</code>) — 나머지 12건은 여전히 미착수(정확한 잔여 카운트는 개별 재확인 필요, 이 문단에서 자동 갱신 안 함).</p>
     <p style="margin-top:8px">렌즈별 「쓰려면 무엇이 필요한가」(7행, 가부 아님): 🔴 <b>WHAT에 실제로 들어가는 건 셋</b>(F스코어=재무건전성·모멘텀+기술=최근변화). 밸류는 <b>Q1이 별개 경로</b>(역DCF와 병합, 가-1 참조). 🔴 <b>퀄리티·저변동·자산성장은 관문①에서 걸린다</b> — GP/A 쓰는 실무 0곳(위 실무갱신 참조)·변동성 축 자체가 위 여섯 질문 어디에도 없음. 공통 결함 패턴 셋: ㉠집계레이어(등급을 verdict.tone이 반영 안 함) ㉡배당조정 처리방식 다름 ㉢검산 인프라 공백(4개 렌즈 연속).</p>
     <p style="margin-top:8px">🟢 <b>2026-08-19 STEP1073·1074</b> — 이 감사 결과로 <b>F스코어(재무건전성)·모멘텀+기술(최근변화)</b>이 「확정된 칸」에 올랐다(맨 위 「확정된 칸」 섹션 참조). 🔴 이 감사는 「7렌즈 거취/처분」이 아니라 <code>CLAUDE.md:81</code> <b>규칙3 재사용 자격 심사</b>였다.</p>
     <p style="margin-top:8px">좌표=<code>LENS_DISPOSITION_2026-08-08.md</code> §7-1·§7-2·§7-5·§8-2·§8-3·§8-4 · <code>LENS_AUDIT_04_QUALITY.md</code> §6</p>
