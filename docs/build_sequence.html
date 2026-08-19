@@ -182,22 +182,46 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:v
   <div class="lbl">미해결 · 장은태만 채울 수 있는 칸</div>
   <div class="blockgrid">
     <div class="block">
-      <span class="tag">판정 A</span>
+      <span class="tag">🟢 판정 A</span>
       <h4>제품 정의의 우선순위</h4>
       <p>정의가 <strong>셋 병존</strong>한다 — 기법 나열(07-03) · 정직한 배수(08-07) · 질문 답변(08-08).
-         셋 다 살아 있고 순위가 없다.</p>
+         <s>셋 다 살아 있고 순위가 없다.</s></p>
+      <p>🟢 <strong>확정(2026-08-19 장은태)</strong> — 정의3(질문구조) 최상위 · 정의2(정직함) 신뢰층 · 정의1(기법나열) 폐기.</p>
       <div class="dep">→ 걸려 있는 것: 그 아래 모든 화면 결정</div>
     </div>
     <div class="block">
-      <span class="tag">판정 B</span>
-      <h4>「새 모델 1개를 고른다」 vs 「이미 있는 것 중 1위를 제대로 만든다」</h4>
+      <span class="tag">🟢 판정 B</span>
+      <h4><s>「새 모델 1개를 고른다」 vs 「이미 있는 것 중 1위를 제대로 만든다」</s></h4>
       <p><code>MODEL_BUILD_ORDER</code> §3-2가 <em>"07-30의 전제 자체가 성립하지 않았을 수 있다"</em>고
-         제기 → <strong>2026-08-07 이후 미판정</strong></p>
+         제기 → <s>2026-08-07 이후 미판정</s></p>
+      <p>🟢 <strong>확정(2026-08-19 장은태)</strong> — 「확정된 모델을 1개씩 완성한다」. 🔴 「1위」는 채택되지 않았다(근거 3건: <code>ROADMAP_V2.md:304</code> 동점4개·순위아님 / <code>:429</code> 사용률1위 탈락 / <code>BUILD_SEQUENCE.md</code> §8 #2).</p>
       <div class="dep">→ 걸려 있는 것: 다음에 착수할 대상 전부</div>
     </div>
   </div>
 </div>
-<p class="note">C~F(역DCF 위치 · ROADMAP 재작성 · 7렌즈 거취 · Q1 착수 4건)는 전부 A·B 아래에 달려 있다. 전체 목록은 맨 아래.</p>
+<p class="note"><s>C~F(역DCF 위치 · ROADMAP 재작성 · 7렌즈 거취 · Q1 착수 4건)는 전부 A·B 아래에 달려 있다.</s> C=🟡착수가능 · D(내용)=🟡착수가능 · E=🟢답 있음(7렌즈는 "거취"가 아니라 <code>CLAUDE.md:81</code> 규칙3 재사용 심사였음) · F=🔴§6-B-1 결과 대기. 전체 목록은 맨 아래.</p>
+
+<div class="hero" style="margin-top:16px">
+  <div class="lbl">🟢 확정된 칸 — 넷(2026-08-19 STEP1073·1074)</div>
+  <div class="blockgrid">
+    <div class="block">
+      <span class="tag">①</span>
+      <h4>「지금 사면 비싸게 사는 걸까」(배수+역DCF 병합)</h4>
+      <p>정본 W-2, STEP1053 2026-08-16 확정 · Q1 트랙(<code>Q1_ENABLED</code> OFF)</p>
+    </div>
+    <div class="block">
+      <span class="tag">②</span>
+      <h4>재무건전성(F스코어)</h4>
+      <p><code>CLAUDE.md:81</code> 규칙3 재사용 심사 통과 · 당장 고칠 것 없음</p>
+    </div>
+    <div class="block">
+      <span class="tag">③④</span>
+      <h4>최근변화(모멘텀 + 기술, 한 칸)</h4>
+      <p>규칙3 통과 · 고칠 것 3건(#7·#9·#15)</p>
+    </div>
+  </div>
+  <p class="note" style="margin-top:8px">🔴 넷 다 「구조 확정」이고 「완성 승인」은 0개다 — <code>BUILD_SEQUENCE.md:106</code> "현재 9/9 통과한 모델은 0개다" 유효.</p>
+</div>
 
 <!-- 제품 정의 -->
 <h2><span class="n">§1</span>우리가 만드는 것 — 정의가 셋 병존한다</h2>
