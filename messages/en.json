@@ -59,7 +59,7 @@
       "lowvol": "Low Volatility — steady per unit of risk? (the low-volatility anomaly)",
       "extra": "Asset Growth · Technical — over-investment and overheating signals. (RSI — Wilder 1978 · moving averages)"
     },
-    "lensClose": "Nothing is hidden. Not a black box — a lens we open. Each lens shows the numbers behind it, and when the data is not there, that lens simply says \"insufficient data.\"",
+    "lensClose": "Nothing is hidden. Not a black box — a lens we open. Each lens shows the numbers behind it, and when the data is not there, that lens simply says \"insufficient data.\" Reference-grade lenses, though, are weighted the same as verified ones when we tally the overall read.",
     "noRecTitle": "We do not predict, and we do not recommend",
     "noRecBody": "There is no \"buy this stock\" signal here. A lens hands you evidence, not certainty; material, not a conclusion. We set several viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
     "coverageTitle": "How far we look",

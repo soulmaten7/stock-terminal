@@ -28,6 +28,7 @@ export type LensRead = {
   cutoffs?: { lo: number; hi: number } | null; // 판정 컷(원값 기준 상태 분기 임계치) — 3단 계산 서사용(STEP 782). 미지원 렌즈는 undefined(응답에 안 실림, byte 불변).
   cutSource?: { market: string; n: number; asOf: string | null } | null; // 컷 출처(분포 유도 시장·표본·기준일·STEP 805 §6). 고정컷(RSI·F-Score)·pending은 없음.
   valueBasis?: "ttm" | "annual" | null; // 밸류 렌즈 전용 — PER을 무엇으로 냈는지(TTM/연간·STEP 809 §1). 화면 문구 분기용.
+  adjUsed?: boolean | null; // 모멘텀 전용 — 배당조정 종가(총수익률)로 계산했는지, 결측이라 raw(가격수익률)로 폴백했는지. false면 note에 캐비어트 추가(STEP1083 §7-4#2 #9).
   // ── STEP 831 §10 깊이 표준(근거 상세 4축) ── 렌즈별 선택. 미지원/결측이면 undefined(지어내지 않음).
   decomposition?: LensDecomposition | null; // ① 구성요소 분해(원자료→최종값·항등식). compute()가 채움.
   timeSeries?: LensTimeSeries | null;        // ② 시계열 추이(연도별·불연속 표시). compute()가 채움.

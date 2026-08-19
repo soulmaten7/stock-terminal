@@ -162,6 +162,8 @@ export const momentum: Lens = {
     //   원전(Jegadeesh-Titman·Carhart·FF) 어디에도 없는 창작이었고(CLAUDE.md 창작금지), 어떤 라이브 화면도
     //   이 필드를 렌더링하지 않아(전수 grep 확인) 대체 산식을 짓지 않고 null로 제거한다. r1·r3 자체는
     //   detail에 그대로 남아 투명 공개된다. §7-4#2 #8(±5%→분포컷 전환)의 대상 코드도 이 제거로 함께 사라짐.
+    const adjUsed = d.adjUsed ?? null;
+    const note = adjUsed === false ? c.note + LENS_MISC[locale].momentumRawFallback : c.note;
     return {
       key: "momentum",
       grade: LENS_GRADE[locale].verified,
@@ -180,9 +182,10 @@ export const momentum: Lens = {
       outlook: isPending ? null : outlookOf(locale, "momentum", mState),
       value: round(m121),
       state: mState,
-      note: c.note,
+      note,
       cutoffs: cut ? { lo: cut.lo, hi: cut.hi } : null, // 실제 사용한 분포 컷(STEP 805 §3·§6)
       cutSource: cutSourceOf(cut, marketOf(d.symbol)),
+      adjUsed, // STEP1083 §7-4#2 #9: 정직 표기용 플래그 노출(화면·note 둘 다 — 노출 안 되면 있으나 마나였다는 결함 재발 방지)
     };
   },
 };

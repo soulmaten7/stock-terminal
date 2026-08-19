@@ -23,7 +23,7 @@ export const LENS_COPY: Record<Locale, {
       about: "오른 주식은 한동안 더 오르는 '관성'이 시장에 있다는 아이디어예요. 1993년 제가디시·티트만이 데이터로 처음 밝혔고, 좋은 소식에 사람들이 천천히 반응하는 심리 때문이라 봐요 — 그래서 최근 강한 주식을 따라가는 추세추종에 씁니다.",
       note: "12-1 모멘텀(현상=Jegadeesh-Titman 1993 · 계산 사양=Carhart(1997) UMD/FF 모멘텀 팩터): 오른 주식이 한동안 더 오르는 '추세 지속'은 학계에서 가장 널리 재현된 이상현상이에요. 우리 백테스트도 방향이 +이고, 초·중·후반 세 구간으로 나눠도 부호가 3/3 일관(시기 무관)이며, 팩터 회귀에서 우리 신호가 학계 모멘텀 팩터에 흡수돼요(βMom 큼 = '우리 모멘텀 = 학계 모멘텀'). 시장·규모·가치(FF3)를 넘는 알파도 +(대체로 유의). 단 세기(t·샤프)는 표본 구간에 따라 흔들려 특정 값으로 못박지 않고, 수익 '수준'은 생존편향·동일가중으로 부풀려져 실전 기대치가 아니에요(방향이 맞다는 뜻이지 수익 보장 아님). ⚠️ 12~18개월 뒤 부분 반전·급반등장 '모멘텀 크래시'가 알려진 실패 모드예요. 판정은 시장 분포 순위(상하위 30%)라 절대 방향이 아니에요(생존자 상위 1,000 사이 순위).",
       scope: {
-        verified: "현상은 제가디시·티트만(1993)이 미국 주식(1965~89·NYSE·AMEX·10분위 롱숏)에서 처음 확인했어요. 다만 우리 계산 사양(12개월 형성·최근 1개월 제외·상하위 30% 3분위)은 그 논문의 기본형이 아니라 카하트(1997) UMD·파마-프렌치 모멘텀 팩터의 관행이에요. 둘 다 '집단 간 평균 차이'지 개별 종목의 미래가 아니에요.",
+        verified: "현상은 제가디시·티트만(1993)이 미국 주식(1965~89·NYSE·AMEX·10분위 롱숏)에서 처음 확인했어요. 우리 계산 사양 중 형성기간(12개월·최근 1개월 제외)과 상하위 30% 구분선은 카하트(1997) UMD·파마-프렌치 모멘텀 팩터를 따랐어요. 다만 그 팩터가 쓰는 사이즈 2분할(NYSE 중앙값)·NYSE 브레이크포인트·가치가중 포트폴리오는 따르지 않고, 개별 종목을 우리 유니버스(시총 상위 1,000) 안에서 그대로 줄 세워요 — 그래서 '카하트/FF 관행'이 아니라 '카하트/FF의 형성기간·30/70 구분만 빌린 것'이라고 밝혀요. 둘 다 '집단 간 평균 차이'지 개별 종목의 미래가 아니에요.",
         failure: "12~18개월 뒤엔 오히려 뒤집히는 경향(부분 반전)이 있고, 급락 뒤 급반등장에선 크게 무너지는 '모멘텀 크래시'가 알려져 있어요. 또 우리 순위는 '오늘 기준 상위 1,000종목'(KR·US 모두 시총 상위)끼리라 상장폐지·쪼그라든 종목이 빠진 생존자들 사이의 순위예요(논문은 상장폐지분까지 포함). '이 종목이 오른다'는 뜻이 아니에요.",
         when: "최근 1개월은 빼고(단기 반전 회피) 봐요. 논문은 3~6개월 보유 전제인데 우리는 시점 스냅샷이라 보유기간 개념이 없어요 — 시장 내 상대 순위로만 보세요.",
       },
@@ -116,7 +116,7 @@ export const LENS_COPY: Record<Locale, {
       about: "The idea that stocks which have been rising tend to keep rising for a while — a kind of market inertia. Jegadeesh and Titman first showed it in the data in 1993, often explained by investors reacting slowly to good news. It's the basis of trend-following: ride the recent winners.",
       note: "12-1 Momentum (phenomenon = Jegadeesh-Titman 1993 · spec = Carhart 1997 UMD / FF momentum factor): the tendency of winners to keep winning ('trend persistence') is one of the most widely replicated anomalies in the literature. Our backtest also points positive, holds the same sign across all three sub-periods (early/middle/late, 3/3 — period-independent), and in factor regressions our signal is absorbed by the academic momentum factor (high βMom = 'our momentum is the academic momentum factor'). The alpha beyond market/size/value (FF3) is positive too (broadly significant). But the strength (t, Sharpe) drifts with the sample window, so we do not pin a specific value, and the return 'level' is overstated by survivorship and equal weighting (direction, not a return guarantee). ⚠️ Known failure modes: partial reversal after 12-18 months and 'momentum crashes' in sharp rebounds. The verdict is a market-distribution rank (top/bottom 30%), not an absolute direction (a rank among the surviving top 1,000).",
       scope: {
-        verified: "The phenomenon was first shown by Jegadeesh and Titman (1993) on US stocks (1965-89, NYSE/AMEX, decile long-short). But our spec (12-month formation, skipping the most recent month, top/bottom 30% terciles) follows the Carhart (1997) UMD / Fama-French momentum-factor convention, not that paper's base form. Both are group averages, not a claim about one stock's future.",
+        verified: "The phenomenon was first shown by Jegadeesh and Titman (1993) on US stocks (1965-89, NYSE/AMEX, decile long-short). Two pieces of our spec — the 12-month formation window (skipping the most recent month) and the top/bottom 30% cutoffs — follow the Carhart (1997) UMD / Fama-French momentum-factor convention. We do not follow that factor's NYSE size-median split, NYSE breakpoints, or value-weighted portfolios — we simply rank individual stocks within our own universe (top 1,000 by market cap). So this borrows the formation window and 30/70 split from Carhart/FF, not the full factor-construction convention. Both are group averages, not a claim about one stock's future.",
         failure: "It tends to partly reverse 12-18 months later, and it can break down badly in sharp rebounds after a crash (a 'momentum crash'). Also, our ranking is among today's top 1,000 names (US and KR by market cap), so delisted or shrunken stocks are missing — a rank among survivors (the papers include delisted returns). It does not mean this stock will rise.",
         when: "We skip the most recent month (to avoid short-term reversal). The papers assume a 3-6 month holding period; we take a point-in-time snapshot with no holding period — read it only as a relative rank within the market.",
       },
@@ -517,6 +517,7 @@ export const LENS_MISC: Record<Locale, {
   pendingPhrase: string; pendingPlain: string;
   cutsErrorPhrase: string; cutsErrorPlain: string; // 컷 '조회 실패'(일시 오류) — pending(기준 준비 중)과 구분·STEP 808 §2
   perBasis: string; // PER 산출 기준(외부 TTM과 다름·STEP 805 §5)
+  momentumRawFallback: string; // STEP1083 §7-4#2 #9: adjUsed=false(배당조정 결측)일 때 note에 덧붙이는 정직 표기
 }> = {
   ko: {
     pendingPhrase: "기준 준비 중",
@@ -524,6 +525,7 @@ export const LENS_MISC: Record<Locale, {
     cutsErrorPhrase: "기준을 불러오지 못했어요",
     cutsErrorPlain: "판정 기준을 일시적으로 불러오지 못했어요 — 값은 위에 그대로 있어요. 잠시 후 다시 시도해 주세요.",
     perBasis: "연간 실적 기준",
+    momentumRawFallback: " ⚠️ 이 종목은 배당조정 데이터가 일부 결측이라 배당을 뺀 가격만으로 계산했어요(총수익률이 아니라 가격수익률) — 배당이 큰 종목은 실제보다 낮게 나올 수 있어요.",
   },
   en: {
     pendingPhrase: "Calibrating",
@@ -531,6 +533,7 @@ export const LENS_MISC: Record<Locale, {
     cutsErrorPhrase: "Could not load the baseline",
     cutsErrorPlain: "We could not load the verdict baseline just now — the number above stands on its own. Please try again in a moment.",
     perBasis: "based on last fiscal year",
+    momentumRawFallback: " ⚠️ Dividend-adjusted data is partly missing for this stock, so this uses price-only return (not total return) — high-dividend names can look weaker than they really are.",
   },
 };
 
