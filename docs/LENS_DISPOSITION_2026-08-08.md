@@ -242,6 +242,64 @@
 | **7** | 「검산 인프라 공백」(㉢, 4개 렌즈)에 원시값·판정근거를 영구 저장하는 인프라를 만드나 | ①`lens_scores`에 raw 필드 추가(grossProfit·rsi14·pos52w·reason 등) ②현행 유지(매 요청 재계산, 사후검증 불가) | ①은 스키마 변경+저장용량 증가, 대신 매번 이런 감사에서 "구조적 불가"가 반복 안 됨 / ②는 다음 렌즈 추가·재감사 때마다 같은 벽 재확인 | ④§4·⑤§손계산·⑥§4·⑦§4(4개 사례 전부 좌표 있음) | 불필요 — 패턴 자체는 4회 반복 확인됨 |
 | **8** | `ROADMAP_V2.md` W-2-4의 "F-스코어 32.3%" 서술을 어떻게 반영하나(⑥ 발견) | ①그 문장에 "라이브 커버리지 근거로 인용 불가" 각주 추가(취소선 없이) ②취소선+정정(단, `probe_1054`의 32.3% 원경로 재확인 전이라 성급할 위험) ③그대로 두고 이 판정 대기만 남김 | ①은 즉시 반영 가능(추가 조사 불요) / ②는 원경로 재확인이 먼저 필요(STEP1060의 실수 반복 위험) | ⑥§1 전문 | ②를 택하면 필요(`probe_1054`가 실제 어떤 원자료를 썼는지) / ①이면 불필요 |
 
+### #7-부록 — 🟢 ①채택(2026-08-19 장은태) 설계 + 영향 실측(STEP1085 · 스키마 미변경)
+
+> 🔴 **이 부록은 설계 문서다. `lens_scores` 스키마는 이 STEP에서 바꾸지 않는다.** DB 쓰기 0·스키마 변경 0·`supabase/migrations/` 파일 0개. 실제 마이그레이션은 이 설계를 장은태가 승인한 뒤 별건 STEP.
+
+#### §1. 현재 상태 실측(2026-08-19, Supabase MCP 직접 조회)
+
+`lens_scores` **현재 19컬럼**(`symbol`·`market`·`name`·`price` + {`momentum`·`lowvol`·`valuation`·`quality`·`assetgrowth`·`technical`}×{`_value`·`_state`} 12개 + `fscore_value`·`fscore_state` + `updated_at`) — **raw 필드(원시값·판정근거)는 이미 저장 중인 것 0건**(반대증거 ㉠ 기각).
+
+| 항목 | 값 |
+|---|---:|
+| 컬럼 수 | 19 |
+| 행 수 | 1,976(KR 978 · US 998) |
+| 테이블 자체 크기(힙, 인덱스 제외) | 2,211,840 bytes(2,160 kB) |
+| 전체 크기(인덱스 포함) | 3,874,816 bytes(3,784 kB) |
+| 행당 평균(힙 기준) | 🔴 **산술(1,119.3 bytes = 2,211,840÷1,976), 실측 아님** |
+
+#### §2. 저장할 필드 확정 — 네 감사 원문에서 역산(상상 필드 0건)
+
+| 렌즈 | 그 감사가 「없어서 못했다」고 한 것(좌표) | 제안 컬럼 | 근거 — 이미 계산 시점 메모리에 있는지 코드로 확인 |
+|---|---|---|---|
+| 퀄리티 | `grossProfit`·`costOfRevenue`(야후 벤더 원시값) — `LENS_AUDIT_04_QUALITY.md §4` | `gross_profit numeric` | `lib/lensCompute.ts:212-213`가 이미 `LensRead.grossProfit`로 담아둠(재취득 아님). `costOfRevenue`는 `latestGrossProfit()`(`lib/lenses.ts:71`)이 null-폴백에 이미 흡수해 최종 `grossProfit` 하나로 수렴 — **별도 컬럼 불필요**(원 감사가 그로스프로핏·매출원가 "두 필드"를 언급한 건 대조 실험용이었지, GP/A 계산엔 해소된 값 하나면 충분) |
+| 기술 | `rsi14`·`pos52w`(표시용 원시 지표값) — `LENS_AUDIT_05_TECHNICAL.md §손계산` | `rsi14 numeric`·`pos52w numeric` | `lib/lenses.ts:224,226`가 이미 `detail.rsi14`·`detail.pos52w`로 계산해 둠 — `lib/lensPrecompute.ts:369`의 `pick()`이 `.value`/`.state`만 추출해 버림(폐기 지점 확인) |
+| F스코어 | `reason`(needThree/dataMissing/gap 어느 것인지) — `LENS_AUDIT_06_FSCORE.md §4` | `fscore_reason_code text` | `lib/fscore.ts:11,28-30`가 `reason`을 이미 채우나 **로케일 고정 문자열**(`computeSymbolLenses(sym,"ko",...)`, `lensPrecompute.ts:558`가 항상 `"ko"` 호출이라 값은 항상 한국어 3종 중 하나) — `lib/lensPrecompute.ts:374-379`의 `fscoreOf()`가 `score`·`grade`만 추출해 버림(폐기 지점 확인). 🔴 **그대로 저장하면 언어 고정 — `X.needThree`·`X.dataMissing`·`X.gap`(ko) 3개 상수와 문자열 비교해 `needThree`/`dataMissing`/`gap` 코드로 변환해 저장하는 편이 낫다**(새 판정 로직 아님, 이미 있는 3개 상수와의 등호 비교) |
+| 자산성장 | 2년치 총자산 — `LENS_AUDIT_07_ASSETGROWTH.md §4` | `total_assets numeric`·`total_assets_prior numeric` | `lib/lenses.ts:380`가 이미 `lr.totalAssets`(당해)·`prev.totalAssets`(전기)로 두 값 다 메모리에 갖고 있음(성장률 계산 직후 버려짐) |
+| (모멘텀 — `adjUsed`, STEP1084 실측) | 저장 컬럼 없음 | `adj_used boolean` | `lib/lensCompute.ts:107,129`가 이미 `adjComplete`로 계산·`LensRead.adjUsed`로 노출(STEP1083) — DB엔 아직 안 감 |
+
+🔴 **삭제한 상상 필드 = 1건** — `costOfRevenue`(퀄리티). 좌표 못 대서가 아니라(코드 좌표는 있음), `grossProfit`이 이미 그 값을 흡수해 별도 저장이 정보를 더 안 준다고 판단해 뺐다(§6①에서 재확인).
+
+🔴 **㉢ 반대증거 필수 확인 — 시계열류(행 하나에 안 들어가는 것)**:
+- **기술의 원시 종가 252봉**(RSI·SMA·52주고저를 "처음부터" 재현하려면 필요) — **이 목록에 없다.** `rsi14`·`pos52w`는 계산 *결과값*(스칼라)이지 계산에 쓰인 원자료(시계열)가 아니다. 시계열은 `lens_scores`의 행 하나(컬럼)에 안 들어간다 — 별도 테이블(종목×날짜)이 필요하며 이는 §7-4#7의 범위(①=`lens_scores`에 raw 필드 추가) 밖이다.
+- **F스코어의 3개 연속 회계연도 전체 재무제표**(9신호 전부를 손으로 재현하려면 필요) — 이 목록에 없다. `fscore_reason_code`는 "왜 못 냈는지 사유"이지 원자료 자체가 아니다. 3년×다필드는 스칼라 컬럼 몇 개로 안 풀리는 규모라 이번 제안엔 없다.
+- **판별 불가 렌즈 = 없음**(퀄리티·자산성장은 스칼라 2개로 충분히 풀림, 기술·F스코어는 시계열/다년치가 필요해 이번 인프라로는 "풀리지 않음"을 §4에서 정직히 표시)
+
+#### §3. 대가 실측(핵심)
+
+| 항목 | 실측/산술 |
+|---|---|
+| **저장용량 증가** | 🔴 **산술(추정), 실측 아님 — 컬럼을 실제로 만들지 않고는 정확히 잴 수 없다.** 기준: 같은 테이블의 실측 평균(`momentum_value` 6.9B·`momentum_state` 4.4B·`fscore_value` 4.0B, MCP 직접 조회) — 단 제안 필드(그로스프로핏·총자산 등)는 값의 자릿수가 훨씬 커서(수억~수천억 단위) 기존 6.9B보다 크게 잡는다. 추정: `gross_profit`·`total_assets`·`total_assets_prior` 각 ~12B(대형 숫자 numeric) + `rsi14`·`pos52w` 각 ~7B(momentum_value류와 동급 자릿수) + `fscore_reason_code` ~9B(text, "dataMissing" 등) + `adj_used` 1B = **행당 +60B(산술)**. 1,976행 기준 **+118,560 bytes(+115.8 kB, 산술)** — 현재 테이블(2,211,840B) 대비 **+5.36%(산술)**. 🔴 **2배 미초과 — 굵은 경고 트리거 해당 없음.** |
+| **쓰기경로 영향** | 🔴 코드 읽기만, 안 고침. 유일한 값 채우기 지점 = `lib/lensPrecompute.ts:569`의 `buffer.push({...})` 객체 리터럴(단일 위치) — 여기에 5개 키 추가 필요. 컷 재매핑 경로(`:451-453`의 두 번째 `patch`)는 `*_state`만 다뤄 raw 필드와 무관(수정 불필요, 원본값은 pass1에서 한 번만 계산되고 안 바뀜). |
+| **읽기경로 영향** | 소비처 **9곳 전수 확인**(`app/api/explore/lens-top`·`krx/ranking`·`watchlist/quotes`·`cron/health`·`yahoo/{us,cn,gb,jp,vn}-list`) — **전부 `select("symbol, ..._state, ...")` 명시 컬럼 나열, `select("*")` 0곳.** 🟢 **새 컬럼을 추가해도 기존 9개 소비처의 페이로드는 늘지 않는다**(명시 select라 자동으로 안 딸려옴) — 신규 소비처가 명시적으로 선택해야만 영향받음. |
+| **마이그레이션 방식(초안, 문서 안 코드블록만 — 파일 생성 안 함)** | ```sql\nALTER TABLE lens_scores\n  ADD COLUMN gross_profit numeric,\n  ADD COLUMN total_assets numeric,\n  ADD COLUMN total_assets_prior numeric,\n  ADD COLUMN rsi14 numeric,\n  ADD COLUMN pos52w numeric,\n  ADD COLUMN fscore_reason_code text,\n  ADD COLUMN adj_used boolean;\n``` 전부 nullable(NOT NULL·DEFAULT 없음) — 기존 1,976행 무영향. |
+| **백필 필요 여부** | 🔴 **기존 1,976행은 백필 불가 — 원자료가 계산 시점에만 메모리에 존재하고 저장된 적이 없어, 지금 채우려면 전 종목 재취득(야후 재호출)이 필요하다.** 이는 이 STEP의 "재취득 0" 제약 밖이라 별도 승인 사항. **권고 = 백필 안 함, 다음 정규크론부터 자연 채움**(크론 수동 실행 금지 원칙상 이 STEP에서 트리거하지 않는다). |
+
+#### §4. ③⑦이 실제로 풀리는가 — 항목별 예/아니오
+
+| 렌즈 | ③값검증 | ⑦화면일관성 | 근거 |
+|---|:--:|:--:|---|
+| 퀄리티 | 예(원래도 손계산 가능했음, 무관) | 예 — `gross_profit`÷`total_assets` 재계산해 저장값과 대조 가능 | §2 |
+| 기술 | 🔴 **아니오** — `rsi14`·`pos52w`는 계산 *결과*를 저장할 뿐, 원시 종가 252봉이 없어 "처음부터 손으로 재현"은 여전히 불가(㉢ 반대증거) | 예 — 저장값=API 반환값 사후 대조 가능(지금은 매 요청 재계산이라 대조 자체가 불가) | §2 ㉢ |
+| F스코어 | 🔴 **아니오** — `fscore_reason_code`는 "왜 못 냈는지"만 알려줄 뿐, 9신호를 3개년 데이터로 재현하는 손계산 자체는 여전히 불가(원자료 없음) | 예 — 코드가 저장되면 "왜 이 점수인지" 사후 감사 가능(지금은 사후검증 불가) | §2 ㉢ |
+| 자산성장 | **예** — `total_assets`÷`total_assets_prior`−1로 성장률 재계산해 저장값과 직접 대조 가능(㉢에 안 걸림, 시계열 불필요) | 예 | §2 |
+
+🔑 **"이걸로 최근변화(모멘텀+기술) 칸이 9/9가 되는가" = 🔴 아니오.** **몇/9까지 가는가 = ~~현재 5/9~~ 🟢 정정(§4 부수정정, 아래) — 표를 세면 현재도 이미 6/9였다 → 이 인프라를 실제 구현하면 최대 7/9까지**(⑦화면일관성이 🟡→✅로 오를 여지 — 모멘텀 `adj_used`·기술 `rsi14`/`pos52w` 저장으로 표시값의 사후 대조가 가능해짐). **③값검증은 기술 렌즈가 원시 종가 시계열 부재로 여전히 막혀 있어 이 인프라만으로는 안 풀린다.** (이 STEP은 설계만 — 실제 7/9 승격은 스키마 변경·코드 배선이 실행된 뒤.)
+
+🔑 **다른 렌즈에 대한 함의(역방향, §6③에서 재확인)** — 자산성장은 이 인프라로 "손계산 구조적 불가"(`LENS_DISPOSITION §8-1`)가 지워질 수 있으나, 기술·F스코어는 지워지지 않는다(시계열·다년치가 별도로 더 필요).
+
+---
+
 ### B. 기존 `ROADMAP_V2.md` F-5에 이미 등재 — 여기선 참조만(중복 등재 안 함)
 
 | F-5 번호 | 내용 | 이 감사 시리즈와의 연결 |
