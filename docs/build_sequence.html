@@ -210,6 +210,7 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:v
 <p class="note">🟡 <strong>2026-08-19 STEP1086</strong> — STEP1073~1085 산출 18건(§6-C #65 포함)이 <code>docs/</code> 전수(md 1,226+html 6)에 퍼졌는지 전수 대조. 문서 분류(㉠살아있는기록 67·㉡시점이력 1,119·㉢죽은문서 30·㉣판별불가 10) 후 ㉠에서 검색 — 대부분 이미 반영돼 있었거나 무관한 문맥(해당없음)이었고, <strong>실제 정정 2건</strong>을 <code>docs/STATE.md</code>에서 발견(§③ Q1 행·⑥ "다음에 할 일" — sectorSource null버그는 STEP1050으로 이미 해소됐는데 "신규 발견·필수 2건" 낡은 문구가 남아 있던 것, 취소선+정정으로 반영). 상세 = <code>CHANGELOG.md</code> STEP1086.</p>
 <p class="note">🔴 <strong>2026-08-19 STEP1087</strong> — §6-C #6(검산 인프라)의 STEP1085 설계를 <strong>집행</strong>. <code>lens_scores</code> 19→26컬럼(<code>gross_profit</code>·<code>total_assets</code>·<code>total_assets_prior</code>·<code>rsi14</code>·<code>pos52w</code>·<code>fscore_reason_code</code>·<code>adj_used</code>, 전부 nullable) + <code>lensPrecompute.ts</code> 배선. 행수·기존 컬럼 값 지문 적용 전후 완전 일치(무손상 확인), 신규 컬럼 전부 null(백필 안 함, 다음 정규크론부터 자연 채움). 🔴 <strong>배선 중 발견</strong> — <code>total_assets_prior</code>는 <code>assetGrowth.compute()</code>가 값을 반환하지 않아 배선 불가(별도 승인 필요, null로 남김). 최근변화 칸은 값이 채워지기 전까진 오르지 않음(미리 ✅ 안 붙임). 상세 = <code>CHANGELOG.md</code> STEP1087.</p>
 <p class="note">🟡 <strong>2026-08-19 STEP1088</strong> — 세션 마감 인수인계. STEP1085~1087 산출(씨앗 18~28)이 문서 전체에 퍼졌는지 대조 — 대부분 이미 반영, <strong>`model_list_30_9.html`에서 1건 발견·반영</strong>("검산 인프라 공백" 옛 서술에 STEP1085·1087 해소 결과 추가). §6-C 대장에 <strong>신규 2행</strong>(#78 ㉣문서10개 생사·#79 `total_assets_prior` 배선 여부) 등재 — <strong>총 76건(🟢45·🟡19·🔴12)</strong>. `docs/STATE.md`에 「직전 세션 요약」(⓪) 신설 — 다음 세션은 여기서 시작. 상세 = <code>CHANGELOG.md</code> STEP1088.</p>
+<p class="note">🔴 <strong>2026-08-19 STEP1089</strong> — 장은태 지적: 지침 문서까지 다 업데이트했나 → 실측 결과 <strong>안 됐다.</strong> STEP1086·1088은 정방향(grep)이라 "빠진 서술"을 못 잡았다(SYSTEM_MAP에 새 컬럼 서술 자체가 없어 검색 자체가 안 걸림). <strong>역방향</strong>(문서→"내 담당 중 뭐가 바뀌었나")으로 재대조 — <code>SYSTEM_MAP.md</code>(lens_scores 26컬럼)·<code>LENS_DEV_PLAYBOOK.md</code>(문제해결 로그 3행 추가, 4개 STEP분 몰린 사실도 기록)·<code>INDEX.md</code>(STEP 명령서 카운트 884→893 정정)·<code>MODEL_ROSTER.md</code>(판정B 반영 스탬프)·<code>CLAUDE.md</code>(참조표에 BUILD_SEQUENCE.md 행 신설, 절대규칙 무변경) 갱신. §8에 재발방지 신규 행(#6, 이 사건 자체) 추가. <code>STATE.md</code>의 45↔43 표기 불일치도 정정(45가 맞음). 상세 = <code>CHANGELOG.md</code> STEP1089.</p>
 
 <div class="hero" style="margin-top:16px">
   <div class="lbl">🟢 확정된 칸 — 넷(2026-08-19 STEP1073·1074)</div>
@@ -397,6 +398,7 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:v
 <p class="note">🟡 <strong>2026-08-19 STEP1086</strong> — STEP1073~1085 산출 18건이 저장소 전체(md 1,226+html 6)에 퍼졌는지 전수 대조. 문서 4갈래 분류(㉠살아있는기록 67·㉡시점이력 1,119·㉢죽은문서 30·㉣판별불가 10) 후 ㉠에서 검색어별 grep — 대부분 이미 반영돼 있거나 무관 문맥. <code>docs/STATE.md</code>에서 <strong>실제 정정 2건</strong> 발견·반영(sectorSource null버그 = STEP1050으로 이미 해소됐는데 낡은 "신규 발견·필수 2건" 문구가 남아 있던 것). 대장 74건·판정 A/B/C~F 자체는 무변경(사실 정정만, 새 판정 없음). 상세 = <code>CHANGELOG.md</code> STEP1086.</p>
 <p class="note">🔴 <strong>2026-08-19 STEP1087</strong> — #6 집행 완료. 마이그레이션(<code>supabase/migrations/20260819_lens_scores_raw_verification_fields.sql</code>, MCP 라이브 적용) + <code>lensPrecompute.ts:569</code> 배선(6/7컬럼, <code>total_assets_prior</code>만 접근 경로 없어 배선 불가로 확인·null 유지). 검증 3 전부 통과(무손상·판정불변·tsc/vitest 386/386), 용량 0바이트 증가(값 null이라 아직). 상세 = <code>CHANGELOG.md</code> STEP1087.</p>
 <p class="note">🟡 <strong>2026-08-19 STEP1088</strong> — 세션 마감. §6-C 신규 2행(#78·#79) 등재로 <strong>대장 총 76건(🟢45·🟡19·🔴12)</strong>. `STATE.md`에 직전 세션 요약 신설(판정 A·B·확정된 칸 넷·검산 인프라·최근변화 6/9·판정 대장 좌표 전부 한 곳에). 상세 = <code>CHANGELOG.md</code> STEP1088.</p>
+<p class="note">🔴 <strong>2026-08-19 STEP1089</strong> — 정방향(grep) 대조의 한계 발견·역방향으로 보완. 지침 문서 5개 갱신(SYSTEM_MAP·LENS_DEV_PLAYBOOK·INDEX·MODEL_ROSTER·CLAUDE.md), §8 신규 행(#6, 이 사건 자체), <code>STATE.md</code> 45↔43 불일치 정정. 상세 = <code>CHANGELOG.md</code> STEP1089.</p>
 
 <!-- 위계 -->
 <h2><span class="n">§7</span>문서 위계 — 무엇이 무엇의 정본인가</h2>
@@ -416,13 +418,15 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:v
 <div class="tbl"><table>
 <thead><tr><th class="n">#</th><th>실수</th><th>기록</th></tr></thead>
 <tbody>
-<tr><td class="n">1</td><td class="m">한 계층만 보고 "후보 소진" 선언</td><td>LENS_ROADMAP(07-03)이 팩터만 훑고 닫음 → 역DCF·배수·건전성 모델이 시야 밖. STEP1033이 12개 이상 재발견</td></tr>
+<tr><td class="n">1</td><td class="m">한 계층만 보고 "후보 소진" 선언</td><td>LENS_ROADMAP(07-03)이 팩터만 훑고 닫음 → 역DCF·배수·건전성 모델이 시야 밖. STEP1033이 12개 이상 재발견. 🔴 <strong>재발(2026-08-19 STEP1073)</strong> — 「확정된 모델」 목록을 만들며 <code>git log</code>(한 계층)만 보고 다섯 항목을 균일하게 「미확정」 처리. 같은 문서 부-7(STEP1069)이 이미 갈라 대조해뒀는데 안 열었다. 정정 = STEP1074</td></tr>
 <tr><td class="n">2</td><td class="m">관문 없이 "원전 대조 가능성"만으로 모델 선정</td><td>MODEL_BUILD_ORDER §5가 자기 실수로 기록 — <em>"사용률 1위가 「원전이라 부를 저작이 없다」는 이유로 밀려났다"</em></td></tr>
 <tr class="hl"><td class="n">3</td><td class="m">같은 실수 반복 (2026-08-15)</td><td>Cowork이 §3-B를 안 읽고 <em>"원전이 책 한 권으로 명확하니 역DCF"</em>를 추천. <strong>2번과 같은 병.</strong> 철회함</td></tr>
-<tr><td class="n">4</td><td class="m">기존 조사를 안 찾고 재조사</td><td>STEP1033 명령서가 ⓪-1b를 규칙으로 걸어놓고 정작 08-07 조사 4건을 빠뜨림 (INDEX에 등재돼 있었음)</td></tr>
+<tr><td class="n">4</td><td class="m">기존 조사를 안 찾고 재조사</td><td>STEP1033 명령서가 ⓪-1b를 규칙으로 걸어놓고 정작 08-07 조사 4건을 빠뜨림 (INDEX에 등재돼 있었음). 🔴 <strong>재발(2026-08-19 STEP1073)</strong> — 같은 문서 안 부-7(STEP1069 대조 기록)을 다시 찾아 열지 않고 처음부터 재판정. 정정 = STEP1074</td></tr>
 <tr><td class="n">5</td><td class="m">소표본 오판 5회(원문 "6회"는 오기)</td><td>_TEMPLATE.md:64가 명시하는 수는 다섯(985 XOM 1종목·998 5종목·999 20종목·1007 USA 수기분류·1015 초안 8/8) — "6번"은 같은 파일 다른 줄(:23)의 Vercel 로그 중복조사 횟수와 혼동. 표본 상한을 걸 때 전수 비용을 안 적음 → 템플릿 ⓪-5에 규칙 신설</td></tr>
+<tr><td class="n">6</td><td class="m">🔴 전수 대조를 정방향(씨앗→grep)으로만 돌았다(2026-08-19 STEP1086·1088)</td><td>grep은 「틀린 서술」은 찾아도 「빠진 서술」은 못 찾는다 — SYSTEM_MAP.md에 새 컬럼 서술이 아예 없어 검색에 안 걸렸고, LENS_DEV_PLAYBOOK·INDEX·DATA_SOURCE_CATALOG도 같은 이유로 누락. 장은태가 지적해서 발견(STEP1089). → 이후 전수 대조는 정방향+역방향을 함께 돈다</td></tr>
 </tbody></table></div>
 <p class="note"><strong>공통 원인: 이미 있는 답을 안 찾고 새로 만든다.</strong> 그래서 KNOWN_ANSWERS.md와 ⓪-1b가 생겼다.</p>
+<p class="note">🔴 <strong>재발 방지 한 줄(2026-08-19 STEP1074 신설)</strong> — 「정본에 반영됐나」를 물을 때는 ㉠git 이력 ㉡정본 본문 내용 ㉢기존 대조 기록(부록·probe) 셋을 다 본다. 하나만 보고 판정하지 않는다.</p>
 
 <footer>
   이 문서는 판정이 아니다. §6의 여섯 칸 = 장은태. · <code>docs/BUILD_SEQUENCE.md</code>
