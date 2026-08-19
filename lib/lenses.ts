@@ -138,7 +138,7 @@ function nonConsecutive(a: { date?: unknown } | undefined, b: { date?: unknown }
 }
 
 
-// ── 모멘텀 렌즈 ── 단기=1·3개월 추세 / 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +).
+// ── 모멘텀 렌즈 ── 장기=검증된 12-1 모멘텀(lib/momentum 공유, 백테스트 +). 단기(short)는 STEP1083에서 폐기(아래 참조).
 export const momentum: Lens = {
   meta: { key: "momentum", nameEn: "Momentum (12-1)", grade: LENS_GRADE.ko.verified, gradeTier: "strong", horizon: "mid", backtestRef: "STEP559", percentile: { dir: "high" } },
   compute(d: StockData, locale: Locale = "ko", cuts?: CutMap): LensRead {
@@ -148,12 +148,6 @@ export const momentum: Lens = {
     const c = LENS_COPY[locale].momentum;
     const r1 = ret(closes, 21), r3 = ret(closes, 63), r6 = ret(closes, 126), r12 = ret(closes, 252);
     const m121 = momentum121FromDaily(closes);
-    const avg = (xs: (number | null)[]) => {
-      const v = xs.filter((x): x is number => x != null);
-      return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
-    };
-    // 단기(1·3개월 평균)용 상태 — 별개 신호(단기 추세)라 분포컷 대상 아님(고정 ±5%·기존 동작).
-    const shortState = (v: number | null) => (v == null ? null : v > 5 ? "strong" : v < -5 ? "weak" : "neutral");
     // STEP 805: 12-1 판정을 시장 분포 컷으로. verdict·장기라벨 단일 컷 통일(기존 verdict ±10 / label ±20 이중컷 제거).
     const cut = cuts?.momentum;
     const mState = verdictState("momentum", m121, cuts);
@@ -164,6 +158,10 @@ export const momentum: Lens = {
       : mState;
     // 장기 라벨(trend)도 같은 컷 상태에서 파생 — up→강세·flat→중립·down→약세(momentumState 별도 임계값 미사용).
     const trendState = mState === "up" ? "strong" : mState === "down" ? "weak" : mState === "flat" ? "neutral" : null;
+    // STEP1083 §7-4#2 #7: 옛 short(avg([r1,r3]) 기반 ±5% 절대추세)는 폐기 — 두 기간을 평균하는 절차가
+    //   원전(Jegadeesh-Titman·Carhart·FF) 어디에도 없는 창작이었고(CLAUDE.md 창작금지), 어떤 라이브 화면도
+    //   이 필드를 렌더링하지 않아(전수 grep 확인) 대체 산식을 짓지 않고 null로 제거한다. r1·r3 자체는
+    //   detail에 그대로 남아 투명 공개된다. §7-4#2 #8(±5%→분포컷 전환)의 대상 코드도 이 제거로 함께 사라짐.
     return {
       key: "momentum",
       grade: LENS_GRADE[locale].verified,
@@ -173,7 +171,7 @@ export const momentum: Lens = {
       name: c.name,
       summary: c.what,
       about: c.about,
-      short: labelOf(locale, "trend", shortState(avg([r1, r3]))),   // 단기=1·3개월 절대 추세(강세/약세 유지)
+      short: null, // STEP1083 — avg(r1,r3) 창작 산식 제거(원전 없음·미노출 확인). 위 주석 참조.
       long: labelOf(locale, "momrank", trendState),                 // 장기=12-1 분포 순위(상위권/하위권·STEP 808 §4)
       detail: { mom12_1: round(m121), ret1m: round(r1), ret3m: round(r3), ret6m: round(r6), ret12m: round(r12) },
       verdict: isPending ? pendingRead(locale) : readOf(locale, "momentum", readKey, mState === "up" ? "pos" : mState === "down" ? "warn" : "flat"),
