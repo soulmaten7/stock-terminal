@@ -182,12 +182,13 @@
 
 ---
 
-## §6-C. 🔴 판정 대장 — 지금 장은태가 정해야 할 것 전수(2026-08-19 STEP1079)
+## §6-C. 🔴 판정 대장 — 지금 장은태가 정해야 할 것 전수(2026-08-19 STEP1079 신설 · STEP1080 마감)
 
-> 🔴 **이 STEP은 판정을 고르지 않는다. 순서를 정하지 않는다. 추천하지 않는다.** 흩어진 판정을 모으고, 각각이 「지금 정할 수 있는가」와 「무엇에 종속되나」를 붙이는 데까지다. 수집 범위 = `LENS_DISPOSITION_2026-08-08.md` §7-4 · 이 문서 §6 C~F · `model_list_30_9.html` 「나·다·라」 · `ROADMAP_V2.md` F-5(①~⑲) · `probe_1017_cron_failure_causes.md` §6(신규) + grep 전수(`판정 대기\|미판정\|장은태 몫\|판정한다\|정본 미확정`) 확장분. 방법 = §1 도입부 참조.
+> 🔴 **이 STEP은 판정을 고르지 않는다. 순서를 정하지 않는다. 추천하지 않는다.** 흩어진 판정을 모으고, 각각이 「지금 정할 수 있는가」와 「무엇에 종속되나」를 붙이는 데까지다. 수집 범위 = `LENS_DISPOSITION_2026-08-08.md` §7-4 · 이 문서 §6 C~F · `model_list_30_9.html` 「나·다·라」 · `ROADMAP_V2.md` F-5(①~⑲) · `probe_1017_cron_failure_causes.md` §6(신규) + grep 전수(`판정 대기\|미판정\|장은태 몫\|판정한다\|정본 미확정`) 확장분(STEP1079 14파일 + STEP1080 28파일 전수 처리, §6-C-미확인 참조). 방법 = §1 도입부 참조.
 >
-> 🔴 **이미 판정된 것은 여기 없다** — 발견 즉시 원 문서에 해소 표기를 붙이고 뺐다(아래 §3 참조: 밸류 렌즈 6결함 → Q1이 흡수 확정, driver4 전액차감 → 910 현행유지 확정, F-5 ⑮·⑯, AUDIT_904 #32·#36).
+> 🔴 **이미 판정된 것은 여기 없다** — 발견 즉시 원 문서에 해소 표기를 붙이고 뺐다(아래 §3 참조: 밸류 렌즈 6결함 → Q1이 흡수 확정, driver4 전액차감 → 910 현행유지 확정, F-5 ⑮·⑯, AUDIT_904 #32·#36·#17·#37·#43, STEP1073 판정B가 MARKET_MODEL_USAGE_TOP20/MODEL_BUILD_ORDER/MODEL_UNIVERSE_63를 해소).
 > 🔴 **다른 판정에 종속된 항목도 "지금 정할 수 있나" 칸에 그대로 종속으로 적었다** — 종속이 곧 순서라는 뜻은 아니다(§2 참조).
+> 🟢 **총 74건**(STEP1079 53건 + STEP1080 21건, 통번호 1~77·결번 3개[31·33·37]) — 🟢 지금 가능 39건 · 🟡 재료 일부 부족 23건 · 🔴 다른 판정에 종속(또는 노출 승인 보류) 12건.
 
 ### A. `LENS_DISPOSITION_2026-08-08.md` §7-4 잔여 (11건 — A-1은 해소되어 뺌)
 
@@ -299,11 +300,47 @@
 
 🔴 **§6-C-정정** — 초안에서 `AUDIT_904_OPEN_ITEMS.md` #17·#37·#43을 열려 있는 것으로 넣었으나, K를 검증하며 `DECISION_918_AGENDA2.md`(2026-08-06 승인기록: "#17 채택·#37 현행유지·#43 현행유지", STEP919 적용)를 다시 열어 **이미 판정됐음을 발견**했다. 세 행을 표에서 빼고(번호 결번, 재번호 안 함) `AUDIT_904_OPEN_ITEMS.md`에 해소 표기를 붙였다(위 §3 ㉠에 포함).
 
-### §6-C-미확인. grep 매칭 42개 파일 중 대장에 반영 못 한 것(누락 아님, 미확인)
+### L. STEP1080 신규 편입 — 생사 판정 후 살아 있는 것만(21건, 통번호 57~77)
 
-🔴 **grep 필터 후 42개 파일·232줄이 매칭됐다.** 이 중 **14개 파일**(A~K 각 절의 좌표로 인용된 것)을 열어 개별 항목을 대장에 반영했다. 나머지 파일은:
+> ⓪-1에서 grep을 다시 돌려 44개 파일(문서 자체 성장분 포함)을 확인, 기존 대장 원좌표 파일 16개를 뺀 **28개 파일**을 대상으로 §1 생사 판정을 했다. 결과 = ㉠대체됨 1 · ㉡중복 11 · ㉢이미판정됨 8 · ㉣살아있음 8(단 그중 `PRIMARY_SOURCE_MAP.md`는 조사 대기만 산출, 신규 행 0). 상세 = `docs/STEP_LEDGER.md` STEP1080 행.
+
+| # | 무엇을 정하나 | 원 좌표 | 선택지 | 지금 정할 수 있나 | 고르면 따라오는 것 |
+|:--:|---|---|---|---|---|
+| 57 | 퀄리티 렌즈에 "일곱 번째 질문"(예: 자산 효율성)을 신설하나 | `LENS_AUDIT_04_QUALITY.md:163` | (선택지 미작성 — 재료는 갖췄으나 신설 여부만 미정) | 🟢 가능 — 원전 있음·정의 공개·컷 정합·15/15 결함이 화면 영향 없음, 재료 전부 확보 | 신설 시 W-2 질문이 여섯→일곱으로 늘어남(#28 층구분 논의와 별개) |
+| 58 | Beneish M-Score 임계값(-1.78 vs -2.22, 출처 간 불일치)을 어느 쪽으로 정본화하나 | `MODEL_ROSTER.md:75,151` | (선택지 미작성) | 🔴 다른 판정에 종속 — #23(Beneish 칸 신설 여부)이 "신설"로 정해져야 의미가 생김 | Beneish 칸 신설 시 계산 임계값 |
+| 59 | 🔴 **[중복 — 2곳 병기]** 운영리스 자본화를 반영하나(현행 범위 밖) | `STATE.md:102`(#8) · `REVDCF_SPEC.md:1581` | (선택지 미작성 — "범위 밖, 미판정. 손대지 않음"이라고만 서술) | 🟡 재료 일부 부족 — 반영 시 어느 driver가 영향받는지·크기 미측정 | 반영 시 driver4·5(운전자본·고정자본) 재계산 필요 가능성 |
+| 60 | IFRS 외국사 197건 중 A분류(135건) 처리 | `STATE.md:105`(#11) | ①현행 유지 ②`ifrs-full` 지원 추가(확실 25건·잠재 52건 회복) ③SEC 밖 소스(정본원칙과 충돌) | 🟢 가능 — 966이 선택지별 회복 건수까지 실측함 | ②는 파서 확장 필요, ③은 CLAUDE.md 정본원칙(US 단독)과 충돌 |
+| 61 | `minSample=20` 경계 취약성(Real Estate PBR 유효표본이 정확히 20) 처리 | `STATE.md:149`(#55) | (선택지 미작성) | 🟡 재료 일부 부족 — 대응 방안 자체가 탐색된 적 없음 | 한 종목 이탈 시 22종목의 배율이 통째로 사라지는 구조적 취약점 |
+| 62 | `as_of='2026-08-10'` 데이터 오염(us_sector_relative 전 행 sector=null 등) 처리 방침 | `STATE.md:154`(#60) | ①삭제 ②재계산 ③그대로 두기 | 🟢 가능 — 3개 선택지가 이미 명시됨(시계열 비교 시 이 날 제외 필요라는 사실도 확인됨) | ①·②는 코드/DB 작업, ③은 시계열 분석 시 매번 예외처리 필요 |
+| 63 | STEP994 throttle 수정 로컬 커밋(revdcf 크론 경쟁조건 수정)을 배포(push)하나 | `STATE.md:162`(#64) · `REVDCF_SPEC.md:1661` | ①배포 ②보류 | 🟡 재료 일부 부족 — 994는 로컬 커밋까지만(2026-08-11경), **이후 90여 STEP이 지나 이 커밋이 지금도 로컬에 살아있는지 자체가 미확인**(git 이력 재확인 필요) | 배포 시 revdcf 크론 발행 간격 변경(27%↓, 의도된 복구) |
+| 64 | "KR 공유 코드를 읽고 확인하는 게 US 단독 정책 위반인가"(선결질문 ⓑ) | `STATE.md:80`(Q1 절) | (선택지 미작성) | 🟡 재료 일부 부족 — Q1_ENABLED와 무관한 별도 트랙이라고만 서술, 판정 재료 자체는 안 갖춰짐 | Q1 축 구성 관련 KR 코드 열람 가능 여부 |
+| 65 | `us_sector_resolved`(Q0, 라이브 화면)를 재생성하나 | `STATE.md:180`(#23) | (선택지 미작성) | 🟡 재료 일부 부족 — "라이브 화면이 읽는 표라 이동 시 별도 승인 필요"라고만 서술 | 재생성 시 Q0 화면(Explore 거래대금 목록) 영향 |
+| 66 | damodaran tier ⓑ(나스닥 5순위)를 추가하나 | `STATE.md:181`(#24) | (선택지 미작성) | 🟡 재료 일부 부족 — ⓐ(페이지네이션 원인)가 954로 해소돼 상대적 이득이 줄었을 가능성만 서술, 재측정 안 됨 | 추가 시 섹터 매핑 소스 하나 더 |
+| 67 | 재료 다섯(총자산·총부채·이익잉여금·CFO·배당) SEC 태그 배열 확장 + 죽은 태그 4개 제거 | `STATE.md:224`(STEP1054) | (선택지 미작성) | 🟢 가능 — 공급 실측 완료(`probe_1054_tag_supply.md`), 죽은 태그·고빈도 누락후보 60개까지 확인됨 | 배선 시 `drivers.ts` 태그 배열 코드 diff |
+| 68 | riskfree/ERP 선택지C(`ERPbymonth.xlsx` 월간 페어 수집)를 채택하나 + 조달 배치 위치(통합 vs 분리) | `REVDCF_SPEC.md:1130,1144` · `STATE.md:70` | 선택지A(rf만 FRED, 철회됨) · **선택지C(권고) = ERPbymonth.xlsx 매월 짝 수집** | 🟢 가능 — 1001·1003이 구현·검증까지 완료(`lib/revdcf/erpMonthly.ts`, 값불변증명 통과), 배치 위치만 미결 | 스키마 옵션(컬럼추가 vs 별도테이블) 확정 필요 — `route.ts:179`의 `.single()` 파손 위험 명시됨 |
+| 69 | 역DCF 유니버스 자기참조 고정(직전 as_of의 CIK만 사용, 신규 종목 편입 경로 없음, 604건 6일 연속 무증감)을 바꾸나 | `REVDCF_SPEC.md:1791`(#76) | (선택지 미작성) | 🟡 재료 일부 부족 — 유니버스 소스는 이미 있음(`us_market_cap` 5,900행), 단 모집단 정의 변경은 전 종목 판정·컷 이동 유발(832 전례) — 크기 미측정 | "2,000종목 매일 분포" 해자 주장의 실현 크기가 여기서 결정됨 |
+| 70 | 🔴 **[중복 — 2곳 병기]** 역DCF 헤드라인의 "N년" 단일 숫자 표현을 폐기하고 3분류(기대 낮음/중간/높음)로 바꾸나 | `REVDCF_SPEC.md:1793`(#78) · `USER_QUESTIONS_2026-08-08.md` §7 ⓔ | (선택지 미작성 — 대안은 이미 코드에 존재: `RevDcf.expectationLevel`·`rankLine`) | 🟢 가능 — 실측 완료(중앙 GAP 9년, 밴드≤1년=3.4%뿐·≥10년=38.5%, "단일 숫자가 의미있는 건 3.4%뿐") | `headline.years` 문구 변경(현재는 여전히 숫자 표기) |
+| 71 | `BUDGET_MS`(270초) 상향 조정 여부 | `REVDCF_SPEC.md:1815` | (선택지 미작성) | 🟡 재료 일부 부족 — "근거만 첨부, 선택 안 함" | revdcf 크론 실행시간 예산 |
+| 72 | US 탐색 목록의 종목명 현지화 표시(예: "NVIDIA Corporation" 목록 vs "엔비디아 NVDA" 상세)가 결함인지 의도인지 | `REVDCF_SPEC.md:2157`(923 관측) | (선택지 미작성) | 🟡 재료 일부 부족 — 관측만 됨, 원인 미조사 | 목록·상세 표시 일관성 |
+| 73 | Q1 카드 세부 표시 선택지 ②~⑥(6문제 각각의 처리 방식) | `Q1_CARD_DESIGN.md` §4 | (문서 자체가 "판정하지 않음"으로 표기, 개별 선택지는 §4 본문 참조) | 🔴 다른 판정에 종속 — #15(Q1_ENABLED) 승인 이후 실질적 의미 | Q1 카드 세부 UI 문구 |
+| 74 | "모델 완성" 정의에서 DoD9(라이브 실측)을 분리해 별도 "노출" 트랙으로 관리하는 권고(§4)를 승인하나 | `DECISION_921_COMPLETION.md` §4 | (권고 하나만 제시됨, 승인/기각) | 🟢 가능 — 근거·대가·불리한 사실·재검토 조건 전부 갖춰짐 | 승인 시 "완성"이 "production 노출"을 자동으로 뜻하지 않게 됨(CLAUDE.md 절대규칙과 별개 확인 필요) |
+| 75 | "편하게"의 기준(읽힘 기준)을 정하나 — 정확성 기준(DoD 9항목)은 있으나 읽힘 기준이 없음 | `USER_QUESTIONS_2026-08-08.md` §7 ⓑ | (선택지 미작성) | 🟡 재료 일부 부족 | 카드 설명 길이·형식 |
+| 76 | 요약층에서 "사실"과 "판단" 사이 어디까지 갈지("4/5 우호"는 사실, "좋아 보입니다"는 판단) | `USER_QUESTIONS_2026-08-08.md` §7 ⓓ | (선택지 미작성) | 🟡 재료 일부 부족 | 요약 문구 표현 수위 |
+| 77 | Q3 표시 문구("감가상각전 영업이익 성장률"이 일반 사용자에게 안 읽힘) — 쉬운 말 + 정의 펼침 필요 | `USER_QUESTIONS_2026-08-08.md` §7 ⓗ | (선택지 미작성) | 🟢 가능 — 단순 문구 신설, 재료 문제 없음 | Q3 카드 문구 변경 |
+
+### §6-C-미확인. grep 매칭 파일 중 대장에 반영 못 한 것 — 🔴 마감(2026-08-19 STEP1080)
+
+~~🔴 **grep 필터 후 42개 파일·232줄이 매칭됐다.** 이 중 **14개 파일**(A~K 각 절의 좌표로 인용된 것)을 열어 개별 항목을 대장에 반영했다. 나머지 파일은:
 - **스팟체크로 "이미 판정됨" 확인**(㉠, 대장에 안 넣음): `AD_MONETIZATION_PLAYBOOK.md`(리딩방 삭제 STEP1035로 종결) · `PARKED_KR_DIVIDEND_ACTIVATION.md`·`PARKED_TERMS_PRIVACY_ACTIVATION.md`(둘 다 장은태 판정 완료, 파킹 상태 자체가 결론)
-- 🔴 **전수 개별 항목 추출을 못 했다**(누락 가능성 있음, 대장에 없다고 "판정 대기가 없다"는 뜻 아님): `DECISION_884_TABLE_STRUCTURE.md`·`DECISION_890_DOD4.md`·`DECISION_902_DOD3.md`·`DECISION_908_PENDING.md`·`DECISION_923_NAMING.md`·`DECISION_925_BRIEF.md`·`DECISION_929_DOD_SCOPE.md`·`DRAFT_MODEL_SELECTION_RECOVERY.md`(STEP1073 판정B로 흡수됐을 가능성 높음, 미확인) · `MARKET_MODEL_USAGE_TOP20_2026-08-07.md`·`MODEL_BUILD_ORDER_2026-08-07.md`(같은 사유, 미확인) · `PRIMARY_SOURCE_MAP.md`(표 내용 미열람) · `Q1_AXIS_DECISION.md`·`Q1_CARD_DESIGN.md`(부분만 확인) · `VALUE_LENS_DEFECT_AUDIT_2026-08-07.md`(L1 참조 외 전수 미확인) · `INDEX.md`·`MODEL_ROSTER.md`(설명성 텍스트로 추정, 확인 안 함)
+- 🔴 **전수 개별 항목 추출을 못 했다**(누락 가능성 있음, 대장에 없다고 "판정 대기가 없다"는 뜻 아님): `DECISION_884_TABLE_STRUCTURE.md`·`DECISION_890_DOD4.md`·`DECISION_902_DOD3.md`·`DECISION_908_PENDING.md`·`DECISION_923_NAMING.md`·`DECISION_925_BRIEF.md`·`DECISION_929_DOD_SCOPE.md`·`DRAFT_MODEL_SELECTION_RECOVERY.md`(STEP1073 판정B로 흡수됐을 가능성 높음, 미확인) · `MARKET_MODEL_USAGE_TOP20_2026-08-07.md`·`MODEL_BUILD_ORDER_2026-08-07.md`(같은 사유, 미확인) · `PRIMARY_SOURCE_MAP.md`(표 내용 미열람) · `Q1_AXIS_DECISION.md`·`Q1_CARD_DESIGN.md`(부분만 확인) · `VALUE_LENS_DEFECT_AUDIT_2026-08-07.md`(L1 참조 외 전수 미확인) · `INDEX.md`·`MODEL_ROSTER.md`(설명성 텍스트로 추정, 확인 안 함)~~
+
+🟢 **STEP1080 처리 결과** — 재확인한 grep(44개 파일, §6-C-종속 아래 참조)에서 기존 대장 원좌표 16개 파일을 뺀 **28개 파일**을 전수 생사 판정했다:
+- ㉠ **대체됨**(1): `DRAFT_MODEL_SELECTION_RECOVERY.md` → 머리에 대체 표기 추가(STEP1073 판정B가 목적 자체를 대체)
+- ㉡ **중복**(11, 신규 행 없음·이미 대장에 반영된 것과 같은 판정): `LENS_AUDIT_02_MOMENTUM_2026-08-07.md`(#1) · `LENS_AUDIT_03_LOWVOL.md`(#3) · `LENS_AUDIT_06_FSCORE.md`(#12) · `LENS_AUDIT_07_ASSETGROWTH.md`(#6·#13) · `DECISION_905_NEXT.md`(전 항목 기존 반영분 재확인일 뿐) · `DECISION_922_BADGE.md`(#41 권고 문구 보강) · `Q1_YAHOO_REMOVAL.md`(#1 해소 근거로 이미 인용) · `VALUE_LENS_DEFECT_AUDIT_2026-08-07.md`(#1로 이미 연결) · `build_sequence.html`·`data_source_catalog.html`·`roadmap_v2.html`(정본 .md의 표시본)
+- ㉢ **이미판정됨**(8, 원 문서에 해소 표기 추가): `DECISION_884_TABLE_STRUCTURE.md`(887 승인·적용 완료 — 문서 자체 명시, 추가 불필요) · `DECISION_890_DOD4.md`(891 조건부승인·적용 완료 — 문서 자체 명시, 추가 불필요) · `MARKET_MODEL_USAGE_TOP20_2026-08-07.md`·`MODEL_BUILD_ORDER_2026-08-07.md`·`MODEL_UNIVERSE_63_2026-08-07.md`(전부 STEP1073 판정B로 이미판정, 머리에 표기 추가) · `Q1_AXIS_DECISION.md`(STATE.md가 이미 해소로 확인, 머리에 표기 추가) · `LENS_DEV_PLAYBOOK.md`(#79 항목이 이미 STEP880으로 닫힘, 문서 자체 명시) · `INDEX.md`(설명성 텍스트, 그 자체로 열린 판정 없음)
+- ㉣ **살아있음**(8, §2로 보내 항목 추출 — 21건 신규 편입, 위 L절): `LENS_AUDIT_04_QUALITY.md`·`MODEL_ROSTER.md`·`STATE.md`·`REVDCF_SPEC.md`·`Q1_CARD_DESIGN.md`·`DECISION_921_COMPLETION.md`·`USER_QUESTIONS_2026-08-08.md` + `PRIMARY_SOURCE_MAP.md`(신규 판정 행은 0 — 남은 세 항목은 "선택"이 아니라 "미대조·미측정"이라 §6-C-조사로 이관)
+
+**합계**: 1(㉠)+11(㉡)+8(㉢)+8(㉣) = 28건, ⓪-1에서 재확인한 대상 파일 수와 정확히 일치.
 
 ### §6-C-종속. 종속 관계도(🔴 순서 아님, 전제 관계만)
 
@@ -313,7 +350,11 @@
 - `#9(층구분) ↔ #12(F스코어경로)` — 같은 문서(`LENS_DISPOSITION §7-4`)의 다른 축, 서로 종속은 아니나 같은 STEP1073·1074 오류 재발 패턴을 공유
 - `#8(9/9충돌) ↔ #12(F스코어경로㉠㉡㉢)` — ㉠을 고르면 #8이 남고 ㉡·㉢을 고르면 #8이 풀릴 경로가 생김(같은 뿌리, 원문 명시)
 - `#16(REVDCF_ENABLED Production) ↔ #39(REVDCF_ENABLED Preview)` — 같은 플래그의 다른 스코프, 서로 종속은 아니나 같은 축
-- 나머지(#1~#7·#10·#11·#13·#14·#21~#47·#50·#52~#54)는 **독립** — 위 종속 사슬에 안 걸린 항목은 전부 독립이다.
+- `#23(Beneish 칸 신설 여부) → #58(Beneish 임계값 정본화)` — 신설이 정해져야 임계값 문제가 의미를 가짐
+- `#15(Q1_ENABLED) → #73(Q1 카드 세부 표시 ②~⑥)` — "켠 뒤 가능", 위 disagree·배율표시와 같은 축
+- 나머지(#1~#7·#10·#11·#13·#14·#21~#47·#50·#52~#54·#57·#59~#72·#74~#77)는 **독립** — 위 종속 사슬에 안 걸린 항목은 전부 독립이다.
+
+🔴 **STEP1080 grep 재확인 44개 파일**(문서 자체 성장분 포함, ⓪-1): `AD_MONETIZATION_PLAYBOOK.md`·`ANSWERABILITY_MAP.md`·`AUDIT_904_OPEN_ITEMS.md`·`build_sequence.html`·`BUILD_SEQUENCE.md`·`CRON_OBSERVABILITY.md`·`data_source_catalog.html`·`DATA_SOURCE_CATALOG.md`·`DECISION_884_TABLE_STRUCTURE.md`·`DECISION_890_DOD4.md`·`DECISION_905_NEXT.md`·`DECISION_912_LIVE.md`·`DECISION_918_AGENDA2.md`·`DECISION_921_COMPLETION.md`·`DECISION_922_BADGE.md`·`DRAFT_MODEL_SELECTION_RECOVERY.md`·`INDEX.md`·`KNOWN_ANSWERS.md`·`LENS_AUDIT_02_MOMENTUM_2026-08-07.md`·`LENS_AUDIT_03_LOWVOL.md`·`LENS_AUDIT_04_QUALITY.md`·`LENS_AUDIT_06_FSCORE.md`·`LENS_AUDIT_07_ASSETGROWTH.md`·`LENS_COMPLETION_STANDARD.md`·`LENS_DEV_PLAYBOOK.md`·`LENS_DISPOSITION_2026-08-08.md`·`MARKET_MODEL_USAGE_TOP20_2026-08-07.md`·`MODEL_BUILD_ORDER_2026-08-07.md`·`model_list_30_9.html`·`MODEL_ROSTER.md`·`MODEL_UNIVERSE_63_2026-08-07.md`·`PARKED_KR_DIVIDEND_ACTIVATION.md`·`PARKED_TERMS_PRIVACY_ACTIVATION.md`·`PRIMARY_SOURCE_MAP.md`·`Q1_AXIS_DECISION.md`·`Q1_CARD_DESIGN.md`·`Q1_YAHOO_REMOVAL.md`·`REVDCF_SPEC.md`·`roadmap_v2.html`·`ROADMAP_V2.md`·`STATE.md`·`USER_QUESTIONS_2026-08-08.md`·`VALUATION_SPEC.md`·`VALUE_LENS_DEFECT_AUDIT_2026-08-07.md`. 이 중 16개(A~K 원좌표)는 이미 대장에 반영돼 있어 제외하고 나머지 28개를 이번 STEP에서 처리했다.
 
 ### §6-C-조사. 「조사 대기」 — 판정이 아니라 사실 확인(원 문서 무접촉, 대장에서 뺌)
 
@@ -322,6 +363,8 @@
 - `AUDIT_904_OPEN_ITEMS.md` #44·#45·#48 — page 92(원전 T5/T8 조정규칙 페이지) 미확보, 외부자원 의존이라 **원리적 불가**(판정이 아니라 자료 접근 문제)
 - `AUDIT_904_OPEN_ITEMS.md` #62 — `row.tax.w` 정량 배선, 실시간 커버리지 계산 API가 없어 **인프라 확충 후에만 가능**(판정이 아니라 선행 인프라 문제)
 - `ROADMAP_V2.md` F-5⑨(Altman 착수 여부) — `BUILD_SEQUENCE.md` §6-부록 부록-4가 "W-2-4가 Altman Z-Score를 부도위험 질문의 확정 모델로 채택(2026-08-16)"이라 기록해 이미 해소됐을 가능성이 있으나, 이 STEP은 재확인하지 않았다(㉢ 후보로만 등재, 대장 #22엔 원문 그대로 남김 — 삭제하지 않음)
+- `PRIMARY_SOURCE_MAP.md`(STEP1080 신규) — driver2 영업이익률의 "미래 마진 추정 4방법이 대조된 적 없음" · 비영업자산의 "T4의 매출 2% 필요현금과 충돌 가능(T8 확인 필요)" · driver3 세율의 "A안 미검토·세율 순효과·도미노 WACC 대조 미측정" — 셋 다 "무엇을 고를지"가 아니라 "아직 안 잰 것"이라 판정 대장 대상이 아니다
+- `STATE.md:166`(#68, STEP1080 신규) — 업종베타가 Damodaran 단일 소스, 무료 대체 소스 없음(진짜 SPOF) — 문서 자신이 "미해결·미판정(대응 방안 없음, 이번엔 조사만)"이라 명시. 선택지 자체가 없어 판정 대상이 아니다
 - `DECISION_912_LIVE.md`의 "97% 게이트를 못 넘는다"(933 산술) — 게이트 임계 자체가 85%로 바뀐 뒤(STEP1031) 이 산술이 여전히 유효한지 재확인 안 됨(대장 #45엔 원문 그대로 남김)
 
 ---
