@@ -683,7 +683,7 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 ### 세션 종료 시 자동 검증
 - Hook이 문서 헤더 날짜를 검증(`docs/STATE.md`·`docs/CHANGELOG.md`)
 - 오늘 날짜가 아니면 ❌ → 반드시 업데이트 후 push
-- ⚠️ **Claude Code 할 일**: `.claude/hooks`가 옛 4문서(NEXT_SESSION_START 등)를 검증하면 STATE·CHANGELOG 검증으로 교체.
+- ~~⚠️ **Claude Code 할 일**: `.claude/hooks`가 옛 4문서(NEXT_SESSION_START 등)를 검증하면 STATE·CHANGELOG 검증으로 교체.~~ ✅ **해소(2026-08-19 STEP1090 확인)** — `.claude/hooks/stop-reminder.sh`를 열어 확인한 결과 이미 `docs/STATE.md`·`docs/CHANGELOG.md`만 검증하고 있음(옛 4문서 언급 0건). 이 항목은 실제로는 이미 처리돼 있었다.
 
 ### 가비지 컬렉션 (세션 시작 시 필수)
 - 매 세션 시작 시 `docs/STATE.md`의 "다음" 섹션 점검 — 이미 한 항목 제거, 낡은 항목 갱신
@@ -694,11 +694,26 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 
 ## 세션 루틴
 
+### 🔴 새 세션에 할 말 (장은태가 복사해 쓰는 한 줄, 2026-08-19 STEP1090)
+```
+CLAUDE.md와 docs/STATE.md ⓪를 먼저 읽고, CLAUDE.md 「세션 시작 시」 순서대로 진행해.
+```
+> 이 문장은 파일을 가리키기만 하므로 **문서가 바뀌어도 고칠 필요가 없다.** 바뀌는 것은 `STATE.md ⓪`와 `BUILD_SEQUENCE.md §6-C`이지 이 문장이 아니다.
+
 ### 세션 시작 시 (Cowork이 처리)
-1. **`docs/STATE.md` 읽기** ← **항상 이것부터** (HEAD·현재 상태·다음 할 일 단일 정본)
-2. **`docs/SYSTEM_MAP.md`** (아키텍처·6개국 파이프라인·크론·테이블·함정 — 필요할 때)
-3. 작업별 PLAYBOOK(`COUNTRY_TAB_PLAYBOOK`·`LENS_DEV_PLAYBOOK`·`LOCALE_SOURCE_PLAYBOOK`) · 이력 = `docs/CHANGELOG.md`
-4. 사용자에게 오늘 할 P0 작업 제안 → 확인 후 명령어 작성
+1. **`docs/STATE.md`** — 🔴 **맨 앞 「⓪ 직전 세션 요약」부터** (직전 세션이 어디까지 갔고 무엇이 남았는지)
+2. **`docs/BUILD_SEQUENCE.md` §6-C(판정 대장)** — 🔴 **지금 정해야 할 것 전수** — 다음 세션의 실제 출발점
+3. **같은 문서 §2(만드는 절차 6단계)·§6-B(판정 B)·§6-B-1(확정된 칸)** — 무엇을 어떻게 만드는가의 정본
+4. **`docs/SYSTEM_MAP.md`** (아키텍처·크론·테이블·함정 — 🔴 US 단독 전환 반영, "6개국 파이프라인" 표현 폐기)
+5. 작업별 PLAYBOOK(`COUNTRY_TAB_PLAYBOOK`·`LENS_DEV_PLAYBOOK`·`LOCALE_SOURCE_PLAYBOOK`) · 이력 = `docs/CHANGELOG.md`
+6. 사용자에게 오늘 할 P0 작업 제안 → 확인 후 명령어 작성
+
+#### 지켜야 할 규칙 좌표 (요약 복제 아님 — 내용은 각 좌표에만 있다)
+- **3번 규칙**(축A/B/C·검증3·검수3·못 거친 항목은 「못 했다」 명시) = `:116`(정의) · `:393`(답변 형식)
+- **근거 좌표 의무**(단정할 땐 `파일:절`, 못 달면 "내 추측"이라 명시) = `/preferences.md`(정본) · `:206`(인용)
+- **낱말의 뜻을 Cowork이 정하지 않는다**(뜻이 갈릴 수 있으면 분석 전에 되묻는다) = `:207`
+- **기존 파일 업데이트 · 새 파일 금지** = `:631`
+- **답변마다 `[3중 점검] ⓪`에 이번에 연 파일·줄번호** = `:266`
 
 ### 작업 중 (역할 분담)
 - **Cowork**: 코드 작성, 명령어 생성, 설계 결정
@@ -709,7 +724,10 @@ Cowork이 명령어 Markdown을 파일로 저장하고, 사용자는 Claude Code
 1. `docs/STATE.md` 덮어쓰기(HEAD·현재 상태·다음)
 2. `docs/CHANGELOG.md`에 이번 세션 블록 추가
 3. 코드/아키텍처 바뀌면 `docs/SYSTEM_MAP.md` 갱신
-4. Claude Code용 git push 명령어 제공 → 사용자가 실행
+4. 🆕 **지침 문서 역방향 대조**(2026-08-19 STEP1089 신설) — 🔴 *"grep(정방향)만으로는 「빠진 서술」을 못 찾는다. 문서에서 출발해 「내 담당 중 뭐가 바뀌었나」를 묻는다"*(`BUILD_SEQUENCE.md §8` #6)
+5. 🆕 **마감 체크 대상 명시** — `STATE.md`·`CHANGELOG.md`·`STEP_LEDGER.md`(항상) · `SYSTEM_MAP.md`(코드/스키마 바뀌면) · `LENS_DEV_PLAYBOOK.md`(렌즈 STEP이면) · `INDEX.md`(새 절/자산 생기면) · 표시본(`docs/*.html`, 머리+본문 둘 다)
+6. Claude Code용 git push 명령어 제공 → 사용자가 실행
+🔴 **「다 됐다」로 적지 않는다 — 못 한 것을 나열한다**(3번 규칙 마지막 조항).
 
 ## 핵심 원칙
 - "로그 없으면 미완료" — 빌드 성공해도, 테스트 통과해도, 기록 없으면 미완료. 🔴 **실패·미실행도 같은 규칙** — 안 된 것을 안 적으면 그 STEP은 없던 일이 되고, 다음 세션이 같은 자리에서 다시 넘어진다.
