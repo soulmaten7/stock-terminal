@@ -330,6 +330,7 @@
   <p style="margin-top:10px">종목 단위로 대조하니 <b>PER를 잃은 552종목이 PBR·PSR도 전부 같이 잃었다</b>(셋 다 null 552건 · PER만 잃은 건 0건) — 셋이 공유하는 입력 하나가 끊겼다는 뜻이다.
   <s>08-16은 STEP1048(KR 테이블 DROP)·STEP1051(미사용 8개 처분·DB 변경)이 돌았던 날이다. 🔴 원인 미확인 · 조사 필요.</s></p>
   <p style="margin-top:10px">🔴 <b>2026-08-18 STEP1058 정정 — 그 추정은 틀렸다.</b> 진짜 원인 = <code>computeAndSaveValuation</code>의 <code>us_market_cap</code> <b>단일-as_of 정확일치 조인</b> — 결측 증가 <b>2,826건 전부(100%·예외 0건)</b> 설명됨. 상류는 <b><code>lens-scores</code>(US) 야후 시총 배치 실패</b>. 🔴 <b><code>us-perf</code>(나스닥)·<code>revdcf</code>는 무관</b>(코드 확정). <b>08-17 밤 자연 복구</b>(PER 1,516→<b>2,133</b>). 🔴 조인 구조 그대로라 재발 가능 · 수리 미판정. 좌표=<code>docs/probe_1017_cron_failure_causes.md</code> §1~§4</p>
+  <p style="margin-top:10px">🔵 <b>2026-08-19 STEP1078 연속 관측 — 재발 없음(08-17·08-18 이틀 다 08-15 수준 유지).</b> <code>us_market_cap</code> 배제율 0.47%(08-16 당시 30.5% 대비 대폭 개선). 원인 코드는 그대로(<code>route.ts:65,67</code> 불변) — 조인 구조 자체는 안 고쳤으니 <b>재발 가능성은 남아 있다, 수리 미판정</b>은 그대로. 좌표=<code>docs/probe_1017_cron_failure_causes.md</code> §5(2026-08-19)</p>
 </div>
 
 <h2 class="dec">🟢 확정된 칸 <span class="cnt">— 넷(2026-08-19 STEP1073·1074, `BUILD_SEQUENCE.md` §6-B-1) · 완성 승인 0</span></h2>
