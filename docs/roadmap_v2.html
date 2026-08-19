@@ -932,7 +932,7 @@ tr.hl td.m{color:#ffb3b3}
   <p><strong>① 수요 1위(적정주가)는 관문 ②에서 탈락하는데, 그 자리를 「시장 내재 기대」가 대신한다.</strong><br>
      F-1-1 그대로다 — "차이는 계산이 아니라 문장". "우리가 매긴 적정가"는 못 주지만 "이 주가가 가정하는 성장률"은 준다. 같은 수요에 정직하게 답하는 형태이며, <span class="hi">무료로 완전공개하는 곳이 드물어 차별화가 가장 큰 자리</span>이기도 하다.</p>
   <p><strong>② 상위 네 개가 전부 「이미 있는 것」이다.</strong><br>
-     배수·재무건전성·최근 변화·업종 대비 — 넷 다 7렌즈나 <code>us_valuation</code>으로 존재한다. <span class="hi">그러면 MODEL_BUILD_ORDER §3-2가 2026-08-07에 제기하고 아직 판정되지 않은 질문이 다시 정면으로 온다</span> — "새 모델 1개를 골라야 한다는 전제 자체가 성립하지 않았을 수 있다. 골라야 했던 게 아니라 이미 있는 것 중 사용률 1위를 제대로 만들었어야 했다." <strong>판정 = 장은태.</strong></p>
+     배수·재무건전성·최근 변화·업종 대비 — 넷 다 7렌즈나 <code>us_valuation</code>으로 존재한다. <span class="hi">그러면 MODEL_BUILD_ORDER §3-2가 2026-08-07에 제기하고 아직 판정되지 않은 질문이 다시 정면으로 온다</span> — "새 모델 1개를 골라야 한다는 전제 자체가 성립하지 않았을 수 있다. 골라야 했던 게 아니라 이미 있는 것 중 사용률 1위를 제대로 만들었어야 했다." <s>판정 = 장은태.</s> <strong>🟢 2026-08-19 판정 완료(STEP1073)</strong> — 「확정된 모델을 1개씩 완성한다」. 단 <b>「1위」라는 낱말은 채택되지 않았다</b>(근거 3건 = <code>BUILD_SEQUENCE.md</code> §6-B).</p>
   <p><strong>③ 수요가 측정된 적 없는데 아무도 안 주는 것이 하나 있다 — 「방법론 공개」.</strong><br>
      <code>probe_1037</code> 방법 C(역방향)의 발견. 아무도 "계산 방법을 알고 싶냐"고 물은 적이 없어 수요 수치가 없고, 그래서 어느 순위표에도 오르지 않는다. 그러나 <strong>HOW 조건 3·창작금지 규칙과 직결</strong>되고 완전공개하는 곳은 소수다.</p>
   <p class="note">이것은 「정보」가 아니라 「모든 정보에 붙는 표시 방식」이므로 순위표의 행이 아니다. MODEL_BUILD_ORDER §3-3("차별화는 모델이 아니라 정직함에서 나온다")이 추론이었는데, 이번에 역방향 실측으로 뒷받침됐다.</p>
@@ -967,6 +967,7 @@ tr.hl td.m{color:#ffb3b3}
     </tbody>
   </table></div>
   <p class="note"><strong>F-4-1②("새 모델 찾기가 아니라 1위를 제대로 만들기")가 사실로 확인됐다.</strong> 1·3·4·5위는 전부 이미 코드로 존재한다(<code>app/api/q1/[symbol]/route.ts</code>+<code>components/Q1Section.tsx</code>, STEP956·957 · 7렌즈). <span class="hi">"제대로"의 실체는 계산이 아니라 승인이다</span> — 막고 있는 것은 <code>Q1_ENABLED="false"</code>(피처 플래그, 기본 OFF) 하나이고, 켜는 조건은 <code>lib/q1/flag.ts</code> 주석 그대로 "장은태 육안 검증·승인 후"다.</p>
+  <p class="note">🔴 <strong>2026-08-19 정정(STEP1073)</strong> — 이 문장의 <b>전반부(「새 모델 찾기가 아니다」)는 판정으로 채택</b>됐고, <b>후반부의 「1위」는 채택되지 않았다.</b> 좌표=<code>BUILD_SEQUENCE.md</code> §6-B.</p>
   <p class="note"><span class="hi">선행 층(모델 순위표에서 뺀 것)</span>: 0층(업종·이익상태, probe_1040) — <strong>0층이 모델보다 선행</strong>이며 P/E(이익상태 43.4%)·재무건전성(업종·Financials 70.9%)이 가장 강하게 흔들린다. <s><code>financials</code> 테이블(오늘도 0행, MODEL_UNIVERSE_63 §3-1은 8~11위에만 유효하게 축소됨)</s> 🔴 2026-08-16 STEP1048 — 전면 철회. <code>financials</code>는 US 재료가 아니라 KR 파일럿 스키마였다. MODEL_UNIVERSE_63 §3-1은 US 모델 선정 문맥에서 처음부터 적용 대상이 아니었다.</p>
   <p class="note"><span class="hi">모델별 보편/US특정</span>(2026-08-16 STEP1049, 세 축 — 원전표본조건·국가파라미터·데이터소스): 배수·성장=엔진보편·소스만US특정(SEC) · 재무건전성(Piotroski)=원전표본조건있음(고B/M, 부분일치)·소스US특정 · 시장내재기대(역DCF)=엔진보편·국가파라미터(rf·ERP·세율)있음·소스US특정(Damodaran 157개시장 이미보유) · 부도위험(AltmanZ)=원전표본조건있음(US제조업1968)이라 <strong>불명</strong>(재추정필요) · 최근변화=엔진보편·소스는 KR/US 이미분리(선례). 전수=<code>probe_1049_table_inventory.md</code> §1-4 — 국가탭 착수 시 체크리스트로 쓴다.</p>
 
