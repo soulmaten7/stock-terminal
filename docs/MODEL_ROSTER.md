@@ -81,7 +81,7 @@
 
 | 모델명(EN/KO) | 방법론 공개 정도 | 원전/출처 | 답하는 질문 | 수요 근거 | 제작 가능성 | 우리 현황 |
 |---|---|---|---|---|---|---|
-| Simply Wall St "Snowflake"(5축) | **부분공개** — 구조(축당 6체크·0~6점)는 공개, Future/Past/Health 세부 6항목은 비공개 | help.simplywall.st | Q1~Q3 혼합 | link_hub `analysis`(Snowflake로 명시 소개) | 원전부재(3/5축 세부 비공개) | 없음 |
+| Simply Wall St "Snowflake"(5축) | **부분공개** — 구조(축당 6체크·0~6점)는 공개, <s>Future/Past/Health 세부 6항목은 비공개</s> 🔴 **2026-08-19 STEP1072 정정** — SWS 공개 GitHub 저장소(`github.com/SimplyWallSt/Company-Analysis-Model/blob/master/MODEL.markdown`)에 Past Performance 세부 6체크 전문이 공개돼 있음(STEP1067 §9-0 원문 확인, `LENS_DISPOSITION_2026-08-08.md` §9) — Future·Health 두 축은 미확인이나 최소 1/3축(Past)은 전면공개로 정정 | help.simplywall.st | Q1~Q3 혼합 | link_hub `analysis`(Snowflake로 명시 소개) | 원전부재(3/5축 세부 비공개) | 없음 |
 | Morningstar Star Rating | **전면공개**(통계 절차 PDF 정본 확인) | Morningstar Rating for Funds Methodology PDF | Q1 | 08-07: *"proprietary…templates"*(프레임워크 공개·개별종목 재현 불가) | 조합필요(위험조정수익률 3/5/10년 창) | 없음 |
 | Morningstar Economic Moat | **부분공개**(정성 프레임워크는 공개, 애널리스트 판단이 최종값) | morningstar.com/stocks/moat | — | — | 원전부재(애널리스트 정성 판단이 핵심) | 없음 |
 | Morningstar Quantitative Equity Rating | **전면공개**(우리가 이미 PDF 보유) | `data/sources/external/morningstar_quant_methodology_2024-12-02.pdf` | Q1 | Q1_CARD_DESIGN.md에서 이미 유니버스 A-9 근거로 활용 중 | 조합필요 | 부분(유니버스 기준으로만 씀) |
