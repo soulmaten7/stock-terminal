@@ -330,7 +330,7 @@
   <p style="margin-top:10px">종목 단위로 대조하니 <b>PER를 잃은 552종목이 PBR·PSR도 전부 같이 잃었다</b>(셋 다 null 552건 · PER만 잃은 건 0건) — 셋이 공유하는 입력 하나가 끊겼다는 뜻이다.
   <s>08-16은 STEP1048(KR 테이블 DROP)·STEP1051(미사용 8개 처분·DB 변경)이 돌았던 날이다. 🔴 원인 미확인 · 조사 필요.</s></p>
   <p style="margin-top:10px">🔴 <b>2026-08-18 STEP1058 정정 — 그 추정은 틀렸다.</b> 진짜 원인 = <code>computeAndSaveValuation</code>의 <code>us_market_cap</code> <b>단일-as_of 정확일치 조인</b> — 결측 증가 <b>2,826건 전부(100%·예외 0건)</b> 설명됨. 상류는 <b><code>lens-scores</code>(US) 야후 시총 배치 실패</b>. 🔴 <b><code>us-perf</code>(나스닥)·<code>revdcf</code>는 무관</b>(코드 확정). <b>08-17 밤 자연 복구</b>(PER 1,516→<b>2,133</b>). 🔴 조인 구조 그대로라 재발 가능 · 수리 미판정. 좌표=<code>docs/probe_1017_cron_failure_causes.md</code> §1~§4</p>
-  <p style="margin-top:10px">🔵 <b>2026-08-19 STEP1078 연속 관측 — 재발 없음(08-17·08-18 이틀 다 08-15 수준 유지).</b> <code>us_market_cap</code> 배제율 0.47%(08-16 당시 30.5% 대비 대폭 개선). 원인 코드는 그대로(<code>route.ts:65,67</code> 불변) — 조인 구조 자체는 안 고쳤으니 <b>재발 가능성은 남아 있다, 수리 미판정</b>은 그대로. 좌표=<code>docs/probe_1017_cron_failure_causes.md</code> §5(2026-08-19)</p>
+  <p style="margin-top:10px">🔵 <b>2026-08-19 STEP1078 연속 관측 — 재발 없음(08-17·08-18 이틀 다 08-15 수준 유지).</b> <code>us_market_cap</code> 배제율 0.47%(08-16 당시 30.5% 대비 대폭 개선). 원인 코드는 그대로(<code>route.ts:65,67</code> 불변) — 조인 구조 자체는 안 고쳤으니 <b>재발 가능성은 남아 있다, 수리 미판정</b>은 그대로. 좌표=<code>docs/probe_1017_cron_failure_causes.md</code> §6(2026-08-19, STEP1079이 §5→§6 재번호)</p>
 </div>
 
 <h2 class="dec">🟢 확정된 칸 <span class="cnt">— 넷(2026-08-19 STEP1073·1074, `BUILD_SEQUENCE.md` §6-B-1) · 완성 승인 0</span></h2>
@@ -470,7 +470,7 @@
   </div>
 
   <div class="ditem">
-    <h4>다. 층 구분 — <span style="color:var(--mint)">✅ 폐기 확정</span> <span style="font-size:12px;font-weight:400;color:var(--muted)">2026-08-17 장은태</span></h4>
+    <h4>다. 층 구분 — <span style="color:var(--mint)">✅ 폐기 확정</span> <span style="font-size:12px;font-weight:400;color:var(--muted)">2026-08-17 장은태 · §6-C #9</span></h4>
     <p style="margin-top:6px">🔴 <b>2026-08-19 STEP1073</b> — 이 "확정"은 <code>ROADMAP_V2.md</code> F-5 ⑱에 반영된 적 없다(git 이력 없음). <b>판정 대기</b>(`LENS_DISPOSITION_2026-08-08.md` §7-4 C#10)</p>
     <p class="ask">「모델 / 지표 / 부품」이라는 층을 <b>쓰지 않는다.</b> 이용자가 보는 축은 <b>질문 여섯</b>이고, 그 아래에 <b>답하는 것</b>을 붙인다.</p>
     <p>🔴 <b>폐기 이유 — 이미 세 체계가 있었고 내가 네 번째를 만들었다.</b></p>
@@ -510,7 +510,7 @@
 
   <div class="ditem">
     
-    <h4>나. Piotroski 32.3%를 받아들이나</h4>
+    <h4>나. Piotroski 32.3%를 받아들이나 <span style="font-size:12px;font-weight:400;color:var(--muted)">§6-C #12</span></h4>
     <p class="ask">9신호 중 일곱은 85%+인데 둘이 전체를 3분의 1로 끌어내린다.</p>
     <p style="margin-top:6px">🟢 <b>2026-08-19 STEP1076</b> — 이 칸(재무건전성)은 「확정된 칸」에 올랐다(위 참조). 단 <b>완성 승인 아님</b> — 여기 선택지 셋이 곧 그 판정이다.</p>
     <ul class="opts">
@@ -546,7 +546,7 @@
   </div>
 
   <div class="ditem">
-    <h4>다. 층 구분을 확정하나</h4>
+    <h4>다. 층 구분을 확정하나 <span style="font-size:12px;font-weight:400;color:var(--muted)">§6-C #9</span></h4>
     <p class="ask">근거가 <code>probe_1041</code>(베타=부품) <b>하나뿐</b>이고, 나머지 열셋은 원전 대조를 안 했다.</p>
     <ul class="opts">
       <li><b>근거를 먼저 만든다</b> — 열넷이 진짜 「모델」인지 「지표」인지 원전으로 대조하는 STEP</li>
@@ -556,7 +556,7 @@
   </div>
 
   <div class="ditem">
-    <h4>라. 자산성장 처분 · Altman 섹터 근사</h4>
+    <h4>라. 자산성장 처분 · Altman 섹터 근사 <span style="font-size:12px;font-weight:400;color:var(--muted)">§6-C #13·#14</span></h4>
     <ul class="opts">
       <li><b>자산성장</b>(99.7%) — 원전이 「포트폴리오 기법」이라 명시한 것을 종목별 백분위로 변형해 <b>지금 라이브 서빙 중</b>이다. 재료는 확인됐으니 남은 건 처분 판정 하나</li>
       <li><b>Altman 섹터</b>(65.1%) — 제조/비제조를 <code>us_sector_wide.sector</code>(GICS 유사)로 <b>근사</b>했다. 원전은 SIC 2000–3999 이진분류. 밝히고 쓸지, SEC <code>submissions</code> 5,742건 더 받아 교체할지</li>
