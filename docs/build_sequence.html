@@ -206,6 +206,7 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:v
 <p class="note">🔵 <strong>2026-08-19 STEP1082</strong> — 옛 ㉢ 13건에 선택지를 놓을 수 있는지 다시 갈랐다(㉮선택지놓을수있음·㉯낱말정의·㉰이미선택지있음·㉱놓아도안풀림). <strong>㉮ 0건</strong> — 13건 전부 원문에 대안이 없거나(㉱ 6건: #5·#16·#55·#59·#61·#71) 낱말 정의 문제거나(㉯ 5건: #40·#50·#64·#75·#76) 이미 선택지가 있었다(㉰ 2건: #43·#53). <strong>강제로 선택지를 짓지 않았다.</strong> #65(11일 격차 실측)를 #50에 근거로 연결했으나 #50은 여전히 ㉯(기준 설정 물음). 대장 총 74건 불변(🟢43·🟡19·🔴12, 🟡 안에서만 하위분류 갱신).</p>
 <p class="note">🔴 <strong>2026-08-19 STEP1083</strong> — STEP1055 이후 첫 코드 수정. §6-C #1(모멘텀 4결함)·#2(집계레이어 문구)·#4(pos52 가드) <strong>판정 완료·집행 완료</strong>(장은태가 §7-4 #2①·#3②·#5① 채택, 커밋 <code>7191521</code>·<code>142c06a</code>·<code>e148b56</code>). 9항목 검증 = 4/9 완전통과, 9/9 아님(억지로 ✅ 안 붙임). 상세 = <code>CHANGELOG.md</code> STEP1083.</p>
 <p class="note">🔵 <strong>2026-08-19 STEP1084</strong> — ②입력검증 실행(출처·단위·결측률·이상치 실측) + ①원전 탐색(Jegadeesh-Titman 1993 전문 무료 확보, <code>data/sources/academic/</code>) — <strong>9항목 4/9 → 5/9</strong>. `LENS_COMPLETION_STANDARD.md`의 낡은 "완성현황표"(모멘텀·기술 전부 ✅였던 것)가 실제 감사 결과와 모순됨을 발견해 정정. 상세 = <code>CHANGELOG.md</code> STEP1084.</p>
+<p class="note">🟡 <strong>2026-08-19 STEP1086</strong> — STEP1073~1085 산출 18건(§6-C #65 포함)이 <code>docs/</code> 전수(md 1,226+html 6)에 퍼졌는지 전수 대조. 문서 분류(㉠살아있는기록 67·㉡시점이력 1,119·㉢죽은문서 30·㉣판별불가 10) 후 ㉠에서 검색 — 대부분 이미 반영돼 있었거나 무관한 문맥(해당없음)이었고, <strong>실제 정정 2건</strong>을 <code>docs/STATE.md</code>에서 발견(§③ Q1 행·⑥ "다음에 할 일" — sectorSource null버그는 STEP1050으로 이미 해소됐는데 "신규 발견·필수 2건" 낡은 문구가 남아 있던 것, 취소선+정정으로 반영). 상세 = <code>CHANGELOG.md</code> STEP1086.</p>
 
 <div class="hero" style="margin-top:16px">
   <div class="lbl">🟢 확정된 칸 — 넷(2026-08-19 STEP1073·1074)</div>
@@ -389,6 +390,7 @@ footer{margin-top:52px;padding-top:22px;border-top:1px solid var(--line);color:v
 <p class="note">🔵 <strong>2026-08-19 STEP1082</strong> — 옛 ㉢ 13건을 선택지 놓을 수 있는지로 재분류(㉮0·㉯5·㉰2·㉱6) — <strong>강제로 선택지를 짓지 않았다.</strong> #50↔#65 근거 연결 완료(여전히 ㉯). 대장 총 74건 불변(🟢43·🟡19·🔴12). 이 표시본은 여전히 §6-C 전문을 이관하지 못했다(정본 참조).</p>
 <p class="note">🔴 <strong>2026-08-19 STEP1083</strong> — 최근변화 칸(모멘텀+기술) 결함 4건 수정 집행 완료(§6-C #1·#2·#4). STEP1055 이후 첫 코드 diff. 9항목 검증 4/9 완전통과 — 나머지는 §6-B-1·CHANGELOG 참조.</p>
 <p class="note">🔵 <strong>2026-08-19 STEP1084</strong> — ②입력검증 + ①원전탐색으로 <strong>5/9</strong> 상향. 상세는 <code>LENS_COMPLETION_STANDARD.md</code> 최근변화 행·<code>CHANGELOG.md</code> 참조.</p>
+<p class="note">🟡 <strong>2026-08-19 STEP1086</strong> — STEP1073~1085 산출 18건이 저장소 전체(md 1,226+html 6)에 퍼졌는지 전수 대조. 문서 4갈래 분류(㉠살아있는기록 67·㉡시점이력 1,119·㉢죽은문서 30·㉣판별불가 10) 후 ㉠에서 검색어별 grep — 대부분 이미 반영돼 있거나 무관 문맥. <code>docs/STATE.md</code>에서 <strong>실제 정정 2건</strong> 발견·반영(sectorSource null버그 = STEP1050으로 이미 해소됐는데 낡은 "신규 발견·필수 2건" 문구가 남아 있던 것). 대장 74건·판정 A/B/C~F 자체는 무변경(사실 정정만, 새 판정 없음). 상세 = <code>CHANGELOG.md</code> STEP1086.</p>
 
 <!-- 위계 -->
 <h2><span class="n">§7</span>문서 위계 — 무엇이 무엇의 정본인가</h2>
