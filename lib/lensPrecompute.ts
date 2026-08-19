@@ -370,6 +370,21 @@ function pick(lenses: LensRead[], key: string) {
   const l = lenses.find((x) => x.key === key);
   return { value: l?.value ?? null, state: l?.state ?? null };
 }
+// STEP 1087: fscore.reason은 로케일 고정 한글 문장(computeSymbolLenses가 항상 "ko"로 호출됨, lib/fscore.ts FS_TEXT.ko)이라
+//   DB엔 영문 코드값으로 저장한다 — 판정(fscoreOf의 value/state)과 무관한 별도 추출, 새 판정 로직 아님(문자열 등호 비교만).
+const FSCORE_REASON_KO = {
+  needThree: "재무 데이터 3개 회계연도가 부족해요 (ROA·회전율은 기초 자산이 필요해서요)",
+  dataMissing: "재무 데이터가 부족해 점수를 낼 수 없어요.",
+  gap: "회계연도가 연속되지 않아 점수를 낼 수 없어요 (중간에 빠진 해가 있어요).",
+} as const;
+function fscoreReasonCode(fscore: unknown): string | null {
+  const reason = (fscore as { reason?: string } | null)?.reason;
+  if (reason == null) return null;
+  if (reason === FSCORE_REASON_KO.needThree) return "needThree";
+  if (reason === FSCORE_REASON_KO.dataMissing) return "dataMissing";
+  if (reason === FSCORE_REASON_KO.gap) return "gap";
+  return null; // 알려진 3종 밖(예: supported=true일 때의 reason 없음) — 상상하지 않는다
+}
 // F-Score: 카드와 동일 규칙(score>=7 strong / <=3 weak / mid). 은행 등 미적용(grade '-')은 na.
 function fscoreOf(fscore: unknown) {
   const fs = fscore as { score?: number; grade?: string } | null;
@@ -560,6 +575,19 @@ export async function computeLensScoresFor(
       const m = pick(r.lenses, "momentum"), lv = pick(r.lenses, "lowvol"), v = pick(r.lenses, "valuation");
       const q = pick(r.lenses, "quality"), ag = pick(r.lenses, "assetgrowth"), t = pick(r.lenses, "technical");
       const fs = fscoreOf(r.fscore);
+      // STEP 1087(#7-부록·검산 인프라 ①): 판정과 무관한 raw 값 — 이미 각 렌즈가 계산해 둔 것을 담기만 한다(재계산 아님).
+      //   quality.decomposition.parts에 grossProfit·totalAssets(최신연도)가, technical.detail에 rsi14·pos52w가 이미 있음(pick()이 버리던 것).
+      const qFull = r.lenses.find((x) => x.key === "quality");
+      const tFull = r.lenses.find((x) => x.key === "technical");
+      const grossProfit = qFull?.decomposition?.parts?.find((p) => p.key === "grossProfit")?.value ?? null;
+      const totalAssets = qFull?.decomposition?.parts?.find((p) => p.key === "totalAssets")?.value ?? null;
+      const rsi14 = tFull?.detail.rsi14 ?? null;
+      const pos52w = tFull?.detail.pos52w ?? null;
+      const reasonCode = fscoreReasonCode(r.fscore);
+      const adjUsed = r.lenses.find((x) => x.key === "momentum")?.adjUsed ?? null;
+      // 🔴 total_assets_prior(자산성장 전용 전기 총자산)는 현재 LensRead 어디에도 노출되지 않는다(assetGrowth.compute()가
+      //   반환하지 않음 — quality.decomposition은 최신연도만 있음). 쓰기 지점을 lensPrecompute.ts 하나로 지키기 위해
+      //   lib/lenses.ts는 건드리지 않고, 이 STEP에선 null로 남긴다(§2 설계가 여기서 낙관적이었음 — 결과에 정직히 기록).
       // 컷 유도용 값 수집(값이 있는 종목만) — 분포 기반 컷 산출용.
       if (m.value != null) cutValues.momentum.push(m.value);
       if (lv.value != null) cutValues.lowvol.push(lv.value);
@@ -575,6 +603,8 @@ export async function computeLensScoresFor(
         assetgrowth_value: ag.value, assetgrowth_state: ag.state,
         technical_value: t.value, technical_state: t.state,
         fscore_value: fs.value, fscore_state: fs.state,
+        gross_profit: grossProfit, total_assets: totalAssets, total_assets_prior: null,
+        rsi14, pos52w, fscore_reason_code: reasonCode, adj_used: adjUsed,
         updated_at: at,
       });
       // STEP 806 §7: 상태 변화 diff는 pass2(컷 재매핑) '이후'에 최종 상태로 계산 — 여기(pass1)선 값·상태만 저장.
