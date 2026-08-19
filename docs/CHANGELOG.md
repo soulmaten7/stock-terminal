@@ -1,6 +1,33 @@
 <!-- 2026-08-19 -->
 # Trillion(트릴리언) — 변경 이력
 
+## 2026-08-19 — 🔴 **STEP1087: 검산 인프라 ① 집행 — `lens_scores` 7컬럼 추가 + 배선(스키마 변경)**
+
+> DB 스키마 변경 + `supabase/migrations/` 파일 신설 + 코드 diff 발생 · 화면 변경 0 · 크론 수동 실행 0. STEP1085가 설계한 `LENS_DISPOSITION §7-4 #7-부록`을 **그대로 집행**(재설계 없음) — 장은태가 이 STEP 실행 자체를 승인으로 명시.
+
+**⓪-1 설계 재확인**: `#7-부록` §1~§4 재열람, §2 확정표 7컬럼 외 추가 없음·삭제된 `costOfRevenue` 부활 없음·시계열 테이블 신설 없음 확인.
+**⓪-3 착수 전 재측정**: `lens_scores` 19컬럼·1,976행·힙 2,160kB·전체 3,784kB — **§1의 기록값과 완전 일치**(드리프트 없음, 안전 확인).
+
+**§1 마이그레이션**: `supabase/migrations/20260819_lens_scores_raw_verification_fields.sql` 신설 — `gross_profit`·`total_assets`·`total_assets_prior`·`rsi14`·`pos52w`·`fscore_reason_code`·`adj_used` 7컬럼(전부 nullable, `NOT NULL`·`DEFAULT`·인덱스 없음). 롤백 SQL(`DROP COLUMN`)·근거 좌표를 파일 상단 주석에 기재. 기존 마이그레이션 관행(`YYYYMMDD_description.sql`·`add column if not exists`) 그대로 따름, 새 방식 창작 없음. Supabase MCP `apply_migration`으로 라이브 적용.
+
+**§2 배선**: `lib/lensPrecompute.ts:569` `buffer.push({...})` 단일 위치에 7키 추가. 출처: `gross_profit`·`total_assets` = 퀄리티 렌즈의 `decomposition.parts`(이미 계산돼 있었으나 `pick()`이 버리던 것) · `rsi14`·`pos52w` = 기술 렌즈의 `detail`(동일) · `fscore_reason_code` = `fscore.ts`의 `reason`(로케일 고정 한글 문장)을 `FS_TEXT.ko`의 3개 상수와 등호 비교해 `needThree`/`dataMissing`/`gap` **영문 코드로 변환**(새 판정 로직 아님, 문자열 등호 비교만 — `lensPrecompute.ts`에 로컬 헬퍼 `fscoreReasonCode()` 신설, `fscore.ts` 무접촉) · `adj_used` = 모멘텀 렌즈의 `LensRead.adjUsed`(STEP1083이 이미 노출).
+🔴 **배선 중 발견 — `total_assets_prior`(자산성장 전용 전기 총자산)는 배선 불가로 확인.** `assetGrowth.compute()`가 이 값을 `LensRead`의 어떤 필드로도 반환하지 않는다(퀄리티의 `decomposition`은 최신연도 하나뿐이라 재사용 불가). 쓰기 지점을 `lensPrecompute.ts` 하나로 지키는 원칙(§2의 "단일 위치")을 지키려면 `lib/lenses.ts`(판정 인접 파일)를 추가로 건드려야 해, **이번 STEP은 손대지 않고 `null`로 남겼다** — STEP1085 설계가 이 지점에서 낙관적이었음을 정직히 기록(값이 아니라 접근 경로 자체가 없었다). 나머지 6컬럼은 배선 완료.
+계산 로직(`pick()`·`fscoreOf()`·`*_value`/`*_state` 산출)은 **한 줄도 안 건드림**(`git diff` 확인 — 순수 추가만).
+
+**§3 소비처 재확인**: #7-부록이 나열한 9곳(`explore/lens-top`·`krx/ranking`·`watchlist/quotes`·`cron/health`·`yahoo/{us,cn,gb,jp,vn}-list`) 전부 재조회 — **전부 명시 컬럼 `select`, `select("*")` 0곳** 재확인. 페이로드 영향 없음, 멈출 사유 없음.
+
+**§4 검증 3**: ①스키마·데이터 무손상 — 적용 후 행수 **1,976 불변** · 기존 19컬럼 값 MD5 지문 **적용 전후 완전 일치**(`fbf5302e7c9e626e80b5c007123c29fc`) · 신규 7컬럼 **전부 null**(백필 안 함, 설계대로) ②판정 불변 — `git diff lib/lensPrecompute.ts`로 `pick()`/`fscoreOf()`/`*_value`/`*_state` 무변경 확인 + DB 지문 재조회로도 확인(코드가 아직 실행 안 됐으므로 당연·다음 크론 후 재확인 필요) ③테스트·타입 — `tsc` 클린(기존 무관 에러 2건 외 신규 0)·`vitest` **386/386** 통과.
+
+**§5 용량 실측**(적용 후 실제로 잼): 힙 **2,160kB(불변)** · 전체 **3,784kB(불변)** — 0바이트 증가. #7-부록의 "+5.36%(산술)" 추정과 다른 이유 = **값이 전부 null이라 Postgres가 null 컬럼에 힙 공간을 안 씀**(null 비트맵만 커짐, 무시 가능한 수준). 실제 증가는 다음 크론이 값을 채우기 시작한 뒤에나 관측 가능 — 그때 재측정 필요(이번 STEP 범위 밖).
+
+**§6 문서 반영**: `LENS_DISPOSITION_2026-08-08.md` §7-4 #7·#7-부록에 "🟢 집행 완료(STEP1087)" + 적용 결과(컬럼 19→26·지문 일치·`total_assets_prior` 배선 불가 발견) 반영 / `LENS_COMPLETION_STANDARD.md` 최근변화 행 ⑦에 "인프라 준비됨, 값 채움 대기" 추가(🔴 **미리 ✅ 안 붙임**, 🟡 그대로) / `BUILD_SEQUENCE.md` §6-C #6 "🟢 집행 완료" 갱신(옛 문구 취소선 보존) / 표시본 머리+본문.
+
+**검수 3**: ①범위 — 7컬럼 외 스키마 변경 0·다른 테이블 0·시계열 테이블 0·`NOT NULL`/`DEFAULT`/인덱스 0·계산 로직 변경 0·화면 변경 0·크론 수동 실행 0·`REVDCF_ENABLED`·`Q1_ENABLED`·`data/us_symbols.json`·`.github/workflows/**`·`vercel.json` 무접촉 ②되돌릴 수 있는가 — 분리 커밋 2개(마이그레이션/배선)·롤백 SQL이 마이그레이션 파일 주석에 있음·착수 전 해시 `c82963b` 기록 ③정직한가 — 용량은 적용 후 실제로 잼(늘지 않은 사실도 그대로 적음)·`total_assets_prior` 배선 불가를 숨기지 않고 기록.
+
+🔴 **못 한 것**: `total_assets_prior` 배선(경로 없음, `lib/lenses.ts` 접촉이 필요해 별도 승인 사항) · 값 채움은 다음 정규크론(US 21:30 UTC±지터) 이후라야 확인 가능(크론 수동 실행 금지) · 그 이후의 판정 분포 before=after 재확인(오늘은 코드 diff와 현재 DB 지문 불변만 확인, 크론 이후 재확인 필요) · 용량의 실제 증가폭 실측(값이 null이라 이번엔 0, 채워진 뒤 재측정 필요).
+
+---
+
 ## 2026-08-19 — 🔵 **STEP1085: 검산 인프라(§7-4 #7 ①) 설계 + 영향 실측 — 스키마는 아직 안 바꾼다**
 
 > 읽기 전용(코드 diff 0·DB 쓰기 0·스키마 변경 0·화면 변경 0·크론 수동 실행 0). 장은태가 2026-08-19 이미 채택한 `LENS_DISPOSITION §7-4 #7 → ①`(`lens_scores`에 raw 필드 추가)의 **집행 설계와 대가를 재는 것까지**. 실제 스키마 변경은 이 설계를 승인한 뒤 별건.
