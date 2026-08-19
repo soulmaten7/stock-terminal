@@ -200,8 +200,11 @@ export const technical: Lens = {
     const last = closes.length ? closes[closes.length - 1] : null;
     const ma200 = sma(closes, 200);
     const win = closes.slice(-252);
-    const hi = win.length ? Math.max(...win) : null;
-    const lo = win.length ? Math.min(...win) : null;
+    // STEP1083 §7-4#5 #15: sma·rsi와 같은 최소표본 가드(요구 구간 길이 미달이면 null) — 이전엔 win.length>0이면
+    //   그대로 계산해 신규상장주가 며칠치 데이터만으로 "52주 위치"를 참칭했다(그 며칠 구간의 최고/최저가 곧 last와
+    //   가까워 0%/100% 근처로 왜곡).
+    const hi = win.length >= 252 ? Math.max(...win) : null;
+    const lo = win.length >= 252 ? Math.min(...win) : null;
     const pos52 = last != null && hi != null && lo != null && hi > lo ? ((last - lo) / (hi - lo)) * 100 : null;
     const shortLab = labelOf(locale, "rsi", rsiState(r));
     const longLab = labelOf(locale, "ma", maTrendState(last, ma200));
