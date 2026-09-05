@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
     const sb = createAdminClient();
     const { data, error } = await sb
       .from("channel_reports")
-      .select("report_date, broker, verdict, target_price, current_price, upside, reasons, earnings_summary, broker_average")
+      .select("report_date, broker, verdict, target_price, current_price, upside, reasons, earnings_summary, broker_average, title")
       .eq("symbol", symbol)
       .order("report_date", { ascending: false });
     if (error) return NextResponse.json({ symbol, reports: [], error: "fetch_failed" });

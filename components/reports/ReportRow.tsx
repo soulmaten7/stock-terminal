@@ -35,6 +35,8 @@ export function ReportRow({ item, loc }: { item: HomeReportItem; loc: Locale }) 
     >
       <StockLogo code={item.symbol} name={item.stock_name} size={30} />
       <div className="min-w-0 flex-1">
+        {/* ORDER_트릴리언국가확장구조_0905 STEP2 — 영상 제목(채널이 보냄). 없으면 지금처럼 종목명이 첫 줄. */}
+        {item.title ? <p className="line-clamp-1 text-[13px] font-medium text-unjong-accent sm:text-[11px]">{item.title}</p> : null}
         <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{item.stock_name}</p>
         <p className="flex items-center gap-1.5 text-[15px] text-unjong-muted sm:text-[12px]">
           <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[verdictTone(item.verdict)]}`} />

@@ -17,6 +17,7 @@ import { PageShell } from '@/components/layout/PageShell';
 import { ReportRow } from '@/components/reports/ReportRow';
 import type { HomeReportFeed } from '@/lib/channelReports';
 import type { OurChannelCard } from '@/lib/ourChannels';
+import { REPORT_COUNTRIES } from '@/lib/constants/reportCountries';
 
 // PC 전용 hover 별(STEP 781 §2) — 탐색 WatchStar 기본값(sm:flex) 위에 평소 투명·행 hover/포커스 시만 표시 추가.
 const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-accent';
@@ -52,14 +53,6 @@ type WatchlistQuote = {
 function pct(v?: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
-}
-// 구독자수 축약 — components/toolbox/YoutubeRanking.tsx의 fmtSubs()와 로직 동일(재사용 대상이나
-// 그 파일은 파킹돼 있어 export/수정 금지 — ORDER_트릴리언채널카드_0905). ko=만·억 / en=K·M 축약.
-const SUBS_COMPACT_FLOOR: Record<string, number> = { ko: 10000, en: 1000 };
-function fmtSubs(n: number, locale: string): string {
-  const floor = SUBS_COMPACT_FLOOR[locale] ?? 10000;
-  if (n < floor) return n.toLocaleString(locale);
-  return new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
 }
 function stateLabel(loc: Locale, key: string, state: string | null): string {
   if (!state) return '—';
@@ -123,8 +116,8 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient({ initialKrReports, initialUsReports, initialIndices, dailyBrief, dailyBriefDate = null, ourChannels }: {
-  initialKrReports: HomeReportFeed; initialUsReports: HomeReportFeed; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null; ourChannels: OurChannelCard[];
+export default function TodayClient({ initialReportsByCountry, initialIndices, dailyBrief, dailyBriefDate = null, ourChannels }: {
+  initialReportsByCountry: Record<string, HomeReportFeed>; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null; ourChannels: OurChannelCard[];
 }) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
@@ -137,8 +130,7 @@ export default function TodayClient({ initialKrReports, initialUsReports, initia
 
   // 시장 전체(지수·리포트 피드) = 서버 프리페치(STEP 771 §3 / STEP2 리포트 피드로 교체) — 클라 fetch 없이 첫 HTML에 바로 포함.
   const indices = initialIndices;
-  const krReports = initialKrReports;
-  const usReports = initialUsReports;
+  const reportsByCountry = initialReportsByCountry;
 
   const [watchlistQuotes, setWatchlistQuotes] = useState<WatchlistQuote[] | null>(null); // null=미조회, []=조회했지만 0
   const [watchlistError, setWatchlistError] = useState(false); // 조회 실패 — 온보딩(없음)과 구분(STEP 804 §4)
@@ -315,45 +307,31 @@ export default function TodayClient({ initialKrReports, initialUsReports, initia
           )}
         </section>
 
-        {/* 3) 한국 주식 · 오늘의 증권사 리포트(KR) — ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화 → channel_reports 피드로 교체 */}
-        <section className="mb-7">
-          <div className="mb-2 px-4 sm:px-0">
-            <h2 className="text-base font-bold text-unjong-primary">{t('krCountryLine')}</h2>
-            <p className="text-[13px] text-unjong-muted">{t('krReportsTitle')}</p>
-          </div>
-          {krReports.items.length === 0 ? (
-            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
-          ) : (
-            <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-              {krReports.items.map((r, i) => (
-                <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
-              ))}
-            </div>
-          )}
-          {krReports.count > krReports.items.length ? (
-            <Link href="/reports?country=KR" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreReports', { n: krReports.count })}</Link>
-          ) : null}
-        </section>
-
-        {/* 4) 미국 주식 · 오늘의 기업 실적 전망(US) — 지금은 US 적재 미착수라 0건. 빈 상태만 두고 어댑터가 붙으면 자동으로 채워진다. */}
-        <section className="mb-7">
-          <div className="mb-2 px-4 sm:px-0">
-            <h2 className="text-base font-bold text-unjong-primary">{t('usCountryLine')}</h2>
-            <p className="text-[13px] text-unjong-muted">{t('usReportsTitle')}</p>
-          </div>
-          {usReports.items.length === 0 ? (
-            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
-          ) : (
-            <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-              {usReports.items.map((r, i) => (
-                <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
-              ))}
-            </div>
-          )}
-          {usReports.count > usReports.items.length ? (
-            <Link href="/reports?country=US" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreReports', { n: usReports.count })}</Link>
-          ) : null}
-        </section>
+        {/* 3) 국가별 리포트 피드 — REPORT_COUNTRIES를 순회(ORDER_트릴리언국가확장구조_0905 STEP2: 국가
+             추가는 lib/constants/reportCountries.ts + messages 국가 블록만으로 끝나야 한다, 컴포넌트 수정 없이). */}
+        {[...REPORT_COUNTRIES].sort((a, b) => a.displayOrder - b.displayOrder).map((rc) => {
+          const feed = reportsByCountry[rc.code] ?? { items: [], count: 0 };
+          return (
+            <section key={rc.code} className="mb-7">
+              <div className="mb-2 px-4 sm:px-0">
+                <h2 className="text-base font-bold text-unjong-primary">{rc.flag} {t(`countries.${rc.code}.name`)}</h2>
+                <p className="text-[13px] text-unjong-muted">{t(`countries.${rc.code}.reportsTitle`)}</p>
+              </div>
+              {feed.items.length === 0 ? (
+                <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
+              ) : (
+                <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
+                  {feed.items.map((r, i) => (
+                    <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
+                  ))}
+                </div>
+              )}
+              {feed.count > feed.items.length ? (
+                <Link href={`/reports?country=${rc.code}`} className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreReports', { n: feed.count })}</Link>
+              ) : null}
+            </section>
+          );
+        })}
 
         {/* 5) 우리 채널 — ORDER_트릴리언채널카드_0905 STEP2: 리포트 피드 다음 행선지로 유튜브 채널 2개 노출 */}
         <section className="mb-7">
@@ -375,11 +353,11 @@ export default function TodayClient({ initialKrReports, initialUsReports, initia
                 )}
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[15px] font-semibold text-unjong-primary sm:text-sm">
-                    {c.channel_key === 'kr' ? '🇰🇷' : '🇺🇸'} {c.title}
+                    {REPORT_COUNTRIES.find((rc) => rc.code === c.country_code)?.flag} {c.title}
                   </p>
-                  {c.subscriber_count != null ? (
-                    <p className="mt-0.5 text-[13px] text-unjong-muted">{t('subscriberCount', { n: fmtSubs(c.subscriber_count, loc) })}</p>
-                  ) : null}
+                  {/* 구독자수 표시는 끔(ORDER_트릴리언국가확장구조_0905 §0-1(A)) — our_channels.subscriber_count·
+                      크론·refreshOurChannels()는 그대로 두고 화면만 채널 설명으로 교체. 숫자가 커지면 이 줄만 되돌리면 된다. */}
+                  <p className="mt-0.5 truncate text-[13px] text-unjong-muted">{t(`countries.${c.country_code}.channelDescription`)}</p>
                 </div>
               </a>
             ))}

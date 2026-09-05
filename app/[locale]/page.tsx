@@ -6,8 +6,9 @@ import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { getIndices } from "@/lib/indices";
 import { getLatestDailyBrief } from "@/lib/dailyBrief";
-import { getHomeReportFeed } from "@/lib/channelReports";
+import { getHomeReportFeed, type HomeReportFeed } from "@/lib/channelReports";
 import { getOurChannels } from "@/lib/ourChannels";
+import { REPORT_COUNTRIES } from "@/lib/constants/reportCountries";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,13 +77,17 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   // ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화(getTodayChanges) 호출을 홈에서 끊고
   // 리포트 피드(channel_reports)로 교체 — 크론·API 라우트 자체는 이번에 건드리지 않는다.
-  const [krReports, usReports, indices, dailyBrief, ourChannels] = await Promise.all([
-    getHomeReportFeed({ country: "KR", limit: 5 }),
-    getHomeReportFeed({ country: "US", limit: 5 }),
+  // ORDER_트릴리언국가확장구조_0905 STEP2: 국가별 fetch를 REPORT_COUNTRIES 순회로 — 새 국가가
+  // 늘어도 이 파일은 손댈 필요가 없다(목록만 순회).
+  const [reportFeeds, indices, dailyBrief, ourChannels] = await Promise.all([
+    Promise.all(REPORT_COUNTRIES.map((rc) => getHomeReportFeed({ country: rc.code, limit: 5 }))),
     getIndices(),
     getLatestDailyBrief(locale === "en" ? "US" : "KR"),
     getOurChannels(),
   ]);
+  const reportsByCountry: Record<string, HomeReportFeed> = Object.fromEntries(
+    REPORT_COUNTRIES.map((rc, i) => [rc.code, reportFeeds[i]])
+  );
   const briefText = locale === "en" ? dailyBrief?.text_en ?? null : dailyBrief?.text_ko ?? null;
   const briefDate = dailyBrief?.brief_date ?? null; // STEP 809 §7: 브리핑 기준일(크론 며칠 실패 시 옛 브리핑을 날짜 없이 붙이던 것 방지)
 
@@ -93,7 +98,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <TodayClient initialKrReports={krReports} initialUsReports={usReports} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} ourChannels={ourChannels} />
+      <TodayClient initialReportsByCountry={reportsByCountry} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} ourChannels={ourChannels} />
     </>
   );
 }

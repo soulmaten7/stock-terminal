@@ -590,6 +590,7 @@ type ChannelReport = {
   reasons: { title: string; detail?: string }[] | null;
   earnings_summary: string | null;
   broker_average: string | null;
+  title: string | null; // ORDER_트릴리언국가확장구조_0905 STEP2 — 채널이 보내는 영상 제목/대표 소제목
 };
 
 function verdictClass(v: string | null): string {
@@ -669,6 +670,7 @@ function ReportLayer({ symbol }: { symbol: string }) {
         const isOpen = isLatest || expanded.has(i);
         return (
           <div key={i} className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+            {r.title ? <p className="mb-1.5 text-[14px] font-semibold text-unjong-primary">{r.title}</p> : null}
             {isLatest ? (
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>

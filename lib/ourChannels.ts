@@ -1,17 +1,21 @@
 import { createAdminClient } from "./supabase/admin";
 
-// Trillion 홈 "우리 채널" 카드 2장 — youtube_channels(경쟁사 Top100 랭킹, refreshYoutubeTop100())와
+// Trillion 홈 "우리 채널" 카드 — youtube_channels(경쟁사 Top100 랭킹, refreshYoutubeTop100())와
 // 무관한 별도 테이블(our_channels)에 저장한다. 채널 ID를 이미 알고 있어 lib/youtube.ts의
 // search.list(키워드 발굴) 단계는 필요 없고, channels.list만 그대로 재사용한다(ORDER_트릴리언채널카드_0905).
-const OUR_CHANNELS: { channel_key: "kr" | "us"; channel_id: string; channel_url: string; fallbackTitle: string }[] = [
-  { channel_key: "kr", channel_id: "UC81WH6o_AKDN2NVqBSs3mlg", channel_url: "https://www.youtube.com/channel/UC81WH6o_AKDN2NVqBSs3mlg", fallbackTitle: "스톡스카우터" },
-  { channel_key: "us", channel_id: "UC0BirFox7u4vg2iMMwBZZ-Q", channel_url: "https://www.youtube.com/channel/UC0BirFox7u4vg2iMMwBZZ-Q", fallbackTitle: "WeTheTicker" },
+//
+// channel_key = 채널 슬러그(국가와 무관, 한 국가에 채널이 둘 이상 생길 여지 대비) ·
+// country_code = lib/constants/reportCountries.ts의 국가 코드와 매칭(ORDER_트릴리언국가확장구조_0905 §2).
+const OUR_CHANNELS: { channel_key: string; country_code: string; channel_id: string; channel_url: string; fallbackTitle: string }[] = [
+  { channel_key: "kr", country_code: "KR", channel_id: "UC81WH6o_AKDN2NVqBSs3mlg", channel_url: "https://www.youtube.com/channel/UC81WH6o_AKDN2NVqBSs3mlg", fallbackTitle: "스톡스카우터" },
+  { channel_key: "us", country_code: "US", channel_id: "UC0BirFox7u4vg2iMMwBZZ-Q", channel_url: "https://www.youtube.com/channel/UC0BirFox7u4vg2iMMwBZZ-Q", fallbackTitle: "WeTheTicker" },
 ];
 
 export type OurChannelCard = {
-  channel_key: "kr" | "us";
+  channel_key: string;
+  country_code: string;
   title: string;
-  subscriber_count: number | null;
+  subscriber_count: number | null; // 화면엔 안 뜨지만(ORDER_트릴리언국가확장구조_0905 §0-1(A)) 계속 쌓는다
   thumbnail_url: string | null;
   channel_url: string;
 };
@@ -45,6 +49,7 @@ export async function refreshOurChannels() {
     const { error } = await supabase.from("our_channels").upsert(
       {
         channel_key: meta.channel_key,
+        country_code: meta.country_code,
         channel_id: meta.channel_id,
         title: info.title,
         subscriber_count: info.subscriber_count,
@@ -60,24 +65,25 @@ export async function refreshOurChannels() {
   return { updated: results.length, channels: results };
 }
 
-// 홈 서버 프리페치용 읽기 — DB 행이 아직 없거나(첫 크론 전) 조회 자체가 실패해도 카드 2장은
+// 홈 서버 프리페치용 읽기 — DB 행이 아직 없거나(첫 크론 전) 조회 자체가 실패해도 카드는
 // 항상 뜨게 한다(ORDER 명시: 구독자수만 생략, 채널명·링크는 상수라 뜬다).
 export async function getOurChannels(): Promise<OurChannelCard[]> {
-  const fallback = (key: "kr" | "us"): OurChannelCard => {
+  const fallback = (key: string): OurChannelCard => {
     const meta = OUR_CHANNELS.find((c) => c.channel_key === key)!;
-    return { channel_key: key, title: meta.fallbackTitle, subscriber_count: null, thumbnail_url: null, channel_url: meta.channel_url };
+    return { channel_key: key, country_code: meta.country_code, title: meta.fallbackTitle, subscriber_count: null, thumbnail_url: null, channel_url: meta.channel_url };
   };
   try {
     const supabase = createAdminClient();
     const { data } = await supabase
       .from("our_channels")
-      .select("channel_key, title, subscriber_count, thumbnail_url, channel_url");
+      .select("channel_key, country_code, title, subscriber_count, thumbnail_url, channel_url");
     const byKey = new Map((data ?? []).map((row) => [row.channel_key, row]));
     return OUR_CHANNELS.map((meta) => {
       const row = byKey.get(meta.channel_key);
       return row
         ? {
             channel_key: meta.channel_key,
+            country_code: row.country_code,
             title: row.title,
             subscriber_count: row.subscriber_count,
             thumbnail_url: row.thumbnail_url,
