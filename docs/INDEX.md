@@ -30,11 +30,16 @@
 
 | 파일 | 용도 | 언제 읽나 |
 |------|------|-----------|
-| `CLAUDE.md` | Claude Code 지침서 — 역할분담·절대규칙·워크플로우·참조 테이블·세션 루틴 | 매 세션(규칙·워크플로우 확인) |
+| `CLAUDE.md` | Claude Code 지침서 **허브**(2026-09-05 재작성) — 항상 적용 규칙 + `.claude/rules/*.md` 라우팅 | 매 세션(규칙 확인) |
+| `.claude/rules/work-protocol.md` | 작업 절차·명령서 형식·⓪줄 보고형식·좌표 의무 | 작업 시작 시 |
+| `.claude/rules/docs-map.md` | 문서 지도·폴더 구조·저장소 경계 | 문서 갈피 잡을 때 |
+| `.claude/rules/deploy-gates.md` | 배포 안전장치(Supabase ref·프로덕션 승인 등) | 커밋·배포 전 |
+| `.claude/rules/mistakes.md` | 실수 기록(누적) | 재발 방지 확인 시 |
 | `AGENTS.md` | Next.js(이 버전) 주의 — 학습지식과 다른 breaking change 경고 | 코드 작성 전 |
 | `README.md` | 프로젝트 소개(구 운종 브랜드 서술 — 리브랜드 반영 필요) | 외부 소개용 |
 | `session-context.md` | [폐기] 구 프로젝트 맥락 — `docs/_archive/`로 통합·폐기(현행 = `docs/STATE.md`) | 히스토리 참고만 |
 | `CLAUDE_CODE_INSTRUCTIONS.md` | 개발 명령서 [보존·V3 명세] — 전체 기능·DB 스키마·페이지 상세 | DB/기능 명세 참조 |
+| `docs/_archive/MODEL_TRACK_RULES_FROZEN_2026-09-05.md` | 🅿️ 동결 — 옛 CLAUDE.md 모델 트랙 규칙 전문(창작금지·US단독·3중규칙·선정모델) | 모델 트랙 재개 판단 시 |
 
 ---
 
@@ -229,12 +234,12 @@
 
 ---
 
-## ⑩ STEP 실행 명령서 아카이브
+## ⑩ STEP 실행 명령서 아카이브 (🅿️ 2026-09-05 동결 — `docs/_archive/steps/`로 이동)
 
-- `docs/STEP_*.md` = **Claude Code용 실행 명령서 아카이브**(총 693개). 번호는 연속(일부 분기 STEP: `20a`/`20b`·`52B`·`663B~E`·`672B~D` 등).
-- 각 파일 = "한 STEP의 목표 + 실행 명령어(Sonnet/Opus) + 전제 커밋 + 변경 내용". 완료 후에도 **삭제하지 않고 아카이브**로 보존(설계 의도 기록).
-- 특정 STEP 내용이 필요할 때만 파일명(`docs/STEP_{번호}_COMMAND.md`)으로 직접 열기. INDEX엔 개별 나열하지 않음.
-- 최신 STEP 진행 상황은 §① 세션·핸드오프 문서에서 확인.
+- `docs/_archive/steps/STEP_*_COMMAND.md`(893개, `git mv`로 이동·git 히스토리 보존) = **옛 Claude Code용 실행 명령서 아카이브**. 번호는 연속(일부 분기 STEP: `20a`/`20b`·`52B`·`663B~E`·`672B~D` 등).
+- 각 파일 = "한 STEP의 목표 + 실행 명령어(Sonnet/Opus) + 전제 커밋 + 변경 내용". **삭제하지 않고 아카이브로 보존**(설계 의도 기록) — 새로 만들지 않는다.
+- 특정 STEP 내용이 필요할 때만 파일명(`docs/_archive/steps/STEP_{번호}_COMMAND.md`)으로 직접 열기. INDEX엔 개별 나열하지 않음.
+- **현행 명령서 형식** = `docs/ORDER_*.md`(설계·명령서) + 실행 한 줄. 이력은 git 커밋 메시지. 상세 = `.claude/rules/work-protocol.md`.
 
 ---
 

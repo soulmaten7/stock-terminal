@@ -1,50 +1,34 @@
-<!-- 2026-08-19 -->
+<!-- 2026-09-05 -->
 # 🚀 Trillion(트릴리언) — STATE (현재 상태 단일 정본)
 
-> **이 파일 = "지금 어디까지 왔나 + 다음 뭐 할까"의 유일한 정본. 매 세션 덮어쓴다(배너 쌓기 금지).**
-> 새 세션 읽는 순서: **이 STATE → `docs/REVDCF_SPEC.md`(모델 설계 정본) → `docs/SYSTEM_MAP.md`(아키텍처) → 작업별 PLAYBOOK** → 이력 = `docs/CHANGELOG.md` · STEP별 요약 = `docs/STEP_LEDGER.md`.
-> 규칙: **현재상태=여기에만 · 이력=CHANGELOG·STEP_LEDGER에만 · 아키텍처=SYSTEM_MAP에만 · 모델 설계=REVDCF_SPEC·VALUATION_SPEC에만.**
-> 🔴 **2026-08-11(STEP991) 재정리** — STEP974~990(2026-08-10~11) 사이 각 STEP이 미해결 목록의 자기 항목만 조각조각 갱신해, STEP971 재작성 이후 다시 흩어진 상태였다. 현재 상태만 남기고 STEP별 서술은 CHANGELOG·STEP_LEDGER·REVDCF_SPEC·VALUATION_SPEC·probe로 보냈다(포인터 유지, 내용 삭제 없음). 이전 재작성 = STEP971(2026-08-10). 재정리 전 원문 = `git show HEAD~1:docs/STATE.md`.
-
-> 🔴 **어디를 보면 되는가**(2026-08-18 STEP1070, 2026-08-19 STEP1071 이어씀) — **저장소 루트**(`/Users/maegbug/stock-terminal/`)가 작업·정본 자리다. Finder에서 여기를 본다. **`docs/`**엔 문서 정본(`.md`)과 표시본(`.html`)이 함께 있다. **`~/Downloads/`**는 열람용 사본이고, 어긋나면 저장소가 맞다(표시본 위계 상세 = `docs/BUILD_SEQUENCE.md` §7). **worktree는 쓰지 않는다**(`docs/COMMIT_GATES.md` 브랜치 규약 — "작업 폴더도 하나다").
-> **문서를 고칠 때**: 저장소 `docs/`의 **그 파일을 덮어쓴다.** 새 파일·새 버전 사본을 만들지 않는다(`/preferences.md` — "중복 파일이 쌓이는 것이 문제").
-> **이전 버전이 필요하면**: `git log --oneline -- <경로>` → `git show <해시>:<경로>`
-> **표시본(html)**: `docs/`에 둔다. `~/Downloads/`는 열람용 사본이며 어긋나면 저장소가 맞다.
-> 🔴 **판정 대기로 남긴 물음** — *"`~/Downloads/`의 현재본 5개(`model_list_30_9.html`·`roadmap_v2_2.html`·`build_sequence.html`·`data_source_catalog.html`·`tombstone.html`)를 계속 둘 것인가"*: 저장소에 있으므로 중복이지만 브라우저 열람에 쓰일 수 있다. **정하지 않는다**(STEP1071).
-> ✅ **STEP1071(2026-08-19)** — `~/Downloads/_to_delete/2026-08-16_roadmap_drafts/`(초안 26개, 반영 검증 완료) 삭제 완료. 상세 = `docs/BUILD_SEQUENCE.md` §7-부록 부-10.
+> **이 파일 = "지금 어디까지 왔나 + 다음 뭐 할까"의 유일한 정본. 상태가 바뀔 때 덮어쓴다(세션마다 의무 아님).**
+> 새 세션 읽는 순서: **이 STATE ⓪ → `docs/ROADMAP_V2.md` 상단 「방향 전환」절 → `CLAUDE.md` 허브 → 필요한 `.claude/rules/*.md`.**
+> 규칙: **현재상태=여기에만.** 이력은 git 커밋 메시지(`docs/CHANGELOG.md`·`docs/STEP_LEDGER.md`는 2026-09-05 동결).
 
 ---
 
-## ⓪ 🔴 직전 세션(2026-08-19, STEP1073~1089) 요약 — 다음 세션은 여기부터
+## ⓪ 🔴 직전 세션(2026-09-05) 요약 — 다음 세션은 여기부터
 
-> 🔴 **「다 됐다」로 읽지 말 것.** 아래 "다음 세션이 먼저 할 것"·"미해결 위험"이 남은 것 전부다.
-> 🔴 **STEP1089 추가** — STEP1086·1088의 문서 대조가 **정방향(grep)뿐**이라 "빠진 서술"(문서에 아예 없어 검색에 안 걸리는 것)을 못 잡았음을 장은태가 지적, 역방향(문서→"내 담당 중 뭐가 바뀌었나")으로 재대조해 `SYSTEM_MAP.md`(lens_scores 26컬럼 서술 누락)·`LENS_DEV_PLAYBOOK.md`(STEP1083~1087 문제해결 로그 4건 통째로 누락)·`INDEX.md`(STEP 명령서 카운트 884→893 정정)·`MODEL_ROSTER.md`(판정B 반영 스탬프 누락)를 보완, `CLAUDE.md` 참조표에 `BUILD_SEQUENCE.md`(판정 대장) 행 신설. 이 절의 "🟢45행"↔"🟢43행" 표기 불일치도 이번에 정정(45가 맞음).
+**무엇이 확정됐나**(장은태 확정, `docs/ORDER_트릴리언이관_0905.md`):
+- 🟢 **운영 체계 전환** — Cowork 폐지, **클로드 채팅(설계·명령서)+클로드 코드(실행)**로 통일. STEP 번호·`STEP_LEDGER.md` 폐지, 이력은 git 커밋 메시지. 🔴 **Trillion 운영의 설계·명령서 대화는 한국 채널 세션(이 채팅)이 전담한다.**
+- 🟢 **모델 트랙(렌즈·역DCF·배수 등) 전면 폐지 확정.** Trillion은 모델 계산 플랫폼에서 **채널 리포트 적재 플랫폼**으로 전환 — 종목 페이지 알맹이는 모델 판정이 아니라 채널 제작 리포트가 국가별 시간순 적재되는 것. UI 껍데기(5면·국가탭·헤더·티커·로그인·관심종목)는 유지.
+- 🟢 **지침 재배치 완료** — `CLAUDE.md`를 짧은 허브로 재작성 + `.claude/rules/{work-protocol,docs-map,mistakes,deploy-gates}.md` 4파일 신설. 옛 모델 트랙 규칙 전문은 `docs/_archive/MODEL_TRACK_RULES_FROZEN_2026-09-05.md`에 동결 보존.
+- 🟢 **동결 처리** — `docs/CHANGELOG.md`·`docs/STEP_LEDGER.md`(상단 한 줄) · `docs/BUILD_SEQUENCE.md` §6-C 판정 대장 · `docs/STEP_*_COMMAND.md` 893개(→ `docs/_archive/steps/`로 이동, README 한 줄) · `docs/handoff_map.html`(상단 한 줄). **전부 삭제 없이 동결 표시만.**
 
-**무엇이 확정됐나**(장은태 판정, 좌표 있음):
-- 🟢 **판정 A** — 제품 정의 우선순위: 정의3(질문구조) 최상위·정의2(정직함) 신뢰층·정의1(기법나열) 폐기(STEP1073, `BUILD_SEQUENCE.md:226` 아래 취소선+정정으로 기존 반영).
-- 🟢 **판정 B** — 「확정된 모델을 1개씩 완성한다」, 「1위」라는 낱말은 채택 안 됨(STEP1073, 같은 좌표).
-- 🟢 **확정된 칸은 넷** — ①배수+역DCF(Q1 트랙) ②재무건전성(F스코어) ③④최근변화(모멘텀+기술, 한 칸). **완성 승인은 여전히 0개**(`BUILD_SEQUENCE.md:173,106`).
-- 🟢 **검산 인프라 ①채택 + 집행 완료** — `lens_scores`에 raw 컬럼 7개 추가(`gross_profit`·`total_assets`·`total_assets_prior`·`rsi14`·`pos52w`·`fscore_reason_code`·`adj_used`, 전부 nullable). 설계=STEP1085, 집행=STEP1087(`supabase/migrations/20260819_lens_scores_raw_verification_fields.sql`). 🔴 **`total_assets_prior`는 배선 불가로 확인됨**(`assetGrowth.compute()`가 값을 반환 안 함 — `LENS_DISPOSITION §7-4 #7-부록` §4).
+**다음 세션이 먼저 할 것**(🔴 순서·추천 없음):
+① 채널 리포트 적재 구조(국가별 시간순) 설계 착수 여부 ② 모델 계산·크론·파이프라인의 실제 정지, 화면 렌즈/역DCF 제거를 별도 STEP으로 실행할지 판단 ③ 허브(①단계 — 채널 디렉토리·제휴 링크·비즈니스 문의 창구) 설계 착수.
 
-**무엇을 만들었나**:
-- **최근변화 칸(모멘텀+기술) 착수** — STEP1055 이후 첫 코드 수정. `avg(r1,r3)` 창작 산식 폐기·`adjUsed` 노출·FF/Carhart 문구 정정·`pos52` 최소표본 가드(STEP1083, 커밋 `7191521`·`142c06a`·`e148b56`) + Jegadeesh-Titman(1993) 원전 확보(STEP1084, `data/sources/academic/`). **9항목 중 6/9**(머리글이 "5/9"였던 계수 오류를 STEP1085가 정정). 🔴 **검산 인프라가 실제로 값을 채워도(다음 크론 후) 상한은 7/9** — 기술·F스코어의 손계산은 원시 종가 시계열·3개년 전체 재무제표 부재로 구조적으로 안 풀림.
-- **검산 인프라 7컬럼**(위 참조) — 값은 전부 `null`(백필 안 함), 다음 정규크론(US 21:30 UTC±지터)부터 자연히 채워짐.
+**건드리면 안 되는 것**: `REVDCF_ENABLED` OFF 유지(별도 승인 없이 켜지 않음, 정지 실행 전까지는 현행 그대로 둔다) · `~/Downloads/`(사용자 파일) · `supabase/migrations/**`(장은태 명시 승인 없이).
 
-**지금 어디인가**:
-- 🔴 **판정 대장 `docs/BUILD_SEQUENCE.md` §6-C — 총 76행(🟢45·🟡19·🔴12).** 저장소 전체에 흩어져 있던 판정 대기를 STEP1079~1082가 모으고 STEP1088이 2행(#78 ㉣문서10개 생사·#79 `total_assets_prior` 배선 여부) 추가한 것 — **다음 세션은 여기서 시작한다.** 🟢45행이 지금 장은태가 바로 판정할 수 있는 상태.
-
-**다음 세션이 먼저 할 것**(🔴 순서·추천 없음 — Cowork이 정하지 않는다):
-① `§6-C` 🟢45행 중 선택 ② 최근변화 항목⑨(라이브 실측 after) — 다음 정규크론 이후에나 확인 가능 ③ 검산 인프라 값이 실제로 채워졌는지 확인(크론 후) + `total_assets_prior` 배선 여부 판정(`lib/lenses.ts` 접촉 필요, 별도 승인) ④ 9/9를 위한 시계열 테이블(원시 종가·3개년 재무제표) 신설 여부 판정.
-
-**건드리면 안 되는 것**: `REVDCF_ENABLED` OFF 유지 · `Q1_ENABLED` 무접촉 · 크론 수동 실행 금지 · `~/Downloads/`(사용자 파일) · 수정 금지 경로(`supabase/migrations/**` 등, 장은태 명시 승인 없이).
-
-**미해결 위험**:
-- 🔴 **08-16 조인 결함 — 재발은 없었으나 원인 코드는 그대로.** `app/api/cron/revdcf/route.ts:65,67`의 정확일치 조인이 08-16 사고(배제율 30.5%)를 만든 그 코드 그대로다(STEP1078 확인, `docs/probe_1017_cron_failure_causes.md` §"2026-08-19 재발 연속 관측"). 08-17·08-18 재발 없음(배제율 0.47%)은 `us_market_cap` 갱신이 최근 정상화된 덕이지 코드가 고쳐져서가 아니다 — **같은 조건이 재현되면 다시 날 수 있다.**
-- **섹터 11일 격차** — `us_sector_wide`·`us_sector_resolved`가 08-08에 멈춰 있고 `us_valuation`은 매일 갱신(`§6-C #65`). 상한 설정은 낱말 정의 문제로 보류 중(`§6-C #50`).
-- **`lens_scores` 41종목 감소 = 못 찾음**(과거 스냅샷 미저장, STEP1078).
-- **㉣ 판별 불가 10개 문서**(생사 미판정, `SITE_MAP_V7` 등 — `§6-C` 대장에 판정 대기 1행으로 등재 예정).
+**미해결(2026-09-05 조사 중 발견, 이번엔 손대지 않음)**:
+- `docs/LENS_DEV_PLAYBOOK.md` 실제 항목수(118+)와 옛 `docs/COMMIT_GATES.md:4`의 "87항목" 표기 불일치 — `.claude/rules/mistakes.md`에 확인 필요로 등재.
+- `/advertise` 광고 지면은 "준비 중" 플레이스홀더뿐(`ad_inquiries` 0행), `brokers`·`link_hub` 화면 소비처(`ToolboxClient`)는 파킹돼 렌더 경로가 없음(`youtube_channels`도 KR만·07-20 이후 미갱신) — 허브 설계 착수 시 이 상태에서 시작한다.
 
 ---
+
+## 🅿️ 아래 ①~③(모델 트랙 시절 기록) — 2026-09-05 동결
+
+> 모델 트랙 전면 폐지로 아래 절들은 더 이상 진행 대상이 아니다. 삭제하지 않고 이력으로 보존한다. 참고가 필요하면 그대로 읽되, "다음에 할 일"로 취급하지 않는다.
 
 ## ① 최우선 확인 대기
 
