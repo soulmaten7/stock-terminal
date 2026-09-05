@@ -58,10 +58,7 @@ export default function Footer() {
           <p className="mb-6 text-sm leading-relaxed text-white/80">
             {t('disclaimer1')}
           </p>
-          <div className="text-sm text-white/60">
-            <p>{t('businessInfo')}</p>
-          </div>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 border-t border-white/10 pt-4 text-center text-sm text-white/70">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-2 text-center text-sm text-white/70">
             <span>&copy; 2026 Trillion. All rights reserved.</span>
             <Link href="/admin/login" className="text-white/65 transition-colors hover:text-white/80">{t('admin')}</Link>
           </div>
