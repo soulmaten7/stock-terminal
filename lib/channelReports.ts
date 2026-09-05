@@ -9,6 +9,7 @@ export type HomeReportItem = {
   broker: string;
   verdict: string | null;
   target_price: string | null;
+  current_price: string | null; // ORDER_트릴리언홈카드가격_0905 — 홈·/reports 카드 우측 표시는 이 값(목표주가 아님)
   report_date: string;
   title: string | null; // ORDER_트릴리언국가확장구조_0905 STEP2 — 채널이 보내는 영상 제목/대표 소제목. NULL이면 미표시.
 };
@@ -28,7 +29,7 @@ export async function getHomeReportFeed({
     const sb = createAdminClient();
     const { data, count, error } = await sb
       .from("channel_reports")
-      .select("symbol, stock_name, broker, verdict, target_price, report_date, title", { count: "exact" })
+      .select("symbol, stock_name, broker, verdict, target_price, current_price, report_date, title", { count: "exact" })
       .eq("country", country)
       .not("symbol", "is", null)
       .order("report_date", { ascending: false })
