@@ -84,13 +84,7 @@ export default function Header() {
             <rect x="69" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
             <rect x="42.5" y="35" width="15" height="43" rx="2.5" fill="#2DD4BF" />
           </svg>
-          <span className="flex flex-col justify-center leading-none">
-            <span className="flex items-baseline gap-2">
-              <span className="text-lg font-bold leading-none tracking-wide text-white">EarthTicker</span>
-              {locale === 'ko' && <span className="hidden text-sm text-white/65 sm:inline">어스티커</span>}
-            </span>
-            <span className="mt-0.5 hidden text-[11px] font-normal leading-none text-white/65 lg:block">{t('tagline')}</span>
-          </span>
+          <span className="text-lg font-bold leading-none tracking-wide text-white">EarthTicker</span>
         </Link>
 
         {/* 네비 탭 */}
