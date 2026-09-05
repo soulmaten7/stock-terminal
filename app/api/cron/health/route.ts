@@ -23,11 +23,10 @@ const CHECKS: Check[] = [
   //   (828이 cron ok:false로도 잡으나 health로도 이중 감시). 임계 80h = 정상 주말(금 마지막→월 재개 ~62~72h)에 여유.
   //   change_date는 상태가 '변한' 종목이 있을 때만 진행 → 주말엔 안 움직이므로 25h가 아니라 80h.
   { name: "상태변화 피드(lens_state_changes)", table: "lens_state_changes", column: "change_date", thresholdH: 80 },
-  { name: "한 입 브리핑(daily-brief)", table: "daily_brief", column: "created_at", thresholdH: 25 },
-  // email-brief·jp-disclosures는 결과 테이블 나이로는 실행 여부를 못 잡음(구독자 0·조용한 주말이면 산출물 미갱신).
-  // → cron_heartbeats에 매 실행 기록한 last_run_at 나이로 감시(STEP 794 §4).
-  { name: "이메일 브리핑(email-brief)", table: "cron_heartbeats", column: "last_run_at", eq: ["job", "email-brief"], thresholdH: 25 },
-  // jp-disclosures 크론은 STEP 806 §6에서 스케줄 제거(소비처 0) → 감시 항목에서도 제거(오탐 방지). 라우트·데이터는 보존.
+  // 2026-09-05(ORDER_트릴리언모델크론정리_0905): daily-brief·email-brief·revdcf 스케줄 제거
+  // (홈 브리핑 화면 호출 이미 끊음·email-brief 구독자 실측 0명·revdcf는 REVDCF_ENABLED/Q1_ENABLED
+  // 플래그 OFF라 화면 어디에도 안 뜸) → 감시 항목에서도 제거(오탐 방지, jp-disclosures 선례와 동일
+  // 처리). 라우트·테이블·lib 함수는 보존 — 재개 시 이 배열에 다시 추가할 것.
 ];
 
 export async function GET(req: Request) {

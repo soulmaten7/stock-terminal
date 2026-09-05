@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useAuthStore } from '@/stores/authStore';
 import { clearCache } from '@/lib/clientCache';
 import { PageShell } from '@/components/layout/PageShell';
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { formatDate } from '@/lib/utils/format';
 import { User, ShieldCheck, Activity as ActivityIcon, Star, AlertTriangle, LogOut, Mail } from 'lucide-react';
 
@@ -15,7 +15,6 @@ type Tab = 'profile' | 'account' | 'activity';
 export default function MyPage() {
   const t = useTranslations('MyPage');
   const tHeader = useTranslations('Header'); // '로그아웃' 재사용(dedup)
-  const locale = useLocale(); // 이메일 opt-in ON 시점 로케일 저장용(STEP 784)
   const router = useRouter();
   const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 마이로 복귀(next)
   const { user, isLoading } = useAuthStore();
@@ -25,13 +24,6 @@ export default function MyPage() {
   const [saveMsg, setSaveMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [watchlistCount, setWatchlistCount] = useState<number | null>(null);
   const [providers, setProviders] = useState<string[]>([]);
-
-  // 이메일 모닝 브리핑 opt-in(STEP 784) — 기본 OFF, 언제든 끌 수 있음.
-  const [emailBrief, setEmailBrief] = useState(false);
-  const [emailBriefLoaded, setEmailBriefLoaded] = useState(false);
-  const [emailBriefSaving, setEmailBriefSaving] = useState(false);
-  const [emailBriefLoadError, setEmailBriefLoadError] = useState(false); // 조회 실패 — OFF로 위장 금지(STEP 804 §5)
-  const [emailBriefMsg, setEmailBriefMsg] = useState<string | null>(null); // 토글 실패 안내
 
   // 비밀번호 변경(계정·보안 탭 — 이메일 로그인 계정만)
   const [newPassword, setNewPassword] = useState('');
@@ -65,30 +57,6 @@ export default function MyPage() {
       const p = (data.user?.app_metadata?.providers as string[] | undefined) ?? [];
       setProviders(p);
     } catch { /* ignore */ }
-    try {
-      const supabase = createClient();
-      const { data, error } = await supabase.from('email_subscriptions').select('daily_brief').eq('user_id', user!.id).maybeSingle();
-      if (error) throw error;
-      setEmailBrief(data?.daily_brief ?? false);
-      setEmailBriefLoadError(false);
-    } catch { setEmailBriefLoadError(true); /* 조회 실패를 '구독 안 함(OFF)'으로 위장하지 않는다(STEP 804 §5) */ }
-    setEmailBriefLoaded(true);
-  };
-
-  // ON=현재 로케일로 upsert(닉네임 변경과 동일하게 RLS 경로로 직접) · OFF=daily_brief만 false.
-  const toggleEmailBrief = async () => {
-    if (!user || emailBriefSaving) return; // 연타 방지(STEP 804 §5)
-    setEmailBriefSaving(true);
-    setEmailBriefMsg(null);
-    const next = !emailBrief;
-    const supabase = createClient();
-    const { error } = await supabase.from('email_subscriptions').upsert(
-      { user_id: user.id, daily_brief: next, locale, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id' }
-    );
-    if (!error) { setEmailBrief(next); setEmailBriefLoadError(false); }
-    else setEmailBriefMsg(t('saveFail')); // 실패 안내(기존엔 조용히 실패)
-    setEmailBriefSaving(false);
   };
 
   const updateNickname = async () => {
@@ -221,25 +189,26 @@ export default function MyPage() {
               </div>
             </div>
 
+            {/* 2026-09-05(ORDER_트릴리언모델크론정리_0905): daily-brief·email-brief 크론 정지로
+                켜도 아무것도 안 오는 상태가 됨 — dividendPaused와 같은 관례(중단 사실을 안내,
+                숨기지 않음)로 토글을 비활성 표시로 바꾼다. 재개 시 토글·상태·핸들러를 되살릴 것
+                (git 이력 참고 — 이 커밋 직전 버전). */}
             <div className="border-t border-unjong-border pt-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="flex items-center gap-1.5 text-sm font-semibold text-unjong-primary"><Mail size={14} />{t('emailBriefTitle')}</p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-unjong-muted">{t('emailBriefDesc')}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-unjong-muted">{t('emailBriefPaused')}</p>
                 </div>
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={emailBrief}
-                  disabled={!emailBriefLoaded || emailBriefSaving}
-                  onClick={toggleEmailBrief}
-                  className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-50 ${emailBrief ? 'bg-unjong-accent' : 'bg-unjong-border'}`}
+                  aria-checked={false}
+                  disabled
+                  className="relative h-6 w-11 shrink-0 rounded-full bg-unjong-border opacity-50"
                 >
-                  <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${emailBrief ? 'translate-x-5' : 'translate-x-0.5'}`} />
+                  <span className="absolute top-0.5 h-5 w-5 translate-x-0.5 rounded-full bg-white" />
                 </button>
               </div>
-              {emailBriefLoadError && <p className="mt-2 text-xs text-unjong-danger">{t('emailBriefLoadError')}</p>}
-              {emailBriefMsg && <p className="mt-2 text-xs text-unjong-danger">{emailBriefMsg}</p>}
             </div>
 
             <div className="border-t border-unjong-border pt-4">
