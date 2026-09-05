@@ -16,6 +16,7 @@ import { WatchStar } from '@/components/common/WatchStar';
 import { PageShell } from '@/components/layout/PageShell';
 import { ReportRow } from '@/components/reports/ReportRow';
 import type { HomeReportFeed } from '@/lib/channelReports';
+import type { OurChannelCard } from '@/lib/ourChannels';
 
 // PC 전용 hover 별(STEP 781 §2) — 탐색 WatchStar 기본값(sm:flex) 위에 평소 투명·행 hover/포커스 시만 표시 추가.
 const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-accent';
@@ -51,6 +52,14 @@ type WatchlistQuote = {
 function pct(v?: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
+}
+// 구독자수 축약 — components/toolbox/YoutubeRanking.tsx의 fmtSubs()와 로직 동일(재사용 대상이나
+// 그 파일은 파킹돼 있어 export/수정 금지 — ORDER_트릴리언채널카드_0905). ko=만·억 / en=K·M 축약.
+const SUBS_COMPACT_FLOOR: Record<string, number> = { ko: 10000, en: 1000 };
+function fmtSubs(n: number, locale: string): string {
+  const floor = SUBS_COMPACT_FLOOR[locale] ?? 10000;
+  if (n < floor) return n.toLocaleString(locale);
+  return new Intl.NumberFormat(locale, { notation: 'compact', maximumFractionDigits: 1 }).format(n);
 }
 function stateLabel(loc: Locale, key: string, state: string | null): string {
   if (!state) return '—';
@@ -114,8 +123,8 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient({ initialKrReports, initialUsReports, initialIndices, dailyBrief, dailyBriefDate = null }: {
-  initialKrReports: HomeReportFeed; initialUsReports: HomeReportFeed; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null;
+export default function TodayClient({ initialKrReports, initialUsReports, initialIndices, dailyBrief, dailyBriefDate = null, ourChannels }: {
+  initialKrReports: HomeReportFeed; initialUsReports: HomeReportFeed; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null; ourChannels: OurChannelCard[];
 }) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
@@ -346,7 +355,38 @@ export default function TodayClient({ initialKrReports, initialUsReports, initia
           ) : null}
         </section>
 
-        {/* 5) 각주 */}
+        {/* 5) 우리 채널 — ORDER_트릴리언채널카드_0905 STEP2: 리포트 피드 다음 행선지로 유튜브 채널 2개 노출 */}
+        <section className="mb-7">
+          <h2 className="mb-2 px-4 text-base font-bold text-unjong-primary sm:px-0">{t('ourChannelsTitle')}</h2>
+          <div className="grid grid-cols-1 gap-3 px-4 sm:grid-cols-2 sm:px-0">
+            {ourChannels.map((c) => (
+              <a
+                key={c.channel_key}
+                href={c.channel_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-2xl border border-unjong-border bg-unjong-surface p-4 transition-colors hover:bg-unjong-background/60"
+              >
+                {c.thumbnail_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={c.thumbnail_url} alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-full" />
+                ) : (
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-unjong-background text-xl">📺</span>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[15px] font-semibold text-unjong-primary sm:text-sm">
+                    {c.channel_key === 'kr' ? '🇰🇷' : '🇺🇸'} {c.title}
+                  </p>
+                  {c.subscriber_count != null ? (
+                    <p className="mt-0.5 text-[13px] text-unjong-muted">{t('subscriberCount', { n: fmtSubs(c.subscriber_count, loc) })}</p>
+                  ) : null}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* 6) 각주 */}
         <p className="px-4 text-[13px] leading-relaxed text-unjong-muted sm:px-0 sm:text-xs">{tMaterial('material')}</p>
     </PageShell>
   );

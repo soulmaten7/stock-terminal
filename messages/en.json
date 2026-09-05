@@ -263,6 +263,7 @@
   },
   "Footer": {
     "tagline": "An eye for stocks — for everyone.",
+    "channelsLabel": "Channels",
     "serviceHeading": "Service",
     "stocksProducts": "Explore",
     "aboutService": "About Trillion",
@@ -660,6 +661,8 @@
     "usReportsTitle": "Today: Earnings Guidance",
     "noReportsYet": "No reports yet",
     "viewMoreReports": "See {n} more reports →",
+    "ourChannelsTitle": "Our Channels",
+    "subscriberCount": "{n} subscribers",
     "noWatchlistChangesToday": "No lens state changes in your watchlist today",
     "lensChangeLine": "{from} → <b>{to}</b>",
     "railMarketTitle": "Markets",

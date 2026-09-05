@@ -263,6 +263,7 @@
   },
   "Footer": {
     "tagline": "종목을 보는 눈을, 누구에게나.",
+    "channelsLabel": "채널",
     "serviceHeading": "서비스",
     "stocksProducts": "탐색",
     "aboutService": "서비스 소개",
@@ -660,6 +661,8 @@
     "usReportsTitle": "오늘의 기업 실적 전망",
     "noReportsYet": "아직 리포트가 없어요",
     "viewMoreReports": "리포트 {n}건 더 보기 →",
+    "ourChannelsTitle": "우리 채널",
+    "subscriberCount": "구독자 {n}명",
     "noWatchlistChangesToday": "오늘은 관심종목 렌즈 상태 변화가 없어요",
     "lensChangeLine": "{from} → <b>{to}</b>",
     "railMarketTitle": "시장",

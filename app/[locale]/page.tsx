@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { getIndices } from "@/lib/indices";
 import { getLatestDailyBrief } from "@/lib/dailyBrief";
 import { getHomeReportFeed } from "@/lib/channelReports";
+import { getOurChannels } from "@/lib/ourChannels";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -75,11 +76,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   // ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화(getTodayChanges) 호출을 홈에서 끊고
   // 리포트 피드(channel_reports)로 교체 — 크론·API 라우트 자체는 이번에 건드리지 않는다.
-  const [krReports, usReports, indices, dailyBrief] = await Promise.all([
+  const [krReports, usReports, indices, dailyBrief, ourChannels] = await Promise.all([
     getHomeReportFeed({ country: "KR", limit: 5 }),
     getHomeReportFeed({ country: "US", limit: 5 }),
     getIndices(),
     getLatestDailyBrief(locale === "en" ? "US" : "KR"),
+    getOurChannels(),
   ]);
   const briefText = locale === "en" ? dailyBrief?.text_en ?? null : dailyBrief?.text_ko ?? null;
   const briefDate = dailyBrief?.brief_date ?? null; // STEP 809 §7: 브리핑 기준일(크론 며칠 실패 시 옛 브리핑을 날짜 없이 붙이던 것 방지)
@@ -91,7 +93,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <TodayClient initialKrReports={krReports} initialUsReports={usReports} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} />
+      <TodayClient initialKrReports={krReports} initialUsReports={usReports} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} ourChannels={ourChannels} />
     </>
   );
 }

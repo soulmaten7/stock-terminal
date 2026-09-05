@@ -14,6 +14,13 @@ export default function Footer() {
               Trillion {locale === 'ko' && <span className="text-sm font-medium text-white/65">트릴리언</span>}
             </p>
             <p className="mt-2 text-sm text-white/70">{t('tagline')}</p>
+            {/* ORDER_트릴리언채널카드_0905 STEP2: 홈 카드와 별개로 상시 접근 가능한 텍스트 링크 */}
+            <p className="mt-3 text-sm text-white/70">
+              {t('channelsLabel')}{' '}
+              <a href="https://www.youtube.com/channel/UC81WH6o_AKDN2NVqBSs3mlg" target="_blank" rel="noopener noreferrer" className="text-white/80 transition-colors hover:text-[#2DD4BF]">스톡스카우터</a>
+              {' · '}
+              <a href="https://www.youtube.com/channel/UC0BirFox7u4vg2iMMwBZZ-Q" target="_blank" rel="noopener noreferrer" className="text-white/80 transition-colors hover:text-[#2DD4BF]">WeTheTicker</a>
+            </p>
           </div>
 
           {/* 서비스 */}
