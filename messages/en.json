@@ -645,13 +645,10 @@
     }
   },
   "Today": {
-    "marketLine": "{index} {pct} yesterday",
-    "briefSectionLabel": "One-bite briefing",
     "asOfDay": "As of {day}",
     "watchlistChangesTitle": "My watchlist — lens changes",
     "viewAllWatchlist": "All watchlist →",
-    "onboardingTitle": "Save stocks to your watchlist and we will surface their changes here every morning",
-    "onboardingCta": "Go search a stock →",
+    "onboardingTitle": "Save stocks to your watchlist",
     "watchlistLoadError": "Could not load your watchlist.",
     "retry": "Retry",
     "selectionBasisLabel": "By value traded · Price · 1d change",

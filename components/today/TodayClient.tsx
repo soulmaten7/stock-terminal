@@ -116,8 +116,8 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient({ initialReportsByCountry, initialIndices, dailyBrief, dailyBriefDate = null, ourChannels }: {
-  initialReportsByCountry: Record<string, HomeReportFeed>; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null; ourChannels: OurChannelCard[];
+export default function TodayClient({ initialReportsByCountry, initialIndices, ourChannels }: {
+  initialReportsByCountry: Record<string, HomeReportFeed>; initialIndices: IndexItem[]; ourChannels: OurChannelCard[];
 }) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
@@ -162,8 +162,6 @@ export default function TodayClient({ initialReportsByCountry, initialIndices, d
     return () => { alive = false; };
   }, [user, authLoading, reloadKey]);
 
-  const homeIndexName = homeMarket === 'KR' ? 'KOSPI' : 'S&P 500';
-  const homeIndex = indices.find((i) => i.name === homeIndexName);
   const formattedDate = new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(new Date());
 
   const quoteMap = new Map((watchlistQuotes ?? []).map((q) => [q.symbol, q]));
@@ -236,76 +234,59 @@ export default function TodayClient({ initialReportsByCountry, initialIndices, d
 
   return (
     <PageShell rail={railNode}>
-        {/* 1) 헤더 — 날짜가 주인공(목업대로·STEP 765b), "오늘" H1·부제 제거(페이지 <title>은 유지) */}
+        {/* 1) 헤더 — 날짜가 주인공(목업대로·STEP 765b), "오늘" H1·부제 제거(페이지 <title>은 유지).
+             ORDER_트릴리언홈히어로정리_0905: 시장 요약 줄(상단 티커·우측 시장 카드와 중복)·한 입
+             브리핑(폐지된 렌즈 모델이 생성한 서술) 제거 — 브리핑 생성 크론·API는 화면 호출만 끊음. */}
         <div className="mb-6 px-4 sm:px-0">
           <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{formattedDate}</h1>
-          {homeIndex ? (
-            <p className="mt-2 text-[15px] font-medium text-unjong-primary sm:text-sm">
-              {t('marketLine', { index: homeIndex.name, pct: pct(homeIndex.changePct) })}
-            </p>
-          ) : null}
         </div>
 
-        {/* 1.5) 한 입 브리핑 — 하루 1회 배치 생성 리드 문단(STEP 778). 없으면 섹션 생략(지어내지 않음). */}
-        {dailyBrief ? (
-          <div className="mb-7 px-4 sm:px-0">
-            <div className="mb-1.5 flex items-center gap-2">
-              <span className="text-[12px] font-semibold text-unjong-muted">{t('briefSectionLabel')}</span>
-              <span className="text-[12px] text-unjong-muted">{tMaterial('briefBadge')}</span>
-              {/* STEP 809 §7: 브리핑이 오늘자가 아니면 기준일 배지(크론 실패 시 옛 브리핑을 날짜 없이 붙이던 것 방지) */}
-              <AsOfBadge date={dailyBriefDate} loc={loc} market={homeMarket} />
-            </div>
-            <p className="text-[15px] leading-7 text-unjong-primary">{dailyBrief}</p>
-          </div>
-        ) : null}
-
-        {/* 2) 내 관심종목 · 렌즈 변화 — 세션 필요라 유일하게 클라 로딩 상태를 가짐 */}
-        <section className="mb-7">
-          {watchlistLoading ? (
+        {/* 2) 내 관심종목 · 렌즈 변화 — 세션 필요라 유일하게 클라 로딩 상태를 가짐. 관심종목이 없는
+             경우의 온보딩 문구는 뺐다(렌즈 변화 알림을 전제한 약속이라 렌즈 폐지 후엔 못 지킴) —
+             그 경우 이 섹션 자체를 생략한다(ORDER_트릴리언홈히어로정리_0905). */}
+        {watchlistLoading ? (
+          <section className="mb-7">
             <div className="space-y-2">
               {Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-14 animate-pulse rounded-xl bg-unjong-background" />)}
             </div>
-          ) : user && watchlistError ? (
-            /* 조회 실패를 온보딩(없음)으로 위장하지 않는다(STEP 804 §4) */
+          </section>
+        ) : user && watchlistError ? (
+          /* 조회 실패를 온보딩(없음)으로 위장하지 않는다(STEP 804 §4) */
+          <section className="mb-7">
             <div className="mx-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center sm:mx-0">
               <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('watchlistLoadError')}</p>
               <button type="button" onClick={() => setReloadKey((k) => k + 1)} className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('retry')}</button>
             </div>
-          ) : !user || !hasWatchlist ? (
-            <div className="mx-4 rounded-2xl border border-unjong-border bg-unjong-surface p-5 text-center sm:mx-0">
-              <p className="text-[15px] font-medium text-unjong-primary sm:text-sm">{t('onboardingTitle')}</p>
-              <Link href="/explore" className="mt-2 inline-block text-[15px] font-semibold text-unjong-accent sm:text-sm">{t('onboardingCta')}</Link>
-            </div>
-          ) : (
-            <>
-              <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
-                <div className="flex items-center">
-                  <h2 className="text-base font-bold text-unjong-primary">{t('watchlistChangesTitle')}</h2>
-                  <AsOfBadge date={watchlistChangesDate} loc={loc} market={homeMarket} />
-                </div>
-                <BasisLabel />
+          </section>
+        ) : hasWatchlist ? (
+          <section className="mb-7">
+            <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
+              <div className="flex items-center">
+                <h2 className="text-base font-bold text-unjong-primary">{t('watchlistChangesTitle')}</h2>
+                <AsOfBadge date={watchlistChangesDate} loc={loc} market={homeMarket} />
               </div>
-              {watchlistChanges.length === 0 ? (
-                <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noWatchlistChangesToday')}</p>
-              ) : (
-                <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-                  {groupBySymbol(watchlistChanges).slice(0, 4).map(({ item, extra }, i) => {
-                    const q = quoteMap.get(item.symbol);
-                    const displayName = q ? resolveWatchlistName(loc, q) : (item.name ?? item.symbol);
-                    return (
-                      <LensChangeRow
-                        key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} extra={extra}
-                        watched={watchSet.has(item.symbol)}
-                        onToggleWatch={() => toggleWatch(item.symbol, displayName, q?.market ?? (q?.country === 'KR' ? 'KRX' : 'US'), q?.country ?? 'US')}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-              <Link href="/favorites" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewAllWatchlist')}</Link>
-            </>
-          )}
-        </section>
+              <BasisLabel />
+            </div>
+            {watchlistChanges.length === 0 ? (
+              <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noWatchlistChangesToday')}</p>
+            ) : (
+              <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
+                {groupBySymbol(watchlistChanges).slice(0, 4).map(({ item, extra }, i) => {
+                  const q = quoteMap.get(item.symbol);
+                  const displayName = q ? resolveWatchlistName(loc, q) : (item.name ?? item.symbol);
+                  return (
+                    <LensChangeRow
+                      key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={q?.changePercent ?? null} displayName={displayName} market={q?.country ?? 'KR'} extra={extra}
+                      watched={watchSet.has(item.symbol)}
+                      onToggleWatch={() => toggleWatch(item.symbol, displayName, q?.market ?? (q?.country === 'KR' ? 'KRX' : 'US'), q?.country ?? 'US')}
+                    />
+                  );
+                })}
+              </div>
+            )}
+            <Link href="/favorites" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewAllWatchlist')}</Link>
+          </section>
+        ) : null}
 
         {/* 3) 국가별 리포트 피드 — REPORT_COUNTRIES를 순회(ORDER_트릴리언국가확장구조_0905 STEP2: 국가
              추가는 lib/constants/reportCountries.ts + messages 국가 블록만으로 끝나야 한다, 컴포넌트 수정 없이). */}
