@@ -24,7 +24,13 @@
   /* 트릴리언(雲從) 브랜드 팔레트 — 다크 플립(STEP 705·2/3단계, 구조색만) */
   --color-unjong-primary: #E9EAEC;
   --color-unjong-strong: #2C303A; /* 어두운 버튼·활성탭 배경 전용 (text-unjong-primary와 역할 분리) */
-  --color-unjong-accent: #2DD4BF;
+  /* 2026-09-06 EarthTicker 컬러 팔레트 갱신: 포인트(링크·주요 강조·로고)를 민트→금색으로.
+     GOLD 값은 채널 style.py의 GOLD(#FFD65A)와 동일 — 범퍼·차트 등 채널 시그니처 색과 통일해
+     채널→플랫폼 이동 시 시각적으로 이어지게 한다. 옛 포인트였던 민트는 지우지 않고
+     unjong-mint로 보조 강조(배지·활성 상태) 역할로 격하 — 전수 사용처 분류는
+     .claude/rules/mistakes.md 또는 커밋 메시지 참고. */
+  --color-unjong-accent: #FFD65A;
+  --color-unjong-mint: #2DD4BF;
   --color-unjong-success: #0E7C7B;
   --color-unjong-danger: #C73E3A;
   --color-unjong-muted: #9CA3AF;

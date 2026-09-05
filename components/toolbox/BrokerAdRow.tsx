@@ -14,9 +14,9 @@ function AdInner({ ad }: { ad: BoardBrokerAd }) {
       href={ad.url}
       target="_blank"
       rel="noopener noreferrer nofollow sponsored"
-      className="flex items-center gap-2.5 px-2 py-2.5 transition-colors hover:bg-unjong-accent/[0.1]"
+      className="flex items-center gap-2.5 px-2 py-2.5 transition-colors hover:bg-unjong-mint/[0.1]"
     >
-      <span className="shrink-0 rounded bg-unjong-accent/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-accent">{t('ad')}</span>
+      <span className="shrink-0 rounded bg-unjong-mint/15 px-1.5 py-0.5 text-[10px] font-bold text-unjong-mint">{t('ad')}</span>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`https://www.google.com/s2/favicons?domain=${ad.domain}&sz=64`}
@@ -40,7 +40,7 @@ export function BrokerAdTr({ locale = 'ko', colSpan = 6 }: { locale?: string; co
   const ad = boardBrokerAd(locale);
   if (!ad) return null;
   return (
-    <tr className="border-b border-unjong-border bg-unjong-accent/[0.05]">
+    <tr className="border-b border-unjong-border bg-unjong-mint/[0.05]">
       <td colSpan={colSpan} className="p-0">
         <AdInner ad={ad} />
       </td>
@@ -52,7 +52,7 @@ export function BrokerAdCard({ locale = 'ko' }: { locale?: string }) {
   const ad = boardBrokerAd(locale);
   if (!ad) return null;
   return (
-    <div className="border-b border-unjong-border bg-unjong-accent/[0.05]">
+    <div className="border-b border-unjong-border bg-unjong-mint/[0.05]">
       <AdInner ad={ad} />
     </div>
   );

@@ -42,7 +42,7 @@ export default async function ReportsPage({
             <Link
               key={rc.code}
               href={`/reports?country=${rc.code}`}
-              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${country === rc.code ? "bg-unjong-accent text-white" : "bg-unjong-surface text-unjong-muted"}`}
+              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${country === rc.code ? "bg-unjong-mint text-unjong-background" : "bg-unjong-surface text-unjong-muted"}`}
             >
               {rc.flag} {t(`countries.${rc.code}.name`)}
             </Link>

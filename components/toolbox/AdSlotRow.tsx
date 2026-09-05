@@ -10,7 +10,7 @@ export default function AdSlotRow({ slot }: { slot: 'broker' | 'room' | 'feed' }
   return (
     <Link
       href={`/advertise?slot=${slot}`}
-      className="flex items-center justify-center gap-0.5 border-b border-unjong-border py-2 text-xs text-unjong-muted transition-colors hover:text-unjong-accent"
+      className="flex items-center justify-center gap-0.5 border-b border-unjong-border py-2 text-xs text-unjong-muted transition-colors hover:text-unjong-mint"
     >
       {t('adInquiry')} <ChevronRight size={12} />
     </Link>

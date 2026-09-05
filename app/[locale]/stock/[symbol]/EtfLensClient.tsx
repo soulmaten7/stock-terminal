@@ -85,7 +85,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
       type="button"
       onClick={toggle}
       aria-label={watched ? tb('watchRemove') : tb('watchAdd')}
-      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-200 ${pop ? 'scale-125' : 'scale-100'} ${watched ? 'text-unjong-accent' : 'text-unjong-muted'}`}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-200 ${pop ? 'scale-125' : 'scale-100'} ${watched ? 'text-unjong-mint' : 'text-unjong-muted'}`}
     >
       <Star size={24} fill={watched ? 'currentColor' : 'none'} />
     </button>
@@ -200,7 +200,7 @@ export default function EtfLensClient({ symbol, initialName }: { symbol: string;
                   <span className="w-16 shrink-0 truncate tabular-nums text-unjong-muted">{h.sym}</span>
                   <span className="min-w-0 flex-1 truncate text-unjong-primary">{h.name}</span>
                   <span className="relative h-1.5 w-20 shrink-0 overflow-hidden rounded-full bg-unjong-background">
-                    <span className="absolute inset-y-0 left-0 rounded-full bg-unjong-accent/60" style={{ width: `${Math.max(6, (h.weight / maxW) * 100)}%` }} />
+                    <span className="absolute inset-y-0 left-0 rounded-full bg-unjong-mint/60" style={{ width: `${Math.max(6, (h.weight / maxW) * 100)}%` }} />
                   </span>
                   <span className="w-14 shrink-0 text-right font-semibold tabular-nums text-unjong-primary">{pct(h.weight)}</span>
                 </li>

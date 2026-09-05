@@ -118,7 +118,7 @@ export default function MyPage() {
   };
 
   if (isLoading || !user) {
-    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-unjong-accent border-t-transparent" /></div>;
+    return <div className="flex min-h-[60vh] items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-unjong-mint border-t-transparent" /></div>;
   }
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
@@ -142,7 +142,7 @@ export default function MyPage() {
             type="button"
             onClick={() => setActiveTab(tab.key)}
             className={`flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm transition-colors ${
-              activeTab === tab.key ? 'border-unjong-accent font-semibold text-unjong-primary' : 'border-transparent text-unjong-muted hover:text-unjong-primary'
+              activeTab === tab.key ? 'border-unjong-mint font-semibold text-unjong-primary' : 'border-transparent text-unjong-muted hover:text-unjong-primary'
             }`}
           >
             {tab.icon}{tab.label}
@@ -158,7 +158,7 @@ export default function MyPage() {
           <div>
             <label className="mb-1 block text-sm text-unjong-muted">{t('nickname')}</label>
             <div className="flex gap-2">
-              <input value={nickname} onChange={(e) => { setNickname(e.target.value); setSaveMsg(null); }} className="flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
+              <input value={nickname} onChange={(e) => { setNickname(e.target.value); setSaveMsg(null); }} className="flex-1 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary outline-none focus:border-unjong-mint" />
               <button type="button" onClick={updateNickname} disabled={saving} className="shrink-0 rounded-lg bg-unjong-strong px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{saving ? t('saving') : t('change')}</button>
             </div>
             {saveMsg ? <p className={`mt-1.5 text-xs ${saveMsg.ok ? 'text-emerald-400' : 'text-red-500'}`}>{saveMsg.text}</p> : null}
@@ -217,11 +217,11 @@ export default function MyPage() {
                 <div className="space-y-2.5">
                   <div>
                     <label className="mb-1 block text-xs text-unjong-muted">{t('fieldNewPassword')} <span className="text-unjong-muted">({t('pwHint')})</span></label>
-                    <input type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setPwMsg(null); }} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" autoComplete="new-password" minLength={8} />
+                    <input type="password" value={newPassword} onChange={(e) => { setNewPassword(e.target.value); setPwMsg(null); }} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint" autoComplete="new-password" minLength={8} />
                   </div>
                   <div>
                     <label className="mb-1 block text-xs text-unjong-muted">{t('fieldNewPasswordConfirm')}</label>
-                    <input type="password" value={newPassword2} onChange={(e) => { setNewPassword2(e.target.value); setPwMsg(null); }} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" autoComplete="new-password" minLength={8} />
+                    <input type="password" value={newPassword2} onChange={(e) => { setNewPassword2(e.target.value); setPwMsg(null); }} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint" autoComplete="new-password" minLength={8} />
                   </div>
                   <button type="button" onClick={changePassword} disabled={pwSaving} className="rounded-lg bg-unjong-strong px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">
                     {pwSaving ? t('pwChanging') : t('pwChangeSubmit')}

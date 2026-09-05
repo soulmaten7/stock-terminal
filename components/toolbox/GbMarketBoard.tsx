@@ -197,8 +197,8 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
   function sortArrow(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
     return sortDir === 'desc'
-      ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />
-      : <ChevronUp size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />;
+      ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-mint" />
+      : <ChevronUp size={14} strokeWidth={2.5} className="shrink-0 text-unjong-mint" />;
   }
   function periodCell(r: Row): number | null | undefined {
     return r[periodField] as number | null | undefined;
@@ -227,7 +227,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(0); }}
                   placeholder={t('search')}
-                  className="w-36 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+                  className="w-36 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-mint"
                 />
                 <button
                   type="button"
@@ -255,9 +255,9 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               placeholder={t('search')}
-              className="w-48 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+              className="w-48 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-mint"
             />
-            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">{t('reset')}</button>}
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-mint">{t('reset')}</button>}
           </div>
         </div>
         <div className="hidden w-96 shrink-0 lg:block" />
@@ -266,13 +266,13 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
       {!loading && sorted.length > 0 ? (
         <div className="mb-3 lg:hidden">
           <div className="flex items-center gap-1.5">
-            <Hand size={13} className="shrink-0 text-unjong-accent" />
+            <Hand size={13} className="shrink-0 text-unjong-mint" />
             <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
           </div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <p className="text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
             <span className="flex shrink-0 items-center gap-1.5 text-[12px] text-unjong-muted">
-              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-mint" />{t('legendPos')}</span>
               <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
               <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
             </span>
@@ -294,14 +294,14 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
             <>
             <div className="mb-1.5 flex items-center justify-between gap-2 border-b border-unjong-border pb-2 sm:hidden">
               {/* 종목명 정렬 진입점은 모바일에서 제거(검색으로 대체·데스크톱 테이블 헤더는 유지·STEP 763b) */}
-              <button type="button" onClick={() => clickHeader('price')} className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-2 text-[14px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}>
+              <button type="button" onClick={() => clickHeader('price')} className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-2 text-[14px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-mint' : 'text-unjong-muted'}`}>
                 {t('colPrice')}{sortArrow('price')}
               </button>
               {/* 기간 드롭다운 — 카드 우측 "1일전 -x.xx%" 열 바로 위(헤더=데이터 열 정렬·STEP 763c) */}
               <span className="inline-flex items-center gap-1">
                 <div ref={periodRefM} className="relative w-[4.75rem]">
                   <button type="button" onClick={() => setPeriodOpenM((o) => !o)} aria-haspopup="listbox" aria-expanded={periodOpenM}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium outline-none hover:bg-unjong-background ${sortKey === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium outline-none hover:bg-unjong-background ${sortKey === period ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}>
                     {t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
                   </button>
@@ -310,7 +310,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                       {PERIODS.map((p) => (
                         <button key={p.key} type="button" role="option" aria-selected={p.key === period}
                           onClick={() => { setPeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpenM(false); }}
-                          className={`flex min-h-11 w-full items-center justify-end whitespace-nowrap px-3 text-right text-[15px] transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
+                          className={`flex min-h-11 w-full items-center justify-end whitespace-nowrap px-3 text-right text-[15px] transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}>
                           {t(p.label)}
                         </button>
                       ))}
@@ -328,14 +328,14 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                   <th className="w-8 py-2.5 pl-2 pr-0.5 text-left font-medium sm:px-2">#</th>
                   <th className="w-full py-2.5 pl-0.5 pr-2 text-left font-medium sm:px-2">
                     <button type="button" onClick={() => clickHeader('name')}
-                      className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-accent' : ''}`}>
+                      className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-mint' : ''}`}>
                       {t('colName')}{sortArrow('name')}
                     </button>
                   </th>
                   <th className="w-[92px] whitespace-nowrap px-2 py-2.5 text-left font-medium sm:px-3">{t('lensCol')}</th>
                   <th className="w-[120px] whitespace-nowrap px-3 py-2.5 text-right font-medium sm:px-4">
                     <button type="button" onClick={() => clickHeader('price')}
-                      className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-accent' : ''}`}>
+                      className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-mint' : ''}`}>
                       {t('colPrice')}{sortArrow('price')}
                     </button>
                   </th>
@@ -343,7 +343,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <span className="inline-flex items-center justify-end gap-1.5">
                       <div ref={periodRef} className="relative w-[4.75rem]">
                         <button type="button" onClick={() => setPeriodOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={periodOpen}
-                          className="flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent">
+                          className="flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-mint">
                           {t(PERIODS.find((p) => p.key === period)?.label ?? 'periodFallback')}
                           <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
                         </button>
@@ -352,7 +352,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                             {PERIODS.map((p) => (
                               <button key={p.key} type="button" role="option" aria-selected={p.key === period}
                                 onClick={() => { setPeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpen(false); }}
-                                className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}>
+                                className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === period ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}>
                                 {t(p.label)}
                               </button>
                             ))}
@@ -389,7 +389,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     <td className="w-9 px-1 py-2.5 text-center">
                       <button type="button" onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                         aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
-                        className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}>
+                        className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-mint' : 'text-unjong-border hover:text-unjong-mint'}`}>
                         <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
                       </button>
                     </td>
@@ -423,7 +423,7 @@ export default function GbMarketBoard({ isLoggedIn = false }: { isLoggedIn?: boo
                     </div>
                     <button type="button" onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                       aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
-                      className={`shrink-0 p-3 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}>
+                      className={`shrink-0 p-3 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-mint' : 'text-unjong-border'}`}>
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>
                   </div>

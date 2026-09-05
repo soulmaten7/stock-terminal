@@ -19,9 +19,9 @@ export default function Footer() {
             {/* ORDER_트릴리언채널카드_0905 STEP2: 홈 카드와 별개로 상시 접근 가능한 텍스트 링크 */}
             <p className="mt-3 text-sm text-white/70">
               {t('channelsLabel')}{' '}
-              <a href="https://www.youtube.com/channel/UC81WH6o_AKDN2NVqBSs3mlg" target="_blank" rel="noopener noreferrer" className="text-white/80 transition-colors hover:text-[#2DD4BF]">스톡스카우터</a>
+              <a href="https://www.youtube.com/channel/UC81WH6o_AKDN2NVqBSs3mlg" target="_blank" rel="noopener noreferrer" className="text-white/80 transition-colors hover:text-[#FFD65A]">스톡스카우터</a>
               {' · '}
-              <a href="https://www.youtube.com/channel/UC0BirFox7u4vg2iMMwBZZ-Q" target="_blank" rel="noopener noreferrer" className="text-white/80 transition-colors hover:text-[#2DD4BF]">WeTheTicker</a>
+              <a href="https://www.youtube.com/channel/UC0BirFox7u4vg2iMMwBZZ-Q" target="_blank" rel="noopener noreferrer" className="text-white/80 transition-colors hover:text-[#FFD65A]">WeTheTicker</a>
             </p>
           </div>
 
@@ -29,7 +29,7 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-bold text-white">{t('serviceHeading')}</h4>
             <ul className="space-y-2">
-              <li><Link href="/about" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('aboutService')}</Link></li>
+              <li><Link href="/about" className="text-sm text-white/80 transition-colors hover:text-[#FFD65A]">{t('aboutService')}</Link></li>
             </ul>
           </div>
 
@@ -37,8 +37,8 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-bold text-white">{t('legalHeading')}</h4>
             <ul className="space-y-2">
-              <li><Link href="/terms" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('terms')}</Link></li>
-              <li><Link href="/privacy" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('privacy')}</Link></li>
+              <li><Link href="/terms" className="text-sm text-white/80 transition-colors hover:text-[#FFD65A]">{t('terms')}</Link></li>
+              <li><Link href="/privacy" className="text-sm text-white/80 transition-colors hover:text-[#FFD65A]">{t('privacy')}</Link></li>
             </ul>
           </div>
 
@@ -46,8 +46,8 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 font-bold text-white">{t('contactHeading')}</h4>
             <ul className="space-y-2 text-sm text-white/80">
-              <li><Link href="/advertise" className="transition-colors hover:text-[#2DD4BF]">{t('adInquiry')}</Link></li>
-              <li>{t('emailLabel')}<a href="mailto:contact@earthticker.app" className="transition-colors hover:text-[#2DD4BF]">contact@earthticker.app</a></li>
+              <li><Link href="/advertise" className="transition-colors hover:text-[#FFD65A]">{t('adInquiry')}</Link></li>
+              <li>{t('emailLabel')}<a href="mailto:contact@earthticker.app" className="transition-colors hover:text-[#FFD65A]">contact@earthticker.app</a></li>
             </ul>
           </div>
         </div>

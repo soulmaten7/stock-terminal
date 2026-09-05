@@ -33,7 +33,7 @@ export default function UsIpoFeed() {
     return (
       <div className="py-8 text-center">
         <p className="text-sm text-unjong-muted">{t("usIpo.empty")}</p>
-        <a href={SRC} target="_blank" rel="noopener noreferrer nofollow" className="mt-1 inline-block text-xs text-unjong-accent">{t("usIpo.direct")}</a>
+        <a href={SRC} target="_blank" rel="noopener noreferrer nofollow" className="mt-1 inline-block text-xs text-unjong-mint">{t("usIpo.direct")}</a>
       </div>
     );
 
@@ -44,7 +44,7 @@ export default function UsIpoFeed() {
   const inner = (it: UsIpoItem) => (
     <>
       <div className="flex items-center justify-between gap-2">
-        <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-unjong-primary group-hover:text-unjong-accent">
+        <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-unjong-primary group-hover:text-unjong-mint">
           {it.name} <span className="text-unjong-muted">{it.ticker}</span>
         </p>
         <span className="shrink-0 text-[11px] font-medium text-unjong-primary">{it.date}</span>

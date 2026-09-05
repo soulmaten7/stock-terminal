@@ -103,7 +103,7 @@ function FilingRow({ group, materialLabel }: { group: { rep: NormalizedFiling; e
   const rep = group.rep;
   const isGroup = group.extra.length > 0;
   const isMaterial = materialLabel !== undefined && items.some((it) => it.material);
-  const dotClass = materialLabel !== undefined ? (isMaterial ? 'bg-unjong-accent' : 'bg-unjong-muted/40') : 'bg-unjong-accent';
+  const dotClass = materialLabel !== undefined ? (isMaterial ? 'bg-unjong-mint' : 'bg-unjong-muted/40') : 'bg-unjong-mint';
   return (
     <li>
       <div className="flex items-start gap-2 rounded-lg border border-unjong-border">
@@ -112,7 +112,7 @@ function FilingRow({ group, materialLabel }: { group: { rep: NormalizedFiling; e
           <div className="min-w-0 flex-1">
             <p className="text-[13px] font-medium leading-snug text-unjong-primary">
               {trimTitle(rep.title)}
-              {isMaterial ? <span className="ml-1.5 rounded bg-unjong-accent/10 px-1 py-0.5 text-[13px] sm:text-[10px] font-semibold text-unjong-accent">{materialLabel}</span> : null}
+              {isMaterial ? <span className="ml-1.5 rounded bg-unjong-mint/10 px-1 py-0.5 text-[13px] sm:text-[10px] font-semibold text-unjong-mint">{materialLabel}</span> : null}
               {isGroup ? <span className="ml-1.5 rounded bg-unjong-background px-1 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{t('events.groupCount', { n: items.length })}</span> : null}
             </p>
             {rep.extraSub ? <p className="mt-0.5 truncate text-[13px] sm:text-[11px] text-unjong-muted">{rep.extraSub}</p> : null}
@@ -570,7 +570,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
       type="button"
       onClick={toggle}
       aria-label={watched ? tb('watchRemove') : tb('watchAdd')}
-      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-200 ${pop ? 'scale-125' : 'scale-100'} ${watched ? 'text-unjong-accent' : 'text-unjong-muted'}`}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center transition-transform duration-200 ${pop ? 'scale-125' : 'scale-100'} ${watched ? 'text-unjong-mint' : 'text-unjong-muted'}`}
     >
       <Star size={24} fill={watched ? 'currentColor' : 'none'} />
     </button>

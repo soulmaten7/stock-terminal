@@ -11,6 +11,6 @@ export default function RevDcfBadge({ verdict, gapYears, lossMaking }: { verdict
   // 🔴 889: value_destroying은 "위험"이 아니라 4개 상태 중 하나 — danger(위험색)를 쓰면 없는 서열을 만든다(888 감사). below_one과 같은 muted.
   if (verdict === "value_destroying") return <span className="rounded px-1.5 py-0.5 text-[11px] font-medium bg-unjong-muted/15 text-unjong-muted">{t("boardBadge.valueDestroying")}</span>;
   if (verdict === "below_one") return <span className="rounded px-1.5 py-0.5 text-[11px] font-medium bg-unjong-muted/15 text-unjong-muted">{t("boardBadge.belowOne")}</span>;
-  if (verdict === "over_cap") return <span className="rounded px-1.5 py-0.5 text-[11px] font-medium bg-unjong-accent/15 text-unjong-accent">{t("boardBadge.overCap")}</span>;
+  if (verdict === "over_cap") return <span className="rounded px-1.5 py-0.5 text-[11px] font-medium bg-unjong-mint/15 text-unjong-mint">{t("boardBadge.overCap")}</span>;
   return <span className="text-unjong-muted">—</span>; // skipped
 }

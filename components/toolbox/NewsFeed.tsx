@@ -76,7 +76,7 @@ export default function NewsFeed({ query, title, country = 'KR' }: { query?: str
           <img src={featured.image} alt="" referrerPolicy="no-referrer" loading="lazy" className="h-32 w-full object-cover sm:h-36" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         ) : null}
         <div className="p-3">
-          <p className="line-clamp-2 text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{featured.title}</p>
+          <p className="line-clamp-2 text-sm font-semibold text-unjong-primary group-hover:text-unjong-mint">{featured.title}</p>
           <p className="mt-1 text-xs text-unjong-muted">{featured.source} · {timeAgo(featured.pubDate, t)}</p>
         </div>
       </a>
@@ -87,7 +87,7 @@ export default function NewsFeed({ query, title, country = 'KR' }: { query?: str
           <li key={i}>
             <a href={n.link} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 border-b border-unjong-border py-2 last:border-0">
               <div className="min-w-0 flex-1">
-                <p className="line-clamp-2 text-sm text-unjong-primary group-hover:text-unjong-accent">{n.title}</p>
+                <p className="line-clamp-2 text-sm text-unjong-primary group-hover:text-unjong-mint">{n.title}</p>
                 <p className="mt-0.5 text-xs text-unjong-muted">{n.source} · {timeAgo(n.pubDate, t)}</p>
               </div>
               <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />

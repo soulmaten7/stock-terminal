@@ -75,7 +75,7 @@ export default function LinkCard({
           type="button"
           onClick={handleFav}
           aria-label={fav ? t('favRemove') : t('favAdd')}
-          className={`transition-colors ${fav ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+          className={`transition-colors ${fav ? 'text-unjong-mint' : 'text-unjong-border hover:text-unjong-mint'}`}
         >
           <Star size={16} fill={fav ? 'currentColor' : 'none'} />
         </button>

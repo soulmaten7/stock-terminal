@@ -185,7 +185,7 @@ export default function LoginPage() {
     }
   };
 
-  const inputClass = "w-full rounded-md border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent";
+  const inputClass = "w-full rounded-md border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-unjong-background p-4">
@@ -229,7 +229,7 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => handleResend(confirmSentEmail)}
                 disabled={loading || resendCooldown > 0}
-                className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-unjong-background disabled:opacity-50"
               >
                 {resendCooldown > 0 ? t('resendCooldown', { s: resendCooldown }) : loading ? t('resending') : t('resendConfirm')}
               </button>
@@ -291,7 +291,7 @@ export default function LoginPage() {
                       type="button"
                       onClick={handleForgotPassword}
                       disabled={loading}
-                      className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                      className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-unjong-background disabled:opacity-50"
                     >
                       {loading ? t('sendingResetEmail') : t('sendResetEmail')}
                     </button>
@@ -323,7 +323,7 @@ export default function LoginPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                      className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-unjong-background disabled:opacity-50"
                     >
                       {loading ? t('loginSubmitting') : t('loginSubmit')}
                     </button>
@@ -346,7 +346,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                    className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-unjong-background disabled:opacity-50"
                   >
                     {loading ? t('signupSubmitting') : t('signupSubmit')}
                   </button>

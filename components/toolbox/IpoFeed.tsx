@@ -33,7 +33,7 @@ export default function IpoFeed() {
     return (
       <div className="py-8 text-center">
         <p className="text-sm text-unjong-muted">{t('ipo.error')}</p>
-        <a href={SRC} target="_blank" rel="noopener noreferrer nofollow" className="mt-1 inline-block text-xs text-unjong-accent">{t('ipo.direct')}</a>
+        <a href={SRC} target="_blank" rel="noopener noreferrer nofollow" className="mt-1 inline-block text-xs text-unjong-mint">{t('ipo.direct')}</a>
       </div>
     );
   }
@@ -45,7 +45,7 @@ export default function IpoFeed() {
         {items.map((it, i) => (
           <a key={`${it.name}${i}`} href={it.link} target="_blank" rel="noopener noreferrer nofollow" className="group block border-b border-unjong-border py-2.5 last:border-0">
             <div className="flex items-center justify-between gap-2">
-              <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-unjong-primary group-hover:text-unjong-accent">{it.name}</p>
+              <p className="min-w-0 flex-1 truncate text-[13px] font-semibold text-unjong-primary group-hover:text-unjong-mint">{it.name}</p>
               <span className="shrink-0 text-[11px] font-medium text-unjong-primary">{it.sub}</span>
             </div>
             <p className="mt-0.5 truncate text-[11px] text-unjong-muted">

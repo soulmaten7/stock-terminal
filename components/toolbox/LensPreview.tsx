@@ -17,7 +17,7 @@ function pctColor(v?: number | null): string {
   return v >= 0 ? 'text-unjong-up' : 'text-unjong-down';
 }
 function gradeBadgeClass(tier: string): string {
-  if (tier === 'strong') return 'bg-unjong-accent/12 text-unjong-success';
+  if (tier === 'strong') return 'bg-unjong-mint/12 text-unjong-success';
   if (tier === 'partial') return 'bg-amber-400/10 text-amber-300';
   return 'bg-unjong-background text-unjong-muted';
 }
@@ -113,7 +113,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
       {etf?.isFund ? (
         <div className={compact ? 'mt-3' : 'mt-3 border-t border-unjong-border pt-3'}>
           <div className="mb-1.5 flex items-center gap-1">
-            <Layers size={12} className="text-unjong-accent" />
+            <Layers size={12} className="text-unjong-mint" />
             <span className="text-[12px] font-semibold text-unjong-primary">{etf.fundType === 'etn' ? t('productInfo') : t('productComposition')}</span>
             <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('notAi')}</span>
           </div>
@@ -143,7 +143,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
             <span className="text-[12px] font-semibold text-unjong-primary">{t('lensTitle')}</span>
           </span>
           <span className="flex items-center gap-2 text-[12px] sm:text-[11px] text-unjong-muted">
-            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{tb('legendPos')}</span>
+            <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-mint" />{tb('legendPos')}</span>
             <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{tb('legendWarn')}</span>
             <span className="flex items-center gap-1"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{tb('legendFlat')}</span>
           </span>
@@ -160,7 +160,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
                 <span className="min-w-0 truncate text-unjong-primary">{l.name}</span>
                 <span className="min-w-0 truncate">
                   {l.verdict?.phrase ? (
-                    <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-accent' : l.verdict.tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
+                    <span className={`font-medium ${l.verdict.tone === 'pos' ? 'text-unjong-mint' : l.verdict.tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted'}`}>{l.verdict.phrase}</span>
                   ) : null}
                 </span>
                 <span className={`justify-self-end whitespace-nowrap rounded px-1 py-0.5 text-[12px] sm:text-[10px] font-medium ${gradeBadgeClass(l.gradeTier)}`}>{l.grade}</span>
@@ -185,8 +185,8 @@ export default function LensPreview({ stock, market, compact = false, example = 
       {briefState !== 'idle' && briefState !== 'error' && (
         <div className="mt-3 border-t border-unjong-border pt-3">
           <div className="mb-1.5 flex items-center gap-1">
-            <Sparkles size={12} className="text-unjong-accent" />
-            <span className="text-[12px] font-semibold text-unjong-accent">{t('briefTitle')}</span>
+            <Sparkles size={12} className="text-unjong-mint" />
+            <span className="text-[12px] font-semibold text-unjong-mint">{t('briefTitle')}</span>
             <span className="ml-auto text-[12px] sm:text-[10px] text-unjong-muted">{t('briefBadge')}</span>
           </div>
           {briefState === 'loading' ? (
@@ -200,7 +200,7 @@ export default function LensPreview({ stock, market, compact = false, example = 
       )}
       <Link
         href={user ? `/stock/${stock.symbol}` : `/auth/login?next=${encodeURIComponent('/stock/' + stock.symbol)}`}
-        className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-accent/10 py-2 text-[12px] font-semibold text-unjong-accent hover:bg-unjong-accent/15"
+        className="mt-3 flex items-center justify-center gap-1 rounded-lg bg-unjong-mint/10 py-2 text-[12px] font-semibold text-unjong-mint hover:bg-unjong-mint/15"
       >
         {etf?.isFund ? (etf.fundType === 'etn' ? t('ctaEtn') : t('ctaEtf')) : t('ctaLens')} →
       </Link>

@@ -14,7 +14,7 @@ export function WatchStar({ symbol, watched, onToggle, className }: {
       type="button"
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(symbol); }}
       aria-label={watched ? t('watchRemove') : t('watchAdd')}
-      className={className ?? `hidden h-11 w-11 shrink-0 items-center justify-center transition-colors sm:flex ${watched ? 'text-unjong-accent' : 'text-unjong-border'}`}
+      className={className ?? `hidden h-11 w-11 shrink-0 items-center justify-center transition-colors sm:flex ${watched ? 'text-unjong-mint' : 'text-unjong-border'}`}
     >
       <Star size={18} fill={watched ? 'currentColor' : 'none'} />
     </button>

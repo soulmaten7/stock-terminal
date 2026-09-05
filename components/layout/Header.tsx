@@ -150,7 +150,7 @@ export default function Header() {
                     lang={l.code}
                     aria-current={l.code === currentLang.code ? 'true' : undefined}
                     className={`flex w-full items-center gap-2 px-4 py-3 text-sm hover:bg-unjong-background ${
-                      l.code === currentLang.code ? 'font-bold text-unjong-accent' : 'text-unjong-primary'
+                      l.code === currentLang.code ? 'font-bold text-unjong-mint' : 'text-unjong-primary'
                     }`}
                   >
                     <span>{l.name}</span>

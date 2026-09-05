@@ -4,15 +4,16 @@ export type Tone = "pos" | "warn" | "flat";
 export type LensScoreRow = Record<string, string | null | undefined>;
 
 // 톤 도트 Tailwind 클래스(강점=민트·주의=앰버·보통=중립) — 단일 소스(STEP 776 §4). 전 사용처가 이 상수만 쓰고 파일별 재선언 금지.
+// 2026-09-06: 배지 성격의 소소한 상태 표시라 accent(금색으로 승격)가 아니라 unjong-mint(구 accent, 보조 강조)를 쓴다.
 export const TONE_DOT_CLASS: Record<Tone, string> = {
-  pos: "bg-unjong-accent",
+  pos: "bg-unjong-mint",
   warn: "bg-amber-400",
   flat: "bg-unjong-muted",
 };
 
 // 톤 텍스트 색 Tailwind 클래스 — 위 도트와 같은 색을 글자에(STEP 777 §4, 전환 문구 도착 상태 강조용).
 export const TONE_TEXT_CLASS: Record<Tone, string> = {
-  pos: "text-unjong-accent",
+  pos: "text-unjong-mint",
   warn: "text-amber-400",
   flat: "text-unjong-muted",
 };

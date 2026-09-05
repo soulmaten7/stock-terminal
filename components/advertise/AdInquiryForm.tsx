@@ -15,7 +15,7 @@ function Field({ label, value, onChange, placeholder, type = 'text' }: { label: 
   return (
     <div>
       <label className="mb-1 block text-xs font-medium text-unjong-muted">{label}</label>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
+      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint" />
     </div>
   );
 }
@@ -74,11 +74,11 @@ export default function AdInquiryForm({ defaultSlot = 'other' }: { defaultSlot?:
       <Field label={t('fieldPhone')} value={phone} onChange={setPhone} placeholder="010-0000-0000" />
       <div>
         <label className="mb-1 block text-xs font-medium text-unjong-muted">{t('fieldMessage')}</label>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={4} placeholder={t('phMessage')} className="w-full resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent" />
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={4} placeholder={t('phMessage')} className="w-full resize-none rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint" />
       </div>
       <p className="text-[11px] leading-relaxed text-unjong-muted">{t('note')}</p>
       {error ? <p className="text-xs text-red-500">{error}</p> : null}
-      <button type="submit" disabled={submitting} className="w-full rounded-lg bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+      <button type="submit" disabled={submitting} className="w-full rounded-lg bg-unjong-accent py-2.5 text-sm font-semibold text-unjong-background disabled:opacity-50">
         {submitting ? t('submitting') : t('submit')}
       </button>
     </form>

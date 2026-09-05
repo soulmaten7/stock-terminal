@@ -17,9 +17,9 @@ import type { OurChannelCard } from '@/lib/ourChannels';
 import { REPORT_COUNTRIES } from '@/lib/constants/reportCountries';
 
 // PC 전용 hover 별(STEP 781 §2) — 탐색 WatchStar 기본값(sm:flex) 위에 평소 투명·행 hover/포커스 시만 표시 추가.
-const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-accent';
+const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-mint';
 function hoverStarClass(watched: boolean): string {
-  return `${HOVER_STAR_CLASS} ${watched ? 'text-unjong-accent' : 'text-unjong-border'}`;
+  return `${HOVER_STAR_CLASS} ${watched ? 'text-unjong-mint' : 'text-unjong-border'}`;
 }
 
 type IndexItem = { name: string; value: string; changeText: string; changePct: number; isUp: boolean; group: string };

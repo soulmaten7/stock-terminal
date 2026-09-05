@@ -61,8 +61,8 @@ export default function FeedbackForm() {
   }
 
   const label = "block text-sm font-semibold text-unjong-primary";
-  const input = "mt-2 w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent";
-  const seg = (active: boolean) => `rounded-lg border px-3 py-2 text-[13px] font-medium transition-colors ${active ? "border-unjong-accent bg-unjong-accent/10 text-unjong-accent" : "border-unjong-border text-unjong-muted hover:bg-unjong-background"}`;
+  const input = "mt-2 w-full rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-mint";
+  const seg = (active: boolean) => `rounded-lg border px-3 py-2 text-[13px] font-medium transition-colors ${active ? "border-unjong-mint bg-unjong-mint/10 text-unjong-mint" : "border-unjong-border text-unjong-muted hover:bg-unjong-background"}`;
 
   return (
     <div className="space-y-6 rounded-2xl border border-unjong-border bg-unjong-surface p-5 sm:p-6">
@@ -103,7 +103,7 @@ export default function FeedbackForm() {
         <label className={label}>{t('rating')}<span className="font-normal text-unjong-muted">{t('ratingOpt')}</span></label>
         <div className="mt-2 flex gap-1">
           {[1, 2, 3, 4, 5].map((n) => (
-            <button key={n} type="button" onClick={() => setRating(n === rating ? 0 : n)} aria-label={t('ratingAria', { n })} className={`text-2xl leading-none transition-colors ${n <= rating ? "text-unjong-accent" : "text-unjong-border hover:text-unjong-muted"}`}>★</button>
+            <button key={n} type="button" onClick={() => setRating(n === rating ? 0 : n)} aria-label={t('ratingAria', { n })} className={`text-2xl leading-none transition-colors ${n <= rating ? "text-unjong-mint" : "text-unjong-border hover:text-unjong-muted"}`}>★</button>
           ))}
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function FeedbackForm() {
 
       {err && <p className="text-sm text-unjong-danger">❌ {err}</p>}
 
-      <button type="button" onClick={submit} disabled={state === "sending"} className="w-full rounded-lg bg-unjong-accent py-3 text-sm font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50">
+      <button type="button" onClick={submit} disabled={state === "sending"} className="w-full rounded-lg bg-unjong-accent py-3 text-sm font-semibold text-unjong-background transition-colors hover:opacity-90 disabled:opacity-50">
         {state === "sending" ? t('sending') : t('submit')}
       </button>
     </div>

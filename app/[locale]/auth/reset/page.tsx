@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
-  const inputClass = "w-full rounded-md border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-accent";
+  const inputClass = "w-full rounded-md border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                className="w-full rounded-md bg-unjong-accent py-2.5 text-sm font-semibold text-unjong-background disabled:opacity-50"
               >
                 {loading ? t('resetSubmitting') : t('resetSubmit')}
               </button>

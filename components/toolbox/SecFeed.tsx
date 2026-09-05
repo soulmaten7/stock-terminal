@@ -56,7 +56,7 @@ export default function SecFeed() {
             <a href={it.link} target="_blank" rel="noopener noreferrer nofollow" className="group flex items-start gap-2 border-b border-unjong-border py-2 last:border-0">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
-                  <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{it.corp}</span>
+                  <span className="truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-mint">{it.corp}</span>
                   {it.cls ? <span className="shrink-0 rounded bg-unjong-background px-1 py-0.5 text-[10px] text-unjong-muted">{it.cls}</span> : null}
                 </div>
                 <p className="line-clamp-2 text-[13px] text-unjong-primary">{it.title}</p>

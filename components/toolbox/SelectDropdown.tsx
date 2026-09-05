@@ -34,7 +34,7 @@ export default function SelectDropdown({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm outline-none focus:border-unjong-accent"
+        className="flex w-full items-center justify-between rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2 text-sm outline-none focus:border-unjong-mint"
       >
         <span className={selected ? 'text-unjong-primary' : 'text-unjong-muted'}>
           {selected ? selected.label : (placeholder ?? t('select'))}

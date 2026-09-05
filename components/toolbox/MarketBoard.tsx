@@ -301,8 +301,8 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
   function sortArrow(k: 'amount' | 'name' | 'price' | PeriodKey) {
     if (sortKey !== k) return <ArrowUpDown size={14} className="shrink-0 text-unjong-muted opacity-60" />;
     return sortDir === 'desc'
-      ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />
-      : <ChevronUp size={14} strokeWidth={2.5} className="shrink-0 text-unjong-accent" />;
+      ? <ChevronDown size={14} strokeWidth={2.5} className="shrink-0 text-unjong-mint" />
+      : <ChevronUp size={14} strokeWidth={2.5} className="shrink-0 text-unjong-mint" />;
   }
 
   function pageNumbers(): (number | '…')[] {
@@ -344,7 +344,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setPage(0); }}
                   placeholder={t('searchKr')}
-                  className="w-36 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+                  className="w-36 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-2.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-mint"
                 />
                 <button
                   type="button"
@@ -372,9 +372,9 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(0); }}
               placeholder={t('searchKr')}
-              className="w-48 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-accent"
+              className="w-48 rounded-lg border border-unjong-border bg-unjong-surface px-3 py-1.5 text-sm text-unjong-primary placeholder:text-unjong-muted outline-none focus:border-unjong-mint"
             />
-            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-accent">{t('reset')}</button>}
+            {search && <button type="button" onClick={() => { setSearch(''); setPage(0); }} className="shrink-0 text-xs text-unjong-muted hover:text-unjong-mint">{t('reset')}</button>}
           </div>
         </div>
         <div className="hidden w-96 shrink-0 lg:block" />
@@ -395,7 +395,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 key={m.key}
                 type="button"
                 onClick={() => setKrMarket(m.key)}
-                className={`rounded px-3 py-1.5 text-[12px] font-semibold transition-colors ${krMarket === m.key ? 'bg-unjong-accent text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
+                className={`rounded px-3 py-1.5 text-[12px] font-semibold transition-colors ${krMarket === m.key ? 'bg-unjong-mint text-white' : 'text-unjong-muted hover:bg-unjong-background'}`}
               >
                 {m.label}
               </button>
@@ -408,13 +408,13 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
       {!loading && sorted.length > 0 ? (
         <div className="mb-3 lg:hidden">
           <div className="flex items-center gap-1.5">
-            <Hand size={13} className="shrink-0 text-unjong-accent" />
+            <Hand size={13} className="shrink-0 text-unjong-mint" />
             <p className="text-[13px] text-unjong-primary">{t('lensHint')}</p>
           </div>
           <div className="mt-1 flex items-center justify-between gap-2">
             <p className="text-[12px] text-unjong-muted">{t('lensHintNote')}</p>
             <span className="flex shrink-0 items-center gap-1.5 text-[12px] text-unjong-muted">
-              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-accent" />{t('legendPos')}</span>
+              <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-mint" />{t('legendPos')}</span>
               <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-amber-400" />{t('legendWarn')}</span>
               <span className="flex items-center gap-0.5"><span className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-muted" />{t('legendFlat')}</span>
             </span>
@@ -459,7 +459,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                             role="option"
                             aria-selected={m === krMarket}
                             onClick={() => { setKrMarket(m); setMarketOpenM(false); }}
-                            className={`flex min-h-11 w-full items-center whitespace-nowrap px-3 text-left text-[15px] transition-colors hover:bg-unjong-background ${m === krMarket ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                            className={`flex min-h-11 w-full items-center whitespace-nowrap px-3 text-left text-[15px] transition-colors hover:bg-unjong-background ${m === krMarket ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}
                           >
                             {t(`krMarket.${m}`)}
                           </button>
@@ -472,7 +472,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                 <button
                   type="button"
                   onClick={() => clickHeader('price')}
-                  className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-2 text-[14px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-accent' : 'text-unjong-muted'}`}
+                  className={`inline-flex min-h-11 shrink-0 items-center gap-0.5 px-2 text-[14px] transition-colors ${sortKey === 'price' ? 'font-bold text-unjong-mint' : 'text-unjong-muted'}`}
                 >
                   {t('colPrice')}{sortArrow('price')}
                 </button>
@@ -485,7 +485,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                     onClick={() => setPeriodOpenM((o) => !o)}
                     aria-haspopup="listbox"
                     aria-expanded={periodOpenM}
-                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium outline-none hover:bg-unjong-background ${sortKey === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                    className={`flex min-h-11 w-full items-center justify-between gap-1 rounded-xl bg-unjong-surface px-3 text-[14px] font-medium outline-none hover:bg-unjong-background ${sortKey === mobilePeriod ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}
                   >
                     {t(PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}
                     <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpenM ? 'rotate-180' : ''}`} />
@@ -499,7 +499,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                           role="option"
                           aria-selected={p.key === mobilePeriod}
                           onClick={() => { setMobilePeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpenM(false); }}
-                          className={`flex min-h-11 w-full items-center justify-end whitespace-nowrap px-3 text-right text-[15px] transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                          className={`flex min-h-11 w-full items-center justify-end whitespace-nowrap px-3 text-right text-[15px] transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}
                         >
                           {t(p.label)}
                         </button>
@@ -522,7 +522,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       onClick={() => clickHeader('name')}
                       aria-label={sortKey === 'name' ? t('sortNameActive', { dir: sortDir === 'desc' ? t('dirDesc') : t('dirAsc') }) : t('sortNameDefault')}
                       title={t('sortNameTitle')}
-                      className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-accent' : ''}`}
+                      className={`inline-flex items-center gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'name' ? 'font-bold text-unjong-mint' : ''}`}
                     >
                       {t('colName')}{sortArrow('name')}
                     </button>
@@ -534,7 +534,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       onClick={() => clickHeader('price')}
                       aria-label={sortKey === 'price' ? t('sortPriceActive', { dir: sortDir === 'desc' ? t('dirDesc') : t('dirAsc') }) : t('sortPriceDefault')}
                       title={t('sortPriceTitle')}
-                      className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-accent' : ''}`}
+                      className={`inline-flex items-center justify-end gap-1 transition-colors hover:text-unjong-primary ${sortKey === 'price' ? 'font-bold text-unjong-mint' : ''}`}
                     >
                       {t('colPrice')}{sortArrow('price')}
                     </button>
@@ -548,7 +548,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                           onClick={() => setPeriodOpen((o) => !o)}
                           aria-haspopup="listbox"
                           aria-expanded={periodOpen}
-                          className="flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-accent"
+                          className="flex w-full items-center justify-between gap-1 rounded border border-unjong-border bg-unjong-surface px-1.5 py-1 text-xs font-medium text-unjong-primary outline-none hover:border-unjong-mint"
                         >
                           {t(DROPDOWN_PERIODS.find((p) => p.key === mobilePeriod)?.label ?? 'periodFallback')}
                           <ChevronDown size={12} className={`shrink-0 text-unjong-muted transition-transform ${periodOpen ? 'rotate-180' : ''}`} />
@@ -562,7 +562,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                                 role="option"
                                 aria-selected={p.key === mobilePeriod}
                                 onClick={() => { setMobilePeriod(p.key); setSortKey(p.key); setSortDir('desc'); setPage(0); setPeriodOpen(false); }}
-                                className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-accent' : 'text-unjong-primary'}`}
+                                className={`block w-full px-3 py-1.5 text-right text-xs transition-colors hover:bg-unjong-background ${p.key === mobilePeriod ? 'font-bold text-unjong-mint' : 'text-unjong-primary'}`}
                               >
                                 {t(p.label)}
                               </button>
@@ -608,7 +608,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                         type="button"
                         onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                         aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
-                        className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border hover:text-unjong-accent'}`}
+                        className={`transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-mint' : 'text-unjong-border hover:text-unjong-mint'}`}
                       >
                         <Star size={14} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} className="mx-auto" />
                       </button>
@@ -647,7 +647,7 @@ export default function MarketBoard({ isLoggedIn = false }: { isLoggedIn?: boole
                       type="button"
                       onClick={(e) => { e.stopPropagation(); toggleWatch(r); }}
                       aria-label={watchSet.has(r.symbol) ? t('watchRemove') : t('watchAdd')}
-                      className={`shrink-0 p-3 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-accent' : 'text-unjong-border'}`}
+                      className={`shrink-0 p-3 transition-colors ${watchSet.has(r.symbol) ? 'text-unjong-mint' : 'text-unjong-border'}`}
                     >
                       <Star size={18} fill={watchSet.has(r.symbol) ? 'currentColor' : 'none'} />
                     </button>

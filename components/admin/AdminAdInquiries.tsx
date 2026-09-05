@@ -94,7 +94,7 @@ export default function AdminAdInquiries({ initial }: { initial: Inquiry[] }) {
                       onClick={() => onStatusClick(q, s.key)}
                       title={s.key === 'contacted' ? '메일 작성 열기 + 연락함 표시' : undefined}
                       className={`flex items-center gap-1 rounded px-2 py-0.5 text-[11px] transition-colors disabled:opacity-50 ${
-                        q.status === s.key ? 'bg-unjong-accent text-white' : 'border border-unjong-border text-unjong-muted hover:text-unjong-primary'
+                        q.status === s.key ? 'bg-unjong-mint text-unjong-background' : 'border border-unjong-border text-unjong-muted hover:text-unjong-primary'
                       }`}
                     >
                       {s.key === 'contacted' ? <Mail size={11} /> : null}
