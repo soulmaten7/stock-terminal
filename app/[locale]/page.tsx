@@ -4,9 +4,9 @@ import HomeIndexStrip from "@/components/layout/HomeIndexStrip";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPathname } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
-import { getTodayChanges } from "@/lib/todayChanges";
 import { getIndices } from "@/lib/indices";
 import { getLatestDailyBrief } from "@/lib/dailyBrief";
+import { getHomeReportFeed } from "@/lib/channelReports";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -73,9 +73,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   setRequestLocale(locale);
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
 
-  const [krChanges, usChanges, indices, dailyBrief] = await Promise.all([
-    getTodayChanges({ market: "KR", limit: 5 }),
-    getTodayChanges({ market: "US", limit: 5 }),
+  // ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화(getTodayChanges) 호출을 홈에서 끊고
+  // 리포트 피드(channel_reports)로 교체 — 크론·API 라우트 자체는 이번에 건드리지 않는다.
+  const [krReports, usReports, indices, dailyBrief] = await Promise.all([
+    getHomeReportFeed({ country: "KR", limit: 5 }),
+    getHomeReportFeed({ country: "US", limit: 5 }),
     getIndices(),
     getLatestDailyBrief(locale === "en" ? "US" : "KR"),
   ]);
@@ -89,7 +91,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd(locale, tMeta('jsonLdDescription'))) }}
       />
       <HomeIndexStrip />
-      <TodayClient initialKrChanges={krChanges} initialUsChanges={usChanges} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} />
+      <TodayClient initialKrReports={krReports} initialUsReports={usReports} initialIndices={indices.items} dailyBrief={briefText} dailyBriefDate={briefDate} />
     </>
   );
 }

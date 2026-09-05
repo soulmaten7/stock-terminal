@@ -4,16 +4,18 @@ import { useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { Link, useRouter, usePathname } from '@/i18n/navigation';
 import { useAuthStore } from '@/stores/authStore';
-import { homeMarketFor, type Country } from '@/stores/countryStore';
+import { homeMarketFor } from '@/stores/countryStore';
 import { LENS_READINGS, compactPhrase, pickLocale, type Locale } from '@/lib/lensCopy';
 import { TONE_DOT_CLASS as TONE_DOT, TONE_TEXT_CLASS, changeColorClass, type Tone } from '@/lib/lensTones';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import { resolveDisplayName, resolveWatchlistName } from '@/lib/displayName';
+import { resolveWatchlistName } from '@/lib/displayName';
 import { groupBySymbol } from '@/lib/groupChanges';
 import { AsOfBadge } from '@/components/ui/AsOfBadge';
 import { WatchStar } from '@/components/common/WatchStar';
 import { PageShell } from '@/components/layout/PageShell';
+import { ReportRow } from '@/components/reports/ReportRow';
+import type { HomeReportFeed } from '@/lib/channelReports';
 
 // PC 전용 hover 별(STEP 781 §2) — 탐색 WatchStar 기본값(sm:flex) 위에 평소 투명·행 hover/포커스 시만 표시 추가.
 const HOVER_STAR_CLASS = 'hidden h-11 w-11 shrink-0 items-center justify-center rounded-lg opacity-0 transition-opacity sm:flex sm:group-hover:opacity-100 sm:focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-unjong-accent';
@@ -72,12 +74,6 @@ function BasisLabel() {
   return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{t('priceChangeBasis')}</span>;
 }
 
-// 간밤 미국·오늘 시장 변화 전용 — 거래대금 정렬 목록이라 선정 기준까지 명시(STEP 772 §2, 관심종목 섹션은 정렬 기준이 없어 BasisLabel 그대로).
-function SelectionBasisLabel() {
-  const t = useTranslations('Today');
-  return <span className="shrink-0 text-[11px] font-medium text-unjong-muted">{t('selectionBasisLabel')}</span>;
-}
-
 function LensChangeRow({
   item, loc, changePercent, displayName, market, extra = 0, watched, onToggleWatch,
 }: {
@@ -118,23 +114,22 @@ function LensChangeRow({
   );
 }
 
-export default function TodayClient({ initialKrChanges, initialUsChanges, initialIndices, dailyBrief, dailyBriefDate = null }: {
-  initialKrChanges: ChangesResp; initialUsChanges: ChangesResp; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null;
+export default function TodayClient({ initialKrReports, initialUsReports, initialIndices, dailyBrief, dailyBriefDate = null }: {
+  initialKrReports: HomeReportFeed; initialUsReports: HomeReportFeed; initialIndices: IndexItem[]; dailyBrief: string | null; dailyBriefDate?: string | null;
 }) {
   const localeRaw = useLocale();
   const loc = pickLocale(localeRaw);
   const t = useTranslations('Today');
   const tMaterial = useTranslations('LensPreview');
-  const tExplore = useTranslations('Explore'); // "상태가 바뀐 종목" 개념명 정본(탐색 섹션 키) 재사용 — 오늘·탐색·풀리스트 3곳 한 이름(STEP 780).
   const { user, isLoading: authLoading } = useAuthStore();
   const homeMarket = homeMarketFor(localeRaw); // 'KR' | 'US'
   const router = useRouter();
   const pathname = usePathname(); // 로케일 무관 경로 — 로그인 후 복귀(next)용
 
-  // 시장 전체(지수·간밤 미국·오늘 시장 변화) = 서버 프리페치(STEP 771 §3) — 클라 fetch 없이 첫 HTML에 바로 포함.
+  // 시장 전체(지수·리포트 피드) = 서버 프리페치(STEP 771 §3 / STEP2 리포트 피드로 교체) — 클라 fetch 없이 첫 HTML에 바로 포함.
   const indices = initialIndices;
-  const usChanges = initialUsChanges;
-  const homeChanges = homeMarket === 'KR' ? initialKrChanges : initialUsChanges;
+  const krReports = initialKrReports;
+  const usReports = initialUsReports;
 
   const [watchlistQuotes, setWatchlistQuotes] = useState<WatchlistQuote[] | null>(null); // null=미조회, []=조회했지만 0
   const [watchlistError, setWatchlistError] = useState(false); // 조회 실패 — 온보딩(없음)과 구분(STEP 804 §4)
@@ -196,12 +191,6 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
   const railNames = homeMarket === 'KR' ? krListForRail : usListForRail;
   const railIndices = railNames.map((n) => indices.find((i) => i.name === n)).filter((x): x is IndexItem => !!x);
 
-  // 종목명 — 공용 util(resolveDisplayName·STEP 775 §3, 오늘·탐색·서버 API 전부 동일 함수. 중복 구현 금지).
-  // market은 Country(6개국) 폭이지만 resolveDisplayName은 KR/그 외(US 취급)만 구분 — 나머지 시장은 현재 이 섹션에 안 옴.
-  function nameFor(item: ChangeItem, market: Country): string {
-    return resolveDisplayName({ loc, market: market === 'KR' ? 'KR' : 'US', symbol: item.symbol, nameKo: item.nameKo, nameEn: item.nameEn, rawName: item.name, context: 'list' });
-  }
-
   // PC 우측 레일(레일 콘텐츠) — PageShell의 rail 슬롯으로 전달. 레일이 <aside>를 그림.
   const railNode = (
     <>
@@ -252,7 +241,6 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           {homeIndex ? (
             <p className="mt-2 text-[15px] font-medium text-unjong-primary sm:text-sm">
               {t('marketLine', { index: homeIndex.name, pct: pct(homeIndex.changePct) })}
-              {homeChanges?.count != null ? <span className="text-unjong-muted"> · {t('changesCount', { n: homeChanges.count })}</span> : null}
             </p>
           ) : null}
         </div>
@@ -318,63 +306,41 @@ export default function TodayClient({ initialKrChanges, initialUsChanges, initia
           )}
         </section>
 
-        {/* 3) 간밤 미국 — en(homeMarket=US)에선 아래 "미국 · 상태 변화" 섹션과 같은 5행이라 완전 중복 → ko만 렌더(STEP 795 §1). */}
-        {homeMarket === 'KR' ? (
+        {/* 3) 오늘의 증권사 리포트(KR) — ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화 → channel_reports 피드로 교체 */}
         <section className="mb-7">
-          <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
-            <div className="flex items-center">
-              <h2 className="text-base font-bold text-unjong-primary">{t('overnightUsTitle')}</h2>
-              <AsOfBadge date={usChanges?.date ?? null} loc={loc} market="US" />
-            </div>
-            <SelectionBasisLabel />
+          <div className="mb-2 flex items-center px-4 sm:px-0">
+            <h2 className="text-base font-bold text-unjong-primary">{t('krReportsTitle')}</h2>
           </div>
-          {usChanges?.failed ? (
-            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('changesLoadError')}</p>
-          ) : (usChanges?.items.length ?? 0) === 0 ? (
-            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
+          {krReports.items.length === 0 ? (
+            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-              {groupBySymbol(usChanges?.items ?? []).slice(0, 5).map(({ item, extra }, i) => (
-                <LensChangeRow
-                  key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, 'US')} market="US" extra={extra}
-                  watched={watchSet.has(item.symbol)}
-                  onToggleWatch={() => toggleWatch(item.symbol, nameFor(item, 'US'), 'US', 'US')}
-                />
+              {krReports.items.map((r, i) => (
+                <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
               ))}
             </div>
           )}
-          {usChanges && usChanges.count != null && usChanges.count > 0 ? (
-            <Link href="/explore?list=changes&market=US" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreUsChanges', { n: usChanges.count })}</Link>
+          {krReports.count > krReports.items.length ? (
+            <Link href="/reports?country=KR" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreReports', { n: krReports.count })}</Link>
           ) : null}
         </section>
-        ) : null}
 
-        {/* 4) 오늘 시장 변화(KR·en이면 US 우선) */}
+        {/* 4) 오늘의 실적 가이던스(US) — 지금은 US 적재 미착수라 0건. 빈 상태만 두고 어댑터가 붙으면 자동으로 채워진다. */}
         <section className="mb-7">
-          <div className="mb-2 flex flex-col gap-1 px-4 sm:flex-row sm:items-center sm:justify-between sm:px-0">
-            <div className="flex items-center">
-              <h2 className="text-base font-bold text-unjong-primary">{tExplore(homeMarket === 'KR' ? 'countryKr' : 'countryUs')} · {tExplore('changesTitle')}</h2>
-              <AsOfBadge date={homeChanges?.date ?? null} loc={loc} market={homeMarket} />
-            </div>
-            <SelectionBasisLabel />
+          <div className="mb-2 flex items-center px-4 sm:px-0">
+            <h2 className="text-base font-bold text-unjong-primary">{t('usReportsTitle')}</h2>
           </div>
-          {homeChanges?.failed ? (
-            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('changesLoadError')}</p>
-          ) : (homeChanges?.items.length ?? 0) === 0 ? (
-            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noChangesToday')}</p>
+          {usReports.items.length === 0 ? (
+            <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
           ) : (
             <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-              {groupBySymbol(homeChanges?.items ?? []).slice(0, 5).map(({ item, extra }, i) => (
-                <LensChangeRow
-                  key={`${item.symbol}-${item.lensKey}-${i}`} item={item} loc={loc} changePercent={item.changePercent} displayName={nameFor(item, homeMarket)} market={homeMarket} extra={extra}
-                  watched={watchSet.has(item.symbol)}
-                  onToggleWatch={() => toggleWatch(item.symbol, nameFor(item, homeMarket), homeMarket === 'KR' ? 'KRX' : 'US', homeMarket)}
-                />
+              {usReports.items.map((r, i) => (
+                <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
               ))}
             </div>
           )}
-          {homeChanges && homeChanges.count != null && homeChanges.count > 0 ? (
-            <Link href={`/explore?list=changes&market=${homeMarket}`} className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreChanges', { n: homeChanges.count })}</Link>
+          {usReports.count > usReports.items.length ? (
+            <Link href="/reports?country=US" className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreReports', { n: usReports.count })}</Link>
           ) : null}
         </section>
 

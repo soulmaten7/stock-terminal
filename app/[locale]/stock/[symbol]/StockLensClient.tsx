@@ -62,9 +62,10 @@ function sevDot(sev: string): string {
 
 // 이벤트 → 렌즈별 플래그 맵. A(근거 흔듦)/B(새 맥락)만, general은 리스트에만.
 
-// ── 공시 카드 정리(STEP 792) — 6개국(KR/JP/GB/CN/VN/US) 공용 원료 ──────────────────────────────
-// 배경: 공시 행이 마운트 즉시 요약 API를 호출해 페이지 로드 시 LLM 호출이 건수만큼(최대 6~7회) 나가고,
-// 요약이 한꺼번에 펼쳐져 텍스트 벽이 됐다. 온디맨드(펼칠 때 1회만)+기본 5건+동일날짜·제목 그룹핑으로 해결.
+// ── 공시 카드(STEP 792 신설 · 2026-09-05 ORDER_트릴리언홈피드로 AI 요약 제거) ──────────
+// 6개국(KR/JP/GB/CN/VN/US) 공용 원료. 목록(제목·날짜·원문 링크)만 보여준다 — 검증된
+// 증권사 리포트 옆에 LLM 생성 요약이 같은 신뢰도로 보이는 걸 막기 위해 AI 요약 블록을
+// 제거했다(요약 API 라우트 자체는 안 지움, 화면 호출만 끊음). 기본 5건+동일날짜·제목 그룹핑은 유지.
 type NormalizedFiling = {
   key: string;
   title: string; // 트림 전 원본 — 표시는 항상 trimTitle() 거침(원본 데이터 자체는 불변)
@@ -73,7 +74,6 @@ type NormalizedFiling = {
   href: string;
   material?: boolean;
   extraSub?: string; // JP reason처럼 제목 아래 보조 한 줄
-  summaryUrl: string | null; // null=요약 불가(원문 식별자 없음 등) → 펼쳐도 조용히 숨김
 };
 
 function trimTitle(s: string): string {
@@ -93,51 +93,13 @@ function groupByKey<T>(items: T[], keyFn: (t: T) => string): { rep: T; extra: T[
   return groups;
 }
 
-type SummaryState = { state: 'idle' | 'loading' | 'done' | 'error'; text: string };
-// 펼칠 때 최초 1회만 fetch — fetchedRef가 재펼침 시 재호출을 막는다(닫아도 이 컴포넌트는 언마운트되지 않음 = 상태 보존).
-function useOnDemandSummaries(urls: (string | null)[], open: boolean): SummaryState[] {
-  const fetchedRef = useRef<boolean[]>(urls.map(() => false));
-  const [states, setStates] = useState<SummaryState[]>(() => urls.map(() => ({ state: 'idle', text: '' })));
-  useEffect(() => {
-    if (!open) return;
-    urls.forEach((url, idx) => {
-      if (fetchedRef.current[idx]) return;
-      fetchedRef.current[idx] = true;
-      if (!url) { setStates((prev) => { const n = [...prev]; n[idx] = { state: 'error', text: '' }; return n; }); return; }
-      setStates((prev) => { const n = [...prev]; n[idx] = { state: 'loading', text: '' }; return n; });
-      fetch(url).then((r) => r.json())
-        .then((j) => { setStates((prev) => { const n = [...prev]; n[idx] = j.summary ? { state: 'done', text: j.summary } : { state: 'error', text: '' }; return n; }); })
-        .catch(() => { setStates((prev) => { const n = [...prev]; n[idx] = { state: 'error', text: '' }; return n; }); });
-    });
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
-  return states;
-}
-
-// 공시 원문 AI 요약 표시 전용 — fetch는 useOnDemandSummaries가 담당, 여긴 상태만 그린다.
-function SummaryBox({ s }: { s: SummaryState }) {
-  const t = useTranslations('StockLens');
-  if (s.state === 'error') return null;
-  return (
-    <div className="mt-1.5 rounded-lg bg-unjong-accent/5 px-2.5 py-2">
-      <div className="mb-1 flex items-center gap-1">
-        <Sparkles size={11} className="text-unjong-accent" />
-        <span className="text-[13px] sm:text-[10px] font-medium text-unjong-accent">{t('ai.summary')}</span>
-        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('ai.fromSource')}</span>
-      </div>
-      {s.state === 'loading' || s.state === 'idle'
-        ? <p className="text-[13px] sm:text-[11px] text-unjong-muted">{t('ai.reading')}</p>
-        : <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-primary">{s.text}</p>}
-    </div>
-  );
-}
-
-// 공시 1행(또는 동일날짜·동일제목 그룹) — 온디맨드 펼침(44px 토글). 링크(제목 영역)와 펼침(토글 버튼)을 형제로 분리해
-// 클릭 충돌 없음. KR/JP/GB/CN/VN 5개국 공용(US는 defs 다중분류 구조가 달라 별도 UsMaterialRow).
+// 공시 1행(또는 동일날짜·동일제목 그룹). AI 요약 제거 후 펼침 토글은 그룹(동일날짜·제목 2건+)일 때만
+// 남긴다 — 개별 원문 링크를 다 보여주기 위해서다(그룹 아니면 펼쳐도 보여줄 게 없어 토글 자체를 안 그림).
+// KR/JP/GB/CN/VN 5개국 공용(US는 defs 다중분류 구조가 달라 별도 UsMaterialRow).
 function FilingRow({ group, materialLabel }: { group: { rep: NormalizedFiling; extra: NormalizedFiling[] }; materialLabel?: string }) {
   const t = useTranslations('StockLens');
   const items = [group.rep, ...group.extra];
   const [open, setOpen] = useState(false);
-  const states = useOnDemandSummaries(items.map((it) => it.summaryUrl), open);
   const rep = group.rep;
   const isGroup = group.extra.length > 0;
   const isMaterial = materialLabel !== undefined && items.some((it) => it.material);
@@ -158,17 +120,18 @@ function FilingRow({ group, materialLabel }: { group: { rep: NormalizedFiling; e
           </div>
           <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
         </a>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t('events.expandAria')} className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted hover:text-unjong-accent">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-        </button>
+        {isGroup ? (
+          <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t('events.expandAria')} className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted hover:text-unjong-accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+        ) : null}
       </div>
-      {open ? (
+      {open && isGroup ? (
         <div className="space-y-1.5 py-1.5 pl-1">
           {items.map((it, idx) => (
-            <div key={it.key}>
-              {isGroup ? <a href={it.href} target="_blank" rel="noopener noreferrer nofollow" className="text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">{t('events.original', { n: idx + 1 })}</a> : null}
-              <SummaryBox s={states[idx]} />
-            </div>
+            <a key={it.key} href={it.href} target="_blank" rel="noopener noreferrer nofollow" className="block text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">
+              {t('events.original', { n: idx + 1 })}
+            </a>
           ))}
         </div>
       ) : null}
@@ -176,7 +139,7 @@ function FilingRow({ group, materialLabel }: { group: { rep: NormalizedFiling; e
   );
 }
 
-// 5개국(KR/JP/GB/CN/VN) 공용 공시 카드 — 기본 5건+더보기, 동일날짜·제목 그룹핑, 요약 온디맨드.
+// 5개국(KR/JP/GB/CN/VN) 공용 공시 카드 — 기본 5건+더보기, 동일날짜·제목 그룹핑(AI 요약 없음).
 function FilingsCard({ titleLabel, srcLabel, noticeNode, footerText, items, materialLabel, emptyNode }: {
   titleLabel: string; srcLabel: string; noticeNode: ReactNode; footerText: string; items: NormalizedFiling[]; materialLabel?: string; emptyNode?: ReactNode;
 }) {
@@ -218,7 +181,6 @@ function FilingsCard({ titleLabel, srcLabel, noticeNode, footerText, items, mate
 type KrEvent = { date: string; report_nm: string; rcept_no: string; url: string };
 function KrEventLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<KrEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -238,7 +200,6 @@ function KrEventLayer({ symbol }: { symbol: string }) {
     date: e.date,
     dateLabel: fmtD(e.date),
     href: e.url,
-    summaryUrl: /^\d{14}$/.test(e.rcept_no) ? '/api/kr-events/summary?' + new URLSearchParams({ rcept: e.rcept_no, symbol, nm: e.report_nm, lang: locale }).toString() : null,
   }));
   return (
     <FilingsCard
@@ -257,7 +218,6 @@ function KrEventLayer({ symbol }: { symbol: string }) {
 type JpEvent = { doc_id: string; title: string; date: string; reason: string | null; material: boolean; type_code: string | null };
 function JpEventLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<JpEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -279,7 +239,6 @@ function JpEventLayer({ symbol }: { symbol: string }) {
     href: `/api/jp-events/doc?docid=${encodeURIComponent(e.doc_id)}`,
     material: e.material,
     extraSub: e.reason ?? undefined,
-    summaryUrl: '/api/jp-events/summary?' + new URLSearchParams({ docid: e.doc_id, symbol, nm: e.title, lang: locale }).toString(),
   }));
   return (
     <FilingsCard
@@ -299,7 +258,6 @@ function JpEventLayer({ symbol }: { symbol: string }) {
 type GbEvent = { id: string; title: string; date: string; time: string; source: string; url: string; material: boolean };
 function GbEventLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<GbEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -319,7 +277,6 @@ function GbEventLayer({ symbol }: { symbol: string }) {
     dateLabel: e.date,
     href: e.url,
     material: e.material,
-    summaryUrl: '/api/gb-events/summary?' + new URLSearchParams({ url: e.url, symbol, nm: e.title, lang: locale }).toString(),
   }));
   return (
     <FilingsCard
@@ -337,7 +294,6 @@ function GbEventLayer({ symbol }: { symbol: string }) {
 type CnEvent = { id: string; title: string; date: string; source: string; url: string; pdf: string; material: boolean };
 function CnEventLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<CnEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -357,7 +313,6 @@ function CnEventLayer({ symbol }: { symbol: string }) {
     dateLabel: e.date,
     href: e.url,
     material: e.material,
-    summaryUrl: e.pdf ? '/api/cn-events/summary?' + new URLSearchParams({ pdf: e.pdf, symbol, nm: e.title, id: e.id, lang: locale }).toString() : null,
   }));
   const srcLabel = events[0]?.source === 'HKEXnews' ? t('events.srcHkex') : t('events.srcCninfo');
   const footerText = events[0]?.source === 'HKEXnews' ? t('events.goHkex') : t('events.goCninfo');
@@ -376,7 +331,6 @@ function CnEventLayer({ symbol }: { symbol: string }) {
 type VnEvent = { id: string; title: string; date: string; source: string; url: string; material: boolean };
 function VnEventLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [events, setEvents] = useState<VnEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
@@ -396,7 +350,6 @@ function VnEventLayer({ symbol }: { symbol: string }) {
     dateLabel: e.date,
     href: e.url,
     material: e.material,
-    summaryUrl: '/api/vn-events/summary?' + new URLSearchParams({ url: e.url, symbol, nm: e.title, id: e.id, lang: locale }).toString(),
   }));
   return (
     <FilingsCard
@@ -453,22 +406,13 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
 }
 
 // 이벤트 사실 레이어 — 최근 중대 8-K(사실만·예측 없음). 렌즈 점수엔 안 섞임.
-// R1: 8-K accession을 SEC 링크에서 추출.
-function accFromLink(link: string): string {
-  const m = link.match(/edgar\/data\/\d+\/([^/]+)\//);
-  return m ? m[1] : '';
-}
-
 // US 중대 이벤트(material) 1행(또는 동일날짜·동일라벨 그룹) — FilingRow의 US 짝. defs 다중분류(severity·item 배지·"왜")
-// 구조가 5개국 공용 NormalizedFiling과 달라 별도 컴포넌트지만, 온디맨드 요약(useOnDemandSummaries)·SummaryBox·
-// trimTitle·그룹 배지는 그대로 공유한다(STEP 792 — "추출이 위험하면 6벌 동일 수정" 조항에 따른 절충).
-function UsMaterialRow({ group, symbol, locale }: { group: { rep: MatEvent; extra: MatEvent[] }; symbol: string; locale: string }) {
+// 구조가 5개국 공용 NormalizedFiling과 달라 별도 컴포넌트지만, trimTitle·그룹 배지는 그대로 공유한다
+// (STEP 792 — "추출이 위험하면 6벌 동일 수정" 조항에 따른 절충. 2026-09-05 AI 요약 제거로 온디맨드 fetch는 없앰).
+function UsMaterialRow({ group }: { group: { rep: MatEvent; extra: MatEvent[] } }) {
   const t = useTranslations('StockLens');
   const items = [group.rep, ...group.extra];
   const [open, setOpen] = useState(false);
-  const buildUrl = (e: MatEvent): string | null =>
-    accFromLink(e.link) ? '/api/events/summary?' + new URLSearchParams({ symbol, link: e.link, items: e.items.join(','), lang: locale }).toString() : null;
-  const states = useOnDemandSummaries(items.map(buildUrl), open);
   const rep = group.rep;
   const d = rep.defs[0];
   if (!d) return null;
@@ -490,17 +434,18 @@ function UsMaterialRow({ group, symbol, locale }: { group: { rep: MatEvent; extr
           </div>
           <ExternalLink size={12} className="mt-1 shrink-0 text-unjong-muted opacity-0 transition-opacity group-hover:opacity-100" />
         </a>
-        <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t('events.expandAria')} className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted hover:text-unjong-accent">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-        </button>
+        {isGroup ? (
+          <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-label={t('events.expandAria')} className="flex h-11 w-11 shrink-0 items-center justify-center text-unjong-muted hover:text-unjong-accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+          </button>
+        ) : null}
       </div>
-      {open ? (
+      {open && isGroup ? (
         <div className="space-y-1.5 py-1.5 pl-1">
           {items.map((e, idx) => (
-            <div key={e.link + idx}>
-              {isGroup ? <a href={e.link} target="_blank" rel="noopener noreferrer nofollow" className="text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">{t('events.original', { n: idx + 1 })}</a> : null}
-              <SummaryBox s={states[idx]} />
-            </div>
+            <a key={e.link + idx} href={e.link} target="_blank" rel="noopener noreferrer nofollow" className="block text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">
+              {t('events.original', { n: idx + 1 })}
+            </a>
           ))}
         </div>
       ) : null}
@@ -508,9 +453,9 @@ function UsMaterialRow({ group, symbol, locale }: { group: { rep: MatEvent; extr
   );
 }
 
-function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) {
+// symbol은 더 이상 안 쓴다(AI 요약 URL 생성용이었음) — 형제 *EventLayer들과 호출부 인터페이스만 맞춘다.
+function EventLayer({ events }: { events: MatEvent[]; symbol?: string }) {
   const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 공시요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [showRoutine, setShowRoutine] = useState(false);
   const [expandedMaterial, setExpandedMaterial] = useState(false);
   if (!events.length) return null;
@@ -556,7 +501,7 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
       <p className="mt-0.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('events.notReflected', { b: (c) => <b className="text-unjong-primary">{c}</b> })}</p>
       {material.length ? (
         <>
-          <ul className="mt-2.5 space-y-1.5">{visibleMaterialGroups.map((g) => <UsMaterialRow key={g.rep.link} group={g} symbol={symbol} locale={locale} />)}</ul>
+          <ul className="mt-2.5 space-y-1.5">{visibleMaterialGroups.map((g) => <UsMaterialRow key={g.rep.link} group={g} />)}</ul>
           {!expandedMaterial && remainingMaterial > 0 ? (
             <button type="button" onClick={() => setExpandedMaterial(true)} className="mt-2 text-[13px] sm:text-[11px] font-medium text-unjong-accent hover:underline">
               {t('events.showMore', { n: remainingMaterial })}

@@ -583,11 +583,6 @@
     "disclaimer": "This is product information and is the same wherever you trade. Not a buy or sell signal — material for you to judge for yourself."
   },
   "StockLens": {
-    "ai": {
-      "summary": "AI summary",
-      "fromSource": "Source-based",
-      "reading": "Reading the original…"
-    },
     "events": {
       "notReflected": "This is a recently filed disclosure.",
       "notReflectedNews": "This is recent news or an event.",
@@ -621,7 +616,7 @@
       "showMore": "See {n} more →",
       "groupCount": "{n} filings",
       "original": "Source {n} →",
-      "expandAria": "Expand AI summary"
+      "expandAria": "Expand source links"
     },
     "newsBrief": {
       "title": "Recent news",
@@ -648,7 +643,6 @@
   },
   "Today": {
     "marketLine": "{index} {pct} yesterday",
-    "changesCount": "{n} lens state changes",
     "briefSectionLabel": "One-bite briefing",
     "asOfDay": "As of {day}",
     "watchlistChangesTitle": "My watchlist — lens changes",
@@ -657,12 +651,11 @@
     "onboardingCta": "Go search a stock →",
     "watchlistLoadError": "Could not load your watchlist.",
     "retry": "Retry",
-    "overnightUsTitle": "Overnight in the US",
     "selectionBasisLabel": "By value traded · Price · 1d change",
-    "viewMoreChanges": "See {n} more changes →",
-    "viewMoreUsChanges": "See {n} more US changes →",
-    "noChangesToday": "No lens state changes today",
-    "changesLoadError": "Could not load changes.",
+    "krReportsTitle": "Today: Broker Reports",
+    "usReportsTitle": "Today: Earnings Guidance",
+    "noReportsYet": "No reports yet",
+    "viewMoreReports": "See {n} more reports →",
     "noWatchlistChangesToday": "No lens state changes in your watchlist today",
     "lensChangeLine": "{from} → <b>{to}</b>",
     "railMarketTitle": "Markets",

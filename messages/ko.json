@@ -583,11 +583,6 @@
     "disclaimer": "상품 정보이며 어디서 거래하든 동일합니다. 사고팔 신호가 아니라 스스로 판단할 재료예요."
   },
   "StockLens": {
-    "ai": {
-      "summary": "AI 요약",
-      "fromSource": "원문 기반",
-      "reading": "원문 읽는 중…"
-    },
     "events": {
       "notReflected": "최근 등록된 공시예요.",
       "notReflectedNews": "최근 등록된 뉴스·이벤트예요.",
@@ -621,7 +616,7 @@
       "showMore": "{n}건 더 보기 →",
       "groupCount": "{n}건",
       "original": "원문 {n} →",
-      "expandAria": "AI 요약 펼치기"
+      "expandAria": "원문 링크 펼치기"
     },
     "newsBrief": {
       "title": "최근 뉴스",
@@ -648,7 +643,6 @@
   },
   "Today": {
     "marketLine": "어제 {index} {pct}",
-    "changesCount": "렌즈 상태 변화 {n}건",
     "briefSectionLabel": "한 입 브리핑",
     "asOfDay": "{day} 기준",
     "watchlistChangesTitle": "내 관심종목 · 렌즈 변화",
@@ -657,12 +651,11 @@
     "onboardingCta": "종목 검색하러 가기 →",
     "watchlistLoadError": "관심종목을 불러오지 못했어요.",
     "retry": "다시 시도",
-    "overnightUsTitle": "간밤 미국",
     "selectionBasisLabel": "거래대금 순 · 현재가 · 어제 등락",
-    "viewMoreChanges": "변화 {n}건 더 보기 →",
-    "viewMoreUsChanges": "미국 변화 {n}건 더 보기 →",
-    "noChangesToday": "오늘은 렌즈 상태 변화가 없어요",
-    "changesLoadError": "변화를 불러오지 못했어요.",
+    "krReportsTitle": "오늘의 증권사 리포트",
+    "usReportsTitle": "오늘의 실적 가이던스",
+    "noReportsYet": "아직 리포트가 없어요",
+    "viewMoreReports": "리포트 {n}건 더 보기 →",
     "noWatchlistChangesToday": "오늘은 관심종목 렌즈 상태 변화가 없어요",
     "lensChangeLine": "{from} → <b>{to}</b>",
     "railMarketTitle": "시장",
