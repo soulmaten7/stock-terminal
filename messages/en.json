@@ -172,7 +172,7 @@
   },
   "Favorites": {
     "title": "Watchlist",
-    "desc": "See your starred stocks through the lenses.",
+    "desc": "See your watchlist and prices at a glance.",
     "links": "Links",
     "loading": "Loading…",
     "loginLink": "Sign in →",
@@ -624,8 +624,6 @@
   },
   "Today": {
     "asOfDay": "As of {day}",
-    "watchlistChangesTitle": "My watchlist — lens changes",
-    "viewAllWatchlist": "All watchlist →",
     "onboardingTitle": "Save stocks to your watchlist",
     "watchlistLoadError": "Could not load your watchlist.",
     "retry": "Retry",
@@ -644,8 +642,6 @@
     "noReportsYet": "No reports yet",
     "viewMoreReports": "See {n} more reports →",
     "ourChannelsTitle": "Our Channels",
-    "noWatchlistChangesToday": "No lens state changes in your watchlist today",
-    "lensChangeLine": "{from} → <b>{to}</b>",
     "railMarketTitle": "Markets",
     "railWatchlistTitle": "My watchlist",
     "railWatchlistLogin": "Log in to see your watchlist",

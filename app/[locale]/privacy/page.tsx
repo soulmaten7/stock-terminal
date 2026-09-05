@@ -7,7 +7,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
     body: [
       "소셜 로그인(구글) 시: 이메일 주소, 프로필 정보(닉네임, 프로필 이미지).",
       "이메일 회원가입 시: 이메일 주소, 비밀번호(암호화 저장·원문 미보관), 닉네임.",
-      "서비스 이용 과정에서 생성: 닉네임, 즐겨찾기 내역, 리딩방 신고·업체 인증 내역, 접속 로그·쿠키.",
+      "서비스 이용 과정에서 생성: 닉네임, 관심종목 등록 내역, 접속 로그·쿠키.",
       "유료 기능 이용 시(향후): 결제 내역. 현재 유료 결제는 운영하지 않습니다.",
     ],
   },
@@ -15,8 +15,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
     h: "2. 개인정보의 수집·이용 목적",
     body: [
       "회원 식별 및 로그인 상태 유지.",
-      "즐겨찾기·관심목록 등 개인화 기능 제공.",
-      "리딩방 신고·업체 인증의 접수·검토·처리 및 부정·악용 방지.",
+      "관심종목 등록 등 개인화 기능 제공.",
       "서비스 운영·개선 및 문의 응대.",
     ],
   },
@@ -85,7 +84,7 @@ export default function PrivacyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
       <h1 className="mb-1 text-2xl font-bold text-unjong-primary">개인정보처리방침</h1>
-      <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-07-11</p>
+      <p className="mb-8 text-sm text-unjong-muted">시행일: 2026-09-05</p>
 
       <p className="mb-8 text-sm leading-relaxed text-unjong-muted">
         트릴리언(이하 &lsquo;서비스&rsquo;)은 이용자의 개인정보를 중요하게 생각하며,

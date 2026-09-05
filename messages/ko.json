@@ -172,7 +172,7 @@
   },
   "Favorites": {
     "title": "관심종목",
-    "desc": "관심종목을 렌즈로 한눈에 봐요.",
+    "desc": "관심종목을 담아 가격을 한눈에 봐요.",
     "links": "링크",
     "loading": "불러오는 중…",
     "loginLink": "로그인 →",
@@ -624,8 +624,6 @@
   },
   "Today": {
     "asOfDay": "{day} 기준",
-    "watchlistChangesTitle": "내 관심종목 · 렌즈 변화",
-    "viewAllWatchlist": "관심종목 전체 →",
     "onboardingTitle": "관심종목을 담아보세요",
     "watchlistLoadError": "관심종목을 불러오지 못했어요.",
     "retry": "다시 시도",
@@ -644,8 +642,6 @@
     "noReportsYet": "아직 리포트가 없어요",
     "viewMoreReports": "리포트 {n}건 더 보기 →",
     "ourChannelsTitle": "우리 채널",
-    "noWatchlistChangesToday": "오늘은 관심종목 렌즈 상태 변화가 없어요",
-    "lensChangeLine": "{from} → <b>{to}</b>",
     "railMarketTitle": "시장",
     "railWatchlistTitle": "내 관심종목",
     "railWatchlistLogin": "로그인하면 관심종목을 볼 수 있어요",
