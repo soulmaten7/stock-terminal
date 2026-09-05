@@ -636,6 +636,14 @@
     "reportComingSoonDesc": "Channel reports covering this stock will be added here in chronological order soon.",
     "horizon": {
       "title": "At a glance, over time"
+    },
+    "reports": {
+      "title": "Reports",
+      "currentPrice": "Current price",
+      "targetPrice": "Target price",
+      "upside": "Upside",
+      "brokerAverage": "Analyst consensus target",
+      "reasonsLabel": "Reasons"
     }
   },
   "Today": {

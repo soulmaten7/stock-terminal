@@ -632,6 +632,91 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
   );
 }
 
+// 🔴 2026-09-05(ORDER_트릴리언리포트렌더): channel_reports를 symbol로 읽어 시간순 카드로 쌓는다.
+// 디자인 최소 — 새 색·레이아웃 발명 없이 기존 다크 토큰만 재사용. verdict·가격은 landing.json 원문 문자열
+// 그대로 출력(파싱·재계산 금지) — API가 이미 report_date desc로 정렬해서 준다.
+type ChannelReport = {
+  report_date: string;
+  broker: string;
+  verdict: string | null;
+  target_price: string | null;
+  current_price: string | null;
+  upside: string | null;
+  reasons: { title: string; detail?: string }[] | null;
+  earnings_summary: string | null;
+  broker_average: string | null;
+};
+
+function verdictClass(v: string | null): string {
+  if (v === '상향') return 'text-unjong-up';
+  if (v === '하향') return 'text-unjong-down';
+  return 'text-unjong-primary';
+}
+
+function ReportLayer({ symbol }: { symbol: string }) {
+  const t = useTranslations('StockLens');
+  const [reports, setReports] = useState<ChannelReport[] | null>(null);
+
+  useEffect(() => {
+    if (!symbol) return;
+    let alive = true;
+    fetch('/api/channel-reports?symbol=' + encodeURIComponent(symbol))
+      .then((r) => r.json())
+      .then((j) => { if (alive) setReports(j.reports ?? []); })
+      .catch(() => { if (alive) setReports([]); });
+    return () => { alive = false; };
+  }, [symbol]);
+
+  if (reports === null) return null; // 로딩 중 — 최소 디자인이라 스켈레톤 생략(깜빡임 방지 목적만)
+
+  if (reports.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-unjong-border bg-unjong-surface/50 p-6 text-center">
+        <p className="text-sm font-medium text-unjong-primary">{t('reportComingSoon')}</p>
+        <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{t('reportComingSoonDesc')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <h2 className="text-sm font-bold text-unjong-primary">{t('reports.title')}</h2>
+      {reports.map((r, i) => (
+        <div key={i} className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>
+            {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{r.verdict}</span> : null}
+          </div>
+          {r.current_price || r.target_price || r.upside ? (
+            <p className="mt-2 text-[13px] tabular-nums text-unjong-muted">
+              {r.current_price ? <>{t('reports.currentPrice')} {r.current_price}</> : null}
+              {r.target_price ? <>{r.current_price ? ' · ' : ''}{t('reports.targetPrice')} {r.target_price}</> : null}
+              {r.upside ? <>{(r.current_price || r.target_price) ? ' · ' : ''}{t('reports.upside')} {r.upside}</> : null}
+            </p>
+          ) : null}
+          {r.broker_average ? (
+            <p className="mt-1 text-[13px] text-unjong-muted">{t('reports.brokerAverage')} {r.broker_average}</p>
+          ) : null}
+          {r.reasons?.length ? (
+            <div className="mt-3 space-y-1.5">
+              <p className="text-[13px] font-semibold text-unjong-primary">{t('reports.reasonsLabel')}</p>
+              {r.reasons.map((reason, ri) => (
+                <div key={ri}>
+                  <p className="text-[13px] font-medium text-unjong-primary">{ri + 1}. {reason.title}</p>
+                  {reason.detail ? <p className="text-[13px] leading-relaxed text-unjong-muted">{reason.detail}</p> : null}
+                </div>
+              ))}
+            </div>
+          ) : null}
+          {r.earnings_summary ? (
+            <p className="mt-3 border-t border-unjong-border pt-2.5 text-[13px] leading-relaxed text-unjong-muted">{r.earnings_summary}</p>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function StockLensClient({ initialName }: { initialName?: string }) {
   const t = useTranslations('StockLens');
   const locale = pickLocale(useLocale()); // 가격 포맷·번역 언어(?lang=) — 안 넘기면 en 화면에 한국어가 온다
@@ -701,12 +786,9 @@ export default function StockLensClient({ initialName }: { initialName?: string 
         </div>
       </div>
 
-      {/* 🔴 2026-09-05: 리포트 자리 — 채널 리포트가 국가별 시간순으로 쌓일 빈 그릇(ORDER_트릴리언종목페이지비우기_0905) */}
+      {/* 🔴 2026-09-05: 리포트 레이어 — channel_reports를 symbol로 읽어 시간순 카드로(ORDER_트릴리언리포트렌더_0905) */}
       <div className="mt-4 max-w-4xl">
-        <div className="rounded-2xl border border-dashed border-unjong-border bg-unjong-surface/50 p-6 text-center">
-          <p className="text-sm font-medium text-unjong-primary">{t('reportComingSoon')}</p>
-          <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{t('reportComingSoonDesc')}</p>
-        </div>
+        <ReportLayer symbol={symbol} />
       </div>
 
       <div className="mt-4 max-w-4xl">
