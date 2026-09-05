@@ -658,12 +658,12 @@
     "countries": {
       "KR": {
         "name": "한국 주식",
-        "reportsTitle": "오늘의 증권사 리포트",
+        "reportsTitle": "최신 증권사 리포트",
         "channelDescription": "한국 증권가 리포트 채널"
       },
       "US": {
         "name": "미국 주식",
-        "reportsTitle": "오늘의 기업 실적 전망",
+        "reportsTitle": "최신 기업 실적 전망",
         "channelDescription": "미국 실적 가이던스 채널"
       }
     },

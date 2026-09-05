@@ -658,12 +658,12 @@
     "countries": {
       "KR": {
         "name": "Korean Stocks",
-        "reportsTitle": "Today: Broker Reports",
+        "reportsTitle": "Latest Broker Reports",
         "channelDescription": "Korean broker reports, daily"
       },
       "US": {
         "name": "US Stocks",
-        "reportsTitle": "Today: Earnings Guidance",
+        "reportsTitle": "Latest Earnings Guidance",
         "channelDescription": "US earnings guidance, daily"
       }
     },
