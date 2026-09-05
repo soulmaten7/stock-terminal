@@ -598,9 +598,47 @@ function verdictClass(v: string | null): string {
   return 'text-unjong-primary';
 }
 
+// 리포트 상세 본문(이유 전체·실적 전망) — 최신 1건은 항상 펼침, 과거 건은 클릭해야 같은 수준으로 펼쳐진다
+// (2026-09-05 ORDER_트릴리언리포트상세화 STEP1: 요약 카드였던 걸 "텍스트로 가장 깊게 읽는 곳"으로).
+function ReportDetail({ r }: { r: ChannelReport }) {
+  const t = useTranslations('StockLens');
+  return (
+    <>
+      {r.current_price || r.target_price || r.upside ? (
+        <p className="mt-2 text-[13px] tabular-nums text-unjong-muted">
+          {r.current_price ? <>{t('reports.currentPrice')} {r.current_price}</> : null}
+          {r.target_price ? <>{r.current_price ? ' · ' : ''}{t('reports.targetPrice')} {r.target_price}</> : null}
+          {r.upside ? <>{(r.current_price || r.target_price) ? ' · ' : ''}{t('reports.upside')} {r.upside}</> : null}
+        </p>
+      ) : null}
+      {r.broker_average ? (
+        <p className="mt-1 text-[13px] text-unjong-muted">{t('reports.brokerAverage')} {r.broker_average}</p>
+      ) : null}
+      {r.reasons?.length ? (
+        <div className="mt-3 space-y-1.5">
+          <p className="text-[13px] font-semibold text-unjong-primary">{t('reports.reasonsLabel')}</p>
+          {r.reasons.map((reason, ri) => (
+            <div key={ri}>
+              <p className="text-[13px] font-medium text-unjong-primary">{ri + 1}. {reason.title}</p>
+              {reason.detail ? <p className="text-[13px] leading-relaxed text-unjong-muted">{reason.detail}</p> : null}
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {r.earnings_summary ? (
+        <div className="mt-3 border-t border-unjong-border pt-2.5">
+          <p className="text-[13px] font-semibold text-unjong-primary">{t('reports.earningsSummaryLabel')}</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{r.earnings_summary}</p>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function ReportLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
   const [reports, setReports] = useState<ChannelReport[] | null>(null);
+  const [expanded, setExpanded] = useState<Set<number>>(new Set()); // 최신(index 0)은 항상 펼침 — 여긴 과거 건만 담는다
 
   useEffect(() => {
     if (!symbol) return;
@@ -626,38 +664,36 @@ function ReportLayer({ symbol }: { symbol: string }) {
   return (
     <div className="space-y-3">
       <h2 className="text-sm font-bold text-unjong-primary">{t('reports.title')}</h2>
-      {reports.map((r, i) => (
-        <div key={i} className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
-          <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>
-            {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{r.verdict}</span> : null}
+      {reports.map((r, i) => {
+        const isLatest = i === 0;
+        const isOpen = isLatest || expanded.has(i);
+        return (
+          <div key={i} className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+            {isLatest ? (
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>
+                {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{r.verdict}</span> : null}
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setExpanded((prev) => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n; })}
+                aria-expanded={isOpen}
+                aria-label={t('reports.expandAria')}
+                className="flex w-full flex-wrap items-baseline justify-between gap-2 text-left"
+              >
+                <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>
+                <span className="flex items-center gap-2">
+                  {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{r.verdict}</span> : null}
+                  {r.target_price ? <span className="text-[13px] tabular-nums text-unjong-muted">{r.target_price}</span> : null}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 text-unjong-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
+                </span>
+              </button>
+            )}
+            {isOpen ? <ReportDetail r={r} /> : null}
           </div>
-          {r.current_price || r.target_price || r.upside ? (
-            <p className="mt-2 text-[13px] tabular-nums text-unjong-muted">
-              {r.current_price ? <>{t('reports.currentPrice')} {r.current_price}</> : null}
-              {r.target_price ? <>{r.current_price ? ' · ' : ''}{t('reports.targetPrice')} {r.target_price}</> : null}
-              {r.upside ? <>{(r.current_price || r.target_price) ? ' · ' : ''}{t('reports.upside')} {r.upside}</> : null}
-            </p>
-          ) : null}
-          {r.broker_average ? (
-            <p className="mt-1 text-[13px] text-unjong-muted">{t('reports.brokerAverage')} {r.broker_average}</p>
-          ) : null}
-          {r.reasons?.length ? (
-            <div className="mt-3 space-y-1.5">
-              <p className="text-[13px] font-semibold text-unjong-primary">{t('reports.reasonsLabel')}</p>
-              {r.reasons.map((reason, ri) => (
-                <div key={ri}>
-                  <p className="text-[13px] font-medium text-unjong-primary">{ri + 1}. {reason.title}</p>
-                  {reason.detail ? <p className="text-[13px] leading-relaxed text-unjong-muted">{reason.detail}</p> : null}
-                </div>
-              ))}
-            </div>
-          ) : null}
-          {r.earnings_summary ? (
-            <p className="mt-3 border-t border-unjong-border pt-2.5 text-[13px] leading-relaxed text-unjong-muted">{r.earnings_summary}</p>
-          ) : null}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

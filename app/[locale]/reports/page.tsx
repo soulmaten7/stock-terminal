@@ -26,12 +26,14 @@ export default async function ReportsPage({
   const tExplore = await getTranslations({ locale, namespace: "Explore" });
 
   const feed = await getHomeReportFeed({ country, limit: 50 });
+  const countryLine = t(country === "KR" ? "krCountryLine" : "usCountryLine");
   const title = t(country === "KR" ? "krReportsTitle" : "usReportsTitle");
 
   return (
     <PageShell>
       <div className="mb-4 px-4 sm:px-0">
-        <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{title}</h1>
+        <h1 className="text-[22px] font-bold text-unjong-primary lg:text-[26px]">{countryLine}</h1>
+        <p className="mt-1 text-[15px] text-unjong-muted">{title}</p>
         <div className="mt-3 flex gap-2">
           <Link
             href="/reports?country=KR"

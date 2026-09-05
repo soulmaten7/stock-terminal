@@ -638,7 +638,9 @@
       "targetPrice": "Target price",
       "upside": "Upside",
       "brokerAverage": "Analyst consensus target",
-      "reasonsLabel": "Reasons"
+      "reasonsLabel": "Reasons",
+      "earningsSummaryLabel": "Earnings outlook",
+      "expandAria": "Expand report"
     }
   },
   "Today": {
@@ -652,7 +654,9 @@
     "watchlistLoadError": "Could not load your watchlist.",
     "retry": "Retry",
     "selectionBasisLabel": "By value traded · Price · 1d change",
+    "krCountryLine": "🇰🇷 Korean Stocks",
     "krReportsTitle": "Today: Broker Reports",
+    "usCountryLine": "🇺🇸 US Stocks",
     "usReportsTitle": "Today: Earnings Guidance",
     "noReportsYet": "No reports yet",
     "viewMoreReports": "See {n} more reports →",

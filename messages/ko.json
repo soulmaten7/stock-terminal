@@ -638,7 +638,9 @@
       "targetPrice": "목표주가",
       "upside": "상승여력",
       "brokerAverage": "증권가 평균 목표주가",
-      "reasonsLabel": "이유"
+      "reasonsLabel": "이유",
+      "earningsSummaryLabel": "실적 전망",
+      "expandAria": "리포트 펼치기"
     }
   },
   "Today": {
@@ -652,8 +654,10 @@
     "watchlistLoadError": "관심종목을 불러오지 못했어요.",
     "retry": "다시 시도",
     "selectionBasisLabel": "거래대금 순 · 현재가 · 어제 등락",
+    "krCountryLine": "🇰🇷 한국 주식",
     "krReportsTitle": "오늘의 증권사 리포트",
-    "usReportsTitle": "오늘의 실적 가이던스",
+    "usCountryLine": "🇺🇸 미국 주식",
+    "usReportsTitle": "오늘의 기업 실적 전망",
     "noReportsYet": "아직 리포트가 없어요",
     "viewMoreReports": "리포트 {n}건 더 보기 →",
     "noWatchlistChangesToday": "오늘은 관심종목 렌즈 상태 변화가 없어요",

@@ -306,10 +306,11 @@ export default function TodayClient({ initialKrReports, initialUsReports, initia
           )}
         </section>
 
-        {/* 3) 오늘의 증권사 리포트(KR) — ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화 → channel_reports 피드로 교체 */}
+        {/* 3) 한국 주식 · 오늘의 증권사 리포트(KR) — ORDER_트릴리언홈피드_0905 STEP2: 렌즈 상태 변화 → channel_reports 피드로 교체 */}
         <section className="mb-7">
-          <div className="mb-2 flex items-center px-4 sm:px-0">
-            <h2 className="text-base font-bold text-unjong-primary">{t('krReportsTitle')}</h2>
+          <div className="mb-2 px-4 sm:px-0">
+            <h2 className="text-base font-bold text-unjong-primary">{t('krCountryLine')}</h2>
+            <p className="text-[13px] text-unjong-muted">{t('krReportsTitle')}</p>
           </div>
           {krReports.items.length === 0 ? (
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
@@ -325,10 +326,11 @@ export default function TodayClient({ initialKrReports, initialUsReports, initia
           ) : null}
         </section>
 
-        {/* 4) 오늘의 실적 가이던스(US) — 지금은 US 적재 미착수라 0건. 빈 상태만 두고 어댑터가 붙으면 자동으로 채워진다. */}
+        {/* 4) 미국 주식 · 오늘의 기업 실적 전망(US) — 지금은 US 적재 미착수라 0건. 빈 상태만 두고 어댑터가 붙으면 자동으로 채워진다. */}
         <section className="mb-7">
-          <div className="mb-2 flex items-center px-4 sm:px-0">
-            <h2 className="text-base font-bold text-unjong-primary">{t('usReportsTitle')}</h2>
+          <div className="mb-2 px-4 sm:px-0">
+            <h2 className="text-base font-bold text-unjong-primary">{t('usCountryLine')}</h2>
+            <p className="text-[13px] text-unjong-muted">{t('usReportsTitle')}</p>
           </div>
           {usReports.items.length === 0 ? (
             <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
