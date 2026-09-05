@@ -16,6 +16,13 @@
 - 장은태가 자기 눈으로 확인하기 전에는 노출·확산에 관한 논의를 꺼내지 않는다.
 - 위반 이력(2026-08-01): STEP815~852가 전부 "화면 변경 0"이었는데 853에서 스스로 프로덕션 출시를 결정한 사례 — 육안 검증도 없었다.
 
+## 2-1. UI 변경 자체 검증 — 헤드리스 Chrome 픽셀 실측 (2026-09-05 확립)
+
+- 위 §2의 "육안 검증"은 **장은태가 사람 눈으로 보는 승인**을 대체하지 않는다 — 아래는 그 전 단계, Claude 자신이 코드를 push하기 전에 스스로 확인하는 방법이다.
+- CSS 클래스만 봐서는(`max-w-[1040px]` 값이 같다 등) 실제 화면에서 정말 정렬되는지 확신할 수 없을 때, 로컬 `Google Chrome.app`을 `--headless=new --disable-gpu --screenshot`으로 띄워 스크린샷을 찍고, Python(PIL)로 특정 y행의 좌/우 첫 비-배경 픽셀 x좌표를 찾아 두 요소의 정렬을 **숫자로** 비교한다(예: 헤더 로고 좌측 227px vs 사이드바 카드 우측 1212px).
+- **함정**: 짧은 페이지에서 `--window-size`로 큰 뷰포트를 주면, `min-h-[calc(100svh-Npx)]` 같은 CSS가 그 뷰포트 높이에 맞춰 다시 늘어나(재계산) 푸터가 항상 뷰포트 경계 밖으로 밀려나 스크린샷에 안 잡힌다(뷰포트를 아무리 키워도 같은 문제가 재발). 해결 = Chrome을 `--remote-debugging-port`로 띄우고 CDP(`Page.getLayoutMetrics`의 `cssContentSize`)로 실제 문서 전체 높이를 구한 뒤, `Page.captureScreenshot`에 `captureBeyondViewport: true` + 그 높이의 `clip`을 줘서 뷰포트 크기를 바꾸지 않고 전체 페이지를 캡처한다.
+- 이 방법은 **로컬 dev·프로덕션 둘 다** 적용 가능(같은 스크립트로 URL만 바꿔 실측) — push 전 검증(로컬)과 배포 후 확인(프로덕션 게이트 8)에 모두 쓴다.
+
 ## 3. Supabase 프로젝트 규칙
 
 - **정답 = "Trillion" `ccbwxcszdoyjxvckedfp`**(ap-northeast-2). 마이그레이션·MCP·앱 런타임 전부 이 ref.

@@ -7,23 +7,54 @@
 
 ---
 
-## ⓪ 🔴 직전 세션(2026-09-05) 요약 — 다음 세션은 여기부터
+## ⓪ 🔴 직전 세션(2026-09-05~09-06) 요약 — 다음 세션은 여기부터
+
+> 🔴 **오늘 하루에 결정·변경이 20건 이상 있었다 — 아래가 그 전체 요약이다.** 상세 근거·검증 로그는 git 커밋 메시지(각 항목에 표시)에 있다.
 
 **무엇이 확정됐나**(장은태 확정, `docs/ORDER_트릴리언이관_0905.md`):
 - 🟢 **운영 체계 전환** — Cowork 폐지, **클로드 채팅(설계·명령서)+클로드 코드(실행)**로 통일. STEP 번호·`STEP_LEDGER.md` 폐지, 이력은 git 커밋 메시지. 🔴 **Trillion 운영의 설계·명령서 대화는 한국 채널 세션(이 채팅)이 전담한다.**
-- 🟢 **모델 트랙(렌즈·역DCF·배수 등) 전면 폐지 확정.** Trillion은 모델 계산 플랫폼에서 **채널 리포트 적재 플랫폼**으로 전환 — 종목 페이지 알맹이는 모델 판정이 아니라 채널 제작 리포트가 국가별 시간순 적재되는 것. UI 껍데기(5면·국가탭·헤더·티커·로그인·관심종목)는 유지.
 - 🟢 **지침 재배치 완료** — `CLAUDE.md`를 짧은 허브로 재작성 + `.claude/rules/{work-protocol,docs-map,mistakes,deploy-gates}.md` 4파일 신설. 옛 모델 트랙 규칙 전문은 `docs/_archive/MODEL_TRACK_RULES_FROZEN_2026-09-05.md`에 동결 보존.
 - 🟢 **동결 처리** — `docs/CHANGELOG.md`·`docs/STEP_LEDGER.md`(상단 한 줄) · `docs/BUILD_SEQUENCE.md` §6-C 판정 대장 · `docs/STEP_*_COMMAND.md` 893개(→ `docs/_archive/steps/`로 이동, README 한 줄) · `docs/handoff_map.html`(상단 한 줄). **전부 삭제 없이 동결 표시만.**
+
+**🟢 모델 폐지 — "확정"에서 "실행 완료"로(화면·크론·계산 전 층위).** 어제까지는 방향만 확정된 상태였다. 오늘 실제로:
+- **종목 페이지 비우기** — 렌즈·F-score·AI브리핑 UI 제거(`StockLensClient.tsx` 1522→718줄). `/api/lens` 호출 자체는 가격·거래대금 데이터 계약으로만 유지(데이터 계약 A, 명시 결정).
+- **모델 잔재 전면 제거** — `/explore`(탐색 탭)·`RevDcfSection`·`Q1Section`·관련 API 라우트·`about` §3(렌즈 방법론)·§6(사용법)·SEO 메타데이터(`generateMetadata` title/description/keywords)·`/favorites`의 렌즈 상태 도트 전부 삭제(85356be). 단 `RevDcfBadge.tsx`·`/api/revdcf`·`/api/revdcf/batch`·`lib/revdcf/flag.ts`는 파킹된 `/toolbox`가 여전히 참조해 존치.
+- **헤더 전역 검색 이전** — `/explore` 삭제로 사라진 유일한 검색 진입로를 신규 `HeaderSearch.tsx`(PC+모바일 상시 노출, 검색 아이콘→전체화면 오버레이)로 옮김.
+- **홈 "내 관심종목·렌즈 변화" 섹션 제거**(6ad0947) — 관심종목 기능(`/favorites`, 추가/해제) 자체는 유지, `/api/today/changes`·`lib/todayChanges.ts`는 화면 호출만 끊고 라우트는 파킹. `/api/lens`의 `enrichPercentiles`/`enrichQualityDistribution`(아무도 렌더 안 하던 죽은 출력)도 이 김에 제거.
+- **크론 5개 완전 정지** — `revdcf`·`daily-brief`·`email-brief`(더 이른 STEP) + `kr-lens-scores`·`lens-scores`(오늘) 5개를 `vercel.json`에서 제거, `health` 크론 CHECKS·행수감시·`lens_cuts` 나이감시도 동반 제거(오탐 방지). **지금 가동 중인 크론은 `us-perf`·`kr-perf`·`kr-etp`·`health`·`our-channels` 5개뿐**(`npx vercel crons ls` 실측 확인, 2026-09-05). `lens_scores`·`lens_state_changes`·`lens_cuts`·`revdcf_results` 등 테이블·`lib/lensPrecompute.ts`·`lib/revdcf/*`는 삭제하지 않고 파킹 — 재개하려면 크론 재등록 + 홈 섹션 복원만 하면 된다.
+- 🟡 **`docs/SYSTEM_MAP.md`(2026-07-28 작성)는 크론 목록·핵심 파일 맵만 오늘 최소 수정했다** — 모델 트랙 서술 전체는 아직 그 시점 기준. 다음에 손댈 때 전면 갱신 필요.
+
+**🟢 채널 리포트 적재 플랫폼 가동 — KR 15건·US 53건 라이브.**
+- `channel_reports`(신규 테이블 — RLS: anon SELECT만, 그 외 REVOKE) + `our_channels`(신규 테이블) 신설.
+- 종목 페이지·홈·`/reports` 목록이 전부 이 테이블 기반으로 렌더 — 최신 항목은 펼쳐서, 과거분은 접혀서 "더 보기"로. 홈·목록 카드는 2줄로 압축(종목명+영상 제목 한 줄·가격 별도 줄), 우측 가격은 `target_price`가 아니라 **`current_price`로 통일**.
+- stock-shorts 저장소의 `trillion_push.py`(KR 먼저 배선, 같은 패턴으로 US 확장)가 리포트 제작 시 자동 적재. `title` 컬럼(영상 제목, `youtube.md` 제목후보 1순위) 추가·소급 반영. **US `current_price`는 외부 API 없이 같은 Supabase 프로젝트의 `us_stock_perf`를 재사용**(비용 0, 채널 자체의 Yahoo/Stooq IP 차단과 무관 — Vercel 인프라의 `us-perf` 크론이 매일 갱신하는 값).
+- **국가 확장 구조 확립 — 코드 수정 0으로 실증.** `lib/constants/reportCountries.ts`(구조: code·flag·displayOrder)와 `messages.*.Today.countries.*`(텍스트)를 분리, `TodayClient.tsx`가 이 배열을 순회 — JP를 임시로 넣었다 빼는 실측으로 ".tsx/.ts diff 0"(데이터만 추가하면 끝)을 확인. 섹션 문구도 실제 동작(최근 5건)에 맞춰 "최신 증권사 리포트"/"최신 기업 실적 전망"으로 교체.
+- **우리 채널 카드** — `our_channels` 테이블 + 홈 "우리 채널" 섹션(유튜브 채널 2개 링크).
+- **홈 히어로 정리** — 시장요약 줄(상단 티커와 중복)·"한 입 브리핑"(폐지된 모델이 만들던 LLM 서술)·관심종목 온보딩 박스(지키지 못하는 "렌즈 알림" 약속) 제거.
+
+**🟢 보안 — users 이메일 전체 공개 차단 + TRUNCATE 구멍 30개 봉인.**
+- `"users public read"`(`SELECT USING (true)`) 정책 제거 — anon 키(공개 저장소라 사실상 공개값)로 전 회원 email 조회가 가능했던 상태. 의존 코드 0건 확인 후 제거(전부 `auth.uid()` 본인 행 조회만 사용).
+- 20260712 마이그레이션이 RLS는 켰지만 REVOKE를 빠뜨려 anon/authenticated에 TRUNCATE가 남아있던 테이블 30개 — GRANT 정리 마이그레이션 적용, `role_table_grants` 재조회로 0건 확인. `link_hub_clicks`의 열린 INSERT(클릭카운터 설계 의도)는 그대로 보존.
+- Supabase service-role 키 재발급 후 `.env.local`·stock-shorts `config/.env` 양쪽 정상 반영을 curl로 검증.
+
+**🟢 약관·개인정보처리방침 실태화.**
+- 2026-08-15에 이미 `spinoff/advisor-directory`로 이관·삭제된 "리딩방(유사투자자문) 검증" 관련 조항을 `/terms`·`/privacy`에서 전부 제거 — 실제로 없는 기능이 문서에만 남아있던 상태(개인정보처리방침은 특히 실제 처리 현황과 일치해야 하는 문서).
+- `/terms` 회원가입 방식(구글 소셜만 → 구글+이메일/비밀번호)을 실제와 privacy 서술에 맞게 정정. 서비스 내용을 사실 그대로("채널 리포트·실적 전망 적재 + 관심종목")로 재작성, 새 브랜딩 문구는 창작하지 않음.
 - 🟡 **영문 `/terms`·`/privacy` 필요성 확정 — 작성은 보류.** 미국 채널 시청자가 유입 대상이라 영문판이 필요하다는 결정은 났으나, 지금 만들지 않는다. 이유: ① 한글 약관의 단순 번역이 아니라 영어권 기준(CCPA·GDPR 등)으로 별도 작성해야 함 ② 리브랜딩에서 브랜드명·도메인·사업자 정보가 바뀌고 법적 문서엔 그 정보가 들어가므로, 리브랜딩 시점에 한글·영문을 동시 작성하는 게 맞다. `/terms`·`/privacy`는 현재 로케일 무관 한국어 고정(2026-09-05 확인).
 
+**🟢 PC 레이아웃·잡다한 텍스트 정리.**
+- 헤더·푸터 안쪽 콘텐츠 `max-w-7xl`(1280px) → 본문(PageShell 등)과 동일한 `max-w-[1040px]`로 통일(배경·구분선은 전폭 유지). 헤드리스 Chrome + 픽셀 좌표 실측으로 좌우 정렬선 일치 검증(신규 검증 방법 — `.claude/rules/deploy-gates.md` 참조).
+- 푸터 사업자정보(상호명·대표자·사업자등록번호) 제거(현재 판매·결제·광고 수익이 없어 전자상거래법 의무 대상 아님, 연락처는 유지) · 푸터 문의란 운영시간 표기 제거 · `/favorites` 설명문구의 "렌즈" 잔재 제거("관심종목을 담아 가격을 한눈에 봐요"로 교체) · 홈 섹션 제거로 죽은 `Today.*` i18n 키 4개 정리.
+
 **다음 세션이 먼저 할 것**(🔴 순서·추천 없음):
-① 채널 리포트 적재 구조(국가별 시간순) 설계 착수 여부 ② 모델 계산·크론·파이프라인의 실제 정지, 화면 렌즈/역DCF 제거를 별도 STEP으로 실행할지 판단 ③ 허브(①단계 — 채널 디렉토리·제휴 링크·비즈니스 문의 창구) 설계 착수.
+① 리브랜딩(브랜드명·도메인·사업자 정보·영문 법적문서를 한글과 동시 작성) ② `link_hub_clicks`의 열린 INSERT(레이트리밋 우회 스팸 여지) 처리 여부 판단 ③ `docs/SYSTEM_MAP.md` 전면 갱신(위 🟡 참조) ④ 허브 단계(채널 디렉토리·제휴 링크·비즈니스 문의 창구) 설계 착수.
 
-**건드리면 안 되는 것**: `REVDCF_ENABLED` OFF 유지(별도 승인 없이 켜지 않음, 정지 실행 전까지는 현행 그대로 둔다) · `~/Downloads/`(사용자 파일) · `supabase/migrations/**`(장은태 명시 승인 없이).
+**건드리면 안 되는 것**: `~/Downloads/`(사용자 파일) · `supabase/migrations/**`(장은태 명시 승인 없이). 🔴 `REVDCF_ENABLED` 관련 문구는 이제 화면·크론 배선이 전부 제거돼 사실상 무의미 — 역DCF 재개 시 이 문구부터 다시 쓸 것.
 
-**미해결(2026-09-05 조사 중 발견, 이번엔 손대지 않음)**:
-- `docs/LENS_DEV_PLAYBOOK.md` 실제 항목수(118+)와 옛 `docs/COMMIT_GATES.md:4`의 "87항목" 표기 불일치 — `.claude/rules/mistakes.md`에 확인 필요로 등재.
+**미해결(이번에도 손대지 않음)**:
+- `docs/LENS_DEV_PLAYBOOK.md` 실제 항목수(118+)와 옛 `docs/COMMIT_GATES.md:4`의 "87항목" 표기 불일치 — 여전히 미확인.
 - `/advertise` 광고 지면은 "준비 중" 플레이스홀더뿐(`ad_inquiries` 0행), `brokers`·`link_hub` 화면 소비처(`ToolboxClient`)는 파킹돼 렌더 경로가 없음(`youtube_channels`도 KR만·07-20 이후 미갱신) — 허브 설계 착수 시 이 상태에서 시작한다.
+- 이번 세션에서 발견된 죽은 i18n 키(`Footer.hoursLabel`·`Today.watchlistChangesTitle` 등)는 그때그때 정리했으나 전수 스윕은 아니었다 — 더 남아있을 수 있음.
 
 ---
 

@@ -8,6 +8,11 @@
 > **아래 이어지는 WHY~수익모델 전체(원 ROADMAP_V2 본문)는 삭제하지 않고 "전환 전 로드맵"으로 보존한다** — 이 문서가 도출한 모델 순위(F-4)·완성 기준(C-1~C-3)·질문 구조(W-2) 전부 모델 트랙 폐지로 더 이상 진행 대상이 아니다. 옛 CLAUDE.md 모델 트랙 규칙 전문은 `docs/_archive/MODEL_TRACK_RULES_FROZEN_2026-09-05.md`에 별도 보존돼 있다.
 >
 > 운영 체계 전환(Cowork 폐지 → 채팅+클로드 코드, STEP 번호 폐지 → `docs/ORDER_*.md`)의 근거 문서 = `docs/ORDER_트릴리언이관_0905.md`. 현행 규칙 허브 = `CLAUDE.md`.
+>
+> 🔴 **2026-09-05 하루 만에 실행 완료(방향 기록에서 실행으로).** 위 배너는 "이 전환과 별개로, 별도 STEP에서 신중히 실행한다"고 적었으나 같은 날 안에 전 층위가 끝났다 — 상세 근거는 `docs/STATE.md` ⓪.
+> - **완료**: 종목 페이지 렌즈 UI 제거 · `/explore`·RevDcf·Q1·SEO·About 모델 잔재 전면 삭제 · 홈 렌즈 변화 섹션 제거 · **크론 5개 정지**(`revdcf`·`daily-brief`·`email-brief`·`kr-lens-scores`·`lens-scores`, 지금 가동은 `us-perf`·`kr-perf`·`kr-etp`·`health`·`our-channels` 5개뿐) · `channel_reports`/`our_channels` 테이블 신설 + 채널 push 배관(KR 15건·US 53건 라이브) · 국가 확장 구조(코드 수정 0 실증) · `/terms`·`/privacy` 리딩방 조항 제거·실태화 · users RLS/TRUNCATE 보안 구멍 봉인 · PC 레이아웃 정렬.
+> - **남은 것**: 리브랜딩(브랜드명·도메인·사업자정보·영문 법적문서) · `docs/SYSTEM_MAP.md` 전면 갱신(오늘은 크론·핵심파일맵만 최소 수정) · 허브 단계(채널 디렉토리·제휴 링크·비즈니스 문의 창구) 설계 착수 · `link_hub_clicks` 열린 INSERT 처리 판단.
+> - **테이블·코드는 삭제 없이 파킹** — `lens_scores`·`lens_state_changes`·`lens_cuts`·`revdcf_results`·`lib/lensPrecompute.ts`·`lib/revdcf/*` 전부 보존(재개 조건 = `docs/STATE.md` ⓪).
 
 ---
 
