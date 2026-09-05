@@ -78,12 +78,10 @@ export default function Header() {
       <div className="mx-auto flex h-[60px] max-w-[1040px] items-center gap-3 px-4 sm:gap-5 sm:px-6">
         {/* 로고 */}
         <Link href="/" className="flex shrink-0 items-center gap-2 hover:opacity-80">
-          <svg viewBox="0 0 100 100" className="h-6 w-6 shrink-0 lg:h-8 lg:w-8" aria-hidden="true">
-            <rect x="16" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
-            <rect x="42.5" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
-            <rect x="69" y="22" width="15" height="14" rx="2.5" fill="#2DD4BF" />
-            <rect x="42.5" y="35" width="15" height="43" rx="2.5" fill="#2DD4BF" />
-          </svg>
+          {/* 2026-09-06: 옛 "T" 마크(Trillion 잔재) → EarthTicker 지구본 심볼로 교체(public/earthticker-globe.png,
+              stock-shorts assets/brand/logo/earthticker_symbol_02.png 원본에서 배경 제거). */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/earthticker-globe.png" alt="" width={32} height={32} className="h-6 w-6 shrink-0 lg:h-8 lg:w-8" aria-hidden="true" />
           <span className="text-lg font-bold leading-none tracking-wide text-white">EarthTicker</span>
         </Link>
 
