@@ -3,13 +3,12 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation'; // useParams는 로케일 무관 — next/navigation 그대로
-import { useRouter, usePathname, Link } from '@/i18n/navigation';
-import { LENS_COPY, DETAIL_LABELS, pickLocale, lensQuestion, lensShortLabel, type Locale } from '@/lib/lensCopy';
-import { AiLensBadge } from '@/components/AiLensBadge';
+import { useRouter, usePathname } from '@/i18n/navigation';
+import { pickLocale } from '@/lib/lensCopy';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
-import { TONE_DOT_CLASS as TONE_DOT, changeColorClass } from '@/lib/lensTones';
+import { changeColorClass } from '@/lib/lensTones';
 import { useAuthStore } from '@/stores/authStore';
-import { AlertTriangle, Info, ExternalLink, Sparkles, Lock, ArrowLeft, Star } from 'lucide-react';
+import { ExternalLink, Sparkles, ArrowLeft, Star } from 'lucide-react';
 
 // 현재가 통화기호용 국가 코드(보드의 formatPrice 키와 동일 — KR/US/JP/HK/CN/VN/GB).
 // 기존 isCN은 HK를 합쳐놔 formatPrice엔 못 씀(HK≠CN 통화) → 별도 도출.
@@ -52,492 +51,10 @@ type FCriterion = { key: string; label: string; pass: boolean; note: string; gro
 type FScoreResp = { supported: boolean; reason?: string; score: number; max: number; grade: string; criteria: FCriterion[]; asOf?: string };
 type LensResp = { symbol: string; name?: string; price?: number | null; changePercent?: number | null; tradeAmount?: number | null; lenses?: LensRead[]; fscore?: FScoreResp | null; error?: string };
 type EventDef = { item: string; label: string; klass: 'A' | 'B' | 'general'; lenses: string[]; severity: 'info' | 'watch' | 'serious'; flagLens: boolean };
-type Flag = { klass: 'A' | 'B'; label: string; date: string };
 type MatEvent = { date: string; items: string[]; defs: EventDef[]; link: string };
 type EventsResp = { symbol: string; events?: MatEvent[] };
 
 // 근거 수치 라벨 — 엔진이 주는 stable 키(rsi14·ma200vs…)를 언어별 표시로. 라벨 없는 키는 키 그대로(새 렌즈가 와도 안 깨짐).
-function detailLabel(locale: Locale, k: string): string {
-  return (DETAIL_LABELS[locale] as Record<string, string>)[k] ?? k;
-}
-
-// 판정(reading) 색조 — pos=민트(우호적 읽기)·warn=앰버(주의 읽기)·flat=중립(기본색). '이 기법 시각'일 뿐 예측 아님(상단 전제).
-function verdictColor(tone?: string): string {
-  if (tone === 'pos') return 'text-unjong-accent';
-  if (tone === 'warn') return 'text-amber-400';
-  return 'text-unjong-primary';
-}
-function toneText(tone?: string): string {
-  return tone === 'pos' ? 'text-unjong-accent' : tone === 'warn' ? 'text-amber-400' : 'text-unjong-muted';
-}
-
-// 신뢰도 배지 색 — strong=다크틸(검증·AA)·partial=앰버·ref=회색
-function gradeBadgeClass(tier: string): string {
-  if (tier === 'strong') return 'bg-unjong-accent/12 text-unjong-success';
-  if (tier === 'partial') return 'bg-amber-400/10 text-amber-300';
-  return 'bg-unjong-background text-unjong-muted';
-}
-
-// 3구간 스펙트럼 — 퍼센타일이 없을 때(비US·유니버스 밖) 폴백. 켜지는 칸만 색조.
-function Spectrum({ labels, active, tone }: { labels: [string, string, string]; active: number; tone?: string }) {
-  const on = tone === 'pos' ? 'border-unjong-accent bg-unjong-accent/10 text-unjong-accent'
-    : tone === 'warn' ? 'border-amber-400 bg-amber-400/10 text-amber-300'
-    : 'border-unjong-muted bg-unjong-background text-unjong-primary';
-  return (
-    <div className="mt-2.5 flex gap-1.5">
-      {labels.map((l, i) => (
-        <span key={i} className={`flex-1 rounded-md border py-1 text-center text-[13px] sm:text-[12px] ${i === active ? `font-medium ${on}` : 'border-unjong-border text-unjong-muted'}`}>{l}</span>
-      ))}
-    </div>
-  );
-}
-
-// 팩터 퍼센타일 게이지 — 시장 유니버스 대비 순위(0~100·오른쪽=우호 방향). 모집단 표현은 근거줄(시장별 라벨)이 단일 정본(STEP 809 §2). 팩터 5종 공통(Stockopedia식).
-// 🔴 STEP 810 §3·§4 / 819 §2: '수익 우호' 축으로 셀 수 있는 렌즈(수익 신호 검증된 것)만. 저변동(위험 축)·기술(참고용)·F-스코어(건전성 축)는 제외.
-//   종합 닫는 카드(returnEvidence·강점 나열)와 시간축 장기 칸이 **같은 모집단**을 쓰도록 모듈 상수로 공유(페이지 내 집계 불일치 방지).
-const RETURN_LENS = new Set(['momentum', 'valuation', 'quality', 'assetgrowth']);
-
-// 모듈 상수 → 값=ko.json 키. 렌더 지점(renderCard)에서 t()로 해석.
-const FACTOR_ENDS: Record<string, { lo: string; hi: string }> = {
-  momentum: { lo: 'factorEnds.momentumLo', hi: 'factorEnds.momentumHi' },
-  quality: { lo: 'factorEnds.qualityLo', hi: 'factorEnds.qualityHi' },
-  valuation: { lo: 'factorEnds.valuationLo', hi: 'factorEnds.valuationHi' },
-  lowvol: { lo: 'factorEnds.lowvolLo', hi: 'factorEnds.lowvolHi' },
-  assetgrowth: { lo: 'factorEnds.assetgrowthLo', hi: 'factorEnds.assetgrowthHi' },
-};
-function PctGauge({ pctl, tone, lo, hi }: { pctl: number; tone?: string; lo: string; hi: string }) {
-  const t = useTranslations('StockLens');
-  const p = Math.max(0, Math.min(100, Math.round(pctl)));
-  const fill = tone === 'pos' ? 'bg-unjong-accent/25' : tone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border';
-  const mk = tone === 'pos' ? 'bg-unjong-accent' : tone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted';
-  return (
-    <div className="mt-2.5">
-      <div className="relative h-2 rounded-full bg-unjong-background">
-        <div className={`absolute left-0 top-0 h-2 rounded-full ${fill}`} style={{ width: `${p}%` }} />
-        <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${p}%` }} />
-      </div>
-      <div className="mt-1 flex justify-between text-[13px] sm:text-[11px] text-unjong-muted"><span>{lo}</span><span>{hi}</span></div>
-      <p className="mt-1 text-[13px] sm:text-[11px] text-unjong-muted">{t.rich('gauge.rank', { p, hi, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
-    </div>
-  );
-}
-
-// 기술(RSI) 존 게이지 — 침체–중립–과열. '지금 상태' 표시일 뿐 매매신호 아님(퍼센타일 아님).
-// 🔴 STEP 830 §6: 존 단어를 축 라벨과 같은 과열/침체/중립으로 통일(과매수/과매도 혼용 제거)·설명절은 존 무관 중립문구(과매도에 '과열 조심' 오표시 방지).
-function RsiZone({ rsi, maPct }: { rsi: number | null; maPct: number | null }) {
-  const t = useTranslations('StockLens');
-  const r = rsi == null ? null : Math.max(0, Math.min(100, Math.round(rsi)));
-  const mk = r == null ? 'bg-unjong-muted' : r >= 70 ? 'bg-amber-400' : r <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted';
-  const zone = r == null ? '—' : r >= 70 ? t('rsi.zoneHot') : r <= 30 ? t('rsi.zoneCold') : t('rsi.zoneNeutral');
-  const ma = maPct != null ? t('rsi.ma', { dir: maPct >= 0 ? t('rsi.above') : t('rsi.below'), pct: `${maPct > 0 ? '+' : ''}${maPct}` }) : '';
-  return (
-    <div className="mt-2.5">
-      <div className="relative h-2.5">
-        <div className="flex h-2.5 overflow-hidden rounded-full">
-          <div className="bg-unjong-down/25" style={{ width: '30%' }} />
-          <div className="bg-unjong-background" style={{ width: '40%' }} />
-          <div className="bg-amber-400/45" style={{ width: '30%' }} />
-        </div>
-        {r != null ? <div className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mk}`} style={{ left: `${r}%` }} /> : null}
-      </div>
-      <div className="mt-1 flex justify-between text-[13px] sm:text-[11px] text-unjong-muted"><span>{t('rsi.low')}</span><span>{t('rsi.mid')}</span><span>{t('rsi.high')}</span></div>
-      <p className="mt-1 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{t.rich('rsi.line', { r: r ?? '—', zone, ma, v: (c) => <span className="tabular-nums text-unjong-primary">{c}</span> })}</p>
-    </div>
-  );
-}
-
-// 렌즈 이름/컷 문구 i18n 키 조회표(STEP 782/783) — 렌즈키→키 매핑만 다르고 로직은 공용(STEP 787에서 일반화·중복 제거).
-const NARRATIVE_METHOD_KEY: Record<string, string> = {
-  momentum: 'narrativeMethodMomentum', lowvol: 'narrativeMethodLowvol', valuation: 'narrativeMethodValuation',
-  quality: 'narrativeMethodQuality', assetgrowth: 'narrativeMethodAssetgrowth', technical: 'narrativeMethodTechnical',
-};
-const NARRATIVE_CUTOFF_KEY: Record<string, string> = {
-  momentum: 'narrativeCutoffMomentum', lowvol: 'narrativeCutoffLowvol', valuation: 'narrativeCutoffValuation',
-  quality: 'narrativeCutoffQuality', assetgrowth: 'narrativeCutoffAssetgrowth', technical: 'narrativeCutoffTechnical',
-};
-
-// 렌즈 계산 서사(STEP 782/783 파일럿·확산 → STEP 787 상시 노출로 전환) — 접힘 제거, 카드 본문에 그대로.
-// 결정론 템플릿만(LLM 금지) — 전부 이미 계산된 detail/percentile/cutoffs 재사용(새 계산 없음).
-// 핵심 값 결측/미지원(state na 또는 null)이면 통째로 생략(정직 결측). 근거 줄은 L.detail 전량을 한 줄로 압축(772/783의 중복 목록·이중 %기호 표기를 여기서 정리).
-// F-Score는 별도(FScoreCard 내부 — 9항목 중복 노출 금지·과적재 방지).
-// 서사 렌더 가능 여부(STEP 789 §2) — LensNarrative 내부 게이트와 renderCard의 verdict.plain 안전망이 같은 조건을 공유해야
-// "서사도 없고 안전망도 없어 본문이 비는" 케이스가 안 생긴다(예: na 상태는 outlook은 non-null이라도 서사는 없음).
-function hasLensNarrative(L: LensRead): boolean {
-  return !!NARRATIVE_METHOD_KEY[L.key] && !!L.state && L.state !== 'na';
-}
-
-function LensNarrative({ L, loc, market }: { L: LensRead; loc: Locale; market: string }) {
-  const t = useTranslations('StockLens');
-  const tMaterial = useTranslations('LensPreview');
-  if (!hasLensNarrative(L)) return null;
-  const methodKey = NARRATIVE_METHOD_KEY[L.key];
-  const verdict = L.verdict?.phrase ?? null;
-  // 🔴 STEP 830 §7: 백분위는 방향 인지(이 기법이 좋게 보는 종목이 high) — "상위 {100-p}%"만 쓰면 불리한 종목이
-  //   "하위권 · 상위 97%"로 모순됨. 상위/하위로 갈라 표시(상위=좋게 보는 쪽) → 판정 단어와 절대 안 어긋남·중립 50 이상만 '상위'.
-  const p = L.percentile;
-  const pctlTop = p != null && p >= 50;
-  const pctlVal = p == null ? null : (pctlTop ? Math.max(1, 100 - p) : Math.max(1, Math.round(p)));
-  const pctlStr = pctlVal == null ? null : t(pctlTop ? 'narrativePercentile' : 'narrativePercentileLow', { v: pctlVal });
-
-  const stockLine = L.key === 'technical'
-    ? (L.detail.ma200vs != null && verdict ? t('narrativeStockTechnical', { pct: L.detail.ma200vs, verdict }) : null)
-    : (verdict ? (pctlVal != null ? t(pctlTop ? 'narrativeStock' : 'narrativeStockLow', { pct: pctlVal, verdict }) : t('narrativeStockNoPctl', { verdict })) : null);
-
-  // 근거 줄 — detail 전 항목(라벨에 %가 이미 포함돼 있어 값 뒤에 별도 % 안 붙임: "12-1모멘텀%: 458.2") + 백분위 + 판정 컷, 한 줄로.
-  const evidenceParts = Object.entries(L.detail)
-    .filter((entry): entry is [string, number] => entry[1] != null)
-    .map(([k, v]) => `${detailLabel(loc, k)}: ${v}`);
-  // §4(STEP 807): 백분위 모집단 라벨 = 시장별(US=시총 상위 ~1000 / KR=거래대금 상위). 시장에 맞게.
-  // STEP 830 §7: 방향 명시("상위=이 기법이 좋게 보는 쪽")를 백분위 옆에 짧게 — 초보가 "상위 5%=많이 성장/비쌈"으로 오독 방지.
-  if (pctlStr != null) evidenceParts.push(`${t(market === 'US' ? 'narrativePercentileLabelUs' : 'narrativePercentileLabel')}: ${pctlStr} ${t('narrativePercentileDir')}`);
-  const cutoffKey = NARRATIVE_CUTOFF_KEY[L.key];
-  const r1 = (v: number) => Math.round(v * 10) / 10; // 컷 표시 반올림(분포 컷은 소수라)
-  if (L.cutoffs && cutoffKey) evidenceParts.push(t(cutoffKey, { hi: r1(L.cutoffs.hi), lo: r1(L.cutoffs.lo) }));
-  // STEP 805 §6: 실제 사용한 컷 출처(시장 분포·표본·기준일).
-  if (L.cutSource) evidenceParts.push(t('narrativeCutSource', { market: L.cutSource.market, n: L.cutSource.n, date: L.cutSource.asOf ?? '—' }));
-
-  return (
-    <div className="mt-2.5 space-y-1.5">
-      <p className="text-[14px] leading-7 text-unjong-primary/90">{t(methodKey)}{stockLine ? ` ${stockLine}` : ''}</p>
-      <p className="text-[11px] leading-relaxed text-unjong-muted">{evidenceParts.join(' · ')}</p>
-      {/* STEP 809 §1: PER 산출 기준 — 실제 사용값(TTM=야후 trailingPE / 연간=재무 폴백)에 맞게 문구 분기(거짓 단정 제거) */}
-      {L.key === 'valuation' && L.detail.per != null && L.valueBasis ? (
-        <p className="text-[11px] text-unjong-muted">{t(L.valueBasis === 'ttm' ? 'narrativePerBasisTtm' : 'narrativePerBasisAnnual')}</p>
-      ) : null}
-      {/* STEP 805 §4·807 §6: 검증 범위 — US는 백테스트 유니버스 '자신'이라 자체검증됨 / 비US(KR 등)는 "이 시장 자체검증 없음" / RSI·F-스코어는 고정 표준값 */}
-      {L.cutSource ? <p className="text-[11px] text-unjong-muted">{t(market === 'US' ? 'narrativeScopeVerifiedUs' : 'narrativeScopeVerified')}</p> : null}
-      {L.key === 'technical' ? <p className="text-[11px] text-unjong-muted">{t('narrativeScopeFixed')}</p> : null}
-      <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
-    </div>
-  );
-}
-
-// 🔴 STEP 831 §10: 깊이 표준 렌더(근거 상세) — ① 구성요소 분해 ② 시계열 추이 ③ 시장 분포. 모두 결측이면 아무것도 안 그림.
-//   과밀 방지는 말이 아니라 구조로(표·정렬)·기존 scope/note는 그대로 둠. 로그인 게이트 안(근거 상세).
-function LensDepth({ L, loc, country }: { L: LensRead; loc: Locale; country: string }) {
-  const t = useTranslations('StockLens');
-  const r2 = (n: number) => Math.round(n * 100) / 100;
-  const fmt = (value: number | null, unit: 'money' | 'pct' | 'x'): string => {
-    if (value == null) return '—';
-    if (unit === 'money') return formatTradeValue(value, country);
-    if (unit === 'pct') return `${value}%`;
-    return `${value}×`;
-  };
-  const decomp = L.decomposition;
-  const ts = L.timeSeries;
-  const dist = L.distribution;
-  if (!decomp && !ts && !dist) return null;
-  return (
-    <div className="mt-2.5 space-y-3 border-t border-unjong-border pt-2.5">
-      {/* ① 구성요소 분해 — 항등식 + 원자료 표 */}
-      {decomp ? (
-        <div>
-          <p className="text-[12px] font-semibold text-unjong-primary/90">{t('depthDecompTitle')}</p>
-          <p className="mt-0.5 text-[11px] leading-relaxed text-unjong-muted">{t(decomp.identityKey)}</p>
-          <div className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-0.5 text-[11px] sm:grid-cols-3">
-            {decomp.parts.map((p) => (
-              <div key={p.key} className="flex justify-between gap-2 tabular-nums">
-                <span className="text-unjong-muted">{detailLabel(loc, p.key)}</span>
-                <span className="text-unjong-primary/90">{fmt(p.value, p.unit)}</span>
-              </div>
-            ))}
-          </div>
-          {decomp.source ? <p className="mt-1 text-[11px] text-unjong-muted">{t(decomp.source === 'direct' ? 'depthSourceDirect' : 'depthSourceComputed')}</p> : null}
-        </div>
-      ) : null}
-      {/* ② 연도별 추이 — 결측 연도는 빈칸으로 표시(건너뛰지 않음) */}
-      {ts && ts.points.length >= 2 ? (
-        <div>
-          <p className="text-[12px] font-semibold text-unjong-primary/90">{t('depthTrendTitle')}</p>
-          <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] tabular-nums">
-            {ts.points.map((pt, i) => (
-              <span key={i} className={pt.missing ? 'text-unjong-border' : 'text-unjong-muted'}>
-                {pt.year ?? '—'} <span className={pt.missing ? '' : 'text-unjong-primary/90'}>{pt.missing || pt.value == null ? '—' : `${pt.value}%`}</span>
-              </span>
-            ))}
-          </div>
-          <p className="mt-1 text-[11px] text-unjong-muted">{t('depthTrendNote')}</p>
-        </div>
-      ) : null}
-      {/* ③ 시장 분포 내 위치 — min·p30(하위30컷)·중앙·p70(상위30컷)·max + 이 종목 값 */}
-      {dist ? (
-        <div>
-          <p className="text-[12px] font-semibold text-unjong-primary/90">{t('depthDistTitle')}</p>
-          <p className="mt-1 text-[11px] leading-relaxed text-unjong-muted tabular-nums">
-            {t('depthDistLine', { min: r2(dist.min), p30: r2(dist.p30), med: r2(dist.median), p70: r2(dist.p70), max: r2(dist.max) })}
-          </p>
-          <p className="mt-0.5 text-[11px] text-unjong-muted tabular-nums">{t('depthDistThis', { v: L.detail.gpa ?? '—', market: dist.market, n: dist.n, date: dist.asOf ?? '—' })}</p>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-// 🔴 STEP 810 §1: "이 기법이 검증한 것" 블록 — 검증 범위·알려진 한계·적용 조건(원전 기반 정적 카피). 로그인 게이트 밖(무료).
-function ScopeBlock({ lensKey, loc }: { lensKey: string; loc: Locale }) {
-  const t = useTranslations('StockLens');
-  const copy = (LENS_COPY[loc] as Record<string, { scope?: { verified: string; failure: string; when: string } }>)[lensKey];
-  const scope = copy?.scope;
-  if (!scope) return null;
-  return (
-    <div className="border-t border-unjong-border bg-unjong-background/40 px-4 py-3.5">
-      <p className="mb-2 text-[12px] font-bold text-unjong-primary">{t('scopeTitle')}</p>
-      <dl className="space-y-2 text-[13px] sm:text-[12px] leading-relaxed">
-        <div><dt className="font-semibold text-unjong-primary">{t('scopeVerified')}</dt><dd className="text-unjong-muted">{scope.verified}</dd></div>
-        <div><dt className="font-semibold text-unjong-primary">{t('scopeFailure')}</dt><dd className="text-unjong-muted">{scope.failure}</dd></div>
-        <div><dt className="font-semibold text-unjong-primary">{t('scopeWhen')}</dt><dd className="text-unjong-muted">{scope.when}</dd></div>
-      </dl>
-    </div>
-  );
-}
-
-// 시간축 스트립 — 단기(RSI)·중기(모멘텀 퍼센타일)·장기(팩터 묶음+개수). 각 칸 자기 축으로 정직하게(하나로 안 뭉침).
-function HorizonStrip({ lenses }: { lenses: LensRead[] }) {
-  const t = useTranslations('StockLens');
-  const find = (k: string) => lenses.find((L) => L.key === k) || null;
-  const tech = find('technical');
-  const mom = find('momentum');
-  // STEP 808 §5: pending·na(판정 아님)는 시간축 집계에서 제외 — pending verdict.tone이 'flat'이라 "중립"으로 새던 것 차단.
-  const scored = (L: LensRead | null | undefined): boolean => !!L && L.state !== 'pending' && L.state !== 'na';
-  // 🔴 STEP 819 §2-1: 장기 칸의 '우호' 집계는 닫는 카드(810 §4)와 동일하게 **수익 렌즈만**(밸류·퀄리티·자산성장).
-  //   저변동(위험 축)·F-스코어(건전성 축)는 '수익 우호'로 세지 않는다(범주 오류 제거·같은 페이지 모집단 통일). 각 렌즈는 자기 카드에 그대로 표시됨.
-  const longs = lenses.filter((L) => L.horizon === 'long' && RETURN_LENS.has(L.key) && scored(L));
-
-  const rsiV = tech?.detail?.rsi14 != null ? Math.round(tech.detail.rsi14 as number) : null;
-  const sWord = rsiV == null ? '—' : rsiV >= 70 ? t('word.overbought') : rsiV <= 30 ? t('word.oversold') : t('word.neutral');
-  const sTone = rsiV != null && (rsiV >= 70 || rsiV <= 30) ? 'warn' : 'flat';
-
-  const mTone = scored(mom) ? (mom?.verdict?.tone ?? 'flat') : 'flat'; // pending/na 모멘텀은 중기 축을 '중립'으로 세지 않음
-  // STEP 809 §3: 중기 축=모멘텀(분포 순위·상대)이라 "강세/약세"(절대) 금지 → "상위권/하위권/중간권"으로 카드 verdict와 정합.
-  const mWord = !scored(mom) ? '—' : mTone === 'pos' ? t('word.topRank') : mTone === 'warn' ? t('word.bottomRank') : t('word.neutral');
-
-  const longPills = longs.map((L) => ({ label: L.name, tone: L.verdict?.tone ?? 'flat' })); // longs는 이미 scored+RETURN_LENS 필터됨
-  // STEP 819 §2-1: F-스코어는 '수익 우호' 축이 아니라 장기 칸 집계에서 제외(닫는 카드와 동일 규칙) — F-스코어 카드에 그대로 표시됨.
-  const favN = longPills.filter((p) => p.tone === 'pos').length;
-  const unfavN = longPills.filter((p) => p.tone === 'warn').length;
-  const lStrong = Math.ceil(longPills.length * 0.6);
-  let lWord = '—';
-  let lTone: 'pos' | 'warn' | 'flat' = 'flat';
-  if (longPills.length) {
-    if (favN >= lStrong) { lWord = t('word.mostlyFav'); lTone = 'pos'; }
-    else if (unfavN >= lStrong) { lWord = t('word.mostlyUnfav'); lTone = 'warn'; }
-    else if (favN === 0 && unfavN === 0) { lWord = t('word.unclear'); }
-    else { lWord = t('word.mixed'); }
-  }
-  const pillClass = (tone: string) => tone === 'pos' ? 'bg-unjong-accent/15 text-unjong-accent' : tone === 'warn' ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-background text-unjong-muted';
-
-  return (
-    <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-3.5 shadow-sm">
-      <div className="mb-2.5 flex items-baseline justify-between">
-        <span className="text-[13px] font-bold text-unjong-primary">{t('horizon.title')}</span>      </div>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-        {/* 단기 */}
-        <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
-          <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">{t('horizon.short')} <span className="text-[13px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.shortSub')}</span></span>
-            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{t('horizon.refBadge')}</span>
-          </div>
-          <div className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('horizon.techRsi')}</div>
-          <div className="relative mt-2 h-2">
-            <div className="flex h-2 overflow-hidden rounded-full"><div className="bg-unjong-down/25" style={{ width: '30%' }} /><div className="bg-unjong-background" style={{ width: '40%' }} /><div className="bg-amber-400/45" style={{ width: '30%' }} /></div>
-            {rsiV != null ? <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${rsiV >= 70 ? 'bg-amber-400' : rsiV <= 30 ? 'bg-unjong-down' : 'bg-unjong-muted'}`} style={{ left: `${rsiV}%` }} /> : null}
-          </div>
-          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(sTone)}`}>{sWord}{rsiV != null ? <span className="font-normal text-unjong-muted">{t('horizon.rsiSuffix', { v: rsiV })}</span> : null}</p>
-        </div>
-        {/* 중기 */}
-        <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
-          <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">{t('horizon.mid')} <span className="text-[13px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.midSub')}</span></span>
-            <span className={`rounded px-1.5 py-0.5 text-[13px] sm:text-[10px] ${mom ? gradeBadgeClass(mom.gradeTier) : 'bg-unjong-background text-unjong-muted'}`}>{mom?.grade ?? '—'}</span>
-          </div>
-          <div className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('horizon.momentum')}</div>
-          {mom?.percentile != null ? (
-            <div className="relative mt-2 h-2 rounded-full bg-unjong-background">
-              <div className={`absolute left-0 top-0 h-2 rounded-full ${mTone === 'pos' ? 'bg-unjong-accent/25' : mTone === 'warn' ? 'bg-amber-400/45' : 'bg-unjong-border'}`} style={{ width: `${mom.percentile}%` }} />
-              <div className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${mTone === 'pos' ? 'bg-unjong-accent' : mTone === 'warn' ? 'bg-amber-400' : 'bg-unjong-muted'}`} style={{ left: `${mom.percentile}%` }} />
-            </div>
-          ) : <div className="mt-2 h-2 rounded-full bg-unjong-background" />}
-          <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(mTone)}`}>{mWord}{mom?.percentile != null ? <span className="font-normal text-unjong-muted">{mom.percentile >= 50 ? t('horizon.topPct', { v: Math.max(1, 100 - mom.percentile) }) : t('horizon.botPct', { v: Math.max(1, Math.round(mom.percentile)) })}</span> : null}</p>
-        </div>
-        {/* 장기 */}
-        <div className="rounded-xl border border-unjong-border bg-unjong-background/40 p-3">
-          <div className="flex items-baseline justify-between">
-            <span className="text-sm font-bold text-unjong-primary">{t('horizon.long')} <span className="text-[13px] sm:text-[11px] font-normal text-unjong-muted">{t('horizon.longSub')}</span></span>
-            <span className="rounded bg-unjong-background px-1.5 py-0.5 text-[13px] sm:text-[10px] text-unjong-muted">{t('horizon.factorBadge')}</span>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-1">
-            {longPills.length ? longPills.map((p, i) => <span key={i} className={`rounded-full px-1.5 py-0.5 text-[13px] sm:text-[10px] font-medium ${pillClass(p.tone)}`}>{p.label}</span>) : <span className="text-[13px] sm:text-[11px] text-unjong-muted">—</span>}
-          </div>
-          {longPills.length ? <p className={`mt-2 text-[13px] sm:text-[12px] font-medium ${toneText(lTone)}`}>{lWord} <span className="font-normal text-unjong-muted">{t('horizon.favCount', { total: longPills.length, fav: favN })}</span></p> : null}
-        </div>
-      </div>
-      <div className="mt-2.5 rounded-lg bg-unjong-background px-3 py-2 text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">
-        {/* STEP 809 §3: 세 축 톤이 실제로 갈릴 때만 "결이 달라요" — 동일하면 "비슷하게 정렬" (무조건 '달라요' 거짓 제거). */}
-        {t.rich(new Set([sTone, mTone, lTone]).size > 1 ? 'horizon.summary' : 'horizon.summarySame', {
-          short: sWord, mid: mWord, long: lWord,
-          s: (c) => <b className={toneText(sTone)}>{c}</b>,
-          m: (c) => <b className={toneText(mTone)}>{c}</b>,
-          l: (c) => <b className={toneText(lTone)}>{c}</b>,
-        })}
-      </div>
-    </div>
-  );
-}
-
-const SUMMARY_CLASS = 'cursor-pointer list-none text-[13px] sm:text-[11px] text-unjong-muted hover:text-unjong-accent [&::-webkit-details-marker]:hidden';
-
-// 렌즈 플래그 칩(헤더) — A 있으면 ⚠️ 자료 갱신 우선, 아니면 📌 새 소식.
-function FlagChip({ flags }: { flags?: Flag[] }) {
-  const t = useTranslations('StockLens');
-  if (!flags?.length) return null;
-  const a = flags.some((x) => x.klass === 'A');
-  return <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[13px] sm:text-[10px] font-medium ${a ? 'bg-amber-400/10 text-amber-300' : 'bg-unjong-accent/10 text-unjong-accent'}`}>{a ? <AlertTriangle size={10} /> : <Info size={10} />}{a ? t('flag.update') : t('flag.news')}</span>;
-}
-
-// 렌즈 플래그 박스(펼침) — A(근거 흔듦)/B(새 사실) 분리. 방향 판정 아님.
-function FlagBox({ flags }: { flags?: Flag[] }) {
-  const t = useTranslations('StockLens');
-  if (!flags?.length) return null;
-  const aFlags = flags.filter((x) => x.klass === 'A');
-  const bFlags = flags.filter((x) => x.klass === 'B');
-  return (
-    <div className="mb-3 space-y-2">
-      {aFlags.length ? (
-        <div className="rounded-lg border border-amber-400/20 bg-amber-400/10 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[13px] sm:text-[11px] font-medium text-amber-300"><AlertTriangle size={11} /> {t('flag.aTitle')}</p>
-          {aFlags.map((f, i) => <p key={i} className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
-        </div>
-      ) : null}
-      {bFlags.length ? (
-        <div className="rounded-lg border border-unjong-accent/30 bg-unjong-accent/5 px-2.5 py-2">
-          <p className="flex items-center gap-1 text-[13px] sm:text-[11px] font-medium text-unjong-accent"><Info size={11} /> {t('flag.bTitle')}</p>
-          {bFlags.map((f, i) => <p key={i} className="mt-0.5 text-[13px] sm:text-[11px] text-unjong-muted">{f.date} · {f.label}</p>)}
-        </div>
-      ) : null}
-      <p className="text-[13px] sm:text-[10px] text-unjong-muted">{t('flag.source')}</p>
-    </div>
-  );
-}
-
-function FScoreCard({ f, flags }: { f: FScoreResp; flags?: Flag[] }) {
-  const t = useTranslations('StockLens');
-  const tMaterial = useTranslations('LensPreview');
-  const locale = pickLocale(useLocale()); // 렌즈 카피는 언어별 맵 — ko 고정하면 en 화면에 한국어가 샌다
-  const [open, setOpen] = useState(false);
-  if (!f.supported) {
-    return (
-      <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4 shadow-sm">
-        <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, 'fscore')}</p>
-        <p className="mt-0.5 text-[11px] text-unjong-muted">{LENS_COPY[locale].fscore.name} · Piotroski F-Score</p>
-        <p className="mt-2 text-sm text-unjong-muted">{f.reason || t('fscore.unsupported')}</p>
-      </div>
-    );
-  }
-  const band = f.score >= 7 ? t('fscore.bandGood') : f.score <= 3 ? t('fscore.bandWeak') : t('fscore.bandMid');
-  // key = API의 c.group 값(데이터 매칭용·번역 금지) / label·sub = 표시용
-  const GROUPS: Array<{ key: string; label: string; sub: string }> = [
-    { key: '수익성', label: t('fscore.groupProfitability'), sub: t('fscore.groupProfitabilitySub') },
-    { key: '재무 안정성', label: t('fscore.groupStability'), sub: t('fscore.groupStabilitySub') },
-    { key: '효율성', label: t('fscore.groupEfficiency'), sub: t('fscore.groupEfficiencySub') },
-  ];
-  return (
-    <div className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
-      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-start justify-between gap-3 p-4 text-left transition-colors hover:bg-unjong-background/40">
-        <div className="min-w-0">
-          <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, 'fscore')}</p>
-          <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-            <span className="text-[11px] text-unjong-muted">{LENS_COPY[locale].fscore.name} · Piotroski F-Score</span>
-            <FlagChip flags={flags} />
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <span className="whitespace-nowrap rounded bg-amber-400/10 px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium text-amber-300">{t('fscore.badge')}</span>
-          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${open ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-          </span>
-        </div>
-      </button>
-      {/* STEP 819 §1: F-스코어도 다른 6렌즈와 동일하게 scope(검증 범위·한계·조건)를 노출 — 로그인 게이트 밖(무료). 818이 쓴 scope가 dead copy였던 것 수정. */}
-      {open ? <ScopeBlock lensKey="fscore" loc={locale} /> : null}
-      {open ? (
-        <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
-          <FlagBox flags={flags} />
-          {/* 판정 — 9칸 트래커 + 점수 */}
-          <div className="mt-3.5 flex items-center justify-between gap-3">
-            <div className="flex flex-1 gap-[3px]" style={{ maxWidth: 240 }}>
-              {Array.from({ length: f.max }, (_, i) => (
-                <span key={i} className={`h-3 flex-1 rounded-sm ${i < f.score ? 'bg-unjong-accent' : 'border border-unjong-border bg-unjong-background'}`} />
-              ))}
-            </div>
-            <span className="whitespace-nowrap text-base font-bold text-unjong-primary">{f.score}<span className="text-[13px] sm:text-xs font-normal text-unjong-muted"> / {f.max}</span></span>
-          </div>
-          <p className="mt-2 text-[13px] leading-relaxed text-unjong-primary">{t.rich('fscore.scoreLine', {
-            score: f.score,
-            band,
-            asOf: f.asOf ? t('fscore.asOf', { d: f.asOf }) : '',
-            m: (c) => <span className="text-unjong-muted">{c}</span>,
-          })}</p>
-
-          {/* 자세히 — 9항목 3그룹 */}
-          <details className="mt-3.5 border-t border-unjong-border pt-3">
-            <summary className={SUMMARY_CLASS}>{t('fscore.detailsItems')}</summary>
-            <div className="mt-2.5 space-y-3">
-              {GROUPS.map((g) => {
-                const items = f.criteria.filter((c) => c.group === g.key);
-                const passed = items.filter((c) => c.pass).length;
-                return (
-                  <div key={g.key}>
-                    <div className="flex items-baseline justify-between">
-                      <span className="text-[13px] sm:text-[12px] font-medium text-unjong-primary">{g.label} <span className="font-normal text-unjong-muted">{g.sub}</span></span>
-                      <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t.rich('fscore.passed', {
-                        passed,
-                        total: items.length,
-                        n: (c) => <span className={passed > 0 ? 'font-medium text-unjong-accent' : 'font-medium text-amber-400'}>{c}</span>,
-                      })}</span>
-                    </div>
-                    <div className="mt-1 space-y-0.5">
-                      {items.map((c) => (
-                        <div key={c.key} className="flex items-baseline gap-1.5 text-[13px] sm:text-[12px]">
-                          <span className={c.pass ? 'text-unjong-up' : 'text-unjong-muted'}>{c.pass ? '✓' : '✗'}</span>
-                          <span className="text-unjong-primary">{c.label} <span className="text-unjong-muted">({c.plain})</span></span>
-                          <span className="ml-auto whitespace-nowrap tabular-nums text-unjong-muted">{c.note}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </details>
-
-          {/* 자세히 — 점수 기준·유래·왜 건전성 */}
-          <details className="mt-2.5">
-            <summary className={SUMMARY_CLASS}>{t('fscore.detailsBasis')}</summary>
-            <div className="mt-2 space-y-2 border-l-2 border-unjong-border pl-2.5">
-              <div>
-                <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.howToRead')}</p>
-                <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.howToReadBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
-              </div>
-              <div>
-                <p className="text-[11.5px] font-medium text-unjong-primary">{t('fscore.whyFinHealth')}</p>
-                <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t.rich('fscore.whyFinHealthBody', { s: (c) => <span className="text-unjong-primary">{c}</span> })}</p>
-              </div>
-            </div>
-          </details>
-
-          {/* 렌즈 계산 서사(STEP 787 — 상시 노출, 접힘 제거). 9항목은 위에 이미 있으니 중복 노출 없이 서사만(과적재 금지). */}
-          <div className="mt-2.5 space-y-1.5 border-t border-unjong-border pt-2.5">
-            <p className="text-[14px] leading-7 text-unjong-primary/90">
-              {t('narrativeMethodFscore')}{' '}{t('narrativeStockFscore', { score: f.score, max: f.max, band })}
-            </p>
-            <p className="text-[11px] text-unjong-muted">{tMaterial('material')}</p>
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 // 이벤트 severity → 점 색(사실의 무게지 방향 아님)
 function sevDot(sev: string): string {
   return sev === 'serious' ? 'bg-unjong-danger' : sev === 'watch' ? 'bg-amber-400' : 'bg-unjong-muted';
@@ -899,7 +416,7 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
   const locale = pickLocale(useLocale()); // 뉴스요약도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 요약이 온다
   const [d, setD] = useState<{ summary: string; tags: string[] } | null>(null);
-  // STEP 809 §6: 실패(429·502·500)를 조용히 숨기지 않는다 — 진짜 '뉴스 없음'(200+summary:null)만 숨기고 실패는 결측 1줄(StockBrief와 동일).
+  // STEP 809 §6: 실패(429·502·500)를 조용히 숨기지 않는다 — 진짜 '뉴스 없음'(200+summary:null)만 숨기고 실패는 결측 1줄로 표시.
   const [state, setState] = useState<'loading' | 'done' | 'hide' | 'error'>('loading');
   useEffect(() => {
     let alive = true;
@@ -933,49 +450,6 @@ function StockNewsBrief({ symbol }: { symbol: string }) {
           </>)}
     </div>
   );
-}
-
-// R2: 종목 브리핑(지연 로드·하루 1회 캐시). LLM이 결정론 판정+공시 사실로 '핵심 긴장+지켜볼 것'을 1문단 — 예측·판정 아님.
-function StockBrief({ symbol }: { symbol: string }) {
-  const t = useTranslations('StockLens');
-  const locale = pickLocale(useLocale()); // 브리핑도 로케일별 생성·캐시(?lang=) — 안 넘기면 en 화면에 한국어 브리핑이 온다
-  const [brief, setBrief] = useState('');
-  // STEP 797 §5: 실패를 무음 처리하지 않는다(공시는 "없어요"라 말하는데 브리핑만 사라지는 정책 불일치 제거).
-  // nodata=데이터 자체 없음(생성 전·비대상)→숨김 / error=실패→결측 1줄(loadError 재사용).
-  const [state, setState] = useState<'loading' | 'done' | 'error' | 'nodata'>('loading');
-  useEffect(() => {
-    let alive = true;
-    setState('loading');
-    fetch('/api/brief?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
-      .then((r) => r.json())
-      .then((j) => { if (!alive) return; if (j.brief) { setBrief(j.brief); setState('done'); } else if (j.error === 'no_data') setState('nodata'); else setState('error'); })
-      .catch(() => { if (alive) setState('error'); });
-    return () => { alive = false; };
-  }, [symbol, locale]);
-  if (state === 'nodata') return null; // 데이터 자체가 없음(생성 전·비대상) — 숨김
-  return (
-    <div className="mb-3 rounded-2xl border border-unjong-accent/20 bg-unjong-accent/5 p-3.5">
-      <div className="mb-1.5 flex items-center gap-1.5">
-        <Sparkles size={14} className="text-unjong-accent" />
-        <span className="text-[13px] font-bold text-unjong-accent">{t('brief.title')}</span>
-        <span className="ml-auto text-[13px] sm:text-[10px] text-unjong-muted">{t('brief.badge')}</span>
-      </div>
-      {state === 'loading'
-        ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('brief.loading')}</p>
-        : state === 'error'
-        ? <p className="text-[13px] sm:text-[12px] text-unjong-muted">{t('loadError')}</p>
-        : <p className="text-[15px] leading-relaxed sm:text-[13px] text-unjong-primary">{brief}</p>}
-    </div>
-  );
-}
-
-function buildLensFlags(events: MatEvent[]): Record<string, Flag[]> {
-  const map: Record<string, Flag[]> = {};
-  for (const e of events) for (const d of e.defs) {
-    if (d.klass === 'general' || !d.flagLens) continue; // 확실히 영향 주는 이벤트만 렌즈 플래그(애매한 건 리스트에만)
-    for (const key of d.lenses) (map[key] ||= []).push({ klass: d.klass, label: d.label, date: e.date });
-  }
-  return map;
 }
 
 // 이벤트 사실 레이어 — 최근 중대 8-K(사실만·예측 없음). 렌즈 점수엔 안 섞임.
@@ -1106,9 +580,6 @@ function EventLayer({ events, symbol }: { events: MatEvent[]; symbol: string }) 
   );
 }
 
-const H_TITLE: Record<string, string> = { short: 'horizon.short', mid: 'horizon.mid', long: 'horizon.long' };
-const H_SUB: Record<string, string> = { short: 'horizon.shortSub', mid: 'horizon.midSub', long: 'horizon.longSub' };
-
 
 // 상세 헤더 아이콘 전용 관심 별(STEP 771 §2) — 모바일 리스트 별 제거의 대체 진입점. market 관례=KR만 'KRX', 그 외는 country와 동일(보드 컴포넌트들과 동일 규칙).
 function WatchStarToggle({ symbol, name, country }: { symbol: string; name: string; country: string }) {
@@ -1163,8 +634,7 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
 
 export default function StockLensClient({ initialName }: { initialName?: string }) {
   const t = useTranslations('StockLens');
-  const tf = useTranslations('Favorites'); // 헤더 요약 카운트·로딩 라벨 재사용(신규 키 없이 패리티 무리스크)
-  const locale = pickLocale(useLocale()); // 렌즈 엔진 언어(?lang=) + 배지 — 안 넘기면 en 화면에 한국어 렌즈가 온다
+  const locale = pickLocale(useLocale()); // 가격 포맷·번역 언어(?lang=) — 안 넘기면 en 화면에 한국어가 온다
   const params = useParams();
   const router = useRouter();
   const symbol = decodeURIComponent(String(params?.symbol || ''));
@@ -1174,19 +644,19 @@ export default function StockLensClient({ initialName }: { initialName?: string 
   const isVN = /\.VN$/i.test(symbol); // VN {TICKER}.VN → 공시(Google News RSS·vi) 층
   const isCN = /(\d{6}\.(SS|SZ)|\d{1,5}\.HK)$/i.test(symbol); // A주 cninfo + HK HKEXnews
   const [data, setData] = useState<LensResp | null>(null);
-  const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<MatEvent[]>([]);
-  const { user, isLoading: authLoading } = useAuthStore(); // 렌즈 카드 펼침(근거 상세) 로그인 게이트(STEP 760) — 접힘 상태는 비로그인에도 그대로
 
+  // 🔴 2026-09-05(ORDER_트릴리언종목페이지비우기): 렌즈 카드·F스코어·AI 브리핑 등 모델 UI는 지웠지만
+  // 이 fetch는 그대로 둔다 — 현재가·등락률·거래대금·이름이 /api/lens 응답에 같이 담겨 있어(계산 로직은
+  // 이번 STEP에서 안 건드림), 호출까지 끊으면 가격 표시가 사라진다. data.lenses/data.fscore는 이제 안 쓴다.
   useEffect(() => {
     if (!symbol) return;
     let alive = true;
-    setLoading(true);
-    setData(null); // 심볼·로케일 변경 시 옛 데이터 즉시 비움 — 실패해도 이전 종목 렌즈가 새 종목 화면에 남지 않게(STEP 800 §3)
+    setData(null); // 심볼·로케일 변경 시 옛 데이터 즉시 비움
     fetch('/api/lens?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
-      .then((j) => { if (alive) { setData(j); setLoading(false); } }) // 이전 요청 응답 무시(레이스)
-      .catch(() => { if (alive) setLoading(false); }); // 실패 = loading 끝 + data null → 기존 loadError 경로
+      .then((j) => { if (alive) setData(j); })
+      .catch(() => {});
     return () => { alive = false; };
   }, [symbol, locale]);
 
@@ -1200,192 +670,7 @@ export default function StockLensClient({ initialName }: { initialName?: string 
     return () => { cancelled = true; };
   }, [symbol, locale]);
 
-  const [openLens, setOpenLens] = useState<Set<string>>(new Set());
-  const lenses = data?.lenses ?? [];
-  const lensFlags = buildLensFlags(events);
-
-  // 헤더 압축 렌즈 요약(30초 글랜스) — WatchlistClient tone 추출과 동일 로직(pos/warn/flat + fscore).
-  // STEP 802 §4: 결측(state==='na', 예: 은행 GP/A·적자 PER)은 verdict tone이 'flat'이라 예전엔 "보통 1표"로 섞였음
-  // → "판단할 근거 없음"이 "중립으로 판단됨"으로 오독. 집계(헤더·닫는카드·시간축)에선 na를 세지 않고 개수만 따로 표기.
-  const headerTones: ('pos' | 'warn' | 'flat')[] = [];
-  let naCount = 0;
-  let pendingCount = 0; // STEP 806 §2: 컷 없음(기준 준비 중)은 판정한 게 아니라 집계 제외 + 별도 표기
-  for (const l of lenses) {
-    // STEP 809 §6: 가격계열 부족(모멘텀 252봉·저변동 120봉 미만)이면 state=null(값도 null) — na와 함께 '결측'으로 세고(집계 제외) 카드에 명시 표시.
-    if (l.state === 'na' || l.state == null) { naCount++; continue; } // 카드엔 "산출 불가"로 여전히 표시 · 집계에서만 제외
-    if (l.state === 'pending') { pendingCount++; continue; } // '기준 준비 중'을 '보통'으로 세지 않음(자기모순 방지)
-    const tone = l.verdict?.tone;
-    if (tone === 'pos' || tone === 'warn' || tone === 'flat') headerTones.push(tone);
-  }
-  // STEP 829 §7: supported=true여도 score 없으면 0으로 날조 금지(804 §1 잔여·관심화면과 동일 버그) — 실수치일 때만 도트.
-  // 🔴 STEP 830 §1: F-스코어 카드는 supported가 아니어도 렌더되고(제목 N=7에 포함), 판정 못하면 '판정하지 않음'(naCount)에 넣어야
-  //   제목 N = 강점+주의+보통+판정안함+준비중 합계가 항상 일치(예전엔 미지원 F-스코어가 어느 버킷에도 안 세어져 7인데 합=6).
-  if (data?.fscore?.supported && typeof data.fscore.score === 'number') {
-    const score = data.fscore.score;
-    headerTones.push(score >= 7 ? 'pos' : score <= 3 ? 'warn' : 'flat');
-  } else if (data?.fscore) {
-    naCount++;
-  }
-  const headerPos = headerTones.filter((x) => x === 'pos').length;
-  const headerWarn = headerTones.filter((x) => x === 'warn').length;
-  const headerFlat = headerTones.filter((x) => x === 'flat').length;
-
-  // "7가지 방법을 종합하면" 닫는 카드 재료(STEP 788) — 전부 이미 계산된 verdict.tone 재사용(새 계산 없음).
-  // 카운트는 위 headerPos/Warn/Flat을 그대로 재사용해 상단 헤더와 100% 동일 보장(별도 계산 안 함).
-  const closingPosLabels: string[] = [];
-  const closingWarnLabels: string[] = [];
-  const byHorizon: Record<'short' | 'mid' | 'long', ('pos' | 'warn' | 'flat')[]> = { short: [], mid: [], long: [] };
-  // 🔴 STEP 810 §3·§4: 저변동·기술은 '수익 우호'가 아니라 종합 verdict·강점 나열에서 제외(범주 오류 방지). RETURN_LENS = 모듈 상수(819 §2·시간축과 공유).
-  for (const l of lenses) {
-    if (l.state === 'na' || l.state === 'pending') continue; // 결측·기준 준비 중 제외(STEP 802 §4·806 §2)
-    if (!RETURN_LENS.has(l.key)) continue; // 저변동·기술 제외(수익 신호 아님)
-    const tone = l.verdict?.tone;
-    if (tone === 'pos') closingPosLabels.push(lensShortLabel(locale, l.key));
-    else if (tone === 'warn') closingWarnLabels.push(lensShortLabel(locale, l.key));
-    if (tone) byHorizon[l.horizon].push(tone);
-  }
-  // F-Score(재무 건전성)는 '수익 우호' 축이 아니라 종합 verdict에서 제외(§4 범주 오류 방지) — 개별 카드·헤더 카운트엔 그대로.
-  const returnEvidence = byHorizon.short.length + byHorizon.mid.length + byHorizon.long.length; // 종합 판정을 뒷받침한 수익 렌즈 수(§4)
-  function axisMajority(tones: ('pos' | 'warn' | 'flat')[]): 'pos' | 'warn' | 'flat' | null {
-    if (!tones.length) return null;
-    const pos = tones.filter((x) => x === 'pos').length;
-    const warn = tones.filter((x) => x === 'warn').length;
-    const flat = tones.length - pos - warn;
-    if (pos > warn && pos > flat) return 'pos';
-    if (warn > pos && warn > flat) return 'warn';
-    return 'flat';
-  }
-  const shortAxisTone = axisMajority(byHorizon.short);
-  const midAxisTone = axisMajority(byHorizon.mid);
-  const longAxisTone = axisMajority(byHorizon.long);
-  const closingAxes = [shortAxisTone, midAxisTone, longAxisTone].filter((x): x is 'pos' | 'warn' | 'flat' => x != null);
-  // 분기 4개 + 혼재 폴백(총 5개) — 데이터 자체가 없으면(closingAxes 0) 문장 생략(정직 결측).
-  // STEP 802 §4: 계산된 렌즈(na 제외)가 3개 미만이면 종합 판단을 내리지 않고 "근거 부족"으로(근거 1개로 '대체로 유리' 방지).
-  // 🔴 STEP 810 §4: 종합 문장은 '수익 렌즈' 근거가 3개 이상일 때만 — 1~2개면 "근거 적어 종합 안 함"(기술 1개로 '짧게 보든' 방지).
-  let closingSentenceKey: string | null = null;
-  if (returnEvidence < 3) {
-    closingSentenceKey = returnEvidence > 0 ? 'closingInsufficient' : null;
-  } else if (closingAxes.length > 0) {
-    if (closingAxes.every((x) => x === 'pos')) closingSentenceKey = 'closingAllPos';
-    else if (closingAxes.every((x) => x === 'warn')) closingSentenceKey = 'closingAllWarn';
-    else if (longAxisTone === 'pos' && (shortAxisTone === 'warn' || midAxisTone === 'warn')) closingSentenceKey = 'closingLongPosShortWarn';
-    else if (longAxisTone === 'warn' && (shortAxisTone === 'pos' || midAxisTone === 'pos')) closingSentenceKey = 'closingLongWarnShortPos';
-    else closingSentenceKey = 'closingMixed';
-  }
-
-  // 파트 헤더 목록 줄(STEP 791) — "7가지가 뭔지" 명시. 실제 렌더 순서(호라이즌 그룹 short→mid→long, 그룹 내부는
-  // 카운트 = 실제 렌더되는 카드 수와 같은 소스에서 도출(STEP 798 §4). F-Score 카드는 supported가 아니어도
-  // "데이터 부족" 카드로 렌더되므로(아래 showFs = !!(data&&data.fscore)), 라벨/개수도 그 조건과 동일하게 센다.
-  // (예전엔 supported일 때만 세서 "6가지인데 카드 7장"·극단적으로 "0가지" 불일치가 났음.)
-  const partHeaderLabels: string[] = [];
-  (['short', 'mid', 'long'] as const).forEach((h) => {
-    for (const l of lenses) {
-      if (l.horizon === h) partHeaderLabels.push(lensShortLabel(locale, l.key));
-    }
-    if (h === 'long' && data?.fscore) partHeaderLabels.push(lensShortLabel(locale, 'fscore'));
-  });
-  const partHeaderCount = partHeaderLabels.length;
-
   const ticker = symbol.replace(/\.(KS|KQ|T|HK|SS|SZ|VN|L)$/, '');
-  const toggleLens = (k: string) => setOpenLens((s) => { const n = new Set(s); if (n.has(k)) n.delete(k); else n.add(k); return n; });
-
-  const renderCard = (L: LensRead) => {
-    const isOpen = openLens.has(L.key);
-    const cardFlags = lensFlags[L.key];
-    const viz = L.key === 'technical'
-      ? <RsiZone rsi={L.detail.rsi14 ?? null} maPct={L.detail.ma200vs ?? null} />
-      : (L.percentile != null && FACTOR_ENDS[L.key])
-        ? <PctGauge pctl={L.percentile} tone={L.verdict?.tone} lo={t(FACTOR_ENDS[L.key].lo)} hi={t(FACTOR_ENDS[L.key].hi)} />
-        : (L.spectrum ? <Spectrum labels={L.spectrum.labels} active={L.spectrum.active} tone={L.verdict?.tone} /> : null);
-    return (
-      <div key={L.key} className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface shadow-sm">
-        {/* 초보 우선 헤더(STEP 787) — 질문형 제목 주연·학술명은 작은 앵커 줄로. 모바일=세로 2행·sm+=3열 그리드(786 구조 유지). */}
-        <button type="button" onClick={() => toggleLens(L.key)} aria-expanded={isOpen} className="flex w-full flex-col gap-1.5 p-4 text-left transition-colors hover:bg-unjong-background/40 sm:grid sm:grid-cols-[auto_1fr_auto] sm:items-center sm:gap-x-3 sm:gap-y-0">
-          <div className="flex items-center justify-between gap-3 sm:contents">
-            <div className="min-w-0">
-              <p className="text-[15px] font-medium text-unjong-primary">{lensQuestion(locale, L.key)}</p>
-              <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span className="text-[11px] text-unjong-muted">{L.name} · {L.nameEn}</span>
-                <FlagChip flags={cardFlags} />
-              </div>
-            </div>
-            <div className="flex shrink-0 items-center gap-2 sm:order-last sm:justify-self-end">
-              <span className={`whitespace-nowrap rounded px-1.5 py-0.5 text-[13px] sm:text-[11px] font-medium ${gradeBadgeClass(L.gradeTier)}`}>{L.grade}</span>
-              <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-unjong-border bg-unjong-surface text-unjong-muted">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-              </span>
-            </div>
-          </div>
-          <div className="min-w-0">
-            {!isOpen && L.verdict ? (
-              <span className="flex flex-wrap items-baseline gap-x-2">
-                <span className={`text-[15px] font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
-                {L.headline ? <span className="text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
-              </span>
-            ) : null}
-          </div>
-        </button>
-        {/* 🔴 STEP 810 §1: "이 기법이 검증한 것"(검증 범위·한계·조건) — 로그인 게이트 밖(무료). 가장 강한 주장의 단서를 무료로 공개. */}
-        {isOpen ? <ScopeBlock lensKey={L.key} loc={locale} /> : null}
-        {isOpen && !authLoading && !user ? ( // 하이드레이션 중 게이트 번쩍 방지(STEP 804 §6)
-          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
-            {/* 🔴 STEP 827 §3: 비로그인이 펼쳐도 판정·headline·읽는법은 유지(정보를 빼지 않는다) — 게이트는 근거 상세(서사·컷·detail)에만. 810 §1 비대칭 제거와 같은 방향. */}
-            {L.verdict ? (
-              <div className="mb-3">
-                <span className="flex flex-wrap items-baseline gap-x-2">
-                  <span className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</span>
-                  {L.headline ? <span className="text-[13px] sm:text-[12px] tabular-nums text-unjong-muted">{L.headline}</span> : null}
-                </span>
-                {L.verdict.plain ? <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{L.verdict.plain}</p> : null}
-              </div>
-            ) : null}
-            {/* 🔴 STEP 830 §3: 결측(판정·서사 둘 다 없음) 렌즈는 비로그인에도 '결측'을 먼저 말한다 — 없는 데이터를 로그인 뒤에 있는 것처럼 팔지 않는다. 잠긴 게 없으니 게이트도 안 띄운다(827 §3 '정보 안 뺀다'의 잔여 구멍). */}
-            {!L.verdict && !hasLensNarrative(L) ? (
-              <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t('insufficient')}</p>
-            ) : (
-            <div className="flex flex-col items-center gap-2 rounded-xl border border-unjong-border bg-unjong-surface p-5 text-center">
-              <Lock size={18} className="text-unjong-muted" />
-              <p className="text-sm font-semibold text-unjong-primary">{t('gateTitle')}</p>
-              <p className="text-[13px] leading-relaxed text-unjong-muted">{t('gateBody')}</p>
-              <Link
-                href={`/auth/login?next=${encodeURIComponent('/stock/' + symbol)}`}
-                className="mt-1 rounded-lg bg-unjong-accent px-4 py-2 text-[13px] font-semibold text-unjong-strong hover:bg-unjong-accent/90"
-              >
-                {t('gateCta')}
-              </Link>
-            </div>
-            )}
-          </div>
-        ) : isOpen ? (
-          <div className="border-t border-unjong-border bg-unjong-background/50 px-4 pb-4 pt-3.5">
-            <FlagBox flags={cardFlags} />
-            {/* PC(lg+) 2단: 좌=결과(판정+게이지) · 우=설명(서사+근거+한계). 헤더가 이미 질문·학술명·등급을 보여줘 여기선 반복 안 함(STEP 789 §1 — 중복 제거). */}
-            <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:gap-4">
-              <div className="min-w-0">
-                {L.verdict ? (
-                  <div className="flex items-baseline justify-between gap-2">
-                    <p className={`text-base font-bold ${verdictColor(L.verdict.tone)}`}>{L.verdict.phrase}</p>
-                    {L.headline ? <span className="whitespace-nowrap text-[13px] sm:text-[12px] text-unjong-muted">{L.headline}</span> : null}
-                  </div>
-                ) : null}
-                {viz}
-              </div>
-              <div className="mt-3.5 min-w-0 lg:mt-0">
-                {/* "이 기법 방향"(outlook) 라벨·블록 제거(서사에 흡수·STEP 789 §2) — 서사가 안 뜨는 렌즈만(na 포함) verdict.plain 안전망으로 대체. */}
-                {!hasLensNarrative(L) && L.verdict ? <p className="text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{L.verdict.plain}</p> : null}
-                {/* STEP 809 §6: verdict·서사 둘 다 없는 결측(가격계열 부족 등) — 빈 카드 대신 명시적 결측 문구 */}
-                {!hasLensNarrative(L) && !L.verdict ? <p className="text-[13px] sm:text-[12px] leading-relaxed text-unjong-muted">{t('insufficient')}</p> : null}
-                <LensNarrative L={L} loc={locale} market={countryOf(symbol)} />
-                {/* STEP 831 §10: 깊이(분해·추이·분포) — 근거 상세라 로그인 게이트 안(이 분기). */}
-                <LensDepth L={L} loc={locale} country={countryOf(symbol)} />
-                {L.note ? <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] leading-relaxed text-unjong-muted">{L.note}</p> : null}
-              </div>
-            </div>
-          </div>
-        ) : null}
-      </div>
-    );
-  };
 
   return (
     <main className="mx-auto max-w-[1040px] px-4 py-6 sm:px-6">
@@ -1395,9 +680,6 @@ export default function StockLensClient({ initialName }: { initialName?: string 
       </button>
 
       <div className="mt-3 max-w-4xl">
-        <div className="mb-1.5 flex items-center gap-2">
-          <AiLensBadge pill lang={locale} />
-        </div>
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <div className="mb-1 flex flex-wrap items-baseline gap-x-2">
@@ -1417,106 +699,20 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           </div>
           <WatchStarToggle symbol={symbol} name={initialName || data?.name || ticker} country={countryOf(symbol)} />
         </div>
-
-        {loading || !data ? (
-          <div className="mt-2 flex items-center gap-2">
-            <div className="flex shrink-0 items-center gap-1">
-              {Array.from({ length: 7 }).map((_, i) => (
-                <span key={i} className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-border" />
-              ))}
-            </div>
-            <span className="text-[13px] sm:text-[11px] text-unjong-muted">{tf('lensLoading')}</span>
-          </div>
-        ) : headerTones.length > 0 ? (
-          <div className="mt-2">
-            <div className="flex items-center gap-2">
-              <div className="flex shrink-0 items-center gap-1">
-                {headerTones.map((tone, i) => (
-                  <span key={i} className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[tone]}`} />
-                ))}
-              </div>
-              <span className="text-[13px] sm:text-[11px] font-medium text-unjong-muted">{tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}{pendingCount > 0 ? ` · ${t('pendingNote', { n: pendingCount })}` : ''}</span>
-            </div>
-          </div>
-        ) : null}
-
-        {/* 상단 안내 4→1 통합(STEP 790) — "판단은 당신" 역할은 이 한 줄이 전담(788 닫는 카드 푸터에도 별도 1회 있어 페이지 상·하단 각 1회). */}
-        <details className="mt-3">
-          <summary className="cursor-pointer list-none text-[13px] sm:text-xs leading-relaxed text-unjong-muted [&::-webkit-details-marker]:hidden">
-            {t('intro')} <span className="font-medium text-unjong-accent">{t('readingGuideSummary')}</span>
-          </summary>
-          <p className="mt-1.5 text-[13px] sm:text-xs leading-relaxed text-unjong-muted">{t.rich('readingGuide', {
-            b: (c) => <b className="text-unjong-primary">{c}</b>,
-            v: (c) => <span className="text-unjong-accent">{c}</span>,
-            d: (c) => <span className="text-unjong-success">{c}</span>, // STEP 819 §4: 검증(방어) 배지 = 저변동(위험 방어). 배지 색(strong tier=success)과 맞춤.
-            w: (c) => <span className="text-amber-400">{c}</span>,
-            r: (c) => <span className="text-unjong-muted">{c}</span>,
-            f: (c) => <span className="text-amber-400">{c}</span>,
-          })}</p>
-        </details>
       </div>
 
-      {loading ? (
-        <div className="mt-4 max-w-4xl space-y-3">
-          {[0, 1, 2, 3].map((i) => <div key={i} className="h-28 animate-pulse rounded-xl bg-unjong-background" />)}
+      {/* 🔴 2026-09-05: 리포트 자리 — 채널 리포트가 국가별 시간순으로 쌓일 빈 그릇(ORDER_트릴리언종목페이지비우기_0905) */}
+      <div className="mt-4 max-w-4xl">
+        <div className="rounded-2xl border border-dashed border-unjong-border bg-unjong-surface/50 p-6 text-center">
+          <p className="text-sm font-medium text-unjong-primary">{t('reportComingSoon')}</p>
+          <p className="mt-1 text-[13px] leading-relaxed text-unjong-muted">{t('reportComingSoonDesc')}</p>
         </div>
-      ) : lenses.length === 0 && !data?.fscore ? (
-        <p className="mt-6 text-center text-sm text-unjong-muted">{t('loadError')}</p>
-      ) : (
-        <div className="mt-4 max-w-4xl">
-          <StockBrief symbol={symbol} />
-          {lenses.length ? <HorizonStrip lenses={lenses} /> : null}
-          {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : isCN ? <CnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
-          <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
-          {/* 파트 구분 헤더(STEP 788) + 목록 노출(STEP 791) — 시간축 요약(위)과 렌즈 하나하나(아래) 사이. 접힘 아님.
-              카운트 0이면(카드 0장) 헤더 자체를 안 그림(결측 문법·STEP 798 §4). */}
-          {partHeaderCount > 0 ? (
-            <div className="mb-1 mt-6 border-t border-unjong-border pt-5">
-              <h2 className="text-base font-bold text-unjong-primary">{t('partHeaderTitle', { n: partHeaderCount })}</h2>
-              <p className="mt-1 text-[13px] sm:text-[11px] leading-relaxed text-unjong-primary/90">{partHeaderLabels.join(' · ')}</p>
-              <p className="mt-1 text-[13px] sm:text-[11px] text-unjong-muted">{t.rich('partHeaderSub', {
-                n: partHeaderCount,
-                a: (chunks) => <Link href="/about" className="text-unjong-accent hover:underline">{chunks}</Link>,
-              })}</p>
-            </div>
-          ) : null}
-          {(['short', 'mid', 'long'] as const).map((h) => {
-            const group = lenses.filter((L) => L.horizon === h);
-            const showFs = h === 'long' && !!(data && data.fscore);
-            if (!group.length && !showFs) return null;
-            return (
-              <section key={h}>
-                <div className="mb-2 mt-5 flex items-baseline gap-2">
-                  <h2 className="text-sm font-bold text-unjong-primary">{t(H_TITLE[h])}</h2>
-                  <span className="text-[13px] sm:text-[11px] text-unjong-muted">{t(H_SUB[h])}</span>
-                </div>
-                <div className="space-y-4">
-                  {group.map(renderCard)}
-                  {showFs && data && data.fscore ? <FScoreCard f={data.fscore} flags={lensFlags['fscore']} /> : null}
-                </div>
-              </section>
-            );
-          })}
-          {/* 닫는 카드 "{n}가지 방법을 종합하면"(STEP 788) — 전부 이미 계산된 값 재조립(LLM 금지). 상단 헤더와 카운트 동일. */}
-          {partHeaderCount > 0 ? (
-            <div className="mt-5 rounded-2xl border-2 border-unjong-accent/40 bg-unjong-surface p-4 shadow-sm">
-              <h2 className="text-base font-bold text-unjong-primary">{t('closingTitle', { n: partHeaderCount })}</h2>
-              {/* 🔴 STEP 830 §2: 이 카운트 줄은 '전체 N가지' 모집단(아래 수익 열거는 수익 렌즈 부분집합) — 라벨로 두 모집단 혼동 방지. */}
-              <p className="mt-1.5 text-[13px] sm:text-[12px] font-medium text-unjong-muted">{t('closingScopeAll')} · {tf('lensSummary', { pos: headerPos, warn: headerWarn, flat: headerFlat })}{naCount > 0 ? ` · ${t('naNote', { n: naCount })}` : ''}{pendingCount > 0 ? ` · ${t('pendingNote', { n: pendingCount })}` : ''}</p>
-              <div className="mt-2.5 space-y-1 text-[13px] sm:text-[12px]">
-                {closingPosLabels.length ? <p className="text-unjong-accent">{t('closingPosLine', { list: closingPosLabels.join(', ') })}</p> : null}
-                {closingWarnLabels.length ? <p className="text-amber-400">{t('closingWarnLine', { list: closingWarnLabels.join(', ') })}</p> : null}
-              </div>
-              {closingSentenceKey ? <p className="mt-2.5 text-[15px] sm:text-[13px] leading-relaxed text-unjong-primary/90">{t(closingSentenceKey)}</p> : null}
-              {/* STEP 810 §4: 종합 문장이 몇 개 수익 렌즈에 근거했는지 명시(축 혼합·범주 오류 방지) */}
-              {closingSentenceKey && closingSentenceKey !== 'closingInsufficient' ? <p className="mt-1 text-[12px] sm:text-[11px] text-unjong-muted">{t('closingEvidence', { n: returnEvidence })}</p> : null}
-              <p className="mt-2.5 border-t border-unjong-border pt-2.5 text-[13px] sm:text-[11px] text-unjong-muted">{t('closingFooter')}</p>
-            </div>
-          ) : null}
-        </div>
-      )}
+      </div>
 
-      {/* 페이지 하단 디스클레이머 제거 — 법적 문구는 전역 푸터에 있음(반복 제거) */}
+      <div className="mt-4 max-w-4xl">
+        {isKR ? <KrEventLayer symbol={symbol} /> : isJP ? <JpEventLayer symbol={symbol} /> : isGB ? <GbEventLayer symbol={symbol} /> : isVN ? <VnEventLayer symbol={symbol} /> : isCN ? <CnEventLayer symbol={symbol} /> : <EventLayer events={events} symbol={symbol} />}
+        <StockNewsBrief symbol={symbol} />{/* R3: KR 포함 전 국가 — 라우트가 KR이면 한글명·한국 뉴스로 분기 */}
+      </div>
     </main>
   );
 }
