@@ -48,7 +48,6 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-white/80">
               <li><Link href="/advertise" className="transition-colors hover:text-[#2DD4BF]">{t('adInquiry')}</Link></li>
               <li>{t('emailLabel')}<a href="mailto:contact@onetrillion.app" className="transition-colors hover:text-[#2DD4BF]">contact@onetrillion.app</a></li>
-              <li>{t('hoursLabel')}</li>
             </ul>
           </div>
         </div>
