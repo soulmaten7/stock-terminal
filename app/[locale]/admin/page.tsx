@@ -6,7 +6,7 @@ import AdminAdInquiries from '@/components/admin/AdminAdInquiries';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const metadata = { title: '트릴리언 관리자' };
+export const metadata = { title: '어스티커 관리자' };
 
 type AdInquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
 
@@ -34,7 +34,7 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <h1 className="text-xl font-bold text-unjong-primary">트릴리언 관리자</h1>
+      <h1 className="text-xl font-bold text-unjong-primary">어스티커 관리자</h1>
 
       {/* STEP1035: 업체 클레임·신고 큐(리딩방·유사투자자문)는 spinoff/advisor-directory로 분리·삭제.
           광고 문의만 남는다 — 큐가 하나뿐이라 탭 없이 바로 렌더. */}

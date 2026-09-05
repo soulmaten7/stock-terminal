@@ -86,8 +86,8 @@ export default function Header() {
           </svg>
           <span className="flex flex-col justify-center leading-none">
             <span className="flex items-baseline gap-2">
-              <span className="text-lg font-bold leading-none tracking-wide text-white">Trillion</span>
-              {locale === 'ko' && <span className="hidden text-sm text-white/65 sm:inline">트릴리언</span>}
+              <span className="text-lg font-bold leading-none tracking-wide text-white">EarthTicker</span>
+              {locale === 'ko' && <span className="hidden text-sm text-white/65 sm:inline">어스티커</span>}
             </span>
             <span className="mt-0.5 hidden text-[11px] font-normal leading-none text-white/65 lg:block">{t('tagline')}</span>
           </span>

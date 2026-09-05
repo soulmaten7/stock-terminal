@@ -13,7 +13,7 @@ export default function Footer() {
           {/* 브랜드 */}
           <div className="col-span-2 md:col-span-1">
             <p className="text-lg font-bold text-white">
-              Trillion {locale === 'ko' && <span className="text-sm font-medium text-white/65">트릴리언</span>}
+              EarthTicker {locale === 'ko' && <span className="text-sm font-medium text-white/65">어스티커</span>}
             </p>
             <p className="mt-2 text-sm text-white/70">{t('tagline')}</p>
             {/* ORDER_트릴리언채널카드_0905 STEP2: 홈 카드와 별개로 상시 접근 가능한 텍스트 링크 */}
@@ -60,7 +60,7 @@ export default function Footer() {
             {t('disclaimer1')}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 pt-2 text-center text-sm text-white/70">
-            <span>&copy; 2026 Trillion. All rights reserved.</span>
+            <span>&copy; 2026 EarthTicker. All rights reserved.</span>
             <Link href="/admin/login" className="text-white/65 transition-colors hover:text-white/80">{t('admin')}</Link>
           </div>
         </div>

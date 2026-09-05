@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
     <div className="flex min-h-[calc(100svh_-_61px)] items-center justify-center bg-unjong-background p-4">
       <div className="w-full max-w-sm rounded-xl border border-unjong-border bg-unjong-surface p-8 text-center">
         <ShieldCheck className="mx-auto mb-3 text-unjong-accent" size={28} />
-        <h1 className="text-lg font-bold text-unjong-primary">트릴리언 관리자</h1>
+        <h1 className="text-lg font-bold text-unjong-primary">어스티커 관리자</h1>
         <p className="mt-1 text-sm text-unjong-muted">관리자 전용 페이지입니다.</p>
         {phase === 'checking' ? (
           <p className="mt-6 text-sm text-unjong-muted">확인 중…</p>

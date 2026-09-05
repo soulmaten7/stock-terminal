@@ -1,16 +1,16 @@
 {
   "Meta": {
-    "title": "Trillion — An eye for stocks, for everyone",
+    "title": "EarthTicker — Every market, one place",
     "description": "We gather broker reports and earnings outlooks made by channels, in chronological order. No forecasts, no recommendations — the judgment is yours. Prices, news, filings, ETFs and IPOs in one place.",
-    "keywords": "Trillion,stock analysis,US stocks,Korean stocks,broker reports,earnings outlook,free stock analysis",
-    "ogTitle": "An eye for stocks — for everyone.",
+    "keywords": "EarthTicker,stock analysis,US stocks,Korean stocks,broker reports,earnings outlook,free stock analysis",
+    "ogTitle": "Every market, one place",
     "ogDescription": "Every view, as data — the judgment is yours.",
-    "ogImageAlt": "An eye for stocks, for everyone — Trillion",
-    "twitterTitle": "An eye for stocks, for everyone | Trillion",
-    "jsonLdDescription": "We gather broker reports and earnings outlooks made by channels, in chronological order. No forecasts, no recommendations, the judgment is yours — an eye for stocks, for everyone."
+    "ogImageAlt": "Every market, one place — EarthTicker",
+    "twitterTitle": "Every market, one place | EarthTicker",
+    "jsonLdDescription": "We gather broker reports and earnings outlooks made by channels, in chronological order. No forecasts, no recommendations, the judgment is yours — every market, one place."
   },
   "Common": {
-    "appName": "Trillion",
+    "appName": "EarthTicker",
     "notFoundTitle": "Page not found",
     "notFoundDesc": "The address may have changed, or the page may have been removed.<br></br>Try finding it again from the home page.",
     "goHome": "Go home",
@@ -44,10 +44,10 @@
       "ownT": "Your judgment",
       "ownD": "No buy or sell signals. We lay several viewpoints side by side; the decision is yours."
     },
-    "title": "About Trillion",
-    "slogan": "An eye for stocks — for everyone.",
+    "title": "About EarthTicker",
+    "slogan": "Every market, one place.",
     "sub": "Every view, as data — the judgment is yours.",
-    "problemTitle": "Why Trillion",
+    "problemTitle": "Why EarthTicker",
     "problemBody": "Investment information is scattered, and the market is loud with predictions and tips. Chat rooms sell you \"the stock that will go up\"; paid tools hide their method inside a black box. In between, individuals end up leaning on what someone else says. The problem is not too little information — it is the lack of a tool to read it with your own eyes. When someone sells you a stock with great confidence, the first thing to look at is not the confidence — it is their incentive.",
     "noRecTitle": "We do not predict, and we do not recommend",
     "noRecBody": "There is no \"buy this stock\" signal here. A report hands you evidence, not certainty; material, not a conclusion. We set several viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
@@ -55,10 +55,10 @@
     "coverageBody": "{markets} — {count} markets. For each, we take first-hand material — prices, news, filings — from public sources and show it as it is. We do not invent values. And when the data looks odd, we do not erase it on a hunch.",
     "quote": "“The best thing a human being can do is to help another human being know more.”",
     "quoteAuthor": "— Charlie Munger",
-    "disclaimer": "Trillion does not trade, broker, or advise on financial products, and does not intermediate any transaction. The information Trillion provides is for reference only and is not a solicitation or advice to invest."
+    "disclaimer": "EarthTicker does not trade, broker, or advise on financial products, and does not intermediate any transaction. The information EarthTicker provides is for reference only and is not a solicitation or advice to invest."
   },
   "Advertise": {
-    "title": "Advertising with Trillion",
+    "title": "Advertising with EarthTicker",
     "lead": "Reach users who come to see stocks as data through published methods, in the place that is most relevant to them.",
     "slotsHeading": "Ad placements",
     "slotsPreparing": "Ad placements are being prepared. Leave a partnership or advertising inquiry below and we will reach out first when they open.",
@@ -91,15 +91,15 @@
   },
   "Login": {
     "back": "Back",
-    "brandKo": "트릴리언",
-    "tagline": "An eye for stocks — for everyone.",
+    "brandKo": "어스티커",
+    "tagline": "Every market, one place.",
     "heading": "Sign in",
     "desc": "Sign in and your nickname and watchlist sync across every device",
     "loading": "Redirecting...",
     "google": "Continue with Google",
     "note1": "You can use the watchlist without signing in",
     "note2": "But your nickname and watchlist are stored only in this browser",
-    "terms": "By signing in you agree to the Trillion <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
+    "terms": "By signing in you agree to the EarthTicker <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>",
     "or": "or",
     "tabLogin": "Sign in",
     "tabSignup": "Sign up",
@@ -137,7 +137,7 @@
   },
   "Feedback": {
     "title": "Beta feedback",
-    "lead": "The blunter, the better. More than praise, <b>what feels awkward, what does not work, what does not make sense</b> helps us sharpen Trillion the most. It takes 2 to 3 minutes.",
+    "lead": "The blunter, the better. More than praise, <b>what feels awkward, what does not work, what does not make sense</b> helps us sharpen EarthTicker the most. It takes 2 to 3 minutes.",
     "understood": {
       "clear": "Clearly understood",
       "vague": "Roughly got it",
@@ -151,7 +151,7 @@
     "errSend": "Sending failed",
     "errNetwork": "A network error occurred",
     "doneTitle": "Thank you 🙏",
-    "doneDesc": "Your feedback goes straight into sharpening Trillion. One honest remark helps the most.",
+    "doneDesc": "Your feedback goes straight into sharpening EarthTicker. One honest remark helps the most.",
     "q1": "1. First impression, in one line",
     "q1ph": "e.g. Clean, but I did or did not get what this place does within 3 seconds",
     "q2": "2. Did you understand what the “TR-AI Lens” is?",
@@ -228,7 +228,7 @@
     "watchlistViewLink": "View watchlist →"
   },
   "Header": {
-    "tagline": "An eye for stocks — for everyone",
+    "tagline": "Every market, one place",
     "mainNav": "Main navigation",
     "about": "About",
     "today": "Today",
@@ -242,10 +242,10 @@
     "logout": "Sign out"
   },
   "Footer": {
-    "tagline": "An eye for stocks — for everyone.",
+    "tagline": "Every market, one place.",
     "channelsLabel": "Channels",
     "serviceHeading": "Service",
-    "aboutService": "About Trillion",
+    "aboutService": "About EarthTicker",
     "legalHeading": "Terms · policies",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",

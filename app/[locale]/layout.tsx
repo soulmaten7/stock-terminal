@@ -49,15 +49,15 @@ export async function generateMetadata({
     metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app"),
     title: {
       default: t('title'),
-      template: "%s | Trillion",
+      template: "%s | EarthTicker",
     },
     description: t('description'),
     keywords: t('keywords').split(',').map((k) => k.trim()),
-    authors: [{ name: "Trillion" }],
+    authors: [{ name: "EarthTicker" }],
     openGraph: {
       title: t('ogTitle'),
       description: t('ogDescription'),
-      siteName: "Trillion",
+      siteName: "EarthTicker",
       type: "website",
       locale: OG_LOCALE[locale] ?? OG_LOCALE.ko,
       images: [{ url: "/og.png", width: 1200, height: 630, alt: t('ogImageAlt') }],

@@ -37,7 +37,7 @@ async function doUnsub(token: string | null): Promise<{ locale: string } | null>
 const SHELL = (title: string, inner: string) => `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>${title}</title></head>
 <body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <div style="max-width:420px;margin:96px auto;padding:32px;background:#fff;border-radius:12px;text-align:center;">
-    <p style="font-size:12px;font-weight:600;color:#2DD4BF;margin:0 0 12px;">Trillion</p>
+    <p style="font-size:12px;font-weight:600;color:#2DD4BF;margin:0 0 12px;">EarthTicker</p>
     ${inner}
   </div>
 </body></html>`;

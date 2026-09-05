@@ -14,7 +14,7 @@ export const dynamic = "force-dynamic";
 
 type Locale = "ko" | "en";
 const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
-const FROM = "Trillion <brief@onetrillion.app>";
+const FROM = "EarthTicker <brief@onetrillion.app>";
 const FRESH_H = 20; // daily_brief가 이 시간 이내로 생성됐어야 "오늘자"로 인정(오래된 걸로 메일 보내지 않음)
 
 function isFresh(createdAt: string): boolean {
@@ -81,7 +81,7 @@ function renderHtml(params: { loc: Locale; briefText: string; moverLines: MoverL
       <tr><td align="center">
         <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;max-width:480px;">
           <tr><td style="padding:20px 24px;border-bottom:2px solid #2DD4BF;">
-            <span style="font-size:16px;font-weight:700;color:#0E1116;">Trillion</span>
+            <span style="font-size:16px;font-weight:700;color:#0E1116;">EarthTicker</span>
             <span style="font-size:12px;color:#2DD4BF;margin-left:6px;">${en ? "TR-AI Lens" : "TR-AI 렌즈"}</span>
           </td></tr>
           <tr><td style="padding:20px 24px 8px;">

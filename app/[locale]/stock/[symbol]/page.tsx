@@ -83,11 +83,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   const kw = isEn
     ? hasName
-      ? [main, `${main} stock`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "Trillion"]
-      : [ticker, "stock", "Trillion"]
+      ? [main, `${main} stock`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "EarthTicker"]
+      : [ticker, "stock", "EarthTicker"]
     : hasName
-      ? [main, `${main} 주가`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "Trillion"]
-      : [ticker, "주가", "Trillion"];
+      ? [main, `${main} 주가`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "EarthTicker"]
+      : [ticker, "주가", "EarthTicker"];
 
   return {
     title,
@@ -103,13 +103,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       },
     },
     openGraph: {
-      title: `${title} | Trillion`,
+      title: `${title} | EarthTicker`,
       description,
       url,
       type: "website",
       locale: isEn ? "en_US" : "ko_KR",
     },
-    twitter: { card: "summary_large_image", title: `${title} | Trillion`, description },
+    twitter: { card: "summary_large_image", title: `${title} | EarthTicker`, description },
   };
 }
 

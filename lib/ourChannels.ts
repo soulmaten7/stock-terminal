@@ -1,6 +1,6 @@
 import { createAdminClient } from "./supabase/admin";
 
-// Trillion 홈 "우리 채널" 카드 — youtube_channels(경쟁사 Top100 랭킹, refreshYoutubeTop100())와
+// EarthTicker 홈 "우리 채널" 카드 — youtube_channels(경쟁사 Top100 랭킹, refreshYoutubeTop100())와
 // 무관한 별도 테이블(our_channels)에 저장한다. 채널 ID를 이미 알고 있어 lib/youtube.ts의
 // search.list(키워드 발굴) 단계는 필요 없고, channels.list만 그대로 재사용한다(ORDER_트릴리언채널카드_0905).
 //

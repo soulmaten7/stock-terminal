@@ -1,4 +1,4 @@
-// Trillion "TR-AI 렌즈" 브랜드 배지 — 어두운 박스 카드(밝은 데이터 행에서 앵커) + 헤더 T 로고(민트) + 흰 글자.
+// EarthTicker "TR-AI 렌즈" 브랜드 배지 — 어두운 박스 카드(밝은 데이터 행에서 앵커) + 헤더 T 로고(민트) + 흰 글자.
 // "TR-AI"·로고=고정, '렌즈'만 언어별. (arrow/pill 프롭은 하위호환용으로 받되 무시 — 룩은 박스 하나로 통일.)
 type Lang = 'ko' | 'en' | 'ja' | 'zh';
 const LENS_WORD: Record<Lang, string> = { ko: '렌즈', en: 'Lens', ja: 'レンズ', zh: '镜头' };

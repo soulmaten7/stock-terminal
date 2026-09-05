@@ -1,5 +1,5 @@
 <!-- 2026-07-28 · 2026-09-05 크론/테이블/핵심파일맵 최소 갱신 -->
-# 🗺️ Trillion(트릴리언) — SYSTEM MAP (아키텍처·파이프라인 지도)
+# 🗺️ EarthTicker(어스티커, 舊 Trillion) — SYSTEM MAP (아키텍처·파이프라인 지도)
 
 > **아키텍처가 바뀔 때만 수정**(세션마다 아님). 현재상태=`STATE.md` · 이력=`CHANGELOG.md`.
 > 이 지도는 **라이브 시스템 실측**(vercel.json 크론·Supabase 테이블·`data/*` 시드·`.env.local` 변수)으로 작성 — 낡은 문서 아님. (2026-07-28 갱신 — 799~806: 활성시장 KR+US 게이트·`lens_cuts` 분포 유도 컷·2-pass 크론·`locale_choice` 쿠키·크론 9→8[jp-disclosures 중지] 반영. 이전 793~798: PageShell·rateLimit·공시 3상태·cron_heartbeats.)

@@ -200,10 +200,10 @@ export default function LoginPage() {
           {t('back')}
         </button>
 
-        {/* 트릴리언 로고 */}
+        {/* 어스티커 로고 */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold tracking-wider text-unjong-primary mb-2">
-            Trillion {locale === 'ko' && <span className="text-base text-unjong-muted font-medium">{t('brandKo')}</span>}
+            EarthTicker {locale === 'ko' && <span className="text-base text-unjong-muted font-medium">{t('brandKo')}</span>}
           </h1>
           <p className="text-sm text-unjong-muted">{t('tagline')}</p>
         </div>
