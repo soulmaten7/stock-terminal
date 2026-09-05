@@ -27,7 +27,9 @@ function verdictTone(verdict: string | null): Tone {
   return 'flat';
 }
 
-export function ReportRow({ item, loc }: { item: HomeReportItem; loc: Locale }) {
+// compact=true(홈) — 증권사·판정 줄을 뺀 2줄 카드(제목이 이미 훅 역할, 상세는 클릭하면 종목
+// 페이지에서). /reports 목록(compact 미지정)은 기존처럼 증권사·판정 줄까지 보여준다.
+export function ReportRow({ item, loc, compact = false }: { item: HomeReportItem; loc: Locale; compact?: boolean }) {
   return (
     <Link
       href={`/stock/${item.symbol}`}
@@ -35,13 +37,17 @@ export function ReportRow({ item, loc }: { item: HomeReportItem; loc: Locale }) 
     >
       <StockLogo code={item.symbol} name={item.stock_name} size={30} />
       <div className="min-w-0 flex-1">
-        {/* ORDER_트릴리언국가확장구조_0905 STEP2 — 영상 제목(채널이 보냄). 없으면 지금처럼 종목명이 첫 줄. */}
-        {item.title ? <p className="line-clamp-1 text-[13px] font-medium text-unjong-accent sm:text-[11px]">{item.title}</p> : null}
-        <p className="line-clamp-1 text-[17px] font-semibold text-unjong-primary sm:text-sm">{item.stock_name}</p>
-        <p className="flex items-center gap-1.5 text-[15px] text-unjong-muted sm:text-[12px]">
-          <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[verdictTone(item.verdict)]}`} />
-          <span className="truncate">{item.broker} · {verdictLabel(loc, item.verdict)}</span>
+        {/* 종목명(강조)·영상 제목(보조 톤)을 한 줄에 — 종목명은 잘리지 않게, 제목만 넘치면 말줄임 */}
+        <p className="flex items-baseline gap-1.5 overflow-hidden">
+          <span className="shrink-0 text-[17px] font-semibold text-unjong-primary sm:text-sm">{item.stock_name}</span>
+          {item.title ? <span className="truncate text-[13px] text-unjong-muted sm:text-[11px]">{item.title}</span> : null}
         </p>
+        {!compact ? (
+          <p className="flex items-center gap-1.5 text-[15px] text-unjong-muted sm:text-[12px]">
+            <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[verdictTone(item.verdict)]}`} />
+            <span className="truncate">{item.broker} · {verdictLabel(loc, item.verdict)}</span>
+          </p>
+        ) : null}
       </div>
       <div className="shrink-0 text-right">
         <span className="text-[15px] font-semibold tabular-nums text-unjong-primary sm:text-sm">{item.target_price ?? '—'}</span>

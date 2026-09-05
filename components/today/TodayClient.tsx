@@ -313,16 +313,15 @@ export default function TodayClient({ initialReportsByCountry, initialIndices, d
           const feed = reportsByCountry[rc.code] ?? { items: [], count: 0 };
           return (
             <section key={rc.code} className="mb-7">
-              <div className="mb-2 px-4 sm:px-0">
-                <h2 className="text-base font-bold text-unjong-primary">{rc.flag} {t(`countries.${rc.code}.name`)}</h2>
-                <p className="text-[13px] text-unjong-muted">{t(`countries.${rc.code}.reportsTitle`)}</p>
-              </div>
+              <h2 className="mb-2 px-4 text-base font-bold text-unjong-primary sm:px-0">
+                {rc.flag} {t(`countries.${rc.code}.name`)} <span className="font-normal text-unjong-muted">· {t(`countries.${rc.code}.reportsTitle`)}</span>
+              </h2>
               {feed.items.length === 0 ? (
                 <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
               ) : (
                 <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
                   {feed.items.map((r, i) => (
-                    <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
+                    <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} compact />
                   ))}
                 </div>
               )}
