@@ -17,16 +17,15 @@ const CHECKS: Check[] = [
   { name: "KR 시세(kr-perf)", table: "kr_stock_snapshot", column: "updated_at", thresholdH: 25 },
   { name: "KR ETP(kr-etp)", table: "kr_etp_snapshot", column: "updated_at", thresholdH: 25 },
   { name: "US 시세(us-perf)", table: "us_stock_perf", column: "updated_at", thresholdH: 25 },
-  { name: "렌즈 KR(kr-lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "KR"], thresholdH: 25 },
-  { name: "렌즈 US(lens-scores)", table: "lens_scores", column: "updated_at", eq: ["market", "US"], thresholdH: 25 },
-  // 🔴 STEP 829 §8: '오늘' 화면 본체 = lens_state_changes. lens_scores만 신선하고 diff(pass2)만 죽으면 이 피드가 굳는다
-  //   (828이 cron ok:false로도 잡으나 health로도 이중 감시). 임계 80h = 정상 주말(금 마지막→월 재개 ~62~72h)에 여유.
-  //   change_date는 상태가 '변한' 종목이 있을 때만 진행 → 주말엔 안 움직이므로 25h가 아니라 80h.
-  { name: "상태변화 피드(lens_state_changes)", table: "lens_state_changes", column: "change_date", thresholdH: 80 },
   // 2026-09-05(ORDER_트릴리언모델크론정리_0905): daily-brief·email-brief·revdcf 스케줄 제거
   // (홈 브리핑 화면 호출 이미 끊음·email-brief 구독자 실측 0명·revdcf는 REVDCF_ENABLED/Q1_ENABLED
   // 플래그 OFF라 화면 어디에도 안 뜸) → 감시 항목에서도 제거(오탐 방지, jp-disclosures 선례와 동일
   // 처리). 라우트·테이블·lib 함수는 보존 — 재개 시 이 배열에 다시 추가할 것.
+  // 2026-09-05(ORDER_트릴리언렌즈크론정지_0905): kr-lens-scores·lens-scores 크론 스케줄 제거(홈 "내
+  // 관심종목·렌즈 변화" 섹션 제거로 유일한 라이브 소비처가 사라짐) → "렌즈 KR/US(lens_scores)"·
+  // "상태변화 피드(lens_state_changes)" 항목도 감시에서 제거(오탐 방지, 위 revdcf 선례와 동일 처리).
+  // lens_scores/lens_state_changes/lens_cuts 테이블과 lib/lensPrecompute.ts는 삭제하지 않고 보존 —
+  // 재개 시 이 배열에 다시 추가할 것. 아래 "렌즈 행수"·"렌즈 컷 나이" 감시 루프도 같은 이유로 제거.
 ];
 
 export async function GET(req: Request) {
@@ -54,18 +53,6 @@ export async function GET(req: Request) {
     }
   }
 
-  // STEP 802 §5: lens_scores 행 수 하한 감시 — MAX(updated_at)만 보면 부분실패(소수 행만 갱신)나 과도 삭제를 못 잡음.
-  //   신선도 정리(유니버스 이탈 삭제) 도입 후 특히 중요. 시장별 최소 행 수 미달이면 stale.
-  for (const { market, floor } of [{ market: "KR", floor: 300 }, { market: "US", floor: 700 }]) {
-    try {
-      const { count } = await sb.from("lens_scores").select("symbol", { count: "exact", head: true }).eq("market", market);
-      const n = count ?? 0;
-      results.push({ name: `렌즈 행수 ${market}(lens_scores)`, latest: `${n} rows`, ageH: null, thresholdH: 0, status: n < floor ? "stale" : "ok" });
-    } catch (e) {
-      results.push({ name: `렌즈 행수 ${market}(lens_scores)`, latest: null, ageH: null, thresholdH: 0, status: "stale", error: String(e) });
-    }
-  }
-
   // 🔴 STEP 828 §2-5: 신선 행 수 하한 — 소스 시세 테이블은 MAX(updated_at)만 보면 99% 실패해도(1행만 갱신) 초록이다.
   //   '최근 25h 내 갱신된 행 수'가 하한 미만이면 부분 실패로 판정. 하한 = 정상 신선 행수(KR~2765·US~5952)의 절반 수준(오탐 여유).
   const since = new Date(now - 25 * 36e5).toISOString();
@@ -79,20 +66,6 @@ export async function GET(req: Request) {
       results.push({ name, latest: `${n} fresh rows`, ageH: null, thresholdH: 0, status: n < floor ? "stale" : "ok" });
     } catch (e) {
       results.push({ name, latest: null, ageH: null, thresholdH: 0, status: "stale", error: String(e) });
-    }
-  }
-
-  // 🔴 STEP 828 §2-5: lens_cuts 나이 감시 — 판정 컷(p30/p70)이 묵으면 전 렌즈 상태가 낡은 기준으로 틀어진다.
-  //   as_of는 날짜(자정 UTC 절삭)라 실행 직후에도 ~12h·다음날 실행전 ~36h → 49h(하루 누락) 임계로 검출.
-  for (const market of ["KR", "US"]) {
-    try {
-      const { data } = await sb.from("lens_cuts").select("as_of").eq("market", market).order("as_of", { ascending: false }).limit(1);
-      const asOf = (data?.[0] as { as_of?: string } | undefined)?.as_of ?? null;
-      const ageH = asOf ? Math.round(((now - new Date(asOf).getTime()) / 36e5) * 10) / 10 : null;
-      const stale = ageH == null || ageH > 49;
-      results.push({ name: `렌즈 컷 ${market}(lens_cuts)`, latest: asOf, ageH, thresholdH: 49, status: stale ? "stale" : "ok" });
-    } catch (e) {
-      results.push({ name: `렌즈 컷 ${market}(lens_cuts)`, latest: null, ageH: null, thresholdH: 49, status: "stale", error: String(e) });
     }
   }
 
