@@ -36,7 +36,7 @@ async function usLiveSet(): Promise<Set<string>> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthticker.app";
   const now = new Date();
   // 🔴 STEP 830 §9: hreflang(alternates.languages) — en 전면 패리티인데 색인 경로가 ko뿐이었다.
   //   next-intl as-needed: 기본 ko는 무프리픽스·en은 `/en` 프리픽스. x-default = ko(기본).

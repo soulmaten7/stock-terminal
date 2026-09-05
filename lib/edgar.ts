@@ -3,7 +3,7 @@
 // SEC 정책: User-Agent 필수, 10 req/s 이하. (연락처 UA는 실제 값으로 바꿔도 됨)
 import type { FRow } from "./fscore";
 
-const UA = { "User-Agent": "Trillion Research admin@onetrillion.app" };
+const UA = { "User-Agent": "EarthTicker Research admin@earthticker.app" };
 
 // F-Score 입력 → us-gaap 태그 후보(회사·연도별 편차 대비 여러 개, 정찰 결과 반영).
 const CONCEPTS: Record<string, string[]> = {

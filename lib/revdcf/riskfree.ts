@@ -40,7 +40,7 @@ export async function fetchFredDGS10(): Promise<{ value: number; asOf: string } 
   let text: string;
   try {
     const res = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; Trillion Research; admin@onetrillion.app)" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; EarthTicker Research; admin@earthticker.app)" },
     });
     if (!res.ok) return null;
     text = await res.text();

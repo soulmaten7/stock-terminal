@@ -5,7 +5,7 @@
 // 🔴 data/sources/nasdaq/*.json 스냅샷 파일은 읽지도 쓰지도 않는다(STEP1012가 확인한 "재취득 안 함" 스크립트와는 별개 경로).
 
 const NASDAQ_URL = "https://api.nasdaq.com/api/screener/stocks?tableonly=false&limit=25000&download=true";
-const UA = { "User-Agent": "Trillion Research admin@onetrillion.app", Accept: "application/json" };
+const UA = { "User-Agent": "EarthTicker Research admin@earthticker.app", Accept: "application/json" };
 const TIMEOUT_MS = 20_000;
 
 export type NasdaqMarketCapRow = { symbol: string; marketCap: number | null };

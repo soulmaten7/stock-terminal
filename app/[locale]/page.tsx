@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 // "원트릴리언"은 사업자 등록명(법인명, 210-39-33812)이라 플랫폼 브랜드와 별개로 유지한다.
 // Organization(발행처) + WebSite(사이트). 종목 검색 결과 페이지가 없어 SearchAction은 넣지 않음(가짜 마크업 금지).
 // name/alternateName은 브랜드 고유명사라 로케일 불변 — 로케일마다 달라지는 건 description·inLanguage.
-const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
+const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthticker.app";
 const JSONLD_LANG: Record<string, string> = { ko: "ko-KR", en: "en-US" };
 
 const homeJsonLd = (locale: string, description: string) => ({

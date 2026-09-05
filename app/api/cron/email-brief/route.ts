@@ -13,8 +13,8 @@ export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
 type Locale = "ko" | "en";
-const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
-const FROM = "EarthTicker <brief@onetrillion.app>";
+const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthticker.app";
+const FROM = "EarthTicker <brief@earthticker.app>";
 const FRESH_H = 20; // daily_brief가 이 시간 이내로 생성됐어야 "오늘자"로 인정(오래된 걸로 메일 보내지 않음)
 
 function isFresh(createdAt: string): boolean {
@@ -199,7 +199,7 @@ export async function GET(req: Request) {
       subject: subjectFor(loc, now),
       html,
       headers: {
-        "List-Unsubscribe": `<mailto:brief@onetrillion.app?subject=unsubscribe>, <${unsubUrl}>`,
+        "List-Unsubscribe": `<mailto:brief@earthticker.app?subject=unsubscribe>, <${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
     });

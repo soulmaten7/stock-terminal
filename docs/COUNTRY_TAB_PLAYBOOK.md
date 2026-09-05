@@ -126,7 +126,7 @@
 - [ ] **인덱스 티커**: 그 나라 지수 마퀴에 노출.
 - [ ] **통화**: 종목표·수익률 통화/포맷 정확.
 - [ ] **모바일 패스**: Chrome MCP로 종목·피드·링크·서브탭 깨짐 없음.
-- [ ] **라이브 검증**: localhost:3333 + prod(onetrillion.app) 양쪽 Chrome MCP 확인.
+- [ ] **라이브 검증**: localhost:3333 + prod(earthticker.app) 양쪽 Chrome MCP 확인.
 - [ ] 🔴 **현지 실물 대조 감사 통과**(2026-07-18 신설): 그 나라 리테일 실물 도구 대조 체크리스트 전 항목 도장(있다/예약/안 만든다) + 그 나라 로케일 UI + 기존 언어권(ko·en) 번역 레이어(종목명 브릿지 포함) 정확.
 - [ ] **문서**: CHANGELOG·STATE 갱신(날짜·상태). (구 session-context·SESSION_BOOT는 `_archive` 폐기 — STATE가 정본.)
 

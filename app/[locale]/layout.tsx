@@ -46,7 +46,7 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: 'Meta' });
 
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app"),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthticker.app"),
     title: {
       default: t('title'),
       template: "%s | EarthTicker",

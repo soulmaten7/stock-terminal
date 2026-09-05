@@ -20,7 +20,7 @@ type SecItem = {
 let cache: { at: number; data: unknown } | null = null;
 
 // SEC는 User-Agent 선언 필수(없으면 403). 연락처 포함 형식 권장.
-const SEC_UA = process.env.SEC_USER_AGENT || "Trillion/1.0 (contact@onetrillion.app)";
+const SEC_UA = process.env.SEC_USER_AGENT || "EarthTicker/1.0 (contact@earthticker.app)";
 const SEC_URL =
   "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=8-K&company=&dateb=&owner=include&count=40&output=atom";
 

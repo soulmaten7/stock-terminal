@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
   let text = "";
   try {
     const res = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; TrillionBot/1.0; +https://onetrillion.app)", Accept: "text/html" },
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; EarthTickerBot/1.0; +https://earthticker.app)", Accept: "text/html" },
       cache: "no-store",
       signal: AbortSignal.timeout(15000),
     });

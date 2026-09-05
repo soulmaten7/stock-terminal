@@ -20,7 +20,7 @@ import EtfLensClient from "./EtfLensClient";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://onetrillion.app";
+const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthticker.app";
 
 type Params = { params: Promise<{ locale: string; symbol: string }> };
 

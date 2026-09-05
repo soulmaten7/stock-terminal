@@ -22,7 +22,7 @@ export const maxDuration = 300;
 // STEP 947 §4~§5 — 유니버스를 넓혀 us_fundamentals(밸류에이션 분모 캐시)·us_valuation(PER·PBR·PSR·EV/EBITDA)을 같은 크론에서 채운다.
 //   🔴 역DCF 계산 대상(revdcf_results)은 그대로 「직전 as_of의 revdcf_results CIK 집합」 — 604는 변하지 않는다.
 //   넓어진 부분(us_cik_map ⋈ us_market_cap)은 재무만 수집한다. 처리 순서 = ①역DCF 유니버스 매일 전량 최우선 ②나머지 fetched_at 오래된 순.
-const UA = { "User-Agent": "Trillion Research admin@onetrillion.app" };
+const UA = { "User-Agent": "EarthTicker Research admin@earthticker.app" };
 const BUDGET_MS = 270_000;
 // 🔴 STEP 893(892 처방 B 적용): us_market_cap 읽기에 신선도 상한. lib/lensPrecompute.ts:142(at10(now-7일))와 같은 7일 기준 —
 //   그 파일은 이 STEP 범위 밖(수정 금지)이라 상수를 복제한다. 값을 바꿀 땐 두 자리 모두 확인할 것.

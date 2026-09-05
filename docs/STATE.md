@@ -11,7 +11,9 @@
 
 > 🔴 **오늘 하루에 결정·변경이 20건 이상 있었다 — 아래가 그 전체 요약이다.** 상세 근거·검증 로그는 git 커밋 메시지(각 항목에 표시)에 있다.
 
-**🟣 2026-09-06 리브랜딩 1단계(텍스트) 완료 — "Trillion(트릴리언)"에서 "EarthTicker(어스티커)"로.** 새 태그라인 ko "세계의 주식 정보를, 한 곳에서" / en "Every market, one place". 사이트·메타데이터·법적문서·i18n·`docs/BRAND_IDENTITY.md`·본 문서·`README.md`·`CLAUDE.md` 등 전수 grep 후 분류해 교체(`docs/ORDER_리브랜딩1단계_텍스트_0906.md`) — **도메인(`onetrillion.app` 그대로)·이메일(`contact@onetrillion.app`)·로고·컬러·Supabase 프로젝트명·저장소명은 이번에 안 바꿈**(2단계 예정). "원트릴리언"(사업자 등록명, 210-39-33812)도 법인 실명이라 유지. 채널명(스톡스카우터·WeTheTicker)도 유지.
+**🟣 2026-09-06 리브랜딩 1단계(텍스트) 완료 — "Trillion(트릴리언)"에서 "EarthTicker(어스티커)"로.** 새 태그라인 ko "세계의 주식 정보를, 한 곳에서" / en "Every market, one place". 사이트·메타데이터·법적문서·i18n·`docs/BRAND_IDENTITY.md`·본 문서·`README.md`·`CLAUDE.md` 등 전수 grep 후 분류해 교체(`docs/ORDER_리브랜딩1단계_텍스트_0906.md`) — 로고·컬러·Supabase 프로젝트명·저장소명은 이번에도 안 바꿈. "원트릴리언"(사업자 등록명, 210-39-33812)도 법인 실명이라 유지. 채널명(스톡스카우터·WeTheTicker)도 유지.
+
+**🟣 2026-09-06 리브랜딩 2단계(도메인) 완료(같은 날) — 정본 도메인 `earthticker.app`.** Vercel에 도메인 추가·A레코드(`76.76.21.21`, 가비아)·Let's Encrypt 인증서 발급 확인 후, `onetrillion.app`은 Vercel 프로젝트 도메인 설정에서 **301 리다이렉트**(`redirect`/`redirectStatusCode` API)로 전환(삭제 안 함 — 기존 링크 보존, 경로 그대로 유지 확인). 코드의 `NEXT_PUBLIC_SITE_URL` 폴백값·SEC/Nasdaq User-Agent 6곳·`contact@`/`brief@` 이메일 주소·sitemap·robots·JSON-LD를 전부 `earthticker.app`으로 교체(`Vercel NEXT_PUBLIC_SITE_URL` 환경변수 자체는 프로덕션에 설정된 적이 없어 이 하드코딩 폴백이 실제 운영값 — 새로 추가하지 않고 폴백만 교체). 🔴 **`contact@earthticker.app`은 코드만 바뀜 — 실제 메일 수신 설정(MX 등)은 아직 안 됨.** 🔴 **Supabase Auth 리다이렉트 URL 허용목록에 새 도메인 추가는 아직 미완료** — Supabase 관리 API 토큰이 없어 Claude Code가 직접 못 하고, 장은태가 Supabase 대시보드(Authentication → URL Configuration)에서 직접 추가해야 한다(옛 도메인 항목은 지우지 말 것 — 전환기 로그인 안 깨지게). `redirectTo`는 코드에서 `window.location.origin` 기반 동적 생성이라 코드 변경은 불필요.
 
 **무엇이 확정됐나**(장은태 확정, `docs/ORDER_트릴리언이관_0905.md`):
 - 🟢 **운영 체계 전환** — Cowork 폐지, **클로드 채팅(설계·명령서)+클로드 코드(실행)**로 통일. STEP 번호·`STEP_LEDGER.md` 폐지, 이력은 git 커밋 메시지. 🔴 **EarthTicker 운영의 설계·명령서 대화는 한국 채널 세션(이 채팅)이 전담한다.**

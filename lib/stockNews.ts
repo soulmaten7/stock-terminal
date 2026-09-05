@@ -7,7 +7,7 @@ export async function fetchStockNews(query: string, limit = 8, locale: 'en' | 'k
   const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&${loc}`;
   try {
     const r = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TrillionBot/1.0; +https://onetrillion.app)' },
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; EarthTickerBot/1.0; +https://earthticker.app)' },
       cache: 'no-store', signal: AbortSignal.timeout(8000),
     });
     if (!r.ok) return [];
