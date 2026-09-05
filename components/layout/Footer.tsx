@@ -6,7 +6,9 @@ export default function Footer() {
   const locale = useLocale();
   return (
     <footer className="mt-auto border-t border-white/10 bg-[#0E1116]">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+      {/* PC 레이아웃 정렬(2026-09-05): 배경은 <footer>가 전폭, 안쪽 내용은 본문(PageShell 등)과
+          같은 max-w-[1040px]로 감싸 링크·각주 좌우 끝이 본문 좌우 끝과 맞도록 한다. */}
+      <div className="mx-auto max-w-[1040px] px-4 py-12 sm:px-6">
         <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-4">
           {/* 브랜드 */}
           <div className="col-span-2 md:col-span-1">
@@ -54,7 +56,7 @@ export default function Footer() {
 
       {/* Disclaimer */}
       <div className="border-t border-white/10 bg-[#15191F]">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <div className="mx-auto max-w-[1040px] px-4 py-6 sm:px-6">
           <p className="mb-6 text-sm leading-relaxed text-white/80">
             {t('disclaimer1')}
           </p>

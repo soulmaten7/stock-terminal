@@ -73,7 +73,9 @@ export default function Header() {
 
   return (
     <header className="border-b border-white/10 bg-[#0E1116]">
-      <div className="mx-auto flex h-[60px] max-w-7xl items-center gap-3 px-4 sm:gap-5 sm:px-6">
+      {/* PC 레이아웃 정렬(2026-09-05): 배경·구분선은 <header>가 전폭, 안쪽 내용은 본문(PageShell 등)과
+          같은 max-w-[1040px]로 감싸 로고·아이콘 좌우 끝이 본문 좌우 끝과 맞도록 한다. */}
+      <div className="mx-auto flex h-[60px] max-w-[1040px] items-center gap-3 px-4 sm:gap-5 sm:px-6">
         {/* 로고 */}
         <Link href="/" className="flex shrink-0 items-center gap-2 hover:opacity-80">
           <svg viewBox="0 0 100 100" className="h-6 w-6 shrink-0 lg:h-8 lg:w-8" aria-hidden="true">
