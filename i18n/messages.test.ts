@@ -94,7 +94,7 @@ describe('messages', () => {
   it('en: 브랜드 보이스 잠금 문자열이 유지된다', () => {
     const locked: Record<string, string> = {
       'About.slogan': 'An eye for stocks — for everyone.',
-      'About.sub': 'Every lens, as data — the judgment is yours.',
+      'About.sub': 'Every view, as data — the judgment is yours.',
       'About.quote': '“The best thing a human being can do is to help another human being know more.”',
       'About.pillar.armT': 'Institutional-grade analysis',
       'About.pillar.seeT': 'Honest data',

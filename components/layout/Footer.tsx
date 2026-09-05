@@ -23,11 +23,10 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* 서비스 */}
+          {/* 서비스 — 2026-09-05(ORDER_트릴리언모델잔재정리_0905): /explore(탐색) 폐지로 링크 제거 */}
           <div>
             <h4 className="mb-4 font-bold text-white">{t('serviceHeading')}</h4>
             <ul className="space-y-2">
-              <li><Link href="/explore" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('stocksProducts')}</Link></li>
               <li><Link href="/about" className="text-sm text-white/80 transition-colors hover:text-[#2DD4BF]">{t('aboutService')}</Link></li>
             </ul>
           </div>

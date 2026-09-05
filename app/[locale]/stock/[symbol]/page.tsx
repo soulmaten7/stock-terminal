@@ -16,10 +16,6 @@ import { Link } from "@/i18n/navigation";
 import { isActiveSymbol } from "@/lib/activeMarkets";
 import StockLensClient from "./StockLensClient";
 import EtfLensClient from "./EtfLensClient";
-import RevDcfSection from "@/components/RevDcfSection";
-import { revdcfEnabled } from "@/lib/revdcf/flag";
-import Q1Section from "@/components/Q1Section";
-import { q1Enabled } from "@/lib/q1/flag";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,22 +53,25 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   // en은 보조 이름 병기 안 함 — 한글 오버라이드명(애플·삼성전자)이 en_US meta description/keywords에 새는 것 방지(STEP 747).
   const sub = isEn ? undefined : en;
 
+  // 2026-09-05(ORDER_트릴리언모델잔재정리_0905): "TR-AI 렌즈"/"AI Lens" 표기 제거 — 종목 페이지가
+  // 더 이상 렌즈를 보여주지 않는데 SEO 메타(수천 페이지)에만 남아 있던 잔재. 새 문구를 짓지 않고
+  // 해당 구절만 덜어냈다(리브랜딩 별도).
   const label = hasName ? `${main} (${ticker})` : ticker;
   const title = isEn
     ? isVN
-      ? `${label} Stock Price · TR-AI Lens · News`
-      : `${label} Stock Price · TR-AI Lens · News · Filings`
+      ? `${label} Stock Price · News`
+      : `${label} Stock Price · News · Filings`
     : isVN
-      ? `${label} 주가·TR-AI 렌즈·뉴스`
-      : `${label} 주가·TR-AI 렌즈·뉴스·공시`;
+      ? `${label} 주가·뉴스`
+      : `${label} 주가·뉴스·공시`;
   const idPart = hasName ? `(${sub ? `${sub}·` : ""}${ticker})` : "";
   const description = isEn
     ? isVN
-      ? `${main}${idPart} stock price with published-method lenses (momentum, value, quality, F-Score) and the latest news at a glance. Not a buy or sell signal — material for you to judge for yourself.`
-      : `${main}${idPart} stock price with published-method lenses (momentum, value, quality, F-Score) and the latest news and filings at a glance. Not a buy or sell signal — material for you to judge for yourself.`
+      ? `${main}${idPart} stock price with the latest news at a glance. Not a buy or sell signal — material for you to judge for yourself.`
+      : `${main}${idPart} stock price with the latest news and filings at a glance. Not a buy or sell signal — material for you to judge for yourself.`
     : isVN
-      ? `${main}${idPart} 주가와 공개된 계산법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
-      : `${main}${idPart} 주가와 공개된 계산법 렌즈(모멘텀·밸류·퀄리티·F-Score), 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
+      ? `${main}${idPart} 주가와 최근 뉴스를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`
+      : `${main}${idPart} 주가와 최근 뉴스·공시를 한눈에. 사고팔 신호가 아니라 스스로 판단할 재료예요.`;
 
   // 경로는 routing 설정(as-needed)이 만들게 둔다 — ko는 프리픽스 없음, en은 /en. 직접 조립하면 프리픽스가 틀린다.
   const href = `/stock/${symbol}`;
@@ -84,11 +83,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   const kw = isEn
     ? hasName
-      ? [main, `${main} stock`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "AI Lens", "Trillion"]
-      : [ticker, "stock", "AI Lens", "Trillion"]
+      ? [main, `${main} stock`, `${main} news`, ...(isVN ? [] : [`${main} filings`]), ...(sub ? [sub] : []), ticker, "Trillion"]
+      : [ticker, "stock", "Trillion"]
     : hasName
-      ? [main, `${main} 주가`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "AI 렌즈", "Trillion"]
-      : [ticker, "주가", "AI 렌즈", "Trillion"];
+      ? [main, `${main} 주가`, `${main} 뉴스`, ...(isVN ? [] : [`${main} 공시`]), ...(sub ? [sub] : []), ticker, "Trillion"]
+      : [ticker, "주가", "Trillion"];
 
   return {
     title,
@@ -173,23 +172,10 @@ export default async function StockPage({ params }: Params) {
         <EtfLensClient symbol={symbol} initialName={h1Name} />
       ) : (
         <>
+          {/* Q1·역DCF 섹션 — 2026-09-05(ORDER_트릴리언모델잔재정리_0905) 제거. 둘 다
+              Q1_ENABLED/REVDCF_ENABLED 플래그가 프로덕션에 없어(env 확인) 화면에 뜬 적이
+              없었다 — 컴포넌트·전용 라우트도 함께 삭제(폐지 크론 대상, 파킹 아님). */}
           <StockLensClient initialName={h1Name} />
-          {/* Q1 카드 — 🔴 STEP 957: 피처 플래그(기본 OFF) 뒤. 서버 분기라 OFF면 클라로 안 내려감. 장은태 육안 승인 후 ON. */}
-          {q1Enabled() && (
-            <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">
-              <div className="max-w-4xl">
-                <Q1Section symbol={symbol} />
-              </div>
-            </div>
-          )}
-          {/* 역DCF 섹션 — 🔴 STEP 854: 피처 플래그(기본 OFF) 뒤. 서버 분기라 OFF면 클라로 안 내려감. 장은태 육안 승인 후 ON. */}
-          {revdcfEnabled() && (
-            <div className="mx-auto max-w-[1040px] px-4 pb-6 sm:px-6">
-              <div className="max-w-4xl">
-                <RevDcfSection symbol={symbol} />
-              </div>
-            </div>
-          )}
         </>
       )}
     </>

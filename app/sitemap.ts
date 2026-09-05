@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 공개 페이지 (admin·mypage·auth는 robots에서 제외됨)
   const staticRoutes: { path: string; priority: number; freq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
     { path: "", priority: 1.0, freq: "daily" },
-    { path: "/explore", priority: 0.8, freq: "daily" }, // 현행 5면(탐색) — /coin(숨김) 대체(STEP 795 §12)
+    // 2026-09-05(ORDER_트릴리언모델잔재정리_0905): /explore(렌즈 랭킹 전용) 폐지로 항목 제거.
     { path: "/about", priority: 0.5, freq: "monthly" },
     { path: "/advertise", priority: 0.4, freq: "monthly" },
     { path: "/terms", priority: 0.3, freq: "monthly" },

@@ -1,13 +1,13 @@
 {
   "Meta": {
     "title": "Trillion — An eye for stocks, for everyone",
-    "description": "See a stock as data, through the published methods professionals use. No forecasts, no recommendations — the judgment is yours. Prices, news, filings, ETFs and IPOs in one place.",
-    "keywords": "Trillion,stock analysis,US stocks,Korean stocks,free stock analysis,TR-AI Lens,published investing methods,momentum value quality,stock research,TR-AI",
+    "description": "We gather broker reports and earnings outlooks made by channels, in chronological order. No forecasts, no recommendations — the judgment is yours. Prices, news, filings, ETFs and IPOs in one place.",
+    "keywords": "Trillion,stock analysis,US stocks,Korean stocks,broker reports,earnings outlook,free stock analysis",
     "ogTitle": "An eye for stocks — for everyone.",
-    "ogDescription": "Every lens, as data — the judgment is yours.",
+    "ogDescription": "Every view, as data — the judgment is yours.",
     "ogImageAlt": "An eye for stocks, for everyone — Trillion",
     "twitterTitle": "An eye for stocks, for everyone | Trillion",
-    "jsonLdDescription": "See a stock as data, through the published methods professionals use. No forecasts, no recommendations, the judgment is yours — an eye for stocks, for everyone."
+    "jsonLdDescription": "We gather broker reports and earnings outlooks made by channels, in chronological order. No forecasts, no recommendations, the judgment is yours — an eye for stocks, for everyone."
   },
   "Common": {
     "appName": "Trillion",
@@ -38,36 +38,21 @@
   "About": {
     "pillar": {
       "armT": "Institutional-grade analysis",
-      "armD": "The analytical eye institutions use, in individual hands. The TR-AI Lens reads stocks through published methods — momentum, value, quality, and more.",
+      "armD": "We gather broker reports and earnings outlooks made by channels, unedited, in chronological order.",
       "seeT": "Honest data",
       "seeD": "Prices, news, and filings as primary material. When data is missing, we do not invent it — we say \"insufficient data.\"",
       "ownT": "Your judgment",
-      "ownD": "No buy or sell signals. We lay several lenses side by side; the decision is yours."
+      "ownD": "No buy or sell signals. We lay several viewpoints side by side; the decision is yours."
     },
     "title": "About Trillion",
     "slogan": "An eye for stocks — for everyone.",
-    "sub": "Every lens, as data — the judgment is yours.",
+    "sub": "Every view, as data — the judgment is yours.",
     "problemTitle": "Why Trillion",
     "problemBody": "Investment information is scattered, and the market is loud with predictions and tips. Chat rooms sell you \"the stock that will go up\"; paid tools hide their method inside a black box. In between, individuals end up leaning on what someone else says. The problem is not too little information — it is the lack of a tool to read it with your own eyes. When someone sells you a stock with great confidence, the first thing to look at is not the confidence — it is their incentive.",
-    "lensTitle": "The TR-AI Lens — how we read a stock",
-    "lensIntro": "We read one stock through several published methods, each on its own. Every lens answers just one honest question, and writes down — right on the screen — which metrics it uses and whose research it leans on.",
-    "lens": {
-      "momentum": "Momentum — is the trend continuing? (trend persistence)",
-      "value": "Value — is it cheap against earnings and assets? (the Graham philosophy · the value premium documented by Basu 1977 and Fama-French HML)",
-      "quality": "Quality — how well does it turn assets into profit? (Novy-Marx 2013 · gross profits ÷ assets)",
-      "fscore": "F-Score — is the balance sheet weak? (Piotroski 2000 · a 9-point financial-health checklist)",
-      "lowvol": "Low Volatility — steady per unit of risk? (the low-volatility anomaly)",
-      "extra": "Asset Growth · Technical — over-investment and overheating signals. (RSI — Wilder 1978 · moving averages)"
-    },
-    "lensClose": "Nothing is hidden. Not a black box — a lens we open. Each lens shows the numbers behind it, and when the data is not there, that lens simply says \"insufficient data.\" Reference-grade lenses, though, are weighted the same as verified ones when we tally the overall read.",
     "noRecTitle": "We do not predict, and we do not recommend",
-    "noRecBody": "There is no \"buy this stock\" signal here. A lens hands you evidence, not certainty; material, not a conclusion. We set several viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
+    "noRecBody": "There is no \"buy this stock\" signal here. A report hands you evidence, not certainty; material, not a conclusion. We set several viewpoints side by side — the decision to buy or sell is entirely yours. A good tool does not make the call for you. It only helps you make a better one.",
     "coverageTitle": "How far we look",
     "coverageBody": "{markets} — {count} markets. For each, we take first-hand material — prices, news, filings — from public sources and show it as it is. We do not invent values. And when the data looks odd, we do not erase it on a hunch.",
-    "howTitle": "How to use it",
-    "step1": "Pick a stock, read the lenses. See at a glance how one stock reads through momentum, value, quality, financial health, and more — each on its own.",
-    "step2": "Read the disagreement. When the lenses disagree is the most important signal — cheap but weak, or pricey but sturdy?",
-    "step3": "You make the call. The material is gathered; the conclusion is yours. We do not press the button for you.",
     "quote": "“The best thing a human being can do is to help another human being know more.”",
     "quoteAuthor": "— Charlie Munger",
     "disclaimer": "Trillion does not trade, broker, or advise on financial products, and does not intermediate any transaction. The information Trillion provides is for reference only and is not a solicitation or advice to invest."
@@ -196,9 +181,6 @@
     "emptyLinks": "No favorites yet.<br></br>Tap ⭐ in a category list to add one.",
     "goCategories": "Browse categories →",
     "emptyWatchlist": "Your watchlist is empty.<br></br>Open a stock and tap ⭐ to add it.",
-    "lensLoading": "Reading lenses…",
-    "lensSummary": "{pos} strong · {warn} caution · {flat} neutral",
-    "lensMissingNote": "Methods that could not be judged are left out of the dots — counts include only judged methods.",
     "marketNotSupported": "Not supported yet",
     "loadError": "Could not load your watchlist.",
     "retry": "Retry",
@@ -248,7 +230,6 @@
   "Header": {
     "tagline": "An eye for stocks — for everyone",
     "mainNav": "Main navigation",
-    "explore": "Explore",
     "about": "About",
     "today": "Today",
     "comingSoon": "Coming soon",
@@ -264,7 +245,6 @@
     "tagline": "An eye for stocks — for everyone.",
     "channelsLabel": "Channels",
     "serviceHeading": "Service",
-    "stocksProducts": "Explore",
     "aboutService": "About Trillion",
     "legalHeading": "Terms · policies",
     "terms": "Terms of Service",
@@ -620,7 +600,7 @@
     },
     "newsBrief": {
       "title": "Recent news",
-      "badge": "TR-AI · facts only",
+      "badge": "Facts only",
       "loading": "Reading the news…"
     },
     "back": "Back",
@@ -650,7 +630,6 @@
     "onboardingTitle": "Save stocks to your watchlist",
     "watchlistLoadError": "Could not load your watchlist.",
     "retry": "Retry",
-    "selectionBasisLabel": "By value traded · Price · 1d change",
     "countries": {
       "KR": {
         "name": "Korean Stocks",
@@ -675,206 +654,24 @@
   },
   "Nav": {
     "today": "Today",
-    "explore": "Explore",
     "watchlist": "Watchlist",
     "my": "My"
   },
-  "Explore": {
-    "pageTitle": "Explore",
+  "Search": {
     "searchPlaceholder": "Search by name or ticker",
     "searchClear": "Clear search",
     "recentSearches": "Recent searches",
     "removeRecent": "Remove recent search",
-    "noSearchResults": "No results",
-    "countryKr": "Korea",
-    "countryUs": "United States",
-    "changesTitle": "Lens state changed",
-    "posTitle": "Stocks several methods view favorably",
-    "posSubNote": "Our list, sorted by how many of the 7 methods view the stock favorably (a strength) — not a recommendation. The methods measure different axes (return, risk, financials), so more strengths does not mean higher return; methods that could not be judged are left out of the dots.",
-    "amountTitle": "Most traded today",
-    "moreCount": "{n} →",
-    "moreLink": "See more →",
-    "noItems": "No stocks to show",
-    "loadError": "Could not load the list.",
-    "retry": "Retry",
-    "toneCountNote": "Chip numbers are the full totals for today; the list shows the top {shown}, grouped by stock.",
-    "filterAll": "All",
-    "filterToPos": "To strength",
-    "filterToWarn": "To caution",
-    "strengthCount": "Strengths {n}",
-    "tradeAmountLabel": "Value traded {v}",
-    "sectorSourceNote": "Sector is resolved from S&P sector ETFs, then Damodaran, then Yahoo. The source can differ by stock."
+    "noSearchResults": "No results"
   },
   "RevDcf": {
-    "badge": {
-      "years": "Decoded expectations",
-      "valueDestroying": "Growth backfires",
-      "belowOne": "Explained without growth",
-      "overCap": "Unexplained",
-      "skipped": "Not applicable"
-    },
-    "headline": {
-      "years": "The price implies {n} years of above-cost growth.",
-      "valueDestroying": "At the current margin, growth destroys value.",
-      "belowOne": "The price is explained even with no growth.",
-      "overCap": "This method cannot explain the current price.",
-      "wideBand": "Extremely sensitive to the discount rate — do not read as a single number."
-    },
-    "band": {
-      "range": "{lo}–{hi} years across cost of capital ±1%p",
-      "sensitive": "A 1%p change in cost of capital swings the conclusion — see the table below"
-    },
-    "sampleNote": "Based on {total} companies where this method applies",
-    "growthNote": "Growth is computed from the past 5 years — not an analyst forecast.",
-    "asOfNote": "Tax rate and cost of capital as of {date}",
-    "methodDependent": "The verdict depends on how investment intensity is estimated.",
-    "methodSplitTitle": "The verdict splits by how investment intensity is measured",
-    "methodLevel": "By equipment (reference only — not used for the verdict since 880)",
-    "methodMarginal": "By actual investment (source method — used for the verdict)",
-    "lossMaking": "The firm is operating at a loss, so this method does not apply. Reverse DCF decodes the expectations of profitable firms.",
     "outOfScope": "N/A",
-    "scenarioTitle": "Cost-of-capital scenarios",
-    "bandCrossWarning": "The conclusion flips entirely depending on the cost-of-capital assumption.",
-    "rankLine": "{rank}th longest of {total} where this method applies",
-    "expectationLevel": {
-      "low": "Lower expectations",
-      "mid": "Middle",
-      "high": "Higher expectations"
-    },
-    "driverDesc": {
-      "growth": "Annual growth computed from the last 5 years of results",
-      "margin": "Revenue minus operating costs, as a share of revenue",
-      "threshold": "The minimum margin needed to preserve value at this growth",
-      "wcRate": "Cash tied up in inventory and receivables per one dollar of new revenue",
-      "capIntensity": "Net investment in equipment per one dollar of revenue growth (source method)",
-      "wacc": "The minimum return investors require from this company"
-    },
-    "skip": {
-      "noMarginalCapex": "Not computable — the data needed for this metric is not available.",
-      "insufficientHistory": "Fewer than 5 years since listing or spin-off.",
-      "notApplicableSector": "The balance sheet is not classified (current vs non-current), so the method does not apply.",
-      "missingTag": "The required 5-year financials are not available.",
-      "noIndustry": "No industry mapping to assemble the cost of capital.",
-      "staleMarketcap": "Not computed because the market cap data is not recent.",
-      "noMarketcap": "Not computed because the market cap data is not available.",
-      "multiClassShares": "Not computed because this company has multiple share classes and a combined share count is not available.",
-      "exception": "Not computed because an error occurred while processing this name.",
-      "httpError": "Not computed because the source data (SEC) could not be fetched.",
-      "missingTagOperatingIncome": "Operating income is not available for 5 years.",
-      "missingTagPpe": "Property, plant and equipment (PP&E) is not available for 5 years.",
-      "missingTagOperatingCash": "Operating cash flow is not available for 5 years.",
-      "unspecified": "This name is excluded from the calculation. The specific reason is not shown here yet."
-    },
-    "driver": {
-      "growth": "Sales growth (5y)",
-      "margin": "Operating margin",
-      "threshold": "Threshold margin",
-      "tax": "Tax rate (marginal)",
-      "wacc": "Cost of capital",
-      "capIntensity": "Incremental capital rate",
-      "wcRate": "Working-capital rate"
-    },
-    "sectionTitle": "Reverse DCF — market-implied expectations",
     "yUnit": "y",
-    "belowOneShort": "Explained without growth",
-    "overCapShort": "Unexplained",
-    "waccLow": "Lower cost of capital (−1%p)",
-    "waccBase": "Base",
-    "waccHigh": "Higher cost of capital (+1%p)",
-    "marginVsThreshold": "Operating margin {margin} < threshold {threshold} — new revenue requires more investment than the profit it earns.",
-    "overCapExplained": "The {years}-year forecast period plus perpetuity explains {pct}% of the price.",
-    "methodologyLink": "The method and how it differs from the source are on the methodology page.",
     "boardCol": "Rev-DCF",
     "boardBadge": {
       "valueDestroying": "Growth backfires",
       "belowOne": "Explained w/o growth",
       "overCap": "Unexplained"
     }
-  },
-  "Q1": {
-    "sectionTitle": "Valuation vs. sector",
-    "headline": "More expensive than {pct}% of the {n} peers in this sector.",
-    "axis": {
-      "per": "P/E",
-      "pbr": "P/B",
-      "psr": "P/S",
-      "evEbitda": "EV/EBITDA"
-    },
-    "sampleNote": "Sample: {n} peers",
-    "fiscalYearNote": "Based on fiscal year {year}",
-    "sectorSourceNote": "{sector} sector, source: {source}",
-    "unavailable": {
-      "noSector": "We could not determine the sector for this stock.",
-      "noValue": "This metric cannot be computed for this stock (for example, negative earnings).",
-      "sampleTooSmall": "Fewer than 20 peers are available for comparison."
-    }
-  },
-  "RevDcfMethod": {
-    "title": "Reverse-DCF methodology",
-    "intro": "This metric decodes the expectations already priced into the stock. It does not set a fair value — it surfaces the growth period the market demands and leaves the judgment to you.",
-    "structure": "The source is Rappaport & Mauboussin, Expectations Investing. We use its calculation structure but source the inputs ourselves from SEC filings and Damodaran public data. So the accurate phrase is not “source-grade” but “source structure + our sourcing.”",
-    "reproTitle": "Reproducing the source example",
-    "repro": "Running the Domino Pizza example from the source through our engine gives $285.2 per share / 8 years (source PIE table: $285.20 / 8 years). Using the WACC worksheet (T7) figures as-is gives 7 years instead — the result is sensitive enough to a single rounding digit that it swings by a year. The engine reproduces; differences come from how inputs are sourced.",
-    "verificationCaveat": "The reproduction above matches a single case the source itself published. There is no contemporaneous outside source to check the per-stock results we compute today against, so whether these figures are correct has never been externally verified.",
-    "ledgerTitle": "How we differ from the source (disclosed as-is)",
-    "col": {
-      "item": "Item",
-      "source": "Source",
-      "ours": "Ours",
-      "why": "Reason"
-    },
-    "row": {
-      "growth": {
-        "i": "Growth",
-        "s": "Guidance, Value Line",
-        "o": "Past 5-year CAGR",
-        "w": "No consensus data — historical, not an analyst forecast"
-      },
-      "tax": {
-        "i": "Tax rate",
-        "s": "Unlevered cash tax rate",
-        "o": "Marginal rate",
-        "w": "The source itself also uses a firm-specific cash tax rate in the cost-of-capital calculation — the method is not different, only the vintage of the value is. That input, the cash tax rate, is not reliably available for most names and carries anomalies, so we substitute the marginal rate instead. For reference, the effective tax rate Damodaran reports for the broad U.S. market excluding financials averages {taxEffMoney}% for profitable firms and {taxEffAgg}% in aggregate — both lower than the {taxMarginal}% marginal rate we use."
-      },
-      "wc": {
-        "i": "Working capital",
-        "s": "Marginal, non-interest-bearing current liabilities only",
-        "o": "Level, 5-year average, all current liabilities",
-        "w": "Marginal varies 40%p year to year. Subtracting all current liabilities produces a different sign than the source method for some stocks. Within what we have checked, that difference has not changed a verdict. Damodaran cautions that working capital should not be assumed to keep getting more negative forever — at some point the change must flatten or reverse. As of today, {wcPct}% of our {wcTotal} computable results carry a negative working-capital rate."
-      },
-      "cap": {
-        "i": "Incremental capital rate",
-        "s": "Marginal",
-        "o": "Marginal (adopted the source method as of 880)",
-        "w": "Reproduces the Domino source anchor at 11.6% (880) — measured six alternatives and adopted the only one that connects to the source. Cost: computable for 90.3% (9.7% not computable), 101 negative values, 133 extreme values (|x|>1) — disclosed, not softened"
-      },
-      "wacc": {
-        "i": "Cost of capital",
-        "s": "Company-specific funding rate and beta (Domino: vendor beta of 1, actual bond yield)",
-        "o": "Assembled from an industry-average credit spread plus an industry unlevered beta, relevered",
-        "w": "Domino source: 5.354% (2020) vs ours: 7.19% (2026) — most of the gap is timing (risk-free rate 0.65% to 3.95%), not method. How far the industry approximation drifts from an individual company has not yet been measured"
-      },
-      "term": {
-        "i": "Terminal",
-        "s": "Includes inflation",
-        "o": "expected_inflation (Damodaran DB)",
-        "w": "The terminal formula (NOPAT×(1+i)÷(WACC−i)) is identical to the source — the value used for i differs by vintage: a 2020 snapshot in the source (1.6%) versus our current expected inflation (Damodaran DB)"
-      },
-      "sensitivity": {
-        "i": "Cost-of-capital sensitivity",
-        "s": "User adjusts it in the spreadsheet",
-        "o": "We compute and show a 3-point band",
-        "w": "Fully automated across names, so the user cannot change inputs; the GAP is most sensitive to the cost of capital (cost of capital ≫ growth ≈ margin)"
-      },
-      "distribution": {
-        "i": "Position in the distribution",
-        "s": "None (single stock only)",
-        "o": "Position within the sample",
-        "w": "A benefit of computing every name daily"
-      }
-    },
-    "betaCaveat": "The cost of capital is computed with CAPM. Research finds beta explains little of the cross-section of stock returns (Fama-French 1992). Since the GAP is sensitive to the cost of capital, we show a range rather than a single number.",
-    "universeCaveat": "Trillion calculates its reverse DCF only for companies listed on US exchanges (NYSE, Nasdaq, and others). 486 over-the-counter (OTC) names (as of 2026-08-02) fall outside this scope — of those, we could obtain a market value for 133, and only 8 actually produced a number of years. The reason we leave them out is price: this model works backward from the share price to infer what the market expects, and OTC quotes are not real-time and trade infrequently, which makes that starting point unreliable. There is another view — Professor Damodaran, whose industry and tax-rate data we rely on, includes OTC names precisely to avoid sampling bias. We know that view and chose differently, which is why we disclose, in numbers, exactly how much we do not see.",
-    "notInvestmentAdvice": "This is neither a forecast nor a recommendation. It is material to judge for yourself."
   }
 }

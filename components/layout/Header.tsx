@@ -7,6 +7,7 @@ import { User, Star, LogOut } from 'lucide-react';
 import { clearCache } from '@/lib/clientCache';
 import { useAuthStore } from '@/stores/authStore';
 import { createClient } from '@/lib/supabase/client';
+import HeaderSearch from './HeaderSearch';
 
 // 헤더 = 언어 선택(시장 선택 아님 — 시장은 페이지의 한국/미국 토글이 담당).
 // 언어명은 t()로 감싸지 않는다 — 언어는 항상 자기 언어로 표기한다(한국어는 언제나 '한국어').
@@ -18,10 +19,10 @@ const LANGS: { code: 'ko' | 'en'; name: string; flag: string }[] = [
 export default function Header() {
   const t = useTranslations('Header');
   const locale = useLocale();
-  // PC 메뉴 순서·라벨(필드 대전환 STEP 767b) — 오늘(루트)·탐색·소개. 관심은 우측 별 아이콘이 담당(메뉴 중복 금지). 모바일은 하단 탭바가 전담(nav 자체를 sm:flex로 숨김).
+  // PC 메뉴 순서·라벨 — 오늘(루트)·소개. 관심은 우측 별 아이콘이 담당(메뉴 중복 금지). 모바일은 하단 탭바가 전담(nav 자체를 sm:flex로 숨김).
+  // 2026-09-05(ORDER_트릴리언모델잔재정리_0905): /explore(렌즈 랭킹 전용) 폐지로 메뉴에서 제거.
   const MENU = [
     { href: '/', label: t('today'), ready: true, match: (p: string) => p === '/' },
-    { href: '/explore', label: t('explore'), ready: true, match: (p: string) => p === '/explore' },
     // { href: '/coin', label: t('coin'), ready: false, match: (p: string) => p === '/coin' }, // 준비 중 — 추후 코인 시장 (베타 전 숨김·데이터 없어 노출 시 전문성↓. 복구=이 줄 주석만 해제)
     { href: '/about', label: t('about'), ready: true, match: (p: string) => p === '/about' }, // 소개(무엇/어떻게) — 온보딩 진입점
   ] as const;
@@ -136,6 +137,9 @@ export default function Header() {
 
         {/* 우측 아이콘 */}
         <div className="flex shrink-0 items-center gap-3">
+          {/* 전역 검색 — 모바일·PC 둘 다 노출(explore 탭 폐지로 하단 탭바에 대체 진입로가 없음) */}
+          <HeaderSearch />
+
           {/* 언어 선택 (시장 선택 아님 — 시장은 페이지의 한국/미국 토글) */}
           <div ref={langRef} className="relative">
             <button type="button" onClick={() => setLangOpen(!langOpen)} className="flex min-h-11 min-w-11 items-center justify-center gap-1.5 px-1 text-sm text-white/80 transition-opacity hover:opacity-70" aria-label={t('language')} title={t('language')}>

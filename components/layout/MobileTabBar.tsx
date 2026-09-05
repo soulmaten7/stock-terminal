@@ -2,13 +2,13 @@
 
 import { Link, usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
-import { Sun, Search, Star, User } from 'lucide-react';
+import { Sun, Star, User } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 
-// 하단 탭 4개(목업 확정·STEP 766, 필드 대전환 STEP 767b로 오늘=루트·탐색=/explore 갱신) — 오늘·탐색·관심·마이. 새 아이콘 팩 없이 lucide-react 기존 세트 재사용.
+// 하단 탭 3개(2026-09-05 ORDER_트릴리언모델잔재정리_0905 — /explore 폐지로 4→3, 탐색은
+// 렌즈 랭킹 전용 페이지였음). 종목상세는 홈에서 리포트를 클릭해 들어가는 흐름이라 "오늘" 탭이 활성.
 const TABS = [
-  { key: 'today', href: '/', Icon: Sun, match: (p: string) => p === '/' },
-  { key: 'explore', href: '/explore', Icon: Search, match: (p: string) => p === '/explore' || p.startsWith('/stock/') },
+  { key: 'today', href: '/', Icon: Sun, match: (p: string) => p === '/' || p.startsWith('/stock/') },
   { key: 'watchlist', href: '/favorites', Icon: Star, match: (p: string) => p === '/favorites' },
   { key: 'my', href: '/mypage', Icon: User, match: (p: string) => p === '/mypage' },
 ] as const;

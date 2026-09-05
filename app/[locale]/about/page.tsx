@@ -1,7 +1,8 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { ACTIVE_MARKETS } from '@/lib/activeMarkets';
+import { REPORT_COUNTRIES } from '@/lib/constants/reportCountries';
 
-// 🔴 STEP 809 §5: 커버리지 문구는 ACTIVE_MARKETS에서 파생(하드코딩 금지) — 799에서 KR·US로 좁혔는데 "6개 시장" 거짓이던 것 정정.
+// 🔴 2026-09-05(ORDER_트릴리언모델잔재정리_0905 §20): 커버리지 문구 소스를 구 모델트랙 게이트
+// (ACTIVE_MARKETS)에서 채널 리포트 국가 목록(REPORT_COUNTRIES)으로 교체 — 하드코딩 금지 원칙은 유지.
 const MARKET_NAME: Record<string, { ko: string; en: string }> = {
   KR: { ko: '한국', en: 'Korea' }, US: { ko: '미국', en: 'United States' },
   JP: { ko: '일본', en: 'Japan' }, CN: { ko: '중국', en: 'China' },
@@ -19,18 +20,11 @@ const PILLARS: { t: string; d: string }[] = [
   { t: "pillar.seeT", d: "pillar.seeD" },
   { t: "pillar.ownT", d: "pillar.ownD" },
 ];
-const LENSES = ["lens.momentum", "lens.value", "lens.quality", "lens.fscore", "lens.lowvol", "lens.extra"];
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('About');
-
-  // 렌즈 줄: 첫 " — "에서 이름/설명 분리(이름 볼드). 설명 내부의 "—"(RSI — 와일더)는 보존.
-  const splitLens = (s: string): [string, string] => {
-    const i = s.indexOf(" — ");
-    return i < 0 ? [s, ""] : [s.slice(0, i), s.slice(i + 3)];
-  };
 
   // STEP 796 §3: 좌측 선을 셸(1040)과 맞추되 읽기 폭은 유지 — 바깥 1040(좌측 144)·안쪽 리딩 컬럼(lg 680).
   return (
@@ -57,23 +51,8 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         ))}
       </div>
 
-      {/* §3 렌즈 방법 (핵심) */}
-      <section className="mt-12">
-        <h2 className="mb-2 text-base font-bold text-unjong-primary">{t('lensTitle')}</h2>
-        <p className="mb-4 text-sm leading-relaxed text-unjong-muted">{t('lensIntro')}</p>
-        <ul className="space-y-2 rounded-xl border border-unjong-border bg-unjong-surface p-5">
-          {LENSES.map((k) => {
-            const [name, desc] = splitLens(t(k));
-            return (
-              <li key={k} className="text-sm leading-relaxed text-unjong-muted">
-                <span className="font-semibold text-unjong-primary">{name}</span>
-                {desc ? <> — {desc}</> : null}
-              </li>
-            );
-          })}
-        </ul>
-        <p className="mt-4 text-sm leading-relaxed text-unjong-muted">{t('lensClose')}</p>
-      </section>
+      {/* §3 렌즈 방법 섹션 — 2026-09-05(ORDER_트릴리언모델잔재정리_0905 §19) 통째 제거.
+          리포트 기준 재작성은 리브랜딩 때 새 브랜드로 할 일이라 지금 임시 문구로 채우지 않는다. */}
 
       {/* §4 비추천 (강조) */}
       <section className="mt-12 rounded-xl border-l-2 border-unjong-accent bg-unjong-surface p-5">
@@ -85,20 +64,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       <section className="mt-12">
         <h2 className="mb-2 text-base font-bold text-unjong-primary">{t('coverageTitle')}</h2>
         <p className="text-sm leading-relaxed text-unjong-muted">{t('coverageBody', {
-          markets: ACTIVE_MARKETS.map((m) => MARKET_NAME[m]?.[locale === 'en' ? 'en' : 'ko'] ?? m).join(' · '),
-          count: ACTIVE_MARKETS.length,
+          markets: REPORT_COUNTRIES.map((rc) => MARKET_NAME[rc.code]?.[locale === 'en' ? 'en' : 'ko'] ?? rc.code).join(' · '),
+          count: REPORT_COUNTRIES.length,
         })}</p>
       </section>
 
-      {/* §6 사용법 */}
-      <section className="mt-12">
-        <h2 className="mb-3 text-base font-bold text-unjong-primary">{t('howTitle')}</h2>
-        <ol className="space-y-2.5 text-sm leading-relaxed text-unjong-muted">
-          <li><span className="font-medium text-unjong-primary">1.</span> {t('step1')}</li>
-          <li><span className="font-medium text-unjong-primary">2.</span> {t('step2')}</li>
-          <li><span className="font-medium text-unjong-primary">3.</span> {t('step3')}</li>
-        </ol>
-      </section>
+      {/* §6 사용법 섹션 — 2026-09-05(ORDER_트릴리언모델잔재정리_0905) 제거. 기존 3단계 중 2단계("렌즈끼리
+          엇갈릴 때가 신호")가 렌즈 비교 UI 전제라 리포트 열람 흐름엔 대응 개념이 없다 — §3과 같은 이유로
+          임시 문구를 짓지 않고 통째로 비워둔다(리브랜딩 때 새로 설계). */}
 
       {/* 인용 + 면책 */}
       <blockquote className="mt-12 border-l-2 border-unjong-accent pl-4 text-sm italic leading-relaxed text-unjong-muted">

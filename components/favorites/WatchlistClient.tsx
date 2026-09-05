@@ -6,53 +6,18 @@ import { useLocale, useTranslations } from 'next-intl';
 import { X } from 'lucide-react';
 import { StockLogo } from '@/components/ui/StockLogo';
 import { formatPrice } from '@/lib/currency';
-import { TONE_DOT_CLASS as TONE_DOT, changeColorClass, type Tone } from '@/lib/lensTones';
+import { changeColorClass } from '@/lib/lensTones';
 import { pickLocale } from '@/lib/lensCopy';
 import { resolveWatchlistName } from '@/lib/displayName';
 import { useAuthStore } from '@/stores/authStore';
 import { AsOfBadge } from '@/components/ui/AsOfBadge';
 import { marketToday } from '@/lib/marketDate';
 
-type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; tones?: Tone[] | null; unsupportedMarket?: boolean };
-type LensState = { state: 'loading' | 'done' | 'error'; tones: Tone[] };
+type WatchItem = { symbol: string; name_ko: string | null; name_en?: string | null; market: string; country: string; price: number | null; changePercent: number | null; unsupportedMarket?: boolean };
 
 function pctText(v: number | null): string {
   if (v == null) return '—';
   return `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
-}
-function LensSummary({ lens, t }: { lens: LensState | undefined; t: ReturnType<typeof useTranslations> }) {
-  // 아직 시작 전(레이스) 또는 로딩 중: 회색 점 7개 스켈레톤
-  if (!lens || lens.state === 'loading') {
-    return (
-      <div className="flex items-center gap-2">
-        <div className="flex shrink-0 items-center gap-1">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <span key={i} className="h-[7px] w-[7px] shrink-0 rounded-full bg-unjong-border" />
-          ))}
-        </div>
-        <span className="text-[11px] text-unjong-muted">{t('lensLoading')}</span>
-      </div>
-    );
-  }
-  // 실패 또는 na(집계할 렌즈 없음): 조용히 숨김
-  if (lens.state === 'error' || lens.tones.length === 0) return null;
-
-  const pos = lens.tones.filter((x) => x === 'pos').length;
-  const warn = lens.tones.filter((x) => x === 'warn').length;
-  const flat = lens.tones.filter((x) => x === 'flat').length;
-
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex shrink-0 items-center gap-1">
-        {lens.tones.map((tone, i) => (
-          <span key={i} className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[tone]}`} />
-        ))}
-      </div>
-      <span className="whitespace-nowrap text-[11px] font-medium text-unjong-muted">
-        {t('lensSummary', { pos, warn, flat })}
-      </span>
-    </div>
-  );
 }
 
 export default function WatchlistClient() {
@@ -67,23 +32,20 @@ export default function WatchlistClient() {
   const [loadError, setLoadError] = useState(false); // 조회 실패 — '없음'과 구분(STEP 804 §4)
   const [reloadKey, setReloadKey] = useState(0); // 재시도 트리거
   const [actionError, setActionError] = useState<string | null>(null); // 해제 실패 알림(STEP 804 §5)
-  const [lensMap, setLensMap] = useState<Record<string, LensState>>({});
   const [asOf, setAsOf] = useState<Record<string, string>>({}); // 시장별 스냅샷 기준일(STEP 829 §7)
-  const lensStarted = useRef(false);
   const removing = useRef<Set<string>>(new Set()); // 해제 연타 방지(in-flight 가드)
 
   // user 변화 구독(STEP 800 §4) — 로그아웃(다른 탭 포함·AuthProvider가 onAuthStateChange로 store 갱신) 시 즉시 초기화.
-  // 예전엔 deps []로 1회만 로드 → 로그아웃 후에도 이전 사용자 관심목록이 그대로 남던 개인정보 노출(TodayClient·ExploreClient엔 이미 있는 가드).
+  // 예전엔 deps []로 1회만 로드 → 로그아웃 후에도 이전 사용자 관심목록이 그대로 남던 개인정보 노출(TodayClient엔 이미 있는 가드).
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      setItems([]); setLensMap({}); setAuth(false); setLoading(false); setLoadError(false); lensStarted.current = false;
+      setItems([]); setAuth(false); setLoading(false); setLoadError(false);
       return;
     }
     let cancelled = false;
     setLoading(true);
     setLoadError(false);
-    lensStarted.current = false; // 사용자 바뀌면 렌즈 큐 재시작 허용
     fetch('/api/watchlist/quotes')
       .then((r) => { if (!r.ok) throw new Error('quotes'); return r.json(); }) // HTTP 오류도 실패로(빈목록으로 위장 금지·STEP 804 §4)
       .then((j) => {
@@ -93,53 +55,10 @@ export default function WatchlistClient() {
         setAsOf((j.asOf ?? {}) as Record<string, string>);
         setAuth(j.auth !== false);
         setLoading(false);
-        // 선계산(lens_scores) 톤이 있는 항목은 즉시 렌더 — 스켈레톤·fetch 없이 바로 채움
-        const seed: Record<string, LensState> = {};
-        for (const it of list) if (it.tones != null) seed[it.symbol] = { state: 'done', tones: it.tones };
-        setLensMap(seed);
       })
       .catch(() => { if (!cancelled) { setLoadError(true); setLoading(false); } }); // 실패는 '없음'이 아니라 에러로 표시
     return () => { cancelled = true; };
   }, [user, authLoading, reloadKey]);
-
-  // 행별 지연 렌즈 요약 — 선계산(lens_scores) 밖 종목만 동시성 4개 제한 큐로 실시간 폴백. 관심목록이 처음 채워질 때 한 번만 시작.
-  useEffect(() => {
-    if (items.length === 0 || lensStarted.current) return;
-    lensStarted.current = true;
-    let cancelled = false;
-    const queue = items.filter((x) => x.tones == null && !x.unsupportedMarket); // 선계산 없는 것만(top-N 밖·비KR/US) — 지원 종료 시장은 조회 자체를 안 함(STEP 799)
-    const CONCURRENCY = 4;
-
-    async function worker() {
-      while (!cancelled) {
-        const item = queue.shift();
-        if (!item) return;
-        setLensMap((m) => ({ ...m, [item.symbol]: { state: 'loading', tones: [] } }));
-        try {
-          const j = await (await fetch(`/api/lens?symbol=${encodeURIComponent(item.symbol)}&lang=${locale}`)).json();
-          if (cancelled) return;
-          const tones: Tone[] = [];
-          for (const l of (j.lenses ?? []) as { state?: string | null; verdict?: { tone?: string } | null }[]) {
-            // STEP 808 §5: pending(기준 준비 중)·na는 판정한 게 아니라 제외 — 선계산 toneForKey와 동일(도트 수 일치).
-            if (l?.state === 'pending' || l?.state === 'na') continue;
-            const tone = l?.verdict?.tone;
-            if (tone === 'pos' || tone === 'warn' || tone === 'flat') tones.push(tone);
-          }
-          // STEP 829 §7: supported=true여도 score가 없으면 0으로 날조하지 않는다(804 §1 잔여) — 실수치일 때만 도트.
-          const fs = j.fscore as { supported?: boolean; score?: number } | null;
-          if (fs?.supported && typeof fs.score === 'number') {
-            const score = fs.score;
-            tones.push(score >= 7 ? 'pos' : score <= 3 ? 'warn' : 'flat');
-          }
-          setLensMap((m) => ({ ...m, [item.symbol]: { state: 'done', tones } }));
-        } catch {
-          if (!cancelled) setLensMap((m) => ({ ...m, [item.symbol]: { state: 'error', tones: [] } }));
-        }
-      }
-    }
-    Array.from({ length: Math.min(CONCURRENCY, queue.length) }, () => worker());
-    return () => { cancelled = true; };
-  }, [items, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const remove = (symbol: string, market: string) => {
     const key = `${symbol}:${market}`;
@@ -200,26 +119,22 @@ export default function WatchlistClient() {
     <ul className="overflow-hidden rounded-2xl border border-unjong-border bg-unjong-surface">
       {items.map((f) => (
         <li key={`${f.symbol}:${f.market}`} className="group flex items-start gap-2 border-b border-unjong-border px-3 py-2.5 last:border-0 hover:bg-unjong-background active:bg-unjong-background">
-          {/* 행(로고·이름·티커·가격·렌즈요약) 전체 클릭 → 종목 상세. 해제(X)만 분리. */}
-          <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-            <div className="flex min-w-0 items-center gap-2 sm:flex-1">
-              <StockLogo code={f.symbol} name={resolveWatchlistName(locale, f)} size={22} />
-              <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{resolveWatchlistName(locale, f)}</span>
-              <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
-              <span className="ml-auto shrink-0 text-right sm:ml-0">
-                {f.unsupportedMarket ? (
-                  <span className="block text-[11px] font-medium text-unjong-muted">{t('marketNotSupported')}</span>
-                ) : (
-                  <>
-                    <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
-                    <span className={`block text-[11px] font-medium tabular-nums ${changeColorClass(f.changePercent, locale)}`}>{pctText(f.changePercent)}</span>
-                  </>
-                )}
-              </span>
-            </div>
-            <div className="shrink-0 sm:flex sm:w-64 sm:justify-end">
-              {f.unsupportedMarket ? null : <LensSummary lens={lensMap[f.symbol]} t={t} />}
-            </div>
+          {/* 행(로고·이름·티커·가격) 전체 클릭 → 종목 상세. 해제(X)만 분리.
+              2026-09-05(ORDER_트릴리언모델잔재정리_0905 §24): 렌즈 요약 도트 제거(관심종목 기능 자체는 유지). */}
+          <Link href={`/stock/${f.symbol}`} className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            <StockLogo code={f.symbol} name={resolveWatchlistName(locale, f)} size={22} />
+            <span className="min-w-0 flex-1 truncate text-sm font-semibold text-unjong-primary group-hover:text-unjong-accent">{resolveWatchlistName(locale, f)}</span>
+            <span className="shrink-0 font-mono text-xs text-unjong-muted">{f.symbol}</span>
+            <span className="ml-auto shrink-0 text-right sm:ml-0">
+              {f.unsupportedMarket ? (
+                <span className="block text-[11px] font-medium text-unjong-muted">{t('marketNotSupported')}</span>
+              ) : (
+                <>
+                  <span className="block text-sm font-semibold tabular-nums text-unjong-primary">{f.price != null ? formatPrice(f.price, f.country) : '—'}</span>
+                  <span className={`block text-[11px] font-medium tabular-nums ${changeColorClass(f.changePercent, locale)}`}>{pctText(f.changePercent)}</span>
+                </>
+              )}
+            </span>
           </Link>
           {/* 히트영역 44px(STEP 795 §7) — 아이콘은 15px 유지, 패딩으로 확대. -my-1.5로 행 높이 영향 최소화. */}
           <button type="button" onClick={() => remove(f.symbol, f.market)} aria-label={tb('watchRemove')} className="-my-1.5 -mr-1.5 flex h-11 w-11 shrink-0 items-center justify-center text-unjong-border transition-colors hover:text-unjong-danger">
@@ -228,8 +143,6 @@ export default function WatchlistClient() {
         </li>
       ))}
     </ul>
-    {/* 🔴 STEP 830 §8: 결측 고백 — 상세는 "N개 판정 안 함"이라 말하는데 리스트는 도트만 줄던 침묵을 메움(도트=판정된 기법만). */}
-    <p className="mt-2 px-1 text-[11px] leading-relaxed text-unjong-muted">{t('lensMissingNote')}</p>
     </>
   );
 }

@@ -5,7 +5,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Trillion",
     short_name: "Trillion",
-    description: "종목을 보는 눈을, 누구에게나 — TR-AI 렌즈로 보는 주식 정보",
+    // 2026-09-05(ORDER_트릴리언모델잔재정리_0905): "TR-AI 렌즈" 표기 제거 — 새 문구 창작 없이 최소 사실 문장으로.
+    description: "종목을 보는 눈을, 누구에게나 — 증권사 리포트로 보는 주식 정보",
     start_url: "/",
     display: "standalone",
     background_color: "#0A0A0A",
