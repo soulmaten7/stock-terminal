@@ -9,6 +9,11 @@
 ## 1. 스택
 - **Next.js 16 App Router**(Turbopack · dev 포트 3333) · **Tailwind v4**(`@theme` in `app/globals.css`) · **Zustand**(`countryStore`·`authStore`) · **next-intl**(`[locale]` · ko 무프리픽스 · en=`/en` · `as-needed` · `localeCookie:false`).
   - **로케일 지속 = `locale_choice` 쿠키**(STEP 806 §5 · 명시 선택[Header.switchLocale]만 심음·URL 방문으론 안 바뀜). proxy가 이 키만 읽어 프리픽스 없는 요청을 `/en`으로. **레거시 `NEXT_LOCALE`은 읽지 않고 삭제**(800 이전 next-intl이 URL마다 덮어써 en으로 굳던 잔류 쿠키 무력화). OAuth 왕복용 `post_login_locale`(795·10분)은 별개.
+  - **첫 방문 자동 언어감지(2026-09-06, `proxy.ts`)** — `locale_choice`도 `locale_auto`(신설)도 없는 진짜
+    첫 방문에만, 봇(User-Agent 정규식)이 아닌 경우에 한해 Accept-Language를 한 번 보고 ko/en을 정해
+    `locale_auto` 쿠키(1년)에 못박는다. 이후 방문은 그 쿠키를 그대로 쓰고 재감지하지 않는다. `locale_choice`가
+    있으면 항상 그게 우선(자동감지는 이 쿠키를 절대 안 건드림) — 명시 선택을 자동감지가 덮어쓰는 경로 없음.
+    봇은 감지도 리다이렉트도 안 타고 항상 기본 ko를 크롤(SEO 안전장치).
 - **Supabase** `@supabase/ssr` — server/browser client + admin client(SERVICE_ROLE · RLS 우회). 마이그레이션 = Cowork가 MCP로 적용, Claude Code가 `.sql` 아카이브.
 - **Vercel** 배포 · 크론(§4) · Analytics · Sentry(@sentry/nextjs v10).
 
