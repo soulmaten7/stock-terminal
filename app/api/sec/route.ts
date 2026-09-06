@@ -5,7 +5,7 @@ export async function GET(request: NextRequest) {
   const ticker = searchParams.get('ticker');
   const formType = searchParams.get('form_type'); // 10-K, 10-Q, 8-K 등
 
-  const userAgent = process.env.SEC_USER_AGENT || 'EarthTicker support@earthticker.app';
+  const userAgent = process.env.SEC_USER_AGENT || 'EarthTicker signal.kr.biz@gmail.com';
 
   // mode=recent: 최근 주요 미국 공시 (ticker 불필요)
   if (searchParams.get('mode') === 'recent') {

@@ -14,6 +14,12 @@ export const dynamic = "force-dynamic";
 
 type Locale = "ko" | "en";
 const SITE_BASE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthticker.app";
+// 🔴 2026-09-07 — 다른 이메일(contact@ 등)은 signal.kr.biz@gmail.com으로 통일했지만
+// 이 발신자만 예외로 남긴다: Resend는 from 주소의 도메인이 자기 대시보드에서
+// DNS(SPF/DKIM) 검증된 것이어야 발송이 성공한다. gmail.com은 우리가 소유한 도메인이
+// 아니라 검증 자체가 불가능 — earthticker.app이 이미 검증돼 있다는 전제로 이 주소를
+// 바꾸면 발송이 전부 실패할 위험이 있다(현재 크론 정지 상태라 확인 안 됨, docs/STATE.md
+// 참고). 도메인 메일함을 실제로 만들 때 같이 정리한다.
 const FROM = "EarthTicker <brief@earthticker.app>";
 const FRESH_H = 20; // daily_brief가 이 시간 이내로 생성됐어야 "오늘자"로 인정(오래된 걸로 메일 보내지 않음)
 
@@ -199,7 +205,7 @@ export async function GET(req: Request) {
       subject: subjectFor(loc, now),
       html,
       headers: {
-        "List-Unsubscribe": `<mailto:brief@earthticker.app?subject=unsubscribe>, <${unsubUrl}>`,
+        "List-Unsubscribe": `<mailto:signal.kr.biz@gmail.com?subject=unsubscribe>, <${unsubUrl}>`,
         "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
       },
     });
