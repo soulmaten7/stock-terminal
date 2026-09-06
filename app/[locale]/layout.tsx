@@ -60,13 +60,15 @@ export async function generateMetadata({
       siteName: "EarthTicker",
       type: "website",
       locale: OG_LOCALE[locale] ?? OG_LOCALE.ko,
-      images: [{ url: "/og.png", width: 1200, height: 630, alt: t('ogImageAlt') }],
+      // 2026-09-06: 로케일별 OG 이미지 분리(이전엔 /og.png 하나를 en에도 그대로 써서
+      // 영문 방문자에게 한글 이미지가 노출되던 기존 버그를 같이 고쳤다).
+      images: [{ url: locale === "en" ? "/og-en.png" : "/og.png", width: 1200, height: 630, alt: t('ogImageAlt') }],
     },
     twitter: {
       card: "summary_large_image",
       title: t('twitterTitle'),
       description: t('ogDescription'),
-      images: ["/og.png"],
+      images: [locale === "en" ? "/og-en.png" : "/og.png"],
     },
     verification: {
       google: "mSXxPQfJZWeRw6IB1sWgggF53JJBnpXSH1nhdJROkUs",
