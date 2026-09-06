@@ -7,6 +7,7 @@ import { useRouter, usePathname } from '@/i18n/navigation';
 import { pickLocale } from '@/lib/lensCopy';
 import { formatPrice, formatTradeValue } from '@/lib/currency';
 import { changeColorClass } from '@/lib/lensTones';
+import { verdictLabel } from '@/components/reports/ReportRow';
 import { useAuthStore } from '@/stores/authStore';
 import { ExternalLink, Sparkles, ArrowLeft, Star } from 'lucide-react';
 
@@ -598,6 +599,8 @@ function verdictClass(v: string | null): string {
   if (v === '하향') return 'text-unjong-down';
   return 'text-unjong-primary';
 }
+// verdict는 채널 수집 코드가 쓰는 한국어 고정 어휘(자유번역 절대 금지 — 콘텐츠 번역 구현 8번 안전장치) —
+// components/reports/ReportRow.tsx의 고정 사전(verdictLabel)을 그대로 재사용한다(재구현 금지).
 
 // 리포트 상세 본문(이유 전체·실적 전망) — 최신 1건은 항상 펼침, 과거 건은 클릭해야 같은 수준으로 펼쳐진다
 // (2026-09-05 ORDER_트릴리언리포트상세화 STEP1: 요약 카드였던 걸 "텍스트로 가장 깊게 읽는 곳"으로).
@@ -638,18 +641,19 @@ function ReportDetail({ r }: { r: ChannelReport }) {
 
 function ReportLayer({ symbol }: { symbol: string }) {
   const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale()); // 2026-09-06: 번역(?lang=)·verdict 라벨 둘 다 이 값 기준
   const [reports, setReports] = useState<ChannelReport[] | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(new Set()); // 최신(index 0)은 항상 펼침 — 여긴 과거 건만 담는다
 
   useEffect(() => {
     if (!symbol) return;
     let alive = true;
-    fetch('/api/channel-reports?symbol=' + encodeURIComponent(symbol))
+    fetch('/api/channel-reports?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
       .then((r) => r.json())
       .then((j) => { if (alive) setReports(j.reports ?? []); })
       .catch(() => { if (alive) setReports([]); });
     return () => { alive = false; };
-  }, [symbol]);
+  }, [symbol, locale]);
 
   if (reports === null) return null; // 로딩 중 — 최소 디자인이라 스켈레톤 생략(깜빡임 방지 목적만)
 
@@ -674,7 +678,7 @@ function ReportLayer({ symbol }: { symbol: string }) {
             {isLatest ? (
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>
-                {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{r.verdict}</span> : null}
+                {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{verdictLabel(locale, r.verdict)}</span> : null}
               </div>
             ) : (
               <button
@@ -686,7 +690,7 @@ function ReportLayer({ symbol }: { symbol: string }) {
               >
                 <span className="text-[13px] font-medium text-unjong-primary">{r.report_date} · {r.broker}</span>
                 <span className="flex items-center gap-2">
-                  {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{r.verdict}</span> : null}
+                  {r.verdict ? <span className={`text-sm font-bold ${verdictClass(r.verdict)}`}>{verdictLabel(locale, r.verdict)}</span> : null}
                   {r.target_price ? <span className="text-[13px] tabular-nums text-unjong-muted">{r.target_price}</span> : null}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`shrink-0 text-unjong-muted transition-transform ${isOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
                 </span>

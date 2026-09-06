@@ -27,7 +27,7 @@ export default async function ReportsPage({
   const loc = pickLocale(locale);
   const t = await getTranslations({ locale, namespace: "Today" });
 
-  const feed = await getHomeReportFeed({ country, limit: 50 });
+  const feed = await getHomeReportFeed({ country, limit: 50, loc });
   const activeCountry = REPORT_COUNTRIES.find((rc) => rc.code === country)!;
 
   return (

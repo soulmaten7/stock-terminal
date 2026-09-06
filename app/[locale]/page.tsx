@@ -8,6 +8,7 @@ import { getIndices } from "@/lib/indices";
 import { getHomeReportFeed, type HomeReportFeed } from "@/lib/channelReports";
 import { getOurChannels } from "@/lib/ourChannels";
 import { REPORT_COUNTRIES } from "@/lib/constants/reportCountries";
+import { pickLocale } from "@/lib/lensCopy";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -83,8 +84,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   // ORDER_트릴리언홈히어로정리_0905: 한 입 브리핑(getLatestDailyBrief) 호출을 홈에서 끊는다 —
   // 폐지된 렌즈 모델이 생성한 서술이라 화면에 남기지 않는다. 크론(daily-brief)·API 라우트·
   // email-brief(별도 소비자)는 이번에 건드리지 않는다(화면 호출만 끊음, 삭제 아님).
+  const loc = pickLocale(locale);
   const [reportFeeds, indices, ourChannels] = await Promise.all([
-    Promise.all(REPORT_COUNTRIES.map((rc) => getHomeReportFeed({ country: rc.code, limit: 5 }))),
+    Promise.all(REPORT_COUNTRIES.map((rc) => getHomeReportFeed({ country: rc.code, limit: 5, loc }))),
     getIndices(),
     getOurChannels(),
   ]);

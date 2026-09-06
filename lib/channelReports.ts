@@ -1,7 +1,10 @@
 // 홈 리포트 피드 원료 — channel_reports 조회(ORDER_트릴리언홈피드_0905 STEP2).
 // 서버 프리페치(app/[locale]/page.tsx)·리포트 목록 페이지(app/[locale]/reports)가 공유.
 // symbol이 NULL(미매칭)인 행은 클릭 시 이동할 곳이 없어 제외한다(ORDER 명시).
+// 2026-09-06(콘텐츠 번역 구현): loc 인자 추가 — title은 번역 있으면 교체, stock_name/broker는
+// kr_stock_snapshot.name_en 조회로 대체(자유번역 아님). lib/channelReportI18n.ts 참고.
 import { createAdminClient } from "@/lib/supabase/admin";
+import { fetchChannelReportLocaleData, localizedStockName, localizedBroker } from "@/lib/channelReportI18n";
 
 export type HomeReportItem = {
   symbol: string;
@@ -21,21 +24,46 @@ export type HomeReportFeed = { items: HomeReportItem[]; count: number };
 export async function getHomeReportFeed({
   country,
   limit = 5,
+  loc = "ko",
 }: {
   country: string;
   limit?: number;
+  loc?: "ko" | "en";
 }): Promise<HomeReportFeed> {
   try {
     const sb = createAdminClient();
     const { data, count, error } = await sb
       .from("channel_reports")
-      .select("symbol, stock_name, broker, verdict, target_price, current_price, report_date, title", { count: "exact" })
+      .select("id, symbol, stock_name, broker, verdict, target_price, current_price, report_date, title", { count: "exact" })
       .eq("country", country)
       .not("symbol", "is", null)
       .order("report_date", { ascending: false })
       .limit(limit);
     if (error) return { items: [], count: 0 };
-    return { items: (data ?? []) as HomeReportItem[], count: count ?? 0 };
+    const rows = (data ?? []) as (HomeReportItem & { id: number })[];
+
+    const { translations, stockNameEn, brokerNameEn } = await fetchChannelReportLocaleData({
+      ids: rows.map((r) => r.id),
+      krSymbols: country === "KR" ? rows.map((r) => r.symbol) : [],
+      krBrokers: country === "KR" ? rows.map((r) => r.broker) : [],
+      loc,
+    });
+
+    const items: HomeReportItem[] = rows.map((r) => {
+      const tr = translations.get(r.id);
+      const ok = tr && tr.status === "ok";
+      return {
+        symbol: r.symbol,
+        stock_name: localizedStockName(loc, country, r.symbol, r.stock_name, stockNameEn),
+        broker: localizedBroker(loc, country, r.broker, brokerNameEn),
+        verdict: r.verdict,
+        target_price: r.target_price,
+        current_price: r.current_price,
+        report_date: r.report_date,
+        title: ok && tr!.title ? tr!.title : r.title,
+      };
+    });
+    return { items, count: count ?? 0 };
   } catch {
     return { items: [], count: 0 };
   }
