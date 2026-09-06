@@ -1,7 +1,7 @@
 // SEC company_tickers.json → us_symbols.json placeholder 실명 보강. node scripts/enrich_us_names.mjs
 import fs from "node:fs";
 
-const UA = "Trillion/1.0 (contact@onetrillion.app)"; // ⚠️ SEC는 UA 없으면 차단
+const UA = "Trillion/1.0 (signal.kr.biz@gmail.com)"; // ⚠️ SEC는 UA 없으면 차단
 const res = await fetch("https://www.sec.gov/files/company_tickers.json", { headers: { "User-Agent": UA } });
 if (!res.ok) { console.error("SEC fetch failed", res.status); process.exit(1); }
 const sec = await res.json(); // { "0": {cik_str, ticker, title}, ... }

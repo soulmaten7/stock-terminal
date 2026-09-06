@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   // 국세청 진위확인 (사업자번호 + 대표명[금감원] + 개업일[입력]) — 명백한 불일치만 차단
   const nts = biz.representative ? await verifyBusiness(biz_no, start_dt, biz.representative as string) : 'unverified';
   if (nts === 'mismatch') {
-    return NextResponse.json({ error: "국세청 진위확인 불일치 — 개업일자를 확인해주세요. (대표명 변경 등 사유면 contact@onetrillion.app 으로 문의)" }, { status: 400 });
+    return NextResponse.json({ error: "국세청 진위확인 불일치 — 개업일자를 확인해주세요. (대표명 변경 등 사유면 signal.kr.biz@gmail.com 으로 문의)" }, { status: 400 });
   }
 
   // 서류 업로드 (비공개 버킷 — service role)

@@ -12,7 +12,7 @@ const STATUS: { key: string; label: string }[] = [
   { key: 'closed', label: '종료' },
 ];
 
-const CONTACT = 'contact@earthticker.app';
+const CONTACT = 'signal.kr.biz@gmail.com';
 // 광고 위치별 기본 회신 템플릿 — '연락함' 클릭 시 메일 본문에 채워짐
 const TEMPLATES: Record<string, { subject: string; body: (company: string) => string }> = {
   broker: {

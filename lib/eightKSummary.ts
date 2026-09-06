@@ -2,7 +2,7 @@
 // 원칙: LLM은 '읽어서 사실만'. 여기선 텍스트만 뽑아 준다(예측·판정 로직 없음).
 // SEC는 User-Agent 필수(없으면 403). 프레임워크 무관(next/server import 금지).
 
-const SEC_UA = process.env.SEC_USER_AGENT || "EarthTicker/1.0 (contact@earthticker.app)";
+const SEC_UA = process.env.SEC_USER_AGENT || "EarthTicker/1.0 (signal.kr.biz@gmail.com)";
 
 // HTML → 순수 텍스트(태그·스크립트·엔티티 제거·공백 정리). SEC 공시는 비교적 깨끗한 HTML.
 export function stripHtml(html: string): string {

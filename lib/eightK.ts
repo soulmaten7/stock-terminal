@@ -58,7 +58,7 @@ export type MaterialEvent = {
   link: string;        // SEC 원문
 };
 
-const SEC_UA = process.env.SEC_USER_AGENT || "EarthTicker/1.0 (contact@earthticker.app)"; // SEC는 User-Agent 필수(없으면 403)
+const SEC_UA = process.env.SEC_USER_AGENT || "EarthTicker/1.0 (signal.kr.biz@gmail.com)"; // SEC는 User-Agent 필수(없으면 403)
 
 // ticker → CIK(10자리 zero-pad). company_tickers.json 1일 인메모리 캐시. 비US(6자리·.T 등)는 없음 → null.
 let tickerMap: Record<string, string> | null = null;

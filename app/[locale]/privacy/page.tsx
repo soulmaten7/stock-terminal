@@ -62,7 +62,7 @@ const SECTIONS: { h: string; body: string[] }[] = [
   },
   {
     h: "9. 개인정보 보호책임자",
-    body: ["성명·직책: 장은태 / 대표", "연락처: contact@earthticker.app"],
+    body: ["성명·직책: 장은태 / 대표", "연락처: signal.kr.biz@gmail.com"],
   },
   {
     h: "10. 고지의 의무",

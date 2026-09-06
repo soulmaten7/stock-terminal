@@ -47,7 +47,7 @@ export default function Footer() {
             <h4 className="mb-4 font-bold text-white">{t('contactHeading')}</h4>
             <ul className="space-y-2 text-sm text-white/80">
               <li><Link href="/advertise" className="transition-colors hover:text-[#FFD65A]">{t('adInquiry')}</Link></li>
-              <li>{t('emailLabel')}<a href="mailto:contact@earthticker.app" className="transition-colors hover:text-[#FFD65A]">contact@earthticker.app</a></li>
+              <li>{t('emailLabel')}<a href="mailto:signal.kr.biz@gmail.com" className="transition-colors hover:text-[#FFD65A]">signal.kr.biz@gmail.com</a></li>
             </ul>
           </div>
         </div>
