@@ -7,7 +7,7 @@ type Item = {
   id: number;
   country: string;
   content_type: string;
-  symbol: string;
+  symbol: string | null;
   stock_name: string;
   target_date: string;
   assembled_date: string;
@@ -15,13 +15,15 @@ type Item = {
   status: string;
   uploaded_at: string | null;
   youtube_url: string | null;
+  bundled_symbols: string[] | null;
 };
 
-const TYPE_LABEL: Record<string, string> = { report: '리포트형', growth_story: '성장스토리' };
+const TYPE_LABEL: Record<string, string> = { report: '리포트형', growth_story: '성장스토리', longform: '롱폼' };
 const STATUS_LABEL: Record<string, string> = { '대기중': '대기중', '기획됨': '기획됨', '조립됨': '조립됨', '업로드됨': '업로드됨' };
 
 const COUNTRY_OPTIONS = [{ value: '', label: '전체' }, { value: 'KR', label: '한국' }, { value: 'US', label: '미국' }];
-const TYPE_OPTIONS = [{ value: '', label: '전체' }, { value: 'report', label: '리포트형' }, { value: 'growth_story', label: '성장스토리' }];
+const TYPE_OPTIONS = [{ value: '', label: '전체' }, { value: 'report', label: '리포트형' }, { value: 'growth_story', label: '성장스토리' }, { value: 'longform', label: '롱폼' }];
+const ADD_COUNTRY_OPTIONS = [{ value: 'KR', label: '한국' }, { value: 'US', label: '미국' }];
 
 export default function AdminProductionStatus({ initial }: { initial: Item[] }) {
   const [rows, setRows] = useState(initial);
@@ -31,6 +33,16 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
   const [type, setType] = useState('');
   const [unuploaded, setUnuploaded] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // 롱폼 수동 추가 — 채널이 EarthTicker에 롱폼을 아직 적재하지 않아
+  // 자동 트리거 소스가 없다(2026-09-08). 준비 단계로 admin이 직접 한 줄
+  // 추가하는 폼만 둔다.
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addCountry, setAddCountry] = useState('KR');
+  const [addTitle, setAddTitle] = useState('');
+  const [addSymbols, setAddSymbols] = useState('');
+  const [addBusy, setAddBusy] = useState(false);
+  const [addError, setAddError] = useState('');
 
   const refetch = useCallback(async () => {
     setLoading(true);
@@ -102,6 +114,29 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
     }
   }
 
+  async function submitAddLongform(e: React.FormEvent) {
+    e.preventDefault();
+    setAddError('');
+    if (!addTitle.trim()) { setAddError('제목을 입력해 주세요'); return; }
+    setAddBusy(true);
+    try {
+      const res = await fetch('/api/admin/production-status', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ country: addCountry, title: addTitle.trim(), symbols: addSymbols.trim() }),
+      });
+      const j = await res.json();
+      if (!res.ok) throw new Error(j.error ?? '추가 실패');
+      setAddTitle('');
+      setAddSymbols('');
+      setShowAddForm(false);
+      refetch();
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : '추가 실패');
+    } finally {
+      setAddBusy(false);
+    }
+  }
+
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -128,8 +163,43 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
         >
           현재 목록 전체 해제
         </button>
+        <span className="mx-1 h-4 w-px bg-unjong-border" />
+        <button
+          type="button"
+          onClick={() => setShowAddForm((v) => !v)}
+          className="rounded border border-unjong-border px-2 py-1 text-[11px] text-unjong-muted hover:text-unjong-primary"
+        >
+          + 롱폼 추가
+        </button>
         {loading || bulkBusy ? <span className="text-xs text-unjong-muted">{bulkBusy ? '적용 중…' : '불러오는 중…'}</span> : null}
       </div>
+
+      {showAddForm ? (
+        <form onSubmit={submitAddLongform} className="mb-4 flex flex-wrap items-end gap-2 rounded-lg border border-unjong-border bg-unjong-surface p-3">
+          <div>
+            <label className="mb-1 block text-[11px] text-unjong-muted">국가</label>
+            <SelectDropdown value={addCountry} onChange={setAddCountry} options={ADD_COUNTRY_OPTIONS} />
+          </div>
+          <div className="flex-1 basis-64">
+            <label className="mb-1 block text-[11px] text-unjong-muted">제목(예: 실리콘투 · 코스맥스 · 에이피알 — 9월 8일)</label>
+            <input
+              type="text" value={addTitle} onChange={(e) => setAddTitle(e.target.value)}
+              className="w-full rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint"
+            />
+          </div>
+          <div className="flex-1 basis-64">
+            <label className="mb-1 block text-[11px] text-unjong-muted">묶인 종목(쉼표로 구분, 선택)</label>
+            <input
+              type="text" value={addSymbols} onChange={(e) => setAddSymbols(e.target.value)} placeholder="실리콘투, 코스맥스, 에이피알"
+              className="w-full rounded-lg border border-unjong-border bg-unjong-background px-3 py-2 text-sm text-unjong-primary outline-none focus:border-unjong-mint"
+            />
+          </div>
+          <button type="submit" disabled={addBusy} className="rounded-lg bg-unjong-accent px-3 py-2 text-xs font-semibold text-unjong-background disabled:opacity-50">
+            {addBusy ? '추가 중…' : '추가'}
+          </button>
+          {addError ? <p className="w-full text-xs text-red-500">{addError}</p> : null}
+        </form>
+      ) : null}
 
       {!rows.length ? (
         <p className="py-8 text-center text-sm text-unjong-muted">해당하는 제작 항목이 없습니다.</p>

@@ -42,6 +42,38 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({ items: data ?? [] });
 }
 
+// 🔴 2026-09-08 신설 — 롱폼(한국판 일일 합본)은 쇼츠 여러 편을 묶은 것이라
+// 종목 하나로 특정이 안 되고, 지금은 채널이 EarthTicker에 아예 적재하지
+// 않는다(채널 쪽 자동 연동은 스코프 밖). channel_reports/channel_growth_
+// stories 같은 자동 트리거 소스가 없으므로, admin이 수동으로 한 줄 추가
+// 하는 것까지만 이번에 준비한다 — 나중에 채널 쪽이 자동 적재를 붙이면
+// 이 수동 입력 경로는 자연히 덜 쓰이게 된다(막을 필요 없음).
+export async function POST(req: NextRequest) {
+  if (!(await requireAdmin())) return NextResponse.json({ error: "권한 없음" }, { status: 403 });
+
+  let body: { country?: string; title?: string; symbols?: string; assembled_date?: string };
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "잘못된 요청" }, { status: 400 }); }
+
+  const country = body.country === "US" ? "US" : "KR";
+  const title = String(body.title ?? "").trim().slice(0, 200);
+  if (!title) return NextResponse.json({ error: "제목을 입력해 주세요" }, { status: 400 });
+
+  const bundledSymbols = String(body.symbols ?? "")
+    .split(/[,·]/).map((s) => s.trim()).filter(Boolean);
+  const stockName = bundledSymbols.length ? bundledSymbols.join(" · ") : title;
+  const assembledDate = body.assembled_date || new Date().toISOString().slice(0, 10);
+
+  const admin = createAdminClient();
+  const { error } = await admin.from("production_items").insert({
+    country, content_type: "longform", symbol: null, stock_name: stockName,
+    target_date: assembledDate, assembled_date: assembledDate, title,
+    bundled_symbols: bundledSymbols.length ? bundledSymbols : null,
+    status: "조립됨",
+  });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+
 export async function PATCH(req: NextRequest) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "권한 없음" }, { status: 403 });
 
