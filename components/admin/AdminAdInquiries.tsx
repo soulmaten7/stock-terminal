@@ -5,7 +5,11 @@ import { Mail } from 'lucide-react';
 
 type Inquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
 
-const SLOT_LABEL: Record<string, string> = { broker: '증권사', other: '기타' };
+// 🔴 2026-09-08 실측 발견 — 'feed'가 빠져 있어 "콘텐츠 피드" 문의가 관리자
+// 화면에 라벨 없이 원문 그대로("feed")로 보이고 있었다(app/api/advertise/
+// inquiry/route.ts의 SLOTS 배열이 옛 "room" 값을 갖고 있던 것과 같은 종류의
+// 누락 — 값 목록이 여러 파일에 흩어질 때 하나만 빠지는 패턴).
+const SLOT_LABEL: Record<string, string> = { broker: '증권사', feed: '콘텐츠 피드', other: '기타' };
 const STATUS: { key: string; label: string }[] = [
   { key: 'new', label: '신규' },
   { key: 'contacted', label: '연락함' },

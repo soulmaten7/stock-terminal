@@ -3,12 +3,14 @@ import { getLocale } from 'next-intl/server';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import AdminAdInquiries from '@/components/admin/AdminAdInquiries';
+import AdminProductionStatus from '@/components/admin/AdminProductionStatus';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const metadata = { title: '어스티커 관리자' };
 
 type AdInquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
+type ProductionItem = { id: number; country: string; content_type: string; symbol: string; stock_name: string; target_date: string; title: string | null; status: string; uploaded_at: string | null; youtube_url: string | null };
 
 export default async function AdminPage() {
   const locale = await getLocale();
@@ -32,6 +34,10 @@ export default async function AdminPage() {
   const { data: inquiriesData } = await admin.from('ad_inquiries').select('*').order('created_at', { ascending: false }).limit(500);
   const inquiries = (inquiriesData ?? []) as AdInquiry[];
 
+  // 제작 관리(production_items) — docs/ORDER_제작관리자페이지_0908.md STEP1 설계, 승인 후 구현(2026-09-08)
+  const { data: productionData } = await admin.from('production_items').select('*').order('target_date', { ascending: false }).limit(300);
+  const productionItems = (productionData ?? []) as ProductionItem[];
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
       <h1 className="text-xl font-bold text-unjong-primary">어스티커 관리자</h1>
@@ -41,6 +47,11 @@ export default async function AdminPage() {
       <section className="mt-4">
         <h2 className="mb-1.5 text-xs font-medium text-unjong-muted">광고 문의 ({inquiries.length})</h2>
         <AdminAdInquiries initial={inquiries} />
+      </section>
+
+      <section className="mt-10">
+        <h2 className="mb-1.5 text-xs font-medium text-unjong-muted">제작 관리 ({productionItems.length})</h2>
+        <AdminProductionStatus initial={productionItems} />
       </section>
     </div>
   );
