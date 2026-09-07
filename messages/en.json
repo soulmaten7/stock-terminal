@@ -609,6 +609,10 @@
     "horizon": {
       "title": "At a glance, over time"
     },
+    "companyIntro": {
+      "title": "Company",
+      "watchVideo": "Watch the video"
+    },
     "reports": {
       "title": "Reports",
       "currentPrice": "Current price",

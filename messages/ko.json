@@ -609,6 +609,10 @@
     "horizon": {
       "title": "시간축으로 한눈에"
     },
+    "companyIntro": {
+      "title": "회사 소개",
+      "watchVideo": "영상으로 보기"
+    },
     "reports": {
       "title": "리포트",
       "currentPrice": "현재가",

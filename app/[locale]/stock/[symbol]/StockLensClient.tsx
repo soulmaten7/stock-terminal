@@ -578,6 +578,56 @@ function WatchStarToggle({ symbol, name, country }: { symbol: string; name: stri
   );
 }
 
+// 🔴 2026-09-07(채팅 지시, B안): channel_growth_stories를 symbol로 읽어 리포트 위에 "회사 소개"로
+// 고정한다. 리포트와 달리 종목당 1건 — 목록이 아니라 있으면 카드 하나, 없으면 섹션 자체가 없다
+// (빈 상태 문구도 없음, 대부분 종목엔 아직 없어서). 도입→난관→해결→요약을 라벨 없이 문단으로 이어
+// 붙인다(사용자 확정 — "난관/해결"은 제작 용어지 독자 언어가 아니라 라벨을 붙이면 형식이 드러나
+// 콘텐츠가 얇아 보인다).
+type GrowthStory = {
+  source_doc: string;
+  intro: string;
+  challenge: string;
+  response: string;
+  summary: string;
+  video_url: string | null;
+};
+
+function CompanyIntroLayer({ symbol }: { symbol: string }) {
+  const t = useTranslations('StockLens');
+  const locale = pickLocale(useLocale());
+  const [story, setStory] = useState<GrowthStory | null>(null);
+
+  useEffect(() => {
+    if (!symbol) return;
+    let alive = true;
+    fetch('/api/channel-growth-stories?symbol=' + encodeURIComponent(symbol) + '&lang=' + locale)
+      .then((r) => r.json())
+      .then((j) => { if (alive) setStory(j.story ?? null); })
+      .catch(() => { if (alive) setStory(null); });
+    return () => { alive = false; };
+  }, [symbol, locale]);
+
+  if (!story) return null; // 로딩 중이거나 없음 — 둘 다 아무 것도 안 보여준다(빈 상태 문구 없음)
+
+  return (
+    <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
+      <h2 className="text-sm font-bold text-unjong-primary">{t('companyIntro.title')}</h2>
+      <p className="mt-1 text-[12px] text-unjong-muted">{story.source_doc}</p>
+      <div className="mt-3 space-y-2.5 text-[13px] leading-relaxed text-unjong-primary">
+        <p>{story.intro}</p>
+        <p>{story.challenge}</p>
+        <p>{story.response}</p>
+        <p>{story.summary}</p>
+      </div>
+      {story.video_url ? (
+        <a href={story.video_url} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 block text-[13px] font-medium text-unjong-accent hover:underline">
+          {t('companyIntro.watchVideo')}
+        </a>
+      ) : null}
+    </div>
+  );
+}
+
 // 🔴 2026-09-05(ORDER_트릴리언리포트렌더): channel_reports를 symbol로 읽어 시간순 카드로 쌓는다.
 // 디자인 최소 — 새 색·레이아웃 발명 없이 기존 다크 토큰만 재사용. verdict·가격은 landing.json 원문 문자열
 // 그대로 출력(파싱·재계산 금지) — API가 이미 report_date desc로 정렬해서 준다.
@@ -771,6 +821,11 @@ export default function StockLensClient({ initialName }: { initialName?: string 
           </div>
           <WatchStarToggle symbol={symbol} name={initialName || data?.name || ticker} country={countryOf(symbol)} />
         </div>
+      </div>
+
+      {/* 🔴 2026-09-07: 회사 소개 레이어 — channel_growth_stories, 리포트보다 위(B안 — 채팅 지시) */}
+      <div className="mt-4 max-w-4xl">
+        <CompanyIntroLayer symbol={symbol} />
       </div>
 
       {/* 🔴 2026-09-05: 리포트 레이어 — channel_reports를 symbol로 읽어 시간순 카드로(ORDER_트릴리언리포트렌더_0905) */}
