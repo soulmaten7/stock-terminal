@@ -74,8 +74,20 @@ function numbersMatch(a: string | null | undefined, b: string | null | undefined
   return na.every((v, i) => Math.abs(v - nb[i]) < 0.005);
 }
 
-function extractPct(t: string | null | undefined) {
-  return (t ?? "").match(/\d+(?:\.\d+)?\s*%/g) ?? [];
+// 🔴 2026-09-07 실측 발견(translate-channel-report/route.ts와 동일 문제) — "1%p"
+// (퍼센트포인트) 원문이 "1 percentage point"처럼 "%" 없이 번역되면 개수가 안
+// 맞아 하드 게이트가 오탐으로 막는다. "%p"·"percentage point(s)"·"pp"를 별도
+// 토큰으로 인식해 같은 개념으로 비교한다(plain %는 "%p" 형태를 제외해 이중
+// 카운트 방지).
+function extractPct(t: string | null | undefined): string[] {
+  const s = t ?? "";
+  const out: string[] = [];
+  let m: RegExpExecArray | null;
+  const plainPct = /\d+(?:\.\d+)?\s*%(?!\s*p\b)/gi;
+  while ((m = plainPct.exec(s)) !== null) out.push(m[0]);
+  const pointPct = /\d+(?:\.\d+)?\s*(?:%\s*p\b|percentage\s*points?|pp\b)/gi;
+  while ((m = pointPct.exec(s)) !== null) out.push(m[0]);
+  return out;
 }
 
 function pctMatch(a: string | null | undefined, b: string | null | undefined): boolean {

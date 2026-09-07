@@ -210,8 +210,23 @@ export async function POST(req: NextRequest) {
   // (1) 하드 게이트: 퍼센트(%)는 조/억/만·trillion/billion 같은 배수 단위나 "Third"→"3분기" 같은
   //     서수 표기 차이의 영향을 안 받는 유일한 숫자 종류라(어느 언어든 그대로), 어긋나면 실제 오역
   //     (자릿수 전치 등)일 가능성이 높다 — 저장하지 않고 실패로 기록한다.
+  // 🔴 2026-09-07 실측 발견: "1%p"(퍼센트포인트) 원문이 번역에서 "1 percentage
+  // point"처럼 "%" 문자 없이 풀어써지는 경우가 있다 — 원문은 plain % 정규식에
+  // 걸리는데(1%p도 "1%" 부분매치) 번역문은 "%"가 아예 없어 개수가 안 맞아 하드
+  // 게이트가 오탐으로 막았다(에이피알 리포트 실사례, report_id=176). "%p"·
+  // "percentage point(s)"·"pp"를 별도 토큰으로 인식해 같은 개념으로 비교한다
+  // (plain %는 "%p" 형태를 제외해 이중 카운트를 막는다).
   const pctMismatches: string[] = [];
-  const extractPct = (t: string | null | undefined) => (t ?? "").match(/\d+(?:\.\d+)?\s*%/g) ?? [];
+  const extractPct = (t: string | null | undefined): string[] => {
+    const s = t ?? "";
+    const out: string[] = [];
+    let m: RegExpExecArray | null;
+    const plainPct = /\d+(?:\.\d+)?\s*%(?!\s*p\b)/gi;
+    while ((m = plainPct.exec(s)) !== null) out.push(m[0]);
+    const pointPct = /\d+(?:\.\d+)?\s*(?:%\s*p\b|percentage\s*points?|pp\b)/gi;
+    while ((m = pointPct.exec(s)) !== null) out.push(m[0]);
+    return out;
+  };
   const pctMatch = (a: string | null | undefined, b: string | null | undefined) => {
     const pa = extractPct(a).map((s) => parseFloat(s)).sort((x, y) => x - y);
     const pb = extractPct(b).map((s) => parseFloat(s)).sort((x, y) => x - y);
