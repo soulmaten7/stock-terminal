@@ -21,6 +21,8 @@ export default async function AdvertisePage({ searchParams }: { searchParams: Pr
     <div className="mx-auto max-w-[1040px] px-4 py-10 sm:px-6">
       <h1 className="text-2xl font-bold text-unjong-primary">{t('title')}</h1>
       <p className="mt-2 text-sm leading-relaxed text-unjong-muted">{t('lead')}</p>
+      <p className="mt-2 text-sm leading-relaxed text-unjong-muted">{t('channelsNote')}</p>
+      <p className="mt-2 text-xs leading-relaxed text-unjong-muted">{t('reachNote')}</p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         <div>

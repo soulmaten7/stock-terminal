@@ -72,7 +72,7 @@
 - **AI 캐시(로케일 컬럼 `*_ko`/`*_en`)**: `stock_briefings`(R2) · `news_briefs`(R3) · `filing_summaries`(R1) · `translation_cache` · **`daily_brief`**(한 입 브리핑 — market별 PK·text_ko/text_en·source_facts jsonb·STEP 778)
 - **공시/뉴스**: `jp_disclosures` · `dart_corp_codes`
 - **링크/큐레이션**: `link_hub`(KR 140·US 139) · `link_hub_clicks` · `link_hub_favorites`
-- **광고**: `ad_inquiries` · `brokers`
+- **광고**: `ad_inquiries`(폼: `components/advertise/AdInquiryForm.tsx` → `app/api/advertise/inquiry/route.ts`. 🔴 2026-09-08 정비 — ①제출 시 Resend로 `signal.kr.biz@gmail.com`에 알림 메일 발송 신설(이전엔 저장만 되고 아무도 알림받지 못함, `/admin`을 직접 열어야만 확인 가능했음) ②`SLOTS` 목록이 폐기된 "room"(리딩방) 값을 갖고 있어 폼의 "콘텐츠 피드"(`feed`) 선택이 조용히 "기타"로 잘못 기록되던 버그 수정. `/advertise` 페이지 카피도 리브랜딩 반영 — "공개된 기법으로" 등 구 모델트랙 표현 제거, 채널명(스톡스카우터·WeTheTicker) 명시, 트래픽 지표는 페이지에 숫자를 박지 않고 "문의 시 공유"로 정리(초기 단계 실측 수치 38·5명이 그대로 노출되면 신뢰도만 깎일 위험). Korean `note`에 남아있던 폐기된 "유사투자자문 신고+운영자 인증" 문구도 제거(English 버전엔 애초에 없었음). `/about`에도 비즈니스 문의 섹션 신설) · `brokers`
 - **유저/UGC**: `users` · `watchlist` · `feedback` · `youtube_channels` · `discussions`·`discussion_comments`·`discussion_likes`(구축됐으나 UI 없음, 회원탈퇴 클린업만 참조) · `platform_discussions`·`platform_discussion_likes`(위와 동일) · **`email_subscriptions`**(이메일 모닝 브리핑 opt-in — user_id PK·daily_brief bool·locale·unsub_token·RLS 본인행만·STEP 784)
 - ⚠️ **git에 없는 테이블 주의**: `link_hub` 등 일부는 MCP 직접 insert라 마이그레이션/git에 없음 → **DB 백업/이전 시 별도 export 필수.**
 

@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Link } from '@/i18n/navigation';
 import { REPORT_COUNTRIES } from '@/lib/constants/reportCountries';
 
 // 🔴 2026-09-05(ORDER_트릴리언모델잔재정리_0905 §20): 커버리지 문구 소스를 구 모델트랙 게이트
@@ -72,6 +73,14 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       {/* §6 사용법 섹션 — 2026-09-05(ORDER_트릴리언모델잔재정리_0905) 제거. 기존 3단계 중 2단계("렌즈끼리
           엇갈릴 때가 신호")가 렌즈 비교 UI 전제라 리포트 열람 흐름엔 대응 개념이 없다 — §3과 같은 이유로
           임시 문구를 짓지 않고 통째로 비워둔다(리브랜딩 때 새로 설계). */}
+
+      {/* 비즈니스 문의 — 2026-09-08 신설: About에 광고·제휴 문의 창구가 없었다 */}
+      <section className="mt-12 rounded-xl border border-unjong-border bg-unjong-surface p-5">
+        <h2 className="mb-1 text-base font-bold text-unjong-primary">{t('bizTitle')}</h2>
+        <p className="text-sm leading-relaxed text-unjong-muted">
+          {t('bizBody')} <Link href="/advertise" className="font-medium text-unjong-accent hover:underline">{t('bizLink')}</Link>
+        </p>
+      </section>
 
       {/* 인용 + 면책 */}
       <blockquote className="mt-12 border-l-2 border-unjong-accent pl-4 text-sm italic leading-relaxed text-unjong-muted">
