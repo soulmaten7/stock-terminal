@@ -13,7 +13,12 @@ async function requireAdmin() {
   return me?.role === "admin" ? user : null;
 }
 
-// 필터: country(KR|US) · type(report|growth_story) · unuploaded(1이면 status!='업로드됨'만) · from/to(target_date 범위)
+// 필터: country(KR|US) · type(report|growth_story) · unuploaded(1이면 status!='업로드됨'만) · from/to(assembled_date 범위)
+// 🔴 2026-09-08 정정 — 정렬·범위 필터 기준을 target_date(콘텐츠 자체의 기준일:
+// 리포트 발행일·성장스토리 사업보고서 제출일)에서 assembled_date(실제 조립일)로
+// 바꿨다. target_date 기준으로 정렬하면 성장스토리(제출일이 3월 등 훨씬 과거)가
+// 최신 목록에서 다 밀려 사라지는 문제가 있었다 — 상세는 migration
+// 20260908d_production_items_assembled_date.sql 참고.
 export async function GET(req: NextRequest) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "권한 없음" }, { status: 403 });
 
@@ -25,12 +30,12 @@ export async function GET(req: NextRequest) {
   const to = sp.get("to");
 
   const admin = createAdminClient();
-  let q = admin.from("production_items").select("*").order("target_date", { ascending: false }).limit(300);
+  let q = admin.from("production_items").select("*").order("assembled_date", { ascending: false }).order("id", { ascending: false }).limit(300);
   if (country) q = q.eq("country", country);
   if (type) q = q.eq("content_type", type);
   if (unuploaded) q = q.neq("status", "업로드됨");
-  if (from) q = q.gte("target_date", from);
-  if (to) q = q.lte("target_date", to);
+  if (from) q = q.gte("assembled_date", from);
+  if (to) q = q.lte("assembled_date", to);
 
   const { data, error } = await q;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
