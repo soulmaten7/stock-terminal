@@ -650,6 +650,8 @@
     },
     "noReportsYet": "No reports yet",
     "viewMoreReports": "See {n} more reports →",
+    "sortNewest": "Newest",
+    "sortOldest": "Oldest",
     "ourChannelsTitle": "Our Channels",
     "railMarketTitle": "Markets",
     "railWatchlistTitle": "My watchlist",

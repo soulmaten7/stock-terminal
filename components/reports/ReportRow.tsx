@@ -19,6 +19,15 @@ const VERDICT_LABEL: Record<string, { ko: string; en: string }> = {
 
 const CURRENT_PRICE_LABEL: Record<Locale, string> = { ko: '현재 주가', en: 'Current price' };
 
+// 🔴 2026-09-08(/reports 날짜 표시): report_date(리포트 발행일)를 쓴다 — 적재일(created_at)은
+// KR은 발행일과 거의 같고, US는 한 번에 배치 적재돼(같은 시각) 행마다 구분이 안 돼 정렬·표시
+// 둘 다 못 쓴다(실측: US 53건 created_at이 전부 같은 분 안에 몰림). report_date는 종목마다
+// 실제로 다른 값이라 "언제 올라온 건지" 구분에 report_date 쪽이 더 쓸모 있다.
+function formatReportDate(loc: Locale, dateStr: string): string {
+  const d = new Date(`${dateStr}T00:00:00Z`);
+  return new Intl.DateTimeFormat(loc === 'en' ? 'en-US' : 'ko-KR', { month: 'short', day: 'numeric', timeZone: 'UTC' }).format(d);
+}
+
 export function verdictLabel(loc: Locale, verdict: string | null): string {
   if (!verdict) return '—';
   return VERDICT_LABEL[verdict]?.[loc] ?? verdict;
@@ -48,7 +57,7 @@ export function ReportRow({ item, loc, compact = false }: { item: HomeReportItem
         {!compact ? (
           <p className="flex items-center gap-1.5 text-[15px] text-unjong-muted sm:text-[12px]">
             <span className={`h-[7px] w-[7px] shrink-0 rounded-full ${TONE_DOT[verdictTone(item.verdict)]}`} />
-            <span className="truncate">{item.broker} · {verdictLabel(loc, item.verdict)}</span>
+            <span className="truncate">{item.broker} · {verdictLabel(loc, item.verdict)} · {formatReportDate(loc, item.report_date)}</span>
           </p>
         ) : null}
       </div>

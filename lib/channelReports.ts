@@ -25,10 +25,12 @@ export async function getHomeReportFeed({
   country,
   limit = 5,
   loc = "ko",
+  sortAscending = false,
 }: {
   country: string;
   limit?: number;
   loc?: "ko" | "en";
+  sortAscending?: boolean; // 🔴 2026-09-08(/reports 날짜 정렬): 기본 최신순(false), true면 오래된순
 }): Promise<HomeReportFeed> {
   try {
     const sb = createAdminClient();
@@ -37,7 +39,7 @@ export async function getHomeReportFeed({
       .select("id, symbol, stock_name, broker, verdict, target_price, current_price, report_date, title", { count: "exact" })
       .eq("country", country)
       .not("symbol", "is", null)
-      .order("report_date", { ascending: false })
+      .order("report_date", { ascending: sortAscending })
       .limit(limit);
     if (error) return { items: [], count: 0 };
     const rows = (data ?? []) as (HomeReportItem & { id: number })[];

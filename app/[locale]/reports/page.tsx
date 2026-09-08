@@ -18,16 +18,18 @@ export default async function ReportsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ country?: string }>;
+  searchParams: Promise<{ country?: string; sort?: string }>;
 }) {
   const { locale } = await params;
-  const { country: countryParam } = await searchParams;
+  const { country: countryParam, sort: sortParam } = await searchParams;
   const country = REPORT_COUNTRIES.find((rc) => rc.code === countryParam)?.code ?? REPORT_COUNTRIES[0].code;
+  // 🔴 2026-09-08: 날짜순 정렬 토글, URL 쿼리로 상태 유지(country와 같은 방식) — 기본 최신순.
+  const sortAscending = sortParam === "asc";
   setRequestLocale(locale);
   const loc = pickLocale(locale);
   const t = await getTranslations({ locale, namespace: "Today" });
 
-  const feed = await getHomeReportFeed({ country, limit: 50, loc });
+  const feed = await getHomeReportFeed({ country, limit: 50, loc, sortAscending });
   const activeCountry = REPORT_COUNTRIES.find((rc) => rc.code === country)!;
 
   return (
@@ -37,16 +39,32 @@ export default async function ReportsPage({
           {activeCountry.flag} {t(`countries.${country}.name`)}
         </h1>
         <p className="mt-1 text-[15px] text-unjong-muted">{t(`countries.${country}.reportsTitle`)}</p>
-        <div className="mt-3 flex gap-2">
-          {[...REPORT_COUNTRIES].sort((a, b) => a.displayOrder - b.displayOrder).map((rc) => (
+        <div className="mt-3 flex items-center justify-between gap-2">
+          <div className="flex gap-2">
+            {[...REPORT_COUNTRIES].sort((a, b) => a.displayOrder - b.displayOrder).map((rc) => (
+              <Link
+                key={rc.code}
+                href={`/reports?country=${rc.code}${sortAscending ? "&sort=asc" : ""}`}
+                className={`rounded-full px-3 py-1.5 text-sm font-semibold ${country === rc.code ? "bg-unjong-mint text-unjong-background" : "bg-unjong-surface text-unjong-muted"}`}
+              >
+                {rc.flag} {t(`countries.${rc.code}.name`)}
+              </Link>
+            ))}
+          </div>
+          <div className="flex shrink-0 gap-1 text-xs font-medium">
             <Link
-              key={rc.code}
-              href={`/reports?country=${rc.code}`}
-              className={`rounded-full px-3 py-1.5 text-sm font-semibold ${country === rc.code ? "bg-unjong-mint text-unjong-background" : "bg-unjong-surface text-unjong-muted"}`}
+              href={`/reports?country=${country}`}
+              className={`rounded-full px-2.5 py-1 ${!sortAscending ? "bg-unjong-surface text-unjong-primary" : "text-unjong-muted"}`}
             >
-              {rc.flag} {t(`countries.${rc.code}.name`)}
+              {t("sortNewest")}
             </Link>
-          ))}
+            <Link
+              href={`/reports?country=${country}&sort=asc`}
+              className={`rounded-full px-2.5 py-1 ${sortAscending ? "bg-unjong-surface text-unjong-primary" : "text-unjong-muted"}`}
+            >
+              {t("sortOldest")}
+            </Link>
+          </div>
         </div>
       </div>
 
