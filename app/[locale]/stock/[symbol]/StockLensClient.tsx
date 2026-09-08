@@ -590,6 +590,7 @@ type GrowthStory = {
   response: string;
   summary: string;
   video_url: string | null;
+  stage: 'material' | 'produced';
 };
 
 function CompanyIntroLayer({ symbol }: { symbol: string }) {
@@ -611,7 +612,14 @@ function CompanyIntroLayer({ symbol }: { symbol: string }) {
 
   return (
     <div className="rounded-2xl border border-unjong-border bg-unjong-surface p-4">
-      <h2 className="text-sm font-bold text-unjong-primary">{t('companyIntro.title')}</h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-sm font-bold text-unjong-primary">{t('companyIntro.title')}</h2>
+        {story.stage === 'material' ? (
+          <span className="rounded-full border border-unjong-border px-2 py-0.5 text-[10px] font-medium text-unjong-muted">
+            {t('companyIntro.materialBadge')}
+          </span>
+        ) : null}
+      </div>
       <p className="mt-1 text-[12px] text-unjong-muted">{story.source_doc}</p>
       <div className="mt-3 space-y-2.5 text-[13px] leading-relaxed text-unjong-primary">
         <p>{story.intro}</p>
@@ -619,7 +627,9 @@ function CompanyIntroLayer({ symbol }: { symbol: string }) {
         <p>{story.response}</p>
         <p>{story.summary}</p>
       </div>
-      {story.video_url ? (
+      {story.stage === 'material' ? (
+        <p className="mt-3 text-[12px] text-unjong-muted">{t('companyIntro.materialNote')}</p>
+      ) : story.video_url ? (
         <a href={story.video_url} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 block text-[13px] font-medium text-unjong-accent hover:underline">
           {t('companyIntro.watchVideo')}
         </a>

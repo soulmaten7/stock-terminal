@@ -616,7 +616,9 @@
     },
     "companyIntro": {
       "title": "회사 소개",
-      "watchVideo": "영상으로 보기"
+      "watchVideo": "영상으로 보기",
+      "materialBadge": "영상 미제작",
+      "materialNote": "사업보고서를 먼저 정리한 내용이며, 아직 영상으로 제작되지 않았습니다."
     },
     "reports": {
       "title": "리포트",

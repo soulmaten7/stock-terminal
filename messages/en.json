@@ -616,7 +616,9 @@
     },
     "companyIntro": {
       "title": "Company",
-      "watchVideo": "Watch the video"
+      "watchVideo": "Watch the video",
+      "materialBadge": "No video yet",
+      "materialNote": "This summary was written directly from the filing. It has not been produced as a video yet."
     },
     "reports": {
       "title": "Reports",

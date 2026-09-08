@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     const sb = createAdminClient();
     const { data, error } = await sb
       .from("channel_growth_stories")
-      .select("id, source_doc, intro, challenge, response, summary, video_url")
+      .select("id, source_doc, intro, challenge, response, summary, video_url, episode_folder")
       .eq("symbol", symbol)
       .maybeSingle();
     if (error) return NextResponse.json({ symbol, story: null, error: "fetch_failed" });
@@ -35,6 +35,8 @@ export async function GET(req: NextRequest) {
         response: ok && tr!.response ? tr!.response : data.response,
         summary: ok && tr!.summary ? tr!.summary : data.summary,
         video_url: data.video_url,
+        // 🔴 2026-09-08: episode_folder가 NULL이면 아직 영상 제작 전(1차 요약만 있음).
+        stage: data.episode_folder ? "produced" : "material",
       },
     });
   } catch {
