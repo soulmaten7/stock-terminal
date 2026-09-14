@@ -10,7 +10,7 @@ export const dynamic = 'force-dynamic';
 export const metadata = { title: '어스티커 관리자' };
 
 type AdInquiry = { id: number; slot: string | null; company: string; contact_name: string | null; email: string | null; phone: string | null; message: string | null; status: string; created_at: string };
-type ProductionItem = { id: number; country: string; content_type: string; symbol: string | null; stock_name: string; target_date: string; assembled_date: string; title: string | null; status: string; uploaded_at: string | null; youtube_url: string | null; bundled_symbols: string[] | null };
+type ProductionItem = { id: number; country: string; content_type: string; symbol: string | null; stock_name: string; target_date: string; assembled_date: string; title: string | null; status: string; uploaded_at: string | null; youtube_url: string | null; instagram_note: string | null; manual_override: boolean; bundled_symbols: string[] | null };
 
 export default async function AdminPage() {
   const locale = await getLocale();

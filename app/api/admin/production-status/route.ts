@@ -74,17 +74,38 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
+// 🔴 2026-09-15 자동판정 전환 — report·growth_story는 이제 게시 증거(youtube_url·
+// instagram_note)로 production_items_compute_status_trigger가 status를 자동
+// 계산한다(supabase/migrations/20260915_production_items_auto_status.sql).
+// 이 PATCH는 그 자동판정을 끄는 예외 경로다:
+// - {id, uploaded}: 값을 직접 쓰고 manual_override=true로 표시 — 이후 트리거가
+//   이 행을 건드리지 않는다(longform은 트리거가 애초에 안 건드리므로 override
+//   플래그가 무의미하지만, 세워도 해롭지 않다 — 기존 체크박스 그대로 동작).
+// - {id, clearOverride:true}: manual_override만 false로 되돌린다 — 같은 UPDATE
+//   문 안에서 트리거가 NEW.manual_override=false를 보고 즉시 증거 기준으로
+//   재계산하므로, status/uploaded_at을 따로 안 써도 된다.
 export async function PATCH(req: NextRequest) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "권한 없음" }, { status: 403 });
 
-  let body: { id?: number; uploaded?: boolean };
+  let body: { id?: number; uploaded?: boolean; clearOverride?: boolean };
   try { body = await req.json(); } catch { return NextResponse.json({ error: "잘못된 요청" }, { status: 400 }); }
   const id = Number(body.id);
-  if (!id || typeof body.uploaded !== "boolean") return NextResponse.json({ error: "잘못된 값" }, { status: 400 });
+  if (!id) return NextResponse.json({ error: "잘못된 값" }, { status: 400 });
 
   const admin = createAdminClient();
+
+  if (body.clearOverride === true) {
+    const { error } = await admin.from("production_items").update({ manual_override: false }).eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  }
+
+  if (typeof body.uploaded !== "boolean") return NextResponse.json({ error: "잘못된 값" }, { status: 400 });
+
   const { error } = await admin.from("production_items").update(
-    body.uploaded ? { status: "업로드됨", uploaded_at: new Date().toISOString() } : { status: "조립됨", uploaded_at: null }
+    body.uploaded
+      ? { status: "업로드됨", uploaded_at: new Date().toISOString(), manual_override: true }
+      : { status: "조립됨", uploaded_at: null, manual_override: true }
   ).eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });

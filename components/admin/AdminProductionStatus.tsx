@@ -15,6 +15,8 @@ type Item = {
   status: string;
   uploaded_at: string | null;
   youtube_url: string | null;
+  instagram_note: string | null;
+  manual_override: boolean;
   bundled_symbols: string[] | null;
 };
 
@@ -69,6 +71,7 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [country, type, unuploaded]);
 
+  // longform 전용 — 자동 증거 소스가 없어 계속 수동 체크박스로 관리한다.
   async function toggleUploaded(id: number, uploaded: boolean) {
     setBusy(id);
     const prev = rows;
@@ -85,31 +88,63 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
     }
   }
 
-  // 전체 선택/해제 — 현재 필터로 걸러진 rows에만 적용(별도 서버 조회 없이 화면에
-  // 이미 떠 있는 목록 기준). 선택(uploaded=true)은 바로 실행, 해제는 실수로
-  // 대량 초기화될 위험이 커서 한 번 확인받는다(사용자 지시).
-  async function bulkSetUploaded(uploaded: boolean) {
-    if (!uploaded) {
-      const ok = window.confirm(`지금 보이는 ${rows.length}건을 전부 "업로드 안 함"으로 되돌립니다. 계속할까요?`);
-      if (!ok) return;
-    }
-    const targets = rows.filter((r) => (r.status === '업로드됨') !== uploaded);
-    if (!targets.length) return;
-
-    setBulkBusy(true);
+  // report·growth_story 예외 처리 — 게시 증거 자동판정(20260915)이 틀렸다고
+  // 판단될 때만 쓴다. 확인창을 거쳐 현재 표시된 상태의 반대값으로 수동 고정한다.
+  async function manualOverride(id: number, currentStatus: string) {
+    const next = currentStatus !== '업로드됨';
+    const label = next ? '업로드됨' : '조립됨';
+    const ok = window.confirm(`이 항목을 자동판정 대신 수동으로 '${label}'(으)로 고정합니다. 계속할까요?`);
+    if (!ok) return;
+    setBusy(id);
     const prev = rows;
-    const targetIds = new Set(targets.map((t) => t.id));
-    setRows((r) => r.map((x) => (targetIds.has(x.id) ? { ...x, status: uploaded ? '업로드됨' : '조립됨', uploaded_at: uploaded ? new Date().toISOString() : null } : x)));
+    setRows((r) => r.map((x) => (x.id === id ? { ...x, status: label, uploaded_at: next ? new Date().toISOString() : null, manual_override: true } : x)));
     try {
-      const results = await Promise.all(targets.map((t) =>
-        fetch('/api/admin/production-status', {
-          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: t.id, uploaded }),
-        })
-      ));
-      if (results.some((r) => !r.ok)) throw new Error();
+      const res = await fetch('/api/admin/production-status', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, uploaded: next }),
+      });
+      if (!res.ok) throw new Error();
     } catch {
       setRows(prev);
     } finally {
+      setBusy(null);
+    }
+  }
+
+  // 수동 재정의 해제 — 되돌린 직후 실제 상태는 서버 트리거가 증거 기준으로
+  // 다시 계산하므로(클라이언트가 미리 알 수 없음), 낙관적 갱신 대신 재조회한다.
+  async function clearOverride(id: number) {
+    setBusy(id);
+    try {
+      const res = await fetch('/api/admin/production-status', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, clearOverride: true }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      // 실패해도 아래 refetch가 실제 서버 상태를 다시 보여준다
+    } finally {
+      await refetch();
+      setBusy(null);
+    }
+  }
+
+  // "override 전부 해제" — 현재 필터로 걸러진 rows 중 수동 재정의된 report·
+  // growth_story만 대상(longform은 override 개념이 없어 기존 체크박스 그대로).
+  async function bulkClearOverride() {
+    const targets = rows.filter((r) => r.content_type !== 'longform' && r.manual_override);
+    if (!targets.length) return;
+    const ok = window.confirm(`현재 목록에서 수동 재정의된 ${targets.length}건을 전부 자동판정으로 되돌립니다. 계속할까요?`);
+    if (!ok) return;
+
+    setBulkBusy(true);
+    try {
+      const results = await Promise.all(targets.map((t) =>
+        fetch('/api/admin/production-status', {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: t.id, clearOverride: true }),
+        })
+      ));
+      if (results.some((r) => !r.ok)) throw new Error();
+    } finally {
+      await refetch();
       setBulkBusy(false);
     }
   }
@@ -149,19 +184,11 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
         <span className="mx-1 h-4 w-px bg-unjong-border" />
         <button
           type="button"
-          disabled={bulkBusy || !rows.length}
-          onClick={() => bulkSetUploaded(true)}
+          disabled={bulkBusy || !rows.some((r) => r.content_type !== 'longform' && r.manual_override)}
+          onClick={bulkClearOverride}
           className="rounded border border-unjong-border px-2 py-1 text-[11px] text-unjong-muted hover:text-unjong-primary disabled:opacity-50"
         >
-          현재 목록 전체 선택
-        </button>
-        <button
-          type="button"
-          disabled={bulkBusy || !rows.length}
-          onClick={() => bulkSetUploaded(false)}
-          className="rounded border border-unjong-border px-2 py-1 text-[11px] text-unjong-muted hover:text-unjong-primary disabled:opacity-50"
-        >
-          현재 목록 전체 해제
+          override 전부 해제(자동판정 복귀)
         </button>
         <span className="mx-1 h-4 w-px bg-unjong-border" />
         <button
@@ -215,7 +242,7 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
                 <th className="py-2 pr-3">종목</th>
                 <th className="py-2 pr-3">제목</th>
                 <th className="py-2 pr-3">상태</th>
-                <th className="py-2">업로드</th>
+                <th className="py-2">관리</th>
               </tr>
             </thead>
             <tbody>
@@ -228,18 +255,51 @@ export default function AdminProductionStatus({ initial }: { initial: Item[] }) 
                   <td className="py-2 pr-3 font-medium text-unjong-primary">{it.stock_name}</td>
                   <td className="max-w-[16rem] py-2 pr-3 text-unjong-primary">{it.title || '—'}</td>
                   <td className="py-2 pr-3">
-                    <span className={`rounded px-2 py-0.5 text-[11px] ${it.status === '업로드됨' ? 'bg-unjong-mint text-unjong-background' : 'border border-unjong-border text-unjong-muted'}`}>
-                      {STATUS_LABEL[it.status] ?? it.status}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className={`rounded px-2 py-0.5 text-[11px] ${it.status === '업로드됨' ? 'bg-unjong-mint text-unjong-background' : 'border border-unjong-border text-unjong-muted'}`}>
+                        {STATUS_LABEL[it.status] ?? it.status}
+                      </span>
+                      {it.manual_override ? <span className="text-[10px] text-unjong-muted" title="관리자가 자동판정 대신 수동으로 고정한 값">(수동)</span> : null}
+                    </div>
+                    {it.youtube_url || it.instagram_note ? (
+                      <div className="mt-1 flex flex-wrap gap-2 text-[11px]">
+                        {it.youtube_url ? (
+                          <a href={it.youtube_url} target="_blank" rel="noopener noreferrer" className="text-unjong-mint hover:underline">유튜브</a>
+                        ) : null}
+                        {it.instagram_note && it.instagram_note.startsWith('http') ? (
+                          <a href={it.instagram_note} target="_blank" rel="noopener noreferrer" className="text-unjong-mint hover:underline">인스타</a>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </td>
                   <td className="py-2">
-                    <input
-                      type="checkbox"
-                      checked={it.status === '업로드됨'}
-                      disabled={busy === it.id || bulkBusy}
-                      onChange={(e) => toggleUploaded(it.id, e.target.checked)}
-                      className="h-4 w-4 accent-unjong-mint disabled:opacity-50"
-                    />
+                    {it.content_type === 'longform' ? (
+                      <input
+                        type="checkbox"
+                        checked={it.status === '업로드됨'}
+                        disabled={busy === it.id || bulkBusy}
+                        onChange={(e) => toggleUploaded(it.id, e.target.checked)}
+                        className="h-4 w-4 accent-unjong-mint disabled:opacity-50"
+                      />
+                    ) : it.manual_override ? (
+                      <button
+                        type="button"
+                        disabled={busy === it.id || bulkBusy}
+                        onClick={() => clearOverride(it.id)}
+                        className="rounded border border-unjong-border px-2 py-1 text-[11px] text-unjong-muted hover:text-unjong-primary disabled:opacity-50"
+                      >
+                        되돌리기
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        disabled={busy === it.id || bulkBusy}
+                        onClick={() => manualOverride(it.id, it.status)}
+                        className="rounded border border-unjong-border px-2 py-1 text-[11px] text-unjong-muted hover:text-unjong-primary disabled:opacity-50"
+                      >
+                        수동 재정의
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
