@@ -172,13 +172,14 @@ export default function TodayClient({ initialReportsByCountry, initialIndices, o
                 <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t('noReportsYet')}</p>
               ) : (
                 <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-                  {feed.items.map((r, i) => (
-                    <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} compact />
+                  {feed.items.map((r) => (
+                    // 종목 단위 피드라 symbol이 곧 고유 키(2026-09-15).
+                    <ReportRow key={r.symbol} item={r} loc={loc} compact />
                   ))}
                 </div>
               )}
               {feed.count > feed.items.length ? (
-                <Link href={`/reports?country=${rc.code}`} className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewMoreReports', { n: feed.count })}</Link>
+                <Link href={`/reports?country=${rc.code}`} className="mt-2 inline-block px-4 text-[15px] font-semibold text-unjong-accent sm:px-0 sm:text-sm">{t('viewAllReports')}</Link>
               ) : null}
             </section>
           );

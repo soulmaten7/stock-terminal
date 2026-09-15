@@ -31,7 +31,7 @@ export default async function ReportsPage({
 
   // 🔴 2026-09-15: 종목 단위 목록으로 재편(장은태 확정) — 같은 symbol의 리포트가
   // 여러 건이면 한 줄로 묶고 그 종목의 최근 리포트 1건만 보여준다. 상세는 lib/channelReports.ts
-  // getSymbolReportFeed() 주석 참고. 홈 피드(getHomeReportFeed, 리포트 단위)는 그대로 둔다.
+  // getSymbolReportFeed() 주석 참고(홈 카드도 같은 함수로 통일됨).
   const feed = await getSymbolReportFeed({ country, limit: 50, loc, sortAscending });
   const activeCountry = REPORT_COUNTRIES.find((rc) => rc.code === country)!;
 
