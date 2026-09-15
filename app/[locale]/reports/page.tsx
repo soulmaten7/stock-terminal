@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { PageShell } from "@/components/layout/PageShell";
 import { ReportRow } from "@/components/reports/ReportRow";
-import { getHomeReportFeed } from "@/lib/channelReports";
+import { getSymbolReportFeed } from "@/lib/channelReports";
 import { pickLocale } from "@/lib/lensCopy";
 import { REPORT_COUNTRIES } from "@/lib/constants/reportCountries";
 
@@ -29,7 +29,10 @@ export default async function ReportsPage({
   const loc = pickLocale(locale);
   const t = await getTranslations({ locale, namespace: "Today" });
 
-  const feed = await getHomeReportFeed({ country, limit: 50, loc, sortAscending });
+  // 🔴 2026-09-15: 종목 단위 목록으로 재편(장은태 확정) — 같은 symbol의 리포트가
+  // 여러 건이면 한 줄로 묶고 그 종목의 최근 리포트 1건만 보여준다. 상세는 lib/channelReports.ts
+  // getSymbolReportFeed() 주석 참고. 홈 피드(getHomeReportFeed, 리포트 단위)는 그대로 둔다.
+  const feed = await getSymbolReportFeed({ country, limit: 50, loc, sortAscending });
   const activeCountry = REPORT_COUNTRIES.find((rc) => rc.code === country)!;
 
   return (
@@ -72,8 +75,9 @@ export default async function ReportsPage({
         <p className="px-4 py-4 text-[15px] text-unjong-muted sm:px-0 sm:text-sm">{t("noReportsYet")}</p>
       ) : (
         <div className="border-y border-unjong-border bg-unjong-surface px-4 sm:rounded-2xl sm:border">
-          {feed.items.map((r, i) => (
-            <ReportRow key={`${r.symbol}-${r.report_date}-${r.broker}-${i}`} item={r} loc={loc} />
+          {feed.items.map((r) => (
+            // 종목 단위 목록이라 symbol이 곧 고유 키(2026-09-15).
+            <ReportRow key={r.symbol} item={r} loc={loc} />
           ))}
         </div>
       )}
