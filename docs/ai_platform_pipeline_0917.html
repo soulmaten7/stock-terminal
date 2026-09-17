@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>질문 처리 파이프라인 — AI 플랫폼 구상 (검토 중)</title>
+<style>
+:root{
+  --bg:#0e1014; --panel:#171a21; --panel2:#1e222b; --line:#2a2f3a;
+  --tx:#e8eaf0; --tx2:#9aa3b2; --tx3:#6b7383;
+  --red:#ff6b6b; --redbg:#2a1618; --amber:#ffc251; --amberbg:#2a2113;
+  --green:#5fd68a; --greenbg:#132618; --blue:#5cc8ff; --bluebg:#0f2430;
+  --gold:#f0c14b; --goldbg:#2a2210;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--tx);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif;
+  line-height:1.6; -webkit-font-smoothing:antialiased; padding:0 0 70px;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{padding:40px 0 24px;border-bottom:1px solid var(--line);margin-bottom:28px}
+h1{font-size:25px;font-weight:700;letter-spacing:-.02em}
+.sub{color:var(--tx2);font-size:13.5px;margin-top:8px}
+.sub code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#252a34;padding:1.5px 5px;border-radius:4px;color:#cbd3e0;font-size:12px}
+.disclaim{
+  margin-top:16px;padding:12px 16px;background:var(--redbg);
+  border-left:3px solid var(--red);border-radius:0 6px 6px 0;font-size:13.5px;color:#ffc9c9
+}
+h2{
+  font-size:18px;font-weight:660;margin:40px 0 14px;letter-spacing:-.01em;
+  display:flex;align-items:baseline;gap:10px
+}
+h2 .n{
+  font-size:11.5px;color:var(--tx3);font-weight:600;font-variant-numeric:tabular-nums;
+  border:1px solid var(--line);border-radius:5px;padding:2px 7px;flex:none
+}
+p{color:var(--tx2);font-size:13.5px;margin:8px 0}
+.note{font-size:12.5px;color:var(--tx3);margin-top:9px}
+code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;
+  background:#252a34;padding:1.5px 5px;border-radius:4px;color:#cbd3e0
+}
+
+/* 범례 */
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.legend .item{
+  display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2);
+  border:1px solid var(--line);border-radius:20px;padding:5px 12px 5px 9px;background:var(--panel)
+}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.dot.g{background:var(--green)} .dot.y{background:var(--amber)} .dot.r{background:var(--red)}
+.legend .item.cost{color:var(--gold)}
+
+/* 파이프라인 */
+.pipe{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.step{
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:16px 18px; position:relative;
+}
+.step.g{border-left:4px solid var(--green)}
+.step.y{border-left:4px solid var(--amber)}
+.step.r{border-left:4px solid var(--red)}
+.step .head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.step .ttl{display:flex;align-items:baseline;gap:9px}
+.step .num{
+  font-size:11px;font-weight:700;color:var(--tx3);border:1px solid var(--line);
+  border-radius:5px;padding:1.5px 7px;font-variant-numeric:tabular-nums
+}
+.step h3{font-size:15.5px;font-weight:650}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:700;border-radius:4px;padding:2px 7px;letter-spacing:.02em}
+.tag.g{background:var(--greenbg);color:var(--green)}
+.tag.y{background:var(--amberbg);color:var(--amber)}
+.tag.r{background:var(--redbg);color:var(--red)}
+.tag.cost{background:var(--goldbg);color:var(--gold)}
+.step .body{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}
+.step .col b{display:block;font-size:11px;color:var(--tx3);font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.03em}
+.step .col span{font-size:13px;color:var(--tx2)}
+.arrow{display:flex;justify-content:center;align-items:center;color:var(--tx3);font-size:18px;height:26px}
+.arrow .lbl{font-size:11px;color:var(--tx3);margin-left:8px}
+
+/* 분기 — 숫자 카드 직행 */
+.branch-wrap{display:grid;grid-template-columns:1fr 40px 280px;gap:0;align-items:stretch;margin:0}
+.branch-main{display:flex;flex-direction:column;gap:0}
+.branch-connector{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:30px;color:var(--tx3);font-size:13px}
+.branch-connector .line{width:2px;flex:1;background:var(--line);margin:4px 0}
+.branch-connector .arrowhead{font-size:16px}
+.fastlane{
+  background:var(--goldbg);border:1.5px dashed #6b5a20;border-radius:10px;
+  padding:15px 16px;align-self:flex-start;margin-top:0
+}
+.fastlane .head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.fastlane h3{font-size:14px;font-weight:660;color:var(--gold)}
+.fastlane p{font-size:12.5px;color:#d9c98f;margin:6px 0}
+.fastlane .cite{
+  margin-top:10px;padding:9px 11px;background:#241d10;border-left:3px solid var(--gold);
+  border-radius:0 5px 5px 0;font-size:11.5px;color:#c9b877
+}
+
+/* 반복 루프 */
+.loopbox{
+  border:1.5px dashed var(--red);border-radius:10px;background:var(--redbg);
+  padding:13px 16px;margin:0;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap
+}
+.loopbox .q{font-size:13.5px;font-weight:650;color:#ffc9c9}
+.loopbox .desc{font-size:12px;color:#e0a3a3}
+.loopbox .tag{background:var(--redbg);color:var(--red);border:1px solid #5a2a2a}
+
+/* 합류 */
+.merge-lbl{display:flex;justify-content:center;gap:26px;margin:2px 0 -2px;flex-wrap:wrap}
+.merge-lbl .item{font-size:11.5px;color:var(--tx3);display:flex;align-items:center;gap:6px}
+.merge-lbl .item::before{content:"↘";font-size:14px;color:var(--tx3)}
+.merge-lbl .item.gold::before{color:var(--gold)}
+
+/* 표 */
+.tbl{overflow-x:auto;margin-top:6px;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{
+  text-align:left;font-size:10.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;
+  letter-spacing:.03em;padding:9px 13px;background:var(--panel2);border-bottom:1px solid var(--line)
+}
+td{padding:9px 13px;border-bottom:1px solid var(--line);color:var(--tx2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.k{color:var(--tx);font-weight:600;white-space:nowrap}
+td.num{font-variant-numeric:tabular-nums;color:var(--tx)}
+
+/* 미정 목록 */
+.pending{list-style:none;display:grid;gap:8px}
+.pending li{
+  background:var(--redbg);border:1px solid #4a2529;border-radius:8px;padding:10px 14px;
+  font-size:13px;color:#ffc9c9;display:flex;gap:9px
+}
+.pending li::before{content:"🔴";flex:none}
+
+footer{
+  margin-top:46px;padding-top:18px;border-top:1px solid var(--line);
+  font-size:12px;color:var(--tx3);text-align:center
+}
+
+/* 인쇄 */
+@media print{
+  body{background:#fff;color:#111;padding:0}
+  .wrap{max-width:100%}
+  header{border-color:#ccc}
+  h1{color:#111}
+  .sub{color:#444}
+  .disclaim{background:#fff0f0;color:#8a1f1f;border-left-color:#c0392b}
+  h2{color:#111}
+  h2 .n{color:#666;border-color:#ccc}
+  p,.note{color:#333}
+  code{background:#f0f0f0;color:#333}
+  .legend .item{background:#fafafa;border-color:#ccc;color:#333}
+  .step{background:#fff;border-color:#ccc;break-inside:avoid}
+  .step.g{border-left-color:#2e8b57}
+  .step.y{border-left-color:#b8860b}
+  .step.r{border-left-color:#c0392b}
+  .step h3{color:#111}
+  .step .col span{color:#333}
+  .tag.g{background:#eaf7ee;color:#1e6b3d}
+  .tag.y{background:#fff6e0;color:#8a6100}
+  .tag.r{background:#fdecec;color:#a12727}
+  .tag.cost{background:#fff8e0;color:#8a6a00}
+  .arrow{color:#888}
+  .fastlane{background:#fffaf0;border-color:#c9a94a;break-inside:avoid}
+  .fastlane h3{color:#8a6a00}
+  .fastlane p{color:#5a4a20}
+  .fastlane .cite{background:#fff4d6;color:#6b5316;border-left-color:#c9a94a}
+  .loopbox{background:#fdecec;border-color:#c0392b;break-inside:avoid}
+  .loopbox .q{color:#8a1f1f}
+  .loopbox .desc{color:#a14040}
+  .tbl{border-color:#ccc;break-inside:avoid}
+  th{background:#f5f5f5;color:#555;border-color:#ddd}
+  td{color:#333;border-color:#eee}
+  td.k{color:#111}
+  .pending li{background:#fdecec;border-color:#e0b0b0;color:#8a1f1f;break-inside:avoid}
+  footer{color:#666;border-color:#ccc}
+  a{color:#111}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<h1>질문 처리 파이프라인 — AI 플랫폼 구상</h1>
+<div class="sub">EarthTicker(도메인 유지)를 리포트 아카이브 → AI 플랫폼으로 전환하는 구상의 후속 문서. 원본 절 = <code>docs/ROADMAP_V2.md</code> 「AI 플랫폼 전환 구상 검토 (2026-09-17)」. 작성일 2026-09-17.</div>
+<div class="disclaim">🔴 <strong>이 문서 전체는 확정이 아니다.</strong> 검토 중인 구상을 구조화한 것이며, 장은태의 명시 확정 전까지는 실행 근거로 쓰지 않는다. 박스마다 색으로 확정도를 표시한다 — 색만으로 판단 가능하도록 각 박스에 상태 텍스트도 함께 적는다(인쇄 시 흑백이어도 구분 가능).</div>
+<div class="legend">
+  <div class="item"><span class="dot g"></span>정해진 것 — 원칙 확정</div>
+  <div class="item"><span class="dot y"></span>값을 채워야 하는 것 — 원칙은 정해졌으나 구체값 미정</div>
+  <div class="item"><span class="dot r"></span>아직 설계 안 된 것</div>
+  <div class="item cost">💰 비용 발생 지점</div>
+</div>
+</header>
+
+<h2><span class="n">파이프라인</span>질문 입력부터 출력까지 — 위→아래로 흐른다</h2>
+
+<div class="pipe">
+
+  <div class="step g">
+    <div class="head">
+      <div class="ttl"><span class="num">1</span><h3>질문 입력</h3></div>
+      <div class="tags"><span class="tag g">정해진 것</span></div>
+    </div>
+    <div class="body">
+      <div class="col"><b>무엇을 하는가</b><span>사용자가 자연어로 종목·시장 관련 질문을 입력한다.</span></div>
+      <div class="col"><b>필요한 것</b><span>질문 입력 UI(구체 화면은 미착수)</span></div>
+    </div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <div class="step y">
+    <div class="head">
+      <div class="ttl"><span class="num">2</span><h3>의도 분해</h3></div>
+      <div class="tags"><span class="tag y">값을 채워야 하는 것</span><span class="tag cost">💰</span></div>
+    </div>
+    <div class="body">
+      <div class="col"><b>무엇을 하는가</b><span>무엇을 묻는지(시세·재무·뉴스·해석 등), 어느 나라 종목인지 판별한다.</span></div>
+      <div class="col"><b>필요한 것</b><span>분류 전용 소형 LLM 호출. 의도 분류 체계(택소노미) 자체는 미정</span></div>
+    </div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <div class="step y">
+    <div class="head">
+      <div class="ttl"><span class="num">3</span><h3>소스 선택</h3></div>
+      <div class="tags"><span class="tag y">값을 채워야 하는 것</span></div>
+    </div>
+    <div class="body">
+      <div class="col"><b>무엇을 하는가</b><span>질문 유형별로 어느 소스층(①표)을 볼지 정한다.</span></div>
+      <div class="col"><b>필요한 것</b><span>3층 소스 구조는 정해짐(아래 ①표). 나라별 실제 소스 목록은 미확보 — 미정 목록 참조</span></div>
+    </div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <!-- 4 수집 + 숫자 직행 분기 -->
+  <div class="branch-wrap">
+    <div class="branch-main">
+      <div class="step y">
+        <div class="head">
+          <div class="ttl"><span class="num">4</span><h3>수집</h3></div>
+          <div class="tags"><span class="tag y">값을 채워야 하는 것</span><span class="tag cost">💰</span></div>
+        </div>
+        <div class="body">
+          <div class="col"><b>무엇을 하는가</b><span>저장된 것 확인 → 없거나 만료됐으면 가져온다(유효기간 기준 = ②표).</span></div>
+          <div class="col"><b>필요한 것</b><span>캐시 DB 조회 로직 + 외부 API/크롤러 호출. API 원가는 미정</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="branch-connector">
+      <div class="line"></div>
+      <div class="arrowhead">↘</div>
+    </div>
+    <div class="fastlane">
+      <div class="head"><h3>🔀 숫자 카드 직행 경로</h3></div>
+      <p><strong>시세·PER·시총</strong> 같은 정형 숫자는 여기서 <strong>LLM을 거치지 않고</strong> 데이터를 그대로 카드 위젯에 꽂는다 — 5(추림)·6(LLM 조립)을 건너뛰고 7(출력)로 바로 간다.</p>
+      <div class="cite">왜: 모델을 통과시키면 오독 위험 — 퍼플렉시티가 소형주 10-K 매출을 1,000배로 읽어 "매출 99.8% 붕괴" 서사를 지어낸 사례(2026-05 보고).</div>
+    </div>
+  </div>
+
+  <div class="arrow">↓ <span class="lbl">(텍스트·문서류만 아래로 계속)</span></div>
+
+  <div class="step r">
+    <div class="head">
+      <div class="ttl"><span class="num">5</span><h3>추림</h3></div>
+      <div class="tags"><span class="tag r">아직 설계 안 된 것</span><span class="tag cost">💰</span></div>
+    </div>
+    <div class="body">
+      <div class="col"><b>무엇을 하는가</b><span>가져온 자료(웹 검색 결과·공시 원문 등)에서 답에 쓸 부분만 골라낸다. 문서를 통째로 다음 단계에 넣지 않는 것이 원가를 가장 크게 좌우한다.</span></div>
+      <div class="col"><b>필요한 것</b><span>추출 방법(규칙 기반? 소형 LLM 요약?) 자체가 미설계</span></div>
+    </div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <div class="loopbox">
+    <div>
+      <div class="q">🔁 충분한가?</div>
+      <div class="desc">부족하면 ③ 소스 선택으로 되돌아가 반복한다.</div>
+    </div>
+    <span class="tag r">최대 횟수·멈추는 조건 미정 — 실측 필요</span>
+  </div>
+
+  <div class="arrow">↓ <span class="lbl">(충분하다고 판단되면)</span></div>
+
+  <div class="step y">
+    <div class="head">
+      <div class="ttl"><span class="num">6</span><h3>LLM 조립</h3></div>
+      <div class="tags"><span class="tag y">값을 채워야 하는 것</span><span class="tag cost">💰</span></div>
+    </div>
+    <div class="body">
+      <div class="col"><b>무엇을 하는가</b><span>추려진 자료로 글 답변을 생성한다. 숫자류는 이 단계를 지나지 않는다(4→7 직행).</span></div>
+      <div class="col"><b>필요한 것</b><span>최종 답변 모델(③표). 요금제 등급별로 어떤 모델을 쓸지는 미정</span></div>
+    </div>
+  </div>
+
+  <div class="merge-lbl">
+    <div class="item">글 답변 (6에서)</div>
+    <div class="item gold">숫자 카드 (4에서, LLM 미경유)</div>
+  </div>
+  <div class="arrow">↘ ↙</div>
+
+  <div class="step g">
+    <div class="head">
+      <div class="ttl"><span class="num">7</span><h3>출력</h3></div>
+      <div class="tags"><span class="tag g">정해진 것</span></div>
+    </div>
+    <div class="body">
+      <div class="col"><b>무엇을 하는가</b><span>두 갈래가 합쳐진다 — 숫자 카드(직행) + 글(LLM) + 출처 표기.</span></div>
+      <div class="col"><b>필요한 것</b><span>위젯 렌더링 + 텍스트 렌더링 + 출처 링크 UI(구체 화면은 미착수, 구조 원칙만 확정)</span></div>
+    </div>
+  </div>
+
+</div>
+
+<h2><span class="n">①</span>소스 층 — 무엇을 담당하는가</h2>
+<div class="tbl"><table>
+<thead><tr><th>층</th><th>내용</th><th>담당</th></tr></thead>
+<tbody>
+<tr><td class="k">1. 정해진 소스</td><td>시세, SEC/DART 공시 원문, 재무제표</td><td>사실이 정확해야 하는 것 — 변하는 값(주가·매출·CEO)</td></tr>
+<tr><td class="k">2. 웹 검색</td><td>뉴스, 시장 반응, 맥락</td><td>지금 무슨 일이 있는지</td></tr>
+<tr><td class="k">3. LLM 지식</td><td>설명·해석(PER이 뭔지, 지주회사를 PER로 보면 안 되는 이유 등)</td><td>변하지 않는 지식</td></tr>
+</tbody>
+</table></div>
+<p class="note">원칙: 변하는 값은 데이터에서, 변하지 않는 지식은 LLM에서. 사실 주장은 반드시 출처가 있어야 한다.</p>
+
+<h2><span class="n">②</span>데이터 유효기간 — 저장 여부 판정 기준</h2>
+<div class="tbl"><table>
+<thead><tr><th>데이터 성격</th><th>예</th><th>저장 방식</th></tr></thead>
+<tbody>
+<tr><td class="k">한 번 확정되면 안 변함</td><td>8-K 원문, 10-K 본문, 과거 실적</td><td>가져오면 저장, 다시 안 받음</td></tr>
+<tr><td class="k">주기적 갱신</td><td>분기 재무제표</td><td>저장하되 새 분기에 교체</td></tr>
+<tr><td class="k">계속 변함</td><td>시세, 뉴스</td><td>저장 안 함, 매번 조회</td></tr>
+</tbody>
+</table></div>
+
+<h2><span class="n">③</span>원가 — LLM API 단가 (2026-09-17 확인)</h2>
+<div class="tbl"><table>
+<thead><tr><th>모델</th><th>입력 (100만 토큰당)</th><th>출력 (100만 토큰당)</th><th>질문 1회당 추정 원가</th></tr></thead>
+<tbody>
+<tr><td class="k">Claude Haiku 4.5</td><td class="num">$1</td><td class="num">$5</td><td class="num">$0.018</td></tr>
+<tr><td class="k">Claude Sonnet 5</td><td class="num">$2</td><td class="num">$10</td><td class="num">$0.035</td></tr>
+<tr><td class="k">Claude Opus 5</td><td class="num">$5</td><td class="num">$25</td><td class="num">$0.088</td></tr>
+<tr><td class="k">GPT-5.6 Terra</td><td class="num">$2</td><td class="num">$12</td><td class="num">— (미산출)</td></tr>
+</tbody>
+</table></div>
+<p class="note">1회당 추정 원가 = 입력 1만·출력 1.5천 토큰 가정. 프롬프트 캐싱 90% 할인·배치 API 50% 할인 별도 적용 가능(⑤ 추림 단계에서 문서를 통째로 안 넣을수록 이 표의 실제 비용이 낮아진다).</p>
+
+<h2><span class="n">미정</span>이 구상에서 아직 정하지 않은 것</h2>
+<ul class="pending">
+  <li>루프(④~⑤ 반복) 최대 횟수와 멈추는 조건</li>
+  <li>요금제 구체안(단계·횟수 제한·금액) — 모델 등급뿐 아니라 <strong>루프 횟수(=참조 출처 수)로도 등급을 나누는 안</strong> 검토 중. 참고: 퍼플렉시티는 무료 5~8개 출처·Pro 15~25개 출처로 깊이를 나눈다</li>
+  <li>무료와 유료의 경계</li>
+  <li>나라별 소스 목록 확보(무료 데이터, API·크롤링 가능 여부, 상업적 이용 약관)</li>
+  <li>웹 검색 API·시세 API 원가</li>
+  <li>답변이 다루는 범위의 선 — 개인 맞춤 조언은 하지 않음(규제 회피). 사실·데이터·엇갈리는 시각까지만 다루는 것으로 검토 중이나 경계선 자체는 미확정</li>
+  <li>기존 EarthTicker 아카이브를 언제 어떻게 걷어낼지</li>
+</ul>
+<p class="note">참고(확인 예정, 미검증): Trillion 모델 트랙 시절 <code>docs/DATA_SOURCE_CATALOG.md</code>·<code>docs/data_source_catalog.html</code>·<code>docs/data_source_catalog.xlsx</code>에 92개 기관/소스 조사가 이미 남아 있다. "나라별 소스 목록 확보" 항목의 출발점이 될 수 있으나, 이 AI 플랫폼 구상 기준으로 재검증된 적은 없다 — 그대로 가져다 쓰지 않는다.</p>
+
+<footer>
+  이 문서는 판정이 아니다 — 색은 확정도 표시일 뿐이다. 확정 시 이 문서와 <code>docs/ROADMAP_V2.md</code> 상단 절을 함께 갱신한다.
+</footer>
+
+</div>
+</body>
+</html>
