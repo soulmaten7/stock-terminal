@@ -56,6 +56,8 @@ echo "== 배포 시작 (~2-3분) =="
 vercel --prod
 ```
 
+> ⚠️ **`vercel env pull`로 `.env.local`을 다시 받을 때는 `SUPABASE_ACCESS_TOKEN` 등 로컬 전용 키가 빠졌는지 확인한다** — 위 3번에서 Vercel에 올리지 않고 제외한 키라 pull로는 복원되지 않는다.
+
 > 마지막에 **`https://...vercel.app` 주소**가 출력돼. 그게 테스트 URL.
 
 ---
