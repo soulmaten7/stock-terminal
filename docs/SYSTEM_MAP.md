@@ -124,6 +124,12 @@
 - 관심목록/기타: `components/favorites/WatchlistClient.tsx` · 유사투자자문 `components/toolbox/AdvisorDirectory.tsx` · 헤더 `components/layout/Header.tsx`
 - i18n: `i18n/{routing,navigation,request}.ts` · `messages/{ko,en}.json` · `lib/authRedirect.ts`(OAuth 로케일 쿠키)
 
+**로컬 개발 환경 — 저장소 위치(2026-10-05)**: 실제 경로 `/Volumes/stock-terminal-apfs/stock-terminal`, `~/stock-terminal`은 링크. 외장하드 `/Volumes/soulmaten`이 exFAT(심볼릭 링크·권한 미지원)이라 Node 프로젝트가 깨지므로, 그 안에 APFS sparsebundle(`/Volumes/soulmaten/stock-terminal.sparsebundle`, 상한 100g·실사용분만 차지)을 두고 마운트해 쓴다.
+- **수동 마운트**: `hdiutil attach /Volumes/soulmaten/stock-terminal.sparsebundle` (외장하드가 먼저 마운트돼 있어야 함 — 외장하드 자체 자동 마운트 실패는 별개 문제, 사용자가 먼저 마운트).
+- **자동 마운트**: LaunchAgent `~/Library/LaunchAgents/com.stockterminal.mount-apfs.plist`(로그인 시 실행) → 스크립트 `~/Library/Scripts/mount_stock_terminal_apfs.sh`(외장하드 미마운트 시 5초 간격 24회 재시도 후 포기). 로그 `~/Library/Logs/stock-terminal-mount-apfs.{out,err}.log`. 이 두 파일은 저장소 밖(홈)에 있다.
+- `docs/probe_951_cache` → `/Volumes/soulmaten/stock-terminal-cache/probe_951_cache` 절대경로 링크(2026-10-03)는 이동 후에도 유효.
+- dev 포트는 3333(`npm run dev`). 느린 파일시스템 경고("Slow filesystem detected")가 뜨나 동작에는 지장 없음.
+
 ## 10. 🐞 함정 (반복 확인 · 상세 = LENS_DEV_PLAYBOOK / COUNTRY_TAB_PLAYBOOK)
 - **Turbopack**: API 라우트·서버 컴포넌트 변경 자동갱신 안 함 → `pkill -f "next dev"; rm -rf .next && npm run dev`. (클라 컴포넌트는 HMR 즉시.)
 - **`[locale]` 캐시**: 페이지에 캐시 지시자 없으면 무한 정적 캐시로 굳음 → `force-dynamic`(클라 컴포넌트는 서버 `layout.tsx` 래퍼로 강제).

@@ -38,6 +38,8 @@
 
 ## 3. 저장소 경계
 
+- **저장소 위치(2026-10-05~)**: 이 저장소는 `/Volumes/stock-terminal-apfs/stock-terminal`(외장하드 `/Volumes/soulmaten/stock-terminal.sparsebundle` APFS 이미지)에 있으며 `~/stock-terminal`은 그곳을 가리키는 링크다. 마운트 절차·자동 마운트 = `docs/SYSTEM_MAP.md` §9.
+
 - **OTMarketing CPA 작업은 여기서 하지 않는다** → `~/OTMarketing/` 별도 저장소(2026-04-23 분리, 상세: `docs/CROSS_REFERENCE.md`).
 - **광고주 DB 수집·정산 로직은 본 프로젝트 영역 아님** — 투자 정보·차트·시그널·트레이딩 도구 + (2026-09-05~) 채널 리포트 적재만 다룬다.
 
